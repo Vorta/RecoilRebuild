@@ -59,19 +59,17 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
             surface_audit._registered_repository_path_authority_findings(),
         )
 
-    def test_live_authority_defaults_use_shared_machine_local_router(self) -> None:
+    def test_live_authority_defaults_bind_directly_to_canonical_root(self) -> None:
         self.assertEqual([], surface_audit._machine_local_authority_routing_findings())
 
-    def test_direct_live_authority_default_is_reported(self) -> None:
+    def test_noncanonical_live_authority_default_is_reported(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             consumer = root / "tools" / "_recoil" / "commands" / "progress_cli.py"
             consumer.parent.mkdir(parents=True)
             consumer.write_text(
                 "from pathlib import Path\n"
-                "REPO_ROOT = Path('.')\n"
-                "DEFAULT_PROGRESS = REPO_ROOT / '.agent' / "
-                "'RECONSTRUCTION_PROGRESS.sqlite3'\n",
+                "DEFAULT_PROGRESS = Path('.agent/RECONSTRUCTION_PROGRESS.sqlite3')\n",
                 encoding="utf-8",
             )
             findings = surface_audit._machine_local_authority_routing_findings(
@@ -80,15 +78,14 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
                     "tools/_recoil/commands/progress_cli.py",
                     "DEFAULT_PROGRESS",
                     ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
-                    "routed-live-authority",
                 ),),
             )
         self.assertEqual(
-            ["direct-live-authority-default"],
+            ["noncanonical-ledger-default"],
             [row.token for row in findings],
         )
 
-    def test_canonicalized_library_logical_default_is_reported(self) -> None:
+    def test_routed_library_default_is_reported(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             consumer = root / "tools" / "_recoil" / "lib" / "progress.py"
@@ -107,11 +104,10 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
                     "tools/_recoil/lib/progress.py",
                     "DEFAULT_PROGRESS_PATH",
                     ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
-                    "logical-execution-root",
                 ),),
             )
         self.assertEqual(
-            ["canonicalized-library-logical-default"],
+            ["noncanonical-ledger-default"],
             [row.token for row in findings],
         )
 
@@ -155,11 +151,6 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
                 "Run `python tools/recoil.py progress work claim-current "
                 "--expected-revision 7 --apply`.\n",
                 "progress work claim-current --expected-revision",
-            ),
-            "unbound acceptance": (
-                "Run `python tools/recoil.py progress advance-live-call-contract "
-                "--slice s --apply`.\n",
-                "progress advance-live-call-contract",
             ),
         }
         for label, (source, token) in rows.items():

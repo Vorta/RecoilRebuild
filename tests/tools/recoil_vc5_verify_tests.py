@@ -294,7 +294,7 @@ def write_data_manifest(directory: Path, name: str = "sample_data") -> Path:
 
 
 def write_data_progress_fixture(directory: Path) -> Path:
-    path = directory / "fixture-progress.json"
+    path = directory / "fixture-progress.sqlite3"
     data = empty_progress_document()
     data["symbols"] = {
         "recoil:data:0x402000": {
@@ -314,7 +314,11 @@ def write_data_progress_fixture(directory: Path) -> Path:
             "name": ".rdata",
         }
     }
-    path.write_text(json.dumps(data), encoding="utf-8")
+    ProgressSQLiteStore.create_from_mapping(
+        path,
+        data,
+        cutover_pair_id="vc5-verify-test",
+    )
     return path
 
 
@@ -1645,19 +1649,7 @@ class RecoilVc5VerifyTests(unittest.TestCase):
         self.assertTrue(all(rows[address].required_presence and rows[address].full_order_gate for address in deferred))
 
     def test_present_registered_vc5_manifest_paths_use_exact_git_spelling(self):
-        from _recoil.lib.worktree_control import resolve_canonical_control_root
-
-        canonical = resolve_canonical_control_root(
-            executing_worktree_root=REPO_ROOT,
-            required_machine_local_paths=(
-                ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
-            ),
-        )
-        progress_path = (
-            canonical.canonical_control_root
-            / ".agent"
-            / "RECONSTRUCTION_PROGRESS.sqlite3"
-        )
+        progress_path = REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
         tracker = ProgressSQLiteStore(progress_path, read_only=True).materialize()
         registered_manifest_paths = sorted(
             row["registration"]["manifest_path"]

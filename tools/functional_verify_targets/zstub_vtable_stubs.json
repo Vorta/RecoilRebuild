@@ -13,6 +13,6 @@
   ],
   "vc5_attempt": "python tools/recoil.py verify vc5 zstub_vtable_stubs",
   "known_limits": [
-    "Tier S byte evidence is tracked by tools/vc5_verify_targets/zstub_vtable_stubs.json and requires a current parent marker review."
+    "Tier S byte evidence is tracked by tools/vc5_verify_targets/zstub_vtable_stubs.json and requires a current direct marker review."
   ]
 }

@@ -22,16 +22,10 @@ from _recoil.commands.live_final_verify import (  # noqa: E402
     semantic_projection,
 )
 from _recoil.lib.pe import data_directory, parse_pe_headers, rva_to_offset  # noqa: E402
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
-
+    return REPO_ROOT / "support" / "Recoil.exe"
 
 class LiveFinalVerifyTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -168,7 +162,7 @@ class LiveFinalVerifyTests(unittest.TestCase):
                 "sections": sections,
             }
         tracker = {
-            "schema_version": 5,
+            "schema_version": 6,
             "revision": 1,
             "symbols": symbols,
             "physical_blocks": blocks,

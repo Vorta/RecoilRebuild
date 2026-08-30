@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from copy import deepcopy
-import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -34,30 +33,14 @@ from _recoil.commands.provider_function_mutation import (  # noqa: E402
 from _recoil.commands.call_contract_verify import build_identity_indexes  # noqa: E402
 from _recoil.lib.pe import parse_pe_headers, rva_to_offset  # noqa: E402
 from _recoil.lib.progress import ProgressStore  # noqa: E402
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
+from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
-
+    return REPO_ROOT / "support" / "Recoil.exe"
 
 def canonical_progress_path() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=(
-            ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
-        ),
-    )
-    return (
-        resolution.canonical_control_root
-        / ".agent"
-        / "RECONSTRUCTION_PROGRESS.sqlite3"
-    )
-
+    return REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
 
 VC5_ROOT = canonical_retail_reference().parents[2] / "Compiler" / "VC5SP3"
 ATEXIT_ADDRESS = "0x4c60e0"
@@ -193,6 +176,19 @@ CURRENT_HEADER_COMDAT_CASES = (
 )
 
 
+def _write_tracker(path: Path, data: dict[str, object]) -> None:
+    ProgressSQLiteStore.create_from_mapping(
+        path,
+        data,
+        cutover_pair_id="provider-function-test",
+        overwrite=path.exists(),
+    )
+
+
+def _read_tracker(path: Path) -> dict[str, object]:
+    return ProgressStore(path).load().data
+
+
 def _tracker_fixture(path: Path) -> int:
     data = ProgressStore(canonical_progress_path()).load().data
     # This archive-member fixture predates the separately reviewed canonical-header
@@ -227,7 +223,7 @@ def _tracker_fixture(path: Path) -> int:
         function.pop(field, None)
     data["symbols"][function_id] = function
     data["owners"].pop(REQUEST["owner_id"], None)
-    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    _write_tracker(path, data)
     return int(data["revision"])
 
 
@@ -259,7 +255,7 @@ def _header_tracker_fixture(path: Path) -> int:
     data["symbols"][function_id] = function
     data["owners"].pop(REQUEST["owner_id"], None)
     data["owners"].pop(HEADER_REQUEST["owner_id"], None)
-    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    _write_tracker(path, data)
     return int(data["revision"])
 
 
@@ -306,7 +302,7 @@ def _atlimpl_cluster_tracker_fixture(path: Path) -> int:
         ATLIMPL_CLUSTER_LEGACY_OWNER_SNAPSHOT
     )
     data["owners"].pop(ATLIMPL_CLUSTER_OWNER_ID, None)
-    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    _write_tracker(path, data)
     return int(data["revision"])
 
 
@@ -326,7 +322,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            tracker = Path(temporary) / "progress.json"
+            tracker = Path(temporary) / "progress.sqlite3"
             revision = _atlimpl_cluster_tracker_fixture(tracker)
             before = tracker.read_bytes()
             report = register_atlimpl_provider_cluster(
@@ -394,7 +390,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
 
     def test_atlimpl_cluster_apply_atomically_retires_legacy_owner(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            tracker = Path(temporary) / "progress.json"
+            tracker = Path(temporary) / "progress.sqlite3"
             revision = _atlimpl_cluster_tracker_fixture(tracker)
             report = register_atlimpl_provider_cluster(
                 progress=tracker,
@@ -405,7 +401,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
                 vc5_root=VC5_ROOT,
             )
             self.assertTrue(report["commit"]["applied"])
-            data = json.loads(tracker.read_text(encoding="utf-8"))
+            data = _read_tracker(tracker)
             self.assertEqual(revision + 1, data["revision"])
             self.assertNotIn(ATLIMPL_CLUSTER_LEGACY_OWNER_ID, data["owners"])
             self.assertIn(ATLIMPL_CLUSTER_OWNER_ID, data["owners"])
@@ -466,14 +462,14 @@ class ProviderFunctionMutationTests(unittest.TestCase):
         for kind, field, value in mutations:
             with self.subTest(kind=kind, field=field):
                 with tempfile.TemporaryDirectory() as temporary:
-                    tracker = Path(temporary) / "progress.json"
+                    tracker = Path(temporary) / "progress.sqlite3"
                     revision = _atlimpl_cluster_tracker_fixture(tracker)
-                    data = json.loads(tracker.read_text(encoding="utf-8"))
+                    data = _read_tracker(tracker)
                     if kind == "owner":
                         data["owners"][ATLIMPL_CLUSTER_LEGACY_OWNER_ID][field] = value
                     else:
                         data["symbols"]["recoil:function:0x42db50"][field] = value
-                    tracker.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+                    _write_tracker(tracker, data)
                     with self.assertRaises(ProviderFunctionMutationError):
                         register_atlimpl_provider_cluster(
                             progress=tracker,
@@ -485,9 +481,9 @@ class ProviderFunctionMutationTests(unittest.TestCase):
                         )
 
         with tempfile.TemporaryDirectory() as temporary:
-            tracker = Path(temporary) / "progress.json"
+            tracker = Path(temporary) / "progress.sqlite3"
             revision = _atlimpl_cluster_tracker_fixture(tracker)
-            data = json.loads(tracker.read_text(encoding="utf-8"))
+            data = _read_tracker(tracker)
             data["symbols"]["recoil:function:0x42db60"] = {
                 "address": "0x42db60",
                 "binary": "recoil",
@@ -496,7 +492,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
                 "kind": "function",
                 "size": 1,
             }
-            tracker.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+            _write_tracker(tracker, data)
             with self.assertRaisesRegex(
                 ProviderFunctionMutationError, "physical cluster census"
             ):
@@ -514,7 +510,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
         for address, offset, value in cases:
             with self.subTest(address=address, offset=offset):
                 with tempfile.TemporaryDirectory() as temporary:
-                    tracker = Path(temporary) / "progress.json"
+                    tracker = Path(temporary) / "progress.sqlite3"
                     reference = Path(temporary) / "Recoil.exe"
                     revision = _atlimpl_cluster_tracker_fixture(tracker)
                     _mutated_reference(reference, address=address, offset=offset, value=value)
@@ -533,7 +529,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            tracker = root / "progress.json"
+            tracker = root / "progress.sqlite3"
             empty_source = root / "ATLIMPL.CPP"
             empty_source.write_bytes(b"")
             revision = _atlimpl_cluster_tracker_fixture(tracker)
@@ -607,7 +603,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
 
     def test_header_comdat_dry_run_proves_construct_without_mutation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            tracker = Path(temporary) / "progress.json"
+            tracker = Path(temporary) / "progress.sqlite3"
             reference = Path(temporary) / "Recoil.exe"
             revision = _header_tracker_fixture(tracker)
             _header_reference_fixture(reference)
@@ -670,9 +666,9 @@ class ProviderFunctionMutationTests(unittest.TestCase):
 
     def test_header_comdat_recipe_does_not_prematurely_accept_construct_retail_row(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            tracker = Path(temporary) / "progress.json"
+            tracker = Path(temporary) / "progress.sqlite3"
             revision = _header_tracker_fixture(tracker)
-            data = json.loads(tracker.read_text(encoding="utf-8"))
+            data = _read_tracker(tracker)
             source = deepcopy(
                 ProgressStore(canonical_progress_path()).load().data["symbols"][
                     f"recoil:function:{CONSTRUCT_ADDRESS}"
@@ -680,7 +676,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
             )
             data["symbols"].pop(f"recoil:function:{ATEXIT_ADDRESS}")
             data["symbols"][f"recoil:function:{CONSTRUCT_ADDRESS}"] = source
-            tracker.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+            _write_tracker(tracker, data)
             with self.assertRaises(ProviderFunctionMutationError):
                 register_provider_function(
                     progress=tracker,
@@ -694,7 +690,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
 
     def test_atexit_dry_run_proves_exact_archive_member_without_mutation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            tracker = Path(temporary) / "progress.json"
+            tracker = Path(temporary) / "progress.sqlite3"
             revision = _tracker_fixture(tracker)
             before = tracker.read_bytes()
             report = register_provider_function(
@@ -741,7 +737,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
 
     def test_apply_updates_only_fixture_and_revision_guards(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            tracker = Path(temporary) / "progress.json"
+            tracker = Path(temporary) / "progress.sqlite3"
             revision = _tracker_fixture(tracker)
             report = register_provider_function(
                 progress=tracker,
@@ -753,7 +749,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
                 vc5_root=VC5_ROOT,
             )
             self.assertTrue(report["commit"]["applied"])
-            data = json.loads(tracker.read_text(encoding="utf-8"))
+            data = _read_tracker(tracker)
             self.assertEqual(revision + 1, data["revision"])
             self.assertIn(REQUEST["owner_id"], data["owners"])
             indexes = build_identity_indexes(ProgressStore(tracker).load())
@@ -845,9 +841,9 @@ class ProviderFunctionMutationTests(unittest.TestCase):
 
     def test_owner_relationship_and_overlapping_symbol_collisions_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            tracker = Path(temporary) / "progress.json"
+            tracker = Path(temporary) / "progress.sqlite3"
             revision = _tracker_fixture(tracker)
-            data = json.loads(tracker.read_text(encoding="utf-8"))
+            data = _read_tracker(tracker)
             data["owners"]["recoil:owner:provider.conflict"] = {
                 "binary": "recoil",
                 "relationships": [
@@ -866,7 +862,7 @@ class ProviderFunctionMutationTests(unittest.TestCase):
                 "extent_state": "known",
                 "size": 0x14,
             }
-            tracker.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+            _write_tracker(tracker, data)
             with self.assertRaisesRegex(
                 ProviderFunctionMutationError, "overlapping or already owned"
             ):
@@ -893,13 +889,11 @@ class ProviderFunctionMutationTests(unittest.TestCase):
         for field, value in mutations:
             with self.subTest(field=field):
                 with tempfile.TemporaryDirectory() as temporary:
-                    tracker = Path(temporary) / "progress.json"
+                    tracker = Path(temporary) / "progress.sqlite3"
                     revision = _tracker_fixture(tracker)
-                    data = json.loads(tracker.read_text(encoding="utf-8"))
+                    data = _read_tracker(tracker)
                     data["symbols"]["recoil:function:0x4c60e0"][field] = value
-                    tracker.write_text(
-                        json.dumps(data, indent=2) + "\n", encoding="utf-8"
-                    )
+                    _write_tracker(tracker, data)
                     with self.assertRaises(ProviderFunctionMutationError):
                         register_provider_function(
                             progress=tracker,

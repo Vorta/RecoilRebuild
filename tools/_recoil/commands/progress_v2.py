@@ -10,6 +10,7 @@ from _recoil.lib.progress import (
     EXACT_LINK_DIMENSIONS,
     FULL_ORDER_DIMENSIONS,
     ProgressError,
+    accepted_byte_mode,
     state_record,
 )
 
@@ -113,19 +114,36 @@ def accept_live_order_block(
 def accept_live_byte_groups(
     data: dict[str, Any],
     *,
-    lane: str,
+    mode: str,
     groups: Iterable[Iterable[str]],
     evidence_id: str,
     facts: Mapping[str, Any],
 ) -> list[str]:
-    if lane == "object":
-        dimensions = ("object_byte",)
-    elif lane == "authored":
+    if mode == "authored":
         dimensions = AUTHORED_BYTE_DIMENSIONS
-    elif lane == "linked":
+    elif mode == "linked":
         dimensions = EXACT_LINK_DIMENSIONS
     else:
-        raise ProgressError(f"unknown byte lane {lane!r}")
+        raise ProgressError(f"unknown byte mode {mode!r}")
+    normalized_facts = deepcopy(dict(facts))
+    if "lane" in normalized_facts:
+        raise ProgressError(
+            "live byte acceptance must not write the legacy accepted_byte_facts lane key"
+        )
+    supplied_mode = normalized_facts.get("mode")
+    if supplied_mode is not None and supplied_mode != mode:
+        raise ProgressError(
+            f"accepted_byte_facts mode {supplied_mode!r} conflicts with live byte mode {mode!r}"
+        )
+    supplied_validation_mode = normalized_facts.get("validation_mode")
+    if supplied_validation_mode is not None and supplied_validation_mode != "live":
+        raise ProgressError(
+            "live byte acceptance requires accepted_byte_facts validation_mode 'live'"
+        )
+    normalized_facts["validation_mode"] = "live"
+    normalized_facts["mode"] = mode
+    # Reuse the shared decoder here so writer and reader constraints cannot drift.
+    accepted_byte_mode(normalized_facts)
     symbols = data.get("symbols", {})
     if not isinstance(symbols, dict):
         raise ProgressError("progress symbols collection must be an object")
@@ -147,7 +165,7 @@ def accept_live_byte_groups(
                     gating=True,
                     validation_mode="live",
                 )
-            symbol["accepted_byte_facts"] = deepcopy(dict(facts))
+            symbol["accepted_byte_facts"] = deepcopy(normalized_facts)
             symbol["evidence_ids"] = sorted(
                 set(str(item) for item in symbol.get("evidence_ids", [])) | {evidence_id}
             )
@@ -260,4 +278,3 @@ def accept_live_call_contract_symbols(
         for item in removable:
             evidence.pop(item, None)
     return accepted
-

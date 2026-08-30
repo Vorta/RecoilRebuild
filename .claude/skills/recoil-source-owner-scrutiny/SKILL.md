@@ -1,6 +1,6 @@
 ---
 name: recoil-source-owner-scrutiny
-description: "Scrutinize RecoilRebuild source-owner acceptance. Use when you need to challenge or approve proposed owner source/data/linkage gates, Model: source-faithful, or tier B/A/S promotions before the unified tracker gates are accepted."
+description: Challenge proposed Recoil source-owner, source-shape, data, linkage, gate, and tier-B-or-higher acceptance before applying it to the tracker.
 ---
 
 # Recoil Source Owner Scrutiny (Claude surface)

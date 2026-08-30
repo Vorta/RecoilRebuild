@@ -1,6 +1,6 @@
 ---
 name: recoil-provider-boundary
-description: Classify provider-owned boundaries in RecoilRebuild. Use when you must decide whether a function, table, thunk, import, CRT/MFC/DirectX/COM/compiler helper, runtime wrapper, message map, scaffold, or address entry is authored or provider-supplied, including Provider-boundary reclassification or missing provider-boundary address entries.
+description: Classify Recoil functions, data, thunks, imports, runtime wrappers, compiler helpers, and framework artifacts as authored, lifecycle-authored, provider-supplied, or unresolved.
 ---
 
 # Recoil Provider Boundary (Claude surface)

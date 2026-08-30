@@ -1,4 +1,4 @@
 interface:
   display_name: "Recoil Tool Maintainer"
-  short_description: "Delegate Recoil tool and workspace issue repairs"
+  short_description: "Repair Recoil tools and workspace issues"
   default_prompt: "Use $recoil-tool-maintainer to fix a Recoil workspace issue or upgrade a local tool."

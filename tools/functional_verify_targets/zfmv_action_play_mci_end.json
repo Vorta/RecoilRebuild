@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly/decompilation for 0x463cc0 validates display-mode surface lock, selector-2 capture, display-mode unlock, optional two-pass primary postprocess/blit/unlock/adjust around zFMV_Playback::StopAndClose, optional captured image release, and null playback/capture guards.",
-    "The dependency frontier has no source blockers; all direct video helper dependencies and zFMV_Playback::StopAndClose are functional-equivalent for the current functional lane.",
+    "The dependency frontier has no source blockers; all direct video helper dependencies and zFMV_Playback::StopAndClose are functional-equivalent for the current functional-verification mode.",
     "The native smoke patches the video/playback helpers and verifies the non-null capture plus playback path, including two restore passes, StopAndClose dispatch, and release, then verifies the null capture/no playback path skips restore, stop, and release work."
   ],
   "vc5_attempt": ""

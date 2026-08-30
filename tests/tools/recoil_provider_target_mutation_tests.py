@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from copy import deepcopy
-import json
 from pathlib import Path
 import sys
 from tempfile import TemporaryDirectory
@@ -20,17 +19,12 @@ from _recoil.commands.provider_target_mutation import (  # noqa: E402
     register_provider_target,
     retail_import_target,
 )
-from _recoil.lib.progress import empty_progress_document  # noqa: E402
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
+from _recoil.lib.progress import ProgressStore, empty_progress_document  # noqa: E402
+from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
-
+    return REPO_ROOT / "support" / "Recoil.exe"
 
 ADDRESS = "0x4cc5d8"
 OWNER_ID = "recoil:owner:provider.crt.rand_import"
@@ -179,8 +173,12 @@ def legacy_tracker(*, revision: int = 7) -> dict[str, object]:
 
 class ProviderTargetMutationTests(unittest.TestCase):
     def write_tracker(self, root: Path, value: dict[str, object] | None = None) -> Path:
-        path = root / "progress.json"
-        path.write_text(json.dumps(value or tracker(), indent=2), encoding="utf-8")
+        path = root / "progress.sqlite3"
+        ProgressSQLiteStore.create_from_mapping(
+            path,
+            value or tracker(),
+            cutover_pair_id="provider-target-test",
+        )
         return path
 
     def register(
@@ -314,14 +312,14 @@ class ProviderTargetMutationTests(unittest.TestCase):
     def test_dry_run_proposes_exact_typed_package_without_writing(self) -> None:
         with TemporaryDirectory() as temp:
             progress = self.write_tracker(Path(temp))
-            before = progress.read_text(encoding="utf-8")
+            before = progress.read_bytes()
 
             report = self.register(progress)
 
             self.assertFalse(report["commit"]["applied"])
             self.assertEqual(7, report["commit"]["previous_revision"])
             self.assertEqual(8, report["commit"]["revision"])
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
             self.assertTrue(report["candidate_independent"])
             retail = report["retail_import"]
             self.assertEqual("0x4cc5dc", retail["storage_end_exclusive"])
@@ -357,7 +355,7 @@ class ProviderTargetMutationTests(unittest.TestCase):
             progress = self.write_tracker(Path(temp))
 
             report = self.register(progress, apply=True)
-            applied = json.loads(progress.read_text(encoding="utf-8"))
+            applied = ProgressStore(progress).load().data
 
             self.assertTrue(report["commit"]["applied"])
             self.assertEqual(8, applied["revision"])
@@ -443,7 +441,7 @@ class ProviderTargetMutationTests(unittest.TestCase):
             progress = self.write_tracker(Path(temp), legacy_tracker())
 
             report = self.register_legacy(progress, apply=True)
-            applied = json.loads(progress.read_text(encoding="utf-8"))
+            applied = ProgressStore(progress).load().data
 
             self.assertEqual("legacy-provider-completion", report["operation"])
             self.assertEqual("completed", report["completion_state"])
@@ -518,19 +516,19 @@ class ProviderTargetMutationTests(unittest.TestCase):
     def test_legacy_completion_dry_run_preserves_tracker_bytes(self) -> None:
         with TemporaryDirectory() as temp:
             progress = self.write_tracker(Path(temp), legacy_tracker())
-            before = progress.read_text(encoding="utf-8")
+            before = progress.read_bytes()
 
             report = self.register_legacy(progress)
 
             self.assertFalse(report["commit"]["applied"])
             self.assertEqual("completed", report["completion_state"])
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
 
     def test_legacy_completion_is_idempotent_without_revision_or_evidence_churn(self) -> None:
         with TemporaryDirectory() as temp:
             progress = self.write_tracker(Path(temp), legacy_tracker())
             first = self.register_legacy(progress, apply=True)
-            before = progress.read_text(encoding="utf-8")
+            before = progress.read_bytes()
 
             second = self.register_legacy(progress, revision=8, apply=True)
 
@@ -540,7 +538,7 @@ class ProviderTargetMutationTests(unittest.TestCase):
             self.assertEqual(8, second["commit"]["previous_revision"])
             self.assertEqual(8, second["commit"]["revision"])
             self.assertIsNone(second["entity_ids"]["evidence_id"])
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
             self.assertEqual(
                 first["entity_ids"]["evidence_id"],
                 second["records"]["owner"]["evidence_ids"][-1],
@@ -662,7 +660,7 @@ class ProviderTargetMutationTests(unittest.TestCase):
                 value = legacy_tracker()
                 mutate(value)
                 progress = self.write_tracker(Path(temp), value)
-                before = progress.read_text(encoding="utf-8")
+                before = progress.read_bytes()
 
                 with self.assertRaisesRegex(
                     ProviderTargetMutationError,
@@ -670,7 +668,7 @@ class ProviderTargetMutationTests(unittest.TestCase):
                 ):
                     self.register_legacy(progress)
 
-                self.assertEqual(before, progress.read_text(encoding="utf-8"))
+                self.assertEqual(before, progress.read_bytes())
 
 
 if __name__ == "__main__":

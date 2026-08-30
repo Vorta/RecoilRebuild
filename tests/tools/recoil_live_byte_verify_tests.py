@@ -40,15 +40,10 @@ from _recoil.commands.live_byte_verify import (  # noqa: E402
     _select_bindings,
     run,
 )
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
+    return REPO_ROOT / "support" / "Recoil.exe"
 
 
 class FakeDocument:
@@ -1585,7 +1580,7 @@ class LiveByteVerifyTests(unittest.TestCase):
                 patch("_recoil.commands.live_byte_verify._pe_bytes", side_effect=pe_bytes),
             ):
                 return _compare_row(
-                    lane="authored",
+                    mode="authored",
                     row=row,
                     binding=binding,
                     config=object(),
@@ -1769,7 +1764,7 @@ class LiveByteVerifyTests(unittest.TestCase):
                 patch("_recoil.commands.live_byte_verify._pe_bytes", side_effect=pe_bytes),
             ):
                 return _compare_row(
-                    lane="authored",
+                    mode="authored",
                     row=row,
                     binding=binding,
                     config=object(),
@@ -1876,7 +1871,7 @@ class LiveByteVerifyTests(unittest.TestCase):
                 patch("_recoil.commands.live_byte_verify._pe_bytes", return_value=body),
             ):
                 result = _compare_row(
-                    lane="object",
+                    mode="object",
                     row=row,
                     binding=binding,
                     config=object(),
@@ -1937,7 +1932,7 @@ class LiveByteVerifyTests(unittest.TestCase):
                 ),
             ):
                 result = _compare_row(
-                    lane="object",
+                    mode="object",
                     row=row,
                     binding=binding,
                     config=object(),
@@ -1981,7 +1976,7 @@ class LiveByteVerifyTests(unittest.TestCase):
                 ),
             ):
                 result = _compare_row(
-                    lane="object",
+                    mode="object",
                     row=row,
                     binding=binding,
                     config=object(),
@@ -2015,7 +2010,7 @@ class LiveByteVerifyTests(unittest.TestCase):
                 summary_path=summary_path,
             )
             args = SimpleNamespace(
-                lane="authored",
+                mode="authored",
                 final_config=Path("tools/_recoil/config/vc5_final_build.json"),
             )
             def complete_build(*_args: object, **_kwargs: object) -> SimpleNamespace:
@@ -2079,7 +2074,7 @@ class LiveByteVerifyTests(unittest.TestCase):
             )
             config = SimpleNamespace(sources=(Path("sample.cpp"),))
             args = SimpleNamespace(
-                lane="object",
+                mode="object",
                 final_config=Path("tools/_recoil/config/vc5_final_build.json"),
             )
             completed = SimpleNamespace(returncode=2, stdout="", stderr="compile failed")
@@ -2110,7 +2105,7 @@ class LiveByteVerifyTests(unittest.TestCase):
             )
             config = SimpleNamespace(sources=())
             args = SimpleNamespace(
-                lane="authored",
+                mode="authored",
                 final_config=Path("tools/_recoil/config/vc5_final_build.json"),
             )
 
@@ -2319,7 +2314,7 @@ class LiveByteVerifyTests(unittest.TestCase):
             "recoil:function:alias": [alias],
         }
         args = SimpleNamespace(
-            lane="object",
+            mode="object",
             at=None,
             progress=Path("progress.json"),
             build_root=Path("build/live-validation/object/unit"),
@@ -2414,7 +2409,7 @@ class LiveByteVerifyTests(unittest.TestCase):
             "0x401000",
         )
         args = SimpleNamespace(
-            lane="linked",
+            mode="linked",
             at=None,
             progress=Path("progress.json"),
             build_root=Path("build/live-validation/linked/unit"),

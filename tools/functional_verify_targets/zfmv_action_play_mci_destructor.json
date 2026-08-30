@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly/decompilation for 0x463c10 validates the thiscall destructor shape: install the PlayMci vtable, free mediaPath when non-null and clear it, call zFMV_Playback::Destructor and operator delete for playback when non-null and clear it, install the base zFMV action vtable, and return.",
-    "The dependency frontier has no source blockers: zFMV_Playback::Destructor is functional-equivalent and free, operator delete, and compiler EH glue are provider-boundary dependencies for the functional lane.",
+    "The dependency frontier has no source blockers: zFMV_Playback::Destructor is functional-equivalent and free, operator delete, and compiler EH glue are provider-boundary dependencies for the functional-verification mode.",
     "The native smoke verifies mediaPath release and clearing, playback destructor/delete and clearing, final base vtable identity, and null-owned-pointer paths."
   ],
   "vc5_attempt": ""

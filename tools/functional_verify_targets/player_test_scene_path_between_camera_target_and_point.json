@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly for 0x401e50 validates camera-target retrieval from g_MainCamera, current variant-tag copy from the active player state, temporary raycastable disable for the tested node and local root, break-on-first and stop-after-first-hit DI setup, directionMode-controlled ray endpoints, RaycastFindClosest dispatch, state restoration, and return 0 only for a zero raycast result with nonzero candidate count.",
-    "Binary Ninja decompilation for 0x401e50 has no function or address warnings; all direct callees are accepted in the functional lane.",
+    "Binary Ninja decompilation for 0x401e50 has no function or address warnings; all direct callees are accepted in the functional-verification mode.",
     "The native line-of-sight smoke covers both camera-target direction modes, verifies the DI ray start/end globals, verifies tested/root node raycast flags are restored, and verifies variant-tag propagation from the active player state."
   ],
   "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x401e50 reported no VC verification target currently covers this address."

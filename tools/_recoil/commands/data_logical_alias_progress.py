@@ -100,7 +100,7 @@ def normalize_register_payload(value: Any) -> dict[str, Any]:
         payload,
         keys=(
             "operation",
-            "parent_reviewed",
+            "reviewed",
             "physical_artifact_id",
             "expected_physical",
             "pooling",
@@ -112,9 +112,9 @@ def normalize_register_payload(value: Any) -> dict[str, Any]:
         raise DataLogicalAliasProgressError(
             f"logical-data payload.operation must be {REGISTER_OPERATION!r}"
         )
-    if payload["parent_reviewed"] is not True:
+    if payload["reviewed"] is not True:
         raise DataLogicalAliasProgressError(
-            "logical-data alias registration requires parent_reviewed=true"
+            "logical-data alias registration requires reviewed=true"
         )
     physical_id = payload["physical_artifact_id"]
     if (
@@ -280,7 +280,7 @@ def normalize_register_payload(value: Any) -> dict[str, Any]:
     normalized_aliases.sort(key=lambda item: item["artifact_id"])
     return {
         "operation": REGISTER_OPERATION,
-        "parent_reviewed": True,
+        "reviewed": True,
         "physical_artifact_id": physical_id,
         "expected_physical": {
             "disposition": "provider",

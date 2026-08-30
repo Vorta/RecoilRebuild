@@ -1,6 +1,6 @@
 ---
 name: recoil-progress-tracker
-description: Inspect and safely update the unified RecoilRebuild reconstruction tracker. Use when you need the current cursor, joined owner/block/semantic/work context, relationships and gates, function-order/linkage/byte state, progress audits, blocker routing, or a parent-owned revision-guarded mutation in `.agent/RECONSTRUCTION_PROGRESS.sqlite3`.
+description: Inspect and safely update the serial Recoil reconstruction tracker, its current task, relationships, gates, order, call-contract, byte, and final-image state.
 ---
 
 # Recoil Progress Tracker (Claude surface)

@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly for 0x4766a0 validates copying input x/y to g_Clip_PolyVerts[0], passing gClipRect_Alt with a vertex count of 1 to zClipRect::TrivialRejectPolyXY, returning 0 without mutating the input point on rejection, and remapping x/y by g_zClipAlt_RemapScaleX/Y plus g_zClipAlt_RemapBiasX/Y on acceptance.",
-    "Binary Ninja decompilation for 0x4766a0 has no function or address warnings, and its only direct callee is accepted in the functional lane.",
+    "Binary Ninja decompilation for 0x4766a0 has no function or address warnings, and its only direct callee is accepted in the functional-verification mode.",
     "The native smoke covers both accepted and rejected one-point cases, including the shared clip vertex copy, in-place remap result, and rejection preserving the input point."
   ],
   "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4766a0 reported no VC verification target currently covers this address."

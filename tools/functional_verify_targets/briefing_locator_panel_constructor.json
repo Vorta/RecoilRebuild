@@ -9,7 +9,7 @@
   "known_limits": [
     "VC5SP3 cl 11.00.7022 x86 /O2 /Ob1 /MD /GX /Zp4 /FAcs COFF byte comparison for ??0HudUiBriefingLocatorPanel@@QAE@XZ at 0x403c10 is byte-clean in the focused briefing_locator_panel_constructor target: 0 unmasked mismatches after 32 relocation-masked bytes and 10 trailing VC NOP bytes.",
     "The compiler-generated EH registration is tracked as provider boundary at 0x4c82e8 rather than authored source.",
-    "HudUiBriefingLocatorPanel now compiles as the real C++ constructor shape with the derived dispatch-table install and constructor-time SetVisible dispatch through the retail table slot; owner tier promotion remains parent-owned through unified progress."
+    "HudUiBriefingLocatorPanel now compiles as the real C++ constructor shape with the derived dispatch-table install and constructor-time SetVisible dispatch through the retail table slot; owner tier promotion remains a direct reviewed operation through unified progress."
   ],
   "functional_evidence": [
     "Binary Ninja assembly and decompilation for 0x403c10 validate zVid::PackColorRGB(0xff, 0, 0), HudUiCircle::HudUiCircle(self, 100, 110, 30, color), compiler dispatch-table write evidence, HudUiElement::SetVisible(0), and return of self. The locator dispatch-table write is produced by the recovered C++ class, not by a production FTable scaffold.",

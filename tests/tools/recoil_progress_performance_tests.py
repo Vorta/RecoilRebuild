@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from copy import deepcopy
-import json
 from pathlib import Path
 import sys
 import tempfile
@@ -14,9 +13,8 @@ TOOLS_ROOT = REPO_ROOT / "tools"
 if str(TOOLS_ROOT) not in sys.path:
     sys.path.insert(0, str(TOOLS_ROOT))
 
-from _recoil.commands import live_byte_verify, workspace_issues  # noqa: E402
+from _recoil.commands import live_byte_verify  # noqa: E402
 from _recoil.lib.call_contract_generations import current_generations  # noqa: E402
-from _recoil.lib.issue_sqlite import create_issue_database  # noqa: E402
 from _recoil.lib.progress import (  # noqa: E402
     AUTHORED_ORDER_DIMENSIONS,
     CALL_CONTRACT_DIMENSION,
@@ -94,12 +92,62 @@ def one_authored_body_document() -> ProgressDocument:
     return ProgressDocument(data)
 
 
+def accept_first_call_contract_body(
+    document: ProgressDocument,
+) -> tuple[dict[str, object], list[dict[str, object]]]:
+    slice_row = document.authored_call_contract_slices()[0]
+    symbol_id = str(slice_row["symbol_ids"][0])
+    symbol = document.collection("symbols")[symbol_id]
+    evidence_id = "recoil:evidence:r0:000001"
+    symbol["binary_state"][CALL_CONTRACT_DIMENSION] = state_record(
+        "passed",
+        "accepted",
+        "current",
+        [evidence_id],
+        validation_mode="live",
+    )
+    transcript = [
+        {
+            "symbol_id": symbol_id,
+            "address": "0x401000",
+            "expected_fact_row": {
+                **current_generations(),
+                "symbol_id": symbol_id,
+                "address": "0x401000",
+                "calls": [],
+            },
+        }
+    ]
+    document.collection("evidence")[evidence_id] = {
+        "kind": "live-authored-call-contract-validation",
+        "result": "passed",
+        "disposition": "accepted",
+        "freshness": "current",
+        "validation_mode": "live",
+        "gating": True,
+        "scope_ids": [symbol_id],
+        "provenance": {
+            **current_generations(),
+            "symbol_id": symbol_id,
+            "address": "0x401000",
+            "physical_block_id": "recoil:block:0x401000",
+            "comparison_passed": True,
+            "expected_contract": [],
+            "candidate_contract": [],
+            "exact_fact_transcript": transcript,
+        },
+    }
+    return slice_row, transcript
+
+
 class RecoilProgressPerformanceTests(unittest.TestCase):
-    def test_owned_json_loads_skip_redundant_progress_document_copy(self) -> None:
+    def test_owned_sqlite_loads_skip_redundant_progress_document_copy(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            path = Path(temporary) / "progress.json"
-            path.write_text(
-                json.dumps(empty_progress_document()) + "\n", encoding="utf-8"
+            path = Path(temporary) / "progress.sqlite3"
+            ProgressSQLiteStore.create_from_mapping(
+                path,
+                empty_progress_document(),
+                cutover_pair_id="owned-load-test",
             )
             with patch(
                 "_recoil.lib.progress.deepcopy",
@@ -157,58 +205,7 @@ class RecoilProgressPerformanceTests(unittest.TestCase):
 
     def test_current_slice_uses_accepted_state_without_source_rescan(self) -> None:
         document = one_authored_body_document()
-        slice_row = document.authored_call_contract_slices()[0]
-        symbol = document.collection("symbols")[slice_row["symbol_ids"][0]]
-        evidence_id = "recoil:evidence:r0:000001"
-        symbol["binary_state"][CALL_CONTRACT_DIMENSION] = state_record(
-            "passed",
-            "accepted",
-            "current",
-            [evidence_id],
-            validation_mode="live",
-        )
-        document.collection("evidence")[evidence_id] = {
-            "kind": "live-authored-call-contract-validation",
-            "result": "passed",
-            "disposition": "accepted",
-            "freshness": "current",
-            "validation_mode": "live",
-            "gating": True,
-            "scope_ids": sorted(slice_row["symbol_ids"]),
-            "provenance": {
-                **current_generations(),
-                "symbol_id": slice_row["symbol_ids"][0],
-                "address": "0x401000",
-                "physical_block_id": "recoil:block:0x401000",
-                "comparison_passed": True,
-                "expected_contract": [],
-                "candidate_contract": [],
-                "binary_ninja_session": {
-                    "begin": {
-                        "saved_view": "Recoil.bndb",
-                        "generation_token": "3",
-                        "revision": "5",
-                        "schema": "recoil-binja-authenticated-snapshot-v2",
-                        "authenticated": True,
-                        "provider": "binary-ninja",
-                        "capability_version": "2",
-                    },
-                    "end": {
-                        "saved_view": "Recoil.bndb",
-                        "generation_token": "3",
-                        "revision": "5",
-                        "schema": "recoil-binja-authenticated-snapshot-v2",
-                        "authenticated": True,
-                        "provider": "binary-ninja",
-                        "capability_version": "2",
-                    },
-                    "snapshot_equal": True,
-                    "exact_fact_transcript": [
-                        {"symbol_id": slice_row["symbol_ids"][0], "calls": []}
-                    ],
-                },
-            },
-        }
+        slice_row, _transcript = accept_first_call_contract_body(document)
 
         with patch(
             "_recoil.commands.call_contract_verify.source_dependency_paths",
@@ -226,6 +223,59 @@ class RecoilProgressPerformanceTests(unittest.TestCase):
                 status["body_statuses"][0]["reason"],
             )
 
+    def test_phase_closeout_requires_v3_ordered_fact_transcript_scan(self) -> None:
+        document = one_authored_body_document()
+        slice_row, transcript = accept_first_call_contract_body(document)
+        closeout = {
+            "schema": "recoil-call-contract-fresh-closeout-v3",
+            "ordered_symbol_ids": list(slice_row["symbol_ids"]),
+            "slice_ids": [slice_row["id"]],
+            "complete_no_reuse_zero_divergence": True,
+            "fresh_build": True,
+            "reuse": False,
+            "candidate_expected_truth": False,
+            "scan_rows": [
+                {
+                    "slice_id": slice_row["id"],
+                    "body_count": slice_row["body_count"],
+                    "build_root": "build/live-validation/unit",
+                    "exact_fact_transcript": deepcopy(transcript),
+                }
+            ],
+            **current_generations(),
+        }
+        document.data.setdefault("migration", {})[
+            "authored_call_contract_fresh_closeout_v3"
+        ] = closeout
+
+        self.assertTrue(
+            document._call_contract_phase_closeout_status([slice_row])[
+                "current"
+            ]
+        )
+
+        missing_transcript = document.clone()
+        missing_transcript.data["migration"][
+            "authored_call_contract_fresh_closeout_v3"
+        ]["scan_rows"][0].pop("exact_fact_transcript")
+        self.assertFalse(
+            missing_transcript._call_contract_phase_closeout_status(
+                [slice_row]
+            )["current"]
+        )
+
+        legacy = document.clone()
+        legacy_closeout = legacy.data["migration"].pop(
+            "authored_call_contract_fresh_closeout_v3"
+        )
+        legacy_closeout["schema"] = "recoil-call-contract-fresh-closeout-v2"
+        legacy.data["migration"][
+            "authored_call_contract_fresh_closeout_v2"
+        ] = legacy_closeout
+        self.assertFalse(
+            legacy._call_contract_phase_closeout_status([slice_row])["current"]
+        )
+
     def test_object_rows_accept_scheduler_prefix_without_pipeline_rederivation(self) -> None:
         document = one_authored_body_document()
         with patch.object(
@@ -241,39 +291,23 @@ class RecoilProgressPerformanceTests(unittest.TestCase):
             )
         self.assertEqual(["recoil:function:0x401000"], rows[0]["scope_ids"])
 
-    def test_combined_leases_load_each_ledger_once(self) -> None:
+    def test_current_task_loads_only_the_progress_ledger_once(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             progress_path = root / "progress.sqlite3"
-            issue_path = root / "issues.sqlite3"
             ProgressSQLiteStore.create_from_mapping(
                 progress_path,
-                empty_progress_document(),
-                cutover_pair_id="combined-lease-test",
-            )
-            create_issue_database(
-                issue_path,
-                workspace_issues.empty_ledger(),
-                cutover_pair_id="combined-lease-test",
+                one_authored_body_document().data,
+                cutover_pair_id="current-task-test",
             )
             progress_load = ProgressStore.load
-            issue_load = workspace_issues._load_valid_issue_ledger
-            with (
-                patch.object(
-                    ProgressStore, "load", side_effect=progress_load, autospec=True
-                ) as tracker_decode,
-                patch.object(
-                    workspace_issues,
-                    "_load_valid_issue_ledger",
-                    side_effect=issue_load,
-                ) as issue_decode,
-            ):
-                payload = workspace_issues.combined_lease_view(
-                    progress_path, issue_path
-                )
-            self.assertEqual(0, payload["active_reservation_count"])
+            with patch.object(
+                ProgressStore, "load", side_effect=progress_load, autospec=True
+            ) as tracker_decode:
+                payload = ProgressStore(progress_path).load().current_task()
+            self.assertIn("task_id", payload)
+            self.assertIn("stage", payload)
             self.assertEqual(1, tracker_decode.call_count)
-            self.assertEqual(1, issue_decode.call_count)
 
 
 if __name__ == "__main__":

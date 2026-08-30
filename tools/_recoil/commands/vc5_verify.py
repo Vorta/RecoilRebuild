@@ -100,19 +100,12 @@ from _recoil.lib.tooling import (
 )
 from _recoil.lib.vc5_compile_topology import reject_raw_topology_flags
 from _recoil.lib.windows_identity import StableReadHandle, physical_identity
-from _recoil.lib.worktree_control import routed_machine_local_path
 
 
 DEFAULT_MANIFEST_DIR = REPO_ROOT / "tools" / "vc5_verify_targets"
-DEFAULT_PROGRESS_PATH = routed_machine_local_path(
-    executing_worktree_root=REPO_ROOT,
-    relative_path=".agent/RECONSTRUCTION_PROGRESS.sqlite3",
-)
+DEFAULT_PROGRESS_PATH = REPO_ROOT / ".agent/RECONSTRUCTION_PROGRESS.sqlite3"
 DEFAULT_BUILD_ROOT = REPO_ROOT / "build" / "vc5-verify"
-MACHINE_RETAIL_REFERENCE = routed_machine_local_path(
-    executing_worktree_root=REPO_ROOT,
-    relative_path="support/Recoil.exe",
-)
+MACHINE_RETAIL_REFERENCE = REPO_ROOT / "support/Recoil.exe"
 DEFAULT_VC5_ROOT = MACHINE_RETAIL_REFERENCE.parents[1].parent / "Compiler" / "VC5SP3"
 DEFAULT_VC5_ENV = Path(os.environ.get("RECOIL_VC5_ENV", str(DEFAULT_VC5_ROOT / "vc5sp3-env.cmd")))
 PROJECT_GENERATED_FILE_PREFIXES = ("src/", "GameZRecoil/", "Battlesport/", "recoil/")
@@ -3368,7 +3361,7 @@ def _function_order_neighbor_window(
 
 
 def function_order_first_divergence(order_check: FunctionOrderCheck) -> dict[str, Any] | None:
-    """Return the first source-worker-actionable identity/order failure."""
+    """Return the first source-actionable identity/order failure."""
     include_object = bool(order_check.target.check_translation_unit_function_order) or any(
         row.object_index for row in order_check.rows
     )

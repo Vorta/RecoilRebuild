@@ -296,7 +296,7 @@ class SourceOwnerEntryTierTests(unittest.TestCase):
             doc.set_entry_reimplementation("test.owner", "0x401000", "S", "live exact")
         doc.set_entry_reimplementation("test.owner", "0x401000", "B", "accepted source")
         old_tier, new_tier = doc.set_entry_reimplementation(
-            "test.owner", "0x401000", "S", "parent reviewed current live exact comparison"
+            "test.owner", "0x401000", "S", "directly reviewed current live exact comparison"
         )
         self.assertEqual(("B", "A"), (old_tier, new_tier))
         record = doc.owner("test.owner").entry_reimplementation("0x401000")

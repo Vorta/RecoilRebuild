@@ -1,6 +1,6 @@
 ---
 name: recoil-tier-verification
-description: Verify RecoilRebuild authored/provider owner tier evidence. Use when you need to promote, downgrade, or audit source-owner gates, Reimplemented [X/C/B/A/S], Provider-boundary owners, functional targets, touched-global data, helper provenance, docblocks, VC5 byte/provider ABI evidence, or owner tier eligibility.
+description: Verify Recoil authored-owner and provider-boundary evidence for behavior, source, data, linkage, near-byte, exact-byte, helper, ABI, and tier eligibility.
 ---
 
 # Recoil Tier Verification (Claude surface)

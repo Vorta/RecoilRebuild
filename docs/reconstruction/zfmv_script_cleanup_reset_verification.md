@@ -1,6 +1,6 @@
 # zFMV Script Cleanup/Reset Verification Notes
 
-These notes track binary-lane evidence for the `zFMV_Script::Cleanup` and
+These notes track binary-verification evidence for the `zFMV_Script::Cleanup` and
 `zFMV_Script::Reset` dependency pair used by RecoilApp FMV state teardown.
 
 ## 0x462630 zFMV_Script::Cleanup

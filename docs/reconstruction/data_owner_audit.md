@@ -2,20 +2,21 @@
 
 The owner `data` gate is whole-owner acceptance. A source owner can keep
 `data=accepted` only when every touched authored `.data`, `.rdata`, and BSS
-packet has complete source data evidence. Field-level recovery inside a
+contribution has complete source data evidence. Field-level recovery inside a
 larger global, source macros, static offset asserts, and functional smokes are
 not enough.
 
-Distinguish primary source-shaped owners from auxiliary data packets. A primary
+Distinguish primary source-shaped owners from auxiliary data groups. A primary
 source-shaped owner is the original source construct being reconstructed:
 class/interface, source-file cluster, subsystem, authored callback table,
 authored record/table/global object/static class-member group, provider
-boundary, or true standalone leaf. An auxiliary data packet merely groups
+boundary, or true standalone leaf. An auxiliary data group merely collects
 globals, literals, constants, or storage ranges to prove data prerequisites and
-byte-readiness for a primary owner. Treat a data packet as a primary
+byte-readiness for a primary owner. Treat a data group as a primary
 source-owner target only when BN/source evidence proves the original source had
 that exact authored data construct; otherwise link it upward to the primary
-source-shaped owner and keep orphan packets as parent-reconciliation blockers.
+source-shaped owner and keep an unlinked group blocked on its primary-owner
+relationship.
 
 Primary-data tracker entries are narrower: they track canonical `.data`
 owner-range globals only. Do not add `.rdata` entries, BSS-only entries, or
@@ -25,14 +26,14 @@ BN-labeled member. `.rdata` and BSS facts still belong in the source-owner data
 gate evidence when owner acceptance depends on them.
 
 Data entries use `Reimplemented [X/C/B/A/S]`: `X` means no accepted
-source-level data implementation, `C` means the complete source data-packet
+source-level data implementation, `C` means the complete source data-group
 model is accepted, `B` means the linked data and linkage gates are
 accepted, `A` means reviewed relocation-masked data-symbol evidence is
 near-byte-equivalent, and `S` means accepted data-symbol bytes plus relocation
-identity, linked data-packet byte gate acceptance, and no current final
+identity, linked data-group byte gate acceptance, and no current final
 executable `.data` section/layout contradiction for that data row or owner byte
-gate. Data-entry `S` means the packet is byte-ready as a dependency; it does
-not complete the parent/source-owner tier `S` gate unless the packet is itself
+gate. Data-entry `S` means the group is byte-ready as a dependency; it does
+not complete the primary source-owner tier `S` gate unless the group is itself
 proven to be the primary original authored construct.
 
 ## Final Executable Data Audit
@@ -62,7 +63,7 @@ is evidence that final data byte identity is blocked, not necessarily a tool
 failure. `--include-owners` correlates final-data issues with current data `S`
 rows for navigation only; it emits no owner-action batch. Inspect the live
 result and `progress storage show`; storage or section acceptance remains a
-separate parent-reviewed operation only after its own semantic gates pass.
+separate reviewed operation only after its own semantic gates pass.
 
 Data symbols, source-owner data gates, physical `storage_contributions`, PE
 `output_sections`, and final-image acceptance are distinct. A symbol address
@@ -78,9 +79,9 @@ mismatch. It was a conservative owner-byte-gate block caused by final executable
 `.data` raw/virtual layout drift, not a block on unrelated source-owner tier
 `S` work whose owner/data byte gates are ready.
 
-## Acceptance Packet
+## Accepted Data Evidence
 
-For each accepted data packet, record:
+For each accepted data group, record:
 
 - owner symbol, BN address/range, section, size, alignment, and source symbol;
 - full storage extent, including adjacent fields that BN labels separately;
@@ -89,9 +90,9 @@ For each accepted data packet, record:
   pointer/symbol identity, and nullness;
 - VC5 `data_symbols` output when available, including relocation identity
   review for pointers;
-- caller/function owners whose accepted data gate depends on this packet.
-- primary source-shaped parent owner when known, or an explicit
-  parent-reconciliation blocker when the packet is orphaned.
+- caller/function owners whose accepted data gate depends on this group.
+- primary source-shaped owner when known, or an explicit unresolved
+  primary-owner relationship when the group is unlinked.
 
 For each owner-tracked `.data` or `.rdata` global definition in source, put an
 immediately preceding source-trace docblock:
@@ -239,9 +240,9 @@ relying only on address-local verification notes.
 - VC5 evidence candidate: `python tools/recoil.py verify vc5
   zfmv_action_tag_strings_data` passed with zero unmasked data-byte mismatches
   for the complete 112-byte owner range using `vc5_o2_ob1_md_gx_facs`.
-- Parent-owned gate status: no owner gate or tier was updated by this
-  evidence candidate; parent still owns source-owner/data/byte acceptance for
-  the twelve owner-tracked data entries.
+- Direct-review gate status: no owner gate or tier was updated by this evidence
+  candidate; source-owner/data/byte acceptance for the twelve owner-tracked
+  data entries remains pending direct review.
 
 ### network_online.westwood_online_upgrade_api_source_file
 
@@ -332,10 +333,10 @@ relying only on address-local verification notes.
   `??_7CZGameFrame@@6B@` because the current public source shape still exposes
   several CZGameFrame/CZRecoilFrame MFC callbacks as static helpers for the
   existing smoke surface instead of the real owner-wide virtual class shape.
-  Parent should keep the owner data gate pending until that vtable is recovered
+  Keep the owner data gate pending until that vtable is recovered
   or explicitly accepted as a bounded blocker.
-- Parent-owned gate status: no owner gate or primary-entry tier was updated by this
-  evidence candidate.
+- Direct-review gate status: no owner gate or primary-entry tier was updated by
+  this evidence candidate.
 
 ### hud_ui.hud_low_meter_loop_sound_globals
 
@@ -362,8 +363,8 @@ relying only on address-local verification notes.
 - VC5 evidence candidate: `python tools/recoil.py verify vc5
   hud_low_meter_loop_sound_globals` passed with zero unmasked data-byte
   mismatches for all five HUD symbols using
-  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`. Parent review still owns
-  acceptance of the source-owner/data/byte gates.
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`. Acceptance of the
+  source-owner/data/byte gates still requires direct review.
 - Dependent owner-ledger entries: 0x439b20 and 0x439b70 for direct loop-sound control;
   this evidence may also support the narrow low-meter portion of
   `Player::InitMissionRuntimeFromWorldAndCamera` without broadening the HUD
@@ -411,7 +412,7 @@ relying only on address-local verification notes.
   verified the first ten symbols listed in the manifest with zero unmasked
   data-byte mismatches before the tool's ten-call BN budget stopped the
   remaining data-symbol comparison. A compile-only rerun with
-  `--skip-bn-compare` covered the full manifest, but parent review still needs
+  `--skip-bn-compare` covered the full manifest, but direct review still needs
   complete BN-backed data-symbol evidence before any byte-tier claim.
 - Dependent owner-ledger entry: 0x41fe90
   `Player::InitMissionRuntimeFromWorldAndCamera`, specifically the
@@ -469,9 +470,9 @@ relying only on address-local verification notes.
 - VC5 evidence candidate: `python tools/recoil.py verify vc5
   hud_layout_class_data` passed with zero unmasked data-byte mismatches for all
   seven data symbols using `vc5_o2_ob0_md_facs`.
-- Parent-owned gate status: no owner gate or primary-entry tier was updated by this
+- Gate status: no owner gate or primary-entry tier was updated by this
   evidence candidate; broader HudLayout source/functional/data gate acceptance
-  remains parent-owned.
+  remains pending direct review.
 
 ## 2026-06-22 Data Evidence Candidates
 
@@ -496,9 +497,9 @@ relying only on address-local verification notes.
   zrndr_textured_finalize_dispatch_data` passed with zero unmasked data-byte
   mismatches for both 4-byte data symbols using `vc5_o2_ob0_md_facs`; both
   zero-initialized symbols reported zero relocation bytes.
-- Parent-owned gate status: no owner gate or tier was updated by this
-  evidence candidate; parent still owns source-owner gate and data-entry
-  promotion for 0x632104 and 0x632108.
+- Direct-review gate status: no owner gate or tier was updated by this evidence
+  candidate; source-owner gate acceptance and data-entry promotion for
+  0x632104 and 0x632108 remain pending.
 
 ## 2026-06-21 Accepted Data Owners
 
@@ -643,7 +644,7 @@ relying only on address-local verification notes.
   relocations.
 - Gate limit: this data evidence supports the RecoilApp owner data gate. It
   does not accept the owner byte gate, owner tier `S`, or final executable
-  reproducibility while the linked final `.data` layout lane remains blocked.
+  reproducibility while the linked final `.data` layout dimension remains blocked.
 
 ### app_shell.czrecoil_frame_mfc_runtime_message_maps
 
@@ -897,7 +898,7 @@ relying only on address-local verification notes.
   base object or distinct data symbols. Variable-indexed access would support
   an array; a single type-bearing 0x98-byte object would support an aggregate;
   distinct original object symbols would support independent globals.
-- A parent-brokered source-discovery review on 2026-07-24
+- A direct source-discovery review on 2026-07-24
   (`2026-07-24T09-31-22-443Z-chatgpt-call`, no uploaded files) ranked the
   aggregate model only narrowly first and advised `BLOCK SOURCE`. Its
   transcript was recorded in session scratch under the matching run id; this

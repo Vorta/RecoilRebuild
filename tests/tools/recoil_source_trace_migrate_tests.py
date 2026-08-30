@@ -413,7 +413,7 @@ class RecoilSourceTraceMigrateTests(unittest.TestCase):
                 template,
                 current_template=template,
                 canonical_artifact_ids=set(),
-                parent_reviewed=True,
+                reviewed=True,
             )
             reviewed_inventory = load_migration_inventory(
                 payload_json=json.dumps(reviewed["inventory"])
@@ -856,7 +856,7 @@ class RecoilSourceTraceMigrateTests(unittest.TestCase):
             grouped,
             current_template=grouped,
             canonical_artifact_ids=set(),
-            parent_reviewed=True,
+            reviewed=True,
         )
         rows = reviewed["inventory"]["rows"]
         self.assertTrue(rows[0]["record_tracker_state"])
@@ -874,7 +874,7 @@ class RecoilSourceTraceMigrateTests(unittest.TestCase):
                 "recoil:function:0x401000",
                 "recoil:function:0x401020",
             },
-            parent_reviewed=True,
+            reviewed=True,
         )
         self.assertTrue(
             all(
@@ -883,13 +883,13 @@ class RecoilSourceTraceMigrateTests(unittest.TestCase):
             )
         )
         with self.assertRaisesRegex(
-            SourceTraceMigrationError, "parent_reviewed"
+            SourceTraceMigrationError, "reviewed"
         ):
             review_conservative_template(
                 grouped,
                 current_template=grouped,
                 canonical_artifact_ids=set(),
-                parent_reviewed=False,
+                reviewed=False,
             )
 
     def test_direct_command_bootstrap_exposes_batch_help(self) -> None:
@@ -1014,7 +1014,7 @@ class RecoilSourceTraceMigrateTests(unittest.TestCase):
                     ],
                 )
 
-        self.assertTrue(payload["parent_reviewed"])
+        self.assertTrue(payload["reviewed"])
         self.assertEqual("replace-batch", payload["operation"])
         self.assertEqual(3, len(payload["updates"]))
         self.assertTrue(

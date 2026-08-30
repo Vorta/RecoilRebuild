@@ -1,4 +1,12 @@
+---
+document_status: historical-process-record
+operational_guidance: false
+superseded_by: docs/reconstruction/final_executable_repro.md
+---
+
 # Final Executable Reproducibility History
+
+> **Historical process record — not current operating guidance.**
 
 This file is an archive of dated experiments and evidence. It is not the live
 queue or current command surface. Use `final_executable_repro.md` and the live
@@ -74,7 +82,7 @@ initialized-data window, not one owner. It contains mostly zInterp literals and
 data, `g_zInterp_UnresolvedFloatDefaults` at `0x4e5954..0x4e5a4f`, provider or
 compiler RTTI-like rows at `0x4e5b10..0x4e5b27`, a zVideo format string at
 `0x4e5b28..0x4e5b48`, and the start of Player
-`g_Player_AivParentDir` at `0x4e5b50`. A source-worker audit of zInterp found
+`g_Player_AivParentDir` at `0x4e5b50`. A focused source audit of zInterp found
 no source-faithful declaration, relocation, xref, copy site, or owner evidence
 for adding `g_zInterp_UnresolvedFloatDefaults`; at that time adding a float
 array there would only move bytes and remained rejected.
@@ -244,7 +252,7 @@ The current `zinterp_parse.obj` already emits its initialized zInterp `.data`
 much earlier in the candidate map, around offsets `0x52f0..0x6420`, and emits
 no `0xfc` contribution matching the unresolved block.
 
-Boundary object inspection also leaves no source-worker target. Immediately
+Boundary object inspection also leaves no justified source-edit target. Immediately
 before the candidate `.data` end are initialized `zVideo.obj` data, including
 `_g_zVideo_PaletteOpenFailedFormat` near offset `0xb498`, and the provider
 `MSVCRT:ti_inst.obj` type-info row near `0xb4c0`. The candidate BSS window
@@ -336,7 +344,7 @@ thresholds (`ainet.obj`, `Briefing.obj`, `HudUiMessageBoxDialog.obj`,
 `WestwoodOnlineUpgradeApi.obj`) remain boundary occupants, not evidence for
 forcing initialized data. A focused Westwood owner check found its existing
 source/data blockers unrelated to this raw-size gap and did not justify a
-source-worker handoff. A focused zInterp placement check found the 37
+source edit. A focused zInterp placement check found the 37
 manifest-backed raw-tail rows present in the current candidate object but
 placed much earlier in candidate `.data` (`0x4cc340..0x4cd324`), while the
 unresolved `0xfc` block at `0x4e5954..0x4e5a50` is absent from the candidate
@@ -402,14 +410,14 @@ not content that can be explained by the nearby candidate BSS owners. The
 boundary owners around candidate offsets `0xb4e0..0xb840` (`ainet.obj`,
 `Briefing.obj`, `HudUiMessageBoxDialog.obj`, `RecoilApp_Late.obj`, `GameNet.obj`,
 and neighboring `zVideo.obj`) are already source/data accepted or locally
-data-symbol covered and are symptoms of placement drift, not source-worker
+data-symbol covered and are symptoms of placement drift, not source
 implementation targets. The `MSVCRT:ti_inst.obj`
 `??_R0?AVtype_info@@@8` symbol at candidate offset `0xb4c0` remains provider
 RTTI/type_info data covered by the original-address provider row `0x4e5b10`;
 the `HudUiMessageBoxDialog.obj` empty string literal at `0xb548` is a
 compiler-generated literal from existing authored `SetTextFmt("")` call sites.
 Neither justifies new owner rows, owner-ledger changes, or an authored source
-handoff. The next evidence-producing work is therefore zInterp source-owner
+editing. The next evidence-producing work is therefore zInterp source-owner
 recovery plus COFF subsection/linker placement comparison for
 `zinterp_parser_runtime_data`, not provider reclassification or boundary-owner
 source implementation.
@@ -434,7 +442,7 @@ remains blocked as `input_script_config.zinterp_anonymous_numeric_cluster_data`
 under the normal source-owner rule. The later user-approved one-row exception
 allows only the emitted `data-equivalent-only` preservation table for
 `0x4e5954..0x4e5a50`; it does not authorize a general raw `float[0x3f]` or
-`zVec3[21]` source-worker pattern. Outside that exception, the next useful
+`zVec3[21]` source pattern. Outside that exception, the next useful
 evidence remains source-owner, original object/map, copy-site, xref, or COFF
 subsection attribution that proves a real source model, or another initialized
 contribution that can move candidate `data_end` beyond the current raw boundary.
@@ -512,7 +520,7 @@ rules this supports continued source-owner recovery, not source implementation
 or marker promotion; the later exception below is the only approved closure path
 without source-faithful owner recovery.
 
-A refreshed parent/subagent pass on 2026-06-29 reached the same boundary with
+A historical review pass on 2026-06-29 reached the same boundary with
 current BN, final-data JSON, source, object, and provider evidence. BN confirms
 the `0xfc` item is `.data` `float[0x3f]` at `0x4e5954..0x4e5a50`, between
 `g_zInterp_Cmd_AddChild` and `g_zInterp_FormatKeywordArgCount`, with no base or
@@ -529,8 +537,8 @@ but its command batches remain empty (`direct_s_tier_issues=0`) and the sample
 does not create an unblocked source-owner task. User-approved policy now allows
 only `0x4e5954..0x4e5a50` to proceed as the one non-reusable
 address-specific orphan initialized-data exception, with `data-equivalent-only`
-modeling and the evidence requirements in `AGENTS.md` and
-`owner_led_workflow.md`. This does not authorize a general source-worker
+modeling and the evidence requirements in `AGENTS.md`. This does not authorize
+a general source-edit
 implementation pattern or any future orphan data row.
 
 The 2026-06-30 CRT-initializer recovery pass added source-backed VC5 `.CRT$XCU`
@@ -790,4 +798,4 @@ The real provider rows are now tracked as accepted provider boundaries:
 
 The adjacent zero rows `0x4e5b08..0x4e5b10` and `0x4e5b4c..0x4e5b50` remain
 filler/alignment diagnostics only. They are not authored data owners,
-provider-boundary owners, or source-worker targets.
+provider-boundary owners, or source-edit targets.

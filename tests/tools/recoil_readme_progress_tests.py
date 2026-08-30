@@ -25,7 +25,7 @@ from _recoil.commands.readme_progress import (  # noqa: E402
 
 class ReadmeProgressTests(unittest.TestCase):
     def test_current_tracker_renders_stable_pipeline_and_restored_tables(self) -> None:
-        progress = REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.json"
+        progress = REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
         first = render_progress_block(progress)
         second = render_progress_block(progress)
 
@@ -80,7 +80,7 @@ class ReadmeProgressTests(unittest.TestCase):
                 planned_readme_text(readme, f"{START_MARKER}\n{END_MARKER}")
 
     def test_update_then_check_uses_explicit_temporary_readme(self) -> None:
-        progress = REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.json"
+        progress = REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
         with TemporaryDirectory() as temporary:
             readme = Path(temporary) / "README.md"
             readme.write_text("# Sample\n\n## Status\n\nNarrative.\n", encoding="utf-8")
@@ -99,11 +99,11 @@ class ReadmeProgressTests(unittest.TestCase):
 
     def test_nondefault_tracker_requires_explicit_readme(self) -> None:
         with TemporaryDirectory() as temporary:
-            progress = Path(temporary) / "progress.json"
+            progress = Path(temporary) / "progress.sqlite3"
             self.assertEqual(2, main(["--progress", str(progress), "--check"]))
 
     def test_freshness_audit_reports_stale_generated_block(self) -> None:
-        progress = REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.json"
+        progress = REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
         with TemporaryDirectory() as temporary:
             readme = Path(temporary) / "README.md"
             readme.write_text("# Sample\n\n## Status\n\nStale.\n", encoding="utf-8")

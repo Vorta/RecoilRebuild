@@ -13,7 +13,7 @@
   "functional_evidence": [
     "Binary Ninja assembly at 0x46d780 walks g_zVid_TexturePacks with a 0xa4 byte stride, closes each non-null fileHandle at offset 0x80 with fclose, clears that slot, frees each non-null records pointer at offset 0x9c, clears that slot, frees the global dynamic pack table, clears g_zVid_TexturePacks, and clears g_zVid_TexturePackCount.",
     "Binary Ninja decompilation for 0x46d780 has no warnings or tags and shows the same dynamic pack file close, records free, global table free, pointer clear, and count clear; the pointer arithmetic is the documented BN limitation from the current function comment.",
-    "The dependency frontier for 0x46d780 has no visible functional-lane blockers after accepting the CRT fclose/free providers.",
+    "The dependency frontier for 0x46d780 has no visible functional-verification blockers after accepting the CRT fclose/free providers.",
     "The native zimage_shutdown_texdir_smoke allocates one dynamic texture pack with records and an open file, reaches this helper through ShutdownSubsystem, and verifies g_zVid_TexturePackCount is zero and g_zVid_TexturePacks is null after shutdown."
   ],
   "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x46d780"

@@ -1,6 +1,6 @@
 # zSnd Sample Init Verification Notes
 
-These notes track binary-lane evidence for the `zSndSample::InitFromWaveData`
+These notes track binary-verification evidence for the `zSndSample::InitFromWaveData`
 backend cluster. Binary Ninja and VC verifier artifacts remain authoritative.
 
 ## 0x4a2ec0 zSndSample::InitFromWaveData_A3D

@@ -10,7 +10,7 @@
     "The current functional smoke covers the already-uninstantiated zero-entry ZBD path and final instantiated marker. Per-entry setup is covered through the functional targets for the direct callees and remains tier S debt for a coherent zEffectAnim load/instantiate cluster pass."
   ],
   "functional_evidence": [
-    "Binary Ninja/frontier evidence for 0x45fb30 validates the direct callee set used by load, renderable-node scanning, copy-root setup, callback installation, capture, cleanup, and velocity setup; those callees are functional-equivalent in the functional lane.",
+    "Binary Ninja/frontier evidence for 0x45fb30 validates the direct callee set used by load, renderable-node scanning, copy-root setup, callback installation, capture, cleanup, and velocity setup; those callees are functional-equivalent in the functional-verification mode.",
     "The native smoke writes a minimal valid zero-entry ZBD file, verifies LoadAndInstantiate calls the loader path when g_zEffectAnim_EntriesInstantiated is zero, preserves the active world pointer through load, imports header globals, and sets g_zEffectAnim_EntriesInstantiated to one."
   ],
   "vc5_attempt": ""

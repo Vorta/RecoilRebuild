@@ -235,7 +235,6 @@ def _normalize_register_payload(value: Any) -> dict[str, Any]:
             "schema",
             "operation",
             "reviewed",
-            "parent_reviewed",
             "symbol_id",
             "storage_contribution_id",
             "owner_id",
@@ -252,10 +251,9 @@ def _normalize_register_payload(value: Any) -> dict[str, Any]:
         raise StorageContributionProgressError(
             f"authored storage payload.operation must be {REGISTER_OPERATION!r}"
         )
-    if payload["reviewed"] is not True or payload["parent_reviewed"] is not True:
+    if payload["reviewed"] is not True:
         raise StorageContributionProgressError(
-            "authored storage registration requires reviewed=true and "
-            "parent_reviewed=true"
+            "authored storage registration requires reviewed=true"
         )
     symbol_id = payload["symbol_id"]
     symbol_match = (
@@ -313,7 +311,6 @@ def _normalize_register_payload(value: Any) -> dict[str, Any]:
         "schema": PAYLOAD_SCHEMA,
         "operation": REGISTER_OPERATION,
         "reviewed": True,
-        "parent_reviewed": True,
         "symbol_id": symbol_id,
         "storage_contribution_id": storage_id,
         "owner_id": owner_id,

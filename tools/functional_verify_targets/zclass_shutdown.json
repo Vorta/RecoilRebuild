@@ -12,7 +12,7 @@
   "functional_evidence": [
     "Binary Ninja assembly at 0x4518e0 calls zClass::ShutdownCore, clears eax, and returns.",
     "Binary Ninja decompilation for 0x4518e0 has no warnings or tags and shows ShutdownCore followed by return 0.",
-    "The dependency frontier for 0x4518e0 has no visible functional-lane blockers after accepting zClass::ShutdownCore.",
+    "The dependency frontier for 0x4518e0 has no visible functional-verification blockers after accepting zClass::ShutdownCore.",
     "The native zclass_shutdown_core_smoke calls zClass::Shutdown and verifies the shutdown path clears node-array globals, active count, free-head index, initialization state, and current ZBD path before returning zero."
   ],
   "vc5_attempt": ""

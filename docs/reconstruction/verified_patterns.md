@@ -108,10 +108,10 @@ for individual functions and owner tiers.
   callee code, so linkage was not the cause of the `0x401580` loop-layout
   difference. The class-static form remains for semantic and functional-test
   API consistency.
-- Hard-byte prompt mechanics are not a reusable pattern in this document. Use
-  `recoil-tier-verification`; production/upload belongs to
-  `recoil_source_worker`, retail assembly to `recoil_bn_fact_mapper`, and
-  validation to `recoil_verifier`.
+- Hard-byte prompt mechanics are not a reusable pattern in this document. The
+  current agent uses `recoil-tier-verification`, gathers retail assembly through
+  `recoil-binary-ninja-workflow`, edits the current source directly, and runs
+  the required validation itself.
 - Hard-byte differential prompt case study (`0x401580`): ask ChatGPT Pro a
   causal side-by-side code-generation question instead of asking it to validate
   an assumed source form. The earlier review prompt prematurely assumed a
@@ -175,7 +175,7 @@ for individual functions and owner tiers.
 - zRndr ESP-pivot span leaves: `0x49b7e0`, `0x49bbf0`, `0x49e6c0`,
   `0x49edc0`, and `0x49f180` are a user-approved address-scoped raw-assembly
   exception through `vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs`, but only for
-  narrow inline `__asm` loops inside ordinary C++ functions. Parent validation
+  narrow inline `__asm` loops inside ordinary C++ functions. Direct validation
   found no viable C++ codegen route for `0x49b7e0` under `/Ob0`, `/Oy`, `/Ob1`,
   or `/Ob2` profiles, and BN evidence proves real ESP-pivot stack writes. This
   exception does not permit `__declspec(naked)`, `_emit`, `.asm`, raw byte
@@ -211,5 +211,5 @@ for individual functions and owner tiers.
   byte-sensitive control-flow cleanup.
 - Add only patterns backed by current verification output or a durable provider
   ABI note. Keep address examples compact.
-- Keep failed-byte functional lanes in their subsystem notes unless they become
+- Keep failed-byte functional verification findings in their subsystem notes unless they become
   broadly reusable.

@@ -282,11 +282,7 @@ from _recoil.commands.vc5_verify import VerifyFunction
 from _recoil.commands.progress_v2 import accept_live_call_contract_symbols
 from _recoil.commands.progress_cli import _validate_call_contract_result
 from _recoil.lib.binja import (
-    AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION,
-    AUTHENTICATED_SNAPSHOT_SCHEMA,
-    BinaryNinjaSnapshot,
     DataVariable,
-    MAINTAINED_RECOIL_SAVED_VIEW,
     Symbol,
 )
 from _recoil.lib.repository_paths import RepositoryPathError
@@ -295,13 +291,10 @@ from _recoil.lib.progress import (
     AUTHORED_ORDER_DIMENSIONS,
     CALL_CONTRACT_CONTRACT_VERSION,
     FULL_ORDER_DIMENSIONS,
-    EXPLICIT_MAINTENANCE_PACKET_TYPE,
-    EXPLICIT_OUTPUT_MARKER_NAME,
     ProgressDocument,
     ProgressError,
     ProgressStore,
     empty_progress_document,
-    explicit_output_allocation_record,
     state_record,
 )
 from _recoil.lib.progress_sqlite import ProgressSQLiteStore
@@ -7807,10 +7800,12 @@ class SliceDerivationTests(unittest.TestCase):
         del data["symbols"]["recoil:function:0x401010"]["binary_state"]["call_contract"]
         pipeline = ProgressDocument(data).pipeline("recoil", resolve_order_target=False)
         self.assertEqual("authored-call-contract", pipeline["phase"])
-        self.assertEqual("blocked", pipeline["authored_call_contract_lane"]["state"])
+        self.assertFalse(
+            pipeline["authored_call_contract_counts"]["stage_enabled"]
+        )
         self.assertIn(
-            "migration is partial",
-            pipeline["authored_call_contract_lane"]["blocked_reason"],
+            "initialization is partial",
+            pipeline["blocker"],
         )
 
 
@@ -28349,18 +28344,6 @@ class InvocationSignatureTests(unittest.TestCase):
             },
         )
         self.assertNotIn("packet_id", result)
-        with self.assertRaisesRegex(
-            ProgressError, "wrong governed direct result"
-        ):
-            _validate_call_contract_result(
-                result,
-                expected_slice=slice_row,
-                expected_source_write_paths=[],
-                expected_definition_source_paths=[],
-                expected_compiled_definition_sources=[],
-                expected_dependency_paths=["tools/recoil.py"],
-                expected_packet_id="recoil:explicit-work:acceptance",
-            )
 
     @unittest.skip("retired pre-direct-result fixture")
     def test_passing_result_requires_exact_definition_compile_closure(self) -> None:
@@ -50370,16 +50353,7 @@ class InvocationSignatureTests(unittest.TestCase):
         self,
     ) -> None:
         fixture = self._hud_update_objective_dirty_center_fixture()
-        from _recoil.lib.worktree_control import resolve_canonical_control_root
-
-        retail_path = (
-            resolve_canonical_control_root(
-                executing_worktree_root=REPO_ROOT,
-                required_machine_local_paths=("support/Recoil.exe",),
-            ).canonical_control_root
-            / "support"
-            / "Recoil.exe"
-        )
+        retail_path = REPO_ROOT / "support" / "Recoil.exe"
         retail_data = bytearray(retail_path.read_bytes())
         exact_extent = bytes.fromhex(
             "a1 b8 65 4e 00 83 ec 10 85 c0 56 57 8b f9 74 06 "
@@ -77283,242 +77257,6 @@ class WolCallContractProfileMatrixTests(unittest.TestCase):
             / "tools/vc5_verify_targets/"
             "wol_43cf90_442890_authored_order.json"
         )
-
-    def prospective_handoff_fixture(self):
-        module = call_contract_verify_module
-        target = self.target()
-        authored_rows = module._wol_profile_matrix_authored_rows(target)
-        registered_paths = list(module.WOL_PROFILE_REGISTERED_SOURCE_PATHS)
-        manifest_path = target.manifest_path.relative_to(REPO_ROOT).as_posix()
-
-        def registered_function(row):
-            return {
-                "address": str(row.address),
-                "symbol": str(row.symbol),
-                "symbol_regex": row.symbol_regex,
-                "name": str(row.name),
-                "pipeline_class": str(row.pipeline_class),
-                "authored_relative_order_gate": True,
-                "required_presence": row.required_presence,
-                "full_order_gate": row.full_order_gate,
-            }
-
-        translation_units = [
-            {
-                "source_from": entry.source_from,
-                "order_scope": "authored",
-                "inventory_only": False,
-                "functions": [
-                    registered_function(row)
-                    for candidate_entry, row in authored_rows
-                    if candidate_entry.source_from == entry.source_from
-                ],
-            }
-            for entry in target.translation_unit_function_order
-        ]
-        data = empty_progress_document()
-        data["verification_targets"][self.target_id] = {
-            "binary": "recoil",
-            "kind": "vc5",
-            "name": target.name,
-            "registration": {
-                "manifest_path": manifest_path,
-                "source_from": module.WOL_PROFILE_MATRIX_WOL_SOURCE,
-                "order_edit_paths": registered_paths,
-                "check_translation_unit_function_order": True,
-                "function_order_scope": "authored",
-                "translation_unit_function_order": translation_units,
-            },
-        }
-        scope_ids = []
-        block_ids = []
-        addresses = []
-        for index, (_entry, row) in enumerate(authored_rows):
-            address = str(row.address)
-            symbol_id = f"recoil:function:{address}"
-            block_id = f"recoil:block:0x{0x43cf90 + (index // 40) * 0x520:x}"
-            data["symbols"][symbol_id] = {
-                "binary": "recoil",
-                "kind": "function",
-                "pipeline_class": "authored",
-                "address": address,
-                "physical_block_id": block_id,
-            }
-            data["physical_blocks"].setdefault(
-                block_id,
-                {"binary": "recoil", "kind": "authored-source"},
-            )
-            scope_ids.append(symbol_id)
-            addresses.append(address)
-            if block_id not in block_ids:
-                block_ids.append(block_id)
-        dependencies = [*registered_paths, manifest_path]
-        closure = module.CallContractSourceClosure(
-            source_edit_paths=tuple(registered_paths),
-            registered_source_paths=tuple(registered_paths),
-            header_paths=tuple(
-                path for path in registered_paths if path.endswith(".h")
-            ),
-            definition_source_paths=(
-                module.WOL_PROFILE_MATRIX_WOL_SOURCE,
-                module.WOL_PROFILE_MATRIX_COMPANION_SOURCE,
-            ),
-            dependency_paths=tuple(dependencies),
-            definition_resolution={"kind": "fixture"},
-        )
-        signatures = [
-            {
-                "path": path,
-                "exists": True,
-                "size": index + 1,
-                "mtime_ns": index + 1,
-            }
-            for index, path in enumerate(sorted(registered_paths))
-        ]
-        return {
-            "document": ProgressDocument(data),
-            "target": target,
-            "slice": {
-                "target_ids": [self.target_id],
-                "addresses": addresses,
-            },
-            "closure": closure,
-            "signatures": signatures,
-            "scope_ids": scope_ids,
-            "block_ids": block_ids,
-        }
-
-    def test_prospective_profile_source_handoff_is_exact_and_nonaccepting(
-        self,
-    ) -> None:
-        module = call_contract_verify_module
-        fixture = self.prospective_handoff_fixture()
-        with (
-            patch.object(module, "load_manifest", return_value=fixture["target"]),
-            patch.object(module, "require_clean_target_source_fragments"),
-            patch.object(
-                module,
-                "call_contract_source_closure",
-                return_value=fixture["closure"],
-            ),
-        ):
-            route = module.prospective_wol_profile_source_handoff_route(
-                fixture["document"], fixture["slice"]
-            )
-
-        self.assertTrue(module._valid_wol_profile_source_handoff_route(route))
-        self.assertEqual(
-            list(module.WOL_PROFILE_SOURCE_HANDOFF_WRITE_PATHS),
-            route["source_edit_paths"],
-        )
-        self.assertEqual(fixture["scope_ids"], route["scope_ids"])
-        self.assertEqual(fixture["block_ids"], route["physical_block_ids"])
-        self.assertFalse(route["comparison_profile"]["profile_selected"])
-        self.assertTrue(route["nonaccepting"])
-        self.assertFalse(route["acceptance_eligible"])
-        self.assertFalse(route["manifest_mutation_allowed"])
-
-        for field, value in (
-            ("source_edit_paths", [*route["source_edit_paths"], "src/extra.cpp"]),
-            ("registered_read_paths", []),
-            ("acceptance_eligible", True),
-            ("manifest_mutation_allowed", True),
-            ("candidate_expected_truth", True),
-        ):
-            with self.subTest(field=field):
-                malformed = deepcopy(route)
-                malformed[field] = value
-                self.assertFalse(
-                    module._valid_wol_profile_source_handoff_route(malformed)
-                )
-
-    def test_prospective_profile_source_handoff_rejects_stale_population(
-        self,
-    ) -> None:
-        module = call_contract_verify_module
-        fixture = self.prospective_handoff_fixture()
-        del fixture["document"].data["symbols"][fixture["scope_ids"][-1]]
-        with (
-            patch.object(module, "load_manifest", return_value=fixture["target"]),
-            patch.object(module, "require_clean_target_source_fragments"),
-            patch.object(
-                module,
-                "call_contract_source_closure",
-                return_value=fixture["closure"],
-            ),
-        ):
-            with self.assertRaisesRegex(
-                call_contract_verify_module.ProgressError,
-                "all 109 exact current",
-            ):
-                module.prospective_wol_profile_source_handoff_route(
-                    fixture["document"], fixture["slice"]
-                )
-
-    def test_prospective_profile_source_handoff_accepts_exact_authored_icf_alias(
-        self,
-    ) -> None:
-        module = call_contract_verify_module
-        fixture = self.prospective_handoff_fixture()
-        target_rows = module._wol_profile_matrix_authored_rows(
-            fixture["target"]
-        )
-        index, (_entry, selected_row) = next(
-            (index, pair)
-            for index, pair in enumerate(target_rows)
-            if getattr(pair[1], "logical_identity_key", None)
-            and getattr(pair[1], "icf_fold_status", None)
-        )
-        symbol = fixture["document"].data["symbols"][
-            fixture["scope_ids"][index]
-        ]
-        logical_key = selected_row.logical_identity_key
-        symbol.update(
-            {
-                "pipeline_class": "non-authored",
-                "authored_order_role": (
-                    "compiler-generated-icf-representative"
-                ),
-                "logical_aliases": {
-                    logical_key: {
-                        "pipeline_class": "authored",
-                        "authored_order_role": "authored-body",
-                        "fold_status": selected_row.icf_fold_status,
-                    }
-                },
-                "icf_address_group": {
-                    "winner_identity_key": logical_key,
-                },
-            }
-        )
-        with (
-            patch.object(module, "load_manifest", return_value=fixture["target"]),
-            patch.object(module, "require_clean_target_source_fragments"),
-            patch.object(
-                module,
-                "call_contract_source_closure",
-                return_value=fixture["closure"],
-            ),
-        ):
-            route = module.prospective_wol_profile_source_handoff_route(
-                fixture["document"], fixture["slice"]
-            )
-        self.assertTrue(module._valid_wol_profile_source_handoff_route(route))
-
-        symbol["logical_aliases"][logical_key]["fold_status"] = (
-            "proven-fold-alias"
-        )
-        with (
-            patch.object(module, "load_manifest", return_value=fixture["target"]),
-            patch.object(module, "require_clean_target_source_fragments"),
-        ):
-            with self.assertRaisesRegex(
-                call_contract_verify_module.ProgressError,
-                "all 109 exact current",
-            ):
-                module.prospective_wol_profile_source_handoff_route(
-                    fixture["document"], fixture["slice"]
-                )
 
     def retail_result(self, **overrides):
         symbols = [f"recoil:function:0x{0x430000 + index * 0x10:x}"
@@ -108626,7 +108364,7 @@ class CallContractMemoryTraceTests(unittest.TestCase):
             self.assertEqual(
                 [
                     "cli-start",
-                    "orchestration-error",
+                    "verification-error",
                     "serialization-start",
                     "serialization-complete",
                 ],
@@ -154242,233 +153980,6 @@ class Schema133ZwepVerifierProvenanceTests(unittest.TestCase):
             expected[module.ZWEP_CIACOS_RETAIL_ORDINAL],
         )
 
-    def test_live_orchestration_keeps_named_thunks_off_dplay_retail_names(
-        self,
-    ) -> None:
-        module = call_contract_verify_module
-        caller_start = module.ZWEP_RUNTIME_CALLBACK_CALLER_START
-        symbol_id = f"recoil:function:{caller_start}"
-        target_id = "recoil:vc5-target:zwep-live-orchestration-fixture"
-        document_data = empty_progress_document()
-        document_data["symbols"][symbol_id] = {
-            "binary": "recoil",
-            "kind": "function",
-            "pipeline_class": "authored",
-            "address": caller_start,
-            "end_exclusive": module.ZWEP_RUNTIME_CALLBACK_CALLER_END,
-            "extent_state": "known",
-            "size": (
-                int(module.ZWEP_RUNTIME_CALLBACK_CALLER_END, 16)
-                - int(caller_start, 16)
-            ),
-        }
-        document = ProgressDocument(document_data)
-        indexes = self.indexes(
-            by_address={caller_start: f"symbol:{symbol_id}"}
-        )
-        closure = SimpleNamespace(
-            source_edit_paths=(module.ZWEP_CALL_CONTRACT_SOURCE_PATH,),
-            write_paths=(module.ZWEP_CALL_CONTRACT_SOURCE_PATH,),
-            header_paths=(),
-            definition_source_paths=(),
-            definition_resolution={},
-        )
-        candidate = CandidateAssembly(
-            instructions=(),
-            local_control_flow_indices=frozenset(),
-        )
-        verifier_receipt = _eligible_fixture_toolchain_receipt(
-            target_id=target_id,
-            source_from=module.ZWEP_CALL_CONTRACT_SOURCE_PATH,
-            compiler_profile="vc5sp3",
-            compiler_flags=("/c", "/O2"),
-        )
-        parent_observation = deepcopy(verifier_receipt["post_observation"])
-        parent_receipt = module.compiler_receipt_stability(
-            parent_observation,
-            deepcopy(parent_observation),
-        )
-        toolchain_receipts = [
-            {
-                "target_id": target_id,
-                "source_from": module.ZWEP_CALL_CONTRACT_SOURCE_PATH,
-                "manifest_index": 0,
-                "verifier_receipt": verifier_receipt,
-                "parent_receipt": parent_receipt,
-            }
-        ]
-
-        candidate_session = SimpleNamespace(
-            _candidates={},
-            _target_acquisition_failures={},
-            compiled_target_ids=[target_id],
-            attempted_target_ids=[target_id],
-            toolchain_receipts=toolchain_receipts,
-            target_id=lambda _address: target_id,
-            candidate=lambda _address: candidate,
-            cod_listing_index_metrics=lambda: {
-                "file_index_ms": 0.0,
-                "procedure_lookup_ms": 0.0,
-            },
-        )
-
-        bridge = MagicMock()
-        bridge.fresh_snapshot.return_value = BinaryNinjaSnapshot(
-            available=True,
-            generation_token="fixture-generation-1",
-            revision="fixture-revision-1",
-            schema=AUTHENTICATED_SNAPSHOT_SCHEMA,
-            authenticated=True,
-            provider="binary-ninja",
-            capability_version=AUTHENTICATED_SNAPSHOT_CAPABILITY_VERSION,
-            saved_view=MAINTAINED_RECOIL_SAVED_VIEW,
-        )
-        bridge.symbols.return_value = ({}, {})
-        bridge.data_variables.return_value = ()
-        bridge.assembly.return_value = (
-            f"{int(caller_start, 16):08x} c3 ret"
-        )
-        ciacos_thunk = module.ProviderPeNamedImportThunk(
-            provider_identity=module.ZWEP_CIACOS_TARGET_IDENTITY,
-            thunk_address=module.ZWEP_CIACOS_TARGET_ADDRESS,
-            retail_name=module.ZWEP_CIACOS_RETAIL_NAME,
-            iat_identity=module.ZWEP_CIACOS_IAT_IDENTITY,
-            iat_address=module.ZWEP_CIACOS_IAT_ADDRESS,
-            import_dll="MSVCRT.dll",
-            import_name=module.ZWEP_CIACOS_RETAIL_NAME,
-        )
-        adapters = module.ReviewedRetailProvenanceAdapters(
-            indexes=indexes,
-            register_call_storage_bridges={},
-            vptr_storage_bridges={},
-            reviewed_call_sites=(),
-        )
-        slice_row = {
-            "id": "recoil:call-contract-phase:zwep-orchestration-fixture",
-            "body_count": 1,
-            "symbol_ids": [symbol_id],
-            "addresses": [caller_start],
-            "target_ids": [target_id],
-            "physical_block_ids": ["recoil:block:zwep-fixture"],
-            "source_paths": [module.ZWEP_CALL_CONTRACT_SOURCE_PATH],
-        }
-        original_dplay = (
-            module._reviewed_r3994_dplay_ordinal_retail_bridge_names
-        )
-        with (
-            patch.object(
-                module, "call_contract_source_closure", return_value=closure
-            ),
-            patch.object(
-                module,
-                "_call_contract_target_source_edit_paths",
-                return_value={
-                    target_id: (module.ZWEP_CALL_CONTRACT_SOURCE_PATH,)
-                },
-            ),
-            patch.object(module, "source_dependency_paths", return_value=[]),
-            patch.object(module, "file_dependency_states", return_value=[]),
-            patch.object(
-                module,
-                "_call_contract_slice_targets",
-                return_value={target_id: SimpleNamespace(name="fixture")},
-            ),
-            patch.object(
-                module,
-                "_LazyCallContractCandidateSession",
-                return_value=candidate_session,
-            ),
-            patch.object(module, "_retail_import_targets", return_value=((), {})),
-            patch.object(module, "build_identity_indexes", return_value=indexes),
-            patch.object(
-                module,
-                "resolve_manifest_zeroarg_abi_identity_bridges",
-                return_value={},
-            ),
-            patch.object(
-                module,
-                "_validated_final_build_coff_alias_bridges",
-                return_value={},
-            ),
-            patch.object(
-                module,
-                "_ftol_import_thunk_retail_bridge",
-                return_value=(None, {}),
-            ),
-            patch.object(
-                module,
-                "_gettickcount_named_import_thunk_retail_bridge",
-                return_value=(None, {}),
-            ),
-            patch.object(
-                module,
-                "_provider_named_import_thunk_retail_bridges",
-                return_value=((ciacos_thunk,), {}),
-            ),
-            patch.object(
-                module,
-                "_provider_ordinal_import_thunk_retail_bridges",
-                return_value=((), {}),
-            ),
-            patch.object(
-                module,
-                "_provider_pe_ordinal_import_thunk_retail_bridges",
-                return_value=(indexes, (), {}),
-            ),
-            patch.object(
-                module,
-                "_provider_terminal_ordinal_import_thunk_retail_bridges",
-                return_value=((), {}),
-            ),
-            patch.object(
-                module,
-                "_retail_direct_import_thunk_indexes",
-                return_value=indexes,
-            ),
-            patch.object(
-                module,
-                "_compose_reviewed_retail_provenance_adapters",
-                return_value=adapters,
-            ),
-            patch.object(
-                module,
-                "_reviewed_r3994_dplay_ordinal_retail_bridge_names",
-                wraps=original_dplay,
-            ) as dplay_spy,
-            patch.object(
-                module,
-                "_compose_caller_scoped_retail_proof_package",
-                side_effect=ValueError("fixture stop after retail-name routing"),
-            ),
-        ):
-            result = module.live_call_contract_result(
-                document=document,
-                build_root=REPO_ROOT / "build/live-orchestration-fixture",
-                bridge=bridge,
-                collect_all_divergences=True,
-                compile_definition_closure=False,
-                convergence_scope_row=slice_row,
-            )
-
-        self.assertFalse(result["passed"])
-        self.assertEqual(
-            "fixture stop after retail-name routing",
-            result["first_divergence"]["message"],
-        )
-        dplay_spy.assert_called_once()
-        self.assertEqual(
-            {"caller_start", "indexes", "bridge_names"},
-            set(dplay_spy.call_args.kwargs),
-        )
-        self.assertNotIn("named_import_thunks", dplay_spy.call_args.kwargs)
-        self.assertEqual(
-            toolchain_receipts,
-            result["candidate_toolchain_stability_receipts"],
-        )
-        self.assertTrue(
-            result["candidate_toolchain_stability_receipts"][0]
-            ["verifier_receipt"]["verification_eligible"]
-        )
 
 
 class MissionProvenanceProfilesWsi010Tests(unittest.TestCase):

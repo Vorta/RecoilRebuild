@@ -13,7 +13,7 @@
   "functional_evidence": [
     "Binary Ninja assembly at 0x442c00 loads dword [ecx+0x20] into eax and returns.",
     "Binary Ninja decompilation for 0x442c00 has no warnings or tags and returns self->m_pMainWnd.",
-    "The dependency frontier for 0x442c00 has no direct callees, unresolved calls, indirect calls, or functional-lane blockers.",
+    "The dependency frontier for 0x442c00 has no direct callees, unresolved calls, indirect calls, or functional-verification blockers.",
     "The native recoil_app_accessor_and_skip_wait_smoke sets RecoilApp::m_pMainWnd to a sentinel and verifies GetMainWnd returns the same pointer value."
   ],
   "vc5_attempt": "python tools/recoil.py verify vc5 0x442c00"

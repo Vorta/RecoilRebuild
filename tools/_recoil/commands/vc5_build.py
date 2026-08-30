@@ -4234,7 +4234,7 @@ def _typed_linked_full_order_fields(
         progress_document,
         binary=target.target_binary,
         target_name=target.name,
-        lane="linked",
+        mode="linked",
         retail_start=interval.retail_start or target.retail_start,
         retail_end_exclusive=interval.retail_end_exclusive or target.retail_end_exclusive,
     )

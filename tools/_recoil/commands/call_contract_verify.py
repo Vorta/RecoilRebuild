@@ -53,6 +53,7 @@ from _recoil.commands.provider_target_mutation import (
     _retail_import_targets,
     retail_import_target,
 )
+from _recoil.commands.binja_preflight import run_preflight
 from _recoil.commands.vc5_verify import (
     DEFAULT_VC5_ENV,
     IMAGE_SCN_LNK_COMDAT,
@@ -76,7 +77,6 @@ from _recoil.lib.binja import (
     BinaryNinjaBridge,
     BridgeError,
     Symbol,
-    require_authenticated_recoil_snapshot,
 )
 from _recoil.lib.call_contract_normalizers import (
     LIVE_CALL_CONTRACT_NORMALIZER_REGISTRY as CALL_CONTRACT_NORMALIZER_REGISTRY,
@@ -105,10 +105,10 @@ from _recoil.lib.repository_paths import (
     resolve_tracked_repository_file,
     validate_repository_relative_path,
 )
+from _recoil.lib.reference_images import reference_image
 from _recoil.lib.pe import parse_pe_headers, rva_to_offset
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio
 from _recoil.lib.windows_identity import StableReadHandle, physical_identity
-from _recoil.lib.worktree_control import routed_machine_local_path
 from _recoil.lib.source_traceability import parse_source_trace_path
 from _recoil.lib.coff_alias import (
     CoffAliasSource,
@@ -856,14 +856,8 @@ def _call_contract_bn_call_budget(body_count: int) -> int:
     )
 
 
-DEFAULT_PROGRESS = routed_machine_local_path(
-    executing_worktree_root=REPO_ROOT,
-    relative_path=".agent/RECONSTRUCTION_PROGRESS.sqlite3",
-)
-DEFAULT_REFERENCE = routed_machine_local_path(
-    executing_worktree_root=REPO_ROOT,
-    relative_path="support/Recoil.exe",
-)
+DEFAULT_PROGRESS = REPO_ROOT / ".agent/RECONSTRUCTION_PROGRESS.sqlite3"
+DEFAULT_REFERENCE = REPO_ROOT / "support/Recoil.exe"
 ZSND_DESTROY_OWNED_DATA_CALLER_IDENTITY = (
     "symbol:recoil:function:0x4a3690"
 )
@@ -2537,14 +2531,6 @@ WOL_PROFILE_MATRIX_PROFILES = (
     ("implicit", ""),
 )
 WOL_PROFILE_MATRIX_SCOPES = ("wol-only", "both-tu")
-WOL_PROFILE_SOURCE_HANDOFF_CONTRACT_VERSION = 2
-WOL_PROFILE_SOURCE_HANDOFF_EXPECTED_TRUTH = (
-    "retail-binary-ninja-plus-reviewed-tracker-identities"
-)
-WOL_PROFILE_SOURCE_HANDOFF_WRITE_PATHS = (
-    WOL_PROFILE_MATRIX_WOL_SOURCE,
-    "src/Battlesport/wol_api_event_sink.h",
-)
 WOL_PROFILE_REGISTERED_SOURCE_PATHS = (
     WOL_PROFILE_MATRIX_WOL_SOURCE,
     WOL_PROFILE_MATRIX_COMPANION_SOURCE,
@@ -11961,12 +11947,6 @@ class CallContractSourceClosure:
     dependency_paths: tuple[str, ...]
     definition_resolution: Mapping[str, Any] = field(default_factory=dict)
 
-    @property
-    def write_paths(self) -> tuple[str, ...]:
-        """Compatibility alias for the v1 slice-result/acceptance schema."""
-
-        return self.source_edit_paths
-
 
 def _call_contract_target_source_edit_paths(
     slice_row: Mapping[str, Any],
@@ -13326,7 +13306,7 @@ def _call_contract_source_closure_uncached(
     definition_resolution = {
         **definition_resolution_result.as_dict(),
         "reason": (
-            "the pre-build packet has no durable reviewed call-edge identity "
+            "the pre-build evidence has no durable reviewed call-edge identity "
             "list; use the complete uniquely resolved header declaration closure"
         ),
         "source_atomic_header_definition_resolution": {
@@ -20711,7 +20691,7 @@ def _reviewed_cod_register_definition_address(
     # Reviewed aggregate-load and member-vptr bridges already require exact
     # candidate COFF/COD bytes, operands, relocation-backed storage lineage,
     # unique inferred offsets, and an unclobbered path to the reviewed call.
-    # Preserve those independent proof paths for packet-entry/abbreviated COD
+    # Preserve those independent proof paths for abbreviated COD
     # views; an unreviewed addressless register load remains unresolved.
     if relative_address in {
         *reviewed_absolute_storage_load_bridges,
@@ -164079,40 +164059,16 @@ def live_call_contract_result(
         dict[str, CandidateConstructorDefinition],
         dict[str, CandidateConstructorDefinition],
     ] | None = None,
-    convergence_scope_row: Mapping[str, Any] | None = None,
     _diagnostic_comparison_context: dict[str, Any] | None = None,
     _memory_trace: _CallContractMemoryTrace | None = None,
-    packet_id: str | None = None,
 ) -> dict[str, Any]:
     memory_trace = _memory_trace or _CallContractMemoryTrace.from_environment()
-    memory_trace.emit("orchestration-start")
+    memory_trace.emit("verification-start")
     total_started = time.perf_counter()
     timings_ms = _empty_call_contract_timings_ms()
     setup_started = time.perf_counter()
     target_mode = target_id is not None
-    phase_convergence_mode = convergence_scope_row is not None
-    if phase_convergence_mode:
-        if slice_id is not None or target_id is not None or all_authored_bodies:
-            raise ProgressError(
-                "phase call-contract convergence scope is an internal exclusive selection"
-            )
-        slice_row = deepcopy(dict(convergence_scope_row))
-        result_slice_id = str(slice_row.get("id", ""))
-        symbol_ids = slice_row.get("symbol_ids")
-        addresses = slice_row.get("addresses")
-        target_ids = slice_row.get("target_ids")
-        if (
-            not isinstance(symbol_ids, list)
-            or not isinstance(addresses, list)
-            or len(symbol_ids) != len(addresses)
-            or len(symbol_ids) != len(set(str(value) for value in symbol_ids))
-            or not isinstance(target_ids, list)
-            or not target_ids
-        ):
-            raise ProgressError(
-                "phase call-contract convergence scope has malformed immutable membership"
-            )
-    elif target_mode:
+    if target_mode:
         if slice_id is not None or not all_authored_bodies:
             raise ProgressError(
                 "target call-contract verification requires --target with --all-authored-bodies only"
@@ -164141,12 +164097,12 @@ def live_call_contract_result(
     target_source_edit_paths = _call_contract_target_source_edit_paths(
         slice_row,
         source_closure,
-        require_explicit=phase_convergence_mode,
+        require_explicit=False,
     )
     dependency_paths = source_dependency_paths(
         document,
         slice_row,
-        source_write_paths=source_closure.write_paths,
+        source_write_paths=source_closure.source_edit_paths,
         source_closure=source_closure,
         tracked_path_inventory=tracked_path_inventory,
     )
@@ -164184,21 +164140,28 @@ def live_call_contract_result(
         setup_started,
     )
     inventory_started = time.perf_counter()
-    bridge = bridge or BinaryNinjaBridge(
-        bridge_url,
-        binary="Recoil.bndb",
-        call_budget=_call_contract_bn_call_budget(
-            int(slice_row["body_count"])
-        ),
-    )
-    snapshot_method = getattr(bridge, "fresh_snapshot", None)
-    if not callable(snapshot_method):
-        raise BridgeError(
-            "Binary Ninja bridge provider has no authenticated snapshot capability"
+    if bridge is None:
+        image = reference_image("recoil")
+        preflight = run_preflight(
+            bridge_url=bridge_url,
+            expected_file=image.bndb_path,
+            expected_platform=image.platform,
+            expected_arch=image.arch,
+            probe_address=image.probe_address,
+            binary_selector=Path(image.bndb_path).name,
         )
-    bn_snapshot = require_authenticated_recoil_snapshot(
-        snapshot_method(), stage="call-contract-begin"
-    )
+        if not preflight.ok:
+            raise BridgeError(
+                "Binary Ninja call-contract preflight failed: "
+                + "; ".join(preflight.messages)
+            )
+        bridge = BinaryNinjaBridge(
+            bridge_url,
+            binary=Path(image.bndb_path).name,
+            call_budget=_call_contract_bn_call_budget(
+                int(slice_row["body_count"])
+            ),
+        )
     by_address, by_name = bridge.symbols()
     bridge_data_rows = bridge.data_variables()
     # Immutable PE import truth is invocation-scoped.  Several independent
@@ -164215,30 +164178,6 @@ def live_call_contract_result(
         retail_import_target_count=len(retail_import_targets),
     )
     _add_elapsed_ms(timings_ms, "binary_ninja_inventory", inventory_started)
-    phase_retail_assembly_cache: dict[str, tuple[bool, str]] = {}
-    phase_retail_assembly_request_count = 0
-    if phase_convergence_mode:
-        prefetch_started = time.perf_counter()
-        for raw_address in slice_row["addresses"]:
-            address = str(raw_address)
-            phase_retail_assembly_request_count += 1
-            try:
-                phase_retail_assembly_cache[address] = (
-                    True,
-                    bridge.assembly(address),
-                )
-            except (BridgeError, OSError, RuntimeError, ValueError) as exc:
-                phase_retail_assembly_cache[address] = (False, str(exc))
-        _add_elapsed_ms(
-            timings_ms,
-            "binary_ninja_assembly",
-            prefetch_started,
-        )
-        if phase_retail_assembly_request_count != int(slice_row["body_count"]):
-            raise ProgressError(
-                "phase call-contract convergence did not request retail assembly "
-                "exactly once for every census body"
-            )
     exact_bridge_names: dict[str, list[Any]] = {}
     for bridge_symbol in by_address.values():
         for name in {
@@ -164611,20 +164550,12 @@ def live_call_contract_result(
                 symbol_id=symbol_id,
                 address=address,
             )
-            if phase_convergence_mode:
-                assembly_ok, retail_assembly = phase_retail_assembly_cache[address]
-                if not assembly_ok:
-                    raise BridgeError(
-                        "phase retail assembly acquisition failed for "
-                        f"{address}: {retail_assembly}"
-                    )
-            else:
-                retail_assembly = bridge.assembly(address)
-                _add_elapsed_ms(
-                    timings_ms,
-                    "binary_ninja_assembly",
-                    assembly_started,
-                )
+            retail_assembly = bridge.assembly(address)
+            _add_elapsed_ms(
+                timings_ms,
+                "binary_ninja_assembly",
+                assembly_started,
+            )
             trace_caller(
                 "retail-assembly-complete",
                 caller_index=caller_index,
@@ -171259,13 +171190,6 @@ def live_call_contract_result(
                 "kind": "source-changed-during-verification",
                 "symbol_id": row["symbol_id"],
             }
-    bn_snapshot_end = require_authenticated_recoil_snapshot(
-        snapshot_method(), stage="call-contract-end"
-    )
-    if bn_snapshot_end != bn_snapshot:
-        raise BridgeError(
-            "Binary Ninja provider generation/revision changed during call-contract verification"
-        )
     retail_fact_transcript = [
         {
             "symbol_id": row["symbol_id"],
@@ -171287,13 +171211,9 @@ def live_call_contract_result(
         first_divergence = deepcopy(caller_divergences[0])
     result = {
         "kind": (
-            "authored-call-contract-phase-convergence-result"
-            if phase_convergence_mode
-            else (
-                "authored-call-contract-target-convergence-result"
-                if target_mode
-                else "authored-call-contract-live-result"
-            )
+            "authored-call-contract-target-convergence-result"
+            if target_mode
+            else "authored-call-contract-live-result"
         ),
         "contract_version": CALL_CONTRACT_CONTRACT_VERSION,
         "closure_contract_version": 2,
@@ -171304,7 +171224,7 @@ def live_call_contract_result(
         "physical_block_ids": slice_row["physical_block_ids"],
         "source_paths": slice_row["source_paths"],
         "source_edit_paths": list(source_closure.source_edit_paths),
-        "source_write_paths": list(source_closure.write_paths),
+        "source_write_paths": list(source_closure.source_edit_paths),
         "definition_source_paths": list(
             source_closure.definition_source_paths
         ),
@@ -171331,18 +171251,12 @@ def live_call_contract_result(
             candidate_session.toolchain_receipts
         ),
         "body_results": body_results,
-        "binary_ninja_session": {
-            "begin": bn_snapshot,
-            "end": bn_snapshot_end,
-            "snapshot_equal": True,
-            "exact_fact_transcript": retail_fact_transcript,
-            "provider_fact_transcript": retail_provider_fact_transcript,
-        },
+        "exact_fact_transcript": retail_fact_transcript,
+        "provider_fact_transcript": retail_provider_fact_transcript,
         "first_divergence": first_divergence,
         "caller_divergences": caller_divergences,
         "expected_truth": "retail-binary-ninja-plus-reviewed-tracker-identities",
         "candidate_expected_truth": False,
-        "packet_id": packet_id,
         "candidate_cod_index": candidate_cod_index,
         "all_caller_divergences_collected": bool(
             collect_all_divergences
@@ -171366,7 +171280,7 @@ def live_call_contract_result(
                 "caller diagnostic census does not preserve the earliest "
                 "first_divergence"
             )
-    if target_mode or phase_convergence_mode:
+    if target_mode:
         result["caller_census"] = _caller_isolated_diagnostic_census(
             symbol_ids=slice_row["symbol_ids"],
             addresses=slice_row["addresses"],
@@ -171397,29 +171311,6 @@ def live_call_contract_result(
                 ),
                 "all_caller_divergences_collected": collect_all_divergences,
                 "definition_closure_deferred": not compile_definition_closure,
-            }
-        )
-    elif phase_convergence_mode:
-        result.update(
-            {
-                "phase_convergence": True,
-                "acceptance_eligible": False,
-                "nonaccepting": True,
-                "acceptance_route": None,
-                "compiled_target_ids": list(
-                    candidate_session.compiled_target_ids
-                ),
-                "attempted_target_ids": list(
-                    candidate_session.attempted_target_ids
-                ),
-                "unique_candidate_target_count": len(
-                    candidate_session.attempted_target_ids
-                ),
-                "retail_inventory_session_count": 1,
-                "retail_assembly_session_count": 1,
-                "retail_assembly_request_count": (
-                    phase_retail_assembly_request_count
-                ),
             }
         )
     memory_trace.emit(
@@ -171630,368 +171521,6 @@ def _wol_profile_registration_authored_rows(
             "registration bodies"
         )
     return rows
-
-
-def _valid_wol_profile_source_handoff_route(value: Any) -> bool:
-    """Validate the compact, comparison-only WOL source-packet routing fact."""
-
-    if not isinstance(value, Mapping):
-        return False
-    signatures = value.get("source_signatures")
-    scope_ids = value.get("scope_ids")
-    blocks = value.get("physical_block_ids")
-    dependencies = value.get("dependency_paths")
-    return bool(
-        value.get("kind") == "wol-prospective-profile-source-handoff"
-        and value.get("contract_version")
-        == WOL_PROFILE_SOURCE_HANDOFF_CONTRACT_VERSION
-        and value.get("target_id") == WOL_PROFILE_MATRIX_TARGET_ID
-        and value.get("profile_matrix_contract_version")
-        == WOL_PROFILE_MATRIX_CONTRACT_VERSION
-        and value.get("comparison_profile")
-        == {
-            "scope": "wol-only",
-            "profile_id": "P1",
-            "inline_flag": "/Ob1",
-            "profile_selected": False,
-            "in_memory_only": True,
-        }
-        and value.get("body_count") == WOL_PROFILE_MATRIX_BODY_COUNT
-        and value.get("start") == "0x43cf90"
-        and value.get("inline_sentinel")
-        == {
-            "address": WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS,
-            "symbol": WOL_PROFILE_MATRIX_EMPTY_CHECK_SYMBOL,
-            "required_positive_dataflow": True,
-        }
-        and value.get("source_edit_paths")
-        == list(WOL_PROFILE_SOURCE_HANDOFF_WRITE_PATHS)
-        and value.get("registered_source_paths")
-        == list(WOL_PROFILE_REGISTERED_SOURCE_PATHS)
-        and value.get("registered_read_paths")
-        == [
-            path
-            for path in WOL_PROFILE_REGISTERED_SOURCE_PATHS
-            if path not in WOL_PROFILE_SOURCE_HANDOFF_WRITE_PATHS
-        ]
-        and isinstance(dependencies, list)
-        and len(dependencies) == len(set(dependencies))
-        and set(WOL_PROFILE_REGISTERED_SOURCE_PATHS).issubset(dependencies)
-        and isinstance(scope_ids, list)
-        and len(scope_ids) == WOL_PROFILE_MATRIX_BODY_COUNT
-        and len(set(scope_ids)) == len(scope_ids)
-        and all(
-            isinstance(symbol_id, str)
-            and symbol_id.startswith("recoil:function:0x")
-            for symbol_id in scope_ids
-        )
-        and isinstance(blocks, list)
-        and bool(blocks)
-        and len(blocks) == len(set(blocks))
-        and all(
-            isinstance(block_id, str)
-            and block_id.startswith("recoil:block:0x")
-            for block_id in blocks
-        )
-        and isinstance(signatures, list)
-        and [
-            row.get("path") if isinstance(row, Mapping) else None
-            for row in signatures
-        ]
-        == sorted(WOL_PROFILE_REGISTERED_SOURCE_PATHS)
-        and all(
-            isinstance(row, Mapping)
-            and set(row)
-            == {
-                "path", "exists", "physical_identity", "size",
-                "mtime_ns", "ctime_ns",
-            }
-            and row.get("exists") is True
-            and type(row.get("size")) is int
-            and type(row.get("mtime_ns")) is int
-            and isinstance(row.get("physical_identity"), Mapping)
-            for row in signatures
-        )
-        and value.get("expected_truth")
-        == WOL_PROFILE_SOURCE_HANDOFF_EXPECTED_TRUTH
-        and value.get("candidate_expected_truth") is False
-        and value.get("nonaccepting") is True
-        and value.get("acceptance_eligible") is False
-        and value.get("manifest_mutation_allowed") is False
-    )
-
-
-def prospective_wol_profile_source_handoff_route(
-    document: ProgressDocument,
-    slice_row: Mapping[str, Any],
-) -> dict[str, Any] | None:
-    """Derive the one prospective WOL-only/P1 source-worker route.
-
-    The route activates only on the deterministic slice containing the first
-    WOL authored matrix body.  It does not select a production compiler
-    profile: the existing nonaccepting matrix creates its P1 target variant in
-    memory and remains the sole worker validator.
-    """
-
-    raw_target_ids = slice_row.get("target_ids")
-    if not isinstance(raw_target_ids, list):
-        return None
-    if WOL_PROFILE_MATRIX_TARGET_ID not in raw_target_ids:
-        return None
-    if raw_target_ids.count(WOL_PROFILE_MATRIX_TARGET_ID) != 1:
-        raise ProgressError(
-            "WOL prospective profile routing rejects duplicate target identity"
-        )
-
-    target_row = document.collection("verification_targets").get(
-        WOL_PROFILE_MATRIX_TARGET_ID
-    )
-    registration = (
-        target_row.get("registration")
-        if isinstance(target_row, Mapping)
-        else None
-    )
-    expected_manifest = WOL_CEDIT_TARGET_MANIFEST.relative_to(REPO_ROOT).as_posix()
-    if (
-        not isinstance(target_row, Mapping)
-        or target_row.get("binary") != "recoil"
-        or target_row.get("kind") != "vc5"
-        or target_row.get("name") != WOL_CEDIT_TARGET_NAME
-        or not isinstance(registration, Mapping)
-        or registration.get("manifest_path") != expected_manifest
-        or registration.get("source_from") != WOL_PROFILE_MATRIX_WOL_SOURCE
-        or registration.get("order_edit_paths")
-        != list(WOL_PROFILE_REGISTERED_SOURCE_PATHS)
-        or registration.get("check_translation_unit_function_order") is not True
-        or registration.get("function_order_scope") != "authored"
-    ):
-        raise ProgressError(
-            "WOL prospective profile routing requires the exact current target "
-            "and registration"
-        )
-
-    target = load_manifest(WOL_CEDIT_TARGET_MANIFEST)
-    require_clean_target_source_fragments(target)
-    registered_paths = _wol_profile_registered_source_paths(target)
-    authored_rows = _wol_profile_matrix_authored_rows(target)
-    registration_rows = _wol_profile_registration_authored_rows(registration)
-    expected_row_keys = [
-        _wol_profile_selected_row_key(str(entry.source_from), row)
-        for entry, row in authored_rows
-    ]
-    registered_row_keys = [
-        _wol_profile_selected_row_key(source_from, row)
-        for source_from, row in registration_rows
-    ]
-    if registered_row_keys != expected_row_keys:
-        raise ProgressError(
-            "WOL prospective profile routing has stale or ambiguous registered "
-            "authored rows"
-        )
-
-    authored_addresses = [str(row.address) for _entry, row in authored_rows]
-    raw_slice_addresses = slice_row.get("addresses")
-    if (
-        not isinstance(raw_slice_addresses, list)
-        or any(not isinstance(address, str) for address in raw_slice_addresses)
-        or len(raw_slice_addresses) != len(set(raw_slice_addresses))
-    ):
-        raise ProgressError(
-            "WOL prospective profile routing requires a deterministic current slice"
-        )
-    authored_address_set = set(authored_addresses)
-    selected_slice_addresses = [
-        address
-        for address in raw_slice_addresses
-        if address in authored_address_set
-    ]
-    if authored_addresses[0] not in selected_slice_addresses:
-        return None
-    if selected_slice_addresses != authored_addresses[: len(selected_slice_addresses)]:
-        raise ProgressError(
-            "WOL prospective profile routing rejects a reordered or ambiguous "
-            "target slice"
-        )
-
-    symbol_rows = document.collection("symbols")
-    scope_ids: list[str] = []
-    physical_block_ids: list[str] = []
-    physical_blocks = document.collection("physical_blocks")
-    for (_entry, selected_row), address in zip(
-        authored_rows, authored_addresses
-    ):
-        symbol_id = f"recoil:function:{address}"
-        symbol = symbol_rows.get(symbol_id)
-        block_id = (
-            symbol.get("physical_block_id")
-            if isinstance(symbol, Mapping)
-            else None
-        )
-        logical_identity_key = str(
-            getattr(selected_row, "logical_identity_key", "") or ""
-        )
-        logical_aliases = (
-            symbol.get("logical_aliases")
-            if isinstance(symbol, Mapping)
-            else None
-        )
-        logical_alias = (
-            logical_aliases.get(logical_identity_key)
-            if isinstance(logical_aliases, Mapping)
-            and logical_identity_key
-            else None
-        )
-        direct_authored = bool(
-            isinstance(symbol, Mapping)
-            and symbol.get("pipeline_class") == "authored"
-        )
-        reviewed_authored_icf_alias = bool(
-            isinstance(symbol, Mapping)
-            and symbol.get("pipeline_class") == "non-authored"
-            and symbol.get("authored_order_role")
-            == "compiler-generated-icf-representative"
-            and isinstance(logical_alias, Mapping)
-            and logical_alias.get("pipeline_class") == "authored"
-            and logical_alias.get("authored_order_role") == "authored-body"
-            and logical_alias.get("fold_status")
-            == getattr(selected_row, "icf_fold_status", None)
-            and isinstance(symbol.get("icf_address_group"), Mapping)
-            and symbol["icf_address_group"].get("winner_identity_key")
-            == logical_identity_key
-        )
-        block = (
-            physical_blocks.get(block_id)
-            if isinstance(block_id, str)
-            else None
-        )
-        if (
-            not isinstance(symbol, Mapping)
-            or symbol.get("binary") != "recoil"
-            or symbol.get("kind") != "function"
-            or not (direct_authored or reviewed_authored_icf_alias)
-            or symbol.get("address") != address
-            or not isinstance(block_id, str)
-            or not block_id.startswith("recoil:block:0x")
-            or not isinstance(block, Mapping)
-            or block.get("binary") != "recoil"
-        ):
-            raise ProgressError(
-                "WOL prospective profile routing requires all 109 exact current "
-                "authored symbol/block facts"
-            )
-        scope_ids.append(symbol_id)
-        if block_id not in physical_block_ids:
-            physical_block_ids.append(block_id)
-
-    profile_slice = {
-        "target_ids": [WOL_PROFILE_MATRIX_TARGET_ID],
-        "source_paths": list(registered_paths),
-    }
-    closure = call_contract_source_closure(document, profile_slice)
-    if (
-        not set(registered_paths).issubset(closure.source_edit_paths)
-        or not set(registered_paths).issubset(closure.dependency_paths)
-        or not set(WOL_PROFILE_SOURCE_HANDOFF_WRITE_PATHS).issubset(
-            closure.source_edit_paths
-        )
-    ):
-        raise ProgressError(
-            "WOL prospective profile routing lacks the exact current source closure"
-        )
-
-    variant = _wol_profile_matrix_variant_target(
-        target,
-        profile_id="P1",
-        inline_flag="/Ob1",
-        scope="wol-only",
-    )
-    original_contexts = {
-        entry.source_from: effective_source_compile_context(
-            target, entry.source_from
-        )
-        for entry in target.translation_unit_function_order
-    }
-    variant_contexts = {
-        entry.source_from: effective_source_compile_context(
-            variant, entry.source_from
-        )
-        for entry in variant.translation_unit_function_order
-    }
-    wol_flags = [flag.upper() for flag in variant_contexts[
-        WOL_PROFILE_MATRIX_WOL_SOURCE
-    ][1]]
-    if (
-        wol_flags.count("/O2") != 1
-        or [flag for flag in wol_flags if flag in {"/OB0", "/OB1", "/OB2"}]
-        != ["/OB1"]
-        or variant_contexts[WOL_PROFILE_MATRIX_COMPANION_SOURCE]
-        != original_contexts[WOL_PROFILE_MATRIX_COMPANION_SOURCE]
-        or effective_source_compile_context(
-            target, WOL_PROFILE_MATRIX_WOL_SOURCE
-        )
-        != original_contexts[WOL_PROFILE_MATRIX_WOL_SOURCE]
-    ):
-        raise ProgressError(
-            "WOL prospective profile routing requires one in-memory WOL-only /Ob1 "
-            "comparison without production profile mutation"
-        )
-
-    sentinel_rows = [
-        row
-        for entry, row in authored_rows
-        if str(row.address) == WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS
-        and str(row.symbol) == WOL_PROFILE_MATRIX_EMPTY_CHECK_SYMBOL
-        and entry.source_from == WOL_PROFILE_MATRIX_WOL_SOURCE
-    ]
-    if len(sentinel_rows) != 1:
-        raise ProgressError(
-            "WOL prospective profile routing requires the exact inline sentinel"
-        )
-
-    source_signatures = file_dependency_states(registered_paths)
-    route = {
-        "kind": "wol-prospective-profile-source-handoff",
-        "contract_version": WOL_PROFILE_SOURCE_HANDOFF_CONTRACT_VERSION,
-        "target_id": WOL_PROFILE_MATRIX_TARGET_ID,
-        "profile_matrix_contract_version": WOL_PROFILE_MATRIX_CONTRACT_VERSION,
-        "comparison_profile": {
-            "scope": "wol-only",
-            "profile_id": "P1",
-            "inline_flag": "/Ob1",
-            "profile_selected": False,
-            "in_memory_only": True,
-        },
-        "body_count": WOL_PROFILE_MATRIX_BODY_COUNT,
-        "start": authored_addresses[0],
-        "inline_sentinel": {
-            "address": WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS,
-            "symbol": WOL_PROFILE_MATRIX_EMPTY_CHECK_SYMBOL,
-            "required_positive_dataflow": True,
-        },
-        "source_edit_paths": list(WOL_PROFILE_SOURCE_HANDOFF_WRITE_PATHS),
-        "registered_source_paths": list(registered_paths),
-        "registered_read_paths": [
-            path
-            for path in registered_paths
-            if path not in WOL_PROFILE_SOURCE_HANDOFF_WRITE_PATHS
-        ],
-        "definition_source_paths": list(closure.definition_source_paths),
-        "dependency_paths": list(closure.dependency_paths),
-        "definition_resolution": deepcopy(dict(closure.definition_resolution)),
-        "scope_ids": scope_ids,
-        "physical_block_ids": physical_block_ids,
-        "source_signatures": source_signatures,
-        "expected_truth": WOL_PROFILE_SOURCE_HANDOFF_EXPECTED_TRUTH,
-        "candidate_expected_truth": False,
-        "nonaccepting": True,
-        "acceptance_eligible": False,
-        "manifest_mutation_allowed": False,
-    }
-    if not _valid_wol_profile_source_handoff_route(route):
-        raise ProgressError(
-            "WOL prospective profile routing produced a malformed source handoff"
-        )
-    return route
 
 
 _WOL_PROFILE_MATRIX_REGISTER_RE = re.compile(
@@ -175102,15 +174631,6 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
-        "--verification-currentness-audit",
-        action="store_true",
-        help=(
-            "resource-governed nonaccepting rebuild and stored-verification "
-            "currentness audit; requires --slice and --packet-id"
-        ),
-    )
-    parser.add_argument("--packet-id")
-    parser.add_argument(
         "--profile-matrix",
         action="store_true",
         help=(
@@ -175267,19 +174787,6 @@ def main(argv: list[str] | None = None) -> int:
         {} if args.diagnostic_window is not None else None
     )
     try:
-        if args.verification_currentness_audit:
-            if args.target is not None or not args.slice or not args.packet_id:
-                raise ProgressError(
-                    "verification currentness audit requires --slice and --packet-id "
-                    "without --target"
-                )
-            from _recoil.commands.progress_cli import (
-                audit_call_contract_verification_currentness,
-            )
-
-            code, payload = audit_call_contract_verification_currentness(args)
-            print(json.dumps(payload, indent=2, sort_keys=True))
-            return code
         if args.memory_trace_file is not None:
             memory_trace = _CallContractMemoryTrace.from_trace_file(
                 args.memory_trace_file,
@@ -175302,7 +174809,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.json:
             # VC5 helpers intentionally print useful compile transcripts. Keep
             # JSON stdout machine-readable while preserving that transcript on
-            # stderr for direct and parent-owned live invocations.
+            # stderr for direct live invocations.
             with redirect_stdout(diagnostics):
                 document = ProgressDocument.load(args.progress)
                 result = (
@@ -175321,7 +174828,6 @@ def main(argv: list[str] | None = None) -> int:
                         build_root=args.build_root,
                         vc5_env=args.vc5_env,
                         bridge_url=args.bridge_url,
-                        packet_id=args.packet_id,
                         _memory_trace=memory_trace,
                         **_direct_cli_target_census_options(
                             target_id=args.target,
@@ -175356,7 +174862,6 @@ def main(argv: list[str] | None = None) -> int:
                     build_root=args.build_root,
                     vc5_env=args.vc5_env,
                     bridge_url=args.bridge_url,
-                    packet_id=args.packet_id,
                     _memory_trace=memory_trace,
                     **_direct_cli_target_census_options(
                         target_id=args.target,
@@ -175375,7 +174880,7 @@ def main(argv: list[str] | None = None) -> int:
             )
     except (BridgeError, OSError, ProgressError, RuntimeError, ValueError) as exc:
         memory_trace.emit(
-            "orchestration-error",
+            "verification-error",
             error_type=type(exc).__name__,
         )
         result = (

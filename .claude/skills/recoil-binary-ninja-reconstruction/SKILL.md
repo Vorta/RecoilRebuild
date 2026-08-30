@@ -1,6 +1,6 @@
 ---
 name: recoil-binary-ninja-reconstruction
-description: Reconstruct Recoil Binary Ninja state safely. Use when you are parent-assigned to improve names, prototypes, calling conventions, return behavior, types, variables, globals, comments, reanalysis, or saved BN database state in the already-open Recoil.bndb or messages.bndb, and need the original callee-first Binary Ninja reconstruction workflow.
+description: Safely improve names, types, prototypes, variables, comments, analysis, or saved state in the already-open Recoil Binary Ninja database.
 ---
 
 # Recoil BN Reconstruction (Claude surface)

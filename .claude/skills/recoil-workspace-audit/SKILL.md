@@ -1,6 +1,6 @@
 ---
 name: recoil-workspace-audit
-description: Audit RecoilRebuild workspace clarity, local agent instructions, Recoil skills, local infrastructure boundaries, and non-address process health. Use when you need to review AGENTS.md, .agent/AGENTS.md, docs/reconstruction onboarding notes, local recoil-* skills, validation guidance, stale workspace metadata, or whether a non-address maintenance task is clear for future agents.
+description: Audit RecoilRebuild instructions, skills, mirrors, command reachability, ledger health, and non-address process clarity for the serial single-agent workflow.
 ---
 
 # Recoil Workspace Audit (Claude surface)

@@ -38,17 +38,11 @@ from _recoil.lib.authored_icf import (  # noqa: E402
     validate_authored_icf_proof,
 )
 from _recoil.lib.source_traceability import parse_source_trace_path  # noqa: E402
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
 from tests.tools.recoil_cli_tests import RecoilCliTests, empty_progress_document  # noqa: E402
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
-
+    return REPO_ROOT / "support" / "Recoil.exe"
 
 class AuthoredIcfLogicalAliasTests(unittest.TestCase):
     symbol_id = "recoil:function:0x401000"
@@ -314,7 +308,7 @@ class AuthoredIcfLogicalAliasTests(unittest.TestCase):
         return {
             "schema": "recoil-logical-alias-group-v4",
             "reviewed": True,
-            "parent_reviewed": True,
+            "reviewed": True,
             "reason": "Retail selectors and fresh VC5 diagnostics prove authored coalescing.",
             "symbol_id": self.symbol_id,
             "address": "0x401000",

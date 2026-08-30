@@ -1,7 +1,16 @@
+---
+document_status: historical-process-record
+operational_guidance: false
+superseded_by: docs/reconstruction/retail_executable_reproduction.md
+---
+
 # Historical removal of cryptographic content verification
 
-> Historical migration note — not an active verification procedure, command
-> reference, scheduler, acceptance rule, or source of current tracker state.
+> **Historical process record — not current operating guidance.**
+
+The current invariant is direct and live: fresh typed semantic comparison with
+retail is authoritative. Hashes, receipts, saved candidates, and raw whole-file
+equality are never acceptance evidence.
 
 Workspace issue `WSI-20260826-001`, linked to `WSI-20260825-002`, removed the
 unactivated cryptographic-content currentness design before it became live
@@ -11,7 +20,7 @@ content/tree hashes, call fingerprints, normalizer/verifier content identities,
 and scheduler output-cache keys. Historical diagnostic output does not become
 current evidence and is not compatibility input.
 
-The active replacement is deliberately direct:
+At the time of this migration, the replacement was deliberately direct:
 
 - a parent call-contract acceptance invocation authenticates one active packet
   and physical output root, performs one fresh build, reads expected facts

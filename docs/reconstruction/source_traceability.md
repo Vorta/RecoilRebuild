@@ -139,7 +139,7 @@ stream remains identical.
 
 ```powershell
 python tools/_recoil/commands/source_trace_migrate.py template --path src --progress <absolute-noncanonical-progress-db> --output <template.json>
-python tools/_recoil/commands/source_trace_migrate.py review-conservative --template <template.json> --progress <absolute-noncanonical-progress-db> --parent-reviewed --output <reviewed.json>
+python tools/_recoil/commands/source_trace_migrate.py review-conservative --template <template.json> --progress <absolute-noncanonical-progress-db> --reviewed --output <reviewed.json>
 python tools/_recoil/commands/source_trace_migrate.py batch-propose --progress <absolute-noncanonical-progress-db> --payload-file <reviewed.json> --output <batch-dry-run.json>
 python tools/_recoil/commands/source_trace_migrate.py tracker-payload --path src --progress <absolute-noncanonical-progress-db> --migration-report <reviewed.json> --migration-template <template.json> --header-overrides <header-overrides.json> --output <tracker-payload.json>
 python tools/_recoil/commands/source_trace_migrate.py batch-propose --progress <absolute-noncanonical-progress-db> --payload-file <reviewed.json> --apply --output <batch-applied.json>
@@ -179,8 +179,8 @@ the physical identity and exact extent before adding a source mirror; do not
 create a named C/C++ global when the legitimate source construct is a switch,
 type, framework macro region, or literal expression.
 
-The parent-only data commands keep physical catalog facts separate from source
-topology:
+The governed data commands keep physical catalog facts separate from source
+topology and run directly from the canonical checkout:
 
 ```powershell
 python tools/recoil.py progress data-extent register --expected-revision <revision> --payload-file <reviewed.json> --dry-run --json

@@ -12,7 +12,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja HLIL and disassembly at 0x4bfa70 show the function pushing the image argument to HudUiWidget::SetImageBorrowedAndInvalidate, testing the returned pointer, calling HudUiBackgroundCursorWidget::RebuildCapturedImageForCurrentImage only when the return is nonzero, then returning with thiscall stack cleanup.",
-    "The dependency frontier for 0x4bfa70 has two direct callees, HudUiWidget::SetImageBorrowedAndInvalidate at 0x4b3e70 and HudUiBackgroundCursorWidget::RebuildCapturedImageForCurrentImage at 0x4bfae0, both accepted at functional lane.",
+    "The dependency frontier for 0x4bfa70 has two direct callees, HudUiWidget::SetImageBorrowedAndInvalidate at 0x4b3e70 and HudUiBackgroundCursorWidget::RebuildCapturedImageForCurrentImage at 0x4bfae0, both accepted at functional-verification mode.",
     "The native smoke verifies the non-null borrowed image path assigns the source image and rebuilds a captured cursor background from the software surface, then verifies the null image path updates the base image to null while skipping a captured-image rebuild."
   ],
   "vc5_attempt": "python tools/recoil.py verify vc5 --explain-missing 0x4bfa70 reported no VC verification target currently covers this address."

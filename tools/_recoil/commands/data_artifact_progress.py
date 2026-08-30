@@ -265,19 +265,19 @@ def _normalize_reviewed_evidence(
 def normalize_register_payload(value: Any) -> dict[str, Any]:
     payload = _require_mapping(value, label="data-artifact payload")
     payload_keys = set(payload)
-    expected_keys = {"operation", "parent_reviewed", "artifact_id", "artifact"}
+    expected_keys = {"operation", "reviewed", "artifact_id", "artifact"}
     if payload_keys not in (expected_keys, expected_keys | {"new_evidence"}):
         raise DataArtifactProgressError(
             "data-artifact payload keys must be exactly operation, "
-            "parent_reviewed, artifact_id, artifact, with optional new_evidence"
+            "reviewed, artifact_id, artifact, with optional new_evidence"
         )
     if payload["operation"] != REGISTER_OPERATION:
         raise DataArtifactProgressError(
             f"data-artifact payload.operation must be {REGISTER_OPERATION!r}"
         )
-    if payload["parent_reviewed"] is not True:
+    if payload["reviewed"] is not True:
         raise DataArtifactProgressError(
-            "data-artifact registration requires parent_reviewed=true"
+            "data-artifact registration requires reviewed=true"
         )
     artifact_id = payload["artifact_id"]
     if (
@@ -420,7 +420,7 @@ def normalize_register_payload(value: Any) -> dict[str, Any]:
     }
     normalized = {
         "operation": REGISTER_OPERATION,
-        "parent_reviewed": True,
+        "reviewed": True,
         "artifact_id": artifact_id,
         "artifact": normalized_artifact,
     }

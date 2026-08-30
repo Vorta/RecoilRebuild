@@ -117,7 +117,7 @@ def normalize_register_payload(value: Any) -> dict[str, Any]:
         payload,
         keys=(
             "operation",
-            "parent_reviewed",
+            "reviewed",
             "artifact_id",
             "expected_current",
             "replacement",
@@ -128,9 +128,9 @@ def normalize_register_payload(value: Any) -> dict[str, Any]:
         raise DataExtentProgressError(
             f"data-extent payload.operation must be {REGISTER_OPERATION!r}"
         )
-    if payload["parent_reviewed"] is not True:
+    if payload["reviewed"] is not True:
         raise DataExtentProgressError(
-            "data-extent registration requires parent_reviewed=true"
+            "data-extent registration requires reviewed=true"
         )
     artifact_id = payload["artifact_id"]
     if (
@@ -197,7 +197,7 @@ def normalize_register_payload(value: Any) -> dict[str, Any]:
         )
     return {
         "operation": REGISTER_OPERATION,
-        "parent_reviewed": True,
+        "reviewed": True,
         "artifact_id": artifact_id,
         "expected_current": {
             "extent_state": "unknown",

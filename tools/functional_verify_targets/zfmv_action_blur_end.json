@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly/decompilation for 0x463920 validates that End ignores self and calls zVideo::Fx_SetSurfaceState with primary pixels, primary width, primary height, and primary pitch.",
-    "The dependency frontier has no source blockers: primary surface getters and Fx_SetSurfaceState are source-ready for the functional lane.",
+    "The dependency frontier has no source blockers: primary surface getters and Fx_SetSurfaceState are source-ready for the functional-verification mode.",
     "The native smoke verifies End restores the FX surface-state globals to the primary surface after Begin has configured the Blur work surface."
   ],
   "vc5_attempt": ""

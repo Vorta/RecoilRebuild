@@ -8,7 +8,7 @@
   ],
   "known_limits": [
     "tier S verification was not attempted in this session; defer to a coherent zWeapon/OptCatalog source-cluster pass.",
-    "The loader is intentionally accepted on the functional lane because /Ob1-era inlining and class/source-cluster context are expected to affect isolated byte shape."
+    "The loader is intentionally accepted on the functional-verification mode because /Ob1-era inlining and class/source-cluster context are expected to affect isolated byte shape."
   ],
   "functional_evidence": [
     "Binary Ninja assembly for 0x4b1190 validates the fastcall ABI, thermal-glow pool initialization, zReader::LoadNodeFromPath, VERSION == 2 gate, warning-sample globals, MAX_CRATER_RADIUS, BALLISTICS entry table allocation, per-entry defaults and parsed fields, embedded FIRE/FLYOUT/IMPACT FX specs, timed-status blocks, runtime projectile pool setup, callback node priority/action callback installation, network option state storage, and success/error return values.",

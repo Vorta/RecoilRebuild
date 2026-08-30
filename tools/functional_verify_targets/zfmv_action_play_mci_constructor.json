@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly/decompilation for 0x463b00 validates the thiscall constructor shape: clear next, install the PlayMci vtable, allocate root/title path storage with calloc, format root\\title through sprintf, allocate 0x30 bytes for zFMV_Playback, initialize playback with mediaPath and notifyHwnd, store it, zero g_zFMV_ActionPlayMci_DestRect origin, fill width/height via zRndr::GetActiveRegionState, call zFMV_Playback::SetDestRect, and return self.",
-    "The dependency frontier has no source blockers: zFMV_Playback::Constructor, zFMV_Playback::SetDestRect, zRndr::GetActiveRegionState, CRT allocation/format calls, operator new, and compiler EH glue are source-ready or provider-boundary for the functional lane.",
+    "The dependency frontier has no source blockers: zFMV_Playback::Constructor, zFMV_Playback::SetDestRect, zRndr::GetActiveRegionState, CRT allocation/format calls, operator new, and compiler EH glue are source-ready or provider-boundary for the functional-verification mode.",
     "The native smoke verifies returned self, PlayMci vtable identity, next clearing, mediaPath content, playback allocation and initialization fields, notify HWND propagation, mci put flags after SetDestRect, and destination rectangle capture into both playback and g_zFMV_ActionPlayMci_DestRect."
   ],
   "vc5_attempt": "python tools/recoil.py verify vc5 0x463b00"

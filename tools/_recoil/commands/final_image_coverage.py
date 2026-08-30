@@ -5,11 +5,16 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
 from _recoil.lib.pe import DIRECTORY_NAMES, PeHeaders, PeSection, parse_pe_headers
-from _recoil.lib.progress import EXACT_LINK_DIMENSIONS, FULL_ORDER_DIMENSIONS
+from _recoil.lib.progress import (
+    EXACT_LINK_DIMENSIONS,
+    FULL_ORDER_DIMENSIONS,
+    ProgressError,
+    SCHEMA_VERSION as TRACKER_SCHEMA_VERSION,
+    accepted_byte_mode,
+)
 
 
 COVERAGE_VERSION = 1
-TRACKER_SCHEMA_VERSION = 5
 CORE_TYPED_SECTIONS = {".text", ".rdata", ".data"}
 MECHANICAL_SECTION_KINDS = {
     ".rsrc": "resource",
@@ -72,7 +77,7 @@ def _linked_byte_accepted(symbol: Mapping[str, Any]) -> bool:
         isinstance(state, Mapping)
         and all(_accepted_state(state.get(dimension)) for dimension in EXACT_LINK_DIMENSIONS)
         and isinstance(facts, Mapping)
-        and facts.get("lane") == "linked"
+        and accepted_byte_mode(facts) == "linked"
         and facts.get("validation_mode") == "live"
     )
 
@@ -333,7 +338,7 @@ def _text_entities(
     section: PeSection,
     headers: PeHeaders,
     tracker: Mapping[str, Any],
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]], Counter[str]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], Counter[str], list[str]]:
     symbols = tracker.get("symbols")
     blocks = tracker.get("physical_blocks")
     targets = tracker.get("verification_targets")
@@ -360,6 +365,7 @@ def _text_entities(
         known.append((str(symbol_id), symbol, extent))
     entities: list[dict[str, Any]] = []
     selected: list[dict[str, Any]] = []
+    unresolved_details: list[str] = []
     for group in _group_exact_extents(known):
         reasons: list[str] = []
         ordered_identities: list[tuple[tuple[int, int, str], dict[str, Any]]] = []
@@ -389,8 +395,13 @@ def _text_entities(
                 else:
                     block_index = covered.index(block_id) if isinstance(covered, list) and block_id in covered else 0
                     order_key = (block_index, matched.index(symbol_id), symbol_id)
-            if not _linked_byte_accepted(symbol):
-                reasons.append(f"{symbol_id} lacks accepted linked-byte facts")
+            try:
+                linked_byte_accepted = _linked_byte_accepted(symbol)
+            except ProgressError as exc:
+                reasons.append(f"{symbol_id} has invalid accepted linked-byte facts: {exc}")
+            else:
+                if not linked_byte_accepted:
+                    reasons.append(f"{symbol_id} lacks accepted linked-byte facts")
             binding, binding_failure = _target_map_binding(symbol_id, symbol, targets)
             if binding_failure:
                 reasons.append(binding_failure)
@@ -432,6 +443,7 @@ def _text_entities(
                     }
                 )
         else:
+            unresolved_details.extend(reasons)
             for reason in set(reasons):
                 if "full function order" in reason:
                     unresolved["full-order-not-accepted"] += 1
@@ -447,7 +459,7 @@ def _text_entities(
                     unresolved["source-block-binding-unresolved"] += 1
                 elif "provider binding" in reason:
                     unresolved["provider-binding-unresolved"] += 1
-    return entities, selected, unresolved
+    return entities, selected, unresolved, sorted(set(unresolved_details))
 
 
 def _data_entities(
@@ -592,8 +604,13 @@ def derive_final_image_coverage(
         )
         failures.extend(section_failures)
         unresolved = Counter()
+        unresolved_details: list[str] = []
         if section.name == ".text":
-            entities, selected, unresolved = _text_entities(section, headers, tracker)
+            entities, selected, unresolved, unresolved_details = _text_entities(
+                section,
+                headers,
+                tracker,
+            )
             selected_text.extend(selected)
         elif section.name in {".rdata", ".data"}:
             entities, unresolved = _data_entities(section, headers, tracker)
@@ -639,6 +656,7 @@ def derive_final_image_coverage(
                 "unresolved_annotations": {
                     "count": sum(unresolved.values()),
                     "by_reason": dict(sorted(unresolved.items())),
+                    "details": unresolved_details,
                 },
                 "file_semantic_coverage": _interval_analysis(
                     file_entities,

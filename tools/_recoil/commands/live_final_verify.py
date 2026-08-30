@@ -25,7 +25,7 @@ from _recoil.commands.vc5_build import (
     with_explicit_build_dir,
 )
 from _recoil.lib.pe import PeFormatError, data_directory, parse_pe_headers
-from _recoil.lib.progress import DEFAULT_PROGRESS_PATH, ProgressDocument
+from _recoil.lib.progress import DEFAULT_PROGRESS_PATH, SCHEMA_VERSION, ProgressDocument
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
 from _recoil.lib.windows_identity import StableReadHandle
 
@@ -530,9 +530,15 @@ def _validate_catalog(
     tracker: Mapping[str, Any] | None = None,
 ) -> list[str]:
     failures: list[str] = []
-    tracker_ready = isinstance(tracker, Mapping) and tracker.get("schema_version") == 5
+    tracker_ready = (
+        isinstance(tracker, Mapping)
+        and tracker.get("schema_version") == SCHEMA_VERSION
+    )
     if not tracker_ready:
-        failures.append("catalog tracker cross-resolution requires a schema-v5 tracker document")
+        failures.append(
+            "catalog tracker cross-resolution requires a "
+            f"schema-v{SCHEMA_VERSION} tracker document"
+        )
     tracker_rows = tracker if isinstance(tracker, Mapping) else {}
     symbols = tracker_rows.get("symbols", {})
     blocks = tracker_rows.get("physical_blocks", {})

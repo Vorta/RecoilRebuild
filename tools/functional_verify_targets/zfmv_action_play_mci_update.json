@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly for 0x463c90 is a single xor eax, eax followed by retn 8, with ECX and the double timeSec argument unused.",
-    "The dependency frontier has no direct callees, unresolved calls, indirect calls, or visible source blockers for the functional lane.",
+    "The dependency frontier has no direct callees, unresolved calls, indirect calls, or visible source blockers for the functional-verification mode.",
     "The native smoke verifies Update returns 0 and leaves the PlayMci action fields unchanged."
   ],
   "vc5_attempt": ""

@@ -736,14 +736,14 @@ def normalize_legacy_claim_resolutions(
 
 def normalize_replace_batch_payload(value: Any) -> dict[str, Any]:
     payload = _require_mapping(value, label="replace-batch payload")
-    base_keys = {"operation", "parent_reviewed", "updates"}
+    base_keys = {"operation", "reviewed", "updates"}
     optional_keys = {
         "unresolved_legacy_claims",
         "legacy_claim_resolutions",
     }
     if not base_keys.issubset(payload) or set(payload) - base_keys - optional_keys:
         raise SourceTraceProgressError(
-            "replace-batch payload keys must be operation, parent_reviewed, "
+            "replace-batch payload keys must be operation, reviewed, "
             "updates, and optional unresolved_legacy_claims and "
             "legacy_claim_resolutions"
         )
@@ -751,9 +751,9 @@ def normalize_replace_batch_payload(value: Any) -> dict[str, Any]:
         raise SourceTraceProgressError(
             f"replace-batch payload.operation must be {REPLACE_BATCH_OPERATION!r}"
         )
-    if payload["parent_reviewed"] is not True:
+    if payload["reviewed"] is not True:
         raise SourceTraceProgressError(
-            "replace-batch requires parent_reviewed=true"
+            "replace-batch requires reviewed=true"
         )
     updates = payload["updates"]
     if not isinstance(updates, list):
@@ -797,7 +797,7 @@ def normalize_replace_batch_payload(value: Any) -> dict[str, Any]:
         )
     normalized = {
         "operation": REPLACE_BATCH_OPERATION,
-        "parent_reviewed": True,
+        "reviewed": True,
         "updates": normalized_updates,
     }
     if "unresolved_legacy_claims" in payload:
@@ -1108,7 +1108,7 @@ def mutate_source_traceability_batch(
     expected_revision: int,
     apply: bool,
 ) -> dict[str, Any]:
-    """Dry-run or CAS-apply a parent-reviewed exact replacement batch."""
+    """Dry-run or CAS-apply a reviewed exact replacement batch."""
 
     store = (
         store_or_path
@@ -1180,7 +1180,7 @@ def build_parser() -> argparse.ArgumentParser:
     replace = subparsers.add_parser(
         REPLACE_BATCH_OPERATION,
         help=(
-            "Parent-reviewed exact-current dry-run/apply topology replacement "
+            "Reviewed exact-current dry-run/apply topology replacement "
             "and append-only legacy-claim resolution batch."
         ),
     )

@@ -424,50 +424,26 @@ def write_data_thunk_manifest(
 
 
 class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
-    def test_linked_root_routes_only_progress_authority_canonically(self) -> None:
+    def test_progress_authority_uses_explicit_or_canonical_direct_path(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            execution = root / "linked"
-            canonical = root / "canonical"
-            execution.mkdir()
-            tracker = canonical / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
-            tracker.parent.mkdir(parents=True)
+            tracker = root / "progress.sqlite3"
             tracker.write_bytes(b"fixture")
-            resolution = SimpleNamespace(canonical_control_root=canonical)
-            with (
-                patch.dict(
-                    os.environ,
-                    {"RECOIL_CANONICAL_ROOT": str(canonical)},
-                    clear=False,
-                ),
-                patch.object(source_guard, "REPO_ROOT", execution),
-                patch.object(
-                    source_guard,
-                    "resolve_canonical_control_root",
-                    return_value=resolution,
-                ) as resolve,
-            ):
-                routed = source_guard.routed_progress_authority(None)
-            self.assertEqual(tracker.resolve(), routed)
             self.assertEqual(
-                execution,
-                resolve.call_args.kwargs["executing_worktree_root"],
+                tracker.resolve(),
+                source_guard.direct_progress_authority(tracker),
             )
-            self.assertEqual(
-                (".agent/RECONSTRUCTION_PROGRESS.sqlite3",),
-                resolve.call_args.kwargs["required_machine_local_paths"],
-            )
+            with patch.object(source_guard, "DEFAULT_PROGRESS", tracker):
+                self.assertEqual(
+                    tracker.resolve(),
+                    source_guard.direct_progress_authority(None),
+                )
 
-    def test_guard_binds_routed_progress_before_loading_tracked_manifests(self) -> None:
+    def test_guard_uses_direct_progress_before_loading_tracked_manifests(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             tracker = Path(temporary) / "progress.sqlite3"
             tracker.write_bytes(b"fixture")
             observed: list[tuple[str, Path]] = []
-
-            @contextlib.contextmanager
-            def binding(path: Path):
-                observed.append(("bind", path))
-                yield
 
             def run(args, *, progress_path: Path) -> int:
                 observed.append(("run", progress_path))
@@ -479,25 +455,16 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                 return 0
 
             with (
-                patch.dict(
-                    os.environ,
-                    {"RECOIL_CANONICAL_ROOT": str(Path(temporary))},
-                    clear=False,
-                ),
                 patch.object(
                     source_guard,
-                    "routed_progress_authority",
+                    "direct_progress_authority",
                     return_value=tracker,
-                ),
-                patch(
-                    "_recoil.commands.pipeline_reachability_audit._bound_vc5_tracker",
-                    side_effect=binding,
                 ),
                 patch.object(source_guard, "_run_guard", side_effect=run),
             ):
                 result = source_guard.main([])
             self.assertEqual(0, result)
-            self.assertEqual([("bind", tracker), ("run", tracker)], observed)
+            self.assertEqual([("run", tracker)], observed)
 
     def test_repo_manifest_key_requires_exact_relative_git_identity(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

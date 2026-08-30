@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly/decompilation for 0x463ca0 validates the null playback guard and the zFMV_Playback::OpenAndPlay call with startMs 0, endMs -1, and notifyFlag 0.",
-    "The dependency frontier has no source blockers: zFMV_Playback::OpenAndPlay is functional-equivalent for the current functional lane.",
+    "The dependency frontier has no source blockers: zFMV_Playback::OpenAndPlay is functional-equivalent for the current functional-verification mode.",
     "The native smoke verifies the null playback path performs no OpenAndPlay call and the non-null path dispatches OpenAndPlay on the stored playback object with arguments 0, -1, and 0."
   ],
   "vc5_attempt": ""

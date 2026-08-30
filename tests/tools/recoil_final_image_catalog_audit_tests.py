@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 import sys
 import tempfile
@@ -15,16 +14,10 @@ from _recoil.commands.final_image_catalog_audit import audit_catalog  # noqa: E4
 from _recoil.lib.pe import parse_pe_headers  # noqa: E402
 from _recoil.lib.progress import empty_progress_document  # noqa: E402
 from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
-
+    return REPO_ROOT / "support" / "Recoil.exe"
 
 class FinalImageCatalogAuditTests(unittest.TestCase):
     @staticmethod
@@ -41,39 +34,24 @@ class FinalImageCatalogAuditTests(unittest.TestCase):
     def test_missing_catalog_is_a_precise_fail_closed_result(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            tracker = root / "progress.json"
-            tracker.write_text(
-                json.dumps(
-                    {
-                        "schema_version": 5,
-                        "revision": 10,
-                        "binaries": {
-                            "recoil": {
-                                "final_image_catalog_state": {
-                                    "state": "blocked",
-                                    "next_command": "python tools/recoil.py audit final-image-catalog --json",
-                                }
+            tracker = self._sqlite_tracker(
+                root / "progress.sqlite3",
+                {
+                    "revision": 10,
+                    "binaries": {
+                        "recoil": {
+                            "final_image_catalog_state": {
+                                "state": "blocked",
+                                "next_command": "python tools/recoil.py audit final-image-catalog --json",
                             }
-                        },
-                    }
-                ),
-                encoding="utf-8",
+                        }
+                    },
+                },
             )
             result = audit_catalog(tracker=tracker, reference=root / "missing.exe")
         self.assertFalse(result["passed"])
         self.assertEqual(result["catalog_path"], "binaries.recoil.final_image_catalog")
         self.assertIn("live validation deliberately does not fabricate", result["failures"][0])
-
-    def test_pre_cutover_tracker_reports_schema_and_catalog_blocks(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            tracker = root / "progress.json"
-            tracker.write_text(
-                json.dumps({"schema_version": 4, "revision": 9, "binaries": {"recoil": {}}}),
-                encoding="utf-8",
-            )
-            with self.assertRaisesRegex(ValueError, "schema_version must be 5"):
-                audit_catalog(tracker=tracker, reference=root / "missing.exe")
 
     def test_sqlite_tracker_is_loaded_semantically(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -96,7 +74,7 @@ class FinalImageCatalogAuditTests(unittest.TestCase):
             )
             result = audit_catalog(tracker=tracker, reference=root / "missing.exe")
         self.assertFalse(result["passed"])
-        self.assertEqual(result["tracker_schema"], 5)
+        self.assertEqual(result["tracker_schema"], 6)
         self.assertEqual(result["tracker_revision"], 27)
         self.assertEqual(result["catalog_state"]["state"], "blocked")
         self.assertIn("live validation deliberately does not fabricate", result["failures"][0])
@@ -151,20 +129,12 @@ class FinalImageCatalogAuditTests(unittest.TestCase):
             "sections": sections,
         }
         with tempfile.TemporaryDirectory() as temporary:
-            tracker = Path(temporary) / "progress.json"
-            tracker.write_text(
-                json.dumps(
-                    {
-                        "schema_version": 5,
-                        "revision": 11,
-                        "binaries": {"recoil": {"final_image_catalog": catalog}},
-                        "symbols": {},
-                        "physical_blocks": {},
-                        "storage_contributions": {},
-                        "output_sections": {},
-                    }
-                ),
-                encoding="utf-8",
+            tracker = self._sqlite_tracker(
+                Path(temporary) / "progress.sqlite3",
+                {
+                    "revision": 11,
+                    "binaries": {"recoil": {"final_image_catalog": catalog}},
+                },
             )
             result = audit_catalog(tracker=tracker, reference=reference)
         self.assertFalse(result["passed"])

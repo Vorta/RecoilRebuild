@@ -16,7 +16,7 @@ from _recoil.commands.final_image_coverage import (
     coverage_summary,
     derive_final_image_coverage,
 )
-from _recoil.lib.progress import ProgressDocument, ProgressError, ProgressStore
+from _recoil.lib.progress import SCHEMA_VERSION, ProgressError, ProgressStore
 from _recoil.lib.tooling import configure_stdio, display_path
 
 
@@ -25,12 +25,6 @@ CATALOG_PATH = "binaries.recoil.final_image_catalog"
 
 def _load_progress(path: Path) -> dict[str, Any]:
     try:
-        # Canonical runtime input is the SQLite authority and therefore goes
-        # through the repository abstraction.  Keep schema-v5 JSON readable
-        # only for isolated pre-cutover test fixtures; normal CLI routing
-        # rejects a JSON progress authority before reaching this command.
-        if path.suffix.lower() == ".json":
-            return ProgressDocument.load(path).data
         return ProgressStore(path).load().data
     except (OSError, UnicodeError, ProgressError) as exc:
         raise ValueError(
@@ -41,8 +35,10 @@ def _load_progress(path: Path) -> dict[str, Any]:
 def audit_catalog(*, tracker: Path, reference: Path) -> dict[str, Any]:
     document = _load_progress(tracker)
     failures: list[str] = []
-    if document.get("schema_version") != 5:
-        failures.append("progress tracker must be schema v5 before live coverage derivation")
+    if document.get("schema_version") != SCHEMA_VERSION:
+        failures.append(
+            f"progress tracker must be schema v{SCHEMA_VERSION} before live coverage derivation"
+        )
     binaries = document.get("binaries")
     recoil = binaries.get("recoil") if isinstance(binaries, Mapping) else None
     legacy_catalog = recoil.get("final_image_catalog") if isinstance(recoil, Mapping) else None
@@ -52,7 +48,7 @@ def audit_catalog(*, tracker: Path, reference: Path) -> dict[str, Any]:
             "retail reference is missing; live validation deliberately does not fabricate retail PE "
             f"facts: {display_path(reference)}"
         )
-    elif document.get("schema_version") == 5:
+    elif document.get("schema_version") == SCHEMA_VERSION:
         reference_data = reference.read_bytes()
         coverage = derive_final_image_coverage(
             reference_data,

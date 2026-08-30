@@ -1151,7 +1151,7 @@ def _exception_sites(value: Mapping[str, Any]) -> tuple[tuple[int, int], ...]:
 
 
 def normalize_reviewed_exception(value: Mapping[str, Any]) -> dict[str, Any]:
-    """Validate one candidate-independent parent-owned exception payload or row."""
+    """Validate one candidate-independent directly reviewed exception payload or row."""
     legacy = (
         value.get("_legacy_reviewed_catalog") is True
         or value.get("legacy_reviewed_catalog") is True

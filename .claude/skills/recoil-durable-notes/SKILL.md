@@ -1,6 +1,6 @@
 ---
 name: recoil-durable-notes
-description: Capture durable RecoilRebuild reconstruction notes. Use when you need to decide whether evidence should be recorded, choose between source comments, docs/reconstruction notes, unified progress-tracker evidence, Binary Ninja comments, tests, or structured work items, update durable knowledge notes, avoid README/progress-note clutter, or state the documentation decision before handoff.
+description: Record durable Recoil reconstruction evidence in the correct source, tracker, Binary Ninja, test, or focused documentation location without duplicating live progress.
 ---
 
 # Recoil Durable Notes (Claude surface)

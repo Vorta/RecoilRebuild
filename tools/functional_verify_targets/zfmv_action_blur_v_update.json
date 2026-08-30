@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly/decompilation for 0x463a70 validates the same update flow as zFMV_ActionBlur::Update, with zVideo::buff_BlurRegionByMode(nullptr, 2) for each blur pass.",
-    "The dependency frontier has no source blockers: postprocess/unlock/adjust functions, buff_BlurRegionByMode, and direct blit dispatch are source-ready for the functional lane.",
+    "The dependency frontier has no source blockers: postprocess/unlock/adjust functions, buff_BlurRegionByMode, and direct blit dispatch are source-ready for the functional-verification mode.",
     "The native smoke verifies the vertical update variant decrements framesRemaining and uses blur mode 2."
   ],
   "vc5_attempt": ""

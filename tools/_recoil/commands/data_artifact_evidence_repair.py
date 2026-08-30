@@ -76,7 +76,7 @@ def normalize_repair_payload(value: Any) -> dict[str, Any]:
         payload,
         keys=(
             "operation",
-            "parent_reviewed",
+            "reviewed",
             "artifact_id",
             "evidence_id",
             "expected_invalid",
@@ -87,9 +87,9 @@ def normalize_repair_payload(value: Any) -> dict[str, Any]:
         raise DataArtifactEvidenceRepairError(
             f"repair payload.operation must be {REPAIR_OPERATION!r}"
         )
-    if payload["parent_reviewed"] is not True:
+    if payload["reviewed"] is not True:
         raise DataArtifactEvidenceRepairError(
-            "data-artifact evidence repair requires parent_reviewed=true"
+            "data-artifact evidence repair requires reviewed=true"
         )
     artifact_id = payload["artifact_id"]
     if (
@@ -129,7 +129,7 @@ def normalize_repair_payload(value: Any) -> dict[str, Any]:
         )
     return {
         "operation": REPAIR_OPERATION,
-        "parent_reviewed": True,
+        "reviewed": True,
         "artifact_id": artifact_id,
         "evidence_id": evidence_id,
         "expected_invalid": expected,

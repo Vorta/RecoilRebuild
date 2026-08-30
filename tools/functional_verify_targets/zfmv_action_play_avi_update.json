@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly for 0x4636d0 validates the thiscall Update contract: latch startTimeSec when lastDecodedFrameIndex is negative, compute frameIndex as (timeSec - startTimeSec) multiplied by stream->videoFramesPerSecond at offset 0xec and converted through _ftol, skip decode/blit on repeated frame index, branch on renderer path 2 for the 3DFX surface-adjust mode, call zFMV_Stream::ReadAndDecodeFrame for new frames, always run the blit and surface-adjust path after a new-frame decode attempt, store lastDecodedFrameIndex, and return the decode result.",
-    "The dependency frontier has no source blockers: zFMV_Stream::ReadAndDecodeFrame, zVideo postprocess/unlock/adjust providers, and the runtime blit dispatcher are accepted for the functional lane.",
+    "The dependency frontier has no source blockers: zFMV_Stream::ReadAndDecodeFrame, zVideo postprocess/unlock/adjust providers, and the runtime blit dispatcher are accepted for the functional-verification mode.",
     "The native smoke verifies first-call latching, same-frame fast path, software renderer postprocess/unlock/blit/adjust behavior, 3DFX blit/adjust behavior, stream FPS frame-index calculation, and decode-failure return propagation."
   ],
   "vc5_attempt": ""

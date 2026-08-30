@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 import struct
 import sys
@@ -17,17 +16,16 @@ from _recoil.commands.final_image_catalog_audit import audit_catalog  # noqa: E4
 from _recoil.commands.final_image_coverage import derive_final_image_coverage  # noqa: E402
 from _recoil.commands.live_final_verify import compare_images  # noqa: E402
 from _recoil.lib.pe import parse_pe_headers  # noqa: E402
-from _recoil.lib.progress import EXACT_LINK_DIMENSIONS, FULL_ORDER_DIMENSIONS  # noqa: E402
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
+from _recoil.lib.progress import (  # noqa: E402
+    EXACT_LINK_DIMENSIONS,
+    FULL_ORDER_DIMENSIONS,
+    empty_progress_document,
+)
+from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
-
+    return REPO_ROOT / "support" / "Recoil.exe"
 
 def accepted_state() -> dict[str, object]:
     return {
@@ -66,16 +64,14 @@ class FinalImageCoverageTests(unittest.TestCase):
         return result
 
     def tracker(self, *, complete: bool) -> dict[str, object]:
-        tracker: dict[str, object] = {
-            "schema_version": 5,
-            "revision": 12,
-            "binaries": {"recoil": {"binary": "recoil"}},
-            "output_sections": self.output_sections(),
-            "symbols": {},
-            "physical_blocks": {},
-            "storage_contributions": {},
-            "verification_targets": {},
-        }
+        tracker: dict[str, object] = empty_progress_document()
+        tracker.update(
+            {
+                "revision": 12,
+                "binaries": {"recoil": {"binary": "recoil"}},
+                "output_sections": self.output_sections(),
+            }
+        )
         if not complete:
             return tracker
         symbols = tracker["symbols"]
@@ -151,8 +147,12 @@ class FinalImageCoverageTests(unittest.TestCase):
     def test_missing_blob_yields_live_typed_gaps(self) -> None:
         tracker = self.tracker(complete=False)
         with tempfile.TemporaryDirectory() as temporary:
-            progress = Path(temporary) / "progress.json"
-            progress.write_text(json.dumps(tracker), encoding="utf-8")
+            progress = Path(temporary) / "progress.sqlite3"
+            ProgressSQLiteStore.create_from_mapping(
+                progress,
+                tracker,
+                cutover_pair_id="final-image-coverage-test",
+            )
             result = audit_catalog(tracker=progress, reference=self.reference)
         self.assertFalse(result["passed"])
         self.assertFalse(result["legacy_catalog_present"])
@@ -174,6 +174,60 @@ class FinalImageCoverageTests(unittest.TestCase):
         for section in coverage["sections"]:
             self.assertTrue(section["file_semantic_coverage"]["complete"], section)
             self.assertTrue(section["virtual_semantic_coverage"]["complete"], section)
+
+    def test_canonical_linked_byte_mode_generates_complete_coverage(self) -> None:
+        tracker = self.tracker(complete=True)
+        tracker["symbols"]["recoil:function:unit-full-text"]["accepted_byte_facts"] = {
+            "validation_mode": "live",
+            "mode": "linked",
+        }
+        coverage = derive_final_image_coverage(
+            self.reference_data,
+            tracker,
+            source="support/Recoil.exe",
+        )
+        self.assertTrue(coverage["complete"], coverage["failures"])
+
+    def test_authored_byte_mode_is_not_linked_acceptance(self) -> None:
+        tracker = self.tracker(complete=True)
+        tracker["symbols"]["recoil:function:unit-full-text"]["accepted_byte_facts"] = {
+            "validation_mode": "live",
+            "mode": "authored",
+        }
+        coverage = derive_final_image_coverage(
+            self.reference_data,
+            tracker,
+            source="support/Recoil.exe",
+        )
+        self.assertFalse(coverage["complete"])
+        text_row = next(row for row in coverage["sections"] if row["name"] == ".text")
+        self.assertTrue(
+            any(
+                "lacks accepted linked-byte facts" in detail
+                for detail in text_row["unresolved_annotations"]["details"]
+            )
+        )
+
+    def test_conflicting_byte_provenance_fails_with_explicit_reason(self) -> None:
+        tracker = self.tracker(complete=True)
+        tracker["symbols"]["recoil:function:unit-full-text"]["accepted_byte_facts"] = {
+            "validation_mode": "live",
+            "mode": "linked",
+            "lane": "authored",
+        }
+        coverage = derive_final_image_coverage(
+            self.reference_data,
+            tracker,
+            source="support/Recoil.exe",
+        )
+        self.assertFalse(coverage["complete"])
+        text_row = next(row for row in coverage["sections"] if row["name"] == ".text")
+        self.assertTrue(
+            any(
+                "invalid accepted linked-byte facts" in detail
+                for detail in text_row["unresolved_annotations"]["details"]
+            )
+        )
 
     def test_overlapping_accepted_text_annotations_fail_closed(self) -> None:
         tracker = self.tracker(complete=True)

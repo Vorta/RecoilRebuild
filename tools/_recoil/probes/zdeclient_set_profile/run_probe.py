@@ -30,7 +30,7 @@ SOURCE = Path(__file__).with_name("zdeclient_set_profile.cpp")
 DEFAULT_VC5_ROOT = Path("D:/Recoil Project/Compiler/VC5SP3")
 DEFAULT_OUTPUT = REPO_ROOT / "build/vc5-probes/zdeclient-set-profile"
 COMPILER_VERSION = "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022"
-PACKET_ID = "recoil:diagnostic-probe:zdeclient-set-profile-r3966"
+PROBE_ID = "recoil:diagnostic-probe:zdeclient-set-profile-r3966"
 SCHEMA = "diagnostic-vc5-provider-probe-v1"
 
 VECTOR_GLOBAL = (
@@ -630,7 +630,7 @@ def run_probe(*, vc5_root: Path, output_dir: Path) -> dict[str, object]:
 
     result: dict[str, object] = {
         "schema": SCHEMA,
-        "packet_id": PACKET_ID,
+        "probe_id": PROBE_ID,
         "kind": "zdeclient-default-set-profile-probe",
         "contract_version": 1,
         "passed": True,
@@ -830,7 +830,7 @@ def main(argv: list[str] | None = None) -> int:
             output_dir=args.output_dir.resolve(),
         )
     except (OSError, RuntimeError, ValueError) as exc:
-        print(json.dumps({"schema": SCHEMA, "packet_id": PACKET_ID, "passed": False, "error": str(exc)}, indent=2))
+        print(json.dumps({"schema": SCHEMA, "probe_id": PROBE_ID, "passed": False, "error": str(exc)}, indent=2))
         return 1
     print(json.dumps(result, indent=2))
     return 0

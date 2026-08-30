@@ -10,7 +10,7 @@
     "tier S verification was not attempted in this session. The reconstructed marker remains limited because broader multi-class transform-chain coverage is deferred to a coherent zClass pass."
   ],
   "functional_evidence": [
-    "Binary Ninja frontier for 0x449480 has no remaining functional-lane source blockers after accepting zMath::MatLoadCurrentFrom, zMath::MatCopyCurrentTo, and gwNode::UpdateTree.",
+    "Binary Ninja frontier for 0x449480 has no remaining functional-verification source blockers after accepting zMath::MatLoadCurrentFrom, zMath::MatCopyCurrentTo, and gwNode::UpdateTree.",
     "The native smoke verifies null-node failure, single-parent Object3D cached world-matrix loading, dirty local-matrix multiplication, cached-world refresh, and dirty-flag clearing."
   ]
 }

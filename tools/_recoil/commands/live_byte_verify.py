@@ -51,7 +51,7 @@ from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
 
 DEFAULT_TRACKER = DEFAULT_PROGRESS_PATH
 DEFAULT_REFERENCE = REPO_ROOT / "support" / "Recoil.exe"
-LANES = ("object", "authored", "linked")
+BYTE_MODES = ("object", "authored", "linked")
 IMAGE_SCN_LNK_COMDAT = 0x00001000
 IMAGE_SCN_CNT_INITIALIZED_DATA = 0x00000040
 IMAGE_SCN_CNT_UNINITIALIZED_DATA = 0x00000080
@@ -1067,9 +1067,9 @@ def _resolved_target(relocation_type: int, operand: bytes, instruction_end: int)
     return None
 
 
-def _unique_root(lane: str) -> Path:
+def _unique_root(mode: str) -> Path:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-    return Path("build") / "live-validation" / lane / f"run-{stamp}-{os_getpid()}"
+    return Path("build") / "live-validation" / mode / f"run-{stamp}-{os_getpid()}"
 
 
 def os_getpid() -> int:
@@ -1081,7 +1081,7 @@ def os_getpid() -> int:
 
 def _rows(
     document: ProgressDocument,
-    lane: str,
+    mode: str,
     at: str | None,
     *,
     authored_order_prefix_end: str | None = None,
@@ -1094,7 +1094,7 @@ def _rows(
             continue
         if not isinstance(symbol.get("end_exclusive"), str):
             continue
-        if lane in {"object", "authored"} and not symbol_authored_order_gate(symbol):
+        if mode in {"object", "authored"} and not symbol_authored_order_gate(symbol):
             continue
         address = symbol.get("address")
         if not isinstance(address, str) or not address:
@@ -1105,7 +1105,7 @@ def _rows(
         row["symbol_id"] = str(symbol_id)
         selected.append(row)
     selected.sort(key=lambda item: (address_value(str(item["address"])), str(item["symbol_id"])))
-    if lane == "object":
+    if mode == "object":
         prefix_text = authored_order_prefix_end
         if prefix_text is None:
             # Standalone verifier calls do not already have scheduler state.
@@ -1143,7 +1143,7 @@ def _rows(
         address = normalize_address(at)
         grouped = [row for row in grouped if normalize_address(row["address"]) == address]
         if not grouped:
-            raise LiveByteError(f"no {lane} lane row exists at {address}")
+            raise LiveByteError(f"no {mode} mode row exists at {address}")
     return grouped
 
 
@@ -1151,7 +1151,7 @@ def _bindings(
     document: ProgressDocument,
     manifest_dir: Path,
 ) -> dict[str, list[TargetBinding]]:
-    # Byte-lane binding only needs symbol/source placement from manifests. Strict
+    # Byte-mode binding only needs symbol/source placement from manifests. Strict
     # source-policy provenance is an order/owner gate and must not block an
     # unrelated address when another target in the catalog is mid-migration.
     manifests = load_manifests(manifest_dir, enforce_source_policy=False)
@@ -1727,7 +1727,7 @@ def _run_fresh_build(args: argparse.Namespace, root: Path) -> tuple[int, Any, An
     paths = build_paths(config)
     object_paths = [object_path(config, paths, source) for source in config.sources]
     required = [*object_paths, paths.summary_path]
-    if args.lane != "object":
+    if args.mode != "object":
         required.extend((paths.exe_path, paths.map_path))
     before = {path: _artifact_signature(path) for path in required}
     command = [
@@ -1742,11 +1742,11 @@ def _run_fresh_build(args: argparse.Namespace, root: Path) -> tuple[int, Any, An
         str(root),
         "--clean",
     ]
-    if args.lane == "object":
+    if args.mode == "object":
         command.extend(("--compile-only", "--compile-only-skip-linked-order"))
     # The byte verifier owns the machine-readable stdout contract.  Final-build
     # may return a nonzero diagnostic result for an independent order mismatch
-    # even though it produced the fresh object/image/MAP needed by this lane, so
+    # even though it produced the fresh object/image/MAP needed by this mode, so
     # capture its output and continue whenever those required products exist.
     completed = subprocess.run(
         command,
@@ -1781,7 +1781,7 @@ def _run_fresh_build(args: argparse.Namespace, root: Path) -> tuple[int, Any, An
         summary = json.loads(paths.summary_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise LiveByteError(f"fresh final-build summary is unreadable: {exc}") from exc
-    if args.lane == "object":
+    if args.mode == "object":
         if completed.returncode != 0 or summary.get("kind") != "compile-only-diagnostic" or not summary.get("success"):
             raise LiveByteError(
                 "fresh compile-only final-build did not complete successfully; "
@@ -1878,7 +1878,7 @@ def _integer(value: Any, *, field: str) -> int:
 
 def _compare_row(
     *,
-    lane: str,
+    mode: str,
     row: Mapping[str, Any],
     binding: TargetBinding,
     config: Any,
@@ -1904,7 +1904,7 @@ def _compare_row(
     function_bytes = coff_object.function_bytes(binding.function.symbol)
     contribution_extent = len(function_bytes.data)
     # A next-symbol COFF extent may include alignment padding after the typed
-    # function body.  This lane owns the body; linked order/padding gates own
+    # function body.  This mode owns the body; linked order/padding gates own
     # that tail.  A contribution shorter than the body is still a hard failure.
     if contribution_extent < extent:
         return {
@@ -1962,7 +1962,7 @@ def _compare_row(
         )
         result["first_difference"] = _first_byte_difference(retail_bytes, normalized_object)
         return result
-    if lane == "object":
+    if mode == "object":
         return result
     assert parsed_map is not None
     linked_addresses = _map_function_addresses(parsed_map, binding.function.symbol)
@@ -1993,7 +1993,7 @@ def _compare_row(
             ),
         )
         return result
-    if lane == "authored":
+    if mode == "authored":
         candidate_relocations = _canonicalize_vc5_local_data_ordinals(
             coff_object=coff_object,
             function_bytes=function_bytes,
@@ -2155,7 +2155,7 @@ def _compare_row(
                     canonical.target_extent,
                 )
             )
-        if lane == "linked":
+        if mode == "linked":
             passed = (
                 candidate_operand == retail_operand
                 and candidate_target == retail_target == expected_retail_target
@@ -2216,7 +2216,7 @@ def _compare_row(
     exact_address = candidate_start == retail_start
     exact_bytes = candidate_bytes == retail_bytes
     passed = linked_body_passed and relocations_passed
-    if lane == "linked":
+    if mode == "linked":
         passed = passed and exact_address and exact_bytes
     result.update(
         passed=passed,
@@ -2239,9 +2239,9 @@ def _compare_row(
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
     document = ProgressDocument.load(args.progress)
-    rows = _rows(document, args.lane, args.at)
+    rows = _rows(document, args.mode, args.at)
     if not rows:
-        raise LiveByteError(f"the {args.lane} lane has no selected rows")
+        raise LiveByteError(f"the {args.mode} mode has no selected rows")
     bindings = _bindings(document, args.manifest_dir)
     relocation_expectations: dict[tuple[str, str], dict[str, Any]] = {}
     retail_reader_universe_cache: dict[
@@ -2300,7 +2300,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     # Authored-byte validation is frequently invoked at the live cursor.  Resolve
     # its retail operand contract before paying for a whole-project link.  Later
     # groups are derived lazily from the same candidate-independent inputs.
-    if args.lane == "authored":
+    if args.mode == "authored":
         first_row = rows[0]
         selected_bindings = _select_bindings(bindings, first_row)
         failed_expectation: dict[str, Any] | None = None
@@ -2312,9 +2312,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         if failed_expectation is not None:
             return {
                 "report_version": 1,
-                "kind": "live-byte-lane",
+                "kind": "live-byte-mode",
                 "validation_mode": "live",
-                "lane": args.lane,
+                "mode": args.mode,
                 "tracker_revision": document.revision,
                 "passed": False,
                 "checked_rows": 0,
@@ -2337,9 +2337,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 },
                 "historical_diagnostic_only": True,
             }
-    root = args.build_root or _unique_root(args.lane)
+    root = args.build_root or _unique_root(args.mode)
     returncode, config, paths = _run_fresh_build(args, root)
-    parsed_map = None if args.lane == "object" else parse_link_map(paths.map_path)
+    parsed_map = None if args.mode == "object" else parse_link_map(paths.map_path)
     checked = 0
     matched_groups: list[dict[str, Any]] = []
     first_divergence: dict[str, Any] | None = None
@@ -2349,7 +2349,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         ]
         provider_rows = (
             [item for item in physical_rows if _is_provider_or_compiler_row(item)]
-            if args.lane == "linked"
+            if args.mode == "linked"
             else []
         )
         authored_rows = [item for item in physical_rows if item not in provider_rows]
@@ -2361,7 +2361,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             selected_bindings = _select_bindings(bindings, authored_group)
             for binding in selected_bindings:
                 relocation_catalog: Sequence[Mapping[str, Any]] | None = None
-                if args.lane != "object":
+                if args.mode != "object":
                     expectation = expectation_for(authored_group, binding)
                     if not expectation["passed"]:
                         group_results.append(
@@ -2384,7 +2384,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                     relocation_catalog = expectation["expectations"]
                 group_results.append(
                     _compare_row(
-                        lane=args.lane,
+                        mode=args.mode,
                         row=authored_group,
                         binding=binding,
                         config=config,
@@ -2427,9 +2427,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         matched_groups.append(_matched_group_contract(row, bindings))
     return {
         "report_version": 1,
-        "kind": "live-byte-lane",
+        "kind": "live-byte-mode",
         "validation_mode": "live",
-        "lane": args.lane,
+        "mode": args.mode,
         "tracker_revision": document.revision,
         "passed": first_divergence is None,
         "checked_rows": checked,
@@ -2445,9 +2445,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Freshly build and directly scan one byte-validation lane."
+        description="Freshly build and directly scan one byte-validation mode."
     )
-    parser.add_argument("lane", choices=LANES)
+    parser.add_argument("mode", choices=BYTE_MODES)
     parser.add_argument("--at")
     parser.add_argument("--build-root", type=Path)
     parser.add_argument("--progress", type=Path, default=DEFAULT_TRACKER)
@@ -2469,7 +2469,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps(report, indent=2))
     else:
-        print(f"Live {report['lane']} byte scan: {'PASS' if report['passed'] else 'FAIL'}")
+        print(f"Live {report['mode']} byte scan: {'PASS' if report['passed'] else 'FAIL'}")
         print(f"- checked rows: {report['checked_rows']}/{report['selected_rows']}")
         print(f"- build root: {report['build_root']}")
         if report["first_divergence"] is not None:

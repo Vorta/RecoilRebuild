@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from copy import deepcopy
-import json
 from pathlib import Path
 import sys
 import tempfile
@@ -21,7 +20,8 @@ from _recoil.commands.storage_contribution_progress import (  # noqa: E402
     plan_authored_storage_registration,
 )
 from _recoil.lib.live_progress import ConcurrentRevisionUpdate  # noqa: E402
-from _recoil.lib.progress import empty_progress_document  # noqa: E402
+from _recoil.lib.progress import ProgressStore, empty_progress_document  # noqa: E402
+from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
 
 
 SYMBOL_ID = "recoil:data:0x4e1320"
@@ -118,7 +118,6 @@ def payload() -> dict:
         "schema": PAYLOAD_SCHEMA,
         "operation": REGISTER_OPERATION,
         "reviewed": True,
-        "parent_reviewed": True,
         "symbol_id": SYMBOL_ID,
         "storage_contribution_id": STORAGE_ID,
         "owner_id": OWNER_ID,
@@ -193,8 +192,12 @@ class StorageContributionProgressTests(unittest.TestCase):
 
     def test_dry_run_apply_and_revision_cas_are_exact(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            path = Path(temp_dir) / "progress.json"
-            path.write_text(json.dumps(tracker()), encoding="utf-8")
+            path = Path(temp_dir) / "progress.sqlite3"
+            ProgressSQLiteStore.create_from_mapping(
+                path,
+                tracker(),
+                cutover_pair_id="storage-contribution-test",
+            )
 
             dry_run = mutate_authored_storage(
                 path,
@@ -206,7 +209,7 @@ class StorageContributionProgressTests(unittest.TestCase):
             self.assertFalse(dry_run["acceptance_changed"])
             self.assertEqual(
                 [],
-                json.loads(path.read_text(encoding="utf-8"))["symbols"][
+                ProgressStore(path).load().data["symbols"][
                     SYMBOL_ID
                 ]["storage_contribution_ids"],
             )
@@ -233,7 +236,7 @@ class StorageContributionProgressTests(unittest.TestCase):
                 apply=True,
             )
             self.assertTrue(applied["applied"])
-            saved = json.loads(path.read_text(encoding="utf-8"))
+            saved = ProgressStore(path).load().data
             self.assertEqual(8, saved["revision"])
             self.assertEqual(
                 [STORAGE_ID],
@@ -254,7 +257,6 @@ class StorageContributionProgressTests(unittest.TestCase):
             ("schema", "wrong", "payload.schema"),
             ("operation", "wrong", "payload.operation"),
             ("reviewed", False, "reviewed=true"),
-            ("parent_reviewed", False, "reviewed=true"),
         ):
             invalid = payload()
             invalid[field] = value

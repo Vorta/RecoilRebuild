@@ -1,6 +1,6 @@
 ---
 name: recoil-source-model-recovery
-description: Recover source-faithful owner models in RecoilRebuild. Use when you need to model authored classes, interfaces, table-shaped dispatch evidence, source-file clusters, initialized globals, record subsystems, original inlined/static helpers, source-shape metadata, route unified tracker owner updates, or replace flattened/raw-offset/non-original-helper/ABI-scaffold code with the original higher-order source construct.
+description: Recover source-faithful Recoil owners, classes, interfaces, source-file clusters, globals, tables, callbacks, helpers, and translation-unit placement from retail evidence.
 ---
 
 # Recoil Source Model Recovery (Claude surface)

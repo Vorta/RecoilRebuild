@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 import sys
 from types import SimpleNamespace
@@ -21,7 +22,13 @@ from _recoil.commands.call_contract_verify import (  # noqa: E402
 from _recoil.commands.progress_cli import (  # noqa: E402
     _validate_call_contract_result,
 )
-from _recoil.lib.progress import ProgressError  # noqa: E402
+from _recoil.lib.call_contract_generations import (  # noqa: E402
+    current_generations,
+)
+from _recoil.lib.progress import (  # noqa: E402
+    CALL_CONTRACT_CONTRACT_VERSION,
+    ProgressError,
+)
 from _recoil.lib.cpp_definition_closure import (  # noqa: E402
     CallableKey,
     decode_vc5_zero_argument_callable_identity,
@@ -100,6 +107,176 @@ class FixtureDocument:
 
 
 class CallContractClosureV2Tests(unittest.TestCase):
+    def test_live_verifier_has_no_unreachable_phase_convergence_mode(self) -> None:
+        source = (
+            REPO_ROOT / "tools/_recoil/commands/call_contract_verify.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("phase_convergence_mode", source)
+
+    @staticmethod
+    def _direct_result_fixture(body_count: int = 2) -> tuple[dict, dict]:
+        symbol_ids = [
+            f"recoil:function:0x{0x401000 + index * 0x10:06x}"
+            for index in range(body_count)
+        ]
+        addresses = [
+            f"0x{0x401000 + index * 0x10:06x}"
+            for index in range(body_count)
+        ]
+        target_ids = [TARGET_ID for _index in range(body_count)]
+        physical_block_ids = [
+            f"recoil:block:{address}" for address in addresses
+        ]
+        expected_fact_rows = [
+            {
+                **current_generations(),
+                "symbol_id": symbol_id,
+                "address": address,
+                "calls": [],
+            }
+            for symbol_id, address in zip(symbol_ids, addresses)
+        ]
+        slice_row = {
+            "id": "recoil:call-contract-slice:fixture",
+            "body_count": body_count,
+            "symbol_ids": symbol_ids,
+            "addresses": addresses,
+            "target_ids": target_ids,
+            "physical_block_ids": physical_block_ids,
+        }
+        result = {
+            "kind": "authored-call-contract-live-result",
+            "contract_version": CALL_CONTRACT_CONTRACT_VERSION,
+            "all_caller_divergences_collected": True,
+            "slice_id": slice_row["id"],
+            "body_count": body_count,
+            "symbol_ids": symbol_ids,
+            "target_ids": target_ids,
+            "physical_block_ids": physical_block_ids,
+            "candidate_expected_truth": False,
+            "source_edit_paths": [],
+            "definition_source_paths": [],
+            "definition_compile_results": [],
+            "dependency_paths": [],
+            "dependency_states_before": [],
+            "dependency_states_after": [],
+            "source_changed_during_validation": False,
+            "passed": True,
+            "first_divergence": None,
+            "exact_fact_transcript": [
+                {
+                    "symbol_id": symbol_id,
+                    "address": address,
+                    "expected_fact_row": expected_fact_row,
+                }
+                for symbol_id, address, expected_fact_row in zip(
+                    symbol_ids, addresses, expected_fact_rows
+                )
+            ],
+            "provider_fact_transcript": [],
+            "body_results": [
+                {
+                    **current_generations(),
+                    "symbol_id": symbol_id,
+                    "address": address,
+                    "target_id": target_id,
+                    "status": "passed",
+                    "comparison_passed": True,
+                    "divergence": None,
+                    "expected_fact_row": expected_fact_row,
+                    "expected_contract": [],
+                    "candidate_contract": [],
+                    "normalizers": [],
+                }
+                for symbol_id, address, target_id, expected_fact_row in zip(
+                    symbol_ids, addresses, target_ids, expected_fact_rows
+                )
+            ],
+        }
+        return slice_row, result
+
+    def test_direct_result_uses_ordered_fact_transcript_without_session_receipt(
+        self,
+    ) -> None:
+        slice_row, result = self._direct_result_fixture()
+        validated = _validate_call_contract_result(
+            result,
+            expected_slice=slice_row,
+            expected_source_write_paths=[],
+            expected_definition_source_paths=[],
+            expected_compiled_definition_sources=[],
+            expected_dependency_paths=[],
+        )
+
+        self.assertEqual(
+            slice_row["symbol_ids"],
+            [row["symbol_id"] for row in validated["exact_fact_transcript"]],
+        )
+        self.assertNotIn("binary_ninja_session", validated)
+
+    def test_direct_result_rejects_inexact_fact_transcript_population(self) -> None:
+        slice_row, result = self._direct_result_fixture()
+        cases = {
+            "missing": result["exact_fact_transcript"][:-1],
+            "extra": [
+                *result["exact_fact_transcript"],
+                deepcopy(result["exact_fact_transcript"][0]),
+            ],
+            "reordered": list(reversed(result["exact_fact_transcript"])),
+            "duplicated": [
+                deepcopy(result["exact_fact_transcript"][0]),
+                deepcopy(result["exact_fact_transcript"][0]),
+            ],
+        }
+        for label, transcript in cases.items():
+            drifted = deepcopy(result)
+            drifted["exact_fact_transcript"] = transcript
+            with (
+                self.subTest(label=label),
+                self.assertRaisesRegex(ProgressError, "expected-fact transcript"),
+            ):
+                _validate_call_contract_result(
+                    drifted,
+                    expected_slice=slice_row,
+                    expected_source_write_paths=[],
+                    expected_definition_source_paths=[],
+                    expected_compiled_definition_sources=[],
+                    expected_dependency_paths=[],
+                )
+
+    def test_direct_result_rejects_transcript_address_or_fact_drift(self) -> None:
+        slice_row, result = self._direct_result_fixture()
+        cases = {
+            "address": ("address", "0x401999"),
+            "fact-address": ("expected_fact_row.address", "0x401999"),
+            "fact-calls": ("expected_fact_row.calls", [{"kind": "call"}]),
+        }
+        for label, (field, value) in cases.items():
+            drifted = deepcopy(result)
+            if field == "address":
+                drifted["exact_fact_transcript"][0]["address"] = value
+            elif field == "expected_fact_row.address":
+                drifted["exact_fact_transcript"][0]["expected_fact_row"][
+                    "address"
+                ] = value
+                drifted["body_results"][0]["expected_fact_row"][
+                    "address"
+                ] = value
+            else:
+                drifted["exact_fact_transcript"][0]["expected_fact_row"][
+                    "calls"
+                ] = value
+                drifted["body_results"][0]["expected_fact_row"]["calls"] = value
+            with self.subTest(label=label), self.assertRaises(ProgressError):
+                _validate_call_contract_result(
+                    drifted,
+                    expected_slice=slice_row,
+                    expected_source_write_paths=[],
+                    expected_definition_source_paths=[],
+                    expected_compiled_definition_sources=[],
+                    expected_dependency_paths=[],
+                )
+
     def test_lifecycle_decoder_records_exact_complete_ctor_and_dtor(self) -> None:
         constructor = decode_vc5_zero_argument_lifecycle_identity(
             "??0HudUiMenuBackButton@@QAE@XZ"
@@ -361,7 +538,6 @@ class CallContractClosureV2Tests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(closure.source_edit_paths, closure.write_paths)
         self.assertNotIn("src/Shared.cpp", closure.source_edit_paths)
         self.assertIn("src/Shared.cpp", closure.definition_source_paths)
         self.assertIn("src/Shared.cpp", closure.dependency_paths)
@@ -455,7 +631,6 @@ class CallContractClosureV2Tests(unittest.TestCase):
                 expected_definition_source_paths=[],
                 expected_compiled_definition_sources=[],
                 expected_dependency_paths=[],
-                expected_packet_id="packet:unit-call-contract-slice",
             )
 
 

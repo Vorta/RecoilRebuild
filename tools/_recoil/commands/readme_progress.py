@@ -200,8 +200,8 @@ def _stage_state(
     order = {
         "authored-function-order": 0,
         "authored-call-contract": 1,
-        "full-function-order": 2,
-        "authored-byte-match": 3,
+        "authored-byte-match": 2,
+        "full-function-order": 3,
         "linked-byte-match": 4,
         "final-validation": 5,
     }
@@ -229,11 +229,9 @@ def build_pipeline_section(document: ProgressDocument) -> str:
     call_contract = pipeline["authored_call_contract_counts"]
     full_order = pipeline["full_function_order_counts"]
     linked_byte = pipeline["linked_byte_counts"]
-    object_byte = pipeline["authored_object_byte_counts"]
     phase = str(pipeline.get("phase") or "")
     primary_blocker = _primary_blocker(pipeline)
-    authored_lane = pipeline.get("authored_byte_lane", {})
-    object_lane = pipeline.get("authored_object_byte_lane", {})
+    current_blocker = str(pipeline.get("blocker") or "—")
     rows = [
         (
             "authored-function-order",
@@ -247,17 +245,14 @@ def build_pipeline_section(document: ProgressDocument) -> str:
             _stage_state(phase, "authored-call-contract", call_contract),
             _count_text(call_contract),
             str(pipeline.get("authored_call_contract_cursor") or "—"),
-            str(
-                pipeline.get("authored_call_contract_lane", {}).get("blocked_reason")
-                or "—"
-            ),
+            current_blocker if phase == "authored-call-contract" else "—",
         ),
         (
             "authored-byte-match",
-            "complete" if not authored_byte.get("remaining") else str(authored_lane.get("state") or "waiting"),
+            _stage_state(phase, "authored-byte-match", authored_byte),
             _count_text(authored_byte),
             str(pipeline.get("authored_byte_match_frontier") or "—"),
-            str(authored_lane.get("blocked_reason") or "—"),
+            current_blocker if phase == "authored-byte-match" else "—",
         ),
         (
             "full-function-order",
@@ -279,13 +274,6 @@ def build_pipeline_section(document: ProgressDocument) -> str:
             "typed whole image",
             "—",
             "—",
-        ),
-        (
-            "authored object-byte preparation (subordinate)",
-            str(object_lane.get("state") or "waiting"),
-            _count_text(object_byte, total_key="eligible"),
-            str(object_lane.get("cursor") or "caught up"),
-            str(object_lane.get("blocked_reason") or "—"),
         ),
     ]
     rendered = [

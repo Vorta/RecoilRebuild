@@ -1313,7 +1313,7 @@ def build_migration_template(
             reason = "header-translation-unit-review-required"
             artifact_id = item.legacy_artifact_id
         else:
-            reason = "parent-review-required"
+            reason = "direct-review-required"
             artifact_id = item.legacy_artifact_id
         anchor_id = None
         if auto_resolved:
@@ -1377,7 +1377,7 @@ def build_migration_template(
                 "classification": (
                     "auto-resolved-unique-attached-direct"
                     if auto_resolved
-                    else "parent-review-required"
+                    else "direct-review-required"
                 ),
             }
         )
@@ -1424,7 +1424,7 @@ def build_migration_template(
         ),
         "debts": debts,
         "instructions": (
-            "Every row requires parent review. Set reviewed=true; choose resolved, "
+            "Every row requires direct review. Set reviewed=true; choose resolved, "
             "unresolved, or not-applicable; select canonical relation independently "
             "from expected_relation; and select exactly one record_tracker_state=true "
             "row per existing artifact. Occurrence-only duplicates remove legacy "
@@ -1718,7 +1718,7 @@ def build_tracker_replace_payload(
     )
     payload: dict[str, Any] = {
         "operation": "replace-batch",
-        "parent_reviewed": True,
+        "reviewed": True,
         "updates": [decisions[key] for key in sorted(decisions)],
     }
     if claims:
@@ -1741,13 +1741,13 @@ def review_conservative_template(
     *,
     current_template: Mapping[str, Any],
     canonical_artifact_ids: set[str],
-    parent_reviewed: bool,
+    reviewed: bool,
 ) -> dict[str, Any]:
     """Apply the parent-approved conservative decision policy to an exact template."""
 
-    if parent_reviewed is not True:
+    if reviewed is not True:
         raise SourceTraceMigrationError(
-            "conservative review output requires explicit parent_reviewed=true"
+            "conservative review output requires explicit reviewed=true"
         )
     if template.get("kind") != "source-trace-migration-template":
         raise SourceTraceMigrationError("input is not a source-trace migration template")
@@ -1945,7 +1945,7 @@ def review_conservative_template(
         "kind": "source-trace-conservative-review",
         "topology_only": True,
         "acceptance_effect": "none",
-        "parent_reviewed": True,
+        "reviewed": True,
         "inventory": reviewed_inventory,
         "unresolved_legacy_claims": deepcopy(
             list(template.get("unresolved_legacy_claims", []))
@@ -2034,7 +2034,7 @@ def build_parser() -> argparse.ArgumentParser:
     review.add_argument("--repo-root", type=Path, default=Path("."))
     review.add_argument("--progress", type=Path, required=True)
     review.add_argument("--output", type=Path, required=True)
-    review.add_argument("--parent-reviewed", action="store_true", required=True)
+    review.add_argument("--reviewed", action="store_true", required=True)
     review.add_argument("--json", action="store_true")
     return parser
 
@@ -2159,7 +2159,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             template,
             current_template=current,
             canonical_artifact_ids=canonical_ids,
-            parent_reviewed=bool(args.parent_reviewed),
+            reviewed=bool(args.reviewed),
         )
         write_review_report(args.output, report)
         return {**report, "output": args.output.as_posix()}

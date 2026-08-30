@@ -5,20 +5,19 @@ one source comment. The current already-open Binary Ninja database is a
 maintained analysis artifact and is authoritative for binary behavior, ABI,
 layouts, globals, imports, tables, xrefs, function boundaries/order, and
 assembly; BN function names and comments are provisional navigation labels. New
-active-scope evidence may be corrected only by a parent-assigned bounded
-`recoil_bn_reconstructor`; tool/docs maintenance is BN-read-only, and the
-reconstructor may not load/switch/patch or decide owner/block/order/provider/tier
-acceptance. `.agent/RECONSTRUCTION_PROGRESS.sqlite3` is the
+active-scope evidence may be corrected only when the current task authorizes a
+bounded `recoil-binary-ninja-reconstruction` procedure; tool/docs maintenance
+is BN-read-only, and a BN edit may not load/switch/patch or decide owner/block/
+order/provider/tier acceptance. `.agent/RECONSTRUCTION_PROGRESS.sqlite3` is the
 only reconstruction-progress authority and must be accessed through `python
 tools/recoil.py progress ...`.
 
 ## Current Authorities
 
 - [`retail_executable_reproduction.md`](retail_executable_reproduction.md) -
-  canonical six-stage pipeline (`authored-function-order`, then
-  `authored-call-contract`, then `full-function-order`) plus the independent
-  retail-monotonic `authored-byte-match` lane; `linked-byte-match` waits for
-  full order and authored bytes and is followed by `final-validation`. It
+  canonical serial six-stage pipeline: `authored-function-order`,
+  `authored-call-contract`, `authored-byte-match`, `full-function-order`,
+  `linked-byte-match`, and `final-validation`. It
   defines row classifications, sole
   `progress next` scheduling, exact
   typed retail semantic goal, evidence gates, and debt-free closeout contract.
@@ -35,10 +34,6 @@ tools/recoil.py progress ...`.
 - [`final_executable_repro.md`](final_executable_repro.md) - Phase-6 VC5SP3
   Recoil.exe mechanics; linked-data and companion-DLL paths are diagnostics or
   independent validation, never peer schedulers.
-- [`final_executable_repro_history.md`](final_executable_repro_history.md) -
-  archived dated final-data experiments, rejected hypotheses, numeric
-  observations, and provenance; use the live runbook and audit output for current
-  state.
 - `inlined_helpers.md` - compact ledger for likely original helpers and methods
   that were fully inlined by the retail compiler, with caller evidence and
   verification limits.
@@ -49,8 +44,6 @@ tools/recoil.py progress ...`.
 - `source_naming_conventions.md` - canonical evidence-ranked source naming,
   C/CZ class-prefix defaults, GameZ module/file morphology, and the bounded
   alphabetical placement heuristic.
-- `owner_led_workflow.md` - unified-tracker owner operations, entry-tier
-  acceptance, and derived-owner gate routing.
 - `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3, MFC42,
   legacy DirectX, imports, and runtime verification.
 - `recoil_app_destructor_tier_s.md` - RecoilApp constructor/destructor EH and
@@ -78,6 +71,18 @@ tools/recoil.py progress ...`.
 - `zsnd_snapshot_verification.md` - zSound snapshot verification notes,
   including current `StopAllIfPlaying` and snapshot cluster byte-diff limits.
 
+## Historical Process Records
+
+These files preserve dated evidence and migration rationale. They are not
+current operating guidance, command surfaces, schedulers, or acceptance rules:
+
+- [`final_executable_repro_history.md`](final_executable_repro_history.md) -
+  archived final-data experiments, rejected hypotheses, numeric observations,
+  and provenance; superseded by `final_executable_repro.md`.
+- [`cryptographic_content_verification_removal.md`](cryptographic_content_verification_removal.md) -
+  record of the retired content-hash/currentness design; superseded by
+  `retail_executable_reproduction.md`.
+
 ## Documentation Policy
 
 Use this directory for durable facts that save future reconstruction time across
@@ -85,7 +90,7 @@ source files, subsystems, providers, or verification targets. Prefer source
 comments for facts local to one function, class, layout, or call site.
 
 When finishing reimplemented code, class/source-cluster work, or verification
-evidence, make a documentation decision before handoff: add a compact durable
+evidence, make a documentation decision before finishing: add a compact durable
 note here, add a local source comment, or state that no durable new
 documentation was needed. Document facts that prevent rediscovery, not routine
 progress.
@@ -100,7 +105,7 @@ progress notes or duplicated live tracker state.
 ## Agent Use
 
 - With no explicit assignment, run `python tools/recoil.py progress next` before
-  consulting any owner, block, semantic, work, final, or companion-binary view.
+  consulting any owner, block, semantic, final, or companion-binary view.
   Expand only that selected cursor into its physical block, semantic span, and
   complete source-shaped owner. For implementation placement, inspect the joined
   `progress show` view and `source_file_layout_audit.md`, then
@@ -140,7 +145,7 @@ progress notes or duplicated live tracker state.
   and a hand-written common tail can preserve behavior while breaking byte
   identity. Passing smokes, byte checks, or ABI call-shape checks are evidence
   candidates, not source-shape proof.
-- For new agent handoff, start with `agent_launch_checklist.md`, then use
+- For a new work session, start with `agent_launch_checklist.md`, then use
   `AGENTS.md` for the full workflow rules.
 - For owner/data promotion, use `progress show`, `progress find`, and
   `progress audit`; do not treat one
@@ -162,5 +167,7 @@ progress notes or duplicated live tracker state.
 - Before duplicating a small repeated decompiled body across callers, check
   `inlined_helpers.md` and consider restoring a likely original inline helper or
   method with caller-based verification evidence.
-- For temporary dependency closures, use a structured tracker work item; move
-  durable facts here only when they save future reconstruction time.
+- Keep temporary dependency closure work inside the task and source closure
+  returned by `progress next`. If required evidence or edits cross that scope,
+  stop with the exact contradiction; move durable facts here only when they
+  save future reconstruction time.

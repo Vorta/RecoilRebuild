@@ -32,18 +32,13 @@ from _recoil.commands.relocation_expectations import (  # noqa: E402
     normalize_reviewed_exception,
 )
 from _recoil.lib.pe import parse_pe_headers  # noqa: E402
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
 
 
 REFERENCE: Path
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
+    return REPO_ROOT / "support" / "Recoil.exe"
 
 
 class FakeDocument:
@@ -75,7 +70,6 @@ class CollectionDocument:
 
     def collection(self, name: str) -> dict[str, object]:
         return self.collections.get(name, {})
-
 
 def row(address: str, end_exclusive: str, symbol_id: str) -> dict[str, object]:
     value: dict[str, object] = {
@@ -1047,7 +1041,7 @@ class RelocationExpectationTests(unittest.TestCase):
         document = FakeDocument({symbol_id: current})
         binding = target_binding("??0CAboutDlg@@QAE@I@Z")
         args = SimpleNamespace(
-            lane="authored",
+            mode="authored",
             at="0x401000",
             progress=Path("progress.json"),
             build_root=Path("build/live-validation/authored/unit"),

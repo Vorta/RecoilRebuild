@@ -20,13 +20,13 @@ If the class model does not fit, model the proven `struct`/record, provider
 boundary, callback/data system, namespace/source-file owner, global-data set, or
 subsystem. Use table layout only as ABI evidence.
 
-For source-owner scheduling and tier `S`, distinguish the primary
-source-shaped owner from auxiliary data packets. Primary owners are original
+For source-owner selection and tier `S`, distinguish the primary
+source-shaped owner from auxiliary data groups. Primary owners are original
 source constructs: classes/interfaces, source-file clusters, subsystems,
 authored callback/record/table/global objects/static class-member groups,
 provider boundaries, or true standalone leaves. Global/literal/constant
-groupings are auxiliary data packets unless evidence proves the original source
-had that exact authored data construct. Link ordinary packets upward to the
+groupings are auxiliary data groups unless evidence proves the original source
+had that exact authored data construct. Link ordinary groups upward to the
 primary owner and use their byte evidence as data dependency readiness, not as
 parent/source-owner tier `S` completion.
 
@@ -48,7 +48,7 @@ classification and real provider headers. Incomplete evidence blocks source;
 improve BN instead of adding production scaffolds.
 
 Temporary ABI/source-shape scaffolds are scratch only, outside production source
-and durable evidence. Remove them before handoff. Never cite them for owner
+and durable evidence. Remove them before finishing. Never cite them for owner
 gate/tier acceptance or use them for `Model: source-faithful`.
 
 ## Class-Promotion Gate
@@ -64,8 +64,9 @@ reset, classify ownership from current BN evidence:
 - identify slot order, target functions, calling conventions, and cleanup shape
 - classify as compiler C++, COM/provider, MFC/runtime metadata, data callbacks,
   or unresolved
-- create or update a structured tracker work item before multi-function
-  class/table/layout/provider/source-file edits
+- require every affected construct to fit the current `progress next` task and
+  source closure before multi-function class/table/layout/provider/source-file
+  edits; otherwise stop with the exact scope contradiction
 
 Do not mark `Source dependencies satisfied` until every table dispatch used by
 the caller has classified ownership. Do not set a `Reimplemented` tier, `Source

@@ -31,8 +31,12 @@ from _recoil.commands.relocation_expectations import (  # noqa: E402
     normalize_reviewed_exception,
     reviewed_exception_staleness,
 )
-from _recoil.lib.progress import ProgressDocument, empty_progress_document  # noqa: E402
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
+from _recoil.lib.progress import (  # noqa: E402
+    ProgressDocument,
+    ProgressStore,
+    empty_progress_document,
+)
+from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
 
 
 REFERENCE: Path
@@ -57,12 +61,20 @@ MISSING_OWNER_EVIDENCE = "recoil:evidence:r725:000465"
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
+    return REPO_ROOT / "support" / "Recoil.exe"
 
+
+def write_progress(path: Path, data: dict[str, object]) -> None:
+    ProgressSQLiteStore.create_from_mapping(
+        path,
+        data,
+        cutover_pair_id="relocation-expectation-test",
+        overwrite=path.exists(),
+    )
+
+
+def read_progress(path: Path) -> dict[str, object]:
+    return ProgressStore(path).load().data
 
 def target_binding(symbol: str, *, name: str) -> SimpleNamespace:
     return SimpleNamespace(
@@ -319,14 +331,14 @@ class RelocationExpectationMutationTests(unittest.TestCase):
         REFERENCE = canonical_retail_reference()
 
     def write_fixture(self, root: Path, *, revision: int = 7) -> Path:
-        path = root / "progress.json"
-        path.write_text(json.dumps(fixture_data(revision=revision), indent=2), encoding="utf-8")
+        path = root / "progress.sqlite3"
+        write_progress(path, fixture_data(revision=revision))
         return path
 
     def test_dry_run_validates_without_mutating_tracker(self) -> None:
         with TemporaryDirectory() as temp:
             progress = self.write_fixture(Path(temp))
-            before = progress.read_text(encoding="utf-8")
+            before = progress.read_bytes()
             report = set_reviewed_exception(
                 progress=progress,
                 reference=REFERENCE,
@@ -341,7 +353,7 @@ class RelocationExpectationMutationTests(unittest.TestCase):
             self.assertFalse(report["commit"]["applied"])
             self.assertEqual(7, report["commit"]["previous_revision"])
             self.assertEqual(8, report["commit"]["revision"])
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
 
     def test_rel32_raw_coff_addend_is_exact_symbol_relative_addend(self) -> None:
         for target_address, target_addend in (("0x4c5b64", 0), ("0x4c5b60", 4)):
@@ -418,7 +430,7 @@ class RelocationExpectationMutationTests(unittest.TestCase):
                 bindings=bindings(),
             )
             self.assertTrue(report["commit"]["applied"])
-            stored = json.loads(progress.read_text(encoding="utf-8"))
+            stored = read_progress(progress)
             self.assertEqual(8, stored["revision"])
             rows = stored["symbols"][SOURCE_ID]["relocation_expectation_exceptions"]
             self.assertEqual(1, len(rows))
@@ -545,7 +557,7 @@ class RelocationExpectationMutationTests(unittest.TestCase):
                     apply=True,
                     bindings=bindings(),
                 )
-            stored = json.loads(progress.read_text(encoding="utf-8"))
+            stored = read_progress(progress)
             self.assertEqual(8, stored["revision"])
 
     def test_physical_target_mode_derives_pair_context_without_candidate_ordinal(
@@ -765,12 +777,9 @@ class RelocationExpectationMutationTests(unittest.TestCase):
         self,
     ) -> None:
         with TemporaryDirectory() as temp:
-            progress = Path(temp) / "progress.json"
-            progress.write_text(
-                json.dumps(missing_data_fixture_data(), indent=2),
-                encoding="utf-8",
-            )
-            before = progress.read_text(encoding="utf-8")
+            progress = Path(temp) / "progress.sqlite3"
+            write_progress(progress, missing_data_fixture_data())
+            before = progress.read_bytes()
             report = set_reviewed_exception(
                 progress=progress,
                 reference=REFERENCE,
@@ -785,7 +794,7 @@ class RelocationExpectationMutationTests(unittest.TestCase):
 
             self.assertFalse(report["commit"]["applied"])
             self.assertTrue(report["target_created"])
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
             self.assertEqual(
                 "00010038",
                 report["exception"]["physical_target_binding"][
@@ -814,8 +823,8 @@ class RelocationExpectationMutationTests(unittest.TestCase):
             initial["owners"][MISSING_OWNER_ID]["reimplementation"]
         )
         with TemporaryDirectory() as temp:
-            progress = Path(temp) / "progress.json"
-            progress.write_text(json.dumps(initial, indent=2), encoding="utf-8")
+            progress = Path(temp) / "progress.sqlite3"
+            write_progress(progress, initial)
             report = set_reviewed_exception(
                 progress=progress,
                 reference=REFERENCE,
@@ -828,7 +837,7 @@ class RelocationExpectationMutationTests(unittest.TestCase):
                 bindings=missing_data_bindings(),
             )
             self.assertTrue(report["commit"]["applied"])
-            stored = json.loads(progress.read_text(encoding="utf-8"))
+            stored = read_progress(progress)
             target_id = "recoil:data:0x4cc838"
             target = stored["symbols"][target_id]
             self.assertEqual("0x4cc83c", target["end_exclusive"])
@@ -958,11 +967,8 @@ class RelocationExpectationMutationTests(unittest.TestCase):
                 if mutate is not None:
                     mutate(data)
                 with TemporaryDirectory() as temp:
-                    progress = Path(temp) / "progress.json"
-                    progress.write_text(
-                        json.dumps(data, indent=2),
-                        encoding="utf-8",
-                    )
+                    progress = Path(temp) / "progress.sqlite3"
+                    write_progress(progress, data)
                     with self.assertRaisesRegex(
                         (RelocationExpectationError, RelocationExceptionMutationError),
                         message,
@@ -982,8 +988,8 @@ class RelocationExpectationMutationTests(unittest.TestCase):
     def test_created_target_owner_and_relationship_drift_are_stale(self) -> None:
         initial = missing_data_fixture_data()
         with TemporaryDirectory() as temp:
-            progress = Path(temp) / "progress.json"
-            progress.write_text(json.dumps(initial, indent=2), encoding="utf-8")
+            progress = Path(temp) / "progress.sqlite3"
+            write_progress(progress, initial)
             set_reviewed_exception(
                 progress=progress,
                 reference=REFERENCE,
@@ -995,7 +1001,7 @@ class RelocationExpectationMutationTests(unittest.TestCase):
                 apply=True,
                 bindings=missing_data_bindings(),
             )
-            stored = json.loads(progress.read_text(encoding="utf-8"))
+            stored = read_progress(progress)
         exception = stored["symbols"][MISSING_SOURCE_ID][
             "relocation_expectation_exceptions"
         ][0]

@@ -12,7 +12,6 @@ if __package__ in {None, ""}:
 import argparse
 from collections import Counter
 from dataclasses import dataclass
-import json
 import os
 import re
 import stat
@@ -39,8 +38,6 @@ DURABLE_REFERENCE_FILES = (
     ".agent/RAW_ASSEMBLY_ALLOWLIST.txt",
     ".agent/RAW_ADDRESS_ALLOWLIST.txt",
 )
-
-LEGACY_PROGRESS_PATH = Path(".agent/RECONSTRUCTION_PROGRESS.json")
 
 DEVSPACE_REFERENCE_RE = re.compile(
     r"\.devspace[\\/](?:runs|context-bundles?|chatgpt-history|state|chrome-profiles?)"
@@ -232,21 +229,11 @@ def _iter_durable_reference_files(root: Path):
         if path.is_file() and path.resolve() not in seen:
             seen.add(path.resolve())
             yield path
-    legacy_progress = root / LEGACY_PROGRESS_PATH
-    if legacy_progress.is_file() and legacy_progress.resolve() not in seen:
-        # Explicit legacy JSON inputs remain readable for migration fixtures.
-        # The canonical SQLite authority is traversed semantically below.
-        yield legacy_progress
-
-
 def progress_tracker_path(root: Path) -> Path:
-    """Resolve the canonical tracker, with legacy JSON only as a fixture fallback."""
+    """Resolve the canonical SQLite tracker."""
 
     relative = DEFAULT_PROGRESS_PATH.relative_to(REPO_ROOT)
-    sqlite_path = root / relative
-    if sqlite_path.is_file():
-        return sqlite_path
-    return root / LEGACY_PROGRESS_PATH
+    return root / relative
 
 
 def load_progress_tracker_data(root: Path) -> dict[str, Any] | None:
@@ -255,16 +242,10 @@ def load_progress_tracker_data(root: Path) -> dict[str, Any] | None:
     tracker_path = progress_tracker_path(root)
     if not tracker_path.is_file():
         return None
-    if tracker_path.suffix.lower() == ".json":
-        try:
-            data = json.loads(tracker_path.read_text(encoding="utf-8"))
-        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-            return None
-    else:
-        try:
-            data = ProgressDocument.load(tracker_path).data
-        except (OSError, ValueError, ProgressError):
-            return None
+    try:
+        data = ProgressDocument.load(tracker_path).data
+    except (OSError, ValueError, ProgressError):
+        return None
     return data if isinstance(data, dict) else None
 
 
@@ -491,7 +472,7 @@ def collect_session_artifacts(root: Path, *, now: float | None = None) -> tuple[
             directory_size(target),
             artifact_age_days(target, current_time),
             True,
-            "parent-owned per-session scratch",
+            "per-session scratch",
             _direct_entry_count(target),
         )
     ], []
@@ -866,7 +847,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--session-only",
         action="store_true",
-        help="Audit only parent-owned repository .devspace session scratch, regardless of age.",
+        help="Audit only repository .devspace session scratch, regardless of age.",
     )
     parser.add_argument(
         "--delete",

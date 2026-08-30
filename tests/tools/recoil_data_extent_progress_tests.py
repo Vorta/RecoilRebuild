@@ -33,6 +33,10 @@ from _recoil.commands.data_logical_alias_progress import (  # noqa: E402
     normalize_register_payload as normalize_alias_payload,
     plan_logical_data_alias_batch,
 )
+from _recoil.lib.progress_sqlite import (  # noqa: E402
+    ProgressSQLiteStore,
+    SEMANTIC_SCHEMA_VERSION,
+)
 
 
 FIRST_EVIDENCE = "recoil:evidence:r7:000001"
@@ -42,7 +46,7 @@ ARTIFACT_ID = "recoil:data:0x4e1348"
 
 def tracker(revision=7):
     return {
-        "schema_version": 5,
+        "schema_version": SEMANTIC_SCHEMA_VERSION,
         "revision": revision,
         "id_sequences": {},
         "migration": {},
@@ -101,7 +105,6 @@ def tracker(revision=7):
                 "kind": "vc5",
             }
         },
-        "work_items": {},
         "blockers": {},
         "evidence": {
             FIRST_EVIDENCE: {
@@ -117,10 +120,22 @@ def tracker(revision=7):
     }
 
 
+def write_tracker(path: Path, data: dict) -> None:
+    ProgressSQLiteStore.create_from_mapping(
+        path,
+        data,
+        cutover_pair_id="data-progress-test",
+    )
+
+
+def read_tracker(path: Path) -> dict:
+    return ProgressSQLiteStore(path, read_only=True).materialize()
+
+
 def payload():
     return {
         "operation": "register-existing-data-extent",
-        "parent_reviewed": True,
+        "reviewed": True,
         "artifact_id": ARTIFACT_ID,
         "expected_current": {
             "extent_state": "unknown",
@@ -138,7 +153,7 @@ def payload():
 def artifact_payload():
     return {
         "operation": "register-exact-data-artifact",
-        "parent_reviewed": True,
+        "reviewed": True,
         "artifact_id": "recoil:data:0x4e1320",
         "artifact": {
             "address": "0x4e1320",
@@ -220,7 +235,7 @@ def provider_tracker():
 def alias_payload():
     return {
         "operation": "register-logical-data-alias-batch",
-        "parent_reviewed": True,
+        "reviewed": True,
         "physical_artifact_id": "recoil:data:0x4e1340",
         "expected_physical": {
             "disposition": "provider",
@@ -291,8 +306,8 @@ class DataExtentProgressTests(unittest.TestCase):
 
     def test_dry_run_and_apply_use_revision_cas(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            path = Path(temp_dir) / "progress.json"
-            path.write_text(json.dumps(tracker()), encoding="utf-8")
+            path = Path(temp_dir) / "progress.sqlite3"
+            write_tracker(path, tracker())
 
             dry_run = mutate_data_extent(
                 path,
@@ -304,7 +319,7 @@ class DataExtentProgressTests(unittest.TestCase):
             self.assertFalse(dry_run["acceptance_changed"])
             self.assertFalse(dry_run["artifact_created"])
             self.assertFalse(dry_run["source_edges_changed"])
-            self.assertEqual("unknown", json.loads(path.read_text())["symbols"][ARTIFACT_ID]["extent_state"])
+            self.assertEqual("unknown", read_tracker(path)["symbols"][ARTIFACT_ID]["extent_state"])
 
             applied = mutate_data_extent(
                 path,
@@ -313,7 +328,7 @@ class DataExtentProgressTests(unittest.TestCase):
                 apply=True,
             )
             self.assertTrue(applied["applied"])
-            saved = json.loads(path.read_text(encoding="utf-8"))
+            saved = read_tracker(path)
             self.assertEqual(8, saved["revision"])
             self.assertEqual("known", saved["symbols"][ARTIFACT_ID]["extent_state"])
 
@@ -396,11 +411,11 @@ class DataExtentProgressTests(unittest.TestCase):
             ):
                 normalize_register_payload(invalid)
 
-    def test_payload_is_fail_closed_and_parent_reviewed(self):
+    def test_payload_is_fail_closed_and_reviewed(self):
         invalid = payload()
-        invalid["parent_reviewed"] = False
+        invalid["reviewed"] = False
         with self.assertRaisesRegex(
-            DataExtentProgressError, "parent_reviewed=true"
+            DataExtentProgressError, "reviewed=true"
         ):
             normalize_register_payload(invalid)
 
@@ -451,8 +466,8 @@ class DataArtifactProgressTests(unittest.TestCase):
 
     def test_dry_run_creates_no_tracker_state(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            path = Path(temp_dir) / "progress.json"
-            path.write_text(json.dumps(tracker()), encoding="utf-8")
+            path = Path(temp_dir) / "progress.sqlite3"
+            write_tracker(path, tracker())
 
             result = mutate_data_artifact(
                 path,
@@ -468,7 +483,7 @@ class DataArtifactProgressTests(unittest.TestCase):
             self.assertEqual(0, result["storage_contributions_created"])
             self.assertNotIn(
                 "recoil:data:0x4e1320",
-                json.loads(path.read_text(encoding="utf-8"))["symbols"],
+                read_tracker(path)["symbols"],
             )
 
     def test_rejects_existing_identity_or_address_collision(self):
@@ -540,11 +555,11 @@ class DataArtifactProgressTests(unittest.TestCase):
                 expected_revision=7,
             )
 
-    def test_artifact_payload_is_exact_parent_reviewed_and_physical(self):
+    def test_artifact_payload_is_exact_reviewed_and_physical(self):
         invalid = artifact_payload()
-        invalid["parent_reviewed"] = False
+        invalid["reviewed"] = False
         with self.assertRaisesRegex(
-            DataArtifactProgressError, "parent_reviewed=true"
+            DataArtifactProgressError, "reviewed=true"
         ):
             normalize_artifact_payload(invalid)
 
@@ -625,8 +640,8 @@ class DataArtifactProgressTests(unittest.TestCase):
     def test_atomic_evidence_apply_references_allocated_id_from_artifact(self):
         current = tracker()
         with tempfile.TemporaryDirectory() as temp_dir:
-            path = Path(temp_dir) / "progress.json"
-            path.write_text(json.dumps(current), encoding="utf-8")
+            path = Path(temp_dir) / "progress.sqlite3"
+            write_tracker(path, current)
 
             result = mutate_data_artifact(
                 path,
@@ -634,7 +649,7 @@ class DataArtifactProgressTests(unittest.TestCase):
                 expected_revision=7,
                 apply=True,
             )
-            updated = json.loads(path.read_text(encoding="utf-8"))
+            updated = read_tracker(path)
 
         evidence_id = result["registered_evidence"]["id"]
         self.assertTrue(result["applied"])
@@ -719,7 +734,7 @@ class DataArtifactEvidenceRepairTests(unittest.TestCase):
             "operation": (
                 "repair-reviewed-data-artifact-observation-schema"
             ),
-            "parent_reviewed": True,
+            "reviewed": True,
             "artifact_id": "recoil:data:0x41b898",
             "evidence_id": "recoil:evidence:r7:000003",
             "expected_invalid": {
@@ -778,10 +793,8 @@ class DataArtifactEvidenceRepairTests(unittest.TestCase):
 
     def test_apply_is_revision_guarded_and_reports_no_acceptance(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            path = Path(temp_dir) / "progress.json"
-            path.write_text(
-                json.dumps(self.repair_tracker()), encoding="utf-8"
-            )
+            path = Path(temp_dir) / "progress.sqlite3"
+            write_tracker(path, self.repair_tracker())
 
             result = mutate_data_artifact_evidence_repair(
                 path,
@@ -789,7 +802,7 @@ class DataArtifactEvidenceRepairTests(unittest.TestCase):
                 expected_revision=7,
                 apply=True,
             )
-            updated = json.loads(path.read_text(encoding="utf-8"))
+            updated = read_tracker(path)
 
         self.assertTrue(result["applied"])
         self.assertFalse(result["acceptance_changed"])
@@ -869,8 +882,8 @@ class DataLogicalAliasProgressTests(unittest.TestCase):
 
     def test_dry_run_creates_no_alias_state(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            path = Path(temp_dir) / "progress.json"
-            path.write_text(json.dumps(provider_tracker()), encoding="utf-8")
+            path = Path(temp_dir) / "progress.sqlite3"
+            write_tracker(path, provider_tracker())
 
             result = mutate_logical_data_alias_batch(
                 path,
@@ -883,7 +896,7 @@ class DataLogicalAliasProgressTests(unittest.TestCase):
             self.assertFalse(result["acceptance_changed"])
             self.assertEqual(0, result["physical_artifacts_created"])
             self.assertEqual(0, result["physical_source_edges_created"])
-            saved = json.loads(path.read_text(encoding="utf-8"))
+            saved = read_tracker(path)
             self.assertNotIn(
                 "logical_aliases",
                 saved["symbols"]["recoil:data:0x4e1340"],

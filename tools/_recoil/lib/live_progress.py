@@ -11,7 +11,7 @@ import time
 from typing import Any, Callable, Iterator, Mapping
 
 
-TRACKER_SCHEMA_VERSION = 5
+TRACKER_SCHEMA_VERSION = 6
 ISSUE_LEDGER_VERSION = 2
 
 REVISION_ENTITY_RE = re.compile(
@@ -218,8 +218,10 @@ class RevisionStore:
 
 
 def validate_tracker_v5(data: Mapping[str, Any]) -> None:
+    """Validate the current tracker (the historical function name is API-only)."""
+
     if data.get("schema_version") != TRACKER_SCHEMA_VERSION:
-        raise LiveProgressError("tracker schema_version must be 5")
+        raise LiveProgressError("tracker schema_version must be 6")
     evidence = data.get("evidence")
     if not isinstance(evidence, Mapping):
         raise LiveProgressError("tracker evidence must be an object")
@@ -238,13 +240,15 @@ def validate_tracker_v5(data: Mapping[str, Any]) -> None:
 def validate_issue_ledger_v2(data: Mapping[str, Any]) -> None:
     if data.get("version") != ISSUE_LEDGER_VERSION:
         raise LiveProgressError("workspace issue ledger version must be 2")
-    for field in ("issues", "work_packets", "reservations"):
-        if not isinstance(data.get(field), list):
-            raise LiveProgressError(f"workspace issue ledger {field} must be a list")
-    for packet in data.get("work_packets", []):
-        if not isinstance(packet, Mapping):
-            raise LiveProgressError("workspace issue work packet must be an object")
-        if packet.get("semantic_contract_version") != 1:
-            raise LiveProgressError(
-                f"workspace issue packet {packet.get('id')!r} lacks semantic contract version 1"
-            )
+    if not isinstance(data.get("issues"), list):
+        raise LiveProgressError("workspace issue ledger issues must be a list")
+    if not isinstance(data.get("id_sequences"), Mapping):
+        raise LiveProgressError("workspace issue ledger id_sequences must be an object")
+    unexpected = set(data) - {
+        "version", "revision", "id_sequences", "issues"
+    }
+    if unexpected:
+        raise LiveProgressError(
+            "workspace issue ledger contains retired allocation fields: "
+            + ", ".join(sorted(unexpected))
+        )

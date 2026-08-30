@@ -21,8 +21,8 @@ The bridge supports target-qualified requests, so agents should pass
 
 ## Unified Progress State
 
-Companion owners, symbols, verification targets, work items, blockers, and
-semantic observations are binary-qualified entities in
+Companion owners, symbols, verification targets, and recorded reconstruction
+facts are stored as binary-qualified records in
 `.agent/RECONSTRUCTION_PROGRESS.sqlite3`. Inspect them with joined selectors:
 
 ```powershell
@@ -32,10 +32,10 @@ python tools/recoil.py progress owner relationships messages:0x10001010
 python tools/recoil.py progress audit --scope all --strict
 ```
 
-Companion work items remain structured, binary-qualified state in the same
-tracker. They never create a second no-target scheduler: ordinary `messages.dll`
-work remains deferred unless explicitly requested or required by the active
-Recoil.exe cursor.
+These binary-qualified records do not create another no-target scheduler.
+Ordinary `messages.dll` reconstruction remains deferred unless it is explicitly
+requested or required by the single current Recoil.exe task returned by
+`python tools/recoil.py progress next --json`.
 
 ## Current Source Shape
 

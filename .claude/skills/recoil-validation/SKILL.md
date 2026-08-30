@@ -1,6 +1,6 @@
 ---
 name: recoil-validation
-description: Validate work in the RecoilRebuild workspace. Use when you need to choose or run checks after reconstruction/source/docs/tool/progress-tracker changes, diagnose native build/test failures, run Recoil doctor/progress/function-order/byte/final-image verification, owner audits, source guards, CTest/native smoke, or PE reference checks.
+description: Select and run proportionate Recoil checks after source, tracker, documentation, tool, build, or final-image changes and diagnose the first real failure.
 ---
 
 # Recoil Validation (Claude surface)

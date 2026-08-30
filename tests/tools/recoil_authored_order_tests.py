@@ -19,8 +19,6 @@ from _recoil.commands.authored_order import (  # noqa: E402
 )
 from _recoil.commands.progress_cli import (  # noqa: E402
     _parse_logical_alias_group_payload,
-    _parse_physical_block_replace_payload,
-    _replace_physical_block,
     _set_symbol_logical_alias_group,
 )
 from _recoil.commands.vc5_verify import load_manifest  # noqa: E402
@@ -31,9 +29,6 @@ from _recoil.lib.progress import (  # noqa: E402
     ProgressDocument,
     empty_progress_document,
     state_record,
-)
-from tests.tools.recoil_live_progress_tests import (  # noqa: E402
-    util_physical_block_replace_fixture,
 )
 
 
@@ -175,25 +170,6 @@ def bind_compile_host(document: ProgressDocument, source: Path) -> ProgressDocum
 
 
 class RecoilAuthoredOrderTests(unittest.TestCase):
-    def test_current_util_split_exposes_only_the_first_physical_slice_to_census(self) -> None:
-        data, raw_payload = util_physical_block_replace_fixture()
-        payload = _parse_physical_block_replace_payload(json.dumps(raw_payload))
-        _replace_physical_block(data, payload)
-
-        result = census(ProgressDocument(data), "0x437e60")
-
-        self.assertEqual("recoil:block:0x437e60", result["block_id"])
-        self.assertEqual("0x437e60", result["start"])
-        self.assertEqual("0x437ef0", result["end_exclusive"])
-        self.assertEqual(
-            ["recoil:function:0x437e60", "recoil:function:0x437ea0"],
-            result["authored_projection"],
-        )
-        self.assertEqual(
-            ["recoil:semantic:0x437e60-0x437ef0"],
-            result["semantic_span_ids"],
-        )
-
     def test_census_excludes_explicit_compiler_generated_lifecycle_role_from_authored_projection(self) -> None:
         document = fixture_document()
         document.data["symbols"]["recoil:function:0x401000"]["authored_order_role"] = (

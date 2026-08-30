@@ -19,8 +19,9 @@
 
 Binary Ninja remains authoritative for function bodies, calls, data, and
 assembly. The unified tracker provides joined physical-block and semantic-span
-context for the cursor selected by `progress next`. Block order, owner views,
-work-item views, and this history never select the next work themselves.
+context for the cursor selected by `progress next`. Read-only block, owner, and
+selector views, together with this history, do not select or replace the next
+task.
 
 ## 2026-07-23 Whole-`src` Naming And Layout Pass
 
@@ -161,7 +162,7 @@ includes, production `.inl` files, and compatibility-only final-build source
 exclusions from the current source tree and final-build manifest. The strict
 counterpart is `python tools/recoil.py guard source-fragments --root src`.
 There is no allowlist. The guard currently reports zero in all five categories,
-and the VC-manifest guard plus live parent order acceptance apply the same
+and the VC-manifest guard plus direct live order acceptance apply the same
 classifier to each target's declared and transitive repo-local production
 closure.
 
@@ -224,7 +225,7 @@ provider/padding labels only.
 Agent-facing source-file block work uses `agent_source_path` for the placement
 file. The tool derives it from `original_source_path`, then
 `provisional_original_path`, then `source_path`, so compatibility `source_path`
-can remain stale or shorthand without sending source workers to the wrong file.
+can remain stale or shorthand without redirecting edits to the wrong file.
 The AINet reference block is literal-backed by
 `D:\Proj\Battlesport\ai_net.cpp`; agents should place that block in
 `src/Battlesport/ai_net.cpp`, not legacy `src/Battlesport/ainet.cpp`. Validate
@@ -254,7 +255,7 @@ late-shelf names `zgame_opt.c`, `zsys_cpu.cpp`, `zui.cpp`, `zutl_zbd.cpp`, or
 `zbd.cpp`. Do not turn those rows into source-path gates without new literals,
 object-map/project evidence, or VC5 natural-order proof.
 
-A 2026-07-03 read-only BN revalidation pass refreshed the current fact packets
+A 2026-07-03 read-only BN revalidation pass refreshed the current evidence sets
 without closing provenance. Representative `zError::ReportOldNoOp` source-path
 xrefs were populated for the literal-backed zClass blocks; those xref lists are
 navigation/evidence aids and are not exhaustive unless a row says so. The same
@@ -597,7 +598,7 @@ The first durable repair is conservative:
   and `0x402be0` no longer have accepted boundary/source/linkage gates or tier
   `B`; their functional evidence remains useful as tier `C` evidence only.
 - `battlesport_gameplay.player_ai_mode2_tuning_globals` keeps its data-byte
-  evidence, but source/linkage ownership is blocked until the data packet is
+  evidence, but source/linkage ownership is blocked until the data group is
   remapped or re-proven against the corrected owner.
 - `legacy.battlesport_gameplay.subsystem_ai` metadata and source body for
   `0x403830` now route through `src/Battlesport/ai_net.cpp`; the broader owner
@@ -700,8 +701,7 @@ and `0x4141bb`; it supports a provisional physical envelope but does not prove
 that all 551 BN functions in that envelope came from one original source file.
 
 The mandatory source-discovery ChatGPT Pro consultation therefore reached the
-following advisory disposition, which the parent accepts only as a routing
-constraint:
+following advisory disposition, retained only as a routing constraint:
 
 - **ALLOW, narrow/provisional:** retain `src/Battlesport/hud.cpp` as the current
   placement host for the opening `[0x404ca0,0x404e80)` primitive layer.
@@ -716,8 +716,8 @@ constraint:
 - **BLOCK physical-block acceptance:** `[0x404ca0,0x415ab0)` remains a
   provisional physical/order envelope pending complete row attribution and
   exact selected-link population/order/seam evidence.
-- **BLOCK source-worker launch:** do not prepare a complete-owner source packet
-  or change owner/block/order/tier/byte acceptance from this consultation.
+- **BLOCK source editing:** do not begin a complete-owner source change or alter
+  owner/block/order/tier/byte acceptance from this consultation.
 
 The subsequent complete read-only BN closure checked every function in
 `[0x404c80,0x404e90)`, all nine late base methods at
@@ -743,11 +743,11 @@ population. It adds these constraints without closing the owner model:
   alone does not prove one original owner, explicit override population, or
   provider/compiler classification.
 
-This closure was a raw, non-recommending BN fact packet, so it used the
+This closure was a raw, non-recommending BN evidence set, so it used the
 source-discovery Pro exemption. It changed no BN state and proves no source
 owner, block, order, role classification, source model, tier, or byte gate.
 
-The completed BN closure satisfies the first requested evidence packet. The
+The completed BN closure satisfies the first requested evidence set. The
 remaining next evidence is an isolated VC5 link-backed artifact named
 `hud_ui_element_complete_owner_source_shape_matrix` comparing the standalone
 `hudui_element.cpp`, standalone `zhud_ui.cpp`, and current
@@ -957,7 +957,7 @@ hypotheses unless a later packet promotes the evidence.
 | `[0x438990,0x43ce80)` | `src/Battlesport/weapon.cpp` provisional physical block | `PickupAirdropSpawnRef::InitNodesFromCarrierNodeName` / `Player::Mines_ZAR_ReadEntryOrReset` | Weapon/combat shelf with 11 semantic subranges. No functions in this block have callers after `0x43ce80`; semantic ownership is retained in the unified tracker's physical-block records. |
 | `[0x43ce80,0x43cf90)` | `src/Battlesport/WinSock.cpp` provisional physical block | `NetUi::VerifyWinsock2OrPromptContinue` / `Net::FormatIpv4Address` | Six recorded subranges: NetUi Winsock prompt helper, padding, `0x43cf20` zStr CRT init-table stub, padding, Net IPv4 formatter, and padding before WOL. No WinSock/NetUi/Net source-path literal was found. |
 | `[0x43cf90,0x43d130)` | WOL dialog head | `WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls` / `WestwoodOnlineUpgradeDialog::AppendStatusTextFmt` | Merge with discontiguous WOL dialog members for owner work. |
-| `[0x43d130,0x43d650)` | WOL API | `WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig` / `WestwoodOnlineUpgradeApi::Init` | Owner gates/tier state need parent scrutiny before acceptance claims. |
+| `[0x43d130,0x43d650)` | WOL API | `WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig` / `WestwoodOnlineUpgradeApi::Init` | Owner gates/tier state need direct scrutiny before acceptance claims. |
 | `[0x43d650,0x43f610)` | WOL dialog continuation | `WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList` / `WestwoodOnlineUpgrade::TruncateStringAtFirstSpace` | `0x43efe0` owns an automatic `WestwoodOnlineUpgradeProgressDialog`; under the main WOL `/Ob0 /GX /Gr` profile VC5 naturally emits its implicit five-byte ordinary destructor at `0x43f440`. The removed authored `Destructor()` scaffold is not a retail identity. |
 | `[0x43f610,0x441600)` | WOL API event sink | `WestwoodOnlineUpgradeApiEventSink::CreateInstance` / `WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult` | Contains MSVC EH jump artifacts at `0x43f682`/`0x43f688`. |
 | `[0x441600,0x441620)` | WOL shared refcount helper | `WestwoodOnlineUpgradeRefCountAndLock::Init` / same | Shared WOL helper, not API-event-sink-only. |
@@ -990,10 +990,10 @@ hypotheses unless a later packet promotes the evidence.
 | `[0x4b3ce0,0x4bd470)` | reusable UI class clusters | `HudUiWidget::ScalarDeletingDestructor` / `HudUiTextStack4::SetYDescending` | High-confidence semantic UI body spanning two exact physical compilands at `0x4bc320`, but not one accepted source owner. The current compile hosts are `zUI/zui_widgets.cpp [0x4b3ce0,0x4bc320)` and `zUI/zui.cpp [0x4bc320,...)`; their names remain provisional even though the seam is proven by natural VC5SP3 order. Contains VC5 STL/vector COMDAT/provider exclusions at `0x4ba470`, `0x4ba4d0`, and `0x4ba510`; `[0x4bcb48,0x4bcb50)` remains exact zero-symbol padding in the second slice. |
 | `[0x4bd470,0x4bf060)` | zTimedTask/HudLineClip/zVideo/HudWeatherFx | `zTimedTask::RemoveFromActiveList` / `zVideoFxPass3Config::Constructor` | Mixed owner islands and zMath helper exceptions. `0x4bd470..0x4bdb60` is a medium-high helper island, not a proven separate draw/clip `.cpp`. `render_video.zvideo_fxpass3_ui_local_config` is split into islands `[0x4bdb60,0x4bdc70)` and `[0x4bed30,0x4bf060)` around HudWeatherFx and must be scheduled as one semantic owner. That non-contiguous placement argues against an accepted contiguous `zvid_fxpass3.cpp` row until VC5 order tests prove one. `0x4bdc70..0x4bed30` is a high-confidence weather-FX class cluster, but `src/GameZRecoil/zWeather/zweather_fx.cpp` remains a semantic filename hypothesis only. |
 | `[0x4bf060,0x4c0d20)` | UI message widgets plus zUtil/zutl_zbd recursive cluster | `HudUiMessageBoxDialog::Constructor` / `zZbdSectionHandlerList::SpliceThreeNodes` | `0x4bf060..0x4bffe0` is a high-confidence reusable UI/dialog/background tail inside the second, `0x4bc320`-based zUI compiland currently hosted by provisional `zUI/zui.cpp`. BN caller-origin examples from earlier UI code (`0x4b463e -> 0x4bf840`, `0x4b95a6 -> 0x4bfc80`, `0x4ba2bd/0x4ba2ef -> 0x4bffb0`) are compatible with that accepted two-TU layout but do not prove the filename. `0x4bffe0..0x4c0d20` remains the zUtil/ZBD cluster. `0x4c06f0` is CRT `tmpfile` provider; sort cascade at `0x4c07d0` is template-expanded in this block. |
-| `[0x4c5a50,0x4c5eb8)` | MFC42 import thunks | `Ordinal_MFC42_5265` / `CFrameWnd::OnActivate` | Provider import packet; no authored body. |
+| `[0x4c5a50,0x4c5eb8)` | MFC42 import thunks | `Ordinal_MFC42_5265` / `CFrameWnd::OnActivate` | Provider import region; no authored body. |
 | `[0x4c5ec0,0x4c637c)` | VC5 CRT/compiler runtime | `MSVC_EH_ArrayDestructor` / `_controlfp` | Includes CRT startup `_start`; provider even though it calls authored `WinMain`. |
 | `[0x4c63f0,0x4c7408)` | DirectInput SDK keyboard provider data | `c_dfDIKeyboard` data | Provider data in `.text`, not authored Recoil data. |
-| `[0x4c7408,0x4c7410)` | linker padding | none | Padding between DirectInput provider data packets. |
+| `[0x4c7408,0x4c7410)` | linker padding | none | Padding between DirectInput provider data regions. |
 | `[0x4c7410,0x4c7498)` | DirectInput SDK mouse provider data | `c_dfDIMouse` data | Provider data in `.text`, not authored Recoil data. |
 | `[0x4c74a0,0x4c7ef8)` | DirectInput SDK joystick provider data | `c_dfDIJoystick` data | Provider data in `.text`, not authored Recoil data. |
 | `[0x4c7f00,0x4c7fd0)` | unresolved late zImage authored island | `zImage_Font::BlitStringToActiveTarget` | Routes semantic work to the zImage font/blit owner. Focused BN found authored code `[0x4c7f00,0x4c7fc1)` plus padding `[0x4c7fc1,0x4c7fd0)`, no `zimg_fonts.h` string, no local `zimg_fonts.cpp` xref, no WinMain caller, and no COMDAT/provider evidence; do not accept the former header-through-WinMain hypothesis without VC5/order proof. |
@@ -1016,7 +1016,7 @@ uses complete owner units.
 
 | Physical range | Internal placement fact | Routing consequence |
 | --- | --- | --- |
-| `Camera.c [0x449ba0,0x44d990)` | Physical first/last is `0x449ba0 zClass_Camera::SetViewDistance` through `0x44d600 zVideo_sw::RenderFrame`. Internal islands include zClass render traversal `[0x44af60,0x44c1b0)` routed to `engine.zclass.render_traversal_dispatch`, and the zVideo software frame orchestration tail `[0x44d600,0x44d990)`. | Do not hand off or verify `0x44d600` as Camera/zClass source. Preserve its physical Camera.c placement while routing semantic work to `render_video.zvideo_sw_frame_orchestration`; no current evidence proves a header/COMDAT explanation for this tail. |
+| `Camera.c [0x449ba0,0x44d990)` | Physical first/last is `0x449ba0 zClass_Camera::SetViewDistance` through `0x44d600 zVideo_sw::RenderFrame`. Internal islands include zClass render traversal `[0x44af60,0x44c1b0)` routed to `engine.zclass.render_traversal_dispatch`, and the zVideo software frame tail `[0x44d600,0x44d990)`. | Do not verify or accept `0x44d600` as Camera/zClass source. Preserve its physical Camera.c placement while routing semantic work to `render_video.zvideo_sw_frame_orchestration`; no current evidence proves a header/COMDAT explanation for this tail. |
 | `cls_util.c [0x4518b0,0x452920)` | Xrefs to the `cls_util.c` literal stop at `zClass_cls_util::CopyNode`, but the physical block continues through `zClass_Node::AssignInt32ToDiRecursive`. Tail islands are BBox helpers `[0x4525d0,0x452770)`, `0x452770` Class.c-style `FindSubNodeByName`, predicate traversal `[0x4527f0,0x452850)`, `0x452860` material flag recursion, and node DI recursive updates `[0x4528a0,0x452920)`. | Treat cls_util as a physical-order block, not one semantic owner. BBox/Class/Object3D/List tail functions need owner-scoped routing before byte/source-path acceptance. |
 | `List.c [0x44e630,0x44f7a0)` | Mostly coherent type-list/node-list operations. `0x44f630 zClass_List::RenderActiveCameras` is physically List.c by neighbor order and comments, has no local file-literal push, calls `zClass_TypeList::GetBucketHead`, then dispatches to `zVideo_sw::RenderFrame` or `zClass_Camera::RenderScene` depending on `g_zVideo_ActiveRendererPath`. | Keep `0x44f630` physically in List.c while routing semantic dependencies to the camera/render pass. Do not reclassify it to Camera solely from callees. |
 | `Window.c [0x44f7a0,0x44fdd0)` | `0x44f870 zClass::RemoveChildChecked` pushes the Window.c source literal directly, then tail-jumps to `zClass_Class::RemoveChildGeneric` on valid parent/child. Its BN comment saying List.c is stale against the literal and physical Window.c block. | Treat as a Window.c-emitted zClass child-removal validation helper unless stronger header/inline evidence appears. Do not schedule it as a Window standalone owner. |
@@ -1048,7 +1048,7 @@ uses complete owner units.
 | `gmod_light.c [0x487a30,0x489d00)` | Active-light list/build/test/set input `[0x487a30,0x488d60)` and light weights/distance/fog/falloff `[0x488d60,0x489d00)` form a comparatively coherent light block. | Earlier fog/render-current accessors currently mapped to gmod_light are physically in gmod_init.c, not this block. |
 | `znet_dplay.cpp [0x489d00,0x48c7d0)` | `0x48bf10 zUtil::CopyDwordRange` is a VC5 STL/compiler-header COMDAT helper selected into this physical block. BN shows a generic `int32_t* __stdcall(srcBegin, srcEnd, dst)` dword-copy body `[0x48bf10,0x48bf3e)`, `retn 0xc`, no data refs/callees, and callers only from vector insertion paths across HUD, zInput, zNetwork, and zSound. Sibling helpers `0x40c190 zUtil::UninitializedFillDwordN` and `0x40c1c0 zUtil::CopySingleDword` match the same VC5 vector helper family. | Do not route `0x48bf10` to authored zUtil or zNetwork source ownership. Treat it as an address-backed provider/compiler-header COMDAT boundary; authored vector-using owners should depend on that provider helper rather than own it. |
 | `znet_dplay.cpp [0x489d00,0x48c7d0)` refined | Internal islands include session runtime `[0x489d00,0x489f30)`, session/service/player list helpers `[0x489f30,0x48a0d0)`, DirectPlay provider/session enumeration/open/status `[0x48a0d0,0x48a980)`, local player/send/receive/pump `[0x48a980,0x48b3a0)`, DirectPlay enum callbacks `[0x48b3a0,0x48b730)`, COM/DirectPlay lifecycle `[0x48b730,0x48b820)`, player-color/record/status `[0x48b820,0x48be10)`, lobby/session helpers `[0x48be10,0x48bf10)`, provider COMDAT `0x48bf10`, dispatch-list helpers `[0x48bf40,0x48c250)`, and error-report tail `[0x48c250,0x48c7d0)`. | Early helpers lack direct local literal xrefs but are bracketed by znet physical order. DirectPlay provider APIs are dependencies; callback and dispatch helpers are authored zNetwork source-owner members, not standalone owners. |
-| `zreader.cpp [0x48c7d0,0x48d340)` | ZRDR free-node pool helpers `[0x48c7d0,0x48c950)`, archive-list/list-node helpers `[0x48c950,0x48cc70)`, ZRDR init/search-path/shutdown `[0x48cc70,0x48cd40)`, zReader resolve/load/free/find/read/open `[0x48cd40,0x48d210)`, and archive mount/unload `[0x48d210,0x48d340)` are physically zreader.cpp. Only one direct source literal xref is late at `0x48d188`. | Current source comments split this range into zreader.cpp, zreader_load.cpp, and zreader_lookup.cpp; physical evidence favors one zreader.cpp emitted block. `core_util_archive.zutil_zrdr_free_pool_data` needs source-shaped parent reconciliation before byte work. |
+| `zreader.cpp [0x48c7d0,0x48d340)` | ZRDR free-node pool helpers `[0x48c7d0,0x48c950)`, archive-list/list-node helpers `[0x48c950,0x48cc70)`, ZRDR init/search-path/shutdown `[0x48cc70,0x48cd40)`, zReader resolve/load/free/find/read/open `[0x48cd40,0x48d210)`, and archive mount/unload `[0x48d210,0x48d340)` are physically zreader.cpp. Only one direct source literal xref is late at `0x48d188`. | Current source comments split this range into zreader.cpp, zreader_load.cpp, and zreader_lookup.cpp; physical evidence favors one zreader.cpp emitted block. `core_util_archive.zutil_zrdr_free_pool_data` needs source-shaped primary-owner reconciliation before byte work. |
 | `zrndr_draw.c [0x48d340,0x49f614)` | BN revalidation on 2026-07-03 keeps one literal-backed physical `zrndr_draw.c` TU. Refined semantic rows are zVid/zVideo noise/surface prefix `[0x48d340,0x48d450)`, overlay blend rows `[0x48d450,0x48d6d0)`, overlay-rect submit/flush `[0x48d6d0,0x48d910)`, zVideo noise/Fx/image blit `[0x48d910,0x48fd80)`, zRndr frame/render-select prelude `[0x48fd80,0x490330)`, `0x490330..0x490340` `zFloat::Set255f`, zRndr setup/raster/draw/visibility/texture/submit/fog/span clusters through `[0x49b7e0,0x49f614)`, and the in-function switch table `[0x49f5f4,0x49f614)`. | Preserve zRndr physical order while routing zVideo/zVid/zFloat exceptions and zRndr no-standalone span/fog/texture helper candidates under their parent render owners. No zVideo/zFloat source literal, header row, provider COMDAT, or separate physical split is proven here. `[0x49f614,0x49f620)` is following-block padding. |
 | `zsnd_play.cpp [0x49f614,0x4a10e0)` | `0x49f614..0x49f620` is NOP padding labeled `zSnd::TickWrapper`; authored code starts at `0x49f620`. The block then contains zSnd tick/fade, zSndSample, sample-set registry, and scalar playback helper slices. | Do not schedule `0x49f614` as a source owner. Preserve `zsnd_play.cpp` physical emission while routing zSndSample/sample-set/scalar helpers to complete zSound owners. |
 | `zvid_init.c [0x4a6b40,0x4a7b40)` | `0x4a6b60` and `0x4a6b70` are tiny DD/DD3D pending-state setter semantic exceptions physically emitted in the init block. | Preserve placement through original-style declarations/includes; do not move semantic `zvid_dd.c`/`zvid_ddd3d.c` owners into the wrong source file merely for placement. |
@@ -1270,7 +1270,7 @@ body into `briefing.h`, relying on its implicit default constructor, spelling
 `actionQueue((unsigned char)(missionId))`, and adding a local
 `missionNamePanel` immediately before post-ZRD visibility. These forms did not
 change the constructor-time VC5 register allocation, so do not retry them
-without new BN/VC5 evidence. A later source-worker pass also rejected removing
+without new BN/VC5 evidence. A later source-edit pass also rejected removing
 the ZRD binding C-style casts for the first two or all element-like binds,
 post-load `transportProgressPanel`/`missionNamePanel` aliases, binding-block
 `transport`/`name` references, `if (loadedRoot)` spelling, constructor-local
@@ -1333,7 +1333,7 @@ scalar-deleting destructor glue. Current VC5 already emits implicit derived
 destructor COMDATs for those classes, and the first byte drift is still the
 live `transportProgress`/`missionName` register-role inversion before cleanup
 labels execute. Treat destructor-visibility changes as scaffold-risk unless a
-separate source-owner scrutiny packet proves original authored destructors.
+separate source-owner scrutiny proves original authored destructors.
 
 Retail constructor unwind state 2 directly jumps from the transport cleanup
 funclet at `0x4c8246` to `0x40cf50`, a provider-boundary VC5 compiler/EH
@@ -1734,7 +1734,7 @@ include-emission boundary.
 | `[0x434660,0x435a30)` | `recoilapp_saveload_dialog_file_list_layer` | save/load dialog and file-list layer | Save/load UI, file records, and file-list behavior remain in the RecoilApp physical order. |
 | `[0x435a30,0x436630)` | `recoilapp_saveload_transition_sort_tail_layer` | save/load transition and sort/vector tail | Transition state and VC5 vector/sort helper activity close the block before `turret.cpp`. |
 
-The RecoilApp IState-family membership packet keeps the seven-table child-owner
+The RecoilApp IState-family membership evidence keeps the seven-table child-owner
 direction fact-based but still pending. The exact data span is
 `0x4d0aa0..0x4d0bb8`: seven contiguous 40-byte `RecoilApp_IState_Vtbl`
 objects, bounded before by `g_RecoilApp_Vtbl @ 0x4d09e0` plus a zero dword at
@@ -1837,7 +1837,7 @@ physical block: no current BN source-path literal was found for `WinSock.cpp`,
 
 Full BN membership sweep status, 2026-07-01:
 
-- Nine BN fact-mapper slices inspected the full Recoil.exe `.text` catalog with
+- Nine read-only BN slices inspected the full Recoil.exe `.text` catalog with
   explicit `Recoil.bndb` selectors: 154 physical blocks covering
   `[0x401000,0x4cb9e8)`, 4,950 BN function starts, and zero unclassified
   function starts.
@@ -2151,7 +2151,7 @@ Known exception classes from this pass:
   address-backed authored/static forwarding code in the bind-map cluster. They
   are now cataloged as unproven `zinput.h`/`zbindmap.h`-style header/API
   wrapper candidates, not accepted emitted header code.
-- A follow-up BN fact mapper identified `[0x471c60,0x471dd0)` inside
+- A follow-up read-only BN pass identified `[0x471c60,0x471dd0)` inside
   literal-backed `zin_init.cpp` as another header/API-wrapper candidate: it is
   a run of mouse/joystick/keyboard suspend/resume/is-unsuspended/add-ref and
   ref-count wrappers. Physical BN order and the `zin_init.cpp` literal keep it
@@ -2666,7 +2666,7 @@ stronger original build/source evidence.
 
 ### Full BN Coverage Revalidation
 
-A 2026-07-03 read-only BN fact-mapper pass covered the then-open 11
+A 2026-07-03 read-only BN pass covered the then-open 11
 `provenance_unresolved_ranges`. It found no new source-path literal, object/map
 evidence, VC5 natural-order proof, or emitted authored header evidence that
 closes any unresolved range. The `.text` coverage and semantic subranges remain
@@ -2883,7 +2883,7 @@ The MFC runtime-class/message-map/vtable data strengthens the physical order
 inside `[0x43cf90,0x443c50)`, but it is class/metadata evidence rather than
 source-path literal evidence.
 
-- `0x4d1918..0x4d1ffc` is a contiguous Westwood Online metadata packet:
+- `0x4d1918..0x4d1ffc` is a contiguous Westwood Online metadata region:
   dialog/config/progress/download message maps, vtables, GUIDs, and COM
   interface maps. Current BN xrefs tie `0x4d1918` to
   `WestwoodOnlineUpgradeDialog::GetMessageMap` at `0x43dcc0`.
@@ -3086,9 +3086,9 @@ selected window only:
    contributors, declaration-only/type-only/full-body header layering,
    class-body or out-of-line member placement, static helper placement, globals,
    and include timing.
-4. Assign non-overlapping workers. BN fact mappers return read-only facts;
-   source workers edit one explicit source-shape window or complete source
-   owner; verifier agents run only the requested VC5/order checks.
+4. Work the selected window directly: inspect its BN evidence, edit only the
+   exact source closure in the canonical checkout, and run only the requested
+   VC5/order check.
 5. During `authored-function-order`, verify the generated VC5 COFF relative
    order and exactly-once identity gate for rows classified `authored` or
    `authored-lifecycle`. Unresolved rows remain blocking; proven non-authored

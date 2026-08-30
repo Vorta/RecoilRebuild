@@ -387,8 +387,10 @@ provider, RVA, alias, disposition, and first-divergence fields directly.
 success is order/process evidence only and does not prove byte identity,
 source ownership, source shape, owner gates, or owner tier acceptance.
 
-This directory is local ignored verification state. Agents may create or update
-targets here for current evidence, but must not stage or commit them. Durable
-evidence belongs in source docblocks/comments, `.agent/RECONSTRUCTION_PROGRESS.sqlite3`
-through `python tools/recoil.py progress ...`, `docs/reconstruction/`, or narrow
-subsystem docs.
+This directory contains tracked, governed manifests. Edit them directly in the
+canonical checkout only when the selected task or explicit maintenance request
+authorizes the target change. A manifest or passing check is verification
+evidence only and accepts no owner, gate, tier, provider, storage, or final-image
+fact by itself. Durable evidence belongs in source docblocks/comments, the
+progress tracker through governed `python tools/recoil.py progress ...`
+commands, `docs/reconstruction/`, or narrow subsystem docs.

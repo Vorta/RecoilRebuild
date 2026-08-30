@@ -25,9 +25,13 @@ from _recoil.commands.relocation_target_mutation import (  # noqa: E402
     normalize_reviewed_target_request,
 )
 from _recoil.lib.pe import parse_pe_headers, rva_to_offset  # noqa: E402
-from _recoil.lib.progress import ProgressDocument, empty_progress_document  # noqa: E402
+from _recoil.lib.progress import (  # noqa: E402
+    ProgressDocument,
+    ProgressStore,
+    empty_progress_document,
+)
+from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
 from _recoil.lib.verification_targets import vc5_target_registration  # noqa: E402
-from _recoil.lib.worktree_control import resolve_canonical_control_root  # noqa: E402
 
 
 REFERENCE: Path
@@ -45,12 +49,20 @@ DATA_EVIDENCE = "recoil:evidence:r725:008435"
 
 
 def canonical_retail_reference() -> Path:
-    resolution = resolve_canonical_control_root(
-        executing_worktree_root=REPO_ROOT,
-        required_machine_local_paths=("support/Recoil.exe",),
-    )
-    return resolution.canonical_control_root / "support" / "Recoil.exe"
+    return REPO_ROOT / "support" / "Recoil.exe"
 
+
+def write_progress(path: Path, data: dict[str, object]) -> None:
+    ProgressSQLiteStore.create_from_mapping(
+        path,
+        data,
+        cutover_pair_id="relocation-target-test",
+        overwrite=path.exists(),
+    )
+
+
+def read_progress(path: Path) -> dict[str, object]:
+    return ProgressStore(path).load().data
 
 def target_binding(symbol: str, *, source_from: str = "about.cpp") -> SimpleNamespace:
     return SimpleNamespace(
@@ -391,8 +403,8 @@ class RelocationTargetMutationTests(unittest.TestCase):
         REFERENCE = canonical_retail_reference()
 
     def write_fixture(self, root: Path, *, revision: int = 7) -> Path:
-        path = root / "progress.json"
-        path.write_text(json.dumps(fixture_data(revision=revision), indent=2), encoding="utf-8")
+        path = root / "progress.sqlite3"
+        write_progress(path, fixture_data(revision=revision))
         return path
 
     def create_data_binding(self, progress: Path) -> dict[str, object]:
@@ -411,7 +423,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
     def test_existing_provider_target_dry_run_uses_exact_retail_and_owner_context(self) -> None:
         with TemporaryDirectory() as temp:
             progress = self.write_fixture(Path(temp))
-            before = progress.read_text(encoding="utf-8")
+            before = progress.read_bytes()
             report = bind_relocation_target(
                 progress=progress,
                 reference=REFERENCE,
@@ -433,7 +445,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
             self.assertEqual(PROVIDER_OWNER, context["owner"]["owner_id"])
             self.assertEqual([PROVIDER_EVIDENCE], context["owner"]["binding_evidence_ids"])
             self.assertIsNone(context["relationship"])
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
 
     def test_existing_nonprovider_function_uses_exact_primary_function_relationship(self) -> None:
         with TemporaryDirectory() as temp:
@@ -445,8 +457,8 @@ class RelocationTargetMutationTests(unittest.TestCase):
                 "symbol_id": PROVIDER_TARGET_ID,
             }
             data["owners"][DATA_OWNER]["relationships"].append(relationship)
-            progress = root / "progress.json"
-            progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
+            progress = root / "progress.sqlite3"
+            write_progress(progress, data)
             payload = provider_payload(
                 target_owner_id=DATA_OWNER,
                 evidence_ids=[DATA_EVIDENCE],
@@ -547,8 +559,8 @@ class RelocationTargetMutationTests(unittest.TestCase):
                 root = Path(temp)
                 data = fixture_data()
                 data["owners"][DATA_OWNER]["relationships"].extend(relationships)
-                progress = root / "progress.json"
-                progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
+                progress = root / "progress.sqlite3"
+                write_progress(progress, data)
                 payload = provider_payload(
                     target_owner_id=DATA_OWNER,
                     evidence_ids=[DATA_EVIDENCE],
@@ -556,7 +568,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                 )
                 current_bindings = bindings()
                 current_bindings[PROVIDER_TARGET_ID] = [target_binding(PROVIDER_OBJECT)]
-                before = progress.read_text(encoding="utf-8")
+                before = progress.read_bytes()
                 with self.assertRaises(RelocationTargetMutationError):
                     bind_relocation_target(
                         progress=progress,
@@ -569,7 +581,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                         apply=False,
                         bindings=current_bindings,
                     )
-                self.assertEqual(before, progress.read_text(encoding="utf-8"))
+                self.assertEqual(before, progress.read_bytes())
 
     def test_existing_target_accepts_one_exact_synchronized_vc5_registration(self) -> None:
         with TemporaryDirectory() as temp:
@@ -578,9 +590,9 @@ class RelocationTargetMutationTests(unittest.TestCase):
                 root,
                 target_specs=[("provider_exact", "0x4c5b64", PROVIDER_OBJECT)],
             )
-            progress = root / "progress.json"
-            progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
-            before = progress.read_text(encoding="utf-8")
+            progress = root / "progress.sqlite3"
+            write_progress(progress, data)
+            before = progress.read_bytes()
             report = bind_relocation_target(
                 progress=progress,
                 reference=REFERENCE,
@@ -594,7 +606,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
             )
             self.assertFalse(report["commit"]["applied"])
             self.assertEqual(PROVIDER_OBJECT, report["binding"]["object_symbol"])
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
 
     def test_existing_target_rejects_non_authoritative_vc5_registration_states(self) -> None:
         cases: list[tuple[str, list[tuple[str, str, str]]]] = [
@@ -624,9 +636,9 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     root,
                     target_specs=target_specs,
                 )
-                progress = root / "progress.json"
-                progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
-                before = progress.read_text(encoding="utf-8")
+                progress = root / "progress.sqlite3"
+                write_progress(progress, data)
+                before = progress.read_bytes()
                 with self.assertRaisesRegex(
                     RelocationTargetMutationError,
                     "does not match current exact tracker identity",
@@ -642,7 +654,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                         apply=False,
                         bindings=current_bindings,
                     )
-                self.assertEqual(before, progress.read_text(encoding="utf-8"))
+                self.assertEqual(before, progress.read_bytes())
 
     def test_existing_target_rejects_stale_unregistered_and_functional_only_targets(self) -> None:
         with TemporaryDirectory() as temp:
@@ -654,8 +666,8 @@ class RelocationTargetMutationTests(unittest.TestCase):
             manifest_data = json.loads(manifests[0].read_text(encoding="utf-8"))
             manifest_data["source_from"] = "src/Battlesport/provider_stale_moved.cpp"
             manifests[0].write_text(json.dumps(manifest_data, indent=2), encoding="utf-8")
-            progress = root / "stale-progress.json"
-            progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
+            progress = root / "stale-progress.sqlite3"
+            write_progress(progress, data)
             with self.assertRaisesRegex(
                 RelocationTargetMutationError,
                 "does not match current exact tracker identity",
@@ -696,9 +708,9 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     data["verification_targets"][target_id] = target_row
                 current_bindings = bindings()
                 current_bindings[PROVIDER_TARGET_ID] = [target_binding(PROVIDER_OBJECT)]
-                progress = root / "progress.json"
-                progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
-                before = progress.read_text(encoding="utf-8")
+                progress = root / "progress.sqlite3"
+                write_progress(progress, data)
+                before = progress.read_bytes()
                 with self.assertRaisesRegex(
                     RelocationTargetMutationError,
                     "does not match current exact tracker identity",
@@ -714,7 +726,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                         apply=False,
                         bindings=current_bindings,
                     )
-                self.assertEqual(before, progress.read_text(encoding="utf-8"))
+                self.assertEqual(before, progress.read_bytes())
 
     def test_missing_data_apply_creates_exact_pending_symbol_owner_relationship_and_tier_x(self) -> None:
         with TemporaryDirectory() as temp:
@@ -734,7 +746,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
             self.assertTrue(report["commit"]["applied"])
             self.assertTrue(report["target_created"])
             self.assertEqual(DATA_TARGET_ID, report["target_symbol_id"])
-            stored = json.loads(progress.read_text(encoding="utf-8"))
+            stored = read_progress(progress)
             self.assertEqual(8, stored["revision"])
             symbol = stored["symbols"][DATA_TARGET_ID]
             self.assertEqual("0x4cc738", symbol["address"])
@@ -847,7 +859,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                 )
             bad = fixture_data()
             bad["evidence"][PROVIDER_EVIDENCE]["scope_ids"] = [DATA_OWNER]
-            progress.write_text(json.dumps(bad), encoding="utf-8")
+            write_progress(progress, bad)
             with self.assertRaisesRegex(RelocationTargetMutationError, "owner-scoped"):
                 bind_relocation_target(
                     progress=progress,
@@ -865,7 +877,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             progress = self.write_fixture(Path(temp))
             self.create_data_binding(progress)
-            before = progress.read_text(encoding="utf-8")
+            before = progress.read_bytes()
             dry_run = bind_relocation_target(
                 progress=progress,
                 reference=REFERENCE,
@@ -884,7 +896,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                 "created-data-symbol",
                 dry_run["binding"]["binding_context"]["creation_mode"],
             )
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
 
             applied = bind_relocation_target(
                 progress=progress,
@@ -898,7 +910,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                 bindings=bindings(),
             )
             self.assertTrue(applied["commit"]["applied"])
-            stored = json.loads(progress.read_text(encoding="utf-8"))
+            stored = read_progress(progress)
             self.assertEqual(9, stored["revision"])
             binding = stored["symbols"][DATA_TARGET_ID]["relocation_target_binding"]
             self.assertIsInstance(binding, dict)
@@ -910,15 +922,15 @@ class RelocationTargetMutationTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             progress = self.write_fixture(Path(temp))
             self.create_data_binding(progress)
-            data = json.loads(progress.read_text(encoding="utf-8"))
+            data = read_progress(progress)
             data["symbols"][DATA_TARGET_ID]["pipeline_class"] = "authored"
-            progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
+            write_progress(progress, data)
             current_bindings = {
                 SOURCE_ID: [
                     target_binding(SOURCE_OBJECT, source_from="refreshed-about.cpp")
                 ]
             }
-            before = progress.read_text(encoding="utf-8")
+            before = progress.read_bytes()
 
             dry_run = bind_relocation_target(
                 progress=progress,
@@ -946,7 +958,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
             )
             self.assertEqual("authored", context["target"]["pipeline_class"])
             self.assertEqual("existing-symbol", context["creation_mode"])
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
 
             applied = bind_relocation_target(
                 progress=progress,
@@ -960,7 +972,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                 bindings=current_bindings,
             )
             self.assertTrue(applied["commit"]["applied"])
-            stored = json.loads(progress.read_text(encoding="utf-8"))
+            stored = read_progress(progress)
             binding = stored["symbols"][DATA_TARGET_ID]["relocation_target_binding"]
             self.assertEqual(DATA_OBJECT, binding["object_symbol"])
             self.assertIn(
@@ -988,7 +1000,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             progress = self.write_fixture(Path(temp))
             self.create_data_binding(progress)
-            before = progress.read_text(encoding="utf-8")
+            before = progress.read_bytes()
             with self.assertRaisesRegex(
                 RelocationTargetMutationError,
                 "requires an existing stale",
@@ -1021,13 +1033,13 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     apply=False,
                     bindings=bindings(),
                 )
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
 
     def test_refresh_still_requires_exactly_one_selected_stale_prior(self) -> None:
         with TemporaryDirectory() as temp:
             progress = self.write_fixture(Path(temp))
             self.create_data_binding(progress)
-            base = json.loads(progress.read_text(encoding="utf-8"))
+            base = read_progress(progress)
             base["symbols"][DATA_TARGET_ID]["pipeline_class"] = "authored"
             binding = base["symbols"][DATA_TARGET_ID]["relocation_target_binding"]
             cases = {
@@ -1060,8 +1072,8 @@ class RelocationTargetMutationTests(unittest.TestCase):
             }
             for name, data in cases.items():
                 with self.subTest(name=name):
-                    progress.write_text(json.dumps(data), encoding="utf-8")
-                    before = progress.read_text(encoding="utf-8")
+                    write_progress(progress, data)
+                    before = progress.read_bytes()
                     with self.assertRaisesRegex(
                         RelocationTargetMutationError,
                         "resolves to .* existing reviewed bindings; expected exactly one",
@@ -1077,7 +1089,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                             apply=False,
                             bindings=bindings(),
                         )
-                    self.assertEqual(before, progress.read_text(encoding="utf-8"))
+                    self.assertEqual(before, progress.read_bytes())
 
     def test_ordinary_bind_cannot_rewrite_an_existing_reviewed_identity(self) -> None:
         with TemporaryDirectory() as temp:
@@ -1099,7 +1111,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     apply=False,
                     bindings=bindings(),
                 )
-            stored = json.loads(progress.read_text(encoding="utf-8"))
+            stored = read_progress(progress)
             self.assertEqual(
                 DATA_OBJECT,
                 stored["symbols"][DATA_TARGET_ID]["relocation_target_binding"]["object_symbol"],
@@ -1154,7 +1166,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             progress = self.write_fixture(Path(temp))
             self.create_data_binding(progress)
-            base = json.loads(progress.read_text(encoding="utf-8"))
+            base = read_progress(progress)
             cases: list[tuple[str, dict[str, object], dict[str, object]]] = []
 
             absent = deepcopy(base)
@@ -1181,8 +1193,8 @@ class RelocationTargetMutationTests(unittest.TestCase):
 
             for name, data, payload in cases:
                 with self.subTest(name=name):
-                    progress.write_text(json.dumps(data), encoding="utf-8")
-                    before = progress.read_text(encoding="utf-8")
+                    write_progress(progress, data)
+                    before = progress.read_bytes()
                     with self.assertRaisesRegex(
                         RelocationTargetMutationError,
                         "resolves to .* existing reviewed bindings; expected exactly one",
@@ -1198,14 +1210,14 @@ class RelocationTargetMutationTests(unittest.TestCase):
                             apply=False,
                             bindings=bindings(),
                         )
-                    self.assertEqual(before, progress.read_text(encoding="utf-8"))
+                    self.assertEqual(before, progress.read_bytes())
 
     def test_correction_fails_closed_for_source_target_owner_and_retail_drift(self) -> None:
         with TemporaryDirectory() as temp:
             root = Path(temp)
             progress = self.write_fixture(root)
             self.create_data_binding(progress)
-            base = json.loads(progress.read_text(encoding="utf-8"))
+            base = read_progress(progress)
 
             drift_cases: list[tuple[str, dict[str, object], dict[str, list[SimpleNamespace]]]] = []
             source = deepcopy(base)
@@ -1229,8 +1241,8 @@ class RelocationTargetMutationTests(unittest.TestCase):
 
             for name, data, current_bindings in drift_cases:
                 with self.subTest(name=name):
-                    progress.write_text(json.dumps(data), encoding="utf-8")
-                    before = progress.read_text(encoding="utf-8")
+                    write_progress(progress, data)
+                    before = progress.read_bytes()
                     with self.assertRaises(RelocationTargetMutationError):
                         bind_relocation_target(
                             progress=progress,
@@ -1243,9 +1255,9 @@ class RelocationTargetMutationTests(unittest.TestCase):
                             apply=False,
                             bindings=current_bindings,
                         )
-                    self.assertEqual(before, progress.read_text(encoding="utf-8"))
+                    self.assertEqual(before, progress.read_bytes())
 
-            progress.write_text(json.dumps(base), encoding="utf-8")
+            write_progress(progress, base)
             image = bytearray(REFERENCE.read_bytes())
             headers = parse_pe_headers(image, source=str(REFERENCE))
             operand_offset = rva_to_offset(0x1000 + 17, headers.sections)
@@ -1253,7 +1265,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
             image[operand_offset] ^= 1
             drifted_reference = root / "drifted-Recoil.exe"
             drifted_reference.write_bytes(image)
-            before = progress.read_text(encoding="utf-8")
+            before = progress.read_bytes()
             with self.assertRaises(RelocationTargetMutationError):
                 bind_relocation_target(
                     progress=progress,
@@ -1266,7 +1278,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     apply=False,
                     bindings=bindings(),
                 )
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
 
     def test_provider_function_and_primary_data_views_select_exact_callable_target(self) -> None:
         with TemporaryDirectory() as temp:
@@ -1309,8 +1321,8 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     "name": "unit provider IAT storage",
                 },
             ]
-            progress = root / "progress.json"
-            progress.write_text(json.dumps(data), encoding="utf-8")
+            progress = root / "progress.sqlite3"
+            write_progress(progress, data)
 
             report = bind_relocation_target(
                 progress=progress,
@@ -1358,8 +1370,8 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     "symbol_id": PROVIDER_TARGET_ID,
                 }
             ]
-            progress = root / "progress.json"
-            progress.write_text(json.dumps(data), encoding="utf-8")
+            progress = root / "progress.sqlite3"
+            write_progress(progress, data)
 
             with self.assertRaisesRegex(
                 RelocationTargetMutationError,
@@ -1402,9 +1414,9 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     "symbol_id": PROVIDER_TARGET_ID,
                 }
             ]
-            progress = root / "progress.json"
-            progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
-            before = progress.read_text(encoding="utf-8")
+            progress = root / "progress.sqlite3"
+            write_progress(progress, data)
+            before = progress.read_bytes()
             report = bind_relocation_target(
                 progress=progress,
                 reference=REFERENCE,
@@ -1438,7 +1450,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                 "provider_object_proof",
                 report["binding"],
             )
-            self.assertEqual(before, progress.read_text(encoding="utf-8"))
+            self.assertEqual(before, progress.read_bytes())
 
     def test_provider_object_proof_rejection_matrix_is_fail_closed(self) -> None:
         proof_symbol = "?ProviderObjectProof@@YGXXZ"
@@ -1458,9 +1470,9 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     "symbol_id": PROVIDER_TARGET_ID,
                 }
             ]
-            progress = root / "progress.json"
-            progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
-            before = progress.read_text(encoding="utf-8")
+            progress = root / "progress.sqlite3"
+            write_progress(progress, data)
+            before = progress.read_bytes()
             retail = immutable_retail_bytes(0x4C5B64, 0x4C5B6A)
             cases = [
                 (
@@ -1581,7 +1593,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                             bindings=bindings(),
                             vc5_root=vc5_root,
                         )
-                    self.assertEqual(before, progress.read_text(encoding="utf-8"))
+                    self.assertEqual(before, progress.read_bytes())
 
     def test_provider_object_proof_rejects_scope_path_and_candidate_shortcuts(self) -> None:
         proof_symbol = "?ProviderObjectProof@@YGXXZ"
@@ -1712,9 +1724,9 @@ class RelocationTargetMutationTests(unittest.TestCase):
             )
             for label, data, payload, message in scoped_cases:
                 with self.subTest(label=label):
-                    progress = root / f"{label}.json"
-                    progress.write_text(json.dumps(data, indent=2), encoding="utf-8")
-                    before = progress.read_text(encoding="utf-8")
+                    progress = root / f"{label}.sqlite3"
+                    write_progress(progress, data)
+                    before = progress.read_bytes()
                     with self.assertRaisesRegex(
                         RelocationTargetMutationError,
                         message,
@@ -1731,7 +1743,7 @@ class RelocationTargetMutationTests(unittest.TestCase):
                             bindings=bindings(),
                             vc5_root=vc5_root,
                         )
-                    self.assertEqual(before, progress.read_text(encoding="utf-8"))
+                    self.assertEqual(before, progress.read_bytes())
 
 
 if __name__ == "__main__":

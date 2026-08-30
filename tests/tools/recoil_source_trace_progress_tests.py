@@ -24,6 +24,7 @@ from _recoil.commands.source_trace_progress import (  # noqa: E402
     show_source_traceability,
 )
 from _recoil.lib.live_progress import ConcurrentRevisionUpdate  # noqa: E402
+from _recoil.lib.progress import SCHEMA_VERSION, empty_progress_document  # noqa: E402
 from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
 
 
@@ -31,17 +32,12 @@ EVIDENCE_ID = "recoil:evidence:r7:000001"
 
 
 def tracker(revision=7):
-    return {
-        "schema_version": 5,
-        "revision": revision,
-        "id_sequences": {},
-        "migration": {},
-        "binaries": {},
-        "physical_blocks": {
-            "recoil:block:0x401000": {"source_traceability": "must-stay-distinct"}
-        },
-        "semantic_spans": {},
-        "symbols": {
+    value = empty_progress_document()
+    value["revision"] = revision
+    value["physical_blocks"] = {
+        "recoil:block:0x401000": {"source_traceability": "must-stay-distinct"}
+    }
+    value["symbols"] = {
             "recoil:function:0x401000": {
                 "kind": "function",
                 "output_section_id": "recoil:section:.text",
@@ -59,26 +55,20 @@ def tracker(revision=7):
                 "kind": "function",
                 "output_section_id": "messages:section:.text",
             },
-        },
-        "output_sections": {},
-        "storage_contributions": {},
-        "owners": {
+        }
+    value["owners"] = {
             "recoil:owner:sample": {
                 "gates": {"source": "accepted"},
                 "reimplementation": {"entries": {}},
             }
-        },
-        "verification_targets": {},
-        "work_items": {},
-        "blockers": {},
-        "evidence": {
+        }
+    value["evidence"] = {
             EVIDENCE_ID: {
                 "freshness": "historical",
                 "validation_mode": "imported",
             },
-        },
-        "tombstones": {},
-    }
+        }
+    return value
 
 
 def resolved_state(anchor="recoil:anchor:sample-run"):
@@ -99,7 +89,7 @@ def resolved_state(anchor="recoil:anchor:sample-run"):
 def payload(artifact_id="recoil:function:0x401000", expected_current=None):
     return {
         "operation": "replace-batch",
-        "parent_reviewed": True,
+        "reviewed": True,
         "updates": [
             {
                 "artifact_id": artifact_id,
@@ -135,7 +125,7 @@ def initialized_tracker(*claims):
 def resolution_only_payload(*records):
     return {
         "operation": "replace-batch",
-        "parent_reviewed": True,
+        "reviewed": True,
         "updates": [],
         "legacy_claim_resolutions": list(records),
     }
@@ -372,7 +362,7 @@ class RecoilSourceTraceProgressTests(unittest.TestCase):
             },
             plan.migration_metadata,
         )
-        self.assertEqual(5, plan.proposed["schema_version"])
+        self.assertEqual(SCHEMA_VERSION, plan.proposed["schema_version"])
         self.assertEqual(
             "must-stay-distinct",
             plan.proposed["physical_blocks"]["recoil:block:0x401000"][
@@ -392,8 +382,12 @@ class RecoilSourceTraceProgressTests(unittest.TestCase):
 
     def test_dry_run_apply_and_revision_cas(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "progress.json"
-            path.write_text(json.dumps(tracker()), encoding="utf-8")
+            path = Path(tmp) / "progress.sqlite3"
+            ProgressSQLiteStore.create_from_mapping(
+                path,
+                tracker(),
+                cutover_pair_id="source-trace-progress-test",
+            )
             before = path.read_bytes()
             dry = mutate_source_traceability_batch(
                 path, payload(), expected_revision=7, apply=False
@@ -406,7 +400,7 @@ class RecoilSourceTraceProgressTests(unittest.TestCase):
                 path, payload(), expected_revision=7, apply=True
             )
             self.assertTrue(applied["applied"])
-            current = json.loads(path.read_text(encoding="utf-8"))
+            current = ProgressSQLiteStore(path, read_only=True).materialize()
             self.assertEqual(8, current["revision"])
             self.assertEqual(
                 resolved_state(),
@@ -434,7 +428,7 @@ class RecoilSourceTraceProgressTests(unittest.TestCase):
             mutate_source_traceability_batch(
                 path, second_payload, expected_revision=8, apply=True
             )
-            final = json.loads(path.read_text(encoding="utf-8"))
+            final = ProgressSQLiteStore(path, read_only=True).materialize()
             self.assertEqual(
                 7,
                 final["migration"]["source_traceability_v1"][
@@ -442,10 +436,10 @@ class RecoilSourceTraceProgressTests(unittest.TestCase):
                 ],
             )
 
-    def test_parent_review_evidence_and_missing_artifact_fail_closed(self):
+    def test_direct_review_evidence_and_missing_artifact_fail_closed(self):
         unreviewed = payload()
-        unreviewed["parent_reviewed"] = False
-        with self.assertRaisesRegex(SourceTraceProgressError, "parent_reviewed"):
+        unreviewed["reviewed"] = False
+        with self.assertRaisesRegex(SourceTraceProgressError, "reviewed"):
             plan_source_traceability_batch(
                 tracker(), unreviewed, expected_revision=7
             )
@@ -580,8 +574,12 @@ class RecoilSourceTraceProgressTests(unittest.TestCase):
             second_claim, "recoil:data:0x4e0000"
         )
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "progress.json"
-            path.write_text(json.dumps(value), encoding="utf-8")
+            path = Path(tmp) / "progress.sqlite3"
+            ProgressSQLiteStore.create_from_mapping(
+                path,
+                value,
+                cutover_pair_id="source-trace-progress-test",
+            )
             before = path.read_bytes()
             dry = mutate_source_traceability_batch(
                 path,
@@ -601,7 +599,7 @@ class RecoilSourceTraceProgressTests(unittest.TestCase):
                 expected_revision=7,
                 apply=True,
             )
-            after_first = json.loads(path.read_text(encoding="utf-8"))
+            after_first = ProgressSQLiteStore(path, read_only=True).materialize()
             self.assertEqual(
                 [first_record],
                 after_first["migration"]["source_traceability_v1"][
@@ -620,7 +618,7 @@ class RecoilSourceTraceProgressTests(unittest.TestCase):
                 expected_revision=8,
                 apply=True,
             )
-            after_second = json.loads(path.read_text(encoding="utf-8"))
+            after_second = ProgressSQLiteStore(path, read_only=True).materialize()
             self.assertEqual(
                 [first_record, second_record],
                 after_second["migration"]["source_traceability_v1"][

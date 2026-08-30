@@ -11,7 +11,7 @@
   ],
   "functional_evidence": [
     "Binary Ninja assembly/decompilation for 0x463870 validates the thiscall Begin contract: zero both rectangle origins, capture SW dimensions into swSurfaceRect, capture primary dimensions into primarySurfaceRect, configure FX state from SW pixels/pitch in software mode, configure FX state from primary pixels/pitch but SW dimensions in hardware mode, and dispatch the direct primary-to-SW or SW-to-primary blit with ECX=primarySurfaceRect and EDX=swSurfaceRect.",
-    "The dependency frontier has no source blockers: zVideo surface getters, Fx_SetSurfaceState, and direct blit dispatch providers are source-ready for the functional lane.",
+    "The dependency frontier has no source blockers: zVideo surface getters, Fx_SetSurfaceState, and direct blit dispatch providers are source-ready for the functional-verification mode.",
     "The native smoke verifies both renderer paths, rectangle fields, FX surface-state fields, and direct blit callback argument order."
   ],
   "vc5_attempt": ""

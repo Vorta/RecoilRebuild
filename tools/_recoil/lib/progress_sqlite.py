@@ -9,30 +9,22 @@ import re
 import sqlite3
 from typing import Any, Callable, Iterable, Mapping
 
-from _recoil.lib.worktree_control import (
-    CANONICAL_ROOT_ENV,
-    VALIDATION_READ_ONLY_AUTHORITY_ENV,
-)
-
-
 APPLICATION_ID = 0x52434C50  # "RCLP"
-USER_VERSION = 2
-LEGACY_USER_VERSION = 1
+USER_VERSION = 3
+LEGACY_USER_VERSIONS = frozenset({1, 2})
 BUSY_TIMEOUT_MS = 10_000
-SEMANTIC_SCHEMA_VERSION = 5
+SEMANTIC_SCHEMA_VERSION = 6
 
 REVISION_DOMAIN_SEMANTIC = "semantic"
 REVISION_DOMAIN_EVIDENCE_GENERATION = "evidence_generation"
-REVISION_DOMAIN_SCHEDULER = "scheduler"
 REVISION_DOMAIN_COLUMNS = {
     REVISION_DOMAIN_SEMANTIC: "semantic_revision",
     REVISION_DOMAIN_EVIDENCE_GENERATION: "evidence_generation_revision",
-    REVISION_DOMAIN_SCHEDULER: "scheduler_revision",
 }
 
-# These are the entity maps in progress schema v5.  They deliberately remain
-# distinct tablespace keys: a physical block is not a semantic span, an owner,
-# a work item, or an evidence observation merely because their payloads link.
+# These are the entity maps in progress schema v6. They remain distinct
+# tablespace keys: a physical block is not a semantic span, an owner, or an
+# evidence observation merely because their payloads link.
 ENTITY_COLLECTIONS = (
     "binaries",
     "physical_blocks",
@@ -42,7 +34,6 @@ ENTITY_COLLECTIONS = (
     "storage_contributions",
     "owners",
     "verification_targets",
-    "work_items",
     "blockers",
     "evidence",
     "tombstones",
@@ -67,18 +58,6 @@ class ConcurrentSQLiteProgressUpdate(ProgressSQLiteError):
 ConcurrentSQLiteRevisionUpdate = ConcurrentSQLiteProgressUpdate
 
 
-def _validation_blocks_live_progress_mutation(path: Path, *, apply: bool) -> bool:
-    if not apply or os.environ.get(VALIDATION_READ_ONLY_AUTHORITY_ENV) != "1":
-        return False
-    canonical_root = os.environ.get(CANONICAL_ROOT_ENV)
-    if not canonical_root:
-        return True
-    live_authority = (
-        Path(canonical_root) / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
-    ).resolve()
-    return path.resolve() == live_authority
-
-
 class _DeleteFacet:
     def __repr__(self) -> str:
         return "DELETE_FACET"
@@ -101,14 +80,12 @@ class SQLiteRevisionVector:
     transaction_revision: int
     semantic_revision: int
     evidence_generation_revision: int
-    scheduler_revision: int
 
     def to_dict(self) -> dict[str, int]:
         return {
             "transaction_revision": self.transaction_revision,
             "semantic_revision": self.semantic_revision,
             "evidence_generation_revision": self.evidence_generation_revision,
-            "scheduler_revision": self.scheduler_revision,
         }
 
 
@@ -121,7 +98,6 @@ class SQLiteMetadata:
     user_version: int
     semantic_revision: int
     evidence_generation_revision: int
-    scheduler_revision: int
 
     @property
     def transaction_revision(self) -> int:
@@ -133,7 +109,6 @@ class SQLiteMetadata:
             transaction_revision=self.revision,
             semantic_revision=self.semantic_revision,
             evidence_generation_revision=self.evidence_generation_revision,
-            scheduler_revision=self.scheduler_revision,
         )
 
 
@@ -364,7 +339,7 @@ CREATE TABLE metadata (
     cutover_pair_id TEXT NOT NULL CHECK (length(cutover_pair_id) > 0),
     semantic_revision INTEGER NOT NULL CHECK (semantic_revision >= 0),
     evidence_generation_revision INTEGER NOT NULL CHECK (evidence_generation_revision >= 0),
-    scheduler_revision INTEGER NOT NULL CHECK (scheduler_revision >= 0)
+    revision_domains_enforced INTEGER NOT NULL CHECK (revision_domains_enforced = 1)
 ) STRICT;
 CREATE TABLE top_level_values (
     key TEXT PRIMARY KEY,
@@ -399,15 +374,13 @@ CREATE TABLE entity_facets (
     physical_block_id TEXT,
     pipeline_class TEXT,
     authored_order_role TEXT,
-    work_state TEXT,
-    reservation_state TEXT,
     PRIMARY KEY (collection, entity_id),
     FOREIGN KEY (collection, entity_id) REFERENCES entities(collection, entity_id)
         ON DELETE CASCADE
 ) STRICT;
 CREATE INDEX entity_facets_scheduler ON entity_facets(
     collection, binary, pipeline_class, authored_order_role,
-    work_state, reservation_state, primary_address, start_address
+    primary_address, start_address
 );
 CREATE INDEX entity_facets_block ON entity_facets(physical_block_id, collection, entity_id);
 CREATE TABLE relationship_index (
@@ -474,13 +447,12 @@ class ProgressSQLiteStore:
             connection.execute(
                 "INSERT INTO metadata("
                 "singleton, schema_version, revision, cutover_pair_id, "
-                "semantic_revision, evidence_generation_revision, scheduler_revision"
-                ") VALUES (1, ?, ?, ?, ?, ?, ?)",
+                "semantic_revision, evidence_generation_revision, revision_domains_enforced"
+                ") VALUES (1, ?, ?, ?, ?, ?, 1)",
                 (
                     schema_version,
                     revision,
                     cutover_pair_id,
-                    revision,
                     revision,
                     revision,
                 ),
@@ -551,77 +523,35 @@ class ProgressSQLiteStore:
             if user_version is None
             else user_version
         )
-        if version == LEGACY_USER_VERSION:
-            row = connection.execute(
-                "SELECT revision FROM metadata WHERE singleton=1"
-            ).fetchone()
-            if row is None:
-                raise ProgressSQLiteError("SQLite progress metadata singleton is missing")
-            revision = int(row[0])
-            return SQLiteRevisionVector(revision, revision, revision, revision)
         if version != USER_VERSION:
             raise ProgressSQLiteError(
-                f"SQLite user_version mismatch: expected {LEGACY_USER_VERSION} or "
-                f"{USER_VERSION}, found {version}"
+                f"SQLite user_version mismatch: expected {USER_VERSION}, found {version}; "
+                "run the governed single-agent cutover"
             )
         try:
             row = connection.execute(
-                "SELECT revision, semantic_revision, evidence_generation_revision, "
-                "scheduler_revision FROM metadata WHERE singleton=1"
+                "SELECT revision, semantic_revision, evidence_generation_revision "
+                "FROM metadata WHERE singleton=1"
             ).fetchone()
         except sqlite3.Error as exc:
             raise ProgressSQLiteError(f"invalid revision-domain metadata: {exc}") from exc
         if row is None:
             raise ProgressSQLiteError("SQLite progress metadata singleton is missing")
-        return SQLiteRevisionVector(*(int(row[index]) for index in range(4)))
+        return SQLiteRevisionVector(*(int(row[index]) for index in range(3)))
 
     @classmethod
     def _migrate_revision_domains_in_transaction(
         cls, connection: sqlite3.Connection
     ) -> SQLiteRevisionVector:
-        """Upgrade storage v1 to v2 without changing the semantic document revision."""
+        """Reject legacy storage; destructive cutover belongs to its governed command."""
 
         user_version = int(connection.execute("PRAGMA user_version").fetchone()[0])
-        if user_version == USER_VERSION:
-            columns = {
-                str(row[1])
-                for row in connection.execute("PRAGMA table_info(metadata)")
-            }
-            if "revision_domains_enforced" not in columns:
-                # A database may have been created directly at storage v2
-                # before domain enforcement existed.  The first scoped write
-                # is the irreversible boundary: after it commits, no caller
-                # may fall back to the legacy global revision coordinate.
-                connection.execute(
-                    "ALTER TABLE metadata ADD COLUMN revision_domains_enforced "
-                    "INTEGER NOT NULL DEFAULT 1 CHECK (revision_domains_enforced = 1)"
-                )
-            return cls._read_revision_vector(connection, user_version=user_version)
-        if user_version != LEGACY_USER_VERSION:
+        if user_version != USER_VERSION:
             raise ProgressSQLiteError(
-                f"cannot migrate unsupported SQLite user_version {user_version}"
+                f"cannot mutate legacy SQLite user_version {user_version}; "
+                "run the governed single-agent cutover"
             )
-        row = connection.execute(
-            "SELECT revision FROM metadata WHERE singleton=1"
-        ).fetchone()
-        if row is None:
-            raise ProgressSQLiteError("SQLite progress metadata singleton is missing")
-        revision = int(row[0])
-        for column in REVISION_DOMAIN_COLUMNS.values():
-            connection.execute(
-                f"ALTER TABLE metadata ADD COLUMN {column} "
-                "INTEGER NOT NULL DEFAULT 0 CHECK ("
-                f"{column} >= 0)"
-            )
-            connection.execute(
-                f"UPDATE metadata SET {column}=? WHERE singleton=1", (revision,)
-            )
-        connection.execute(
-            "ALTER TABLE metadata ADD COLUMN revision_domains_enforced "
-            "INTEGER NOT NULL DEFAULT 1 CHECK (revision_domains_enforced = 1)"
-        )
-        connection.execute(f"PRAGMA user_version={USER_VERSION}")
-        return SQLiteRevisionVector(revision, revision, revision, revision)
+        return cls._read_revision_vector(connection, user_version=user_version)
 
     @staticmethod
     def _validate_header(connection: sqlite3.Connection) -> None:
@@ -641,10 +571,10 @@ class ProgressSQLiteStore:
             raise ProgressSQLiteError(
                 f"SQLite application_id mismatch: expected {APPLICATION_ID}, found {application_id}"
             )
-        if user_version not in {LEGACY_USER_VERSION, USER_VERSION}:
+        if user_version != USER_VERSION:
             raise ProgressSQLiteError(
-                f"SQLite user_version mismatch: expected {LEGACY_USER_VERSION} or "
-                f"{USER_VERSION}, found {user_version}"
+                f"SQLite user_version mismatch: expected {USER_VERSION}, found {user_version}; "
+                "run the governed single-agent cutover"
             )
         if journal_mode != "delete":
             raise ProgressSQLiteError(f"SQLite journal_mode must be DELETE, found {journal_mode}")
@@ -712,17 +642,13 @@ class ProgressSQLiteStore:
             value = payload.get(name) if isinstance(payload, Mapping) else None
             return value if isinstance(value, str) else None
 
-        reservation = payload.get("reservation") if isinstance(payload, Mapping) else None
-        reservation_state = (
-            reservation.get("state") if isinstance(reservation, Mapping) else None
-        )
         primary_address = _address_value(
             payload.get("address") if isinstance(payload, Mapping) else None
         )
         if primary_address is None:
             primary_address = _address_value(entity_id.rsplit(":", 1)[-1])
         connection.execute(
-            "INSERT INTO entity_facets VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO entity_facets VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 collection,
                 entity_id,
@@ -734,8 +660,6 @@ class ProgressSQLiteStore:
                 string_field("physical_block_id"),
                 string_field("pipeline_class"),
                 string_field("authored_order_role"),
-                string_field("state"),
-                reservation_state if isinstance(reservation_state, str) else None,
             ),
         )
         connection.executemany(
@@ -776,7 +700,6 @@ class ProgressSQLiteStore:
                 user_version=user_version,
                 semantic_revision=revision_vector.semantic_revision,
                 evidence_generation_revision=revision_vector.evidence_generation_revision,
-                scheduler_revision=revision_vector.scheduler_revision,
             )
 
     def read_revision(self) -> int:
@@ -787,70 +710,58 @@ class ProgressSQLiteStore:
 
         return self.metadata().revision_vector
 
-    def migrate_revision_domains(
-        self, *, expected_revision: int, apply: bool
-    ) -> SQLiteRevisionVector:
-        """Explicitly upgrade legacy storage while preserving the document revision.
-
-        New scoped writes also perform this migration inside their own guarded
-        transaction, so read-only diagnostics and legacy reads never mutate a
-        v1 database merely by opening it.
-        """
-
-        if _validation_blocks_live_progress_mutation(self.path, apply=apply):
-            raise ProgressSQLiteError(
-                "packet/integration validation cannot apply live progress-authority mutations"
-            )
-        if self.read_only:
-            raise ProgressSQLiteError(
-                "cannot migrate through a read-only SQLite progress store"
-            )
-        connection = self._connect()
-        try:
-            connection.execute("BEGIN IMMEDIATE")
-            observed = self._read_revision_vector(connection)
-            if observed.transaction_revision != expected_revision:
-                raise ConcurrentSQLiteRevisionUpdate(
-                    "revision changed: expected "
-                    f"{expected_revision}, found {observed.transaction_revision}"
-                )
-            migrated = self._migrate_revision_domains_in_transaction(connection)
-            if apply:
-                connection.commit()
-            else:
-                connection.rollback()
-            return migrated
-        except (ProgressSQLiteError, ConcurrentSQLiteRevisionUpdate):
-            connection.rollback()
-            raise
-        except sqlite3.Error as exc:
-            connection.rollback()
-            raise ProgressSQLiteError(
-                f"SQLite progress storage migration failed: {exc}"
-            ) from exc
-        finally:
-            connection.close()
-
     def materialize(self) -> dict[str, Any]:
         with closing(self._connect()) as connection:
             self._validate_header(connection)
-            metadata = connection.execute(
-                "SELECT schema_version, revision FROM metadata WHERE singleton=1"
-            ).fetchone()
-            assert metadata is not None
-            result: dict[str, Any] = {
-                "schema_version": int(metadata[0]),
-                "revision": int(metadata[1]),
-                **{key: {} for key in SCALAR_TOP_LEVEL_KEYS},
-                **{collection: {} for collection in ENTITY_COLLECTIONS},
-            }
-            for row in connection.execute("SELECT key, payload FROM top_level_values"):
-                result[str(row[0])] = json.loads(str(row[1]))
-            for row in connection.execute(
-                "SELECT collection, entity_id, payload FROM entities ORDER BY collection, entity_id"
-            ):
-                result[str(row[0])][str(row[1])] = json.loads(str(row[2]))
-            return result
+            return self._materialize_connection(connection)
+
+    def materialize_with_revision_vector(
+        self,
+    ) -> tuple[dict[str, Any], SQLiteRevisionVector]:
+        """Read one document and its concurrency coordinates from one snapshot."""
+
+        connection = self._connect()
+        try:
+            self._validate_header(connection)
+            connection.execute("BEGIN")
+            vector = self._read_revision_vector(connection)
+            document = self._materialize_connection(connection)
+            if int(document["revision"]) != vector.transaction_revision:
+                raise ProgressSQLiteError(
+                    "SQLite progress snapshot is incoherent: document revision "
+                    f"{document['revision']}, transaction revision "
+                    f"{vector.transaction_revision}"
+                )
+            connection.rollback()
+            return document, vector
+        except Exception:
+            connection.rollback()
+            raise
+        finally:
+            connection.close()
+
+    @staticmethod
+    def _materialize_connection(connection: sqlite3.Connection) -> dict[str, Any]:
+        """Materialize the exact state visible to one existing transaction."""
+
+        metadata = connection.execute(
+            "SELECT schema_version, revision FROM metadata WHERE singleton=1"
+        ).fetchone()
+        if metadata is None:
+            raise ProgressSQLiteError("SQLite progress metadata singleton is missing")
+        result: dict[str, Any] = {
+            "schema_version": int(metadata[0]),
+            "revision": int(metadata[1]),
+            **{key: {} for key in SCALAR_TOP_LEVEL_KEYS},
+            **{collection: {} for collection in ENTITY_COLLECTIONS},
+        }
+        for row in connection.execute("SELECT key, payload FROM top_level_values"):
+            result[str(row[0])] = json.loads(str(row[1]))
+        for row in connection.execute(
+            "SELECT collection, entity_id, payload FROM entities ORDER BY collection, entity_id"
+        ):
+            result[str(row[0])][str(row[1])] = json.loads(str(row[2]))
+        return result
 
     def query_entity_ids(
         self,
@@ -859,8 +770,6 @@ class ProgressSQLiteStore:
         binary: str | None = None,
         pipeline_class: str | None = None,
         authored_order_role: str | None = None,
-        work_state: str | None = None,
-        reservation_state: str | None = None,
         physical_block_id: str | None = None,
         address_at_or_after: int | None = None,
         limit: int | None = None,
@@ -874,8 +783,6 @@ class ProgressSQLiteStore:
             ("binary", binary),
             ("pipeline_class", pipeline_class),
             ("authored_order_role", authored_order_role),
-            ("work_state", work_state),
-            ("reservation_state", reservation_state),
             ("physical_block_id", physical_block_id),
         ):
             if value is not None:
@@ -955,10 +862,6 @@ class ProgressSQLiteStore:
         expected_revision: int,
         apply: bool,
     ) -> SQLiteCommitResult:
-        if _validation_blocks_live_progress_mutation(self.path, apply=apply):
-            raise ProgressSQLiteError(
-                "packet/integration validation cannot apply live progress-authority mutations"
-            )
         if self.read_only:
             raise ProgressSQLiteError("cannot persist through a read-only SQLite progress store")
         upserts = upserts or {}
@@ -988,22 +891,6 @@ class ProgressSQLiteStore:
         try:
             connection.execute("BEGIN IMMEDIATE")
             observed_vector = self._read_revision_vector(connection)
-            user_version = int(
-                connection.execute("PRAGMA user_version").fetchone()[0]
-            )
-            enforced_columns = {
-                str(row[1])
-                for row in connection.execute("PRAGMA table_info(metadata)")
-            }
-            if (
-                user_version == USER_VERSION
-                and "revision_domains_enforced" in enforced_columns
-            ):
-                raise ProgressSQLiteError(
-                    "legacy single-revision mutation is disabled after revision-domain "
-                    "migration; use persist_scoped_changes with explicit semantic, "
-                    "evidence-generation, or scheduler CAS coordinates"
-                )
             observed = observed_vector.transaction_revision
             if observed != expected_revision:
                 raise ConcurrentSQLiteRevisionUpdate(
@@ -1055,39 +942,22 @@ class ProgressSQLiteStore:
                 self._rebuild_entity_indexes(
                     connection, collection, entity_id, json.loads(encoded), locations
                 )
-            user_version = int(connection.execute("PRAGMA user_version").fetchone()[0])
-            if user_version == USER_VERSION:
-                connection.execute(
-                    "UPDATE metadata SET revision=?, semantic_revision=?, "
-                    "evidence_generation_revision=?, scheduler_revision=? "
-                    "WHERE singleton=1 AND revision=?",
-                    (
-                        expected_revision + 1,
-                        observed_vector.semantic_revision + 1,
-                        observed_vector.evidence_generation_revision + 1,
-                        observed_vector.scheduler_revision + 1,
-                        expected_revision,
-                    ),
-                )
-                result_vector = SQLiteRevisionVector(
+            connection.execute(
+                "UPDATE metadata SET revision=?, semantic_revision=?, "
+                "evidence_generation_revision=? "
+                "WHERE singleton=1 AND revision=?",
+                (
                     expected_revision + 1,
                     observed_vector.semantic_revision + 1,
                     observed_vector.evidence_generation_revision + 1,
-                    observed_vector.scheduler_revision + 1,
-                )
-            else:
-                connection.execute(
-                    "UPDATE metadata SET revision=? WHERE singleton=1 AND revision=?",
-                    (expected_revision + 1, expected_revision),
-                )
-                # A v1 store has one conservative global coordinate. Legacy
-                # commits therefore advance every synthetic domain together.
-                result_vector = SQLiteRevisionVector(
-                    expected_revision + 1,
-                    expected_revision + 1,
-                    expected_revision + 1,
-                    expected_revision + 1,
-                )
+                    expected_revision,
+                ),
+            )
+            result_vector = SQLiteRevisionVector(
+                expected_revision + 1,
+                observed_vector.semantic_revision + 1,
+                observed_vector.evidence_generation_revision + 1,
+            )
             violations = tuple(tuple(row) for row in connection.execute("PRAGMA foreign_key_check"))
             if violations:
                 raise ProgressSQLiteError(f"foreign-key violations after proposed commit: {violations!r}")
@@ -1146,10 +1016,6 @@ class ProgressSQLiteStore:
         the action rolls back the SQLite transaction.
         """
 
-        if _validation_blocks_live_progress_mutation(self.path, apply=apply):
-            raise ProgressSQLiteError(
-                "packet/integration validation cannot apply live progress-authority mutations"
-            )
         if self.read_only:
             raise ProgressSQLiteError(
                 "cannot persist through a read-only SQLite progress store"
@@ -1227,7 +1093,6 @@ class ProgressSQLiteStore:
                 REVISION_DOMAIN_EVIDENCE_GENERATION: (
                     observed_vector.evidence_generation_revision
                 ),
-                REVISION_DOMAIN_SCHEDULER: observed_vector.scheduler_revision,
             }
             for domain, expected in expected_domain_revisions.items():
                 observed = observed_by_domain[domain]
@@ -1308,17 +1173,15 @@ class ProgressSQLiteStore:
                 evidence_generation_revision=next_by_domain[
                     REVISION_DOMAIN_EVIDENCE_GENERATION
                 ],
-                scheduler_revision=next_by_domain[REVISION_DOMAIN_SCHEDULER],
             )
             cursor = connection.execute(
                 "UPDATE metadata SET revision=?, semantic_revision=?, "
-                "evidence_generation_revision=?, scheduler_revision=? "
+                "evidence_generation_revision=? "
                 "WHERE singleton=1 AND revision=?",
                 (
                     result_vector.transaction_revision,
                     result_vector.semantic_revision,
                     result_vector.evidence_generation_revision,
-                    result_vector.scheduler_revision,
                     observed_vector.transaction_revision,
                 ),
             )
@@ -1414,23 +1277,6 @@ class ProgressSQLiteStore:
             if facet_count != entity_count:
                 errors.append("entity_facets does not contain exactly one row per entity")
         return SQLiteValidation(not errors, integrity, violations, tuple(errors))
-
-
-def import_legacy_json(
-    json_path: str | Path,
-    sqlite_path: str | Path,
-    *,
-    cutover_pair_id: str,
-    overwrite: bool = False,
-) -> ProgressSQLiteStore:
-    source_path = Path(json_path)
-    try:
-        data = json.loads(source_path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise ProgressSQLiteError(f"{source_path}: unreadable legacy progress JSON: {exc}") from exc
-    return ProgressSQLiteStore.create_from_mapping(
-        sqlite_path, data, cutover_pair_id=cutover_pair_id, overwrite=overwrite
-    )
 
 
 def read_progress_metadata(path: str | Path) -> SQLiteMetadata:

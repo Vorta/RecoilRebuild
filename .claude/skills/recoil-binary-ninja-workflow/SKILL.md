@@ -1,6 +1,6 @@
 ---
 name: recoil-binary-ninja-workflow
-description: Inspect the already-open Recoil Binary Ninja database safely and read-only. Use when you need current names, types, layouts, globals, xrefs, assembly, function order, HLIL caveats, BN-backed status checks, or a fact packet without changing Binary Ninja state.
+description: Inspect the already-open Recoil Binary Ninja database read-only for assembly, xrefs, layouts, globals, imports, function order, and current analysis facts.
 ---
 
 # Recoil BN Read-Only Evidence (Claude surface)

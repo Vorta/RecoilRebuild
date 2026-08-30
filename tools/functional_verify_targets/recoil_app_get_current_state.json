@@ -13,7 +13,7 @@
   "functional_evidence": [
     "Binary Ninja assembly at 0x443140 loads the current state index from ecx+0xc8, returns zero for negative or index >= 16, and otherwise returns dword [ecx+index*4+0xd8].",
     "Binary Ninja decompilation for 0x443140 has no warnings or tags and shows the same bounds-checked state-stack accessor.",
-    "The dependency frontier for 0x443140 has no direct callees, unresolved calls, indirect calls, or functional-lane blockers.",
+    "The dependency frontier for 0x443140 has no direct callees, unresolved calls, indirect calls, or functional-verification blockers.",
     "The native recoil_app_get_current_state_smoke verifies negative index, first entry, last valid entry, and out-of-range index behavior."
   ],
   "vc5_attempt": "python tools/recoil.py verify vc5 0x443140"

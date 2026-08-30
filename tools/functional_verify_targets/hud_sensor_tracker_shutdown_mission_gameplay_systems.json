@@ -13,7 +13,7 @@
   "functional_evidence": [
     "Binary Ninja assembly at 0x417d40 returns 1 immediately when missionLoaded is zero; otherwise it logs shutdown checkpoints, clears the reticle/HUD/aux overlay, captures and stops active sound handles, disables the mission camera flag, shuts down map/objectives, unregisters gameplay networking, closes player/pickup/turret/weapon/effect/animation/DEClient/model/image systems, clears render/display/camera targets, logs the world large-model count, destroys the mission sample set named from missionId, clears display/window/camera/world/loaded fields, calls ResetMissionState, and returns 1.",
     "Binary Ninja decompilation for 0x417d40 has no warnings or tags and shows the same early guard, shutdown ordering, sprintf calls, global mission sound-name buffer use at offset 16, field clears, ResetMissionState call, and success return.",
-    "The dependency frontier for 0x417d40 has no visible functional-lane blockers after accepting all direct callees and providers in the current session.",
+    "The dependency frontier for 0x417d40 has no visible functional-verification blockers after accepting all direct callees and providers in the current session.",
     "The native hud_sensor_shutdown_mission_gameplay_systems_early_smoke verifies the unloaded guard returns 1 without clearing already-present world/mission-id state."
   ],
   "vc5_attempt": ""

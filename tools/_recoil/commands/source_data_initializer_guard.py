@@ -18,21 +18,19 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from _recoil.lib.progress import DEFAULT_PROGRESS_PATH, ProgressDocument
+from _recoil.lib.progress import DEFAULT_PROGRESS_PATH, SCHEMA_VERSION, ProgressDocument
 from _recoil.lib.tooling import REPO_ROOT, display_path, strip_comments_and_strings
 
 
 DEFAULT_PROGRESS = DEFAULT_PROGRESS_PATH.relative_to(REPO_ROOT).as_posix()
-LEGACY_PROGRESS = ".agent/RECONSTRUCTION_PROGRESS.json"
 VALID_DATA_STATUSES = {"✅", "❌"}
 VALID_EXPECTED_SHAPES = {"concrete-initializer-list", "bss-zero"}
 
 
 def find_workspace_root(scan_root: Path) -> Path:
     default_manifest = Path(DEFAULT_PROGRESS)
-    legacy_manifest = Path(LEGACY_PROGRESS)
     for candidate in (scan_root, *scan_root.parents):
-        if (candidate / default_manifest).exists() or (candidate / legacy_manifest).exists():
+        if (candidate / default_manifest).exists():
             return candidate
     return scan_root
 
@@ -63,28 +61,7 @@ def is_relative_to(path: Path, root: Path) -> bool:
     return True
 
 
-def legacy_source_data_records_from_evidence(
-    path: Path,
-    evidence: Mapping[str, Any],
-) -> list[Mapping[str, Any]]:
-    records: list[Mapping[str, Any]] = []
-    for evidence_id, evidence_record in evidence.items():
-        location = f"{path}: evidence[{evidence_id!r}]"
-        if not isinstance(evidence_record, Mapping):
-            raise ValueError(f"{location} must be an object")
-        if evidence_record.get("kind") != "legacy-data-initializer":
-            continue
-        provenance = evidence_record.get("provenance")
-        if not isinstance(provenance, Mapping):
-            raise ValueError(f"{location} expected object field 'provenance'")
-        record = provenance.get("record")
-        if not isinstance(record, Mapping):
-            raise ValueError(f"{location}.provenance expected object field 'record'")
-        records.append(record)
-    return records
-
-
-def source_data_records_from_schema_five(
+def source_data_records_from_progress(
     path: Path,
     document: ProgressDocument,
 ) -> list[Mapping[str, Any]]:
@@ -154,37 +131,24 @@ def source_data_records_from_schema_five(
 
 
 def load_manifest(path: Path) -> list[dict[str, str]]:
-    document: ProgressDocument | None = None
     if path.suffix.lower() in {".sqlite", ".sqlite3", ".db"}:
         document = ProgressDocument.load(path)
         data: Any = document.data
+        if data.get("schema_version") != SCHEMA_VERSION:
+            raise ValueError(
+                f"{path}: unsupported unified progress schema_version "
+                f"{data.get('schema_version')!r}; expected schema_version {SCHEMA_VERSION}"
+            )
+        globals_value: Any = source_data_records_from_progress(path, document)
     else:
-        # Explicit JSON inputs remain supported for legacy migration fixtures.
+        # A standalone guard manifest may be JSON, but the unified progress
+        # authority is SQLite-only.
         data = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(data, dict):
-        raise ValueError(f"{path}: expected a progress object")
-
-    schema_version = data.get("schema_version")
-    if schema_version == 5:
-        document = document or ProgressDocument.load(path)
-        globals_value: Any = source_data_records_from_schema_five(
-            path,
-            document,
-        )
-    elif schema_version in {1, 2}:
+        if not isinstance(data, dict):
+            raise ValueError(f"{path}: expected a manifest object")
+        if "schema_version" in data:
+            raise ValueError(f"{path}: unified progress input must be SQLite")
         globals_value = data.get("globals")
-        if globals_value is None:
-            evidence = data.get("evidence")
-            if not isinstance(evidence, Mapping):
-                raise ValueError(f"{path}: unified progress evidence must be an object")
-            globals_value = legacy_source_data_records_from_evidence(path, evidence)
-    elif schema_version is None:
-        globals_value = data.get("globals")
-    else:
-        raise ValueError(
-            f"{path}: unsupported unified progress schema_version {schema_version!r}; "
-            "expected schema_version 5"
-        )
 
     if not isinstance(globals_value, list):
         raise ValueError(f"{path}: expected list field 'globals'")
@@ -384,11 +348,6 @@ def main(argv: list[str] | None = None) -> int:
         help="alias for --root; source file or directory to scan",
     )
     parser.add_argument("--progress", help="unified reconstruction progress path")
-    parser.add_argument(
-        "--summary",
-        action="store_true",
-        help="Accepted for compatibility with handoff guard commands.",
-    )
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
 

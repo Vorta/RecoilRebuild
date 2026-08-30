@@ -4,16 +4,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import contextlib
 import difflib
-import importlib
-import io
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
-from typing import Any, Iterable, Mapping, Sequence
 
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio
 from _recoil.lib.progress import DEFAULT_PROGRESS_PATH
@@ -35,7 +31,6 @@ class CommandSpec:
     mutates: bool = False
     needs_binja: bool = False
     required_revision_domains: tuple[str, ...] = ()
-    packet_binding: str = "none"
     build_root_contract: str = "none"
     ledger_routing: str = "default"
     mutation_scope: str = "none"
@@ -61,7 +56,6 @@ def spec(
     mutates: bool = False,
     needs_binja: bool = False,
     required_revision_domains: tuple[str, ...] = (),
-    packet_binding: str = "none",
     build_root_contract: str = "none",
     ledger_routing: str = "default",
     mutation_scope: str = "none",
@@ -77,7 +71,6 @@ def spec(
         mutates=mutates,
         needs_binja=needs_binja,
         required_revision_domains=required_revision_domains,
-        packet_binding=packet_binding,
         build_root_contract=build_root_contract,
         ledger_routing=ledger_routing,
         mutation_scope=mutation_scope,
@@ -90,21 +83,10 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec("progress show", "progress_cli", prepend=("show",), summary="Show a joined owner/block/semantic/order/link/byte view.", category="progress", examples=("python tools/recoil.py progress show 0x401000", "python tools/recoil.py progress show recoil:owner:misc_unresolved.cabout_dlg")),
     spec("progress find", "progress_cli", prepend=("find",), summary="Search all unified reconstruction progress entities.", category="progress", examples=("python tools/recoil.py progress find CAboutDlg",)),
     spec("progress audit", "progress_cli", prepend=("audit",), summary="Audit unified tracker schema, relationships, evidence, and derived pipeline invariants.", category="progress", examples=("python tools/recoil.py progress audit --strict", "python tools/recoil.py progress audit --scope evidence --strict")),
-    spec("progress compact", "progress_cli", prepend=("compact",), summary="Parent-only no-archive active-only schema-v5 tracker compaction with exact scheduler parity.", category="progress", examples=("python tools/recoil.py progress compact --expected-revision <revision> --dry-run --json",), mutates=True),
-    spec("progress report", "progress_cli", prepend=("report",), summary="Render an on-demand unified progress report without creating a shadow tracker.", category="progress", examples=("python tools/recoil.py progress report --format markdown",)),
+    spec("progress report", "progress_cli", prepend=("report",), summary="Render the current serial task on demand without creating a shadow tracker.", category="progress", examples=("python tools/recoil.py progress report --json",)),
     spec("docs readme-progress", "readme_progress", summary="Update or check the deterministic public README progress snapshot derived from the unified tracker.", category="docs", examples=("python tools/recoil.py docs readme-progress", "python tools/recoil.py docs readme-progress --check --json"), mutates=True),
-    spec(
-        "maintenance migrate-ledgers-sqlite",
-        "ledger_sqlite_migration",
-        summary="Parent-only guarded direct cutover of both legacy JSON authorities to a matched SQLite database pair.",
-        category="validation",
-        examples=("python tools/recoil.py maintenance migrate-ledgers-sqlite --progress-json <absolute-legacy-progress-json> --issues-json <absolute-legacy-issues-json> --progress-db <absolute-noncanonical-progress-db> --issues-db <absolute-noncanonical-issues-db> --expected-progress-revision <revision> --expected-issues-revision <revision> --dry-run --json",),
-        mutates=True,
-    ),
-    spec("policy show", "policy_cli", prepend=("show",), summary="Show one machine-readable reconstruction scheduling policy.", category="docs", examples=("python tools/recoil.py policy show authored-order --json",)),
-    spec("verify linked-byte", "live_byte_verify", prepend=("linked",), summary="Freshly rebuild and directly scan the linked-byte lane, stopping at the earliest real divergence.", category="verification", examples=("python tools/recoil.py verify linked-byte", "python tools/recoil.py verify linked-byte --at 0x401000")),
+    spec("verify linked-byte", "live_byte_verify", prepend=("linked",), summary="Freshly rebuild and directly scan linked bytes, stopping at the earliest real divergence.", category="verification", examples=("python tools/recoil.py verify linked-byte", "python tools/recoil.py verify linked-byte --at 0x401000")),
     spec("verify authored-byte", "live_byte_verify", prepend=("authored",), summary="Freshly rebuild and directly scan authored object, relocation, target, and linked-body semantics.", category="verification", examples=("python tools/recoil.py verify authored-byte", "python tools/recoil.py verify authored-byte --at 0x401000")),
-    spec("verify authored-object-byte", "live_byte_verify", prepend=("object",), summary="Freshly compile and directly scan authored object bodies outside relocation fields.", category="verification", examples=("python tools/recoil.py verify authored-object-byte", "python tools/recoil.py verify authored-object-byte --at 0x401180")),
       spec(
           "verify call-contract",
           "call_contract_verify",
@@ -112,7 +94,6 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
           category="verification",
           examples=(
               "python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json",
-              "python tools/recoil.py verify call-contract --slice <slice-id> --packet-id <packet-id> --verification-currentness-audit --build-root <packet-root> --json",
               "python tools/recoil.py verify call-contract --target <target-id> --all-authored-bodies --build-root <fresh-root> --json",
           ),
         needs_binja=True,
@@ -120,26 +101,14 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec("verify final-image", "live_final_verify", summary="Freshly build and validate complete typed PE semantics against retail; raw file differences and COFF time are diagnostic only.", category="verification", examples=("python tools/recoil.py verify final-image", "python tools/recoil.py verify final-image --candidate build/vc5-final/Recoil.exe --map build/vc5-final/Recoil.map --json"), mutates=True),
     spec("verify authored-order scaffold", "authored_order", prepend=("scaffold",), summary="Draft or explicitly write a fail-closed current-block authored-order VC5 manifest candidate.", category="verification", examples=("python tools/recoil.py verify authored-order scaffold 0x401060 --json", "python tools/recoil.py verify authored-order scaffold 0x401060 --output build/reconstruction-evidence/candidates/order_401060.json --json"), mutates=True),
     spec("verify authored-order sweep", "authored_order", prepend=("sweep",), summary="Read-only mechanical scaffold-readiness sweep across remaining authored-order blocks.", category="verification", examples=("python tools/recoil.py verify authored-order sweep --from-current --json",)),
-    spec("issue report", "workspace_issues", prepend=("report",), summary="Record an agent tooling/process problem for a future agent to fix.", category="issue", examples=("python tools/recoil.py issue report --kind tool-error --severity high --summary \"...\" --area tools/recoil.py --impact \"...\" --actual \"...\" --repro \"...\" --next-action \"...\"",), mutates=True),
+    spec("issue report", "workspace_issues", prepend=("report",), summary="Record an agent tooling/process problem for a future work session.", category="issue", examples=("python tools/recoil.py issue report --kind tool-error --severity high --summary \"...\" --area tools/recoil.py --impact \"...\" --actual \"...\" --repro \"...\" --next-action \"...\"",), mutates=True),
     spec("issue request", "workspace_issues", prepend=("request",), summary="Record an agent tooling/process improvement request.", category="issue", examples=("python tools/recoil.py issue request --severity medium --summary \"...\" --area tools/recoil.py --impact \"...\" --requested-change \"...\" --benefit \"...\" --next-action \"...\"",), mutates=True),
     spec("issue list", "workspace_issues", prepend=("list",), summary="List open agent tooling/process issue reports.", category="issue", examples=("python tools/recoil.py issue list --status open",)),
     spec("issue show", "workspace_issues", prepend=("show",), summary="Show one agent tooling/process issue report.", category="issue", examples=("python tools/recoil.py issue show WSI-YYYYMMDD-NNN",)),
     spec("issue resolve", "workspace_issues", prepend=("resolve",), summary="Mark an agent tooling/process issue resolved.", category="issue", examples=("python tools/recoil.py issue resolve WSI-YYYYMMDD-NNN --resolution \"...\"",), mutates=True),
     spec("issue wont-fix", "workspace_issues", prepend=("wont-fix",), summary="Close an agent tooling/process issue without resolution and remove its terminal active-only rows.", category="issue", mutates=True),
     spec("issue reopen", "workspace_issues", prepend=("reopen",), summary="Reopen an agent tooling/process issue.", category="issue", examples=("python tools/recoil.py issue reopen WSI-YYYYMMDD-NNN --reason \"...\"",), mutates=True),
-    spec("issue compact", "workspace_issues", prepend=("compact",), summary="Parent-only no-archive active-only workspace-issue ledger compaction.", category="issue", examples=("python tools/recoil.py issue compact --expected-revision <revision> --dry-run --json",), mutates=True),
     spec("issue audit", "workspace_issues", prepend=("audit",), summary="Validate the agent tooling/process issue ledger shape.", category="issue", examples=("python tools/recoil.py issue audit --strict",)),
-    spec("issue work set", "workspace_issues", prepend=("work", "set"), summary="Create one revision-guarded workspace-issue work packet.", category="issue", mutates=True),
-    spec("issue work list", "workspace_issues", prepend=("work", "list"), summary="List explicit workspace-issue work packets.", category="issue"),
-    spec("issue work show", "workspace_issues", prepend=("work", "show"), summary="Show one workspace-issue packet and reservation history.", category="issue"),
-    spec("issue work reserve", "workspace_issues", prepend=("work", "reserve"), summary="Reserve one ready workspace-issue packet after global conflict checking.", category="issue", mutates=True),
-    spec("issue work close", "workspace_issues", prepend=("work", "close"), summary="Release and close one active workspace-issue packet.", category="issue", mutates=True),
-    spec("workspace worktree status", "worktree_control", prepend=("status",), summary="Inspect canonical and linked Git worktrees, packet associations, build roots, and branch hygiene.", category="issue"),
-    spec("workspace worktree create", "worktree_control", prepend=("create",), summary="Parent-only creation and reservation of one linked workspace-issue packet worktree.", category="issue", mutates=True),
-    spec("workspace worktree validate", "worktree_control", prepend=("validate",), summary="Validate one linked workspace-issue packet commit and exact authored closure.", category="issue"),
-    spec("workspace worktree integrate", "worktree_control", prepend=("integrate",), summary="Parent-only validated temporary-worktree integration of one packet branch into master.", category="issue", mutates=True),
-    spec("workspace worktree retire", "worktree_control", prepend=("retire",), summary="Parent-only removal of one integrated packet worktree, branch, and authenticated build root.", category="issue", mutates=True),
-    spec("workspace worktree hygiene", "worktree_control", prepend=("hygiene",), summary="Audit branch, linked-worktree, association, and external-build-root hygiene.", category="issue"),
     spec(
         "doctor",
         "doctor",
@@ -190,7 +159,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
             "Run one registered function-order target in an isolated build root without Binary "
             "Ninja or byte comparison. The source-edit loop is live and receipt-free; ordinary "
             "comments do not participate in validation, while address-bearing markers remain exact. "
-            "A full-order packet pairs the compiling object target with --linked-target so the same "
+            "A full-order validation pairs the compiling object target with --linked-target so the same "
             "non-mutating loop reports exact linked selected-population and seam divergence."
         ),
         category="verification",
@@ -256,7 +225,6 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
         mutates=True,
     ),
     spec("audit artifacts", "artifact_audit", summary="Dry-run or empty the complete direct build directory while retaining build/, with explicit local-root and session-scratch modes.", category="audit", examples=("python tools/recoil.py audit artifacts", "python tools/recoil.py audit artifacts --delete", "python tools/recoil.py audit artifacts --include-vs --older-than-days 30", "python tools/recoil.py audit artifacts --session-only", "python tools/recoil.py audit artifacts --session-only --delete"), mutates=True),
-    spec("audit current-metadata", "current_metadata_audit", summary="Reject stale static current-cursor narratives and validate generated current metadata against progress next.", category="audit", examples=("python tools/recoil.py audit current-metadata --strict",)),
     spec("audit state-performance", "state_performance_audit", summary="Measure fresh-process SQLite ledger reads and bounded scratch-copy transactions against governed performance ceilings.", category="audit", examples=("python tools/recoil.py audit state-performance --strict", "python tools/recoil.py audit state-performance --json")),
     spec("audit final-image-catalog", "final_image_catalog_audit", summary="Derive and audit complete typed final-image coverage live from retail plus accepted tracker facts, without building a candidate.", category="audit", examples=("python tools/recoil.py audit final-image-catalog --json",)),
     spec("audit relocation-expectations", "relocation_expectations", summary="Derive candidate-independent authored relocation expectations live from retail and accepted typed identities.", category="audit", examples=("python tools/recoil.py audit relocation-expectations --at 0x401000 --json",)),
@@ -306,8 +274,8 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     ),
     spec("audit docblocks", "function_docblock_audit", summary="Audit reconstruction docblocks and source-comment hygiene.", category="audit", examples=("python tools/recoil.py audit docblocks --path src/path/file.cpp --summary --max 50", "python tools/recoil.py audit docblocks --path src --summary --max 50")),
     spec("audit workspace", "workspace_hygiene", summary="Detect generated artifacts outside approved output roots.", category="audit", examples=("python tools/recoil.py audit workspace --strict",)),
-    spec("audit agent-surface", "agent_surface_audit", summary="Audit agent-facing tool, doc, skill, and role alignment.", category="audit", examples=("python tools/recoil.py audit agent-surface --strict",)),
-    spec("audit workflow-contracts", "workflow_contract_audit", summary="Exercise compact reservation, handoff, mutation-boundary, and single-validator live acceptance contracts.", category="audit", examples=("python tools/recoil.py audit workflow-contracts --strict", "python tools/recoil.py audit workflow-contracts --json")),
+    spec("audit agent-surface", "agent_surface_audit", summary="Audit the serial agent-facing tool, documentation, and skill surface.", category="audit", examples=("python tools/recoil.py audit agent-surface --strict",)),
+    spec("audit pipeline-contracts", "pipeline_contract_audit", summary="Audit the one serial task projection and its direct validation/acceptance command contracts.", category="audit", examples=("python tools/recoil.py audit pipeline-contracts --strict", "python tools/recoil.py audit pipeline-contracts --json")),
     spec("audit call-contract-readiness", "call_contract_readiness_audit", summary="Preflight exact dependency closure for original authored call-contract slices.", category="audit", examples=("python tools/recoil.py audit call-contract-readiness --all-slices --strict --json", "python tools/recoil.py audit call-contract-readiness --slice recoil:call-contract-slice:0x401000-0x408210 --json")),
     spec("audit pipeline-reachability", "pipeline_reachability_audit", summary="Prove every fail-closed live pipeline consumer has a reachable candidate-independent expected-fact producer.", category="audit", examples=("python tools/recoil.py audit pipeline-reachability --strict", "python tools/recoil.py audit pipeline-reachability --json")),
     spec(
@@ -338,7 +306,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec("guard reinterpret-cast", "no_reinterpret_cast", summary="Reject named reinterpret_cast usage.", category="guard", examples=("python tools/recoil.py guard reinterpret-cast --root src",)),
     spec("guard provider", "provider_boundary_guard", summary="Reject fake provider internals and provider ABI shims.", category="guard", examples=("python tools/recoil.py guard provider --root src --summary",)),
     spec("guard original-symbol", "original_source_symbol_guard", summary="Audit unsupported reconstruction helper dependencies.", category="guard", examples=("python tools/recoil.py guard original-symbol --root src --max 50",)),
-    spec("guard source-data", "source_data_initializer_guard", summary="Validate source data initializer rules recorded in unified progress.", category="guard", examples=("python tools/recoil.py guard source-data", "python tools/recoil.py guard source-data --path src/Battlesport/CZRecoilFrame.cpp --summary"), ledger_routing="canonical-machine-local-default"),
+    spec("guard source-data", "source_data_initializer_guard", summary="Validate source data initializer rules recorded in unified progress.", category="guard", examples=("python tools/recoil.py guard source-data", "python tools/recoil.py guard source-data --path src/Battlesport/CZRecoilFrame.cpp"), ledger_routing="canonical-machine-local-default"),
     spec("guard multiline", "multiline_style_guard", summary="Check multiline declaration/call style.", category="guard", examples=("python tools/recoil.py guard multiline --root src",)),
     spec("guard source-placement", "source_placement_guard", summary="Check source placement and provenance conventions.", category="guard", examples=("python tools/recoil.py guard source-placement --root src",)),
     spec("guard vc5-manifest", "vc5_manifest_source_guard", summary="Reject VC manifest-local source and generated header shadows.", category="guard", examples=("python tools/recoil.py guard vc5-manifest", "python tools/recoil.py guard vc5-manifest --path tools/vc5_verify_targets/target.json")),
@@ -387,8 +355,6 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
 )
 
 _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
-    spec("progress handoff", "progress_cli", prepend=("handoff",), summary="Render one compact worker packet and authenticated execution context from a real active reservation; fail closed when no matching reservation exists.", category="progress", examples=("python tools/recoil.py progress handoff --packet-id <packet-id> --json",), packet_binding="active-reservation-required", build_root_contract="return-authenticated-packet-root", ledger_routing="canonical-machine-local-default"),
-    spec("progress current-metadata refresh", "current_metadata_mutation", prepend=("refresh",), summary="Revision-guard regeneration of live scheduler metadata and historicalize audited stale cursor narratives.", category="progress", examples=("python tools/recoil.py progress current-metadata refresh --expected-revision <revision> --dry-run --json",), mutates=True),
     spec("progress relocation-exception set", "relocation_expectation_mutation", prepend=("set",), summary="Revision-guard one reviewed retail-relocation ambiguity exception against exact current source and target context.", category="progress", examples=("python tools/recoil.py progress relocation-exception set --source-symbol-id <physical-symbol-id> --source-address 0xNNNNNN --payload-json '<json-object>' --expected-revision <revision> --dry-run --json",), mutates=True),
     spec("progress relocation-target bind", "relocation_target_mutation", prepend=("bind",), summary="Bind one immutable-retail relocation operand to reviewed existing or exact known-extent target identity.", category="progress", examples=("python tools/recoil.py progress relocation-target bind --source-symbol-id <physical-symbol-id> --source-address 0xNNNNNN --payload-json '<reviewed-binding>' --expected-revision <revision> --dry-run --json",), mutates=True),
     spec(
@@ -423,7 +389,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
             "three-body canonical VC5SP3 ATLIMPL provider cluster."
         ),
         description=(
-            "Dry-run-first one-time parent route for exactly 0x42db50, 0x42dc30, "
+            "Dry-run-first one-time reviewed route for exactly 0x42db50, 0x42dc30, "
             "and 0x42dcf0 after the separate pipeline-classification batch and target "
             "synchronization. It guards the complete legacy owner and post-classification "
             "function snapshots, compiles only the fixed canonical VC5SP3 ATLIMPL recipe "
@@ -451,12 +417,12 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress_cli",
         prepend=("owner", "repair-primary-data-tier-x"),
         summary=(
-            "Parent-only conservative initialization of absent tier-X records for "
+            "Direct conservative initialization of absent tier-X records for "
             "exact existing same-owner authored primary data."
         ),
         category="progress",
         description=(
-            "Dry-run-first parent repair route. One reviewed "
+            "Dry-run-first reviewed repair route. One reviewed "
             "recoil-owner-primary-data-tier-x-repair-v1 payload guards an exact "
             "current non-provider owner and complete current primary-data relationship "
             "snapshots. Every selected symbol must already be authored data, primary-owned, "
@@ -473,10 +439,10 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress owner downgrade",
         "progress_cli",
         prepend=("owner", "downgrade"),
-        summary="Parent-only atomic conservative downgrade of selected gates and primary-entry tiers on one exact current authored owner.",
+        summary="Atomically and conservatively downgrade selected gates and primary-entry tiers on one exact current authored owner.",
         category="progress",
         description=(
-            "Dry-run-first parent route. A reviewed recoil-owner-downgrade-v1 payload "
+            "Dry-run-first reviewed route. A recoil-owner-downgrade-v1 payload "
             "guards one exact current non-provider owner, every selected current gate "
             "state, and every selected current primary-entry tier. It permits only "
             "accepted/none gate states to become blocked, pending, or deferred and "
@@ -493,10 +459,10 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress owner replace-batch",
         "progress_cli",
         prepend=("owner", "replace-batch"),
-        summary="Parent-only atomic replacement of exact reviewed source-owner snapshots and guarded primary-function/data memberships.",
+        summary="Atomically replace exact reviewed source-owner snapshots and guarded primary-function/data memberships.",
         category="progress",
         description=(
-            "Dry-run-first parent route. Reviewed v1 payloads supply exact current owner records and "
+            "Dry-run-first reviewed route. V1 payloads supply exact current owner records and "
             "complete replacement owner records. V2 additionally supplies exact reviewed currently-unowned "
             "function bootstraps, primary-data reassignments, unknown-extent data-symbol bootstraps, and "
             "optional exact primary-function detachments. A detachment applies only to an already reviewed "
@@ -524,11 +490,11 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress_cli",
         prepend=("block", "reclassify-provider"),
         summary=(
-            "Parent-only exact-snapshot reclassification of one stale authored physical "
+            "Direct exact-snapshot reclassification of one stale authored physical "
             "block to a provider boundary."
         ),
         description=(
-            "Dry-run-first parent route for one reviewed physical block whose contribution "
+            "Dry-run-first reviewed route for one physical block whose contribution "
             "kind and provisional compile/source placement are stale after provider ownership "
             "acceptance. The v1 payload supplies the complete exact current block snapshot, "
             "canonical expected provider-owner ids, an explicit placement-clearing "
@@ -553,11 +519,11 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress_cli",
         prepend=("block", "accept-authored-non-gating"),
         summary=(
-            "Parent-only atomic acceptance of exact live-cursor physical blocks with zero "
+            "Direct atomic acceptance of exact live-cursor physical blocks with zero "
             "authored gating identities."
         ),
         description=(
-            "Dry-run-first parent route for one reviewed contiguous physical-block prefix at "
+            "Dry-run-first reviewed route for one contiguous physical-block prefix at "
             "the live authored-order cursor. The v1 payload supplies complete exact current "
             "block snapshots and one exact expected authored cursor-after. Every contribution "
             "membership is rederived live; every member must have a resolved, compatible, "
@@ -582,9 +548,9 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress block replace",
         "progress_cli",
         prepend=("block", "replace"),
-        summary="Parent-only atomic replacement of one reviewed physical block and all affected symbol/semantic assignments.",
+        summary="Atomically replace one reviewed physical block and all affected symbol/semantic assignments.",
         description=(
-            "Dry-run-first parent route for one exact unresolved physical block. The reviewed v1 JSON "
+            "Dry-run-first reviewed route for one exact unresolved physical block. The v1 JSON "
             "payload staleness-guards the current range, source/provenance fields, contribution inventory, "
             "and semantic inventory; it then enumerates contiguous replacement blocks, every selected "
             "symbol assignment, and complete replacement semantic spans. Existing semantic observations "
@@ -610,7 +576,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         prepend=("symbol", "set-pipeline-class-batch"),
         summary="Revision-guard a reviewed batch of exact function-row pipeline classifications.",
         description=(
-            "Dry-run-first parent route for exact existing Recoil function-symbol ids and addresses. "
+            "Dry-run-first reviewed route for exact existing Recoil function-symbol ids and addresses. "
             "Every JSON batch item must carry reviewed=true, the current pipeline_class and "
             "authored_order_role used for staleness detection, and one compatible replacement pair. "
             "Apply changes only those two classification fields; successful authoritative apply "
@@ -627,10 +593,10 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress_cli",
         prepend=("symbol", "set-logical-alias-group"),
         summary=(
-            "Parent-only revision-guard one reviewed physical ICF row and its authored logical aliases."
+            "Revision-guard one reviewed physical ICF row and its authored logical aliases."
         ),
         description=(
-            "Parent-only dry-run-first route for one exact existing Recoil physical function row. The "
+            "Dry-run-first reviewed route for one exact existing Recoil physical function row. The "
             "reviewed v1-v3 contracts retain the established non-authored/compiler-generated-ICF "
             "representative model. The reviewed v1 "
             "payload guards the complete current alias-related state, selects exactly one authored "
@@ -676,11 +642,11 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress_cli",
         prepend=("symbol", "replace-padding"),
         summary=(
-            "Parent-only removal of one exact false function identity after immutable-retail "
+            "Direct removal of one exact false function identity after immutable-retail "
             "NOP-padding verification."
         ),
         description=(
-            "Dry-run-first parent route for one reviewed recoil-function-padding-correction-v1 "
+            "Dry-run-first reviewed route for one recoil-function-padding-correction-v1 "
             "payload. The command exact-guards the complete current function and semantic-span "
             "rows plus the retained physical block's scalar/count/membership state; reads bytes "
             "only from the registered immutable support/Recoil.exe; and refuses non-NOP bytes, "
@@ -698,29 +664,10 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         mutates=True,
     ),
     spec(
-        "progress work show",
-        "progress_cli",
-        prepend=("work", "show"),
-        summary="Show one exact structured work item.",
-        category="progress",
-        examples=(
-            "python tools/recoil.py progress work show <work-item-id> --json",
-        ),
-    ),
-    spec("progress work claim-current", "progress_cli", prepend=("work", "claim-current"), summary="Atomically create and reserve compatible current packets through prioritized multi-lane or focused individual-lane claims.", category="progress", examples=("python tools/recoil.py progress work claim-current --lane all --max-packets <N> --expected-scheduler-revision <scheduler-revision> --apply --json", "python tools/recoil.py progress work claim-current --lane primary --expected-scheduler-revision <scheduler-revision> --apply --json"), mutates=True, required_revision_domains=("scheduler",), packet_binding="allocator", build_root_contract="allocate-authenticated-external-root", ledger_routing="canonical-machine-local-default", mutation_scope="scheduler"),
-    spec("progress work create-explicit", "progress_cli", prepend=("work", "create-explicit"), summary="Parent-only journal-first output-root allocation followed by one final atomic activation of an exact explicitly user-selected maintenance or read-only diagnostic packet.", category="progress", examples=("python tools/recoil.py progress work create-explicit --payload-file build/diagnostics/<packet>.json --expected-scheduler-revision <revision> --expected-semantic-revision <revision> --dry-run --json", "python tools/recoil.py progress work create-explicit --payload-file build/diagnostics/<packet>.json --expected-scheduler-revision <revision> --expected-semantic-revision <revision> --apply --json"), mutates=True),
-    spec("progress work reserve", "progress_cli", prepend=("work", "reserve"), summary="Reserve one scheduler-launchable or exact retry-eligible returned packet with non-expiring normalized resource claims.", category="progress", mutates=True),
-    spec("progress work return", "progress_cli", prepend=("work", "return"), summary="Return one active explicit maintenance packet with bounded nonaccepting feedback.", category="progress", mutates=True),
-    spec("progress work return-binja", "progress_cli", prepend=("work", "return-binja"), summary="Parent-only governed Binary Ninja read-plan execution and scheduler-CAS return for one active BN-enabled explicit packet.", category="progress", mutates=True, needs_binja=True),
-    spec("progress work recover-expired", "progress_cli", prepend=("work", "recover-expired"), summary="Release one expired explicit maintenance reservation back to ready state without acceptance.", category="progress", mutates=True),
-    spec("progress work recover-allocation", "progress_cli", prepend=("work", "recover-allocation"), summary="Authenticate and recover one journal-owned failed explicit output allocation without acceptance.", category="progress", examples=("python tools/recoil.py progress work recover-allocation --id <packet-id> --expected-scheduler-revision <revision> --expected-semantic-revision <revision> --dry-run --json",), mutates=True),
-    spec("progress work leases", "progress_cli", prepend=("work", "leases"), summary="Show global reconstruction and workspace-issue leases, or conflicts for one packet.", category="progress"),
-    spec("progress work close", "progress_cli", prepend=("work", "close"), summary="Close one structured work item.", category="progress", mutates=True),
-    spec(
         "progress call-contract initialize",
         "progress_cli",
         prepend=("call-contract", "initialize"),
-        summary="Parent-only one-time initialization of the accepted-authored-order-derived call-contract census while preserving all order and byte facts.",
+        summary="One-time initialization of the accepted-authored-order-derived call-contract census while preserving all order and byte facts.",
         description=(
             "Revision-atomically initialize pending call_contract state from the complete "
             "accepted authored-order gating census. The initial reviewed migration census "
@@ -731,48 +678,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         examples=("python tools/recoil.py progress call-contract initialize --expected-revision <revision> --dry-run --json",),
         mutates=True,
     ),
-    spec(
-        "progress call-contract prepare-live-convergence",
-        "progress_cli",
-        prepend=("call-contract", "prepare-live-convergence"),
-        summary=(
-            "Contained parent-only fresh no-reuse zero-divergence closeout; requires an "
-            "active packet and is the only call-contract route that may authorize phase transition."
-        ),
-        description=(
-            "Authenticate the canonical issue ledger, active explicit packet, reservation claims, "
-            "and physical output root, then stop at the containment gate. No compiler, Binary "
-            "Ninja expected-fact producer, convergence generation, or tracker mutation is reachable "
-            "until a separately reviewed direct-comparison producer is accepted."
-        ),
-        category="progress",
-        examples=(
-            "python tools/recoil.py progress call-contract prepare-live-convergence --packet-id <packet-id> --closeout --build-root <packet-root> --jobs 2 --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",
-        ),
-        mutates=True,
-        needs_binja=True,
-    ),
-    spec(
-        "progress call-contract prepare-repair-continuation",
-        "progress_cli",
-        prepend=("call-contract", "prepare-repair-continuation"),
-        summary=(
-            "Parent-only fresh producer-result routing into one fail-closed repair descriptor; "
-            "the later child is created only by claim-current."
-        ),
-        description=(
-            "Authenticate the active branchless continuation producer and retained predecessor, "
-            "run the producer's exact exhaustive verifier command, and store only a fresh "
-            "verifier-derived route descriptor. No operator caller, owner, or path facts are "
-            "accepted; this command creates no child and accepts no reconstruction evidence."
-        ),
-        category="progress",
-        examples=(
-            "python tools/recoil.py progress call-contract prepare-repair-continuation --producer-packet <producer-packet-id> --returned-work-item <returned-work-id> --build-root <producer-root> --expected-revision <revision> --apply --json",
-        ),
-        mutates=True,
-        needs_binja=True,
-    ),
+    spec("progress call-contract close-live", "progress_cli", prepend=("call-contract", "close-live"), summary="Run one fresh no-reuse complete-census call-contract scan and record the direct closeout.", category="progress", examples=("python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",), mutates=True, needs_binja=True, required_revision_domains=("semantic", "evidence_generation"), build_root_contract="fresh-direct-root", mutation_scope="call-contract"),
     spec("progress output-section show", "progress_cli", prepend=("output-section", "show"), summary="Show one normalized PE output section.", category="progress"),
     spec("progress storage show", "progress_cli", prepend=("storage", "show"), summary="Show one normalized physical storage contribution.", category="progress"),
     spec(
@@ -780,11 +686,11 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress_cli",
         prepend=("storage", "register-authored-data"),
         summary=(
-            "Parent-only revision-guarded registration of one exact "
+            "Direct revision-guarded registration of one exact "
             "non-overlapping authored data-symbol storage contribution."
         ),
         description=(
-            "Dry-run-first parent route for one existing known-extent authored "
+            "Dry-run-first reviewed route for one existing known-extent authored "
             "physical data artifact with exactly one existing primary-data "
             "owner. The reviewed v1 payload exact-guards canonical symbol, "
             "storage, and owner ids plus binary, output section, extent, empty "
@@ -802,14 +708,14 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         ),
         mutates=True,
     ),
-    spec("progress verification-target sync", "progress_cli", prepend=("verification-target", "sync"), summary="Synchronize selected verification-target registrations, with a fail-closed parent-only source-policy bootstrap for one reviewed order target.", category="progress", examples=("python tools/recoil.py progress verification-target sync --target ainet_text_block_order --expected-revision 45 --dry-run", "python tools/recoil.py progress verification-target sync --target camera_449ba0_44d990_authored_order --source-policy-bootstrap --expected-revision 910 --dry-run --json"), mutates=True),
+    spec("progress verification-target sync", "progress_cli", prepend=("verification-target", "sync"), summary="Synchronize selected verification-target registrations, with a fail-closed source-policy bootstrap for one reviewed order target.", category="progress", examples=("python tools/recoil.py progress verification-target sync --target ainet_text_block_order --expected-revision 45 --dry-run", "python tools/recoil.py progress verification-target sync --target camera_449ba0_44d990_authored_order --source-policy-bootstrap --expected-revision 910 --dry-run --json"), mutates=True),
     spec(
         "progress verification-target retire",
         "progress_cli",
         prepend=("verification-target", "retire"),
-        summary="Dry-run-first parent route that retires exactly one stale verification-target registration by exact id or unique name.",
+        summary="Dry-run-first reviewed route that retires exactly one stale verification-target registration by exact id or unique name.",
         description=(
-            "Fail-closed parent-only retirement of exactly one existing verification-target "
+            "Fail-closed retirement of exactly one existing verification-target "
             "registration. Exact tracker target ids take precedence over names; a name must "
             "resolve uniquely. The route detaches that exact id from every symbol relationship, "
             "invalidates dependent symbol byte/call-contract/link facts and physical-block order "
@@ -827,49 +733,36 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress advance-live-order",
         "progress_cli",
         prepend=("advance-live-order",),
-        summary="Freshly validate one registered order target, derive its complete contiguous block slices, and revision-atomically accept all slices only on exact PASS; full order keeps linked acceptance separate from its paired object worker target.",
+        summary="Freshly validate one registered order target, derive its complete contiguous block slices, and revision-atomically accept all slices only on exact PASS.",
         category="progress",
         examples=("python tools/recoil.py progress advance-live-order --target <linked-target-id> --object-target <object-target-id> --build-root <fresh-root> --expected-revision <revision> --apply --json",),
         mutates=True,
         required_revision_domains=("global",),
-        build_root_contract="fresh-parent-root",
+        build_root_contract="fresh-direct-root",
         ledger_routing="canonical-machine-local-default",
         mutation_scope="order",
     ),
-    spec(
-        "progress advance-live-byte",
-        "progress_cli",
-        prepend=("advance-live-byte",),
-        summary="Freshly compile and directly compare one byte lane, accepting only explicitly matched tracker physical groups.",
-        category="progress",
-        examples=("python tools/recoil.py progress advance-live-byte --lane authored --build-root <fresh-root> --expected-revision <revision> --apply --json",),
-        mutates=True,
-        required_revision_domains=("global",),
-        build_root_contract="fresh-parent-root",
-        ledger_routing="canonical-machine-local-default",
-        mutation_scope="byte",
-    ),
+    spec("progress advance-live-authored-byte", "progress_cli", prepend=("advance-live-authored-byte",), summary="Freshly compile and directly accept the current authored byte group.", category="progress", examples=("python tools/recoil.py progress advance-live-authored-byte --build-root <fresh-root> --expected-revision <revision> --apply --json",), mutates=True, required_revision_domains=("global",), build_root_contract="fresh-direct-root", mutation_scope="byte"),
+    spec("progress advance-live-linked-byte", "progress_cli", prepend=("advance-live-linked-byte",), summary="Freshly build and directly accept the current linked byte group.", category="progress", examples=("python tools/recoil.py progress advance-live-linked-byte --build-root <fresh-root> --expected-revision <revision> --apply --json",), mutates=True, required_revision_domains=("global",), build_root_contract="fresh-direct-root", mutation_scope="byte"),
     spec(
         "progress advance-live-call-contract",
         "progress_cli",
         prepend=("advance-live-call-contract",),
         summary=(
-            "Contained parent route that performs one fresh build and direct retail comparison, "
+            "Direct route that performs one fresh build and direct retail comparison, "
             "then CAS-accepts only bodies that passed in that invocation."
         ),
         description=(
-            "Authenticate the active call-contract-acceptance packet, reservation claims, physical "
-            "output root, and separate semantic/evidence revision guards before building. The same "
+            "Authenticate a fresh build root and separate semantic/evidence revision guards before building. The same "
             "invocation compares exact structured call facts and may advance only directly passing "
             "bodies; divergent bodies remain pending and no stored result substitutes for the build."
         ),
         category="progress",
-        examples=("python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --packet-id <packet-id> --build-root <packet-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",),
+        examples=("python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",),
         mutates=True,
         needs_binja=True,
         required_revision_domains=("semantic", "evidence_generation"),
-        packet_binding="active-call-contract-reservation-required",
-        build_root_contract="packet-authenticated-external-root",
+        build_root_contract="fresh-direct-root",
         ledger_routing="canonical-machine-local-default",
         mutation_scope="call-contract",
     ),
@@ -877,7 +770,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress source-trace replace-batch",
         "source_trace_progress",
         prepend=("replace-batch",),
-        summary="Parent-only revision-guarded replacement of reviewed source-trace topology rows and append-only resolution of immutable legacy claims.",
+        summary="Revision-guarded replacement of reviewed source-trace topology rows and append-only resolution of immutable legacy claims.",
         category="progress",
         examples=(
             "python tools/recoil.py progress source-trace replace-batch --expected-revision <revision> --payload-file <reviewed.json> --dry-run --json",
@@ -900,7 +793,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress data-extent register",
         "data_extent_progress",
         summary=(
-            "Parent-only revision-guarded exact extent registration for one "
+            "Direct revision-guarded exact extent registration for one "
             "existing physical data artifact; creates no artifact, source "
             "edge, or acceptance."
         ),
@@ -915,7 +808,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress data-artifact register",
         "data_artifact_progress",
         summary=(
-            "Parent-only revision-guarded registration of one exact physical "
+            "Direct revision-guarded registration of one exact physical "
             "data identity and extent; creates no source edge, owner link, "
             "storage contribution, or acceptance."
         ),
@@ -930,7 +823,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress data-artifact evidence repair-observation",
         "data_artifact_evidence_repair",
         summary=(
-            "Parent-only revision-guarded repair of the known invalid "
+            "Direct revision-guarded repair of the known invalid "
             "freshness/validation-mode pair on one reviewed non-gating "
             "data-artifact observation."
         ),
@@ -945,7 +838,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress data-artifact logical-alias register-batch",
         "data_logical_alias_progress",
         summary=(
-            "Parent-only revision-guarded registration of reviewed authored "
+            "Direct revision-guarded registration of reviewed authored "
             "logical-data occurrences under one provider/compiler-pooled "
             "physical representative."
         ),
@@ -968,7 +861,6 @@ COMMAND_ALIASES = {
     ("audit", "raw-assembly"): ("guard", "raw-assembly"),
     ("audit", "source-placement"): ("guard", "source-placement"),
     ("audit", "source-shape"): ("guard", "source-shape"),
-    ("guard", "source-data-initializer"): ("guard", "source-data"),
 }
 
 OBSOLETE_RAW_ASSEMBLY_ALLOWLIST = "tools/raw_assembly_allowlist.json"
@@ -995,7 +887,6 @@ def command_to_json(item: CommandSpec) -> dict[str, object]:
         "needs_binja": item.needs_binja,
         "examples": list(item.examples),
         "required_revision_domains": list(item.required_revision_domains),
-        "packet_binding": item.packet_binding,
         "build_root_contract": item.build_root_contract,
         "ledger_routing": item.ledger_routing,
         "mutation_scope": item.mutation_scope,
@@ -1048,7 +939,6 @@ def print_command_help(item: CommandSpec) -> None:
         "Required revision domains: "
         + (", ".join(item.required_revision_domains) or "none")
     )
-    print(f"Packet binding: {item.packet_binding}")
     print(f"Build-root contract: {item.build_root_contract}")
     print(f"Ledger routing: {item.ledger_routing}")
     print(f"Mutation scope: {item.mutation_scope}")
@@ -1092,109 +982,8 @@ def resolve_command(args: list[str]) -> tuple[CommandSpec | None, list[str]]:
     return None, args
 
 
-_EXPLICIT_PACKET_PUBLIC_GROUPS = frozenset({"verify", "audit", "guard", "doctor"})
-_EXPLICIT_PACKET_BUILD_ONLY_ROUTES = frozenset({("verify", "final-build")})
 
 
-def _explicit_packet_claim_keys(
-    resource_claims: Iterable[Mapping[str, Any] | str],
-) -> frozenset[tuple[str, str, str]]:
-    """Normalize only the resource identity needed by public-route validation."""
-
-    result: set[tuple[str, str, str]] = set()
-    for claim in resource_claims:
-        if isinstance(claim, Mapping):
-            kind = str(claim.get("kind", "")).strip()
-            identity = str(claim.get("id", "")).strip()
-            access = str(claim.get("access", "")).strip()
-        elif isinstance(claim, str):
-            parts = claim.split(":", 2)
-            if len(parts) != 3:
-                raise ValueError(f"malformed explicit-packet resource claim {claim!r}")
-            kind, identity, access = (part.strip() for part in parts)
-        else:
-            raise ValueError("explicit-packet resource claims must be mappings or strings")
-        if not kind or not identity or access not in {"read", "write"}:
-            raise ValueError(f"malformed explicit-packet resource claim {claim!r}")
-        result.add((kind, identity, access))
-    return frozenset(result)
-
-
-def validate_nonmutating_public_command(
-    public_args: Sequence[str],
-    *,
-    resource_claims: Iterable[Mapping[str, Any] | str] = (),
-) -> dict[str, object]:
-    """Authenticate one packet worker command against the actual public registry.
-
-    This function imports and invokes only the selected backend's argparse parser;
-    it never dispatches the command.  The explicit packet constructor calls it
-    before reserving resources or allocating an output root, so an unknown route,
-    malformed argument vector, authority mutation, or missing BN/whole-link claim
-    fails before any compiler, linker, Binary Ninja, or filesystem work can start.
-    """
-
-    args = [str(part) for part in public_args]
-    if not args or args[0] not in _EXPLICIT_PACKET_PUBLIC_GROUPS:
-        raise ValueError(
-            "explicit maintenance validation must use a registered verify, audit, guard, or doctor route"
-        )
-    item, rest = resolve_command(args)
-    if item is None:
-        raise ValueError(f"unknown public validation command: {' '.join(args)}")
-    if item.path[0] not in _EXPLICIT_PACKET_PUBLIC_GROUPS:
-        raise ValueError(f"public route {item.name!r} is not a packet validation command")
-    build_only = item.path in _EXPLICIT_PACKET_BUILD_ONLY_ROUTES
-    if item.mutates and not build_only:
-        raise ValueError(f"public route {item.name!r} mutates authoritative workspace state")
-    if any(argument in {"--apply", "--delete"} for argument in rest):
-        raise ValueError(f"public route {item.name!r} includes a mutating argument")
-
-    try:
-        module = importlib.import_module(item.module_name)
-    except Exception as exc:
-        raise ValueError(
-            f"public route {item.name!r} backend cannot be imported: {exc}"
-        ) from exc
-    parser_factory = getattr(module, "build_parser", None)
-    if not callable(parser_factory):
-        parser_factory = getattr(module, "_parser", None)
-    if not callable(parser_factory):
-        raise ValueError(f"public route {item.name!r} has no reviewable argument parser")
-    try:
-        with contextlib.redirect_stderr(io.StringIO()):
-            parser_factory().parse_args([*item.prepend_args, *rest])
-    except SystemExit as exc:
-        raise ValueError(f"public route {item.name!r} arguments do not parse") from exc
-    except Exception as exc:
-        raise ValueError(
-            f"public route {item.name!r} parser could not validate its arguments: {exc}"
-        ) from exc
-
-    claims = _explicit_packet_claim_keys(resource_claims)
-    required_claims: set[tuple[str, str, str]] = set()
-    if item.needs_binja:
-        required_claims.add(("binary-ninja-db", "Recoil.bndb", "read"))
-    if item.path == ("verify", "final-build"):
-        required_claims.add(("whole-project-build", "recoil", "write"))
-    missing = sorted(required_claims - set(claims))
-    if missing:
-        formatted = ", ".join(":".join(row) for row in missing)
-        raise ValueError(
-            f"public route {item.name!r} lacks required packet resources: {formatted}"
-        )
-    return {
-        "path": list(item.path),
-        "command": item.name,
-        "module": item.module,
-        "prepend_args": list(item.prepend_args),
-        "needs_binja": item.needs_binja,
-        "build_artifacts_only": build_only,
-        "required_resource_claims": [
-            {"kind": kind, "id": identity, "access": access}
-            for kind, identity, access in sorted(required_claims)
-        ],
-    }
 
 
 def format_command(command: list[str]) -> str:
@@ -1347,8 +1136,8 @@ def main(argv: list[str] | None = None) -> int:
     rejected_option = rejected_json_ledger_argument(forward_rest, item)
     if rejected_option is not None:
         print(
-            f"recoil: {rejected_option} no longer accepts a JSON ledger; run "
-            "'python tools/recoil.py maintenance migrate-ledgers-sqlite' first",
+            f"recoil: {rejected_option} no longer accepts a JSON ledger; "
+            "this workspace uses SQLite authorities only",
             file=sys.stderr,
         )
         return 2
