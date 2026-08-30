@@ -184,7 +184,7 @@ worker build, saved candidate, or prior dry-run result.
 Call-contract acceptance stores no body proof that can substitute for fresh
 verification. Currency is maintained by governed source/tool/manifest mutation
 and conservative explicit invalidation. The reviewed schema coordinates are
-`CALL_CONTRACT_VERIFIER_GENERATION = 13`,
+`CALL_CONTRACT_VERIFIER_GENERATION = 14`,
 `NORMALIZER_REGISTRY_GENERATION = 12`, and
 `EXPECTED_FACT_SCHEMA_VERSION = 12`; a governed component edit increments its
 coordinate and invalidates all affected evidence. Phase transition still

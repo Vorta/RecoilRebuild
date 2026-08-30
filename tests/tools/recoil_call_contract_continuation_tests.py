@@ -161,7 +161,7 @@ class CallContractContinuationTests(unittest.TestCase):
             document, predecessor[continuation.RETURN_PROVENANCE_FIELD]
         )
         self.assertTrue(continuation.continuation_snapshots_equal(snapshot, deepcopy(snapshot)))
-        self.assertEqual(13, snapshot["generations"]["call_contract_verifier_generation"])
+        self.assertEqual(14, snapshot["generations"]["call_contract_verifier_generation"])
         with self.assertRaises(ProgressError):
             continuation.activate_continuation_child({"state": "descriptor-ready"}, child_work_item_id="child")
 

@@ -228,7 +228,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
         self.assertEqual(projection, current_call_contract_verifier_components())
 
     def test_live_generation_coordinates_are_current(self):
-        self.assertEqual(13, CALL_CONTRACT_VERIFIER_GENERATION)
+        self.assertEqual(14, CALL_CONTRACT_VERIFIER_GENERATION)
         self.assertEqual(12, NORMALIZER_REGISTRY_GENERATION)
         self.assertEqual(12, EXPECTED_FACT_SCHEMA_VERSION)
 

@@ -23,17 +23,31 @@ from _recoil.commands.workspace_packet_handoff import (
     _compact_reserved_packet,
     render_workspace_issue_handoff,
 )
+from _recoil.lib.git_change_control import capture_clean_git_baseline
+from _recoil.lib.progress import (
+    bind_progress_packet_native_git,
+    empty_progress_document,
+    ProgressStore,
+    terminalize_progress_packet_native_git,
+)
+from _recoil.lib.progress_sqlite import (
+    ConcurrentSQLiteRevisionUpdate,
+    ProgressSQLiteStore,
+)
 from _recoil.lib.worktree_control import (
     BUILD_ROOT_MARKER_NAME,
     PROGRESS_ADAPTER_REASON,
     PROGRESS_ADAPTER_STATE,
     WorktreeControlError,
+    WorktreeAssociation,
     _capture_normalized_path_projection_child,
     authenticate_build_root,
     authenticate_temporary_build_root,
     canonical_validation_environment,
     common_git_directory,
     create_temporary_build_root,
+    create_build_root,
+    create_linked_worktree,
     list_git_worktrees,
     parse_worktree_list_porcelain,
     reauthenticate_canonical_control_root,
@@ -608,6 +622,213 @@ class WorktreeControlTests(unittest.TestCase):
         with mock.patch.object(command, "REPO_ROOT", self.repo), redirect_stderr(stderr):
             self.assertEqual(2, command.command_create(args))
         self.assertIn("claim-current", stderr.getvalue())
+
+    def test_terminal_native_git_progress_packet_retires_from_retained_record(self) -> None:
+        packet_id = "recoil:work:native-git-retirement-r0"
+        topology = resolve_topology(self.repo)
+        branch = "packet/progress/native-git-retirement-r0"
+        packet_root = topology.worktree_parent / "progress-native-git-retirement-r0"
+        build_root = topology.build_parent / "progress-native-git-retirement-r0"
+        association = WorktreeAssociation(
+            "progress", packet_id, str(build_root.resolve())
+        )
+        create_linked_worktree(
+            topology,
+            branch=branch,
+            worktree_root=packet_root,
+            start_point="master",
+            association=association,
+        )
+        marker = create_build_root(
+            build_root,
+            authority="progress",
+            packet_id=packet_id,
+            branch=branch,
+            worktree_root=packet_root,
+        )
+        baseline = capture_clean_git_baseline(
+            packet_root,
+            packet_id=packet_id,
+            writable_paths=["inside.txt"],
+        )
+        document = empty_progress_document()
+        document["work_items"][packet_id] = {
+            "state": "active",
+            "packet_type": "byte-edit-v1",
+            "packet_contract_version": 4,
+            "phase": "authored-byte-match",
+            "lane": "authored",
+            "nonaccepting": True,
+            "acceptance_eligible": False,
+            "resource_claims": [
+                {"kind": "path", "id": "inside.txt", "access": "write"}
+            ],
+            "reservation": {
+                "id": f"{packet_id}:attempt:1",
+                "state": "active",
+            },
+        }
+        bind_progress_packet_native_git(
+            document,
+            work_id=packet_id,
+            baseline=baseline,
+            association=association.to_dict(),
+            build_root_marker=marker,
+            operation_id=f"{packet_id}:allocation:1",
+        )
+        progress_path = Path(self.temp.name) / "progress-native-git.sqlite3"
+        store = ProgressSQLiteStore.create_from_mapping(
+            progress_path,
+            document,
+            cutover_pair_id="native-git-retirement-test",
+        )
+
+        with self.assertRaisesRegex(WorktreeControlError, "must be terminal"):
+            command.retire_progress_packet_worktree(
+                repository_root=self.repo,
+                progress_path=progress_path,
+                packet_id=packet_id,
+                expected_revision=0,
+                apply=True,
+                outcome="integrated",
+            )
+        self.assertTrue(packet_root.is_dir())
+        self.assertTrue(build_root.is_dir())
+
+        terminal_document = store.materialize()
+        self.assertTrue(
+            terminalize_progress_packet_native_git(
+                terminal_document,
+                work_id=packet_id,
+                outcome="abandoned",
+            )
+        )
+        terminal_document["work_items"][packet_id]["state"] = "abandoned"
+        terminal_document["work_items"][packet_id][
+            "abandonment_reason"
+        ] = "superseded"
+        store.persist_scoped_changes(
+            expected_domain_revisions={"scheduler": 0},
+            increment_domains={"scheduler"},
+            entity_patches={
+                "work_items": {
+                    packet_id: {"": terminal_document["work_items"][packet_id]}
+                }
+            },
+            top_level_patches={
+                "migration": {"": terminal_document["migration"]}
+            },
+            apply=True,
+        )
+        terminal = store.materialize()["work_items"][packet_id]
+        self.assertEqual("abandoned", terminal["state"])
+        self.assertEqual("released", terminal["reservation"]["state"])
+
+        progress_load = ProgressStore.load
+
+        def mutate_between_vector_and_document(progress_store):
+            ProgressSQLiteStore(progress_path).persist_scoped_changes(
+                expected_domain_revisions={"scheduler": 1},
+                increment_domains={"scheduler"},
+                top_level_patches={
+                    "migration": {"/retirement_snapshot_intervening_write": True}
+                },
+                apply=True,
+            )
+            return progress_load(progress_store)
+
+        with (
+            mock.patch.object(
+                ProgressStore,
+                "load",
+                new=mutate_between_vector_and_document,
+            ),
+            self.assertRaisesRegex(WorktreeControlError, "snapshot changed"),
+        ):
+            command.retire_progress_packet_worktree(
+                repository_root=self.repo,
+                progress_path=progress_path,
+                packet_id=packet_id,
+                expected_revision=1,
+                apply=True,
+                outcome="integrated",
+            )
+        self.assertTrue(packet_root.is_dir())
+        self.assertTrue(build_root.is_dir())
+        self.assertTrue(
+            store.materialize()["migration"][
+                "retirement_snapshot_intervening_write"
+            ]
+        )
+
+        scoped_persist = ProgressSQLiteStore.persist_scoped_changes
+
+        def drift_before_cas(scoped_store, **kwargs):
+            connection = sqlite3.connect(progress_path)
+            try:
+                connection.execute(
+                    "UPDATE metadata SET revision=revision+1, "
+                    "scheduler_revision=scheduler_revision+1 WHERE singleton=1"
+                )
+                connection.commit()
+            finally:
+                connection.close()
+            return scoped_persist(scoped_store, **kwargs)
+
+        with (
+            mock.patch.object(
+                ProgressSQLiteStore,
+                "persist_scoped_changes",
+                new=drift_before_cas,
+            ),
+            self.assertRaisesRegex(
+                ConcurrentSQLiteRevisionUpdate, "scheduler revision changed"
+            ),
+        ):
+            command.retire_progress_packet_worktree(
+                repository_root=self.repo,
+                progress_path=progress_path,
+                packet_id=packet_id,
+                expected_revision=2,
+                apply=True,
+                outcome="integrated",
+            )
+        self.assertTrue(packet_root.is_dir())
+        self.assertTrue(build_root.is_dir())
+        self.assertIn(branch, git(self.repo, "branch", "--format=%(refname:short)"))
+        self.assertEqual(
+            "terminal",
+            store.materialize()["migration"]["progress_packet_allocation_journals"]
+            ["rows"][packet_id]["state"],
+        )
+
+        retired = command.retire_progress_packet_worktree(
+            repository_root=self.repo,
+            progress_path=progress_path,
+            packet_id=packet_id,
+            expected_revision=3,
+            apply=True,
+            outcome="integrated",
+        )
+        self.assertTrue(retired["passed"])
+        self.assertFalse(packet_root.exists())
+        self.assertFalse(build_root.exists())
+        self.assertNotIn(branch, git(self.repo, "branch", "--format=%(refname:short)"))
+        stored = store.materialize()
+        self.assertEqual(
+            "retired",
+            stored["migration"]["progress_packet_allocation_journals"]["rows"]
+            [packet_id]["state"],
+        )
+        self.assertEqual(
+            {
+                "transaction_revision": 4,
+                "semantic_revision": 0,
+                "evidence_generation_revision": 0,
+                "scheduler_revision": 4,
+            },
+            store.read_revision_vector().to_dict(),
+        )
 
     def test_abandonment_cli_requires_parent_supplied_guard_fields(self) -> None:
         parser = command.build_parser()

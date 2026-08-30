@@ -666,6 +666,68 @@ def bind_progress_packet_native_git(
     return deepcopy(binding)
 
 
+def terminalize_progress_packet_native_git(
+    data: dict[str, Any],
+    *,
+    work_id: str,
+    outcome: str,
+) -> bool:
+    """Release one active native-Git packet and terminalize its journal row.
+
+    The retained work-item record is the durable retirement authority.  This
+    helper deliberately performs no mutation for a branchless packet, while a
+    partial or drifted native-Git binding fails closed instead of stranding a
+    physical worktree behind a misleading terminal packet.
+    """
+
+    work = data.get("work_items", {}).get(work_id)
+    if not isinstance(work, dict):
+        raise ProgressError(f"unknown progress packet {work_id}")
+    reservation = work.get("reservation")
+    work_binding = work.get("native_git")
+    reservation_binding = (
+        reservation.get("native_git") if isinstance(reservation, Mapping) else None
+    )
+    if work_binding is None and reservation_binding is None:
+        return False
+    if (
+        work.get("state") != "active"
+        or not isinstance(reservation, dict)
+        or reservation.get("state") != "active"
+        or not isinstance(work_binding, Mapping)
+        or work_binding.get("adapter") != PROGRESS_PACKET_ADAPTER
+        or reservation_binding != work_binding
+    ):
+        raise ProgressError(
+            "native-Git terminal close requires one exact active lifecycle-matched "
+            "reservation"
+        )
+    rows = progress_packet_allocation_journal(data)
+    journal = rows.get(work_id) if isinstance(rows, Mapping) else None
+    expected_journal = {
+        "schema": PROGRESS_PACKET_ALLOCATION_JOURNAL_SCHEMA,
+        "adapter": PROGRESS_PACKET_ADAPTER,
+        "packet_id": work_id,
+        "reservation_id": str(reservation.get("id", "")),
+        "operation_id": str(work_binding.get("operation_id", "")),
+        "state": "activated",
+        "binding": dict(work_binding),
+        "nonaccepting": True,
+    }
+    if not isinstance(journal, dict) or dict(journal) != expected_journal:
+        raise ProgressError(
+            "native-Git terminal close requires the exact activated allocation journal"
+        )
+    reservation["state"] = "released"
+    reservation["outcome"] = outcome
+    work["nonaccepting"] = True
+    work["acceptance_eligible"] = False
+    journal["state"] = "terminal"
+    journal["terminal_outcome"] = outcome
+    journal["terminal_nonaccepting"] = True
+    return True
+
+
 def retail_fact_packet_contract_problem(
     work: Mapping[str, Any],
     claims: Iterable[Mapping[str, Any]],

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from copy import deepcopy
 from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
@@ -1696,10 +1697,17 @@ def retire_progress_packet_worktree(
     if outcome != "integrated":
         raise WorktreeControlError("progress retirement currently accepts only an integrated packet")
     store = ProgressStore(progress_path)
+    revision_vector = ProgressSQLiteStore(progress_path).read_revision_vector()
     document = store.load()
-    if document.revision != expected_revision:
+    if (
+        document.revision != expected_revision
+        or revision_vector.transaction_revision != expected_revision
+        or document.revision != revision_vector.transaction_revision
+    ):
         raise WorktreeControlError(
-            f"progress revision changed: expected {expected_revision}, found {document.revision}"
+            "progress retirement snapshot changed: expected transaction revision "
+            f"{expected_revision}, found vector {revision_vector.transaction_revision} "
+            f"and document {document.revision}"
         )
     packet = document.collection("work_items").get(packet_id)
     if not isinstance(packet, Mapping) or packet.get("state") not in {
@@ -1743,39 +1751,56 @@ def retire_progress_packet_worktree(
         authority="progress", packet_id=packet_id,
         branch=worktree.branch, worktree_root=worktree.root,
     )
-    details: dict[str, object] = {}
+    migration = deepcopy(document.data.get("migration", {}))
+    registry = (
+        migration.get("progress_packet_allocation_journals")
+        if isinstance(migration, Mapping)
+        else None
+    )
+    rows = registry.get("rows") if isinstance(registry, Mapping) else None
+    journal = rows.get(packet_id) if isinstance(rows, Mapping) else None
+    if not isinstance(journal, dict) or journal.get("state") != "terminal":
+        raise WorktreeControlError("progress allocation journal is not terminal")
+    journal["state"] = "retired"
+    journal["retired_nonaccepting"] = True
 
-    def transform(data: dict[str, Any]) -> None:
-        current = data.get("work_items", {}).get(packet_id)
-        if not isinstance(current, Mapping) or current.get("state") != packet.get("state"):
-            raise WorktreeControlError("progress packet changed before retirement CAS")
-        migration = data.get("migration", {})
-        registry = migration.get("progress_packet_allocation_journals") if isinstance(migration, Mapping) else None
-        rows = registry.get("rows") if isinstance(registry, Mapping) else None
-        journal = rows.get(packet_id) if isinstance(rows, Mapping) else None
-        if not isinstance(journal, dict) or journal.get("state") != "terminal":
-            raise WorktreeControlError("progress allocation journal is not terminal")
+    def retire_physical_allocation() -> None:
         remove_linked_worktree(
             topology.integration_root,
             worktree_root=worktree.root,
             branch=worktree.branch,
         )
-        remove_authenticated_build_root(
-            worktree.association.external_build_root,
-            authority="progress", packet_id=packet_id,
-        )
-        journal["state"] = "retired"
-        journal["retired_nonaccepting"] = True
-        details.update({
-            "packet_id": packet_id,
-            "removed_worktree": str(worktree.root),
-            "removed_branch": worktree.branch,
-            "removed_build_root": worktree.association.external_build_root,
-        })
+        try:
+            remove_authenticated_build_root(
+                worktree.association.external_build_root,
+                authority="progress",
+                packet_id=packet_id,
+            )
+        except Exception as exc:
+            raise WorktreeControlError(
+                "partial progress retirement: the linked worktree and branch were "
+                "removed but authenticated build-root removal failed; the SQLite "
+                "journal was rolled back to terminal and requires parent recovery: "
+                f"{exc}"
+            ) from exc
 
-    commit = store.mutate(
-        transform, expected_revision=expected_revision, apply=True
+    commit = ProgressSQLiteStore(progress_path).persist_scoped_changes(
+        expected_domain_revisions={
+            "semantic": revision_vector.semantic_revision,
+            "evidence_generation": revision_vector.evidence_generation_revision,
+            "scheduler": revision_vector.scheduler_revision,
+        },
+        increment_domains={"scheduler"},
+        top_level_patches={"migration": {"": migration}},
+        apply_action=retire_physical_allocation,
+        apply=True,
     )
+    details: dict[str, object] = {
+        "packet_id": packet_id,
+        "removed_worktree": str(worktree.root),
+        "removed_branch": worktree.branch,
+        "removed_build_root": worktree.association.external_build_root,
+    }
     return {
         "passed": True, "applied": True, "authority": "progress",
         **details, "commit": commit.to_dict(), "nonaccepting": True,
