@@ -74,9 +74,9 @@ call-contract` command. The parent acceptance command performs its own single
 fresh build and direct retail comparison and may advance only bodies that pass
 in that invocation. Stored body results and worker output are nonaccepting.
 Currency uses governed invalidation and the reviewed integer coordinates
-`CALL_CONTRACT_VERIFIER_GENERATION = 11`,
-`NORMALIZER_REGISTRY_GENERATION = 11`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 11`. Full-order transition additionally
+`CALL_CONTRACT_VERIFIER_GENERATION = 12`,
+`NORMALIZER_REGISTRY_GENERATION = 12`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 12`. Full-order transition additionally
 requires the fresh complete no-reuse zero-divergence closeout.
 
 A linked WSI-20260809-007 continuation is two claims, not an alternate

@@ -739,6 +739,89 @@ class LiveProgressCleanupTests(unittest.TestCase):
             Path(self.issue_temporary.name) / "issues.sqlite3"
         )
 
+    def test_work_show_requires_exact_positional_id_before_tracker_load(self) -> None:
+        stderr = io.StringIO()
+        with (
+            patch.object(
+                progress_cli,
+                "_load",
+                side_effect=AssertionError("tracker must not be opened"),
+            ) as load,
+            redirect_stderr(stderr),
+            self.assertRaises(SystemExit) as raised,
+        ):
+            progress_cli.main(["work", "show", "--json"])
+
+        self.assertEqual(2, raised.exception.code)
+        self.assertIn("the following arguments are required: work_item_id", stderr.getvalue())
+        load.assert_not_called()
+
+    def test_work_show_exact_known_id_returns_only_selected_record(self) -> None:
+        selected_id = "recoil:work:selected"
+        selected = {"state": "ready", "packet_type": "fixture-selected"}
+
+        class ExactLookupOnly(dict):
+            def __iter__(self):
+                raise AssertionError("work-item collection must not be projected")
+
+            def items(self):
+                raise AssertionError("work-item collection must not be projected")
+
+            def keys(self):
+                raise AssertionError("work-item collection must not be projected")
+
+            def values(self):
+                raise AssertionError("work-item collection must not be projected")
+
+        rows = ExactLookupOnly(
+            {
+                selected_id: selected,
+                "recoil:work:unselected": {
+                    "state": "returned",
+                    "packet_type": "fixture-unselected",
+                },
+            }
+        )
+        document = SimpleNamespace(
+            collection=lambda name: rows if name == "work_items" else {},
+            scheduler_output=lambda payload: {"revision": 7, **payload},
+        )
+        stdout = io.StringIO()
+        with (
+            patch.object(progress_cli, "_load", return_value=document),
+            redirect_stdout(stdout),
+        ):
+            result = progress_cli.main(["work", "show", selected_id, "--json"])
+
+        self.assertEqual(0, result)
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(selected_id, payload["id"])
+        self.assertEqual(selected, payload["record"])
+        self.assertNotIn("work_items", payload)
+        self.assertNotIn("fixture-unselected", stdout.getvalue())
+
+    def test_work_show_unknown_id_is_concise(self) -> None:
+        missing_id = "recoil:work:missing"
+        document = SimpleNamespace(
+            collection=lambda name: {} if name == "work_items" else {},
+            scheduler_output=lambda payload: payload,
+        )
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with (
+            patch.object(progress_cli, "_load", return_value=document),
+            redirect_stdout(stdout),
+            redirect_stderr(stderr),
+        ):
+            result = progress_cli.main(["work", "show", missing_id, "--json"])
+
+        self.assertEqual(2, result)
+        self.assertEqual("", stdout.getvalue())
+        self.assertEqual(
+            f"progress error: unknown work item: {missing_id}\n",
+            stderr.getvalue(),
+        )
+
     def test_focused_binding_expands_exact_registered_source_closure(self) -> None:
         data = focused_binding_closure_fixture()
         current_registration = focused_current_registration(data)

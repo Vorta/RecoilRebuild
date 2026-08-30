@@ -682,7 +682,16 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         ),
         mutates=True,
     ),
-    spec("progress work show", "progress_cli", prepend=("work", "show"), summary="Show structured work items.", category="progress"),
+    spec(
+        "progress work show",
+        "progress_cli",
+        prepend=("work", "show"),
+        summary="Show one exact structured work item.",
+        category="progress",
+        examples=(
+            "python tools/recoil.py progress work show <work-item-id> --json",
+        ),
+    ),
     spec("progress work claim-current", "progress_cli", prepend=("work", "claim-current"), summary="Atomically create and reserve compatible current packets through prioritized multi-lane or focused individual-lane claims.", category="progress", examples=("python tools/recoil.py progress work claim-current --lane all --max-packets <N> --expected-revision <revision> --apply --json", "python tools/recoil.py progress work claim-current --lane primary --expected-revision <revision> --apply --json"), mutates=True),
     spec("progress work create-explicit", "progress_cli", prepend=("work", "create-explicit"), summary="Parent-only journal-first output-root allocation followed by one final atomic activation of an exact explicitly user-selected maintenance or read-only diagnostic packet.", category="progress", examples=("python tools/recoil.py progress work create-explicit --payload-file build/diagnostics/<packet>.json --expected-scheduler-revision <revision> --expected-semantic-revision <revision> --dry-run --json", "python tools/recoil.py progress work create-explicit --payload-file build/diagnostics/<packet>.json --expected-scheduler-revision <revision> --expected-semantic-revision <revision> --apply --json"), mutates=True),
     spec("progress work reserve", "progress_cli", prepend=("work", "reserve"), summary="Reserve one scheduler-launchable or exact retry-eligible returned packet with non-expiring normalized resource claims.", category="progress", mutates=True),

@@ -61,9 +61,9 @@ Audit these mode contracts:
   extents, ambiguity, and missing providers block before the final build.
 - call-contract acceptance performs one fresh build and direct per-body retail
   comparison in the parent invocation. Stored body results never substitute;
-  the current integer coordinates are `CALL_CONTRACT_VERIFIER_GENERATION = 11`,
-  `NORMALIZER_REGISTRY_GENERATION = 11`, and
-  `EXPECTED_FACT_SCHEMA_VERSION = 11`. They drive conservative invalidation,
+  the current integer coordinates are `CALL_CONTRACT_VERIFIER_GENERATION = 12`,
+  `NORMALIZER_REGISTRY_GENERATION = 12`, and
+  `EXPECTED_FACT_SCHEMA_VERSION = 12`. They drive conservative invalidation,
   and transition requires a fresh complete no-reuse zero-divergence scan.
 - workspace-issue packets require a clean reviewed branch and use the opaque
   baseline commit plus native Git status/diff for exact closure control. Database

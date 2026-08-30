@@ -831,9 +831,15 @@ def _parser() -> argparse.ArgumentParser:
 
     work = subparsers.add_parser("work", help="Inspect and reserve structured work packets.")
     work_children = work.add_subparsers(dest="work_command", required=True)
-    work_show = work_children.add_parser("show")
+    work_show = work_children.add_parser(
+        "show",
+        help="Show one exact structured work item.",
+    )
     _add_progress_path(work_show)
-    work_show.add_argument("selector", nargs="?")
+    work_show.add_argument(
+        "work_item_id",
+        help="Exact structured work-item id.",
+    )
     work_show.add_argument("--json", action="store_true")
     work_leases = work_children.add_parser("leases")
     _add_progress_path(work_leases)
@@ -16296,13 +16302,14 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.command == "work" and args.work_command == "show":
             rows = document.collection("work_items")
-            if args.selector:
-                row = rows.get(args.selector)
-                if not isinstance(row, Mapping):
-                    raise ProgressError(f"unknown work item {args.selector}")
-                _print_json(document.scheduler_output({"id": args.selector, "record": row}))
-            else:
-                _print_json(document.scheduler_output({"work_items": rows}))
+            row = rows.get(args.work_item_id)
+            if not isinstance(row, Mapping):
+                raise ProgressError(f"unknown work item: {args.work_item_id}")
+            _print_json(
+                document.scheduler_output(
+                    {"id": args.work_item_id, "record": row}
+                )
+            )
             return 0
         if args.command == "work" and args.work_command == "leases":
             from _recoil.commands.workspace_issues import combined_lease_view
