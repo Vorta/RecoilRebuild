@@ -139,6 +139,7 @@ from _recoil.lib.progress import (
     retail_fact_packet_contract_problem,
     state_record,
     symbol_authored_order_gate,
+    terminalize_progress_packet_native_git,
     validate_authored_order_role,
     validate_claim_provenance,
     validate_owner_invariants,
@@ -16785,8 +16786,13 @@ def main(argv: list[str] | None = None) -> int:
                         raise ProgressError(
                             "a repair continuation is already active or awaiting full closeout"
                         )
+                native_git_terminal = terminalize_progress_packet_native_git(
+                    data,
+                    work_id=args.work_id,
+                    outcome=args.outcome,
+                )
                 reservation = work.get("reservation")
-                if isinstance(reservation, dict):
+                if isinstance(reservation, dict) and not native_git_terminal:
                     reservation["state"] = "released"
                     reservation["outcome"] = args.outcome
                 if work.get("packet_type") == EXPLICIT_MAINTENANCE_PACKET_TYPE:
@@ -16870,11 +16876,6 @@ def main(argv: list[str] | None = None) -> int:
                             child_work=work,
                         )
                     )
-                    journal = migration.get("progress_packet_allocation_journals")
-                    journal_rows = journal.get("rows") if isinstance(journal, dict) else None
-                    journal_row = journal_rows.get(args.work_id) if isinstance(journal_rows, dict) else None
-                    if isinstance(journal_row, dict):
-                        journal_row["state"] = "terminal"
                     details.update(
                         {
                             "continuation_finalized": True,
@@ -16894,7 +16895,18 @@ def main(argv: list[str] | None = None) -> int:
                         }
                     )
                 else:
-                    work_items.pop(args.work_id)
+                    if native_git_terminal:
+                        details.update(
+                            {
+                                "retained_terminal_work_item": True,
+                                "terminal_allocation_journal": True,
+                                "noncurrent": True,
+                                "nonaccepting": True,
+                                "acceptance_eligible": False,
+                            }
+                        )
+                    else:
+                        work_items.pop(args.work_id)
                 details["convergence_generation_carried"] = bool(
                     scheduler_domains is None
                     and semantic_projection_before is not None

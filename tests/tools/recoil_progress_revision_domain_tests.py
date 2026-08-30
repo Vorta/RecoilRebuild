@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from contextlib import redirect_stderr, redirect_stdout
 from contextlib import closing
+from copy import deepcopy
+import io
 import json
 import os
 from pathlib import Path
@@ -15,7 +18,11 @@ from unittest import mock
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
-from _recoil.lib.progress import empty_progress_document  # noqa: E402
+from _recoil.commands import progress_cli, workspace_issues  # noqa: E402
+from _recoil.lib.progress import (  # noqa: E402
+    bind_progress_packet_native_git,
+    empty_progress_document,
+)
 from _recoil.lib.progress_sqlite import (  # noqa: E402
     LEGACY_USER_VERSION,
     USER_VERSION,
@@ -31,6 +38,52 @@ from _recoil.lib.worktree_control import (  # noqa: E402
 
 
 class RecoilProgressRevisionDomainTests(unittest.TestCase):
+    @staticmethod
+    def create_native_git_packet(
+        root: Path,
+        *,
+        revision: int = 7,
+        work_id: str = "recoil:work:native-git-close-r7",
+    ) -> tuple[Path, ProgressSQLiteStore, str]:
+        document = empty_progress_document()
+        document["revision"] = revision
+        document["work_items"][work_id] = {
+            "state": "active",
+            "packet_type": "byte-edit-v1",
+            "packet_contract_version": 4,
+            "phase": "authored-byte-match",
+            "lane": "authored",
+            "nonaccepting": False,
+            "acceptance_eligible": True,
+            "resource_claims": [
+                {"kind": "path", "id": "inside.txt", "access": "write"}
+            ],
+            "reservation": {
+                "id": f"{work_id}:attempt:1",
+                "state": "active",
+            },
+        }
+        bind_progress_packet_native_git(
+            document,
+            work_id=work_id,
+            baseline={
+                "packet_id": work_id,
+                "writable_paths": ["inside.txt"],
+            },
+            association={
+                "authority": "progress",
+                "packet_id": work_id,
+                "external_build_root": str(root / "build-root"),
+            },
+            build_root_marker={"fixture": True},
+            operation_id=f"{work_id}:allocation:1",
+        )
+        path = root / "progress.sqlite3"
+        store = ProgressSQLiteStore.create_from_mapping(
+            path, document, cutover_pair_id="native-git-close-test"
+        )
+        return path, store, work_id
+
     @staticmethod
     def concurrent_writers(
         path: Path, rows: tuple[tuple[str, str, str], ...]
@@ -576,6 +629,222 @@ else:
             self.assertEqual(8, applied.revision_vector.scheduler_revision)
             self.assertEqual(USER_VERSION, store.metadata().user_version)
             self.assertTrue(store.materialize()["migration"]["applied"])
+
+    def test_native_git_abandonment_dry_run_and_apply_are_scheduler_scoped(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, store, work_id = self.create_native_git_packet(Path(temporary))
+            before = deepcopy(store.materialize())
+            before_vector = store.read_revision_vector().to_dict()
+            command = [
+                "work",
+                "close",
+                work_id,
+                "--outcome",
+                "abandoned",
+                "--abandonment-reason",
+                "superseded",
+                "--progress",
+                str(path),
+                "--expected-scheduler-revision",
+                "7",
+                "--json",
+            ]
+
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                rc = progress_cli.main([*command, "--dry-run"])
+            self.assertEqual(0, rc, stderr.getvalue())
+            self.assertFalse(json.loads(stdout.getvalue())["commit"]["applied"])
+            self.assertEqual(before, store.materialize())
+            self.assertEqual(before_vector, store.read_revision_vector().to_dict())
+
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                rc = progress_cli.main([*command, "--apply"])
+            self.assertEqual(0, rc, stderr.getvalue())
+            result = json.loads(stdout.getvalue())
+            self.assertTrue(result["commit"]["applied"])
+            self.assertTrue(result["retained_terminal_work_item"])
+            self.assertTrue(result["terminal_allocation_journal"])
+            stored = store.materialize()
+            packet = stored["work_items"][work_id]
+            self.assertEqual("abandoned", packet["state"])
+            self.assertEqual("superseded", packet["abandonment_reason"])
+            self.assertEqual("released", packet["reservation"]["state"])
+            self.assertEqual("abandoned", packet["reservation"]["outcome"])
+            self.assertTrue(packet["nonaccepting"])
+            self.assertFalse(packet["acceptance_eligible"])
+            journal = stored["migration"]["progress_packet_allocation_journals"][
+                "rows"
+            ][work_id]
+            self.assertEqual("terminal", journal["state"])
+            self.assertEqual("abandoned", journal["terminal_outcome"])
+            self.assertTrue(journal["terminal_nonaccepting"])
+            self.assertEqual(
+                {
+                    "transaction_revision": 8,
+                    "semantic_revision": 7,
+                    "evidence_generation_revision": 7,
+                    "scheduler_revision": 8,
+                },
+                store.read_revision_vector().to_dict(),
+            )
+
+    def test_native_git_tool_blocked_return_terminalizes_exact_journal(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, store, work_id = self.create_native_git_packet(Path(temporary))
+            issue_ledger = {
+                "revision": 12,
+                "issues": [{"id": "WSI-TEST-OPEN", "status": "open"}],
+            }
+            fake_store = mock.Mock()
+            fake_store.load.return_value = issue_ledger
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with (
+                mock.patch.object(workspace_issues, "issue_store", return_value=fake_store),
+                redirect_stdout(stdout),
+                redirect_stderr(stderr),
+            ):
+                rc = progress_cli.main(
+                    [
+                        "work",
+                        "close",
+                        work_id,
+                        "--outcome",
+                        "returned-tool-blocked",
+                        "--linked-tool-issue",
+                        "WSI-TEST-OPEN",
+                        "--progress",
+                        str(path),
+                        "--issue-ledger",
+                        str(Path(temporary) / "issues.sqlite3"),
+                        "--expected-scheduler-revision",
+                        "7",
+                        "--apply",
+                        "--json",
+                    ]
+                )
+            self.assertEqual(0, rc, stderr.getvalue())
+            packet = store.materialize()["work_items"][work_id]
+            self.assertEqual("returned-tool-blocked", packet["state"])
+            self.assertEqual(
+                "WSI-TEST-OPEN",
+                packet[progress_cli.TOOL_BLOCKED_PROVENANCE_FIELD]["linked_issue_id"],
+            )
+            journal = store.materialize()["migration"][
+                "progress_packet_allocation_journals"
+            ]["rows"][work_id]
+            self.assertEqual("terminal", journal["state"])
+            self.assertEqual("returned-tool-blocked", journal["terminal_outcome"])
+            vector = store.read_revision_vector()
+            self.assertEqual((8, 7, 7, 8), tuple(vector.__dict__.values()))
+
+    def test_native_git_close_rejects_stale_or_drifted_journal_without_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, store, work_id = self.create_native_git_packet(Path(temporary))
+            stale_stderr = io.StringIO()
+            with redirect_stdout(io.StringIO()), redirect_stderr(stale_stderr):
+                rc = progress_cli.main(
+                    [
+                        "work",
+                        "close",
+                        work_id,
+                        "--outcome",
+                        "abandoned",
+                        "--abandonment-reason",
+                        "superseded",
+                        "--progress",
+                        str(path),
+                        "--expected-scheduler-revision",
+                        "6",
+                        "--apply",
+                        "--json",
+                    ]
+                )
+            self.assertEqual(2, rc)
+            self.assertIn("scheduler revision changed", stale_stderr.getvalue())
+            self.assertEqual("active", store.materialize()["work_items"][work_id]["state"])
+
+            document = store.materialize()
+            document["migration"]["progress_packet_allocation_journals"]["rows"][
+                work_id
+            ]["operation_id"] = "drifted"
+            drift_path = Path(temporary) / "drifted.sqlite3"
+            drift_store = ProgressSQLiteStore.create_from_mapping(
+                drift_path, document, cutover_pair_id="native-git-close-drift-test"
+            )
+            before = deepcopy(drift_store.materialize())
+            stderr = io.StringIO()
+            with redirect_stdout(io.StringIO()), redirect_stderr(stderr):
+                rc = progress_cli.main(
+                    [
+                        "work",
+                        "close",
+                        work_id,
+                        "--outcome",
+                        "abandoned",
+                        "--abandonment-reason",
+                        "superseded",
+                        "--progress",
+                        str(drift_path),
+                        "--expected-scheduler-revision",
+                        "7",
+                        "--apply",
+                        "--json",
+                    ]
+                )
+            self.assertEqual(2, rc)
+            self.assertIn("exact activated allocation journal", stderr.getvalue())
+            self.assertEqual(before, drift_store.materialize())
+            self.assertEqual(7, drift_store.read_revision())
+
+    def test_scoped_apply_action_is_apply_only_and_rolls_back_on_exception(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, store = self.create(Path(temporary), revision=7)
+            calls: list[str] = []
+
+            with self.assertRaisesRegex(ProgressSQLiteError, "requires apply=True"):
+                store.persist_scoped_changes(
+                    expected_domain_revisions={"scheduler": 7},
+                    top_level_patches={"migration": {"/action_test": "dry-run"}},
+                    apply_action=lambda: calls.append("dry-run"),
+                    apply=False,
+                )
+            self.assertEqual([], calls)
+            self.assertNotIn("action_test", store.materialize()["migration"])
+
+            read_only = ProgressSQLiteStore(path, read_only=True)
+            with self.assertRaisesRegex(ProgressSQLiteError, "read-only"):
+                read_only.persist_scoped_changes(
+                    expected_domain_revisions={"scheduler": 7},
+                    top_level_patches={"migration": {"/action_test": "read-only"}},
+                    apply_action=lambda: calls.append("read-only"),
+                    apply=True,
+                )
+            self.assertEqual([], calls)
+
+            def fail_action() -> None:
+                calls.append("apply")
+                raise RuntimeError("injected lifecycle failure")
+
+            with self.assertRaisesRegex(RuntimeError, "injected lifecycle failure"):
+                store.persist_scoped_changes(
+                    expected_domain_revisions={"scheduler": 7},
+                    top_level_patches={"migration": {"/action_test": "apply"}},
+                    apply_action=fail_action,
+                    apply=True,
+                )
+            self.assertEqual(["apply"], calls)
+            self.assertNotIn("action_test", store.materialize()["migration"])
+            self.assertEqual(
+                {
+                    "transaction_revision": 7,
+                    "semantic_revision": 7,
+                    "evidence_generation_revision": 7,
+                    "scheduler_revision": 7,
+                },
+                store.read_revision_vector().to_dict(),
+            )
 
 
 if __name__ == "__main__":

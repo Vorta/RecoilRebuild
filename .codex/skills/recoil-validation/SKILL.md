@@ -118,7 +118,7 @@ No stored body result, worker result, saved candidate, object, or receipt can
 substitute for that fresh comparison. Currency is maintained by governed
 source/tool/manifest mutation and conservative explicit invalidation. The
 reviewed implementation coordinates are currently
-`CALL_CONTRACT_VERIFIER_GENERATION = 13`,
+`CALL_CONTRACT_VERIFIER_GENERATION = 14`,
 `NORMALIZER_REGISTRY_GENERATION = 12`, and
 `EXPECTED_FACT_SCHEMA_VERSION = 12`. Any verifier-component change invalidates
 all current call-contract evidence; any normalizer-registry change invalidates

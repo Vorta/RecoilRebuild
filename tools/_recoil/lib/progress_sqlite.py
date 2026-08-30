@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import re
 import sqlite3
-from typing import Any, Iterable, Mapping
+from typing import Any, Callable, Iterable, Mapping
 
 from _recoil.lib.worktree_control import (
     CANONICAL_ROOT_ENV,
@@ -1125,6 +1125,7 @@ class ProgressSQLiteStore:
             str, Mapping[str, Mapping[str, Any]]
         ] | None = None,
         top_level_patches: Mapping[str, Mapping[str, Any]] | None = None,
+        apply_action: Callable[[], None] | None = None,
         apply: bool,
     ) -> SQLiteCommitResult:
         """Merge explicitly addressed JSON facets under domain-specific CAS.
@@ -1137,6 +1138,12 @@ class ProgressSQLiteStore:
         guarded domain is incremented. ``increment_domains`` may name a
         nonempty subset when an operation must guard additional input domains
         without claiming to mutate them.
+
+        ``apply_action`` is reserved for an applied governed machine-local lifecycle
+        action that must run only after the write transaction has acquired its
+        lock, passed every CAS guard, applied its scoped rows, and passed the
+        foreign-key check. It is never called for a dry-run. An exception from
+        the action rolls back the SQLite transaction.
         """
 
         if _validation_blocks_live_progress_mutation(self.path, apply=apply):
@@ -1147,6 +1154,10 @@ class ProgressSQLiteStore:
             raise ProgressSQLiteError(
                 "cannot persist through a read-only SQLite progress store"
             )
+        if apply_action is not None and not callable(apply_action):
+            raise ProgressSQLiteError("apply_action must be callable")
+        if apply_action is not None and not apply:
+            raise ProgressSQLiteError("apply_action requires apply=True")
         if not isinstance(expected_domain_revisions, Mapping) or not expected_domain_revisions:
             raise ProgressSQLiteError(
                 "scoped progress changes require at least one expected domain revision"
@@ -1322,6 +1333,8 @@ class ProgressSQLiteStore:
                 raise ProgressSQLiteError(
                     f"foreign-key violations after proposed scoped commit: {violations!r}"
                 )
+            if apply and apply_action is not None:
+                apply_action()
             result = SQLiteCommitResult(
                 applied=apply,
                 path=self.path,
@@ -1346,6 +1359,9 @@ class ProgressSQLiteStore:
             raise ProgressSQLiteError(
                 f"SQLite scoped progress transaction failed: {exc}"
             ) from exc
+        except Exception:
+            connection.rollback()
+            raise
         finally:
             connection.close()
 
