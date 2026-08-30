@@ -45,7 +45,7 @@ class AgentSurfaceAuditTests(unittest.TestCase):
             ".codex/skills/recoil-workspace-audit/SKILL.md",
         )
         required_coordinates = (
-            "CALL_CONTRACT_VERIFIER_GENERATION = 12",
+            "CALL_CONTRACT_VERIFIER_GENERATION = 13",
             "NORMALIZER_REGISTRY_GENERATION = 12",
             "EXPECTED_FACT_SCHEMA_VERSION = 12",
         )

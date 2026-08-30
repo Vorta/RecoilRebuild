@@ -1821,6 +1821,10 @@ class OrderEditPathContractTests(unittest.TestCase):
         source_closure_call.assert_called_once_with(document, slice_row)
 
         self.assertEqual(expected, work["allowed_paths"])
+        self.assertIn("--progress {progress_path}", work["validation_commands"][0])
+        self.assertNotIn(
+            "--progress .agent/", work["validation_commands"][0].replace("\\", "/")
+        )
         write_paths = sorted(
             row["id"]
             for row in work["resource_claims"]
@@ -3359,6 +3363,88 @@ class ClaimCurrentIsolationTests(unittest.TestCase):
         ):
             progress_cli._compact_reserved_packet(work_id, work)
 
+    def test_byte_packet_defers_progress_binding_until_authenticated_allocation(
+        self,
+    ) -> None:
+        document = SimpleNamespace(
+            revision=12,
+            _fresh_root=lambda *_args: "build/live-validation/worker-authored-byte/unit",
+            collection=lambda _name: {},
+        )
+        scope = {
+            "source_paths": ["src/unit.cpp"],
+            "read_paths": ["src/unit.h"],
+            "owner_ids": ["recoil:owner:unit"],
+            "block_id": "recoil:block:0x401000",
+            "scope_ids": ["recoil:function:0x401000"],
+            "target_ids": ["recoil:vc5-target:unit"],
+        }
+        with (
+            patch.object(progress_cli, "_byte_scope", return_value=scope),
+            patch.object(
+                progress_cli,
+                "bind_work_packet_contract",
+                side_effect=lambda _document, packet: packet,
+            ),
+        ):
+            _work_id, work = progress_cli._byte_claim_candidate(
+                document,
+                packet_lane="authored",
+                verifier_lane="authored",
+                cursor="0x401000",
+                phase="authored-call-contract",
+                progress_path=Path(".agent/RECONSTRUCTION_PROGRESS.sqlite3"),
+                preflight={"passed": True},
+            )
+
+        command = work["validation_commands"][0]
+        self.assertIn("--progress {progress_path}", command)
+        self.assertNotIn("--progress .agent/", command.replace("\\", "/"))
+
+    def test_native_git_progress_binding_rejects_relative_and_authenticates_absolute(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            canonical = Path(temporary) / "canonical authority.sqlite3"
+            canonical.write_text("fixture", encoding="utf-8")
+            template = (
+                "python tools/recoil.py verify authored-byte --at 0x401000 "
+                "--build-root build/unit --progress {progress_path} --json"
+            )
+            bound = progress_cli._bind_native_git_progress_authority(
+                template,
+                canonical,
+            )
+            self.assertNotIn("{progress_path}", bound)
+            self.assertIn(canonical.resolve().as_posix(), bound)
+            self.assertNotIn("--progress .agent/", bound.replace("\\", "/"))
+
+            with self.assertRaisesRegex(
+                ProgressError,
+                "binds a live progress authority before authenticated native-Git allocation",
+            ):
+                progress_cli._bind_native_git_progress_authority(
+                    "python tools/recoil.py verify authored-byte --at 0x401000 "
+                    "--build-root build/unit --progress "
+                    ".agent/RECONSTRUCTION_PROGRESS.sqlite3 --json",
+                    canonical,
+                )
+            with self.assertRaisesRegex(
+                ProgressError,
+                "linked-worktree-relative live progress authority",
+            ):
+                progress_cli._validate_native_git_progress_authority(
+                    [
+                        "python",
+                        "tools/recoil.py",
+                        "verify",
+                        "authored-byte",
+                        "--progress",
+                        ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+                    ],
+                    progress_path=canonical,
+                )
+
     def test_dry_run_claim_routing_does_no_verification_before_reservation(self) -> None:
         original = {
             "revision": 12,
@@ -4584,6 +4670,117 @@ class ClaimCurrentIsolationTests(unittest.TestCase):
                         for work in stored["work_items"].values()
                     )
                 )
+
+    def test_non_call_contract_tool_blocked_return_accepts_any_real_open_issue(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            progress_path = Path(temporary) / "progress.json"
+            data = empty_progress_document()
+            data["work_items"]["unit:byte"] = {
+                "state": "active",
+                "packet_type": "byte-edit-v1",
+                "phase": "authored-call-contract",
+                "lane": "authored",
+                "byte_lane": "authored",
+                "cursor": "0x401000",
+                "block_id": "recoil:block:0x401000",
+                "covered_block_ids": ["recoil:block:0x401000"],
+                "scope_ids": ["recoil:function:0x401000"],
+                "target_ids": ["recoil:vc5-target:unit"],
+                "reservation": {
+                    "id": "unit:byte:attempt:1",
+                    "state": "active",
+                },
+            }
+            progress_path.write_text(json.dumps(data) + "\n", encoding="utf-8")
+            issue_ledger = {
+                "revision": 31,
+                "issues": [
+                    {
+                        "id": "WSI-20260830-003",
+                        "status": "open",
+                    }
+                ],
+            }
+            fake_store = SimpleNamespace(load=lambda: issue_ledger)
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with (
+                patch.object(workspace_issues, "issue_store", return_value=fake_store),
+                redirect_stdout(stdout),
+                redirect_stderr(stderr),
+            ):
+                rc = progress_cli.main(
+                    [
+                        "work",
+                        "close",
+                        "unit:byte",
+                        "--outcome",
+                        "returned-tool-blocked",
+                        "--linked-tool-issue",
+                        "WSI-20260830-003",
+                        "--progress",
+                        str(progress_path),
+                        "--issue-ledger",
+                        str(Path(temporary) / "issues.sqlite3"),
+                        "--expected-revision",
+                        "0",
+                        "--apply",
+                        "--json",
+                    ]
+                )
+
+            self.assertEqual(0, rc, stderr.getvalue())
+            stored = json.loads(progress_path.read_text(encoding="utf-8"))
+            retained = stored["work_items"]["unit:byte"]
+            self.assertEqual("returned-tool-blocked", retained["state"])
+            provenance = retained[progress_cli.TOOL_BLOCKED_PROVENANCE_FIELD]
+            self.assertEqual("WSI-20260830-003", provenance["linked_issue_id"])
+            self.assertEqual("byte-edit-v1", provenance["packet_type"])
+            self.assertNotIn(progress_cli.RETURN_PROVENANCE_FIELD, retained)
+            result = json.loads(stdout.getvalue())
+            self.assertFalse(result["call_contract_continuation"])
+
+    def test_call_contract_continuation_rejects_arbitrary_linked_issue(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            progress_path = Path(temporary) / "progress.json"
+            data = empty_progress_document()
+            data["work_items"]["unit:call-contract"] = {
+                "state": "active",
+                "packet_type": "call-contract-edit-v1",
+                "phase": "authored-call-contract",
+                "lane": "primary",
+                "target_id": "recoil:vc5-target:unit",
+                "reservation": {
+                    "id": "unit:call-contract:attempt:1",
+                    "state": "active",
+                },
+            }
+            progress_path.write_text(json.dumps(data) + "\n", encoding="utf-8")
+            stderr = io.StringIO()
+            with redirect_stdout(io.StringIO()), redirect_stderr(stderr):
+                rc = progress_cli.main(
+                    [
+                        "work",
+                        "close",
+                        "unit:call-contract",
+                        "--outcome",
+                        "returned-tool-blocked",
+                        "--linked-tool-issue",
+                        "WSI-20260830-003",
+                        "--progress",
+                        str(progress_path),
+                        "--expected-revision",
+                        "0",
+                        "--apply",
+                        "--json",
+                    ]
+                )
+
+            self.assertEqual(2, rc)
+            self.assertIn("governed only by WSI-20260809-007", stderr.getvalue())
+            stored = json.loads(progress_path.read_text(encoding="utf-8"))
+            self.assertEqual("active", stored["work_items"]["unit:call-contract"]["state"])
 
 
 UTIL_SYMBOL_INTERVALS = (
