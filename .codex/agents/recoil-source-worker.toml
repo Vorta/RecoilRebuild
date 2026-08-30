@@ -43,9 +43,13 @@ the exact live validator named by the packet. Mode-specific tier, hard-byte,
 raw-assembly, or source-model procedures are supplied only when that packet
 triggers their canonical Recoil skill. Never broaden into another lane.
 
-Never mutate Binary Ninja, progress or issue ledgers, support inputs, tools, or
-git. Build only in the assigned isolated root. Do not clear or durably depend
-on `.devspace`.
+Never mutate Binary Ninja, progress or issue ledgers, support inputs, or tools.
+For a tracked-write native-git-v1 packet, work only in the handed-off linked
+worktree, stage only the exact writable closure, and create exactly one
+nonaccepting commit whose message contains the packet id. The parent owns every
+other Git operation, including branch/worktree creation, switching, merging,
+rebasing, integration, and retirement. Build only in the assigned isolated
+root. Do not clear or durably depend on `.devspace`.
 
 Return only packet id, outcome (`pass` or `blocked`), changed paths, exact
 validation command/result, first divergence, concrete scope contradiction if

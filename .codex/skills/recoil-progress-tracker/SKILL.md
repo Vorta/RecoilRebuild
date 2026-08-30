@@ -72,7 +72,10 @@ derives its normalized resource claims. `progress handoff --packet-id
 <packet-id> --json` only renders that active reservation; it fails for no
 reservation, absent lease, empty write claims, or a mutating worker command. It
 must never synthesize a work item or expose a parent `--apply` command as worker
-validation. For `order-edit-v1`, the worker command is only the registered
+validation. A tracked-write handoff reauthenticates and returns the exact
+branch, opaque baseline commit, linked `worktree_root`, authenticated external
+build root, and bounded worker Git permissions. Launch the worker with its
+current directory set to that returned `worktree_root`. For `order-edit-v1`, the worker command is only the registered
 `verify vc5-order` loop. For `call-contract-edit-v1`, it is only the registered
 nonmutating `verify call-contract` loop for the complete deterministic slice.
 Byte/BN/Pro/evidence-package obligations are not added to either packet. An
@@ -110,7 +113,7 @@ The parent accepts only through a fresh self-validating invocation:
 
 ```powershell
 python tools/recoil.py progress advance-live-order --target <target> --build-root <fresh-root> --expected-revision <revision> --apply --json
-python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
+python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --packet-id <packet-id> --build-root <packet-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 python tools/recoil.py progress advance-live-byte --lane <object|authored|linked> --build-root <fresh-root> --expected-revision <revision> --apply --json
 ```
 

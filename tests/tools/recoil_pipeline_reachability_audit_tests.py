@@ -33,6 +33,9 @@ from _recoil.commands.pipeline_reachability_audit import (  # noqa: E402
     build_parser,
 )
 from _recoil.lib.issue_sqlite import create_issue_database  # noqa: E402
+from _recoil.commands.workflow_contract_audit import (  # noqa: E402
+    REQUIRED_COMMANDS as WORKFLOW_REQUIRED_COMMANDS,
+)
 
 
 def valid_specs() -> list[dict[str, object]]:
@@ -42,6 +45,11 @@ def valid_specs() -> list[dict[str, object]]:
             "module": contract.module,
             "prepend_args": contract.prepend,
             "mutates": contract.mutates,
+            "required_revision_domains": contract.required_revision_domains,
+            "packet_binding": contract.packet_binding,
+            "build_root_contract": contract.build_root_contract,
+            "ledger_routing": contract.ledger_routing,
+            "mutation_scope": contract.mutation_scope,
         }
         for path, contract in REQUIRED_COMMANDS.items()
     ]
@@ -289,6 +297,14 @@ class PipelineReachabilityAuditTests(unittest.TestCase):
                 progress_module=progress_cli,
                 **selected,
             )
+
+    def test_overlapping_routes_reuse_authoritative_workflow_contracts(self) -> None:
+        overlapping = set(REQUIRED_COMMANDS) & set(WORKFLOW_REQUIRED_COMMANDS)
+        self.assertIn(("progress", "advance-live-order"), overlapping)
+        self.assertIn(("progress", "advance-live-byte"), overlapping)
+        self.assertIn(("progress", "advance-live-call-contract"), overlapping)
+        for path in overlapping:
+            self.assertIs(REQUIRED_COMMANDS[path], WORKFLOW_REQUIRED_COMMANDS[path])
 
     def test_deep_vc5_probes_use_and_restore_authenticated_tracker(self) -> None:
         from _recoil.commands import vc5_verify

@@ -989,6 +989,19 @@ class RecoilCliTests(unittest.TestCase):
         self.assertEqual("", claim_stderr)
         self.assertIn("Atomically create and reserve", claim_stdout)
         self.assertIn("--lane primary", claim_stdout)
+        self.assertIn("--expected-scheduler-revision", claim_stdout)
+        self.assertNotIn("--expected-revision", claim_stdout)
+
+        rc, call_stdout, call_stderr = self.run_cli(
+            "help", "progress", "advance-live-call-contract"
+        )
+        self.assertEqual(0, rc)
+        self.assertEqual("", call_stderr)
+        self.assertIn("--packet-id", call_stdout)
+        self.assertIn("--build-root", call_stdout)
+        self.assertIn("--expected-semantic-revision", call_stdout)
+        self.assertIn("--expected-evidence-generation-revision", call_stdout)
+        self.assertNotIn("--expected-revision", call_stdout)
 
         rc, relocation_stdout, relocation_stderr = self.run_cli(
             "help", "progress", "relocation-exception", "set"
@@ -1389,7 +1402,12 @@ class RecoilCliTests(unittest.TestCase):
                 "--json",
             )
 
-            rc, stdout, stderr = self.run_progress_cli(*common, "--dry-run")
+            with mock.patch.object(
+                progress_cli,
+                "MACHINE_RETAIL_REFERENCE",
+                canonical_retail_reference(),
+            ):
+                rc, stdout, stderr = self.run_progress_cli(*common, "--dry-run")
             self.assertEqual(0, rc, stderr)
             self.assertEqual("", stderr)
             self.assertEqual(before_text, progress_path.read_text(encoding="utf-8"))
@@ -1408,7 +1426,12 @@ class RecoilCliTests(unittest.TestCase):
             self.assertEqual(expected_scope, dry["evidence_scope_ids"])
             self.assertTrue(dry["evidence_created"])
 
-            rc, stdout, stderr = self.run_progress_cli(*common, "--apply")
+            with mock.patch.object(
+                progress_cli,
+                "MACHINE_RETAIL_REFERENCE",
+                canonical_retail_reference(),
+            ):
+                rc, stdout, stderr = self.run_progress_cli(*common, "--apply")
             self.assertEqual(0, rc, stderr)
             self.assertEqual("", stderr)
             applied = json.loads(stdout)
@@ -1482,6 +1505,10 @@ class RecoilCliTests(unittest.TestCase):
             with mock.patch(
                 "_recoil.lib.verification_targets.vc5_target_registration",
                 return_value=(target_id, synchronized),
+            ), mock.patch.object(
+                progress_cli,
+                "MACHINE_RETAIL_REFERENCE",
+                canonical_retail_reference(),
             ):
                 rc, stdout, stderr = self.run_progress_cli(*common, "--dry-run")
             self.assertEqual(0, rc, stderr)
@@ -1498,6 +1525,10 @@ class RecoilCliTests(unittest.TestCase):
             with mock.patch(
                 "_recoil.lib.verification_targets.vc5_target_registration",
                 return_value=(target_id, synchronized),
+            ), mock.patch.object(
+                progress_cli,
+                "MACHINE_RETAIL_REFERENCE",
+                canonical_retail_reference(),
             ):
                 rc, stdout, stderr = self.run_progress_cli(*common, "--apply")
             self.assertEqual(0, rc, stderr)
@@ -2763,8 +2794,10 @@ class RecoilCliTests(unittest.TestCase):
                 "build/full-convergence-fixture",
                 "--jobs",
                 "2",
-                "--expected-revision",
+                "--expected-semantic-revision",
                 "17",
+                "--expected-evidence-generation-revision",
+                "9",
                 "--dry-run",
             ]
         )

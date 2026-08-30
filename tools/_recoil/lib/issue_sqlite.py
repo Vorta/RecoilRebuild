@@ -4,6 +4,7 @@ from contextlib import closing
 from copy import deepcopy
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 import sqlite3
 from typing import Any, Callable, Mapping
@@ -16,11 +17,27 @@ from _recoil.lib.live_progress import (
     RevisionCommitResult,
     validate_issue_ledger_v2,
 )
+from _recoil.lib.worktree_control import (
+    CANONICAL_ROOT_ENV,
+    VALIDATION_READ_ONLY_AUTHORITY_ENV,
+)
 
 
 ISSUE_APPLICATION_ID = 0x52434953  # "RCIS"
 ISSUE_DATABASE_SCHEMA_VERSION = 1
 ISSUE_APPLICATION_NAME = "recoil-workspace-issues"
+
+
+def _validation_blocks_live_issue_mutation(path: Path, *, apply: bool) -> bool:
+    if not apply or os.environ.get(VALIDATION_READ_ONLY_AUTHORITY_ENV) != "1":
+        return False
+    canonical_root = os.environ.get(CANONICAL_ROOT_ENV)
+    if not canonical_root:
+        return True
+    live_authority = (
+        Path(canonical_root) / ".agent" / "WORKSPACE_ISSUES.sqlite3"
+    ).resolve()
+    return path.resolve() == live_authority
 
 
 @dataclass(frozen=True)
@@ -867,6 +884,10 @@ class IssueSQLiteStore:
         expected_revision: int,
         apply: bool,
     ) -> RevisionCommitResult:
+        if _validation_blocks_live_issue_mutation(self.path, apply=apply):
+            raise LiveProgressError(
+                "packet/integration validation cannot apply live issue-authority mutations"
+            )
         candidate = deepcopy(dict(proposed))
         candidate["version"] = ISSUE_LEDGER_VERSION
         candidate["revision"] = expected_revision + 1

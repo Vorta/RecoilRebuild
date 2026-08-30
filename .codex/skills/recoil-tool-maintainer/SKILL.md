@@ -42,7 +42,7 @@ binary equivalence. Routine database
 no-mutation evidence is revision, schema/user version, relevant row counts, and
 `PRAGMA integrity_check`, with CAS guards for every mutation.
 
-Orchestrated workspace-issue packets use one `packet/` branch, one linked
+Orchestrated tracked-write issue and progress packets use one `packet/` branch, one linked
 worktree, one external physically authenticated build root, and one central
 reservation. The orchestrator owns create/integrate/retire/hygiene. A handed-off
 worker may stage only the exact writable closure and create one nonaccepting

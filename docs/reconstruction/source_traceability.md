@@ -138,11 +138,11 @@ encoding and newline style and fails unless the complete non-comment C/C++ token
 stream remains identical.
 
 ```powershell
-python tools/_recoil/commands/source_trace_migrate.py template --path src --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --output <template.json>
-python tools/_recoil/commands/source_trace_migrate.py review-conservative --template <template.json> --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --parent-reviewed --output <reviewed.json>
-python tools/_recoil/commands/source_trace_migrate.py batch-propose --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --payload-file <reviewed.json> --output <batch-dry-run.json>
-python tools/_recoil/commands/source_trace_migrate.py tracker-payload --path src --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --migration-report <reviewed.json> --migration-template <template.json> --header-overrides <header-overrides.json> --output <tracker-payload.json>
-python tools/_recoil/commands/source_trace_migrate.py batch-propose --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --payload-file <reviewed.json> --apply --output <batch-applied.json>
+python tools/_recoil/commands/source_trace_migrate.py template --path src --progress <absolute-noncanonical-progress-db> --output <template.json>
+python tools/_recoil/commands/source_trace_migrate.py review-conservative --template <template.json> --progress <absolute-noncanonical-progress-db> --parent-reviewed --output <reviewed.json>
+python tools/_recoil/commands/source_trace_migrate.py batch-propose --progress <absolute-noncanonical-progress-db> --payload-file <reviewed.json> --output <batch-dry-run.json>
+python tools/_recoil/commands/source_trace_migrate.py tracker-payload --path src --progress <absolute-noncanonical-progress-db> --migration-report <reviewed.json> --migration-template <template.json> --header-overrides <header-overrides.json> --output <tracker-payload.json>
+python tools/_recoil/commands/source_trace_migrate.py batch-propose --progress <absolute-noncanonical-progress-db> --payload-file <reviewed.json> --apply --output <batch-applied.json>
 python tools/recoil.py progress source-trace replace-batch --expected-revision <revision> --payload-file <tracker-payload.json> --dry-run --json
 python tools/recoil.py progress source-trace replace-batch --expected-revision <revision> --payload-file <tracker-payload.json> --apply --json
 ```

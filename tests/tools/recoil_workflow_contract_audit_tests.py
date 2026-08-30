@@ -42,6 +42,11 @@ def valid_specs() -> list[dict[str, object]]:
             "module": contract.module,
             "prepend_args": contract.prepend,
             "mutates": contract.mutates,
+            "required_revision_domains": contract.required_revision_domains,
+            "packet_binding": contract.packet_binding,
+            "build_root_contract": contract.build_root_contract,
+            "ledger_routing": contract.ledger_routing,
+            "mutation_scope": contract.mutation_scope,
         }
         for path, contract in REQUIRED_COMMANDS.items()
     ]

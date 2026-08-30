@@ -34,6 +34,11 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
             ),
             patch.object(
                 surface_audit,
+                "_machine_local_authority_routing_findings",
+                return_value=[],
+            ),
+            patch.object(
+                surface_audit,
                 "required_call_contract_verifier_component_findings",
                 return_value=[
                     {
@@ -52,6 +57,62 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
         self.assertEqual(
             [],
             surface_audit._registered_repository_path_authority_findings(),
+        )
+
+    def test_live_authority_defaults_use_shared_machine_local_router(self) -> None:
+        self.assertEqual([], surface_audit._machine_local_authority_routing_findings())
+
+    def test_direct_live_authority_default_is_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            consumer = root / "tools" / "_recoil" / "commands" / "progress_cli.py"
+            consumer.parent.mkdir(parents=True)
+            consumer.write_text(
+                "from pathlib import Path\n"
+                "REPO_ROOT = Path('.')\n"
+                "DEFAULT_PROGRESS = REPO_ROOT / '.agent' / "
+                "'RECONSTRUCTION_PROGRESS.sqlite3'\n",
+                encoding="utf-8",
+            )
+            findings = surface_audit._machine_local_authority_routing_findings(
+                repository_root=root,
+                consumers=((
+                    "tools/_recoil/commands/progress_cli.py",
+                    "DEFAULT_PROGRESS",
+                    ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+                    "routed-live-authority",
+                ),),
+            )
+        self.assertEqual(
+            ["direct-live-authority-default"],
+            [row.token for row in findings],
+        )
+
+    def test_canonicalized_library_logical_default_is_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            consumer = root / "tools" / "_recoil" / "lib" / "progress.py"
+            consumer.parent.mkdir(parents=True)
+            consumer.write_text(
+                "from _recoil.lib.worktree_control import routed_machine_local_path\n"
+                "DEFAULT_PROGRESS_PATH = routed_machine_local_path(\n"
+                "    executing_worktree_root=REPO_ROOT,\n"
+                "    relative_path='.agent/RECONSTRUCTION_PROGRESS.sqlite3',\n"
+                ")\n",
+                encoding="utf-8",
+            )
+            findings = surface_audit._machine_local_authority_routing_findings(
+                repository_root=root,
+                consumers=((
+                    "tools/_recoil/lib/progress.py",
+                    "DEFAULT_PROGRESS_PATH",
+                    ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+                    "logical-execution-root",
+                ),),
+            )
+        self.assertEqual(
+            ["canonicalized-library-logical-default"],
+            [row.token for row in findings],
         )
 
     def test_executable_content_binding_is_reported(self) -> None:
@@ -82,6 +143,32 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
             path.write_text(f"Run `tool {retired_option} VALUE`.\n", encoding="utf-8")
             findings = audit_paths([path])
         self.assertEqual(1, len(findings))
+
+    def test_relative_live_authority_and_stale_domain_guidance_are_reported(self) -> None:
+        rows = {
+            "relative ledger": (
+                "Run `python tools/recoil.py progress next --progress "
+                ".agent/RECONSTRUCTION_PROGRESS.sqlite3`.\n",
+                "--progress .agent/RECONSTRUCTION_PROGRESS.sqlite3",
+            ),
+            "stale scheduler guard": (
+                "Run `python tools/recoil.py progress work claim-current "
+                "--expected-revision 7 --apply`.\n",
+                "progress work claim-current --expected-revision",
+            ),
+            "unbound acceptance": (
+                "Run `python tools/recoil.py progress advance-live-call-contract "
+                "--slice s --apply`.\n",
+                "progress advance-live-call-contract",
+            ),
+        }
+        for label, (source, token) in rows.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as temporary:
+                path = Path(temporary) / "guidance.md"
+                path.write_text(source, encoding="utf-8")
+                findings = audit_paths([path])
+            self.assertEqual(1, len(findings))
+            self.assertIn(token, findings[0].token)
 
     def test_no_project_owned_currentness_path_is_exempt(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

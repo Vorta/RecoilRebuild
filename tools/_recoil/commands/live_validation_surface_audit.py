@@ -35,6 +35,50 @@ CALL_CONTRACT_AUTHORITY_PATH = (
     REPO_ROOT / "tools" / "_recoil" / "commands" / "call_contract_verify.py"
 )
 REPOSITORY_PATH_AUTHORITY = "tools/_recoil/lib/repository_paths.py"
+MACHINE_LOCAL_AUTHORITY_DEFAULTS = (
+    (
+        "tools/_recoil/lib/progress.py",
+        "DEFAULT_PROGRESS_PATH",
+        ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+        "logical-execution-root",
+    ),
+    (
+        "tools/_recoil/commands/progress_cli.py",
+        "DEFAULT_PROGRESS",
+        ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+        "routed-live-authority",
+    ),
+    (
+        "tools/_recoil/commands/progress_cli.py",
+        "DEFAULT_ISSUE_LEDGER",
+        ".agent/WORKSPACE_ISSUES.sqlite3",
+        "routed-live-authority",
+    ),
+    (
+        "tools/_recoil/commands/workspace_issues.py",
+        "default_ledger",
+        ".agent/WORKSPACE_ISSUES.sqlite3",
+        "routed-live-authority",
+    ),
+    (
+        "tools/_recoil/commands/workspace_issues.py",
+        "default_progress_path",
+        ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+        "routed-live-authority",
+    ),
+    (
+        "tools/_recoil/commands/worktree_control.py",
+        "default_ledger",
+        ".agent/WORKSPACE_ISSUES.sqlite3",
+        "routed-live-authority",
+    ),
+    (
+        "tools/_recoil/commands/worktree_control.py",
+        "default_progress_path",
+        ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+        "routed-live-authority",
+    ),
+)
 REPOSITORY_LOGICAL_CONSUMERS = frozenset(
     {
         "tools/_recoil/commands/vc5_verify.py",
@@ -127,6 +171,21 @@ UNSAFE_DOC_RE = re.compile(
     r"lease.{0,80}stale.{0,40}semantic\s+evidence|"
     r"(?:skip|remove|optional).{0,80}(?:global|full).{0,40}(?:closeout|convergence)"
     r")"
+)
+RELATIVE_LIVE_LEDGER_RE = re.compile(
+    r"--(?:progress|ledger|issue-ledger)\s+\.agent[/\\]"
+    r"(?:RECONSTRUCTION_PROGRESS|WORKSPACE_ISSUES)\.sqlite3\b",
+    re.IGNORECASE,
+)
+STALE_LIVE_REVISION_RE = re.compile(
+    r"(?:progress\s+work\s+claim-current|"
+    r"progress\s+advance-live-call-contract)[^\r\n]*--expected-revision\b",
+    re.IGNORECASE,
+)
+UNBOUND_CALL_CONTRACT_ACCEPTANCE_RE = re.compile(
+    r"progress\s+advance-live-call-contract(?![^\r\n]*--packet-id)"
+    r"[^\r\n]*--apply\b",
+    re.IGNORECASE,
 )
 
 
@@ -303,7 +362,12 @@ def audit_paths(paths: Iterable[Path]) -> list[Finding]:
             if "gameplay_hash" in line.casefold() or "game_hash" in line.casefold():
                 continue
             if path.suffix.casefold() == ".md":
-                match = DOC_ROUTE_RE.search(line)
+                match = (
+                    RELATIVE_LIVE_LEDGER_RE.search(line)
+                    or STALE_LIVE_REVISION_RE.search(line)
+                    or UNBOUND_CALL_CONTRACT_ACCEPTANCE_RE.search(line)
+                    or DOC_ROUTE_RE.search(line)
+                )
                 policy_context = " ".join(lines[max(0, line_number - 2):line_number])
                 if match is None and not re.search(
                     r"(?i)\b(?:never|cannot|must\s+not|does\s+not|do\s+not|no)\b",
@@ -560,6 +624,103 @@ def _registered_repository_path_authority_findings(
     return findings
 
 
+def _machine_local_authority_routing_findings(
+    *,
+    repository_root: Path = REPO_ROOT,
+    consumers: Iterable[tuple[str, str, str, str]] = MACHINE_LOCAL_AUTHORITY_DEFAULTS,
+) -> list[Finding]:
+    """Keep logical library paths local and route only live command defaults."""
+
+    findings: list[Finding] = []
+    for relative, assignment_name, authority_path, routing_mode in consumers:
+        path = repository_root / Path(*relative.split("/"))
+        try:
+            source = path.read_text(encoding="utf-8")
+            tree = ast.parse(source)
+        except (OSError, UnicodeDecodeError, SyntaxError):
+            continue
+        lines = source.splitlines()
+        string_constants: dict[str, str] = {}
+        for node in ast.walk(tree):
+            if not isinstance(node, (ast.Assign, ast.AnnAssign)):
+                continue
+            if not isinstance(node.value, ast.Constant) or not isinstance(
+                node.value.value, str
+            ):
+                continue
+            targets = node.targets if isinstance(node, ast.Assign) else (node.target,)
+            for target in targets:
+                for name in _assignment_names(target):
+                    string_constants[name] = node.value.value
+        assignments = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, (ast.Assign, ast.AnnAssign))
+            and assignment_name.casefold()
+            in {
+                name
+                for target in (
+                    node.targets if isinstance(node, ast.Assign) else (node.target,)
+                )
+                for name in _assignment_names(target)
+            }
+        ]
+        valid = False
+        for node in assignments:
+            text = _node_text(node)
+            referenced_names = {
+                child.id.casefold()
+                for child in ast.walk(node)
+                if isinstance(child, ast.Name)
+            }
+            authority_binding_present = (
+                authority_path.casefold() in text
+                or any(
+                    name in referenced_names
+                    and value.casefold() == authority_path.casefold()
+                    for name, value in string_constants.items()
+                )
+            )
+            path_tokens_present = all(
+                token.casefold() in text for token in Path(authority_path).parts
+            )
+            if routing_mode == "routed-live-authority":
+                valid = (
+                    "routed_machine_local_path" in text
+                    and authority_binding_present
+                )
+            elif routing_mode == "logical-execution-root":
+                valid = (
+                    "repo_root" in text
+                    and "routed_machine_local_path" not in text
+                    and path_tokens_present
+                )
+            else:
+                raise ValueError(f"unknown authority routing mode {routing_mode!r}")
+            if valid:
+                break
+        if valid:
+            continue
+        line = getattr(assignments[0], "lineno", 1) if assignments else 1
+        findings.append(
+            Finding(
+                path=display_path(path, repository_root),
+                line=line,
+                token=(
+                    "canonicalized-library-logical-default"
+                    if routing_mode == "logical-execution-root"
+                    else "direct-live-authority-default"
+                ),
+                text=(
+                    lines[line - 1].strip()[:240]
+                    if lines and line <= len(lines)
+                    else f"missing routed assignment for {assignment_name}"
+                ),
+            )
+        )
+    return findings
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
@@ -578,6 +739,7 @@ def main(argv: list[str] | None = None) -> int:
     findings = audit_paths(args.path or ROOTS)
     findings.extend(_targeted_direct_evidence_findings())
     findings.extend(_registered_repository_path_authority_findings())
+    findings.extend(_machine_local_authority_routing_findings())
     findings.extend(
         Finding(
             path=row["path"],

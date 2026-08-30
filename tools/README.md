@@ -90,7 +90,7 @@ The core loop is:
 python tools/recoil.py progress next --json
 python tools/recoil.py progress show <selector>
 python tools/recoil.py progress work leases --json
-python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-revision <revision> --apply --json
+python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-scheduler-revision <scheduler-revision> --apply --json
 python tools/recoil.py progress handoff --packet-id <packet-id> --json
 python tools/recoil.py verify vc5-order <registered-target> --build-root <new-isolated-root>
 ```
@@ -105,6 +105,12 @@ primary does
 not suppress compatible bytes; full authored byte wins over overlapping new
 object work. Actual resource conflicts and capacity skips are tool-owned.
 Individual `--lane <primary|authored|object>` claims remain supported.
+
+For every tracked-write packet, `progress handoff` reauthenticates and returns
+the exact packet branch, opaque baseline commit, linked `worktree_root`,
+authenticated `external_build_root`, and bounded worker Git permissions. The
+worker runs the exact command with its current directory set to the returned
+`worktree_root`; it never infers execution context from the parent checkout.
 
 `progress status`, `next`, `show`, `report`, work preview, deterministic slice
 projection, and closeout projection are operationally pure. They read explicit
@@ -222,7 +228,7 @@ retail-monotonic slices capped at 160 bodies before allowing full order. A
 `call-contract-edit-v1` worker uses one nonmutating command:
 
 ```powershell
-python tools/recoil.py verify call-contract --slice <slice-id> --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --build-root <fresh-root> --json
+python tools/recoil.py verify call-contract --slice <slice-id> --build-root <packet-root> --json
 ```
 
 The verifier freshly compiles the accepted authored-order target/source
@@ -408,16 +414,23 @@ status whether or not the optional `--strict` compatibility flag is present.
 The self-validating `progress advance-live-order` and `progress
 advance-live-byte` commands normally use direct `--apply`: they build and
 validate once, then CAS-mutate from that same result. The contained
-`progress advance-live-call-contract` route is not currently accepting and
-must not be used until an independently accepted parent producer enables it.
+`progress advance-live-call-contract` route requires an active packet, its
+authenticated external build root, and separate semantic and
+evidence-generation revision guards.
 Full-order advance uses
 the linked target for acceptance and names its separately validated object
 worker target with `--object-target`. Optional `--dry-run` is diagnostic only.
 Manual owner/block/provider/classification/catalog-exception/
-tier mutations remain dry-run-first. All mutations use `--expected-revision`
-as the sole optimistic-concurrency guard. IDs in schema v5 are revision/
-sequence IDs; they do not describe content and changing a comment does not
-invalidate them.
+tier mutations remain dry-run-first. Global semantic mutations use
+`--expected-revision`; scheduler-only packet lifecycle mutations use
+`--expected-scheduler-revision`; call-contract acceptance uses both
+`--expected-semantic-revision` and
+`--expected-evidence-generation-revision`. The default live authorities are
+routed through the authenticated canonical control root, so live instructions
+do not pass relative ledger flags. Legacy generic guards are accepted only for
+explicit absolute, noncanonical, schema-valid test fixtures. IDs in
+schema v5 are revision/sequence IDs; they do not describe content and changing
+a comment does not invalidate them.
 
 The supported owner and target maintenance routes are deliberately narrow.
 Use `progress owner replace-batch` for reviewed owner topology or primary
@@ -1025,7 +1038,7 @@ not ordinary reconstruction workflow steps.
 | `python tools/recoil.py progress data-artifact register` | progress | yes | no | Parent-only revision-guarded registration of one exact physical data identity and extent; creates no source edge, owner link, storage contribution, or acceptance. |
 | `python tools/recoil.py progress data-extent register` | progress | yes | no | Parent-only revision-guarded exact extent registration for one existing physical data artifact; creates no artifact, source edge, or acceptance. |
 | `python tools/recoil.py progress find` | progress | no | no | Search all unified reconstruction progress entities. |
-| `python tools/recoil.py progress handoff` | progress | no | no | Render one compact worker packet from a real active reservation; fail closed when no matching reservation exists. |
+| `python tools/recoil.py progress handoff` | progress | no | no | Render one compact worker packet and authenticated execution context from a real active reservation; fail closed when no matching reservation exists. |
 | `python tools/recoil.py progress next` | progress | no | no | Select the sole authoritative next Recoil.exe reconstruction task from the unified progress tracker. |
 | `python tools/recoil.py progress output-section show` | progress | no | no | Show one normalized PE output section. |
 | `python tools/recoil.py progress owner audit` | progress | no | no | Audit unified source-owner invariants. |

@@ -13,6 +13,7 @@ from typing import Any, Iterable, Mapping
 from _recoil.commands.workflow_contract_audit import (
     CommandContract,
     EXPECTED_CALL_CONTRACT_ACCEPTANCE_POLICY,
+    REQUIRED_COMMANDS as WORKFLOW_REQUIRED_COMMANDS,
     _named_call_count,
     audit_generated_call_contract_commands,
     registry_view,
@@ -207,51 +208,51 @@ def _bound_call_contract_include_roots(
                 )
 
 
-REQUIRED_COMMANDS: dict[tuple[str, ...], CommandContract] = {
+_PIPELINE_LOCAL_COMMANDS: dict[tuple[str, ...], CommandContract] = {
     ("audit", "pipeline-reachability"): CommandContract(
         "pipeline_reachability_audit", (), False
-    ),
-    ("verify", "vc5-order"): CommandContract("vc5_verify", ("--order-only",), False),
-    ("progress", "advance-live-order"): CommandContract(
-        "progress_cli", ("advance-live-order",), True
-    ),
-    ("verify", "authored-object-byte"): CommandContract(
-        "live_byte_verify", ("object",), False
-    ),
-    ("verify", "authored-byte"): CommandContract(
-        "live_byte_verify", ("authored",), False
-    ),
-    ("verify", "linked-byte"): CommandContract(
-        "live_byte_verify", ("linked",), False
-    ),
-    ("progress", "advance-live-byte"): CommandContract(
-        "progress_cli", ("advance-live-byte",), True
-    ),
-    ("verify", "call-contract"): CommandContract(
-        "call_contract_verify", (), False
     ),
     ("audit", "call-contract-readiness"): CommandContract(
         "call_contract_readiness_audit", (), False
     ),
-    ("progress", "advance-live-call-contract"): CommandContract(
-        "progress_cli", ("advance-live-call-contract",), True
-    ),
-    ("progress", "call-contract", "prepare-live-convergence"): CommandContract(
-        "progress_cli", ("call-contract", "prepare-live-convergence"), True
-    ),
-    ("progress", "call-contract", "prepare-repair-continuation"): CommandContract(
-        "progress_cli", ("call-contract", "prepare-repair-continuation"), True
-    ),
     ("audit", "relocation-expectations"): CommandContract(
         "relocation_expectations", (), False
-    ),
-    ("progress", "relocation-exception", "set"): CommandContract(
-        "relocation_expectation_mutation", ("set",), True
     ),
     ("audit", "final-image-catalog"): CommandContract(
         "final_image_catalog_audit", (), False
     ),
     ("verify", "final-image"): CommandContract("live_final_verify", (), True),
+}
+
+_PIPELINE_REQUIRED_PATHS = (
+    ("audit", "pipeline-reachability"),
+    ("verify", "vc5-order"),
+    ("progress", "advance-live-order"),
+    ("verify", "authored-object-byte"),
+    ("verify", "authored-byte"),
+    ("verify", "linked-byte"),
+    ("progress", "advance-live-byte"),
+    ("verify", "call-contract"),
+    ("audit", "call-contract-readiness"),
+    ("progress", "advance-live-call-contract"),
+    ("progress", "call-contract", "prepare-live-convergence"),
+    ("progress", "call-contract", "prepare-repair-continuation"),
+    ("audit", "relocation-expectations"),
+    ("progress", "relocation-exception", "set"),
+    ("audit", "final-image-catalog"),
+    ("verify", "final-image"),
+)
+
+# The workflow contract audit owns public command metadata shared across
+# operational audits. Pipeline reachability owns only its additional producer
+# routes and reuses the exact authoritative objects for every overlap.
+REQUIRED_COMMANDS: dict[tuple[str, ...], CommandContract] = {
+    path: (
+        WORKFLOW_REQUIRED_COMMANDS[path]
+        if path in WORKFLOW_REQUIRED_COMMANDS
+        else _PIPELINE_LOCAL_COMMANDS[path]
+    )
+    for path in _PIPELINE_REQUIRED_PATHS
 }
 
 

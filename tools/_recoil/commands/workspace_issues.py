@@ -53,6 +53,7 @@ from _recoil.lib.worktree_control import (
     WorktreeControlError,
     authenticated_validation_command_tokens,
     capture_packet_git_closeout as capture_git_closeout,
+    routed_machine_local_path,
 )
 from _recoil.lib.progress_sqlite import ProgressSQLiteStore, read_progress_metadata
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
@@ -1721,8 +1722,10 @@ def command_work_show(args: argparse.Namespace) -> int:
         return 2
 
 
-def add_common_create_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+def add_common_create_args(
+    parser: argparse.ArgumentParser, *, default_ledger: Path
+) -> None:
+    parser.add_argument("--ledger", default=str(default_ledger))
     parser.add_argument("--from-json", help="Read issue fields from a JSON object.")
     parser.add_argument("--severity", choices=sorted(SEVERITIES))
     parser.add_argument("--summary")
@@ -1743,17 +1746,27 @@ def add_revision_mutation_mode(parser: argparse.ArgumentParser) -> None:
     mode.add_argument("--apply", action="store_true")
 
 
-def add_work_mutation_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+def add_work_mutation_args(
+    parser: argparse.ArgumentParser, *, default_ledger: Path
+) -> None:
+    parser.add_argument("--ledger", default=str(default_ledger))
     add_revision_mutation_mode(parser)
 
 
 def build_parser() -> argparse.ArgumentParser:
+    default_ledger = routed_machine_local_path(
+        executing_worktree_root=REPO_ROOT,
+        relative_path=".agent/WORKSPACE_ISSUES.sqlite3",
+    )
+    default_progress_path = routed_machine_local_path(
+        executing_worktree_root=REPO_ROOT,
+        relative_path=".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+    )
     parser = argparse.ArgumentParser(description="Record and inspect Recoil agent tooling/process issue reports.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     report = subparsers.add_parser("report", help="Record an agent tooling/process problem for a future agent to fix.")
-    add_common_create_args(report)
+    add_common_create_args(report, default_ledger=default_ledger)
     report.add_argument("--kind", choices=sorted(PROBLEM_KINDS))
     report.add_argument("--actual")
     report.add_argument("--expected")
@@ -1762,13 +1775,13 @@ def build_parser() -> argparse.ArgumentParser:
     report.set_defaults(func=command_report)
 
     request = subparsers.add_parser("request", help="Record an agent tooling/process improvement request.")
-    add_common_create_args(request)
+    add_common_create_args(request, default_ledger=default_ledger)
     request.add_argument("--requested-change")
     request.add_argument("--benefit")
     request.set_defaults(func=command_request)
 
     list_parser = subparsers.add_parser("list", help="List agent tooling/process issues.")
-    list_parser.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    list_parser.add_argument("--ledger", default=str(default_ledger))
     list_parser.add_argument("--status", default="open", choices=["all", *sorted(STATUSES)])
     list_parser.add_argument("--kind", choices=sorted(KINDS))
     list_parser.add_argument("--limit", type=int, default=80)
@@ -1777,13 +1790,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     show = subparsers.add_parser("show", help="Show one agent tooling/process issue.")
     show.add_argument("issue_id")
-    show.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    show.add_argument("--ledger", default=str(default_ledger))
     show.add_argument("--json", action="store_true")
     show.set_defaults(func=command_show)
 
     resolve = subparsers.add_parser("resolve", help="Mark one agent tooling/process issue resolved.")
     resolve.add_argument("issue_id")
-    resolve.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    resolve.add_argument("--ledger", default=str(default_ledger))
     resolve.add_argument("--resolution", required=True)
     add_revision_mutation_mode(resolve)
     resolve.set_defaults(func=lambda args: transition_issue(args, status="resolved", action="resolved", note_field="resolution"))
@@ -1793,7 +1806,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Close one issue without resolution and remove its terminal rows.",
     )
     wont_fix.add_argument("issue_id")
-    wont_fix.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    wont_fix.add_argument("--ledger", default=str(default_ledger))
     wont_fix.add_argument("--reason", required=True)
     add_revision_mutation_mode(wont_fix)
     wont_fix.set_defaults(
@@ -1807,13 +1820,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     reopen = subparsers.add_parser("reopen", help="Reopen one agent tooling/process issue.")
     reopen.add_argument("issue_id")
-    reopen.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    reopen.add_argument("--ledger", default=str(default_ledger))
     reopen.add_argument("--reason", required=True)
     add_revision_mutation_mode(reopen)
     reopen.set_defaults(func=lambda args: transition_issue(args, status="open", action="reopened", note_field="reason"))
 
     audit = subparsers.add_parser("audit", help="Validate the agent tooling/process issue ledger shape.")
-    audit.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    audit.add_argument("--ledger", default=str(default_ledger))
     audit.add_argument("--strict", action="store_true")
     audit.add_argument("--json", action="store_true")
     audit.set_defaults(func=command_audit)
@@ -1822,7 +1835,7 @@ def build_parser() -> argparse.ArgumentParser:
         "compact",
         help="Parent-only active-only workspace-issue ledger compaction.",
     )
-    compact.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    compact.add_argument("--ledger", default=str(default_ledger))
     add_revision_mutation_mode(compact)
     compact.add_argument("--json", action="store_true")
     compact.set_defaults(func=command_compact)
@@ -1844,18 +1857,18 @@ def build_parser() -> argparse.ArgumentParser:
     work_set.add_argument("--validation-command", action="append", required=True)
     work_set.add_argument("--return-field", action="append", required=True)
     work_set.add_argument("--claim", action="append", required=True)
-    add_work_mutation_args(work_set)
+    add_work_mutation_args(work_set, default_ledger=default_ledger)
     work_set.set_defaults(func=command_work_set)
 
     work_list = work_subparsers.add_parser("list", help="List workspace-issue work packets.")
-    work_list.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    work_list.add_argument("--ledger", default=str(default_ledger))
     work_list.add_argument("--state", default="all", choices=["all", *sorted(ISSUE_WORK_STATES)])
     work_list.add_argument("--issue-id")
     work_list.add_argument("--json", action="store_true")
     work_list.set_defaults(func=command_work_list)
 
     work_show = work_subparsers.add_parser("show", help="Show one workspace-issue work packet.")
-    work_show.add_argument("--ledger", default=str(DEFAULT_LEDGER))
+    work_show.add_argument("--ledger", default=str(default_ledger))
     work_show.add_argument("--id", required=True)
     work_show.set_defaults(func=command_work_show)
 
@@ -1864,9 +1877,9 @@ def build_parser() -> argparse.ArgumentParser:
     work_reserve.add_argument(
         "--progress",
         type=Path,
-        default=DEFAULT_PROGRESS_PATH,
+        default=default_progress_path,
     )
-    add_work_mutation_args(work_reserve)
+    add_work_mutation_args(work_reserve, default_ledger=default_ledger)
     work_reserve.set_defaults(func=command_work_reserve)
 
     work_close = work_subparsers.add_parser("close", help="Release and close one active issue packet.")
@@ -1876,9 +1889,9 @@ def build_parser() -> argparse.ArgumentParser:
     work_close.add_argument(
         "--progress",
         type=Path,
-        default=DEFAULT_PROGRESS_PATH,
+        default=default_progress_path,
     )
-    add_work_mutation_args(work_close)
+    add_work_mutation_args(work_close, default_ledger=default_ledger)
     work_close.set_defaults(func=command_work_close)
 
     return parser

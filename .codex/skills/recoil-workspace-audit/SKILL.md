@@ -65,7 +65,7 @@ Audit these mode contracts:
   `NORMALIZER_REGISTRY_GENERATION = 12`, and
   `EXPECTED_FACT_SCHEMA_VERSION = 12`. They drive conservative invalidation,
   and transition requires a fresh complete no-reuse zero-divergence scan.
-- workspace-issue packets require a clean reviewed branch and use the opaque
+- tracked-write issue and progress packets require a clean reviewed branch and use the opaque
   baseline commit plus native Git status/diff for exact closure control. Database
   no-mutation evidence uses revisions, schema/user version, row counts, and
   `PRAGMA integrity_check` under CAS.

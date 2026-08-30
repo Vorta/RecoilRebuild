@@ -34,6 +34,11 @@ class CommandSpec:
     examples: tuple[str, ...] = ()
     mutates: bool = False
     needs_binja: bool = False
+    required_revision_domains: tuple[str, ...] = ()
+    packet_binding: str = "none"
+    build_root_contract: str = "none"
+    ledger_routing: str = "default"
+    mutation_scope: str = "none"
 
     @property
     def name(self) -> str:
@@ -55,6 +60,11 @@ def spec(
     examples: tuple[str, ...] = (),
     mutates: bool = False,
     needs_binja: bool = False,
+    required_revision_domains: tuple[str, ...] = (),
+    packet_binding: str = "none",
+    build_root_contract: str = "none",
+    ledger_routing: str = "default",
+    mutation_scope: str = "none",
 ) -> CommandSpec:
     return CommandSpec(
         path=tuple(path.split()),
@@ -66,6 +76,11 @@ def spec(
         examples=examples,
         mutates=mutates,
         needs_binja=needs_binja,
+        required_revision_domains=required_revision_domains,
+        packet_binding=packet_binding,
+        build_root_contract=build_root_contract,
+        ledger_routing=ledger_routing,
+        mutation_scope=mutation_scope,
     )
 
 
@@ -83,7 +98,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
         "ledger_sqlite_migration",
         summary="Parent-only guarded direct cutover of both legacy JSON authorities to a matched SQLite database pair.",
         category="validation",
-        examples=("python tools/recoil.py maintenance migrate-ledgers-sqlite --progress-json .agent/RECONSTRUCTION_PROGRESS.json --issues-json .agent/WORKSPACE_ISSUES.json --progress-db .agent/RECONSTRUCTION_PROGRESS.sqlite3 --issues-db .agent/WORKSPACE_ISSUES.sqlite3 --expected-progress-revision <revision> --expected-issues-revision <revision> --dry-run --json",),
+        examples=("python tools/recoil.py maintenance migrate-ledgers-sqlite --progress-json <absolute-legacy-progress-json> --issues-json <absolute-legacy-issues-json> --progress-db <absolute-noncanonical-progress-db> --issues-db <absolute-noncanonical-issues-db> --expected-progress-revision <revision> --expected-issues-revision <revision> --dry-run --json",),
         mutates=True,
     ),
     spec("policy show", "policy_cli", prepend=("show",), summary="Show one machine-readable reconstruction scheduling policy.", category="docs", examples=("python tools/recoil.py policy show authored-order --json",)),
@@ -323,7 +338,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec("guard reinterpret-cast", "no_reinterpret_cast", summary="Reject named reinterpret_cast usage.", category="guard", examples=("python tools/recoil.py guard reinterpret-cast --root src",)),
     spec("guard provider", "provider_boundary_guard", summary="Reject fake provider internals and provider ABI shims.", category="guard", examples=("python tools/recoil.py guard provider --root src --summary",)),
     spec("guard original-symbol", "original_source_symbol_guard", summary="Audit unsupported reconstruction helper dependencies.", category="guard", examples=("python tools/recoil.py guard original-symbol --root src --max 50",)),
-    spec("guard source-data", "source_data_initializer_guard", summary="Validate source data initializer rules recorded in unified progress.", category="guard", examples=("python tools/recoil.py guard source-data --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3", "python tools/recoil.py guard source-data --path src/Battlesport/CZRecoilFrame.cpp --summary")),
+    spec("guard source-data", "source_data_initializer_guard", summary="Validate source data initializer rules recorded in unified progress.", category="guard", examples=("python tools/recoil.py guard source-data", "python tools/recoil.py guard source-data --path src/Battlesport/CZRecoilFrame.cpp --summary"), ledger_routing="canonical-machine-local-default"),
     spec("guard multiline", "multiline_style_guard", summary="Check multiline declaration/call style.", category="guard", examples=("python tools/recoil.py guard multiline --root src",)),
     spec("guard source-placement", "source_placement_guard", summary="Check source placement and provenance conventions.", category="guard", examples=("python tools/recoil.py guard source-placement --root src",)),
     spec("guard vc5-manifest", "vc5_manifest_source_guard", summary="Reject VC manifest-local source and generated header shadows.", category="guard", examples=("python tools/recoil.py guard vc5-manifest", "python tools/recoil.py guard vc5-manifest --path tools/vc5_verify_targets/target.json")),
@@ -372,7 +387,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
 )
 
 _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
-    spec("progress handoff", "progress_cli", prepend=("handoff",), summary="Render one compact worker packet from a real active reservation; fail closed when no matching reservation exists.", category="progress", examples=("python tools/recoil.py progress handoff --packet-id <packet-id> --json",)),
+    spec("progress handoff", "progress_cli", prepend=("handoff",), summary="Render one compact worker packet and authenticated execution context from a real active reservation; fail closed when no matching reservation exists.", category="progress", examples=("python tools/recoil.py progress handoff --packet-id <packet-id> --json",), packet_binding="active-reservation-required", build_root_contract="return-authenticated-packet-root", ledger_routing="canonical-machine-local-default"),
     spec("progress current-metadata refresh", "current_metadata_mutation", prepend=("refresh",), summary="Revision-guard regeneration of live scheduler metadata and historicalize audited stale cursor narratives.", category="progress", examples=("python tools/recoil.py progress current-metadata refresh --expected-revision <revision> --dry-run --json",), mutates=True),
     spec("progress relocation-exception set", "relocation_expectation_mutation", prepend=("set",), summary="Revision-guard one reviewed retail-relocation ambiguity exception against exact current source and target context.", category="progress", examples=("python tools/recoil.py progress relocation-exception set --source-symbol-id <physical-symbol-id> --source-address 0xNNNNNN --payload-json '<json-object>' --expected-revision <revision> --dry-run --json",), mutates=True),
     spec("progress relocation-target bind", "relocation_target_mutation", prepend=("bind",), summary="Bind one immutable-retail relocation operand to reviewed existing or exact known-extent target identity.", category="progress", examples=("python tools/recoil.py progress relocation-target bind --source-symbol-id <physical-symbol-id> --source-address 0xNNNNNN --payload-json '<reviewed-binding>' --expected-revision <revision> --dry-run --json",), mutates=True),
@@ -692,7 +707,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
             "python tools/recoil.py progress work show <work-item-id> --json",
         ),
     ),
-    spec("progress work claim-current", "progress_cli", prepend=("work", "claim-current"), summary="Atomically create and reserve compatible current packets through prioritized multi-lane or focused individual-lane claims.", category="progress", examples=("python tools/recoil.py progress work claim-current --lane all --max-packets <N> --expected-revision <revision> --apply --json", "python tools/recoil.py progress work claim-current --lane primary --expected-revision <revision> --apply --json"), mutates=True),
+    spec("progress work claim-current", "progress_cli", prepend=("work", "claim-current"), summary="Atomically create and reserve compatible current packets through prioritized multi-lane or focused individual-lane claims.", category="progress", examples=("python tools/recoil.py progress work claim-current --lane all --max-packets <N> --expected-scheduler-revision <scheduler-revision> --apply --json", "python tools/recoil.py progress work claim-current --lane primary --expected-scheduler-revision <scheduler-revision> --apply --json"), mutates=True, required_revision_domains=("scheduler",), packet_binding="allocator", build_root_contract="allocate-authenticated-external-root", ledger_routing="canonical-machine-local-default", mutation_scope="scheduler"),
     spec("progress work create-explicit", "progress_cli", prepend=("work", "create-explicit"), summary="Parent-only journal-first output-root allocation followed by one final atomic activation of an exact explicitly user-selected maintenance or read-only diagnostic packet.", category="progress", examples=("python tools/recoil.py progress work create-explicit --payload-file build/diagnostics/<packet>.json --expected-scheduler-revision <revision> --expected-semantic-revision <revision> --dry-run --json", "python tools/recoil.py progress work create-explicit --payload-file build/diagnostics/<packet>.json --expected-scheduler-revision <revision> --expected-semantic-revision <revision> --apply --json"), mutates=True),
     spec("progress work reserve", "progress_cli", prepend=("work", "reserve"), summary="Reserve one scheduler-launchable or exact retry-eligible returned packet with non-expiring normalized resource claims.", category="progress", mutates=True),
     spec("progress work return", "progress_cli", prepend=("work", "return"), summary="Return one active explicit maintenance packet with bounded nonaccepting feedback.", category="progress", mutates=True),
@@ -732,7 +747,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         ),
         category="progress",
         examples=(
-            "python tools/recoil.py progress call-contract prepare-live-convergence --packet-id <packet-id> --closeout --build-root <packet-root> --jobs 2 --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",
+            "python tools/recoil.py progress call-contract prepare-live-convergence --packet-id <packet-id> --closeout --build-root <packet-root> --jobs 2 --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",
         ),
         mutates=True,
         needs_binja=True,
@@ -753,7 +768,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         ),
         category="progress",
         examples=(
-            "python tools/recoil.py progress call-contract prepare-repair-continuation --producer-packet <producer-packet-id> --returned-work-item <returned-work-id> --build-root <producer-root> --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 --expected-revision <revision> --apply --json",
+            "python tools/recoil.py progress call-contract prepare-repair-continuation --producer-packet <producer-packet-id> --returned-work-item <returned-work-id> --build-root <producer-root> --expected-revision <revision> --apply --json",
         ),
         mutates=True,
         needs_binja=True,
@@ -816,6 +831,10 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         category="progress",
         examples=("python tools/recoil.py progress advance-live-order --target <linked-target-id> --object-target <object-target-id> --build-root <fresh-root> --expected-revision <revision> --apply --json",),
         mutates=True,
+        required_revision_domains=("global",),
+        build_root_contract="fresh-parent-root",
+        ledger_routing="canonical-machine-local-default",
+        mutation_scope="order",
     ),
     spec(
         "progress advance-live-byte",
@@ -825,6 +844,10 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         category="progress",
         examples=("python tools/recoil.py progress advance-live-byte --lane authored --build-root <fresh-root> --expected-revision <revision> --apply --json",),
         mutates=True,
+        required_revision_domains=("global",),
+        build_root_contract="fresh-parent-root",
+        ledger_routing="canonical-machine-local-default",
+        mutation_scope="byte",
     ),
     spec(
         "progress advance-live-call-contract",
@@ -844,6 +867,11 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         examples=("python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --packet-id <packet-id> --build-root <packet-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",),
         mutates=True,
         needs_binja=True,
+        required_revision_domains=("semantic", "evidence_generation"),
+        packet_binding="active-call-contract-reservation-required",
+        build_root_contract="packet-authenticated-external-root",
+        ledger_routing="canonical-machine-local-default",
+        mutation_scope="call-contract",
     ),
     spec(
         "progress source-trace replace-batch",
@@ -966,6 +994,11 @@ def command_to_json(item: CommandSpec) -> dict[str, object]:
         "mutates": item.mutates,
         "needs_binja": item.needs_binja,
         "examples": list(item.examples),
+        "required_revision_domains": list(item.required_revision_domains),
+        "packet_binding": item.packet_binding,
+        "build_root_contract": item.build_root_contract,
+        "ledger_routing": item.ledger_routing,
+        "mutation_scope": item.mutation_scope,
     }
 
 
@@ -1011,6 +1044,14 @@ def print_command_help(item: CommandSpec) -> None:
     print(f"Category: {item.category}")
     print(f"Mutates files/state: {'yes' if item.mutates else 'no'}")
     print(f"May need Binary Ninja: {'yes' if item.needs_binja else 'no'}")
+    print(
+        "Required revision domains: "
+        + (", ".join(item.required_revision_domains) or "none")
+    )
+    print(f"Packet binding: {item.packet_binding}")
+    print(f"Build-root contract: {item.build_root_contract}")
+    print(f"Ledger routing: {item.ledger_routing}")
+    print(f"Mutation scope: {item.mutation_scope}")
     if item.examples:
         print()
         print("Examples:")

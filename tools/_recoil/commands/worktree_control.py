@@ -59,6 +59,7 @@ from _recoil.lib.worktree_control import (
     resolve_topology,
     run_absolute_path_independence_probe,
 )
+from _recoil.lib.worktree_control import routed_machine_local_path
 
 
 class IntegrationValidationError(WorktreeControlError):
@@ -601,8 +602,37 @@ def _run_validation(
                 "RECOIL_EXECUTION_WORKTREE_ROOT"
             ),
             "external_build_root": environment.get("RECOIL_EXTERNAL_BUILD_ROOT"),
+            "validation_read_only_authority": environment.get(
+                "RECOIL_VALIDATION_READ_ONLY_AUTHORITY"
+            ),
         }
     return result
+
+
+def _declared_validation_authority_paths(
+    *, master_root: Path, ledger_path: Path, progress_path: Path
+) -> tuple[str, ...]:
+    """Return canonical authority inputs explicitly supplied to integration.
+
+    Foreign repositories and noncanonical test/migration fixtures are not
+    silently promoted into live authorities.  When an integration invocation
+    supplies either canonical SQLite authority, however, its physical file
+    identity is pinned by ``CanonicalControlRoot`` before any candidate
+    validation subprocess runs and reauthenticated around every subprocess.
+    """
+
+    declared: list[str] = []
+    for relative_path, supplied_path in (
+        (".agent/WORKSPACE_ISSUES.sqlite3", ledger_path),
+        (".agent/RECONSTRUCTION_PROGRESS.sqlite3", progress_path),
+    ):
+        canonical_path = master_root / Path(relative_path)
+        try:
+            if supplied_path.resolve(strict=True) == canonical_path.resolve(strict=True):
+                declared.append(relative_path)
+        except OSError:
+            continue
+    return tuple(declared)
 
 
 def _run_authenticated_validation(
@@ -887,9 +917,14 @@ def integrate_issue_packet_worktree(
         integration_build_identity = create_temporary_build_root(
             integration_build_root
         )
+        validation_authority_paths = _declared_validation_authority_paths(
+            master_root=master_root,
+            ledger_path=ledger_path,
+            progress_path=progress_path,
+        )
         canonical_resolution = resolve_canonical_control_root(
             executing_worktree_root=integration_root,
-            required_machine_local_paths=(),
+            required_machine_local_paths=validation_authority_paths,
             explicit_root=master_root,
         )
         validation_environment = canonical_validation_environment(
@@ -1765,21 +1800,29 @@ def command_hygiene(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    default_ledger = routed_machine_local_path(
+        executing_worktree_root=REPO_ROOT,
+        relative_path=".agent/WORKSPACE_ISSUES.sqlite3",
+    )
+    default_progress_path = routed_machine_local_path(
+        executing_worktree_root=REPO_ROOT,
+        relative_path=".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+    )
     parser = argparse.ArgumentParser(
         description="Parent-owned linked worktree lifecycle for workspace-issue packets."
     )
     sub = parser.add_subparsers(dest="command", required=True)
     status = sub.add_parser("status")
-    status.add_argument("--ledger", default=str(DEFAULT_LEDGER))
-    status.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
+    status.add_argument("--ledger", default=str(default_ledger))
+    status.add_argument("--progress", type=Path, default=default_progress_path)
     status.add_argument("--json", action="store_true")
     status.set_defaults(func=command_status)
 
     create = sub.add_parser("create")
     create.add_argument("--authority", default="issue", choices=("issue", "progress"))
     create.add_argument("--id", required=True)
-    create.add_argument("--ledger", default=str(DEFAULT_LEDGER))
-    create.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
+    create.add_argument("--ledger", default=str(default_ledger))
+    create.add_argument("--progress", type=Path, default=default_progress_path)
     create.add_argument("--expected-revision", required=True, type=int)
     create.add_argument("--apply", action="store_true", required=True)
     create.set_defaults(func=command_create)
@@ -1787,8 +1830,8 @@ def build_parser() -> argparse.ArgumentParser:
     validate = sub.add_parser("validate")
     validate.add_argument("--authority", default="issue", choices=("issue", "progress"))
     validate.add_argument("--id", required=True)
-    validate.add_argument("--ledger", default=str(DEFAULT_LEDGER))
-    validate.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
+    validate.add_argument("--ledger", default=str(default_ledger))
+    validate.add_argument("--progress", type=Path, default=default_progress_path)
     validate.add_argument("--json", action="store_true")
     validate.add_argument("--absolute-path-probe", action="store_true")
     validate.set_defaults(func=command_validate)
@@ -1796,8 +1839,8 @@ def build_parser() -> argparse.ArgumentParser:
     integrate = sub.add_parser("integrate")
     integrate.add_argument("--authority", default="issue", choices=("issue", "progress"))
     integrate.add_argument("--id", required=True)
-    integrate.add_argument("--ledger", default=str(DEFAULT_LEDGER))
-    integrate.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
+    integrate.add_argument("--ledger", default=str(default_ledger))
+    integrate.add_argument("--progress", type=Path, default=default_progress_path)
     integrate.add_argument("--validation-command", action="append", default=[])
     integrate.add_argument("--apply", action="store_true", required=True)
     integrate.set_defaults(func=command_integrate)
@@ -1805,8 +1848,8 @@ def build_parser() -> argparse.ArgumentParser:
     retire = sub.add_parser("retire")
     retire.add_argument("--authority", default="issue", choices=("issue", "progress"))
     retire.add_argument("--id", required=True)
-    retire.add_argument("--ledger", default=str(DEFAULT_LEDGER))
-    retire.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
+    retire.add_argument("--ledger", default=str(default_ledger))
+    retire.add_argument("--progress", type=Path, default=default_progress_path)
     retire.add_argument("--expected-revision", type=int)
     retire.add_argument(
         "--outcome",
@@ -1823,8 +1866,8 @@ def build_parser() -> argparse.ArgumentParser:
     retire.set_defaults(func=command_retire)
 
     hygiene = sub.add_parser("hygiene")
-    hygiene.add_argument("--ledger", default=str(DEFAULT_LEDGER))
-    hygiene.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
+    hygiene.add_argument("--ledger", default=str(default_ledger))
+    hygiene.add_argument("--progress", type=Path, default=default_progress_path)
     hygiene.add_argument("--strict", action="store_true")
     hygiene.add_argument("--json", action="store_true")
     hygiene.set_defaults(func=command_hygiene)
