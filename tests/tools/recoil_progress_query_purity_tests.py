@@ -346,7 +346,7 @@ class ProgressQueryPurityTests(unittest.TestCase):
             ["next", "--json"],
             ["show", "recoil:function:0x401000", "--json"],
             ["report", "--json"],
-            ["work", "show", "--json"],
+            ["work", "show", "packet", "--json"],
         )
         first: list[object] = []
         second: list[object] = []

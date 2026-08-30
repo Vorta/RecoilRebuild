@@ -1087,9 +1087,9 @@ by the final revision-domain CAS.
 No stored body result substitutes for fresh verification. Currency is
 maintained through governed source/tool/manifest mutation, explicit
 invalidation, and the reviewed integer coordinates
-`CALL_CONTRACT_VERIFIER_GENERATION = 11`,
-`NORMALIZER_REGISTRY_GENERATION = 11`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 11`. Any verifier component change invalidates all
+`CALL_CONTRACT_VERIFIER_GENERATION = 12`,
+`NORMALIZER_REGISTRY_GENERATION = 12`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 12`. Any verifier component change invalidates all
 current call-contract evidence; a normalizer change invalidates all users when
 the exact user set cannot be proven. The result records exact ordered symbols,
 targets, physical blocks, source/dependency paths, integer generations,

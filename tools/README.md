@@ -236,9 +236,9 @@ semantic and evidence-generation revision guards before any compiler or Binary
 Ninja work. It performs one fresh build and direct retail comparison, then may
 CAS-accept only bodies that passed in that same invocation. Stored body results
 and prior scans are nonaccepting. Current evidence carries only the reviewed
-integer coordinates `CALL_CONTRACT_VERIFIER_GENERATION = 11`,
-`NORMALIZER_REGISTRY_GENERATION = 11`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 11`; governed component edits require the
+integer coordinates `CALL_CONTRACT_VERIFIER_GENERATION = 12`,
+`NORMALIZER_REGISTRY_GENERATION = 12`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 12`; governed component edits require the
 corresponding increment and conservative invalidation. Compatible byte packets
 remain independently launchable; full order remains blocked while any body is
 not current or the fresh no-reuse zero-divergence closeout has not passed.
@@ -1062,7 +1062,7 @@ not ordinary reconstruction workflow steps.
 | `python tools/recoil.py progress work reserve` | progress | yes | no | Reserve one scheduler-launchable or exact retry-eligible returned packet with non-expiring normalized resource claims. |
 | `python tools/recoil.py progress work return` | progress | yes | no | Return one active explicit maintenance packet with bounded nonaccepting feedback. |
 | `python tools/recoil.py progress work return-binja` | progress | yes | yes | Parent-only governed Binary Ninja read-plan execution and scheduler-CAS return for one active BN-enabled explicit packet. |
-| `python tools/recoil.py progress work show` | progress | no | no | Show structured work items. |
+| `python tools/recoil.py progress work show` | progress | no | no | Show one exact structured work item. |
 | `python tools/recoil.py style fix-multiline` | style | yes | no | Rewrite strict multiline style issues. |
 | `python tools/recoil.py verify asm` | verification | no | yes | Extract or compare Binary Ninja assembly/bytes. |
 | `python tools/recoil.py verify authored-byte` | verification | no | no | Freshly rebuild and directly scan authored object, relocation, target, and linked-body semantics. |

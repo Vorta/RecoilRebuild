@@ -35,7 +35,7 @@ import recoil  # noqa: E402
 
 
 class AgentSurfaceAuditTests(unittest.TestCase):
-    def test_generation11_and_pre_fast_forward_validation_policy_are_current(self) -> None:
+    def test_generation12_and_pre_fast_forward_validation_policy_are_current(self) -> None:
         coordinate_surfaces = (
             "AGENTS.md",
             "tools/README.md",
@@ -45,9 +45,9 @@ class AgentSurfaceAuditTests(unittest.TestCase):
             ".codex/skills/recoil-workspace-audit/SKILL.md",
         )
         required_coordinates = (
-            "CALL_CONTRACT_VERIFIER_GENERATION = 11",
-            "NORMALIZER_REGISTRY_GENERATION = 11",
-            "EXPECTED_FACT_SCHEMA_VERSION = 11",
+            "CALL_CONTRACT_VERIFIER_GENERATION = 12",
+            "NORMALIZER_REGISTRY_GENERATION = 12",
+            "EXPECTED_FACT_SCHEMA_VERSION = 12",
         )
         for relative in coordinate_surfaces:
             with self.subTest(surface=relative):
