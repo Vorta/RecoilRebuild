@@ -208,6 +208,14 @@ from _recoil.lib.git_change_control import (
 
 PROGRESS_AUTHORITY_RELATIVE_PATH = ".agent/RECONSTRUCTION_PROGRESS.sqlite3"
 ISSUE_AUTHORITY_RELATIVE_PATH = ".agent/WORKSPACE_ISSUES.sqlite3"
+TOOL_BLOCKED_PROVENANCE_FIELD = "tool_blocked_return_provenance"
+CALL_CONTRACT_CONTINUATION_PREDECESSOR_TYPES = frozenset(
+    {
+        "call-contract-edit-v1",
+        "call-contract-converge-edit-v1",
+        "call-contract-dependent-owner-edit-v1",
+    }
+)
 DEFAULT_PROGRESS = routed_machine_local_path(
     executing_worktree_root=REPO_ROOT,
     relative_path=PROGRESS_AUTHORITY_RELATIVE_PATH,
@@ -1728,7 +1736,7 @@ def _compact_reserved_packet(
         raise ProgressError(f"work item {work_id} requires exactly one worker validation command")
     worker_command = validation_commands[0].strip()
     try:
-        authenticated_validation_command_tokens(
+        command_tokens = authenticated_validation_command_tokens(
             worker_command,
             require_public_route=False,
             resource_claims=claims,
@@ -1841,6 +1849,24 @@ def _compact_reserved_packet(
                 packet_id=work_id,
                 branch=str(descriptor.get("branch", "")),
                 worktree_root=packet_root,
+            )
+            if "{progress_path}" in worker_command:
+                if progress_path is None:
+                    raise ProgressError(
+                        f"work item {work_id} has an unbound progress authority placeholder"
+                    )
+                worker_command = _bind_native_git_progress_authority(
+                    worker_command,
+                    Path(progress_path),
+                )
+                command_tokens = authenticated_validation_command_tokens(
+                    worker_command,
+                    require_public_route=False,
+                    resource_claims=claims,
+                )
+            _validate_native_git_progress_authority(
+                command_tokens,
+                progress_path=progress_path,
             )
             native_git_execution_context = {
                 "baseline_schema": baseline.get("schema"),
@@ -2105,6 +2131,112 @@ def _progress_command_path(path: Path) -> str:
         return resolved.relative_to(REPO_ROOT.resolve()).as_posix()
     except ValueError:
         return resolved.as_posix()
+
+
+def _bind_native_git_progress_authority(command: str, progress_path: Path) -> str:
+    """Bind a tracked-write worker to the authenticated live authority.
+
+    Candidate construction happens before the packet worktree exists, so its
+    command carries an explicit placeholder instead of a repository-relative
+    ``.agent`` path. Native-Git allocation calls this helper only after
+    authenticating ``progress_path`` as the canonical live SQLite authority.
+    An already-rendered relative override fails closed rather than being
+    interpreted relative to the newly created linked checkout.
+    """
+
+    placeholder = "{progress_path}"
+    count = command.count(placeholder)
+    if count > 1:
+        raise ProgressError(
+            "tracked-write worker command has more than one progress authority placeholder"
+        )
+    if count == 1:
+        authority = progress_path.resolve(strict=True)
+        return command.replace(placeholder, _command_arg(authority.as_posix()))
+    tokens = authenticated_validation_command_tokens(
+        command,
+        require_public_route=False,
+    )
+    if "--progress" in tokens:
+        raise ProgressError(
+            "tracked-write worker command binds a live progress authority before "
+            "authenticated native-Git allocation"
+        )
+    return command
+
+
+def _validate_native_git_progress_authority(
+    command_tokens: list[str],
+    *,
+    progress_path: str | Path | None,
+) -> None:
+    """Reject linked-worktree-relative live SQLite overrides at handoff."""
+
+    positions = [
+        index for index, token in enumerate(command_tokens) if token == "--progress"
+    ]
+    if not positions:
+        return
+    if len(positions) != 1 or positions[0] + 1 >= len(command_tokens):
+        raise ProgressError(
+            "native-Git worker command requires exactly one complete --progress option"
+        )
+    if progress_path is None:
+        raise ProgressError(
+            "native-Git worker command progress authority lacks its tracker binding"
+        )
+    observed = Path(command_tokens[positions[0] + 1])
+    if not observed.is_absolute():
+        raise ProgressError(
+            "native-Git worker command uses a linked-worktree-relative live progress authority"
+        )
+    try:
+        expected = Path(progress_path).resolve(strict=True)
+        actual = observed.resolve(strict=True)
+    except OSError as exc:
+        raise ProgressError(
+            f"native-Git worker command progress authority cannot be authenticated: {exc}"
+        ) from exc
+    if actual != expected:
+        raise ProgressError(
+            "native-Git worker command does not bind the authenticated canonical "
+            "progress authority"
+        )
+
+
+def _is_call_contract_continuation_predecessor(work: Mapping[str, Any]) -> bool:
+    return bool(
+        work.get("packet_type") in CALL_CONTRACT_CONTINUATION_PREDECESSOR_TYPES
+        and work.get("phase") == "authored-call-contract"
+        and str(work.get("target_id", ""))
+    )
+
+
+def _generic_tool_blocked_return_provenance(
+    work_id: str,
+    work: Mapping[str, Any],
+    linked_issue_id: str,
+) -> dict[str, Any]:
+    """Retain a non-call-contract packet's exact tool-blocked linkage."""
+
+    return {
+        "schema_version": 1,
+        "kind": "reconstruction-packet-tool-blocked-return-provenance",
+        "predecessor_work_item_id": work_id,
+        "linked_issue_id": linked_issue_id,
+        "packet_type": str(work.get("packet_type", "")),
+        "phase": str(work.get("phase", "")),
+        "lane": str(work.get("lane", "")),
+        "byte_lane": str(work.get("byte_lane", "")),
+        "cursor": str(work.get("cursor", "")),
+        "block_id": str(work.get("block_id", "")),
+        "covered_block_ids": deepcopy(list(work.get("covered_block_ids", []))),
+        "scope_ids": deepcopy(list(work.get("scope_ids", []))),
+        "target_ids": deepcopy(list(work.get("target_ids", []))),
+        "noncurrent": True,
+        "nonaccepting": True,
+        "acceptance_eligible": False,
+    }
 
 
 _PROGRESS_GIT_DOCUMENT: ContextVar[ProgressDocument | None] = ContextVar(
@@ -2980,8 +3112,7 @@ def _byte_claim_candidate(
     verify_name = BYTE_VERIFY_COMMANDS[verifier_lane]
     worker_command = (
         f"python tools/recoil.py verify {verify_name} --at {cursor} "
-        f"--build-root {worker_root} --progress "
-        f"{_command_arg(_progress_command_path(progress_path))} --json"
+        f"--build-root {worker_root} --progress {{progress_path}} --json"
     )
     stem = (
         f"recoil:work:live-{packet_lane}-{verifier_lane}-byte-"
@@ -3098,7 +3229,7 @@ def _call_contract_claim_candidate(
     worker_command = (
         "python tools/recoil.py verify call-contract "
         f"--slice {_command_arg(slice_id)} "
-        f"--progress {_command_arg(_progress_command_path(progress_path))} "
+        "--progress {progress_path} "
         f"--build-root {_command_arg(worker_root)} --json"
     )
     work_id = _unique_work_id(
@@ -3713,7 +3844,7 @@ def _call_contract_convergence_repair_candidates(
         worker_command = (
             "python tools/recoil.py verify call-contract "
             f"--target {_command_arg(target_id)} --all-authored-bodies "
-            f"--progress {_command_arg(_progress_command_path(progress_path))} "
+            "--progress {progress_path} "
             f"--build-root {_command_arg(worker_root)} --json"
         )
         prospective_profile_handoff = descriptor.get(
@@ -3734,7 +3865,7 @@ def _call_contract_convergence_repair_candidates(
             worker_command = (
                 "python tools/recoil.py verify call-contract "
                 f"--target {_command_arg(target_id)} --profile-matrix "
-                f"--progress {_command_arg(_progress_command_path(progress_path))} "
+                "--progress {progress_path} "
                 f"--build-root {_command_arg(worker_root)} --json"
             )
         if selected_target_compile_definition:
@@ -4249,10 +4380,6 @@ def _call_contract_mixed_obligation_candidates(
         validation_commands = [
             str(command)
             .replace("{packet_build_root}", _command_arg(worker_root))
-            .replace(
-                "{progress_path}",
-                _command_arg(_progress_command_path(progress_path)),
-            )
             for command in descriptor.get("validation_commands", [])
         ]
         if not write_paths or not validation_commands:
@@ -5183,7 +5310,10 @@ def claim_current_work(args: argparse.Namespace) -> dict[str, Any]:
                 raise ProgressError("progress packet requires exactly one validation command")
             command = commands[0]
             command = command.replace("{packet_build_root}", _command_arg(str(external_root)))
-            command = command.replace("{progress_path}", _command_arg(str(Path(args.progress).resolve())))
+            command = _bind_native_git_progress_authority(
+                command,
+                Path(args.progress),
+            )
             for old_root in old_roots:
                 command = command.replace(old_root, _command_arg(str(external_root)))
             work["validation_commands"] = [command]
@@ -9082,7 +9212,7 @@ def _handoff(document: ProgressDocument, args: argparse.Namespace) -> dict[str, 
         packet = _compact_reserved_packet(
             packet_id,
             work,
-            progress_path=getattr(args, "progress", document.path),
+            progress_path=getattr(args, "progress", DEFAULT_PROGRESS),
         )
         cursor = str(work.get("cursor", ""))
         joined_scope = (
@@ -16547,7 +16677,21 @@ def main(argv: list[str] | None = None) -> int:
                 raise ProgressError(
                     "returned-tool-blocked cannot carry an abandonment reason"
                 )
-            if special_tool_blocked and args.linked_tool_issue != LINKED_TOOL_ISSUE:
+            close_document = (
+                scheduler_document
+                if scheduler_document is not None
+                else ProgressStore(args.progress).load()
+            )
+            closing_work = close_document.collection("work_items").get(args.work_id)
+            continuation_tool_blocked = bool(
+                special_tool_blocked
+                and isinstance(closing_work, Mapping)
+                and _is_call_contract_continuation_predecessor(closing_work)
+            )
+            if (
+                continuation_tool_blocked
+                and args.linked_tool_issue != LINKED_TOOL_ISSUE
+            ):
                 raise ProgressError(
                     f"call-contract repair continuation is governed only by {LINKED_TOOL_ISSUE}"
                 )
@@ -16635,7 +16779,7 @@ def main(argv: list[str] | None = None) -> int:
                     raise ProgressError(
                         "abandoning an explicit maintenance packet requires a reason"
                     )
-                if special_tool_blocked:
+                if continuation_tool_blocked:
                     state = continuation_state(current)
                     if _continuation_blocks_primary_scheduler(state):
                         raise ProgressError(
@@ -16662,7 +16806,7 @@ def main(argv: list[str] | None = None) -> int:
                 if args.abandonment_reason:
                     work["abandonment_reason"] = args.abandonment_reason
                 details.update({"work_item_id": args.work_id, "outcome": args.outcome})
-                if special_tool_blocked:
+                if continuation_tool_blocked:
                     provenance = returned_tool_blocked_provenance(
                         current,
                         args.work_id,
@@ -16680,6 +16824,29 @@ def main(argv: list[str] | None = None) -> int:
                                 else None
                             ),
                             "full_convergence_required": True,
+                            "noncurrent": True,
+                            "nonaccepting": True,
+                            "acceptance_eligible": False,
+                        }
+                    )
+                elif special_tool_blocked:
+                    work[TOOL_BLOCKED_PROVENANCE_FIELD] = (
+                        _generic_tool_blocked_return_provenance(
+                            args.work_id,
+                            work,
+                            str(args.linked_tool_issue),
+                        )
+                    )
+                    details.update(
+                        {
+                            "retained_terminal_work_item": True,
+                            "linked_tool_issue_id": args.linked_tool_issue,
+                            "linked_issue_ledger_revision": (
+                                linked_issue_snapshot.get("revision")
+                                if isinstance(linked_issue_snapshot, Mapping)
+                                else None
+                            ),
+                            "call_contract_continuation": False,
                             "noncurrent": True,
                             "nonaccepting": True,
                             "acceptance_eligible": False,
@@ -16731,7 +16898,7 @@ def main(argv: list[str] | None = None) -> int:
                 details["convergence_generation_carried"] = bool(
                     scheduler_domains is None
                     and semantic_projection_before is not None
-                    and not special_tool_blocked
+                    and not continuation_tool_blocked
                     and work.get("packet_type") != CONTINUATION_PACKET_TYPE
                 ) and (
                     carry_current_generation_across_work_ledger_mutation(

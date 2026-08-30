@@ -763,22 +763,30 @@ class ExplicitMaintenanceWorkTests(unittest.TestCase):
             finally:
                 connection.close()
 
-        before = observation()
-        metadata = ProgressSQLiteStore(path, read_only=True).metadata()
-        after = observation()
-        self.assertEqual(before, after)
-        self.assertEqual(("ok",), before["integrity"])
-        self.assertEqual(metadata.revision, before["metadata"][1])
-        self.assertEqual(
-            (metadata.revision,) * 4,
-            (
-                metadata.revision,
-                metadata.semantic_revision,
-                metadata.evidence_generation_revision,
-                metadata.scheduler_revision,
-            ),
+        before_metadata = ProgressSQLiteStore(path, read_only=True).metadata()
+        before_revision_vector = (
+            before_metadata.revision,
+            before_metadata.semantic_revision,
+            before_metadata.evidence_generation_revision,
+            before_metadata.scheduler_revision,
         )
-        self.assertEqual(1, metadata.user_version)
+        before = observation()
+        after = observation()
+        after_metadata = ProgressSQLiteStore(path, read_only=True).metadata()
+        after_revision_vector = (
+            after_metadata.revision,
+            after_metadata.semantic_revision,
+            after_metadata.evidence_generation_revision,
+            after_metadata.scheduler_revision,
+        )
+        self.assertEqual(before, after)
+        self.assertEqual(before_revision_vector, after_revision_vector)
+        self.assertEqual(("ok",), before["integrity"])
+        self.assertEqual(before_metadata.revision, before["metadata"][1])
+        self.assertEqual(after_metadata.revision, after["metadata"][1])
+        self.assertEqual(before_metadata.user_version, before["user_version"])
+        self.assertEqual(after_metadata.user_version, after["user_version"])
+        self.assertEqual(before_metadata.user_version, after_metadata.user_version)
 
     def test_expiry_recovery_releases_attempt_and_returns_ready(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

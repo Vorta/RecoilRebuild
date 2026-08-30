@@ -109,7 +109,7 @@ class CallContractConvergenceTests(unittest.TestCase):
         identity = convergence.current_call_contract_verifier_semantic_identity()
 
         self.assertEqual("call-contract-reviewed-integer-generations", identity["kind"])
-        self.assertEqual(12, identity["call_contract_verifier_generation"])
+        self.assertEqual(13, identity["call_contract_verifier_generation"])
         self.assertEqual(12, identity["normalizer_registry_generation"])
         self.assertEqual(12, identity["expected_fact_schema_version"])
 
@@ -139,9 +139,9 @@ class CallContractConvergenceTests(unittest.TestCase):
             )
         )
 
-    def test_generation12_is_current_and_generation11_or_mixed_fail_closed(self) -> None:
+    def test_generation13_verifier_with_generation12_schema_is_current(self) -> None:
         current = {
-            "call_contract_verifier_generation": 12,
+            "call_contract_verifier_generation": 13,
             "normalizer_registry_generation": 12,
             "expected_fact_schema_version": 12,
         }
