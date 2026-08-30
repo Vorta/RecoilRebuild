@@ -131,7 +131,7 @@ After every body is current, phase transition still requires one fresh,
 complete-TU, no-reuse, zero-divergence scan:
 
 ```powershell
-python tools/recoil.py progress call-contract prepare-live-convergence --packet-id <packet-id> --closeout --build-root <packet-root> --jobs <n> --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
+python tools/recoil.py progress call-contract prepare-live-convergence --packet-id <packet-id> --closeout --build-root <packet-root> --jobs <n> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 ```
 
 Incremental or reused output is diagnostic and cannot substitute for this

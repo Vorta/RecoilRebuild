@@ -23,6 +23,11 @@ class CommandContract:
     module: str
     prepend: tuple[str, ...]
     mutates: bool
+    required_revision_domains: tuple[str, ...] = ()
+    packet_binding: str = "none"
+    build_root_contract: str = "none"
+    ledger_routing: str = "default"
+    mutation_scope: str = "none"
 
 
 REQUIRED_COMMANDS: dict[tuple[str, ...], CommandContract] = {
@@ -37,7 +42,9 @@ REQUIRED_COMMANDS: dict[tuple[str, ...], CommandContract] = {
     ),
     ("docs", "readme-progress"): CommandContract("readme_progress", (), True),
     ("progress", "work", "claim-current"): CommandContract(
-        "progress_cli", ("work", "claim-current"), True
+        "progress_cli", ("work", "claim-current"), True,
+        ("scheduler",), "allocator", "allocate-authenticated-external-root",
+        "canonical-machine-local-default", "scheduler",
     ),
     ("progress", "work", "create-explicit"): CommandContract(
         "progress_cli", ("work", "create-explicit"), True
@@ -54,7 +61,11 @@ REQUIRED_COMMANDS: dict[tuple[str, ...], CommandContract] = {
     ("progress", "work", "recover-allocation"): CommandContract(
         "progress_cli", ("work", "recover-allocation"), True
     ),
-    ("progress", "handoff"): CommandContract("progress_cli", ("handoff",), False),
+    ("progress", "handoff"): CommandContract(
+        "progress_cli", ("handoff",), False, (),
+        "active-reservation-required", "return-authenticated-packet-root",
+        "canonical-machine-local-default", "none",
+    ),
     ("progress", "current-metadata", "refresh"): CommandContract(
         "current_metadata_mutation", ("refresh",), True
     ),
@@ -78,13 +89,21 @@ REQUIRED_COMMANDS: dict[tuple[str, ...], CommandContract] = {
         "call_contract_verify", (), False
     ),
     ("progress", "advance-live-order"): CommandContract(
-        "progress_cli", ("advance-live-order",), True
+        "progress_cli", ("advance-live-order",), True,
+        ("global",), "none", "fresh-parent-root",
+        "canonical-machine-local-default", "order",
     ),
     ("progress", "advance-live-byte"): CommandContract(
-        "progress_cli", ("advance-live-byte",), True
+        "progress_cli", ("advance-live-byte",), True,
+        ("global",), "none", "fresh-parent-root",
+        "canonical-machine-local-default", "byte",
     ),
     ("progress", "advance-live-call-contract"): CommandContract(
-        "progress_cli", ("advance-live-call-contract",), True
+        "progress_cli", ("advance-live-call-contract",), True,
+        ("semantic", "evidence_generation"),
+        "active-call-contract-reservation-required",
+        "packet-authenticated-external-root",
+        "canonical-machine-local-default", "call-contract",
     ),
     ("progress", "call-contract", "initialize"): CommandContract(
         "progress_cli", ("call-contract", "initialize"), True
@@ -153,11 +172,21 @@ def registry_view(specs: Iterable[Any] | None = None) -> dict[tuple[str, ...], C
             module = item.get("module", "")
             prepend = item.get("prepend_args", item.get("prepend", ()))
             mutates = item.get("mutates", False)
+            revision_domains = item.get("required_revision_domains", ())
+            packet_binding = item.get("packet_binding", "none")
+            build_root_contract = item.get("build_root_contract", "none")
+            ledger_routing = item.get("ledger_routing", "default")
+            mutation_scope = item.get("mutation_scope", "none")
         else:
             raw_path = getattr(item, "path", ())
             module = getattr(item, "module", "")
             prepend = getattr(item, "prepend_args", ())
             mutates = getattr(item, "mutates", False)
+            revision_domains = getattr(item, "required_revision_domains", ())
+            packet_binding = getattr(item, "packet_binding", "none")
+            build_root_contract = getattr(item, "build_root_contract", "none")
+            ledger_routing = getattr(item, "ledger_routing", "default")
+            mutation_scope = getattr(item, "mutation_scope", "none")
         if isinstance(raw_path, str):
             path = tuple(raw_path.split())
         else:
@@ -166,6 +195,11 @@ def registry_view(specs: Iterable[Any] | None = None) -> dict[tuple[str, ...], C
             module=str(module),
             prepend=tuple(str(part) for part in prepend),
             mutates=bool(mutates),
+            required_revision_domains=tuple(str(value) for value in revision_domains),
+            packet_binding=str(packet_binding),
+            build_root_contract=str(build_root_contract),
+            ledger_routing=str(ledger_routing),
+            mutation_scope=str(mutation_scope),
         )
     return result
 
@@ -748,7 +782,7 @@ def _audit_parser_and_validator_calls(
             [
                 "work",
                 "claim-current",
-                "--expected-revision",
+                "--expected-scheduler-revision",
                 "7",
                 "--apply",
             ]
@@ -757,7 +791,8 @@ def _audit_parser_and_validator_calls(
             parsed.command != "work"
             or parsed.work_command != "claim-current"
             or parsed.lane != "primary"
-            or parsed.expected_revision != 7
+            or parsed.expected_scheduler_revision != 7
+            or getattr(parsed, "expected_revision", None) is not None
             or parsed.apply is not True
         ):
             failures.append(
@@ -775,7 +810,7 @@ def _audit_parser_and_validator_calls(
                 "all",
                 "--max-packets",
                 "2",
-                "--expected-revision",
+                "--expected-scheduler-revision",
                 "7",
                 "--apply",
             ]
@@ -794,6 +829,28 @@ def _audit_parser_and_validator_calls(
     except (AttributeError, SystemExit) as exc:
         failures.append(
             _finding("progress-parser", f"multi-lane claim or packet-id handoff is unreachable: {exc}")
+        )
+
+    with contextlib.redirect_stderr(io.StringIO()):
+        try:
+            legacy_call = progress_module._parser().parse_args(
+                [
+                    "advance-live-call-contract",
+                    "--slice", "recoil:call-contract-slice:audit",
+                    "--packet-id", "recoil:work:audit",
+                    "--build-root", "build/audit",
+                    "--expected-revision", "7",
+                    "--apply",
+                ]
+            )
+        except SystemExit:
+            legacy_call = None
+    if legacy_call is not None:
+        failures.append(
+            _finding(
+                "call-contract-domain-guards",
+                "advance-live-call-contract parser still accepts the stale global revision guard",
+            )
         )
 
     try:

@@ -55,6 +55,7 @@ _WINDOWS_SAFE_CHILD_LIMIT = 220
 CANONICAL_ROOT_ENV = "RECOIL_CANONICAL_ROOT"
 EXECUTION_WORKTREE_ROOT_ENV = "RECOIL_EXECUTION_WORKTREE_ROOT"
 EXTERNAL_BUILD_ROOT_ENV = "RECOIL_EXTERNAL_BUILD_ROOT"
+VALIDATION_READ_ONLY_AUTHORITY_ENV = "RECOIL_VALIDATION_READ_ONLY_AUTHORITY"
 FORBIDDEN_VALIDATION_COMMAND_COMPOSITION = (
     "\r",
     "\n",
@@ -828,7 +829,7 @@ def canonical_validation_environment(
     expected_external_build_root_identity: PhysicalFileIdentity | None = None,
     base_environment: Mapping[str, str] | None = None,
 ) -> dict[str, str]:
-    """Preserve the process environment and add only bounded routing roots."""
+    """Preserve the process environment and add bounded read-only routing roots."""
 
     reauthenticate_canonical_control_root(resolution)
     build_lexical = _lexical_absolute(
@@ -846,6 +847,10 @@ def canonical_validation_environment(
         resolution.executing_worktree_root
     )
     environment[EXTERNAL_BUILD_ROOT_ENV] = str(build_root)
+    # Packet/integration validation may read the authenticated live authorities,
+    # but candidate code and tests must never apply a mutation to them. Parent
+    # acceptance runs outside this environment and remains available.
+    environment[VALIDATION_READ_ONLY_AUTHORITY_ENV] = "1"
     return environment
 
 
@@ -1817,6 +1822,7 @@ __all__ = [
     "BUILD_ROOT_MARKER_NAME",
     "BUILD_ROOT_MARKER_SCHEMA",
     "CANONICAL_ROOT_ENV",
+    "VALIDATION_READ_ONLY_AUTHORITY_ENV",
     "CanonicalControlRoot",
     "EXECUTION_WORKTREE_ROOT_ENV",
     "EXTERNAL_BUILD_ROOT_ENV",

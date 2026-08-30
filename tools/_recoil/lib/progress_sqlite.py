@@ -9,6 +9,11 @@ import re
 import sqlite3
 from typing import Any, Iterable, Mapping
 
+from _recoil.lib.worktree_control import (
+    CANONICAL_ROOT_ENV,
+    VALIDATION_READ_ONLY_AUTHORITY_ENV,
+)
+
 
 APPLICATION_ID = 0x52434C50  # "RCLP"
 USER_VERSION = 2
@@ -60,6 +65,18 @@ class ConcurrentSQLiteProgressUpdate(ProgressSQLiteError):
 
 # Compatibility with the backend's revision-specific internal terminology.
 ConcurrentSQLiteRevisionUpdate = ConcurrentSQLiteProgressUpdate
+
+
+def _validation_blocks_live_progress_mutation(path: Path, *, apply: bool) -> bool:
+    if not apply or os.environ.get(VALIDATION_READ_ONLY_AUTHORITY_ENV) != "1":
+        return False
+    canonical_root = os.environ.get(CANONICAL_ROOT_ENV)
+    if not canonical_root:
+        return True
+    live_authority = (
+        Path(canonical_root) / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
+    ).resolve()
+    return path.resolve() == live_authority
 
 
 class _DeleteFacet:
@@ -780,6 +797,10 @@ class ProgressSQLiteStore:
         v1 database merely by opening it.
         """
 
+        if _validation_blocks_live_progress_mutation(self.path, apply=apply):
+            raise ProgressSQLiteError(
+                "packet/integration validation cannot apply live progress-authority mutations"
+            )
         if self.read_only:
             raise ProgressSQLiteError(
                 "cannot migrate through a read-only SQLite progress store"
@@ -934,6 +955,10 @@ class ProgressSQLiteStore:
         expected_revision: int,
         apply: bool,
     ) -> SQLiteCommitResult:
+        if _validation_blocks_live_progress_mutation(self.path, apply=apply):
+            raise ProgressSQLiteError(
+                "packet/integration validation cannot apply live progress-authority mutations"
+            )
         if self.read_only:
             raise ProgressSQLiteError("cannot persist through a read-only SQLite progress store")
         upserts = upserts or {}
@@ -1114,6 +1139,10 @@ class ProgressSQLiteStore:
         without claiming to mutate them.
         """
 
+        if _validation_blocks_live_progress_mutation(self.path, apply=apply):
+            raise ProgressSQLiteError(
+                "packet/integration validation cannot apply live progress-authority mutations"
+            )
         if self.read_only:
             raise ProgressSQLiteError(
                 "cannot persist through a read-only SQLite progress store"

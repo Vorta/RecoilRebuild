@@ -493,8 +493,10 @@ class ClaudeMirrorAuditTests(unittest.TestCase):
             f"---\nname: {self.ROLE_STEM if name is None else name}\n"
             f"description: {self.ROLE_DESCRIPTION}\n"
             "disallowedTools: Edit, Write, NotebookEdit, Agent\n---\n\n"
-            "Root `AGENTS.md` is authoritative. Your operating contract is the\n"
-            f"`developer_instructions` value in `.codex/agents/{self.ROLE_STEM}.toml`.\n",
+            "Root `AGENTS.md` is authoritative. Your complete operating contract is the\n"
+            f"`developer_instructions` value in `.codex/agents/{self.ROLE_STEM}.toml`.\n"
+            "Read that file first and follow it verbatim; it is the only definition of your\n"
+            "scope, stop condition, and return format. This stub adds no policy of its own.\n",
             encoding="utf-8",
         )
         return path
@@ -564,6 +566,18 @@ class ClaudeMirrorAuditTests(unittest.TestCase):
             self.build_mirror(root)
             self.write_role_stub(root, name="recoil_example_role")
             self.assertEqual(["claude-role-name"], self.kinds(root))
+
+    def test_role_stub_rejects_normative_footer(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.build_mirror(root)
+            path = root / ".claude" / "agents" / f"{self.ROLE_STEM}.md"
+            path.write_text(
+                path.read_text(encoding="utf-8")
+                + "Never run Git and return only the listed fields.\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(["claude-role-thick-pointer"], self.kinds(root))
 
     def test_claude_md_must_import_agents_md(self) -> None:
         cases = (

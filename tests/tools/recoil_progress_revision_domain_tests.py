@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from contextlib import closing
 import json
+import os
 from pathlib import Path
 import sqlite3
+import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -21,9 +24,79 @@ from _recoil.lib.progress_sqlite import (  # noqa: E402
     ProgressSQLiteStore,
     read_progress_revision_vector,
 )
+from _recoil.lib.worktree_control import (  # noqa: E402
+    CANONICAL_ROOT_ENV,
+    VALIDATION_READ_ONLY_AUTHORITY_ENV,
+)
 
 
 class RecoilProgressRevisionDomainTests(unittest.TestCase):
+    @staticmethod
+    def concurrent_writers(
+        path: Path, rows: tuple[tuple[str, str, str], ...]
+    ) -> list[dict[str, object]]:
+        script = r'''
+import json
+from pathlib import Path
+import sys
+from _recoil.lib.progress_sqlite import ProgressSQLiteStore
+
+path = Path(sys.argv[1])
+domain, pointer, value = sys.argv[2:5]
+sys.stdin.readline()
+try:
+    result = ProgressSQLiteStore(path).persist_scoped_changes(
+        expected_domain_revisions={domain: 7},
+        entity_patches={
+            "symbols": {
+                "recoil:function:0x401000": {pointer: value}
+            }
+        },
+        apply=True,
+    )
+except Exception as exc:
+    print(json.dumps({"status": "error", "type": type(exc).__name__, "message": str(exc)}))
+else:
+    print(json.dumps({"status": "ok", "revisions": result.revision_vector.to_dict()}))
+'''
+        environment = os.environ.copy()
+        existing = environment.get("PYTHONPATH", "")
+        environment["PYTHONPATH"] = os.pathsep.join(
+            [str(REPO_ROOT / "tools"), *([existing] if existing else [])]
+        )
+        processes = [
+            subprocess.Popen(
+                [sys.executable, "-B", "-c", script, str(path), *row],
+                cwd=REPO_ROOT,
+                env=environment,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                encoding="utf-8",
+            )
+            for row in rows
+        ]
+        for process in processes:
+            assert process.stdin is not None
+            process.stdin.write("start\n")
+            process.stdin.flush()
+            process.stdin.close()
+        results: list[dict[str, object]] = []
+        for process in processes:
+            process.wait(timeout=30)
+            assert process.stdout is not None and process.stderr is not None
+            stdout = process.stdout.read().strip()
+            stderr = process.stderr.read().strip()
+            process.stdout.close()
+            process.stderr.close()
+            if process.returncode != 0:
+                raise AssertionError(
+                    f"writer exited {process.returncode}: stdout={stdout!r} stderr={stderr!r}"
+                )
+            results.append(json.loads(stdout))
+        return results
+
     @staticmethod
     def structured_observation(path: Path) -> dict[str, object]:
         store = ProgressSQLiteStore(path, read_only=True)
@@ -213,6 +286,89 @@ class RecoilProgressRevisionDomainTests(unittest.TestCase):
             symbol = store.materialize()["symbols"][symbol_id]
             self.assertEqual("active", symbol["scheduler"]["state"])
             self.assertEqual("accepted", symbol["semantic"]["state"])
+
+    def test_cross_process_disjoint_domain_writes_both_survive(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, store = self.create(Path(temporary), revision=7)
+            results = self.concurrent_writers(
+                path,
+                (
+                    ("semantic", "/semantic/state", "accepted-cross-process"),
+                    ("scheduler", "/scheduler/state", "active-cross-process"),
+                ),
+            )
+            self.assertEqual(["ok", "ok"], sorted(str(row["status"]) for row in results))
+            self.assertEqual(
+                {
+                    "transaction_revision": 9,
+                    "semantic_revision": 8,
+                    "evidence_generation_revision": 7,
+                    "scheduler_revision": 8,
+                },
+                store.read_revision_vector().to_dict(),
+            )
+            symbol = store.materialize()["symbols"]["recoil:function:0x401000"]
+            self.assertEqual("accepted-cross-process", symbol["semantic"]["state"])
+            self.assertEqual("active-cross-process", symbol["scheduler"]["state"])
+            observation = self.structured_observation(path)
+            self.assertEqual(["ok"], observation["integrity_check"])
+            self.assertEqual([], observation["foreign_key_check"])
+
+    def test_cross_process_same_domain_has_exactly_one_cas_winner(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path, store = self.create(Path(temporary), revision=7)
+            results = self.concurrent_writers(
+                path,
+                (
+                    ("semantic", "/semantic/state", "winner-a"),
+                    ("semantic", "/semantic/state", "winner-b"),
+                ),
+            )
+            self.assertEqual(1, sum(row["status"] == "ok" for row in results))
+            errors = [row for row in results if row["status"] == "error"]
+            self.assertEqual(1, len(errors))
+            self.assertIn("semantic revision changed", str(errors[0]["message"]))
+            vector = store.read_revision_vector()
+            self.assertEqual((8, 8, 7, 7), tuple(vector.__dict__.values()))
+            state = store.materialize()["symbols"]["recoil:function:0x401000"]["semantic"]["state"]
+            self.assertIn(state, {"winner-a", "winner-b"})
+            observation = self.structured_observation(path)
+            self.assertEqual(["ok"], observation["integrity_check"])
+            self.assertEqual([], observation["foreign_key_check"])
+
+    def test_validation_context_blocks_live_authority_but_not_fixture_writes(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            live_path, live_store = self.create(
+                root / ".agent", revision=7
+            )
+            # create() uses a fixed basename; placing its root at .agent gives
+            # the canonical live authority path after the explicit rename.
+            canonical_live = root / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
+            live_path.replace(canonical_live)
+            live_store = ProgressSQLiteStore(canonical_live)
+            fixture_path, fixture_store = self.create(root / "fixtures", revision=7)
+            environment = {
+                CANONICAL_ROOT_ENV: str(root),
+                VALIDATION_READ_ONLY_AUTHORITY_ENV: "1",
+            }
+            with mock.patch.dict(os.environ, environment, clear=False):
+                with self.assertRaisesRegex(
+                    ProgressSQLiteError,
+                    "validation cannot apply live progress-authority mutations",
+                ):
+                    live_store.persist_scoped_changes(
+                        expected_domain_revisions={"scheduler": 7},
+                        top_level_patches={"migration": {"/blocked": True}},
+                        apply=True,
+                    )
+                fixture_store.persist_scoped_changes(
+                    expected_domain_revisions={"scheduler": 7},
+                    top_level_patches={"migration": {"/fixture": True}},
+                    apply=True,
+                )
+            self.assertEqual(7, live_store.read_revision())
+            self.assertEqual(8, fixture_store.read_revision())
 
     def test_multi_domain_commit_and_new_root_entity_are_atomic(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

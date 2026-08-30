@@ -84,10 +84,10 @@ EXPECTED_ROLES = {
     "recoil-source-owner-scrutinizer.toml": {"name": "recoil_source_owner_scrutinizer", "sandbox": "read-only", "required": ("Try to disprove", "Return exactly ALLOW or BLOCK", "Do not edit anything", "competing source models", "Registered live-order comparison", "request kind `source-discovery`", "must never invoke `chatgpt-pro-line`", "target binary", "global phase", "cursor/range", "frontier relation")},
     "recoil-provider-data-classifier.toml": {"name": "recoil_provider_data_classifier", "sandbox": "read-only", "required": ("authored-candidate", "route authored-primary-versus-auxiliary", "`pipeline_class`", "`authored_order_role`", "progress symbol set-pipeline-class-batch", "`progress owner replace-batch`", "`progress owner downgrade`", "`progress verification-target sync`", "workspace-issue candidates", "Never route row classification through an owner command", "Do not edit anything", "target binary", "global phase", "cursor/range", "frontier relation")},
     "recoil-scaffold-auditor.toml": {"name": "recoil_scaffold_auditor", "sandbox": "read-only", "required": ("failed source-faithful VC5SP3 variants AND", "Purpose docblock", ".agent/RAW_ASSEMBLY_ALLOWLIST.txt", "mechanically non-blocking", "`authored-body`/`authored-lifecycle-body`", "selected linked contributions as blocking", "order-gate debt", "Do not decide owner", "target binary", "global phase", "cursor/range", "frontier relation")},
-    "recoil-verifier.toml": {"name": "recoil_verifier", "sandbox": "workspace-write", "required": ("schema/mode", "packet id", "first typed divergence", "Raw object extras remain diagnostic", "selected full-order", "Missing expected facts or ambiguous coverage blocks", "falling back to persisted summaries", "Never advance or accept ledger state")},
+    "recoil-verifier.toml": {"name": "recoil_verifier", "sandbox": "workspace-write", "required": ("schema/mode", "packet id", "first typed divergence", "Raw object extras remain diagnostic", "selected full-order", "Missing expected facts or ambiguous coverage blocks", "falling back to persisted summaries", "Never advance or accept ledger state", "never creates a packet commit", "read-only Git inspection")},
     "recoil-workspace-librarian.toml": {"name": "recoil_workspace_librarian", "sandbox": "read-only", "required": ("task_class: non-address-maintenance", "Mechanically locate already-accepted facts", "Do not turn docs/catalog/history into a new placement", "Do not edit anything")},
-    "recoil-tool-maintainer.toml": {"name": "recoil_tool_maintainer", "sandbox": "workspace-write", "required": ("task_class: non-address-maintenance", "allowed/forbidden paths", "Never mutate progress-tracker/process-issue state", "issue-resolution candidate text")},
-    "recoil-source-worker.toml": {"name": "recoil_source_worker", "sandbox": "workspace-write", "required": ("schema/mode", "packet id", "exact writable paths", "exact validation command", "order-edit-v1", "verify vc5-order", "needs no Binary Ninja", "no Binary Ninja, byte work", "Never broaden into another lane", "Never mutate Binary Ninja", "Do not claim owner")},
+    "recoil-tool-maintainer.toml": {"name": "recoil_tool_maintainer", "sandbox": "workspace-write", "required": ("task_class: non-address-maintenance", "allowed/forbidden paths", "Never mutate progress-tracker/process-issue state", "issue-resolution candidate text", "stage only the exact writable closure", "exactly one nonaccepting commit", "parent owns every other Git operation")},
+    "recoil-source-worker.toml": {"name": "recoil_source_worker", "sandbox": "workspace-write", "required": ("schema/mode", "packet id", "exact writable paths", "exact validation command", "order-edit-v1", "verify vc5-order", "needs no Binary Ninja", "no Binary Ninja, byte work", "Never broaden into another lane", "Never mutate Binary Ninja", "Do not claim owner", "stage only the exact writable closure", "exactly one nonaccepting commit", "parent owns every other Git operation")},
 }
 
 QUIET_ROLE_REQUIREMENTS = ()
@@ -2706,6 +2706,27 @@ def audit_claude_pointer_stub(
                 "Keep policy in the canonical `.codex` surface; the stub may only route to it.",
             )
         )
+    if kind_prefix == "claude-role":
+        match = FRONTMATTER_RE.match(text)
+        assert match is not None
+        expected_body = (
+            "\nRoot `AGENTS.md` is authoritative. Your complete operating contract is the\n"
+            f"`developer_instructions` value in `{canonical_reference}`.\n"
+            "Read that file first and follow it verbatim; it is the only definition of your\n"
+            "scope, stop condition, and return format. This stub adds no policy of its own.\n"
+        )
+        body = text[match.end() :].replace("\r\n", "\n")
+        if body != expected_body:
+            findings.append(
+                Finding(
+                    "error",
+                    surface,
+                    1,
+                    "claude-role-thick-pointer",
+                    "Claude role mirror contains body text beyond the exact canonical pointer.",
+                    "Keep only the root authority sentence, canonical developer_instructions pointer, and no-policy statement.",
+                )
+            )
     return findings
 
 

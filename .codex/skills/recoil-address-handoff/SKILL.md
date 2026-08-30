@@ -60,7 +60,7 @@ waiting for another user confirmation:
 
 ```powershell
 python tools/recoil.py progress work leases --json
-python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-revision <revision> --apply --json
+python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-scheduler-revision <scheduler-revision> --apply --json
 python tools/recoil.py progress handoff --packet-id <packet-id> --json
 ```
 
@@ -78,7 +78,11 @@ derives normalized resource claims behind `packet_id`. The handoff command is
 only a renderer for that active reservation. It fails closed when there is no
 reservation, no lease, no writable claim, an ineligible/stale cursor, or a
 mutating worker validation command. It never fabricates a work item and never
-hands a parent `progress ... --apply` command to a worker.
+hands a parent `progress ... --apply` command to a worker. For a tracked-write
+packet it returns the exact branch, opaque baseline commit, linked
+`worktree_root`, authenticated external build root, and bounded worker Git
+permissions; launch the worker with its current directory set to that returned
+`worktree_root`.
 
 The parent uses the registered lane selector for a scheduler-returned parallel
 authored-byte or subordinate object-byte opportunity and renders only the
@@ -113,7 +117,7 @@ source/header paths, isolated build root, objective, stop condition, and one
 worker command:
 
 ```powershell
-python tools/recoil.py verify call-contract --slice <slice-id> --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --build-root <packet-root> --json
+python tools/recoil.py verify call-contract --slice <slice-id> --build-root <packet-root> --json
 ```
 
 The worker repeats only that nonmutating command until PASS or the first exact
@@ -154,7 +158,7 @@ source and accepts from that same invocation:
 
 ```powershell
 python tools/recoil.py progress advance-live-order --target <target> --build-root <fresh-root> --expected-revision <revision> --apply --json
-python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-root> --expected-revision <revision> --apply --json
+python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --packet-id <packet-id> --build-root <packet-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 python tools/recoil.py progress advance-live-byte --lane <object|authored|linked> --build-root <fresh-root> --expected-revision <revision> --apply --json
 ```
 

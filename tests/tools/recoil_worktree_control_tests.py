@@ -59,6 +59,7 @@ class WorktreeControlTests(unittest.TestCase):
         "RECOIL_CANONICAL_ROOT",
         "RECOIL_EXECUTION_WORKTREE_ROOT",
         "RECOIL_EXTERNAL_BUILD_ROOT",
+        "RECOIL_VALIDATION_READ_ONLY_AUTHORITY",
     )
 
     def setUp(self) -> None:
@@ -813,6 +814,10 @@ class WorktreeControlTests(unittest.TestCase):
             == expected_build_parent
             for _root, _tip, _head, environment in calls
         ))
+        self.assertTrue(all(
+            environment["RECOIL_VALIDATION_READ_ONLY_AUTHORITY"] == "1"
+            for _root, _tip, _head, environment in calls
+        ))
         self.assertEqual(
             0,
             result["post_fast_forward_git_assertions"][
@@ -847,6 +852,36 @@ class WorktreeControlTests(unittest.TestCase):
             row["cwd"] == str(calls[0][0])
             for row in result["integration_validation"] + result["post_integration_validation"]
         ))
+
+    def test_integration_pins_explicit_canonical_sqlite_authorities(self) -> None:
+        agent_root = self.repo / ".agent"
+        agent_root.mkdir()
+        issue_path = agent_root / "WORKSPACE_ISSUES.sqlite3"
+        progress_path = agent_root / "RECONSTRUCTION_PROGRESS.sqlite3"
+        issue_path.write_bytes(b"issue-authority")
+        progress_path.write_bytes(b"progress-authority")
+
+        declared = command._declared_validation_authority_paths(
+            master_root=self.repo,
+            ledger_path=issue_path,
+            progress_path=progress_path,
+        )
+
+        self.assertEqual(
+            (
+                ".agent/WORKSPACE_ISSUES.sqlite3",
+                ".agent/RECONSTRUCTION_PROGRESS.sqlite3",
+            ),
+            declared,
+        )
+        self.assertEqual(
+            (),
+            command._declared_validation_authority_paths(
+                master_root=self.repo,
+                ledger_path=self.ledger,
+                progress_path=self.progress,
+            ),
+        )
 
     def test_first_validation_failure_leaves_master_and_no_integration_residue(self) -> None:
         self.create_with_worker_commit()

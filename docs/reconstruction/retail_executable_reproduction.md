@@ -39,8 +39,8 @@ The governed cutover converts both legacy JSON inputs and installs both SQLite
 authorities as one paired operation:
 
 ```powershell
-python tools/recoil.py maintenance migrate-ledgers-sqlite --progress-json .agent/RECONSTRUCTION_PROGRESS.json --issues-json .agent/WORKSPACE_ISSUES.json --progress-db .agent/RECONSTRUCTION_PROGRESS.sqlite3 --issues-db .agent/WORKSPACE_ISSUES.sqlite3 --expected-progress-revision <revision> --expected-issues-revision <revision> --dry-run --json
-python tools/recoil.py maintenance migrate-ledgers-sqlite --progress-json .agent/RECONSTRUCTION_PROGRESS.json --issues-json .agent/WORKSPACE_ISSUES.json --progress-db .agent/RECONSTRUCTION_PROGRESS.sqlite3 --issues-db .agent/WORKSPACE_ISSUES.sqlite3 --expected-progress-revision <revision> --expected-issues-revision <revision> --apply --json
+python tools/recoil.py maintenance migrate-ledgers-sqlite --progress-json <absolute-legacy-progress-json> --issues-json <absolute-legacy-issues-json> --progress-db <absolute-noncanonical-progress-db> --issues-db <absolute-noncanonical-issues-db> --expected-progress-revision <revision> --expected-issues-revision <revision> --dry-run --json
+python tools/recoil.py maintenance migrate-ledgers-sqlite --progress-json <absolute-legacy-progress-json> --issues-json <absolute-legacy-issues-json> --progress-db <absolute-noncanonical-progress-db> --issues-db <absolute-noncanonical-issues-db> --expected-progress-revision <revision> --expected-issues-revision <revision> --apply --json
 ```
 
 Review the dry-run before applying with the same paths and exact independent
@@ -58,7 +58,7 @@ immediately applies the compatible multi-lane claim without another user
 confirmation:
 
 ```powershell
-python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-revision <revision> --apply --json
+python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-scheduler-revision <scheduler-revision> --apply --json
 ```
 
 Claim priority is fixed as primary order, full authored byte, then subordinate
@@ -227,7 +227,6 @@ appropriate phase-frontier claim, the parent may submit one
 ```powershell
 python tools/recoil.py progress work create-explicit `
   --payload-file build/diagnostics/<packet>.json `
-  --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 `
   --expected-scheduler-revision <revision> `
   --expected-semantic-revision <revision> `
   --dry-run --json
@@ -235,7 +234,6 @@ python tools/recoil.py progress work create-explicit `
 # After reviewing the projection, repeat the unchanged payload and guards:
 python tools/recoil.py progress work create-explicit `
   --payload-file build/diagnostics/<packet>.json `
-  --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 `
   --expected-scheduler-revision <revision> `
   --expected-semantic-revision <revision> `
   --apply --json
@@ -352,7 +350,13 @@ and the semantic revision used to derive the closure, then increments
 transaction and scheduler only. The semantic and evidence revisions are not
 incremented. Legacy live storage is not migrated by this route.
 `progress handoff --packet-id <id> --json` renders the complete stored
-closure only from an active reservation with a reauthenticated root.
+closure only from an active reservation after reauthenticating the exact clean
+Git baseline. For every tracked-write issue or progress packet it returns the
+exact linked `worktree_root`, packet branch, opaque baseline commit,
+physically authenticated external build root, and bounded Git restrictions.
+The worker runs from that returned root, may stage only the exact writable
+closure and create exactly one nonaccepting packet commit containing the packet id,
+and performs no other branch, worktree, integration, or build-root lifecycle.
 `progress work return` stores bounded
 nonaccepting feedback and releases the lease; `progress work close` closes that
 returned packet while retaining its immutable user selection, closure, result,
@@ -613,7 +617,7 @@ current reviewed classification.
 The worker loop is:
 
 ```powershell
-python tools/recoil.py verify call-contract --slice <slice-id> --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --build-root <fresh-worker-root> --json
+python tools/recoil.py verify call-contract --slice <slice-id> --build-root <packet-root> --json
 ```
 
 It derives one deterministic writable definition closure before compiling:
@@ -666,7 +670,7 @@ Phase closeout requires a completely fresh phase-wide invocation before any
 ordinary scheduling or transition decision can rely on convergence:
 
 ```powershell
-python tools/recoil.py progress call-contract prepare-live-convergence --packet-id <packet-id> --closeout --build-root <packet-root> --jobs 2 --issue-ledger .agent/WORKSPACE_ISSUES.sqlite3 --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
+python tools/recoil.py progress call-contract prepare-live-convergence --packet-id <packet-id> --closeout --build-root <packet-root> --jobs 2 --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 ```
 
 The issue-ledger option defaults to that canonical SQLite authority. Before any
@@ -1447,7 +1451,7 @@ Use:
 python tools/recoil.py progress next --json
 python tools/recoil.py progress status
 python tools/recoil.py progress work leases --json
-python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-revision <revision> --apply --json
+python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-scheduler-revision <scheduler-revision> --apply --json
 python tools/recoil.py progress handoff --packet-id <packet-id> --json
 python tools/recoil.py progress audit --scope all --strict
 ```
@@ -1541,9 +1545,11 @@ replace-batch`; conservative owner gate/tier decreases use `progress owner
 downgrade`; verification-target registration metadata uses `progress
 verification-target sync`. Unsupported positive owner metadata, gate, or tier
 changes route to a bounded `issue request`, never an improvised mutation. Other
-governed block, provider, classification, ambiguity-exception, blocker,
-semantic, and work mutations remain dry-run-first. `--expected-revision` is the
-sole concurrency guard. Durable observations record semantic facts and direct
+governed block, provider, classification, ambiguity-exception, blocker, and
+semantic mutations remain dry-run-first under `--expected-revision`.
+Scheduler-only work lifecycle commands use `--expected-scheduler-revision`;
+live call-contract acceptance uses both semantic and evidence-generation
+revision guards. Durable observations record semantic facts and direct
 evidence paths when needed; they never store a concrete `.devspace`
 dependency. Evidence generation never promotes owner gates, tiers, provider
 classification, global prefixes, or `Model:` metadata.
@@ -1553,7 +1559,8 @@ real active reservation and lease. `progress handoff --packet-id <packet-id>
 --json` fails when that state is absent, claims no writable path, or contains a
 mutating worker command; it never fabricates current work. An `order-edit-v1`
 packet carries only packet id, registered target, exact writable source/header
-closure, isolated root, objective, stop condition, and its `verify vc5-order`
+closure, exact returned worktree and external build roots, opaque baseline,
+branch and bounded Git restrictions, objective, stop condition, and its `verify vc5-order`
 command. Results return
 packet id, outcome, changed paths, exact validation result, first divergence,
 and concrete scope contradictions. Ordinary owner, final-data/final-repro,

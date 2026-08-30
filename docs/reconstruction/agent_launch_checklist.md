@@ -10,7 +10,7 @@ With no explicit target:
 ```powershell
 python tools/recoil.py progress next --json
 python tools/recoil.py progress work leases --json
-python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-revision <revision> --apply --json
+python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-scheduler-revision <scheduler-revision> --apply --json
 ```
 
 `progress next` is the sole Recoil.exe scheduler. It keeps
@@ -39,7 +39,10 @@ Individual `--lane <primary|authored|object>` claims remain available for a
 focused retry or explicit assignment.
 The handoff exists only while that reservation and lease are active. It names
 packet mode/id, target, covered blocks, writable paths, one non-mutating worker
-command, objective, stop condition, and return fields. It fails closed for an
+command, objective, stop condition, return fields, exact branch/baseline,
+linked `worktree_root`, authenticated external build root, and bounded worker
+Git permissions. The worker runs the command with its current directory set to
+that returned `worktree_root`. It fails closed for an
 absent lease, empty write closure, or parent-only acceptance command.
 `progress next` never allocates. A newly claimed tracked-write progress packet
 uses the `native-git-v1` v4 contract and is handoff-visible only after its
@@ -93,7 +96,7 @@ Use one fresh acceptance invocation:
 
 ```powershell
 python tools/recoil.py progress advance-live-order --target <tracker-target-id> --build-root <fresh-root> --expected-revision <revision> --apply --json
-python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-root> --expected-revision <revision> --apply --json
+python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --packet-id <packet-id> --build-root <packet-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 python tools/recoil.py progress advance-live-byte --lane <object|authored|linked> --build-root <fresh-root> --expected-revision <revision> --apply --json
 ```
 

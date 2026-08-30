@@ -165,6 +165,7 @@ from _recoil.lib.source_traceability import parse_source_trace_text
 from _recoil.lib.issue_sqlite import read_issue_metadata
 from _recoil.lib.progress_sqlite import (
     DELETE_FACET,
+    ProgressSQLiteError,
     ProgressSQLiteStore,
     read_progress_metadata,
 )
@@ -198,7 +199,11 @@ from _recoil.lib.worktree_control import (
     resolve_exact_packet_worktree,
     routed_machine_local_path,
 )
-from _recoil.lib.git_change_control import capture_clean_git_baseline
+from _recoil.lib.git_change_control import (
+    GitChangeControlError,
+    capture_clean_git_baseline,
+    reauthenticate_clean_git_baseline,
+)
 
 
 PROGRESS_AUTHORITY_RELATIVE_PATH = ".agent/RECONSTRUCTION_PROGRESS.sqlite3"
@@ -353,12 +358,21 @@ def _add_mutation_controls(
     parser: argparse.ArgumentParser,
     *,
     expected_revision_required: bool = True,
+    expected_revision_mode: str = "public",
 ) -> None:
-    parser.add_argument(
-        "--expected-revision",
-        type=int,
-        required=expected_revision_required,
-    )
+    if expected_revision_mode == "none":
+        parser.set_defaults(expected_revision=None)
+    else:
+        parser.add_argument(
+            "--expected-revision",
+            type=int,
+            required=expected_revision_required,
+            help=(
+                argparse.SUPPRESS
+                if expected_revision_mode == "fixture-only"
+                else None
+            ),
+        )
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--apply", action="store_true")
@@ -366,10 +380,12 @@ def _add_mutation_controls(
 
 
 def _add_call_contract_domain_guards(parser: argparse.ArgumentParser) -> None:
-    """Add optional scoped-CAS guards while preserving the legacy CLI."""
+    """Add the paired scoped-CAS guards required by live call-contract routes."""
 
-    parser.add_argument("--expected-semantic-revision", type=int)
-    parser.add_argument("--expected-evidence-generation-revision", type=int)
+    parser.add_argument("--expected-semantic-revision", type=int, required=True)
+    parser.add_argument(
+        "--expected-evidence-generation-revision", type=int, required=True
+    )
 
 
 def _call_contract_expected_domain_revisions(
@@ -382,16 +398,21 @@ def _call_contract_expected_domain_revisions(
             "call-contract domain CAS requires both --expected-semantic-revision "
             "and --expected-evidence-generation-revision"
         )
+    legacy = getattr(args, "expected_revision", None)
+    if legacy is not None:
+        raise ProgressError(
+            "call-contract mutation requires semantic/evidence domain CAS; "
+            "--expected-revision is not accepted"
+        )
     if semantic is not None:
         return {
             "semantic": int(semantic),
             "evidence_generation": int(evidence),
         }
-    if getattr(args, "expected_revision", None) is None:
-        raise ProgressError(
-            "provide the semantic/evidence revision pair or legacy --expected-revision"
-        )
-    return None
+    raise ProgressError(
+        "provide both --expected-semantic-revision and "
+        "--expected-evidence-generation-revision"
+    )
 
 
 def _json_pointer_token(value: str) -> str:
@@ -461,14 +482,8 @@ def _call_contract_scoped_patch_commit(
 def _precheck_call_contract_revisions(
     args: argparse.Namespace,
     document: ProgressDocument,
-) -> dict[str, int] | None:
+) -> dict[str, int]:
     expected_domains = _call_contract_expected_domain_revisions(args)
-    if expected_domains is None:
-        if document.revision != args.expected_revision:
-            raise ConcurrentProgressUpdate(
-                f"revision changed: expected {args.expected_revision}, found {document.revision}"
-            )
-        return None
     vector = ProgressSQLiteStore(Path(args.progress)).read_revision_vector()
     observed = {
         "semantic": vector.semantic_revision,
@@ -486,11 +501,40 @@ def _precheck_scheduler_revision(
     args: argparse.Namespace,
 ) -> tuple[ProgressDocument | None, dict[str, int] | None]:
     expected_scheduler = getattr(args, "expected_scheduler_revision", None)
+    legacy_revision = getattr(args, "expected_revision", None)
+    if expected_scheduler is not None and legacy_revision is not None:
+        raise ProgressError(
+            "scheduler-domain CAS rejects mixed --expected-scheduler-revision "
+            "and --expected-revision guards"
+        )
     if expected_scheduler is None:
-        if getattr(args, "expected_revision", None) is None:
+        if legacy_revision is None:
             raise ProgressError(
-                "provide --expected-scheduler-revision or legacy --expected-revision"
+                "provide --expected-scheduler-revision"
             )
+        progress_path = Path(args.progress)
+        if not progress_path.is_absolute():
+            raise ProgressError(
+                "legacy --expected-revision is fixture-only and requires an explicit "
+                "absolute noncanonical progress fixture"
+            )
+        try:
+            supplied = progress_path.resolve(strict=True)
+            canonical = Path(DEFAULT_PROGRESS).resolve()
+        except OSError as exc:
+            raise ProgressError(
+                "legacy --expected-revision requires a readable schema-valid fixture"
+            ) from exc
+        if supplied == canonical:
+            raise ProgressError(
+                "live canonical progress mutations require --expected-scheduler-revision"
+            )
+        try:
+            ProgressStore(supplied).load()
+        except (OSError, ValueError, ProgressSQLiteError) as exc:
+            raise ProgressError(
+                "legacy --expected-revision requires a schema-valid progress fixture"
+            ) from exc
         return None, None
     document = ProgressStore(args.progress).load()
     vector = ProgressSQLiteStore(Path(args.progress)).read_revision_vector()
@@ -870,8 +914,14 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         default=DEFAULT_ISSUE_LEDGER,
     )
-    _add_mutation_controls(work_claim, expected_revision_required=False)
-    work_claim.add_argument("--expected-scheduler-revision", type=int)
+    _add_mutation_controls(work_claim, expected_revision_mode="none")
+    claim_revision_guard = work_claim.add_mutually_exclusive_group(required=True)
+    claim_revision_guard.add_argument("--expected-scheduler-revision", type=int)
+    claim_revision_guard.add_argument(
+        "--expected-revision",
+        type=int,
+        help=argparse.SUPPRESS,
+    )
     work_explicit = work_children.add_parser(
         "create-explicit",
         help=(
@@ -1065,6 +1115,7 @@ def _parser() -> argparse.ArgumentParser:
     _add_mutation_controls(
         advance_call_contract,
         expected_revision_required=False,
+        expected_revision_mode="none",
     )
     _add_call_contract_domain_guards(advance_call_contract)
 
@@ -1121,6 +1172,7 @@ def _parser() -> argparse.ArgumentParser:
     _add_mutation_controls(
         call_contract_convergence,
         expected_revision_required=False,
+        expected_revision_mode="none",
     )
     _add_call_contract_domain_guards(call_contract_convergence)
 
@@ -1695,6 +1747,7 @@ def _compact_reserved_packet(
     obligation_contract = CALL_CONTRACT_OBLIGATION_PACKET_CONTRACTS.get(
         str(work.get("packet_type", ""))
     )
+    native_git_execution_context: dict[str, Any] | None = None
     if retail_fact_packet:
         problem = retail_fact_packet_contract_problem(work, claims)
         if problem:
@@ -1776,6 +1829,12 @@ def _compact_reserved_packet(
             )
             if observed is None or observed.to_dict() != dict(association):
                 raise ProgressError(f"work item {work_id} worktree association changed")
+            baseline = reauthenticate_clean_git_baseline(
+                packet_root,
+                descriptor,
+                packet_id=work_id,
+                writable_paths=write_paths,
+            )
             authenticate_build_root(
                 observed.external_build_root,
                 authority="progress",
@@ -1783,7 +1842,27 @@ def _compact_reserved_packet(
                 branch=str(descriptor.get("branch", "")),
                 worktree_root=packet_root,
             )
-        except (WorktreeControlError, OSError) as exc:
+            native_git_execution_context = {
+                "baseline_schema": baseline.get("schema"),
+                "baseline_commit": baseline.get("baseline_commit"),
+                "branch": baseline.get("branch"),
+                "repository_root": str(REPO_ROOT.resolve()),
+                "worktree_root": str(packet_root.resolve()),
+                "external_build_root": str(
+                    Path(observed.external_build_root).resolve()
+                ),
+                "git_object_ids_are_opaque": True,
+                "git_restrictions": {
+                    "worker_git_mutation_allowed": True,
+                    "worker_may_stage_exact_writable_paths": True,
+                    "worker_may_create_one_packet_commit": True,
+                    "packet_commit_message_must_contain_packet_id": work_id,
+                    "worker_branch_worktree_integration_allowed": False,
+                    "branch_worktree_merge_integration_parent_owned": True,
+                    "writable_closure_only": True,
+                },
+            }
+        except (GitChangeControlError, WorktreeControlError, OSError) as exc:
             raise ProgressError(f"work item {work_id} native Git authentication failed: {exc}") from exc
     raw_claim_provenance = work.get("claim_provenance")
     claim_provenance = (
@@ -1967,6 +2046,8 @@ def _compact_reserved_packet(
         )
     if claim_provenance is not None:
         packet["claim_provenance"] = claim_provenance
+    if native_git_execution_context is not None:
+        packet.update(native_git_execution_context)
     return packet
 
 
@@ -8517,7 +8598,7 @@ def advance_live_call_contract(args: argparse.Namespace) -> tuple[int, dict[str,
         "--slice",
         str(args.slice),
         "--progress",
-        display_path(args.progress),
+        str(Path(args.progress).resolve(strict=True)),
         "--build-root",
         display_path(build_root),
         "--all-caller-divergences",
@@ -8643,20 +8724,12 @@ def advance_live_call_contract(args: argparse.Namespace) -> tuple[int, dict[str,
         ({"semantic", "evidence_generation"} if passing else set())
         | ({"scheduler"} if archive_after_acceptance else set())
     )
-    commit = (
-        _call_contract_scoped_patch_commit(
-            args=args,
-            document=document,
-            transform=transform,
-            expected_domains=expected_domains,
-            increment_domains=increment_domains,
-        )
-        if expected_domains is not None
-        else store.mutate(
-            transform,
-            expected_revision=args.expected_revision,
-            apply=args.apply,
-        )
+    commit = _call_contract_scoped_patch_commit(
+        args=args,
+        document=document,
+        transform=transform,
+        expected_domains=expected_domains,
+        increment_domains=increment_domains,
     )
     return (0 if result["passed"] else 1), _commit_payload(commit, details)
 

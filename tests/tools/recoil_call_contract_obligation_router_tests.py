@@ -193,6 +193,7 @@ class CallContractObligationRouterTests(unittest.TestCase):
             "linker": "recoil_tool_maintainer",
         }
         for ordinal, (work_id, work) in enumerate(candidates, 1):
+            descriptor = descriptors[ordinal - 1]
             work["state"] = "active"
             work["reservation"] = {
                 "id": f"{work_id}:attempt:1",
@@ -205,11 +206,20 @@ class CallContractObligationRouterTests(unittest.TestCase):
                 "packet_id": work_id,
                 "external_build_root": f"build/native-git/{ordinal}",
             }
+            packet_root = Path(f"worktrees/obligation-{ordinal}")
+            baseline_descriptor = {
+                "schema": "recoil-git-workspace-baseline-v2",
+                "packet_id": work_id,
+                "baseline_commit": f"{ordinal:040x}",
+                "branch": f"packet/progress/obligation-{ordinal}",
+                "writable_paths": sorted(descriptor["write_paths"]),
+                "status_porcelain_v2": [],
+                "ignored_paths": [],
+                "git_object_ids_are_opaque": True,
+            }
             work["native_git"] = {
                 "adapter": "native-git-v1",
-                "git_workspace_baseline": {
-                    "branch": f"packet/progress/obligation-{ordinal}",
-                },
+                "git_workspace_baseline": baseline_descriptor,
                 "association": association,
             }
             document.data["work_items"][work_id] = work
@@ -221,8 +231,13 @@ class CallContractObligationRouterTests(unittest.TestCase):
                 patch.object(
                     progress_cli,
                     "resolve_exact_packet_worktree",
-                    return_value=(Path(f"worktrees/obligation-{ordinal}"), observed),
+                    return_value=(packet_root, observed),
                 ),
+                patch.object(
+                    progress_cli,
+                    "reauthenticate_clean_git_baseline",
+                    return_value=deepcopy(baseline_descriptor),
+                ) as reauthenticate,
                 patch.object(progress_cli, "authenticate_build_root"),
             ):
                 handoff = progress_cli._handoff(
@@ -232,7 +247,12 @@ class CallContractObligationRouterTests(unittest.TestCase):
                         issue_ledger=Path(".agent/WORKSPACE_ISSUES.sqlite3"),
                     ),
                 )["work_item"]
-            descriptor = descriptors[ordinal - 1]
+            reauthenticate.assert_called_once_with(
+                packet_root,
+                baseline_descriptor,
+                packet_id=work_id,
+                writable_paths=baseline_descriptor["writable_paths"],
+            )
             kind = descriptor["obligation_kind"]
             self.assertEqual(descriptor["obligation_id"], handoff["obligation_id"])
             self.assertEqual(kind, handoff["obligation_kind"])
@@ -240,6 +260,11 @@ class CallContractObligationRouterTests(unittest.TestCase):
             self.assertEqual(descriptor["write_paths"], handoff["write_paths"])
             self.assertEqual(["tools/recoil.py"], handoff["read_paths"])
             self.assertTrue(handoff["build_root"].startswith("build/"))
+            self.assertEqual(
+                baseline_descriptor["baseline_commit"], handoff["baseline_commit"]
+            )
+            self.assertEqual(baseline_descriptor["branch"], handoff["branch"])
+            self.assertEqual(str(packet_root.resolve()), handoff["worktree_root"])
             self.assertTrue(handoff["nonaccepting"])
             self.assertFalse(handoff["acceptance_eligible"])
             self.assertFalse(handoff["worker_acceptance_allowed"])

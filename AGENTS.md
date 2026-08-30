@@ -142,7 +142,7 @@ one non-mutating validation command, an objective, and a stop condition. Its
 loop is only:
 
 ```powershell
-python tools/recoil.py verify call-contract --slice <slice-id> --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3 --build-root <packet-root> --json
+python tools/recoil.py verify call-contract --slice <slice-id> --build-root <packet-root> --json
 ```
 
 Edit only the assigned source/header closure and repeat until PASS or a
@@ -158,7 +158,7 @@ in-memory semantic result through:
 
 ```powershell
 python tools/recoil.py progress advance-live-order --target <tracker-target-id> --build-root <fresh-root> --expected-revision <revision> --apply --json
-python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-root> --expected-revision <revision> --apply --json
+python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --packet-id <packet-id> --build-root <packet-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 python tools/recoil.py progress advance-live-byte --lane <object|authored|linked> --build-root <fresh-root> --expected-revision <revision> --apply --json
 ```
 
@@ -243,7 +243,7 @@ waiting for another user confirmation—claims every compatible current lane in
 one revision-atomic operation:
 
 ```powershell
-python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-revision <revision> --apply --json
+python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-scheduler-revision <scheduler-revision> --apply --json
 ```
 
 The fixed claim priority is primary order, full authored byte, then subordinate
@@ -291,7 +291,11 @@ was copied.
 `progress handoff --packet-id <packet-id> --json` renders only a real active
 reservation. It must fail for no reservation, absent lease, empty write claims,
 or a mutating worker command. It never fabricates a work item or exposes a
-parent `--apply` command as worker validation.
+parent `--apply` command as worker validation. For every tracked-write packet,
+it reauthenticates and returns the exact branch, opaque baseline commit, linked
+`worktree_root`, external build root, and bounded worker Git permissions. The
+worker runs the exact validation command with its current directory set to the
+returned `worktree_root`.
 
 For source work, the worker edits only packet paths and returns packet id,
 outcome, changed paths, exact validation result, first divergence, and any
@@ -305,7 +309,8 @@ reanalysis, propagation checks, save, and return.
 
 The parent/tool orchestrator owns packet branch creation, linked-worktree and
 external-build-root allocation, exact-worktree handoff/closeout, integration,
-retirement, and strict branch hygiene. Each active workspace-issue packet has
+retirement, and strict branch hygiene. Each active tracked-write issue or
+progress packet has
 one `packet/` branch, one linked worktree, one physically authenticated sibling
 build root, and one central reservation. The worker edits only packet paths,
 may stage only the exact handed-off writable closure, and may create exactly one
