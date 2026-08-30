@@ -1300,7 +1300,7 @@ RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
  * 0x48daf0 writes the clip bounds for every pass and writes the scratch offsets
  * only when it switches from the direct scatter path to the clipped helper path.
  * This documents the local source shape only; the complete zVideo data owner is
- * broader than this slice and remains a parent-owned data-gate decision.
+ * broader than this slice and remains a direct-review data-gate decision.
  */
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchoffsetx

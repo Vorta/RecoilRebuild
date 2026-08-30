@@ -14,25 +14,23 @@ whole-file difference are diagnostics, not acceptance gates. Behavioral
 similarity, post-link patching, or a matching subset of the executable do not
 satisfy the goal.
 
-The unified tracker coordinates six stages with independently monotonic
-primary and authored-byte lanes that join before resolved linked-byte
-traversal:
+The unified tracker coordinates one strictly serial six-stage traversal:
 
 1. `authored-function-order` recovers the natural VC5SP3 order of
    source-authored and authored-lifecycle bodies across retail `.text`.
 2. `authored-call-contract` checks the static invocation contract of every
    currently reviewed physical authored gating body in deterministic
    retail-contiguous slices.
-3. Independently, `authored-byte-match` proves each gating authored
-   contribution at the object, relocation, symbolic-target, and
-   relocation-normalized linked-body level.
-4. After all authored call contracts are current, `full-function-order`
-   restarts at the beginning without waiting for authored bytes and recovers
-   the complete linked contribution set, retail addresses, order, and seams,
-   including compiler, runtime, framework, and provider rows.
-5. Once full order and authored-byte traversal have both completed,
-   `linked-byte-match` proves every resolved linked address, relocation operand,
-   reference target, and linked byte sequence.
+3. `authored-byte-match` proves each gating authored contribution at the
+   object, relocation, symbolic-target, and relocation-normalized linked-body
+   level.
+4. `full-function-order` begins only after every authored call contract, its
+   fresh closeout, and every authored byte group are current. It restarts at
+   the beginning and recovers the complete linked contribution set, retail
+   addresses, order, and seams, including compiler, runtime, framework, and
+   provider rows.
+5. `linked-byte-match` then proves every resolved linked address, relocation
+   operand, reference target, and linked byte sequence.
 6. `final-validation` derives complete typed final-image coverage live from
    retail plus accepted tracker facts, then checks one fresh unrestricted
    build. No unmodelled byte range may pass. Raw file
@@ -79,11 +77,10 @@ Generated from the unified reconstruction tracker. The tracker remains the sole 
 | --- | --- | ---: | --- | --- |
 | authored-function-order | complete | 121 / 121 | 0x4cb9e8 | — |
 | authored-call-contract | current | 0 / 3338 | 0x401000 | — |
-| authored-byte-match | ready | 21 / 3338 | 0x4024a0 | — |
+| authored-byte-match | waiting | 21 / 3338 | 0x4024a0 | — |
 | full-function-order | waiting | 0 / 121 | 0x401000 | — |
 | linked-byte-match | waiting | 0 / 4981 | 0x401000 | — |
 | final-validation | waiting | typed whole image | — | — |
-| authored object-byte preparation (subordinate) | ready | 21 / 3338 | 0x4024a0 | — |
 
 ### Source-Owner Overview
 
@@ -154,9 +151,9 @@ Counts durable per-primary-entry tiers for authored primary data entries. Owner 
 
 Reconstruction is ongoing. The marker-managed block above is synchronized from
 `.agent/RECONSTRUCTION_PROGRESS.sqlite3`; that unified tracker remains the sole
-progress authority. The snapshot intentionally excludes leases, work packets,
-evidence ids, commands, timestamps, and tracker revisions so it stays a concise
-public view rather than a second operational ledger.
+progress authority. The snapshot contains only the public stage, cursor, and
+coverage projection; it contains no transient execution state and never acts
+as a second operational ledger.
 
 ## License
 

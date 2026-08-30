@@ -1249,7 +1249,7 @@ HudCmdBindingEntry() {
  * Purpose: express command-binding entry cleanup through ordinary STL source.
  * legacy verification anchor now represented only by
  * natural compiler output from this functor/lifetime shape; its exact later
- * full-order classification remains a parent-owned Binary Ninja decision.
+ * full-order classification remains a direct-review Binary Ninja decision.
  */
 struct HudCmdBindingEntryDelete {
     /**
