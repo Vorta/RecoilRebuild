@@ -128,24 +128,14 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# AI/local assistant runtime state. Canonical `.codex/skills/recoil-*`, pointer
-# mirrors under `.claude/`, AGENTS.md, and CLAUDE.md are maintained authored
-# workspace files and therefore are not broadly ignored.
+# AI/local assistant runtime state. Repository-local skills live only under
+# `.codex/skills/recoil-*`; `AGENTS.md` is the sole instruction entry point.
 .codex/*
-!.codex/agents/
-!.codex/agents/**
 !.codex/skills/
 .codex/skills/*
 !.codex/skills/recoil-*/
 !.codex/skills/recoil-*/**
-.claude/*
-!.claude/agents/
-!.claude/agents/**
-!.claude/skills/
-.claude/skills/*
-!.claude/skills/recoil-*/
-!.claude/skills/recoil-*/**
-!.claude/settings.json
+.claude/
 .cursor/
 .agent/claims/
 

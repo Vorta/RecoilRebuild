@@ -68,93 +68,14 @@ payloads, redistributable DLLs, or compiler toolchains.
 
 ## Status
 
-<!-- RECOIL_PROGRESS:START -->
-Generated from the unified reconstruction tracker. The tracker remains the sole progress authority.
+Current reconstruction state is read directly from the sole progress authority:
 
-### Live Reconstruction Pipeline
+```powershell
+python tools/recoil.py progress next --json
+```
 
-| Stage | State | Accepted / total | Frontier | Typed blocker |
-| --- | --- | ---: | --- | --- |
-| authored-function-order | complete | 121 / 121 | 0x4cb9e8 | — |
-| authored-call-contract | current | 0 / 3338 | 0x401000 | — |
-| authored-byte-match | waiting | 21 / 3338 | 0x4024a0 | — |
-| full-function-order | waiting | 0 / 121 | 0x401000 | — |
-| linked-byte-match | waiting | 0 / 4981 | 0x401000 | — |
-| final-validation | waiting | typed whole image | — | — |
-
-### Source-Owner Overview
-
-| Binary | Owners | Authored owners | Provider boundaries |
-| --- | ---: | ---: | ---: |
-| recoil | 1287 | 1201 | 86 |
-| messages | 1 | 1 | 0 |
-| Total | 1288 | 1202 | 86 |
-
-### Source-Owner Gates
-
-| Gate | accepted | blocked | deferred | none | pending | Total |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| boundary | 1271 | 6 | 0 | 1 | 10 | 1288 |
-| source | 1256 | 11 | 5 | 1 | 15 | 1288 |
-| data | 987 | 5 | 5 | 230 | 61 | 1288 |
-| functional | 809 | 0 | 0 | 364 | 115 | 1288 |
-| linkage | 1026 | 144 | 5 | 100 | 13 | 1288 |
-| byte | 20 | 466 | 767 | 0 | 35 | 1288 |
-
-### Owner Reimplementation Tiers
-
-| Tier | Count | Percent of authored owners |
-| --- | ---: | ---: |
-| X | 157 | 13.1% |
-| C | 221 | 18.4% |
-| B | 812 | 67.6% |
-| A | 1 | 0.1% |
-| S | 11 | 0.9% |
-
-### Function Reimplementation Tiers
-
-Counts durable per-primary-entry tiers for authored primary functions. Owner tiers are derived separately and may be lower because of sibling entries or owner gates.
-
-| Tier | recoil | messages | Total | Percent of authored entries |
-| --- | ---: | ---: | ---: | ---: |
-| X | 495 | 0 | 495 | 14.1% |
-| C | 74 | 0 | 74 | 2.1% |
-| B | 2911 | 0 | 2911 | 82.9% |
-| A | 0 | 0 | 0 | 0.0% |
-| S | 29 | 1 | 30 | 0.9% |
-
-### Data Reimplementation Tiers
-
-Counts durable per-primary-entry tiers for authored primary data entries. Owner tiers are derived separately and may be lower because of sibling entries or owner gates.
-
-| Tier | recoil | messages | Total | Percent of authored entries |
-| --- | ---: | ---: | ---: | ---: |
-| X | 402 | 0 | 402 | 12.3% |
-| C | 1596 | 0 | 1596 | 48.8% |
-| B | 1265 | 0 | 1265 | 38.7% |
-| A | 4 | 0 | 4 | 0.1% |
-| S | 0 | 1 | 1 | 0.0% |
-
-### Owner Kinds
-
-| Kind | Count | Percent of owners |
-| --- | ---: | ---: |
-| callback-table | 1 | 0.1% |
-| class | 162 | 12.6% |
-| data-owner | 431 | 33.5% |
-| provider-boundary | 86 | 6.7% |
-| record | 40 | 3.1% |
-| source-file | 172 | 13.4% |
-| standalone | 58 | 4.5% |
-| subsystem | 338 | 26.2% |
-<!-- RECOIL_PROGRESS:END -->
-
-Reconstruction is ongoing. The marker-managed block above is synchronized from
-`.agent/RECONSTRUCTION_PROGRESS.sqlite3`; that unified tracker remains the sole
-progress authority. The snapshot contains only the public stage, cursor, and
-coverage projection; it contains no transient execution state and never acts
-as a second operational ledger.
-
+`.agent/RECONSTRUCTION_PROGRESS.sqlite3` is intentionally machine-local. The
+README does not cache or project its changing state.
 ## License
 
 The reconstructed source, tests, and documentation in this repository are
