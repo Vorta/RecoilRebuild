@@ -865,11 +865,5 @@
     "src/GameZRecoil/zVideo/zvid_main.c",
     "src/GameZRecoil/zWeapon/zwep_init.c",
     "src/WinMain.cpp"
-  ],
-  "physical_block_source_exclusions": [
-    {
-      "path": "src/Messages/messages.c",
-      "reason": "Companion messages.dll source is intentionally excluded from the Recoil.exe final-build manifest."
-    }
   ]
 }

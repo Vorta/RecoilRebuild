@@ -21,8 +21,6 @@ tools/recoil.py progress ...`.
   defines row classifications, sole
   `progress next` scheduling, exact
   typed retail semantic goal, evidence gates, and debt-free closeout contract.
-- `agent_launch_checklist.md` - compact preflight and task-selection checklist
-  for reconstruction agents.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
   assumptions guarded by `python tools/recoil.py audit provenance --strict`.
 - `source_traceability.md` - canonical source anchors, function/data artifact
@@ -52,8 +50,6 @@ tools/recoil.py progress ...`.
   from BN source-path literal xrefs, compiler-emitted physical source-file
   block order, header/provider/COMDAT exceptions, and dated historical repair
   notes. It deliberately contains no live cursor.
-- `visual_studio_mcp_workflow.md` - preferred Visual Studio MCP development
-  workflow for generated `vs-x86` solution projects.
 - `verified_patterns.md` - compact ledger of currently verified reusable source
   and verification shapes.
 - `zfmv_script_cleanup_reset_verification.md` - zFMV cleanup/reset tier S
@@ -79,9 +75,6 @@ current operating guidance, command surfaces, schedulers, or acceptance rules:
 - [`final_executable_repro_history.md`](final_executable_repro_history.md) -
   archived final-data experiments, rejected hypotheses, numeric observations,
   and provenance; superseded by `final_executable_repro.md`.
-- [`cryptographic_content_verification_removal.md`](cryptographic_content_verification_removal.md) -
-  record of the retired content-hash/currentness design; superseded by
-  `retail_executable_reproduction.md`.
 
 ## Documentation Policy
 
@@ -145,8 +138,8 @@ progress notes or duplicated live tracker state.
   and a hand-written common tail can preserve behavior while breaking byte
   identity. Passing smokes, byte checks, or ABI call-shape checks are evidence
   candidates, not source-shape proof.
-- For a new work session, start with `agent_launch_checklist.md`, then use
-  `AGENTS.md` for the full workflow rules.
+- For a new work session, use `AGENTS.md` and then query
+  `python tools/recoil.py progress next --json`.
 - For owner/data promotion, use `progress show`, `progress find`, and
   `progress audit`; do not treat one
   address as the accepted unit when BN proves a larger owner.

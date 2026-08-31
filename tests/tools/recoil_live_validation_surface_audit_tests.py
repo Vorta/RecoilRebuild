@@ -274,7 +274,7 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
             consumer = root / "tools" / "_recoil" / "commands" / "vc5_verify.py"
             consumer.parent.mkdir(parents=True)
             consumer.write_text(
-                "from _recoil.lib.repository_paths import resolve_tracked_repository_file\n"
+                "from _recoil.lib.repository_paths import resolve_repository_file\n"
                 "def validate_repository_relative_path(value):\n"
                 "    return value\n",
                 encoding="utf-8",
@@ -294,7 +294,7 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
             consumer = root / "tools" / "_recoil" / "commands" / "vc5_verify.py"
             consumer.parent.mkdir(parents=True)
             consumer.write_text(
-                "from _recoil.lib.repository_paths import resolve_tracked_repository_file\n"
+                "from _recoil.lib.repository_paths import resolve_repository_file\n"
                 "def logical(path, root):\n"
                 "    return path.resolve().relative_to(root.resolve()).as_posix()\n",
                 encoding="utf-8",
@@ -330,7 +330,7 @@ class LiveValidationSurfaceAuditTests(unittest.TestCase):
             component = root / "tools" / "_recoil" / "commands" / "progress_cli.py"
             component.parent.mkdir(parents=True)
             component.write_text(
-                "from _recoil.lib.repository_paths import resolve_tracked_repository_file\n"
+                "from _recoil.lib.repository_paths import resolve_repository_file\n"
                 "REPO_ROOT = object()\n"
                 "def _progress_command_path(path):\n"
                 "    resolved = path.resolve()\n"

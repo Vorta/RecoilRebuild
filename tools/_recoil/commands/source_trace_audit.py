@@ -341,112 +341,19 @@ def migrated_graph_findings(
     return _dedupe_findings(findings)
 
 
-def migration_occurrences(
-    documents: tuple[SourceTraceDocument, ...],
-    index: SourceArtifactIndex,
-) -> list[dict[str, object]]:
-    legacy = [artifact for document in documents for artifact in document.legacy_artifacts]
-    counts: dict[str, int] = {}
-    for artifact in legacy:
-        counts[artifact.artifact_id] = counts.get(artifact.artifact_id, 0) + 1
-    rows: list[dict[str, object]] = []
-    for artifact in legacy:
-        candidate = index.resolve(artifact.artifact_id)
-        trace = (
-            candidate.row.get("source_traceability")
-            if candidate is not None and isinstance(candidate.row, dict)
-            else None
-        )
-        construct = artifact.construct
-        rows.append(
-            {
-                "inventory_kind": "parsed-legacy-marker",
-                "path": artifact.path,
-                "line": artifact.line,
-                "legacy_relation": artifact.relation,
-                "legacy_artifact_id": artifact.artifact_id,
-                "description": artifact.description,
-                "comment_style": artifact.comment_style,
-                "attachment": {
-                    "status": artifact.attachment_status,
-                    "direct": artifact.direct,
-                    "construct_kind": construct.kind if construct is not None else None,
-                    "construct_name": construct.name if construct is not None else None,
-                    "construct_line": construct.line if construct is not None else None,
-                },
-                "tracker_candidate": {
-                    "resolved": candidate is not None,
-                    "artifact_id": candidate.artifact_id if candidate is not None else artifact.artifact_id,
-                    "physical_id": candidate.physical_id if candidate is not None else None,
-                    "kind": candidate.kind if candidate is not None else None,
-                    "output_section": candidate.output_section if candidate is not None else None,
-                    "class": (
-                        candidate.row.get("pipeline_class")
-                        or candidate.row.get("disposition")
-                        or candidate.row.get("kind")
-                    )
-                    if candidate is not None
-                    else None,
-                    "source_traceability_state": (
-                        trace.get("state") if isinstance(trace, dict) else None
-                    ),
-                },
-                "duplicate_physical_occurrences": counts[artifact.artifact_id],
-            }
-        )
-    for document in documents:
-        for occurrence in document.unsupported_legacy_addresses:
-            rows.append(
-                {
-                    "inventory_kind": "unsupported-legacy-address",
-                    "path": occurrence.path,
-                    "line": occurrence.line,
-                    "legacy_relation": None,
-                    "legacy_artifact_id": None,
-                    "legacy_marker": occurrence.marker,
-                    "address": occurrence.address,
-                    "description": occurrence.text,
-                    "comment_style": occurrence.comment_style,
-                    "attachment": {
-                        "status": "unsupported-syntax",
-                        "direct": False,
-                        "construct_kind": None,
-                        "construct_name": None,
-                        "construct_line": None,
-                    },
-                    "tracker_candidate": {
-                        "resolved": False,
-                        "artifact_id": None,
-                        "physical_id": None,
-                        "kind": None,
-                        "output_section": None,
-                        "class": None,
-                        "source_traceability_state": None,
-                    },
-                    "duplicate_physical_occurrences": None,
-                }
-            )
-    return rows
-
-
 def report_payload(
     documents: tuple[SourceTraceDocument, ...],
     findings: tuple[SourceTraceFinding, ...],
     *,
     progress_path: Path,
-    strict: bool,
-    policy: str,
-    index: SourceArtifactIndex,
 ) -> dict[str, object]:
     parsed_legacy_count = sum(len(item.legacy_artifacts) for item in documents)
     unsupported_legacy_count = sum(
         len(item.unsupported_legacy_addresses) for item in documents
     )
     return {
-        "schema": "source-trace-audit-v1",
+        "schema": "source-trace-audit-v2",
         "result": "passed" if not findings else "failed",
-        "strict": strict,
-        "policy": policy,
         "progress": str(progress_path),
         "acceptance_effect": "none",
         "topology_only": True,
@@ -454,9 +361,7 @@ def report_payload(
             "files": len(documents),
             "anchors": sum(len(item.anchors) for item in documents),
             "canonical_artifacts": sum(len(item.artifacts) for item in documents),
-            "legacy_inventory": parsed_legacy_count + unsupported_legacy_count,
-            "parsed_legacy_inventory": parsed_legacy_count,
-            "unsupported_legacy_inventory": unsupported_legacy_count,
+            "legacy_syntax": parsed_legacy_count + unsupported_legacy_count,
             "findings": len(findings),
         },
         "files": [
@@ -466,19 +371,12 @@ def report_payload(
                 "newline": item.newline,
                 "anchors": len(item.anchors),
                 "canonical_artifacts": len(item.artifacts),
-                "legacy_inventory": (
-                    len(item.legacy_artifacts)
-                    + len(item.unsupported_legacy_addresses)
-                ),
-                "parsed_legacy_inventory": len(item.legacy_artifacts),
-                "unsupported_legacy_inventory": len(
-                    item.unsupported_legacy_addresses
-                ),
+                "legacy_syntax": len(item.legacy_artifacts)
+                + len(item.unsupported_legacy_addresses),
             }
             for item in documents
         ],
         "findings": [asdict(item) for item in findings],
-        "migration_occurrences": migration_occurrences(documents, index),
     }
 
 
@@ -490,34 +388,9 @@ def build_parser() -> argparse.ArgumentParser:
         )
     )
     parser.add_argument(
-        "--path",
-        action="append",
-        default=[],
-        help="source file or directory; repeatable; defaults to src",
-    )
-    parser.add_argument(
         "--progress",
         default=str(DEFAULT_PROGRESS_PATH),
         help="unified tracker used only for function/data/logical-id and output-section lookup",
-    )
-    parser.add_argument(
-        "--binary",
-        choices=("recoil", "messages"),
-        help=(
-            "legacy-marker binary namespace override for focused/non-repository paths; "
-            "canonical artifact IDs remain namespace-driven"
-        ),
-    )
-    parser.add_argument(
-        "--policy",
-        choices=("migration", "migrated"),
-        default="migration",
-        help="migration inventories legacy attachment facts; migrated enforces canonical/tracker edges",
-    )
-    parser.add_argument(
-        "--strict",
-        action="store_true",
-        help="compatibility alias for --policy migrated",
     )
     parser.add_argument("--json", action="store_true", help="emit the complete JSON report")
     parser.add_argument("--max", type=int, default=100, help="maximum text findings to print")
@@ -527,14 +400,12 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     progress_path = _resolve_path(args.progress, REPO_ROOT)
-    policy = "migrated" if args.strict else args.policy
     try:
-        paths = source_paths(args.path, REPO_ROOT)
+        paths = source_paths([], REPO_ROOT)
         documents = tuple(
             parse_source_trace_path(
                 path,
                 repo_root=REPO_ROOT,
-                legacy_binary=args.binary,
             )
             for path in paths
         )
@@ -542,39 +413,34 @@ def main(argv: list[str] | None = None) -> int:
         findings = list(audit_documents(
             documents,
             progress_path=progress_path,
-            strict=policy == "migrated",
+            strict=True,
         ))
-        if policy == "migrated":
-            graph_paths = source_graph_paths(args.path, paths, REPO_ROOT)
-            graph_documents = tuple(
-                parse_source_trace_path(
-                    path,
-                    repo_root=REPO_ROOT,
-                    legacy_binary=args.binary,
-                )
-                for path in graph_paths
+        graph_paths = source_graph_paths([], paths, REPO_ROOT)
+        graph_documents = tuple(
+            parse_source_trace_path(path, repo_root=REPO_ROOT)
+            for path in graph_paths
+        )
+        anchor_scope_paths = {document.path for document in documents}
+        emission_scope_paths = {
+            document.path
+            for document in documents
+            if Path(document.path).suffix.lower() in {".c", ".cc", ".cpp", ".cxx"}
+        }
+        findings.extend(
+            migrated_graph_findings(
+                graph_documents,
+                index,
+                anchor_scope_paths=anchor_scope_paths,
+                emission_scope_paths=emission_scope_paths,
             )
-            anchor_scope_paths = {document.path for document in documents}
-            emission_scope_paths = {
-                document.path
-                for document in documents
-                if Path(document.path).suffix.lower() in {".c", ".cc", ".cpp", ".cxx"}
-            }
-            findings.extend(
-                migrated_graph_findings(
-                    graph_documents,
-                    index,
-                    anchor_scope_paths=anchor_scope_paths,
-                    emission_scope_paths=emission_scope_paths,
-                )
-            )
+        )
         findings = _dedupe_findings(findings)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         if args.json:
             print(
                 json.dumps(
                     {
-                        "schema": "source-trace-audit-v1",
+                        "schema": "source-trace-audit-v2",
                         "result": "error",
                         "acceptance_effect": "none",
                         "error": str(exc),
@@ -591,9 +457,6 @@ def main(argv: list[str] | None = None) -> int:
         documents,
         findings,
         progress_path=progress_path,
-        strict=policy == "migrated",
-        policy=policy,
-        index=index,
     )
     if args.json:
         print(json.dumps(payload, indent=2, sort_keys=True))
@@ -603,7 +466,7 @@ def main(argv: list[str] | None = None) -> int:
             "source-trace audit "
             f"{str(payload['result']).upper()}: files={counts['files']} "
             f"anchors={counts['anchors']} artifacts={counts['canonical_artifacts']} "
-            f"legacy={counts['legacy_inventory']} findings={counts['findings']}"
+            f"legacy_syntax={counts['legacy_syntax']} findings={counts['findings']}"
         )
         print("Source-trace rows are read-only topology observations; acceptance effect: none.")
         limit = max(int(args.max), 0)

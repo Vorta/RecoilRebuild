@@ -93,7 +93,7 @@ The direct verifier compares:
 - authored/self/provider/IAT target identity;
 - virtual/interface slot or callback storage;
 - known caller cleanup;
-- current direct Binary Ninja facts after canonical database preflight.
+- current direct Binary Ninja facts from the target-qualified loaded database.
 
 ```powershell
 python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json
@@ -118,9 +118,10 @@ python tools/recoil.py progress call-contract close-live --build-root <fresh-roo
 ```
 
 The closeout runs the complete current census from fresh output, forbids reuse,
-requires zero divergence, preflights the canonical BN database for each slice,
-records each slice's exact expected-fact transcript, and records generation
-16/14/14 currency. It is the only route to stage completion.
+requires zero divergence, queries the target-qualified canonical BN database
+directly without repeating database preflight per slice, records each slice's
+exact expected-fact transcript, and records generation 18/15/16 currency. It is
+the only route to stage completion.
 
 ## Stage 3: Authored Bytes
 
@@ -252,16 +253,18 @@ VC5 evidence for every actual acceptance.
 
 ## Binary Ninja
 
-Before BN work:
+Once after Binary Ninja is opened, reopened, or switched for the current
+working session:
 
 ```powershell
-python tools/recoil.py doctor --quick --binja
+python tools/recoil.py binja preflight --binary recoil --strict
 ```
 
 If the bridge is unavailable, ask the user to open the correct database. Do not
-load or switch binaries. Read-only inspection never saves. Reconstruction
-edits only explicitly selected analysis facts, runs propagation checks, and
-saves before returning to source work.
+load or switch binaries. Reuse the preflight result while the database and
+connection remain unchanged; never repeat it per slice. Read-only inspection
+never saves. Reconstruction edits only explicitly selected analysis facts,
+runs propagation checks, and saves before returning to source work.
 
 ## Persistence And Recovery
 
@@ -269,29 +272,13 @@ The two live SQLite databases are the only runtime authorities. Never hand-edit
 them. Semantic mutations use CAS and fresh evidence. Issue mutations use their
 independent monotonic revision.
 
-The README marker block is a derived public snapshot:
-
-```powershell
-python tools/recoil.py docs readme-progress
-python tools/recoil.py docs readme-progress --check
-```
-
-It is not a second current-state authority and is not synchronized inside every
-tracker transaction.
+The README contains only a static pointer to `progress next --json`. It is not
+a second current-state authority and no tracker transaction updates it.
 
 ## Validation
 
-After tool, docs, skill, or tracker work:
-
-```powershell
-python tools/recoil.py doctor --infrastructure-only
-python tools/recoil.py audit agent-surface --strict
-python tools/recoil.py audit pipeline-contracts --strict
-python tools/recoil.py audit pipeline-reachability --strict
-python tools/recoil.py audit live-validation-surface --strict
-python tools/recoil.py progress audit --scope pipeline --strict
-python tools/recoil.py issue audit --strict
-```
+After tool, docs, skill, or tracker work, use the canonical matrix in
+`recoil-validation` rather than maintaining another copy here.
 
 Run focused unit tests first. Preserve unrelated changes. Report exact commands,
 first divergences, changed paths, remaining gaps, and the narrow next action.

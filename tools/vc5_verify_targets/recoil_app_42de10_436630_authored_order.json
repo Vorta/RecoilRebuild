@@ -2019,7 +2019,7 @@
     "src/GameZRecoil/zDEClient/zdec.h",
     "src/GameZRecoil/zHud/zhud_ui.h",
     "src/GameZRecoil/zInput/zInput.h",
-    "src/GameZRecoil/zReader/zReader.h"
+    "src/GameZRecoil/zReader/zreader.h"
   ],
   "retail_end_exclusive": "0x436630",
   "retail_start": "0x42de10",

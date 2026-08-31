@@ -11,7 +11,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zSys/zSys.cpp"
+    "src/GameZRecoil/zSys/zsys.cpp"
   ],
   "functions": [
     {
@@ -29,5 +29,5 @@
       "byte_length": 10
     }
   ],
-  "source_from": "src/GameZRecoil/zSys/zSys.cpp"
+  "source_from": "src/GameZRecoil/zSys/zsys.cpp"
 }

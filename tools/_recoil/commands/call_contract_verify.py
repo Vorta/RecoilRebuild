@@ -53,7 +53,6 @@ from _recoil.commands.provider_target_mutation import (
     _retail_import_targets,
     retail_import_target,
 )
-from _recoil.commands.binja_preflight import run_preflight
 from _recoil.commands.vc5_verify import (
     DEFAULT_VC5_ENV,
     IMAGE_SCN_LNK_COMDAT,
@@ -98,11 +97,11 @@ from _recoil.lib.progress import (
     normalize_address,
 )
 from _recoil.lib.repository_paths import (
-    GitTrackedPathInventory,
+    RepositoryPathInventory,
     RepositoryPathError,
     diagnose_historical_repository_path,
-    load_git_tracked_path_inventory,
-    resolve_tracked_repository_file,
+    load_repository_path_inventory,
+    resolve_repository_file,
     validate_repository_relative_path,
 )
 from _recoil.lib.reference_images import reference_image
@@ -853,6 +852,21 @@ def _call_contract_bn_call_budget(body_count: int) -> int:
     return (
         CALL_CONTRACT_BN_FIXED_CALLS
         + scaled_count * CALL_CONTRACT_BN_CALLS_PER_BODY
+    )
+
+
+def _new_call_contract_bridge(
+    *,
+    bridge_url: str,
+    body_count: int,
+) -> BinaryNinjaBridge:
+    """Create the target-qualified bridge used for direct retail fact reads."""
+
+    image = reference_image("recoil")
+    return BinaryNinjaBridge(
+        bridge_url,
+        binary=Path(image.bndb_path).name,
+        call_budget=_call_contract_bn_call_budget(body_count),
     )
 
 
@@ -2781,11 +2795,11 @@ PLAYER_PROFILE_MATRIX_ORDER_EDIT_PATHS = (
     "src/Battlesport/player.h",
     "src/Battlesport/WOL.cpp",
     "src/Battlesport/wol_api.h",
-    "src/GameZRecoil/zCom/zCom.h",
+    "src/GameZRecoil/zCom/zcom.h",
     "src/GameZRecoil/zUI/zui.cpp",
     "src/GameZRecoil/zHud/zhud_ui.h",
     "src/GameZRecoil/zReader/zreader.cpp",
-    "src/GameZRecoil/zReader/zReader.h",
+    "src/GameZRecoil/zReader/zreader.h",
     "src/GameZRecoil/zClass/Class.c",
     "src/GameZRecoil/zClass/cls_di.c",
     "src/GameZRecoil/include/zClass.h",
@@ -11858,33 +11872,33 @@ def _call_contract_body_results(
 def file_dependency_states(
     paths: Iterable[str],
     *,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> list[dict[str, Any]]:
     """Return exact physical/stat state for an invocation-local TOCTOU check."""
 
     rows: list[dict[str, Any]] = []
-    tracked_inventory = (
-        tracked_path_inventory
-        or load_git_tracked_path_inventory(REPO_ROOT)
+    repository_inventory = (
+        repository_path_inventory
+        or load_repository_path_inventory(REPO_ROOT)
     )
     for raw_path in sorted({str(item).replace("\\", "/") for item in paths if str(item)}):
         try:
-            tracked = resolve_tracked_repository_file(
+            tracked = resolve_repository_file(
                 raw_path,
                 context="call-contract dependency",
-                repository_root=tracked_inventory.repository_root,
-                inventory=tracked_inventory,
+                repository_root=repository_inventory.repository_root,
+                inventory=repository_inventory,
             )
             path = tracked.physical_path
-            relative = tracked.git_path
+            relative = tracked.repository_path
         except RepositoryPathError as exc:
-            if exc.kind != "tracked-file-missing":
+            if exc.kind != "repository-file-missing":
                 raise
             # The dependency was exact in the immutable invocation inventory
             # but disappeared before the physical signature read. Preserve the
-            # Git logical identity so the TOCTOU recheck reports a missing row.
+            # repository identity so the TOCTOU recheck reports a missing row.
             relative = raw_path
-            path = tracked_inventory.repository_root / relative
+            path = repository_inventory.repository_root / relative
         try:
             with StableReadHandle(path) as handle:
                 stat = os.fstat(handle.stream.fileno())
@@ -12086,11 +12100,11 @@ def call_contract_registration_path_reconciliation(
     target_id: str,
     registration: Mapping[str, Any],
     current_target: Any,
-    inventory: GitTrackedPathInventory,
+    inventory: RepositoryPathInventory,
 ) -> dict[str, Any]:
     """Compare historical registration paths with current manifest paths.
 
-    Current manifest values must first authenticate as exact Git paths.  Old
+    Current manifest values must first authenticate as exact repository paths.  Old
     registration spelling may then be reconciled for diagnosis only; it never
     becomes a current input or mutates tracker state.
     """
@@ -12106,7 +12120,7 @@ def call_contract_registration_path_reconciliation(
     exact_current: list[str] = []
     for index, path in enumerate(current_paths):
         try:
-            tracked = resolve_tracked_repository_file(
+            tracked = resolve_repository_file(
                 path,
                 repository_root=inventory.repository_root,
                 inventory=inventory,
@@ -12118,7 +12132,7 @@ def call_contract_registration_path_reconciliation(
             )
         except RepositoryPathError as exc:
             raise ProgressError(str(exc)) from exc
-        exact_current.append(tracked.git_path)
+        exact_current.append(tracked.repository_path)
     if len({path.casefold() for path in exact_current}) != len(exact_current):
         raise ProgressError(
             f"call-contract target {target_id} current manifest repeats a semantic path"
@@ -12155,7 +12169,7 @@ def call_contract_registration_path_reconciliation(
             exact_current = []
             for index, path in enumerate(dict.fromkeys(like_for_like_current)):
                 try:
-                    tracked = resolve_tracked_repository_file(
+                    tracked = resolve_repository_file(
                         path,
                         repository_root=inventory.repository_root,
                         inventory=inventory,
@@ -12167,7 +12181,7 @@ def call_contract_registration_path_reconciliation(
                     )
                 except RepositoryPathError as exc:
                     raise ProgressError(str(exc)) from exc
-                exact_current.append(tracked.git_path)
+                exact_current.append(tracked.repository_path)
         else:
             # No field-equivalent historical projection exists. The exact
             # current manifest remains the candidate input.
@@ -12214,25 +12228,25 @@ def call_contract_registration_path_reconciliation(
             )
         except RepositoryPathError as exc:
             raise ProgressError(str(exc)) from exc
-        if diagnosis.status == "exact-historical" and diagnosis.current_git_path:
+        if diagnosis.status == "exact-historical" and diagnosis.current_repository_path:
             unchanged.append(path)
-            matched_current.add(diagnosis.current_git_path)
-            reconciled_order.append(diagnosis.current_git_path)
+            matched_current.add(diagnosis.current_repository_path)
+            reconciled_order.append(diagnosis.current_repository_path)
         elif (
             diagnosis.status == "historical-case-alias"
-            and diagnosis.current_git_path
+            and diagnosis.current_repository_path
         ):
             case_aliases.append(
                 {
                     "status": diagnosis.status,
                     "historical_path": diagnosis.historical_path,
-                    "current_git_path": diagnosis.current_git_path,
+                    "current_repository_path": diagnosis.current_repository_path,
                     "current": diagnosis.current,
                     "tracker_mutated": diagnosis.tracker_mutated,
                 }
             )
-            matched_current.add(diagnosis.current_git_path)
-            reconciled_order.append(diagnosis.current_git_path)
+            matched_current.add(diagnosis.current_repository_path)
+            reconciled_order.append(diagnosis.current_repository_path)
         elif diagnosis.status == "ambiguous":
             ambiguous.append(
                 {
@@ -12446,11 +12460,11 @@ def _call_contract_slice_targets(
     document: ProgressDocument,
     slice_row: Mapping[str, Any],
     *,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> dict[str, Any]:
     """Load the exact selected target manifests without compiling them."""
 
-    inventory = tracked_path_inventory or load_git_tracked_path_inventory(
+    inventory = repository_path_inventory or load_repository_path_inventory(
         REPO_ROOT
     )
     result: dict[str, Any] = {}
@@ -12458,7 +12472,7 @@ def _call_contract_slice_targets(
         _call_contract_target_registrations(document, slice_row)
     ):
         try:
-            tracked_manifest = resolve_tracked_repository_file(
+            repository_manifest = resolve_repository_file(
                 manifest_path,
                 repository_root=inventory.repository_root,
                 inventory=inventory,
@@ -12468,8 +12482,8 @@ def _call_contract_slice_targets(
         except RepositoryPathError as exc:
             raise ProgressError(str(exc)) from exc
         target = load_manifest(
-            tracked_manifest.physical_path,
-            tracked_path_inventory=inventory,
+            repository_manifest.physical_path,
+            repository_path_inventory=inventory,
         )
         require_clean_target_source_fragments(target)
         result[target_id] = _appframe_v10_base_profile_target(
@@ -12552,37 +12566,37 @@ def _call_contract_repository_include_roots() -> tuple[tuple[str, Path], ...]:
 def _call_contract_final_build_source_map(
     config: Any,
     *,
-    inventory: GitTrackedPathInventory | None = None,
+    inventory: RepositoryPathInventory | None = None,
 ) -> tuple[
     dict[str, list[tuple[str, Path]]],
     tuple[dict[str, Any], ...],
 ]:
-    """Project final-build source rows through exact current Git identities.
+    """Project final-build source rows through exact current repository identities.
 
     The checked-in final-build configuration may retain historical case-only
     spellings.  Those spellings are diagnosed as stale and never become the
-    current logical result; the returned map is keyed by exact current Git
+    current logical result; the returned map is keyed by exact current repository
     paths and uses their separately authenticated physical files.
     """
 
-    tracked_inventory = inventory or load_git_tracked_path_inventory(REPO_ROOT)
-    explicit_git_paths = getattr(config, "source_git_paths", None)
-    if explicit_git_paths is not None:
+    repository_inventory = inventory or load_repository_path_inventory(REPO_ROOT)
+    explicit_repository_paths = getattr(config, "source_repository_paths", None)
+    if explicit_repository_paths is not None:
         if (
-            not isinstance(explicit_git_paths, (tuple, list))
-            or len(explicit_git_paths) != len(tuple(getattr(config, "sources", ())))
-            or any(not isinstance(path, str) or not path for path in explicit_git_paths)
+            not isinstance(explicit_repository_paths, (tuple, list))
+            or len(explicit_repository_paths) != len(tuple(getattr(config, "sources", ())))
+            or any(not isinstance(path, str) or not path for path in explicit_repository_paths)
         ):
             raise ProgressError(
-                "call-contract explicit final-build Git source registry is malformed"
+                "call-contract explicit final-build source registry is malformed"
             )
         result: dict[str, list[tuple[str, Path]]] = {}
-        for git_path, configured_path in zip(explicit_git_paths, config.sources):
+        for repository_path, configured_path in zip(explicit_repository_paths, config.sources):
             try:
-                tracked = resolve_tracked_repository_file(
-                    git_path,
-                    repository_root=tracked_inventory.repository_root,
-                    inventory=tracked_inventory,
+                tracked = resolve_repository_file(
+                    repository_path,
+                    repository_root=repository_inventory.repository_root,
+                    inventory=repository_inventory,
                     context="call-contract explicit final-build source",
                     allowed_suffixes=CALL_CONTRACT_SOURCE_SUFFIXES,
                 )
@@ -12593,22 +12607,22 @@ def _call_contract_final_build_source_map(
             ):
                 raise ProgressError(
                     "call-contract explicit final-build source does not match "
-                    f"its exact Git physical file: {git_path}"
+                    f"its exact repository file: {repository_path}"
                 )
-            result.setdefault(tracked.git_path.casefold(), []).append(
-                (tracked.git_path, tracked.physical_path)
+            result.setdefault(tracked.repository_path.casefold(), []).append(
+                (tracked.repository_path, tracked.physical_path)
             )
         return result, ()
     try:
-        tracked_manifest = resolve_tracked_repository_file(
+        repository_manifest = resolve_repository_file(
             _call_contract_final_build_manifest_logical_path(),
-            repository_root=tracked_inventory.repository_root,
-            inventory=tracked_inventory,
+            repository_root=repository_inventory.repository_root,
+            inventory=repository_inventory,
             context="call-contract final-build manifest",
             allowed_suffixes={".json"},
         )
         raw = json.loads(
-            tracked_manifest.physical_path.read_text(encoding="utf-8")
+            repository_manifest.physical_path.read_text(encoding="utf-8")
         )
     except (RepositoryPathError, OSError, json.JSONDecodeError) as exc:
         raise ProgressError(
@@ -12631,23 +12645,23 @@ def _call_contract_final_build_source_map(
         try:
             diagnosis = diagnose_historical_repository_path(
                 raw_path,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
             )
         except RepositoryPathError as exc:
             raise ProgressError(str(exc)) from exc
         if diagnosis.status not in {
             "exact-historical",
             "historical-case-alias",
-        } or not diagnosis.current_git_path:
+        } or not diagnosis.current_repository_path:
             raise ProgressError(
-                "call-contract final-build source has no unique current Git "
+                "call-contract final-build source has no unique current repository "
                 f"identity: {raw_path} ({diagnosis.status})"
             )
         try:
-            tracked = resolve_tracked_repository_file(
-                diagnosis.current_git_path,
-                repository_root=tracked_inventory.repository_root,
-                inventory=tracked_inventory,
+            tracked = resolve_repository_file(
+                diagnosis.current_repository_path,
+                repository_root=repository_inventory.repository_root,
+                inventory=repository_inventory,
                 context="call-contract final-build current source",
                 allowed_suffixes=CALL_CONTRACT_SOURCE_SUFFIXES,
             )
@@ -12658,17 +12672,17 @@ def _call_contract_final_build_source_map(
         ):
             raise ProgressError(
                 "call-contract parsed final-build source does not match its "
-                f"current Git physical file: {raw_path}"
+                f"current repository file: {raw_path}"
             )
-        result.setdefault(tracked.git_path.casefold(), []).append(
-            (tracked.git_path, tracked.physical_path)
+        result.setdefault(tracked.repository_path.casefold(), []).append(
+            (tracked.repository_path, tracked.physical_path)
         )
         if diagnosis.status == "historical-case-alias":
             diagnostics.append(
                 {
                     "status": diagnosis.status,
                     "historical_path": diagnosis.historical_path,
-                    "current_git_path": diagnosis.current_git_path,
+                    "current_repository_path": diagnosis.current_repository_path,
                     "current": diagnosis.current,
                     "tracker_mutated": diagnosis.tracker_mutated,
                 }
@@ -12720,7 +12734,7 @@ def _call_contract_cached_manifest(
     document: ProgressDocument,
     manifest_path: Path,
     *,
-    tracked_path_inventory: Any | None = None,
+    repository_path_inventory: Any | None = None,
 ) -> Any:
     """Reuse one unchanged governed target manifest within this request."""
 
@@ -12743,7 +12757,7 @@ def _call_contract_cached_manifest(
     target = load_manifest(
         canonical,
         enforce_source_policy=False,
-        tracked_path_inventory=tracked_path_inventory,
+        repository_path_inventory=repository_path_inventory,
     )
     try:
         after = canonical.stat()
@@ -12872,7 +12886,7 @@ def _call_contract_source_closure_uncached(
     document: ProgressDocument,
     slice_row: Mapping[str, Any],
     *,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> CallContractSourceClosure:
     """Return exact registered/header/definition paths for one slice.
 
@@ -12883,11 +12897,11 @@ def _call_contract_source_closure_uncached(
     final-build preprocessor contexts; callee identity alone grants no path.
     """
 
-    tracked_inventory = (
-        tracked_path_inventory
-        or load_git_tracked_path_inventory(REPO_ROOT)
+    repository_inventory = (
+        repository_path_inventory
+        or load_repository_path_inventory(REPO_ROOT)
     )
-    root = tracked_inventory.repository_root
+    root = repository_inventory.repository_root
 
     def canonical_existing_file(
         candidate: Path,
@@ -12896,7 +12910,7 @@ def _call_contract_source_closure_uncached(
         required: bool,
     ) -> tuple[Path, str] | None:
         # This helper is used only for include traversal candidates assembled
-        # from a current exact Git path plus a lexical quoted include.  Use the
+        # from a current exact repository path plus a lexical quoted include.  Use the
         # inventory for the logical result; physical spelling is never
         # projected back into that result.
         try:
@@ -12905,37 +12919,37 @@ def _call_contract_source_closure_uncached(
             raise ProgressError(
                 f"{context} leaves the repository: {candidate}"
             ) from exc
-        matches = tracked_inventory.casefolded_paths.get(
+        matches = repository_inventory.casefolded_paths.get(
             lexical_relative.casefold(), ()
         )
-        if lexical_relative in tracked_inventory.exact_paths:
-            git_path = lexical_relative
+        if lexical_relative in repository_inventory.exact_paths:
+            repository_path = lexical_relative
         elif not matches and not required:
             return None
         elif len(matches) == 1:
             # A quoted include operand is relative to compiler include roots,
             # not itself a repository-relative identity.  Resolve the unique
-            # tracked candidate for traversal while retaining only its exact
-            # Git spelling in the public closure.
-            git_path = matches[0]
+            # repository candidate for traversal while retaining only its exact
+            # repository spelling in the public closure.
+            repository_path = matches[0]
         elif not matches:
-            raise ProgressError(f"{context} is not tracked by Git: {candidate}")
+            raise ProgressError(f"{context} is outside the repository inventory: {candidate}")
         else:
             raise ProgressError(
-                f"{context} has ambiguous Git-index casing: {candidate}"
+                f"{context} has ambiguous repository casing: {candidate}"
             )
         try:
-            tracked = resolve_tracked_repository_file(
-                git_path,
+            tracked = resolve_repository_file(
+                repository_path,
                 context=context,
                 repository_root=root,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
             )
         except RepositoryPathError as exc:
-            if not required and exc.kind in {"untracked-path", "tracked-file-missing"}:
+            if not required and exc.kind in {"unknown-path", "repository-file-missing"}:
                 return None
             raise ProgressError(str(exc)) from exc
-        return tracked.physical_path, tracked.git_path
+        return tracked.physical_path, tracked.repository_path
 
     def normalized_source_roots(
         value: Any,
@@ -12979,7 +12993,7 @@ def _call_contract_source_closure_uncached(
                 selected,
                 context=context,
                 repository_root=root,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
             )
         except ValueError as exc:
             raise ProgressError(str(exc)) from exc
@@ -13001,10 +13015,10 @@ def _call_contract_source_closure_uncached(
         _call_contract_target_registrations(document, slice_row)
     ):
         try:
-            tracked_manifest = resolve_tracked_repository_file(
+            repository_manifest = resolve_repository_file(
                 manifest_value,
                 repository_root=root,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
                 context=f"call-contract target {target_id} manifest",
                 allowed_suffixes={".json"},
             )
@@ -13012,8 +13026,8 @@ def _call_contract_source_closure_uncached(
             raise ProgressError(str(exc)) from exc
         manifest = _call_contract_cached_manifest(
             document,
-            tracked_manifest.physical_path,
-            tracked_path_inventory=tracked_inventory,
+            repository_manifest.physical_path,
+            repository_path_inventory=repository_inventory,
         )
         raw_order_edit_paths = _call_contract_target_source_edit_roots(
             target_id=target_id,
@@ -13027,7 +13041,7 @@ def _call_contract_source_closure_uncached(
                     "phase-all-authored-bodies",
                 }
             ),
-            tracked_path_inventory=tracked_inventory,
+            repository_path_inventory=repository_inventory,
         )
         target_edit_paths = normalized_source_roots(
             raw_order_edit_paths,
@@ -13047,10 +13061,10 @@ def _call_contract_source_closure_uncached(
     pending: list[tuple[str, Path]] = []
     for edit_path in source_edit_paths:
         try:
-            tracked = resolve_tracked_repository_file(
+            tracked = resolve_repository_file(
                 edit_path,
                 repository_root=root,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
                 context="call-contract registered source-edit path",
                 allowed_suffixes=(
                     CALL_CONTRACT_SOURCE_SUFFIXES
@@ -13059,27 +13073,27 @@ def _call_contract_source_closure_uncached(
             )
         except RepositoryPathError as exc:
             raise ProgressError(str(exc)) from exc
-        editable.setdefault(tracked.git_path.casefold(), tracked.git_path)
+        editable.setdefault(tracked.repository_path.casefold(), tracked.repository_path)
     for registered_path in registered_paths:
         if Path(registered_path).suffix.casefold() not in (
             CALL_CONTRACT_SOURCE_SUFFIXES
         ):
             continue
         try:
-            tracked = resolve_tracked_repository_file(
+            tracked = resolve_repository_file(
                 registered_path,
                 repository_root=root,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
                 context="call-contract registered source path",
                 allowed_suffixes=CALL_CONTRACT_SOURCE_SUFFIXES,
             )
         except RepositoryPathError as exc:
             raise ProgressError(str(exc)) from exc
-        key = tracked.git_path.casefold()
+        key = tracked.repository_path.casefold()
         if key not in registered_sources:
-            registered_sources[key] = tracked.git_path
-            included_paths[key] = tracked.git_path
-            pending.append((tracked.git_path, tracked.physical_path))
+            registered_sources[key] = tracked.repository_path
+            included_paths[key] = tracked.repository_path
+            pending.append((tracked.repository_path, tracked.physical_path))
     if not pending:
         raise ProgressError(
             "call-contract slice has no registered C/C++ source files"
@@ -13088,8 +13102,8 @@ def _call_contract_source_closure_uncached(
     include_roots = _call_contract_repository_include_roots()
     scanned: set[str] = set()
     while pending:
-        source_git_path, source_path = pending.pop(0)
-        source_key = source_git_path.casefold()
+        source_repository_path, source_path = pending.pop(0)
+        source_key = source_repository_path.casefold()
         if source_key in scanned:
             continue
         scanned.add(source_key)
@@ -13113,7 +13127,7 @@ def _call_contract_source_closure_uncached(
             if quoted is None:
                 raise ProgressError(
                     "call-contract source has a malformed quoted include at "
-                    f"{source_git_path}:"
+                    f"{source_repository_path}:"
                     f"{text.count(chr(10), 0, match.start()) + 1}"
                 )
             include_text = quoted.group("path")
@@ -13132,7 +13146,7 @@ def _call_contract_source_closure_uncached(
                 raise ProgressError(
                     "call-contract source has a malformed or escaping quoted "
                     f"include {include_text!r} in "
-                    f"{source_git_path}"
+                    f"{source_repository_path}"
                 )
             if include_posix.suffix.casefold() not in (
                 CALL_CONTRACT_HEADER_SUFFIXES
@@ -13140,7 +13154,7 @@ def _call_contract_source_closure_uncached(
                 continue
 
             resolved_include: tuple[Path, str] | None = None
-            source_parent = PurePosixPath(source_git_path).parent.as_posix()
+            source_parent = PurePosixPath(source_repository_path).parent.as_posix()
             candidate_roots = (
                 (source_parent, source_path.parent),
                 *include_roots,
@@ -13162,7 +13176,7 @@ def _call_contract_source_closure_uncached(
                     context=(
                         "call-contract quoted include "
                         f"{include_text!r} from "
-                        f"{source_git_path}"
+                        f"{source_repository_path}"
                     ),
                     required=False,
                 )
@@ -13282,10 +13296,10 @@ def _call_contract_source_closure_uncached(
         _call_contract_final_build_manifest_logical_path()
     )
     try:
-        final_build_manifest_tracked = resolve_tracked_repository_file(
+        final_build_manifest_tracked = resolve_repository_file(
             final_build_manifest_logical,
             repository_root=root,
-            inventory=tracked_inventory,
+            inventory=repository_inventory,
             context="call-contract final-build manifest",
             allowed_suffixes={".json"},
         )
@@ -13295,7 +13309,7 @@ def _call_contract_source_closure_uncached(
         *editable.values(),
         *included_paths.values(),
         *definition_sources,
-        final_build_manifest_tracked.git_path,
+        final_build_manifest_tracked.repository_path,
         *(
             manifest_path.replace("\\", "/")
             for _target_id, _registration, manifest_path in (
@@ -13349,14 +13363,14 @@ def call_contract_source_closure(
     document: ProgressDocument,
     slice_row: Mapping[str, Any],
     *,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> CallContractSourceClosure:
     """Derive the exact source closure without persistent reuse."""
 
     return _call_contract_source_closure_uncached(
         document,
         slice_row,
-        tracked_path_inventory=tracked_path_inventory,
+        repository_path_inventory=repository_path_inventory,
     )
 
 def _candidate_dependent_owner_provenance(
@@ -13384,15 +13398,15 @@ def _candidate_dependent_owner_provenance(
     resolution = None
     if decoded_identity is not None and non_source_class is None:
         try:
-            tracked_inventory = load_git_tracked_path_inventory(REPO_ROOT)
-            root = tracked_inventory.repository_root
+            repository_inventory = load_repository_path_inventory(REPO_ROOT)
+            root = repository_inventory.repository_root
             config = load_final_build_config(DEFAULT_FINAL_BUILD_MANIFEST)
             context_by_source: dict[str, tuple[str, ...]] = {}
             canonical_source_by_key: dict[str, str] = {}
             configured_sources, _stale_diagnostics = (
                 _call_contract_final_build_source_map(
                     config,
-                    inventory=tracked_inventory,
+                    inventory=repository_inventory,
                 )
             )
             for rows in configured_sources.values():
@@ -13681,14 +13695,14 @@ def _selected_target_compile_diagnostic_route(
         )
         return route
 
-    tracked_inventory = load_git_tracked_path_inventory(REPO_ROOT)
-    root = tracked_inventory.repository_root
+    repository_inventory = load_repository_path_inventory(REPO_ROOT)
+    root = repository_inventory.repository_root
     try:
         config = load_final_build_config(DEFAULT_FINAL_BUILD_MANIFEST)
         configured_sources, _stale_diagnostics = (
             _call_contract_final_build_source_map(
                 config,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
             )
         )
         configured_definition = configured_sources.get(
@@ -13776,10 +13790,10 @@ def _selected_target_compile_diagnostic_route(
         ),
     ):
         try:
-            tracked_routed = resolve_tracked_repository_file(
+            repository_routed = resolve_repository_file(
                 routed_path,
                 repository_root=root,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
                 context=f"call-contract {label}",
                 allowed_suffixes=suffixes,
             )
@@ -13787,7 +13801,7 @@ def _selected_target_compile_diagnostic_route(
             route["blocker_reason"] = f"{label}-escaping"
             return route
         if (
-            tracked_routed.git_path != routed_path
+            repository_routed.repository_path != routed_path
             or [path.casefold() for path in authority_paths].count(
                 routed_path.casefold()
             )
@@ -14112,14 +14126,14 @@ def _prove_intentionally_inlined_empty_authored_candidate(
     ):
         return None
 
-    tracked_inventory = load_git_tracked_path_inventory(REPO_ROOT)
-    root = tracked_inventory.repository_root
+    repository_inventory = load_repository_path_inventory(REPO_ROOT)
+    root = repository_inventory.repository_root
     try:
         config = load_final_build_config(DEFAULT_FINAL_BUILD_MANIFEST)
         configured_sources, _stale_diagnostics = (
             _call_contract_final_build_source_map(
                 config,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
             )
         )
         configured_definition = configured_sources.get(
@@ -14616,14 +14630,14 @@ def _candidate_body_declaration_header_route(
         route["blocker_reason"] = "selected-target-definition-authority-mismatch"
         return route
 
-    tracked_inventory = load_git_tracked_path_inventory(REPO_ROOT)
-    root = tracked_inventory.repository_root
+    repository_inventory = load_repository_path_inventory(REPO_ROOT)
+    root = repository_inventory.repository_root
     try:
         config = load_final_build_config(DEFAULT_FINAL_BUILD_MANIFEST)
         configured_sources, _stale_diagnostics = (
             _call_contract_final_build_source_map(
                 config,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
             )
         )
         resolver = _call_contract_callable_inventory_resolver(
@@ -14703,10 +14717,10 @@ def _candidate_body_declaration_header_route(
     )
     for routed_path, suffixes, authority_paths, label in routed_path_specs:
         try:
-            tracked_routed = resolve_tracked_repository_file(
+            repository_routed = resolve_repository_file(
                 routed_path,
                 repository_root=root,
-                inventory=tracked_inventory,
+                inventory=repository_inventory,
                 context=f"call-contract {label}",
                 allowed_suffixes=suffixes,
             )
@@ -14717,7 +14731,7 @@ def _candidate_body_declaration_header_route(
             path.casefold() for path in authority_paths
         ]
         if (
-            tracked_routed.git_path != routed_path
+            repository_routed.repository_path != routed_path
             or authority_casefolds.count(routed_path.casefold()) != 1
             or (
                 label == "selected-target-definition"
@@ -14822,10 +14836,10 @@ def _compile_call_contract_definition_sources(
     config = with_final_build_dir(config, requested_build_dir_relative)
     prepare_clean_build_dir(build_root, "call-contract-definition-closure")
     paths = final_build_paths(config)
-    tracked_inventory = load_git_tracked_path_inventory(REPO_ROOT)
+    repository_inventory = load_repository_path_inventory(REPO_ROOT)
     configured_rows, _stale_diagnostics = _call_contract_final_build_source_map(
         config,
-        inventory=tracked_inventory,
+        inventory=repository_inventory,
     )
     configured = {
         key: rows[0][1]
@@ -14915,12 +14929,12 @@ def source_dependency_paths(
     *,
     source_write_paths: Sequence[str] | None = None,
     source_closure: CallContractSourceClosure | None = None,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> list[str]:
     closure = source_closure or call_contract_source_closure(
         document,
         slice_row,
-        tracked_path_inventory=tracked_path_inventory,
+        repository_path_inventory=repository_path_inventory,
     )
     paths = set(closure.dependency_paths)
     if source_write_paths is not None:
@@ -87469,15 +87483,15 @@ def _call_contract_target_source_edit_roots(
     manifest: Any,
     override_paths: Any,
     strict_internal_scope: bool,
-    tracked_path_inventory: GitTrackedPathInventory,
+    repository_path_inventory: RepositoryPathInventory,
 ) -> Any:
-    """Project registered authority through current Git-case manifest paths."""
+    """Project registered authority through current repository-case manifest paths."""
 
     reconciliation = call_contract_registration_path_reconciliation(
         target_id=target_id,
         registration=registration,
         current_target=manifest,
-        inventory=tracked_path_inventory,
+        inventory=repository_path_inventory,
     )
     if reconciliation["blocker_kind"] is not None:
         raise ProgressError(
@@ -156771,14 +156785,14 @@ def _zclass_freeall_source_provenance(
 ) -> None:
     """Require the unique current header declaration and two TU definitions."""
 
-    tracked_inventory = load_git_tracked_path_inventory(REPO_ROOT)
-    root = tracked_inventory.repository_root
+    repository_inventory = load_repository_path_inventory(REPO_ROOT)
+    root = repository_inventory.repository_root
     config = load_final_build_config(DEFAULT_FINAL_BUILD_MANIFEST)
     contexts: dict[str, tuple[str, ...]] = {}
     configured_sources, _stale_diagnostics = (
         _call_contract_final_build_source_map(
             config,
-            inventory=tracked_inventory,
+            inventory=repository_inventory,
         )
     )
     for rows in configured_sources.values():
@@ -157215,14 +157229,14 @@ def _zclass_reset_zbd_source_provenance(
 ) -> None:
     """Prove the declaration/definition/caller split under VC5 contexts."""
 
-    tracked_inventory = load_git_tracked_path_inventory(REPO_ROOT)
-    root = tracked_inventory.repository_root
+    repository_inventory = load_repository_path_inventory(REPO_ROOT)
+    root = repository_inventory.repository_root
     config = load_final_build_config(DEFAULT_FINAL_BUILD_MANIFEST)
     contexts: dict[str, tuple[str, ...]] = {}
     configured_sources, _stale_diagnostics = (
         _call_contract_final_build_source_map(
             config,
-            inventory=tracked_inventory,
+            inventory=repository_inventory,
         )
     )
     for rows in configured_sources.values():
@@ -163529,9 +163543,9 @@ def _compiler_destructor_provider_bridges(
 
 
 def _coff_alias_rows_for_comparison(specs: Sequence[CoffAliasSource]) -> list[dict[str, object]]:
-    inventory = load_git_tracked_path_inventory(REPO_ROOT)
+    inventory = load_repository_path_inventory(REPO_ROOT)
     try:
-        manifest = resolve_tracked_repository_file(
+        manifest = resolve_repository_file(
             _call_contract_final_build_manifest_logical_path(),
             repository_root=inventory.repository_root,
             inventory=inventory,
@@ -163559,13 +163573,13 @@ def _coff_alias_rows_for_comparison(specs: Sequence[CoffAliasSource]) -> list[di
                 f"call-contract COFF alias registry row {index} paths are malformed"
             )
         try:
-            source = resolve_tracked_repository_file(
+            source = resolve_repository_file(
                 source_text,
                 repository_root=inventory.repository_root,
                 inventory=inventory,
                 context=f"call-contract COFF alias source[{index}]",
             )
-            link_after = resolve_tracked_repository_file(
+            link_after = resolve_repository_file(
                 link_after_text,
                 repository_root=inventory.repository_root,
                 inventory=inventory,
@@ -163585,8 +163599,8 @@ def _coff_alias_rows_for_comparison(specs: Sequence[CoffAliasSource]) -> list[di
             )
         result.append(
             {
-                "source": source.git_path,
-                "link_after_source": link_after.git_path,
+                "source": source.repository_path,
+                "link_after_source": link_after.repository_path,
                 "aliases": [
                     {"alias": item.alias, "target": item.target}
                     for item in spec.aliases
@@ -164088,11 +164102,11 @@ def live_call_contract_result(
         caller_total=caller_total,
         selected_target_count=len(slice_row["target_ids"]),
     )
-    tracked_path_inventory = load_git_tracked_path_inventory(REPO_ROOT)
+    repository_path_inventory = load_repository_path_inventory(REPO_ROOT)
     source_closure = call_contract_source_closure(
         document,
         slice_row,
-        tracked_path_inventory=tracked_path_inventory,
+        repository_path_inventory=repository_path_inventory,
     )
     target_source_edit_paths = _call_contract_target_source_edit_paths(
         slice_row,
@@ -164104,16 +164118,16 @@ def live_call_contract_result(
         slice_row,
         source_write_paths=source_closure.source_edit_paths,
         source_closure=source_closure,
-        tracked_path_inventory=tracked_path_inventory,
+        repository_path_inventory=repository_path_inventory,
     )
     signatures_before = file_dependency_states(
         dependency_paths,
-        tracked_path_inventory=tracked_path_inventory,
+        repository_path_inventory=repository_path_inventory,
     )
     slice_targets = _call_contract_slice_targets(
         document,
         slice_row,
-        tracked_path_inventory=tracked_path_inventory,
+        repository_path_inventory=repository_path_inventory,
     )
     candidate_session = _LazyCallContractCandidateSession(
         document,
@@ -164141,26 +164155,9 @@ def live_call_contract_result(
     )
     inventory_started = time.perf_counter()
     if bridge is None:
-        image = reference_image("recoil")
-        preflight = run_preflight(
+        bridge = _new_call_contract_bridge(
             bridge_url=bridge_url,
-            expected_file=image.bndb_path,
-            expected_platform=image.platform,
-            expected_arch=image.arch,
-            probe_address=image.probe_address,
-            binary_selector=Path(image.bndb_path).name,
-        )
-        if not preflight.ok:
-            raise BridgeError(
-                "Binary Ninja call-contract preflight failed: "
-                + "; ".join(preflight.messages)
-            )
-        bridge = BinaryNinjaBridge(
-            bridge_url,
-            binary=Path(image.bndb_path).name,
-            call_budget=_call_contract_bn_call_budget(
-                int(slice_row["body_count"])
-            ),
+            body_count=int(slice_row["body_count"]),
         )
     by_address, by_name = bridge.symbols()
     bridge_data_rows = bridge.data_variables()
@@ -171145,7 +171142,7 @@ def live_call_contract_result(
     signature_started = time.perf_counter()
     signatures_after = file_dependency_states(
         dependency_paths,
-        tracked_path_inventory=tracked_path_inventory,
+        repository_path_inventory=repository_path_inventory,
     )
     first_divergence, source_changed_during_validation = (
         _source_signature_recheck(
@@ -174622,7 +174619,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--all-authored-bodies", action="store_true")
     parser.add_argument(
         "--collect-all-divergences",
-        "--all-caller-divergences",
         dest="collect_all_divergences",
         action="store_true",
         help=(

@@ -5,12 +5,12 @@
   "retail_start": "0x4a5980",
   "retail_end_exclusive": "0x4a59a0",
   "source_filename": "zSys.cpp",
-  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "source_from": "src/GameZRecoil/zSys/zsys.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "check_translation_unit_function_order": true,
   "order_edit_paths": [
-    "src/GameZRecoil/zSys/zSys.cpp",
-    "src/GameZRecoil/zSys/zSys.h"
+    "src/GameZRecoil/zSys/zsys.cpp",
+    "src/GameZRecoil/zSys/zsys.h"
   ],
   "functions": [
     {
@@ -25,7 +25,7 @@
   ],
   "translation_unit_function_order": [
     {
-      "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+      "source_from": "src/GameZRecoil/zSys/zsys.cpp",
       "order_scope": "authored",
       "function_address_refs": [
         "0x4a5980"
@@ -64,11 +64,11 @@
   "authored_order_scaffold": {
     "version": 1,
     "block_id": "recoil:block:0x4a5980",
-    "agent_source_path": "src/GameZRecoil/zSys/zSys.cpp",
-    "physical_compile_host": "src/GameZRecoil/zSys/zSys.cpp",
+    "agent_source_path": "src/GameZRecoil/zSys/zsys.cpp",
+    "physical_compile_host": "src/GameZRecoil/zSys/zsys.cpp",
     "candidate_source_contributors": [],
     "candidate_header_contributors": [
-      "src/GameZRecoil/zSys/zSys.h"
+      "src/GameZRecoil/zSys/zsys.h"
     ],
     "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
     "tracker_revision": 1231,

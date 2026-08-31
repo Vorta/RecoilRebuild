@@ -22,10 +22,9 @@ class LiveProgressTests(unittest.TestCase):
         )
         return json.loads(completed.stdout)
 
-    def test_next_status_and_report_share_one_current_task_contract(self) -> None:
-        results = [self.invoke(command) for command in ("next", "status", "report")]
+    def test_next_and_status_share_one_current_task_contract(self) -> None:
+        results = [self.invoke(command) for command in ("next", "status")]
         self.assertEqual(results[0], results[1])
-        self.assertEqual(results[0], results[2])
         task = results[0]
         self.assertEqual("recoil-current-task-v2", task["schema"])
         self.assertIn(task["stage"], {

@@ -11,11 +11,9 @@ from pathlib import Path
 import subprocess
 import sys
 
+sys.dont_write_bytecode = True
+
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio
-from _recoil.lib.progress import DEFAULT_PROGRESS_PATH
-from _recoil.lib.progress_sqlite import ProgressSQLiteError, read_progress_metadata
-
-
 TOOLS_DIR = REPO_ROOT / "tools"
 
 
@@ -83,8 +81,6 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec("progress show", "progress_cli", prepend=("show",), summary="Show a joined owner/block/semantic/order/link/byte view.", category="progress", examples=("python tools/recoil.py progress show 0x401000", "python tools/recoil.py progress show recoil:owner:misc_unresolved.cabout_dlg")),
     spec("progress find", "progress_cli", prepend=("find",), summary="Search all unified reconstruction progress entities.", category="progress", examples=("python tools/recoil.py progress find CAboutDlg",)),
     spec("progress audit", "progress_cli", prepend=("audit",), summary="Audit unified tracker schema, relationships, evidence, and derived pipeline invariants.", category="progress", examples=("python tools/recoil.py progress audit --strict", "python tools/recoil.py progress audit --scope evidence --strict")),
-    spec("progress report", "progress_cli", prepend=("report",), summary="Render the current serial task on demand without creating a shadow tracker.", category="progress", examples=("python tools/recoil.py progress report --json",)),
-    spec("docs readme-progress", "readme_progress", summary="Update or check the deterministic public README progress snapshot derived from the unified tracker.", category="docs", examples=("python tools/recoil.py docs readme-progress", "python tools/recoil.py docs readme-progress --check --json"), mutates=True),
     spec("verify linked-byte", "live_byte_verify", prepend=("linked",), summary="Freshly rebuild and directly scan linked bytes, stopping at the earliest real divergence.", category="verification", examples=("python tools/recoil.py verify linked-byte", "python tools/recoil.py verify linked-byte --at 0x401000")),
     spec("verify authored-byte", "live_byte_verify", prepend=("authored",), summary="Freshly rebuild and directly scan authored object, relocation, target, and linked-body semantics.", category="verification", examples=("python tools/recoil.py verify authored-byte", "python tools/recoil.py verify authored-byte --at 0x401000")),
       spec(
@@ -112,13 +108,11 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec(
         "doctor",
         "doctor",
-        summary="Run categorized full or infrastructure-only process-health checks.",
+        summary="Run the sequential fail-fast workspace health matrix.",
         category="validation",
         examples=(
-            "python tools/recoil.py doctor --quick --binja",
-            "python tools/recoil.py doctor --infrastructure-only",
+            "python tools/recoil.py doctor",
         ),
-        needs_binja=True,
     ),
     spec("env", "env_check", summary="Check local native build environment.", category="validation", examples=("python tools/recoil.py env --native-x86",)),
     spec("verify functional", "functional_verify", summary="List or run tier C functional smoke evidence.", category="verification", examples=("python tools/recoil.py verify functional 0xNNNNNN",)),
@@ -276,24 +270,22 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec("audit workspace", "workspace_hygiene", summary="Detect generated artifacts outside approved output roots.", category="audit", examples=("python tools/recoil.py audit workspace --strict",)),
     spec("audit agent-surface", "agent_surface_audit", summary="Audit the serial agent-facing tool, documentation, and skill surface.", category="audit", examples=("python tools/recoil.py audit agent-surface --strict",)),
     spec("audit pipeline-contracts", "pipeline_contract_audit", summary="Audit the one serial task projection and its direct validation/acceptance command contracts.", category="audit", examples=("python tools/recoil.py audit pipeline-contracts --strict", "python tools/recoil.py audit pipeline-contracts --json")),
-    spec("audit call-contract-readiness", "call_contract_readiness_audit", summary="Preflight exact dependency closure for original authored call-contract slices.", category="audit", examples=("python tools/recoil.py audit call-contract-readiness --all-slices --strict --json", "python tools/recoil.py audit call-contract-readiness --slice recoil:call-contract-slice:0x401000-0x408210 --json")),
+    spec("audit call-contract-readiness", "call_contract_readiness_audit", summary="Audit exact dependency closure for original authored call-contract slices.", category="audit", examples=("python tools/recoil.py audit call-contract-readiness --all-slices --strict --json", "python tools/recoil.py audit call-contract-readiness --slice recoil:call-contract-slice:0x401000-0x408210 --json")),
     spec("audit pipeline-reachability", "pipeline_reachability_audit", summary="Prove every fail-closed live pipeline consumer has a reachable candidate-independent expected-fact producer.", category="audit", examples=("python tools/recoil.py audit pipeline-reachability --strict", "python tools/recoil.py audit pipeline-reachability --json")),
     spec(
         "audit live-validation-surface",
         "live_validation_surface_audit",
-        summary="Reject retired integrity, receipt, snapshot, clock, and content-derived identity mechanisms across tracked and ignored authored workspace surfaces.",
+        summary="Reject retired integrity, receipt, snapshot, clock, and content-derived identity mechanisms across authored workspace surfaces.",
         category="audit",
         examples=("python tools/recoil.py audit live-validation-surface --strict",),
     ),
-    spec("audit source-fragments", "source_fragments", prepend=("--audit",), summary="Inventory temporary production source fragments, quoted source includes, .inl files, and compatibility final-build exclusions.", category="audit", examples=("python tools/recoil.py audit source-fragments --root src --json",)),
     spec(
         "audit source-trace",
         "source_trace_audit",
         summary="Audit attached source-to-retail artifact topology without changing acceptance state.",
         category="audit",
         examples=(
-            "python tools/recoil.py audit source-trace --path src/path/file.cpp --json",
-            "python tools/recoil.py audit source-trace --path src --policy migrated --json",
+            "python tools/recoil.py audit source-trace --json",
         ),
     ),
     spec("audit zinterp", "zinterp_dispatch_audit", summary="Audit zInterp dispatch literals against optional BN text dumps.", category="audit", examples=("python tools/recoil.py audit zinterp",)),
@@ -301,16 +293,15 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec("guard raw-offset", "raw_offset_guard", summary="Reject raw authored runtime-state offset access.", category="guard", examples=("python tools/recoil.py guard raw-offset --root src --summary",)),
     spec("guard raw-image", "no_raw_image_addresses", summary="Reject raw original-image addresses.", category="guard", examples=("python tools/recoil.py guard raw-image --root src --allowlist .agent/RAW_ADDRESS_ALLOWLIST.txt",)),
     spec("guard raw-assembly", "no_raw_assembly", summary="Reject unallowlisted or undocumented raw assembly and naked stubs.", category="guard", examples=("python tools/recoil.py guard raw-assembly --root src --allowlist .agent/RAW_ASSEMBLY_ALLOWLIST.txt",)),
-    spec("guard source-goto", "no_source_goto", summary="Reject source-level goto outside the exact reviewed migration baseline.", category="guard", examples=("python tools/recoil.py guard source-goto --root src --summary", "python tools/recoil.py guard source-goto --root src --strict-zero")),
+    spec("guard source-goto", "no_source_goto", summary="Reject source-level goto in production source.", category="guard", examples=("python tools/recoil.py guard source-goto --root src --summary",)),
     spec("guard modern-cpp", "no_modern_cpp_constructs", summary="Reject post-VC5 C++ constructs and forbidden call-convention helpers.", category="guard", examples=("python tools/recoil.py guard modern-cpp --root src --summary",)),
     spec("guard reinterpret-cast", "no_reinterpret_cast", summary="Reject named reinterpret_cast usage.", category="guard", examples=("python tools/recoil.py guard reinterpret-cast --root src",)),
     spec("guard provider", "provider_boundary_guard", summary="Reject fake provider internals and provider ABI shims.", category="guard", examples=("python tools/recoil.py guard provider --root src --summary",)),
     spec("guard original-symbol", "original_source_symbol_guard", summary="Audit unsupported reconstruction helper dependencies.", category="guard", examples=("python tools/recoil.py guard original-symbol --root src --max 50",)),
     spec("guard source-data", "source_data_initializer_guard", summary="Validate source data initializer rules recorded in unified progress.", category="guard", examples=("python tools/recoil.py guard source-data", "python tools/recoil.py guard source-data --path src/Battlesport/CZRecoilFrame.cpp"), ledger_routing="canonical-machine-local-default"),
-    spec("guard multiline", "multiline_style_guard", summary="Check multiline declaration/call style.", category="guard", examples=("python tools/recoil.py guard multiline --root src",)),
     spec("guard source-placement", "source_placement_guard", summary="Check source placement and provenance conventions.", category="guard", examples=("python tools/recoil.py guard source-placement --root src",)),
     spec("guard vc5-manifest", "vc5_manifest_source_guard", summary="Reject VC manifest-local source and generated header shadows.", category="guard", examples=("python tools/recoil.py guard vc5-manifest", "python tools/recoil.py guard vc5-manifest --path tools/vc5_verify_targets/target.json")),
-    spec("guard source-fragments", "source_fragments", summary="Reject temporary production source fragments, quoted source includes, .inl files, and compatibility final-build exclusions.", category="guard", examples=("python tools/recoil.py guard source-fragments --root src",)),
+    spec("guard source-fragments", "source_fragments", summary="Reject temporary production source fragments, quoted source includes, and .inl files.", category="guard", examples=("python tools/recoil.py guard source-fragments --root src",)),
     spec("build msvc-x86", "msvc_x86_run", summary="Run an arbitrary command through the x86 MSVC environment wrapper.", category="build", examples=("python tools/recoil.py build msvc-x86 -- ctest --preset ninja-x86-debug",), mutates=True),
     spec(
         "build resource",
@@ -351,7 +342,6 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
         needs_binja=True,
     ),
     spec("msvc eh-dump", "msvc_eh_dump", summary="Decode MSVC EH metadata from the reference image.", category="diagnostic", examples=("python tools/recoil.py msvc eh-dump 0x4d5e68 0x4d5f18",)),
-    spec("style fix-multiline", "strict_multiline_style_fix", summary="Rewrite strict multiline style issues.", category="style", examples=("python tools/recoil.py style fix-multiline src/GameZRecoil/sample.cpp",), mutates=True),
 )
 
 _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
@@ -380,61 +370,10 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         ),
         mutates=True,
     ),
-    spec(
-        "progress provider-function register-atlimpl-cluster",
-        "provider_function_mutation",
-        prepend=("register-atlimpl-cluster",),
-        summary=(
-            "Atomically replace the exact reviewed legacy zCom owner with the fixed "
-            "three-body canonical VC5SP3 ATLIMPL provider cluster."
-        ),
-        description=(
-            "Dry-run-first one-time reviewed route for exactly 0x42db50, 0x42dc30, "
-            "and 0x42dcf0 after the separate pipeline-classification batch and target "
-            "synchronization. It guards the complete legacy owner and post-classification "
-            "function snapshots, compiles only the fixed canonical VC5SP3 ATLIMPL recipe "
-            "under /MD /G5 /O2 /Ob1 /GX /Zp4 /FAcs, directly compares immutable retail "
-            "bytes outside the complete supported relocation rows, verifies exact retail "
-            "relocation operands and natural extents, retires the legacy owner, and creates "
-            "one accepted provider-boundary owner with exactly three primaries, no tiers, "
-            "and no source paths. It preserves pipeline_class and authored_order_role, "
-            "forbids 0x42de00, and records neither an original TU nor retail COFF spelling."
-        ),
-        category="progress",
-        examples=(
-            "python tools/recoil.py progress provider-function register-atlimpl-cluster "
-            "--payload-json '<recoil-vc5-atlimpl-provider-cluster-v1-object>' "
-            "--expected-revision <revision> --dry-run --json",
-        ),
-        mutates=True,
-    ),
     spec("progress owner show", "progress_cli", prepend=("owner", "show"), summary="Show one unified source owner or address-linked owner set.", category="progress"),
     spec("progress owner find", "progress_cli", prepend=("owner", "find"), summary="Search unified source owners.", category="progress"),
     spec("progress owner relationships", "progress_cli", prepend=("owner", "relationships"), summary="Show normalized unified owner relationships.", category="progress"),
     spec("progress owner audit", "progress_cli", prepend=("owner", "audit"), summary="Audit unified source-owner invariants.", category="progress"),
-    spec(
-        "progress owner repair-primary-data-tier-x",
-        "progress_cli",
-        prepend=("owner", "repair-primary-data-tier-x"),
-        summary=(
-            "Direct conservative initialization of absent tier-X records for "
-            "exact existing same-owner authored primary data."
-        ),
-        category="progress",
-        description=(
-            "Dry-run-first reviewed repair route. One reviewed "
-            "recoil-owner-primary-data-tier-x-repair-v1 payload guards an exact "
-            "current non-provider owner and complete current primary-data relationship "
-            "snapshots. Every selected symbol must already be authored data, primary-owned, "
-            "and uniquely related to that same owner, with no reimplementation entry. "
-            "Apply initializes only kind=data, tier=X, evidence_ids=[]; existing entries, "
-            "function rows, changed memberships, ambiguity, and positive tier state fail closed."
-        ),
-        examples=(
-            "python tools/recoil.py progress owner repair-primary-data-tier-x --payload-json '<recoil-owner-primary-data-tier-x-repair-v1-object>' --expected-revision <revision> --dry-run --json",
-        ),
-        mutates=True,
-    ),
     spec(
         "progress owner downgrade",
         "progress_cli",
@@ -663,21 +602,6 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         ),
         mutates=True,
     ),
-    spec(
-        "progress call-contract initialize",
-        "progress_cli",
-        prepend=("call-contract", "initialize"),
-        summary="One-time initialization of the accepted-authored-order-derived call-contract census while preserving all order and byte facts.",
-        description=(
-            "Revision-atomically initialize pending call_contract state from the complete "
-            "accepted authored-order gating census. The initial reviewed migration census "
-            "was 3,380 bodies; that historical count is not a permanent live invariant, "
-            "and each invocation derives and validates the current census."
-        ),
-        category="progress",
-        examples=("python tools/recoil.py progress call-contract initialize --expected-revision <revision> --dry-run --json",),
-        mutates=True,
-    ),
     spec("progress call-contract close-live", "progress_cli", prepend=("call-contract", "close-live"), summary="Run one fresh no-reuse complete-census call-contract scan and record the direct closeout.", category="progress", examples=("python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",), mutates=True, needs_binja=True, required_revision_domains=("semantic", "evidence_generation"), build_root_contract="fresh-direct-root", mutation_scope="call-contract"),
     spec("progress output-section show", "progress_cli", prepend=("output-section", "show"), summary="Show one normalized PE output section.", category="progress"),
     spec("progress storage show", "progress_cli", prepend=("storage", "show"), summary="Show one normalized physical storage contribution.", category="progress"),
@@ -770,7 +694,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "progress source-trace replace-batch",
         "source_trace_progress",
         prepend=("replace-batch",),
-        summary="Revision-guarded replacement of reviewed source-trace topology rows and append-only resolution of immutable legacy claims.",
+        summary="Revision-guarded replacement of reviewed source-trace topology rows.",
         category="progress",
         examples=(
             "python tools/recoil.py progress source-trace replace-batch --expected-revision <revision> --payload-file <reviewed.json> --dry-run --json",
@@ -820,21 +744,6 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         mutates=True,
     ),
     spec(
-        "progress data-artifact evidence repair-observation",
-        "data_artifact_evidence_repair",
-        summary=(
-            "Direct revision-guarded repair of the known invalid "
-            "freshness/validation-mode pair on one reviewed non-gating "
-            "data-artifact observation."
-        ),
-        category="progress",
-        examples=(
-            "python tools/recoil.py progress data-artifact evidence repair-observation --expected-revision <revision> --payload-file <reviewed.json> --dry-run --json",
-            "python tools/recoil.py progress data-artifact evidence repair-observation --expected-revision <revision> --payload-file <reviewed.json> --apply --json",
-        ),
-        mutates=True,
-    ),
-    spec(
         "progress data-artifact logical-alias register-batch",
         "data_logical_alias_progress",
         summary=(
@@ -854,18 +763,6 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
 COMMAND_SPECS: tuple[CommandSpec, ...] = (*_BASE_COMMAND_SPECS, *_PROGRESS_TYPED_SPECS)
 
 COMMANDS = {item.path: item for item in COMMAND_SPECS}
-
-COMMAND_ALIASES = {
-    ("audit", "function-docblocks"): ("audit", "docblocks"),
-    ("audit", "modern-cpp"): ("guard", "modern-cpp"),
-    ("audit", "raw-assembly"): ("guard", "raw-assembly"),
-    ("audit", "source-placement"): ("guard", "source-placement"),
-    ("audit", "source-shape"): ("guard", "source-shape"),
-}
-
-OBSOLETE_RAW_ASSEMBLY_ALLOWLIST = "tools/raw_assembly_allowlist.json"
-CANONICAL_RAW_ASSEMBLY_ALLOWLIST = ".agent/RAW_ASSEMBLY_ALLOWLIST.txt"
-
 
 def command_names() -> list[str]:
     return sorted(item.name for item in COMMAND_SPECS)
@@ -971,11 +868,6 @@ def resolve_command(args: list[str]) -> tuple[CommandSpec | None, list[str]]:
     max_len = min(len(args), max(len(path) for path in COMMANDS))
     for size in range(max_len, 0, -1):
         prefix = tuple(args[:size])
-        alias = COMMAND_ALIASES.get(prefix)
-        if alias is not None:
-            item = COMMANDS.get(alias)
-            if item is not None:
-                return item, args[size:]
         item = COMMANDS.get(prefix)
         if item is not None:
             return item, args[size:]
@@ -993,6 +885,7 @@ def format_command(command: list[str]) -> str:
 def build_command(item: CommandSpec, rest: list[str]) -> list[str]:
     return [
         sys.executable,
+        "-B",
         "-m",
         item.module_name,
         *item.prepend_args,
@@ -1000,51 +893,15 @@ def build_command(item: CommandSpec, rest: list[str]) -> list[str]:
     ]
 
 
-def translate_compatibility_args(
-    invoked_args: list[str],
-    item: CommandSpec,
-    rest: list[str],
-) -> list[str]:
-    if (
-        tuple(invoked_args[:2]) == ("audit", "function-docblocks")
-        and item.path == ("audit", "docblocks")
-    ):
-        return ["--path" if arg == "--root" else arg for arg in rest]
-
-    if (
-        tuple(invoked_args[:2]) != ("audit", "raw-assembly")
-        or item.path != ("guard", "raw-assembly")
-    ):
-        return rest
-
-    translated = list(rest)
-    for index in range(len(translated) - 1):
-        if (
-            translated[index] == "--allowlist"
-            and translated[index + 1] == OBSOLETE_RAW_ASSEMBLY_ALLOWLIST
-        ):
-            translated[index + 1] = CANONICAL_RAW_ASSEMBLY_ALLOWLIST
-    return translated
-
-
 def internal_command_env() -> dict[str, str]:
     env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
     existing = env.get("PYTHONPATH", "")
     parts = [str(TOOLS_DIR)]
     if existing:
         parts.append(existing)
     env["PYTHONPATH"] = os.pathsep.join(parts)
     return env
-
-
-def progress_file_signature(path: Path = DEFAULT_PROGRESS_PATH) -> int | None:
-    """Return the semantic tracker revision, independent of SQLite file metadata."""
-    try:
-        return read_progress_metadata(path).revision
-    except ProgressSQLiteError:
-        # The invoked backend remains the authority for its normal fail-closed
-        # missing/corrupt-store error.  This observer must not mask that output.
-        return None
 
 
 def rejected_json_ledger_argument(args: list[str], item: CommandSpec) -> str | None:
@@ -1060,13 +917,6 @@ def rejected_json_ledger_argument(args: list[str], item: CommandSpec) -> str | N
         if separator and option in ledger_options and Path(value).suffix.casefold() == ".json":
             return option
     return None
-
-
-def sync_readme_after_progress_mutation() -> None:
-    """Synchronize silently so a backend's stdout, including JSON, stays intact."""
-    from _recoil.commands.readme_progress import synchronize_readme
-
-    synchronize_readme()
 
 
 def print_unknown_command(args: list[str]) -> int:
@@ -1132,7 +982,6 @@ def main(argv: list[str] | None = None) -> int:
     if "--show-command" in forward_rest:
         show_command = True
         forward_rest = [arg for arg in forward_rest if arg != "--show-command"]
-    forward_rest = translate_compatibility_args(args, item, forward_rest)
     rejected_option = rejected_json_ledger_argument(forward_rest, item)
     if rejected_option is not None:
         print(
@@ -1153,18 +1002,7 @@ def main(argv: list[str] | None = None) -> int:
         print(format_command(command))
         return 0
 
-    watches_progress = item.mutates and item.path[:1] == ("progress",)
-    progress_before = progress_file_signature() if watches_progress else None
     completed = subprocess.run(command, cwd=str(REPO_ROOT), env=internal_command_env())
-    progress_changed = (
-        watches_progress and progress_before != progress_file_signature()
-    )
-    readme_sync_failure: Exception | None = None
-    if progress_changed:
-        try:
-            sync_readme_after_progress_mutation()
-        except Exception as exc:  # tracker commit already happened; never roll it back
-            readme_sync_failure = exc
     if completed.returncode:
         print(
             f"recoil: command failed with exit code {completed.returncode}: {item.name}",
@@ -1172,17 +1010,6 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(f"mapped_command={format_command(command)}", file=sys.stderr)
         print(f"help=python tools/recoil.py help {item.name}", file=sys.stderr)
-    if readme_sync_failure is not None:
-        print(
-            "recoil: tracker changed but README progress synchronization failed: "
-            f"{readme_sync_failure}",
-            file=sys.stderr,
-        )
-        print(
-            "remediation=python tools/recoil.py docs readme-progress",
-            file=sys.stderr,
-        )
-        return 3
     return completed.returncode
 
 

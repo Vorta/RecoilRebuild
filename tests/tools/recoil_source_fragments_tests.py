@@ -4,7 +4,6 @@ import contextlib
 import io
 import json
 from pathlib import Path
-import subprocess
 from types import SimpleNamespace
 import sys
 import tempfile
@@ -26,39 +25,11 @@ from _recoil.lib.source_fragments import (  # noqa: E402
 
 class RecoilSourceFragmentsTests(unittest.TestCase):
     @staticmethod
-    def initialize_tracked_fixture(root: Path, files: dict[str, str]) -> None:
+    def initialize_fixture(root: Path, files: dict[str, str]) -> None:
         for relative_path, contents in files.items():
             path = root / relative_path
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(contents, encoding="utf-8")
-        subprocess.run(
-            ["git", "init", "--quiet"],
-            cwd=root,
-            check=True,
-            capture_output=True,
-        )
-        subprocess.run(
-            ["git", "add", "--", *files],
-            cwd=root,
-            check=True,
-            capture_output=True,
-        )
-        subprocess.run(
-            [
-                "git",
-                "-c",
-                "user.name=Recoil Tests",
-                "-c",
-                "user.email=recoil-tests@example.invalid",
-                "commit",
-                "--quiet",
-                "-m",
-                "tracked source-fragment fixture",
-            ],
-            cwd=root,
-            check=True,
-            capture_output=True,
-        )
 
     @staticmethod
     def target(path: Path) -> SimpleNamespace:
@@ -71,7 +42,7 @@ class RecoilSourceFragmentsTests(unittest.TestCase):
             translation_unit_function_order=(),
         )
 
-    def make_fixture(self, root: Path) -> tuple[Path, Path]:
+    def make_fixture(self, root: Path) -> Path:
         source = root / "src"
         source.mkdir()
         (source / "main.cpp").write_text(
@@ -83,37 +54,15 @@ class RecoilSourceFragmentsTests(unittest.TestCase):
         (source / "ai_net.h").write_text("inline int Ordinary() { return 2; }\n", encoding="utf-8")
         (source / "split.cpp").write_text("int Split() { return 3; }\n", encoding="utf-8")
         (source / "legacy.inl").write_text("inline int Legacy() { return 4; }\n", encoding="utf-8")
-        manifest = root / "final.json"
-        manifest.write_text(
-            json.dumps(
-                {
-                    "physical_block_source_exclusions": [
-                        {
-                            "path": "src/split.cpp",
-                            "reason": (
-                                "Recovered source-block file is currently included by src/main.cpp "
-                                "until its standalone dependency context is restored."
-                            ),
-                        },
-                        {
-                            "path": "src/messages.c",
-                            "reason": "Companion messages.dll source is intentionally excluded.",
-                        },
-                    ]
-                }
-            ),
-            encoding="utf-8",
-        )
-        return source, manifest
+        return source
 
     def test_inventory_classifies_exact_forbidden_forms_without_generic_body_headers(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            source, manifest = self.make_fixture(root)
+            source = self.make_fixture(root)
             result = inventory_source_fragments(
                 source,
                 repo_root=root,
-                final_build_manifest=manifest,
             )
 
         self.assertEqual(
@@ -125,8 +74,7 @@ class RecoilSourceFragmentsTests(unittest.TestCase):
                 "included_source_edges": 1,
                 "included_source_files": 1,
                 "inl_files": 1,
-                "compatibility_final_build_exclusions": 1,
-                "total_findings": 5,
+                "total_findings": 4,
             },
             result["counts"],
         )
@@ -150,24 +98,21 @@ class RecoilSourceFragmentsTests(unittest.TestCase):
         self.assertEqual("nested", nested[0]["edge_scope"])
         self.assertTrue(any(item["kind"] == "included-source-edge" for item in findings))
 
-    def test_audit_json_is_complete_and_guard_is_concise_and_strict(self) -> None:
+    def test_json_is_complete_and_text_output_is_concise_and_strict(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            source, manifest = self.make_fixture(root)
+            source = self.make_fixture(root)
             for index in range(7):
                 (source / f"extra_{index}_body.h").write_text("// debt\n", encoding="utf-8")
-            audit_stdout = io.StringIO()
+            json_stdout = io.StringIO()
             guard_stdout = io.StringIO()
             guard_stderr = io.StringIO()
             with mock.patch.object(source_fragments, "REPO_ROOT", root):
-                with contextlib.redirect_stdout(audit_stdout):
-                    audit_rc = source_fragments.main(
+                with contextlib.redirect_stdout(json_stdout):
+                    json_rc = source_fragments.main(
                         [
-                            "--audit",
                             "--root",
                             "src",
-                            "--final-build-manifest",
-                            str(manifest),
                             "--json",
                         ]
                     )
@@ -176,14 +121,12 @@ class RecoilSourceFragmentsTests(unittest.TestCase):
                         [
                             "--root",
                             "src",
-                            "--final-build-manifest",
-                            str(manifest),
                         ]
                     )
 
-        audit = json.loads(audit_stdout.getvalue())
-        self.assertEqual(0, audit_rc)
-        self.assertEqual(8, audit["counts"]["fragment_files"])
+        report = json.loads(json_stdout.getvalue())
+        self.assertEqual(1, json_rc)
+        self.assertEqual(8, report["counts"]["fragment_files"])
         self.assertEqual(1, guard_rc)
         self.assertIn("fragment_files=8", guard_stdout.getvalue())
         self.assertIn("source-fragment-file: ... 3 more", guard_stderr.getvalue())
@@ -226,7 +169,7 @@ class RecoilSourceFragmentsTests(unittest.TestCase):
             source = root / "src" / "unit_body.h"
             donor = root / "src" / "donor.h"
             manifest_path = root / "tools" / "vc5_verify_targets" / "unit.json"
-            self.initialize_tracked_fixture(
+            self.initialize_fixture(
                 root,
                 {
                     "src/unit_body.h": "// debt\n",
@@ -321,7 +264,7 @@ class RecoilSourceFragmentsTests(unittest.TestCase):
             root = Path(tmp)
             source = root / "src" / "unit_impl.h"
             manifest_path = root / "tools" / "vc5_verify_targets" / "unit.json"
-            self.initialize_tracked_fixture(
+            self.initialize_fixture(
                 root,
                 {
                     "src/unit_impl.h": "// debt\n",

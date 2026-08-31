@@ -66,12 +66,12 @@ from _recoil.lib.authored_icf import (
 )
 from _recoil.lib.progress import ProgressError, ProgressStore
 from _recoil.lib.repository_paths import (
-    GitTrackedPathInventory,
+    RepositoryPathInventory,
     RepositoryPathError,
-    TrackedRepositoryPath,
+    RepositoryFile,
     diagnose_historical_repository_path,
-    load_git_tracked_path_inventory,
-    resolve_tracked_repository_file,
+    load_repository_path_inventory,
+    resolve_repository_file,
     validate_repository_relative_path,
 )
 from _recoil.lib.source_traceability import (
@@ -759,15 +759,12 @@ ORDER_EDIT_PATH_SUFFIXES = {
 }
 
 
-TrackedRepositoryFile = TrackedRepositoryPath
-
-
 def normalize_order_edit_paths(
     value: Any,
     *,
     context: str,
     repository_root: Path = REPO_ROOT,
-    inventory: GitTrackedPathInventory | None = None,
+    inventory: RepositoryPathInventory | None = None,
 ) -> tuple[str, ...]:
     if value is None:
         return ()
@@ -775,41 +772,41 @@ def normalize_order_edit_paths(
         raise ValueError(f"{context}: order_edit_paths must be a list")
     result: list[str] = []
     seen: set[str] = set()
-    tracked = inventory or load_git_tracked_path_inventory(repository_root)
+    tracked = inventory or load_repository_path_inventory(repository_root)
     for index, path_text in enumerate(value):
         if not isinstance(path_text, str) or not path_text:
             raise ValueError(
                 f"{context}: order_edit_paths[{index}] must be a non-empty string"
             )
-        resolved = resolve_tracked_repository_file(
+        resolved = resolve_repository_file(
             path_text,
             context=f"{context}: order_edit_paths[{index}]",
             repository_root=tracked.repository_root,
             allowed_suffixes=ORDER_EDIT_PATH_SUFFIXES,
             inventory=tracked,
         )
-        key = resolved.git_path.casefold()
+        key = resolved.repository_path.casefold()
         if key in seen:
             raise ValueError(f"{context}: duplicate order_edit_paths entry: {path_text}")
         seen.add(key)
-        result.append(resolved.git_path)
+        result.append(resolved.repository_path)
     return tuple(result)
 
 
-def _exact_tracked_manifest_path(
+def _exact_repository_manifest_path(
     path_text: str,
     *,
-    inventory: GitTrackedPathInventory,
+    inventory: RepositoryPathInventory,
     context: str,
     allowed_suffixes: set[str] | None = None,
 ) -> str:
-    return resolve_tracked_repository_file(
+    return resolve_repository_file(
         path_text,
         context=context,
         repository_root=inventory.repository_root,
         allowed_suffixes=allowed_suffixes,
         inventory=inventory,
-    ).git_path
+    ).repository_path
 
 
 def generated_file_shadows_project(relative_path: str) -> bool:
@@ -1352,7 +1349,7 @@ def validate_source_policy(
     target_binary: str,
     strict_source_emissions: bool = False,
     strict_source_traceability: bool = False,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> tuple[SourceEmissionWarning, ...]:
     has_source_from = bool(source_from)
     warnings: list[SourceEmissionWarning] = []
@@ -1370,7 +1367,7 @@ def validate_source_policy(
             for path in normalize_order_edit_paths(
                 raw_order_edit_paths,
                 context=str(manifest_path),
-                inventory=tracked_path_inventory,
+                inventory=repository_path_inventory,
             ):
                 if path not in policy_paths:
                     policy_paths.append(path)
@@ -1927,7 +1924,7 @@ def parse_translation_unit_function_order(
     *,
     manifest_path: Path,
     reusable_functions: tuple[VerifyFunction, ...] = (),
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
     strict_tracked_paths: bool = False,
 ) -> tuple[bool, tuple[TranslationUnitFunctionOrderEntry, ...]]:
     check_translation_unit_function_order = optional_bool(
@@ -1957,13 +1954,13 @@ def parse_translation_unit_function_order(
             raise ValueError(f"{manifest_path}: translation_unit_function_order entries must be objects")
         source_from = require_string(entry_data, "source_from", manifest_path=manifest_path)
         if strict_tracked_paths:
-            if tracked_path_inventory is None:
+            if repository_path_inventory is None:
                 raise ValueError(
                     f"{manifest_path}: tracked inventory is required for current manifest paths"
                 )
-            source_from = _exact_tracked_manifest_path(
+            source_from = _exact_repository_manifest_path(
                 source_from,
-                inventory=tracked_path_inventory,
+                inventory=repository_path_inventory,
                 context=(
                     f"{manifest_path}: translation_unit_function_order[{entry_index}]."
                     "source_from"
@@ -3788,7 +3785,7 @@ def translation_unit_order_report_data(order_check: FunctionOrderCheck) -> dict[
             for row in order_check.rows
         ]
     return {
-        "report_version": 1,
+        "report_version": 2,
         "kind": "vc5-function-order-report",
         "target": order_check.target.name,
         "binary": order_check.target.target_binary,
@@ -3800,17 +3797,9 @@ def translation_unit_order_report_data(order_check: FunctionOrderCheck) -> dict[
         "order_gate_policy": "required-presence-plus-scope-relative-order",
         "unlisted_raw_contributions_blocking": False,
         "required_presence_passed": identity_passed,
-        # Compatibility aliases retained for callers that consume the semantic report.
-        "expected_identity_resolution_passed": identity_passed,
         "authored_relative_order_passed": authored_relative_order_passed,
         "full_relative_order_passed": full_relative_order_passed,
-        "expected_relative_order_passed": (
-            authored_relative_order_passed
-            if order_check.order_scope == "authored"
-            else full_relative_order_passed
-        ),
         "exact_full_order_claimed": order_check.order_scope == "full",
-        "function_order_passed": order_check.ok,
         "first_divergence": function_order_first_divergence(order_check),
         "expected_contributions": expected,
         "expected_count": len(expected),
@@ -3830,7 +3819,6 @@ def translation_unit_order_report_data(order_check: FunctionOrderCheck) -> dict[
         "diagnostics": list(order_check.diagnostics),
         "blocking_diagnostics": list(order_check.blocking_diagnostics),
         "actual_contributions": contribution_rows,
-        "contributions": contribution_rows,
     }
 
 
@@ -4004,12 +3992,12 @@ def load_manifest(
     enforce_source_policy: bool = True,
     strict_source_emissions: bool = False,
     strict_source_traceability: bool = False,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
     strict_tracked_paths: bool | None = None,
 ) -> VerifyTarget:
-    operation_inventory = tracked_path_inventory
+    operation_inventory = repository_path_inventory
     authenticate_current_paths = (
-        tracked_path_inventory is not None
+        repository_path_inventory is not None
         if strict_tracked_paths is None
         else strict_tracked_paths
     )
@@ -4025,7 +4013,7 @@ def load_manifest(
     if operation_inventory is None and (
         authenticate_current_paths or data.get("order_edit_paths") is not None
     ):
-        operation_inventory = load_git_tracked_path_inventory(REPO_ROOT)
+        operation_inventory = load_repository_path_inventory(REPO_ROOT)
     if bool(data.get("retail_start")) != bool(data.get("retail_end_exclusive")):
         raise ValueError(f"{path}: retail_start and retail_end_exclusive must be specified together")
     if data.get("retail_start") and int(normalize_address(data["retail_start"]), 16) >= int(
@@ -4039,7 +4027,7 @@ def load_manifest(
     if source_from and authenticate_current_paths:
         if operation_inventory is None:
             raise ValueError(f"{path}: tracked inventory is required")
-        source_from = _exact_tracked_manifest_path(
+        source_from = _exact_repository_manifest_path(
             source_from,
             inventory=operation_inventory,
             context=f"{path}: source_from",
@@ -4102,7 +4090,7 @@ def load_manifest(
         data,
         manifest_path=path,
         reusable_functions=tuple(functions),
-        tracked_path_inventory=operation_inventory,
+        repository_path_inventory=operation_inventory,
         strict_tracked_paths=authenticate_current_paths,
     )
     translation_scopes = {entry.order_scope for entry in translation_unit_function_order}
@@ -4146,7 +4134,7 @@ def load_manifest(
             (),
         )
         if scope_matches:
-            exact_scope = _exact_tracked_manifest_path(
+            exact_scope = _exact_repository_manifest_path(
                 profile_guard.scope,
                 inventory=operation_inventory,
                 context=f"{path}: profile_guard.scope",
@@ -4246,7 +4234,7 @@ def load_manifest(
     if compile_context_from and not isinstance(compile_context_from, str):
         raise ValueError(f"{path}: compile_context_from must be a string")
     if compile_context_from and authenticate_current_paths:
-        compile_context_from = _exact_tracked_manifest_path(
+        compile_context_from = _exact_repository_manifest_path(
             compile_context_from,
             inventory=operation_inventory,
             context=f"{path}: compile_context_from",
@@ -4260,7 +4248,7 @@ def load_manifest(
             if not isinstance(raw_source_path, str):
                 exact_profiles[raw_source_path] = profile_name
                 continue
-            exact_source_path = _exact_tracked_manifest_path(
+            exact_source_path = _exact_repository_manifest_path(
                 raw_source_path,
                 inventory=operation_inventory,
                 context=f"{path}: source_compile_profiles source",
@@ -4308,12 +4296,12 @@ def load_manifest(
                     inventory=operation_inventory,
                     context=f"{context_path}: sources",
                 )
-                if resolution.current_git_path is None:
+                if resolution.current_repository_path is None:
                     raise ValueError(
-                        f"{context_path}: source row has no unique current Git path: "
+                        f"{context_path}: source row has no unique current repository path: "
                         f"{source} ({resolution.status})"
                     )
-                reconciled_source_rows.append(resolution.current_git_path)
+                reconciled_source_rows.append(resolution.current_repository_path)
             source_rows = tuple(reconciled_source_rows)
         source_row_keys = {compile_source_identity(source) for source in source_rows}
         for required_source in selected_sources:
@@ -4400,7 +4388,7 @@ def load_manifest(
             target_binary=target_binary,
             strict_source_emissions=strict_source_emissions,
             strict_source_traceability=strict_source_traceability,
-            tracked_path_inventory=operation_inventory,
+            repository_path_inventory=operation_inventory,
         ))
         source_emission_warnings.extend(validate_translation_unit_source_policy(
             manifest_path=path,
@@ -4442,7 +4430,7 @@ def load_manifest(
     )
     if authenticate_current_paths:
         manifest_source_files = tuple(
-            _exact_tracked_manifest_path(
+            _exact_repository_manifest_path(
                 source_file,
                 inventory=operation_inventory,
                 context=f"{path}: source_files",
@@ -4501,59 +4489,48 @@ def load_manifests(
     enforce_source_policy: bool = True,
     strict_source_emissions: bool = False,
     strict_source_traceability: bool = False,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> list[VerifyTarget]:
     candidate_dir = manifest_dir if manifest_dir.is_absolute() else REPO_ROOT / manifest_dir
-    inventory = tracked_path_inventory
-    if inventory is None:
-        try:
-            inventory = load_git_tracked_path_inventory(REPO_ROOT)
-        except RepositoryPathError:
-            if (REPO_ROOT / ".git").exists():
-                raise
-            inventory = None
-    if inventory is None:
+    inventory = repository_path_inventory or load_repository_path_inventory(REPO_ROOT)
+    try:
+        relative_dir = candidate_dir.absolute().relative_to(
+            inventory.repository_root.absolute()
+        ).as_posix()
+    except ValueError:
+        relative_dir = ""
+    if relative_dir:
+        prefix = relative_dir.rstrip("/") + "/"
+        manifest_repository_paths = tuple(
+            sorted(
+                repository_path
+                for repository_path in inventory.exact_paths
+                if repository_path.startswith(prefix)
+                and "/" not in repository_path[len(prefix) :]
+                and repository_path.endswith(".json")
+            )
+        )
+        manifest_paths = tuple(
+            resolve_repository_file(
+                repository_path,
+                repository_root=inventory.repository_root,
+                inventory=inventory,
+                context="registered VC5 manifest",
+            ).physical_path
+            for repository_path in manifest_repository_paths
+        )
+        strict_tracked_paths = None
+    else:
         manifest_paths = tuple(sorted(candidate_dir.glob("*.json")))
         strict_tracked_paths = False
-    else:
-        try:
-            relative_dir = candidate_dir.absolute().relative_to(
-                inventory.repository_root.absolute()
-            ).as_posix()
-        except ValueError:
-            relative_dir = ""
-        if relative_dir:
-            prefix = relative_dir.rstrip("/") + "/"
-            manifest_git_paths = tuple(
-                sorted(
-                    git_path
-                    for git_path in inventory.exact_paths
-                    if git_path.startswith(prefix)
-                    and "/" not in git_path[len(prefix) :]
-                    and git_path.endswith(".json")
-                )
-            )
-            manifest_paths = tuple(
-                resolve_tracked_repository_file(
-                    git_path,
-                    repository_root=inventory.repository_root,
-                    inventory=inventory,
-                    context="registered VC5 manifest",
-                ).physical_path
-                for git_path in manifest_git_paths
-            )
-            strict_tracked_paths = None
-        else:
-            manifest_paths = tuple(sorted(candidate_dir.glob("*.json")))
-            strict_tracked_paths = False
-    registered_paths = registered_vc5_manifest_paths() if inventory is not None else frozenset()
+    registered_paths = registered_vc5_manifest_paths()
     manifests = [
         load_manifest(
             path,
             enforce_source_policy=enforce_source_policy,
             strict_source_emissions=strict_source_emissions,
             strict_source_traceability=strict_source_traceability,
-            tracked_path_inventory=inventory,
+            repository_path_inventory=inventory,
             strict_tracked_paths=(
                 path.absolute().relative_to(inventory.repository_root.absolute()).as_posix()
                 in registered_paths
@@ -5791,7 +5768,7 @@ def source_from_matches(
     target: VerifyTarget,
     source_from: str,
     *,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> bool:
     if not target_has_compile_work(target) or not target.source_from:
         return False
@@ -5800,40 +5777,40 @@ def source_from_matches(
     if target_path.is_absolute() or supplied_path.is_absolute():
         if not (target_path.is_absolute() and supplied_path.is_absolute()):
             raise ValueError(
-                "--source-from must be an exact Git repository-relative path for a "
-                "tracked target"
+                "--source-from must be an exact repository-relative path for a "
+                "registered target"
             )
         return target_path.resolve() == supplied_path.resolve()
-    inventory = tracked_path_inventory or load_git_tracked_path_inventory(REPO_ROOT)
-    target_git_path = resolve_tracked_repository_file(
+    inventory = repository_path_inventory or load_repository_path_inventory(REPO_ROOT)
+    target_repository_path = resolve_repository_file(
         target.source_from,
         repository_root=inventory.repository_root,
         inventory=inventory,
         context=f"{target.name}: source_from",
         allowed_suffixes=ORDER_EDIT_PATH_SUFFIXES,
-    ).git_path
-    supplied_git_path = resolve_tracked_repository_file(
+    ).repository_path
+    supplied_repository_path = resolve_repository_file(
         source_from,
         repository_root=inventory.repository_root,
         inventory=inventory,
         context="--source-from",
         allowed_suffixes=ORDER_EDIT_PATH_SUFFIXES,
-    ).git_path
-    return target_git_path == supplied_git_path
+    ).repository_path
+    return target_repository_path == supplied_repository_path
 
 
 def selected_targets_for_source_from(
     manifests: list[VerifyTarget],
     source_from: str,
     *,
-    tracked_path_inventory: GitTrackedPathInventory | None = None,
+    repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> list[VerifySelection]:
     needs_inventory = any(
         target.source_from and not Path(target.source_from).is_absolute()
         for target in manifests
     ) and not Path(source_from).is_absolute()
     inventory = (
-        tracked_path_inventory or load_git_tracked_path_inventory(REPO_ROOT)
+        repository_path_inventory or load_repository_path_inventory(REPO_ROOT)
         if needs_inventory
         else None
     )
@@ -5843,7 +5820,7 @@ def selected_targets_for_source_from(
         if source_from_matches(
             manifest,
             source_from,
-            tracked_path_inventory=inventory,
+            repository_path_inventory=inventory,
         )
     ]
 
@@ -8194,8 +8171,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Require canonical source-trace directives for resolved authored VC rows; "
             "validate exact relation, artifact id, section, and direct attachment. "
-            "Repository-wide tracker mirror/state enforcement remains audit source-trace "
-            "--policy migrated."
+            "Repository-wide tracker mirror/state enforcement remains audit source-trace."
         ),
     )
     return parser
@@ -8255,15 +8231,10 @@ def main(argv: list[str] | None = None) -> int:
                 parser.error("--owner cannot be combined with --list or --explain-missing")
             if args.compiler_profile or args.profile_sweep:
                 parser.error("--owner cannot be combined with --compiler-profile or --profile-sweep")
-        try:
-            operation_inventory = load_git_tracked_path_inventory(REPO_ROOT)
-        except RepositoryPathError:
-            if (REPO_ROOT / ".git").exists():
-                raise
-            operation_inventory = None
+        operation_inventory = load_repository_path_inventory(REPO_ROOT)
         manifests = load_manifests(
             Path(args.manifest_dir),
-            tracked_path_inventory=operation_inventory,
+            repository_path_inventory=operation_inventory,
         )
         if not args.json:
             print_source_emission_warnings(manifests)
@@ -8303,7 +8274,7 @@ def main(argv: list[str] | None = None) -> int:
                 else selected_targets_for_source_from(
                     manifests,
                     args.source_from,
-                    tracked_path_inventory=operation_inventory,
+                    repository_path_inventory=operation_inventory,
                 )
             )
             selections = apply_target_binary_override(selections, args.binary)

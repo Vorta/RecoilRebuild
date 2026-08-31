@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-import json
 from pathlib import Path
 import re
 from typing import Iterable
@@ -13,7 +12,6 @@ PRODUCTION_SUFFIXES = frozenset({".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp
 SOURCE_SUFFIXES = frozenset({".c", ".cc", ".cpp", ".cxx"})
 FRAGMENT_HEADER_RE = re.compile(r"(?:_body|_impl|_impl_body)\.h$", re.IGNORECASE)
 QUOTED_INCLUDE_RE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.MULTILINE)
-COMPATIBILITY_EXCLUSION_MARKER = "currently included by"
 
 
 @dataclass(frozen=True)
@@ -95,55 +93,10 @@ def _production_files(source_root: Path) -> tuple[Path, ...]:
     )
 
 
-def compatibility_final_build_exclusions(
-    manifest_path: Path | None,
-    *,
-    repo_root: Path,
-    source_root: Path,
-) -> tuple[dict[str, object], ...]:
-    if manifest_path is None:
-        return ()
-    if not manifest_path.is_file():
-        raise ValueError(f"{manifest_path}: final-build manifest does not exist")
-    data = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if not isinstance(data, dict):
-        raise ValueError(f"{manifest_path}: final-build manifest root must be an object")
-    raw = data.get("physical_block_source_exclusions", [])
-    if not isinstance(raw, list):
-        raise ValueError(f"{manifest_path}: physical_block_source_exclusions must be a list")
-    findings: list[dict[str, object]] = []
-    for index, item in enumerate(raw):
-        if not isinstance(item, dict):
-            raise ValueError(
-                f"{manifest_path}: physical_block_source_exclusions[{index}] must be an object"
-            )
-        path_text = item.get("path")
-        reason = item.get("reason")
-        if not isinstance(path_text, str) or not isinstance(reason, str):
-            continue
-        if COMPATIBILITY_EXCLUSION_MARKER not in reason.casefold():
-            continue
-        excluded_path = Path(path_text)
-        if not excluded_path.is_absolute():
-            excluded_path = repo_root / excluded_path
-        if not _is_within(excluded_path, source_root):
-            continue
-        findings.append(
-            {
-                "path": _display_path(excluded_path, repo_root),
-                "reason": reason,
-                "manifest": _display_path(manifest_path, repo_root),
-                "index": index,
-            }
-        )
-    return tuple(sorted(findings, key=lambda item: str(item["path"]).casefold()))
-
-
 def inventory_source_fragments(
     source_root: Path,
     *,
     repo_root: Path,
-    final_build_manifest: Path | None,
 ) -> dict[str, object]:
     if not source_root.is_dir():
         raise ValueError(f"{source_root}: source-fragment root does not exist or is not a directory")
@@ -191,11 +144,6 @@ def inventory_source_fragments(
     included_source_files = tuple(
         sorted({edge.target for edge in included_source_edges}, key=str.casefold)
     )
-    exclusions = compatibility_final_build_exclusions(
-        final_build_manifest,
-        repo_root=repo_root,
-        source_root=source_root,
-    )
     direct_edges = sum(edge.edge_scope == "direct" for edge in fragment_edges)
     nested_edges = len(fragment_edges) - direct_edges
     counts = {
@@ -206,21 +154,16 @@ def inventory_source_fragments(
         "included_source_edges": len(included_source_edges),
         "included_source_files": len(included_source_files),
         "inl_files": len(inl_files),
-        "compatibility_final_build_exclusions": len(exclusions),
     }
     counts["total_findings"] = (
         counts["fragment_files"]
         + counts["fragment_include_edges"]
         + counts["included_source_edges"]
         + counts["inl_files"]
-        + counts["compatibility_final_build_exclusions"]
     )
     return {
         "kind": "source-fragment-audit",
         "root": _display_path(source_root, repo_root),
-        "final_build_manifest": (
-            _display_path(final_build_manifest, repo_root) if final_build_manifest is not None else None
-        ),
         "ok": counts["total_findings"] == 0,
         "counts": counts,
         "findings": {
@@ -229,7 +172,6 @@ def inventory_source_fragments(
             "included_source_edges": [asdict(edge) for edge in included_source_edges],
             "included_source_files": list(included_source_files),
             "inl_files": list(inl_files),
-            "compatibility_final_build_exclusions": list(exclusions),
         },
     }
 

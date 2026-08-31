@@ -2230,7 +2230,6 @@ def _compare_row(
         relocation_expectations_exact=relocations_passed,
         # Compatibility projection for old report readers; expectations are now
         # derived live and are not a required stored tracker catalog.
-        relocation_catalog_exact=relocations_passed,
     )
     if not exact_bytes:
         result["first_difference"] = _first_byte_difference(retail_bytes, candidate_bytes)

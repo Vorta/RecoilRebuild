@@ -6,21 +6,13 @@ from pathlib import Path
 import sys
 from typing import Any, Mapping
 
-from _recoil.commands.live_final_verify import (
-    DEFAULT_REFERENCE,
-    DEFAULT_TRACKER,
-    _validate_catalog,
-    semantic_projection,
-)
+from _recoil.commands.live_final_verify import DEFAULT_REFERENCE, DEFAULT_TRACKER
 from _recoil.commands.final_image_coverage import (
     coverage_summary,
     derive_final_image_coverage,
 )
 from _recoil.lib.progress import SCHEMA_VERSION, ProgressError, ProgressStore
 from _recoil.lib.tooling import configure_stdio, display_path
-
-
-CATALOG_PATH = "binaries.recoil.final_image_catalog"
 
 
 def _load_progress(path: Path) -> dict[str, Any]:
@@ -39,9 +31,6 @@ def audit_catalog(*, tracker: Path, reference: Path) -> dict[str, Any]:
         failures.append(
             f"progress tracker must be schema v{SCHEMA_VERSION} before live coverage derivation"
         )
-    binaries = document.get("binaries")
-    recoil = binaries.get("recoil") if isinstance(binaries, Mapping) else None
-    legacy_catalog = recoil.get("final_image_catalog") if isinstance(recoil, Mapping) else None
     coverage: dict[str, Any] | None = None
     if not reference.is_file():
         failures.append(
@@ -56,14 +45,6 @@ def audit_catalog(*, tracker: Path, reference: Path) -> dict[str, Any]:
             source=display_path(reference),
         )
         failures.extend(str(item) for item in coverage["failures"])
-    legacy_diagnostics: list[str] = []
-    if isinstance(legacy_catalog, Mapping) and reference.is_file():
-        projection = semantic_projection(reference.read_bytes(), source=str(reference))
-        legacy_diagnostics.extend(
-            f"legacy catalog diagnostic: {failure}"
-            for failure in _validate_catalog(legacy_catalog, projection, document)
-        )
-    state = recoil.get("final_image_catalog_state") if isinstance(recoil, Mapping) else None
     return {
         "kind": "final-image-catalog-audit",
         "validation_mode": "live-retail-plus-accepted-tracker",
@@ -71,12 +52,6 @@ def audit_catalog(*, tracker: Path, reference: Path) -> dict[str, Any]:
         "tracker": display_path(tracker),
         "tracker_schema": document.get("schema_version"),
         "tracker_revision": document.get("revision"),
-        "catalog_path": CATALOG_PATH,
-        "catalog_state": state,
-        "catalog_state_diagnostic_only": True,
-        "legacy_catalog_present": isinstance(legacy_catalog, Mapping),
-        "legacy_catalog_required": False,
-        "legacy_catalog_diagnostics": legacy_diagnostics,
         "coverage": coverage,
         "coverage_summary": coverage_summary(coverage) if coverage is not None else None,
         "failure_count": len(failures),

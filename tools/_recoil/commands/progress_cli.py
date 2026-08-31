@@ -65,11 +65,11 @@ from _recoil.lib.progress import (
     validate_owner_invariants,
 )
 from _recoil.lib.repository_paths import (
-    GitTrackedPathInventory,
+    RepositoryPathInventory,
     RepositoryPathError,
-    TrackedRepositoryPath,
-    load_git_tracked_path_inventory,
-    resolve_tracked_repository_file,
+    RepositoryFile,
+    load_repository_path_inventory,
+    resolve_repository_file,
 )
 from _recoil.lib.live_progress import ConcurrentRevisionUpdate
 from _recoil.lib.pe import parse_pe_headers, rva_to_offset
@@ -327,7 +327,6 @@ def _parser() -> argparse.ArgumentParser:
     for name, help_text in (
         ("next", "Select the authoritative next Recoil.exe task."),
         ("status", "Show derived pipeline status."),
-        ("report", "Render an on-demand progress summary."),
     ):
         child = subparsers.add_parser(name, help=help_text)
         _add_progress_path(child)
@@ -548,23 +547,6 @@ def _parser() -> argparse.ArgumentParser:
     _add_progress_path(owner_audit)
     owner_audit.add_argument("--strict", action="store_true")
     owner_audit.add_argument("--json", action="store_true")
-    owner_repair_data_tier = owner_children.add_parser(
-        "repair-primary-data-tier-x",
-        help=(
-            "Conservative initialization of absent tier-X records for "
-            "exact existing same-owner authored primary-data relationships."
-        ),
-    )
-    _add_progress_path(owner_repair_data_tier)
-    owner_repair_data_tier.add_argument(
-        "--payload-json",
-        required=True,
-        help=(
-            "One recoil-owner-primary-data-tier-x-repair-v1 object guarding the "
-            "exact current owner and complete primary-data relationship rows."
-        ),
-    )
-    _add_mutation_controls(owner_repair_data_tier)
     owner_replace = owner_children.add_parser(
         "replace-batch",
         help=(
@@ -709,22 +691,12 @@ def _parser() -> argparse.ArgumentParser:
 
     call_contract = subparsers.add_parser(
         "call-contract",
-        help="Initialize the permanent authored call-contract state.",
+        help="Close the completed authored call-contract census from a fresh live scan.",
     )
     call_contract_children = call_contract.add_subparsers(
         dest="call_contract_command",
         required=True,
     )
-    call_contract_initialize = call_contract_children.add_parser(
-        "initialize",
-        help=(
-            "Revision-atomically initialize exactly the reviewed 3,380 authored "
-            "gating bodies without changing order or byte facts."
-        ),
-    )
-    _add_progress_path(call_contract_initialize)
-    _add_mutation_controls(call_contract_initialize)
-
     call_contract_close = call_contract_children.add_parser(
         "close-live",
         help="Run a fresh no-reuse complete-census scan and record the closeout.",
@@ -922,7 +894,7 @@ def _command_arg(value: str) -> str:
 
 
 def _progress_command_path(path: Path) -> str:
-    """Render a machine-local SQLite path without assigning Git identity."""
+    """Render a machine-local SQLite path without assigning repository identity."""
 
     resolved = path.resolve()
     try:
@@ -939,25 +911,25 @@ def _progress_command_path(path: Path) -> str:
 
 
 
-_PROGRESS_GIT_DOCUMENT: ContextVar[ProgressDocument | None] = ContextVar(
-    "progress-git-path-operation-document",
+_PROGRESS_REPOSITORY_DOCUMENT: ContextVar[ProgressDocument | None] = ContextVar(
+    "progress-repository-path-operation-document",
     default=None,
 )
 
 
-def _load_progress_git_inventory(
+def _load_progress_repository_inventory(
     document: ProgressDocument | None = None,
-) -> GitTrackedPathInventory:
+) -> RepositoryPathInventory:
     if document is None:
-        document = _PROGRESS_GIT_DOCUMENT.get()
-    cache_key = ("git-tracked-path-inventory", str(REPO_ROOT))
+        document = _PROGRESS_REPOSITORY_DOCUMENT.get()
+    cache_key = ("repository-path-inventory", str(REPO_ROOT))
     request_cache = getattr(document, "_request_cache", None)
     if isinstance(request_cache, dict):
         cached = request_cache.get(cache_key)
-        if isinstance(cached, GitTrackedPathInventory):
+        if isinstance(cached, RepositoryPathInventory):
             return cached
     try:
-        inventory = load_git_tracked_path_inventory(REPO_ROOT)
+        inventory = load_repository_path_inventory(REPO_ROOT)
     except RepositoryPathError as exc:
         raise ProgressError(str(exc)) from exc
     if isinstance(request_cache, dict):
@@ -965,31 +937,31 @@ def _load_progress_git_inventory(
     return inventory
 
 
-def _with_progress_git_inventory(function):
+def _with_progress_repository_inventory(function):
     """Scope one immutable canonical-checkout inventory to one operation."""
 
     @wraps(function)
     def wrapped(document: ProgressDocument, *args, **kwargs):
-        if _PROGRESS_GIT_DOCUMENT.get() is document:
+        if _PROGRESS_REPOSITORY_DOCUMENT.get() is document:
             return function(document, *args, **kwargs)
-        token = _PROGRESS_GIT_DOCUMENT.set(document)
+        token = _PROGRESS_REPOSITORY_DOCUMENT.set(document)
         try:
             return function(document, *args, **kwargs)
         finally:
-            _PROGRESS_GIT_DOCUMENT.reset(token)
+            _PROGRESS_REPOSITORY_DOCUMENT.reset(token)
 
     return wrapped
 
 
-def _resolve_tracked_progress_file(
+def _resolve_progress_repository_file(
     path_text: str,
     *,
     context: str,
-    inventory: GitTrackedPathInventory | None = None,
-) -> TrackedRepositoryPath:
-    current_inventory = inventory or _load_progress_git_inventory()
+    inventory: RepositoryPathInventory | None = None,
+) -> RepositoryFile:
+    current_inventory = inventory or _load_progress_repository_inventory()
     try:
-        return resolve_tracked_repository_file(
+        return resolve_repository_file(
             path_text,
             repository_root=REPO_ROOT,
             inventory=current_inventory,
@@ -1106,26 +1078,26 @@ def _registered_order_interval(target: Mapping[str, Any]) -> tuple[str, str] | N
     manifest_value = registration.get("manifest_path")
     if not isinstance(manifest_value, str) or not manifest_value:
         return None
-    tracked_manifest = _resolve_tracked_progress_file(
+    repository_manifest = _resolve_progress_repository_file(
         manifest_value,
         context="registered order manifest",
     )
-    manifest_path = tracked_manifest.physical_path
+    manifest_path = repository_manifest.physical_path
     try:
         payload = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ProgressError(
-            f"cannot read registered order manifest {tracked_manifest.git_path}: {exc}"
+            f"cannot read registered order manifest {repository_manifest.repository_path}: {exc}"
         ) from exc
     if not isinstance(payload, Mapping):
         raise ProgressError(
-            f"registered order manifest {tracked_manifest.git_path} must contain an object"
+            f"registered order manifest {repository_manifest.repository_path} must contain an object"
         )
     start = payload.get("retail_start")
     end = payload.get("retail_end_exclusive")
     if not isinstance(start, str) or not isinstance(end, str) or not start or not end:
         raise ProgressError(
-            f"registered order manifest {tracked_manifest.git_path} lacks an exact retail interval"
+            f"registered order manifest {repository_manifest.repository_path} lacks an exact retail interval"
         )
     return normalize_address(start), normalize_address(end)
 
@@ -1149,15 +1121,15 @@ def _synchronized_order_target(
     manifest_value = registration.get("manifest_path")
     if not isinstance(manifest_value, str) or not manifest_value:
         raise ProgressError(f"order target {target_id!r} has no registered manifest path")
-    tracked_manifest = _resolve_tracked_progress_file(
+    repository_manifest = _resolve_progress_repository_file(
         manifest_value,
         context=f"order target {target_id!r} registered manifest",
     )
-    if not tracked_manifest.git_path.startswith("tools/vc5_verify_targets/"):
+    if not repository_manifest.repository_path.startswith("tools/vc5_verify_targets/"):
         raise ProgressError(
             f"order target {target_id!r} manifest is outside tools/vc5_verify_targets"
         )
-    manifest_path = tracked_manifest.physical_path
+    manifest_path = repository_manifest.physical_path
 
     from _recoil.lib.verification_targets import vc5_target_registration
 
@@ -1281,7 +1253,7 @@ def _order_row_role_gate(
         )
 
 
-@_with_progress_git_inventory
+@_with_progress_repository_inventory
 def _target_order_contract(
     document: ProgressDocument,
     target_id: str,
@@ -1757,7 +1729,7 @@ def _order_contract_signature(contract: Mapping[str, Any]) -> tuple[Any, ...]:
     )
 
 
-@_with_progress_git_inventory
+@_with_progress_repository_inventory
 def _full_order_object_contract(
     document: ProgressDocument,
     acceptance: Mapping[str, Any],
@@ -2028,7 +2000,7 @@ def _current_order_contract(
     return result
 
 
-@_with_progress_git_inventory
+@_with_progress_repository_inventory
 def resolve_current_order_target(document: ProgressDocument) -> dict[str, Any]:
     """Resolve the current order cursor to one executable target or a typed blocker."""
 
@@ -2500,7 +2472,7 @@ def _run_full_linked_order_validation(
 
 def _require_order_contract_source_fragments_clean(contract: Mapping[str, Any]) -> None:
     checked_manifests: set[Path] = set()
-    inventory = _load_progress_git_inventory()
+    inventory = _load_progress_repository_inventory()
     for key in ("verifier_target", "object_target", "linked_target"):
         record = contract.get(key)
         if not isinstance(record, Mapping):
@@ -2511,7 +2483,7 @@ def _require_order_contract_source_fragments_clean(contract: Mapping[str, Any]) 
         manifest_text = registration.get("manifest_path")
         if not isinstance(manifest_text, str) or not manifest_text:
             continue
-        manifest_path = _resolve_tracked_progress_file(
+        manifest_path = _resolve_progress_repository_file(
             manifest_text,
             context=f"live order acceptance {key} manifest",
             inventory=inventory,
@@ -3056,7 +3028,7 @@ def advance_live_call_contract(args: argparse.Namespace) -> tuple[int, dict[str,
         str(Path(args.progress).resolve(strict=True)),
         "--build-root",
         display_path(build_root),
-        "--all-caller-divergences",
+        "--collect-all-divergences",
         "--json",
     ]
     returncode, raw, stderr = _run_json_process(command)
@@ -3198,7 +3170,7 @@ def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
             str(Path(args.progress).resolve(strict=True)),
             "--build-root",
             display_path(slice_root),
-            "--all-caller-divergences",
+            "--collect-all-divergences",
             "--json",
         ]
         returncode, raw, stderr = _run_json_process(command)
@@ -3287,128 +3259,8 @@ def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
     return _commit_payload(commit, details)
 
 
-def initialize_authored_call_contract(args: argparse.Namespace) -> dict[str, Any]:
-    """Additively initialize the reviewed call-contract census."""
-    store = ProgressStore(args.progress)
-    document = store.load()
-    if document.revision != args.expected_revision:
-        raise ConcurrentProgressUpdate(
-            f"revision changed: expected {args.expected_revision}, found {document.revision}"
-        )
-    pipeline = document.pipeline("recoil", resolve_order_target=False)
-    if pipeline["authored_function_order_counts"]["remaining"] != 0:
-        raise ProgressError(
-            "call-contract initialization requires complete authored function order"
-        )
-    if pipeline["full_function_order_counts"]["accepted"] != 0:
-        raise ProgressError(
-            "call-contract initialization requires full order to remain at zero"
-        )
-    slices = document.authored_call_contract_slices()
-    symbol_ids = [symbol_id for row in slices for symbol_id in row["symbol_ids"]]
-    symbols = document.collection("symbols")
-    preexisting = [
-        symbol_id
-        for symbol_id in symbol_ids
-        if (
-            isinstance(symbols[symbol_id].get("binary_state"), Mapping)
-            and "call_contract" in symbols[symbol_id]["binary_state"]
-        )
-        or "accepted_call_contract_facts" in symbols[symbol_id]
-    ]
-    if preexisting:
-        raise ProgressError(
-            "call-contract initialization requires a clean uninitialized census; "
-            f"found {len(preexisting)} preexisting rows"
-        )
-    before_order = deepcopy(document.collection("physical_blocks"))
-    before_other_binary_state = {
-        symbol_id: deepcopy(symbols[symbol_id].get("binary_state", {}))
-        for symbol_id in symbol_ids
-    }
-    details = {
-        "kind": "authored-call-contract-initialization",
-        "body_count": len(symbol_ids),
-        "slice_count": len(slices),
-        "slice_body_counts": [row["body_count"] for row in slices],
-        "max_slice_bodies": max(row["body_count"] for row in slices),
-        "full_order_accepted_before": 0,
-        "preserved": {
-            "physical_blocks_and_order": True,
-            "existing_symbol_binary_dimensions": True,
-            "owners_providers_tiers_storage": True,
-        },
-        "mutation_planned": True,
-    }
-
-    def transform(data: dict[str, Any]) -> None:
-        current = ProgressDocument(data, path=args.progress)
-        current_slices = current.authored_call_contract_slices()
-        current_ids = [
-            symbol_id for row in current_slices for symbol_id in row["symbol_ids"]
-        ]
-        if current_ids != symbol_ids:
-            raise ProgressError(
-                "authored call-contract census/order changed before initialization CAS"
-            )
-        for symbol_id in symbol_ids:
-            symbol = data["symbols"][symbol_id]
-            binary_state = symbol.setdefault("binary_state", {})
-            if "call_contract" in binary_state or "accepted_call_contract_facts" in symbol:
-                raise ProgressError(
-                    f"call-contract row {symbol_id} changed before initialization CAS"
-                )
-            binary_state["call_contract"] = state_record(
-                "pending", "observed", "changed", []
-            )
-        migration = data.setdefault("migration", {})
-        if not isinstance(migration, dict):
-            raise ProgressError("tracker migration metadata must be an object")
-        if "authored_call_contract_v1" in migration:
-            raise ProgressError("authored call-contract migration metadata already exists")
-        migration["authored_call_contract_v1"] = {
-            "body_count": len(symbol_ids),
-            "slice_count": len(slices),
-            "max_slice_bodies": max(row["body_count"] for row in slices),
-            "state": "initialized-pending",
-        }
-        if data["physical_blocks"] != before_order:
-            raise ProgressError("call-contract initialization changed physical/order facts")
-        for symbol_id in symbol_ids:
-            remaining = {
-                key: value
-                for key, value in data["symbols"][symbol_id]["binary_state"].items()
-                if key != "call_contract"
-            }
-            if remaining != before_other_binary_state[symbol_id]:
-                raise ProgressError(
-                    f"call-contract initialization changed existing binary state for {symbol_id}"
-                )
-
-    commit = store.mutate(
-        transform,
-        expected_revision=args.expected_revision,
-        apply=args.apply,
-    )
-    return _commit_payload(commit, details)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def _direct_compile_host_policy_text(source_from: str) -> str:
-    source_path = _resolve_tracked_progress_file(
+    source_path = _resolve_progress_repository_file(
         source_from,
         context="same-host bootstrap compile host",
     ).physical_path
@@ -3796,7 +3648,7 @@ def _sync_verification_targets(
         functional_manifest_dir=REPO_ROOT / "tools" / "functional_verify_targets",
         vc5_manifest_dir=REPO_ROOT / "tools" / "vc5_verify_targets",
     )
-    tracked_inventory = _load_progress_git_inventory()
+    repository_inventory = _load_progress_repository_inventory()
     requested = {str(item) for item in selectors if str(item)}
     selected = {
         target_id: record
@@ -3845,16 +3697,16 @@ def _sync_verification_targets(
         manifest_value = registration.get("manifest_path")
         if not isinstance(manifest_value, str) or not manifest_value:
             raise ProgressError(f"target {target_id!r} has no VC5 manifest_path")
-        tracked_manifest = _resolve_tracked_progress_file(
+        repository_manifest = _resolve_progress_repository_file(
             manifest_value,
             context=f"verification target {target_id!r} registered manifest",
-            inventory=tracked_inventory,
+            inventory=repository_inventory,
         )
-        if not tracked_manifest.git_path.startswith("tools/vc5_verify_targets/"):
+        if not repository_manifest.repository_path.startswith("tools/vc5_verify_targets/"):
             raise ProgressError(
                 f"target {target_id!r} manifest is outside tools/vc5_verify_targets"
             )
-        manifest_path = tracked_manifest.physical_path
+        manifest_path = repository_manifest.physical_path
         if source_policy_bootstrap:
             manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
             if not isinstance(manifest_data, Mapping):
@@ -6741,23 +6593,6 @@ def _accept_authored_non_gating_blocks(
 _OWNER_REPLACE_BATCH_SCHEMA_V1 = "recoil-owner-replace-batch-v1"
 _OWNER_REPLACE_BATCH_SCHEMA_V2 = "recoil-owner-replace-batch-v2"
 _OWNER_DOWNGRADE_SCHEMA_V1 = "recoil-owner-downgrade-v1"
-_OWNER_PRIMARY_DATA_TIER_X_REPAIR_SCHEMA_V1 = (
-    "recoil-owner-primary-data-tier-x-repair-v1"
-)
-_OWNER_PRIMARY_DATA_TIER_X_REPAIR_FIELDS = {
-    "schema",
-    "reviewed",
-    "reason",
-    "binary",
-    "owner_id",
-    "primary_data",
-}
-_OWNER_PRIMARY_DATA_TIER_X_REPAIR_ROW_FIELDS = {
-    "symbol_id",
-    "address",
-    "current_ownership_state",
-    "current_relationship",
-}
 _OWNER_DOWNGRADE_FIELDS = {
     "schema",
     "reviewed",
@@ -6841,220 +6676,6 @@ _UNKNOWN_DATA_SYMBOL_BOOTSTRAP_FIELDS = {
     "disposition",
     "output_section_id",
 }
-
-
-def _parse_owner_primary_data_tier_x_repair_payload(
-    payload_json: str,
-) -> dict[str, Any]:
-    try:
-        raw_payload = json.loads(payload_json)
-    except json.JSONDecodeError as exc:
-        raise ProgressError(f"--payload-json is not valid JSON: {exc.msg}") from exc
-    if not isinstance(raw_payload, Mapping):
-        raise ProgressError(
-            "--payload-json must be one primary-data tier-X repair object"
-        )
-    payload = _require_exact_payload_fields(
-        raw_payload,
-        _OWNER_PRIMARY_DATA_TIER_X_REPAIR_FIELDS,
-        label="primary-data tier-X repair payload",
-    )
-    if payload["schema"] != _OWNER_PRIMARY_DATA_TIER_X_REPAIR_SCHEMA_V1:
-        raise ProgressError(
-            "primary-data tier-X repair schema must be "
-            f"{_OWNER_PRIMARY_DATA_TIER_X_REPAIR_SCHEMA_V1!r}"
-        )
-    if payload["reviewed"] is not True:
-        raise ProgressError(
-            "primary-data tier-X repair requires reviewed=true"
-        )
-    payload["reason"] = _require_payload_string(payload["reason"], label="reason")
-    payload["binary"] = _require_payload_string(payload["binary"], label="binary")
-    if payload["binary"] not in {"recoil", "messages"}:
-        raise ProgressError(
-            "primary-data tier-X repair binary must be recoil or messages"
-        )
-    payload["owner_id"] = _require_payload_string(
-        payload["owner_id"], label="owner_id"
-    )
-    raw_rows = payload["primary_data"]
-    if not isinstance(raw_rows, list) or not raw_rows:
-        raise ProgressError(
-            "primary-data tier-X repair primary_data must be a non-empty array"
-        )
-    rows: list[dict[str, Any]] = []
-    seen_symbol_ids: set[str] = set()
-    seen_addresses: set[str] = set()
-    for index, raw_row in enumerate(raw_rows):
-        row = _require_exact_payload_fields(
-            raw_row,
-            _OWNER_PRIMARY_DATA_TIER_X_REPAIR_ROW_FIELDS,
-            label=f"primary_data[{index}]",
-        )
-        row["symbol_id"] = _require_payload_string(
-            row["symbol_id"], label=f"primary_data[{index}].symbol_id"
-        )
-        if not row["symbol_id"].startswith(f"{payload['binary']}:data:"):
-            raise ProgressError(
-                f"primary_data[{index}].symbol_id must be a canonical data identity"
-            )
-        row["address"] = normalize_address(
-            _require_payload_string(
-                row["address"], label=f"primary_data[{index}].address"
-            )
-        )
-        row["current_ownership_state"] = _require_payload_string(
-            row["current_ownership_state"],
-            label=f"primary_data[{index}].current_ownership_state",
-        )
-        if row["current_ownership_state"] != "primary-owned":
-            raise ProgressError(
-                "primary-data tier-X repair requires current_ownership_state="
-                "'primary-owned'"
-            )
-        relationship = row["current_relationship"]
-        if not isinstance(relationship, Mapping):
-            raise ProgressError(
-                f"primary_data[{index}].current_relationship must be an object"
-            )
-        row["current_relationship"] = deepcopy(dict(relationship))
-        if row["symbol_id"] in seen_symbol_ids:
-            raise ProgressError(
-                f"primary-data tier-X repair duplicates symbol {row['symbol_id']!r}"
-            )
-        if row["address"] in seen_addresses:
-            raise ProgressError(
-                f"primary-data tier-X repair duplicates address {row['address']!r}"
-            )
-        seen_symbol_ids.add(row["symbol_id"])
-        seen_addresses.add(row["address"])
-        rows.append(row)
-    payload["primary_data"] = rows
-    return payload
-
-
-def _repair_owner_primary_data_tier_x(
-    data: dict[str, Any],
-    payload: Mapping[str, Any],
-) -> dict[str, Any]:
-    owners = data.get("owners")
-    symbols = data.get("symbols")
-    if not isinstance(owners, dict) or not isinstance(symbols, dict):
-        raise ProgressError(
-            "primary-data tier-X repair requires tracker owner and symbol collections"
-        )
-    owner_id = str(payload["owner_id"])
-    owner = owners.get(owner_id)
-    if not isinstance(owner, dict):
-        raise ProgressError(
-            f"primary-data tier-X repair exact owner {owner_id!r} does not exist"
-        )
-    if owner.get("binary") != payload["binary"]:
-        raise ProgressError(
-            f"primary-data tier-X repair owner {owner_id!r} binary is stale"
-        )
-    if owner.get("kind") == "provider-boundary":
-        raise ProgressError(
-            "primary-data tier-X repair rejects provider-boundary owners"
-        )
-    relationships = owner.get("relationships")
-    reimplementation = owner.get("reimplementation")
-    entries = (
-        reimplementation.get("entries")
-        if isinstance(reimplementation, dict)
-        else None
-    )
-    if not isinstance(relationships, list) or not isinstance(entries, dict):
-        raise ProgressError(
-            f"primary-data tier-X repair owner {owner_id!r} must have relationship "
-            "and reimplementation-entry collections"
-        )
-
-    initialized: list[str] = []
-    for row in payload["primary_data"]:
-        symbol_id = str(row["symbol_id"])
-        address = str(row["address"])
-        symbol = symbols.get(symbol_id)
-        if not isinstance(symbol, Mapping):
-            raise ProgressError(
-                f"primary-data tier-X repair references unknown symbol {symbol_id!r}"
-            )
-        if symbol.get("binary") != payload["binary"]:
-            raise ProgressError(
-                f"primary-data tier-X repair symbol {symbol_id!r} binary is stale"
-            )
-        if symbol.get("kind") != "data" or symbol.get("disposition") != "authored":
-            raise ProgressError(
-                f"primary-data tier-X repair symbol {symbol_id!r} is not authored data"
-            )
-        if normalize_address(str(symbol.get("address"))) != address:
-            raise ProgressError(
-                f"primary-data tier-X repair symbol {symbol_id!r} address is stale"
-            )
-        if symbol.get("ownership_state") != row["current_ownership_state"]:
-            raise ProgressError(
-                f"primary-data tier-X repair symbol {symbol_id!r} ownership_state is stale"
-            )
-        exact_relationships = [
-            relationship
-            for relationship in relationships
-            if isinstance(relationship, Mapping)
-            and relationship.get("kind") == "primary-data"
-            and relationship.get("symbol_id") == symbol_id
-        ]
-        if len(exact_relationships) != 1:
-            raise ProgressError(
-                f"primary-data tier-X repair symbol {symbol_id!r} must have exactly "
-                f"one current relationship in owner {owner_id!r}"
-            )
-        if exact_relationships[0] != row["current_relationship"]:
-            raise ProgressError(
-                f"primary-data tier-X repair symbol {symbol_id!r} relationship snapshot is stale"
-            )
-        if normalize_address(str(exact_relationships[0].get("address"))) != address:
-            raise ProgressError(
-                f"primary-data tier-X repair symbol {symbol_id!r} relationship address is stale"
-            )
-        owning_owner_ids = sorted(
-            candidate_owner_id
-            for candidate_owner_id, candidate_owner in owners.items()
-            if isinstance(candidate_owner, Mapping)
-            and any(
-                isinstance(candidate_relationship, Mapping)
-                and candidate_relationship.get("kind") == "primary-data"
-                and candidate_relationship.get("symbol_id") == symbol_id
-                for candidate_relationship in candidate_owner.get("relationships", [])
-            )
-        )
-        if owning_owner_ids != [owner_id]:
-            raise ProgressError(
-                f"primary-data tier-X repair symbol {symbol_id!r} has ambiguous or "
-                "changed owner membership"
-            )
-        if symbol_id in entries:
-            raise ProgressError(
-                f"primary-data tier-X repair symbol {symbol_id!r} already has a "
-                "reimplementation entry"
-            )
-        initialized.append(symbol_id)
-
-    for symbol_id in initialized:
-        entries[symbol_id] = {"kind": "data", "tier": "X", "evidence_ids": []}
-
-    validate_owner_invariants(data)
-    return {
-        "kind": "owner-primary-data-tier-x-repair",
-        "schema": str(payload["schema"]),
-        "reviewed": True,
-        "reason": str(payload["reason"]),
-        "binary": str(payload["binary"]),
-        "owner_id": owner_id,
-        "initialized_primary_data_tier_x_ids": initialized,
-        "initialized_entry": {"kind": "data", "tier": "X", "evidence_ids": []},
-        "owner_invariants_passed": True,
-        "membership_unchanged": True,
-        "all_other_state_unchanged": True,
-    }
 
 
 def _parse_owner_downgrade_payload(payload_json: str) -> dict[str, Any]:
@@ -10252,9 +9873,6 @@ def main(argv: list[str] | None = None) -> int:
             code, payload = advance_live_call_contract(args)
             _print_json(payload)
             return code
-        if args.command == "call-contract" and args.call_contract_command == "initialize":
-            _print_json(initialize_authored_call_contract(args))
-            return 0
         if args.command == "call-contract" and args.call_contract_command == "close-live":
             _print_json(close_live_call_contract(args))
             return 0
@@ -10274,10 +9892,6 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "find":
             payload = document.find(args.query, args.limit)
             _print_json(payload)
-            return 0
-        if args.command == "report":
-            payload = document.current_task(args.binary)
-            _print_json(payload) if args.json else _print_pipeline(payload)
             return 0
         if args.command == "audit":
             findings = document.audit(args.scope)
@@ -10363,23 +9977,6 @@ def main(argv: list[str] | None = None) -> int:
             _print_json(document.with_revision_vector(_resolve_collection_row(document, collection, args.selector)))
             return 0
         if args.command == "owner":
-            if args.owner_command == "repair-primary-data-tier-x":
-                payload = _parse_owner_primary_data_tier_x_repair_payload(
-                    args.payload_json
-                )
-                details: dict[str, Any] = {}
-
-                def transform(data: dict[str, Any]) -> None:
-                    details.update(_repair_owner_primary_data_tier_x(data, payload))
-
-                commit = ProgressStore(args.progress).mutate(
-                    transform,
-                    expected_revision=args.expected_revision,
-                    apply=args.apply,
-                )
-                details["mutation_planned"] = True
-                _print_json(_commit_payload(commit, details))
-                return 0
             if args.owner_command == "downgrade":
                 payload = _parse_owner_downgrade_payload(args.payload_json)
                 details: dict[str, Any] = {}

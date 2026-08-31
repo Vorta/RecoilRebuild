@@ -16,22 +16,11 @@ from _recoil.commands.agent_surface_audit import (  # noqa: E402
 )
 
 
-VALID_AGENT_POINTER = """# AGENTS.md
-
-> Compatibility pointer for tools that search this folder first.
-
-`../AGENTS.md` is the sole authoritative instruction file.
-Read it now and follow it verbatim.
-This pointer adds no policy or procedure. Update `../AGENTS.md`, not this file.
-"""
-
-
 class AgentSurfaceAuditTests(unittest.TestCase):
-    def test_live_surface_is_single_agent_and_mirrored(self) -> None:
+    def test_live_surface_is_single_agent_and_codex_only(self) -> None:
         result = audit_agent_surface(ROOT)
         self.assertTrue(result["passed"], result["findings"])
         self.assertEqual(0, result["role_file_count"])
-        self.assertEqual(result["canonical_skill_count"], result["mirror_skill_count"])
         self.assertGreater(result["canonical_skill_count"], 0)
 
     def test_contextual_matcher_allows_runtime_terms_and_explicit_prohibitions(self) -> None:
@@ -118,8 +107,6 @@ class AgentSurfaceFixtureTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)
         self._write("AGENTS.md", "There is no worker handoff.\n")
-        self._write("CLAUDE.md", "There are no work packets.\n")
-        self._write(".agent/AGENTS.md", VALID_AGENT_POINTER)
         self._write(
             "README.md",
             "\n".join(
@@ -156,10 +143,6 @@ class AgentSurfaceFixtureTests(unittest.TestCase):
             "# Current final procedure\n",
         )
         self._write_historical(
-            "docs/reconstruction/cryptographic_content_verification_removal.md",
-            "docs/reconstruction/retail_executable_reproduction.md",
-        )
-        self._write_historical(
             "docs/reconstruction/final_executable_repro_history.md",
             "docs/reconstruction/final_executable_repro.md",
         )
@@ -174,14 +157,6 @@ class AgentSurfaceFixtureTests(unittest.TestCase):
             '  display_name: "Recoil Unit"\n'
             '  short_description: "Audit one Recoil unit workspace"\n'
             '  default_prompt: "Use $recoil-unit to audit the unit workspace."\n',
-        )
-        self._write(
-            ".claude/skills/recoil-unit/SKILL.md",
-            f"---\nname: recoil-unit\ndescription: {description}\n---\n\n"
-            "# Recoil Unit (Claude surface)\n\n"
-            "Root `AGENTS.md` is authoritative. This stub adds no policy.\n\n"
-            "The canonical procedure is `.codex/skills/recoil-unit/SKILL.md`.\n"
-            "Read that file now and follow it verbatim.\n",
         )
 
     def tearDown(self) -> None:
@@ -209,62 +184,10 @@ class AgentSurfaceFixtureTests(unittest.TestCase):
         result = audit_agent_surface(self.root)
         self.assertTrue(result["passed"], result["findings"])
 
-    def test_agent_compatibility_pointer_is_scanned(self) -> None:
-        self._write(
-            ".agent/AGENTS.md",
-            "# AGENTS.md\n\nIntegration operations are orchestrator-only.\n",
-        )
-        result = audit_agent_surface(self.root)
-        self.assertFalse(result["passed"])
-        self.assertTrue(
-            any(
-                ".agent/AGENTS.md" in finding
-                and "[orchestrator-role]" in finding
-                for finding in result["findings"]
-            ),
-            result["findings"],
-        )
-
-    def test_agent_compatibility_pointer_is_required(self) -> None:
-        (self.root / ".agent/AGENTS.md").unlink()
-        findings = audit_agent_surface(self.root)["findings"]
-        self.assertTrue(
-            any(
-                "active agent surface file is missing: .agent/AGENTS.md" in finding
-                for finding in findings
-            ),
-            findings,
-        )
-
-    def test_agent_compatibility_pointer_rejects_local_procedure(self) -> None:
-        self._write(
-            ".agent/AGENTS.md",
-            VALID_AGENT_POINTER + "\nRun a local maintenance procedure here.\n",
-        )
-        findings = audit_agent_surface(self.root)["findings"]
-        self.assertTrue(
-            any(
-                ".agent/AGENTS.md" in finding
-                and "[compatibility-pointer]" in finding
-                for finding in findings
-            ),
-            findings,
-        )
-
-    def test_agent_compatibility_pointer_normalizes_text_formatting(self) -> None:
-        lines = VALID_AGENT_POINTER.rstrip("\n").split("\n")
-        payload = "\r\n".join(
-            f"{line}  " if line else line
-            for line in lines
-        ) + "\r\n   \r\n"
-        (self.root / ".agent/AGENTS.md").write_bytes(payload.encode("utf-8"))
-        result = audit_agent_surface(self.root)
-        self.assertTrue(result["passed"], result["findings"])
-
     def test_historical_record_requires_visible_banner(self) -> None:
         path = (
             self.root
-            / "docs/reconstruction/cryptographic_content_verification_removal.md"
+            / "docs/reconstruction/final_executable_repro_history.md"
         )
         path.write_text(
             path.read_text(encoding="utf-8").replace(HISTORICAL_BANNER, ""),
@@ -284,15 +207,10 @@ class AgentSurfaceFixtureTests(unittest.TestCase):
             findings,
         )
 
-    def test_thick_mirror_is_rejected(self) -> None:
-        path = self.root / ".claude/skills/recoil-unit/SKILL.md"
-        path.write_text(
-            path.read_text(encoding="utf-8")
-            + "\n```powershell\npython tools/recoil.py progress next\n```\n",
-            encoding="utf-8",
-        )
+    def test_duplicate_instruction_surface_is_rejected(self) -> None:
+        self._write("CLAUDE.md", "Duplicate instructions.\n")
         findings = audit_agent_surface(self.root)["findings"]
-        self.assertTrue(any("[thick-mirror]" in finding for finding in findings))
+        self.assertTrue(any("retired duplicate instruction surfaces" in finding for finding in findings))
 
 
 if __name__ == "__main__":

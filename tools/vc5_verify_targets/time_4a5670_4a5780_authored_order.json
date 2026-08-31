@@ -10,8 +10,8 @@
   "check_translation_unit_function_order": true,
   "order_edit_paths": [
     "src/GameZRecoil/Time/Time.cpp",
-    "src/GameZRecoil/Time/Time.h",
-    "src/GameZRecoil/zSys/zSys.cpp"
+    "src/GameZRecoil/Time/time.h",
+    "src/GameZRecoil/zSys/zsys.cpp"
   ],
   "functions": [
     {
@@ -79,10 +79,10 @@
     "agent_source_path": "src/GameZRecoil/Time/Time.cpp",
     "physical_compile_host": "src/GameZRecoil/Time/Time.cpp",
     "candidate_source_contributors": [
-      "src/GameZRecoil/zSys/zSys.cpp"
+      "src/GameZRecoil/zSys/zsys.cpp"
     ],
     "candidate_header_contributors": [
-      "src/GameZRecoil/Time/Time.h"
+      "src/GameZRecoil/Time/time.h"
     ],
     "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
     "tracker_revision": 1219,

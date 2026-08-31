@@ -113,63 +113,28 @@ Logical aliases and their physical ICF/pooling groups are explicit graph
 entities. They are not represented by repeating the same physical address on
 multiple source constructs.
 
-An obsolete legacy address that names an instruction inside a known physical
-artifact is provenance debt, not a second artifact or a logical alias. Resolve
-it append-only as an exact-existing or strict-interior legacy claim with the
-containing artifact and evidence. Such a resolution creates no source edge,
-catalog artifact, or acceptance fact.
-
 Only the revision-guarded `progress source-trace` mutation path may change the
 tracker graph. Review its dry-run before applying. Source comments must then
 match the resulting graph under:
 
 ```powershell
-python tools/recoil.py audit source-trace --path src --policy migrated --json
+python tools/recoil.py audit source-trace --json
 ```
 
-Migration/inventory mode may report legacy syntax while a bounded conversion is
-in progress, but it never treats legacy comments as accepted graph edges.
-
-## Governed Migration
-
-For a repository-wide conversion, keep review, source mutation, and tracker
-mutation as distinct steps. The migration command preserves the original source
-encoding and newline style and fails unless the complete non-comment C/C++ token
-stream remains identical.
+The audit always checks the complete production source graph, requires exact
+agreement with tracker edges, and reports remaining legacy syntax as a failure.
+There is no migration mode or compatibility payload. A reviewed topology
+change uses an exact replacement batch:
 
 ```powershell
-python tools/_recoil/commands/source_trace_migrate.py template --path src --progress <absolute-noncanonical-progress-db> --output <template.json>
-python tools/_recoil/commands/source_trace_migrate.py review-conservative --template <template.json> --progress <absolute-noncanonical-progress-db> --reviewed --output <reviewed.json>
-python tools/_recoil/commands/source_trace_migrate.py batch-propose --progress <absolute-noncanonical-progress-db> --payload-file <reviewed.json> --output <batch-dry-run.json>
-python tools/_recoil/commands/source_trace_migrate.py tracker-payload --path src --progress <absolute-noncanonical-progress-db> --migration-report <reviewed.json> --migration-template <template.json> --header-overrides <header-overrides.json> --output <tracker-payload.json>
-python tools/_recoil/commands/source_trace_migrate.py batch-propose --progress <absolute-noncanonical-progress-db> --payload-file <reviewed.json> --apply --output <batch-applied.json>
-python tools/recoil.py progress source-trace replace-batch --expected-revision <revision> --payload-file <tracker-payload.json> --dry-run --json
-python tools/recoil.py progress source-trace replace-batch --expected-revision <revision> --payload-file <tracker-payload.json> --apply --json
+python tools/recoil.py progress source-trace replace-batch --expected-revision <revision> --payload-file <reviewed.json> --dry-run --json
+python tools/recoil.py progress source-trace replace-batch --expected-revision <revision> --payload-file <reviewed.json> --apply --json
 ```
 
-Generate the tracker payload before applying the source rewrite: reviewed
-legacy rows are still available then, and canonical annotations anywhere under
-the same top-level source root are included when deciding whether an occurrence
-is cleanup-only. Header anchors require reviewed translation-unit overrides
-because a header can be compiled into several consumers; an override may name
-one translation unit for the whole header or map individual artifact ids.
-
-The final migrated-policy audit must report zero legacy inventory and exact
-agreement between canonical source edges and the tracker. The migration and
-tracker commands are topology-only: they do not accept owner, source model,
+Replacement batches are topology-only: they do not accept owner, source model,
 provider, tier, function order, bytes, data extent, or final-image coverage.
-
-Resolved legacy rows always become canonical directives, including their
-reviewed artifact descriptions. For unresolved or `not-applicable` standalone
-legacy rows, the explicit reviewed `Reimplements` migration—and only that
-migration—removes the complete semantic row when its description is only a
-construct title, source path, or mechanical routing/lifecycle placeholder.
-Normal comment hygiene does not delete or report construct-only titles.
-Substantive prose remains after the legacy address marker is removed. Reviewed
-occurrence-only redundant rows are deleted when standalone, while an embedded
-marker inside substantive prose retains the surrounding sentence. Empty
-touched comment blocks and excess blank separators are removed without
-changing source encoding, newline style, or non-comment tokens.
+Historical migration metadata is retained as read-only ledger history and is
+never required or rewritten by current operations.
 
 ## Data Coverage
 

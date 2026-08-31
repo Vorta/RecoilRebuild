@@ -15,10 +15,10 @@ from _recoil.commands.call_contract_verify import (
 )
 from _recoil.lib.progress import DEFAULT_PROGRESS_PATH, ProgressDocument
 from _recoil.lib.repository_paths import (
-    GitTrackedPathInventory,
+    RepositoryPathInventory,
     RepositoryPathError,
-    load_git_tracked_path_inventory,
-    resolve_tracked_repository_file,
+    load_repository_path_inventory,
+    resolve_repository_file,
 )
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio
 
@@ -45,7 +45,7 @@ def _finding(
 def _canonical_dependency_paths(
     paths: list[str],
     *,
-    inventory: GitTrackedPathInventory,
+    inventory: RepositoryPathInventory,
 ) -> list[str]:
     """Authenticate current dependencies without projecting NTFS spelling."""
 
@@ -57,7 +57,7 @@ def _canonical_dependency_paths(
                 f"dependency_paths[{index}] must be a non-empty string"
             )
         try:
-            tracked = resolve_tracked_repository_file(
+            tracked = resolve_repository_file(
                 raw_path,
                 repository_root=inventory.repository_root,
                 inventory=inventory,
@@ -65,13 +65,13 @@ def _canonical_dependency_paths(
             )
         except RepositoryPathError as exc:
             raise ValueError(str(exc)) from exc
-        key = tracked.git_path.casefold()
+        key = tracked.repository_path.casefold()
         if key in seen:
             raise ValueError(
                 f"call-contract dependency is duplicated case-insensitively: {raw_path}"
             )
         seen.add(key)
-        result.append(tracked.git_path)
+        result.append(tracked.repository_path)
     return sorted(result, key=lambda path: (path.casefold(), path))
 
 
@@ -118,14 +118,14 @@ def audit_call_contract_readiness(
         }
 
     try:
-        tracked_inventory = load_git_tracked_path_inventory(REPO_ROOT)
+        repository_inventory = load_repository_path_inventory(REPO_ROOT)
         live_document = document or ProgressDocument.load(tracker)
         original_slices = live_document.authored_call_contract_slices("recoil")
     except Exception as exc:
         infrastructure_findings.append(_finding("tracker-input", str(exc)))
         original_slices = []
         live_document = document
-        tracked_inventory = None
+        repository_inventory = None
 
     selected: list[Mapping[str, Any]] = []
     if original_slices:
@@ -151,7 +151,7 @@ def audit_call_contract_readiness(
         )
 
     reports: list[dict[str, Any]] = []
-    if live_document is not None and tracked_inventory is not None:
+    if live_document is not None and repository_inventory is not None:
         for slice_row in selected:
             selected_id = str(slice_row.get("id") or "")
             ordinal = int(slice_row.get("ordinal") or 0)
@@ -159,7 +159,7 @@ def audit_call_contract_readiness(
                 targets = _call_contract_slice_targets(
                     live_document,
                     slice_row,
-                    tracked_path_inventory=tracked_inventory,
+                    repository_path_inventory=repository_inventory,
                 )
                 reconciliations: list[dict[str, Any]] = []
                 slice_stale_blockers: list[dict[str, Any]] = []
@@ -173,7 +173,7 @@ def audit_call_contract_readiness(
                             target_id=target_id,
                             registration=registration,
                             current_target=targets[target_id],
-                            inventory=tracked_inventory,
+                            inventory=repository_inventory,
                         )
                     )
                     reconciliations.append(reconciliation)
@@ -233,7 +233,7 @@ def audit_call_contract_readiness(
                 closure = call_contract_source_closure(
                     live_document,
                     slice_row,
-                    tracked_path_inventory=tracked_inventory,
+                    repository_path_inventory=repository_inventory,
                 )
                 if not closure.registered_source_paths:
                     raise ValueError(
@@ -241,7 +241,7 @@ def audit_call_contract_readiness(
                     )
                 dependency_paths = _canonical_dependency_paths(
                     list(closure.dependency_paths),
-                    inventory=tracked_inventory,
+                    inventory=repository_inventory,
                 )
                 accepted_state_rows: list[dict[str, Any]] = []
                 currentness = getattr(

@@ -14,7 +14,7 @@ Choose the smallest authoritative home for the fact:
 - Use Binary Ninja comments only for analysis navigation; they are not acceptance evidence.
 - Use `.agent/WORKSPACE_ISSUES.sqlite3` only for reproducible tool, environment, validation, or rule defects.
 
-Do not create progress diaries, duplicate tracker snapshots, address ledgers, status scratchpads, packet notes, or handoff documents. The root README progress block is generated; never edit it by hand.
+Do not create progress diaries, duplicate tracker snapshots, address ledgers, status scratchpads, packet notes, or handoff documents. The root README contains only a static pointer to `progress next --json`; current state belongs exclusively to the tracker.
 
 For source traceability, attach one stable anchor directly to a real source construct and use one artifact row per emitted object:
 

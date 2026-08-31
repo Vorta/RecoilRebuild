@@ -22,24 +22,11 @@ RETIRED_PUBLIC_REFERENCES = (
     "progress owner set-address-meta",
 )
 HISTORICAL_PROCESS_RECORDS = {
-    "docs/reconstruction/cryptographic_content_verification_removal.md": (
-        "docs/reconstruction/retail_executable_reproduction.md"
-    ),
     "docs/reconstruction/final_executable_repro_history.md": (
         "docs/reconstruction/final_executable_repro.md"
     ),
 }
 HISTORICAL_BANNER = "> **Historical process record — not current operating guidance.**"
-REQUIRED_COMPATIBILITY_POINTERS = {
-    ".agent/AGENTS.md": """# AGENTS.md
-
-> Compatibility pointer for tools that search this folder first.
-
-`../AGENTS.md` is the sole authoritative instruction file.
-Read it now and follow it verbatim.
-This pointer adds no policy or procedure. Update `../AGENTS.md`, not this file.
-""",
-}
 HARD_OPERATIONAL_PATTERNS = {
     "source-worker-role": re.compile(r"\bsource[- ]workers?\b", re.IGNORECASE),
     "fact-mapper-role": re.compile(r"\bfact[- ]mappers?\b", re.IGNORECASE),
@@ -64,10 +51,6 @@ HARD_OPERATIONAL_PATTERNS = {
         r"\blocal ignored verification state\b",
         re.IGNORECASE,
     ),
-    "tracked-target-git-ban": re.compile(
-        r"\bmust not (?:stage or commit|run git commands)\b",
-        re.IGNORECASE,
-    ),
 }
 NON_NEGATABLE_CATEGORIES = {
     "functional-lane",
@@ -77,7 +60,6 @@ NON_NEGATABLE_CATEGORIES = {
     "independent-lanes",
     "stage-bypass",
     "ignored-target-state",
-    "tracked-target-git-ban",
 }
 NEGATION_RE = re.compile(
     r"\b(?:no|never|without|retired|removed|does not|do not|must not|"
@@ -344,17 +326,14 @@ def _historical_record_findings(root: Path, path: Path, expected_superseder: str
     return findings
 
 
-def _active_surface_paths(root: Path, canonical: Mapping[str, Path], mirrors: Mapping[str, Path]) -> list[Path]:
+def _active_surface_paths(root: Path, canonical: Mapping[str, Path]) -> list[Path]:
     paths = {
         root / "AGENTS.md",
-        root / "CLAUDE.md",
         root / "README.md",
         root / "tools" / "README.md",
         root / "tools" / "functional_verify_targets" / "README.md",
         root / "tools" / "vc5_verify_targets" / "README.md",
-        *(root / relative for relative in REQUIRED_COMPATIBILITY_POINTERS),
         *canonical.values(),
-        *mirrors.values(),
     }
     docs = root / "docs" / "reconstruction"
     if docs.is_dir():
@@ -364,50 +343,22 @@ def _active_surface_paths(root: Path, canonical: Mapping[str, Path], mirrors: Ma
     return sorted(paths)
 
 
-def _normalized_pointer_text(text: str) -> str:
-    lines = [
-        line.rstrip()
-        for line in text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
-    ]
-    while lines and not lines[-1]:
-        lines.pop()
-    normalized = "\n".join(lines)
-    return f"{normalized}\n" if normalized else ""
-
-
-def _compatibility_pointer_findings(root: Path) -> list[str]:
-    findings: list[str] = []
-    for relative, expected in REQUIRED_COMPATIBILITY_POINTERS.items():
-        path = root / relative
-        if not path.is_file():
-            continue
-        actual = path.read_text(encoding="utf-8", errors="replace")
-        if _normalized_pointer_text(actual) != _normalized_pointer_text(expected):
-            findings.append(
-                f"{relative} [compatibility-pointer] must be the required root-only pointer"
-            )
-    return findings
-
-
 def audit_agent_surface(root: Path = REPO_ROOT) -> dict[str, object]:
     findings: list[str] = []
-    findings.extend(_compatibility_pointer_findings(root))
     codex_skills = root / ".codex" / "skills"
-    claude_skills = root / ".claude" / "skills"
     canonical = {
         path.parent.name: path
         for path in codex_skills.glob("recoil-*/SKILL.md")
         if path.parent.name != "recoil-address-handoff"
     }
-    mirrors = {
-        path.parent.name: path
-        for path in claude_skills.glob("recoil-*/SKILL.md")
-        if path.parent.name != "recoil-address-handoff"
-    }
-    if set(canonical) != set(mirrors):
+    retired_surfaces = [
+        path for path in (root / "CLAUDE.md", root / ".claude", root / ".agent" / "AGENTS.md")
+        if path.exists()
+    ]
+    if retired_surfaces:
         findings.append(
-            "canonical/mirror skill names differ: "
-            f"canonical={sorted(canonical)}, mirrors={sorted(mirrors)}"
+            "retired duplicate instruction surfaces still exist: "
+            + ", ".join(_relative(path, root) for path in retired_surfaces)
         )
     for name, path in canonical.items():
         relative = _relative(path, root)
@@ -442,39 +393,8 @@ def audit_agent_surface(root: Path = REPO_ROOT) -> dict[str, object]:
                 findings.append(
                     f"{_relative(agents_yaml, root)} [role-metadata] short_description must describe direct work"
                 )
-        mirror = mirrors.get(name)
-        if mirror is None:
-            continue
-        mirror_relative = _relative(mirror, root)
-        mirror_text = mirror.read_text(encoding="utf-8")
-        mirror_metadata, _mirror_body_start = _front_matter(mirror_text)
-        if mirror_metadata.get("name") != name:
-            findings.append(f"{mirror_relative} has the wrong skill name")
-        if mirror_metadata.get("description") != metadata.get("description"):
-            findings.append(
-                f"{mirror_relative} description differs from canonical {relative}"
-            )
-        expected = f".codex/skills/{name}/SKILL.md"
-        required_pointer_lines = (
-            "Root `AGENTS.md` is authoritative. This stub adds no policy.",
-            f"The canonical procedure is `{expected}`.",
-            "Read that file now and follow it verbatim.",
-        )
-        if any(line not in mirror_text for line in required_pointer_lines):
-            findings.append(
-                f"{mirror_relative} is not the required pointer to {expected}"
-            )
-        if (
-            len(mirror_text) > 900
-            or "```" in mirror_text
-            or "python tools/recoil.py" in mirror_text
-        ):
-            findings.append(
-                f"{mirror_relative} [thick-mirror] contains procedure content"
-            )
-
     role_files: list[Path] = []
-    for directory in (root / ".codex" / "agents", root / ".claude" / "agents"):
+    for directory in (root / ".codex" / "agents",):
         if directory.is_dir():
             role_files.extend(sorted(path for path in directory.glob("*") if path.is_file()))
     if role_files:
@@ -484,7 +404,6 @@ def audit_agent_surface(root: Path = REPO_ROOT) -> dict[str, object]:
         )
     address_skill_paths = (
         root / ".codex" / "skills" / "recoil-address-handoff",
-        root / ".claude" / "skills" / "recoil-address-handoff",
     )
     for path in address_skill_paths:
         if path.exists() and any(path.rglob("*")):
@@ -493,7 +412,7 @@ def audit_agent_surface(root: Path = REPO_ROOT) -> dict[str, object]:
     for relative, superseder in HISTORICAL_PROCESS_RECORDS.items():
         findings.extend(_historical_record_findings(root, root / relative, superseder))
 
-    active_paths = _active_surface_paths(root, canonical, mirrors)
+    active_paths = _active_surface_paths(root, canonical)
     historical_paths = {root / relative for relative in HISTORICAL_PROCESS_RECORDS}
     for path in active_paths:
         relative = _relative(path, root)
@@ -576,7 +495,6 @@ def audit_agent_surface(root: Path = REPO_ROOT) -> dict[str, object]:
         "passed": not findings,
         "findings": findings,
         "canonical_skill_count": len(canonical),
-        "mirror_skill_count": len(mirrors),
         "role_file_count": len(role_files),
     }
 

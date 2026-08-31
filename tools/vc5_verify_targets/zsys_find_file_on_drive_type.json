@@ -11,8 +11,8 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zSys/zSys.cpp",
-    "src/GameZRecoil/zSys/zSys.h"
+    "src/GameZRecoil/zSys/zsys.cpp",
+    "src/GameZRecoil/zSys/zsys.h"
   ],
   "functions": [
     {
@@ -21,5 +21,5 @@
       "name": "zSys::FindFileOnDriveType"
     }
   ],
-  "source_from": "src/GameZRecoil/zSys/zSys.cpp"
+  "source_from": "src/GameZRecoil/zSys/zsys.cpp"
 }

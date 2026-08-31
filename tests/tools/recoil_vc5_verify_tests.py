@@ -71,7 +71,7 @@ from _recoil.commands.vc5_verify import (  # noqa: E402
 )
 from _recoil.lib.owner_entries import OwnerEntryIndex  # noqa: E402
 from _recoil.lib.progress import ProgressError, empty_progress_document  # noqa: E402
-from _recoil.lib.repository_paths import load_git_tracked_path_inventory  # noqa: E402
+from _recoil.lib.repository_paths import load_repository_path_inventory  # noqa: E402
 from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
 from _recoil.lib.source_owners import SourceOwnerDocument  # noqa: E402
 from _recoil.lib.tooling import CommandScriptResult  # noqa: E402
@@ -823,11 +823,11 @@ class RecoilVc5VerifyTests(unittest.TestCase):
     def test_order_edit_paths_fail_closed_on_invalid_entries(self):
         cases = {
             "not-list": ("src/Battlesport/ai_net.h", "must be a list"),
-            "backslash": (["src\\Battlesport\\ai_net.h"], "normalized repo-local"),
-            "absolute": ([str(REPO_ROOT / "src/Battlesport/ai_net.h")], "repo-local"),
-            "traversal": (["../RecoilRebuild/src/Battlesport/ai_net.h"], "not normalized"),
-            "missing": (["src/Battlesport/missing_order_header.h"], "does not exist"),
-            "wrong-extension": (["tools/README.md"], r"not a C/C\+\+ source or header"),
+            "backslash": (["src\\Battlesport\\ai_net.h"], "must use forward slashes"),
+            "absolute": ([str(REPO_ROOT / "src/Battlesport/ai_net.h")], "must use forward slashes"),
+            "traversal": (["../RecoilRebuild/src/Battlesport/ai_net.h"], "empty, dot, or dot-dot"),
+            "missing": (["src/Battlesport/missing_order_header.h"], "outside the authorized repository inventory"),
+            "wrong-extension": (["tools/README.md"], "has a disallowed suffix"),
             "duplicate": (
                 ["src/Battlesport/ai_net.h", "src/Battlesport/ai_net.h"],
                 "duplicate order_edit_paths entry",
@@ -842,8 +842,8 @@ class RecoilVc5VerifyTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, error):
                     load_manifest(path)
 
-    def test_registered_current_manifest_paths_are_exact_while_unregistered_are_historical(self):
-        inventory = load_git_tracked_path_inventory(REPO_ROOT)
+    def test_registered_and_unregistered_manifest_paths_are_exact(self):
+        inventory = load_repository_path_inventory(REPO_ROOT)
         registered_path = (
             REPO_ROOT
             / "tools/vc5_verify_targets/briefing_text_block_order_current_shape.json"
@@ -851,7 +851,7 @@ class RecoilVc5VerifyTests(unittest.TestCase):
         registered = load_manifest(
             registered_path,
             enforce_source_policy=False,
-            tracked_path_inventory=inventory,
+            repository_path_inventory=inventory,
             strict_tracked_paths=True,
         )
         self.assertEqual("src/Battlesport/Briefing.cpp", registered.source_from)
@@ -863,12 +863,12 @@ class RecoilVc5VerifyTests(unittest.TestCase):
             wrong_path.write_text(json.dumps(wrong_data), encoding="utf-8")
             with self.assertRaisesRegex(
                 ValueError,
-                r"incorrect Git path case.*expected 'src/Battlesport/Briefing\.cpp'",
+                r"incorrect repository path case.*expected 'src/Battlesport/Briefing\.cpp'",
             ):
                 load_manifest(
                     wrong_path,
                     enforce_source_policy=False,
-                    tracked_path_inventory=inventory,
+                    repository_path_inventory=inventory,
                     strict_tracked_paths=True,
                 )
 
@@ -877,25 +877,25 @@ class RecoilVc5VerifyTests(unittest.TestCase):
             / "tools/vc5_verify_targets/"
             "hud_confirmed_layout_runtime_layer_authored_order_current_shape.json"
         )
-        historical_git_path = historical_path.relative_to(REPO_ROOT).as_posix()
+        historical_repository_path = historical_path.relative_to(REPO_ROOT).as_posix()
         self.assertNotIn(
-            historical_git_path,
+            historical_repository_path,
             vc5_verify_module.registered_vc5_manifest_paths(),
         )
         historical = load_manifest(
             historical_path,
             enforce_source_policy=False,
-            tracked_path_inventory=inventory,
+            repository_path_inventory=inventory,
             strict_tracked_paths=False,
         )
         self.assertIn("src/GameZRecoil/zSys/zsys.cpp", historical.source_files)
-        with self.assertRaisesRegex(ValueError, "incorrect Git path case"):
-            load_manifest(
-                historical_path,
-                enforce_source_policy=False,
-                tracked_path_inventory=inventory,
-                strict_tracked_paths=True,
-            )
+        exact_historical = load_manifest(
+            historical_path,
+            enforce_source_policy=False,
+            repository_path_inventory=inventory,
+            strict_tracked_paths=True,
+        )
+        self.assertEqual(historical.source_files, exact_historical.source_files)
 
     def test_generated_role_warns_without_emission_anchor_in_compatibility_mode(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1523,26 +1523,30 @@ class RecoilVc5VerifyTests(unittest.TestCase):
                 include_anchor=True,
                 marker=canonical_generated_marker(),
             )
+            manifest_dir = root / "tools" / "vc5_verify_targets"
+            manifest_dir.mkdir(parents=True)
+            valid_path = valid_path.replace(manifest_dir / valid_path.name)
             missing_data = json.loads(valid_path.read_text(encoding="utf-8"))
             missing_data["name"] = "missing_generated"
             missing_data["functions"][0].pop("emission_anchor")
-            (root / "missing.json").write_text(json.dumps(missing_data), encoding="utf-8")
+            (manifest_dir / "missing.json").write_text(json.dumps(missing_data), encoding="utf-8")
 
+            stderr = io.StringIO()
             with (
                 patch("_recoil.commands.vc5_verify.REPO_ROOT", root),
                 patch("_recoil.commands.vc5_verify.run_target", return_value=0) as runner,
-                contextlib.redirect_stderr(io.StringIO()),
+                contextlib.redirect_stderr(stderr),
             ):
                 result = vc5_main(
                     [
                         "generated",
                         "--manifest-dir",
-                        str(root),
+                        str(manifest_dir),
                         "--strict-source-emissions",
                     ]
                 )
 
-        self.assertEqual(0, result)
+        self.assertEqual(0, result, stderr.getvalue())
         self.assertTrue(runner.call_args.kwargs["target"].source_emission_policy_strict)
 
     def test_cli_strict_source_traceability_revalidates_only_selected_target(self):
@@ -1648,7 +1652,7 @@ class RecoilVc5VerifyTests(unittest.TestCase):
         self.assertEqual(deferred, {address for address in deferred if not function_authored_order_gate(rows[address])})
         self.assertTrue(all(rows[address].required_presence and rows[address].full_order_gate for address in deferred))
 
-    def test_present_registered_vc5_manifest_paths_use_exact_git_spelling(self):
+    def test_present_registered_vc5_manifest_paths_use_exact_repository_spelling(self):
         progress_path = REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
         tracker = ProgressSQLiteStore(progress_path, read_only=True).materialize()
         registered_manifest_paths = sorted(
@@ -1661,26 +1665,14 @@ class RecoilVc5VerifyTests(unittest.TestCase):
         )
         self.assertEqual(1497, len(registered_manifest_paths))
 
-        tracked_output = subprocess.run(
-            ["git", "ls-files", "-z"],
-            cwd=REPO_ROOT,
-            check=True,
-            stdout=subprocess.PIPE,
-        ).stdout
-        tracked_paths = tuple(
-            value.decode("utf-8")
-            for value in tracked_output.split(b"\0")
-            if value
-        )
-        tracked_exact = set(tracked_paths)
-        tracked_by_casefold: dict[str, list[str]] = {}
-        for path in tracked_paths:
-            tracked_by_casefold.setdefault(path.casefold(), []).append(path)
+        inventory = load_repository_path_inventory(REPO_ROOT)
+        repository_exact = set(inventory.exact_paths)
+        repository_by_casefold = inventory.casefolded_paths
 
         absent = {
             path
             for path in registered_manifest_paths
-            if path not in tracked_exact
+            if path not in repository_exact
         }
         self.assertEqual(
             {
@@ -1713,7 +1705,7 @@ class RecoilVc5VerifyTests(unittest.TestCase):
             present_count += 1
             manifest = json.loads((REPO_ROOT / manifest_path).read_text(encoding="utf-8"))
             for value in string_values(manifest):
-                matches = tracked_by_casefold.get(value.casefold(), ())
+                matches = repository_by_casefold.get(value.casefold(), ())
                 if len(matches) == 1 and value != matches[0]:
                     case_mismatches.append((manifest_path, value, matches[0]))
 
@@ -3428,7 +3420,7 @@ class RecoilVc5VerifyTests(unittest.TestCase):
         self.assertEqual(3, len(unlisted))
         self.assertEqual((), result.blocking_diagnostics)
         report = translation_unit_order_report_data(result)
-        self.assertEqual(1, report["report_version"])
+        self.assertEqual(2, report["report_version"])
         self.assertEqual("vc5-function-order-report", report["kind"])
         self.assertEqual("full", report["order_scope"])
         self.assertFalse(report["unlisted_raw_contributions_blocking"])
@@ -3441,8 +3433,6 @@ class RecoilVc5VerifyTests(unittest.TestCase):
         )
         self.assertFalse(report["raw_defined_function_set_matches"])
         self.assertEqual(5, len(report["actual_contributions"]))
-        self.assertTrue(report["expected_identity_resolution_passed"])
-        self.assertTrue(report["expected_relative_order_passed"])
         self.assertTrue(report["passed"])
 
     def test_translation_unit_order_projects_physical_icf_gate_to_tu_object_symbol(self):

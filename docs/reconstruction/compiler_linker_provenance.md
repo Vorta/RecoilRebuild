@@ -220,4 +220,6 @@ python tools/recoil.py guard vc5-manifest
 python tools/recoil.py verify vc5 --all --skip-bn-compare
 ```
 
-`python tools/recoil.py doctor --quick` also runs the provenance audit.
+Run `python tools/recoil.py audit provenance --strict` when compiler/linker
+provenance changes; the general doctor matrix does not duplicate this focused
+check.

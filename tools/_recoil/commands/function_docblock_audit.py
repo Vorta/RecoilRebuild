@@ -709,11 +709,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--path",
-        "--root",
         dest="path",
         action="append",
         default=[],
-        help="source file or directory to audit; --root is a compatibility alias; defaults to src",
+        help="source file or directory to audit; defaults to src",
     )
     parser.add_argument("--summary", action="store_true", help="print finding counts by type")
     parser.add_argument("--max", type=int, default=80, help="maximum findings to print")

@@ -220,456 +220,6 @@ def _directory_payload(data: bytes, headers: Any, index: int) -> bytes | None:
     return data[offset : offset + directory.size]
 
 
-def _validate_interval_cover(
-    rows: Sequence[Mapping[str, Any]],
-    *,
-    start_key: str,
-    end_key: str,
-    extent: int,
-    label: str,
-) -> list[str]:
-    failures: list[str] = []
-    intervals: list[tuple[int, int, str]] = []
-    for row in rows:
-        if start_key not in row and end_key not in row:
-            continue
-        start = row.get(start_key)
-        end = row.get(end_key)
-        if (
-            not isinstance(start, int)
-            or isinstance(start, bool)
-            or not isinstance(end, int)
-            or isinstance(end, bool)
-            or start < 0
-            or end <= start
-            or end > extent
-        ):
-            failures.append(f"{label}: invalid interval on {row.get('id')!r}: {start!r}..{end!r}")
-            continue
-        intervals.append((start, end, str(row.get("id", ""))))
-    intervals.sort()
-    cursor = 0
-    for start, end, entity_id in intervals:
-        if start > cursor:
-            failures.append(f"{label}: unmodeled range {cursor:#x}..{start:#x}")
-        elif start < cursor:
-            failures.append(f"{label}: overlapping entity {entity_id!r} begins at {start:#x}")
-        cursor = max(cursor, end)
-    if cursor < extent:
-        failures.append(f"{label}: unmodeled range {cursor:#x}..{extent:#x}")
-    if extent and not intervals:
-        failures.append(f"{label}: no typed entities cover the section")
-    return failures
-
-
-def _tracker_integer(value: Any) -> int | None:
-    if isinstance(value, int) and not isinstance(value, bool):
-        return value
-    if isinstance(value, str):
-        try:
-            return int(value, 0)
-        except ValueError:
-            return None
-    return None
-
-
-def _tracker_extent(row: Mapping[str, Any]) -> tuple[int, int] | None:
-    if row.get("extent_state") != "known":
-        return None
-    start = _tracker_integer(row.get("address"))
-    end = _tracker_integer(row.get("end_exclusive"))
-    if end is None:
-        size = _tracker_integer(row.get("size"))
-        end = start + size if start is not None and size is not None else None
-    if start is None or end is None or end <= start:
-        return None
-    return start, end
-
-
-def _catalog_entity_extent(
-    entity: Mapping[str, Any],
-    section: Mapping[str, Any],
-    projection: Mapping[str, Any],
-) -> tuple[int, int] | None:
-    start = entity.get("virtual_start")
-    end = entity.get("virtual_end")
-    if (
-        not isinstance(start, int)
-        or isinstance(start, bool)
-        or not isinstance(end, int)
-        or isinstance(end, bool)
-        or end <= start
-    ):
-        return None
-    section_start = int(projection["image_base"]) + int(section["virtual_address"])
-    return section_start + start, section_start + end
-
-
-def _tracker_section_matches_projection(
-    tracker_section: Mapping[str, Any],
-    section: Mapping[str, Any],
-    projection: Mapping[str, Any],
-) -> bool:
-    reference = tracker_section.get("reference")
-    if not isinstance(reference, Mapping):
-        return False
-    return (
-        tracker_section.get("binary") == "recoil"
-        and tracker_section.get("name") == section.get("name")
-        and _tracker_integer(reference.get("image_address"))
-        == int(projection["image_base"]) + int(section["virtual_address"])
-        and _tracker_integer(reference.get("virtual_size")) == int(section["virtual_size"])
-        and _tracker_integer(reference.get("raw_size")) == int(section["raw_size"])
-    )
-
-
-def _validate_text_identity_binding(
-    *,
-    entity: Mapping[str, Any],
-    identity: Mapping[str, Any],
-    section: Mapping[str, Any],
-    projection: Mapping[str, Any],
-    symbols: Mapping[str, Any],
-    blocks: Mapping[str, Any],
-    output_sections: Mapping[str, Any],
-) -> list[str]:
-    failures: list[str] = []
-    entity_id = entity.get("id")
-    symbol_id = identity.get("symbol_id")
-    if not isinstance(symbol_id, str) or not symbol_id:
-        return [f"catalog .text identity in {entity_id!r} lacks symbol_id"]
-    symbol = symbols.get(symbol_id)
-    if not isinstance(symbol, Mapping) or symbol.get("binary") != "recoil":
-        return [f"catalog .text identity {symbol_id!r} does not resolve to a recoil tracker symbol"]
-    section_id = "recoil:section:.text"
-    tracker_section = output_sections.get(section_id)
-    if not isinstance(tracker_section, Mapping) or not _tracker_section_matches_projection(
-        tracker_section, section, projection
-    ):
-        failures.append(f"catalog .text identity {symbol_id!r} lacks tracker output section {section_id}")
-    if symbol.get("output_section_id") != section_id:
-        failures.append(
-            f"catalog .text identity {symbol_id!r} resolves to tracker section "
-            f"{symbol.get('output_section_id')!r}, expected {section_id}"
-        )
-    entity_extent = _catalog_entity_extent(entity, section, projection)
-    symbol_extent = _tracker_extent(symbol)
-    if entity_extent is None or symbol_extent != entity_extent:
-        failures.append(
-            f"catalog .text identity {symbol_id!r} extent does not exactly match its tracker symbol: "
-            f"catalog={entity_extent}, tracker={symbol_extent}"
-        )
-    block_id = identity.get("source_block_id")
-    block = blocks.get(block_id) if isinstance(block_id, str) else None
-    if not isinstance(block, Mapping) or block.get("binary") != "recoil":
-        failures.append(
-            f"catalog .text identity {symbol_id!r} source_block_id {block_id!r} does not resolve"
-        )
-    else:
-        if symbol.get("physical_block_id") != block_id:
-            failures.append(
-                f"catalog .text identity {symbol_id!r} source block differs from tracker symbol"
-            )
-        contributions = block.get("contribution_ids")
-        if not isinstance(contributions, list) or symbol_id not in contributions:
-            failures.append(
-                f"catalog .text identity {symbol_id!r} is not a contribution of {block_id!r}"
-            )
-    contribution_class = identity.get("contribution_class")
-    if contribution_class != symbol.get("pipeline_class"):
-        failures.append(
-            f"catalog .text identity {symbol_id!r} contribution_class {contribution_class!r} "
-            f"does not match tracker pipeline_class {symbol.get('pipeline_class')!r}"
-        )
-    tracker_comdat = symbol.get("comdat")
-    if not isinstance(tracker_comdat, bool):
-        failures.append(f"catalog .text tracker symbol {symbol_id!r} lacks COMDAT classification")
-    elif identity.get("comdat") is not tracker_comdat:
-        failures.append(
-            f"catalog .text identity {symbol_id!r} COMDAT classification differs from tracker"
-        )
-    if "provider" in identity or "provider" in symbol:
-        if identity.get("provider") != symbol.get("provider"):
-            failures.append(
-                f"catalog .text identity {symbol_id!r} provider classification differs from tracker"
-            )
-    kind = entity.get("kind")
-    if kind == "provider" and not (
-        symbol.get("kind") == "provider-function" or symbol.get("pipeline_class") == "non-authored"
-    ):
-        failures.append(f"catalog .text provider identity {symbol_id!r} is not provider-classified")
-    if kind == "compiler" and not (
-        symbol.get("kind") == "compiler-function"
-        or str(symbol.get("authored_order_role", "")).startswith("compiler-generated-")
-    ):
-        failures.append(f"catalog .text compiler identity {symbol_id!r} is not compiler-classified")
-    return failures
-
-
-def _validate_icf_binding(
-    entity: Mapping[str, Any],
-    identities: Sequence[Mapping[str, Any]],
-    symbols: Mapping[str, Any],
-) -> list[str]:
-    if len(identities) <= 1:
-        return []
-    failures: list[str] = []
-    entity_id = entity.get("id")
-    icf = entity.get("icf")
-    if not isinstance(icf, Mapping):
-        return [f"catalog .text alias group {entity_id!r} lacks ICF tracker binding"]
-    winner_symbol_id = icf.get("winner_symbol_id")
-    winner_symbol = icf.get("winner_symbol")
-    identity_by_id = {
-        identity.get("symbol_id"): identity
-        for identity in identities
-        if isinstance(identity.get("symbol_id"), str)
-    }
-    winner_identity = identity_by_id.get(winner_symbol_id)
-    if not isinstance(winner_identity, Mapping):
-        failures.append(
-            f"catalog .text alias group {entity_id!r} winner_symbol_id is not one of its identities"
-        )
-    elif winner_identity.get("map_symbol") != winner_symbol:
-        failures.append(
-            f"catalog .text alias group {entity_id!r} winner_symbol does not match winner_symbol_id"
-        )
-    winner_status = icf.get("winner_status")
-    for symbol_id in identity_by_id:
-        symbol = symbols.get(symbol_id)
-        tracker_group = symbol.get("icf_address_group") if isinstance(symbol, Mapping) else None
-        if not isinstance(tracker_group, Mapping):
-            failures.append(
-                f"catalog .text alias identity {symbol_id!r} lacks tracker ICF classification"
-            )
-            continue
-        tracker_winner = tracker_group.get("winner_identity_key")
-        if tracker_winner != winner_symbol_id:
-            failures.append(
-                f"catalog .text alias identity {symbol_id!r} has tracker ICF winner "
-                f"{tracker_winner!r}, expected {winner_symbol_id!r}"
-            )
-        if winner_status != tracker_group.get("winner_status"):
-            failures.append(
-                f"catalog .text alias identity {symbol_id!r} ICF winner_status differs from tracker"
-            )
-    return failures
-
-
-def _validate_data_source_binding(
-    *,
-    entity: Mapping[str, Any],
-    section: Mapping[str, Any],
-    projection: Mapping[str, Any],
-    symbols: Mapping[str, Any],
-    storage_contributions: Mapping[str, Any],
-    output_sections: Mapping[str, Any],
-) -> list[str]:
-    failures: list[str] = []
-    entity_id = entity.get("id")
-    source_id = entity.get("source_id")
-    if not isinstance(source_id, str) or not source_id:
-        return [f"catalog section {section['name']}: entity {entity_id!r} lacks source_id"]
-    storage_id: str | None = None
-    symbol_id: str | None = None
-    storage = storage_contributions.get(source_id)
-    if isinstance(storage, Mapping):
-        storage_id = source_id
-        source_symbols = storage.get("symbol_ids")
-        if not isinstance(source_symbols, list) or len(source_symbols) != 1:
-            return [
-                f"catalog data source {source_id!r} must resolve to exactly one tracker symbol"
-            ]
-        symbol_id = str(source_symbols[0])
-    else:
-        symbol = symbols.get(source_id)
-        if isinstance(symbol, Mapping):
-            symbol_id = source_id
-            source_storage = symbol.get("storage_contribution_ids")
-            if not isinstance(source_storage, list) or len(source_storage) != 1:
-                return [
-                    f"catalog data source {source_id!r} must resolve to exactly one storage contribution"
-                ]
-            storage_id = str(source_storage[0])
-            storage = storage_contributions.get(storage_id)
-    symbol = symbols.get(symbol_id) if symbol_id is not None else None
-    if not isinstance(storage, Mapping) or not isinstance(symbol, Mapping):
-        return [f"catalog data source {source_id!r} does not resolve to tracker storage and symbol rows"]
-    if storage.get("binary") != "recoil" or symbol.get("binary") != "recoil":
-        failures.append(f"catalog data source {source_id!r} does not belong to recoil")
-    section_name = str(section["name"])
-    section_id = f"recoil:section:{section_name}"
-    tracker_section = output_sections.get(section_id)
-    if not isinstance(tracker_section, Mapping) or not _tracker_section_matches_projection(
-        tracker_section, section, projection
-    ):
-        failures.append(f"catalog data source {source_id!r} lacks tracker output section {section_id}")
-    if storage.get("output_section_id") != section_id or symbol.get("output_section_id") != section_id:
-        failures.append(
-            f"catalog data source {source_id!r} storage/symbol section does not exactly match {section_id}"
-        )
-    if symbol_id not in storage.get("symbol_ids", []):
-        failures.append(f"catalog data source {source_id!r} storage does not link symbol {symbol_id!r}")
-    if storage_id not in symbol.get("storage_contribution_ids", []):
-        failures.append(f"catalog data source {source_id!r} symbol does not link storage {storage_id!r}")
-    entity_extent = _catalog_entity_extent(entity, section, projection)
-    symbol_extent = _tracker_extent(symbol)
-    reference = storage.get("reference")
-    storage_extent = _tracker_extent(reference) if isinstance(reference, Mapping) else None
-    if entity_extent is None or symbol_extent != entity_extent or storage_extent != entity_extent:
-        failures.append(
-            f"catalog data source {source_id!r} extent does not exactly match tracker storage/symbol: "
-            f"catalog={entity_extent}, storage={storage_extent}, symbol={symbol_extent}"
-        )
-    return failures
-
-
-def _validate_catalog(
-    catalog: Mapping[str, Any],
-    reference_projection: Mapping[str, Any],
-    tracker: Mapping[str, Any] | None = None,
-) -> list[str]:
-    failures: list[str] = []
-    tracker_ready = (
-        isinstance(tracker, Mapping)
-        and tracker.get("schema_version") == SCHEMA_VERSION
-    )
-    if not tracker_ready:
-        failures.append(
-            "catalog tracker cross-resolution requires a "
-            f"schema-v{SCHEMA_VERSION} tracker document"
-        )
-    tracker_rows = tracker if isinstance(tracker, Mapping) else {}
-    symbols = tracker_rows.get("symbols", {})
-    blocks = tracker_rows.get("physical_blocks", {})
-    storage_contributions = tracker_rows.get("storage_contributions", {})
-    output_sections = tracker_rows.get("output_sections", {})
-    if not isinstance(symbols, Mapping):
-        symbols = {}
-        failures.append("catalog tracker symbols collection is missing")
-    if not isinstance(blocks, Mapping):
-        blocks = {}
-        failures.append("catalog tracker physical_blocks collection is missing")
-    if not isinstance(storage_contributions, Mapping):
-        storage_contributions = {}
-        failures.append("catalog tracker storage_contributions collection is missing")
-    if not isinstance(output_sections, Mapping):
-        output_sections = {}
-        failures.append("catalog tracker output_sections collection is missing")
-    if catalog.get("version") != CATALOG_VERSION:
-        failures.append(f"catalog version must be {CATALOG_VERSION}")
-    if catalog.get("binary") != "recoil":
-        failures.append("catalog binary must be recoil")
-    section_catalog = catalog.get("sections")
-    if not isinstance(section_catalog, Mapping):
-        return [*failures, "catalog sections must be an object"]
-    expected_names = [str(row["name"]) for row in reference_projection["sections"]]
-    if set(section_catalog) != set(expected_names):
-        failures.append(
-            "catalog section population differs from retail: "
-            f"expected={expected_names}, catalog={sorted(section_catalog)}"
-        )
-    seen_entity_ids: set[str] = set()
-    for section in reference_projection["sections"]:
-        name = str(section["name"])
-        row = section_catalog.get(name)
-        if not isinstance(row, Mapping):
-            continue
-        entities = row.get("entities")
-        if not isinstance(entities, list) or any(not isinstance(item, Mapping) for item in entities):
-            failures.append(f"catalog section {name}: entities must be a list of objects")
-            continue
-        for entity in entities:
-            entity_id = entity.get("id")
-            if not isinstance(entity_id, str) or not entity_id:
-                failures.append(f"catalog section {name}: every entity requires a stable semantic id")
-            elif entity_id in seen_entity_ids:
-                failures.append(f"catalog entity id is duplicated: {entity_id}")
-            else:
-                seen_entity_ids.add(entity_id)
-            kind = entity.get("kind")
-            allowed = TEXT_ENTITY_KINDS if name == ".text" else DATA_ENTITY_KINDS if name in {".rdata", ".data"} else OTHER_ENTITY_KINDS
-            if kind not in allowed:
-                failures.append(f"catalog section {name}: entity {entity_id!r} has unsupported kind {kind!r}")
-            if name in {".rdata", ".data"} and not isinstance(entity.get("source_id"), str):
-                failures.append(f"catalog section {name}: entity {entity_id!r} lacks source/storage identity")
-            if name == ".text" and kind in {"address-group", "provider", "compiler"}:
-                identities = entity.get("identities")
-                if not isinstance(identities, list) or not identities:
-                    failures.append(f"catalog .text entity {entity_id!r} lacks selected identities")
-                else:
-                    for identity in identities:
-                        if not isinstance(identity, Mapping):
-                            failures.append(f"catalog .text entity {entity_id!r} has malformed identity")
-                            continue
-                        for field in (
-                            "symbol_id",
-                            "map_symbol",
-                            "object",
-                            "source_block_id",
-                            "contribution_class",
-                        ):
-                            if not isinstance(identity.get(field), str) or not identity.get(field):
-                                failures.append(
-                                    f"catalog .text identity in {entity_id!r} lacks {field}"
-                                )
-                        if not isinstance(identity.get("comdat"), bool):
-                            failures.append(f"catalog .text identity in {entity_id!r} lacks COMDAT classification")
-                        failures.extend(
-                            _validate_text_identity_binding(
-                                entity=entity,
-                                identity=identity,
-                                section=section,
-                                projection=reference_projection,
-                                symbols=symbols,
-                                blocks=blocks,
-                                output_sections=output_sections,
-                            )
-                        )
-                    if len(identities) > 1:
-                        failures.extend(_validate_icf_binding(entity, identities, symbols))
-                relocations = entity.get("relocations")
-                if not isinstance(relocations, list):
-                    failures.append(f"catalog .text entity {entity_id!r} lacks relocation inventory")
-            if name in {".rdata", ".data"} and kind in DATA_ENTITY_KINDS - {"padding"}:
-                failures.extend(
-                    _validate_data_source_binding(
-                        entity=entity,
-                        section=section,
-                        projection=reference_projection,
-                        symbols=symbols,
-                        storage_contributions=storage_contributions,
-                        output_sections=output_sections,
-                    )
-                )
-            if kind == "pointer-data" and not isinstance(entity.get("pointers"), list):
-                failures.append(f"catalog pointer entity {entity_id!r} lacks pointer inventory")
-        failures.extend(
-            _validate_interval_cover(
-                entities,
-                start_key="file_start",
-                end_key="file_end",
-                extent=int(section["raw_size"]),
-                label=f"catalog {name} file coverage",
-            )
-        )
-        failures.extend(
-            _validate_interval_cover(
-                entities,
-                start_key="virtual_start",
-                end_key="virtual_end",
-                extent=int(section["virtual_size"]),
-                label=f"catalog {name} virtual coverage",
-            )
-        )
-    overlay = catalog.get("overlay")
-    if not isinstance(overlay, Mapping) or overlay.get("mode") != "exact":
-        failures.append("catalog overlay must explicitly require exact semantic coverage")
-    if catalog.get("directories") != "exact-including-absence":
-        failures.append("catalog must require exact directories including required absence")
-    return failures
-
-
 def _normalize_map_rows(rows: Iterable[Any]) -> list[dict[str, Any]]:
     normalized: list[dict[str, Any]] = []
     for row in rows:
@@ -689,65 +239,6 @@ def _normalize_map_rows(rows: Iterable[Any]) -> list[dict[str, Any]]:
                     }
                 )
     return normalized
-
-
-def _validate_text_population(
-    catalog: Mapping[str, Any],
-    projection: Mapping[str, Any],
-    map_rows: Sequence[Mapping[str, Any]],
-) -> list[str]:
-    failures: list[str] = []
-    text = catalog.get("sections", {}).get(".text", {})
-    entities = text.get("entities", []) if isinstance(text, Mapping) else []
-    expected: list[tuple[int, str, str]] = []
-    image_base = int(projection["image_base"])
-    for entity in entities:
-        if not isinstance(entity, Mapping) or entity.get("kind") not in {"address-group", "provider", "compiler"}:
-            continue
-        virtual_start = entity.get("virtual_start")
-        if not isinstance(virtual_start, int):
-            continue
-        for identity in entity.get("identities", []):
-            if not isinstance(identity, Mapping):
-                continue
-            expected.append(
-                (
-                    image_base + next(
-                        int(section["virtual_address"])
-                        for section in projection["sections"]
-                        if section["name"] == ".text"
-                    ) + virtual_start,
-                    str(identity.get("map_symbol", "")),
-                    str(identity.get("object", "")),
-                )
-            )
-    text_section = next(section for section in projection["sections"] if section["name"] == ".text")
-    text_start = image_base + int(text_section["virtual_address"])
-    text_end = text_start + int(text_section["virtual_size"])
-    observed = [
-        (int(row["address"]), str(row["symbol"]), str(row["object"]))
-        for row in map_rows
-        if text_start <= int(row["address"]) < text_end
-    ]
-    expected_counts = Counter(expected)
-    observed_counts = Counter(observed)
-    missing = sorted((expected_counts - observed_counts).elements())
-    unexpected = sorted((observed_counts - expected_counts).elements())
-    if missing:
-        failures.append(f".text selected MAP population is missing {len(missing)} identity row(s): {missing[:8]}")
-    if unexpected:
-        failures.append(f".text selected MAP population has {len(unexpected)} unexpected row(s): {unexpected[:8]}")
-    if not missing and not unexpected and observed != expected:
-        mismatch = next(
-            index
-            for index, (expected_row, observed_row) in enumerate(zip(expected, observed))
-            if expected_row != observed_row
-        )
-        failures.append(
-            ".text selected MAP order differs at row "
-            f"{mismatch}: expected={expected[mismatch]!r}, observed={observed[mismatch]!r}"
-        )
-    return failures
 
 
 def _validate_coverage_text_population(
@@ -816,113 +307,24 @@ def _validate_coverage_text_population(
     return failures
 
 
-def _resolved_operand(
-    data: bytes,
-    *,
-    file_offset: int,
-    width: int,
-    kind: str,
-    operand_va: int,
-    image_base: int,
-) -> int:
-    if width not in {1, 2, 4}:
-        raise LiveFinalError(f"unsupported catalog operand width {width}")
-    raw = int.from_bytes(data[file_offset : file_offset + width], "little", signed=kind == "rel32")
-    if kind == "rel32":
-        return operand_va + width + raw
-    if kind == "rva32":
-        return image_base + raw
-    if kind == "absolute32":
-        return raw
-    raise LiveFinalError(f"unsupported catalog relocation kind {kind!r}")
-
-
-def _validate_operands(
-    data: bytes,
-    projection: Mapping[str, Any],
-    catalog: Mapping[str, Any],
-    *,
-    label: str,
-) -> list[str]:
-    failures: list[str] = []
-    image_base = int(projection["image_base"])
-    sections_by_name = {str(row["name"]): row for row in projection["sections"]}
-    for section_name, section_catalog in catalog.get("sections", {}).items():
-        if not isinstance(section_catalog, Mapping) or section_name not in sections_by_name:
-            continue
-        section = sections_by_name[section_name]
-        raw_pointer = int(section["raw_pointer"])
-        section_va = image_base + int(section["virtual_address"])
-        for entity in section_catalog.get("entities", []):
-            if not isinstance(entity, Mapping):
-                continue
-            inventories = []
-            if entity.get("kind") in {"address-group", "provider", "compiler"}:
-                inventories.append(entity.get("relocations", []))
-            if entity.get("kind") == "pointer-data":
-                inventories.append(entity.get("pointers", []))
-            for inventory in inventories:
-                for operand in inventory if isinstance(inventory, list) else []:
-                    if not isinstance(operand, Mapping):
-                        failures.append(f"{label}: malformed operand in {entity.get('id')!r}")
-                        continue
-                    offset = operand.get("offset")
-                    width = operand.get("width")
-                    kind = operand.get("type")
-                    target_rva = operand.get("target_rva")
-                    addend = operand.get("addend", 0)
-                    entity_file_start = entity.get("file_start")
-                    entity_virtual_start = entity.get("virtual_start")
-                    if not all(isinstance(value, int) and not isinstance(value, bool) for value in (offset, width, target_rva, addend, entity_file_start, entity_virtual_start)) or not isinstance(kind, str):
-                        failures.append(f"{label}: incomplete operand catalog in {entity.get('id')!r}")
-                        continue
-                    file_offset = raw_pointer + entity_file_start + offset
-                    operand_va = section_va + entity_virtual_start + offset
-                    if file_offset < 0 or file_offset + width > len(data):
-                        failures.append(f"{label}: operand lies outside image in {entity.get('id')!r}")
-                        continue
-                    resolved = _resolved_operand(
-                        data,
-                        file_offset=file_offset,
-                        width=width,
-                        kind=kind,
-                        operand_va=operand_va,
-                        image_base=image_base,
-                    )
-                    expected = image_base + target_rva + addend
-                    if resolved != expected:
-                        failures.append(
-                            f"{label}: {entity.get('id')} operand +{offset:#x} resolves "
-                            f"to {resolved:#x}, expected {expected:#x}"
-                        )
-    return failures
-
-
 def _compare_image_data(
     candidate: Path,
     reference: Path,
     *,
     candidate_data: bytes,
     reference_data: bytes,
-    catalog: Mapping[str, Any] | None = None,
-    coverage: Mapping[str, Any] | None = None,
+    coverage: Mapping[str, Any],
     candidate_map_rows: Iterable[Any],
-    tracker: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     reference_headers = parse_pe_headers(reference_data, source=str(reference))
     candidate_headers = parse_pe_headers(candidate_data, source=str(candidate))
     reference_projection = semantic_projection(reference_data, source=str(reference))
     candidate_projection = semantic_projection(candidate_data, source=str(candidate))
-    if (catalog is None) == (coverage is None):
-        raise LiveFinalError("final image comparison requires exactly one live coverage or legacy catalog")
-    if coverage is not None:
-        failures = validate_coverage_view(
-            coverage,
-            reference_headers=reference_headers,
-            reference_size=len(reference_data),
-        )
-    else:
-        failures = _validate_catalog(catalog or {}, reference_projection, tracker)
+    failures = validate_coverage_view(
+        coverage,
+        reference_headers=reference_headers,
+        reference_size=len(reference_data),
+    )
     semantic_differences = _semantic_differences(reference_projection, candidate_projection)
     if semantic_differences:
         failures.append(f"PE semantic projection differs in {len(semantic_differences)} reported field(s)")
@@ -985,28 +387,9 @@ def _compare_image_data(
         failures.append("overlay bytes or provider tail selection differ")
 
     normalized_map_rows = _normalize_map_rows(candidate_map_rows)
-    if coverage is not None:
-        failures.extend(
-            _validate_coverage_text_population(coverage, candidate_projection, normalized_map_rows)
-        )
-    else:
-        legacy_catalog = catalog or {}
-        failures.extend(
-            _validate_text_population(legacy_catalog, candidate_projection, normalized_map_rows)
-        )
-        reference_operand_failures = _validate_operands(
-            reference_data, reference_projection, legacy_catalog, label="retail catalog"
-        )
-        if reference_operand_failures:
-            failures.extend(reference_operand_failures)
-        failures.extend(
-            _validate_operands(
-                candidate_data,
-                candidate_projection,
-                legacy_catalog,
-                label="candidate",
-            )
-        )
+    failures.extend(
+        _validate_coverage_text_population(coverage, candidate_projection, normalized_map_rows)
+    )
 
     raw_differences = _byte_difference_ranges(reference_data, candidate_data)
     timestamp_offset = reference_headers.pe_offset + 8
@@ -1022,14 +405,9 @@ def _compare_image_data(
         "passed": not failures,
         "candidate": display_path(candidate),
         "reference": display_path(reference),
-        "coverage_mode": "live-generated" if coverage is not None else "legacy-catalog",
-        "coverage_version": coverage.get("version") if coverage is not None else None,
-        "catalog_version": catalog.get("version") if catalog is not None else None,
-        "catalog_complete": (
-            coverage.get("complete") is True
-            if coverage is not None
-            else not any("catalog" in failure or "unmodeled" in failure for failure in failures)
-        ),
+        "coverage_mode": "live-generated",
+        "coverage_version": coverage.get("version"),
+        "coverage_complete": coverage.get("complete") is True,
         "semantic_failures": failures,
         "semantic_differences": semantic_differences,
         "sections": section_results,
@@ -1056,10 +434,8 @@ def compare_images(
     candidate: Path,
     reference: Path,
     *,
-    catalog: Mapping[str, Any] | None = None,
-    coverage: Mapping[str, Any] | None = None,
+    coverage: Mapping[str, Any],
     candidate_map_rows: Iterable[Any],
-    tracker: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Compare both images directly while stable read handles remain open."""
 
@@ -1071,24 +447,21 @@ def compare_images(
             reference,
             candidate_data=candidate_data,
             reference_data=reference_data,
-            catalog=catalog,
             coverage=coverage,
             candidate_map_rows=candidate_map_rows,
-            tracker=tracker,
         )
         report["retail_physical_identity"] = retail_handle.identity.to_dict()
         report["candidate_physical_identity"] = candidate_handle.identity.to_dict()
-        if coverage is not None:
-            expected_identity = coverage.get("retail_physical_identity")
-            if isinstance(expected_identity, Mapping) and dict(expected_identity) != retail_handle.identity.to_dict():
-                report["semantic_failures"].append(
-                    "retail physical file identity changed after typed coverage derivation"
-                )
-                report["passed"] = False
+        expected_identity = coverage.get("retail_physical_identity")
+        if isinstance(expected_identity, Mapping) and dict(expected_identity) != retail_handle.identity.to_dict():
+            report["semantic_failures"].append(
+                "retail physical file identity changed after typed coverage derivation"
+            )
+            report["passed"] = False
         return report
 
 
-def _load_catalog(
+def _load_coverage(
     progress_path: Path,
     *,
     reference: Path = DEFAULT_REFERENCE,
@@ -1116,7 +489,7 @@ def _load_catalog(
     return coverage, document.data
 
 
-def _load_catalog_from_open_retail(
+def _load_coverage_from_open_retail(
     progress_path: Path,
     *,
     reference: Path,
@@ -1174,7 +547,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     # Keep retail deny-write/deny-delete identity live across coverage
     # extraction, the fresh build, and the complete direct comparison.
     with StableReadHandle(args.reference) as retail_operation_handle:
-        validation_model, tracker = _load_catalog_from_open_retail(
+        coverage, _tracker = _load_coverage_from_open_retail(
             args.progress,
             reference=args.reference,
             retail_handle=retail_operation_handle,
@@ -1188,22 +561,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             if map_path is None:
                 raise LiveFinalError("--candidate requires its fresh --map for selected population validation")
         parsed_map = parse_link_map(map_path)
-        if validation_model.get("kind") == "live-final-image-coverage":
-            report = compare_images(
-                candidate,
-                args.reference,
-                coverage=validation_model,
-                candidate_map_rows=parsed_map.symbols,
-                tracker=tracker,
-            )
-        else:
-            report = compare_images(
-                candidate,
-                args.reference,
-                catalog=validation_model,
-                candidate_map_rows=parsed_map.symbols,
-                tracker=tracker,
-            )
+        report = compare_images(
+            candidate,
+            args.reference,
+            coverage=coverage,
+            candidate_map_rows=parsed_map.symbols,
+        )
     report["build_root"] = build_root.as_posix() if build_root is not None else None
     report["fresh_build"] = build_root is not None
     report["map"] = display_path(map_path)
@@ -1249,7 +612,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report, indent=2))
     else:
         print(f"Live final semantic image: {'PASS' if report['passed'] else 'FAIL'}")
-        print(f"- catalog complete: {str(report['catalog_complete']).lower()}")
+        print(f"- typed coverage complete: {str(report['coverage_complete']).lower()}")
         print(f"- acceptance eligible: {str(report.get('acceptance_eligible', False)).lower()}")
         print(f"- candidate timestamp (diagnostic): {report['candidate_timestamp']}")
         print(f"- raw file equality (diagnostic): {str(report['raw_file_equal_diagnostic']).lower()}")

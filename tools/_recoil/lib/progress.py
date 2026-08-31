@@ -223,7 +223,7 @@ def _repository_path_error(exc: RepositoryPathError) -> ProgressError:
 
 
 def _lexical_repository_resource_path(value: str, *, context: str) -> str:
-    """Normalize replayed path claims without inventing current Git identity.
+    """Normalize replayed path claims without inventing current repository identity.
 
     Resource-claim rows are persisted concurrency identities.  Their replay
     remains lexical; current command consumers authenticate tracked files at
@@ -883,7 +883,7 @@ class ProgressDocument:
 
             # Persisted target registration supplies a historical projection.
             # Legacy block source-shape labels are only a fail-closed fallback
-            # when that projection has no implementation root.  Current Git
+            # when that projection has no implementation root. Current repository
             # spelling is authenticated later from the canonical checkout's
             # tracked manifest; this layer must not case-normalize old rows.
             exact_source_roots = {

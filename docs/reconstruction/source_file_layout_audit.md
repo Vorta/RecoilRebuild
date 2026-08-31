@@ -150,18 +150,17 @@ edges, production `.inl` files, or compatibility-only final-build exclusions
 remain. This negative source-shape result does not by itself prove an original
 filename or translation-unit split.
 
-The live, non-mutating inventory for this debt is:
+The live strict inventory is:
 
 ```powershell
-python tools/recoil.py audit source-fragments --root src --json
+python tools/recoil.py guard source-fragments --root src --json
 ```
 
 It derives preservation-header files (`*_body.h`, `*_impl.h`, and
 `*_impl_body.h`), direct and nested quoted include edges, quoted `.c`/`.cpp`
 includes, production `.inl` files, and compatibility-only final-build source
 exclusions from the current source tree and final-build manifest. The strict
-counterpart is `python tools/recoil.py guard source-fragments --root src`.
-There is no allowlist. The guard currently reports zero in all five categories,
+There is no allowlist. The guard currently reports zero in all categories,
 and the VC-manifest guard plus direct live order acceptance apply the same
 classifier to each target's declared and transitive repo-local production
 closure.

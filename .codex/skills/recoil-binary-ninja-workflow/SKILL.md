@@ -5,11 +5,16 @@ description: Inspect the already-open Recoil Binary Ninja database read-only for
 
 # Recoil Binary Ninja Read-Only Workflow
 
-Read root `AGENTS.md`, check `get_bridge_info` and `list_tools`, then run:
+Read root `AGENTS.md`. Once after the user opens, reopens, or switches the
+database for the current working session, authenticate the intended input with:
 
 ```powershell
-python tools/recoil.py doctor --quick --binja
+python tools/recoil.py binja preflight --binary recoil --strict
 ```
+
+Reuse that result for subsequent read-only slices in the same session. Do not
+repeat preflight merely because the address, slice, or question changes; run it
+again only after the open database changes or the connection is lost.
 
 Require the correct database to be already open. Never load, switch, patch, save, rename, retype, or otherwise mutate Binary Ninja in this workflow.
 

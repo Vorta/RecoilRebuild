@@ -10,7 +10,7 @@
   "check_translation_unit_function_order": true,
   "order_edit_paths": [
     "src/GameZRecoil/zUtil/zutl_zar.cpp",
-    "src/GameZRecoil/zReader/zReader.h"
+    "src/GameZRecoil/zReader/zreader.h"
   ],
   "functions": [
     {

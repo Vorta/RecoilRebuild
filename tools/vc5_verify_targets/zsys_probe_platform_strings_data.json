@@ -3,7 +3,7 @@
   "description": "VC data-symbol verification for zSys DirectDraw/DirectInput platform-probe strings.",
   "source_filename": "zSys.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
-  "source_from": "src/GameZRecoil/zSys/zSys.cpp",
+  "source_from": "src/GameZRecoil/zSys/zsys.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -12,7 +12,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zSys/zSys.cpp"
+    "src/GameZRecoil/zSys/zsys.cpp"
   ],
   "data_symbols": [
     {

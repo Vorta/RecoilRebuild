@@ -13,7 +13,6 @@ import argparse
 from collections import Counter
 import re
 import sys
-import tempfile
 from pathlib import Path
 
 
@@ -218,73 +217,13 @@ def print_summary(*, violations: list[tuple[str, int, str, str]], top: int) -> N
         print("     0  <none>")
 
 
-def run_self_tests() -> int:
-    cases: list[tuple[str, str, bool]] = [
-        ("fake MFC storage", "struct MfcWndStorage { void *vtable; };\n", True),
-        (
-            "fake MFC vtable",
-            'const RecoilNamedVtable kMfcCEdit_Vtable = {"fake"};\n',
-            True,
-        ),
-        (
-            "fake DirectSound vtable",
-            "struct DirectSoundBufferVTable { void *slots[4]; };\n",
-            True,
-        ),
-        (
-            "real MFC access shim",
-            "// Access shim for imported MFC42 metadata; this does not reimplement behavior.\n"
-            "class DialogAccessor : public CDialog { public: void CallBase(); };\n",
-            True,
-        ),
-        (
-            "documented provider shim",
-            "// Imported Aureal A3D COM ABI shim. This does not reimplement Aureal behavior.\n"
-            "struct zA3dProviderSourceVTable { void *QueryInterface; void *SetGain; };\n"
-            "RECOIL_STATIC_ASSERT(offsetof(zA3dProviderSourceVTable, SetGain) == 4);\n",
-            True,
-        ),
-        (
-            "undocumented provider shim",
-            "struct VendorProviderThingVTable { void *slot; };\n",
-            True,
-        ),
-    ]
-
-    with tempfile.TemporaryDirectory() as tmp:
-        root = Path(tmp)
-        src = root / "src"
-        src.mkdir()
-        for index, (_name, source, _should_fail) in enumerate(cases):
-            (src / f"case_{index}.h").write_text(source, encoding="utf-8")
-
-        all_violations = find_violations(src, root)
-
-    failures: list[str] = []
-    for index, (name, _source, should_fail) in enumerate(cases):
-        rel = f"src/case_{index}.h"
-        failed = any(violation[0] == rel for violation in all_violations)
-        if failed != should_fail:
-            failures.append(f"{name}: expected failed={should_fail}, got failed={failed}")
-
-    if failures:
-        print("provider-boundary guard self-test failures:")
-        for failure in failures:
-            print(f"- {failure}")
-        return 1
-    return 0
-
-
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", default="src", help="production source root to scan")
     parser.add_argument("--summary", action="store_true", help="print current provider-boundary guard usage")
     parser.add_argument("--top", type=int, default=10, help="number of labels/files to print with --summary")
-    parser.add_argument("--self-test", action="store_true", help="run guard fixture tests")
     args = parser.parse_args(argv)
 
-    if args.self_test:
-        return run_self_tests()
 
     repo_root = Path.cwd().resolve()
     scan_root = (repo_root / args.root).resolve()

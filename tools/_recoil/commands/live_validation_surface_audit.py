@@ -20,11 +20,9 @@ TEXT_SUFFIXES = {".py", ".json", ".toml", ".md", ".txt", ".cmake", ".ps1", ".yml
 ROOTS = (
     REPO_ROOT / "tools",
     REPO_ROOT / ".codex",
-    REPO_ROOT / ".claude",
     REPO_ROOT / "docs" / "reconstruction",
     REPO_ROOT / "cmake",
     REPO_ROOT / "AGENTS.md",
-    REPO_ROOT / "CLAUDE.md",
     REPO_ROOT / "README.md",
 )
 STRUCTURED_SQLITE_TEST_PATHS = (
@@ -63,17 +61,14 @@ REPOSITORY_LOGICAL_CONSUMERS = frozenset(
 )
 SHARED_REPOSITORY_PATH_DEFINITIONS = frozenset(
     {
-        "GitTrackedPathInventory",
-        "TrackedRepositoryPath",
+        "RepositoryPathInventory",
+        "RepositoryFile",
         "HistoricalPathResolution",
-        "load_git_tracked_path_inventory",
+        "load_repository_path_inventory",
         "validate_repository_relative_path",
-        "resolve_tracked_repository_file",
+        "resolve_repository_file",
         "diagnose_historical_repository_path",
         "normalize_generated_repository_path",
-        "TrackedRepositoryFile",
-        "_git_path_command",
-        "_validate_repository_path_lexical",
     }
 )
 # Each entry must be a reviewed physical-only projection (for example a build
@@ -163,6 +158,36 @@ class Finding:
     text: str
 
 
+class _SourceCache:
+    """Operation-local text and AST cache shared by the audit passes."""
+
+    def __init__(self) -> None:
+        self._sources: dict[Path, str | None] = {}
+        self._trees: dict[Path, ast.AST | None] = {}
+
+    def source(self, path: Path) -> str | None:
+        key = path.resolve()
+        if key not in self._sources:
+            try:
+                self._sources[key] = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                self._sources[key] = None
+        return self._sources[key]
+
+    def tree(self, path: Path) -> ast.AST | None:
+        key = path.resolve()
+        if key not in self._trees:
+            source = self.source(path)
+            if source is None:
+                self._trees[key] = None
+            else:
+                try:
+                    self._trees[key] = ast.parse(source)
+                except SyntaxError:
+                    self._trees[key] = None
+        return self._trees[key]
+
+
 def _relative_path(path: Path) -> str | None:
     try:
         return path.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
@@ -205,12 +230,20 @@ def _contains_candidate_artifact_digest(value_text: str) -> bool:
     )
 
 
-def _unsafe_python_findings(path: Path, source: str) -> list[Finding]:
+def _unsafe_python_findings(
+    path: Path,
+    source: str,
+    *,
+    tree: ast.AST | None = None,
+) -> list[Finding]:
     """Find executable attempts to turn candidate artifacts into expected truth."""
 
-    try:
-        tree = ast.parse(source)
-    except SyntaxError:
+    if tree is None:
+        try:
+            tree = ast.parse(source)
+        except SyntaxError:
+            tree = None
+    if tree is None:
         # Syntax errors belong to the normal Python/unit-test checks.  Retain the
         # line scanner below rather than disguising one as a validation finding.
         return []
@@ -307,21 +340,25 @@ def _files(paths: Iterable[Path]) -> Iterable[Path]:
             yield candidate
 
 
-def audit_paths(paths: Iterable[Path]) -> list[Finding]:
+def audit_paths(
+    paths: Iterable[Path],
+    *,
+    cache: _SourceCache | None = None,
+) -> list[Finding]:
+    cache = cache or _SourceCache()
     findings: list[Finding] = []
     for path in sorted(set(_files(paths)), key=lambda item: item.as_posix().casefold()):
         resolved = path.resolve()
         if resolved == SELF:
             continue
-        try:
-            source = path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
+        source = cache.source(path)
+        if source is None:
             continue
         lines = source.splitlines()
         relative = _relative_path(path)
         approved_currentness = relative in CURRENTNESS_IDENTITY_PATHS
         if path.suffix.casefold() == ".py":
-            findings.extend(_unsafe_python_findings(path, source))
+            findings.extend(_unsafe_python_findings(path, source, tree=cache.tree(path)))
         for line_number, line in enumerate(lines, start=1):
             # Game/runtime algorithms named hash table or hash value are not
             # workspace validation mechanisms.
@@ -357,15 +394,17 @@ def audit_paths(paths: Iterable[Path]) -> list[Finding]:
     return findings
 
 
-def _targeted_direct_evidence_findings() -> list[Finding]:
+def _targeted_direct_evidence_findings(
+    cache: _SourceCache | None = None,
+) -> list[Finding]:
     """Guard exact authority/test surfaces that generic token scans omit."""
 
+    cache = cache or _SourceCache()
     findings: list[Finding] = []
     for path in STRUCTURED_SQLITE_TEST_PATHS:
-        try:
-            source = path.read_text(encoding="utf-8")
-            tree = ast.parse(source)
-        except (OSError, UnicodeDecodeError, SyntaxError):
+        source = cache.source(path)
+        tree = cache.tree(path)
+        if source is None or tree is None:
             continue
         lines = source.splitlines()
         for node in ast.walk(tree):
@@ -414,10 +453,7 @@ def _targeted_direct_evidence_findings() -> list[Finding]:
                     token=token,
                     text=lines[line - 1].strip()[:240],
                 ))
-    try:
-        source = CALL_CONTRACT_AUTHORITY_PATH.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
-        source = ""
+    source = cache.source(CALL_CONTRACT_AUTHORITY_PATH) or ""
     for line_number, line in enumerate(source.splitlines(), start=1):
         if "vc5_verify_bn_cache" in line:
             findings.append(Finding(
@@ -485,6 +521,7 @@ def _registered_repository_path_authority_findings(
     *,
     repository_root: Path = REPO_ROOT,
     component_paths: Iterable[str] = CALL_CONTRACT_VERIFIER_COMPONENT_PATHS,
+    cache: _SourceCache | None = None,
 ) -> list[Finding]:
     """Reject independent physical-to-logical case authority in verifier code.
 
@@ -495,13 +532,13 @@ def _registered_repository_path_authority_findings(
     identity.
     """
 
+    cache = cache or _SourceCache()
     findings: list[Finding] = []
     for relative in sorted(set(component_paths), key=str.casefold):
         path = repository_root / Path(*relative.split("/"))
-        try:
-            source = path.read_text(encoding="utf-8")
-            tree = ast.parse(source)
-        except (OSError, UnicodeDecodeError, SyntaxError):
+        source = cache.source(path)
+        tree = cache.tree(path)
+        if source is None or tree is None:
             continue
         lines = source.splitlines()
         display = display_path(path, repository_root)
@@ -593,16 +630,17 @@ def _machine_local_authority_routing_findings(
     *,
     repository_root: Path = REPO_ROOT,
     consumers: Iterable[tuple[str, str, str]] = MACHINE_LOCAL_AUTHORITY_DEFAULTS,
+    cache: _SourceCache | None = None,
 ) -> list[Finding]:
     """Require every ledger default to bind directly to the canonical root."""
 
+    cache = cache or _SourceCache()
     findings: list[Finding] = []
     for relative, assignment_name, authority_path in consumers:
         path = repository_root / Path(*relative.split("/"))
-        try:
-            source = path.read_text(encoding="utf-8")
-            tree = ast.parse(source)
-        except (OSError, UnicodeDecodeError, SyntaxError):
+        source = cache.source(path)
+        tree = cache.tree(path)
+        if source is None or tree is None:
             continue
         lines = source.splitlines()
         string_constants: dict[str, str] = {}
@@ -682,17 +720,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--json", action="store_true")
-    parser.add_argument("--path", action="append", type=Path, default=[])
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     configure_stdio()
     args = build_parser().parse_args(argv)
-    findings = audit_paths(args.path or ROOTS)
-    findings.extend(_targeted_direct_evidence_findings())
-    findings.extend(_registered_repository_path_authority_findings())
-    findings.extend(_machine_local_authority_routing_findings())
+    cache = _SourceCache()
+    findings = audit_paths(ROOTS, cache=cache)
+    findings.extend(_targeted_direct_evidence_findings(cache))
+    findings.extend(_registered_repository_path_authority_findings(cache=cache))
+    findings.extend(_machine_local_authority_routing_findings(cache=cache))
     findings.extend(
         Finding(
             path=row["path"],

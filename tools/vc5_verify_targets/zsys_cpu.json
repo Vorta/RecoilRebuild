@@ -12,7 +12,7 @@
   ],
   "source_files": [
     "src/GameZRecoil/zSys/zsys_cpu.cpp",
-    "src/GameZRecoil/zSys/zSys.h"
+    "src/GameZRecoil/zSys/zsys.h"
   ],
   "functions": [
     {

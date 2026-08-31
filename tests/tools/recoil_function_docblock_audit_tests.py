@@ -861,14 +861,14 @@ class RecoilFunctionDocblockAuditTests(unittest.TestCase):
         self.assertEqual(2, result.returncode)
         self.assertIn("unrecognized arguments: --changed", result.stderr)
 
-    def test_root_option_is_an_exact_path_alias(self) -> None:
+    def test_retired_root_alias_is_rejected(self) -> None:
         module = load_audit_module()
 
-        args = module.build_parser().parse_args(
-            ["--root", "src/Battlesport/hud.cpp"]
-        )
-
-        self.assertEqual(["src/Battlesport/hud.cpp"], args.path)
+        with self.assertRaises(SystemExit) as raised:
+            module.build_parser().parse_args(
+                ["--root", "src/Battlesport/hud.cpp"]
+            )
+        self.assertEqual(2, raised.exception.code)
 
     def test_default_and_explicit_src_cover_full_production_tree(self) -> None:
         module = load_audit_module()

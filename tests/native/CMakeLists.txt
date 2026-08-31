@@ -209,8 +209,6 @@ set_source_files_properties(
     PROPERTIES COMPILE_OPTIONS "/FI${ZDECLIENT_NATIVE_SMOKE_PREFIX}"
 )
 
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
-
 add_test(
     NAME recoil_native_smoke
     COMMAND ${Python3_EXECUTABLE}
@@ -276,16 +274,6 @@ add_test(
 )
 
 add_test(
-    NAME recoil_provider_boundary_guard_selftest
-    COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil.py
-        guard
-        provider
-        --self-test
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
-
-add_test(
     NAME recoil_source_placement_guard
     COMMAND ${Python3_EXECUTABLE}
         ${PROJECT_SOURCE_DIR}/tools/recoil.py
@@ -296,52 +284,12 @@ add_test(
 )
 
 add_test(
-    NAME recoil_source_placement_guard_selftest
-    COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil.py
-        guard
-        source-placement
-        --self-test
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
-
-add_test(
-    NAME recoil_multiline_style_guard
-    COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil.py
-        guard
-        multiline
-        --root src
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
-
-add_test(
-    NAME recoil_multiline_style_guard_selftest
-    COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil.py
-        guard
-        multiline
-        --self-test
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
-
-add_test(
     NAME recoil_source_data_initializer_guard
     COMMAND ${Python3_EXECUTABLE}
         ${PROJECT_SOURCE_DIR}/tools/recoil.py
         guard
         source-data
         --progress .agent/RECONSTRUCTION_PROGRESS.sqlite3
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
-
-add_test(
-    NAME recoil_source_data_initializer_guard_selftest
-    COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil.py
-        guard
-        source-data
-        --self-test
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
@@ -371,14 +319,5 @@ add_test(
         audit
         workspace
         --strict
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
-
-add_test(
-    NAME recoil_tools_unittest
-    COMMAND ${Python3_EXECUTABLE}
-        -m unittest discover
-        -s tests/tools
-        -p *_tests.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )

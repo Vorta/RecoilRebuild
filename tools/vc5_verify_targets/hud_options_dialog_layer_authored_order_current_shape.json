@@ -42,7 +42,7 @@
     "src/GameZRecoil/zUI/zui_widgets.cpp",
     "src/Battlesport/RecoilApp.cpp",
     "src/GameZRecoil/zFMV/fmv_script.cpp",
-    "src/GameZRecoil/zSys/zSys.cpp"
+    "src/GameZRecoil/zSys/zsys.cpp"
   ],
   "translation_unit_function_order": [
     {

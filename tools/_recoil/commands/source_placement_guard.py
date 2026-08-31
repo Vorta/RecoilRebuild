@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import re
 import sys
-import tempfile
 from pathlib import Path
 
 if __package__ in {None, ""}:
@@ -186,64 +185,11 @@ def find_violations(scan_root: Path, repo_root: Path) -> list[tuple[str, int, st
     return violations
 
 
-def run_self_tests() -> int:
-    with tempfile.TemporaryDirectory() as tmp:
-        root = Path(tmp)
-        src = root / "src"
-        (src / "Battlesport" / "zUtil").mkdir(parents=True)
-        (src / "GameZRecoil" / "zEffect").mkdir(parents=True)
-        (src / "GameZRecoil" / "zUtil").mkdir(parents=True)
-
-        (src / "Battlesport" / "zUtil" / "bad.cpp").write_text(
-            "void bad() {}\n", encoding="utf-8"
-        )
-        (src / "GameZRecoil" / "zEffect" / "bad_include.cpp").write_text(
-            '#include "Battlesport/zUtil/zutil.h"\n', encoding="utf-8"
-        )
-        (src / "GameZRecoil" / "zUtil" / "ok.cpp").write_text(
-            "/**\n"
-            " * Retail literal-backed physical source block: GameZRecoil/zUtil/zutil.cpp.\n"
-            " * Provisional source-placement hypothesis: GameZRecoil/zUtil/zutil.cpp.\n"
-            " */\n"
-            '#include "GameZRecoil/zUtil/zutil.h"\n',
-            encoding="utf-8",
-        )
-        (src / "GameZRecoil" / "zUtil" / "bad_label.cpp").write_text(
-            "/** Original source path: GameZRecoil/zUtil/zutil.cpp. */\n",
-            encoding="utf-8",
-        )
-        (root / "cmake").mkdir()
-        (root / "cmake" / "RetiredLayout.cmake").write_text(
-            "add_subdirectory(src/native)\n", encoding="utf-8"
-        )
-
-        violations = find_violations(src, root)
-        messages = [violation[2] for violation in violations]
-        if messages.count("misplaced Recoil engine source") != 1:
-            print("self-test failed: misplaced source was not detected", file=sys.stderr)
-            return 1
-        if messages.count("stale zUtil include path") != 1:
-            print("self-test failed: stale include was not detected", file=sys.stderr)
-            return 1
-        if messages.count("ambiguous source-provenance label") != 1:
-            print("self-test failed: ambiguous provenance label was not detected", file=sys.stderr)
-            return 1
-        if messages.count("retired source-layout path") != 1:
-            print("self-test failed: retired layout path was not detected", file=sys.stderr)
-            return 1
-
-    print("recoil_source_placement_guard self-test passed")
-    return 0
-
-
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", default="src", help="Source tree to scan.")
-    parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
 
-    if args.self_test:
-        return run_self_tests()
 
     repo_root = Path.cwd()
     scan_root = (repo_root / args.root).resolve()

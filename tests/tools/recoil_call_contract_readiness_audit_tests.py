@@ -21,7 +21,7 @@ from _recoil.commands.call_contract_verify import (  # noqa: E402
     call_contract_registration_path_reconciliation,
 )
 from _recoil.lib.repository_paths import (  # noqa: E402
-    load_git_tracked_path_inventory,
+    load_repository_path_inventory,
 )
 
 
@@ -151,13 +151,13 @@ class CallContractReadinessAuditTests(unittest.TestCase):
         self.assertTrue(args.json)
 
     def test_historical_wrong_case_is_diagnostic_only(self) -> None:
-        inventory = load_git_tracked_path_inventory(REPO_ROOT)
+        inventory = load_repository_path_inventory(REPO_ROOT)
         result = call_contract_registration_path_reconciliation(
             target_id="recoil:vc5-target:unit",
             registration={
-                "order_edit_paths": ["src/GameZRecoil/zSys/zsys.cpp"]
+                "order_edit_paths": ["src/GameZRecoil/zSys/zSys.cpp"]
             },
-            current_target=self.target("src/GameZRecoil/zSys/zSys.cpp"),
+            current_target=self.target("src/GameZRecoil/zSys/zsys.cpp"),
             inventory=inventory,
         )
 
@@ -169,8 +169,8 @@ class CallContractReadinessAuditTests(unittest.TestCase):
             [
                 {
                     "status": "historical-case-alias",
-                    "historical_path": "src/GameZRecoil/zSys/zsys.cpp",
-                    "current_git_path": "src/GameZRecoil/zSys/zSys.cpp",
+                    "historical_path": "src/GameZRecoil/zSys/zSys.cpp",
+                    "current_repository_path": "src/GameZRecoil/zSys/zsys.cpp",
                     "current": False,
                     "tracker_mutated": False,
                 }
@@ -181,10 +181,10 @@ class CallContractReadinessAuditTests(unittest.TestCase):
     def test_absent_order_edit_projection_compares_source_from_like_for_like(
         self,
     ) -> None:
-        inventory = load_git_tracked_path_inventory(REPO_ROOT)
+        inventory = load_repository_path_inventory(REPO_ROOT)
         current_target = self.target(
             "src/Battlesport/Briefing.cpp",
-            "src/Battlesport/Briefing.h",
+            "src/Battlesport/briefing.h",
         )
         current_target.source_from = "src/Battlesport/Briefing.cpp"
 
@@ -209,7 +209,7 @@ class CallContractReadinessAuditTests(unittest.TestCase):
         )
 
     def test_zui_registration_drift_has_exact_field_projection(self) -> None:
-        inventory = load_git_tracked_path_inventory(REPO_ROOT)
+        inventory = load_repository_path_inventory(REPO_ROOT)
         result = call_contract_registration_path_reconciliation(
             target_id="recoil:vc5-target:zui_438920_438980_authored_order",
             registration={

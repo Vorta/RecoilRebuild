@@ -285,7 +285,10 @@ from _recoil.lib.binja import (
     DataVariable,
     Symbol,
 )
-from _recoil.lib.repository_paths import RepositoryPathError
+from _recoil.lib.repository_paths import (
+    RepositoryPathError,
+    load_repository_path_inventory,
+)
 from _recoil.lib.coff_alias import CoffAlias, CoffAliasSource
 from _recoil.lib.progress import (
     AUTHORED_ORDER_DIMENSIONS,
@@ -19569,6 +19572,38 @@ class InvocationSignatureTests(unittest.TestCase):
                 call_contract_verify_module._call_contract_bn_call_budget(
                     invalid
                 )
+
+    def test_schema37_default_bridge_is_target_qualified_without_preflight(
+        self,
+    ) -> None:
+        bridge = MagicMock()
+        image = SimpleNamespace(
+            bndb_path=r"D:\Recoil Project\Decomp\Recoil.bndb"
+        )
+        with (
+            patch.object(
+                call_contract_verify_module,
+                "reference_image",
+                return_value=image,
+            ),
+            patch.object(
+                call_contract_verify_module,
+                "BinaryNinjaBridge",
+                return_value=bridge,
+            ) as bridge_factory,
+        ):
+            actual = call_contract_verify_module._new_call_contract_bridge(
+                bridge_url="http://127.0.0.1:9000",
+                body_count=160,
+            )
+
+        self.assertIs(bridge, actual)
+        bridge_factory.assert_called_once_with(
+            "http://127.0.0.1:9000",
+            binary="Recoil.bndb",
+            call_budget=12032,
+        )
+        self.assertFalse(hasattr(call_contract_verify_module, "run_preflight"))
 
     def test_schema37_overlapping_eh_short_jump_is_not_tail_call(self) -> None:
         rows = parse_assembly(
@@ -75161,21 +75196,6 @@ class ChkstkCompilerHelperCandidateBridgeTests(unittest.TestCase):
 
 
 class CallContractStatSignatureTests(unittest.TestCase):
-    @staticmethod
-    def _track(root: Path) -> None:
-        subprocess.run(
-            ["git", "init", "--quiet"],
-            cwd=root,
-            check=True,
-            capture_output=True,
-        )
-        subprocess.run(
-            ["git", "add", "--all"],
-            cwd=root,
-            check=True,
-            capture_output=True,
-        )
-
     def test_exact_physical_state_schema_and_missing_row(self):
         module = call_contract_verify_module
         with tempfile.TemporaryDirectory() as temporary:
@@ -75185,11 +75205,14 @@ class CallContractStatSignatureTests(unittest.TestCase):
             present.write_text("source", encoding="utf-8")
             missing = root / "src" / "missing.h"
             missing.write_text("header", encoding="utf-8")
-            self._track(root)
+            inventory = load_repository_path_inventory(
+                root, allowed_roots=("src",), allowed_paths=()
+            )
             missing.unlink()
             with patch.object(module, "REPO_ROOT", root):
                 rows = module.file_dependency_states(
-                    ["src/missing.h", "src/present.cpp"]
+                    ["src/missing.h", "src/present.cpp"],
+                    repository_path_inventory=inventory,
                 )
         self.assertEqual(
             {
@@ -75220,7 +75243,6 @@ class CallContractStatSignatureTests(unittest.TestCase):
             source = root / "src" / "unit.cpp"
             source.parent.mkdir()
             source.write_text("source", encoding="utf-8")
-            self._track(root)
             with patch.object(module, "REPO_ROOT", root):
                 before = module.file_dependency_states(["src/unit.cpp"])[0]
                 replacement = root / "src" / "replacement.cpp"
@@ -102072,25 +102094,10 @@ namespace Unit { void Run() {} }
 
 class CallContractDependentOwnerProvenanceTests(unittest.TestCase):
     @staticmethod
-    def _config(root: Path, *git_paths: str) -> SimpleNamespace:
+    def _config(root: Path, *repository_paths: str) -> SimpleNamespace:
         return SimpleNamespace(
-            sources=tuple(root / path for path in git_paths),
-            source_git_paths=git_paths,
-        )
-
-    @staticmethod
-    def _track(root: Path) -> None:
-        subprocess.run(
-            ["git", "init", "--quiet"],
-            cwd=root,
-            check=True,
-            capture_output=True,
-        )
-        subprocess.run(
-            ["git", "add", "--all"],
-            cwd=root,
-            check=True,
-            capture_output=True,
+            sources=tuple(root / path for path in repository_paths),
+            source_repository_paths=repository_paths,
         )
 
     @staticmethod
@@ -103092,7 +103099,6 @@ class CallContractDependentOwnerProvenanceTests(unittest.TestCase):
                     f"namespace Unrelated {{ void Context{index}() {{}} }}\n",
                     encoding="utf-8",
                 )
-            self._track(root)
             config = self._config(
                 root, definition, *unrelated_relatives
             )
@@ -103203,7 +103209,7 @@ class CallContractDependentOwnerProvenanceTests(unittest.TestCase):
         )
         config = SimpleNamespace(
             sources=(root / definition, root / "SRC/unit/DUP.CPP"),
-            source_git_paths=(definition, "SRC/unit/DUP.CPP"),
+            source_repository_paths=(definition, "SRC/unit/DUP.CPP"),
         )
         with (
             patch.object(
@@ -103233,7 +103239,7 @@ class CallContractDependentOwnerProvenanceTests(unittest.TestCase):
         self.assertEqual("non-source-ambiguity", result["owner_relation"])
         self.assertEqual("resolver-error", result["owner_resolution"]["mode"])
         self.assertIn(
-            "does not exist as a Git-tracked path",
+            "outside the authorized repository inventory",
             result["owner_resolution"]["error"],
         )
 
@@ -103281,10 +103287,9 @@ class CallContractDependentOwnerProvenanceTests(unittest.TestCase):
             )
             config = SimpleNamespace(
                 sources=(root / definition, root / unrelated),
-                source_git_paths=(definition, unrelated),
+                source_repository_paths=(definition, unrelated),
             )
 
-            self._track(root)
 
             def source_context(_config: object, source: Path) -> tuple[str, ...]:
                 return (
@@ -103447,7 +103452,7 @@ class CallContractDependentOwnerProvenanceTests(unittest.TestCase):
                 "load_final_build_config",
                 return_value=SimpleNamespace(
                     sources=(REPO_ROOT / caller, REPO_ROOT / definition),
-                    source_git_paths=(caller, definition),
+                    source_repository_paths=(caller, definition),
                 ),
             ),
             patch.object(
@@ -103722,7 +103727,7 @@ class CallContractDependentOwnerProvenanceTests(unittest.TestCase):
         )
         config = SimpleNamespace(
             sources=(REPO_ROOT / "src/GameZRecoil/zReader/zreader.cpp",),
-            source_git_paths=("src/GameZRecoil/zReader/zreader.cpp",),
+            source_repository_paths=("src/GameZRecoil/zReader/zreader.cpp",),
         )
         with (
             patch.object(
@@ -103793,7 +103798,7 @@ class CallContractDependentOwnerProvenanceTests(unittest.TestCase):
         )
         config = SimpleNamespace(
             sources=(REPO_ROOT / "src/GameZRecoil/zMath/zmth_main.c",),
-            source_git_paths=("src/GameZRecoil/zMath/zmth_main.c",),
+            source_repository_paths=("src/GameZRecoil/zMath/zmth_main.c",),
         )
         with (
             patch.object(
@@ -103848,7 +103853,7 @@ class CallContractIncludeClosureTests(unittest.TestCase):
             "recoil:vc5-target:unit": {
                 "kind": "vc5",
                 "registration": {
-                    "manifest_path": "targets/unit.json",
+                    "manifest_path": "tools/vc5_verify_targets/unit.json",
                     "order_edit_paths": [
                         "src/App/Main.CPP",
                         "src/App/Second.c",
@@ -103871,13 +103876,13 @@ class CallContractIncludeClosureTests(unittest.TestCase):
         }
 
     def _patch_root(self, root: Path):
-        manifest_path = root / "targets" / "unit.json"
+        manifest_path = root / "tools" / "vc5_verify_targets" / "unit.json"
         manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
         if not manifest_data.get("functions"):
             manifest_data.update(
                 {
                     "name": "unit",
-                    "description": "call-contract Git-path fixture",
+                    "description": "call-contract repository-path fixture",
                     "source_filename": "Main.CPP",
                     "source_from": "",
                     "compiler_flags": ["/nologo", "/TP"],
@@ -103898,18 +103903,6 @@ class CallContractIncludeClosureTests(unittest.TestCase):
                 }
             )
             manifest_path.write_text(json.dumps(manifest_data), encoding="utf-8")
-        subprocess.run(
-            ["git", "init", "--quiet"],
-            cwd=root,
-            check=True,
-            capture_output=True,
-        )
-        subprocess.run(
-            ["git", "add", "--all"],
-            cwd=root,
-            check=True,
-            capture_output=True,
-        )
         source_paths = tuple(
             path
             for path in root.rglob("*")
@@ -103921,7 +103914,7 @@ class CallContractIncludeClosureTests(unittest.TestCase):
             patch.object(
                 call_contract_verify_module,
                 "DEFAULT_FINAL_BUILD_MANIFEST",
-                root / "final.json",
+                root / "tools" / "final.json",
             ),
             patch("_recoil.commands.vc5_verify.REPO_ROOT", root),
             patch.object(
@@ -103944,7 +103937,7 @@ class CallContractIncludeClosureTests(unittest.TestCase):
             root = Path(temp_dir)
             self._write(
                 root,
-                "final.json",
+                "tools/final.json",
                 json.dumps(
                     {
                         "include_dirs": [
@@ -103982,7 +103975,7 @@ class CallContractIncludeClosureTests(unittest.TestCase):
             self._write(root, "src/System.H")
             self._write(root, "src/Unrelated/Registered.H")
             self._write(root, "src/Effect/UnregisteredCallee.c")
-            self._write(root, "targets/unit.json", "{}")
+            self._write(root, "tools/vc5_verify_targets/unit.json", "{}")
 
             patches = self._patch_root(root)
             with patches[0], patches[1], patches[2], patches[3]:
@@ -104006,8 +103999,8 @@ class CallContractIncludeClosureTests(unittest.TestCase):
                     "src/Headers/Leaf.HPP",
                     "src/Headers/Root.H",
                     "src/Headers/Sub/Nested.hxx",
-                    "final.json",
-                    "targets/unit.json",
+                    "tools/final.json",
+                    "tools/vc5_verify_targets/unit.json",
                 }
             ),
             dependency_paths,
@@ -104034,13 +104027,13 @@ class CallContractIncludeClosureTests(unittest.TestCase):
                 root = Path(temp_dir)
                 self._write(
                     root,
-                    "final.json",
+                    "tools/final.json",
                     json.dumps({"include_dirs": ["src"]}),
                 )
                 self._write(root, "src/App/Main.CPP", source_text)
                 self._write(root, "src/App/Second.c")
                 self._write(root, "src/Unrelated/Registered.H")
-                self._write(root, "targets/unit.json", "{}")
+                self._write(root, "tools/vc5_verify_targets/unit.json", "{}")
 
                 patches = self._patch_root(root)
                 with (
@@ -104056,14 +104049,14 @@ class CallContractIncludeClosureTests(unittest.TestCase):
 
     def test_current_manifest_wins_over_historical_slice_path_case(self) -> None:
         with tempfile.TemporaryDirectory(
-            prefix="call_contract_git_case_"
+            prefix="call_contract_repository_case_"
         ) as temp_dir:
             root = Path(temp_dir)
-            self._write(root, "final.json", json.dumps({"include_dirs": ["src"]}))
+            self._write(root, "tools/final.json", json.dumps({"include_dirs": ["src"]}))
             self._write(root, "src/App/Main.CPP")
             self._write(root, "src/App/Second.c")
             self._write(root, "src/Unrelated/Registered.H")
-            self._write(root, "targets/unit.json", "{}")
+            self._write(root, "tools/vc5_verify_targets/unit.json", "{}")
             patches = self._patch_root(root)
             with patches[0], patches[1], patches[2], patches[3]:
                 self.assertEqual(
@@ -104089,20 +104082,20 @@ class CallContractIncludeClosureTests(unittest.TestCase):
                     ),
                 )
 
-    def test_wrong_case_current_manifest_path_is_rejected_with_git_spelling(
+    def test_wrong_case_current_manifest_path_is_rejected_with_repository_spelling(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory(
-            prefix="call_contract_manifest_git_case_"
+            prefix="call_contract_manifest_repository_case_"
         ) as temp_dir:
             root = Path(temp_dir)
-            self._write(root, "final.json", json.dumps({"include_dirs": ["src"]}))
+            self._write(root, "tools/final.json", json.dumps({"include_dirs": ["src"]}))
             self._write(root, "src/App/Main.CPP")
             self._write(root, "src/App/Second.c")
             self._write(root, "src/Unrelated/Registered.H")
-            self._write(root, "targets/unit.json", "{}")
+            self._write(root, "tools/vc5_verify_targets/unit.json", "{}")
             patches = self._patch_root(root)
-            manifest_path = root / "targets" / "unit.json"
+            manifest_path = root / "tools" / "vc5_verify_targets" / "unit.json"
             manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
             manifest_data["order_edit_paths"][0] = "src/app/Main.CPP"
             manifest_path.write_text(json.dumps(manifest_data), encoding="utf-8")
@@ -104116,7 +104109,7 @@ class CallContractIncludeClosureTests(unittest.TestCase):
         self.assertEqual("wrong-case", raised.exception.kind)
         self.assertEqual(
             "src/App/Main.CPP",
-            raised.exception.expected_git_path,
+            raised.exception.expected_repository_path,
         )
 
 
@@ -115988,21 +115981,9 @@ class IntentionallyInlinedAuthoredAbsenceTests(unittest.TestCase):
                 definition_source_paths=(),
                 dependency_paths=("src/fixture.cpp", "src/fixture.h"),
             )
-            subprocess.run(
-                ["git", "init", "--quiet"],
-                cwd=root,
-                check=True,
-                capture_output=True,
-            )
-            subprocess.run(
-                ["git", "add", "--all"],
-                cwd=root,
-                check=True,
-                capture_output=True,
-            )
             config = SimpleNamespace(
                 sources=(source_path,),
-                source_git_paths=("src/fixture.cpp",),
+                source_repository_paths=("src/fixture.cpp",),
                 defines=(),
             )
 

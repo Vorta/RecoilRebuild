@@ -10,9 +10,12 @@ Use this only when the task authorizes Binary Ninja mutation. Perform the work d
 ## Before mutation
 
 1. Read root `AGENTS.md` and identify the exact database and mutation scope.
-2. Check the Binary Ninja bridge with `get_bridge_info` and `list_tools`.
-3. Run `python tools/recoil.py doctor --quick --binja`.
-4. Require the intended database to be already open. Never load, switch, or patch a binary through this workflow.
+2. Once after the database is opened, reopened, or switched for the current
+   working session, run `python tools/recoil.py binja preflight --binary recoil --strict`.
+3. Require the intended database to be already open. Never load, switch, or patch a binary through this workflow.
+
+Reuse the preflight result while that database and connection remain unchanged;
+do not repeat it for individual mutations or source slices.
 
 If the bridge or database is unavailable, stop and ask the user to open it.
 

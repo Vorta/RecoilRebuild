@@ -110,7 +110,7 @@ authored VC rows. An authored function uses `defines`; an explicit
 compiler-generated function uses `emits`. Data directives present in a VC
 source closure are checked for exact id, data section, direct attachment, and
 `defines`; the repository-wide
-`audit source-trace --policy migrated` command remains authoritative for
+`audit source-trace` command remains authoritative for
 whether a data artifact is resolved/direct, compiler-emitted, unresolved, or
 not-applicable. Unresolved/provider rows do not acquire a canonical edge merely
 because a VC manifest names them, and an inline canonical claim for such a

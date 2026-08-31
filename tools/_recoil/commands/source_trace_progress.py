@@ -50,15 +50,6 @@ EVIDENCE_ID_RE = re.compile(
     r"^[a-z0-9_-]+:evidence:r[0-9]+:[0-9]{6,}$"
 )
 REPLACE_BATCH_OPERATION = "replace-batch"
-MIGRATION_METADATA = {
-    "version": 1,
-    "policy": "topology-only-no-acceptance",
-    "state": "initialized",
-}
-LEGACY_CLAIM_KIND_HINTS = frozenset({"function", "data"})
-LEGACY_CLAIM_RESOLUTION_KINDS = frozenset(
-    {"exact-existing-artifact", "interior-of-existing-artifact"}
-)
 
 
 class SourceTraceProgressError(ValueError):
@@ -103,9 +94,6 @@ class SourceTraceabilityBatchPlan:
     expected_revision: int
     proposed_revision: int
     artifact_ids: tuple[str, ...]
-    legacy_claim_resolution_count: int
-    initializes_migration: bool
-    migration_metadata: Mapping[str, Any]
     proposed: Mapping[str, Any]
 
     def to_dict(self, *, include_document: bool = False) -> dict[str, Any]:
@@ -115,9 +103,6 @@ class SourceTraceabilityBatchPlan:
             "proposed_revision": self.proposed_revision,
             "artifact_ids": list(self.artifact_ids),
             "update_count": len(self.artifact_ids),
-            "legacy_claim_resolution_count": self.legacy_claim_resolution_count,
-            "initializes_migration": self.initializes_migration,
-            "migration_metadata": deepcopy(dict(self.migration_metadata)),
         }
         if include_document:
             result["proposed"] = deepcopy(dict(self.proposed))
@@ -496,257 +481,13 @@ def show_source_traceability(
     }
 
 
-def _validate_migration_metadata(value: Any) -> dict[str, Any]:
-    metadata = _require_mapping(
-        value, label="migration.source_traceability_v1"
-    )
-    base_keys = {"version", "policy", "initialized_from_revision", "state"}
-    optional_keys = {
-        "unresolved_legacy_claims",
-        "legacy_claim_resolutions",
-    }
-    if not base_keys.issubset(metadata) or set(metadata) - base_keys - optional_keys:
-        raise SourceTraceProgressError(
-            "migration.source_traceability_v1 keys must be the exact base "
-            "metadata with optional unresolved_legacy_claims and "
-            "legacy_claim_resolutions"
-        )
-    if metadata["version"] != 1:
-        raise SourceTraceProgressError(
-            "migration.source_traceability_v1.version must be 1"
-        )
-    if metadata["policy"] != "topology-only-no-acceptance":
-        raise SourceTraceProgressError(
-            "migration.source_traceability_v1.policy must be topology-only-no-acceptance"
-        )
-    initialized = metadata["initialized_from_revision"]
-    if (
-        not isinstance(initialized, int)
-        or isinstance(initialized, bool)
-        or initialized < 0
-    ):
-        raise SourceTraceProgressError(
-            "migration.source_traceability_v1.initialized_from_revision "
-            "must be a non-negative integer"
-        )
-    if metadata["state"] != "initialized":
-        raise SourceTraceProgressError(
-            "migration.source_traceability_v1.state must be initialized"
-        )
-    normalized = deepcopy(dict(metadata))
-    if "unresolved_legacy_claims" in metadata:
-        normalized["unresolved_legacy_claims"] = (
-            normalize_unresolved_legacy_claims(
-                metadata["unresolved_legacy_claims"]
-            )
-        )
-    if "legacy_claim_resolutions" in metadata:
-        if "unresolved_legacy_claims" not in metadata:
-            raise SourceTraceProgressError(
-                "migration.source_traceability_v1 legacy_claim_resolutions "
-                "require the immutable unresolved_legacy_claims inventory"
-            )
-        normalized["legacy_claim_resolutions"] = (
-            normalize_legacy_claim_resolutions(
-                metadata["legacy_claim_resolutions"]
-            )
-        )
-    return normalized
-
-
-def normalize_unresolved_legacy_claims(value: Any) -> list[dict[str, str]]:
-    if not isinstance(value, list) or not value:
-        raise SourceTraceProgressError(
-            "unresolved_legacy_claims must be a non-empty array when present"
-        )
-    claims: list[dict[str, str]] = []
-    identities: set[tuple[str, str, str, str]] = set()
-    for index, raw_claim in enumerate(value):
-        label = f"unresolved_legacy_claims[{index}]"
-        claim = _require_mapping(raw_claim, label=label)
-        _require_exact_keys(
-            claim,
-            keys=(
-                "binary",
-                "kind_hint",
-                "address",
-                "reason_code",
-                "source_path",
-            ),
-            label=label,
-        )
-        binary = claim["binary"]
-        if (
-            not isinstance(binary, str)
-            or re.fullmatch(r"[a-z0-9][a-z0-9_-]*", binary) is None
-        ):
-            raise SourceTraceProgressError(
-                f"{label}.binary must be an exact lowercase tracker binary id"
-            )
-        kind_hint = claim["kind_hint"]
-        if kind_hint not in LEGACY_CLAIM_KIND_HINTS:
-            raise SourceTraceProgressError(
-                f"{label}.kind_hint must be function or data"
-            )
-        address = normalize_artifact_address(claim["address"])
-        if claim["reason_code"] != "missing-artifact-identity":
-            raise SourceTraceProgressError(
-                f"{label}.reason_code must be missing-artifact-identity"
-            )
-        source_path = _normalized_translation_unit(
-            claim["source_path"], label=f"{label}.source_path"
-        )
-        identity = (binary, kind_hint, address, source_path)
-        if identity in identities:
-            raise SourceTraceProgressError(
-                f"{label} duplicates an unresolved legacy claim"
-            )
-        identities.add(identity)
-        claims.append(
-            {
-                "binary": binary,
-                "kind_hint": kind_hint,
-                "address": address,
-                "reason_code": "missing-artifact-identity",
-                "source_path": source_path,
-            }
-        )
-    claims.sort(
-        key=lambda claim: (
-            claim["binary"],
-            int(claim["address"], 16),
-            claim["kind_hint"],
-            claim["source_path"],
-        )
-    )
-    return claims
-
-
-def _legacy_claim_identity(
-    claim: Mapping[str, str],
-) -> tuple[str, str, str, str]:
-    return (
-        claim["binary"],
-        claim["kind_hint"],
-        claim["address"],
-        claim["source_path"],
-    )
-
-
-def normalize_legacy_claim_resolutions(
-    value: Any,
-) -> list[dict[str, Any]]:
-    """Validate append-only resolutions of exact immutable migration claims."""
-
-    if not isinstance(value, list) or not value:
-        raise SourceTraceProgressError(
-            "legacy_claim_resolutions must be a non-empty array when present"
-        )
-    records: list[dict[str, Any]] = []
-    identities: set[tuple[str, str, str, str]] = set()
-    for index, raw_record in enumerate(value):
-        label = f"legacy_claim_resolutions[{index}]"
-        record = _require_mapping(raw_record, label=label)
-        _require_exact_keys(
-            record,
-            keys=("expected_claim", "replacement_resolution"),
-            label=label,
-        )
-        expected_claim = normalize_unresolved_legacy_claims(
-            [record["expected_claim"]]
-        )[0]
-        identity = _legacy_claim_identity(expected_claim)
-        if identity in identities:
-            raise SourceTraceProgressError(
-                f"{label} duplicates a legacy claim resolution"
-            )
-        identities.add(identity)
-
-        resolution = _require_mapping(
-            record["replacement_resolution"],
-            label=f"{label}.replacement_resolution",
-        )
-        kind = resolution.get("kind")
-        if kind not in LEGACY_CLAIM_RESOLUTION_KINDS:
-            raise SourceTraceProgressError(
-                f"{label}.replacement_resolution.kind must be one of "
-                f"{sorted(LEGACY_CLAIM_RESOLUTION_KINDS)}"
-            )
-        exact_keys = {"kind", "artifact_id"}
-        if kind == "interior-of-existing-artifact":
-            exact_keys |= {"reason", "evidence_ids"}
-        _require_exact_keys(
-            resolution,
-            keys=exact_keys,
-            label=f"{label}.replacement_resolution",
-        )
-        artifact_id = resolution["artifact_id"]
-        if (
-            not isinstance(artifact_id, str)
-            or SOURCE_ARTIFACT_ID_RE.fullmatch(artifact_id) is None
-        ):
-            raise SourceTraceProgressError(
-                f"{label}.replacement_resolution.artifact_id is not a "
-                "supported exact source artifact id"
-            )
-        normalized_resolution: dict[str, Any] = {
-            "kind": kind,
-            "artifact_id": artifact_id,
-        }
-        if kind == "interior-of-existing-artifact":
-            reason = resolution["reason"]
-            if (
-                not isinstance(reason, str)
-                or not reason
-                or reason.strip() != reason
-            ):
-                raise SourceTraceProgressError(
-                    f"{label}.replacement_resolution.reason must be a "
-                    "non-empty trimmed string"
-                )
-            evidence_ids = resolution["evidence_ids"]
-            if (
-                not isinstance(evidence_ids, list)
-                or not evidence_ids
-                or not all(
-                    isinstance(item, str)
-                    and EVIDENCE_ID_RE.fullmatch(item)
-                    for item in evidence_ids
-                )
-            ):
-                raise SourceTraceProgressError(
-                    f"{label}.replacement_resolution.evidence_ids must be a "
-                    "non-empty array of exact tracker evidence ids"
-                )
-            if len(evidence_ids) != len(set(evidence_ids)):
-                raise SourceTraceProgressError(
-                    f"{label}.replacement_resolution.evidence_ids contains "
-                    "duplicates"
-                )
-            normalized_resolution["reason"] = reason
-            normalized_resolution["evidence_ids"] = sorted(evidence_ids)
-        records.append(
-            {
-                "expected_claim": expected_claim,
-                "replacement_resolution": normalized_resolution,
-            }
-        )
-    return records
-
-
 def normalize_replace_batch_payload(value: Any) -> dict[str, Any]:
     payload = _require_mapping(value, label="replace-batch payload")
-    base_keys = {"operation", "reviewed", "updates"}
-    optional_keys = {
-        "unresolved_legacy_claims",
-        "legacy_claim_resolutions",
-    }
-    if not base_keys.issubset(payload) or set(payload) - base_keys - optional_keys:
-        raise SourceTraceProgressError(
-            "replace-batch payload keys must be operation, reviewed, "
-            "updates, and optional unresolved_legacy_claims and "
-            "legacy_claim_resolutions"
-        )
+    _require_exact_keys(
+        payload,
+        keys=("operation", "reviewed", "updates"),
+        label="replace-batch payload",
+    )
     if payload["operation"] != REPLACE_BATCH_OPERATION:
         raise SourceTraceProgressError(
             f"replace-batch payload.operation must be {REPLACE_BATCH_OPERATION!r}"
@@ -800,104 +541,11 @@ def normalize_replace_batch_payload(value: Any) -> dict[str, Any]:
         "reviewed": True,
         "updates": normalized_updates,
     }
-    if "unresolved_legacy_claims" in payload:
-        normalized["unresolved_legacy_claims"] = (
-            normalize_unresolved_legacy_claims(
-                payload["unresolved_legacy_claims"]
-            )
-        )
-    if "legacy_claim_resolutions" in payload:
-        normalized["legacy_claim_resolutions"] = (
-            normalize_legacy_claim_resolutions(
-                payload["legacy_claim_resolutions"]
-            )
-        )
-    if not normalized_updates and "legacy_claim_resolutions" not in normalized:
+    if not normalized_updates:
         raise SourceTraceProgressError(
-            "replace-batch requires at least one topology update or legacy "
-            "claim resolution"
+            "replace-batch requires at least one topology update"
         )
     return normalized
-
-
-def _artifact_binary_and_kind(artifact: TrackerArtifact) -> tuple[str, str]:
-    binary, encoded_kind, *_ = artifact.artifact_id.split(":")
-    kind = encoded_kind.removeprefix("logical-")
-    return binary, kind
-
-
-def _validate_legacy_claim_resolution(
-    tracker: Mapping[str, Any],
-    record: Mapping[str, Any],
-) -> None:
-    claim = record["expected_claim"]
-    resolution = record["replacement_resolution"]
-    artifact = resolve_tracker_artifact(tracker, resolution["artifact_id"])
-    binary, kind = _artifact_binary_and_kind(artifact)
-    if binary != claim["binary"] or kind != claim["kind_hint"]:
-        raise SourceTraceProgressError(
-            f"legacy claim {claim!r} cannot resolve to "
-            f"{artifact.artifact_id!r}: binary/kind mismatch"
-        )
-
-    claim_address = int(claim["address"], 16)
-    artifact_start = int(artifact_address(artifact.artifact_id), 16)
-    if resolution["kind"] == "exact-existing-artifact":
-        if claim_address != artifact_start:
-            raise SourceTraceProgressError(
-                f"legacy claim {claim!r} exact resolution address does not "
-                f"match existing artifact {artifact.artifact_id!r}"
-            )
-        return
-
-    if artifact.parent_artifact_id is not None:
-        raise SourceTraceProgressError(
-            f"legacy claim {claim!r} interior resolution requires a physical "
-            "artifact with an exact extent, not a logical alias"
-        )
-    row = artifact.row
-    if row.get("extent_state") != "known":
-        raise SourceTraceProgressError(
-            f"legacy claim {claim!r} interior resolution target "
-            f"{artifact.artifact_id!r} does not have a known exact extent"
-        )
-    try:
-        row_start = int(normalize_artifact_address(row["address"]), 16)
-        row_end = int(normalize_artifact_address(row["end_exclusive"]), 16)
-        row_size = row["size"]
-    except KeyError as exc:
-        raise SourceTraceProgressError(
-            f"legacy claim {claim!r} interior resolution target "
-            f"{artifact.artifact_id!r} lacks exact address/end/size fields"
-        ) from exc
-    if (
-        isinstance(row_size, bool)
-        or not isinstance(row_size, int)
-        or row_size <= 0
-        or row_start != artifact_start
-        or row_start + row_size != row_end
-    ):
-        raise SourceTraceProgressError(
-            f"legacy claim {claim!r} interior resolution target "
-            f"{artifact.artifact_id!r} has an inconsistent exact extent"
-        )
-    if not row_start < claim_address < row_end:
-        raise SourceTraceProgressError(
-            f"legacy claim {claim!r} is not strictly interior to existing "
-            f"artifact {artifact.artifact_id!r} extent "
-            f"[0x{row_start:x},0x{row_end:x})"
-        )
-    evidence = _require_mapping(tracker.get("evidence"), label="tracker.evidence")
-    missing = [
-        evidence_id
-        for evidence_id in resolution["evidence_ids"]
-        if evidence_id not in evidence
-    ]
-    if missing:
-        raise SourceTraceProgressError(
-            f"legacy claim {claim!r} interior resolution references unknown "
-            f"evidence ids: {missing}"
-        )
 
 
 def plan_source_traceability_batch(
@@ -970,92 +618,10 @@ def plan_source_traceability_batch(
         row["source_traceability"] = deepcopy(replacement)
         changed.append(artifact_id)
 
-    migration = proposed.get("migration")
-    if not isinstance(migration, dict):
-        raise SourceTraceProgressError("tracker.migration must be an object")
-    existing_metadata = migration.get("source_traceability_v1")
-    initializes = existing_metadata is None
-    if initializes:
-        if "legacy_claim_resolutions" in normalized_payload:
-            raise SourceTraceProgressError(
-                "legacy_claim_resolutions require an already initialized "
-                "immutable unresolved_legacy_claims inventory"
-            )
-        metadata = {
-            **MIGRATION_METADATA,
-            "initialized_from_revision": expected_revision,
-        }
-        if "unresolved_legacy_claims" in normalized_payload:
-            metadata["unresolved_legacy_claims"] = deepcopy(
-                normalized_payload["unresolved_legacy_claims"]
-            )
-        migration["source_traceability_v1"] = deepcopy(metadata)
-    else:
-        metadata = _validate_migration_metadata(existing_metadata)
-        requested_claims = normalized_payload.get("unresolved_legacy_claims")
-        if (
-            requested_claims is not None
-            and metadata.get("unresolved_legacy_claims") != requested_claims
-        ):
-            raise SourceTraceProgressError(
-                "unresolved_legacy_claims differ from the initialized exact "
-                "migration metadata"
-            )
-        if migration["source_traceability_v1"] != metadata:
-            raise SourceTraceProgressError(
-                "migration.source_traceability_v1 must be preserved exactly"
-            )
-        requested_resolutions = normalized_payload.get(
-            "legacy_claim_resolutions", []
-        )
-        if requested_resolutions:
-            immutable_claims = metadata.get("unresolved_legacy_claims")
-            if immutable_claims is None:
-                raise SourceTraceProgressError(
-                    "legacy_claim_resolutions require the immutable "
-                    "unresolved_legacy_claims inventory"
-                )
-            claim_identities = {
-                _legacy_claim_identity(claim)
-                for claim in immutable_claims
-            }
-            existing_resolutions = metadata.get(
-                "legacy_claim_resolutions", []
-            )
-            resolved_identities = {
-                _legacy_claim_identity(record["expected_claim"])
-                for record in existing_resolutions
-            }
-            for record in requested_resolutions:
-                claim = record["expected_claim"]
-                identity = _legacy_claim_identity(claim)
-                if identity not in claim_identities:
-                    raise SourceTraceProgressError(
-                        f"legacy claim {claim!r} is stale or absent from the "
-                        "immutable unresolved_legacy_claims inventory"
-                    )
-                if identity in resolved_identities:
-                    raise SourceTraceProgressError(
-                        f"legacy claim {claim!r} already has an immutable "
-                        "resolution record"
-                    )
-                _validate_legacy_claim_resolution(proposed, record)
-                resolved_identities.add(identity)
-            metadata["legacy_claim_resolutions"] = [
-                *deepcopy(existing_resolutions),
-                *deepcopy(requested_resolutions),
-            ]
-            migration["source_traceability_v1"] = deepcopy(metadata)
-
     return SourceTraceabilityBatchPlan(
         expected_revision=expected_revision,
         proposed_revision=expected_revision + 1,
         artifact_ids=tuple(changed),
-        legacy_claim_resolution_count=len(
-            normalized_payload.get("legacy_claim_resolutions", [])
-        ),
-        initializes_migration=initializes,
-        migration_metadata=metadata,
         proposed=proposed,
     )
 
@@ -1168,7 +734,6 @@ def build_parser() -> argparse.ArgumentParser:
     )
     show.add_argument(
         "--progress",
-        "--tracker",
         dest="tracker",
         default=str(DEFAULT_TRACKER),
     )
@@ -1181,12 +746,11 @@ def build_parser() -> argparse.ArgumentParser:
         REPLACE_BATCH_OPERATION,
         help=(
             "Reviewed exact-current dry-run/apply topology replacement "
-            "and append-only legacy-claim resolution batch."
+            "batch. Historical metadata remains read-only."
         ),
     )
     replace.add_argument(
         "--progress",
-        "--tracker",
         dest="tracker",
         default=str(DEFAULT_TRACKER),
     )

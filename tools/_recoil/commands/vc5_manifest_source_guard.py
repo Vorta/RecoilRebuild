@@ -27,10 +27,10 @@ from _recoil.commands.vc5_verify import (
     target_source_fragment_findings,
 )
 from _recoil.lib.repository_paths import (
-    GitTrackedPathInventory,
+    RepositoryPathInventory,
     RepositoryPathError,
-    load_git_tracked_path_inventory,
-    resolve_tracked_repository_file,
+    load_repository_path_inventory,
+    resolve_repository_file,
     validate_repository_relative_path,
 )
 from _recoil.lib.tooling import REPO_ROOT
@@ -59,19 +59,19 @@ LINKED_ORDER_DIAGNOSTIC_OVERLAY_KEYS = frozenset(
 
 
 @lru_cache(maxsize=4)
-def _guard_git_inventory(repository_root_text: str) -> GitTrackedPathInventory:
-    """Load one exact tracked-path inventory for this guard invocation."""
+def _guard_repository_inventory(repository_root_text: str) -> RepositoryPathInventory:
+    """Load one exact repository-path inventory for this guard invocation."""
 
-    return load_git_tracked_path_inventory(Path(repository_root_text))
+    return load_repository_path_inventory(Path(repository_root_text))
 
 
 def repo_manifest_key(
     path: str | Path,
     *,
     repository_root: Path | None = None,
-    inventory: GitTrackedPathInventory | None = None,
+    inventory: RepositoryPathInventory | None = None,
 ) -> str:
-    """Return the exact Git-index identity for a guard manifest input.
+    """Return the exact repository identity for a guard manifest input.
 
     This retains the guard's historical string result while delegating logical
     path admission to the neutral repository-path authority.  Physical path
@@ -82,19 +82,19 @@ def repo_manifest_key(
     supplied = Path(path)
     if supplied.is_absolute():
         raise ValueError(
-            f"guard manifest path must be a repository-relative Git path: {path}"
+            f"guard manifest path must be a repository-relative repository path: {path}"
         )
     path_text = supplied.as_posix()
     try:
         validate_repository_relative_path(path_text, context="guard manifest path")
-        tracked = inventory or _guard_git_inventory(str(root))
-        return resolve_tracked_repository_file(
+        tracked = inventory or _guard_repository_inventory(str(root))
+        return resolve_repository_file(
             path_text,
             repository_root=root,
             inventory=tracked,
             context="guard manifest path",
             allowed_suffixes={".json"},
-        ).git_path
+        ).repository_path
     except RepositoryPathError as exc:
         raise ValueError(str(exc)) from exc
 
@@ -103,7 +103,7 @@ def _repo_manifest_key_from_filesystem_path(
     path: Path,
     *,
     repository_root: Path | None = None,
-    inventory: GitTrackedPathInventory | None = None,
+    inventory: RepositoryPathInventory | None = None,
 ) -> str:
     """Authenticate a trusted discovered file without projecting resolved case."""
 
@@ -114,7 +114,7 @@ def _repo_manifest_key_from_filesystem_path(
             relative = supplied.absolute().relative_to(root)
         except ValueError as exc:
             raise ValueError(
-                f"guard manifest path must be inside the executing worktree: {path}"
+                f"guard manifest path must be inside the workspace: {path}"
             ) from exc
     else:
         relative = supplied
@@ -328,22 +328,7 @@ def final_build_source_debt(final_build_manifest: Path, progress_path: Path) -> 
         raise ValueError(f"{final_build_manifest}: sources must be a list of strings")
     sources = {normalized_repo_path(item) for item in sources_raw}
 
-    exclusions_raw = data.get("physical_block_source_exclusions", [])
-    if not isinstance(exclusions_raw, list):
-        raise ValueError(f"{final_build_manifest}: physical_block_source_exclusions must be a list")
-    exclusions: set[str] = set()
-    for index, item in enumerate(exclusions_raw):
-        if not isinstance(item, dict):
-            raise ValueError(f"{final_build_manifest}: physical_block_source_exclusions[{index}] must be an object")
-        path = item.get("path")
-        reason = str(item.get("reason", "")).strip()
-        if not isinstance(path, str) or not path:
-            raise ValueError(f"{final_build_manifest}: physical_block_source_exclusions[{index}].path must be a string")
-        if not reason:
-            raise ValueError(f"{final_build_manifest}: physical_block_source_exclusions[{index}].reason is required")
-        exclusions.add(normalized_repo_path(path))
-
-    return progress_physical_block_source_paths(progress_path) - sources - exclusions
+    return progress_physical_block_source_paths(progress_path) - sources
 
 
 def direct_progress_authority(explicit_progress: str | Path | None) -> Path:
@@ -361,9 +346,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--final-build-manifest", default=str(DEFAULT_FINAL_BUILD_MANIFEST))
     parser.add_argument("--progress")
     parser.add_argument(
-        "--skip-final-build-source-audit",
+        "--source-warning-details",
         action="store_true",
-        help="skip unified physical-block source coverage check for the final Recoil.exe build manifest",
+        help="print per-target source-emission warnings",
     )
     parser.add_argument(
         "--strict-source-emissions",
@@ -424,17 +409,36 @@ def _run_guard(args: argparse.Namespace, *, progress_path: Path) -> int:
         print(f"{prefix}{exc}", file=sys.stderr)
         return 1
 
-    print_source_emission_warnings(loaded_manifests)
+    if args.source_warning_details:
+        print_source_emission_warnings(loaded_manifests)
     source_emission_warnings = [
         (target, warning)
         for target in loaded_manifests
         for warning in target.source_emission_warnings
     ]
-    source_fragment_findings = [
-        (target, finding)
-        for target in loaded_manifests
-        for finding in target_source_fragment_findings(target)
-    ]
+    fragment_cache: dict[tuple[str, ...], tuple[dict[str, object], ...]] = {}
+    source_fragment_findings: list[tuple[VerifyTarget, dict[str, object]]] = []
+    for target in loaded_manifests:
+        closure_key = tuple(
+            dict.fromkeys(
+                path
+                for path in (
+                    getattr(target, "source_from", ""),
+                    *getattr(target, "source_files", ()),
+                    *getattr(target, "order_edit_paths", ()),
+                    *(
+                        entry.source_from
+                        for entry in getattr(target, "translation_unit_function_order", ())
+                    ),
+                )
+                if path
+            )
+        )
+        findings = fragment_cache.get(closure_key)
+        if findings is None:
+            findings = target_source_fragment_findings(target)
+            fragment_cache[closure_key] = findings
+        source_fragment_findings.extend((target, finding) for finding in findings)
 
     try:
         actual_inline, actual_generated = actual_policy_debt(
@@ -451,7 +455,7 @@ def _run_guard(args: argparse.Namespace, *, progress_path: Path) -> int:
     actual_mfc_path_debt = active_mfc_path_debt(provider_paths)
     missing_final_sources: set[str] = set()
     try:
-        if manifest_path is None and not args.skip_final_build_source_audit:
+        if manifest_path is None:
             missing_final_sources = final_build_source_debt(
                 Path(args.final_build_manifest),
                 progress_path,

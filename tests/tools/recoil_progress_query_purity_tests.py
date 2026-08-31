@@ -18,7 +18,7 @@ class ProgressQueryPurityTests(unittest.TestCase):
 
     def test_all_current_task_views_are_read_only(self) -> None:
         before = self.digest()
-        for command in ("next", "status", "report"):
+        for command in ("next", "status"):
             completed = subprocess.run(
                 [sys.executable, "tools/recoil.py", "progress", command, "--json"],
                 cwd=REPO_ROOT,

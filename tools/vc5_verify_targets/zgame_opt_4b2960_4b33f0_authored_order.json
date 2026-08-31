@@ -10,9 +10,9 @@
   "check_translation_unit_function_order": true,
   "order_edit_paths": [
     "src/GameZRecoil/zGame/zgame_opt.c",
-    "src/GameZRecoil/zGame/zGame.h",
+    "src/GameZRecoil/zGame/zgame.h",
     "src/GameZRecoil/zSound/zsnd.h",
-    "src/GameZRecoil/zSys/zSys.h",
+    "src/GameZRecoil/zSys/zsys.h",
     "src/GameZRecoil/zVideo/zvid.h"
   ],
   "functions": [
@@ -70,7 +70,7 @@
     "agent_source_path": "src/GameZRecoil/zGame/zgame_opt.c",
     "physical_compile_host": "src/GameZRecoil/zGame/zgame_opt.c",
     "candidate_source_contributors": [],
-    "candidate_header_contributors": ["src/GameZRecoil/zGame/zGame.h","src/GameZRecoil/zSound/zsnd.h","src/GameZRecoil/zSys/zSys.h","src/GameZRecoil/zVideo/zvid.h"],
+    "candidate_header_contributors": ["src/GameZRecoil/zGame/zgame.h","src/GameZRecoil/zSound/zsnd.h","src/GameZRecoil/zSys/zsys.h","src/GameZRecoil/zVideo/zvid.h"],
     "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
     "tracker_revision": 1365,
     "covered_block_ids": ["recoil:block:0x4b2960","recoil:block:0x4b31f0"]

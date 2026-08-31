@@ -218,12 +218,12 @@ class RecoilNoSourceShapeScaffoldsTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-        result = self.run_guard(clean, "--path", str(bad))
+        result = self.run_guard(clean, "--root", str(bad))
 
         self.assertEqual(result.returncode, 1)
         self.assertIn("vtable/ftable factory scaffold", result.stdout)
 
-    def test_legacy_paths_and_max_aliases_are_accepted(self) -> None:
+    def test_retired_paths_and_max_aliases_are_rejected(self) -> None:
         _, root = self.make_temp()
         clean = root / "clean.cpp"
         bad_a = root / "bad_a.cpp"
@@ -248,11 +248,8 @@ class RecoilNoSourceShapeScaffoldsTests(unittest.TestCase):
             "1",
         )
 
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("source-shape scaffold production-source summary:", result.stdout)
-        self.assertIn("top labels (limit 1)", result.stdout)
-        self.assertIn("vtable/ftable factory scaffold", result.stdout)
-        self.assertIn("authored vtable/ftable type scaffold", result.stdout)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("unrecognized arguments", result.stderr)
 
     def test_repeated_root_arguments_are_scanned(self) -> None:
         temp = tempfile.TemporaryDirectory()

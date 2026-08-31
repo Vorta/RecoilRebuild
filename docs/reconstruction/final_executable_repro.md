@@ -63,7 +63,7 @@ Recoil.exe acceptance unless the active cursor proves it is a dependency:
 
 ```powershell
 python tools/recoil.py verify pe --reference support/messages.dll --manifest .agent/REFERENCE_MESSAGES_DLL.json --verify
-python tools/recoil.py doctor --binary messages --quick
+python tools/recoil.py doctor --infrastructure-only
 python tools/recoil.py verify final-build --manifest tools/_recoil/config/vc5_messages_build.json --dry-run
 ```
 

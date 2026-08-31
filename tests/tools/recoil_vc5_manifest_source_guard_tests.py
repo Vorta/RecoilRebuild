@@ -2,7 +2,6 @@ import contextlib
 import io
 import json
 import os
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -19,51 +18,32 @@ from _recoil.commands import vc5_verify  # noqa: E402
 from _recoil.commands.vc5_verify import SourceEmissionWarning  # noqa: E402
 from _recoil.lib.progress import empty_progress_document  # noqa: E402
 from _recoil.lib.progress_sqlite import ProgressSQLiteStore  # noqa: E402
+from _recoil.lib.repository_paths import load_repository_path_inventory  # noqa: E402
 
 
-def _commit_guard_fixture(repository_root: Path) -> None:
-    if not (repository_root / ".git").exists():
-        subprocess.run(
-            ["git", "init", "--quiet"],
-            cwd=repository_root,
-            check=True,
-            capture_output=True,
-        )
-    subprocess.run(
-        ["git", "add", "-A"],
-        cwd=repository_root,
-        check=True,
-        capture_output=True,
+def _finalize_guard_fixture(repository_root: Path) -> None:
+    """Filesystem-backed inventories need no fixture registration step."""
+
+    del repository_root
+
+
+def _fixture_repository_inventory(repository_root: Path):
+    roots: list[str] = []
+    paths: list[str] = []
+    for entry in os.scandir(repository_root):
+        if entry.is_dir(follow_symlinks=False):
+            roots.append(entry.name)
+        elif entry.is_file(follow_symlinks=False):
+            paths.append(entry.name)
+    return load_repository_path_inventory(
+        repository_root,
+        allowed_roots=roots,
+        allowed_paths=paths,
     )
-    status = subprocess.run(
-        ["git", "diff", "--cached", "--quiet"],
-        cwd=repository_root,
-        check=False,
-        capture_output=True,
-    )
-    if status.returncode == 1:
-        subprocess.run(
-            [
-                "git",
-                "-c",
-                "user.name=Recoil Tests",
-                "-c",
-                "user.email=recoil-tests@example.invalid",
-                "commit",
-                "--quiet",
-                "-m",
-                "tracked VC5 guard fixture",
-            ],
-            cwd=repository_root,
-            check=True,
-            capture_output=True,
-        )
-    elif status.returncode != 0:
-        raise RuntimeError("cannot inspect staged VC5 guard fixture")
 
 
 def guard_main(argv: list[str]) -> int:
-    """Run temporary guard fixtures as authenticated isolated Git inputs."""
+    """Run temporary guard fixtures as authenticated filesystem inputs."""
 
     if "--help" in argv:
         return source_guard.main(argv)
@@ -97,13 +77,15 @@ def guard_main(argv: list[str]) -> int:
     if final_build is not None:
         roots.append(final_build.parent)
     repository_root = Path(os.path.commonpath([str(path) for path in roots]))
-    _commit_guard_fixture(repository_root)
+    _finalize_guard_fixture(repository_root)
     effective_argv = list(argv)
     if final_build is None:
+        final_build = repository_root / "final-build.json"
+        final_build.write_text('{"sources": []}\n', encoding="utf-8")
         effective_argv.extend(
-            ["--final-build-manifest", str(repository_root / "absent-final-build.json")]
+            ["--final-build-manifest", str(final_build)]
         )
-    source_guard._guard_git_inventory.cache_clear()
+    source_guard._guard_repository_inventory.cache_clear()
     progress_context = (
         contextlib.nullcontext(None)
         if explicit_progress
@@ -114,6 +96,8 @@ def guard_main(argv: list[str]) -> int:
         patch.dict(os.environ, {"RECOIL_CANONICAL_ROOT": ""}),
         patch.object(source_guard, "REPO_ROOT", repository_root),
         patch.object(vc5_verify, "REPO_ROOT", repository_root),
+        patch.object(source_guard, "load_repository_path_inventory", _fixture_repository_inventory),
+        patch.object(vc5_verify, "load_repository_path_inventory", _fixture_repository_inventory),
     ):
         if progress_tmp is not None:
             progress_path = Path(progress_tmp) / "progress.sqlite3"
@@ -439,7 +423,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                     source_guard.direct_progress_authority(None),
                 )
 
-    def test_guard_uses_direct_progress_before_loading_tracked_manifests(self) -> None:
+    def test_guard_uses_direct_progress_before_loading_repository_manifests(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             tracker = Path(temporary) / "progress.sqlite3"
             tracker.write_bytes(b"fixture")
@@ -466,14 +450,14 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
             self.assertEqual(0, result)
             self.assertEqual([("run", tracker)], observed)
 
-    def test_repo_manifest_key_requires_exact_relative_git_identity(self) -> None:
+    def test_repo_manifest_key_requires_exact_relative_repository_identity(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             manifest = root / "tools" / "vc5_verify_targets" / "Exact.json"
             manifest.parent.mkdir(parents=True)
             manifest.write_text('{"name":"exact"}\n', encoding="utf-8")
-            _commit_guard_fixture(root)
-            source_guard._guard_git_inventory.cache_clear()
+            _finalize_guard_fixture(root)
+            source_guard._guard_repository_inventory.cache_clear()
             with patch.object(source_guard, "REPO_ROOT", root):
                 self.assertEqual(
                     "tools/vc5_verify_targets/Exact.json",
@@ -489,13 +473,13 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                     source_guard.repo_manifest_key(
                         "tools/vc5_verify_targets/exact.json"
                     )
-                with self.assertRaisesRegex(ValueError, "does not exist as a Git-tracked path"):
+                with self.assertRaisesRegex(ValueError, "outside the authorized repository inventory"):
                     source_guard.repo_manifest_key(
                         "tools/vc5_verify_targets/missing.json"
                     )
-                with self.assertRaisesRegex(ValueError, "repository-relative Git path"):
+                with self.assertRaisesRegex(ValueError, "repository-relative repository path"):
                     source_guard.repo_manifest_key(manifest)
-                with self.assertRaisesRegex(ValueError, "not normalized"):
+                with self.assertRaisesRegex(ValueError, "dot-dot component"):
                     source_guard.repo_manifest_key("../escape.json")
 
     def test_strict_guard_uses_one_manifest_pass_and_does_not_fail_unresolved_warnings(
@@ -549,7 +533,6 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                     [
                         "--manifest-dir",
                         str(manifest_dir),
-                        "--skip-final-build-source-audit",
                         "--strict-source-emissions",
                     ]
                 )
@@ -626,13 +609,16 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
 
             with contextlib.redirect_stderr(stderr):
                 compatibility_result = guard_main(
-                    ["--manifest-dir", str(manifest_dir), "--skip-final-build-source-audit"]
+                    [
+                        "--manifest-dir",
+                        str(manifest_dir),
+                        "--source-warning-details",
+                    ]
                 )
                 strict_result = guard_main(
                     [
                         "--manifest-dir",
                         str(manifest_dir),
-                        "--skip-final-build-source-audit",
                         "--strict-source-emissions",
                     ]
                 )
@@ -654,7 +640,6 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                     [
                         "--manifest-dir",
                         str(manifest_dir),
-                        "--skip-final-build-source-audit",
                         "--strict-source-emissions",
                     ]
                 )
@@ -673,7 +658,6 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                     [
                         "--manifest-dir",
                         str(manifest_dir),
-                        "--skip-final-build-source-audit",
                         "--strict-source-emissions",
                         "--strict-source-traceability",
                     ]
@@ -702,7 +686,6 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                         [
                             "--manifest-dir",
                             str(manifest_dir),
-                            "--skip-final-build-source-audit",
                             "--strict-source-emissions",
                             "--strict-source-traceability",
                         ]
@@ -732,7 +715,6 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                     [
                         "--manifest-dir",
                         str(manifest_dir),
-                        "--skip-final-build-source-audit",
                         "--strict-source-traceability",
                     ]
                 )
@@ -756,7 +738,6 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                     [
                         "--manifest-dir",
                         str(manifest_dir),
-                        "--skip-final-build-source-audit",
                         "--strict-source-traceability",
                     ]
                 )
@@ -771,7 +752,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
             write_linked_only_manifest(manifest_dir)
 
             directory_result = guard_main(
-                ["--manifest-dir", str(manifest_dir), "--skip-final-build-source-audit"]
+                ["--manifest-dir", str(manifest_dir)]
             )
             focused_result = guard_main(["--path", str(manifest_dir / "linked_only.json")])
 
@@ -785,7 +766,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
             write_linked_only_manifest(manifest_dir, generated_files=True)
 
             result = guard_main(
-                ["--manifest-dir", str(manifest_dir), "--skip-final-build-source-audit"]
+                ["--manifest-dir", str(manifest_dir)]
             )
 
         self.assertEqual(1, result)
@@ -797,7 +778,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
             _, overlay_path = write_diagnostic_overlay(manifest_dir)
 
             directory_result = guard_main(
-                ["--manifest-dir", str(manifest_dir), "--skip-final-build-source-audit"]
+                ["--manifest-dir", str(manifest_dir)]
             )
             focused_result = guard_main(["--path", str(overlay_path)])
 
@@ -949,7 +930,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
             path.write_text(json.dumps(data), encoding="utf-8")
 
             result = guard_main(
-                ["--manifest-dir", str(manifest_dir), "--skip-final-build-source-audit"]
+                ["--manifest-dir", str(manifest_dir)]
             )
 
         self.assertEqual(1, result)
@@ -960,7 +941,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
             manifest_dir.mkdir()
             write_source_manifest(manifest_dir)
 
-            result = guard_main(["--manifest-dir", str(manifest_dir), "--skip-final-build-source-audit"])
+            result = guard_main(["--manifest-dir", str(manifest_dir)])
 
         self.assertEqual(0, result)
 
@@ -970,7 +951,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
             manifest_dir.mkdir()
             write_inline_manifest(manifest_dir)
 
-            result = guard_main(["--manifest-dir", str(manifest_dir), "--skip-final-build-source-audit"])
+            result = guard_main(["--manifest-dir", str(manifest_dir)])
 
         self.assertEqual(1, result)
 
@@ -1001,7 +982,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
 
         self.assertEqual(1, result)
 
-    def test_guard_accepts_final_build_physical_block_exclusion_with_reason(self) -> None:
+    def test_guard_ignores_retired_final_build_physical_block_exclusion(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             manifest_dir = root / "targets"
@@ -1033,7 +1014,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
                 ]
             )
 
-        self.assertEqual(0, result)
+        self.assertEqual(1, result)
 
     def test_guard_rejects_old_support_mfc_include_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1046,7 +1027,7 @@ class RecoilVc5ManifestSourceGuardTests(unittest.TestCase):
             path.write_text(json.dumps(data), encoding="utf-8")
 
             result = guard_main(
-                ["--manifest-dir", str(manifest_dir), "--skip-final-build-source-audit"]
+                ["--manifest-dir", str(manifest_dir)]
             )
 
         self.assertEqual(1, result)

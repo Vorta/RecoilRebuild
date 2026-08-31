@@ -17,29 +17,21 @@ def _command(*args: str) -> list[str]:
     return [sys.executable, str(REPO_ROOT / "tools/recoil.py"), *args]
 
 
-def _steps(*, infrastructure_only: bool, quick: bool, binja: bool, binary: str) -> list[tuple[str, list[str]]]:
+def _steps(*, infrastructure_only: bool) -> list[tuple[str, list[str]]]:
     steps: list[tuple[str, list[str]]] = [
         ("agent surface", _command("audit", "agent-surface", "--strict")),
         ("serial pipeline contract", _command("audit", "pipeline-contracts", "--strict")),
         ("serial pipeline reachability", _command("audit", "pipeline-reachability", "--strict")),
         ("issue ledger", _command("issue", "audit", "--strict", "--json")),
         ("progress tracker", _command("progress", "audit", "--scope", "pipeline", "--strict", "--json")),
-        ("README projection", _command("docs", "readme-progress", "--check", "--json")),
+        ("live validation surface", _command("audit", "live-validation-surface", "--strict")),
     ]
-    if not quick:
-        steps.append(
-            ("live validation surface", _command("audit", "live-validation-surface", "--strict"))
-        )
     if not infrastructure_only:
         steps.extend(
             [
                 ("workspace hygiene", _command("audit", "workspace", "--strict")),
                 ("VC5 manifest source policy", _command("guard", "vc5-manifest")),
             ]
-        )
-    if binja:
-        steps.append(
-            ("Binary Ninja preflight", _command("binja", "preflight", "--binary", binary, "--strict"))
         )
     return steps
 
@@ -48,19 +40,11 @@ def main(argv: list[str] | None = None) -> int:
     configure_stdio()
     parser = argparse.ArgumentParser(description="Run Recoil health checks one at a time.")
     parser.add_argument("--infrastructure-only", action="store_true")
-    parser.add_argument("--quick", action="store_true")
-    parser.add_argument("--binja", action="store_true")
-    parser.add_argument("--binary", default="recoil")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
     results: list[dict[str, object]] = []
-    for label, command in _steps(
-        infrastructure_only=args.infrastructure_only,
-        quick=args.quick,
-        binja=args.binja,
-        binary=args.binary,
-    ):
+    for label, command in _steps(infrastructure_only=args.infrastructure_only):
         started = time.monotonic()
         completed = subprocess.run(
             command,
@@ -88,11 +72,13 @@ def main(argv: list[str] | None = None) -> int:
                     print(row["stdout"])
                 if row["stderr"]:
                     print(row["stderr"], file=sys.stderr)
+        if not row["passed"]:
+            break
 
     payload = {
         "passed": all(bool(row["passed"]) for row in results),
         "mode": "infrastructure-only" if args.infrastructure_only else "full",
-        "execution": "sequential",
+        "execution": "sequential-fail-fast",
         "results": results,
     }
     if args.json:

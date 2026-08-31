@@ -20,11 +20,14 @@ Validate the changed dimension directly in the canonical checkout. Use a fresh b
 Infrastructure gates:
 
 ```powershell
-python tools/recoil.py doctor --infrastructure-only
-python tools/recoil.py audit agent-surface --strict
-python tools/recoil.py audit pipeline-contracts --strict
-python tools/recoil.py audit pipeline-reachability --strict
+python tools/recoil.py doctor
 ```
+
+`doctor` owns the sequential, fail-fast infrastructure matrix. Run an individual
+underlying audit only to diagnose its reported failure, not in addition to a
+passing doctor run. A workspace-wide maintenance pass runs doctor once after
+focused tests; individual skills and runbooks should refer here instead of
+copying its internal command list.
 
 Final typed gates:
 

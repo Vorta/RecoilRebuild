@@ -122,9 +122,9 @@ python tools/recoil.py progress call-contract close-live --build-root <fresh-roo
 ```
 
 The reviewed implementation coordinates are
-`CALL_CONTRACT_VERIFIER_GENERATION = 16`,
-`NORMALIZER_REGISTRY_GENERATION = 14`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 14`. A governed component edit increments its
+`CALL_CONTRACT_VERIFIER_GENERATION = 18`,
+`NORMALIZER_REGISTRY_GENERATION = 15`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 16`. A governed component edit increments its
 coordinate and conservatively invalidates affected evidence.
 
 For bytes:
@@ -229,12 +229,16 @@ advice.
 
 ## 6. Binary Ninja
 
-Before BN-backed work, check the bridge with `get_bridge_info` and
-`list_tools`, then run:
+Once after Binary Ninja is opened, reopened, or switched for the current
+working session, authenticate the intended database with:
 
 ```powershell
-python tools/recoil.py doctor --quick --binja
+python tools/recoil.py binja preflight --binary recoil --strict
 ```
+
+Reuse that result while the database and connection remain unchanged.
+Call-contract slices and their closeout query the target-qualified database
+directly and do not repeat database preflight per slice.
 
 If unavailable, ask the user to open the correct database; never load, switch,
 or patch binaries. Read-only inspection uses
@@ -286,28 +290,14 @@ whole-file equality cannot replace typed comparison.
 ## 9. Tool, Skill, Instruction, And Validation Maintenance
 
 Documentation/infrastructure work does not select an address or require BN.
-Canonical procedures live in `.codex/skills/recoil-*/SKILL.md`; `.claude`
-contains thin pointer mirrors. There is no local Recoil role registry.
+Canonical procedures live in `.codex/skills/recoil-*/SKILL.md`. There are no
+repository-local skill mirrors or role registries. The README contains only a
+static pointer to `progress next --json`; the tracker is the sole current-state
+record.
 
-The README progress block is an explicit derived projection. Tracker mutations
-do not cache or synchronize a second current record. Use:
-
-```powershell
-python tools/recoil.py docs readme-progress
-python tools/recoil.py docs readme-progress --check
-```
-
-Core infrastructure checks are:
-
-```powershell
-python tools/recoil.py doctor --infrastructure-only
-python tools/recoil.py audit agent-surface --strict
-python tools/recoil.py audit pipeline-contracts --strict
-python tools/recoil.py audit pipeline-reachability --strict
-python tools/recoil.py audit live-validation-surface --strict
-python tools/recoil.py progress audit --scope pipeline --strict
-python tools/recoil.py issue audit --strict
-```
+Use `recoil-validation` as the single validation matrix for tool, skill,
+instruction, tracker, build, and final-image changes. Other skills and runbooks
+must refer to it rather than copying maintenance command lists.
 
 Report reproducible tool/rule defects through `issue report`. Workspace issues
 track broken tools, validation paths, environment/setup, or rules—not ordinary

@@ -42,7 +42,7 @@ def fake_hexdump_response(*_args: object, **_kwargs: object) -> FakeResponse:
 
 
 class RecoilBinjaTests(unittest.TestCase):
-    def test_bridge_has_no_session_receipt_api_or_endpoint(self) -> None:
+    def test_bridge_has_no_session_receipt_or_per_slice_preflight(self) -> None:
         bridge = BinaryNinjaBridge("http://example.invalid")
         self.assertFalse(hasattr(bridge, "snapshot"))
         self.assertFalse(hasattr(bridge, "fresh_snapshot"))
@@ -55,6 +55,12 @@ class RecoilBinjaTests(unittest.TestCase):
             source = (REPO_ROOT / relative).read_text(encoding="utf-8")
             self.assertNotIn("snapshot" + "Info", source)
             self.assertNotIn("binary_ninja_session", source)
+
+        verifier_source = (
+            REPO_ROOT / "tools/_recoil/commands/call_contract_verify.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("run_preflight", verifier_source)
+        self.assertNotIn("_recoil.commands.binja_preflight", verifier_source)
 
     def test_default_bridge_call_budget_is_200(self) -> None:
         self.assertEqual(200, DEFAULT_BN_CALL_BUDGET)

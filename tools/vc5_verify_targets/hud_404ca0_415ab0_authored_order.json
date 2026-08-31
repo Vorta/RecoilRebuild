@@ -57,7 +57,7 @@
     "src/GameZRecoil/zFMV/fmv.h",
     "src/GameZRecoil/zHud/zhud_ui.h",
     "src/GameZRecoil/zHud/zhud_ui_defs.h",
-    "src/GameZRecoil/zGame/zGame.h",
+    "src/GameZRecoil/zGame/zgame.h",
     "src/GameZRecoil/zInput/zInput.h",
     "src/GameZRecoil/zSound/zsnd.h",
     "src/GameZRecoil/zVideo/zvid.h",

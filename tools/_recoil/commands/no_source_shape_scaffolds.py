@@ -290,23 +290,8 @@ def main() -> int:
             "Defaults to src when omitted"
         ),
     )
-    parser.add_argument(
-        "--path",
-        action="append",
-        default=[],
-        help="additional source file or directory to scan; may be repeated",
-    )
-    parser.add_argument(
-        "--paths",
-        action="append",
-        nargs="+",
-        default=[],
-        metavar="PATH",
-        help="compatibility alias for one or more --path arguments",
-    )
     parser.add_argument("--summary", action="store_true", help="print current scaffold usage")
     parser.add_argument("--top", dest="top", type=int, default=None, help="number of labels/files to print with --summary")
-    parser.add_argument("--max", dest="top", type=int, default=None, help="compatibility alias for --top")
     parser.add_argument(
         "--include-owners",
         action="store_true",
@@ -322,8 +307,6 @@ def main() -> int:
     repo_root = REPO_ROOT
     roots = args.root if args.root is not None else ["src"]
     scan_paths = [(repo_root / root).resolve() for root in roots]
-    scan_paths.extend((repo_root / path).resolve() for path in args.path)
-    scan_paths.extend((repo_root / path).resolve() for paths in args.paths for path in paths)
     top = max(args.top if args.top is not None else 10, 0)
 
     locations = find_occurrences(scan_paths, repo_root)

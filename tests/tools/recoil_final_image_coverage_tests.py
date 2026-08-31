@@ -155,8 +155,6 @@ class FinalImageCoverageTests(unittest.TestCase):
             )
             result = audit_catalog(tracker=progress, reference=self.reference)
         self.assertFalse(result["passed"])
-        self.assertFalse(result["legacy_catalog_present"])
-        self.assertFalse(result["legacy_catalog_required"])
         self.assertIsNotNone(result["coverage"])
         self.assertTrue(result["coverage"]["file_backed_topology"]["complete"])
         self.assertTrue(result["coverage"]["rva_topology"]["complete"])
@@ -288,7 +286,6 @@ class FinalImageCoverageTests(unittest.TestCase):
                         "object": "unit.obj",
                     }
                 ],
-                tracker=self.tracker(complete=True),
             )
         self.assertTrue(report["passed"], report["semantic_failures"])
         self.assertEqual("live-generated", report["coverage_mode"])

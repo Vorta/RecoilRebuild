@@ -21,7 +21,7 @@
   ],
   "order_edit_paths": [
     "src/Battlesport/Briefing.cpp",
-    "src/Battlesport/Briefing.h",
+    "src/Battlesport/briefing.h",
     "src/GameZRecoil/zHud/zhud_ui.h"
   ],
   "functions": [

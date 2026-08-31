@@ -21,12 +21,6 @@ from _recoil.commands.data_artifact_progress import (  # noqa: E402
     normalize_register_payload as normalize_artifact_payload,
     plan_data_artifact_registration,
 )
-from _recoil.commands.data_artifact_evidence_repair import (  # noqa: E402
-    DataArtifactEvidenceRepairError,
-    mutate_data_artifact_evidence_repair,
-    normalize_repair_payload,
-    plan_data_artifact_evidence_repair,
-)
 from _recoil.commands.data_logical_alias_progress import (  # noqa: E402
     DataLogicalAliasProgressError,
     mutate_logical_data_alias_batch,
@@ -725,125 +719,6 @@ class DataArtifactProgressTests(unittest.TestCase):
             "requires source_traceability_state='not-applicable'",
         ):
             normalize_artifact_payload(invalid)
-
-
-class DataArtifactEvidenceRepairTests(unittest.TestCase):
-    @staticmethod
-    def repair_payload():
-        return {
-            "operation": (
-                "repair-reviewed-data-artifact-observation-schema"
-            ),
-            "reviewed": True,
-            "artifact_id": "recoil:data:0x41b898",
-            "evidence_id": "recoil:evidence:r7:000003",
-            "expected_invalid": {
-                "freshness": "current-unhashed",
-                "validation_mode": "reviewed-non-gating-observation",
-            },
-        }
-
-    @staticmethod
-    def repair_tracker():
-        current = tracker()
-        artifact_id = "recoil:data:0x41b898"
-        evidence_id = "recoil:evidence:r7:000003"
-        current["symbols"][artifact_id] = {
-            "address": "0x41b898",
-            "binary": "recoil",
-            "kind": "data",
-            "evidence_ids": [evidence_id],
-        }
-        current["evidence"][evidence_id] = {
-            "kind": "reviewed-data-artifact-observation",
-            "summary": "Reviewed exact data observation.",
-            "scope_ids": [artifact_id],
-            "result": "observed",
-            "disposition": "observed",
-            "freshness": "current-unhashed",
-            "gating": False,
-            "validation_mode": "reviewed-non-gating-observation",
-            "artifacts": [],
-            "provenance": {
-                "acceptance_effect": "none",
-            },
-        }
-        return current
-
-    def test_plan_repairs_only_invalid_schema_pair(self):
-        current = self.repair_tracker()
-        before = deepcopy(current)
-
-        plan = plan_data_artifact_evidence_repair(
-            current,
-            self.repair_payload(),
-            expected_revision=7,
-        )
-
-        self.assertEqual(current, before)
-        repaired = plan.proposed["evidence"][plan.evidence_id]
-        self.assertEqual("historical", repaired["freshness"])
-        self.assertEqual(
-            "historical-observation", repaired["validation_mode"]
-        )
-        expected = deepcopy(before["evidence"][plan.evidence_id])
-        expected["freshness"] = "historical"
-        expected["validation_mode"] = "historical-observation"
-        self.assertEqual(expected, repaired)
-
-    def test_apply_is_revision_guarded_and_reports_no_acceptance(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            path = Path(temp_dir) / "progress.sqlite3"
-            write_tracker(path, self.repair_tracker())
-
-            result = mutate_data_artifact_evidence_repair(
-                path,
-                self.repair_payload(),
-                expected_revision=7,
-                apply=True,
-            )
-            updated = read_tracker(path)
-
-        self.assertTrue(result["applied"])
-        self.assertFalse(result["acceptance_changed"])
-        self.assertFalse(result["owner_gates_changed"])
-        self.assertFalse(result["owner_tiers_changed"])
-        self.assertEqual(8, updated["revision"])
-        self.assertEqual(
-            "historical",
-            updated["evidence"]["recoil:evidence:r7:000003"]["freshness"],
-        )
-
-    def test_rejects_semantic_drift_and_nonexact_expected_pair(self):
-        drifted = self.repair_tracker()
-        drifted["evidence"]["recoil:evidence:r7:000003"]["gating"] = True
-        with self.assertRaisesRegex(
-            DataArtifactEvidenceRepairError, "semantic identity drifted"
-        ):
-            plan_data_artifact_evidence_repair(
-                drifted,
-                self.repair_payload(),
-                expected_revision=7,
-            )
-
-        payload = self.repair_payload()
-        payload["expected_invalid"]["freshness"] = "historical"
-        with self.assertRaisesRegex(
-            DataArtifactEvidenceRepairError, "known invalid"
-        ):
-            normalize_repair_payload(payload)
-
-    def test_rejects_artifact_evidence_link_drift(self):
-        current = self.repair_tracker()
-        current["symbols"]["recoil:data:0x41b898"]["evidence_ids"] = []
-        with self.assertRaisesRegex(
-            DataArtifactEvidenceRepairError, "does not reference"
-        ):
-            plan_data_artifact_evidence_repair(
-                current,
-                self.repair_payload(),
-                expected_revision=7,
-            )
 
 
 class DataLogicalAliasProgressTests(unittest.TestCase):

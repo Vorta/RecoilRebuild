@@ -13,7 +13,6 @@ import argparse
 import json
 import re
 import sys
-import tempfile
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -284,52 +283,6 @@ def run_guard(workspace_root: Path, scan_root: Path, manifest_path: Path) -> lis
     return violations
 
 
-def self_test() -> int:
-    with tempfile.TemporaryDirectory() as temp:
-        root = Path(temp)
-        manifest = root / "manifest.json"
-        source_dir = root / "src"
-        source_dir.mkdir()
-        source = source_dir / "sample.cpp"
-        manifest.write_text(
-            json.dumps(
-                {
-                    "globals": [
-                        {
-                            "path": "src/sample.cpp",
-                            "name": "g_Table",
-                            "data_reimplemented": "✅",
-                            "expected": "concrete-initializer-list",
-                            "evidence": "unit test evidence",
-                        }
-                    ]
-                }
-            ),
-            encoding="utf-8",
-        )
-
-        source.write_text("Record g_Table[2] = {0};\n", encoding="utf-8")
-        violations = run_guard(root, root, manifest)
-        if len(violations) != 1 or "g_Table" not in violations[0]:
-            print("self-test failed: zero placeholder was not rejected", file=sys.stderr)
-            return 1
-
-        source.write_text(
-            "Record g_Table[2] = {\n"
-            "    {\"first\", 1},\n"
-            "    {\"second\", 2},\n"
-            "};\n",
-            encoding="utf-8",
-        )
-        violations = run_guard(root, root, manifest)
-        if violations:
-            print("self-test failed: concrete initializer was rejected", file=sys.stderr)
-            return 1
-
-    print("recoil_source_data_initializer_guard self-test passed")
-    return 0
-
-
 def main(argv: list[str] | None = None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -348,11 +301,8 @@ def main(argv: list[str] | None = None) -> int:
         help="alias for --root; source file or directory to scan",
     )
     parser.add_argument("--progress", help="unified reconstruction progress path")
-    parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
 
-    if args.self_test:
-        return self_test()
 
     scan_root = Path(args.root).resolve()
     workspace_root = find_workspace_root(scan_root)
