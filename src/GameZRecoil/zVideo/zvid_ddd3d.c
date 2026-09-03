@@ -103,7 +103,13 @@ namespace {
             for (_colorIndex = 0; _colorIndex < (vertexCount); ++_colorIndex) { \
                 const float _attr0Value = (attr0)[(vertexCount) - 1 - _colorIndex]; \
                 DWORD _packed; \
-                if (_attr0Value > (1.0f / 255.0f)) { \
+                DWORD _packedTail; \
+                if (!(_attr0Value > (1.0f / 255.0f))) { \
+                    _packed = (((((DWORD)((int)((baseColor).r * (attr1Scale) + 0.5f)) << 8) | \
+                        (DWORD)((int)((baseColor).g * (attr1Scale) + 0.5f))) << 8) | \
+                        (DWORD)((int)((baseColor).b * (attr1Scale) + 0.5f))); \
+                    _packedTail = (alphaBits); \
+                } else { \
                     float _red = (baseColor).r * (attr1Scale) + _attr0Value * g_zVideo_D3DColorAttrBiasR; \
                     float _green = (baseColor).g * (attr1Scale) + _attr0Value * g_zVideo_D3DColorAttrBiasG; \
                     float _blue = (baseColor).b * (attr1Scale) + _attr0Value * g_zVideo_D3DColorAttrBiasB; \
@@ -115,16 +121,11 @@ namespace {
                         _green *= _scale; \
                         _blue *= _scale; \
                     } \
-                    _packed = (alphaBits) | ((((((DWORD)((int)(_red)) << 8) | \
-                        (DWORD)((int)(_green))) << 8) | (DWORD)((int)(_blue)))); \
-                } else { \
-                    _packed = PackColorAttrConstant( \
-                        (baseColor), \
-                        (attr1Scale), \
-                        (alphaBits) \
-                    ); \
+                    _packed = (((((DWORD)((int)(_red)) << 8) | \
+                        (DWORD)((int)(_green))) << 8) | (alphaBits)); \
+                    _packedTail = (DWORD)((int)(_blue)); \
                 } \
-                g_zVideo_D3DSubmitTempVertices[_colorIndex].color = _packed; \
+                g_zVideo_D3DSubmitTempVertices[_colorIndex].color = _packed | _packedTail; \
             } \
         } \
     }

@@ -486,6 +486,47 @@ class Vc5BuildLiveCleanupTests(unittest.TestCase):
             with self.subTest(output=output):
                 self.assertTrue(output.resolve().is_relative_to(root))
 
+    def test_diagnostic_build_roots_are_manifest_qualified(self) -> None:
+        canonical = vc5_build.load_config(vc5_build.DEFAULT_MANIFEST)
+        first = dataclasses.replace(
+            canonical,
+            name="first diagnostic",
+            diagnostic_only=True,
+            source_compile_profiles=(("unit.cpp", "unit-profile"),),
+        )
+        second = dataclasses.replace(first, name="second diagnostic")
+
+        first = vc5_build.finalize_diagnostic_build_dir(first)
+        second = vc5_build.finalize_diagnostic_build_dir(second)
+
+        self.assertNotEqual(first.build_dir, second.build_dir)
+        self.assertEqual("first_diagnostic", first.build_dir.parent.name)
+        self.assertEqual("second_diagnostic", second.build_dir.parent.name)
+
+    def test_diagnostic_pch_is_rebased_into_finalized_root(self) -> None:
+        canonical = vc5_build.load_config(vc5_build.DEFAULT_MANIFEST)
+        original_root = ROOT / "build" / "vc5-probes" / "unit-pch-original"
+        topology = vc5_build.PchTopology(
+            header="unit.h",
+            pch_path=original_root / "pch" / "unit.pch",
+            roles=(),
+        )
+        config = dataclasses.replace(
+            canonical,
+            name="unit pch",
+            diagnostic_only=True,
+            build_dir=original_root,
+            pch_topology=topology,
+            source_compile_profiles=(("unit.cpp", "unit-profile"),),
+        )
+
+        finalized = vc5_build.finalize_diagnostic_build_dir(config)
+
+        self.assertEqual(
+            finalized.build_dir / "pch" / "unit.pch",
+            finalized.pch_topology.pch_path,
+        )
+
     def test_explicit_clean_proves_selected_root_was_removed(self) -> None:
         with self.temporary_directory() as temporary:
             build_root = Path(temporary) / "run"

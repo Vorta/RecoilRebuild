@@ -41,6 +41,13 @@ def audit_reachability(progress: Path) -> dict[str, object]:
     check = task.get("check_command")
     if isinstance(check, str) and not check.startswith("python tools/recoil.py "):
         findings.append("check command does not route through tools/recoil.py")
+    stage_runner = task.get("stage_runner_command")
+    if isinstance(stage_runner, str) and not stage_runner.startswith(
+        "python tools/recoil.py progress call-contract replay-live "
+    ):
+        findings.append(
+            "stage runner does not route through progress call-contract replay-live"
+        )
     return {"passed": not findings, "findings": findings, "task": task}
 
 

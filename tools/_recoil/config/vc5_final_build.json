@@ -67,7 +67,7 @@
     "src/Battlesport/version.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
     "src/Battlesport/weapon.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
     "src/Battlesport/WinSock.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
-    "src/Battlesport/WOL.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
+    "src/Battlesport/WOL.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zDEClient/zdec_crater.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zFMV/fmv_main.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",

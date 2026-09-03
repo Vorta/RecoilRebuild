@@ -223,6 +223,46 @@ class RecoilProgressPerformanceTests(unittest.TestCase):
                 status["body_statuses"][0]["reason"],
             )
 
+    def test_current_slice_accepts_reviewed_semantic_equivalence_raw_rows(
+        self,
+    ) -> None:
+        document = one_authored_body_document()
+        slice_row, transcript = accept_first_call_contract_body(document)
+        symbol_id = str(slice_row["symbol_ids"][0])
+        evidence_id = document._call_contract_state_evidence_id(
+            document.collection("symbols")[symbol_id]
+        )
+        evidence = document.collection("evidence")[evidence_id]
+        provenance = evidence["provenance"]
+        expected_call = {
+            "ordinal": 0,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "provider",
+            "target_identity": "provider:recoil:function:0x4c60a6",
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": None,
+        }
+        candidate_call = {
+            **expected_call,
+            "identity_kind": "direct",
+            "target_identity": "iat:_ftol",
+        }
+        transcript[0]["expected_fact_row"]["calls"] = [expected_call]
+        provenance["expected_contract"] = [expected_call]
+        provenance["candidate_contract"] = [candidate_call]
+
+        self.assertEqual(
+            {
+                "current": True,
+                "reason": "accepted-and-not-invalidated",
+                "evidence_id": evidence_id,
+                **current_generations(),
+            },
+            document.call_contract_body_currentness(symbol_id),
+        )
+
     def test_phase_closeout_requires_v3_ordered_fact_transcript_scan(self) -> None:
         document = one_authored_body_document()
         slice_row, transcript = accept_first_call_contract_body(document)
@@ -308,6 +348,60 @@ class RecoilProgressPerformanceTests(unittest.TestCase):
             self.assertIn("task_id", payload)
             self.assertIn("stage", payload)
             self.assertEqual(1, tracker_decode.call_count)
+
+    def test_current_task_keeps_direct_acceptance_and_adds_one_stage_runner(self) -> None:
+        document = one_authored_body_document()
+        slice_id = document.authored_call_contract_slices()[0]["id"]
+        with patch.object(
+            document,
+            "pipeline",
+            return_value={
+                "phase": "authored-call-contract",
+                "cursor": "0x401000",
+                "physical_block_id": "recoil:block:0x401000",
+                "authored_call_contract_slice_id": slice_id,
+                "next_command": (
+                    "python tools/recoil.py progress advance-live-call-contract "
+                    f"--slice {slice_id} "
+                    "--build-root build/live-validation/call-contract/unit "
+                    "--expected-semantic-revision 0 "
+                    "--expected-evidence-generation-revision 0 --apply --json"
+                ),
+            },
+        ):
+            payload = document.current_task()
+        self.assertEqual("authored-call-contract", payload["stage"])
+        self.assertEqual(
+            "python tools/recoil.py progress call-contract replay-live "
+            "--apply --json",
+            payload["stage_runner_command"],
+        )
+        self.assertIn(
+            "progress advance-live-call-contract",
+            payload["acceptance_command"],
+        )
+        self.assertIn("verify call-contract", payload["check_command"])
+
+        with patch.object(
+            document,
+            "pipeline",
+            return_value={
+                "phase": "authored-byte-match",
+                "cursor": "0x401000",
+                "physical_block_id": "recoil:block:0x401000",
+                "next_command": (
+                    "python tools/recoil.py progress advance-live-authored-byte "
+                    "--build-root build/live-validation/authored-byte/unit "
+                    "--expected-revision 0 --apply --json"
+                ),
+            },
+        ):
+            non_call_contract = document.current_task()
+        self.assertIsNone(non_call_contract["stage_runner_command"])
+        self.assertIn(
+            "advance-live-authored-byte",
+            non_call_contract["acceptance_command"],
+        )
 
 
 if __name__ == "__main__":

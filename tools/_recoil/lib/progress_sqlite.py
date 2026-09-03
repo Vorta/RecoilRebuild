@@ -1107,12 +1107,25 @@ class ProgressSQLiteStore:
             self._migrate_revision_domains_in_transaction(connection)
 
             encoded_upserts: dict[tuple[str, str], str] = {}
+            delete_keys: set[tuple[str, str]] = set()
             for collection, rows in entity_patches.items():
                 for entity_id, patches in rows.items():
                     row = connection.execute(
                         "SELECT payload FROM entities WHERE collection=? AND entity_id=?",
                         (collection, entity_id),
                     ).fetchone()
+                    root_delete = (
+                        len(patches) == 1
+                        and "" in patches
+                        and patches[""] is DELETE_FACET
+                    )
+                    if root_delete:
+                        if row is None:
+                            raise ProgressSQLiteError(
+                                f"{collection}/{entity_id}: cannot delete a missing entity"
+                            )
+                        delete_keys.add((collection, entity_id))
+                        continue
                     current = None if row is None else json.loads(str(row[0]))
                     if row is None and "" not in patches:
                         raise ProgressSQLiteError(
@@ -1141,10 +1154,22 @@ class ProgressSQLiteStore:
                 )
                 encoded_top_updates[key] = _json(updated)
 
-            for collection, entity_id in encoded_upserts:
+            for collection, entity_id in set(encoded_upserts) | delete_keys:
                 connection.execute(
                     "DELETE FROM relationship_index "
                     "WHERE source_collection=? AND source_entity_id=?",
+                    (collection, entity_id),
+                )
+            for collection, entity_id in delete_keys:
+                connection.execute(
+                    "DELETE FROM relationship_index "
+                    "WHERE source_collection='evidence' "
+                    "AND target_collection=? AND target_entity_id=?",
+                    (collection, entity_id),
+                )
+            for collection, entity_id in delete_keys:
+                connection.execute(
+                    "DELETE FROM entities WHERE collection=? AND entity_id=?",
                     (collection, entity_id),
                 )
             for (collection, entity_id), payload in encoded_upserts.items():
@@ -1204,7 +1229,7 @@ class ProgressSQLiteStore:
                 previous_revision=observed_vector.transaction_revision,
                 revision=result_vector.transaction_revision,
                 upserted_entities=len(encoded_upserts),
-                deleted_entities=0,
+                deleted_entities=len(delete_keys),
                 updated_top_level_values=len(encoded_top_updates),
                 previous_revision_vector=observed_vector,
                 revision_vector=result_vector,

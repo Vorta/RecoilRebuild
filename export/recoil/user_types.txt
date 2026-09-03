@@ -342,7 +342,6 @@ struct HudUiWeaponSlotElementCursor;
 struct HudUiWidget;
 struct HudUiWidget_FTable;
 struct HudUiZrdButton_FTable;
-struct HudUiZrdDialog;
 struct HudUiZrdScrollingText;
 struct HudUiZrdWidget;
 struct HudUiZrdWidgetEx150;
@@ -874,7 +873,6 @@ struct zModel_DisplayDistanceState;
 struct zModel_DrawBatchBase;
 struct zModel_FogTargetColorOverride;
 struct zModel_Instance;
-struct zModel_LightState;
 struct zModel_Material;
 struct zModel_MaterialCycle;
 struct zModel_MaterialSlot;
@@ -1796,8 +1794,6 @@ struct CGdiObjectVTable
 	void* Dump;
 	void* AssertValid;
 	void* Serialize;
-	void* unknown_14;
-	void* unknown_18;
 };
 
 // "CListBox"
@@ -2449,7 +2445,7 @@ struct HudCmdBindButton_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiCheckToggleWidget* self);
-	int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiZrdDialog* owner);
+	int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiBackground* owner);
 	void* function_80;
 	void (* OnSelectedIndexChanged)(struct HudCmdBindButton* self, int32_t selectedIndex);
 };
@@ -2504,7 +2500,7 @@ struct HudCmdCaptureBindButton_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiCheckToggleWidget* self);
-	int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiZrdDialog* owner);
+	int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiBackground* owner);
 	void* function_80;
 	void (* OnSelectedIndexChanged)(struct HudCmdBindButton* self, int32_t selectedIndex);
 };
@@ -2936,7 +2932,7 @@ struct HudTimerPanelNetState
 	int32_t oneMinuteWarningShown;
 	int32_t startCountdownTriggered;
 	int32_t tenSecondWarningsEnabled;
-	int32_t unknownTailFlags[0x8];
+	int32_t reservedTailFlags[0x8];
 };
 
 // "HudUiBackground"
@@ -3061,7 +3057,7 @@ struct HudUiBackgroundPanel_FTableHeader
 };
 
 // "HudUiBackgroundPanel_VT_Action"
-typedef void (__thiscall* HudUiBackgroundPanel_VT_Action)(struct HudUiZrdDialog* self);
+typedef void (__thiscall* HudUiBackgroundPanel_VT_Action)(struct HudUiBackground* self);
 
 // "HudUiBackgroundPanel_VT_ScalarDeletingDtor"
 typedef struct HudUiContainer* (__thiscall* HudUiBackgroundPanel_VT_ScalarDeletingDtor)(struct HudUiContainer* self, int32_t shouldDelete);
@@ -3352,9 +3348,9 @@ struct HudUiBriefingTransportProgress_FTable
 	void* function_70;
 	void* function_74;
 	void* function_78;
-	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale);
+	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
-	void (__thiscall* SetNormalizedValue)(void* self, float deltaTime);
+	void (* SetNormalizedValue)(void* self, float deltaTime);
 };
 
 // "HudUiChatMessageStack"
@@ -3426,7 +3422,7 @@ struct HudUiCheckToggleWidget_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiCheckToggleWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner);
+	int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	void* function_84;
 };
@@ -3482,7 +3478,7 @@ struct HudUiClampedIntStepButton_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiZrdWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale);
+	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	void* function_84;
 };
@@ -3540,7 +3536,7 @@ struct HudUiClampedIntTextInput_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiNumericTextInputWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale);
+	int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	int32_t (* OnRawKeyboardEvent)(struct HudUiClampedIntTextInput* self, int32_t key);
 	void (* OnAccept)(struct HudUiClampedIntTextInput* self);
@@ -3827,7 +3823,7 @@ struct HudUiCycleSelectorWidget_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiCycleSelectorWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner);
+	int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	void* function_84;
 };
@@ -3955,7 +3951,7 @@ struct HudUiFillBitmap_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiZrdWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiFillBitmap* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner);
+	int32_t (* LoadFromZrd)(struct HudUiFillBitmap* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	void (* SetNormalizedValue)(struct HudUiFillBitmap* self, float normalizedValue);
 };
@@ -4836,7 +4832,7 @@ struct HudUiNumericTextInput_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiNumericTextInputWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale);
+	int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	int32_t (* OnRawKeyboardEvent)(struct HudUiNumericTextInput* self, int32_t key);
 	void (* OnAccept)(struct HudUiNumericTextInput* self);
@@ -4971,7 +4967,7 @@ struct HudUiOptionsPanelCheckToggleWidget_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiCheckToggleWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct HudUiZrdDialog* owner, float uiScale);
+	int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	void (* SyncFromOptions)(struct HudUiCheckToggleWidget* self);
 };
@@ -5010,7 +5006,7 @@ struct HudUiOptionsPanelCycleSelectorWidget_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiCycleSelectorWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct HudUiZrdDialog* owner, float uiScale);
+	int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	void (* SyncFromOptions)(struct HudUiCycleSelectorWidget* self);
 };
@@ -5055,7 +5051,7 @@ struct HudUiOptionsPanelMusicVolumeWidget_FTable
 	void* function_70;
 	void* function_74;
 	void* function_78;
-	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale);
+	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void (* SyncFromOptions)(struct HudUiOptionsPanelMusicVolumeWidget* self);
 	void (* SetNormalizedValue)(struct HudUiFillBitmap* self, float normalizedValue);
 };
@@ -5107,7 +5103,7 @@ struct HudUiOptionsPanelSoundVolumeWidget_FTable
 	void* function_70;
 	void* function_74;
 	void* function_78;
-	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale);
+	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void (* SyncFromOptions)(struct HudUiOptionsPanelSoundVolumeWidget* self);
 	void (* SetNormalizedValue)(struct HudUiFillBitmap* self, float normalizedValue);
 };
@@ -6195,7 +6191,7 @@ typedef void (__thiscall* HudUiWidget_VT_GetRect)(struct HudUiWidget* self, stru
 typedef char (__thiscall* HudUiWidget_VT_HitTest)(struct HudUiWidget* self, int32_t px, int32_t py);
 
 // "HudUiWidget_VT_LoadFromZrd"
-typedef int32_t (__thiscall* HudUiWidget_VT_LoadFromZrd)(struct HudUiWidget* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner);
+typedef int32_t (__thiscall* HudUiWidget_VT_LoadFromZrd)(struct HudUiWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 
 // "HudUiWidget_VT_Noarg"
 typedef void (__thiscall* HudUiWidget_VT_Noarg)(struct HudUiWidget* self);
@@ -6240,24 +6236,8 @@ struct HudUiZrdButton_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiZrdWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale);
+	int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
-};
-
-// "HudUiZrdDialog"
-struct HudUiZrdDialog
-{
-	struct HudUiContainer base;
-	int32_t unknown_10;
-	int32_t cursorX;
-	char __padding_18[0x100];
-	struct zVideo_BltSourceHead* clipSource;
-	char __padding_11C[0x1bd0];
-	struct HudFontStyle fontStyles[0x14];
-	char __padding_1FBC[0x8988];
-	int32_t originX;
-	int32_t originY;
-	void* currentOrFocus;
 };
 
 // "HudUiZrdScrollingText"
@@ -6276,7 +6256,7 @@ struct HudUiZrdWidget
 	int32_t originX;
 	int32_t originY;
 	int32_t modeOrEnabled;
-	struct HudUiZrdDialog* owner;
+	struct HudUiBackground* owner;
 	struct HudUiRect boundsRect;
 	struct zVid_Image* defaultImage;
 	struct zVid_Image* disabledImage;
@@ -6346,7 +6326,7 @@ struct HudUiZrdWidgetEx17C_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiZrdWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiZrdWidgetEx17C* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner);
+	int32_t (* LoadFromZrd)(struct HudUiZrdWidgetEx17C* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	void* function_84;
 };
@@ -6400,7 +6380,7 @@ struct HudUiZrdWidgetEx17C_Item_FTable
 	int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect);
 	void (* RebuildBltRectFromImage)(struct HudUiWidget* self);
 	void (* RefreshState)(struct HudUiZrdWidget* self);
-	int32_t (* LoadFromZrd)(struct HudUiZrdWidgetEx17C_Item* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner);
+	int32_t (* LoadFromZrd)(struct HudUiZrdWidgetEx17C_Item* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 	void* function_80;
 	void* function_84;
 };
@@ -6451,7 +6431,7 @@ typedef struct HudUiZrdWidget* (__thiscall* HudUiZrdWidget_VT_Dtor)(struct HudUi
 typedef struct HudUiRect* (__thiscall* HudUiZrdWidget_VT_GetBoundsRectOrNull)(struct HudUiZrdWidget* self);
 
 // "HudUiZrdWidget_VT_LoadFromZrd"
-typedef int32_t (__thiscall* HudUiZrdWidget_VT_LoadFromZrd)(struct HudUiZrdWidget* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner);
+typedef int32_t (__thiscall* HudUiZrdWidget_VT_LoadFromZrd)(struct HudUiZrdWidget* self, struct zReader_Node* zrdSection, struct HudUiBackground* owner);
 
 // "HudUiZrdWidget_VT_Noarg"
 typedef void (__thiscall* HudUiZrdWidget_VT_Noarg)(struct HudUiZrdWidget* self);
@@ -7507,7 +7487,7 @@ struct OptCatalogEntryDef
 	float impactEffectParams[0x6];
 	float trailSegmentTimeSec;
 	int32_t unknown_154;
-	int32_t unknown_158;
+	float lastGroundClearance;
 	int32_t unknown_15c;
 	char* killVerbString;
 };
@@ -7883,7 +7863,7 @@ struct OptCatalogTrailRuntimeState
 	struct zClass_Node* projectileNode;
 	struct zTag4* variantTagPtr;
 	struct zSndPlayHandle* trailAudioHandle;
-	int32_t unknown_18;
+	float weaponCharge;
 	struct zClass_Node* attachNode;
 	struct zVec3* originPos;
 	struct zVec3* forwardVec;
@@ -8155,7 +8135,7 @@ struct PickupParsedZrdEntry
 	struct zVec3 rotation;
 	__padding char _24[4];
 	int32_t param;
-	int32_t unknown_2c;
+	int32_t reservedSpawnField;
 	float respawnDelay;
 };
 
@@ -9614,7 +9594,7 @@ struct PlayerState
 	struct zVec3 yawRotatedLocalVel;
 	float axisClampRuntime;
 	float yawVelocityLimit;
-	char _pad0d0[0xc];
+	struct zVec3 reservedMotionVector;
 	float cachedStatusMeterRatio;
 	int32_t cachedHudCounterValue;
 	float cursorNormX;
@@ -11711,7 +11691,7 @@ struct zClass_DisplayData
 // "zClass_Light"
 struct zClass_Light
 {
-	char name[0x24];
+	union zClass_NodeName name;
 	int32_t flags;
 	int32_t auxFlags;
 	int32_t boundsFlags;
@@ -12648,7 +12628,7 @@ struct zEffectAnimEntry
 	uint8_t sampleRefCount;
 	uint8_t effectTemplateRefCount;
 	uint8_t activationPrereqCount;
-	uint8_t unknown_10c;
+	uint8_t activationPrereqMinimumMatchCount;
 	uint8_t runtimeRefCount;
 	uint8_t __padding_10e[0x2];
 	struct zEffectAnimTrackedNode* trackedNodeList;
@@ -12689,8 +12669,8 @@ struct zEffectAnimNodeRestoreFromActive
 	int32_t active;
 	int32_t useMatrix;
 	float transformData[0xc];
-	int32_t unk3c;
-	int32_t unk40;
+	int32_t hasDiState;
+	float diBlendScale;
 };
 
 // "zEffectAnimNodeRestoreState"
@@ -12700,8 +12680,8 @@ struct zEffectAnimNodeRestoreState
 	int32_t active;
 	int32_t useMatrix;
 	float transformData[0xc];
-	int32_t unk3c;
-	int32_t unk40;
+	int32_t hasDiState;
+	float diBlendScale;
 };
 
 // "zEffectAnimOnStateDoneCallback"
@@ -13191,7 +13171,7 @@ struct zEffectNodeAnimEvent
 	float scaleRate_Y;
 	float scaleRate_Z;
 	float endTime;
-	char _padding_90[0x4];
+	float runtimeVecBInitial_Z;
 	float runtimeVecA_X;
 	float runtimeVecA_Y;
 	float runtimeVecA_Z;
@@ -14543,13 +14523,34 @@ struct zInput_GlobalState
 	struct zInput_DirectInput* directInput;
 	uint8_t hWnd[0x4];
 	struct zInput_DeviceRegistry deviceRegistry;
-	char _padding_0014[0x41dc];
+	int32_t keyboardSystemReady;
+	struct zInput_DirectInputDevice* keyboardDevice;
+	struct zInput_DIDeviceObjectData* keyboardEventBuffer;
+	int32_t keyboardModifierState;
+	struct zInput_KbdKeyDispatchEntry keyboardDispatchTable[0x7de];
+	zInputKeyboardRawEventCallbackFn keyboardRawEventCallback;
+	void* keyboardRawEventCallbackCtx;
+	int32_t joystickInitialized;
+	struct zInput_DirectInputDevice* joystickDevice;
+	struct DIJOYSTATE2 joystickCurrentState;
+	struct DIJOYSTATE2 joystickPreviousState;
+	uint8_t unknown_4144[0x20];
+	int32_t joystickAxisCount;
+	int32_t joystickCapsForceFeedback;
+	int32_t joystickCapsFFAttack;
+	int32_t joystickCapsFFFade;
+	struct zInput_JoystickAxisConfig joystickAxisConfig;
+	int32_t mouseInitialized;
+	struct zInput_DirectInputDevice* mouseDevice;
+	struct zInput_DIMouseState mouseCurrentState;
+	struct zInput_DIMouseState mousePreviousState;
+	uint8_t unknown_41ec[0x4];
 	struct zInput_BindMapContext* currentBindMap;
-	int32_t unknown_41f4;
-	struct zInput_DoublyLinkedNode* unknown_41f8;
+	int32_t bindMapOverlayBlockSize;
+	struct zInput_BindMapOverlayStackNode* bindMapOverlayNodeBlockList;
 	struct zInput_BindMapOverlayStackNode* bindMapOverlayNodeFreeList;
 	struct zInput_BindMapOverlayStackNode* bindMapOverlayNodeStackHead;
-	void* unknown_4204;
+	int32_t bindMapOverlayReserved;
 	int32_t bindMapOverlayDepth;
 };
 
@@ -14819,7 +14820,7 @@ enum zModelTextureScrollUpdateResult : uint32_t
 struct zModel_ActiveLightEntryLive
 {
 	struct zClass_LightData* light;
-	struct zModel_LightState* lightState;
+	struct zClass_Light* lightNode;
 	int32_t useFullWeight;
 	int32_t contributesToLighting;
 	uint32_t reserved;
@@ -14882,13 +14883,6 @@ struct zModel_Instance
 	struct zDiEntry* entries;
 };
 
-// "zModel_LightState"
-struct zModel_LightState
-{
-	char __padding00[0x24];
-	int32_t flags;
-};
-
 // "zModel_Material"
 struct zModel_Material
 {
@@ -14896,9 +14890,9 @@ struct zModel_Material
 	int16_t packedColor;
 	struct zColorRgb colorRgb;
 	struct zImage_TexDirEntry* currentTextureDirectoryEntry;
-	float unknown_14;
+	float reservedScalar0;
 	float colorScalar;
-	float unknown_1c;
+	float reservedScalar1;
 	int32_t userTag;
 	struct zModel_MaterialCycle* cycle;
 };
@@ -17255,13 +17249,13 @@ struct zUtil_SaveGameStateList
 	struct zUtil_SaveGameStateList* next;
 	struct PlayerState* playerState;
 	struct zUtil_SaveGameState* firstSaveState;
-	int32_t unknown_00c;
-	int32_t unknown_010;
+	int32_t reservedBeforeList0;
+	int32_t reservedBeforeList1;
 	struct zUtil_SaveGameState* saveStateListHead;
 	struct zUtil_SaveGameState* saveStateListTail;
 	int32_t saveStateCount;
-	int32_t unknown_020;
-	int32_t unknown_024;
+	int32_t reservedAfterList0;
+	int32_t reservedAfterList1;
 };
 
 // "zVariantPackedIds"
@@ -18038,7 +18032,8 @@ struct zVideo_ViewContext
 	float projDepth;
 	struct zVec3 nearClipCenter;
 	struct zVec3 farClipCenter;
-	char _padd0[0x8];
+	uint32_t reservedD0;
+	float lodDistanceScaleSq;
 	float viewportWidth;
 	float viewportHeight;
 	float frustumWidth;
@@ -18119,7 +18114,8 @@ struct zWorldArea
 // "zWorldAreaChildCountInfo"
 struct zWorldAreaChildCountInfo
 {
-	int16_t unknown_0;
+	uint8_t reservedStateByte;
+	uint8_t featureDisplayState;
 	int16_t childCount;
 };
 

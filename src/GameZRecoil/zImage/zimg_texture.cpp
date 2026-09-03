@@ -853,14 +853,12 @@ extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
         return 0;
     }
 
-    if (fread(&entry->header, sizeof(entry->header), 1, entry->fileHandle) != 1) {
+    if (fread(&entry->header, sizeof(entry->header), 1, entry->fileHandle) != 1 ||
+        entry->header.fileFormat != 1) {
         fclose(entry->fileHandle);
         entry->fileHandle = 0;
-        return 0;
     }
-    if (entry->header.fileFormat != 1) {
-        fclose(entry->fileHandle);
-        entry->fileHandle = 0;
+    if (entry->fileHandle == 0) {
         return 0;
     }
 
@@ -875,71 +873,74 @@ extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
         ) != (size_t)(entry->header.recordCount)) {
         fclose(entry->fileHandle);
         entry->fileHandle = 0;
-        free(entry->records);
-        entry->records = 0;
-        return 0;
     }
 
-    entry->paletteTableBaseIndex = g_zVid_PaletteRemapVariantTableCount;
-    if (entry->header.paletteTableCount <= 0) {
-        return entry->fileHandle;
-    }
-
-    int tableIndex = g_zVid_PaletteRemapVariantTableCount;
-    g_zVid_PaletteRemapVariantTableCount += entry->header.paletteTableCount;
-    g_zVid_PaletteRemapVariantTables = (unsigned short **)(realloc(
-        g_zVid_PaletteRemapVariantTables,
-        (size_t)(g_zVid_PaletteRemapVariantTableCount) * sizeof(unsigned short *)
-    ));
-
-    int rBits = 0;
-    int gBits = 0;
-    int bBits = 0;
-    zVideo::PixelPack_GetRgbBits(
-        &rBits,
-        &gBits,
-        &bBits
-    );
-
-    while (tableIndex < g_zVid_PaletteRemapVariantTableCount) {
-        unsigned short *table =
-            (unsigned short *)(malloc((size_t)kZVidPaletteColorCount * sizeof(unsigned short)));
-        g_zVid_PaletteRemapVariantTables[tableIndex] = table;
-        if (fread(
-            table,
-            sizeof(unsigned short),
-            kZVidPaletteColorCount,
-            entry->fileHandle
-        ) != (size_t)kZVidPaletteColorCount) {
-            fclose(entry->fileHandle);
-            entry->fileHandle = 0;
-            free(entry->records);
-            entry->records = 0;
-            return 0;
+    if (entry->fileHandle != 0) {
+        entry->paletteTableBaseIndex = g_zVid_PaletteRemapVariantTableCount;
+        if (entry->header.paletteTableCount <= 0) {
+            return entry->fileHandle;
         }
 
-        if (gBits == 5) {
-            {
-                for (int colorIndex = 0; colorIndex < kZVidPaletteColorCount; ++colorIndex) {
-                    unsigned short *color = &table[colorIndex];
-                    const unsigned short value = *color;
-                    const unsigned short shifted = (unsigned short)(value >> 1);
-                    const unsigned short lowXor =
-                        (unsigned char)((unsigned char)(value) ^ (unsigned char)(shifted));
-                    *color = (unsigned short)((lowXor & 0x1f) ^ shifted);
+        int tableIndex = g_zVid_PaletteRemapVariantTableCount;
+        int rBits = 0;
+        int gBits = 0;
+        int bBits = 0;
+        zVideo::PixelPack_GetRgbBits(
+            &rBits,
+            &gBits,
+            &bBits
+        );
+
+        g_zVid_PaletteRemapVariantTableCount += entry->header.paletteTableCount;
+        g_zVid_PaletteRemapVariantTables = (unsigned short **)(realloc(
+            g_zVid_PaletteRemapVariantTables,
+            (size_t)(g_zVid_PaletteRemapVariantTableCount) * sizeof(unsigned short *)
+        ));
+
+        while (tableIndex < g_zVid_PaletteRemapVariantTableCount) {
+            unsigned short *table =
+                (unsigned short *)(malloc((size_t)kZVidPaletteColorCount * sizeof(unsigned short)));
+            g_zVid_PaletteRemapVariantTables[tableIndex] = table;
+            if (fread(
+                table,
+                sizeof(unsigned short),
+                kZVidPaletteColorCount,
+                entry->fileHandle
+            ) != (size_t)kZVidPaletteColorCount) {
+                fclose(entry->fileHandle);
+                entry->fileHandle = 0;
+                break;
+            }
+
+            if (gBits == 5) {
+                {
+                    for (int colorIndex = 0; colorIndex < kZVidPaletteColorCount; ++colorIndex) {
+                        unsigned short *color = &table[colorIndex];
+                        const unsigned short value = *color;
+                        const unsigned short shifted = (unsigned short)(value >> 1);
+                        const unsigned short lowXor =
+                            (unsigned char)((unsigned char)(value) ^ (unsigned char)(shifted));
+                        *color = (unsigned short)((lowXor & 0x1f) ^ shifted);
+                    }
                 }
             }
+
+            g_zVid_PaletteRemapVariantTables[tableIndex] =
+                zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
+                    table,
+                    kZVidPaletteColorCount
+                );
+            ++tableIndex;
         }
 
-        g_zVid_PaletteRemapVariantTables[tableIndex] =
-            zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
-                table,
-                kZVidPaletteColorCount
-            );
-        ++tableIndex;
+        if (entry->fileHandle != 0) {
+            return entry->fileHandle;
+        }
     }
 
-    return entry->fileHandle;
+    free(entry->records);
+    entry->records = 0;
+    return 0;
 }
 
 extern "C" zVidImagePartial *__fastcall
@@ -1025,9 +1026,7 @@ int __cdecl TexDir_LoadPendingEntries() {
             OptCatalog_IsDamageMaskSlotPtrRegistered(entry) != 0) {
             zVid_Image::CalcPow2ScratchFields(entry->image);
         } else if (entry->loadState == 3) {
-            zVideo_TextureRecordFinalizeUploadProc finalizeUpload =
-                g_zVideo_pfnTextureRecordFinalizeUpload;
-            finalizeUpload(
+            g_zVideo_pfnTextureRecordFinalizeUpload(
                 entry->texture,
                 0,
                 entry->image

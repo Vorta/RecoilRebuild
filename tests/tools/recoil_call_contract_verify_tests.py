@@ -4,6 +4,7 @@ import ast
 import contextlib
 from copy import deepcopy
 from dataclasses import replace
+import hashlib
 import io
 import inspect
 import json
@@ -5637,7 +5638,7 @@ class PointerVectorDestroyProviderBridgeTests(unittest.TestCase):
         data = empty_progress_document()
         data["symbols"][self.symbol_id] = {
             "binary": "recoil",
-            "kind": "function",
+            "kind": "provider-function",
             "address": self.address,
             "end_exclusive": "0x40be00",
             "extent_state": "known",
@@ -5852,6 +5853,40 @@ class PointerVectorDestroyProviderBridgeTests(unittest.TestCase):
                 self._bridge(b"\xc2\x04\x00"), address=self.address, length=3
             ),
         )
+
+        class RenderedBridge:
+            def __init__(self, rendered: str) -> None:
+                self.rendered = rendered
+
+            def hexdump(self, address: str, length: int) -> str:
+                return self.rendered
+
+        governed_render = (
+            "40bdf0  MSVC_STL::PtrVector_NoOpDestroyRange_COMDAT:\n"
+            "40bdf0  c2 08 00                                         ...\n"
+        )
+        self.assertEqual(
+            b"\xc2\x08\x00",
+            _direct_bn_retail_bytes(
+                RenderedBridge(governed_render),
+                address=self.address,
+                length=3,
+            ),
+        )
+        malformed_renders = (
+            governed_render.replace("40bdf0  c2", "40bdf1  c2"),
+            governed_render.replace("c2 08 00", "c2 gg 00"),
+            governed_render.replace("c2 08 00", "c2 08 00 90"),
+        )
+        for rendered in malformed_renders:
+            with self.subTest(rendered=rendered):
+                self.assertIsNone(
+                    _direct_bn_retail_bytes(
+                        RenderedBridge(rendered),
+                        address=self.address,
+                        length=3,
+                    )
+                )
 
 
 class HudCmdBindingPointerVectorEraseProviderBridgeTests(unittest.TestCase):
@@ -13472,6 +13507,7 @@ class InvocationSignatureTests(unittest.TestCase):
         )
         cod_variants = (
             "je $Lhidden",
+            "je $L80963",
             "je 0x18",
         )
         for rendered_branch in cod_variants:
@@ -13689,6 +13725,33 @@ class InvocationSignatureTests(unittest.TestCase):
             ["symbol:callee", ""],
             [row["target_identity"] for row in contract],
         )
+        self.assertEqual("load(this)", contract[1]["storage_identity"])
+
+    def test_cod_local_branch_uses_complete_candidate_instruction_extent(
+        self,
+    ) -> None:
+        contract = extract_invocation_contract(
+            parse_assembly(
+                "\n".join(
+                    [
+                        "  00000 e9 2b 00 00 00 jmp $L80963",
+                        "  00005 e8 00 00 00 00 call ?Callee@@YAXXZ",
+                        "  0000a c3 ret 0",
+                        "  00030 8b 01 mov eax, dword [ecx]",
+                        "  00032 ff 50 20 call dword [eax+0x20]",
+                        "  00035 c3 ret 0",
+                    ]
+                ),
+                source="cod",
+            ),
+            source="cod",
+            caller_identity="symbol:caller",
+            caller_start="0x401000",
+            caller_end_exclusive="0x401020",
+            indexes=self.indexes,
+        )
+        self.assertEqual(2, len(contract))
+        self.assertEqual("symbol:callee", contract[0]["target_identity"])
         self.assertEqual("load(this)", contract[1]["storage_identity"])
 
     def test_cod_external_rel32_zero_placeholder_is_not_local_control_flow(
@@ -23678,6 +23741,63 @@ class InvocationSignatureTests(unittest.TestCase):
             candidate[2]["storage_identity"],
         )
 
+    def test_exact_null_register_cmp_refines_nullable_call_result(self) -> None:
+        allocator_identity = "provider:recoil:function:0x4c5b76"
+        constructor_identity = "symbol:recoil:function:0x4bc7c0"
+        indexes = IdentityIndexes(
+            by_address={},
+            by_candidate_name={
+                "??2@YAPAXI@Z": allocator_identity,
+                "??0HudUiPanel@@QAE@PBDHH@Z": constructor_identity,
+            },
+            provider_ids=frozenset({allocator_identity}),
+            storage_by_address={},
+            storage_by_name={},
+        )
+        assembly = [
+            "  00000 33 ed xor ebp, ebp",
+            "  00002 e8 00 00 00 00 call ??2@YAPAXI@Z",
+            "  00007 8b f0 mov esi, eax",
+            "  00009 3b f5 cmp esi, ebp",
+            "  0000b 74 0d je SHORT $Ljoin",
+            "  0000d 6a 00 push 0",
+            "  0000f 6a 00 push 0",
+            "  00011 6a 00 push 0",
+            "  00013 8b ce mov ecx, esi",
+            "  00015 e8 00 00 00 00 call ??0HudUiPanel@@QAE@PBDHH@Z",
+            "$Ljoin:",
+            "  0001a 8b 16 mov edx, dword [esi]",
+            "  0001c 56 push esi",
+            "  0001d ff 52 74 call dword [edx+116]",
+        ]
+        candidate = extract_invocation_contract(
+            parse_assembly("\n".join(assembly), source="cod"),
+            source="cod",
+            caller_identity="symbol:caller",
+            caller_start="0x401000",
+            caller_end_exclusive="0x401020",
+            indexes=indexes,
+        )
+        self.assertEqual(
+            f"load(nullable(call-result({allocator_identity})))",
+            candidate[2]["storage_identity"],
+        )
+
+        drifted = list(assembly)
+        drifted[3] = "  00009 3b fd cmp edi, ebp"
+        drifted_candidate = extract_invocation_contract(
+            parse_assembly("\n".join(drifted), source="cod"),
+            source="cod",
+            caller_identity="symbol:caller",
+            caller_start="0x401000",
+            caller_end_exclusive="0x401020",
+            indexes=indexes,
+        )
+        self.assertEqual(
+            f"load(call-result({allocator_identity}))",
+            drifted_candidate[2]["storage_identity"],
+        )
+
     def test_nullable_direct_call_result_provenance_fails_closed_on_drift(
         self,
     ) -> None:
@@ -27839,6 +27959,66 @@ class InvocationSignatureTests(unittest.TestCase):
                 ),
             )
 
+    def test_candidate_absolute_callback_root_preserves_explicit_zero_slot(
+        self,
+    ) -> None:
+        indexes = replace(
+            self.indexes,
+            storage_by_name={
+                "_callback": "storage:callback",
+                "callback": "storage:callback",
+            },
+        )
+        retail = extract_invocation_contract(
+            parse_assembly(
+                "00401000 ff 15 18 bc 56 00 "
+                "call dword [_callback]",
+                source="bn",
+            ),
+            source="bn",
+            caller_identity="symbol:caller",
+            caller_start="0x401000",
+            caller_end_exclusive="0x401010",
+            indexes=indexes,
+        )
+        candidate = extract_invocation_contract(
+            parse_assembly(
+                "\n".join(
+                    [
+                        "  00000 ff 15 00 00 00 00 "
+                        "call DWORD PTR _callback",
+                        "  00006 ff 15 00 00 00 00 "
+                        "call DWORD PTR _callback+4",
+                    ]
+                ),
+                source="cod",
+            ),
+            source="cod",
+            caller_identity="symbol:caller",
+            caller_start="0x401000",
+            caller_end_exclusive="0x401010",
+            indexes=indexes,
+        )
+        bridged_candidate = extract_invocation_contract(
+            parse_assembly(
+                "  00000 ff 15 00 00 00 00 "
+                "call DWORD PTR _callback",
+                source="cod",
+            ),
+            source="cod",
+            caller_identity="symbol:caller",
+            caller_start="0x401000",
+            caller_end_exclusive="0x401010",
+            indexes=self.indexes,
+            candidate_storage_bridges={
+                "_callback": "storage:callback",
+            },
+        )
+        self.assertEqual(retail[0], candidate[0])
+        self.assertEqual(retail, bridged_candidate)
+        self.assertEqual(0, candidate[0]["slot_displacement"])
+        self.assertEqual(4, candidate[1]["slot_displacement"])
+
     def test_unique_storage_container_member_load_provenance_matches_retail_and_cod(
         self,
     ) -> None:
@@ -28334,6 +28514,56 @@ class InvocationSignatureTests(unittest.TestCase):
         self.assertEqual(1, returncode)
         self.assertEqual(typed_result, json.loads(stdout.getvalue()))
         self.assertEqual("VC5 compile transcript\n", stderr.getvalue())
+        live_result.assert_called_once()
+
+    def test_json_summary_keeps_only_terminal_sized_typed_result(self) -> None:
+        typed_result = {
+            "kind": "authored-call-contract-live-result",
+            "contract_version": CALL_CONTRACT_CONTRACT_VERSION,
+            "slice_id": "slice",
+            "body_count": 160,
+            "passed": False,
+            "first_divergence": {"kind": "mismatch", "ordinal": 3},
+            "candidate_expected_truth": False,
+            "caller_divergences": [{"kind": "mismatch", "ordinal": 3}],
+            "expected_contracts": {"large": [object()]},
+            "candidate_contracts": {"large": [object()]},
+            "timings_ms": {"total": 1.0},
+        }
+
+        stdout = io.StringIO()
+        with (
+            patch(
+                "_recoil.commands.call_contract_verify.ProgressDocument.load",
+                return_value=object(),
+            ),
+            patch(
+                "_recoil.commands.call_contract_verify.live_call_contract_result",
+                return_value=typed_result,
+            ) as live_result,
+            contextlib.redirect_stdout(stdout),
+        ):
+            returncode = call_contract_main(
+                [
+                    "--slice", "slice",
+                    "--build-root", "build/unit-call-contract-summary",
+                    "--json", "--summary",
+                ]
+            )
+
+        summary = json.loads(stdout.getvalue())
+        self.assertEqual(1, returncode)
+        self.assertEqual("slice", summary["slice_id"])
+        self.assertEqual(160, summary["body_count"])
+        self.assertEqual(1, summary["caller_divergence_count"])
+        self.assertEqual(
+            typed_result["caller_divergences"], summary["caller_divergences"]
+        )
+        self.assertEqual(
+            typed_result["first_divergence"], summary["first_divergence"]
+        )
+        self.assertNotIn("expected_contracts", summary)
+        self.assertNotIn("candidate_contracts", summary)
         live_result.assert_called_once()
 
     def test_blocked_diagnostic_retains_slice_closure_but_is_not_acceptable(self) -> None:
@@ -72027,6 +72257,97 @@ class ReviewedR3994RetailRegisterStorageBridgeTests(unittest.TestCase):
         candidate[0]["target_identity"] = "symbol:recoil:function:0x404d20"
         self.assertFalse(compare_call_contracts(expected, candidate)["passed"])
 
+    def test_zui_set_input_active_candidate_proves_guarded_label_panel_vptr(
+        self,
+    ) -> None:
+        listing = "\n".join((
+            "00000 8b 54 24 04 mov edx, dword [esp+4]",
+            "00006 8b f1 mov esi, ecx",
+            "00009 33 ff xor edi, edi",
+            "00017 8b 8e 10 01 00 00 mov ecx, dword [esi+0x110]",
+            "0001d 85 c9 test ecx, ecx",
+            "0001f 75 04 jne 0x25",
+            "00021 33 c0 xor eax, eax",
+            "00023 eb 0b jmp 0x30",
+            "00025 8b 86 14 01 00 00 mov eax, dword [esi+0x114]",
+            "0002b 2b c1 sub eax, ecx",
+            "0002d c1 f8 02 sar eax, 2",
+            "00030 33 c9 xor ecx, ecx",
+            "00032 85 c0 test eax, eax",
+            "00034 0f 94 c1 sete cl",
+            "00037 84 c9 test cl, cl",
+            "00039 75 08 jne 0x43",
+            "0003b 8b 86 10 01 00 00 mov eax, dword [esi+0x110]",
+            "00041 8b 38 mov edi, dword [eax]",
+            "00043 85 d2 test edx, edx",
+            "00045 74 2f je 0x76",
+            "0004d ff 52 60 call dword [edx+0x60]",
+            "0005e ff 50 60 call dword [eax+0x60]",
+            "00061 85 ff test edi, edi",
+            "00063 74 38 je 0x9d",
+            "00065 8b 17 mov edx, dword [edi]",
+            "00067 6a 01 push 1",
+            "00069 8b cf mov ecx, edi",
+            "0006b ff 52 60 call dword [edx+0x60]",
+            "00073 c2 04 00 ret 4",
+            "00076 8b 06 mov eax, dword [esi]",
+            "0007c ff 50 60 call dword [eax+0x60]",
+            "0007f 85 ff test edi, edi",
+            "00081 74 09 je 0x8c",
+            "00083 8b 17 mov edx, dword [edi]",
+            "00085 6a 00 push 0",
+            "00087 8b cf mov ecx, edi",
+            "00089 ff 52 60 call dword [edx+0x60]",
+            "0009a ff 50 60 call dword [eax+0x60]",
+            "000a2 c2 04 00 ret 4",
+        ))
+        rows = parse_assembly(listing, source="cod")
+        base_indexes = self.indexes()
+        indexes = replace(
+            base_indexes,
+            by_address={
+                **base_indexes.by_address,
+                "0x4b4ba0": "symbol:recoil:function:0x4b4ba0",
+            },
+        )
+        proofs = (
+            call_contract_verify_module
+            ._exact_candidate_zui_label_panels_vptr_proofs(
+                rows,
+                source="cod",
+                caller_start="0x4b4ba0",
+                caller_end_exclusive="0x4b4c50",
+                indexes=indexes,
+            )
+        )
+        self.assertEqual(2, len(proofs))
+        self.assertEqual(
+            {"load(load(load(this+0x110)))"},
+            set(proofs.values()),
+        )
+
+        drifted = parse_assembly(
+            listing.replace(
+                "00065 8b 17 mov edx, dword [edi]",
+                "00065 8b 07 mov eax, dword [edi]",
+            ),
+            source="cod",
+        )
+        with self.assertRaisesRegex(
+            call_contract_verify_module.CandidateCallContractEvidenceError,
+            r"exact guarded receiver lineage at \+0x65",
+        ):
+            (
+                call_contract_verify_module
+                ._exact_candidate_zui_label_panels_vptr_proofs(
+                    drifted,
+                    source="cod",
+                    caller_start="0x4b4ba0",
+                    caller_end_exclusive="0x4b4c50",
+                    indexes=indexes,
+                )
+            )
+
     def test_bounded_targetless_lineage_failure_reports_exact_state(self) -> None:
         abstract = (
             "load(affine(this,"
@@ -73718,6 +74039,299 @@ class ChkstkCompilerHelperCandidateBridgeTests(unittest.TestCase):
         }
         return fixture
 
+    def fxpass3_dynamic_alloca_fixture(self) -> dict:
+        fixture = self.fixture()
+        caller_identity = "symbol:recoil:function:0x48daf0"
+        caller_id = caller_identity.removeprefix("symbol:")
+        caller_spec = (
+            call_contract_verify_module.MSVC_CHKSTK_CALLER_SPECS[
+                caller_identity
+            ]
+        )
+        target_id = str(caller_spec["target_id"])
+        source_path = str(caller_spec["source_path"])
+        manifest_path = Path(caller_spec["target_manifest"])
+        fixture["data"]["symbols"][caller_id] = {
+            "binary": "recoil",
+            "kind": "function",
+            "pipeline_class": "authored",
+            "address": caller_spec["address"],
+            "end_exclusive": caller_spec["end_exclusive"],
+            "extent_state": "known",
+            "size": caller_spec["size"],
+            "ownership_state": "primary-owned",
+            "physical_block_id": caller_spec["physical_block_id"],
+            "source_traceability": {
+                "reason_code": None,
+                "source_edges": [
+                    {
+                        "anchor_id": caller_spec["source_anchor"],
+                        "emission_context": {
+                            "translation_unit": source_path,
+                        },
+                        "evidence_ids": [],
+                        "relation": "defines",
+                    }
+                ],
+                "state": "resolved",
+            },
+            "verification_target_ids": list(
+                caller_spec["verification_target_ids"]
+            ),
+        }
+        fixture["data"]["verification_targets"][target_id] = {
+            "binary": "recoil",
+            "kind": "vc5",
+            "name": caller_spec["target_name"],
+            "registered_addresses": [caller_spec["address"]],
+            "registration": {
+                "manifest_path": manifest_path.relative_to(
+                    REPO_ROOT
+                ).as_posix(),
+                "source_from": source_path,
+                "order_edit_paths": list(caller_spec["order_edit_paths"]),
+                "function_addresses": [caller_spec["address"]],
+            },
+        }
+        self.rebuild_document(fixture)
+        fixture["retail"] = parse_assembly(
+            "0048db25 8d 34 bd 04 00 00 00 lea esi, [edi*4+4]\n"
+            "0048db2c 8b c6 mov eax, esi\n"
+            "0048db31 83 c0 03 add eax, 3\n"
+            "0048db37 24 fc and al, 0xfc\n"
+            "0048db39 e8 c2 85 03 00 call __alloca_probe\n"
+            "0048db3e 8b c6 mov eax, esi\n"
+            "0048db43 83 c0 03 add eax, 3\n"
+            "0048db46 24 fc and al, 0xfc\n"
+            "0048db48 e8 b3 85 03 00 call __alloca_probe",
+            source="bn",
+        )
+        body = bytearray([0x90] * int(caller_spec["candidate_size"]))
+        setup_rows = tuple(caller_spec["candidate_setup_rows"])
+        for offset, row in setup_rows:
+            body[offset : offset + len(row)] = row
+        call_offsets = tuple(caller_spec["candidate_call_offsets"])
+        for offset in call_offsets:
+            body[offset : offset + 5] = b"\xe8\0\0\0\0"
+        mask = [False] * len(body)
+        for offset in call_offsets:
+            mask[offset + 1 : offset + 5] = [True] * 4
+        fixture["candidate"] = CandidateAssembly(
+            instructions=parse_assembly(
+                "000fc 8d 04 bd 04 00 00 00 lea eax, [edi*4+4]\n"
+                "00103 83 c0 03 add eax, 3\n"
+                "00106 24 fc and al, 0xfc\n"
+                "00108 e8 00 00 00 00 call __alloca_probe\n"
+                "0010d 8d 04 bd 04 00 00 00 lea eax, [edi*4+4]\n"
+                "00114 89 65 e8 mov dword [ebp-0x18], esp\n"
+                "00117 83 c0 03 add eax, 3\n"
+                "0011a 24 fc and al, 0xfc\n"
+                "0011c e8 00 00 00 00 call __alloca_probe",
+                source="cod",
+            ),
+            local_control_flow_indices=frozenset(),
+            target=SimpleNamespace(
+                name=caller_spec["target_name"],
+                target_binary="recoil",
+                manifest_path=manifest_path,
+                source_from=source_path,
+                functions=(
+                    SimpleNamespace(
+                        address=caller_spec["address"],
+                        symbol=caller_spec["symbol"],
+                        pipeline_class="authored",
+                        authored_order_role="authored-body",
+                    ),
+                ),
+            ),
+            caller_definition=CandidateCallerDefinition(
+                symbol=caller_spec["symbol"],
+                data=bytes(body),
+                relocations=tuple(
+                    CoffRelocation(
+                        offset + 1,
+                        1,
+                        call_contract_verify_module.IMAGE_REL_I386_REL32,
+                        call_contract_verify_module.MSVC_CHKSTK_RETAIL_NAME,
+                    )
+                    for offset in call_offsets
+                ),
+                relocation_mask=tuple(mask),
+                undefined_external_functions=(
+                    call_contract_verify_module.MSVC_CHKSTK_RETAIL_NAME,
+                ),
+                section_index=caller_spec["candidate_section_index"],
+                section_start=0,
+                section_end=len(body),
+            ),
+        )
+        fixture["expected"] = [
+            {
+                "ordinal": ordinal,
+                "form": "call",
+                "dispatch": "direct",
+                "identity_kind": "provider",
+                "target_identity": self.target_identity,
+                "storage_identity": "",
+                "slot_displacement": None,
+                "cleanup_bytes": None,
+            }
+            for ordinal in caller_spec["retail_ordinals"]
+        ]
+        fixture["fxpass3_arguments"] = {
+            "caller_identity": caller_identity,
+            "caller_start": caller_spec["address"],
+            "caller_end_exclusive": caller_spec["end_exclusive"],
+        }
+        return fixture
+
+    def zrender_mmx_stack_probe_fixture(
+        self,
+        caller_identity: str,
+    ) -> dict:
+        fixture = self.fixture()
+        caller_id = caller_identity.removeprefix("symbol:")
+        caller_spec = (
+            call_contract_verify_module.MSVC_CHKSTK_CALLER_SPECS[
+                caller_identity
+            ]
+        )
+        target_id = str(caller_spec["target_id"])
+        source_path = str(caller_spec["source_path"])
+        manifest_path = Path(caller_spec["target_manifest"])
+        fixture["data"]["symbols"][caller_id] = {
+            "binary": "recoil",
+            "kind": "function",
+            "pipeline_class": "authored",
+            "address": caller_spec["address"],
+            "end_exclusive": caller_spec["end_exclusive"],
+            "extent_state": "known",
+            "size": caller_spec["size"],
+            "ownership_state": "primary-owned",
+            "physical_block_id": caller_spec["physical_block_id"],
+            "source_traceability": {
+                "reason_code": None,
+                "source_edges": [
+                    {
+                        "anchor_id": caller_spec["source_anchor"],
+                        "emission_context": {
+                            "translation_unit": source_path,
+                        },
+                        "evidence_ids": [],
+                        "relation": "defines",
+                    }
+                ],
+                "state": "resolved",
+            },
+            "verification_target_ids": list(
+                caller_spec["verification_target_ids"]
+            ),
+        }
+        fixture["data"]["verification_targets"][target_id] = {
+            "binary": "recoil",
+            "kind": "vc5",
+            "name": caller_spec["target_name"],
+            "registered_addresses": [caller_spec["address"]],
+            "registration": {
+                "manifest_path": manifest_path.relative_to(
+                    REPO_ROOT
+                ).as_posix(),
+                "source_from": source_path,
+                "order_edit_paths": list(caller_spec["order_edit_paths"]),
+                "function_addresses": [caller_spec["address"]],
+            },
+        }
+        self.rebuild_document(fixture)
+
+        retail_start = int(caller_spec["address"], 16)
+        retail_frame = int(caller_spec["retail_frame_size"])
+        retail_call_offset = int(caller_spec["retail_call_offset"])
+        retail_displacement = (
+            int(call_contract_verify_module.MSVC_CHKSTK_TARGET_ADDRESS, 16)
+            - (retail_start + retail_call_offset + 5)
+        )
+        fixture["retail"] = parse_assembly(
+            f"{retail_start:08x} 55 push ebp\n"
+            f"{retail_start + 1:08x} 8b ec mov ebp, esp\n"
+            f"{retail_start + 3:08x} b8 "
+            + retail_frame.to_bytes(4, "little").hex(" ")
+            + f" mov eax, 0x{retail_frame:x}\n"
+            f"{retail_start + retail_call_offset:08x} e8 "
+            + retail_displacement.to_bytes(
+                4, "little", signed=True
+            ).hex(" ")
+            + " call __alloca_probe",
+            source="bn",
+        )
+
+        candidate_frame = int(caller_spec["candidate_frame_size"])
+        candidate_frame_bytes = candidate_frame.to_bytes(4, "little")
+        candidate_data = (
+            b"\x55\x8b\xec\xb8"
+            + candidate_frame_bytes
+            + b"\xe8\0\0\0\0"
+        )
+        fixture["candidate"] = CandidateAssembly(
+            instructions=parse_assembly(
+                "00000 55 push ebp\n"
+                "00001 8b ec mov ebp, esp\n"
+                "00003 b8 "
+                + candidate_frame_bytes.hex(" ")
+                + f" mov eax, 0x{candidate_frame:x}\n"
+                "00008 e8 00 00 00 00 call __chkstk",
+                source="cod",
+            ),
+            local_control_flow_indices=frozenset(),
+            target=SimpleNamespace(
+                name=caller_spec["target_name"],
+                target_binary="recoil",
+                manifest_path=manifest_path,
+                source_from=source_path,
+                functions=(
+                    SimpleNamespace(
+                        address=caller_spec["address"],
+                        symbol=caller_spec["symbol"],
+                        pipeline_class="authored",
+                        authored_order_role="authored-body",
+                    ),
+                ),
+            ),
+            caller_definition=CandidateCallerDefinition(
+                symbol=caller_spec["symbol"],
+                data=candidate_data,
+                relocations=(
+                    CoffRelocation(
+                        0x09,
+                        1,
+                        call_contract_verify_module.IMAGE_REL_I386_REL32,
+                        call_contract_verify_module.MSVC_CHKSTK_CANDIDATE_SYMBOL,
+                    ),
+                ),
+                relocation_mask=(False,) * 9 + (True,) * 4,
+                undefined_external_functions=(
+                    call_contract_verify_module.MSVC_CHKSTK_CANDIDATE_SYMBOL,
+                ),
+            ),
+        )
+        fixture["expected"] = [
+            {
+                "ordinal": caller_spec["retail_ordinal"],
+                "form": "call",
+                "dispatch": "direct",
+                "identity_kind": "provider",
+                "target_identity": self.target_identity,
+                "storage_identity": "",
+                "slot_displacement": None,
+                "cleanup_bytes": None,
+            }
+        ]
+        fixture["zrender_mmx_arguments"] = {
+            "caller_identity": caller_identity,
+            "caller_start": caller_spec["address"],
+            "caller_end_exclusive": caller_spec["end_exclusive"],
+        }
+        return fixture
+
     def wol_submit_status_fixture(
         self,
         caller_identity: str = "symbol:recoil:function:0x43e1c0",
@@ -74079,6 +74693,138 @@ class ChkstkCompilerHelperCandidateBridgeTests(unittest.TestCase):
             {"__chkstk": self.target_identity},
             self.prove(fixture),
         )
+
+    def test_exact_fxpass3_two_dynamic_alloca_probe_bridge(self) -> None:
+        fixture = self.fxpass3_dynamic_alloca_fixture()
+        caller_spec = call_contract_verify_module.MSVC_CHKSTK_CALLER_SPECS[
+            fixture["fxpass3_arguments"]["caller_identity"]
+        ]
+        self.assertEqual((0x108, 0x11C), caller_spec["candidate_call_offsets"])
+        self.assertEqual(
+            (0x109, 0x11D),
+            tuple(
+                relocation.offset
+                for relocation in fixture["candidate"].caller_definition.relocations
+            ),
+        )
+        self.assertEqual(
+            {"__alloca_probe": self.target_identity},
+            self.prove(fixture, **fixture["fxpass3_arguments"]),
+        )
+
+    def test_fxpass3_dynamic_alloca_rejects_second_relocation_drift(
+        self,
+    ) -> None:
+        fixture = self.fxpass3_dynamic_alloca_fixture()
+        definition = fixture["candidate"].caller_definition
+        fixture["candidate"] = replace(
+            fixture["candidate"],
+            caller_definition=replace(
+                definition,
+                relocations=definition.relocations[:1],
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "REL32 relocation"):
+            self.prove(fixture, **fixture["fxpass3_arguments"])
+
+    def test_fxpass3_dynamic_alloca_rejects_retail_population_or_ordinal_drift(
+        self,
+    ) -> None:
+        fixture = self.fxpass3_dynamic_alloca_fixture()
+        fixture["expected"] = fixture["expected"][:1]
+        with self.assertRaisesRegex(ValueError, "population and ordinals"):
+            self.prove(fixture, **fixture["fxpass3_arguments"])
+
+        fixture = self.fxpass3_dynamic_alloca_fixture()
+        fixture["expected"][1]["ordinal"] = 2
+        with self.assertRaisesRegex(ValueError, "population and ordinals"):
+            self.prove(fixture, **fixture["fxpass3_arguments"])
+
+    def test_exact_zrender_mmx_stack_probe_family_bridge(self) -> None:
+        cases = (
+            ("symbol:recoil:function:0x49cbb0", 0x101C, 0x1028),
+            ("symbol:recoil:function:0x49cea0", 0x101C, 0x1028),
+            ("symbol:recoil:function:0x49da80", 0x1020, 0x102C),
+            ("symbol:recoil:function:0x49ddb0", 0x1020, 0x102C),
+        )
+        for caller_identity, retail_frame, candidate_frame in cases:
+            with self.subTest(caller_identity=caller_identity):
+                caller_spec = (
+                    call_contract_verify_module.MSVC_CHKSTK_CALLER_SPECS[
+                        caller_identity
+                    ]
+                )
+                self.assertEqual(0x03, caller_spec["retail_setup_offset"])
+                self.assertEqual(0x08, caller_spec["retail_call_offset"])
+                self.assertEqual(
+                    0x03,
+                    caller_spec["candidate_setup_offset"],
+                )
+                self.assertEqual(
+                    0x08,
+                    caller_spec["candidate_call_offset"],
+                )
+                self.assertEqual(retail_frame, caller_spec["retail_frame_size"])
+                self.assertEqual(
+                    candidate_frame,
+                    caller_spec["candidate_frame_size"],
+                )
+                fixture = self.zrender_mmx_stack_probe_fixture(
+                    caller_identity
+                )
+                definition = fixture["candidate"].caller_definition
+                self.assertEqual(0x09, definition.relocations[0].offset)
+                self.assertEqual(
+                    {"__chkstk": self.target_identity},
+                    self.prove(
+                        fixture,
+                        **fixture["zrender_mmx_arguments"],
+                    ),
+                )
+
+    def test_zrender_mmx_stack_probe_rejects_coordinate_and_authority_drift(
+        self,
+    ) -> None:
+        caller_identity = "symbol:recoil:function:0x49cbb0"
+
+        fixture = self.zrender_mmx_stack_probe_fixture(caller_identity)
+        definition = fixture["candidate"].caller_definition
+        fixture["candidate"] = replace(
+            fixture["candidate"],
+            caller_definition=replace(
+                definition,
+                data=(
+                    definition.data[:4]
+                    + (0x1029).to_bytes(4, "little")
+                    + definition.data[8:]
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "REL32 relocation"):
+            self.prove(fixture, **fixture["zrender_mmx_arguments"])
+
+        fixture = self.zrender_mmx_stack_probe_fixture(caller_identity)
+        definition = fixture["candidate"].caller_definition
+        fixture["candidate"] = replace(
+            fixture["candidate"],
+            caller_definition=replace(
+                definition,
+                relocations=(
+                    replace(definition.relocations[0], offset=0x0A),
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "REL32 relocation"):
+            self.prove(fixture, **fixture["zrender_mmx_arguments"])
+
+        fixture = self.zrender_mmx_stack_probe_fixture(caller_identity)
+        caller_id = caller_identity.removeprefix("symbol:")
+        fixture["data"]["symbols"][caller_id]["source_traceability"][
+            "source_edges"
+        ][0]["anchor_id"] += ".drift"
+        self.rebuild_document(fixture)
+        with self.assertRaisesRegex(ValueError, "caller source trace"):
+            self.prove(fixture, **fixture["zrender_mmx_arguments"])
 
     def test_exact_zwep_process_runtime_stack_probe_bridge(self) -> None:
         fixture = self.zwep_stack_probe_fixture()
@@ -99480,6 +100226,10 @@ class CandidateLocalCoffCallableBridgeTests(unittest.TestCase):
 
         for scoped_name in (
             "?zVideoFxPass3ApproxRadiusIndex@zVideo@@YIHHH@Z",
+            "?zVideoFxPass3ScatterDirectSymmetric@zVideo@@YIXHHHHHH@Z",
+            "?zVideoFxPass3ScatterClippedSymmetric@zVideo@@YIXHHHH@Z",
+            "?zVideoFxPass3CopyDirect@zVideo@@YIXHHHHHH@Z",
+            "?zVideoFxPass3CopyScratchToSurface@zVideo@@YIXHHHHH@Z",
             "?TruncateFloat@zVideo_FxSurface@@YIHM@Z",
         ):
             scoped_definition = self.definition(
@@ -99498,6 +100248,27 @@ class CandidateLocalCoffCallableBridgeTests(unittest.TestCase):
                     compiler_generated_bridges={},
                 ),
             )
+        for wrong_pass3_signature in (
+            "?zVideoFxPass3ScatterClippedSymmetric@zVideo@@YIXHHHHH@Z",
+            "?zVideoFxPass3CopyDirect@zVideo@@YIXHHHHH@Z",
+            "?zVideoFxPass3CopyScratchToSurface@zVideo@@YIXHHHHHH@Z",
+        ):
+            with self.subTest(name=wrong_pass3_signature), self.assertRaisesRegex(
+                ValueError,
+                "defined external",
+            ):
+                module._candidate_local_coff_callable_bridges(
+                    self.candidate(
+                        definition=self.definition(
+                            name=wrong_pass3_signature,
+                            storage_class=module.IMAGE_SYM_CLASS_STATIC,
+                        ),
+                        defined=(),
+                    ),
+                    indexes=self.indexes(),
+                    bridge_names={},
+                    compiler_generated_bridges={},
+                )
         wrong_signature = current_discriminator.replace("YIGGI@Z", "YIGHI@Z")
         with self.assertRaisesRegex(ValueError, "defined external"):
             module._candidate_local_coff_callable_bridges(
@@ -130556,6 +131327,474 @@ class Schema81LiveOrchestrationClosureTests(unittest.TestCase):
             },
         )
 
+    def test_r4564_candidate_dynamic_selection_sources_require_exact_coff_population(
+        self,
+    ) -> None:
+        module = call_contract_verify_module
+        self.assertEqual(
+            (
+                (2,),
+                "dynamic:RndrSpanLenShiftFn-selection:6320e0-6320ec",
+                (
+                    "g_pfnPolyTlvSpanOp_Mode0",
+                    "g_pfnPolyTlvSpanOpAlt_Mode0",
+                    "g_pfnPolyTlvSpanOp_Mode1",
+                    "g_pfnPolyTlvSpanOpAlt_Mode1",
+                ),
+                (),
+            ),
+            module._R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCES["0x494af0"],
+        )
+        self.assertEqual(
+            (
+                (4, 6, 7, 9),
+                "dynamic:RndrSpanLenShiftFn-selection:6320b8-6320bc-or-49f180",
+                (
+                    "g_pfnTexturedQueuedSpanOp_Mode0",
+                    "g_pfnTexturedQueuedSpanOp_Mode1",
+                ),
+                (("SpanShade16FromPal8SwitchVShift", "0x49f180"),),
+            ),
+            module._R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCES["0x495850"],
+        )
+        self.assertEqual(
+            (
+                (3, 4),
+                "dynamic:RndrSpanLenShiftFn-selection:6320b8-6320bc",
+                (
+                    "g_pfnTexturedQueuedSpanOp_Mode0",
+                    "g_pfnTexturedQueuedSpanOp_Mode1",
+                ),
+                (),
+            ),
+            module._R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCES["0x4969d0"],
+        )
+        self.assertEqual(
+            {"g_pfnTexturedQueuedSpanOp_Mode1": 2},
+            module._R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCE_COUNTS["0x4969d0"],
+        )
+        self.assertEqual(
+            (
+                (3, 4),
+                "dynamic:RndrSpanLenShiftFn-selection:6320d8-6320dc",
+                (
+                    "g_pfnTexturedFanTriSpanOp_Mode0",
+                    "g_pfnTexturedFanTriSpanOp_Mode1",
+                ),
+                (),
+            ),
+            module._R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCES["0x497ac0"],
+        )
+        self.assertEqual(
+            {"g_pfnTexturedFanTriSpanOp_Mode1": 2},
+            module._R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCE_COUNTS["0x497ac0"],
+        )
+        identity = "symbol:recoil:function:0x493df0"
+        source_names = (
+            "g_pfnFlatQueuedSpanOp_Mode0",
+            "g_pfnFlatQueuedSpanOpAlt_Mode0",
+            "g_pfnFlatQueuedSpanOp_Mode1",
+            "g_pfnFlatQueuedSpanOpAlt_Mode1",
+        )
+        decorated_names = tuple(
+            f"?{name}@zRndr@@3P6IXHHHH@ZA"
+            for name in source_names
+        )
+        load_offsets = (0x0E, 0x14, 0x1C, 0x22)
+        listing = (
+            "00000 ff 15 00 00 00 00 call dword g_pfnBuildSpanListSecondary\n"
+            "00006 ff 15 00 00 00 00 call dword fixtureMiddleCallback\n"
+            "0000c 74 0e je 0x1c\n"
+            f"0000e 8b 0d 00 00 00 00 mov ecx, dword {decorated_names[0]}\n"
+            f"00014 8b 35 00 00 00 00 mov esi, dword {decorated_names[1]}\n"
+            "0001a eb 0c jmp 0x28\n"
+            f"0001c 8b 0d 00 00 00 00 mov ecx, dword {decorated_names[2]}\n"
+            f"00022 8b 35 00 00 00 00 mov esi, dword {decorated_names[3]}\n"
+            "00028 89 4c 24 38 mov dword _spanProc$[esp+2536], ecx\n"
+            "0002c 85 c0 test eax, eax\n"
+            "0002e 74 04 je 0x34\n"
+            "00030 89 74 24 38 mov dword _spanProc$[esp+2536], esi\n"
+            "00034 50 push eax\n"
+            "00035 ff 54 24 3c call dword _spanProc$[esp+2540]"
+        )
+        body = bytearray(b"\x90" * 0x40)
+        relocation_offsets = tuple(offset + 2 for offset in load_offsets)
+        for offset in relocation_offsets:
+            body[offset : offset + 4] = b"\x00\x00\x00\x00"
+        relocation_mask = tuple(
+            any(offset <= index < offset + 4 for offset in relocation_offsets)
+            for index in range(len(body))
+        )
+        symbols = tuple(
+            CandidateCoffSymbolDefinition(
+                index=31 + ordinal,
+                name=name,
+                value=ordinal * 4,
+                section_number=7,
+                symbol_type=0,
+                storage_class=2,
+                aux_count=0,
+                weak_external_tag_index=None,
+                weak_external_characteristics=None,
+                section_name=".bss",
+                section_size=0x20,
+                section_characteristics=0,
+                natural_end=ordinal * 4 + 4,
+            )
+            for ordinal, name in enumerate(decorated_names)
+        )
+        relocations = tuple(
+            CoffRelocation(
+                offset,
+                31 + ordinal,
+                module.IMAGE_REL_I386_DIR32,
+                decorated_names[ordinal],
+            )
+            for ordinal, offset in enumerate(relocation_offsets)
+        )
+        candidate = CandidateAssembly(
+            instructions=parse_assembly(listing, source="cod"),
+            local_control_flow_indices=frozenset(),
+            caller_definition=CandidateCallerDefinition(
+                symbol="?RndrDynamicSelectionFixture@@YAXXZ",
+                data=bytes(body),
+                relocations=relocations,
+                relocation_mask=relocation_mask,
+                undefined_external_data=(),
+                undefined_external_functions=(),
+                defined_external_data=decorated_names,
+                coff_symbols=symbols,
+            ),
+        )
+        expected = [
+            {
+                "ordinal": ordinal,
+                "form": "call",
+                "dispatch": "indirect",
+                "identity_kind": "callback",
+                "target_identity": "",
+                "storage_identity": storage,
+                "slot_displacement": None,
+                "cleanup_bytes": None,
+            }
+            for ordinal, storage in enumerate((
+                "dynamic:build-span",
+                "dynamic:unused-middle-row",
+                "dynamic:RndrSpanLenShiftFn-selection:6320c8-6320d4",
+            ))
+        ]
+        exact_calls: dict[str, module.ReviewedExactIndirectStorageBridge] = {}
+        result = module._r4564_candidate_callback_storage_bridges(
+            expected,
+            candidate,
+            caller_identity=identity,
+            caller_start="0x493df0",
+            indexes=self.indexes(by_address={"0x493df0": identity}),
+            reviewed_exact_indirect_storage_bridges_out=exact_calls,
+        )
+        for bare_name, decorated_name in zip(source_names, decorated_names):
+            self.assertEqual(expected[2]["storage_identity"], result[bare_name])
+            self.assertEqual(expected[2]["storage_identity"], result[decorated_name])
+        self.assertEqual(
+            {
+                "0x35": module.ReviewedExactIndirectStorageBridge(
+                    register="esp",
+                    storage_identity=expected[2]["storage_identity"],
+                    slot_displacement=2540,
+                    assembly_source="cod",
+                    identity_kind="callback",
+                )
+            },
+            exact_calls,
+        )
+        consumed_exact_calls: set[str] = set()
+        self.assertEqual(
+            (
+                "callback",
+                "",
+                None,
+                expected[2]["storage_identity"],
+            ),
+            module._canonical_indirect_storage(
+                module._instruction_operand(candidate.instructions[-1]),
+                instruction=candidate.instructions[-1],
+                reviewed_instruction_address="0x35",
+                source="cod",
+                registers={},
+                indexes=self.indexes(by_address={"0x493df0": identity}),
+                candidate_storage_bridges=result,
+                reviewed_call_result_bridges={},
+                consumed_call_result_bridges=set(),
+                reviewed_vptr_storage_bridges={},
+                consumed_vptr_storage_bridges=set(),
+                reviewed_loop_vptr_storage_bridges={},
+                consumed_loop_vptr_storage_bridges=set(),
+                reviewed_exact_indirect_storage_bridges=exact_calls,
+                consumed_exact_indirect_storage_bridges=consumed_exact_calls,
+                reviewed_member_vptr_call_bridges={},
+                consumed_member_vptr_call_bridges=set(),
+            ),
+        )
+        self.assertEqual({"0x35"}, consumed_exact_calls)
+
+        missing_source = replace(
+            candidate,
+            instructions=parse_assembly(
+                listing.replace(
+                    f"00022 8b 35 00 00 00 00 mov esi, dword {decorated_names[3]}\n",
+                    "",
+                ),
+                source="cod",
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "source population drifted"):
+            module._r4564_candidate_callback_storage_bridges(
+                expected,
+                missing_source,
+                caller_identity=identity,
+                caller_start="0x493df0",
+                indexes=self.indexes(by_address={"0x493df0": identity}),
+                reviewed_exact_indirect_storage_bridges_out={},
+            )
+
+        malformed_relocation = replace(
+            candidate,
+            caller_definition=replace(
+                candidate.caller_definition,
+                relocations=(
+                    replace(relocations[0], type=module.IMAGE_REL_I386_REL32),
+                    *relocations[1:],
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "malformed"):
+            module._r4564_candidate_callback_storage_bridges(
+                expected,
+                malformed_relocation,
+                caller_identity=identity,
+                caller_start="0x493df0",
+                indexes=self.indexes(by_address={"0x493df0": identity}),
+                reviewed_exact_indirect_storage_bridges_out={},
+            )
+
+        uninitialized_path = replace(
+            candidate,
+            instructions=parse_assembly(
+                listing.replace(
+                    "00028 89 4c 24 38 mov dword _spanProc$[esp+2536], ecx\n",
+                    "00028 90 nop\n00029 90 nop\n0002a 90 nop\n0002b 90 nop\n",
+                ),
+                source="cod",
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "not assigned"):
+            module._r4564_candidate_callback_storage_bridges(
+                expected,
+                uninitialized_path,
+                caller_identity=identity,
+                caller_start="0x493df0",
+                indexes=self.indexes(by_address={"0x493df0": identity}),
+                reviewed_exact_indirect_storage_bridges_out={},
+            )
+
+        queued_identity = "symbol:recoil:function:0x495850"
+        authored_callback_identity = "symbol:recoil:function:0x49f180"
+        build_name = "?g_pfnBuildSpanList@zRndr@@3P6IXPAPAUSpanNodePartial@1@HPAH@ZA"
+        finalizer_name = "?g_pfnTexturedQueuedFinalize@zRndr@@3P6IXHH@ZA"
+        queued_source_names = (
+            "g_pfnTexturedQueuedSpanOp_Mode0",
+            "g_pfnTexturedQueuedSpanOp_Mode1",
+        )
+        queued_decorated_names = tuple(
+            f"?{name}@zRndr@@3P6IXHHHH@ZA"
+            for name in queued_source_names
+        )
+        callback_name = "?SpanShade16FromPal8SwitchVShift@zRndr@@YIXHHHH@Z"
+        queued_listing = (
+            "00000 e8 00 00 00 00 call fixturePerspective\n"
+            "00005 e8 00 00 00 00 call fixtureMip\n"
+            "0000a e8 00 00 00 00 call fixtureRecipe\n"
+            f"0000f ff 15 00 00 00 00 call dword {build_name}\n"
+            f"00015 a1 00 00 00 00 mov eax, dword {queued_decorated_names[0]}\n"
+            "0001a 89 44 24 10 mov dword _spanProc$[esp+16], eax\n"
+            "0001e 74 0a je 0x2a\n"
+            f"00020 8b 0d 00 00 00 00 mov ecx, dword {queued_decorated_names[1]}\n"
+            "00026 89 4c 24 10 mov dword _spanProc$[esp+16], ecx\n"
+            "0002a 75 08 jne 0x34\n"
+            f"0002c c7 44 24 10 00 00 00 00 mov dword _spanProc$[esp+16], OFFSET FLAT:{callback_name}\n"
+            "00034 8b 44 24 10 mov eax, dword _spanProc$[esp+16]\n"
+            "00038 ff d0 call eax\n"
+            f"0003a ff 15 00 00 00 00 call dword {finalizer_name}\n"
+            "00040 50 push eax\n"
+            "00041 ff 54 24 14 call dword _spanProc$[esp+20]\n"
+            "00045 8b 44 24 10 mov eax, dword _spanProc$[esp+16]\n"
+            "00049 ff d0 call eax\n"
+            f"0004b ff 15 00 00 00 00 call dword {finalizer_name}\n"
+            "00051 50 push eax\n"
+            "00052 ff 54 24 14 call dword _spanProc$[esp+20]"
+        )
+        queued_relocation_rows = (
+            (0x11, build_name, 61),
+            (0x16, queued_decorated_names[0], 62),
+            (0x22, queued_decorated_names[1], 63),
+            (0x30, callback_name, 64),
+            (0x3C, finalizer_name, 65),
+            (0x4D, finalizer_name, 65),
+        )
+        queued_body = bytearray(b"\x90" * 0x60)
+        for offset, _name, _index in queued_relocation_rows:
+            queued_body[offset : offset + 4] = b"\x00\x00\x00\x00"
+        queued_relocation_mask = tuple(
+            any(offset <= index < offset + 4 for offset, _name, _symbol in queued_relocation_rows)
+            for index in range(len(queued_body))
+        )
+        queued_data_symbols = tuple(
+            CandidateCoffSymbolDefinition(
+                index=index,
+                name=name,
+                value=ordinal * 4,
+                section_number=7,
+                symbol_type=0,
+                storage_class=2,
+                aux_count=0,
+                weak_external_tag_index=None,
+                weak_external_characteristics=None,
+                section_name=".bss",
+                section_size=0x20,
+                section_characteristics=0,
+                natural_end=ordinal * 4 + 4,
+            )
+            for ordinal, (name, index) in enumerate((
+                (build_name, 61),
+                (queued_decorated_names[0], 62),
+                (queued_decorated_names[1], 63),
+                (finalizer_name, 65),
+            ))
+        )
+        queued_function_symbol = CandidateCoffSymbolDefinition(
+            index=64,
+            name=callback_name,
+            value=0,
+            section_number=8,
+            symbol_type=0x20,
+            storage_class=2,
+            aux_count=0,
+            weak_external_tag_index=None,
+            weak_external_characteristics=None,
+            section_name=".text",
+            section_size=0x80,
+            section_characteristics=0,
+            natural_end=0x80,
+        )
+        queued_candidate = CandidateAssembly(
+            instructions=parse_assembly(queued_listing, source="cod"),
+            local_control_flow_indices=frozenset(),
+            caller_definition=CandidateCallerDefinition(
+                symbol="?QueuedDynamicSelectionFixture@@YAXXZ",
+                data=bytes(queued_body),
+                relocations=tuple(
+                    CoffRelocation(
+                        offset,
+                        index,
+                        module.IMAGE_REL_I386_DIR32,
+                        name,
+                    )
+                    for offset, name, index in queued_relocation_rows
+                ),
+                relocation_mask=queued_relocation_mask,
+                undefined_external_data=(),
+                undefined_external_functions=(),
+                defined_external_data=(
+                    build_name,
+                    *queued_decorated_names,
+                    finalizer_name,
+                ),
+                defined_external_functions=(callback_name,),
+                coff_symbols=(*queued_data_symbols, queued_function_symbol),
+            ),
+        )
+        queued_storage = (
+            "dynamic:RndrSpanLenShiftFn-selection:6320b8-6320bc-or-49f180"
+        )
+        queued_expected = [
+            {
+                "ordinal": ordinal,
+                "form": "call",
+                "dispatch": "indirect",
+                "identity_kind": "callback",
+                "target_identity": "",
+                "storage_identity": (
+                    "dynamic:build-span"
+                    if ordinal == 3
+                    else "dynamic:finalizer"
+                    if ordinal in {5, 8}
+                    else queued_storage
+                    if ordinal in {4, 6, 7, 9}
+                    else f"dynamic:fixture-{ordinal}"
+                ),
+                "slot_displacement": None,
+                "cleanup_bytes": None,
+            }
+            for ordinal in range(10)
+        ]
+        queued_exact_calls: dict[
+            str, module.ReviewedExactIndirectStorageBridge
+        ] = {}
+        queued_result = module._r4564_candidate_callback_storage_bridges(
+            queued_expected,
+            queued_candidate,
+            caller_identity=queued_identity,
+            caller_start="0x495850",
+            indexes=self.indexes(
+                by_address={
+                    "0x495850": queued_identity,
+                    "0x49f180": authored_callback_identity,
+                }
+            ),
+            reviewed_exact_indirect_storage_bridges_out=queued_exact_calls,
+        )
+        self.assertEqual(queued_storage, queued_result[callback_name])
+        self.assertEqual("dynamic:finalizer", queued_result[finalizer_name])
+        self.assertEqual(
+            {
+                "0x38": ("eax", 0),
+                "0x41": ("esp", 20),
+                "0x49": ("eax", 0),
+                "0x52": ("esp", 20),
+            },
+            {
+                site: (bridge.register, bridge.slot_displacement)
+                for site, bridge in queued_exact_calls.items()
+            },
+        )
+
+        malformed_function_relocation = replace(
+            queued_candidate,
+            caller_definition=replace(
+                queued_candidate.caller_definition,
+                relocations=tuple(
+                    replace(row, type=module.IMAGE_REL_I386_REL32)
+                    if row.symbol_name == callback_name
+                    else row
+                    for row in queued_candidate.caller_definition.relocations
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "callback-function.*malformed"):
+            module._r4564_candidate_callback_storage_bridges(
+                queued_expected,
+                malformed_function_relocation,
+                caller_identity=queued_identity,
+                caller_start="0x495850",
+                indexes=self.indexes(
+                    by_address={
+                        "0x495850": queued_identity,
+                        "0x49f180": authored_callback_identity,
+                    }
+                ),
+                reviewed_exact_indirect_storage_bridges_out={},
+            )
+
     def test_coff_unit_indexes_are_one_pass_and_reused_by_identity(self) -> None:
         module = call_contract_verify_module
 
@@ -148470,6 +149709,426 @@ class CallContractSchema131RecoilAppDecoderNormalizationTests(unittest.TestCase)
         ):
             helper(expected, shifted, **arguments)
 
+    def test_player_node_flag_pushback_graph_expansion_is_artifact_finite(
+        self,
+    ) -> None:
+        module = call_contract_verify_module
+        artifact_root = (
+            REPO_ROOT / "build" / "live-validation" / "call-contract"
+            / "41c880-429430-r4754"
+            / "call-contract-player_41ea90_42de10_authored_order"
+        )
+        cod_path = artifact_root / "player.cod"
+        obj_path = artifact_root / "player.obj"
+        candidate = None
+        if cod_path.is_file() and obj_path.is_file():
+            symbol = "?RecordNodeFlagsForRestore@Player@@YIXPAUzClass_NodePartial@@@Z"
+            coff_object = module.CoffObject.from_path(obj_path)
+            caller = coff_object.function_bytes(symbol)
+            parsed = module._extract_cod_proc_with_local_switches(
+                cod_path, symbol
+            )
+            external = module._candidate_external_symbol_inventory(coff_object)
+            candidate = CandidateAssembly(
+                instructions=parsed.instructions,
+                local_control_flow_indices=parsed.local_control_flow_indices,
+                local_control_flow_targets=parsed.local_control_flow_targets,
+                tu_local_function_definitions=(
+                    module._candidate_tu_local_function_definitions(
+                        coff_object, cod_path
+                    )
+                ),
+                caller_definition=CandidateCallerDefinition(
+                    symbol=symbol,
+                    data=caller.data,
+                    relocations=caller.relocations,
+                    relocation_mask=caller.relocation_mask,
+                    undefined_external_functions=external[0],
+                    defined_external_functions=external[1],
+                    undefined_external_data=external[2],
+                    defined_external_data=external[3],
+                    coff_symbols=module._candidate_coff_symbol_definitions(
+                        coff_object
+                    ),
+                    section_index=caller.section_index,
+                    section_start=caller.start,
+                    section_end=caller.end,
+                ),
+            )
+        if candidate is None:
+            candidate = self._player_r4646_artifact_candidate("0x41ecd0")
+        if candidate is None:
+            candidate = self._player_r4669_artifact_candidate("0x41ecd0")
+        if candidate is None:
+            self.skipTest("governed Player /Ob0 OBJ/COD is unavailable")
+        pushback = (
+            "?push_back@?$vector@UPlayerNodeFlagRestoreEntry@@"
+            "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+            "QAEXABUPlayerNodeFlagRestoreEntry@@@Z"
+        )
+        ucopy = (
+            "?_Ucopy@?$vector@UPlayerNodeFlagRestoreEntry@@"
+            "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+            "IAEPAUPlayerNodeFlagRestoreEntry@@PBU3@0PAU3@@Z"
+        )
+        ufill = (
+            "?_Ufill@?$vector@UPlayerNodeFlagRestoreEntry@@"
+            "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+            "IAEXPAUPlayerNodeFlagRestoreEntry@@IABU3@@Z"
+        )
+        destroy = (
+            "?_Destroy@?$vector@UPlayerNodeFlagRestoreEntry@@"
+            "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+            "IAEXPAUPlayerNodeFlagRestoreEntry@@0@Z"
+        )
+        new_identity = "provider:recoil:function:0x4c5b76"
+        delete_identity = "provider:recoil:function:0x4c5b6a"
+        ucopy_identity = "provider:recoil:function:0x4233b0"
+        ufill_identity = "provider:recoil:function:0x423400"
+        destroy_identity = "provider:recoil:function:0x40bdf0"
+        first = [
+            self._direct_row(ordinal, f"symbol:fixture:{ordinal}")
+            for ordinal in range(3)
+        ]
+        raw = [
+            *deepcopy(first),
+            {
+                **self._direct_row(
+                    3, f"candidate-local-coff:{pushback}"
+                ),
+                "cleanup_bytes": 4,
+            },
+        ]
+        leaf_specs = (
+            (new_identity, 4),
+            (ufill_identity, None),
+            (ucopy_identity, None),
+            (destroy_identity, None),
+            (delete_identity, 4),
+            (ucopy_identity, None),
+            (ufill_identity, None),
+            (ucopy_identity, None),
+        )
+        expected = deepcopy(first)
+        for ordinal, (identity, cleanup) in enumerate(leaf_specs, start=3):
+            expected.append({
+                **self._direct_row(ordinal, identity, kind="provider"),
+                "cleanup_bytes": cleanup,
+            })
+        indexes = IdentityIndexes(
+            by_address={},
+            by_candidate_name={
+                "??2@YAPAXI@Z": new_identity,
+                "??3@YAXPAX@Z": delete_identity,
+            },
+            provider_ids=frozenset({
+                new_identity,
+                delete_identity,
+                ucopy_identity,
+                ufill_identity,
+                destroy_identity,
+            }),
+            storage_by_address={},
+            storage_by_name={},
+        )
+        arguments = {
+            "document": ProgressDocument(empty_progress_document()),
+            "indexes": indexes,
+            "bridge": object(),
+            "caller_identity": "symbol:recoil:function:0x41ecd0",
+            "caller_start": "0x41ecd0",
+            "caller_end_exclusive": "0x41ef30",
+        }
+        with patch.object(
+            module,
+            "_player_exact_retail_provider_identity",
+            side_effect=lambda identity, **_kwargs: identity,
+        ):
+            projected, receipt = (
+                module._player_node_flag_pushback_graph_expansion(
+                    expected, raw, candidate, **arguments
+                )
+            )
+            self.assertEqual(expected, projected)
+            self.assertEqual(raw, receipt["raw_physical_calls"])
+            self.assertEqual(expected[3:], receipt["expanded_invocation_leaves"])
+            self.assertEqual(19, len(receipt["helper_graph"]))
+
+            with self.assertRaisesRegex(
+                ValueError, "local COMDAT identity/extent/selection/call-topology"
+            ):
+                insert_many = next(
+                    name for name in candidate.tu_local_function_definitions
+                    if name.startswith(
+                        "?insert@?$vector@UPlayerNodeFlagRestoreEntry@@"
+                    )
+                    and "QAEXPAUPlayerNodeFlagRestoreEntry@@IABU3@@Z" in name
+                )
+                definition = candidate.tu_local_function_definitions[insert_many]
+                module._player_node_flag_pushback_graph_expansion(
+                    expected,
+                    raw,
+                    replace(
+                        candidate,
+                        tu_local_function_definitions={
+                            **candidate.tu_local_function_definitions,
+                            insert_many: replace(
+                                definition,
+                                section_is_comdat=False,
+                            ),
+                        },
+                    ),
+                    **arguments,
+                )
+
+    def test_player_zinput_ob0_helper_graph_expansions_are_artifact_finite(
+        self,
+    ) -> None:
+        module = call_contract_verify_module
+        artifact_root = (
+            REPO_ROOT / "build" / "live-validation" / "call-contract"
+            / "41c880-429430-r4754"
+            / "call-contract-player_41ea90_42de10_authored_order"
+        )
+        cod_path = artifact_root / "player.cod"
+        obj_path = artifact_root / "player.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed Player r4754 `/Ob0` OBJ/COD is unavailable")
+        manifest = json.loads(
+            (
+                REPO_ROOT / "tools" / "vc5_verify_targets"
+                / "player_41ea90_42de10_authored_order.json"
+            ).read_text(encoding="utf-8")
+        )
+        symbols = {
+            row["address"]: row["symbol"]
+            for interval in manifest["linked_function_intervals"]
+            for row in interval["functions"]
+        }
+        coff_object = module.CoffObject.from_path(obj_path)
+        definitions = module._candidate_tu_local_function_definitions(
+            coff_object, cod_path
+        )
+        external = module._candidate_external_symbol_inventory(coff_object)
+
+        def candidate_at(address):
+            symbol = symbols[address]
+            caller = coff_object.function_bytes(symbol)
+            parsed = module._extract_cod_proc_with_local_switches(
+                cod_path, symbol
+            )
+            return CandidateAssembly(
+                instructions=parsed.instructions,
+                local_control_flow_indices=parsed.local_control_flow_indices,
+                local_control_flow_targets=parsed.local_control_flow_targets,
+                tu_local_function_definitions=definitions,
+                caller_definition=CandidateCallerDefinition(
+                    symbol=symbol,
+                    data=caller.data,
+                    relocations=caller.relocations,
+                    relocation_mask=caller.relocation_mask,
+                    undefined_external_functions=external[0],
+                    defined_external_functions=external[1],
+                    undefined_external_data=external[2],
+                    defined_external_data=external[3],
+                    coff_symbols=module._candidate_coff_symbol_definitions(
+                        coff_object
+                    ),
+                    section_index=caller.section_index,
+                    section_start=caller.start,
+                    section_end=caller.end,
+                ),
+            )
+
+        new_identity = "provider:recoil:function:0x4c5b76"
+        delete_identity = "provider:recoil:function:0x4c5b6a"
+        cstring_ctor_identity = "provider:recoil:function:0x4c5ba0"
+        cstring_assign_identity = "provider:recoil:function:0x4c5b9a"
+        empty_identity = "provider:fixture:cstring-empty"
+        cstring_dtor_identity = "provider:fixture:cstring-dtor"
+        ucopy_identity = "provider:recoil:function:0x48bf10"
+        ufill_identity = "provider:recoil:function:0x40c190"
+        destroy_identity = "provider:recoil:function:0x40bdf0"
+        size_identity = "provider:recoil:function:0x42a9d0"
+        construct_identity = "provider:recoil:function:0x40c1c0"
+        destructor_identity = "symbol:recoil:function:0x42a000"
+        provider_ids = frozenset({
+            new_identity,
+            delete_identity,
+            cstring_ctor_identity,
+            cstring_assign_identity,
+            empty_identity,
+            cstring_dtor_identity,
+            ucopy_identity,
+            ufill_identity,
+            destroy_identity,
+            size_identity,
+            construct_identity,
+        })
+        indexes = IdentityIndexes(
+            by_address={"0x42a000": destructor_identity},
+            by_candidate_name={
+                "??2@YAPAXI@Z": new_identity,
+                "??3@YAXPAX@Z": delete_identity,
+                "??0CString@@QAE@XZ": cstring_ctor_identity,
+                "??4CString@@QAEABV0@PBD@Z": cstring_assign_identity,
+            },
+            provider_ids=provider_ids,
+            storage_by_address={},
+            storage_by_name={},
+        )
+
+        def local(ordinal, name, cleanup=None):
+            return {
+                **self._direct_row(
+                    ordinal, f"candidate-local-coff:{name}"
+                ),
+                "cleanup_bytes": cleanup,
+            }
+
+        def provider(ordinal, identity, cleanup=None):
+            return {
+                **self._direct_row(ordinal, identity, kind="provider"),
+                "cleanup_bytes": cleanup,
+            }
+
+        pointer_begin = (
+            "?begin@?$vector@PAUzInput_BindGroupInfo@@"
+            "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+            "QAEPAPAUzInput_BindGroupInfo@@XZ"
+        )
+        pointer_end = pointer_begin.replace("?begin@", "?end@")
+        pointer_size = (
+            "?size@?$vector@PAUzInput_BindGroupInfo@@"
+            "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@QBEIXZ"
+        )
+        pointer_erase = (
+            "?erase@?$vector@PAUzInput_BindGroupInfo@@"
+            "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+            "QAEPAPAUzInput_BindGroupInfo@@PAPAU3@0@Z"
+        )
+        scalar_dtor = "??_GzInput_BindGroupInfo@@QAEPAXI@Z"
+        vector_dtor = "??1?$vector@HV?$allocator@H@std@@@std@@QAE@XZ"
+        record_ctor = "??0zInput_BindGroupInfo@@QAE@PBD@Z"
+        pointer_pushback = (
+            "?push_back@?$vector@PAUzInput_BindGroupInfo@@"
+            "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+            "QAEXABQAUzInput_BindGroupInfo@@@Z"
+        )
+        pointer_subscript = (
+            "??A?$vector@PAUzInput_BindGroupInfo@@"
+            "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+            "QAEAAPAUzInput_BindGroupInfo@@I@Z"
+        )
+        int_pushback = (
+            "?push_back@?$vector@HV?$allocator@H@std@@@std@@QAEXABH@Z"
+        )
+
+        cases = []
+        clear_expected = [
+            self._direct_row(0, destructor_identity),
+            provider(1, delete_identity, 4),
+        ]
+        clear_raw = [
+            local(0, pointer_begin),
+            local(1, pointer_end),
+            local(2, scalar_dtor, 4),
+            provider(3, delete_identity, 4),
+            local(4, pointer_end),
+            local(5, pointer_end),
+            local(6, pointer_begin),
+            local(7, pointer_erase, 8),
+        ]
+        cases.append(("0x429f80", "0x42a000", clear_expected, clear_raw))
+
+        dtor_expected = [
+            provider(0, empty_identity),
+            provider(1, delete_identity, 4),
+            provider(2, cstring_dtor_identity),
+        ]
+        dtor_raw = [
+            dtor_expected[0],
+            local(1, vector_dtor),
+            dtor_expected[2],
+        ]
+        cases.append(("0x42a000", "0x42a070", dtor_expected, dtor_raw))
+
+        add_group_specs = (
+            (new_identity, 4),
+            (cstring_ctor_identity, None),
+            (cstring_assign_identity, None),
+            (new_identity, 4),
+            (ucopy_identity, None),
+            (ufill_identity, None),
+            (ucopy_identity, None),
+            (destroy_identity, None),
+            (delete_identity, 4),
+            (size_identity, None),
+            (ucopy_identity, None),
+            (ufill_identity, None),
+            (ucopy_identity, None),
+        )
+        add_group_expected = [
+            provider(ordinal, identity, cleanup)
+            for ordinal, (identity, cleanup) in enumerate(add_group_specs)
+        ]
+        add_group_raw = [
+            local(0, pointer_size),
+            provider(1, new_identity, 4),
+            local(2, record_ctor, 4),
+            local(3, pointer_pushback, 4),
+        ]
+        cases.append((
+            "0x42a070", "0x42a2c0", add_group_expected, add_group_raw
+        ))
+
+        add_command_specs = (
+            (new_identity, 4),
+            (construct_identity, None),
+            (ufill_identity, None),
+            (ucopy_identity, None),
+            (destroy_identity, None),
+            (delete_identity, 4),
+            (ucopy_identity, None),
+            (ufill_identity, None),
+            (ucopy_identity, None),
+        )
+        add_command_expected = [
+            provider(ordinal, identity, cleanup)
+            for ordinal, (identity, cleanup) in enumerate(add_command_specs)
+        ]
+        add_command_raw = [
+            local(0, pointer_subscript, 4),
+            local(1, int_pushback, 4),
+        ]
+        cases.append((
+            "0x42a2c0", "0x42a480", add_command_expected, add_command_raw
+        ))
+
+        with patch.object(
+            module,
+            "_player_exact_retail_provider_identity",
+            side_effect=lambda identity, **_kwargs: identity,
+        ):
+            for address, end, expected, raw in cases:
+                with self.subTest(address=address):
+                    projected, receipt = (
+                        module._player_zinput_ob0_helper_graph_expansion(
+                            expected,
+                            raw,
+                            candidate_at(address),
+                            document=ProgressDocument(empty_progress_document()),
+                            indexes=indexes,
+                            bridge=object(),
+                            caller_identity=f"symbol:recoil:function:{address}",
+                            caller_start=address,
+                            caller_end_exclusive=end,
+                        )
+                    )
+                    self.assertEqual(expected, projected)
+                    self.assertEqual(raw, receipt["raw_physical_calls"])
+                    self.assertTrue(receipt["helper_graph"])
+
     def test_player_candidate_local_occurrence_graph_is_artifact_finite(
         self,
     ) -> None:
@@ -148766,6 +150425,28 @@ class CallContractSchema131RecoilAppDecoderNormalizationTests(unittest.TestCase)
                 for row in caller.relocations
                 if row.symbol_name == temporary_label
             )
+            if start == "0x420c60":
+                renumbered = replace(
+                    candidate,
+                    caller_definition=replace(
+                        caller,
+                        relocations=tuple(
+                            replace(row, symbol_name="$L123456")
+                            if row is temporary_reference else row
+                            for row in caller.relocations
+                        ),
+                    ),
+                )
+                with self.subTest(start=start, proof="renumbered-local-label"):
+                    self.assertEqual(
+                        expected,
+                        helper(
+                            expected,
+                            candidate_contract,
+                            renumbered,
+                            **arguments,
+                        ),
+                    )
             drifted = replace(
                 candidate,
                 caller_definition=replace(
@@ -149045,7 +150726,7 @@ class CallContractSchema131RecoilAppDecoderNormalizationTests(unittest.TestCase)
             caller_definition=replace(
                 candidate.caller_definition,
                 relocations=tuple(
-                    replace(row, symbol_name="$L90743")
+                    replace(row, symbol_name="$Lwrong")
                     if row.offset == 0x03 else row
                     for row in caller.relocations
                 ),
@@ -155526,6 +157207,987 @@ class MissionCallProfilesWsi011Tests(unittest.TestCase):
         ):
             self.assertIn(gate, population_source)
 
+class ZuiPointerVectorOccurrenceGraphTests(unittest.TestCase):
+    artifact_root = (
+        REPO_ROOT / "build" / "live-validation"
+        / "zui-query-width-r4905-1"
+        / "call-contract-zui_4b3ce0_4bffe0_authored_order"
+    )
+
+    def _artifact_package(self):
+        module = call_contract_verify_module
+        cod_path = self.artifact_root / "zui_widgets.cod"
+        obj_path = self.artifact_root / "zui_widgets.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed WSI007 zUI COD/OBJ is unavailable")
+        symbol = (
+            "?LoadFromZrd@HudUiZrdWidget@@UAEHPAUNode@zReader@@"
+            "PAUHudUiBackground@@@Z"
+        )
+        coff = module.CoffObject.from_path(obj_path)
+        caller = coff.function_bytes(symbol)
+        parsed = module._extract_cod_proc_with_local_switches(cod_path, symbol)
+        external = module._candidate_external_symbol_inventory(coff)
+        candidate = CandidateAssembly(
+            instructions=parsed.instructions,
+            local_control_flow_indices=parsed.local_control_flow_indices,
+            local_control_flow_targets=parsed.local_control_flow_targets,
+            tu_local_function_definitions=(
+                module._candidate_tu_local_function_definitions(coff, cod_path)
+            ),
+            caller_definition=CandidateCallerDefinition(
+                symbol=symbol,
+                data=caller.data,
+                relocations=caller.relocations,
+                relocation_mask=caller.relocation_mask,
+                undefined_external_functions=external[0],
+                defined_external_functions=external[1],
+                undefined_external_data=external[2],
+                defined_external_data=external[3],
+                coff_symbols=module._candidate_coff_symbol_definitions(coff),
+                section_index=caller.section_index,
+                section_start=caller.start,
+                section_end=caller.end,
+                associated_sections=module._candidate_associated_comdat_sections(
+                    coff, caller.section_index
+                ),
+            ),
+        )
+        helper_cleanup = {
+            name: None
+            for name in candidate.tu_local_function_definitions
+            if "?$vector@PAUHudUiPanel@@" in name
+        }
+        invocation_indices = module._candidate_static_invocation_indices(
+            candidate,
+            caller_start="0x0",
+            caller_end_exclusive=hex(len(caller.data)),
+        )
+        offsets = module._candidate_complete_instruction_offsets(candidate)
+        raw = []
+        for ordinal, index in enumerate(invocation_indices):
+            offset = offsets[index]
+            assert offset is not None
+            relocation = next((
+                row for row in caller.relocations
+                if row.offset == offset + 1
+                and row.type == module.IMAGE_REL_I386_REL32
+            ), None)
+            name = relocation.symbol_name if relocation is not None else ""
+            target = (
+                f"candidate-local-coff:{name}"
+                if name in helper_cleanup
+                else f"symbol:fixture:{ordinal}"
+            )
+            raw.append({
+                "ordinal": ordinal,
+                "form": (
+                    "tail"
+                    if module._instruction_mnemonic(candidate.instructions[index])
+                    == "jmp" else "call"
+                ),
+                "dispatch": "direct",
+                "identity_kind": "direct",
+                "target_identity": target,
+                "storage_identity": "",
+                "slot_displacement": None,
+                "cleanup_bytes": helper_cleanup.get(name),
+            })
+        copy_identity = "provider:recoil:function:0x40c1c0"
+        destroy_identity = "provider:recoil:function:0x40bdf0"
+        for row in raw:
+            if row["target_identity"].startswith(
+                "candidate-local-coff:?_Destroy@"
+            ):
+                row.update({
+                    "identity_kind": "provider",
+                    "target_identity": destroy_identity,
+                })
+        expected = []
+        for row in raw:
+            identity = row["target_identity"]
+            if (
+                identity.startswith("candidate-local-coff:?size@")
+                or identity == destroy_identity
+            ):
+                continue
+            projected = dict(row)
+            if identity.startswith((
+                "candidate-local-coff:?_Ucopy@",
+                "candidate-local-coff:?_Ufill@",
+            )):
+                projected.update({
+                    "identity_kind": "provider",
+                    "target_identity": copy_identity,
+                    "cleanup_bytes": None,
+                })
+            projected["ordinal"] = len(expected)
+            expected.append(projected)
+        indexes = SimpleNamespace(
+            by_address={
+                "0x40c1c0": copy_identity,
+                "0x40bdf0": destroy_identity,
+            },
+            provider_ids={copy_identity, destroy_identity},
+        )
+        arguments = {
+            "caller_identity": "symbol:recoil:function:0x4b59f0",
+            "caller_start": "0x4b59f0",
+            "caller_end_exclusive": "0x4b6fc0",
+            "indexes": indexes,
+        }
+        return candidate, raw, expected, arguments
+
+    def test_zui_pointer_vector_occurrence_graph_is_artifact_finite(self):
+        module = call_contract_verify_module
+        candidate, raw, expected, arguments = self._artifact_package()
+        projected, receipt = (
+            module._zui_candidate_local_vector_occurrence_projection(
+                expected, raw, candidate, **arguments
+            )
+        )
+        self.assertEqual(expected, projected)
+        self.assertIsNotNone(receipt)
+        self.assertFalse(receipt["candidate_expected_truth"])
+        self.assertEqual(6, len(receipt["expanded_invocation_leaves"]))
+        self.assertEqual(3, len(receipt["helper_graph"]))
+
+        caller = candidate.caller_definition
+        assert caller is not None
+        insert_name = next(
+            name for name in candidate.tu_local_function_definitions
+            if name.startswith("?insert@?$vector@PAUHudUiPanel@@")
+        )
+        insert = candidate.tu_local_function_definitions[insert_name]
+        insert_symbol = next(
+            row for row in caller.coff_symbols if row.name == insert_name
+        )
+        self.assertEqual(0x220, len(insert.data))
+        self.assertEqual(
+            "52953d5c4675eced536ed3521d05d03027e808234d68a85f7e51e104713ecaea",
+            hashlib.sha256(insert.data).hexdigest(),
+        )
+        self.assertEqual(
+            (
+                (0x399, module.IMAGE_REL_I386_REL32, insert_symbol.index),
+                (0x565, module.IMAGE_REL_I386_REL32, insert_symbol.index),
+                (0x888, module.IMAGE_REL_I386_REL32, insert_symbol.index),
+                (0xA54, module.IMAGE_REL_I386_REL32, insert_symbol.index),
+                (0xD77, module.IMAGE_REL_I386_REL32, insert_symbol.index),
+                (0xF43, module.IMAGE_REL_I386_REL32, insert_symbol.index),
+                (0x11F3, module.IMAGE_REL_I386_REL32, insert_symbol.index),
+            ),
+            tuple(
+                (row.offset, row.type, row.symbol_index)
+                for row in caller.relocations
+                if row.symbol_name == insert_name
+            ),
+        )
+
+        ucopy_name = next(
+            name for name in candidate.tu_local_function_definitions
+            if name.startswith("?_Ucopy@?$vector@PAUHudUiPanel@@")
+        )
+        ucopy = candidate.tu_local_function_definitions[ucopy_name]
+        drifted = replace(
+            candidate,
+            tu_local_function_definitions={
+                **candidate.tu_local_function_definitions,
+                ucopy_name: replace(
+                    ucopy, data=b"\x90" + ucopy.data[1:]
+                ),
+            },
+        )
+        with self.assertRaisesRegex(
+            ValueError, "zUI candidate-only pointer-vector occurrence graph"
+        ):
+            module._zui_candidate_local_vector_occurrence_projection(
+                expected, raw, drifted, **arguments
+            )
+
+        caller_drift = replace(
+            candidate,
+            caller_definition=replace(
+                caller, data=b"\x90" + caller.data[1:]
+            ),
+        )
+        with self.assertRaisesRegex(
+            ValueError, "zUI candidate-only pointer-vector occurrence graph"
+        ):
+            module._zui_candidate_local_vector_occurrence_projection(
+                expected, raw, caller_drift, **arguments
+            )
+
+    def test_zui_stack_receiver_projection_is_exact_and_finite(self):
+        module = call_contract_verify_module
+        candidate, _raw, _expected, arguments = self._artifact_package()
+        expected = [
+            {
+                "ordinal": ordinal,
+                "form": "call",
+                "dispatch": "direct",
+                "identity_kind": "direct",
+                "target_identity": f"symbol:fixture:{ordinal}",
+                "storage_identity": "",
+                "slot_displacement": None,
+                "cleanup_bytes": None,
+            }
+            for ordinal in range(122)
+        ]
+        observed = deepcopy(expected)
+        bridge_ordinals = (
+            17, 18, 19, 20,
+            26, 27, 28, 29,
+            45, 46, 47, 48,
+            54, 55, 56, 57,
+            73, 74, 75, 76,
+            82, 83, 84, 85,
+            96, 97, 98, 99,
+            105, 106, 107, 108,
+        )
+        candidate_storage = (
+            "load(load(stack+0x3c))",
+            "load(nullable(call-result(provider:recoil:function:0x4c5b76)))",
+            "load(load(stack+0x44))",
+            "load(nullable(call-result(provider:recoil:function:0x4c5b76)))",
+        )
+        for index, ordinal in enumerate(bridge_ordinals):
+            slot = (116, 12, 128, 96)[index % 4]
+            cleanup = 8 if slot == 116 else None
+            expected[ordinal].update({
+                "dispatch": "indirect",
+                "identity_kind": "virtual-slot",
+                "target_identity": "",
+                "storage_identity": (
+                    "load(load(stack+0x48))"
+                    if index % 4 in {0, 3}
+                    else "load(load(stack+0x50))"
+                ),
+                "slot_displacement": slot,
+                "cleanup_bytes": cleanup,
+            })
+            observed[ordinal] = {
+                **expected[ordinal],
+                "storage_identity": candidate_storage[index % 4],
+            }
+        projected = module._zui_exact_stack_receiver_storage_projection(
+            expected,
+            observed,
+            candidate,
+            caller_identity=arguments["caller_identity"],
+            caller_start=arguments["caller_start"],
+            caller_end_exclusive=arguments["caller_end_exclusive"],
+        )
+        self.assertEqual(expected, projected)
+
+        drifted = deepcopy(observed)
+        drifted[17]["slot_displacement"] = 120
+        with self.assertRaisesRegex(
+            ValueError, "zUI exact stack-receiver storage projection"
+        ):
+            module._zui_exact_stack_receiver_storage_projection(
+                expected,
+                drifted,
+                candidate,
+                caller_identity=arguments["caller_identity"],
+                caller_start=arguments["caller_start"],
+                caller_end_exclusive=arguments["caller_end_exclusive"],
+            )
+
+    def test_zui_spilled_receiver_vptr_proof_is_artifact_finite(self):
+        module = call_contract_verify_module
+        cod_path = self.artifact_root / "zui_widgets.cod"
+        obj_path = self.artifact_root / "zui_widgets.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed WSI003 zUI COD/OBJ is unavailable")
+        symbol = (
+            "?LoadFromZrd@HudUiCheckToggleWidget@@UAEHPAUNode@zReader@@"
+            "PAUHudUiBackground@@@Z"
+        )
+        coff = module.CoffObject.from_path(obj_path)
+        caller = coff.function_bytes(symbol)
+        parsed = module._extract_cod_proc_with_local_switches(cod_path, symbol)
+        external = module._candidate_external_symbol_inventory(coff)
+        definition = CandidateCallerDefinition(
+            symbol=symbol,
+            data=caller.data,
+            relocations=caller.relocations,
+            relocation_mask=caller.relocation_mask,
+            undefined_external_functions=external[0],
+            defined_external_functions=external[1],
+            undefined_external_data=external[2],
+            defined_external_data=external[3],
+            coff_symbols=module._candidate_coff_symbol_definitions(coff),
+            section_index=caller.section_index,
+            section_start=caller.start,
+            section_end=caller.end,
+            associated_sections=module._candidate_associated_comdat_sections(
+                coff, caller.section_index
+            ),
+        )
+        indexes = SimpleNamespace(
+            by_address={
+                "0x4b7340": "symbol:recoil:function:0x4b7340",
+            },
+            provider_ids=set(),
+        )
+        arguments = {
+            "source": "cod",
+            "caller_start": "0x4b7340",
+            "caller_end_exclusive": "0x4b7d60",
+            "indexes": indexes,
+            "candidate_caller_definition": definition,
+        }
+        proof = module._exact_candidate_zui_spilled_receiver_vptr_proof(
+            parsed.instructions,
+            **arguments,
+        )
+        offsets = module._candidate_complete_instruction_offsets(
+            CandidateAssembly(parsed.instructions, frozenset())
+        )
+        self.assertEqual(
+            {offsets.index(0x82F): "load(this)"},
+            proof,
+        )
+
+        with self.assertRaisesRegex(
+            ValueError, "zUI spilled receiver-vptr projection"
+        ):
+            module._exact_candidate_zui_spilled_receiver_vptr_proof(
+                parsed.instructions,
+                **{
+                    **arguments,
+                    "candidate_caller_definition": replace(
+                        definition,
+                        data=b"\x90" + definition.data[1:],
+                    ),
+                },
+            )
+
+        call_index = offsets.index(0x82F)
+        drifted_instructions = list(parsed.instructions)
+        drifted_instructions[call_index] = replace(
+            drifted_instructions[call_index],
+            bytes=("ff", "50", "10"),
+        )
+        with self.assertRaisesRegex(
+            ValueError, "zUI spilled receiver-vptr projection"
+        ):
+            module._exact_candidate_zui_spilled_receiver_vptr_proof(
+                tuple(drifted_instructions),
+                **arguments,
+            )
+
+    def test_zui_cycle_entry_vptr_proof_is_artifact_finite(self):
+        module = call_contract_verify_module
+        cod_path = self.artifact_root / "zui_widgets.cod"
+        obj_path = self.artifact_root / "zui_widgets.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed zUI COD/OBJ is unavailable")
+        symbol = "?AddTextEntry@HudUiCycleSelectorWidget@@QAEXHPBDHH@Z"
+        coff = module.CoffObject.from_path(obj_path)
+        caller = coff.function_bytes(symbol)
+        parsed = module._extract_cod_proc_with_local_switches(cod_path, symbol)
+        external = module._candidate_external_symbol_inventory(coff)
+        definition = CandidateCallerDefinition(
+            symbol=symbol,
+            data=caller.data,
+            relocations=caller.relocations,
+            relocation_mask=caller.relocation_mask,
+            undefined_external_functions=external[0],
+            defined_external_functions=external[1],
+            undefined_external_data=external[2],
+            defined_external_data=external[3],
+            coff_symbols=module._candidate_coff_symbol_definitions(coff),
+            section_index=caller.section_index,
+            section_start=caller.start,
+            section_end=caller.end,
+            associated_sections=module._candidate_associated_comdat_sections(
+                coff, caller.section_index
+            ),
+        )
+        indexes = SimpleNamespace(
+            by_address={
+                "0x4b7fd0": "symbol:recoil:function:0x4b7fd0",
+            },
+            provider_ids=set(),
+        )
+        arguments = {
+            "source": "cod",
+            "caller_start": "0x4b7fd0",
+            "caller_end_exclusive": "0x4b8100",
+            "indexes": indexes,
+            "candidate_caller_definition": definition,
+        }
+        proof = module._exact_candidate_zui_cycle_entry_vptr_proofs(
+            parsed.instructions,
+            **arguments,
+        )
+        offsets = module._candidate_complete_instruction_offsets(
+            CandidateAssembly(parsed.instructions, frozenset())
+        )
+        storage = (
+            "load(load(affine(this,load(entry-stack+0x4)*4,+0x168)))"
+        )
+        self.assertEqual(
+            {
+                offsets.index(0x0F3): storage,
+                offsets.index(0x100): storage,
+            },
+            proof,
+        )
+
+        table_identity = "storage:recoil:data:0x4cd388"
+        set_pos_identity = "symbol:recoil:function:0x404cd0"
+        set_visible_identity = "symbol:recoil:function:0x404d20"
+        bridge_indexes = SimpleNamespace(
+            by_address={
+                "0x4b7fd0": "symbol:recoil:function:0x4b7fd0",
+                "0x404cd0": set_pos_identity,
+                "0x404d20": set_visible_identity,
+            },
+            storage_by_address={"0x4cd388": table_identity},
+            provider_ids=set(),
+        )
+        expected = [{}, {}, {}, {
+            "ordinal": 3,
+            "form": "call",
+            "dispatch": "indirect",
+            "identity_kind": "virtual-slot",
+            "target_identity": set_pos_identity,
+            "storage_identity": table_identity,
+            "slot_displacement": 0x0C,
+            "cleanup_bytes": None,
+        }, {
+            "ordinal": 4,
+            "form": "call",
+            "dispatch": "indirect",
+            "identity_kind": "virtual-slot",
+            "target_identity": set_visible_identity,
+            "storage_identity": table_identity,
+            "slot_displacement": 0x60,
+            "cleanup_bytes": None,
+        }]
+        retail_bridges = {
+            "0x4b80c3": ReviewedLoopVptrStorageBridge(
+                register="edx",
+                storage_identity=table_identity,
+                slot_displacement=0x0C,
+                assembly_source="bn",
+                target_identity=set_pos_identity,
+            ),
+            "0x4b80d0": ReviewedLoopVptrStorageBridge(
+                register="edx",
+                storage_identity=table_identity,
+                slot_displacement=0x60,
+                assembly_source="bn",
+                target_identity=set_visible_identity,
+            ),
+        }
+        self.assertEqual(
+            {
+                "0xf3": replace(
+                    retail_bridges["0x4b80c3"], assembly_source="cod"
+                ),
+                "0x100": replace(
+                    retail_bridges["0x4b80d0"], assembly_source="cod"
+                ),
+            },
+            module._zui_cycle_entry_candidate_vptr_bridges(
+                expected,
+                CandidateAssembly(
+                    parsed.instructions,
+                    parsed.local_control_flow_indices,
+                    local_control_flow_targets=(
+                        parsed.local_control_flow_targets
+                    ),
+                    caller_definition=definition,
+                ),
+                caller_identity="symbol:recoil:function:0x4b7fd0",
+                caller_start="0x4b7fd0",
+                caller_end_exclusive="0x4b8100",
+                indexes=bridge_indexes,
+                retail_vptr_bridges=retail_bridges,
+            ),
+        )
+
+        with self.assertRaisesRegex(
+            ValueError, "zUI cycle-entry indexed-vptr projection"
+        ):
+            module._exact_candidate_zui_cycle_entry_vptr_proofs(
+                parsed.instructions,
+                **{
+                    **arguments,
+                    "candidate_caller_definition": replace(
+                        definition,
+                        data=b"\x90" + definition.data[1:],
+                    ),
+                },
+            )
+
+    def test_zui_cycle_font_entry_vptr_bridge_is_artifact_finite(self):
+        module = call_contract_verify_module
+        cod_path = self.artifact_root / "zui_widgets.cod"
+        obj_path = self.artifact_root / "zui_widgets.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed zUI COD/OBJ is unavailable")
+        symbol = (
+            "?ApplyFontStyleForEntry@HudUiCycleSelectorWidget@@QAEXHH@Z"
+        )
+        coff = module.CoffObject.from_path(obj_path)
+        caller = coff.function_bytes(symbol)
+        parsed = module._extract_cod_proc_with_local_switches(cod_path, symbol)
+        external = module._candidate_external_symbol_inventory(coff)
+        definition = CandidateCallerDefinition(
+            symbol=symbol,
+            data=caller.data,
+            relocations=caller.relocations,
+            relocation_mask=caller.relocation_mask,
+            undefined_external_functions=external[0],
+            defined_external_functions=external[1],
+            undefined_external_data=external[2],
+            defined_external_data=external[3],
+            coff_symbols=module._candidate_coff_symbol_definitions(coff),
+            section_index=caller.section_index,
+            section_start=caller.start,
+            section_end=caller.end,
+            associated_sections=module._candidate_associated_comdat_sections(
+                coff, caller.section_index
+            ),
+        )
+        candidate = CandidateAssembly(
+            parsed.instructions,
+            parsed.local_control_flow_indices,
+            local_control_flow_targets=parsed.local_control_flow_targets,
+            caller_definition=definition,
+        )
+        table_identity = "storage:recoil:data:0x4cd388"
+        target_identity = "symbol:recoil:function:0x4babb0"
+        indexes = SimpleNamespace(
+            by_address={
+                "0x4b8100": "symbol:recoil:function:0x4b8100",
+                "0x4babb0": target_identity,
+            },
+            storage_by_address={"0x4cd388": table_identity},
+            provider_ids=set(),
+        )
+        expected = [{
+            "ordinal": 0,
+            "form": "call",
+            "dispatch": "indirect",
+            "identity_kind": "virtual-slot",
+            "target_identity": target_identity,
+            "storage_identity": table_identity,
+            "slot_displacement": 0x80,
+            "cleanup_bytes": None,
+        }]
+        retail_bridge = ReviewedLoopVptrStorageBridge(
+            register="edx",
+            storage_identity=table_identity,
+            slot_displacement=0x80,
+            assembly_source="bn",
+            target_identity=target_identity,
+        )
+        self.assertEqual(
+            {
+                "0x86": replace(retail_bridge, assembly_source="cod"),
+            },
+            module._zui_cycle_font_entry_candidate_vptr_bridges(
+                expected,
+                candidate,
+                caller_identity="symbol:recoil:function:0x4b8100",
+                caller_start="0x4b8100",
+                caller_end_exclusive="0x4b8200",
+                indexes=indexes,
+                retail_vptr_bridges={"0x4b8186": retail_bridge},
+            ),
+        )
+        with self.assertRaisesRegex(
+            ValueError, "zUI cycle font-entry constructor-vptr bridge"
+        ):
+            module._zui_cycle_font_entry_candidate_vptr_bridges(
+                expected,
+                replace(
+                    candidate,
+                    caller_definition=replace(
+                        definition,
+                        data=b"\x90" + definition.data[1:],
+                    ),
+                ),
+                caller_identity="symbol:recoil:function:0x4b8100",
+                caller_start="0x4b8100",
+                caller_end_exclusive="0x4b8200",
+                indexes=indexes,
+                retail_vptr_bridges={"0x4b8186": retail_bridge},
+            )
+
+    def test_zui_cycle_bitmap_entry_vptr_bridge_is_artifact_finite(self):
+        module = call_contract_verify_module
+        cod_path = self.artifact_root / "zui_widgets.cod"
+        obj_path = self.artifact_root / "zui_widgets.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed zUI COD/OBJ is unavailable")
+        symbol = "?AddBitmapEntry@HudUiCycleSelectorWidget@@QAEXHPBDHH@Z"
+        coff = module.CoffObject.from_path(obj_path)
+        caller = coff.function_bytes(symbol)
+        parsed = module._extract_cod_proc_with_local_switches(cod_path, symbol)
+        external = module._candidate_external_symbol_inventory(coff)
+        definition = CandidateCallerDefinition(
+            symbol=symbol,
+            data=caller.data,
+            relocations=caller.relocations,
+            relocation_mask=caller.relocation_mask,
+            undefined_external_functions=external[0],
+            defined_external_functions=external[1],
+            undefined_external_data=external[2],
+            defined_external_data=external[3],
+            coff_symbols=module._candidate_coff_symbol_definitions(coff),
+            section_index=caller.section_index,
+            section_start=caller.start,
+            section_end=caller.end,
+            associated_sections=module._candidate_associated_comdat_sections(
+                coff, caller.section_index
+            ),
+        )
+        candidate = CandidateAssembly(
+            parsed.instructions,
+            parsed.local_control_flow_indices,
+            local_control_flow_targets=parsed.local_control_flow_targets,
+            caller_definition=definition,
+        )
+        table_identity = "storage:recoil:data:0x4d3428"
+        targets = {
+            "0x4b3dd0": "symbol:recoil:function:0x4b3dd0",
+            "0x404d20": "symbol:recoil:function:0x404d20",
+        }
+        indexes = SimpleNamespace(
+            by_address={
+                "0x4b8200": "symbol:recoil:function:0x4b8200",
+                **targets,
+            },
+            storage_by_address={"0x4d3428": table_identity},
+            provider_ids=set(),
+        )
+        expected = [{}, {}, {}]
+        retail_bridges = {}
+        wanted = {}
+        for retail_call, candidate_call, ordinal, slot, target_address in (
+            ("0x4b82a8", "0x75", 3, 0x0C, "0x4b3dd0"),
+            ("0x4b82b6", "0x7e", 4, 0x60, "0x404d20"),
+        ):
+            expected.append({
+                "ordinal": ordinal,
+                "form": "call",
+                "dispatch": "indirect",
+                "identity_kind": "virtual-slot",
+                "target_identity": targets[target_address],
+                "storage_identity": table_identity,
+                "slot_displacement": slot,
+                "cleanup_bytes": None,
+            })
+            retail_bridges[retail_call] = ReviewedLoopVptrStorageBridge(
+                register="edx",
+                storage_identity=table_identity,
+                slot_displacement=slot,
+                assembly_source="bn",
+                target_identity=targets[target_address],
+            )
+            wanted[candidate_call] = replace(
+                retail_bridges[retail_call], assembly_source="cod"
+            )
+        expected.append({})
+        self.assertEqual(
+            wanted,
+            module._zui_cycle_bitmap_entry_candidate_vptr_bridges(
+                expected,
+                candidate,
+                caller_identity="symbol:recoil:function:0x4b8200",
+                caller_start="0x4b8200",
+                caller_end_exclusive="0x4b82e0",
+                indexes=indexes,
+                retail_vptr_bridges=retail_bridges,
+            ),
+        )
+        with self.assertRaisesRegex(
+            ValueError, "zUI cycle bitmap-entry constructor-vptr bridge"
+        ):
+            module._zui_cycle_bitmap_entry_candidate_vptr_bridges(
+                expected,
+                replace(
+                    candidate,
+                    caller_definition=replace(
+                        definition,
+                        data=b"\x90" + definition.data[1:],
+                    ),
+                ),
+                caller_identity="symbol:recoil:function:0x4b8200",
+                caller_start="0x4b8200",
+                caller_end_exclusive="0x4b82e0",
+                indexes=indexes,
+                retail_vptr_bridges=retail_bridges,
+            )
+
+    def test_zui_check_toggle_inline_helper_graph_is_artifact_finite(self):
+        module = call_contract_verify_module
+        cod_path = self.artifact_root / "zui_widgets.cod"
+        obj_path = self.artifact_root / "zui_widgets.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed WSI007 zUI COD/OBJ is unavailable")
+        symbol = (
+            "?LoadFromZrd@HudUiCheckToggleWidget@@UAEHPAUNode@zReader@@"
+            "PAUHudUiBackground@@@Z"
+        )
+        coff = module.CoffObject.from_path(obj_path)
+        caller = coff.function_bytes(symbol)
+        parsed = module._extract_cod_proc_with_local_switches(cod_path, symbol)
+        external = module._candidate_external_symbol_inventory(coff)
+        candidate = CandidateAssembly(
+            instructions=parsed.instructions,
+            local_control_flow_indices=parsed.local_control_flow_indices,
+            local_control_flow_targets=parsed.local_control_flow_targets,
+            tu_local_function_definitions=(
+                module._candidate_tu_local_function_definitions(coff, cod_path)
+            ),
+            caller_definition=CandidateCallerDefinition(
+                symbol=symbol,
+                data=caller.data,
+                relocations=caller.relocations,
+                relocation_mask=caller.relocation_mask,
+                undefined_external_functions=external[0],
+                defined_external_functions=external[1],
+                undefined_external_data=external[2],
+                defined_external_data=external[3],
+                coff_symbols=module._candidate_coff_symbol_definitions(coff),
+                section_index=caller.section_index,
+                section_start=caller.start,
+                section_end=caller.end,
+                associated_sections=(
+                    module._candidate_associated_comdat_sections(
+                        coff, caller.section_index
+                    )
+                ),
+            ),
+        )
+        invocation_indices = module._candidate_static_invocation_indices(
+            candidate,
+            caller_start="0x0",
+            caller_end_exclusive=hex(len(caller.data)),
+        )
+        offsets = module._candidate_complete_instruction_offsets(candidate)
+        local_fragments = (
+            "ZrdArrayString@?%",
+            "ZrdArrayInt@?%",
+            "HudUiZrdOwnerFontStyle@?%",
+            "ApplyHudFontStyleTextOnly@?%",
+        )
+        receiver_offsets = {0x1A0, 0x2FC, 0x85C}
+        raw = []
+        for ordinal, index in enumerate(invocation_indices):
+            offset = offsets[index]
+            assert offset is not None
+            relocation = next((
+                row for row in caller.relocations
+                if row.offset == offset + 1
+                and row.type == module.IMAGE_REL_I386_REL32
+            ), None)
+            name = relocation.symbol_name if relocation is not None else ""
+            row = {
+                "ordinal": ordinal,
+                "form": "call",
+                "dispatch": "direct",
+                "identity_kind": "direct",
+                "target_identity": f"symbol:fixture:{ordinal}",
+                "storage_identity": "",
+                "slot_displacement": None,
+                "cleanup_bytes": None,
+            }
+            if any(fragment in name for fragment in local_fragments):
+                row["target_identity"] = f"candidate-local-coff:{name}"
+            if offset in receiver_offsets:
+                row.update({
+                    "dispatch": "indirect",
+                    "identity_kind": "virtual-slot",
+                    "target_identity": "",
+                    "storage_identity": f"load(receiver:{offset:x})",
+                    "slot_displacement": 0x60,
+                })
+            raw.append(row)
+
+        projected, receipt = (
+            module._zui_check_toggle_inline_helper_occurrence_projection(
+                raw,
+                candidate,
+                caller_identity="symbol:recoil:function:0x4b7340",
+                caller_start="0x4b7340",
+                caller_end_exclusive="0x4b7d60",
+            )
+        )
+        self.assertIsNotNone(receipt)
+        self.assertEqual(len(raw) - 13, len(projected))
+        self.assertEqual(3, len(receipt["expanded_invocation_leaves"]))
+        self.assertEqual(
+            [0x80, 0x80, 0x80],
+            [
+                row["slot_displacement"]
+                for row in receipt["expanded_invocation_leaves"]
+            ],
+        )
+
+        expected_member = [
+            {
+                "ordinal": ordinal,
+                "form": "call",
+                "dispatch": "direct",
+                "identity_kind": "direct",
+                "target_identity": f"symbol:fixture:{ordinal}",
+                "storage_identity": "",
+                "slot_displacement": None,
+                "cleanup_bytes": None,
+            }
+            for ordinal in range(63)
+        ]
+        observed_member = deepcopy(expected_member)
+        expected_member[18]["target_identity"] = (
+            "symbol:recoil:function:0x4ba740"
+        )
+        observed_member[18]["target_identity"] = (
+            "symbol:recoil:function:0x4ba020"
+        )
+        allocation_storage = (
+            "load(nullable(call-result("
+            "provider:recoil:function:0x4c5b76)))"
+        )
+        member_storage = "load(exact-receiver-field(this,+0x160))"
+        for ordinal, slot in (
+            (9, 0x0C),
+            (10, 0x80),
+            (11, 0x60),
+            (21, 0x0C),
+            (22, 0x80),
+            (23, 0x60),
+            (52, 0x0C),
+            (53, 0x80),
+            (54, 0x60),
+        ):
+            expected_member[ordinal].update({
+                "dispatch": "indirect",
+                "identity_kind": "virtual-slot",
+                "target_identity": "",
+                "storage_identity": member_storage,
+                "slot_displacement": slot,
+            })
+            observed_member[ordinal] = {
+                **expected_member[ordinal],
+                "storage_identity": (
+                    "load(this)" if ordinal == 52 else allocation_storage
+                ),
+            }
+        for (
+            ordinal,
+            slot,
+            retail_storage,
+            candidate_storage,
+            cleanup,
+        ) in (
+            (29, 0x74, "load(load(stack+0x34))", "load(load(stack+0x38))", 8),
+            (30, 0x0C, "load(load(stack+0x34))", allocation_storage, None),
+            (31, 0x80, "load(load(stack+0x3c))", "load(load(stack+0x40))", None),
+            (32, 0x60, "load(load(stack+0x34))", allocation_storage, None),
+            (38, 0x74, "load(load(stack+0x34))", "load(load(stack+0x38))", 8),
+            (39, 0x0C, "load(load(stack+0x3c))", allocation_storage, None),
+            (40, 0x80, "load(load(stack+0x3c))", "load(load(stack+0x40))", None),
+            (41, 0x60, "load(load(stack+0x34))", allocation_storage, None),
+        ):
+            expected_member[ordinal].update({
+                "dispatch": "indirect",
+                "identity_kind": "virtual-slot",
+                "target_identity": "",
+                "storage_identity": retail_storage,
+                "slot_displacement": slot,
+                "cleanup_bytes": cleanup,
+            })
+            observed_member[ordinal] = {
+                **expected_member[ordinal],
+                "storage_identity": candidate_storage,
+            }
+        self.assertEqual(
+            expected_member,
+            module._zui_check_toggle_receiver_storage_projection(
+                expected_member,
+                observed_member,
+                candidate,
+                caller_identity="symbol:recoil:function:0x4b7340",
+                caller_start="0x4b7340",
+                caller_end_exclusive="0x4b7d60",
+            ),
+        )
+        drifted_member = deepcopy(observed_member)
+        drifted_member[10]["slot_displacement"] = 0x84
+        with self.assertRaisesRegex(
+            ValueError,
+            "receiver-storage projection",
+        ):
+            module._zui_check_toggle_receiver_storage_projection(
+                expected_member,
+                drifted_member,
+                candidate,
+                caller_identity="symbol:recoil:function:0x4b7340",
+                caller_start="0x4b7340",
+                caller_end_exclusive="0x4b7d60",
+            )
+
+        constructor_name = "??0HudUiTransitionTextPanel@@QAE@XZ"
+        constructor = candidate.tu_local_function_definitions[
+            constructor_name
+        ]
+        constructor_drift = replace(
+            candidate,
+            tu_local_function_definitions={
+                **candidate.tu_local_function_definitions,
+                constructor_name: replace(
+                    constructor,
+                    data=b"\x90" + constructor.data[1:],
+                ),
+            },
+        )
+        with self.assertRaisesRegex(
+            ValueError,
+            "transition-panel constructor leaf",
+        ):
+            module._zui_check_toggle_receiver_storage_projection(
+                expected_member,
+                observed_member,
+                constructor_drift,
+                caller_identity="symbol:recoil:function:0x4b7340",
+                caller_start="0x4b7340",
+                caller_end_exclusive="0x4b7d60",
+            )
+
+        helper_name = next(
+            name for name in candidate.tu_local_function_definitions
+            if name.startswith("?ZrdArrayInt@?%")
+        )
+        helper = candidate.tu_local_function_definitions[helper_name]
+        drifted = replace(
+            candidate,
+            tu_local_function_definitions={
+                **candidate.tu_local_function_definitions,
+                helper_name: replace(
+                    helper,
+                    data=b"\x90" + helper.data[1:],
+                ),
+            },
+        )
+        with self.assertRaisesRegex(
+            ValueError, "zUI check-toggle inline-helper occurrence graph"
+        ):
+            module._zui_check_toggle_inline_helper_occurrence_projection(
+                raw,
+                drifted,
+                caller_identity="symbol:recoil:function:0x4b7340",
+                caller_start="0x4b7340",
+                caller_end_exclusive="0x4b7d60",
+            )
 
 
 if __name__ == "__main__":

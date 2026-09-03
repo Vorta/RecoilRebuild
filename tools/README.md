@@ -11,19 +11,33 @@ python tools/recoil.py progress next --json
 ```
 
 It returns one `recoil-current-task-v2` task with one stage, advisory scope,
-optional diagnostic check, direct acceptance command when ready, blocker, and
-the transaction/semantic/evidence-generation revisions. The machine-local
-SQLite tracker is the only current-state authority. There is no README cache,
-work allocator, role registry, reservation, handoff, or secondary progress
-record.
+optional diagnostic check, optional serial stage runner, direct acceptance
+command when ready, blocker, and the transaction/semantic/evidence-generation
+revisions. The machine-local SQLite tracker is the only current-state authority.
+There is no README cache, work allocator, role registry, reservation, handoff,
+or secondary progress record.
 
 For the current authored call-contract stage:
 
 ```powershell
 python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json
 python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
+python tools/recoil.py progress call-contract replay-live --dry-run --json
+python tools/recoil.py progress call-contract replay-live --apply --json
 python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 ```
+
+`replay-live` is the normal governed full-census route. It proves all authored
+callers once while sharing unique target and
+definition builds, source discovery, COD indexing, and immutable Binary Ninja
+facts, then serially commits the proof through the existing original-slice
+evidence/CAS path. It stops after the first divergent slice, returns the
+mandatory `close-live` command after the census becomes current, and never runs
+or replaces that fresh no-reuse closeout. Its dry-run is plan-only and performs
+no build, Binary Ninja read, or mutation. Fresh replay sibling roots do not
+consume the scheduler-selected direct root; interrupted roots remain inert.
+Use the direct one-slice verify/acceptance commands to diagnose the first
+divergence reported by replay.
 
 One target-qualified Binary Ninja preflight is required after opening or
 switching the database, not per slice:

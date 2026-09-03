@@ -5256,8 +5256,22 @@ def _governed_header_inputs(
     source_path: Path,
     target: VerifyTarget,
     environment: Mapping[str, str],
-) -> tuple[tuple[dict[str, Any], ...], tuple[dict[str, Any], ...], tuple[str, ...]]:
-    """Resolve direct textual include inputs without deriving content summaries."""
+) -> tuple[
+    tuple[dict[str, Any], ...],
+    tuple[dict[str, Any], ...],
+    tuple[dict[str, str], ...],
+    tuple[str, ...],
+]:
+    """Resolve textual include inputs and retain unresolved references.
+
+    This deliberately does not try to implement the C preprocessor.  A header
+    may contain a textual include in an inactive target branch (for example,
+    VC5 ``OLECTL.H`` names ``macocidl.h`` only for ``_MAC``).  Existing files
+    remain identity-bound inputs.  Missing textual references are recorded in
+    the direct pre/post observation, while the real compiler remains the
+    authority on whether a missing include was active: an active missing input
+    makes the governed compilation fail before it can yield evidence.
+    """
 
     project_roots = tuple(resolve_repo_path(path).resolve() for path in target.include_dirs)
     environment_roots = _environment_search_paths(str(environment.get("INCLUDE", "")))
@@ -5287,6 +5301,7 @@ def _governed_header_inputs(
     pending = [source_path.resolve()]
     visited: set[str] = set()
     header_rows: list[dict[str, Any]] = []
+    unresolved_rows: list[dict[str, str]] = []
     while pending:
         including_path = pending.pop()
         including_key = str(including_path).casefold()
@@ -5308,7 +5323,13 @@ def _governed_header_inputs(
             candidates.extend(root / include_text for root in search_roots)
             resolved = next((candidate.resolve() for candidate in candidates if candidate.is_file()), None)
             if resolved is None:
-                errors.append(f"include-input-unresolved:{including_path}:{include_text}")
+                unresolved_rows.append(
+                    {
+                        "included_from": str(including_path),
+                        "include_text": include_text,
+                        "delimiter": "angle" if delimiter == b"<" else "quote",
+                    }
+                )
                 continue
             key = str(resolved).casefold()
             if key in visited or any(str(row["path"]).casefold() == key for row in header_rows):
@@ -5333,7 +5354,19 @@ def _governed_header_inputs(
                 }
             )
             pending.append(resolved)
-    return tuple(header_rows), tuple(root_rows), tuple(sorted(set(errors)))
+    unresolved_rows.sort(
+        key=lambda row: (
+            row["included_from"].casefold(),
+            row["include_text"].casefold(),
+            row["delimiter"],
+        )
+    )
+    return (
+        tuple(header_rows),
+        tuple(root_rows),
+        tuple(unresolved_rows),
+        tuple(sorted(set(errors))),
+    )
 
 
 def _target_manifest_projection(
@@ -5456,7 +5489,12 @@ def build_compiler_receipt(
         reasons.append("manifest-unavailable")
     if compiler_env_identity is None:
         reasons.append("compiler-environment-script-unavailable")
-    header_inputs, include_search_roots, header_errors = _governed_header_inputs(
+    (
+        header_inputs,
+        include_search_roots,
+        unresolved_header_references,
+        header_errors,
+    ) = _governed_header_inputs(
         source_path=source_path,
         target=target,
         environment=environment,
@@ -5503,6 +5541,9 @@ def build_compiler_receipt(
             "compiler_version": compiler_version,
             "include_search_roots": list(include_search_roots),
             "header_inputs": list(header_inputs),
+            "unresolved_textual_include_references": list(
+                unresolved_header_references
+            ),
             "library_inputs": {
                 "status": "not-applicable",
                 "reason": "compile-only-/c-operation",

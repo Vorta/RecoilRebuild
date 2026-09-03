@@ -140,7 +140,7 @@ HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
 HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
     const HudUiCompositePanelEntry *source
 ) {
-    HudUiPanel::operator=(*source);
+    new ((HudUiPanel *)this) HudUiPanel(*source);
     flashCountdown = source->flashCountdown;
     flashResetValue = source->flashResetValue;
     flashAltColor0 = source->flashAltColor0;
@@ -227,7 +227,6 @@ HudUiBackgroundContainer::HudUiBackgroundContainer(
  * Purpose: Restores the background-container base state and tears down the inherited container.
  */
 HudUiBackgroundContainer::~HudUiBackgroundContainer() {
-    HudUiContainer::DestructorCore();
 }
 
 /**
@@ -1015,17 +1014,7 @@ void HudUiBar::Draw() {
  * Purpose: construct the top-message four-line stack and configure ascending rows.
  */
 HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
-    new ((HudUiContainer *)this) HudUiContainer;
-
-    {
-        for (int index = 0; index < 4; ++index) {
-            lines[index].ConstructorDefault(
-                0,
-                0,
-                0
-            );
-        }
-    }
+    new (this) HudUiTopMessageStack;
 
     int y = 0x1e;
     {
@@ -1149,17 +1138,7 @@ void HudUiTextStack4::Clear() {
  * Purpose: construct the chat-message four-line stack and configure descending rows.
  */
 HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
-    new ((HudUiContainer *)this) HudUiContainer;
-
-    {
-        for (int index = 0; index < 4; ++index) {
-            lines[index].ConstructorDefault(
-                0,
-                0,
-                0
-            );
-        }
-    }
+    new (this) HudUiChatMessageStack;
 
     int y = 0x159;
     {

@@ -85,6 +85,9 @@ VECTOR_INT_UFILL_OBJECT_BYTES = bytes.fromhex(
     "8b4c240885c976188b54240c8b4424045685c074048b328930"
     "83c0044975f25ec20c0090909090909090909090909090"
 )
+VECTOR_POINTER_DESTROY_OBJECT_BYTES = bytes.fromhex(
+    "c2080090909090909090909090909090"
+)
 
 def _header_request(
     *, recipe: str, header: str, symbol: str, owner_suffix: str
@@ -137,12 +140,19 @@ VECTOR_INT_UFILL_REQUEST = _header_request(
     symbol="?_Ufill@?$vector@HV?$allocator@H@std@@@std@@IAEXPAHIABH@Z",
     owner_suffix="vector_int_ufill",
 )
+VECTOR_POINTER_DESTROY_REQUEST = _header_request(
+    recipe="vc5-vector-pointer-destroy-ob1-v1",
+    header="VC/INCLUDE/vector",
+    symbol="?_Destroy@?$vector@PAHV?$allocator@PAH@std@@@std@@IAEXPAPAH0@Z",
+    owner_suffix="vector_pointer_destroy",
+)
 
 CURRENT_HEADER_COMDAT_CASES = (
     (CONSTRUCT_OB1_REQUEST, CONSTRUCT_OB1_OBJECT_BYTES),
     (VECTOR_UFILL_REQUEST, VECTOR_UFILL_OBJECT_BYTES),
     (VECTOR_UCOPY_REQUEST, VECTOR_UCOPY_OBJECT_BYTES),
     (VECTOR_INT_UFILL_REQUEST, VECTOR_INT_UFILL_OBJECT_BYTES),
+    (VECTOR_POINTER_DESTROY_REQUEST, VECTOR_POINTER_DESTROY_OBJECT_BYTES),
 )
 
 
@@ -262,6 +272,104 @@ class ProviderFunctionMutationTests(unittest.TestCase):
                     ("/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X"),
                     proof.compile_flags,
                 )
+
+    def test_pointer_destroy_registration_accepts_only_detached_icf_row(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            tracker = Path(temporary) / "progress.sqlite3"
+            data = ProgressStore(canonical_progress_path()).load().data
+            function_id = "recoil:function:0x40bdf0"
+            owner_id = "recoil:owner:legacy.hud_ui.struct_stdptrvector"
+            provider_owner_id = (
+                "recoil:owner:provider.vc5_stl.pointer_vector_destroy"
+            )
+            function = data["symbols"][function_id]
+            provider_object = function.pop("provider_object_identity", None)
+            provider_evidence_id = (
+                provider_object.get("evidence_id")
+                if isinstance(provider_object, dict)
+                else None
+            )
+            function.update({"kind": "function", "disposition": "unresolved"})
+            function.pop("object_symbol", None)
+            if provider_evidence_id is not None:
+                function["evidence_ids"] = [
+                    evidence_id
+                    for evidence_id in function["evidence_ids"]
+                    if evidence_id != provider_evidence_id
+                ]
+                data["evidence"].pop(provider_evidence_id, None)
+            data["owners"].pop(provider_owner_id, None)
+            owner = data["owners"][owner_id]
+            owner["reimplementation"]["entries"][function_id] = {
+                "evidence_ids": ["recoil:evidence:r725:004640"],
+                "kind": "function",
+                "tier": "B",
+            }
+            owner["address_metadata"]["0x40bdf0"] = {
+                "group": "ui.zhud",
+                "name": "StdPtrVector::ClearNoOpDestroy",
+                "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+                "target": "std_ptr_vector_clear_no_op_destroy",
+            }
+            owner["relationships"].append(
+                {
+                    "kind": "primary-function",
+                    "address": "0x40bdf0",
+                    "symbol_id": function_id,
+                }
+            )
+
+            with self.assertRaisesRegex(
+                ProviderFunctionMutationError,
+                "still claimed by primary source owners",
+            ):
+                _write_tracker(tracker, data)
+                register_provider_function(
+                    progress=tracker,
+                    reference=canonical_retail_reference(),
+                    address="0x40bdf0",
+                    payload=VECTOR_POINTER_DESTROY_REQUEST,
+                    expected_revision=int(data["revision"]),
+                    apply=False,
+                    vc5_root=VC5_ROOT,
+                )
+
+            replacement = deepcopy(owner)
+            replacement["reimplementation"]["entries"].pop(function_id)
+            replacement["address_metadata"].pop("0x40bdf0")
+            replacement["relationships"] = [
+                relationship
+                for relationship in replacement["relationships"]
+                if not (
+                    relationship.get("kind") == "primary-function"
+                    and relationship.get("symbol_id") == function_id
+                )
+            ]
+            data["owners"][owner_id] = replacement
+            _write_tracker(tracker, data)
+            report = register_provider_function(
+                progress=tracker,
+                reference=canonical_retail_reference(),
+                address="0x40bdf0",
+                payload=VECTOR_POINTER_DESTROY_REQUEST,
+                expected_revision=int(data["revision"]),
+                apply=True,
+                vc5_root=VC5_ROOT,
+            )
+            self.assertTrue(report["commit"]["applied"])
+            function = report["records"]["function"]
+            self.assertEqual(
+                "compiler-generated-icf-representative",
+                function["authored_order_role"],
+            )
+            self.assertEqual("provider", function["disposition"])
+            indexes = build_identity_indexes(ProgressStore(tracker).load())
+            self.assertEqual(
+                "provider:recoil:function:0x40bdf0",
+                indexes.by_candidate_name[
+                    "?_Destroy@?$vector@PAHV?$allocator@PAH@std@@@std@@IAEXPAPAH0@Z"
+                ],
+            )
 
     def test_current_header_comdat_blocker_recipes_reject_first_byte_mismatch(self) -> None:
         for raw_request, retail_body in CURRENT_HEADER_COMDAT_CASES:

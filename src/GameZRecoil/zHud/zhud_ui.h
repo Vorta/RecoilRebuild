@@ -1065,7 +1065,7 @@ struct HudUiPanel : HudUiTextLabel {
         int pitchAndFamily
     );
     virtual void SetFontHandle(HGDIOBJ fontHandle);
-    virtual void SetTextFmtV(
+    virtual void __cdecl SetTextFmtV(
         const char *format,
         va_list args
     );
@@ -1087,6 +1087,12 @@ struct HudUiPanel : HudUiTextLabel {
         int maxChars,
         RECT *outRect
     );
+    int QueryTextWidth() {
+        if (textDirty != 0) {
+            RebuildTextRect();
+        }
+        return textWidthPx;
+    }
     int QueryTextHeight();
     HudUiRect * GetWrapRect();
     int HitTest(
@@ -2223,7 +2229,7 @@ struct HudUiCompositePanel : HudUiPanel {
         const char *format,
         ...
     );
-    void SetTextFmtV(
+    void __cdecl SetTextFmtV(
         const char *format,
         va_list args
     );

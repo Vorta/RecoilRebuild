@@ -50,8 +50,8 @@ The canonical executable runbook is
 `python tools/recoil.py progress next --json` is the only no-target scheduler.
 It returns one `recoil-current-task-v2` object with one stage, one task, one
 advisory scope, an optional nonmutating check command, exactly one direct
-acceptance command when ready, a blocker when not ready, and the three retained
-revision coordinates.
+acceptance command when ready, an optional serial stage-runner command, a blocker
+when not ready, and the three retained revision coordinates.
 
 All work is performed directly in the canonical checkout by the current agent.
 The workspace has no Recoil role registry, worker handoff, task allocator,
@@ -106,7 +106,18 @@ Then perform fresh live acceptance:
 python tools/recoil.py progress advance-live-order --target <target-id> --build-root <fresh-root> --expected-revision <revision> --apply --json
 ```
 
-For call-contract source work:
+For call-contract source work, use the serial whole-stage replay as the normal
+route:
+
+```powershell
+python tools/recoil.py progress call-contract replay-live --dry-run --json
+python tools/recoil.py progress call-contract replay-live --apply --json
+```
+
+Replay proves the complete original-slice census once, commits exact slice
+projections serially, stops at the first divergence, and returns but never runs
+the mandatory closeout. Use the direct current-slice commands to diagnose that
+first divergence:
 
 ```powershell
 python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json
@@ -122,9 +133,9 @@ python tools/recoil.py progress call-contract close-live --build-root <fresh-roo
 ```
 
 The reviewed implementation coordinates are
-`CALL_CONTRACT_VERIFIER_GENERATION = 18`,
-`NORMALIZER_REGISTRY_GENERATION = 15`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 16`. A governed component edit increments its
+`CALL_CONTRACT_VERIFIER_GENERATION = 35`,
+`NORMALIZER_REGISTRY_GENERATION = 31`, and
+`EXPECTED_FACT_SCHEMA_VERSION = 32`. A governed component edit increments its
 coordinate and conservatively invalidates affected evidence.
 
 For bytes:

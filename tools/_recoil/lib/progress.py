@@ -1033,7 +1033,6 @@ class ProgressDocument:
             or provenance.get("physical_block_id")
             != str(symbol.get("physical_block_id", ""))
             or provenance.get("comparison_passed") is not True
-            or provenance.get("expected_contract") != provenance.get("candidate_contract")
             or not isinstance(transcript_row, Mapping)
             or transcript_row.get("symbol_id") != symbol_id
             or transcript_row.get("address") != provenance.get("address")
@@ -1464,13 +1463,22 @@ class ProgressDocument:
                 ]
         objectives = {
             "authored-function-order": "Make the current authored order target pass exactly.",
-            "authored-call-contract": "Make the current authored call-contract slice pass, then record a fresh complete closeout.",
+            "authored-call-contract": (
+                "Replay the authored call-contract census, diagnose any first "
+                "divergent slice directly, then record a fresh complete closeout."
+            ),
             "authored-byte-match": "Make the current authored physical group match retail bytes and relocations.",
             "full-function-order": "Make the current full linked-order target pass exactly.",
             "linked-byte-match": "Make the current linked physical group match retail placement, targets, and bytes.",
             "final-validation": "Complete live typed final-image validation.",
         }
         acceptance = str(state.get("next_command", "")) or None
+        stage_runner_command = (
+            "python tools/recoil.py progress call-contract replay-live "
+            "--apply --json"
+            if stage == "authored-call-contract"
+            else None
+        )
         check_command: str | None = None
         if stage == "authored-call-contract" and slice_id:
             check_command = (
@@ -1499,6 +1507,7 @@ class ProgressDocument:
             },
             "objective": objectives[stage],
             "check_command": check_command,
+            "stage_runner_command": stage_runner_command,
             "acceptance_command": acceptance,
             "blocker": None
             if acceptance

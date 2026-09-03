@@ -18,6 +18,7 @@ EXPECTED_KEYS = {
     "scope",
     "objective",
     "check_command",
+    "stage_runner_command",
     "acceptance_command",
     "blocker",
     "revision_vector",
@@ -55,7 +56,23 @@ def audit_pipeline_contract(progress: Path) -> dict[str, object]:
         isinstance(acceptance, str) and acceptance.strip()
     ):
         findings.append("ready task lacks its one direct acceptance command")
-    for field in ("check_command", "acceptance_command"):
+    stage_runner = task.get("stage_runner_command")
+    expected_stage_runner = (
+        "python tools/recoil.py progress call-contract replay-live "
+        "--apply --json"
+        if task.get("stage") == "authored-call-contract"
+        else None
+    )
+    if stage_runner != expected_stage_runner:
+        findings.append(
+            "stage_runner_command differs: "
+            f"expected {expected_stage_runner!r}, found {stage_runner!r}"
+        )
+    for field in (
+        "check_command",
+        "stage_runner_command",
+        "acceptance_command",
+    ):
         value = task.get(field)
         if not isinstance(value, str):
             continue

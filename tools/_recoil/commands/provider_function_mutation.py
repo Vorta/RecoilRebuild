@@ -91,6 +91,20 @@ VECTOR_INT_UFILL_PROBE_SOURCE = (
 )
 
 
+VECTOR_POINTER_DESTROY_PROBE_SOURCE = (
+    "#include <vector>\r\n"
+    "struct RecoilProviderVectorPointerDestroyProbe : std::vector<int *>\r\n"
+    "{\r\n"
+    "    typedef std::vector<int *> Base;\r\n"
+    "    typedef void (Base::*DestroyFn)(iterator, iterator);\r\n"
+    "    static DestroyFn destroy;\r\n"
+    "};\r\n"
+    "RecoilProviderVectorPointerDestroyProbe::DestroyFn\r\n"
+    "RecoilProviderVectorPointerDestroyProbe::destroy =\r\n"
+    "    &RecoilProviderVectorPointerDestroyProbe::_Destroy;\r\n"
+)
+
+
 HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
     "vc5-xmemory-construct-int-v1": {
         "canonical_header": "VC/INCLUDE/xmemory",
@@ -187,6 +201,27 @@ HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
         "object_symbol": "?_Ufill@?$vector@HV?$allocator@H@std@@@std@@IAEXPAHIABH@Z",
         "retail_body_size": 0x30,
         "source": VECTOR_INT_UFILL_PROBE_SOURCE,
+        "compile_flags": (
+            "/nologo",
+            "/c",
+            "/TP",
+            "/Gy",
+            "/O2",
+            "/Ob1",
+            "/Gr",
+            "/Zl",
+            "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-vector-pointer-destroy-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": (
+            "?_Destroy@?$vector@PAHV?$allocator@PAH@std@@@std@@IAEXPAPAH0@Z"
+        ),
+        "retail_body_size": 0x10,
+        "source": VECTOR_POINTER_DESTROY_PROBE_SOURCE,
         "compile_flags": (
             "/nologo",
             "/c",
@@ -562,8 +597,6 @@ def _validate_existing_function(
         "address": address,
         "extent_state": "known",
         "pipeline_class": "non-authored",
-        "authored_order_role": "non-authored",
-        "ownership_state": "unresolved",
         "output_section_id": "recoil:section:.text",
     }
     mismatches = {
@@ -576,6 +609,44 @@ def _validate_existing_function(
             "existing row is not an exact known-extent unresolved non-authored "
             f"Recoil function: {mismatches}"
         )
+    classification = (
+        row.get("authored_order_role"),
+        row.get("ownership_state"),
+    )
+    detached_icf_representative = classification == (
+        "compiler-generated-icf-representative",
+        "primary-owned",
+    )
+    if classification != ("non-authored", "unresolved") and not (
+        detached_icf_representative
+    ):
+        raise ProviderFunctionMutationError(
+            "existing row is not an unresolved non-authored function or an exact "
+            "detached compiler-generated ICF representative: "
+            f"authored_order_role={classification[0]!r}, "
+            f"ownership_state={classification[1]!r}"
+        )
+    if detached_icf_representative:
+        primary_owner_ids: list[str] = []
+        for owner_id, owner in document.collection("owners").items():
+            if not isinstance(owner, Mapping):
+                continue
+            relationships = owner.get("relationships")
+            if not isinstance(relationships, list):
+                continue
+            if any(
+                isinstance(relationship, Mapping)
+                and relationship.get("kind") == "primary-function"
+                and relationship.get("symbol_id") == function_id
+                and relationship.get("address") == address
+                for relationship in relationships
+            ):
+                primary_owner_ids.append(str(owner_id))
+        if primary_owner_ids:
+            raise ProviderFunctionMutationError(
+                "compiler-generated ICF representative is still claimed by primary "
+                "source owners: " + ", ".join(sorted(primary_owner_ids))
+            )
     if row.get("disposition") not in {"unresolved", "non-authored"}:
         raise ProviderFunctionMutationError(
             "existing function disposition is authored, provider, or otherwise owned"

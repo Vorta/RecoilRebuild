@@ -477,13 +477,21 @@ def _synchronized_vc5_object_identity(
         if manifest_path is None:
             return False
         try:
-            current_target_id, current_registration = vc5_target_registration(manifest_path)
+            current_target_id, current_target = vc5_target_registration(manifest_path)
             target = load_vc5_manifest(manifest_path, enforce_source_policy=False)
         except (OSError, ValueError):
             return False
-        if current_target_id != target_id or dict(tracked) != current_registration:
+        current_registration = current_target.get("registration")
+        if (
+            current_target_id != target_id
+            or current_target.get("binary") != tracked.get("binary")
+            or current_target.get("kind") != tracked.get("kind")
+            or current_target.get("name") != tracked.get("name")
+            or not isinstance(current_registration, Mapping)
+            or dict(registration) != dict(current_registration)
+        ):
             return False
-        registered_addresses = tracked.get("registered_addresses")
+        registered_addresses = current_target.get("registered_addresses")
         if not isinstance(registered_addresses, list) or row_address not in {
             normalize_address(item)
             for item in registered_addresses
@@ -494,9 +502,9 @@ def _synchronized_vc5_object_identity(
         if exact_symbols:
             suppliers.append((target_id, exact_symbols))
 
-    if not saw_vc5 or len(suppliers) != 1:
+    if not saw_vc5 or not suppliers:
         return False
-    return suppliers[0][1] == {object_symbol}
+    return all(exact_symbols == {object_symbol} for _target_id, exact_symbols in suppliers)
 
 
 def _existing_object_identity(

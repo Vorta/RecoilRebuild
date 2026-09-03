@@ -7,6 +7,7 @@ from contextlib import redirect_stdout
 from copy import deepcopy
 import ctypes
 from dataclasses import dataclass, field, replace
+import hashlib
 import io
 import json
 import os
@@ -1753,6 +1754,270 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             (
                 "recoil:vc5-target:"
                 "zmodel_gmod_light_487a30_489d00_authored_order"
+            ),
+        ),
+    },
+    "symbol:recoil:function:0x48daf0": {
+        "address": "0x48daf0",
+        "end_exclusive": "0x48e380",
+        "size": 0x890,
+        "candidate_size": 0x720,
+        "candidate_section_index": 101,
+        "physical_block_id": "recoil:block:0x48d340",
+        "symbol": (
+            "?FxPass3_ApplyToCurrentSurface@zVideo@@"
+            "YIXHHHHHMMPAUzVidRect32@@@Z"
+        ),
+        "candidate_symbol": MSVC_CHKSTK_RETAIL_NAME,
+        "retail_call_offsets": (0x49, 0x58),
+        "retail_ordinals": (0, 1),
+        "retail_setup_rows": (
+            (0x35, bytes.fromhex("8d 34 bd 04 00 00 00")),
+            (0x3C, bytes.fromhex("8b c6")),
+            (0x41, bytes.fromhex("83 c0 03")),
+            (0x47, bytes.fromhex("24 fc")),
+            (0x4E, bytes.fromhex("8b c6")),
+            (0x53, bytes.fromhex("83 c0 03")),
+            (0x56, bytes.fromhex("24 fc")),
+        ),
+        "candidate_call_offsets": (0x108, 0x11C),
+        "candidate_setup_rows": (
+            (0xFC, bytes.fromhex("8d 04 bd 04 00 00 00")),
+            (0x103, bytes.fromhex("83 c0 03")),
+            (0x106, bytes.fromhex("24 fc")),
+            (0x10D, bytes.fromhex("8d 04 bd 04 00 00 00")),
+            (0x114, bytes.fromhex("89 65 e8")),
+            (0x117, bytes.fromhex("83 c0 03")),
+            (0x11A, bytes.fromhex("24 fc")),
+        ),
+        "target_id": (
+            "recoil:vc5-target:"
+            "zrender_zrndr_draw_48d340_49f614_authored_order"
+        ),
+        "target_name": "zrender_zrndr_draw_48d340_49f614_authored_order",
+        "target_manifest": (
+            REPO_ROOT
+            / "tools"
+            / "vc5_verify_targets"
+            / "zrender_zrndr_draw_48d340_49f614_authored_order.json"
+        ),
+        "source_path": "src/GameZRecoil/zRender/zrndr_draw.c",
+        "order_edit_paths": (
+            "src/GameZRecoil/zRender/zrndr_draw.c",
+            "src/GameZRecoil/zVideo/zvid_main.c",
+            "src/GameZRecoil/zMath/zmth_main.c",
+        ),
+        "source_anchor": (
+            "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"
+            "fxpass3-applytocurrentsurface"
+        ),
+        "verification_target_ids": (
+            "recoil:functional-target:"
+            "zvideo_fxpass3_apply_to_current_surface",
+            (
+                "recoil:vc5-target:"
+                "zrender_zrndr_draw_48d340_49f614_authored_order"
+            ),
+            "recoil:vc5-target:zvideo_fxpass3_surface_apply_helpers",
+        ),
+    },
+    "symbol:recoil:function:0x49cbb0": {
+        "address": "0x49cbb0",
+        "end_exclusive": "0x49cea0",
+        "size": 0x2F0,
+        "physical_block_id": "recoil:block:0x48d340",
+        "symbol": (
+            "?SpanAlphaBlend565MmxFromTex16Alpha8@zRndr@@"
+            "YIXHHHH@Z"
+        ),
+        "retail_ordinal": 0,
+        "retail_setup_offset": 0x03,
+        "retail_call_offset": 0x08,
+        "retail_frame_size": 0x101C,
+        "candidate_setup_offset": 0x03,
+        "candidate_call_offset": 0x08,
+        "candidate_frame_size": 0x1028,
+        "target_id": (
+            "recoil:vc5-target:"
+            "zrender_zrndr_draw_48d340_49f614_authored_order"
+        ),
+        "target_name": "zrender_zrndr_draw_48d340_49f614_authored_order",
+        "target_manifest": (
+            REPO_ROOT
+            / "tools"
+            / "vc5_verify_targets"
+            / "zrender_zrndr_draw_48d340_49f614_authored_order.json"
+        ),
+        "source_path": "src/GameZRecoil/zRender/zrndr_draw.c",
+        "order_edit_paths": (
+            "src/GameZRecoil/zRender/zrndr_draw.c",
+            "src/GameZRecoil/zVideo/zvid_main.c",
+            "src/GameZRecoil/zMath/zmth_main.c",
+        ),
+        "source_anchor": (
+            "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"
+            "spanalphablend565mmxfromtex16alpha8"
+        ),
+        "verification_target_ids": (
+            "recoil:functional-target:"
+            "zrndr_span_alpha_blend_565_mmx_from_tex16_alpha8",
+            (
+                "recoil:vc5-target:"
+                "zrender_zrndr_draw_48d340_49f614_authored_order"
+            ),
+            (
+                "recoil:vc5-target:"
+                "zrndr_span_alpha_blend_565_mmx_from_tex16_alpha8"
+            ),
+        ),
+    },
+    "symbol:recoil:function:0x49cea0": {
+        "address": "0x49cea0",
+        "end_exclusive": "0x49d1a0",
+        "size": 0x300,
+        "physical_block_id": "recoil:block:0x48d340",
+        "symbol": (
+            "?SpanAlphaBlend555MmxFromTex16Alpha8@zRndr@@"
+            "YIXHHHH@Z"
+        ),
+        "retail_ordinal": 0,
+        "retail_setup_offset": 0x03,
+        "retail_call_offset": 0x08,
+        "retail_frame_size": 0x101C,
+        "candidate_setup_offset": 0x03,
+        "candidate_call_offset": 0x08,
+        "candidate_frame_size": 0x1028,
+        "target_id": (
+            "recoil:vc5-target:"
+            "zrender_zrndr_draw_48d340_49f614_authored_order"
+        ),
+        "target_name": "zrender_zrndr_draw_48d340_49f614_authored_order",
+        "target_manifest": (
+            REPO_ROOT
+            / "tools"
+            / "vc5_verify_targets"
+            / "zrender_zrndr_draw_48d340_49f614_authored_order.json"
+        ),
+        "source_path": "src/GameZRecoil/zRender/zrndr_draw.c",
+        "order_edit_paths": (
+            "src/GameZRecoil/zRender/zrndr_draw.c",
+            "src/GameZRecoil/zVideo/zvid_main.c",
+            "src/GameZRecoil/zMath/zmth_main.c",
+        ),
+        "source_anchor": (
+            "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"
+            "spanalphablend555mmxfromtex16alpha8"
+        ),
+        "verification_target_ids": (
+            "recoil:functional-target:"
+            "zrndr_span_alpha_blend_555_mmx_from_tex16_alpha8",
+            (
+                "recoil:vc5-target:"
+                "zrender_zrndr_draw_48d340_49f614_authored_order"
+            ),
+            (
+                "recoil:vc5-target:"
+                "zrndr_span_alpha_blend_555_mmx_from_tex16_alpha8"
+            ),
+        ),
+    },
+    "symbol:recoil:function:0x49da80": {
+        "address": "0x49da80",
+        "end_exclusive": "0x49ddb0",
+        "size": 0x330,
+        "physical_block_id": "recoil:block:0x48d340",
+        "symbol": (
+            "?SpanAlphaBlend565MmxFromPal8Alpha8@zRndr@@"
+            "YIXHHHH@Z"
+        ),
+        "retail_ordinal": 0,
+        "retail_setup_offset": 0x03,
+        "retail_call_offset": 0x08,
+        "retail_frame_size": 0x1020,
+        "candidate_setup_offset": 0x03,
+        "candidate_call_offset": 0x08,
+        "candidate_frame_size": 0x102C,
+        "target_id": (
+            "recoil:vc5-target:"
+            "zrender_zrndr_draw_48d340_49f614_authored_order"
+        ),
+        "target_name": "zrender_zrndr_draw_48d340_49f614_authored_order",
+        "target_manifest": (
+            REPO_ROOT
+            / "tools"
+            / "vc5_verify_targets"
+            / "zrender_zrndr_draw_48d340_49f614_authored_order.json"
+        ),
+        "source_path": "src/GameZRecoil/zRender/zrndr_draw.c",
+        "order_edit_paths": (
+            "src/GameZRecoil/zRender/zrndr_draw.c",
+            "src/GameZRecoil/zVideo/zvid_main.c",
+            "src/GameZRecoil/zMath/zmth_main.c",
+        ),
+        "source_anchor": (
+            "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"
+            "spanalphablend565mmxfrompal8alpha8"
+        ),
+        "verification_target_ids": (
+            "recoil:functional-target:"
+            "zrndr_span_alpha_blend_565_mmx_from_pal8_alpha8",
+            (
+                "recoil:vc5-target:"
+                "zrender_zrndr_draw_48d340_49f614_authored_order"
+            ),
+            (
+                "recoil:vc5-target:"
+                "zrndr_span_alpha_blend_565_mmx_from_pal8_alpha8"
+            ),
+        ),
+    },
+    "symbol:recoil:function:0x49ddb0": {
+        "address": "0x49ddb0",
+        "end_exclusive": "0x49e0e0",
+        "size": 0x330,
+        "physical_block_id": "recoil:block:0x48d340",
+        "symbol": (
+            "?SpanAlphaBlend555MmxFromPal8Alpha8@zRndr@@"
+            "YIXHHHH@Z"
+        ),
+        "retail_ordinal": 0,
+        "retail_setup_offset": 0x03,
+        "retail_call_offset": 0x08,
+        "retail_frame_size": 0x1020,
+        "candidate_setup_offset": 0x03,
+        "candidate_call_offset": 0x08,
+        "candidate_frame_size": 0x102C,
+        "target_id": (
+            "recoil:vc5-target:"
+            "zrender_zrndr_draw_48d340_49f614_authored_order"
+        ),
+        "target_name": "zrender_zrndr_draw_48d340_49f614_authored_order",
+        "target_manifest": (
+            REPO_ROOT
+            / "tools"
+            / "vc5_verify_targets"
+            / "zrender_zrndr_draw_48d340_49f614_authored_order.json"
+        ),
+        "source_path": "src/GameZRecoil/zRender/zrndr_draw.c",
+        "order_edit_paths": (
+            "src/GameZRecoil/zRender/zrndr_draw.c",
+            "src/GameZRecoil/zVideo/zvid_main.c",
+            "src/GameZRecoil/zMath/zmth_main.c",
+        ),
+        "source_anchor": (
+            "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"
+            "spanalphablend555mmxfrompal8alpha8"
+        ),
+        "verification_target_ids": (
+            "recoil:functional-target:"
+            "zrndr_span_alpha_blend_555_mmx_from_pal8_alpha8",
+            (
+                "recoil:vc5-target:"
+                "zrender_zrndr_draw_48d340_49f614_authored_order"
+            ),
+            (
+                "recoil:vc5-target:"
+                "zrndr_span_alpha_blend_555_mmx_from_pal8_alpha8"
             ),
         ),
     },
@@ -16266,15 +16531,31 @@ def _direct_bn_retail_bytes(
         if not line:
             continue
         match = re.fullmatch(
-            r"(?:0x)?(?P<address>[0-9a-fA-F]{8})\s*:?[ ]+"
-            r"(?P<bytes>(?:[0-9a-fA-F]{2}(?:\s+|$))+)",
+            r"(?:0x)?(?P<address>[0-9a-fA-F]{1,16})\s*:?[ ]+"
+            r"(?P<rendered>.+)",
             line,
         )
-        if match is None or int(match.group("address"), 16) != (
-            expected_address + len(result)
+        if match is None:
+            return None
+        row_address = int(match.group("address"), 16)
+        if row_address != expected_address + len(result):
+            return None
+        rendered = match.group("rendered")
+        if rendered.endswith(":") and re.search(r"\s", rendered) is None:
+            # The governed bridge prefixes a hexdump with an address-qualified
+            # function label. It carries no bytes and must identify the next
+            # unread address.
+            continue
+        byte_column = re.split(r"\s{2,}", rendered, maxsplit=1)[0]
+        tokens = byte_column.split()
+        if not tokens or any(
+            re.fullmatch(r"[0-9a-fA-F]{2}", token) is None
+            for token in tokens
         ):
             return None
-        result.extend(int(token, 16) for token in match.group("bytes").split())
+        if len(result) + len(tokens) > length:
+            return None
+        result.extend(int(token, 16) for token in tokens)
     return bytes(result) if len(result) == length else None
 
 
@@ -16326,7 +16607,7 @@ def _registered_pointer_vector_destroy_provider_suppliers(
             or trace.get("reason_code") != "provider-boundary"
             or not isinstance(verification_target_ids, list)
             or symbol.get("binary") != "recoil"
-            or symbol.get("kind") != "function"
+            or symbol.get("kind") not in {"function", "provider-function"}
             or symbol.get("pipeline_class") != "non-authored"
             or symbol.get("authored_order_role")
             != "compiler-generated-icf-representative"
@@ -19478,7 +19759,10 @@ def build_identity_indexes(
             or symbol.get("disposition") != "provider"
             or symbol.get("ownership_state") != "primary-owned"
             or symbol.get("pipeline_class") != "non-authored"
-            or symbol.get("authored_order_role") != "non-authored"
+            or symbol.get("authored_order_role") not in {
+                "non-authored",
+                "compiler-generated-icf-representative",
+            }
             or not isinstance(object_symbol, str)
             or not object_symbol
             or symbol.get("object_symbol") != object_symbol
@@ -20721,6 +21005,13 @@ def _rendered_numeric_branch_target(
     source: str,
     caller_start: int,
 ) -> int | None:
+    if source == "cod" and _exact_cod_local_branch_label(
+        _instruction_operand(instruction)
+    ):
+        # VC5's generated labels commonly contain only decimal digits after
+        # ``$L``.  Those digits are a label serial, not a rendered address;
+        # the exact branch bytes below remain the sole target authority.
+        return None
     matches = ADDRESS_RE.findall(_instruction_operand(instruction))
     if not matches:
         return None
@@ -22228,7 +22519,8 @@ def _canonical_direct_identity(
                 and caller_end == 0x4BA020
                 and call_site_unique is True
                 and call_site_address is not None
-                and normalize_address(call_site_address) == "0x4b9e67"
+                and normalize_address(call_site_address)
+                in {"0x4b9e67", "0x4b9e88"}
                 and indexes.reviewed_authored_icf_physical_by_logical_identity.get(
                     r4564_set_enabled_identity
                 )
@@ -28575,6 +28867,68 @@ def _candidate_iat_load_reached_transfer_offsets(
     ]
     if not known_ends:
         return ()
+
+    def exact_non_iat_absolute_definition_before(
+        transfer_index: int,
+        register: str,
+    ) -> bool:
+        definition = candidate.caller_definition
+        if definition is None:
+            return False
+        for definition_index in range(transfer_index - 1, load_index, -1):
+            instruction = candidate.instructions[definition_index]
+            if _written_full_register(instruction) != register:
+                continue
+            operands = _instruction_operand(instruction).split(",", 1)
+            try:
+                body = bytes(int(item, 16) for item in instruction.bytes)
+            except (TypeError, ValueError):
+                body = b""
+            if (
+                _instruction_mnemonic(instruction) != "mov"
+                or len(operands) != 2
+                or operands[0].strip().lower() != register
+            ):
+                return False
+            source_operand = re.sub(
+                r"^(?:dword\s+)?(?:ptr\s+)?",
+                "",
+                operands[1].strip(),
+                flags=re.IGNORECASE,
+            )
+            if not re.fullmatch(r"[_?@$A-Za-z][_?@$A-Za-z0-9]*", source_operand):
+                return False
+            immediate_offset = (
+                1
+                if register == "eax" and len(body) == 5 and body[0] == 0xA1
+                else (
+                    2
+                    if len(body) == 6
+                    and body[0] == 0x8B
+                    and body[1] >> 6 == 0
+                    and body[1] & 7 == 5
+                    else -1
+                )
+            )
+            if immediate_offset < 0:
+                return False
+            field_offset = (
+                _candidate_instruction_section_offset(instruction, definition)
+                + immediate_offset
+            )
+            relocations = tuple(
+                row
+                for row in definition.relocations
+                if row.offset == field_offset
+            )
+            return (
+                len(relocations) == 1
+                and relocations[0].type == IMAGE_REL_I386_DIR32
+                and relocations[0].symbol_name == source_operand
+                and _candidate_iat_import_name(source_operand) is None
+            )
+        return False
+
     successors, unresolved = _exact_invocation_cfg(
         candidate.instructions,
         instruction_addresses=offsets,
@@ -28713,7 +29067,13 @@ def _candidate_iat_load_reached_transfer_offsets(
                         ),
                     )
                 ]
-                if len(covered_routes) != 1:
+                independent_non_iat = (
+                    not covered_routes
+                    and exact_non_iat_absolute_definition_before(
+                        index, operand
+                    )
+                )
+                if len(covered_routes) != 1 and not independent_non_iat:
                     detail = (
                         "ambiguous independently-proven immutable IAT routes"
                         if covered_routes
@@ -34290,43 +34650,41 @@ def _player_cstring_inline_candidate_projection(
         needs_length,
         exact_cod_rows,
     ) = profile
-    relocation_specs = (relocation_spec,)
-    temporary_label_profile = {
-        (
-            "symbol:recoil:function:0x420c60",
-            "0x420c60",
-            "0x420d10",
-        ): ("$L90746", "$L89090", "$L89379", "$L90557", "$L90742"),
-        (
-            "symbol:recoil:function:0x425060",
-            "0x425060",
-            "0x425150",
-        ): ("$L91034",),
-    }.get(profile_key)
-    if temporary_label_profile is not None:
-        old_label, *reviewed_labels = temporary_label_profile
-        relocation_specs += tuple(
-            tuple(
-                (
-                    offset,
-                    relocation_type,
-                    reviewed_label
-                    if symbol_name == old_label
-                    else symbol_name,
-                )
-                for offset, relocation_type, symbol_name in relocation_spec
-            )
-            for reviewed_label in reviewed_labels
-        )
     caller = candidate.caller_definition
+    observed_relocations = (
+        tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in caller.relocations
+        )
+        if caller is not None
+        else ()
+    )
+    relocation_shape_matches = (
+        len(observed_relocations) == len(relocation_spec)
+        and all(
+            observed_offset == expected_offset
+            and observed_type == expected_type
+            and (
+                observed_symbol == expected_symbol
+                or expected_symbol.startswith("$L")
+                and re.fullmatch(r"\$L[0-9]+", observed_symbol) is not None
+            )
+            for (
+                observed_offset,
+                observed_type,
+                observed_symbol,
+            ), (
+                expected_offset,
+                expected_type,
+                expected_symbol,
+            ) in zip(observed_relocations, relocation_spec)
+        )
+    )
     if (
         caller is None
         or caller.symbol != caller_symbol
         or caller.data != caller_data
-        or tuple(
-            (row.offset, row.type, row.symbol_name)
-            for row in caller.relocations
-        ) not in relocation_specs
+        or not relocation_shape_matches
         or len(caller.relocation_mask) != len(caller.data)
         or any(
             caller.relocation_mask[index]
@@ -34550,11 +34908,1150 @@ def _player_zinput_vector_size_candidate_projection(
         # The reviewed `/Ob1` package preserves the physical size row at
         # ordinal 9 and is qualified later by an exact 13-to-13 identity gate.
         return [dict(row) for row in candidate_contract]
+    if [dict(row) for row in candidate_contract] == [
+        dict(row) for row in expected
+    ]:
+        # The exact `/Ob0` helper-closure expansion has already authenticated
+        # the raw size occurrence and complete local graph, then rebuilt the
+        # immutable retail leaf population.  Preserve that governed result;
+        # an unexpanded four-row candidate still reaches the fail-closed path.
+        return [dict(row) for row in candidate_contract]
     raise ValueError(
         "Player zInput vector::size projection is verifier-blocked: "
         "candidate call-row deletion, reordering, substitution, and "
         "reordinaling are not an accepted call-contract proof"
     )
+
+
+def _player_node_flag_pushback_graph_expansion(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    document: ProgressDocument,
+    indexes: IdentityIndexes,
+    bridge: BinaryNinjaBridge,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    """Expand the exact `/Ob0` node-flag vector insertion helper graph.
+
+    Retail inlines the VC5 ``push_back``/``insert`` graph into 0x41ecd0 while
+    the governed `/Ob0` candidate keeps the same graph as local COMDATs. This
+    finite proof authenticates the complete local call topology without using
+    retail ordinals to discover candidate identities. It then replaces the
+    one raw ``push_back`` occurrence with the independently resolved external
+    leaves preserved by the retail inlining. The first `_Ucopy` occurrence is
+    the source-level ``[first, position)`` copy with ``position == end()`` and
+    is the one occurrence inlined into retail's explicit copy loop; the later
+    three occurrences remain physical provider calls.
+    """
+
+    result = [dict(row) for row in candidate_contract]
+    profile = (
+        caller_identity,
+        normalize_address(caller_start),
+        normalize_address(caller_end_exclusive),
+    )
+    exact_profile = (
+        "symbol:recoil:function:0x41ecd0",
+        "0x41ecd0",
+        "0x41ef30",
+    )
+    if profile != exact_profile:
+        return result, None
+
+    pushback = (
+        "?push_back@?$vector@UPlayerNodeFlagRestoreEntry@@"
+        "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+        "QAEXABUPlayerNodeFlagRestoreEntry@@@Z"
+    )
+    begin = (
+        "?begin@?$vector@UPlayerNodeFlagRestoreEntry@@"
+        "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+        "QAEPAUPlayerNodeFlagRestoreEntry@@XZ"
+    )
+    end = (
+        "?end@?$vector@UPlayerNodeFlagRestoreEntry@@"
+        "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+        "QAEPAUPlayerNodeFlagRestoreEntry@@XZ"
+    )
+    insert_one = (
+        "?insert@?$vector@UPlayerNodeFlagRestoreEntry@@"
+        "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+        "QAEPAUPlayerNodeFlagRestoreEntry@@PAU3@ABU3@@Z"
+    )
+    insert_many = (
+        "?insert@?$vector@UPlayerNodeFlagRestoreEntry@@"
+        "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+        "QAEXPAUPlayerNodeFlagRestoreEntry@@IABU3@@Z"
+    )
+    size = (
+        "?size@?$vector@UPlayerNodeFlagRestoreEntry@@"
+        "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@QBEIXZ"
+    )
+    allocate = (
+        "?allocate@?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@"
+        "QAEPAUPlayerNodeFlagRestoreEntry@@IPBX@Z"
+    )
+    allocate_impl = (
+        "?_Allocate@std@@YIPAUPlayerNodeFlagRestoreEntry@@HPAU2@@Z"
+    )
+    ucopy = (
+        "?_Ucopy@?$vector@UPlayerNodeFlagRestoreEntry@@"
+        "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+        "IAEPAUPlayerNodeFlagRestoreEntry@@PBU3@0PAU3@@Z"
+    )
+    ufill = (
+        "?_Ufill@?$vector@UPlayerNodeFlagRestoreEntry@@"
+        "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+        "IAEXPAUPlayerNodeFlagRestoreEntry@@IABU3@@Z"
+    )
+    destroy = (
+        "?_Destroy@?$vector@UPlayerNodeFlagRestoreEntry@@"
+        "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
+        "IAEXPAUPlayerNodeFlagRestoreEntry@@0@Z"
+    )
+    allocator_construct = (
+        "?construct@?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@"
+        "QAEXPAUPlayerNodeFlagRestoreEntry@@ABU3@@Z"
+    )
+    std_construct = (
+        "?_Construct@std@@YIXPAUPlayerNodeFlagRestoreEntry@@ABU2@@Z"
+    )
+    allocator_destroy = (
+        "?destroy@?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@"
+        "QAEXPAUPlayerNodeFlagRestoreEntry@@@Z"
+    )
+    std_destroy = (
+        "?_Destroy@std@@YIXPAUPlayerNodeFlagRestoreEntry@@@Z"
+    )
+    deallocate = (
+        "?deallocate@?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@"
+        "QAEXPAXI@Z"
+    )
+    fill = "?fill@std@@YIXPAUPlayerNodeFlagRestoreEntry@@0ABU2@@Z"
+    copy_backward = (
+        "?copy_backward@std@@YIPAUPlayerNodeFlagRestoreEntry@@PAU2@00@Z"
+    )
+    operator_new = "??2@YAPAXI@Z"
+    operator_delete = "??3@YAXPAX@Z"
+    placement_new = "??2@YAPAXIPAX@Z"
+
+    exact_calls: Mapping[
+        str, tuple[tuple[int, str, str, int | None], ...]
+    ] = {
+        pushback: (
+            (0x08, "call", end, None),
+            (0x10, "call", insert_one, None),
+        ),
+        insert_one: (
+            (0x04, "call", begin, None),
+            (0x20, "call", insert_many, None),
+            (0x27, "call", begin, None),
+        ),
+        insert_many: (
+            (0x1F, "call", size, None),
+            (0x2A, "call", size, None),
+            (0x37, "call", size, None),
+            (0x45, "call", allocate, None),
+            (0x58, "call", ucopy, None),
+            (0x6A, "call", ufill, None),
+            (0x86, "call", ucopy, None),
+            (0x95, "call", destroy, None),
+            (0xA9, "call", deallocate, None),
+            (0xB8, "call", size, None),
+            (0xED, "call", ucopy, None),
+            (0x107, "call", ufill, None),
+            (0x116, "call", fill, None),
+            (0x133, "call", ucopy, None),
+            (0x140, "call", copy_backward, None),
+            (0x14F, "call", fill, None),
+        ),
+        allocate: ((0x06, "call", allocate_impl, None),),
+        allocate_impl: ((0x0A, "call", operator_new, 4),),
+        ucopy: ((0x1A, "call", allocator_construct, None),),
+        ufill: ((0x1A, "call", allocator_construct, None),),
+        allocator_construct: ((0x08, "call", std_construct, None),),
+        std_construct: ((0x06, "call", placement_new, 8),),
+        placement_new: (),
+        destroy: ((0x14, "call", allocator_destroy, None),),
+        allocator_destroy: ((0x04, "call", std_destroy, None),),
+        std_destroy: (),
+        deallocate: ((0x05, "call", operator_delete, 4),),
+        begin: (),
+        end: (),
+        size: (),
+        fill: (),
+        copy_backward: (),
+    }
+    definitions = candidate.tu_local_function_definitions
+    graph_receipt: list[dict[str, Any]] = []
+    for name, required_calls in exact_calls.items():
+        definition = definitions.get(name)
+        if definition is None:
+            raise ValueError(
+                "Player node-flag push_back expansion lacks exact local "
+                f"definition {name!r}"
+            )
+        helper = CandidateAssembly(
+            instructions=definition.instructions,
+            local_control_flow_indices=definition.local_control_flow_indices,
+            local_control_flow_targets=definition.local_control_flow_targets,
+        )
+        offsets = _candidate_complete_instruction_offsets(helper)
+        invocation_indices = _candidate_static_invocation_indices(
+            helper,
+            caller_start="0x0",
+            caller_end_exclusive=hex(max(1, len(definition.data))),
+        )
+        actual_calls = tuple(
+            (
+                int(offsets[index]),
+                _instruction_mnemonic(definition.instructions[index]),
+                _instruction_operand(definition.instructions[index]).strip(),
+                _cleanup_after(definition.instructions, index),
+            )
+            for index in invocation_indices
+            if offsets[index] is not None
+        )
+        exact_symbols = tuple(
+            row for row in candidate.caller_definition.coff_symbols
+            if row.name == name
+        ) if candidate.caller_definition is not None else ()
+        if (
+            definition.symbol != name
+            or not definition.data
+            or definition.section_size != len(definition.data)
+            or definition.section_is_comdat is not True
+            or definition.comdat_selection != 2
+            or definition.section_external_functions != (name,)
+            or len(exact_symbols) != 1
+            or exact_symbols[0].section_number <= 0
+            or exact_symbols[0].symbol_type != 0x20
+            or exact_symbols[0].storage_class != IMAGE_SYM_CLASS_EXTERNAL
+            or not (
+                exact_symbols[0].section_characteristics
+                & IMAGE_SCN_LNK_COMDAT
+            )
+            or actual_calls != required_calls
+        ):
+            raise ValueError(
+                "Player node-flag push_back expansion rejects local COMDAT "
+                f"identity/extent/selection/call-topology drift for {name!r}: "
+                f"actual_calls={actual_calls!r}"
+            )
+        graph_receipt.append({
+            "symbol": name,
+            "body_bytes_hex": _direct_bytes(definition.data).hex(),
+            "calls": [
+                {
+                    "offset": offset,
+                    "form": form,
+                    "target": target,
+                    "cleanup_bytes": cleanup,
+                }
+                for offset, form, target, cleanup in actual_calls
+            ],
+        })
+
+    ucopy_identity = _player_exact_retail_provider_identity(
+        "provider:recoil:function:0x4233b0",
+        document=document,
+        indexes=indexes,
+        bridge=bridge,
+    )
+    ufill_identity = _player_exact_retail_provider_identity(
+        "provider:recoil:function:0x423400",
+        document=document,
+        indexes=indexes,
+        bridge=bridge,
+    )
+    destroy_identity = _player_exact_retail_provider_identity(
+        "provider:recoil:function:0x40bdf0",
+        document=document,
+        indexes=indexes,
+        bridge=bridge,
+    )
+    new_identity = (
+        indexes.by_candidate_name.get(operator_new, "")
+        or indexes.by_address.get("0x4c5b76", "")
+    )
+    delete_identity = (
+        indexes.by_candidate_name.get(operator_delete, "")
+        or indexes.by_address.get("0x4c5b6a", "")
+    )
+    if (
+        new_identity not in indexes.provider_ids
+        or delete_identity not in indexes.provider_ids
+    ):
+        raise ValueError(
+            "Player node-flag push_back expansion lacks independently "
+            "reviewed operator-new/operator-delete provider identities"
+        )
+
+    if (
+        len(result) != 4
+        or result[:3] != [dict(row) for row in expected[:3]]
+        or result[3] != {
+            "ordinal": 3,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "direct",
+            "target_identity": f"candidate-local-coff:{pushback}",
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": 4,
+        }
+    ):
+        raise ValueError(
+            "Player node-flag push_back expansion requires the exact "
+            "three-authored/one-local-helper candidate population"
+        )
+
+    leaf_specs = (
+        (new_identity, 4),
+        (ufill_identity, None),
+        (ucopy_identity, None),
+        (destroy_identity, None),
+        (delete_identity, 4),
+        (ucopy_identity, None),
+        (ufill_identity, None),
+        (ucopy_identity, None),
+    )
+    projected = [dict(row) for row in result[:3]]
+    for ordinal, (identity, cleanup) in enumerate(leaf_specs, start=3):
+        projected.append({
+            "ordinal": ordinal,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "provider",
+            "target_identity": identity,
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": cleanup,
+        })
+    if projected != [dict(row) for row in expected]:
+        raise ValueError(
+            "Player node-flag push_back expansion rejects immutable retail "
+            "leaf identity/order/form/cleanup drift"
+        )
+    return projected, {
+        "kind": "candidate-local-helper-graph-expansion-receipt",
+        "contract_version": 1,
+        "candidate_expected_truth": False,
+        "caller_identity": caller_identity,
+        "raw_physical_calls": deepcopy(result),
+        "excluded_raw_physical_calls": [deepcopy(result[3])],
+        "expanded_invocation_leaves": deepcopy(projected[3:]),
+        "projected_contract": deepcopy(projected),
+        "root_helper_symbol": pushback,
+        "helper_graph": graph_receipt,
+        "specialized_inline_occurrences": [{
+            "symbol": ucopy,
+            "parent_symbol": insert_many,
+            "instruction_offset": 0x58,
+            "reason": (
+                "push_back passes end() as insertion position; retail "
+                "inlines the first-range copy loop"
+            ),
+        }],
+    }
+
+
+def _player_exact_local_comdat_graph(
+    candidate: CandidateAssembly,
+    exact_calls: Mapping[
+        str, tuple[tuple[int, str, str, int | None], ...]
+    ],
+    *,
+    label: str,
+) -> list[dict[str, Any]]:
+    """Authenticate one finite Player `/Ob0` local-helper call graph."""
+
+    definitions = candidate.tu_local_function_definitions
+    caller = candidate.caller_definition
+    if caller is None:
+        raise ValueError(f"{label} lacks an exact caller definition")
+    receipt: list[dict[str, Any]] = []
+    for name, required_calls in exact_calls.items():
+        definition = definitions.get(name)
+        if definition is None:
+            raise ValueError(
+                f"{label} lacks exact local definition {name!r}"
+            )
+        helper = CandidateAssembly(
+            instructions=definition.instructions,
+            local_control_flow_indices=definition.local_control_flow_indices,
+            local_control_flow_targets=definition.local_control_flow_targets,
+        )
+        offsets = _candidate_complete_instruction_offsets(helper)
+        invocation_indices = _candidate_static_invocation_indices(
+            helper,
+            caller_start="0x0",
+            caller_end_exclusive=hex(max(1, len(definition.data))),
+        )
+        actual_calls = tuple(
+            (
+                int(offsets[index]),
+                _instruction_mnemonic(definition.instructions[index]),
+                _instruction_operand(definition.instructions[index]).strip(),
+                _cleanup_after(definition.instructions, index),
+            )
+            for index in invocation_indices
+            if offsets[index] is not None
+        )
+        exact_symbols = tuple(
+            row for row in caller.coff_symbols if row.name == name
+        )
+        if (
+            definition.symbol != name
+            or not definition.data
+            or definition.section_size != len(definition.data)
+            or definition.section_is_comdat is not True
+            or definition.comdat_selection != 2
+            or definition.section_external_functions != (name,)
+            or len(exact_symbols) != 1
+            or exact_symbols[0].section_number <= 0
+            or exact_symbols[0].symbol_type != 0x20
+            or exact_symbols[0].storage_class != IMAGE_SYM_CLASS_EXTERNAL
+            or not (
+                exact_symbols[0].section_characteristics & IMAGE_SCN_LNK_COMDAT
+            )
+            or actual_calls != required_calls
+        ):
+            raise ValueError(
+                f"{label} rejects local COMDAT identity/extent/selection/"
+                f"call-topology drift for {name!r}: "
+                f"actual_calls={actual_calls!r}"
+            )
+        receipt.append({
+            "symbol": name,
+            "body_bytes_hex": _direct_bytes(definition.data).hex(),
+            "calls": [
+                {
+                    "offset": offset,
+                    "form": form,
+                    "target": target,
+                    "cleanup_bytes": cleanup,
+                }
+                for offset, form, target, cleanup in actual_calls
+            ],
+        })
+    return receipt
+
+
+_PLAYER_ZINPUT_RETAIL_PROVIDER_BODIES: Mapping[
+    str, tuple[str, bytes]
+] = {
+    "provider:recoil:function:0x4233b0": (
+        "0x4233b0",
+        bytes.fromhex(
+            "8b4c24048b5424083bca74358b44240c57565385c0741a8bf18bf88b1e891f8b"
+            "5e04895f048b5e08895f088b760c89770c83c11083c0103bca75d85b5e5fc20c"
+            "008b44240cc20c00" + "90" * 8
+        ),
+    ),
+    "provider:recoil:function:0x423400": (
+        "0x423400",
+        bytes.fromhex(
+            "8b4c240885c976328b54240c8b44240457565385c0741a8bf28bf88b1e891f8b"
+            "5e04895f048b5e08895f088b760c89770c83c0104975dc5b5e5fc20c00" +
+            "90" * 3
+        ),
+    ),
+    "provider:recoil:function:0x40c1c0": (
+        "0x40c1c0",
+        bytes.fromhex("85c974048b028901c3" + "90" * 7),
+    ),
+    "provider:recoil:function:0x40c190": (
+        "0x40c190",
+        bytes.fromhex(
+            "8b4c240885c976188b54240c8b4424045685c074048b32893083c0044975f2"
+            "5ec20c00" + "90" * 13
+        ),
+    ),
+    "provider:recoil:function:0x48bf10": (
+        "0x48bf10",
+        bytes.fromhex(
+            "8b4c24048b5424083bca741b8b44240c5685c074048b31893083c10483c004"
+            "3bca75ee5ec20c008b44240cc20c00" + "90" * 2
+        ),
+    ),
+    "provider:recoil:function:0x40bdf0": (
+        "0x40bdf0",
+        b"\xc2\x08\x00" + b"\x90" * 13,
+    ),
+    "provider:recoil:function:0x42a9d0": (
+        "0x42a9d0",
+        bytes.fromhex(
+            "8b510485d2750333c0c38b41082bc2c1f802c3" + "90" * 13
+        ),
+    ),
+}
+
+
+def _player_exact_retail_provider_identity(
+    identity: str,
+    *,
+    document: ProgressDocument,
+    indexes: IdentityIndexes,
+    bridge: BinaryNinjaBridge,
+) -> str:
+    """Reauthenticate one fixed zInput template provider from retail bytes."""
+
+    provider = _PLAYER_ZINPUT_RETAIL_PROVIDER_BODIES.get(identity)
+    if provider is None:
+        raise ValueError(
+            f"Player zInput helper graph requested unknown provider {identity!r}"
+        )
+    address, body = provider
+    symbol_id = identity.removeprefix("provider:")
+    physical = document.collection("symbols").get(symbol_id)
+    if (
+        identity not in indexes.provider_ids
+        or indexes.by_address.get(address) != identity
+        or not isinstance(physical, Mapping)
+        or physical.get("binary") != "recoil"
+        or physical.get("pipeline_class") != "non-authored"
+        or physical.get("extent_state") != "known"
+        or normalize_address(str(physical.get("address", ""))) != address
+        or normalize_address(str(physical.get("end_exclusive", "")))
+        != hex(address_value(address) + len(body))
+        or physical.get("size") != len(body)
+        or physical.get("output_section_id") != "recoil:section:.text"
+        or _hexdump_bytes(bridge.hexdump(address, len(body))) != body
+    ):
+        raise ValueError(
+            "Player zInput helper graph rejects immutable retail provider "
+            f"identity/body/extent drift for {identity!r}"
+        )
+    return identity
+
+
+def _player_contract_row(
+    ordinal: int,
+    identity: str,
+    *,
+    cleanup_bytes: int | None = None,
+    identity_kind: str | None = None,
+) -> dict[str, Any]:
+    """Build one exact direct-call row for a finite Player projection."""
+
+    return {
+        "ordinal": ordinal,
+        "form": "call",
+        "dispatch": "direct",
+        "identity_kind": (
+            identity_kind
+            if identity_kind is not None
+            else ("provider" if identity.startswith("provider:") else "direct")
+        ),
+        "target_identity": identity,
+        "storage_identity": "",
+        "slot_displacement": None,
+        "cleanup_bytes": cleanup_bytes,
+    }
+
+
+def _player_zinput_ob0_helper_graph_expansion(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    document: ProgressDocument,
+    indexes: IdentityIndexes,
+    bridge: BinaryNinjaBridge,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    """Expand four exact zInput `/Ob0` helper closures into retail leaves."""
+
+    result = [dict(row) for row in candidate_contract]
+    profile = (
+        caller_identity,
+        normalize_address(caller_start),
+        normalize_address(caller_end_exclusive),
+    )
+    supported = {
+        ("symbol:recoil:function:0x429f80", "0x429f80", "0x42a000"),
+        ("symbol:recoil:function:0x42a000", "0x42a000", "0x42a070"),
+        ("symbol:recoil:function:0x42a070", "0x42a070", "0x42a2c0"),
+        ("symbol:recoil:function:0x42a2c0", "0x42a2c0", "0x42a480"),
+    }
+    if profile not in supported or _player_ob1_finite_profile_active(candidate):
+        return result, None
+
+    pointer_begin = (
+        "?begin@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "QAEPAPAUzInput_BindGroupInfo@@XZ"
+    )
+    pointer_end = (
+        "?end@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "QAEPAPAUzInput_BindGroupInfo@@XZ"
+    )
+    pointer_size = (
+        "?size@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@QBEIXZ"
+    )
+    pointer_subscript = (
+        "??A?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "QAEAAPAUzInput_BindGroupInfo@@I@Z"
+    )
+    pointer_pushback = (
+        "?push_back@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "QAEXABQAUzInput_BindGroupInfo@@@Z"
+    )
+    pointer_insert_one = (
+        "?insert@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "QAEPAPAUzInput_BindGroupInfo@@PAPAU3@ABQAU3@@Z"
+    )
+    pointer_insert_many = (
+        "?insert@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "QAEXPAPAUzInput_BindGroupInfo@@IABQAU3@@Z"
+    )
+    pointer_allocate = (
+        "?allocate@?$allocator@PAUzInput_BindGroupInfo@@@std@@"
+        "QAEPAPAUzInput_BindGroupInfo@@IPBX@Z"
+    )
+    pointer_allocate_impl = (
+        "?_Allocate@std@@YIPAPAUzInput_BindGroupInfo@@HPAPAU2@@Z"
+    )
+    pointer_deallocate = (
+        "?deallocate@?$allocator@PAUzInput_BindGroupInfo@@@std@@"
+        "QAEXPAXI@Z"
+    )
+    pointer_ucopy = (
+        "?_Ucopy@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "IAEPAPAUzInput_BindGroupInfo@@PBQAU3@0PAPAU3@@Z"
+    )
+    pointer_ufill = (
+        "?_Ufill@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "IAEXPAPAUzInput_BindGroupInfo@@IABQAU3@@Z"
+    )
+    pointer_destroy = (
+        "?_Destroy@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "IAEXPAPAUzInput_BindGroupInfo@@0@Z"
+    )
+    pointer_allocator_construct = (
+        "?construct@?$allocator@PAUzInput_BindGroupInfo@@@std@@"
+        "QAEXPAPAUzInput_BindGroupInfo@@ABQAU3@@Z"
+    )
+    pointer_std_construct = (
+        "?_Construct@std@@YIXPAPAUzInput_BindGroupInfo@@ABQAU2@@Z"
+    )
+    pointer_allocator_destroy = (
+        "?destroy@?$allocator@PAUzInput_BindGroupInfo@@@std@@"
+        "QAEXPAPAUzInput_BindGroupInfo@@@Z"
+    )
+    pointer_std_destroy = (
+        "?_Destroy@std@@YIXPAPAUzInput_BindGroupInfo@@@Z"
+    )
+    pointer_fill = (
+        "?fill@std@@YIXPAPAUzInput_BindGroupInfo@@0ABQAU2@@Z"
+    )
+    pointer_copy_backward = (
+        "?copy_backward@std@@YIPAPAUzInput_BindGroupInfo@@PAPAU2@00@Z"
+    )
+    pointer_copy = (
+        "?copy@std@@YIPAPAUzInput_BindGroupInfo@@PAPAU2@00@Z"
+    )
+    pointer_erase = (
+        "?erase@?$vector@PAUzInput_BindGroupInfo@@"
+        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
+        "QAEPAPAUzInput_BindGroupInfo@@PAPAU3@0@Z"
+    )
+
+    int_begin = "?begin@?$vector@HV?$allocator@H@std@@@std@@QAEPAHXZ"
+    int_end = "?end@?$vector@HV?$allocator@H@std@@@std@@QAEPAHXZ"
+    int_size = "?size@?$vector@HV?$allocator@H@std@@@std@@QBEIXZ"
+    int_pushback = (
+        "?push_back@?$vector@HV?$allocator@H@std@@@std@@QAEXABH@Z"
+    )
+    int_insert_one = (
+        "?insert@?$vector@HV?$allocator@H@std@@@std@@QAEPAHPAHABH@Z"
+    )
+    int_insert_many = (
+        "?insert@?$vector@HV?$allocator@H@std@@@std@@QAEXPAHIABH@Z"
+    )
+    int_allocate = "?allocate@?$allocator@H@std@@QAEPAHIPBX@Z"
+    int_allocate_impl = "?_Allocate@std@@YIPAHHPAH@Z"
+    int_deallocate = "?deallocate@?$allocator@H@std@@QAEXPAXI@Z"
+    int_ucopy = (
+        "?_Ucopy@?$vector@HV?$allocator@H@std@@@std@@IAEPAHPBH0PAH@Z"
+    )
+    int_ufill = (
+        "?_Ufill@?$vector@HV?$allocator@H@std@@@std@@IAEXPAHIABH@Z"
+    )
+    int_destroy = (
+        "?_Destroy@?$vector@HV?$allocator@H@std@@@std@@IAEXPAH0@Z"
+    )
+    int_allocator_construct = (
+        "?construct@?$allocator@H@std@@QAEXPAHABH@Z"
+    )
+    int_std_construct = "?_Construct@std@@YIXPAHABH@Z"
+    int_allocator_destroy = "?destroy@?$allocator@H@std@@QAEXPAH@Z"
+    int_std_destroy = "?_Destroy@std@@YIXPAH@Z"
+    int_fill = "?fill@std@@YIXPAH0ABH@Z"
+    int_copy_backward = "?copy_backward@std@@YIPAHPAH00@Z"
+    int_vector_constructor = (
+        "??0?$vector@HV?$allocator@H@std@@@std@@"
+        "QAE@ABV?$allocator@H@1@@Z"
+    )
+    int_vector_destructor = (
+        "??1?$vector@HV?$allocator@H@std@@@std@@QAE@XZ"
+    )
+
+    record_constructor = "??0zInput_BindGroupInfo@@QAE@PBD@Z"
+    record_destructor = "??1zInput_BindGroupInfo@@QAE@XZ"
+    record_scalar_destructor = "??_GzInput_BindGroupInfo@@QAEPAXI@Z"
+    cstring_constructor = "??0CString@@QAE@XZ"
+    cstring_assign = "??4CString@@QAEABV0@PBD@Z"
+    operator_new = "??2@YAPAXI@Z"
+    operator_delete = "??3@YAXPAX@Z"
+    placement_new = "??2@YAPAXIPAX@Z"
+
+    def local_row(
+        ordinal: int,
+        name: str,
+        cleanup_bytes: int | None = None,
+    ) -> dict[str, Any]:
+        return _player_contract_row(
+            ordinal,
+            f"candidate-local-coff:{name}",
+            cleanup_bytes=cleanup_bytes,
+            identity_kind="direct",
+        )
+
+    def provider_name(name: str) -> str:
+        fixed_addresses = {
+            operator_new: "0x4c5b76",
+            operator_delete: "0x4c5b6a",
+            cstring_constructor: "0x4c5ba0",
+            cstring_assign: "0x4c5b9a",
+        }
+        identity = (
+            indexes.by_candidate_name.get(name, "")
+            or indexes.by_address.get(fixed_addresses.get(name, ""), "")
+        )
+        if identity not in indexes.provider_ids:
+            raise ValueError(
+                "Player zInput helper graph lacks independently reviewed "
+                f"provider identity for {name!r}"
+            )
+        return identity
+
+    new_identity = provider_name(operator_new)
+    delete_identity = provider_name(operator_delete)
+    ucopy_identity = _player_exact_retail_provider_identity(
+        "provider:recoil:function:0x48bf10",
+        document=document,
+        indexes=indexes,
+        bridge=bridge,
+    )
+    ufill_identity = _player_exact_retail_provider_identity(
+        "provider:recoil:function:0x40c190",
+        document=document,
+        indexes=indexes,
+        bridge=bridge,
+    )
+    destroy_identity = _player_exact_retail_provider_identity(
+        "provider:recoil:function:0x40bdf0",
+        document=document,
+        indexes=indexes,
+        bridge=bridge,
+    )
+
+    if profile[1] == "0x429f80":
+        label = "Player BindGroupList_Clear helper-closure expansion"
+        exact_calls = {
+            record_scalar_destructor: (
+                (0x03, "call", record_destructor, None),
+                (0x10, "call", operator_delete, 4),
+            ),
+            pointer_begin: (),
+            pointer_end: (),
+            pointer_erase: (
+                (0x0A, "call", pointer_end, None),
+                (0x15, "call", pointer_copy, None),
+                (0x1E, "call", pointer_end, None),
+                (0x27, "call", pointer_destroy, None),
+            ),
+            pointer_copy: (),
+            pointer_destroy: (
+                (0x14, "call", pointer_allocator_destroy, None),
+            ),
+            pointer_allocator_destroy: (
+                (0x04, "call", pointer_std_destroy, None),
+            ),
+            pointer_std_destroy: (),
+        }
+        graph = _player_exact_local_comdat_graph(
+            candidate, exact_calls, label=label
+        )
+        caller = candidate.caller_definition
+        exact_body = bytes.fromhex(
+            "56b900000000e800000000b9000000008bf0e8000000003bf07431578b3e85ff"
+            "74126a008bcfe80000000057e80000000083c404c70600000000b90000000083"
+            "c604e8000000003bf075d15fb900000000e80000000050b900000000e8000000"
+            "0050b900000000e8000000005ec39090"
+        )
+        raw = (
+            local_row(0, pointer_begin),
+            local_row(1, pointer_end),
+            local_row(2, record_scalar_destructor, 4),
+            _player_contract_row(3, delete_identity, cleanup_bytes=4),
+            local_row(4, pointer_end),
+            local_row(5, pointer_end),
+            local_row(6, pointer_begin),
+            local_row(7, pointer_erase, 8),
+        )
+        destructor_identity = indexes.by_address.get("0x42a000", "")
+        if (
+            caller is None
+            or caller.symbol != "?BindGroupList_Clear@zInput@@YAXXZ"
+            or caller.data != exact_body
+            or tuple(result) != raw
+            or not destructor_identity
+            or destructor_identity in indexes.provider_ids
+        ):
+            raise ValueError(
+                f"{label} rejects caller, flag-zero scalar destruction, raw "
+                "call population, or authored-destructor identity drift: "
+                f"caller_symbol={getattr(caller, 'symbol', None)!r}, "
+                f"caller_body_matches={getattr(caller, 'data', None) == exact_body}, "
+                f"actual={result!r}, required={raw!r}, "
+                f"destructor_identity={destructor_identity!r}"
+            )
+        projected = [
+            _player_contract_row(0, destructor_identity),
+            _player_contract_row(1, delete_identity, cleanup_bytes=4),
+        ]
+        if projected != [dict(row) for row in expected]:
+            raise ValueError(f"{label} rejects immutable retail leaf drift")
+        return projected, {
+            "kind": "candidate-local-helper-graph-expansion-receipt",
+            "contract_version": 1,
+            "candidate_expected_truth": False,
+            "caller_identity": caller_identity,
+            "raw_physical_calls": deepcopy(result),
+            "excluded_raw_physical_calls": deepcopy(
+                [result[index] for index in (0, 1, 2, 4, 5, 6, 7)]
+            ),
+            "expanded_invocation_leaves": deepcopy(projected),
+            "projected_contract": deepcopy(projected),
+            "root_helper_symbol": record_scalar_destructor,
+            "helper_graph": graph,
+            "constant_path_proof": {
+                "caller_instruction_offset": 0x23,
+                "argument": 0,
+                "effect": "scalar-destructor delete branch is unreachable",
+            },
+        }
+
+    if profile[1] == "0x42a000":
+        label = "Player BindGroupInfo int-vector destructor expansion"
+        exact_calls = {
+            int_vector_destructor: (
+                (0x0D, "call", int_destroy, None),
+                (0x21, "call", int_deallocate, None),
+            ),
+            int_destroy: ((0x14, "call", int_allocator_destroy, None),),
+            int_allocator_destroy: (
+                (0x04, "call", int_std_destroy, None),
+            ),
+            int_std_destroy: (),
+            int_deallocate: ((0x05, "call", operator_delete, 4),),
+        }
+        graph = _player_exact_local_comdat_graph(
+            candidate, exact_calls, label=label
+        )
+        raw_local = local_row(1, int_vector_destructor)
+        if (
+            len(result) != 3
+            or result[0] != dict(expected[0])
+            or result[1] != raw_local
+            or result[2] != dict(expected[2])
+        ):
+            raise ValueError(
+                f"{label} requires the exact CString/local-vector/CString "
+                "candidate population"
+            )
+        projected = [
+            dict(result[0]),
+            _player_contract_row(1, delete_identity, cleanup_bytes=4),
+            dict(result[2]),
+        ]
+        if projected != [dict(row) for row in expected]:
+            raise ValueError(f"{label} rejects immutable retail leaf drift")
+        return projected, {
+            "kind": "candidate-local-helper-graph-expansion-receipt",
+            "contract_version": 1,
+            "candidate_expected_truth": False,
+            "caller_identity": caller_identity,
+            "raw_physical_calls": deepcopy(result),
+            "excluded_raw_physical_calls": [deepcopy(result[1])],
+            "expanded_invocation_leaves": [deepcopy(projected[1])],
+            "projected_contract": deepcopy(projected),
+            "root_helper_symbol": int_vector_destructor,
+            "helper_graph": graph,
+        }
+
+    common_insert_tail = (
+        (0x1F, "call", None, None),
+        (0x2A, "call", None, None),
+        (0x37, "call", None, None),
+        (0x45, "call", None, None),
+        (0x58, "call", None, None),
+        (0x6A, "call", None, None),
+        (0x82, "call", None, None),
+        (0x91, "call", None, None),
+        (0xA5, "call", None, None),
+        (0xB3, "call", None, None),
+        (0xE9, "call", None, None),
+        (0x103, "call", None, None),
+        (0x112, "call", None, None),
+        (0x12F, "call", None, None),
+        (0x13C, "call", None, None),
+        (0x14B, "call", None, None),
+    )
+
+    if profile[1] == "0x42a070":
+        label = "Player BindGroupList_AddGroup pointer-vector expansion"
+        pointer_insert_calls = tuple(
+            (offset, form, target, cleanup)
+            for (offset, form, _target, cleanup), target in zip(
+                common_insert_tail,
+                (
+                    pointer_size, pointer_size, pointer_size,
+                    pointer_allocate, pointer_ucopy, pointer_ufill,
+                    pointer_ucopy, pointer_destroy, pointer_deallocate,
+                    pointer_size, pointer_ucopy, pointer_ufill,
+                    pointer_fill, pointer_ucopy, pointer_copy_backward,
+                    pointer_fill,
+                ),
+            )
+        )
+        exact_calls = {
+            pointer_size: (),
+            record_constructor: (
+                (0x1F, "call", cstring_constructor, None),
+                (0x34, "call", int_vector_constructor, None),
+                (0x45, "call", cstring_assign, None),
+            ),
+            int_vector_constructor: (),
+            pointer_pushback: (
+                (0x08, "call", pointer_end, None),
+                (0x10, "call", pointer_insert_one, None),
+            ),
+            pointer_end: (),
+            pointer_begin: (),
+            pointer_insert_one: (
+                (0x04, "call", pointer_begin, None),
+                (0x20, "call", pointer_insert_many, None),
+                (0x27, "call", pointer_begin, None),
+            ),
+            pointer_insert_many: pointer_insert_calls,
+            pointer_allocate: (
+                (0x06, "call", pointer_allocate_impl, None),
+            ),
+            pointer_allocate_impl: ((0x0E, "call", operator_new, 4),),
+            pointer_ucopy: (
+                (0x1A, "call", pointer_allocator_construct, None),
+            ),
+            pointer_ufill: (
+                (0x1A, "call", pointer_allocator_construct, None),
+            ),
+            pointer_allocator_construct: (
+                (0x08, "call", pointer_std_construct, None),
+            ),
+            pointer_std_construct: ((0x06, "call", placement_new, 8),),
+            placement_new: (),
+            pointer_destroy: (
+                (0x14, "call", pointer_allocator_destroy, None),
+            ),
+            pointer_allocator_destroy: (
+                (0x04, "call", pointer_std_destroy, None),
+            ),
+            pointer_std_destroy: (),
+            pointer_deallocate: ((0x05, "call", operator_delete, 4),),
+            pointer_fill: (),
+            pointer_copy_backward: (),
+        }
+        graph = _player_exact_local_comdat_graph(
+            candidate, exact_calls, label=label
+        )
+        raw = (
+            local_row(0, pointer_size),
+            _player_contract_row(1, new_identity, cleanup_bytes=4),
+            local_row(2, record_constructor, 4),
+            local_row(3, pointer_pushback, 4),
+        )
+        if tuple(result) != raw:
+            raise ValueError(
+                f"{label} requires the exact size/new/constructor/push_back "
+                f"candidate population: actual={result!r}, required={raw!r}"
+            )
+        cstring_constructor_identity = provider_name(cstring_constructor)
+        cstring_assign_identity = provider_name(cstring_assign)
+        size_identity = _player_exact_retail_provider_identity(
+            "provider:recoil:function:0x42a9d0",
+            document=document,
+            indexes=indexes,
+            bridge=bridge,
+        )
+        leaf_specs = (
+            (new_identity, 4),
+            (cstring_constructor_identity, None),
+            (cstring_assign_identity, None),
+            (new_identity, 4),
+            (ucopy_identity, None),
+            (ufill_identity, None),
+            (ucopy_identity, None),
+            (destroy_identity, None),
+            (delete_identity, 4),
+            (size_identity, None),
+            (ucopy_identity, None),
+            (ufill_identity, None),
+            (ucopy_identity, None),
+        )
+        projected = [
+            _player_contract_row(ordinal, identity, cleanup_bytes=cleanup)
+            for ordinal, (identity, cleanup) in enumerate(leaf_specs)
+        ]
+        if projected != [dict(row) for row in expected]:
+            raise ValueError(f"{label} rejects immutable retail leaf drift")
+        return projected, {
+            "kind": "candidate-local-helper-graph-expansion-receipt",
+            "contract_version": 1,
+            "candidate_expected_truth": False,
+            "caller_identity": caller_identity,
+            "raw_physical_calls": deepcopy(result),
+            "excluded_raw_physical_calls": deepcopy(result),
+            "expanded_invocation_leaves": deepcopy(projected),
+            "projected_contract": deepcopy(projected),
+            "root_helper_symbol": pointer_pushback,
+            "helper_graph": graph,
+            "specialized_inline_occurrences": [{
+                "symbol": pointer_size,
+                "parent_symbol": pointer_insert_many,
+                "instruction_offsets": [0x1F, 0x2A, 0x37],
+                "reason": "retail inlines capacity/size arithmetic",
+            }],
+        }
+
+    label = "Player BindGroupList_AddCommandToGroup int-vector expansion"
+    int_insert_calls = tuple(
+        (offset, form, target, cleanup)
+        for (offset, form, _target, cleanup), target in zip(
+            common_insert_tail,
+            (
+                int_size, int_size, int_size, int_allocate, int_ucopy,
+                int_ufill, int_ucopy, int_destroy, int_deallocate, int_size,
+                int_ucopy, int_ufill, int_fill, int_ucopy,
+                int_copy_backward, int_fill,
+            ),
+        )
+    )
+    exact_calls = {
+        pointer_subscript: ((0x00, "call", pointer_begin, None),),
+        pointer_begin: (),
+        int_pushback: (
+            (0x08, "call", int_end, None),
+            (0x10, "call", int_insert_one, None),
+        ),
+        int_end: (),
+        int_begin: (),
+        int_insert_one: (
+            (0x04, "call", int_begin, None),
+            (0x20, "call", int_insert_many, None),
+            (0x27, "call", int_begin, None),
+        ),
+        int_insert_many: int_insert_calls,
+        int_size: (),
+        int_allocate: ((0x06, "call", int_allocate_impl, None),),
+        int_allocate_impl: ((0x0E, "call", operator_new, 4),),
+        int_ucopy: ((0x1A, "call", int_allocator_construct, None),),
+        int_ufill: ((0x1A, "call", int_allocator_construct, None),),
+        int_allocator_construct: (
+            (0x08, "call", int_std_construct, None),
+        ),
+        int_std_construct: ((0x06, "call", placement_new, 8),),
+        placement_new: (),
+        int_destroy: ((0x14, "call", int_allocator_destroy, None),),
+        int_allocator_destroy: ((0x04, "call", int_std_destroy, None),),
+        int_std_destroy: (),
+        int_deallocate: ((0x05, "call", operator_delete, 4),),
+        int_fill: (),
+        int_copy_backward: (),
+    }
+    graph = _player_exact_local_comdat_graph(
+        candidate, exact_calls, label=label
+    )
+    raw = (
+        local_row(0, pointer_subscript, 4),
+        local_row(1, int_pushback, 4),
+    )
+    if tuple(result) != raw:
+        raise ValueError(
+            f"{label} requires the exact pointer-subscript/int-push_back "
+            f"candidate population: actual={result!r}, required={raw!r}"
+        )
+    construct_identity = _player_exact_retail_provider_identity(
+        "provider:recoil:function:0x40c1c0",
+        document=document,
+        indexes=indexes,
+        bridge=bridge,
+    )
+    leaf_specs = (
+        (new_identity, 4),
+        (construct_identity, None),
+        (ufill_identity, None),
+        (ucopy_identity, None),
+        (destroy_identity, None),
+        (delete_identity, 4),
+        (ucopy_identity, None),
+        (ufill_identity, None),
+        (ucopy_identity, None),
+    )
+    projected = [
+        _player_contract_row(ordinal, identity, cleanup_bytes=cleanup)
+        for ordinal, (identity, cleanup) in enumerate(leaf_specs)
+    ]
+    if projected != [dict(row) for row in expected]:
+        raise ValueError(f"{label} rejects immutable retail leaf drift")
+    return projected, {
+        "kind": "candidate-local-helper-graph-expansion-receipt",
+        "contract_version": 1,
+        "candidate_expected_truth": False,
+        "caller_identity": caller_identity,
+        "raw_physical_calls": deepcopy(result),
+        "excluded_raw_physical_calls": deepcopy(result),
+        "expanded_invocation_leaves": deepcopy(projected),
+        "projected_contract": deepcopy(projected),
+        "root_helper_symbol": int_pushback,
+        "helper_graph": graph,
+        "specialized_inline_occurrences": [{
+            "symbol": int_ucopy,
+            "parent_symbol": int_insert_many,
+            "instruction_offset": 0x58,
+            "reason": (
+                "retail keeps the per-element construct provider while "
+                "inlining the surrounding first-range copy loop"
+            ),
+        }],
+    }
 
 
 def _player_call_free_accessor_expansion(
@@ -35119,6 +36616,1144 @@ def _player_candidate_local_occurrence_graph_expansion(
         "caller_body_bytes_hex": _direct_bytes(caller.data).hex(),
     }
     return projected, receipt
+
+
+_ZUI_TU_RELOCATION_SYMBOL = re.compile(
+    r"(\?%D:\\Recoil Project\\RecoilRebuild\\src\\GameZRecoil\\"
+    r"zUI\\zui_widgets\.cpp)[0-9]+(?=@@)"
+)
+_VC5_PRIVATE_RELOCATION_LABEL = re.compile(r"^\$(?P<kind>[LT])[0-9]+$")
+
+
+def _canonical_zui_relocation_names(
+    relocations: Sequence[CoffRelocation],
+) -> tuple[str, ...]:
+    """Remove unstable VC5 serials without weakening relocation topology.
+
+    Function-local ``$L``/``$T`` symbols are numbered from a translation-unit
+    compiler counter, so an edit to a later function can renumber otherwise
+    byte-identical earlier artifacts. Canonicalize each private label by its
+    kind and first-occurrence equivalence class. Offsets, relocation types,
+    ordinary symbol identities, TU-local helper kind, and repeated-label
+    equality remain exact in the enclosing relocation transcript.
+    """
+
+    private_aliases: dict[str, str] = {}
+    next_alias_by_kind = {"L": 0, "T": 0}
+    result: list[str] = []
+    for row in relocations:
+        raw_name = row.symbol_name
+        name = _ZUI_TU_RELOCATION_SYMBOL.sub(
+            r"\1<tu-discriminator>", raw_name
+        )
+        private_match = _VC5_PRIVATE_RELOCATION_LABEL.fullmatch(raw_name)
+        if private_match is not None:
+            kind = private_match.group("kind")
+            alias = private_aliases.get(raw_name)
+            if alias is None:
+                alias = f"${kind}<local-{next_alias_by_kind[kind]}>"
+                private_aliases[raw_name] = alias
+                next_alias_by_kind[kind] += 1
+            name = alias
+        result.append(name)
+    return tuple(result)
+
+
+def _zui_relocation_payload(
+    relocations: Sequence[CoffRelocation],
+) -> bytes:
+    names = _canonical_zui_relocation_names(relocations)
+    return json.dumps(
+        [
+            [row.offset, row.type, name]
+            for row, name in zip(relocations, names)
+        ],
+        ensure_ascii=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+
+
+def _zui_candidate_local_vector_occurrence_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    """Project one exact VC5 pointer-vector inline occurrence package.
+
+    The retail 0x4b59f0 body inlines six element-copy loops but retains one
+    call to the address-backed ``CopySingleDword`` COMDAT in each loop.  The
+    governed candidate retains four ``_Ucopy`` and two ``_Ufill`` occurrences
+    as call-free local COMDATs, plus one call-free ``size`` bookkeeping
+    occurrence.  This finite proof authenticates the complete caller artifact
+    and all three local definitions, replaces each
+    copy/fill occurrence in place with the independently catalogued retail
+    provider leaf, and removes only the call-free bookkeeping occurrences.
+    The ordinary downstream provider arbitration and direct retail comparator
+    remain solely responsible for accepting the resulting full contract.
+    """
+
+    profile = (
+        caller_identity,
+        normalize_address(caller_start),
+        normalize_address(caller_end_exclusive),
+    )
+    if profile != (
+        "symbol:recoil:function:0x4b59f0",
+        "0x4b59f0",
+        "0x4b6fc0",
+    ):
+        return [dict(row) for row in candidate_contract], None
+
+    prefix = "zUI candidate-only pointer-vector occurrence graph"
+    caller = candidate.caller_definition
+    caller_symbol = (
+        "?LoadFromZrd@HudUiZrdWidget@@UAEHPAUNode@zReader@@"
+        "PAUHudUiBackground@@@Z"
+    )
+    if caller is None:
+        raise ValueError(f"{prefix} lacks the complete caller definition")
+    relocation_payload = _zui_relocation_payload(caller.relocations)
+    if (
+        caller.symbol != caller_symbol
+        or len(caller.data) != 0x15E0
+        or hashlib.sha256(caller.data).hexdigest()
+        != "c6861a893cbb58427a0ed36d864c3dd94215bd68b300f04d3d8fc5c5740eda74"
+        or len(caller.relocations) != 150
+        or hashlib.sha256(relocation_payload).hexdigest()
+        != "2c8d2d053d246cb6316bf92b304a77aefc40a64c49fab7accb1a29720233f496"
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in caller.relocations
+            )
+            for index in range(len(caller.data))
+        )
+    ):
+        raise ValueError(
+            f"{prefix} rejects caller symbol, extent, body, relocation, or "
+            "boundary drift"
+        )
+
+    size = (
+        "?size@?$vector@PAUHudUiPanel@@"
+        "V?$allocator@PAUHudUiPanel@@@std@@@std@@QBEIXZ"
+    )
+    ucopy = (
+        "?_Ucopy@?$vector@PAUHudUiPanel@@"
+        "V?$allocator@PAUHudUiPanel@@@std@@@std@@"
+        "IAEPAPAUHudUiPanel@@PBQAU3@0PAPAU3@@Z"
+    )
+    ufill = (
+        "?_Ufill@?$vector@PAUHudUiPanel@@"
+        "V?$allocator@PAUHudUiPanel@@@std@@@std@@"
+        "IAEXPAPAUHudUiPanel@@IABQAU3@@Z"
+    )
+    insert_many = (
+        "?insert@?$vector@PAUHudUiPanel@@"
+        "V?$allocator@PAUHudUiPanel@@@std@@@std@@"
+        "QAEXPAPAUHudUiPanel@@IABQAU3@@Z"
+    )
+    helper_specs = {
+        size: bytes.fromhex(
+            "8b510485d2750333c0c38b41082bc2c1f802c3" + "90" * 13
+        ),
+        ucopy: bytes.fromhex(
+            "8b4c24048b5424083bca741b8b44240c5685c074048b31893083c104"
+            "83c0043bca75ee5ec20c008b44240cc20c00" + "90" * 2
+        ),
+        ufill: bytes.fromhex(
+            "8b4c240885c976188b54240c8b4424045685c074048b32893083c004"
+            "4975f25ec20c00" + "90" * 13
+        ),
+    }
+    definitions = candidate.tu_local_function_definitions
+    vector_population = {
+        name for name in definitions
+        if "?$vector@PAUHudUiPanel@@" in name
+    }
+    if not {*helper_specs, insert_many}.issubset(vector_population):
+        raise ValueError(
+            f"{prefix} lacks a required local vector definition: "
+            f"observed={sorted(vector_population)!r}"
+        )
+    helper_receipts: list[dict[str, Any]] = []
+    for name, body in helper_specs.items():
+        definition = definitions.get(name)
+        exact_symbols = tuple(
+            row for row in caller.coff_symbols if row.name == name
+        )
+        exact_symbol = exact_symbols[0] if len(exact_symbols) == 1 else None
+        if (
+            definition is None
+            or definition.symbol != name
+            or definition.data != body
+            or definition.section_size != len(body)
+            or definition.section_is_comdat is not True
+            or definition.comdat_selection != 2
+            or definition.section_external_functions != (name,)
+            or definition.relocations
+            or any(definition.relocation_mask)
+            or definition.local_control_flow_indices
+            or definition.local_control_flow_targets
+            or exact_symbol is None
+            or exact_symbol.value != 0
+            or exact_symbol.symbol_type != 0x20
+            or exact_symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
+            or exact_symbol.natural_end != len(body)
+            or exact_symbol.section_size != len(body)
+            or not (exact_symbol.section_characteristics & IMAGE_SCN_LNK_COMDAT)
+            or not definition.source_provenance.replace("\\", "/").endswith(
+                "/VC/INCLUDE/vector"
+            )
+        ):
+            raise ValueError(
+                f"{prefix} rejects body, extent, selection, relocation, "
+                f"collision, CFG, or provenance drift for {name!r}"
+            )
+        helper_assembly = CandidateAssembly(
+            instructions=definition.instructions,
+            local_control_flow_indices=definition.local_control_flow_indices,
+            local_control_flow_targets=definition.local_control_flow_targets,
+        )
+        if _candidate_static_invocation_indices(
+            helper_assembly,
+            caller_start="0x0",
+            caller_end_exclusive=hex(len(body)),
+        ):
+            raise ValueError(f"{prefix} rejects a non-call-free local helper")
+        helper_receipts.append({
+            "symbol": name,
+            "body_bytes_hex": _direct_bytes(body).hex(),
+            "relocations": [],
+            "call_population": 0,
+        })
+
+    local_sites = (
+        (0x142B, ucopy),
+        (0x143E, ufill),
+        (0x1452, ucopy),
+        (0x1473, size),
+        (0x149B, ucopy),
+        (0x14BA, ufill),
+        (0x14DD, ucopy),
+    )
+    cleanup_by_symbol = {name: None for name in helper_specs}
+    invocation_indices = _candidate_static_invocation_indices(
+        candidate,
+        caller_start="0x0",
+        caller_end_exclusive=hex(len(caller.data)),
+    )
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    if len(invocation_indices) != len(candidate_contract):
+        raise ValueError(f"{prefix} rejects caller invocation population drift")
+    selected_ordinals: dict[int, str] = {}
+    observed_sites: list[tuple[int, str]] = []
+    for ordinal, index in enumerate(invocation_indices):
+        if index >= len(offsets) or offsets[index] is None:
+            raise ValueError(f"{prefix} rejects unresolved caller offsets")
+        offset = int(offsets[index])
+        relocation = next(
+            (
+                row for row in caller.relocations
+                if row.offset == offset + 1
+                and row.type == IMAGE_REL_I386_REL32
+            ),
+            None,
+        )
+        if relocation is None or relocation.symbol_name not in helper_specs:
+            continue
+        name = relocation.symbol_name
+        observed_sites.append((offset, name))
+        exact_row = {
+            "ordinal": ordinal,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "direct",
+            "target_identity": f"candidate-local-coff:{name}",
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": cleanup_by_symbol[name],
+        }
+        if dict(candidate_contract[ordinal]) != exact_row:
+            raise ValueError(
+                f"{prefix} rejects local-row identity drift at caller "
+                f"offset {hex(offset)} ordinal {ordinal}: "
+                f"observed={dict(candidate_contract[ordinal])!r}, "
+                f"required={exact_row!r}"
+            )
+        selected_ordinals[ordinal] = name
+    if tuple(observed_sites) != local_sites:
+        raise ValueError(
+            f"{prefix} rejects local occurrence order/population drift: "
+            f"observed={tuple(observed_sites)!r}"
+        )
+
+    copy_identity = indexes.by_address.get("0x40c1c0")
+    if (
+        copy_identity != "provider:recoil:function:0x40c1c0"
+        or copy_identity not in indexes.provider_ids
+    ):
+        raise ValueError(
+            f"{prefix} lacks independently catalogued CopySingleDword authority"
+        )
+    projected: list[dict[str, Any]] = []
+    expanded_leaves: list[dict[str, Any]] = []
+    for ordinal, raw_row in enumerate(candidate_contract):
+        name = selected_ordinals.get(ordinal)
+        if name == size:
+            continue
+        if name in {ucopy, ufill}:
+            row = {
+                "ordinal": len(projected),
+                "form": "call",
+                "dispatch": "direct",
+                "identity_kind": "provider",
+                "target_identity": copy_identity,
+                "storage_identity": "",
+                "slot_displacement": None,
+                "cleanup_bytes": None,
+            }
+            projected.append(row)
+            expanded_leaves.append(deepcopy(row))
+            continue
+        row = dict(raw_row)
+        row["ordinal"] = len(projected)
+        projected.append(row)
+    return projected, {
+        "kind": "candidate-local-helper-graph-expansion-receipt",
+        "contract_version": 1,
+        "candidate_expected_truth": False,
+        "caller_identity": caller_identity,
+        "raw_physical_calls": [deepcopy(dict(row)) for row in candidate_contract],
+        "excluded_raw_physical_calls": [
+            deepcopy(dict(candidate_contract[ordinal]))
+            for ordinal in selected_ordinals
+        ],
+        "expanded_invocation_leaves": expanded_leaves,
+        "projected_contract": deepcopy(projected),
+        "definition_symbols": sorted(helper_specs),
+        "helper_graph": helper_receipts,
+        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
+    }
+
+
+def _zui_check_toggle_inline_helper_occurrence_projection(
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    """Expand the exact compiler-local zUI source-helper occurrences.
+
+    Retail inlines four source-faithful helpers in
+    ``HudUiCheckToggleWidget::LoadFromZrd``.  The governed VC5 candidate keeps
+    sixteen physical helper calls: thirteen call-free accessor occurrences
+    and three ``ApplyHudFontStyleTextOnly`` occurrences whose only invocation
+    leaf is the panel's slot-0x80 virtual ``SetFont`` call.  Authenticate the
+    complete caller and helper package, remove only those physical wrapper
+    calls, and insert each proven virtual leaf at its original occurrence.
+    """
+
+    result = [dict(row) for row in candidate_contract]
+    profile = (
+        caller_identity,
+        normalize_address(caller_start),
+        normalize_address(caller_end_exclusive),
+    )
+    if profile != (
+        "symbol:recoil:function:0x4b7340",
+        "0x4b7340",
+        "0x4b7d60",
+    ):
+        return result, None
+
+    prefix = "zUI check-toggle inline-helper occurrence graph"
+    caller = candidate.caller_definition
+    if caller is None:
+        raise ValueError(f"{prefix} lacks the complete caller definition")
+    relocation_payload = _zui_relocation_payload(caller.relocations)
+    if (
+        caller.symbol
+        != (
+            "?LoadFromZrd@HudUiCheckToggleWidget@@UAEHPAUNode@zReader@@"
+            "PAUHudUiBackground@@@Z"
+        )
+        or len(caller.data) != 0x9A0
+        or hashlib.sha256(caller.data).hexdigest()
+        != "ca21689d6d39eb39fb3093ee5c18370b2911c54f08f8307c1743482294e92b91"
+        or len(caller.relocations) != 83
+        or hashlib.sha256(relocation_payload).hexdigest()
+        != "9692af36ee96ad0482f837a15cca12b4350c25327577c939aed428bd63fd416b"
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in caller.relocations
+            )
+            for index in range(len(caller.data))
+        )
+    ):
+        raise ValueError(
+            f"{prefix} rejects caller body, relocation, or boundary drift"
+        )
+
+    helper_patterns = {
+        "string": re.compile(
+            r"^\?ZrdArrayString@\?%D:\\Recoil Project\\RecoilRebuild\\"
+            r"src\\GameZRecoil\\zUI\\zui_widgets\.cpp(?P<d>[0-9]+)"
+            r"@@YIPBDPAUNode@zReader@@H@Z$"
+        ),
+        "integer": re.compile(
+            r"^\?ZrdArrayInt@\?%D:\\Recoil Project\\RecoilRebuild\\"
+            r"src\\GameZRecoil\\zUI\\zui_widgets\.cpp(?P<d>[0-9]+)"
+            r"@@YIHPAUNode@zReader@@HH@Z$"
+        ),
+        "owner_style": re.compile(
+            r"^\?HudUiZrdOwnerFontStyle@\?%D:\\Recoil Project\\"
+            r"RecoilRebuild\\src\\GameZRecoil\\zUI\\zui_widgets\.cpp"
+            r"(?P<d>[0-9]+)@@YIPBUHudFontStyle@@"
+            r"PBUHudUiBackground@@H@Z$"
+        ),
+        "apply_style": re.compile(
+            r"^\?ApplyHudFontStyleTextOnly@\?%D:\\Recoil Project\\"
+            r"RecoilRebuild\\src\\GameZRecoil\\zUI\\zui_widgets\.cpp"
+            r"(?P<d>[0-9]+)@@YIXPAUHudUiPanel@@"
+            r"PBUHudFontStyle@@@Z$"
+        ),
+    }
+    definitions = candidate.tu_local_function_definitions
+    matched: dict[str, tuple[str, CandidateTuLocalFunctionDefinition]] = {}
+    discriminators: set[str] = set()
+    for logical, pattern in helper_patterns.items():
+        rows = [
+            (name, definition, match)
+            for name, definition in definitions.items()
+            if (match := pattern.fullmatch(name)) is not None
+        ]
+        if len(rows) != 1:
+            raise ValueError(
+                f"{prefix} requires one exact {logical} definition"
+            )
+        name, definition, match = rows[0]
+        matched[logical] = (name, definition)
+        discriminators.add(match.group("d"))
+    if len(discriminators) != 1:
+        raise ValueError(f"{prefix} rejects mixed TU-local discriminators")
+
+    helper_bodies = {
+        "string": bytes.fromhex(
+            "85c974058d04d1eb0233c085c0740983380375048b4004c333c0c3"
+            "9090909090"
+        ),
+        "integer": bytes.fromhex(
+            "85c974058d04d1eb0233c085c0740b83380175068b4004c20400"
+            "8b442404c20400" + "90" * 15
+        ),
+        "owner_style": bytes.fromhex(
+            "8d04d28d8c81ec1c00008b01f7d81bc023c1c3" + "90" * 13
+        ),
+        "apply_style": bytes.fromhex(
+            "56578bfa8bf185ff74508b4f1c8b57088b066a026a006a006a0051"
+            "8b4f0452518bceff90800000008b570c89964c0100008b470c898650"
+            "010000b8010000008986700200008b4f18898e6402000089869c0200"
+            "008986a00200005f5ec3" + "90" * 3
+        ),
+    }
+    helper_receipts: list[dict[str, Any]] = []
+    for logical, (name, definition) in matched.items():
+        helper = CandidateAssembly(
+            instructions=definition.instructions,
+            local_control_flow_indices=definition.local_control_flow_indices,
+            local_control_flow_targets=definition.local_control_flow_targets,
+        )
+        invocation_indices = _candidate_static_invocation_indices(
+            helper,
+            caller_start="0x0",
+            caller_end_exclusive=hex(len(definition.data)),
+        )
+        offsets = _candidate_complete_instruction_offsets(helper)
+        invocation_offsets = tuple(
+            offsets[index] for index in invocation_indices
+        )
+        required_offsets = (0x22,) if logical == "apply_style" else ()
+        if (
+            definition.symbol != name
+            or definition.data != helper_bodies[logical]
+            or definition.section_size != len(helper_bodies[logical])
+            or definition.section_is_comdat is not True
+            or definition.comdat_selection != 2
+            or definition.section_external_functions != (name,)
+            or definition.relocations
+            or any(definition.relocation_mask)
+            or invocation_offsets != required_offsets
+            or not definition.source_provenance.replace("\\", "/").endswith(
+                "/src/GameZRecoil/zUI/zui_widgets.cpp"
+            )
+        ):
+            raise ValueError(
+                f"{prefix} rejects {logical} body, COMDAT, CFG, relocation, "
+                "or provenance drift"
+            )
+        if logical == "apply_style" and (
+            len(invocation_indices) != 1
+            or bytes(
+                int(item, 16)
+                for item in definition.instructions[
+                    invocation_indices[0]
+                ].bytes
+            )
+            != bytes.fromhex("ff 90 80 00 00 00")
+        ):
+            raise ValueError(f"{prefix} rejects the exact SetFont leaf")
+        helper_receipts.append({
+            "logical_helper": logical,
+            "symbol": name,
+            "body_bytes_hex": _direct_bytes(definition.data).hex(),
+            "relocations": [],
+            "invocation_offsets": list(invocation_offsets),
+        })
+
+    site_specs = (
+        (0x117, "string"),
+        (0x14C, "integer"),
+        (0x163, "integer"),
+        (0x17F, "integer"),
+        (0x18C, "owner_style"),
+        (0x195, "apply_style"),
+        (0x29F, "integer"),
+        (0x2B6, "integer"),
+        (0x2D2, "integer"),
+        (0x2F1, "apply_style"),
+        (0x7CC, "string"),
+        (0x804, "integer"),
+        (0x81B, "integer"),
+        (0x83B, "integer"),
+        (0x848, "owner_style"),
+        (0x851, "apply_style"),
+    )
+    invocation_indices = _candidate_static_invocation_indices(
+        candidate,
+        caller_start="0x0",
+        caller_end_exclusive=hex(len(caller.data)),
+    )
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    if len(invocation_indices) != len(result):
+        raise ValueError(f"{prefix} rejects caller invocation population drift")
+    ordinal_by_offset = {
+        int(offsets[index]): ordinal
+        for ordinal, index in enumerate(invocation_indices)
+        if offsets[index] is not None
+    }
+    cleanup_by_logical = {
+        "string": None,
+        # The generic cleanup receipt intentionally does not publish
+        # free-function ``YIH`` cleanup.  The exact helper body above still
+        # authenticates both RET 4 terminals before this wrapper is removed.
+        "integer": None,
+        "owner_style": None,
+        "apply_style": None,
+    }
+    selected: dict[int, str] = {}
+    for offset, logical in site_specs:
+        ordinal = ordinal_by_offset.get(offset)
+        name = matched[logical][0]
+        expected_row = {
+            "ordinal": ordinal,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "direct",
+            "target_identity": f"candidate-local-coff:{name}",
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": cleanup_by_logical[logical],
+        }
+        if ordinal is None or result[ordinal] != expected_row:
+            raise ValueError(
+                f"{prefix} rejects raw {logical} occurrence at +0x{offset:x}: "
+                f"observed={result[ordinal] if ordinal is not None else None!r}, "
+                f"required={expected_row!r}"
+            )
+        selected[ordinal] = logical
+    observed_local_sites = tuple(
+        (offset, logical)
+        for offset, logical in site_specs
+        if any(
+            row.offset == offset + 1
+            and row.type == IMAGE_REL_I386_REL32
+            and row.symbol_name == matched[logical][0]
+            for row in caller.relocations
+        )
+    )
+    if observed_local_sites != site_specs:
+        raise ValueError(f"{prefix} rejects helper relocation-site drift")
+
+    apply_receiver_offsets = {
+        0x195: 0x1A0,
+        0x2F1: 0x2FC,
+        0x851: 0x85C,
+    }
+    leaf_by_ordinal: dict[int, dict[str, Any]] = {}
+    for apply_offset, receiver_offset in apply_receiver_offsets.items():
+        apply_ordinal = ordinal_by_offset.get(apply_offset)
+        receiver_ordinal = ordinal_by_offset.get(receiver_offset)
+        receiver = (
+            result[receiver_ordinal]
+            if receiver_ordinal is not None
+            else None
+        )
+        if (
+            apply_ordinal is None
+            or selected.get(apply_ordinal) != "apply_style"
+            or receiver is None
+            or receiver.get("form") != "call"
+            or receiver.get("dispatch") != "indirect"
+            or receiver.get("identity_kind") != "virtual-slot"
+            or receiver.get("target_identity") != ""
+            or receiver.get("slot_displacement") != 0x60
+            or receiver.get("cleanup_bytes") is not None
+            or not receiver.get("storage_identity")
+        ):
+            raise ValueError(
+                f"{prefix} rejects receiver lineage at +0x{apply_offset:x}"
+            )
+        leaf_by_ordinal[apply_ordinal] = {
+            "form": "call",
+            "dispatch": "indirect",
+            "identity_kind": "virtual-slot",
+            "target_identity": "",
+            "storage_identity": receiver["storage_identity"],
+            "slot_displacement": 0x80,
+            "cleanup_bytes": None,
+        }
+
+    projected: list[dict[str, Any]] = []
+    expanded_leaves: list[dict[str, Any]] = []
+    for ordinal, row in enumerate(result):
+        if ordinal not in selected:
+            projected_row = dict(row)
+            projected_row["ordinal"] = len(projected)
+            projected.append(projected_row)
+            continue
+        leaf = leaf_by_ordinal.get(ordinal)
+        if leaf is not None:
+            projected_row = {"ordinal": len(projected), **leaf}
+            projected.append(projected_row)
+            expanded_leaves.append(deepcopy(projected_row))
+    return projected, {
+        "kind": "candidate-local-helper-graph-expansion-receipt",
+        "contract_version": 1,
+        "candidate_expected_truth": False,
+        "caller_identity": caller_identity,
+        "raw_physical_calls": deepcopy(result),
+        "excluded_raw_physical_calls": [
+            deepcopy(result[ordinal]) for ordinal in sorted(selected)
+        ],
+        "expanded_invocation_leaves": expanded_leaves,
+        "projected_contract": deepcopy(projected),
+        "helper_graph": helper_receipts,
+        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
+    }
+
+
+def _zui_exact_stack_receiver_storage_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+) -> list[dict[str, Any]]:
+    """Normalize exact ephemeral panel locals across one VC5 frame delta.
+
+    Retail reserves twelve more local-frame bytes than the governed candidate
+    and reuses argument-home slots for the same eight newly allocated panel
+    receivers.  The full caller body and relocation package below freezes the
+    candidate proof.  Each accepted row must otherwise equal retail exactly;
+    only the rendered ephemeral receiver storage may change.
+    """
+
+    result = [dict(row) for row in candidate_contract]
+    profile = (
+        caller_identity,
+        normalize_address(caller_start),
+        normalize_address(caller_end_exclusive),
+    )
+    if profile != (
+        "symbol:recoil:function:0x4b59f0",
+        "0x4b59f0",
+        "0x4b6fc0",
+    ):
+        return result
+    prefix = "zUI exact stack-receiver storage projection"
+    caller = candidate.caller_definition
+    if caller is None:
+        raise ValueError(f"{prefix} lacks the complete caller definition")
+    relocation_payload = _zui_relocation_payload(caller.relocations)
+    if (
+        caller.symbol
+        != (
+            "?LoadFromZrd@HudUiZrdWidget@@UAEHPAUNode@zReader@@"
+            "PAUHudUiBackground@@@Z"
+        )
+        or len(caller.data) != 0x15E0
+        or hashlib.sha256(caller.data).hexdigest()
+        != "c6861a893cbb58427a0ed36d864c3dd94215bd68b300f04d3d8fc5c5740eda74"
+        or len(caller.relocations) != 150
+        or hashlib.sha256(relocation_payload).hexdigest()
+        != "2c8d2d053d246cb6316bf92b304a77aefc40a64c49fab7accb1a29720233f496"
+        or len(caller.relocation_mask) != len(caller.data)
+    ):
+        raise ValueError(
+            f"{prefix} rejects caller body, relocation, boundary, or "
+            "contract-population drift: "
+            f"symbol={caller.symbol!r}, extent={len(caller.data)}, "
+            f"body_sha256={hashlib.sha256(caller.data).hexdigest()!r}, "
+            f"relocation_count={len(caller.relocations)}, "
+            f"relocations_sha256={hashlib.sha256(relocation_payload).hexdigest()!r}, "
+            f"mask_count={len(caller.relocation_mask)}, "
+            f"retail_count={len(expected)}, candidate_count={len(result)}"
+        )
+    allowed_candidate_storage = {
+        "load(load(stack+0x3c))",
+        "load(load(stack+0x44))",
+        "load(nullable(call-result(provider:recoil:function:0x4c5b76)))",
+    }
+    allowed_retail_storage = {
+        "load(load(stack+0x48))",
+        "load(load(stack+0x50))",
+    }
+    bridged_ordinals: list[int] = []
+    for ordinal, (retail_row, candidate_row) in enumerate(
+        zip(expected, result)
+    ):
+        retail = dict(retail_row)
+        observed = dict(candidate_row)
+        retail_storage = retail.get("storage_identity")
+        candidate_storage = observed.get("storage_identity")
+        if (
+            retail_storage == candidate_storage
+            or candidate_storage not in allowed_candidate_storage
+            or retail_storage not in allowed_retail_storage
+            or retail.get("dispatch") != "indirect"
+            or retail.get("identity_kind") != "virtual-slot"
+            or observed.get("dispatch") != "indirect"
+            or observed.get("identity_kind") != "virtual-slot"
+        ):
+            continue
+        candidate_without_storage = dict(observed)
+        retail_without_storage = dict(retail)
+        candidate_without_storage["storage_identity"] = ""
+        retail_without_storage["storage_identity"] = ""
+        if candidate_without_storage != retail_without_storage:
+            continue
+        observed["storage_identity"] = str(retail_storage)
+        result[ordinal] = observed
+        bridged_ordinals.append(ordinal)
+    required_ordinals = (
+        17, 18, 19, 20,
+        26, 27, 28, 29,
+        45, 46, 47, 48,
+        54, 55, 56, 57,
+        73, 74, 75, 76,
+        82, 83, 84, 85,
+        96, 97, 98, 99,
+        105, 106, 107, 108,
+    )
+    if tuple(bridged_ordinals) != required_ordinals:
+        raise ValueError(
+            f"{prefix} rejects exact bridge population drift: "
+            f"observed={tuple(bridged_ordinals)!r}"
+        )
+    return result
+
+
+def _zui_check_toggle_receiver_storage_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+) -> list[dict[str, Any]]:
+    """Normalize exact panel receivers in one frozen check-toggle caller.
+
+    The governed candidate configures two conditional transition-text panels
+    through an allocation-result register and stores each same nonvolatile
+    receiver into ``this+0x160`` after ``AddChild``.  Retail performs the
+    accepted owner-field contribution early enough that the configuration
+    vcalls are rendered through the member.  Normalize only those six storage
+    spellings after authenticating the complete candidate body/relocations and
+    both exact allocation, receiver, virtual-call, AddChild, and member-store
+    lineages.  The second allocation retains the separately required inline
+    constructor as one exact VC5 COMDAT wrapper; expand its one authenticated
+    base-constructor leaf before comparing retail.  The same caller has two
+    loop-local panels whose candidate frame is four bytes larger than retail;
+    normalize their exact eight vcalls only after the same complete caller and
+    relocation proof.
+    """
+
+    result = [dict(row) for row in candidate_contract]
+    profile = (
+        caller_identity,
+        normalize_address(caller_start),
+        normalize_address(caller_end_exclusive),
+    )
+    if profile != (
+        "symbol:recoil:function:0x4b7340",
+        "0x4b7340",
+        "0x4b7d60",
+    ):
+        return result
+    prefix = "zUI check-toggle receiver-storage projection"
+    caller = candidate.caller_definition
+    if caller is None:
+        raise ValueError(f"{prefix} lacks the complete caller definition")
+    relocation_payload = _zui_relocation_payload(caller.relocations)
+    if (
+        caller.symbol
+        != (
+            "?LoadFromZrd@HudUiCheckToggleWidget@@UAEHPAUNode@zReader@@"
+            "PAUHudUiBackground@@@Z"
+        )
+        or len(caller.data) != 0x9A0
+        or hashlib.sha256(caller.data).hexdigest()
+        != "ca21689d6d39eb39fb3093ee5c18370b2911c54f08f8307c1743482294e92b91"
+        or len(caller.relocations) != 83
+        or hashlib.sha256(relocation_payload).hexdigest()
+        != "9692af36ee96ad0482f837a15cca12b4350c25327577c939aed428bd63fd416b"
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in caller.relocations
+            )
+            for index in range(len(caller.data))
+        )
+    ):
+        raise ValueError(f"{prefix} rejects caller artifact drift")
+
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    index_by_offset = {
+        int(offset): index
+        for index, offset in enumerate(offsets)
+        if offset is not None
+    }
+    exact_rows = {
+        0x025: (bytes.fromhex("8b f9"), "edi, ecx"),
+        0x0C4: (bytes.fromhex("e8 00 00 00 00"), "??2@YAPAXI@Z"),
+        0x0C9: (bytes.fromhex("8b f0"), "esi, eax"),
+        0x0D0: (bytes.fromhex("3b f5"), "esi, ebp"),
+        0x0D2: (bytes.fromhex("74 3c"), "$L<private>"),
+        0x0D7: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x0D9: (
+            bytes.fromhex("e8 00 00 00 00"),
+            "??0HudUiPanel@@QAE@PBDHH@Z",
+        ),
+        0x137: (bytes.fromhex("8b 16"), "edx, dword [esi]"),
+        0x13B: (bytes.fromhex("ff 52 74"), "dword [edx+116]"),
+        0x13E: (bytes.fromhex("8b 2e"), "ebp, dword [esi]"),
+        0x16E: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x173: (bytes.fromhex("ff 55 0c"), "dword [ebp+12]"),
+        0x19A: (bytes.fromhex("8b 06"), "eax, dword [esi]"),
+        0x19E: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x1A0: (bytes.fromhex("ff 50 60"), "dword [eax+96]"),
+        0x1A9: (bytes.fromhex("56"), "esi"),
+        0x1AA: (
+            bytes.fromhex("e8 00 00 00 00"),
+            "?AddChild@HudUiContainer@@QAEHPAUHudUiElement@@@Z",
+        ),
+        0x1B3: (
+            bytes.fromhex("89 b7 60 01 00 00"),
+            "dword [edi+352], esi",
+        ),
+        0x247: (bytes.fromhex("e8 00 00 00 00"), "??2@YAPAXI@Z"),
+        0x24C: (bytes.fromhex("8b f0"), "esi, eax"),
+        0x251: (bytes.fromhex("85 f6"), "esi, esi"),
+        0x253: (bytes.fromhex("74 07"), "$L<private>"),
+        0x255: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x257: (
+            bytes.fromhex("e8 00 00 00 00"),
+            "??0HudUiTransitionTextPanel@@QAE@XZ",
+        ),
+        0x28A: (bytes.fromhex("8b 0e"), "ecx, dword [esi]"),
+        0x28E: (bytes.fromhex("ff 51 74"), "dword [ecx+116]"),
+        0x291: (bytes.fromhex("8b 2e"), "ebp, dword [esi]"),
+        0x2C1: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x2C6: (bytes.fromhex("ff 55 0c"), "dword [ebp+12]"),
+        0x2F6: (bytes.fromhex("8b 16"), "edx, dword [esi]"),
+        0x2FA: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x2FC: (bytes.fromhex("ff 52 60"), "dword [edx+96]"),
+        0x305: (bytes.fromhex("56"), "esi"),
+        0x306: (
+            bytes.fromhex("e8 00 00 00 00"),
+            "?AddChild@HudUiContainer@@QAEHPAUHudUiElement@@@Z",
+        ),
+        0x30F: (
+            bytes.fromhex("89 b7 60 01 00 00"),
+            "dword [edi+352], esi",
+        ),
+        0x77B: (bytes.fromhex("e8 00 00 00 00"), "??2@YAPAXI@Z"),
+        0x780: (bytes.fromhex("8b f0"), "esi, eax"),
+        0x785: (bytes.fromhex("3b f5"), "esi, ebp"),
+        0x787: (bytes.fromhex("74 3c"), "$L<private>"),
+        0x78C: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x78E: (
+            bytes.fromhex("e8 00 00 00 00"),
+            "??0HudUiPanel@@QAE@PBDHH@Z",
+        ),
+        0x7EC: (bytes.fromhex("8b 16"), "edx, dword [esi]"),
+        0x7F0: (bytes.fromhex("ff 52 74"), "dword [edx+116]"),
+        0x7F3: (bytes.fromhex("8b 06"), "eax, dword [esi]"),
+        0x800: (bytes.fromhex("89 44 24 38"), "dword 8+[esp+48], eax"),
+        0x828: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x82B: (bytes.fromhex("8b 44 24 3c"), "eax, dword 8+[esp+52]"),
+        0x82F: (bytes.fromhex("ff 50 0c"), "dword [eax+12]"),
+        0x856: (bytes.fromhex("8b 16"), "edx, dword [esi]"),
+        0x85A: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x85C: (bytes.fromhex("ff 52 60"), "dword [edx+96]"),
+        0x865: (bytes.fromhex("56"), "esi"),
+        0x866: (
+            bytes.fromhex("e8 00 00 00 00"),
+            "?AddChild@HudUiContainer@@QAEHPAUHudUiElement@@@Z",
+        ),
+        0x86B: (
+            bytes.fromhex("89 b7 60 01 00 00"),
+            "dword [edi+352], esi",
+        ),
+    }
+    for offset, (body, operand) in exact_rows.items():
+        index = index_by_offset.get(offset)
+        try:
+            observed_body = (
+                bytes(int(item, 16) for item in candidate.instructions[index].bytes)
+                if index is not None
+                else b""
+            )
+        except (TypeError, ValueError):
+            observed_body = b""
+        observed_operand = (
+            _instruction_operand(candidate.instructions[index]).strip()
+            if index is not None else ""
+        )
+        operand_matches = (
+            observed_operand == operand
+            or (
+                operand == "$L<private>"
+                and re.fullmatch(r"\$L[0-9]+", observed_operand) is not None
+            )
+        )
+        if (
+            observed_body != body
+            or index is None
+            or not operand_matches
+        ):
+            raise ValueError(
+                f"{prefix} rejects receiver lineage at +0x{offset:x}"
+            )
+    required_relocations = {
+        0x0C5: "??2@YAPAXI@Z",
+        0x0DA: "??0HudUiPanel@@QAE@PBDHH@Z",
+        0x1AB: "?AddChild@HudUiContainer@@QAEHPAUHudUiElement@@@Z",
+        0x248: "??2@YAPAXI@Z",
+        0x258: "??0HudUiTransitionTextPanel@@QAE@XZ",
+        0x307: "?AddChild@HudUiContainer@@QAEHPAUHudUiElement@@@Z",
+        0x77C: "??2@YAPAXI@Z",
+        0x78F: "??0HudUiPanel@@QAE@PBDHH@Z",
+        0x867: "?AddChild@HudUiContainer@@QAEHPAUHudUiElement@@@Z",
+    }
+    if any(
+        len(
+            [
+                row for row in caller.relocations
+                if row.offset == offset
+                and row.type == IMAGE_REL_I386_REL32
+                and row.symbol_name == name
+            ]
+        )
+        != 1
+        for offset, name in required_relocations.items()
+    ):
+        raise ValueError(f"{prefix} rejects direct-call relocation lineage")
+
+    if (
+        len(expected) <= 18
+        or len(result) <= 18
+        or tuple(row.get("ordinal") for row in expected)
+        != tuple(range(len(expected)))
+        or tuple(row.get("ordinal") for row in result)
+        != tuple(range(len(result)))
+    ):
+        raise ValueError(f"{prefix} rejects contract population drift")
+    transition_constructor = "??0HudUiTransitionTextPanel@@QAE@XZ"
+    helper = candidate.tu_local_function_definitions.get(
+        transition_constructor
+    )
+    helper_candidate = (
+        CandidateAssembly(
+            instructions=helper.instructions,
+            local_control_flow_indices=helper.local_control_flow_indices,
+            local_control_flow_targets=helper.local_control_flow_targets,
+        )
+        if helper is not None else None
+    )
+    helper_invocations = (
+        _candidate_static_invocation_indices(
+            helper_candidate,
+            caller_start="0x0",
+            caller_end_exclusive="0x50",
+        )
+        if helper_candidate is not None else ()
+    )
+    helper_offsets = (
+        _candidate_complete_instruction_offsets(helper_candidate)
+        if helper_candidate is not None else ()
+    )
+    expected_constructor_leaf = {
+        "ordinal": 18,
+        "form": "call",
+        "dispatch": "direct",
+        "identity_kind": "direct",
+        "target_identity": "symbol:recoil:function:0x4ba740",
+        "storage_identity": "",
+        "slot_displacement": None,
+        "cleanup_bytes": None,
+    }
+    candidate_constructor_wrapper = {
+        **expected_constructor_leaf,
+        "target_identity": "symbol:recoil:function:0x4ba020",
+    }
+    if (
+        dict(expected[18]) != expected_constructor_leaf
+        or dict(result[18]) != candidate_constructor_wrapper
+        or helper is None
+        or helper.symbol != transition_constructor
+        or len(helper.data) != 0x50
+        or hashlib.sha256(helper.data).hexdigest()
+        != "bdcd3e23d34c7f3796dff2b532a55eb0652930e6fbb6576b2d2d7011f20cbe66"
+        or helper.section_size != 0x50
+        or not helper.section_is_comdat
+        or helper.comdat_selection != 2
+        or helper.section_external_functions != (transition_constructor,)
+        or tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in helper.relocations
+        ) != (
+            (0x0A, IMAGE_REL_I386_REL32, "??0HudUiPanel@@QAE@PBDHH@Z"),
+            (0x28, IMAGE_REL_I386_DIR32, "??_7HudUiTransitionTextPanel@@6B@"),
+        )
+        or len(helper.relocation_mask) != len(helper.data)
+        or any(
+            helper.relocation_mask[index]
+            != (index in range(0x0A, 0x0E) or index in range(0x28, 0x2C))
+            for index in range(len(helper.data))
+        )
+        or len(helper_invocations) != 1
+        or helper_offsets[helper_invocations[0]] != 0x09
+        or not helper.source_provenance.replace("\\", "/").endswith(
+            "/src/GameZRecoil/zHud/zhud_ui_defs.h"
+        )
+    ):
+        raise ValueError(
+            f"{prefix} rejects exact transition-panel constructor leaf"
+        )
+    result[18] = dict(expected_constructor_leaf)
+    allocation_storage = (
+        "load(nullable(call-result(provider:recoil:function:0x4c5b76)))"
+    )
+    member_storage = "load(exact-receiver-field(this,+0x160))"
+    bridged: list[int] = []
+    bridge_specs = (
+        (9, 0x0C),
+        (10, 0x80),
+        (11, 0x60),
+        (21, 0x0C),
+        (22, 0x80),
+        (23, 0x60),
+        (52, 0x0C),
+        (53, 0x80),
+        (54, 0x60),
+    )
+    for ordinal, slot in bridge_specs:
+        retail = dict(expected[ordinal])
+        observed = dict(result[ordinal])
+        if (
+            retail.get("form") != "call"
+            or retail.get("dispatch") != "indirect"
+            or retail.get("identity_kind") != "virtual-slot"
+            or retail.get("target_identity") != ""
+            or retail.get("storage_identity") != member_storage
+            or retail.get("slot_displacement") != slot
+            or retail.get("cleanup_bytes") is not None
+            or observed.get("storage_identity")
+            != ("load(this)" if ordinal == 52 else allocation_storage)
+        ):
+            raise ValueError(
+                f"{prefix} rejects exact bridge row at ordinal {ordinal}"
+            )
+        observed["storage_identity"] = member_storage
+        if observed != retail:
+            raise ValueError(
+                f"{prefix} rejects non-storage drift at ordinal {ordinal}"
+            )
+        result[ordinal] = observed
+        bridged.append(ordinal)
+    if tuple(bridged) != tuple(ordinal for ordinal, _slot in bridge_specs):
+        raise ValueError(f"{prefix} rejects bridge population drift")
+
+    stack_specs = (
+        (29, 0x74, "load(load(stack+0x34))", "load(load(stack+0x38))", 8),
+        (30, 0x0C, "load(load(stack+0x34))", allocation_storage, None),
+        (31, 0x80, "load(load(stack+0x3c))", "load(load(stack+0x40))", None),
+        (32, 0x60, "load(load(stack+0x34))", allocation_storage, None),
+        (38, 0x74, "load(load(stack+0x34))", "load(load(stack+0x38))", 8),
+        (39, 0x0C, "load(load(stack+0x3c))", allocation_storage, None),
+        (40, 0x80, "load(load(stack+0x3c))", "load(load(stack+0x40))", None),
+        (41, 0x60, "load(load(stack+0x34))", allocation_storage, None),
+    )
+    stack_bridged: list[int] = []
+    for ordinal, slot, retail_storage, candidate_storage, cleanup in stack_specs:
+        retail = dict(expected[ordinal])
+        observed = dict(result[ordinal])
+        if (
+            retail.get("form") != "call"
+            or retail.get("dispatch") != "indirect"
+            or retail.get("identity_kind") != "virtual-slot"
+            or retail.get("target_identity") != ""
+            or retail.get("storage_identity") != retail_storage
+            or retail.get("slot_displacement") != slot
+            or retail.get("cleanup_bytes") != cleanup
+            or observed.get("storage_identity") != candidate_storage
+        ):
+            raise ValueError(
+                f"{prefix} rejects exact stack row at ordinal {ordinal}: "
+                f"retail={retail!r}, candidate={observed!r}, "
+                f"required_candidate_storage={candidate_storage!r}"
+            )
+        observed["storage_identity"] = retail_storage
+        if observed != retail:
+            raise ValueError(
+                f"{prefix} rejects non-storage stack drift at ordinal {ordinal}"
+            )
+        result[ordinal] = observed
+        stack_bridged.append(ordinal)
+    if tuple(stack_bridged) != tuple(
+        ordinal for ordinal, *_rest in stack_specs
+    ):
+        raise ValueError(f"{prefix} rejects stack bridge population drift")
+    return result
 
 
 def _player_top_message_static_indirect_storage_bridge(
@@ -59301,6 +61936,50 @@ def _exact_test_same_register(instruction: Instruction) -> str | None:
     return register if operands[0] == register else None
 
 
+def _exact_cmp_register_pair(
+    instruction: Instruction,
+) -> tuple[str, str] | None:
+    """Return one exact unprefixed ``CMP r32, r32`` operand pair.
+
+    VC5 also spells null checks as ``cmp value, zero_register`` after an
+    independently proved self-XOR.  The caller's flow state decides whether
+    either encoded operand is actually null; this helper proves only the
+    rendered and ModRM register pair.
+    """
+
+    if _instruction_mnemonic(instruction) != "cmp":
+        return None
+    operands = tuple(
+        item.strip().lower()
+        for item in _instruction_operand(instruction).split(",")
+    )
+    if len(operands) != 2:
+        return None
+    try:
+        body = bytes(int(item, 16) for item in instruction.bytes)
+    except (TypeError, ValueError):
+        return None
+    if len(body) != 2 or body[0] not in {0x39, 0x3B}:
+        return None
+    modrm = body[1]
+    if modrm >> 6 != 3:
+        return None
+    registers = (
+        "eax",
+        "ecx",
+        "edx",
+        "ebx",
+        "esp",
+        "ebp",
+        "esi",
+        "edi",
+    )
+    reg = registers[(modrm >> 3) & 0x07]
+    rm = registers[modrm & 0x07]
+    encoded = (rm, reg) if body[0] == 0x39 else (reg, rm)
+    return encoded if operands == encoded else None
+
+
 BOUNDED_TARGETLESS_VPTR_STRIDES = frozenset({0x2AC, 0x2C0})
 BOUNDED_TARGETLESS_VPTR_SLOTS = frozenset(
     {
@@ -66184,6 +68863,781 @@ def _r4585_appframe_exitinstance_candidate_vptr_proof(
     return {index_by_offset[0x37B]: "load(this)"}
 
 
+def _exact_candidate_zui_label_panels_vptr_proofs(
+    instructions: Sequence[Instruction],
+    *,
+    source: str,
+    caller_start: str,
+    caller_end_exclusive: str | None,
+    indexes: IdentityIndexes,
+) -> dict[int, str]:
+    """Prove the two guarded ``labelPanels[0]`` candidate vcalls.
+
+    VC5 keeps the nullable first-vector-element receiver in EDI across the
+    active/inactive branch.  The generic register join intentionally discards
+    a null-versus-loaded-object merge, so retain the targetless vptr only for
+    this complete, exact caller shape.  Retail independently supplies the
+    reviewed ``dynamic:labelPanels-element-vptr`` family for comparison.
+    """
+
+    start = normalize_address(caller_start)
+    if source != "cod" or start != "0x4b4ba0":
+        return {}
+
+    def reject(detail: str) -> NoReturn:
+        raise CandidateCallContractEvidenceError(
+            "zUI SetInputActive labelPanels vptr projection requires "
+            + detail
+        )
+
+    caller_identity = "symbol:recoil:function:0x4b4ba0"
+    if (
+        normalize_address(caller_end_exclusive or "0x0") != "0x4b4c50"
+        or indexes.by_address.get(start) != caller_identity
+        or caller_identity in indexes.provider_ids
+    ):
+        reject("the exact authored caller identity and registered extent")
+
+    offsets = _candidate_complete_instruction_offsets(
+        CandidateAssembly(tuple(instructions), frozenset())
+    )
+    if len(offsets) != len(instructions) or any(
+        offset is None for offset in offsets
+    ):
+        reject("complete unique COD instruction coordinates")
+    index_by_offset = {
+        int(offset): index
+        for index, offset in enumerate(offsets)
+        if offset is not None
+    }
+    if len(index_by_offset) != len(instructions):
+        reject("complete unique COD instruction coordinates")
+
+    expected_call_offsets = (0x4D, 0x5E, 0x6B, 0x7C, 0x89, 0x9A)
+    call_offsets = tuple(
+        int(offsets[index])
+        for index, instruction in enumerate(instructions)
+        if _instruction_mnemonic(instruction) == "call"
+        and _exact_invocation_encoding(instruction, mnemonic="call")
+    )
+    if call_offsets != expected_call_offsets:
+        reject("the complete exact current candidate call population")
+
+    exact_rows = {
+        0x00: bytes.fromhex("8b 54 24 04"),
+        0x06: bytes.fromhex("8b f1"),
+        0x09: bytes.fromhex("33 ff"),
+        0x17: bytes.fromhex("8b 8e 10 01 00 00"),
+        0x1D: bytes.fromhex("85 c9"),
+        0x1F: bytes.fromhex("75 04"),
+        0x21: bytes.fromhex("33 c0"),
+        0x23: bytes.fromhex("eb 0b"),
+        0x25: bytes.fromhex("8b 86 14 01 00 00"),
+        0x2B: bytes.fromhex("2b c1"),
+        0x2D: bytes.fromhex("c1 f8 02"),
+        0x30: bytes.fromhex("33 c9"),
+        0x32: bytes.fromhex("85 c0"),
+        0x34: bytes.fromhex("0f 94 c1"),
+        0x37: bytes.fromhex("84 c9"),
+        0x39: bytes.fromhex("75 08"),
+        0x3B: bytes.fromhex("8b 86 10 01 00 00"),
+        0x41: bytes.fromhex("8b 38"),
+        0x43: bytes.fromhex("85 d2"),
+        0x45: bytes.fromhex("74 2f"),
+        0x61: bytes.fromhex("85 ff"),
+        0x63: bytes.fromhex("74 38"),
+        0x65: bytes.fromhex("8b 17"),
+        0x67: bytes.fromhex("6a 01"),
+        0x69: bytes.fromhex("8b cf"),
+        0x6B: bytes.fromhex("ff 52 60"),
+        0x73: bytes.fromhex("c2 04 00"),
+        0x76: bytes.fromhex("8b 06"),
+        0x7C: bytes.fromhex("ff 50 60"),
+        0x7F: bytes.fromhex("85 ff"),
+        0x81: bytes.fromhex("74 09"),
+        0x83: bytes.fromhex("8b 17"),
+        0x85: bytes.fromhex("6a 00"),
+        0x87: bytes.fromhex("8b cf"),
+        0x89: bytes.fromhex("ff 52 60"),
+        0x9A: bytes.fromhex("ff 50 60"),
+        0xA2: bytes.fromhex("c2 04 00"),
+    }
+    for offset, expected_body in exact_rows.items():
+        index = index_by_offset.get(offset)
+        try:
+            body = (
+                bytes(int(item, 16) for item in instructions[index].bytes)
+                if index is not None
+                else b""
+            )
+        except (TypeError, ValueError):
+            body = b""
+        if body != expected_body:
+            reject(f"exact guarded receiver lineage at +0x{offset:x}")
+
+    storage = "load(load(load(this+0x110)))"
+    return {
+        index_by_offset[0x6B]: storage,
+        index_by_offset[0x89]: storage,
+    }
+
+
+def _exact_candidate_zui_spilled_receiver_vptr_proof(
+    instructions: Sequence[Instruction],
+    *,
+    source: str,
+    caller_start: str,
+    caller_end_exclusive: str | None,
+    indexes: IdentityIndexes,
+    candidate_caller_definition: CandidateCallerDefinition | None,
+) -> dict[int, str]:
+    """Prove one VC5 stack-spilled receiver-vptr call in zUI.
+
+    ``HudUiCheckToggleWidget::LoadFromZrd`` loads the vptr of its newly
+    allocated panel receiver, spills that value across one ``ZrdArrayInt``
+    call, and reloads the same absolute stack slot after the argument pushes.
+    The ordinary register interpreter deliberately does not retain arbitrary
+    stack values across calls.  Preserve this one targetless vptr only when
+    the complete caller body, relocation package, and exact spill/reload
+    window match the governed VC5 artifact.
+    """
+
+    start = normalize_address(caller_start)
+    if source != "cod" or start != "0x4b7340":
+        return {}
+
+    def reject(detail: str) -> NoReturn:
+        raise CandidateCallContractEvidenceError(
+            "zUI spilled receiver-vptr projection requires " + detail
+        )
+
+    caller_identity = "symbol:recoil:function:0x4b7340"
+    caller = candidate_caller_definition
+    if (
+        normalize_address(caller_end_exclusive or "0x0") != "0x4b7d60"
+        or indexes.by_address.get(start) != caller_identity
+        or caller_identity in indexes.provider_ids
+        or caller is None
+    ):
+        reject("the exact authored caller identity, extent, and definition")
+
+    canonical_relocation_names = _canonical_zui_relocation_names(
+        caller.relocations
+    )
+    relocation_payload = _zui_relocation_payload(caller.relocations)
+    if (
+        caller.symbol
+        != (
+            "?LoadFromZrd@HudUiCheckToggleWidget@@UAEHPAUNode@zReader@@"
+            "PAUHudUiBackground@@@Z"
+        )
+        or len(caller.data) != 0x9A0
+        or hashlib.sha256(caller.data).hexdigest()
+        != "ca21689d6d39eb39fb3093ee5c18370b2911c54f08f8307c1743482294e92b91"
+        or len(caller.relocations) != 83
+        or hashlib.sha256(relocation_payload).hexdigest()
+        != "9692af36ee96ad0482f837a15cca12b4350c25327577c939aed428bd63fd416b"
+        or any(
+            name != row.symbol_name
+            and _ZUI_TU_RELOCATION_SYMBOL.search(row.symbol_name) is None
+            and _VC5_PRIVATE_RELOCATION_LABEL.fullmatch(row.symbol_name) is None
+            for row, name in zip(
+                caller.relocations, canonical_relocation_names
+            )
+        )
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in caller.relocations
+            )
+            for index in range(len(caller.data))
+        )
+    ):
+        reject("the complete caller body, relocation package, and mask")
+
+    offsets = _candidate_complete_instruction_offsets(
+        CandidateAssembly(tuple(instructions), frozenset())
+    )
+    unresolved_offsets = tuple(
+        index for index, offset in enumerate(offsets) if offset is None
+    )
+    if (
+        len(offsets) != len(instructions)
+        or unresolved_offsets != (0,)
+        or not instructions
+        or bytes(int(item, 16) for item in instructions[0].bytes)
+        != bytes.fromhex("64 a1 00 00 00 00")
+    ):
+        # VC5's COD listing omits only the coordinate of the leading FS
+        # exception-chain load.  The complete COFF body above authenticates
+        # that row; every later row, including the proof window, must retain
+        # one unique coordinate.
+        reject("the exact leading FS row and all later COD coordinates")
+    index_by_offset = {
+        int(offset): index
+        for index, offset in enumerate(offsets)
+        if offset is not None
+    }
+    if len(index_by_offset) != len(instructions) - 1:
+        reject("complete unique COD instruction coordinates")
+
+    exact_rows = {
+        0x7F3: bytes.fromhex("8b 06"),
+        0x7F5: bytes.fromhex("83 c4 08"),
+        0x7F8: bytes.fromhex("ba 03 00 00 00"),
+        0x7FD: bytes.fromhex("8b cb"),
+        0x7FF: bytes.fromhex("55"),
+        0x800: bytes.fromhex("89 44 24 38"),
+        0x804: bytes.fromhex("e8 00 00 00 00"),
+        0x809: bytes.fromhex("8b 8f c0 00 00 00"),
+        0x80F: bytes.fromhex("ba 02 00 00 00"),
+        0x814: bytes.fromhex("03 c1"),
+        0x816: bytes.fromhex("8b cb"),
+        0x818: bytes.fromhex("50"),
+        0x819: bytes.fromhex("6a 00"),
+        0x81B: bytes.fromhex("e8 00 00 00 00"),
+        0x820: bytes.fromhex("8b 8f bc 00 00 00"),
+        0x826: bytes.fromhex("03 c1"),
+        0x828: bytes.fromhex("8b ce"),
+        0x82A: bytes.fromhex("50"),
+        0x82B: bytes.fromhex("8b 44 24 3c"),
+        0x82F: bytes.fromhex("ff 50 0c"),
+    }
+    for offset, expected_body in exact_rows.items():
+        index = index_by_offset.get(offset)
+        try:
+            body = (
+                bytes(int(item, 16) for item in instructions[index].bytes)
+                if index is not None
+                else b""
+            )
+        except (TypeError, ValueError):
+            body = b""
+        if body != expected_body:
+            reject(f"the exact spill/reload lineage at +0x{offset:x}")
+
+    helper_relocations = tuple(
+        row
+        for row in caller.relocations
+        if row.offset in {0x805, 0x81C}
+    )
+    if (
+        len(helper_relocations) != 2
+        or tuple(row.offset for row in helper_relocations) != (0x805, 0x81C)
+        or any(row.type != IMAGE_REL_I386_REL32 for row in helper_relocations)
+        or any(
+            not row.symbol_name.startswith("?ZrdArrayInt@?")
+            for row in helper_relocations
+        )
+    ):
+        reject("the exact intervening helper relocations")
+
+    return {index_by_offset[0x82F]: "load(this)"}
+
+
+def _exact_candidate_zui_cycle_entry_vptr_proofs(
+    instructions: Sequence[Instruction],
+    *,
+    source: str,
+    caller_start: str,
+    caller_end_exclusive: str | None,
+    indexes: IdentityIndexes,
+    candidate_caller_definition: CandidateCallerDefinition | None,
+) -> dict[int, str]:
+    """Prove two indexed ``entriesA[index]`` vptr calls in AddTextEntry.
+
+    VC5's SEH prologue loads the first entry argument into EBX before the
+    constructor path, then uses ``[this+ebx*4+0x168]`` for SetPos and
+    SetVisible.  The generic candidate walk deliberately does not carry that
+    entry-stack/index lineage through the constructor join.  Retain it only
+    for the complete frozen caller and the two exact reload/vptr/call windows.
+    """
+
+    start = normalize_address(caller_start)
+    if source != "cod" or start != "0x4b7fd0":
+        return {}
+
+    def reject(detail: str) -> NoReturn:
+        raise CandidateCallContractEvidenceError(
+            "zUI cycle-entry indexed-vptr projection requires " + detail
+        )
+
+    caller_identity = "symbol:recoil:function:0x4b7fd0"
+    caller = candidate_caller_definition
+    if (
+        normalize_address(caller_end_exclusive or "0x0") != "0x4b8100"
+        or indexes.by_address.get(start) != caller_identity
+        or caller_identity in indexes.provider_ids
+        or caller is None
+    ):
+        reject("the exact authored caller identity, extent, and definition")
+
+    relocation_payload = _zui_relocation_payload(caller.relocations)
+    if (
+        caller.symbol
+        != "?AddTextEntry@HudUiCycleSelectorWidget@@QAEXHPBDHH@Z"
+        or len(caller.data) != 0x130
+        or hashlib.sha256(caller.data).hexdigest()
+        != "6f341e8a5e1a070501629cb7b0feb03802fa5b522b924eed29383ce5f497d45d"
+        or len(caller.relocations) != 8
+        or hashlib.sha256(relocation_payload).hexdigest()
+        != "ac953fb67b3ab2a454a6e3669abc0927f904e643fde4d9188d2115ba84232bd1"
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in caller.relocations
+            )
+            for index in range(len(caller.data))
+        )
+    ):
+        reject("the complete caller body, relocation package, and mask")
+
+    offsets = _candidate_complete_instruction_offsets(
+        CandidateAssembly(tuple(instructions), frozenset())
+    )
+    unresolved_offsets = tuple(
+        index for index, offset in enumerate(offsets) if offset is None
+    )
+    if (
+        len(offsets) != len(instructions)
+        or unresolved_offsets != (0,)
+        or not instructions
+        or bytes(int(item, 16) for item in instructions[0].bytes)
+        != bytes.fromhex("64 a1 00 00 00 00")
+    ):
+        reject("the exact leading FS row and all later COD coordinates")
+    index_by_offset = {
+        int(offset): index
+        for index, offset in enumerate(offsets)
+        if offset is not None
+    }
+    if len(index_by_offset) + 1 != len(instructions):
+        reject("complete unique COD instruction coordinates")
+
+    exact_rows = {
+        0x016: (bytes.fromhex("8b 5c 24 14"), "ebx, dword _index$[esp+12]"),
+        0x01C: (bytes.fromhex("8b f1"), "esi, ecx"),
+        0x0D7: (
+            bytes.fromhex("8b 8c 9e 68 01 00 00"),
+            "ecx, dword [esi+ebx*4+360]",
+        ),
+        0x0E7: (bytes.fromhex("8b 11"), "edx, dword [ecx]"),
+        0x0F3: (bytes.fromhex("ff 52 0c"), "dword [edx+12]"),
+        0x0F6: (
+            bytes.fromhex("8b 8c 9e 68 01 00 00"),
+            "ecx, dword [esi+ebx*4+360]",
+        ),
+        0x0FE: (bytes.fromhex("8b 11"), "edx, dword [ecx]"),
+        0x100: (bytes.fromhex("ff 52 60"), "dword [edx+96]"),
+        0x103: (
+            bytes.fromhex("8b 84 9e 68 01 00 00"),
+            "eax, dword [esi+ebx*4+360]",
+        ),
+    }
+    for offset, (body, operand) in exact_rows.items():
+        index = index_by_offset.get(offset)
+        try:
+            observed_body = (
+                bytes(int(item, 16) for item in instructions[index].bytes)
+                if index is not None else b""
+            )
+        except (TypeError, ValueError):
+            observed_body = b""
+        if (
+            observed_body != body
+            or index is None
+            or _instruction_operand(instructions[index]).strip() != operand
+            or caller.data[offset:offset + len(body)] != body
+        ):
+            reject(f"the exact indexed receiver lineage at +0x{offset:x}")
+
+    storage = (
+        "load(load(affine(this,load(entry-stack+0x4)*4,+0x168)))"
+    )
+    return {
+        index_by_offset[0x0F3]: storage,
+        index_by_offset[0x100]: storage,
+    }
+
+
+def _zui_cycle_entry_candidate_vptr_bridges(
+    expected: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+    retail_vptr_bridges: Mapping[str, ReviewedLoopVptrStorageBridge],
+) -> dict[str, ReviewedLoopVptrStorageBridge]:
+    """Join the exact indexed candidate calls to retail constructor truth.
+
+    ``_exact_candidate_zui_cycle_entry_vptr_proofs`` proves the complete
+    candidate body and its two ``entriesA[index]`` receiver lineages.  The
+    independently derived retail static-vptr bridges prove that the entry
+    constructor installs the HudUiTextEntry table and that slots 0x0c/0x60
+    contain the two authored targets.  Rebind those facts only when both
+    finite packages and the extracted retail contract agree exactly.
+    """
+
+    start = normalize_address(caller_start)
+    if start != "0x4b7fd0":
+        return {}
+
+    def reject(detail: str) -> NoReturn:
+        raise CandidateCallContractEvidenceError(
+            "zUI cycle-entry constructor-vptr bridge requires " + detail
+        )
+
+    if (
+        caller_identity != "symbol:recoil:function:0x4b7fd0"
+        or normalize_address(caller_end_exclusive) != "0x4b8100"
+        or indexes.by_address.get(start) != caller_identity
+        or caller_identity in indexes.provider_ids
+    ):
+        reject("the exact authored caller identity and extent")
+
+    proof = _exact_candidate_zui_cycle_entry_vptr_proofs(
+        candidate.instructions,
+        source="cod",
+        caller_start=caller_start,
+        caller_end_exclusive=caller_end_exclusive,
+        indexes=indexes,
+        candidate_caller_definition=candidate.caller_definition,
+    )
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    expected_proof = {
+        offsets.index(0x0F3): (
+            "load(load(affine(this,load(entry-stack+0x4)*4,+0x168)))"
+        ),
+        offsets.index(0x100): (
+            "load(load(affine(this,load(entry-stack+0x4)*4,+0x168)))"
+        ),
+    }
+    if proof != expected_proof:
+        reject("both exact indexed receiver lineages")
+
+    retail_specs = (
+        ("0x4b80c3", "0xf3", 3, 0x0C),
+        ("0x4b80d0", "0x100", 4, 0x60),
+    )
+    result: dict[str, ReviewedLoopVptrStorageBridge] = {}
+    for retail_call, candidate_call, ordinal, slot in retail_specs:
+        bridge = retail_vptr_bridges.get(retail_call)
+        row = expected[ordinal] if len(expected) > ordinal else None
+        if (
+            bridge is None
+            or bridge.assembly_source != "bn"
+            or bridge.register != "edx"
+            or bridge.slot_displacement != slot
+            or bridge.storage_identity
+            != indexes.storage_by_address.get("0x4cd388", "")
+            or not bridge.storage_identity.startswith("storage:recoil:data:")
+            or not bridge.target_identity
+            or indexes.by_address.get(
+                "0x404cd0" if slot == 0x0C else "0x404d20"
+            )
+            != bridge.target_identity
+            or not isinstance(row, Mapping)
+            or row.get("ordinal") != ordinal
+            or row.get("form") != "call"
+            or row.get("dispatch") != "indirect"
+            or row.get("identity_kind") != "virtual-slot"
+            or row.get("target_identity") != bridge.target_identity
+            or row.get("storage_identity") != bridge.storage_identity
+            or row.get("slot_displacement") != slot
+            or row.get("cleanup_bytes") is not None
+        ):
+            reject(
+                f"retail constructor-table and contract truth for slot 0x{slot:x}"
+            )
+        result[candidate_call] = ReviewedLoopVptrStorageBridge(
+            register="edx",
+            storage_identity=bridge.storage_identity,
+            slot_displacement=slot,
+            assembly_source="cod",
+            target_identity=bridge.target_identity,
+        )
+    return result
+
+
+def _zui_cycle_font_entry_candidate_vptr_bridges(
+    expected: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+    retail_vptr_bridges: Mapping[str, ReviewedLoopVptrStorageBridge],
+) -> dict[str, ReviewedLoopVptrStorageBridge]:
+    """Prove ApplyFontStyleForEntry's indexed HudUiTextEntry dispatch."""
+
+    start = normalize_address(caller_start)
+    if start != "0x4b8100":
+        return {}
+
+    def reject(detail: str) -> NoReturn:
+        raise CandidateCallContractEvidenceError(
+            "zUI cycle font-entry constructor-vptr bridge requires " + detail
+        )
+
+    definition = candidate.caller_definition
+    if (
+        caller_identity != "symbol:recoil:function:0x4b8100"
+        or normalize_address(caller_end_exclusive) != "0x4b8200"
+        or indexes.by_address.get(start) != caller_identity
+        or caller_identity in indexes.provider_ids
+        or definition is None
+        or definition.symbol
+        != "?ApplyFontStyleForEntry@HudUiCycleSelectorWidget@@QAEXHH@Z"
+        or len(definition.data) != 0x100
+        or hashlib.sha256(definition.data).hexdigest()
+        != "737c2fa841cf27f6a21cb501fc3ce0c1e47b05b8c875ef7c0145c19a352c57f3"
+        or definition.relocations
+        or len(definition.relocation_mask) != 0x100
+        or any(definition.relocation_mask)
+    ):
+        reject("the exact authored caller, extent, body, and empty relocation set")
+
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    if (
+        len(offsets) != len(candidate.instructions)
+        or any(offset is None for offset in offsets)
+        or len(set(offsets)) != len(offsets)
+    ):
+        reject("complete unique COD coordinates")
+    by_offset = {
+        int(offset): instruction
+        for offset, instruction in zip(offsets, candidate.instructions)
+        if offset is not None
+    }
+    exact_rows = {
+        0x6C: (
+            bytes.fromhex("8b 8c 9f 68 01 00 00"),
+            "ecx, dword [edi+ebx*4+360]",
+        ),
+        0x77: (bytes.fromhex("8b 11"), "edx, dword [ecx]"),
+        0x86: (
+            bytes.fromhex("ff 92 80 00 00 00"),
+            "dword [edx+128]",
+        ),
+    }
+    for offset, (body, operand) in exact_rows.items():
+        instruction = by_offset.get(offset)
+        try:
+            observed_body = (
+                bytes(int(item, 16) for item in instruction.bytes)
+                if instruction is not None
+                else b""
+            )
+        except (TypeError, ValueError):
+            observed_body = b""
+        if (
+            instruction is None
+            or observed_body != body
+            or _instruction_operand(instruction).strip() != operand
+            or definition.data[offset:offset + len(body)] != body
+        ):
+            reject(f"the exact indexed receiver lineage at +0x{offset:x}")
+    invocation_offsets = tuple(
+        offsets[index]
+        for index in _candidate_static_invocation_indices(
+            candidate,
+            caller_start=caller_start,
+            caller_end_exclusive=caller_end_exclusive,
+        )
+    )
+    if invocation_offsets != (0x86,):
+        reject("the complete singleton candidate invocation population")
+
+    retail_bridge = retail_vptr_bridges.get("0x4b8186")
+    expected_row = expected[0] if len(expected) == 1 else None
+    table_identity = indexes.storage_by_address.get("0x4cd388", "")
+    target_identity = indexes.by_address.get("0x4babb0", "")
+    if (
+        retail_bridge is None
+        or retail_bridge.assembly_source != "bn"
+        or retail_bridge.register != "edx"
+        or retail_bridge.storage_identity != table_identity
+        or not table_identity.startswith("storage:recoil:data:")
+        or retail_bridge.slot_displacement != 0x80
+        or not target_identity
+        or retail_bridge.target_identity != target_identity
+        or not isinstance(expected_row, Mapping)
+        or dict(expected_row)
+        != {
+            "ordinal": 0,
+            "form": "call",
+            "dispatch": "indirect",
+            "identity_kind": "virtual-slot",
+            "target_identity": target_identity,
+            "storage_identity": table_identity,
+            "slot_displacement": 0x80,
+            "cleanup_bytes": None,
+        }
+    ):
+        reject("the independently derived retail table, slot, target, and contract")
+    return {
+        "0x86": ReviewedLoopVptrStorageBridge(
+            register="edx",
+            storage_identity=table_identity,
+            slot_displacement=0x80,
+            assembly_source="cod",
+            target_identity=target_identity,
+        )
+    }
+
+
+def _zui_cycle_bitmap_entry_candidate_vptr_bridges(
+    expected: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+    retail_vptr_bridges: Mapping[str, ReviewedLoopVptrStorageBridge],
+) -> dict[str, ReviewedLoopVptrStorageBridge]:
+    """Join AddBitmapEntry's allocation result to its installed table."""
+
+    start = normalize_address(caller_start)
+    if start != "0x4b8200":
+        return {}
+
+    def reject(detail: str) -> NoReturn:
+        raise CandidateCallContractEvidenceError(
+            "zUI cycle bitmap-entry constructor-vptr bridge requires " + detail
+        )
+
+    definition = candidate.caller_definition
+    if (
+        caller_identity != "symbol:recoil:function:0x4b8200"
+        or normalize_address(caller_end_exclusive) != "0x4b82e0"
+        or indexes.by_address.get(start) != caller_identity
+        or caller_identity in indexes.provider_ids
+        or definition is None
+        or definition.symbol
+        != "?AddBitmapEntry@HudUiCycleSelectorWidget@@QAEXHPBDHH@Z"
+        or len(definition.data) != 0xA0
+        or hashlib.sha256(definition.data).hexdigest()
+        != "4ebc9d3afebc1911fa0a3bc404302d4ee7e2538abf92f14605d343dc2096f36c"
+        or len(definition.relocations) != 4
+        or hashlib.sha256(
+            _zui_relocation_payload(definition.relocations)
+        ).hexdigest()
+        != "604946fd7b7bb107ad226014604223c3dfb8786cb1f398f0294b72113a4a6be2"
+        or len(definition.relocation_mask) != 0xA0
+        or any(
+            definition.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in definition.relocations
+            )
+            for index in range(0xA0)
+        )
+    ):
+        reject("the exact authored caller, body, and relocation package")
+
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    if (
+        len(offsets) != len(candidate.instructions)
+        or any(offset is None for offset in offsets)
+        or len(set(offsets)) != len(offsets)
+    ):
+        reject("complete unique COD coordinates")
+    by_offset = {
+        int(offset): instruction
+        for offset, instruction in zip(offsets, candidate.instructions)
+        if offset is not None
+    }
+    exact_rows = {
+        0x5B: (
+            bytes.fromhex("89 b4 9f b8 01 00 00"),
+            "dword [edi+ebx*4+440], esi",
+        ),
+        0x6F: (bytes.fromhex("8b 16"), "edx, dword [esi]"),
+        0x73: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x75: (bytes.fromhex("ff 52 0c"), "dword [edx+12]"),
+        0x78: (bytes.fromhex("8b 16"), "edx, dword [esi]"),
+        0x7C: (bytes.fromhex("8b ce"), "ecx, esi"),
+        0x7E: (bytes.fromhex("ff 52 60"), "dword [edx+96]"),
+    }
+    for offset, (body, operand) in exact_rows.items():
+        instruction = by_offset.get(offset)
+        try:
+            observed_body = (
+                bytes(int(item, 16) for item in instruction.bytes)
+                if instruction is not None
+                else b""
+            )
+        except (TypeError, ValueError):
+            observed_body = b""
+        if (
+            instruction is None
+            or observed_body != body
+            or _instruction_operand(instruction).strip() != operand
+            or definition.data[offset:offset + len(body)] != body
+        ):
+            reject(f"the exact allocation-result lineage at +0x{offset:x}")
+    invocation_offsets = tuple(
+        offsets[index]
+        for index in _candidate_static_invocation_indices(
+            candidate,
+            caller_start=caller_start,
+            caller_end_exclusive=caller_end_exclusive,
+        )
+    )
+    if invocation_offsets != (0x41, 0x4F, 0x62, 0x75, 0x7E, 0x88):
+        reject("the complete ordered six-call candidate population")
+
+    table_identity = indexes.storage_by_address.get("0x4d3428", "")
+    specs = (
+        ("0x4b82a8", "0x75", 3, 0x0C, "0x4b3dd0"),
+        ("0x4b82b6", "0x7e", 4, 0x60, "0x404d20"),
+    )
+    result: dict[str, ReviewedLoopVptrStorageBridge] = {}
+    for retail_call, candidate_call, ordinal, slot, target_address in specs:
+        bridge = retail_vptr_bridges.get(retail_call)
+        target_identity = indexes.by_address.get(target_address, "")
+        row = expected[ordinal] if len(expected) == 6 else None
+        if (
+            bridge is None
+            or bridge.assembly_source != "bn"
+            or bridge.register != "edx"
+            or bridge.storage_identity != table_identity
+            or not table_identity.startswith("storage:recoil:data:")
+            or bridge.slot_displacement != slot
+            or not target_identity
+            or bridge.target_identity != target_identity
+            or not isinstance(row, Mapping)
+            or dict(row)
+            != {
+                "ordinal": ordinal,
+                "form": "call",
+                "dispatch": "indirect",
+                "identity_kind": "virtual-slot",
+                "target_identity": target_identity,
+                "storage_identity": table_identity,
+                "slot_displacement": slot,
+                "cleanup_bytes": None,
+            }
+        ):
+            reject(f"retail constructor-table truth for slot 0x{slot:x}")
+        result[candidate_call] = ReviewedLoopVptrStorageBridge(
+            register="edx",
+            storage_identity=table_identity,
+            slot_displacement=slot,
+            assembly_source="cod",
+            target_identity=target_identity,
+        )
+    return result
+
+
 def _exact_targetless_vptr_call_proofs(
     instructions: Sequence[Instruction],
     *,
@@ -66524,6 +69978,50 @@ def _exact_targetless_vptr_call_proofs(
             for index, marker in zsnd_apply_mute_proofs.items()
         ):
             proof_by_index.update(zsnd_apply_mute_proofs)
+        zui_label_panel_proofs = (
+            _exact_candidate_zui_label_panels_vptr_proofs(
+                instructions,
+                source=source,
+                caller_start=caller_start,
+                caller_end_exclusive=caller_end_exclusive,
+                indexes=indexes,
+            )
+        )
+        if all(
+            index not in proof_by_index or proof_by_index[index] == marker
+            for index, marker in zui_label_panel_proofs.items()
+        ):
+            proof_by_index.update(zui_label_panel_proofs)
+        zui_spilled_receiver_proof = (
+            _exact_candidate_zui_spilled_receiver_vptr_proof(
+                instructions,
+                source=source,
+                caller_start=caller_start,
+                caller_end_exclusive=caller_end_exclusive,
+                indexes=indexes,
+                candidate_caller_definition=candidate_caller_definition,
+            )
+        )
+        if all(
+            index not in proof_by_index or proof_by_index[index] == marker
+            for index, marker in zui_spilled_receiver_proof.items()
+        ):
+            proof_by_index.update(zui_spilled_receiver_proof)
+        zui_cycle_entry_proofs = (
+            _exact_candidate_zui_cycle_entry_vptr_proofs(
+                instructions,
+                source=source,
+                caller_start=caller_start,
+                caller_end_exclusive=caller_end_exclusive,
+                indexes=indexes,
+                candidate_caller_definition=candidate_caller_definition,
+            )
+        )
+        if all(
+            index not in proof_by_index or proof_by_index[index] == marker
+            for index, marker in zui_cycle_entry_proofs.items()
+        ):
+            proof_by_index.update(zui_cycle_entry_proofs)
 
     # One reviewed RecoilApp state transition loads the aggregate's offset-zero
     # vptr and receiver address in adjacent absolute instructions.  Preserve
@@ -69335,7 +72833,12 @@ def _canonical_indirect_storage(
         next(iter(bridge_identities)) if bridge_identities else ""
     )
     if bridged_storage:
-        return "callback", "", displacement, bridged_storage
+        return (
+            "callback",
+            "",
+            0 if name_expression == exact_expression else displacement,
+            bridged_storage,
+        )
     exact_storage = (
         _candidate_c_external_storage_identity(
             name_expression,
@@ -69356,7 +72859,7 @@ def _canonical_indirect_storage(
             )
         named_displacement = (
             0
-            if containers and name_expression == exact_expression
+            if name_expression == exact_expression
             else displacement
         )
         if containers and (
@@ -81148,7 +84651,7 @@ _R4564_CANDIDATE_CALLBACK_STORAGE_NAMES: Mapping[str, tuple[str, ...]] = {
     "0x4936d0": ("g_pfnSelectedSpanOp",),
     "0x493df0": ("g_pfnBuildSpanListSecondary",),
     "0x494af0": ("g_pfnBuildSpanList", "g_pfnBuildSpanListSecondary"),
-    "0x495850": ("g_pfnBuildSpanList",),
+    "0x495850": ("g_pfnBuildSpanList", "g_pfnTexturedQueuedFinalize"),
     "0x4969d0": ("g_pfnBuildSpanList",),
     "0x497ac0": ("g_pfnBuildSpanListSecondary",),
     "0x498bd0": ("g_pfnImmediateRaster4",),
@@ -81156,6 +84659,618 @@ _R4564_CANDIDATE_CALLBACK_STORAGE_NAMES: Mapping[str, tuple[str, ...]] = {
     "0x498f90": ("g_pfnPointOpActive",),
     "0x499020": ("g_pfnPointOpActive",),
 }
+
+
+_R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCES: Mapping[
+    str,
+    tuple[
+        tuple[int, ...],
+        str,
+        tuple[str, ...],
+        tuple[tuple[str, str], ...],
+    ],
+] = {
+    "0x493df0": (
+        (2,),
+        "dynamic:RndrSpanLenShiftFn-selection:6320c8-6320d4",
+        (
+            "g_pfnFlatQueuedSpanOp_Mode0",
+            "g_pfnFlatQueuedSpanOpAlt_Mode0",
+            "g_pfnFlatQueuedSpanOp_Mode1",
+            "g_pfnFlatQueuedSpanOpAlt_Mode1",
+        ),
+        (),
+    ),
+    "0x494af0": (
+        (2,),
+        "dynamic:RndrSpanLenShiftFn-selection:6320e0-6320ec",
+        (
+            "g_pfnPolyTlvSpanOp_Mode0",
+            "g_pfnPolyTlvSpanOpAlt_Mode0",
+            "g_pfnPolyTlvSpanOp_Mode1",
+            "g_pfnPolyTlvSpanOpAlt_Mode1",
+        ),
+        (),
+    ),
+    "0x495850": (
+        (4, 6, 7, 9),
+        "dynamic:RndrSpanLenShiftFn-selection:6320b8-6320bc-or-49f180",
+        (
+            "g_pfnTexturedQueuedSpanOp_Mode0",
+            "g_pfnTexturedQueuedSpanOp_Mode1",
+        ),
+        (("SpanShade16FromPal8SwitchVShift", "0x49f180"),),
+    ),
+    "0x4969d0": (
+        (3, 4),
+        "dynamic:RndrSpanLenShiftFn-selection:6320b8-6320bc",
+        (
+            "g_pfnTexturedQueuedSpanOp_Mode0",
+            "g_pfnTexturedQueuedSpanOp_Mode1",
+        ),
+        (),
+    ),
+    "0x497ac0": (
+        (3, 4),
+        "dynamic:RndrSpanLenShiftFn-selection:6320d8-6320dc",
+        (
+            "g_pfnTexturedFanTriSpanOp_Mode0",
+            "g_pfnTexturedFanTriSpanOp_Mode1",
+        ),
+        (),
+    ),
+}
+
+
+_R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCE_COUNTS: Mapping[
+    str,
+    Mapping[str, int],
+] = {
+    "0x4969d0": {
+        "g_pfnTexturedQueuedSpanOp_Mode1": 2,
+    },
+    "0x497ac0": {
+        "g_pfnTexturedFanTriSpanOp_Mode1": 2,
+    },
+}
+
+
+def _r4564_prove_candidate_callback_data_reference(
+    candidate: CandidateAssembly,
+    complete_offsets: Sequence[int | None],
+    *,
+    instruction_index: int,
+    bare_name: str,
+    operand_name: str,
+    fallback_offset: int | None = None,
+) -> int | None:
+    """Validate one exact candidate callback-data COFF reference."""
+
+    if operand_name == bare_name:
+        return None
+    caller = candidate.caller_definition
+    if caller is None:
+        raise ValueError(
+            "r4564 decorated callback projection lacks COFF caller evidence"
+        )
+    symbols = [row for row in caller.coff_symbols if row.name == operand_name]
+    if len(symbols) != 1:
+        raise ValueError(
+            "r4564 decorated callback projection requires one exact "
+            "COFF data symbol"
+        )
+    symbol = symbols[0]
+    instruction_offset = complete_offsets[instruction_index]
+    if instruction_offset is None:
+        instruction_offset = fallback_offset
+    if instruction_offset is None:
+        raise ValueError(
+            "r4564 decorated callback projection lacks exact COFF "
+            "instruction coordinates"
+        )
+    instruction = candidate.instructions[instruction_index]
+    body = bytes(int(item, 16) for item in instruction.bytes)
+    field_delta = len(body) - 4
+    relocation_offset = int(instruction_offset) + field_delta
+    references = [
+        row
+        for row in caller.relocations
+        if row.offset == relocation_offset
+        and row.symbol_name == operand_name
+    ]
+    undefined = (
+        symbol.section_number == 0
+        and caller.undefined_external_data.count(operand_name) == 1
+        and operand_name not in caller.defined_external_data
+    )
+    same_tu_defined = (
+        symbol.section_number > 0
+        and caller.defined_external_data.count(operand_name) == 1
+        and operand_name not in caller.undefined_external_data
+        and symbol.section_name in {".data", ".bss"}
+        and symbol.section_size >= 4
+        and symbol.value >= 0
+        and symbol.natural_end == symbol.value + 4
+        and symbol.natural_end <= symbol.section_size
+    )
+    if (
+        len(references) != 1
+        or symbol.symbol_type != 0
+        or symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
+        or symbol.aux_count != 0
+        or not (undefined or same_tu_defined)
+        or references[0].type != IMAGE_REL_I386_DIR32
+        or references[0].symbol_index != symbol.index
+        or field_delta not in {1, 2}
+        or relocation_offset < 0
+        or relocation_offset + 4 > len(caller.data)
+        or caller.data[relocation_offset : relocation_offset + 4]
+        != b"\x00\x00\x00\x00"
+        or any(
+            caller.relocation_mask[
+                int(instruction_offset) : relocation_offset
+            ]
+        )
+        or not all(
+            caller.relocation_mask[
+                relocation_offset : relocation_offset + 4
+            ]
+        )
+    ):
+        raise ValueError(
+            "r4564 decorated callback projection rejects malformed "
+            "same-TU/undefined COFF data-symbol or call-reaching "
+            "relocation provenance"
+        )
+    return relocation_offset
+
+
+def _exact_vc5_symbolic_stack_indirect_invocation(
+    instruction: Instruction,
+) -> tuple[str, int, str, int] | None:
+    """Decode one exact VC5 ``CALL/JMP local$[ESP+disp]`` invocation."""
+
+    match = re.fullmatch(
+        r"(?P<form>call|jmp)\s+"
+        r"(?P<source>(?:dword\s+(?:ptr\s+)?)?"
+        r"[A-Za-z_?$][A-Za-z0-9_@$?]*\[[^\]]+\])",
+        instruction.raw_text.strip(),
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    symbolic = _vc5_symbolic_stack_local(
+        match.group("source"),
+        index_register=None,
+    )
+    if symbolic is None:
+        return None
+    try:
+        body = bytes(int(item, 16) for item in instruction.bytes)
+    except (TypeError, ValueError):
+        return None
+    if len(body) < 3 or body[0] != 0xFF:
+        return None
+    form = match.group("form").lower()
+    modrm = body[1]
+    mode = modrm >> 6
+    expected_operation = 2 if form == "call" else 4
+    if (
+        (modrm >> 3) & 0x07 != expected_operation
+        or modrm & 0x07 != 0x04
+        or body[2] != 0x24
+    ):
+        return None
+    if mode == 0 and len(body) == 3:
+        displacement = 0
+    elif mode == 1 and len(body) == 4:
+        displacement = struct.unpack("<b", body[3:4])[0]
+    elif mode == 2 and len(body) == 7:
+        displacement = struct.unpack("<i", body[3:7])[0]
+    else:
+        return None
+    symbol, rendered_displacement = symbolic
+    return form, displacement, symbol, rendered_displacement
+
+
+def _exact_vc5_register_indirect_invocation(
+    instruction: Instruction,
+) -> tuple[str, str] | None:
+    """Decode one exact VC5 ``CALL/JMP r32`` invocation."""
+
+    match = re.fullmatch(
+        r"(?P<form>call|jmp)\s+"
+        r"(?:(?:near|far|dword)\s+(?:ptr\s+)?)?"
+        r"(?P<register>e(?:ax|bx|cx|dx|si|di|bp))",
+        instruction.raw_text.strip(),
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    try:
+        body = bytes(int(item, 16) for item in instruction.bytes)
+    except (TypeError, ValueError):
+        return None
+    if len(body) != 2 or body[0] != 0xFF:
+        return None
+    form = match.group("form").lower()
+    register = match.group("register").lower()
+    registers = (
+        "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi",
+    )
+    modrm = body[1]
+    expected_operation = 2 if form == "call" else 4
+    if (
+        modrm >> 6 != 3
+        or (modrm >> 3) & 0x07 != expected_operation
+        or registers[modrm & 0x07] != register
+    ):
+        return None
+    return form, register
+
+
+def _exact_vc5_symbolic_stack_function_store(
+    instruction: Instruction,
+) -> tuple[int, str, int, str, int] | None:
+    """Decode ``MOV local$[ESP+n], OFFSET FLAT:function`` exactly."""
+
+    match = re.fullmatch(
+        r"mov\s+(?P<destination>(?:dword\s+(?:ptr\s+)?)?"
+        r"[A-Za-z_?$][A-Za-z0-9_@$?]*\[[^\]]+\])\s*,\s*"
+        r"(?:offset\s+(?:flat:)?\s*)?"
+        r"(?P<function>[?$@A-Za-z_][?$@A-Za-z0-9_]*)",
+        instruction.raw_text.strip(),
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    symbolic = _vc5_symbolic_stack_local(
+        match.group("destination"),
+        index_register=None,
+    )
+    try:
+        body = bytes(int(item, 16) for item in instruction.bytes)
+    except (TypeError, ValueError):
+        return None
+    if symbolic is None or len(body) < 7 or body[0] != 0xC7:
+        return None
+    modrm = body[1]
+    mode = modrm >> 6
+    if (modrm >> 3) & 0x07 != 0 or modrm & 0x07 != 0x04 or body[2] != 0x24:
+        return None
+    if mode == 0 and len(body) == 7:
+        displacement = 0
+        immediate_delta = 3
+    elif mode == 1 and len(body) == 8:
+        displacement = struct.unpack("<b", body[3:4])[0]
+        immediate_delta = 4
+    elif mode == 2 and len(body) == 11:
+        displacement = struct.unpack("<i", body[3:7])[0]
+        immediate_delta = 7
+    else:
+        return None
+    if body[immediate_delta : immediate_delta + 4] != b"\x00\x00\x00\x00":
+        return None
+    symbol, rendered_displacement = symbolic
+    return (
+        displacement,
+        symbol,
+        rendered_displacement,
+        match.group("function"),
+        immediate_delta,
+    )
+
+
+def _r4564_prove_candidate_callback_function_reference(
+    candidate: CandidateAssembly,
+    complete_offsets: Sequence[int | None],
+    *,
+    instruction_index: int,
+    operand_name: str,
+    immediate_delta: int,
+) -> int:
+    """Validate one exact same-TU callback-function address reference."""
+
+    caller = candidate.caller_definition
+    if caller is None:
+        raise ValueError(
+            "r4564 dynamic callback-function source lacks COFF caller evidence"
+        )
+    symbols = [row for row in caller.coff_symbols if row.name == operand_name]
+    instruction_offset = complete_offsets[instruction_index]
+    if len(symbols) != 1 or instruction_offset is None:
+        raise ValueError(
+            "r4564 dynamic callback-function source requires one exact COFF symbol"
+        )
+    symbol = symbols[0]
+    relocation_offset = int(instruction_offset) + immediate_delta
+    references = [
+        row
+        for row in caller.relocations
+        if row.offset == relocation_offset and row.symbol_name == operand_name
+    ]
+    same_tu_defined = (
+        symbol.section_number > 0
+        and caller.defined_external_functions.count(operand_name) == 1
+        and operand_name not in caller.undefined_external_functions
+        and symbol.section_name == ".text"
+        and symbol.value >= 0
+        and symbol.natural_end > symbol.value
+        and symbol.natural_end <= symbol.section_size
+    )
+    if (
+        len(references) != 1
+        or not same_tu_defined
+        or symbol.symbol_type != 0x20
+        or symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
+        or symbol.aux_count != 0
+        or references[0].type != IMAGE_REL_I386_DIR32
+        or references[0].symbol_index != symbol.index
+        or relocation_offset < 0
+        or relocation_offset + 4 > len(caller.data)
+        or caller.data[relocation_offset : relocation_offset + 4]
+        != b"\x00\x00\x00\x00"
+        or any(caller.relocation_mask[int(instruction_offset) : relocation_offset])
+        or not all(caller.relocation_mask[relocation_offset : relocation_offset + 4])
+    ):
+        raise ValueError(
+            "r4564 dynamic callback-function source rejects malformed "
+            "same-TU COFF function/DIR32 provenance"
+        )
+    return relocation_offset
+
+
+def _r4564_prove_candidate_dynamic_selection_calls(
+    candidate: CandidateAssembly,
+    complete_offsets: Sequence[int | None],
+    invocation_indices: Sequence[int],
+    *,
+    ordinals: Sequence[int],
+    source_load_registers: Mapping[int, str],
+    direct_function_store_indices: frozenset[int] = frozenset(),
+) -> tuple[tuple[int, str, int], ...]:
+    """Prove every reviewed use of one VC5 callback-selection local.
+
+    The compiler is free to rebase a fixed-frame local as outgoing arguments
+    change ESP.  COD preserves the local symbol and its constant symbolic-to-
+    encoded displacement delta, so this proof follows that exact local across
+    every resolved CFG path.  Register calls must be fed by an exact load from
+    the same local; stack calls must invoke that local directly.  Every value
+    admitted into the local must descend from a relocation-proven callback
+    data load or reviewed same-TU callback-function address store.
+    """
+
+    caller = candidate.caller_definition
+    ordinal_rows = tuple(int(value) for value in ordinals)
+    if (
+        caller is None
+        or not ordinal_rows
+        or tuple(sorted(set(ordinal_rows))) != ordinal_rows
+        or any(value < 0 or value >= len(invocation_indices) for value in ordinal_rows)
+        or not source_load_registers
+        or any(
+            index < 0
+            or index >= len(candidate.instructions)
+            or register not in {
+                "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"
+            }
+            for index, register in source_load_registers.items()
+        )
+        or any(
+            index < 0 or index >= len(candidate.instructions)
+            for index in direct_function_store_indices
+        )
+    ):
+        raise ValueError(
+            "r4564 candidate dynamic selection proof is malformed"
+        )
+
+    call_indices = tuple(invocation_indices[value] for value in ordinal_rows)
+    call_shapes: dict[int, tuple[str, str, int]] = {}
+    local_rows: set[tuple[str, int]] = set()
+    for call_index in call_indices:
+        call = candidate.instructions[call_index]
+        call_offset = complete_offsets[call_index]
+        symbolic_call = _exact_vc5_symbolic_stack_indirect_invocation(call)
+        register_call = _exact_vc5_register_indirect_invocation(call)
+        if call_offset is None or (symbolic_call is None) == (register_call is None):
+            raise ValueError(
+                "r4564 candidate dynamic selection requires exact register-or-"
+                "symbolic-stack call sites"
+            )
+        if symbolic_call is not None:
+            form, encoded_displacement, symbol, rendered_displacement = symbolic_call
+            if form != "call":
+                raise ValueError(
+                    "r4564 candidate dynamic selection invocation form drifted"
+                )
+            local_rows.add((symbol, rendered_displacement - encoded_displacement))
+            call_shapes[call_index] = (
+                "esp",
+                symbol,
+                rendered_displacement,
+            )
+        else:
+            assert register_call is not None
+            form, register = register_call
+            if form != "call":
+                raise ValueError(
+                    "r4564 candidate dynamic selection invocation form drifted"
+                )
+            call_shapes[call_index] = (register, "", 0)
+    if len(local_rows) != 1:
+        raise ValueError(
+            "r4564 candidate dynamic selection calls do not share one exact local"
+        )
+    local_symbol, local_coordinate = next(iter(local_rows))
+    if not -0x10000 <= local_coordinate <= 0x10000:
+        raise ValueError(
+            "r4564 candidate dynamic selection local coordinate is unbounded"
+        )
+
+    instruction_addresses = tuple(
+        int(offset) if offset is not None else None
+        for offset in complete_offsets
+    )
+    if (
+        any(address is None for address in instruction_addresses)
+        or len(set(instruction_addresses)) != len(instruction_addresses)
+        or any(
+            address is None or not 0 <= address < len(caller.data)
+            for address in instruction_addresses
+        )
+    ):
+        raise ValueError(
+            "r4564 candidate dynamic selection lacks a complete unique "
+            "instruction cover"
+        )
+    instruction_index_by_address = {
+        int(address): index
+        for index, address in enumerate(instruction_addresses)
+        if address is not None
+    }
+    successors, unresolved = _exact_invocation_cfg(
+        candidate.instructions,
+        instruction_addresses=instruction_addresses,
+        instruction_index_by_address=instruction_index_by_address,
+        source="cod",
+        caller_start=0,
+        caller_end=len(caller.data),
+        local_control_flow_indices=candidate.local_control_flow_indices,
+        local_control_flow_targets=candidate.local_control_flow_targets,
+    )
+    entry_reachable = _reachable_cfg_indices(successors, (0,))
+    for call_index in call_indices:
+        reaching_call = _indices_reaching_cfg_target(successors, call_index)
+        if (
+            call_index not in entry_reachable
+            or unresolved & entry_reachable & reaching_call
+        ):
+            raise ValueError(
+                "r4564 candidate dynamic selection has an unresolved or "
+                "unreachable invocation path"
+            )
+
+    # Register provenance distinguishes a direct family-source load from a
+    # value loaded back from the reviewed selection local.  This prevents a
+    # same-family register value from bypassing the required shared local.
+    work: list[tuple[int, tuple[tuple[str, str], ...], bool]] = [(0, (), False)]
+    visited: set[tuple[int, tuple[tuple[str, str], ...], bool]] = set()
+    observed: dict[int, set[bool]] = {index: set() for index in call_indices}
+    matching_store_count = 0
+    while work:
+        index, register_rows, local_live = work.pop()
+        state = (index, register_rows, local_live)
+        if state in visited:
+            continue
+        visited.add(state)
+        if len(visited) > 0x20000:
+            raise ValueError(
+                "r4564 candidate dynamic selection state is unbounded"
+            )
+        register_provenance = dict(register_rows)
+        instruction = candidate.instructions[index]
+        mnemonic = _instruction_mnemonic(instruction)
+        symbolic_store = _exact_vc5_symbolic_stack_slot_store(instruction)
+        symbolic_load = _exact_vc5_symbolic_stack_slot_load(instruction)
+        function_store = _exact_vc5_symbolic_stack_function_store(instruction)
+
+        if index in call_shapes:
+            call_register, call_symbol, _call_displacement = call_shapes[index]
+            if call_register == "esp":
+                observed[index].add(call_symbol == local_symbol and local_live)
+            else:
+                observed[index].add(
+                    register_provenance.get(call_register) == "local"
+                )
+
+        if index in source_load_registers:
+            destination = source_load_registers[index]
+            register_provenance[destination] = "source"
+        elif (move := _exact_register_move(instruction)) is not None:
+            destination, source_register = move
+            if source_register in register_provenance:
+                register_provenance[destination] = register_provenance[source_register]
+            else:
+                register_provenance.pop(destination, None)
+        elif symbolic_store is not None:
+            (
+                encoded_displacement,
+                source_register,
+                symbol,
+                rendered_displacement,
+            ) = symbolic_store
+            if (
+                symbol == local_symbol
+                and rendered_displacement - encoded_displacement
+                == local_coordinate
+            ):
+                matching_store_count += 1
+                local_live = source_register in register_provenance
+        elif function_store is not None:
+            (
+                encoded_displacement,
+                symbol,
+                rendered_displacement,
+                _function_name,
+                _immediate_delta,
+            ) = function_store
+            if (
+                symbol == local_symbol
+                and rendered_displacement - encoded_displacement
+                == local_coordinate
+            ):
+                matching_store_count += 1
+                local_live = index in direct_function_store_indices
+        elif symbolic_load is not None:
+            (
+                encoded_displacement,
+                destination,
+                symbol,
+                rendered_displacement,
+            ) = symbolic_load
+            if (
+                symbol == local_symbol
+                and rendered_displacement - encoded_displacement
+                == local_coordinate
+                and local_live
+            ):
+                register_provenance[destination] = "local"
+            else:
+                register_provenance.pop(destination, None)
+        else:
+            operand = _instruction_operand(instruction)
+            if re.search(
+                rf"(?<![A-Za-z0-9_@$?]){re.escape(local_symbol)}"
+                r"(?![A-Za-z0-9_@$?])",
+                operand,
+            ):
+                if index not in call_shapes:
+                    raise ValueError(
+                        "r4564 candidate dynamic selection local escapes its "
+                        "exact load/store/call lineage"
+                    )
+            for register in tuple(register_provenance):
+                if _instruction_may_clobber_register(instruction, register):
+                    register_provenance.pop(register, None)
+
+        next_register_rows = tuple(sorted(register_provenance.items()))
+        for successor in successors.get(index, ()):
+            work.append((successor, next_register_rows, local_live))
+
+    if matching_store_count == 0 or any(values != {True} for values in observed.values()):
+        raise ValueError(
+            "r4564 candidate dynamic selection stack local is not assigned "
+            "from the exact callback family on every reviewed invocation path"
+        )
+    return tuple(
+        (
+            int(complete_offsets[index]),
+            call_shapes[index][0],
+            call_shapes[index][2],
+        )
+        for index in call_indices
+    )
 
 
 def _r4564_candidate_callback_storage_bridges(
@@ -81322,79 +85437,17 @@ def _r4564_candidate_callback_storage_bridges(
                 "r4564 direct callback storage has conflicting per-call identities"
             )
 
-        if operand_name != bare_name:
-            if caller is None:
-                raise ValueError(
-                    "r4564 decorated callback projection lacks COFF caller evidence"
-                )
-            symbols = [row for row in caller.coff_symbols if row.name == operand_name]
-            if len(symbols) != 1:
-                raise ValueError(
-                    "r4564 decorated callback projection requires one exact "
-                    "COFF data symbol"
-                )
-            symbol = symbols[0]
-            instruction_offset = complete_offsets[load_index]
-            if instruction_offset is None and load_index == _call_index:
-                instruction_offset = call_offset
-            if instruction_offset is None:
-                raise ValueError(
-                    "r4564 decorated callback projection lacks exact COFF "
-                    "instruction coordinates"
-                )
-            instruction = candidate.instructions[load_index]
-            body = bytes(int(item, 16) for item in instruction.bytes)
-            field_delta = len(body) - 4
-            relocation_offset = int(instruction_offset) + field_delta
-            references = [
-                row for row in caller.relocations
-                if row.offset == relocation_offset
-                and row.symbol_name == operand_name
-            ]
-            undefined = (
-                symbol.section_number == 0
-                and caller.undefined_external_data.count(operand_name) == 1
-                and operand_name not in caller.defined_external_data
-            )
-            same_tu_defined = (
-                symbol.section_number > 0
-                and caller.defined_external_data.count(operand_name) == 1
-                and operand_name not in caller.undefined_external_data
-                and symbol.section_name in {".data", ".bss"}
-                and symbol.section_size >= 4
-                and symbol.value >= 0
-                and symbol.natural_end == symbol.value + 4
-                and symbol.natural_end <= symbol.section_size
-            )
-            if (
-                len(references) != 1
-                or symbol.symbol_type != 0
-                or symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
-                or symbol.aux_count != 0
-                or not (undefined or same_tu_defined)
-                or references[0].type != IMAGE_REL_I386_DIR32
-                or references[0].symbol_index != symbol.index
-                or field_delta not in {1, 2}
-                or relocation_offset < 0
-                or relocation_offset + 4 > len(caller.data)
-                or caller.data[relocation_offset : relocation_offset + 4]
-                != b"\x00\x00\x00\x00"
-                or any(
-                    caller.relocation_mask[
-                        int(instruction_offset) : relocation_offset
-                    ]
-                )
-                or not all(
-                    caller.relocation_mask[
-                        relocation_offset : relocation_offset + 4
-                    ]
-                )
-            ):
-                raise ValueError(
-                    "r4564 decorated callback projection rejects malformed "
-                    "same-TU/undefined COFF data-symbol or call-reaching "
-                    "relocation provenance"
-                )
+        relocation_offset = _r4564_prove_candidate_callback_data_reference(
+            candidate,
+            complete_offsets,
+            instruction_index=load_index,
+            bare_name=bare_name,
+            operand_name=operand_name,
+            fallback_offset=(
+                call_offset if load_index == _call_index else None
+            ),
+        )
+        if relocation_offset is not None:
             proven_expressions.add((operand_name, relocation_offset))
 
         if register:
@@ -81417,6 +85470,237 @@ def _r4564_candidate_callback_storage_bridges(
         else:
             resolved[operand_name] = identity
             resolved[bare_name] = identity
+
+    selection_spec = _R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCES.get(start)
+    selection_source_present = (
+        selection_spec is not None
+        and any(
+            re.search(rf"\b{re.escape(name)}\b", _instruction_operand(instruction))
+            for instruction in candidate.instructions
+            for name in selection_spec[2]
+        )
+    )
+    if selection_spec is not None and selection_source_present:
+        ordinals, identity, source_names, function_sources = selection_spec
+        if any(ordinal >= len(expected) for ordinal in ordinals):
+            raise ValueError(
+                "r4564 candidate dynamic selection lacks its retail ordinals"
+            )
+        for ordinal in ordinals:
+            retail = expected[ordinal]
+            if (
+                retail.get("ordinal") != ordinal
+                or retail.get("form") not in {"call", "tail"}
+                or retail.get("dispatch") != "indirect"
+                or retail.get("identity_kind") != "callback"
+                or retail.get("target_identity") != ""
+                or retail.get("storage_identity") != identity
+            ):
+                raise ValueError(
+                    "r4564 candidate dynamic selection retail identity drifted"
+                )
+        operands_by_name: dict[str, set[str]] = {
+            name: set() for name in source_names
+        }
+        source_loads_by_name: dict[str, list[tuple[int, str]]] = {
+            name: [] for name in source_names
+        }
+        for instruction_index, instruction in enumerate(candidate.instructions):
+            if _instruction_mnemonic(instruction) != "mov":
+                continue
+            operand = _instruction_operand(instruction)
+            matches = tuple(
+                name
+                for name in source_names
+                if re.search(rf"\b{re.escape(name)}\b", operand)
+            )
+            if not matches:
+                continue
+            if len(matches) != 1:
+                raise ValueError(
+                    "r4564 candidate dynamic selection has an ambiguous source name"
+                )
+            bare_name = matches[0]
+            operand_names = tuple(
+                symbol.name
+                for symbol in (caller.coff_symbols if caller is not None else ())
+                if symbol.name.startswith("?")
+                and re.search(rf"\b{re.escape(bare_name)}\b", symbol.name)
+                and symbol.name in operand
+            )
+            if len(operand_names) != 1:
+                raise ValueError(
+                    "r4564 candidate dynamic selection lacks a decorated COFF source"
+                )
+            operand_name = operand_names[0]
+            try:
+                body = bytes(int(item, 16) for item in instruction.bytes)
+            except (TypeError, ValueError):
+                body = b""
+            operands = _instruction_operand(instruction).split(",", 1)
+            register_names = (
+                "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"
+            )
+            destination = (
+                "eax"
+                if len(body) == 5 and body[0] == 0xA1
+                else register_names[(body[1] >> 3) & 0x07]
+                if (
+                    len(body) == 6
+                    and body[0] == 0x8B
+                    and body[1] >> 6 == 0
+                    and body[1] & 0x07 == 0x05
+                )
+                else ""
+            )
+            if (
+                len(operands) != 2
+                or operands[0].strip().lower() != destination
+                or _exact_memory_expression(operands[1]) != operand_name
+            ):
+                raise ValueError(
+                    "r4564 candidate dynamic selection requires exact "
+                    "absolute callback-source loads"
+                )
+            relocation_offset = (
+                _r4564_prove_candidate_callback_data_reference(
+                    candidate,
+                    complete_offsets,
+                    instruction_index=instruction_index,
+                    bare_name=bare_name,
+                    operand_name=operand_name,
+                )
+            )
+            if relocation_offset is None:
+                raise ValueError(
+                    "r4564 candidate dynamic selection lacks relocation provenance"
+                )
+            proof = (operand_name, relocation_offset)
+            if proof in proven_expressions:
+                raise ValueError(
+                    "r4564 candidate dynamic selection reuses a callback proof"
+                )
+            proven_expressions.add(proof)
+            operands_by_name[bare_name].add(operand_name)
+            source_loads_by_name[bare_name].append(
+                (instruction_index, destination)
+            )
+        source_counts = _R4564_CANDIDATE_DYNAMIC_SELECTION_SOURCE_COUNTS.get(
+            start,
+            {},
+        )
+        if (
+            set(source_counts) - set(source_names)
+            or any(
+                not isinstance(count, int) or count < 1
+                for count in source_counts.values()
+            )
+            or any(len(operands) != 1 for operands in operands_by_name.values())
+            or any(
+                len(loads) != source_counts.get(name, 1)
+                for name, loads in source_loads_by_name.items()
+            )
+        ):
+            raise ValueError(
+                "r4564 candidate dynamic selection source population drifted"
+            )
+        for bare_name, operands in operands_by_name.items():
+            operand_name = next(iter(operands))
+            resolved[bare_name] = identity
+            resolved[operand_name] = identity
+
+        direct_function_store_indices: set[int] = set()
+        for bare_name, address in function_sources:
+            normalized_address = normalize_address(address)
+            authored_identity = indexes.by_address.get(normalized_address)
+            if authored_identity is None or authored_identity in indexes.provider_ids:
+                raise ValueError(
+                    "r4564 candidate dynamic selection callback-function source "
+                    "is not an exact authored identity"
+                )
+            matches: list[tuple[int, str, int]] = []
+            for instruction_index, instruction in enumerate(candidate.instructions):
+                if (
+                    _instruction_mnemonic(instruction) != "mov"
+                    or not re.search(
+                        rf"\b{re.escape(bare_name)}\b",
+                        _instruction_operand(instruction),
+                    )
+                ):
+                    continue
+                decoded = _exact_vc5_symbolic_stack_function_store(instruction)
+                if decoded is None:
+                    raise ValueError(
+                        "r4564 candidate dynamic selection requires an exact "
+                        "symbolic-local callback-function store"
+                    )
+                _encoded, _symbol, _rendered, operand_name, immediate_delta = decoded
+                if (
+                    caller is None
+                    or operand_name not in {
+                        symbol.name
+                        for symbol in caller.coff_symbols
+                        if symbol.symbol_type == 0x20
+                        and re.search(rf"\b{re.escape(bare_name)}\b", symbol.name)
+                    }
+                ):
+                    raise ValueError(
+                        "r4564 candidate dynamic selection lacks its exact "
+                        "decorated callback-function symbol"
+                    )
+                matches.append((instruction_index, operand_name, immediate_delta))
+            if len(matches) != 1:
+                raise ValueError(
+                    "r4564 candidate dynamic selection callback-function source "
+                    "population drifted"
+                )
+            instruction_index, operand_name, immediate_delta = matches[0]
+            relocation_offset = _r4564_prove_candidate_callback_function_reference(
+                candidate,
+                complete_offsets,
+                instruction_index=instruction_index,
+                operand_name=operand_name,
+                immediate_delta=immediate_delta,
+            )
+            proof = (operand_name, relocation_offset)
+            if proof in proven_expressions:
+                raise ValueError(
+                    "r4564 candidate dynamic selection reuses a callback proof"
+                )
+            proven_expressions.add(proof)
+            direct_function_store_indices.add(instruction_index)
+            resolved[bare_name] = identity
+            resolved[operand_name] = identity
+
+        if exact_out is not None:
+            source_load_registers = {
+                instruction_index: register
+                for loads in source_loads_by_name.values()
+                for instruction_index, register in loads
+            }
+            proven_calls = _r4564_prove_candidate_dynamic_selection_calls(
+                candidate,
+                complete_offsets,
+                invocation_indices,
+                ordinals=ordinals,
+                source_load_registers=source_load_registers,
+                direct_function_store_indices=frozenset(
+                    direct_function_store_indices
+                ),
+            )
+            for call_offset, register, slot_displacement in proven_calls:
+                key = hex(call_offset)
+                if key in exact_out:
+                    raise ValueError(
+                        "r4564 candidate dynamic selection collides at one call site"
+                    )
+                exact_out[key] = ReviewedExactIndirectStorageBridge(
+                    register=register,
+                    storage_identity=identity,
+                    slot_displacement=slot_displacement,
+                    assembly_source="cod",
+                    identity_kind="callback",
+                )
     return resolved
 
 
@@ -82204,16 +86488,31 @@ def extract_invocation_contract(
         source=source,
         caller_start=start,
     )
+    local_flow_end = end
+    if source == "cod":
+        local_flow_end = max(
+            end,
+            max(
+                (
+                    address + max(1, len(instruction.bytes))
+                    for instruction, address in zip(
+                        instructions, instruction_addresses
+                    )
+                    if address is not None
+                ),
+                default=end,
+            ),
+        )
     address_counts: dict[int, int] = {}
     for address in instruction_addresses:
-        if address is not None and start <= address < end:
+        if address is not None and start <= address < local_flow_end:
             address_counts[address] = address_counts.get(address, 0) + 1
     instruction_index_by_address = {
         address: index
         for index, address in enumerate(instruction_addresses)
         if (
             address is not None
-            and start <= address < end
+            and start <= address < local_flow_end
             and address_counts.get(address) == 1
         )
     }
@@ -82452,7 +86751,7 @@ def extract_invocation_contract(
         instruction_index_by_address=instruction_index_by_address,
         source=source,
         caller_start=start,
-        caller_end=end,
+        caller_end=local_flow_end,
         local_control_flow_indices=local_control_flow_indices,
         local_control_flow_targets=switch_targets,
     )
@@ -82460,7 +86759,7 @@ def extract_invocation_contract(
         instructions,
         source=source,
         caller_start=start,
-        caller_end=end,
+        caller_end=local_flow_end,
         indexes=indexes,
         reviewed_register_storage_bridges=register_storage_bridges,
         reviewed_iat_register_definition_offsets=(
@@ -82474,27 +86773,27 @@ def extract_invocation_contract(
         instructions,
         source=source,
         caller_start=start,
-        caller_end=end,
+        caller_end=local_flow_end,
     )
     bounded_local_stack_scalar_loads = (
         _bounded_initialized_stack_scalar_loads(
             instructions,
             source=source,
             caller_start=start,
-            caller_end=end,
+            caller_end=local_flow_end,
         )
     )
     bounded_loop_counter_registers = _bounded_loop_counter_registers(
         instructions,
         source=source,
         caller_start=start,
-        caller_end=end,
+        caller_end=local_flow_end,
     )
     bounded_stack_loop_counter_loads = _bounded_stack_loop_counter_loads(
         instructions,
         source=source,
         caller_start=start,
-        caller_end=end,
+        caller_end=local_flow_end,
     )
     bounded_stack_loop_counter_initializers = (
         _bounded_stack_loop_counter_initializers(
@@ -82506,7 +86805,7 @@ def extract_invocation_contract(
         instructions,
         source=source,
         caller_start=start,
-        caller_end=end,
+        caller_end=local_flow_end,
     )
     first_entry_stack_affine_index_load = (
         _first_entry_stack_affine_index_load(instructions)
@@ -82615,7 +86914,7 @@ def extract_invocation_contract(
             instruction_index_by_address=instruction_index_by_address,
             source=source,
             caller_start=start,
-            caller_end=end,
+            caller_end=local_flow_end,
         )
         if (
             fallthrough_live
@@ -82631,6 +86930,26 @@ def extract_invocation_contract(
                 tested_register = _exact_test_same_register(
                     instructions[index - 1]
                 )
+                if tested_register is None:
+                    compared_registers = _exact_cmp_register_pair(
+                        instructions[index - 1]
+                    )
+                    if compared_registers is not None:
+                        left, right = compared_registers
+                        left_provenance = branch_registers.get(left, "")
+                        right_provenance = branch_registers.get(right, "")
+                        if (
+                            left_provenance.startswith("call-result(")
+                            and left_provenance.endswith(")")
+                            and right_provenance == "null"
+                        ):
+                            tested_register = left
+                        elif (
+                            right_provenance.startswith("call-result(")
+                            and right_provenance.endswith(")")
+                            and left_provenance == "null"
+                        ):
+                            tested_register = right
                 tested_provenance = branch_registers.get(
                     tested_register or "",
                     "",
@@ -82691,7 +87010,7 @@ def extract_invocation_contract(
                             instruction_addresses=instruction_addresses,
                             instruction_address_counts=address_counts,
                             caller_start=start,
-                            caller_end=end,
+                            caller_end=local_flow_end,
                             reviewed_absolute_storage_load_bridges=(
                                 absolute_storage_load_bridges
                             ),
@@ -87637,6 +91956,195 @@ def _resolve_target_all_authored_bodies(
             target_id: exact_compile_sources
         }
     return result
+
+
+def _resolve_phase_all_authored_bodies(
+    document: ProgressDocument,
+) -> dict[str, Any]:
+    """Project the immutable original slices into one retail-ordered proof scope.
+
+    The projection is invocation-local.  Original slice identities remain the
+    only acceptance units; this wider scope exists solely so target builds,
+    source discovery, COD indexing, and Binary Ninja reads can be shared by a
+    governed replay.
+    """
+
+    original_slices = document.authored_call_contract_slices()
+    if not original_slices:
+        raise ProgressError("call-contract phase has no original slices")
+    symbol_ids: list[str] = []
+    addresses: list[str] = []
+    target_ids: list[str] = []
+    physical_block_ids: list[str] = []
+    source_paths: list[str] = []
+    slice_boundaries: list[dict[str, Any]] = []
+    source_edit_paths_override: dict[str, list[str]] = {}
+    offset = 0
+    for raw_slice in original_slices:
+        slice_row = _resolve_slice(document, str(raw_slice.get("id", "")))
+        count = int(slice_row["body_count"])
+        slice_boundaries.append(
+            {
+                "slice_id": str(slice_row["id"]),
+                "start_index": offset,
+                "end_index_exclusive": offset + count,
+                "body_count": count,
+            }
+        )
+        offset += count
+        symbol_ids.extend(str(value) for value in slice_row["symbol_ids"])
+        addresses.extend(
+            normalize_address(str(value)) for value in slice_row["addresses"]
+        )
+        target_ids.extend(str(value) for value in slice_row["target_ids"])
+        physical_block_ids.extend(
+            str(value) for value in slice_row["physical_block_ids"]
+        )
+        source_paths.extend(str(value) for value in slice_row["source_paths"])
+    if len(symbol_ids) != len(set(symbol_ids)):
+        raise ProgressError("call-contract phase projection repeats a body identity")
+    if addresses != sorted(addresses, key=address_value):
+        raise ProgressError("call-contract phase projection is not in retail order")
+
+    selected_target_ids = list(dict.fromkeys(target_ids))
+    targets = document.collection("verification_targets")
+    for selected_target_id in selected_target_ids:
+        target = targets.get(selected_target_id)
+        registration = (
+            target.get("registration") if isinstance(target, Mapping) else None
+        )
+        if not isinstance(target, Mapping) or target.get("kind") != "vc5":
+            raise ProgressError(
+                f"call-contract phase target {selected_target_id!r} is not one exact VC5 target"
+            )
+        if not isinstance(registration, Mapping):
+            raise ProgressError(
+                f"call-contract phase target {selected_target_id!r} has no exact registration"
+            )
+        manifest_value = registration.get("manifest_path")
+        if not isinstance(manifest_value, str) or not manifest_value:
+            raise ProgressError(
+                f"call-contract phase target {selected_target_id!r} has no manifest path"
+            )
+        manifest = _call_contract_cached_manifest(
+            document,
+            (REPO_ROOT / manifest_value).resolve(),
+        )
+        registered_edit_paths = registration.get("order_edit_paths")
+        if registered_edit_paths is None:
+            registered_edit_paths = list(manifest.order_edit_paths)
+        if not registered_edit_paths:
+            exact_compile_sources = _exact_target_compile_tu_source_edit_override(
+                manifest
+            )
+            if not exact_compile_sources:
+                raise ProgressError(
+                    f"call-contract phase target {selected_target_id!r} has neither "
+                    "order_edit_paths nor exact translation-unit implementation roots"
+                )
+            source_edit_paths_override[selected_target_id] = exact_compile_sources
+
+    result = {
+        "id": "recoil:call-contract-phase-scope:authored-call-contract",
+        "ordinal": 0,
+        "start": addresses[0],
+        "end": addresses[-1],
+        "body_count": len(symbol_ids),
+        "symbol_ids": symbol_ids,
+        "addresses": addresses,
+        "target_ids": selected_target_ids,
+        "physical_block_ids": list(dict.fromkeys(physical_block_ids)),
+        "source_paths": list(dict.fromkeys(source_paths)),
+        "original_slice_ids": [row["slice_id"] for row in slice_boundaries],
+        "slice_boundaries": slice_boundaries,
+        "selection_mode": "phase-all-authored-bodies",
+    }
+    if source_edit_paths_override:
+        result["source_edit_paths_override"] = source_edit_paths_override
+    return result
+
+
+class _CallContractBinaryNinjaFactCache:
+    """Invocation-local immutable read cache for a full-census proof."""
+
+    def __init__(self, bridge: BinaryNinjaBridge) -> None:
+        self._bridge = bridge
+        self._json_rows: dict[tuple[str, tuple[tuple[str, str], ...]], dict[str, Any]] = {}
+        self._assemblies: dict[str, str] = {}
+        self._hexdumps: dict[tuple[str, int], str] = {}
+        self._hits = 0
+        self._misses = 0
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._bridge, name)
+
+    def get_json(self, endpoint: str, **params: object) -> dict[str, Any]:
+        key = (
+            endpoint.lstrip("/"),
+            tuple(sorted((str(name), repr(value)) for name, value in params.items())),
+        )
+        cached = self._json_rows.get(key)
+        if cached is not None:
+            self._hits += 1
+            return deepcopy(cached)
+        result = self._bridge.get_json(endpoint, **params)
+        self._json_rows[key] = deepcopy(result)
+        self._misses += 1
+        return deepcopy(result)
+
+    def assembly(self, address_or_name: str) -> str:
+        key = str(address_or_name)
+        if key in self._assemblies:
+            self._hits += 1
+            return self._assemblies[key]
+        result = str(self._bridge.assembly(key))
+        self._assemblies[key] = result
+        self._misses += 1
+        return result
+
+    def function_info(self, address_or_name: str) -> dict[str, Any]:
+        key = (
+            "address"
+            if str(address_or_name).lower().startswith("0x")
+            else "name"
+        )
+        return self.get_json("functionInfo", **{key: address_or_name})
+
+    def hexdump(self, address: str, length: int) -> str:
+        key = (str(address), int(length))
+        if key in self._hexdumps:
+            self._hits += 1
+            return self._hexdumps[key]
+        result = str(self._bridge.hexdump(address, length))
+        self._hexdumps[key] = result
+        self._misses += 1
+        return result
+
+    def il(self, address_or_name: str, view: str = "mlil") -> str:
+        key = (
+            "address"
+            if str(address_or_name).lower().startswith("0x")
+            else "name"
+        )
+        return str(
+            self.get_json(
+                "il",
+                **{key: address_or_name, "view": view},
+            ).get("il", "")
+        )
+
+    def preload_assemblies(self, addresses: Sequence[str]) -> None:
+        for address in addresses:
+            self.assembly(str(address))
+
+    def metrics(self) -> dict[str, int]:
+        return {
+            "json_request_count": len(self._json_rows),
+            "assembly_count": len(self._assemblies),
+            "hexdump_count": len(self._hexdumps),
+            "cache_hit_count": self._hits,
+            "bridge_read_count": self._misses,
+        }
 
 
 def _target_function_rows(target: Any) -> tuple[Any, ...]:
@@ -132106,6 +136614,10 @@ _R4575_ZRENDER_STATIC_COMPARISON_ONLY_CALLABLES = frozenset({
     "FogBlendPair565",
     "FogBlendPair555",
     "zVideoFxPass3ApproxRadiusIndex",
+    "zVideoFxPass3ScatterDirectSymmetric",
+    "zVideoFxPass3ScatterClippedSymmetric",
+    "zVideoFxPass3CopyDirect",
+    "zVideoFxPass3CopyScratchToSurface",
     "TruncateFloat",
 })
 
@@ -132135,6 +136647,18 @@ def _r4578_zrender_static_comparison_callable(value: str) -> str:
         ),
         "?zVideoFxPass3ApproxRadiusIndex@zVideo@@YIHHH@Z": (
             "zVideoFxPass3ApproxRadiusIndex"
+        ),
+        "?zVideoFxPass3ScatterDirectSymmetric@zVideo@@YIXHHHHHH@Z": (
+            "zVideoFxPass3ScatterDirectSymmetric"
+        ),
+        "?zVideoFxPass3ScatterClippedSymmetric@zVideo@@YIXHHHH@Z": (
+            "zVideoFxPass3ScatterClippedSymmetric"
+        ),
+        "?zVideoFxPass3CopyDirect@zVideo@@YIXHHHHHH@Z": (
+            "zVideoFxPass3CopyDirect"
+        ),
+        "?zVideoFxPass3CopyScratchToSurface@zVideo@@YIXHHHHH@Z": (
+            "zVideoFxPass3CopyScratchToSurface"
         ),
         "?TruncateFloat@zVideo_FxSurface@@YIHM@Z": "TruncateFloat",
     }
@@ -132317,10 +136841,20 @@ def _candidate_local_coff_callable_bridges(
         is_hud_cmd_binding_ptr_vector_erase = (
             name == HUD_CMD_BINDING_PTR_VECTOR_ERASE_SYMBOL
         )
+        is_player_bind_group_scalar_destructor = (
+            name == "??_GzInput_BindGroupInfo@@QAEPAXI@Z"
+            and caller.symbol == "?BindGroupList_Clear@zInput@@YAXXZ"
+        )
+        is_player_bind_group_int_vector_destructor = (
+            name == "??1?$vector@HV?$allocator@H@std@@@std@@QAE@XZ"
+            and caller.symbol == "??1zInput_BindGroupInfo@@QAE@XZ"
+        )
         is_reviewed_candidate_local_provider = (
             is_noop_vector_destroy
             or is_hud_panel_layout_vector_destroy
             or is_hud_cmd_binding_ptr_vector_erase
+            or is_player_bind_group_scalar_destructor
+            or is_player_bind_group_int_vector_destructor
         )
         if any(exact_authorities) and not is_reviewed_candidate_local_provider:
             continue
@@ -139642,6 +144176,37 @@ def _comparison_scoped_provider_comdat_contract(
             == "?InsertCopiesAt@HudUiSaveLoadEntries@@QAEPAUHudUiSaveLoadEntry@@PAU2@IPBU2@@Z"
             and provider_identity == "provider:recoil:function:0x435fd0"
         )
+        zui_insert_caller_sites = {
+            (
+                "symbol:recoil:function:0x4b59f0",
+                "0x4b59f0",
+                "0x4b6fc0",
+            ): (
+                0x399, 0x565, 0x888, 0xA54,
+                0xD77, 0xF43, 0x11F3,
+            ),
+            (
+                "symbol:recoil:function:0x4b7340",
+                "0x4b7340",
+                "0x4b7d60",
+            ): (0x514, 0x6E3),
+        }.get((
+            caller_identity,
+            normalize_address(caller_start),
+            normalize_address(caller_end_exclusive),
+        ))
+        zui_insert_provider_bridge = bool(
+            name
+            == (
+                "?insert@?$vector@PAUHudUiPanel@@"
+                "V?$allocator@PAUHudUiPanel@@@std@@@std@@"
+                "QAEXPAPAUHudUiPanel@@IABQAU3@@Z"
+            )
+            and provider_identity == "provider:recoil:function:0x4ba510"
+            and zui_insert_caller_sites is not None
+            and getattr(candidate.target, "name", "")
+            == "zui_4b3ce0_4bffe0_authored_order"
+        )
         znetwork_append_match = _ZNETWORK_APPEND_COFF_RE.fullmatch(name)
         znetwork_append_provider_bridge = bool(
             znetwork_append_match is not None
@@ -139919,7 +144484,11 @@ def _comparison_scoped_provider_comdat_contract(
             else (
                 0x240
                 if recoilapp_insert_copies_provider_bridge
-                else (0x90 if znetwork_append_provider_bridge else size)
+                else (
+                    0x220
+                    if zui_insert_provider_bridge
+                    else (0x90 if znetwork_append_provider_bridge else size)
+                )
             )
         )
         expected_comdat_selection = (
@@ -139946,7 +144515,24 @@ def _comparison_scoped_provider_comdat_contract(
         ):
             raise ValueError(
                 "comparison-scoped provider COMDAT arbitration rejects "
-                "non-COMDAT, alias, external-population, extent, or relocation drift"
+                "non-COMDAT, alias, external-population, extent, or relocation "
+                f"drift for {name!r}: helper_symbol={helper.symbol!r}, "
+                f"instruction_count={len(helper.instructions)}, "
+                f"extent={len(helper.data)}, expected_extent={candidate_extent}, "
+                f"section_size={helper.section_size}, "
+                f"mask_size={len(helper.relocation_mask)}, "
+                f"actual_mask={sorted(actual_mask)!r}, "
+                f"expected_mask={sorted(expected_mask)!r}, "
+                f"is_comdat={helper.section_is_comdat!r}, "
+                f"selection={helper.comdat_selection!r}, "
+                f"expected_selection={expected_comdat_selection!r}, "
+                f"section_externals={helper.section_external_functions!r}, "
+                f"coff_value={coff_symbol.value}, "
+                f"coff_natural_end={coff_symbol.natural_end}, "
+                f"coff_section_size={coff_symbol.section_size}, "
+                f"coff_characteristics={coff_symbol.section_characteristics:#x}, "
+                f"same_section_externals={same_section_externals!r}, "
+                f"weak_or_coincident_count={len(weak_or_coincident)}"
             )
         instruction_offsets: set[int] = set()
         for instruction in helper.instructions:
@@ -140599,6 +145185,63 @@ def _comparison_scoped_provider_comdat_contract(
                     "RecoilApp InsertCopiesAt provider COMDAT arbitration "
                     "rejects exact selection-1, 0x240 extent, new/delete "
                     "REL32 package, or body-boundary drift"
+                )
+        if zui_insert_provider_bridge:
+            caller_references = tuple(
+                row for row in definition.relocations
+                if row.symbol_name == name
+            )
+            helper_relocations = tuple(
+                sorted(helper.relocations, key=lambda row: row.offset)
+            )
+            target_rows = {
+                target_name: [
+                    row for row in definition.coff_symbols
+                    if row.name == target_name
+                ]
+                for target_name in ("??2@YAPAXI@Z", "??3@YAXPAX@Z")
+            }
+            if (
+                address != "0x4ba510"
+                or end != "0x4ba740"
+                or size != 0x230
+                or len(same_name_rows) != len(zui_insert_caller_sites)
+                or tuple(
+                    (row.offset, row.type, row.symbol_index)
+                    for row in caller_references
+                )
+                != tuple(
+                    (offset, IMAGE_REL_I386_REL32, coff_symbol.index)
+                    for offset in zui_insert_caller_sites
+                )
+                or hashlib.sha256(helper.data).hexdigest()
+                != "52953d5c4675eced536ed3521d05d03027e808234d68a85f7e51e104713ecaea"
+                or tuple(
+                    (row.offset, row.type, row.symbol_name)
+                    for row in helper_relocations
+                )
+                != (
+                    (0x6F, IMAGE_REL_I386_REL32, "??2@YAPAXI@Z"),
+                    (0xE9, IMAGE_REL_I386_REL32, "??3@YAXPAX@Z"),
+                )
+                or any(
+                    len(target_rows[row.symbol_name]) != 1
+                    or row.symbol_index
+                    != target_rows[row.symbol_name][0].index
+                    or helper.data[row.offset - 1] != 0xE8
+                    or struct.unpack_from("<I", helper.data, row.offset)[0]
+                    != 0
+                    for row in helper_relocations
+                )
+                or not helper.source_provenance.replace("\\", "/").endswith(
+                    "/VC/INCLUDE/vector"
+                )
+            ):
+                raise ValueError(
+                    "zUI counted vector insert provider bridge rejects exact "
+                    "caller population/sites, 0x220 candidate COMDAT, "
+                    "new/delete relocation package, immutable 0x230 retail "
+                    "provider extent, or canonical provenance"
                 )
         collisions = {
             candidate_name: identity
@@ -141898,6 +146541,9 @@ def _hud_ui_mgr_ensure_unsupported_helpers_candidate_bridges(
     mismatches.  The returned caller identity is a comparison sentinel, not a
     source-owner, provider, or retail-call claim.
     """
+
+    if normalize_address(caller_start) != HUD_UI_MGR_ENSURE_CALLER_START:
+        return {}
 
     matching_by_label: dict[str, list[tuple[int, Instruction, re.Match[str]]]] = {
         label: []
@@ -155319,7 +159965,7 @@ def _chkstk_compiler_helper_candidate_bridge(
     bridge_names: Mapping[str, Any],
     bridge: BinaryNinjaBridge,
 ) -> dict[str, str]:
-    """Bind one exact VC5 stack-probe call to its retail helper body.
+    """Bind exact finite VC5 stack-probe calls to their retail helper body.
 
     ``__chkstk`` is a compiler-emitted candidate spelling, not identity
     authority.  This bridge is therefore deliberately limited to the finite
@@ -155356,7 +160002,7 @@ def _chkstk_compiler_helper_candidate_bridge(
         for instruction in mentions
     ):
         raise ValueError(
-            "MSVC stack-probe bridge accepts only one exact direct CALL operand; "
+            "MSVC stack-probe bridge accepts only exact direct CALL operands; "
             "aliases, case drift, and indirect forms are forbidden"
         )
 
@@ -155592,11 +160238,19 @@ def _chkstk_compiler_helper_candidate_bridge(
         for address, instruction in zip(retail_addresses, retail_instructions)
         if address is not None
     }
-    retail_call_address = (
-        address_value(str(caller_spec["address"]))
-        + int(caller_spec["retail_call_offset"])
+    if "retail_call_offsets" in caller_spec:
+        retail_call_offsets = tuple(
+            int(value) for value in caller_spec["retail_call_offsets"]
+        )
+    else:
+        retail_call_offsets = (int(caller_spec["retail_call_offset"]),)
+    retail_call_addresses = tuple(
+        address_value(str(caller_spec["address"])) + offset
+        for offset in retail_call_offsets
     )
-    retail_call = retail_by_address.get(retail_call_address)
+    retail_calls = tuple(
+        retail_by_address.get(address) for address in retail_call_addresses
+    )
     dynamic_retail_setup_rows = tuple(
         (int(offset), bytes(body))
         for offset, body in caller_spec.get("retail_setup_rows", ())
@@ -155627,18 +160281,25 @@ def _chkstk_compiler_helper_candidate_bridge(
         )
     if (
         not retail_setup_exact
-        or retail_call is None
-        or _instruction_mnemonic(retail_call) != "call"
-        or len(retail_call.bytes) != 5
-        or tuple(retail_call.bytes[:1]) != ("e8",)
-        or _instruction_operand(retail_call).strip()
-        != MSVC_CHKSTK_RETAIL_NAME
-        or retail_call_address
-        + 5
-        + struct.unpack_from(
-            "<i", bytes(int(value, 16) for value in retail_call.bytes), 1
-        )[0]
-        != address_value(MSVC_CHKSTK_TARGET_ADDRESS)
+        or not retail_calls
+        or any(call is None for call in retail_calls)
+        or any(
+            _instruction_mnemonic(call) != "call"
+            or len(call.bytes) != 5
+            or tuple(call.bytes[:1]) != ("e8",)
+            or _instruction_operand(call).strip()
+            != MSVC_CHKSTK_RETAIL_NAME
+            or call_address
+            + 5
+            + struct.unpack_from(
+                "<i", bytes(int(value, 16) for value in call.bytes), 1
+            )[0]
+            != address_value(MSVC_CHKSTK_TARGET_ADDRESS)
+            for call_address, call in zip(
+                retail_call_addresses, retail_calls
+            )
+            if call is not None
+        )
     ):
         raise ValueError(
             "MSVC __chkstk bridge retail caller setup, direct target, or call "
@@ -155650,23 +160311,32 @@ def _chkstk_compiler_helper_candidate_bridge(
         for row in expected
         if row.get("target_identity") == MSVC_CHKSTK_TARGET_IDENTITY
     ]
-    if (
-        len(expected_rows) != 1
-        or (
-            caller_spec.get("retail_ordinal") is not None
-            and expected_rows[0].get("ordinal")
-            != int(caller_spec["retail_ordinal"])
+    if "retail_ordinals" in caller_spec:
+        retail_ordinals = tuple(
+            int(value) for value in caller_spec["retail_ordinals"]
         )
-        or expected_rows[0].get("form") != "call"
-        or expected_rows[0].get("dispatch") != "direct"
-        or expected_rows[0].get("identity_kind") != "provider"
-        or expected_rows[0].get("storage_identity") != ""
-        or expected_rows[0].get("slot_displacement") is not None
-        or expected_rows[0].get("cleanup_bytes") is not None
+    elif caller_spec.get("retail_ordinal") is not None:
+        retail_ordinals = (int(caller_spec["retail_ordinal"]),)
+    else:
+        retail_ordinals = ()
+    if (
+        len(expected_rows) != len(retail_call_offsets)
+        or retail_ordinals
+        and tuple(row.get("ordinal") for row in expected_rows)
+        != retail_ordinals
+        or any(
+            row.get("form") != "call"
+            or row.get("dispatch") != "direct"
+            or row.get("identity_kind") != "provider"
+            or row.get("storage_identity") != ""
+            or row.get("slot_displacement") is not None
+            or row.get("cleanup_bytes") is not None
+            for row in expected_rows
+        )
     ):
         raise ValueError(
             "MSVC __chkstk bridge lacks the exact retail direct no-cleanup "
-            "compiler-helper invocation"
+            "compiler-helper invocation population and ordinals"
         )
 
     definition = candidate.caller_definition
@@ -155676,13 +160346,25 @@ def _chkstk_compiler_helper_candidate_bridge(
         for index, offset in enumerate(offsets)
         if offset is not None
     }
-    candidate_call_offset = int(caller_spec.get("candidate_call_offset", 5))
-    candidate_call = rows_by_offset.get(candidate_call_offset)
+    if "candidate_call_offsets" in caller_spec:
+        candidate_call_offsets = tuple(
+            int(value) for value in caller_spec["candidate_call_offsets"]
+        )
+    else:
+        candidate_call_offsets = (
+            int(caller_spec.get("candidate_call_offset", 5)),
+        )
+    candidate_calls = tuple(
+        rows_by_offset.get(offset) for offset in candidate_call_offsets
+    )
     dynamic_candidate_setup_rows = tuple(
         (int(offset), bytes(body))
         for offset, body in caller_spec.get("candidate_setup_rows", ())
     )
-    candidate_setup = rows_by_offset.get(0)
+    candidate_setup_offset = int(
+        caller_spec.get("candidate_setup_offset", 0)
+    )
+    candidate_setup = rows_by_offset.get(candidate_setup_offset)
     candidate_frame_body = b""
     if dynamic_candidate_setup_rows:
         candidate_setup_exact = all(
@@ -155722,10 +160404,19 @@ def _chkstk_compiler_helper_candidate_bridge(
     if (
         definition is None
         or definition.symbol != caller_spec["symbol"]
-        or len(mentions) != 1
-        or candidate_call is not mentions[0]
+        or len(mentions) != len(candidate_call_offsets)
+        or len(candidate_calls) != len(mentions)
+        or any(call is None for call in candidate_calls)
+        or any(
+            call is not mention
+            for call, mention in zip(candidate_calls, mentions)
+        )
         or not candidate_setup_exact
-        or tuple(candidate_call.bytes) != ("e8", "00", "00", "00", "00")
+        or any(
+            tuple(call.bytes) != ("e8", "00", "00", "00", "00")
+            for call in candidate_calls
+            if call is not None
+        )
         or definition.undefined_external_functions.count(
             candidate_symbol
         )
@@ -155750,48 +160441,75 @@ def _chkstk_compiler_helper_candidate_bridge(
     ):
         raise ValueError(
             "MSVC stack-probe bridge requires the exact reviewed EAX setup, "
-            "offset-five/direct reviewed candidate call coordinate, caller "
-            "definition, and unique "
+            "offset-five/direct or explicitly reviewed candidate call "
+            "coordinates, caller definition, and unique "
             "undefined helper symbol"
         )
 
-    references = tuple(
-        relocation
-        for relocation in definition.relocations
-        if relocation.symbol_name == candidate_symbol
+    references = tuple(sorted(
+        (
+            relocation
+            for relocation in definition.relocations
+            if relocation.symbol_name == candidate_symbol
+        ),
+        key=lambda relocation: relocation.offset,
+    ))
+    relocation_offsets = tuple(
+        candidate_call_offset + 1
+        for candidate_call_offset in candidate_call_offsets
     )
-    relocation_offset = candidate_call_offset + 1
     if (
-        len(references) != 1
-        or references[0].offset != relocation_offset
-        or references[0].type != IMAGE_REL_I386_REL32
+        len(references) != len(relocation_offsets)
+        or tuple(reference.offset for reference in references)
+        != relocation_offsets
+        or any(
+            reference.type != IMAGE_REL_I386_REL32
+            for reference in references
+        )
         or (
             caller_spec.get("candidate_relocation_symbol_index") is not None
-            and references[0].symbol_index
-            != int(caller_spec["candidate_relocation_symbol_index"])
+            and any(
+                reference.symbol_index
+                != int(caller_spec["candidate_relocation_symbol_index"])
+                for reference in references
+            )
         )
-        or len(definition.data) < relocation_offset + 4
-        or len(definition.relocation_mask) < relocation_offset + 4
-        or definition.data[candidate_call_offset : relocation_offset]
-        != b"\xe8"
-        or struct.unpack_from("<I", definition.data, relocation_offset)[0]
-        != 0
-        or not all(
-            definition.relocation_mask[index]
-            for index in range(relocation_offset, relocation_offset + 4)
+        or any(
+            len(definition.data) < relocation_offset + 4
+            or len(definition.relocation_mask) < relocation_offset + 4
+            or definition.data[
+                candidate_call_offset:relocation_offset
+            ] != b"\xe8"
+            or struct.unpack_from(
+                "<I", definition.data, relocation_offset
+            )[0] != 0
+            or not all(
+                definition.relocation_mask[index]
+                for index in range(relocation_offset, relocation_offset + 4)
+            )
+            or definition.relocation_mask[candidate_call_offset]
+            for candidate_call_offset, relocation_offset in zip(
+                candidate_call_offsets, relocation_offsets
+            )
         )
-        or definition.relocation_mask[candidate_call_offset]
         or (
             not dynamic_candidate_setup_rows
             and (
-                definition.data[:1] != b"\xb8"
-                or definition.data[1:5] != candidate_frame_body
+                definition.data[
+                    candidate_setup_offset:candidate_setup_offset + 1
+                ]
+                != b"\xb8"
+                or definition.data[
+                    candidate_setup_offset + 1:candidate_setup_offset + 5
+                ]
+                != candidate_frame_body
             )
         )
     ):
         raise ValueError(
-            "MSVC stack-probe bridge requires one exact zero-addend fully "
-            "masked E8 REL32 relocation at the reviewed call coordinate"
+            "MSVC stack-probe bridge requires the exact zero-addend fully "
+            "masked E8 REL32 relocation population at every reviewed call "
+            "coordinate"
         )
 
     return {candidate_symbol: MSVC_CHKSTK_TARGET_IDENTITY}
@@ -159863,10 +164581,18 @@ def _eh_array_destructor_callback_noncall_relocation_offsets(
             for name in definition.undefined_external_functions
             if name.casefold() == callback_symbol.casefold()
         )
-        if folded_undefined != (callback_symbol,):
+        folded_defined = tuple(
+            name
+            for name in definition.defined_external_functions
+            if name.casefold() == callback_symbol.casefold()
+        )
+        if (
+            (folded_undefined, folded_defined)
+            not in (((callback_symbol,), ()), ((), (callback_symbol,)))
+        ):
             raise CandidateCallContractEvidenceError(
-                "EH array-destructor callback proof requires one exact undefined "
-                "ordinary destructor symbol"
+                "EH array-destructor callback proof requires one exact "
+                "ordinary external destructor symbol"
             )
         field_offset = (
             _candidate_instruction_section_offset(
@@ -163264,6 +167990,20 @@ def _compiler_destructor_provider_bridges(
         indexes=indexes,
         bridge_names=bridge_names,
     )
+    if (
+        caller_identity == "symbol:recoil:function:0x42a000"
+        and normalize_address(caller_start) == "0x42a000"
+        and normalize_address(caller_end_exclusive) == "0x42a070"
+    ):
+        # The governed `/Ob0` zInput proof expands this complete local vector
+        # destructor recursively.  Do not let same-ordinal generic destructor
+        # arbitration borrow retail's operator-delete identity before that
+        # finite helper graph has been authenticated.
+        candidate_names = tuple(
+            name for name in candidate_names
+            if name
+            != "??1?$vector@HV?$allocator@H@std@@@std@@QAE@XZ"
+        )
     zsnd_vector_dtor_bridge = _zsnd_static_vector_dtor_candidate_bridge(
         expected,
         candidate,
@@ -164058,12 +168798,14 @@ def live_call_contract_result(
     slice_id: str | None = None,
     target_id: str | None = None,
     all_authored_bodies: bool = False,
+    phase_all_authored_bodies: bool = False,
     build_root: Path,
     vc5_env: Path = DEFAULT_VC5_ENV,
     bridge_url: str = DEFAULT_BRIDGE_URL,
     bridge: BinaryNinjaBridge | None = None,
     collect_all_divergences: bool = False,
     compile_definition_closure: bool = True,
+    compile_definition_closure_on_divergence: bool = False,
     precompiled_target_units: Mapping[
         str, tuple[Any, tuple[tuple[Any, Path, CoffObject], ...]]
     ] | None = None,
@@ -164075,6 +168817,7 @@ def live_call_contract_result(
     ] | None = None,
     _diagnostic_comparison_context: dict[str, Any] | None = None,
     _memory_trace: _CallContractMemoryTrace | None = None,
+    _repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> dict[str, Any]:
     memory_trace = _memory_trace or _CallContractMemoryTrace.from_environment()
     memory_trace.emit("verification-start")
@@ -164082,7 +168825,19 @@ def live_call_contract_result(
     timings_ms = _empty_call_contract_timings_ms()
     setup_started = time.perf_counter()
     target_mode = target_id is not None
-    if target_mode:
+    phase_mode = bool(phase_all_authored_bodies)
+    if target_mode and phase_mode:
+        raise ProgressError(
+            "call-contract verification cannot combine target and phase scopes"
+        )
+    if phase_mode:
+        if slice_id is not None or all_authored_bodies or not collect_all_divergences:
+            raise ProgressError(
+                "phase call-contract verification requires the internal complete-census route"
+            )
+        slice_row = _resolve_phase_all_authored_bodies(document)
+        result_slice_id = str(slice_row["id"])
+    elif target_mode:
         if slice_id is not None or not all_authored_bodies:
             raise ProgressError(
                 "target call-contract verification requires --target with --all-authored-bodies only"
@@ -164102,7 +168857,10 @@ def live_call_contract_result(
         caller_total=caller_total,
         selected_target_count=len(slice_row["target_ids"]),
     )
-    repository_path_inventory = load_repository_path_inventory(REPO_ROOT)
+    repository_path_inventory = (
+        _repository_path_inventory
+        or load_repository_path_inventory(REPO_ROOT)
+    )
     source_closure = call_contract_source_closure(
         document,
         slice_row,
@@ -164159,6 +168917,11 @@ def live_call_contract_result(
             bridge_url=bridge_url,
             body_count=int(slice_row["body_count"]),
         )
+    phase_bridge_cache: _CallContractBinaryNinjaFactCache | None = None
+    if phase_mode:
+        phase_bridge_cache = _CallContractBinaryNinjaFactCache(bridge)
+        bridge = phase_bridge_cache
+        phase_bridge_cache.preload_assemblies(slice_row["addresses"])
     by_address, by_name = bridge.symbols()
     bridge_data_rows = bridge.data_variables()
     # Immutable PE import truth is invocation-scoped.  Several independent
@@ -169889,6 +174652,93 @@ def live_call_contract_result(
                     candidate=candidate_assembly,
                 )
             )
+            cycle_entry_candidate_vptr_bridges = (
+                _zui_cycle_entry_candidate_vptr_bridges(
+                    expected,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                    retail_vptr_bridges=(
+                        reviewed_retail_adapters.vptr_storage_bridges
+                    ),
+                )
+            )
+            loop_vptr_conflicts = (
+                candidate_layout_loop_vptr_bridges.keys()
+                & cycle_entry_candidate_vptr_bridges.keys()
+            )
+            if any(
+                candidate_layout_loop_vptr_bridges[key]
+                != cycle_entry_candidate_vptr_bridges[key]
+                for key in loop_vptr_conflicts
+            ):
+                raise ValueError(
+                    "zUI cycle-entry candidate vptr bridge conflicts with "
+                    "another reviewed loop-vptr bridge"
+                )
+            candidate_layout_loop_vptr_bridges.update(
+                cycle_entry_candidate_vptr_bridges
+            )
+            cycle_font_entry_candidate_vptr_bridges = (
+                _zui_cycle_font_entry_candidate_vptr_bridges(
+                    expected,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                    retail_vptr_bridges=(
+                        reviewed_retail_adapters.vptr_storage_bridges
+                    ),
+                )
+            )
+            loop_vptr_conflicts = (
+                candidate_layout_loop_vptr_bridges.keys()
+                & cycle_font_entry_candidate_vptr_bridges.keys()
+            )
+            if any(
+                candidate_layout_loop_vptr_bridges[key]
+                != cycle_font_entry_candidate_vptr_bridges[key]
+                for key in loop_vptr_conflicts
+            ):
+                raise ValueError(
+                    "zUI cycle font-entry candidate vptr bridge conflicts "
+                    "with another reviewed loop-vptr bridge"
+                )
+            candidate_layout_loop_vptr_bridges.update(
+                cycle_font_entry_candidate_vptr_bridges
+            )
+            cycle_bitmap_entry_candidate_vptr_bridges = (
+                _zui_cycle_bitmap_entry_candidate_vptr_bridges(
+                    expected,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                    retail_vptr_bridges=(
+                        reviewed_retail_adapters.vptr_storage_bridges
+                    ),
+                )
+            )
+            loop_vptr_conflicts = (
+                candidate_layout_loop_vptr_bridges.keys()
+                & cycle_bitmap_entry_candidate_vptr_bridges.keys()
+            )
+            if any(
+                candidate_layout_loop_vptr_bridges[key]
+                != cycle_bitmap_entry_candidate_vptr_bridges[key]
+                for key in loop_vptr_conflicts
+            ):
+                raise ValueError(
+                    "zUI cycle bitmap-entry candidate vptr bridge conflicts "
+                    "with another reviewed loop-vptr bridge"
+                )
+            candidate_layout_loop_vptr_bridges.update(
+                cycle_bitmap_entry_candidate_vptr_bridges
+            )
             zwep_damage_candidate_vptr_bridges = (
                 _zwep_damage_handler_candidate_vptr_bridge(
                     expected,
@@ -170458,6 +175308,88 @@ def live_call_contract_result(
                 candidate_expansion_receipts_by_symbol[symbol_id] = (
                     occurrence_graph_receipt
                 )
+            candidate, zui_helper_receipt = (
+                _zui_check_toggle_inline_helper_occurrence_projection(
+                    candidate,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                )
+            )
+            if zui_helper_receipt is not None:
+                if symbol_id in candidate_expansion_receipts_by_symbol:
+                    raise ValueError(
+                        "zUI caller emitted overlapping finite helper-graph "
+                        "expansions"
+                    )
+                candidate_expansion_receipts_by_symbol[symbol_id] = (
+                    zui_helper_receipt
+                )
+            candidate, zui_vector_receipt = (
+                _zui_candidate_local_vector_occurrence_projection(
+                    expected,
+                    candidate,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                )
+            )
+            if zui_vector_receipt is not None:
+                if symbol_id in candidate_expansion_receipts_by_symbol:
+                    raise ValueError(
+                        "zUI caller emitted overlapping finite helper-graph "
+                        "expansions"
+                    )
+                candidate_expansion_receipts_by_symbol[symbol_id] = (
+                    zui_vector_receipt
+                )
+            candidate, node_flag_pushback_receipt = (
+                _player_node_flag_pushback_graph_expansion(
+                    expected,
+                    candidate,
+                    candidate_assembly,
+                    document=document,
+                    indexes=indexes,
+                    bridge=bridge,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                )
+            )
+            if node_flag_pushback_receipt is not None:
+                if symbol_id in candidate_expansion_receipts_by_symbol:
+                    raise ValueError(
+                        "Player caller emitted overlapping finite helper-graph "
+                        "expansions"
+                    )
+                candidate_expansion_receipts_by_symbol[symbol_id] = (
+                    node_flag_pushback_receipt
+                )
+            candidate, zinput_ob0_receipt = (
+                _player_zinput_ob0_helper_graph_expansion(
+                    expected,
+                    candidate,
+                    candidate_assembly,
+                    document=document,
+                    indexes=indexes,
+                    bridge=bridge,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                )
+            )
+            if zinput_ob0_receipt is not None:
+                if symbol_id in candidate_expansion_receipts_by_symbol:
+                    raise ValueError(
+                        "Player caller emitted overlapping zInput `/Ob0` "
+                        "helper-graph expansions"
+                    )
+                candidate_expansion_receipts_by_symbol[symbol_id] = (
+                    zinput_ob0_receipt
+                )
             inline_expansion_receipts: list[dict[str, Any]] = []
             candidate = _player_cstring_inline_candidate_projection(
                 expected,
@@ -170877,6 +175809,22 @@ def live_call_contract_result(
                 caller_start=address,
                 caller_end_exclusive=end_exclusive,
             )
+            candidate = _zui_exact_stack_receiver_storage_projection(
+                expected,
+                candidate,
+                candidate_assembly,
+                caller_identity=caller_identity,
+                caller_start=address,
+                caller_end_exclusive=end_exclusive,
+            )
+            candidate = _zui_check_toggle_receiver_storage_projection(
+                expected,
+                candidate,
+                candidate_assembly,
+                caller_identity=caller_identity,
+                caller_start=address,
+                caller_end_exclusive=end_exclusive,
+            )
             candidate = _player_ob1_finite_identity_projection(
                 expected,
                 candidate,
@@ -171119,16 +176067,23 @@ def live_call_contract_result(
             source_closure.definition_source_paths
         ),
     )
-    definition_compile_results = (
-        _compile_definition_closure_after_comparison(
-            first_divergence,
-            source_closure,
-            build_root=build_root,
-            vc5_env=vc5_env,
+    if compile_definition_closure:
+        definition_compile_results = (
+            _compile_call_contract_definition_sources(
+                source_closure,
+                build_root=build_root,
+                vc5_env=vc5_env,
+            )
+            if compile_definition_closure_on_divergence
+            else _compile_definition_closure_after_comparison(
+                first_divergence,
+                source_closure,
+                build_root=build_root,
+                vc5_env=vc5_env,
+            )
         )
-        if compile_definition_closure
-        else ()
-    )
+    else:
+        definition_compile_results = ()
     memory_trace.emit(
         "definition-closure-compilation-complete",
         caller_total=caller_total,
@@ -171208,9 +176163,13 @@ def live_call_contract_result(
         first_divergence = deepcopy(caller_divergences[0])
     result = {
         "kind": (
-            "authored-call-contract-target-convergence-result"
-            if target_mode
-            else "authored-call-contract-live-result"
+            "authored-call-contract-phase-replay-result"
+            if phase_mode
+            else (
+                "authored-call-contract-target-convergence-result"
+                if target_mode
+                else "authored-call-contract-live-result"
+            )
         ),
         "contract_version": CALL_CONTRACT_CONTRACT_VERSION,
         "closure_contract_version": 2,
@@ -171307,6 +176266,25 @@ def live_call_contract_result(
                     candidate_session.compiled_target_ids.count(target_id)
                 ),
                 "all_caller_divergences_collected": collect_all_divergences,
+                "definition_closure_deferred": not compile_definition_closure,
+            }
+        )
+    if phase_mode:
+        result.update(
+            {
+                "phase_all_authored_bodies": True,
+                "original_slice_ids": list(slice_row["original_slice_ids"]),
+                "slice_boundaries": deepcopy(slice_row["slice_boundaries"]),
+                "acceptance_eligible": False,
+                "nonaccepting": True,
+                "acceptance_route": "project-to-original-slices",
+                "compiled_target_ids": list(candidate_session.compiled_target_ids),
+                "attempted_target_ids": list(candidate_session.attempted_target_ids),
+                "binary_ninja_fact_cache": (
+                    phase_bridge_cache.metrics()
+                    if phase_bridge_cache is not None
+                    else {}
+                ),
                 "definition_closure_deferred": not compile_definition_closure,
             }
         )
@@ -174659,6 +179637,14 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument("--json", action="store_true")
+    parser.add_argument(
+        "--summary",
+        action="store_true",
+        help=(
+            "with --json, emit only status, selection, timing, and the first "
+            "typed divergence; validation and exit status remain unchanged"
+        ),
+    )
     return parser
 
 
@@ -174752,6 +179738,58 @@ def _blocked_call_contract_result(
     return result
 
 
+def _compact_call_contract_result(
+    result: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Project one full live result to a stable terminal-sized report."""
+
+    retained = (
+        "kind",
+        "contract_version",
+        "closure_contract_version",
+        "slice_id",
+        "target_id",
+        "all_authored_bodies",
+        "body_count",
+        "passed",
+        "acceptance_eligible",
+        "nonaccepting",
+        "candidate_expected_truth",
+        "source_changed_during_validation",
+        "first_divergence",
+        "timings_ms",
+    )
+    compact = {
+        key: deepcopy(result[key])
+        for key in retained
+        if key in result
+    }
+    caller_divergences = result.get("caller_divergences")
+    if isinstance(caller_divergences, Sequence) and not isinstance(
+        caller_divergences, (str, bytes)
+    ):
+        compact["caller_divergence_count"] = len(caller_divergences)
+        divergence_keys = (
+            "symbol_id",
+            "address",
+            "kind",
+            "side",
+            "message",
+            "ordinal",
+            "expected",
+            "candidate",
+        )
+        compact["caller_divergences"] = [
+            {
+                key: deepcopy(row[key])
+                for key in divergence_keys
+                if isinstance(row, Mapping) and key in row
+            }
+            for row in caller_divergences
+        ]
+    return compact
+
+
 def _direct_cli_target_census_options(
     *,
     target_id: str | None,
@@ -174783,6 +179821,8 @@ def main(argv: list[str] | None = None) -> int:
         {} if args.diagnostic_window is not None else None
     )
     try:
+        if args.summary and not args.json:
+            raise ProgressError("--summary requires --json")
         if args.memory_trace_file is not None:
             memory_trace = _CallContractMemoryTrace.from_trace_file(
                 args.memory_trace_file,
@@ -174944,6 +179984,8 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
         }
+    if args.summary:
+        output_result = _compact_call_contract_result(output_result)
     if args.json:
         compile_diagnostics = diagnostics.getvalue()
         if compile_diagnostics:

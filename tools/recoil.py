@@ -76,13 +76,48 @@ def spec(
 
 
 _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
-    spec("progress next", "progress_cli", prepend=("next",), summary="Select the sole authoritative next Recoil.exe reconstruction task from the unified progress tracker.", category="progress", examples=("python tools/recoil.py progress next", "python tools/recoil.py progress next --json")),
+    spec(
+        "progress next",
+        "progress_cli",
+        prepend=("next",),
+        summary=(
+            "Select the sole authoritative next Recoil.exe reconstruction task, "
+            "including its direct acceptance and optional stage_runner_command."
+        ),
+        description=(
+            "The current-task contract retains exactly one direct acceptance "
+            "command. During authored-call-contract its stage_runner_command also "
+            "publishes replay-live as the normal serial whole-stage runner; the "
+            "slice check and direct acceptance remain available for "
+            "first-divergence diagnosis."
+        ),
+        category="progress",
+        examples=(
+            "python tools/recoil.py progress next",
+            "python tools/recoil.py progress next --json",
+        ),
+    ),
     spec("progress status", "progress_cli", prepend=("status",), summary="Show derived unified pipeline or selector status.", category="progress", examples=("python tools/recoil.py progress status", "python tools/recoil.py progress status --binary messages", "python tools/recoil.py progress status 0x401060 --json")),
     spec("progress show", "progress_cli", prepend=("show",), summary="Show a joined owner/block/semantic/order/link/byte view.", category="progress", examples=("python tools/recoil.py progress show 0x401000", "python tools/recoil.py progress show recoil:owner:misc_unresolved.cabout_dlg")),
     spec("progress find", "progress_cli", prepend=("find",), summary="Search all unified reconstruction progress entities.", category="progress", examples=("python tools/recoil.py progress find CAboutDlg",)),
     spec("progress audit", "progress_cli", prepend=("audit",), summary="Audit unified tracker schema, relationships, evidence, and derived pipeline invariants.", category="progress", examples=("python tools/recoil.py progress audit --strict", "python tools/recoil.py progress audit --scope evidence --strict")),
     spec("verify linked-byte", "live_byte_verify", prepend=("linked",), summary="Freshly rebuild and directly scan linked bytes, stopping at the earliest real divergence.", category="verification", examples=("python tools/recoil.py verify linked-byte", "python tools/recoil.py verify linked-byte --at 0x401000")),
     spec("verify authored-byte", "live_byte_verify", prepend=("authored",), summary="Freshly rebuild and directly scan authored object, relocation, target, and linked-body semantics.", category="verification", examples=("python tools/recoil.py verify authored-byte", "python tools/recoil.py verify authored-byte --at 0x401000")),
+    spec(
+        "verify zui-inline-context",
+        "zui_inline_context",
+        summary="Compile the authentic zUI target and report the 0x4b59f0 vector-insert call, related emitter, and local-COMDAT context.",
+        description=(
+            "Run a nonaccepting diagnostic compile of the registered zui_widgets.cpp target. "
+            "The report retains exact caller and authentic-emitter relocation offsets plus matching TU-local provider "
+            "extent, COMDAT selection, provenance, and relocation facts without weakening the "
+            "call-contract provider gate."
+        ),
+        category="verification",
+        examples=(
+            "python tools/recoil.py verify zui-inline-context --build-root build/live-validation/zui-inline-context/<fresh-root> --json",
+        ),
+    ),
       spec(
           "verify call-contract",
           "call_contract_verify",
@@ -603,6 +638,34 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         mutates=True,
     ),
     spec("progress call-contract close-live", "progress_cli", prepend=("call-contract", "close-live"), summary="Run one fresh no-reuse complete-census call-contract scan and record the direct closeout.", category="progress", examples=("python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",), mutates=True, needs_binja=True, required_revision_domains=("semantic", "evidence_generation"), build_root_contract="fresh-direct-root", mutation_scope="call-contract"),
+    spec(
+        "progress call-contract replay-live",
+        "call_contract_replay",
+        summary=(
+            "Prove the complete authored call-contract census once and "
+            "serially commit its original-slice projections."
+        ),
+        description=(
+            "Load one atomic current task, reserve a fresh replay sibling without "
+            "consuming its direct root, share unique target/definition builds, source "
+            "discovery, COD indexing, and target-qualified Binary Ninja facts across "
+            "one full-census proof, then commit exact original-slice projections with "
+            "the existing per-body evidence and semantic/evidence CAS. Stop after the "
+            "first divergent slice and return close-live without running it. Dry-run "
+            "plans the whole census with no build, Binary Ninja read, or mutation."
+        ),
+        category="progress",
+        examples=(
+            "python tools/recoil.py progress call-contract replay-live --dry-run --json",
+            "python tools/recoil.py progress call-contract replay-live --apply --json",
+        ),
+        mutates=True,
+        needs_binja=True,
+        required_revision_domains=("semantic", "evidence_generation"),
+        build_root_contract="fresh-replay-sibling",
+        ledger_routing="canonical-machine-local-default",
+        mutation_scope="call-contract",
+    ),
     spec("progress output-section show", "progress_cli", prepend=("output-section", "show"), summary="Show one normalized PE output section.", category="progress"),
     spec("progress storage show", "progress_cli", prepend=("storage", "show"), summary="Show one normalized physical storage contribution.", category="progress"),
     spec(

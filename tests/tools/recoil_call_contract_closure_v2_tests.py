@@ -20,6 +20,7 @@ from _recoil.commands.call_contract_verify import (  # noqa: E402
     build_parser,
 )
 from _recoil.commands.progress_cli import (  # noqa: E402
+    _call_contract_separate_definition_compile_sources,
     _validate_call_contract_result,
 )
 from _recoil.lib.call_contract_generations import (  # noqa: E402
@@ -107,6 +108,32 @@ class FixtureDocument:
 
 
 class CallContractClosureV2Tests(unittest.TestCase):
+    def test_live_acceptance_separates_target_compiles_from_extra_definitions(
+        self,
+    ) -> None:
+        closure = CallContractSourceClosure(
+            source_edit_paths=(),
+            registered_source_paths=("SRC/UNIT/REGISTERED.CPP",),
+            header_paths=(),
+            definition_source_paths=(
+                "src/Unit/Registered.cpp",
+                "src/Unit/Extra.cpp",
+            ),
+            dependency_paths=(),
+        )
+
+        self.assertEqual(
+            (
+                "src/Unit/Registered.cpp",
+                "src/Unit/Extra.cpp",
+            ),
+            closure.definition_source_paths,
+        )
+        self.assertEqual(
+            ["src/Unit/Extra.cpp"],
+            _call_contract_separate_definition_compile_sources(closure),
+        )
+
     def test_live_verifier_has_no_unreachable_phase_convergence_mode(self) -> None:
         source = (
             REPO_ROOT / "tools/_recoil/commands/call_contract_verify.py"
@@ -213,6 +240,172 @@ class CallContractClosureV2Tests(unittest.TestCase):
             [row["symbol_id"] for row in validated["exact_fact_transcript"]],
         )
         self.assertNotIn("binary_ninja_session", validated)
+
+    def test_direct_result_accepts_reviewed_semantic_equivalence_raw_rows(
+        self,
+    ) -> None:
+        slice_row, result = self._direct_result_fixture(body_count=1)
+        expected_call = {
+            "ordinal": 0,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "provider",
+            "target_identity": "provider:recoil:function:0x4c60a6",
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": None,
+        }
+        candidate_call = {
+            **expected_call,
+            "identity_kind": "direct",
+            "target_identity": "iat:_ftol",
+        }
+        expected_fact_row = result["exact_fact_transcript"][0][
+            "expected_fact_row"
+        ]
+        expected_fact_row["calls"] = [expected_call]
+        result["body_results"][0]["expected_fact_row"] = deepcopy(
+            expected_fact_row
+        )
+        result["body_results"][0]["expected_contract"] = [expected_call]
+        result["body_results"][0]["candidate_contract"] = [candidate_call]
+
+        validated = _validate_call_contract_result(
+            result,
+            expected_slice=slice_row,
+            expected_source_write_paths=[],
+            expected_definition_source_paths=[],
+            expected_compiled_definition_sources=[],
+            expected_dependency_paths=[],
+        )
+        self.assertEqual(
+            slice_row["symbol_ids"], validated["passing_symbol_ids"]
+        )
+
+        malformed = deepcopy(result)
+        malformed["body_results"][0]["divergence"] = {
+            "kind": "unexpected-divergence"
+        }
+        with self.assertRaisesRegex(
+            ProgressError, "lacks a passing direct comparison"
+        ):
+            _validate_call_contract_result(
+                malformed,
+                expected_slice=slice_row,
+                expected_source_write_paths=[],
+                expected_definition_source_paths=[],
+                expected_compiled_definition_sources=[],
+                expected_dependency_paths=[],
+            )
+
+    def test_direct_result_accepts_deferred_compile_on_blocked_slice(
+        self,
+    ) -> None:
+        slice_row, result = self._direct_result_fixture(body_count=1)
+        divergence = {
+            "kind": "verifier-blocked",
+            "symbol_id": slice_row["symbol_ids"][0],
+            "address": slice_row["addresses"][0],
+            "side": "candidate",
+        }
+        result["passed"] = False
+        result["first_divergence"] = divergence
+        result["definition_source_paths"] = ["src/Unit/Extra.cpp"]
+        result["body_results"][0]["status"] = "blocked"
+        result["body_results"][0]["comparison_passed"] = False
+        result["body_results"][0]["divergence"] = divergence
+
+        validated = _validate_call_contract_result(
+            result,
+            expected_slice=slice_row,
+            expected_source_write_paths=[],
+            expected_definition_source_paths=["src/Unit/Extra.cpp"],
+            expected_compiled_definition_sources=["src/Unit/Extra.cpp"],
+            expected_dependency_paths=[],
+        )
+        self.assertFalse(validated["passed"])
+        self.assertEqual([], validated["passing_symbol_ids"])
+        self.assertEqual(divergence, validated["first_divergence"])
+
+        partial_compile = deepcopy(result)
+        partial_compile["definition_compile_results"] = [
+            {"source": "src/Unit/Wrong.cpp", "returncode": 0}
+        ]
+        with self.assertRaisesRegex(
+            ProgressError, "did not compile the exact definition closure"
+        ):
+            _validate_call_contract_result(
+                partial_compile,
+                expected_slice=slice_row,
+                expected_source_write_paths=[],
+                expected_definition_source_paths=["src/Unit/Extra.cpp"],
+                expected_compiled_definition_sources=["src/Unit/Extra.cpp"],
+                expected_dependency_paths=[],
+            )
+
+    def test_direct_result_accepts_exact_nonpass_transcript_subset(self) -> None:
+        slice_row, result = self._direct_result_fixture(body_count=2)
+        divergence = {
+            "kind": "verifier-blocked",
+            "symbol_id": slice_row["symbol_ids"][0],
+            "address": slice_row["addresses"][0],
+            "side": "candidate",
+        }
+        result["passed"] = False
+        result["first_divergence"] = divergence
+        result["body_results"][0].update(
+            {
+                "status": "blocked",
+                "comparison_passed": False,
+                "divergence": divergence,
+            }
+        )
+        result["body_results"][1].update(
+            {
+                "status": "not-evaluated",
+                "comparison_passed": False,
+                "divergence": None,
+            }
+        )
+        result["exact_fact_transcript"] = result["exact_fact_transcript"][:1]
+
+        validated = _validate_call_contract_result(
+            result,
+            expected_slice=slice_row,
+            expected_source_write_paths=[],
+            expected_definition_source_paths=[],
+            expected_compiled_definition_sources=[],
+            expected_dependency_paths=[],
+        )
+        self.assertFalse(validated["passed"])
+        self.assertEqual([], validated["passing_symbol_ids"])
+        self.assertEqual(1, len(validated["exact_fact_transcript"]))
+
+        blocked_without_truth = deepcopy(result)
+        blocked_without_truth["exact_fact_transcript"] = []
+        validated = _validate_call_contract_result(
+            blocked_without_truth,
+            expected_slice=slice_row,
+            expected_source_write_paths=[],
+            expected_definition_source_paths=[],
+            expected_compiled_definition_sources=[],
+            expected_dependency_paths=[],
+        )
+        self.assertFalse(validated["passed"])
+
+        malformed = deepcopy(blocked_without_truth)
+        malformed["body_results"][0]["divergence"] = None
+        with self.assertRaisesRegex(
+            ProgressError, "blocked body without expected truth is malformed"
+        ):
+            _validate_call_contract_result(
+                malformed,
+                expected_slice=slice_row,
+                expected_source_write_paths=[],
+                expected_definition_source_paths=[],
+                expected_compiled_definition_sources=[],
+                expected_dependency_paths=[],
+            )
 
     def test_direct_result_rejects_inexact_fact_transcript_population(self) -> None:
         slice_row, result = self._direct_result_fixture()

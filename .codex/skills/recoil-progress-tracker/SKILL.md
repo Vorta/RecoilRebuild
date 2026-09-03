@@ -23,7 +23,10 @@ With no explicit target, run:
 python tools/recoil.py progress next --json
 ```
 
-It returns one `recoil-current-task-v2` object with one task, check command, and—when ready—one direct acceptance command. Work on that task in the canonical checkout. Do not allocate or hand it off.
+It returns one `recoil-current-task-v2` object with one task, check command,
+optional serial `stage_runner_command`, and—when ready—one direct acceptance
+command. Work on that task in the canonical checkout. Do not allocate or hand
+it off.
 
 Strict stage order is:
 
@@ -45,6 +48,29 @@ python tools/recoil.py progress call-contract close-live --build-root <fresh-roo
 python tools/recoil.py progress advance-live-authored-byte --build-root <fresh-root> --expected-revision <revision> --apply --json
 python tools/recoil.py progress advance-live-linked-byte --build-root <fresh-root> --expected-revision <revision> --apply --json
 ```
+
+For authored call contracts, the normal serial whole-stage route is:
+
+```powershell
+python tools/recoil.py progress call-contract replay-live --dry-run --json
+python tools/recoil.py progress call-contract replay-live --apply --json
+```
+
+Dry-run plans the complete original-slice census without building, querying
+Binary Ninja, or mutating. Apply performs one invocation-local full-census
+proof: it discovers source once, builds each unique target and separate
+definition TU once, shares one COD index and target-qualified Binary Ninja fact
+cache, then projects the proof back onto the immutable original slices. Those
+projections use the same per-body evidence shape and serial semantic/evidence
+CAS as direct slice acceptance. Replay revalidates already-current predecessor
+slices, stops after committing only the passing bodies in the first divergent
+current slice, leaves later slices untouched, and returns but never runs the
+mandatory `close-live` command. Its fresh `-replay-NNN` sibling root never
+consumes the scheduler-selected direct root; an interrupted root is inert and a
+later invocation selects a new sibling.
+
+Use `verify call-contract` and `advance-live-call-contract` directly only for
+the first divergent current slice or another focused one-slice diagnosis.
 
 For manual semantic mutations—owner topology, provider/classification decisions, catalog exceptions, target bindings, positive gates, or tiers—run the command with `--dry-run`, review the complete diff, then repeat unchanged with `--apply` and the expected revision. Conservative downgrades use the governed downgrade route.
 

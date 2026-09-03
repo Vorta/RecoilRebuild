@@ -6532,6 +6532,64 @@ class RecoilVc5VerifyTests(unittest.TestCase):
         self.assertEqual("/c", argv[-2])
         self.assertEqual("receipt.cpp", argv[-1])
 
+    def test_header_input_observation_records_inactive_missing_reference(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "unit.cpp"
+            conditional = root / "conditional.h"
+            active = root / "active.h"
+            source.write_text('#include "conditional.h"\n', encoding="ascii")
+            conditional.write_text(
+                "#if defined(_MAC)\n"
+                "#include <missing_mac_only.h>\n"
+                "#else\n"
+                "#include \"active.h\"\n"
+                "#endif\n",
+                encoding="ascii",
+            )
+            active.write_text("#define ACTIVE_VALUE 1\n", encoding="ascii")
+            target = VerifyTarget(
+                name="conditional-headers",
+                description="conditional headers",
+                source_filename="unit.cpp",
+                source_text="",
+                source_from=str(source),
+                compare_mode="coff_bytes",
+                trim_trailing_nops=True,
+                compiler_profile="profile-a",
+                compiler_env="",
+                compiler_flags=("/O2",),
+                include_dirs=(str(root),),
+                source_files=(str(source),),
+                generated_files=(),
+                functions=(),
+                data_symbols=(),
+                manifest_path=root / "manifest.json",
+            )
+
+            headers, roots, unresolved, errors = (
+                vc5_verify_module._governed_header_inputs(
+                    source_path=source,
+                    target=target,
+                    environment={"INCLUDE": ""},
+                )
+            )
+
+            self.assertEqual([], list(errors))
+            self.assertEqual(1, len(roots))
+            self.assertEqual(
+                {str(conditional.resolve()), str(active.resolve())},
+                {row["path"] for row in headers},
+            )
+            self.assertEqual(
+                ({
+                    "included_from": str(conditional.resolve()),
+                    "include_text": "missing_mac_only.h",
+                    "delimiter": "angle",
+                },),
+                unresolved,
+            )
+
     def test_compiler_receipt_captures_inherited_and_response_order(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

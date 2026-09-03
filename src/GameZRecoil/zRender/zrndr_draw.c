@@ -77,7 +77,7 @@ zVideo_BltSourceToPrimaryProc g_zVideo_pfnBltSourceToPrimary = 0;
 }
 
 namespace zSys {
-int CheckCpuSignatureMask();
+int __cdecl CheckCpuSignatureMask();
 }
 
 namespace {
@@ -1803,40 +1803,6 @@ void InsertPendingSpanWithDepthTest(
     ++g_spanAllocCursor;
 }
 
-/**
- * Recovered inline helper: zRndr active fog comparison
- * Original-source helper evidence: No standalone retail function is expected;
- * observed in 0x49b4c0, 0x49b530, and 0x49b710 as the thresholded
- * fog-parameter comparison before committing to the active record.
- * Purpose: Detect whether the pending fog color differs enough from the active renderer fog state to commit.
- */
-static inline bool FogParamsDifferFromActive(
-    const FogParamsPartial &params
-) {
-    const float kCommitThreshold = 0.01f;
-    return fabs(g_fogParamsActive.colorRgb01[0] - params.colorRgb01[0]) >= kCommitThreshold ||
-           fabs(g_fogParamsActive.colorRgb01[1] - params.colorRgb01[1]) >= kCommitThreshold ||
-           fabs(g_fogParamsActive.colorRgb01[2] - params.colorRgb01[2]) >= kCommitThreshold;
-}
-
-/**
- * Recovered inline helper: zRndr active fog commit
- * Original-source helper evidence: No standalone retail function is expected;
- * observed in 0x49b4c0, 0x49b530, and 0x49b710 as the shared comparison plus
- * 0xa0-byte copy into the active fog-parameter record.
- * Purpose: Copy pending fog parameters into active renderer state only when the thresholded color comparison changes.
- */
-static inline void CommitFogParamsIfChanged(
-    const FogParamsPartial &params
-) {
-    if (FogParamsDifferFromActive(params)) {
-        memcpy(
-            &g_fogParamsActive,
-            &params,
-            sizeof(params)
-        );
-    }
-}
 } // namespace
 
 
@@ -2053,18 +2019,8 @@ static inline unsigned short BlendPixel565Alpha8(
     unsigned short srcPixel,
     int alpha
 );
-static inline unsigned int BlendPair565Alpha5(
-    unsigned int dstPair,
-    unsigned short srcPixel,
-    int alpha
-);
 static inline unsigned short BlendPixel555Alpha8(
     unsigned short dstPixel,
-    unsigned short srcPixel,
-    int alpha
-);
-static inline unsigned int BlendPair555Alpha5(
-    unsigned int dstPair,
     unsigned short srcPixel,
     int alpha
 );
@@ -2421,28 +2377,6 @@ static inline unsigned short BlendPixel565Alpha8(
 }
 
 /**
- * Recovered inline helper: zRndr 565 alpha pair blend
- * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49c360 and 0x49d1a0 paired-pixel alpha blend loops.
- * Purpose: Blend two packed 565 destination pixels toward one source pixel using a 5-bit alpha approximation.
- */
-static inline unsigned int BlendPair565Alpha5(
-    unsigned int dstPair,
-    unsigned short srcPixel,
-    int alpha
-) {
-    const unsigned int srcPair = (unsigned int)(srcPixel) | ((unsigned int)(srcPixel) << 16);
-    const unsigned int alpha5 = (unsigned int)(alpha >> 3);
-    const unsigned int inverseAlpha5 = 0x1fu - alpha5;
-    const unsigned int lowTerms =
-        ((((dstPair & 0x07e0f81fu) * inverseAlpha5) + ((srcPair & 0x07e0f81fu) * alpha5)) >> 5) &
-        0x07e0f81fu;
-    const unsigned int highTerms = ((((dstPair >> 5) & 0x07c0f83fu) * inverseAlpha5) +
-                                       (((srcPair >> 5) & 0x07c0f83fu) * alpha5)) &
-                                   0xf81f07e0u;
-    return lowTerms | highTerms;
-}
-
-/**
  * Recovered inline helper: zRndr 555 alpha pixel blend
  * Original-source inline helper evidence: No standalone retail function is expected; observed across 0x49c560, 0x49ca90, 0x49cea0, 0x49d3b0, 0x49d950, and 0x49ddb0 alpha-map span callers.
  * Purpose: Blend one 555 destination pixel toward a source pixel using an 8-bit alpha value.
@@ -2460,28 +2394,6 @@ static inline unsigned short BlendPixel555Alpha8(
     const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
     blended += (greenDelta & 0xffffffe0) + blueDelta;
     return (unsigned short)(blended);
-}
-
-/**
- * Recovered inline helper: zRndr 555 alpha pair blend
- * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49c560 and 0x49d3b0 paired-pixel alpha blend loops.
- * Purpose: Blend two packed 555 destination pixels toward one source pixel using a 5-bit alpha approximation.
- */
-static inline unsigned int BlendPair555Alpha5(
-    unsigned int dstPair,
-    unsigned short srcPixel,
-    int alpha
-) {
-    const unsigned int srcPair = (unsigned int)(srcPixel) | ((unsigned int)(srcPixel) << 16);
-    const unsigned int alpha5 = (unsigned int)(alpha >> 3);
-    const unsigned int inverseAlpha5 = 0x1fu - alpha5;
-    const unsigned int lowTerms =
-        ((((dstPair & 0x03e07c1fu) * inverseAlpha5) + ((srcPair & 0x03e07c1fu) * alpha5)) >> 5) &
-        0x03e07c1fu;
-    const unsigned int highTerms = ((((dstPair >> 5) & 0x03e0f81fu) * inverseAlpha5) +
-                                       (((srcPair >> 5) & 0x03e0f81fu) * alpha5)) &
-                                   0x7c1f03e0u;
-    return highTerms | lowTerms;
 }
 
 /**
@@ -4384,10 +4296,12 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
     zVidRect32 *clipRectOrNull
 ) {
     const int cappedMaxRadius = maxRadius > 0 ? maxRadius : 0;
-    currentRadius = zVideoFxPass3ClampCurrentRadius(
-        currentRadius,
-        maxRadius
-    );
+    if (currentRadius > cappedMaxRadius) {
+        currentRadius = cappedMaxRadius;
+    }
+    if (currentRadius < 0) {
+        currentRadius = 0;
+    }
     if (currentRadius == cappedMaxRadius) {
         return;
     }
@@ -4443,45 +4357,125 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
     const int useClippedPath =
         minOuterX < clipMinX || maxOuterX >= clipMaxX || minOuterY < clipMinY ||
         maxOuterY >= clipMaxY;
-    if (useClippedPath) {
+    if (!useClippedPath) {
+        int y;
+        for (y = -cappedMaxRadius; y <= currentRadius; ++y) {
+            int x;
+            for (x = y; x <= currentRadius; ++x) {
+                const int distanceSquared = x * x + y * y;
+                int srcX = x;
+                int srcY = y;
+                if (distanceSquared < maxRadiusSquared &&
+                    currentRadiusSquared < distanceSquared) {
+                    const float distanceSquaredFloat = (float)(distanceSquared);
+                    const int distanceBits = *((int *)(&distanceSquaredFloat));
+                    int approximateBits = (distanceBits >> 1) + 0x1fc00000;
+                    int radiusIndex;
+                    if ((int)(*((float *)(&approximateBits))) >= cappedMaxRadius) {
+                        radiusIndex = cappedMaxRadius;
+                    } else {
+                        approximateBits = (distanceBits >> 1) + 0x1fc00000;
+                        radiusIndex = (int)(*((float *)(&approximateBits)));
+                    }
+                    const float scale =
+                        sinAmpTable[radiusIndex] * recipTable[radiusIndex];
+                    srcX = x + (int)((float)(x) * scale);
+                    srcY = y + (int)((float)(y) * scale);
+                }
+
+                g_zVideo_FxPass3_ScratchPixels16[
+                    (centerY + y) * g_zVideo_FxSurfaceWidth + centerX + x
+                ] = g_zVideo_FxSurfacePixels16[
+                    (centerY + srcY) * g_zVideo_FxSurfacePitchPixels16 +
+                    centerX + srcX
+                ];
+                g_zVideo_FxPass3_ScratchPixels16[
+                    (centerY + x) * g_zVideo_FxSurfaceWidth + centerX + y
+                ] = g_zVideo_FxSurfacePixels16[
+                    (centerY + srcX) * g_zVideo_FxSurfacePitchPixels16 +
+                    centerX + srcY
+                ];
+                g_zVideo_FxPass3_ScratchPixels16[
+                    (centerY + y) * g_zVideo_FxSurfaceWidth + centerX - x
+                ] = g_zVideo_FxSurfacePixels16[
+                    (centerY + srcY) * g_zVideo_FxSurfacePitchPixels16 +
+                    centerX - srcX
+                ];
+                g_zVideo_FxPass3_ScratchPixels16[
+                    (centerY - x) * g_zVideo_FxSurfaceWidth + centerX + y
+                ] = g_zVideo_FxSurfacePixels16[
+                    (centerY - srcX) * g_zVideo_FxSurfacePitchPixels16 +
+                    centerX + srcY
+                ];
+                g_zVideo_FxPass3_ScratchPixels16[
+                    (centerY - y) * g_zVideo_FxSurfaceWidth + centerX + x
+                ] = g_zVideo_FxSurfacePixels16[
+                    (centerY - srcY) * g_zVideo_FxSurfacePitchPixels16 +
+                    centerX + srcX
+                ];
+                g_zVideo_FxPass3_ScratchPixels16[
+                    (centerY + x) * g_zVideo_FxSurfaceWidth + centerX - y
+                ] = g_zVideo_FxSurfacePixels16[
+                    (centerY + srcX) * g_zVideo_FxSurfacePitchPixels16 +
+                    centerX - srcY
+                ];
+                g_zVideo_FxPass3_ScratchPixels16[
+                    (centerY - y) * g_zVideo_FxSurfaceWidth + centerX - x
+                ] = g_zVideo_FxSurfacePixels16[
+                    (centerY - srcY) * g_zVideo_FxSurfacePitchPixels16 +
+                    centerX - srcX
+                ];
+                g_zVideo_FxPass3_ScratchPixels16[
+                    (centerY - x) * g_zVideo_FxSurfaceWidth + centerX - y
+                ] = g_zVideo_FxSurfacePixels16[
+                    (centerY - srcX) * g_zVideo_FxSurfacePitchPixels16 +
+                    centerX - srcY
+                ];
+            }
+        }
+    } else {
         g_zVideo_FxPass3_ScratchOffsetX = centerX;
         g_zVideo_FxPass3_ScratchOffsetY = centerY;
-    }
+        int y;
+        for (y = -cappedMaxRadius; y <= currentRadius; ++y) {
+            int x;
+            for (x = y; x <= currentRadius; ++x) {
+                const int distanceSquared = x * x + y * y;
+                if (distanceSquared < maxRadiusSquared &&
+                    currentRadiusSquared < distanceSquared) {
+                    const float distanceSquaredFloat = (float)(distanceSquared);
+                    const int distanceBits = *((int *)(&distanceSquaredFloat));
+                    int approximateBits = (distanceBits >> 1) + 0x1fc00000;
+                    int radiusIndex;
+                    if ((int)(*((float *)(&approximateBits))) >= cappedMaxRadius) {
+                        radiusIndex = cappedMaxRadius;
+                    } else {
+                        approximateBits = (distanceBits >> 1) + 0x1fc00000;
+                        radiusIndex = (int)(*((float *)(&approximateBits)));
+                    }
+                    const float scale =
+                        sinAmpTable[radiusIndex] * recipTable[radiusIndex];
+                    const int srcX = x + (int)((float)(x) * scale);
+                    const int srcY = y + (int)((float)(y) * scale);
 
-    int y;
-    for (y = -cappedMaxRadius; y <= currentRadius; ++y) {
-        int x;
-        for (x = y; x <= currentRadius; ++x) {
-            const int distanceSquared = x * x + y * y;
-            int srcX = x;
-            int srcY = y;
-            if (distanceSquared < maxRadiusSquared &&
-                currentRadiusSquared < distanceSquared) {
-                const int radiusIndex = zVideoFxPass3ApproxRadiusIndex(
-                    distanceSquared,
-                    cappedMaxRadius
-                );
-                const float scale = sinAmpTable[radiusIndex] * recipTable[radiusIndex];
-                srcX = x + (int)((float)(x) * scale);
-                srcY = y + (int)((float)(y) * scale);
-            }
-
-            if (useClippedPath) {
-                zVideoFxPass3ScatterClippedSymmetric(
-                    x,
-                    y,
-                    srcX,
-                    srcY
-                );
-            } else {
-                zVideoFxPass3ScatterDirectSymmetric(
-                    centerX,
-                    centerY,
-                    x,
-                    y,
-                    srcX,
-                    srcY
-                );
+                    FxPass3_CopySurfacePixelToScratchClipped(x, y, srcX, srcY);
+                    FxPass3_CopySurfacePixelToScratchClipped(y, x, srcY, srcX);
+                    FxPass3_CopySurfacePixelToScratchClipped(-x, y, -srcX, srcY);
+                    FxPass3_CopySurfacePixelToScratchClipped(y, -x, srcY, -srcX);
+                    FxPass3_CopySurfacePixelToScratchClipped(x, -y, srcX, -srcY);
+                    FxPass3_CopySurfacePixelToScratchClipped(-y, x, -srcY, srcX);
+                    FxPass3_CopySurfacePixelToScratchClipped(-x, -y, -srcX, -srcY);
+                    FxPass3_CopySurfacePixelToScratchClipped(-y, -x, -srcY, -srcX);
+                } else {
+                    FxPass3_CopySurfacePixelToScratchClipped(x, y, x, y);
+                    FxPass3_CopySurfacePixelToScratchClipped(y, x, y, x);
+                    FxPass3_CopySurfacePixelToScratchClipped(-x, y, -x, y);
+                    FxPass3_CopySurfacePixelToScratchClipped(y, -x, y, -x);
+                    FxPass3_CopySurfacePixelToScratchClipped(x, -y, x, -y);
+                    FxPass3_CopySurfacePixelToScratchClipped(-y, x, -y, x);
+                    FxPass3_CopySurfacePixelToScratchClipped(-x, -y, -x, -y);
+                    FxPass3_CopySurfacePixelToScratchClipped(-y, -x, -y, -x);
+                }
             }
         }
     }
@@ -4505,13 +4499,25 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
         }
     }
 
-    zVideoFxPass3CopyScratchToSurface(
-        copyMinX,
-        copyMinY,
-        copyMaxX,
-        copyMaxY,
-        currentRadius
-    );
+    int copyY;
+    for (copyY = copyMinY; copyY < copyMaxY; ++copyY) {
+        if (copyY > currentRadius || copyY < -currentRadius) {
+            unsigned short *src =
+                g_zVideo_FxPass3_ScratchPixels16 +
+                copyY * g_zVideo_FxSurfaceWidth + copyMinX;
+            unsigned short *dst =
+                g_zVideo_FxSurfacePixels16 +
+                copyY * g_zVideo_FxSurfacePitchPixels16 + copyMinX;
+            int copyX;
+            for (copyX = copyMinX; copyX < copyMaxX; ++copyX) {
+                if (copyX > currentRadius || copyX < -currentRadius) {
+                    *dst = *src;
+                }
+                ++dst;
+                ++src;
+            }
+        }
+    }
 }
 } // namespace zVideo
 
@@ -5116,22 +5122,32 @@ void __fastcall DrawAlphaBlendedLine(
     const int top = clipRect->top + clipInset;
     const int right = clipRect->right - clipInset;
     const int bottom = clipRect->bottom - clipInset;
-    int startOutCode = FxLineOutCode(
-        x1,
-        y1,
-        left,
-        top,
-        right,
-        bottom
-    );
-    int endOutCode = FxLineOutCode(
-        x0,
-        y0,
-        left,
-        top,
-        right,
-        bottom
-    );
+    int startOutCode = 0;
+    if (x1 < left) {
+        startOutCode |= 1;
+    }
+    if (x1 > right) {
+        startOutCode |= 2;
+    }
+    if (y1 < top) {
+        startOutCode |= 4;
+    }
+    if (y1 > bottom) {
+        startOutCode |= 8;
+    }
+    int endOutCode = 0;
+    if (x0 < left) {
+        endOutCode |= 1;
+    }
+    if (x0 > right) {
+        endOutCode |= 2;
+    }
+    if (y0 < top) {
+        endOutCode |= 4;
+    }
+    if (y0 > bottom) {
+        endOutCode |= 8;
+    }
     if ((startOutCode & endOutCode) != 0) {
         return;
     }
@@ -5147,7 +5163,7 @@ void __fastcall DrawAlphaBlendedLine(
         }
 
         if (x1 < left) {
-            y1 += TruncateFloat((float)(left - x1) * slopeYPerX);
+            y1 += (int)((float)(left - x1) * slopeYPerX);
             x1 = left;
         }
         dx = x0 - x1;
@@ -5164,7 +5180,7 @@ void __fastcall DrawAlphaBlendedLine(
         }
 
         if (x1 > right) {
-            y1 += TruncateFloat((float)(right - x1) * slopeYPerX);
+            y1 += (int)((float)(right - x1) * slopeYPerX);
             x1 = right;
         }
         dx = x0 - x1;
@@ -5181,7 +5197,7 @@ void __fastcall DrawAlphaBlendedLine(
         }
 
         if (x0 < left) {
-            y0 += TruncateFloat((float)(left - x0) * slopeYPerX);
+            y0 += (int)((float)(left - x0) * slopeYPerX);
             x0 = left;
         }
         dx = x0 - x1;
@@ -5193,7 +5209,7 @@ void __fastcall DrawAlphaBlendedLine(
         }
 
         if (x0 > right) {
-            y0 += TruncateFloat((float)(right - x0) * slopeYPerX);
+            y0 += (int)((float)(right - x0) * slopeYPerX);
             x0 = right;
         }
         dx = x0 - x1;
@@ -5205,10 +5221,10 @@ void __fastcall DrawAlphaBlendedLine(
         }
 
         if (y1 < top) {
-            x1 += TruncateFloat((float)(top - y1) * slopeXPerY);
+            x1 += (int)((float)(top - y1) * slopeXPerY);
             y1 = top;
         } else if (y1 > bottom) {
-            x1 += TruncateFloat((float)(bottom - y1) * slopeXPerY);
+            x1 += (int)((float)(bottom - y1) * slopeXPerY);
             y1 = bottom;
         }
         dx = x0 - x1;
@@ -5220,10 +5236,10 @@ void __fastcall DrawAlphaBlendedLine(
         }
 
         if (y0 < top) {
-            x0 += TruncateFloat((float)(top - y0) * slopeXPerY);
+            x0 += (int)((float)(top - y0) * slopeXPerY);
             y0 = top;
         } else if (y0 > bottom) {
-            x0 += TruncateFloat((float)(bottom - y0) * slopeXPerY);
+            x0 += (int)((float)(bottom - y0) * slopeXPerY);
             y0 = bottom;
         }
     }
@@ -5244,23 +5260,61 @@ void __fastcall DrawAlphaBlendedLine(
     }
 
     const unsigned short packedColor = (unsigned short)(color16);
-    int alphaFixed = TruncateFloat(alphaStart * 255.0f) << 16;
+    int alphaFixed = (int)(alphaStart * 255.0f) << 16;
     if (dx > dy) {
         int err = dx >> 1;
         int steps = dx + 1;
-        const int alphaStep =
-            TruncateFloat(((alphaEnd - alphaStart) / (float)(steps)) * 16777215.0f);
+        const int alphaStep = (int)(
+            ((alphaEnd - alphaStart) / (float)(steps)) * 16777215.0f
+        );
         while (steps != 0) {
             const int alpha = alphaFixed >> 16;
             if (clipInset > 0) {
                 unsigned short *spanPixel = pixel;
                 int spanCount = clipInset;
                 while (spanCount != 0) {
-                    DrawFxSurfaceSpanPixel(
-                        spanPixel,
-                        packedColor,
-                        alpha
-                    );
+                    const int dstValue = (int)(*spanPixel);
+                    const int colorValue = (int)(packedColor);
+                    if (zRndr::g_pixelPackGreenBits == 5) {
+                        if (alpha > 7) {
+                            if (alpha >= 252) {
+                                *spanPixel = packedColor;
+                            } else {
+                                const int redDelta =
+                                    (((colorValue & 0x7c00) -
+                                      (dstValue & 0x7c00)) * alpha) >> 8;
+                                const int greenDelta =
+                                    (((colorValue & 0x03e0) -
+                                      (dstValue & 0x03e0)) * alpha) >> 8;
+                                const int blueDelta =
+                                    (((colorValue & 0x001f) -
+                                      (dstValue & 0x001f)) * alpha) >> 8;
+                                *spanPixel = (unsigned short)(
+                                    dstValue + (redDelta & 0xfc00) +
+                                    (greenDelta & 0xffe0) + blueDelta
+                                );
+                            }
+                        }
+                    } else if (alpha > 3) {
+                        if (alpha >= 252) {
+                            *spanPixel = packedColor;
+                        } else {
+                            const int redDelta =
+                                (((colorValue & 0xf800) -
+                                  (dstValue & 0xf800)) * alpha) >> 8;
+                            const int greenDelta =
+                                (((colorValue & 0x07e0) -
+                                  (dstValue & 0x07e0)) * alpha) >> 8;
+                            const int redApplied =
+                                dstValue + (redDelta & 0xfffff800);
+                            const int blueDelta =
+                                (((colorValue & 0x001f) -
+                                  (redApplied & 0x001f)) * alpha) >> 8;
+                            *spanPixel = (unsigned short)(
+                                redApplied + (greenDelta & 0xffe0) + blueDelta
+                            );
+                        }
+                    }
                     spanPixel += yStepPitch;
                     --spanCount;
                 }
@@ -5281,19 +5335,57 @@ void __fastcall DrawAlphaBlendedLine(
     {
         int err = dy >> 1;
         int steps = dy + 1;
-        const int alphaStep =
-            TruncateFloat(((alphaEnd - alphaStart) / (float)(steps)) * 16777215.0f);
+        const int alphaStep = (int)(
+            ((alphaEnd - alphaStart) / (float)(steps)) * 16777215.0f
+        );
         while (steps != 0) {
             const int alpha = alphaFixed >> 16;
             if (clipInset > 0) {
                 unsigned short *spanPixel = pixel;
                 int spanCount = clipInset;
                 while (spanCount != 0) {
-                    DrawFxSurfaceSpanPixel(
-                        spanPixel,
-                        packedColor,
-                        alpha
-                    );
+                    const int dstValue = (int)(*spanPixel);
+                    const int colorValue = (int)(packedColor);
+                    if (zRndr::g_pixelPackGreenBits == 5) {
+                        if (alpha > 7) {
+                            if (alpha >= 252) {
+                                *spanPixel = packedColor;
+                            } else {
+                                const int redDelta =
+                                    (((colorValue & 0x7c00) -
+                                      (dstValue & 0x7c00)) * alpha) >> 8;
+                                const int greenDelta =
+                                    (((colorValue & 0x03e0) -
+                                      (dstValue & 0x03e0)) * alpha) >> 8;
+                                const int blueDelta =
+                                    (((colorValue & 0x001f) -
+                                      (dstValue & 0x001f)) * alpha) >> 8;
+                                *spanPixel = (unsigned short)(
+                                    dstValue + (redDelta & 0xfc00) +
+                                    (greenDelta & 0xffe0) + blueDelta
+                                );
+                            }
+                        }
+                    } else if (alpha > 3) {
+                        if (alpha >= 252) {
+                            *spanPixel = packedColor;
+                        } else {
+                            const int redDelta =
+                                (((colorValue & 0xf800) -
+                                  (dstValue & 0xf800)) * alpha) >> 8;
+                            const int greenDelta =
+                                (((colorValue & 0x07e0) -
+                                  (dstValue & 0x07e0)) * alpha) >> 8;
+                            const int redApplied =
+                                dstValue + (redDelta & 0xfffff800);
+                            const int blueDelta =
+                                (((colorValue & 0x001f) -
+                                  (redApplied & 0x001f)) * alpha) >> 8;
+                            *spanPixel = (unsigned short)(
+                                redApplied + (greenDelta & 0xffe0) + blueDelta
+                            );
+                        }
+                    }
                     spanPixel += xStep;
                     --spanCount;
                 }
@@ -5423,7 +5515,7 @@ void __fastcall BlitToFramebufferClipped(
     const int framebufferPitch = (int)((unsigned int)(zRndr::g_pitchBytes) >> 1);
     unsigned short *dstRow =
         (unsigned short *)(zRndr::g_frameBuffer) + framebufferPitch * clippedDstY + clippedDstX;
-    const int alphaSkipThreshold = zVideo_GetAlphaSkipThreshold();
+    const int alphaSkipThreshold = zRndr::g_pixelPackGreenBits == 6 ? 3 : 7;
 
     if (image->palette == 0) {
         unsigned short *sourceRow =
@@ -5436,13 +5528,33 @@ void __fastcall BlitToFramebufferClipped(
                     const int alpha = alphaRow[x];
                     if (alpha > alphaSkipThreshold) {
                         const unsigned short sourcePixel = sourceRow[x];
-                        dstRow[x] = alpha >= 252
-                                        ? sourcePixel
-                                        : zVideo_BlendFramebufferPixelAlpha8(
-                                              dstRow[x],
-                                              sourcePixel,
-                                              alpha
-                                          );
+                        if (alpha >= 252) {
+                            dstRow[x] = sourcePixel;
+                        } else if (zRndr::g_pixelPackGreenBits == 6) {
+                            const int dstColor = (short)(dstRow[x]);
+                            const int srcColor = sourcePixel;
+                            const int greenDelta =
+                                (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                            const int redDelta =
+                                (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                            int blended = dstColor + (redDelta & 0xfffff800);
+                            const int blueDelta =
+                                (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                            blended += (greenDelta & 0xffffffe0) + blueDelta;
+                            dstRow[x] = (unsigned short)(blended);
+                        } else {
+                            const int dstColor = (short)(dstRow[x]);
+                            const int srcColor = sourcePixel;
+                            const int redDelta =
+                                (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                            int blended = dstColor + (redDelta & 0xfffffc00);
+                            const int greenDelta =
+                                (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                            const int blueDelta =
+                                (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                            blended += (greenDelta & 0xffffffe0) + blueDelta;
+                            dstRow[x] = (unsigned short)(blended);
+                        }
                     }
                 }
 
@@ -5502,13 +5614,33 @@ void __fastcall BlitToFramebufferClipped(
                 const int alpha = alphaRow8[x_2];
                 if (alpha > alphaSkipThreshold) {
                     const unsigned short sourcePixel = palette[sourceRow8[x_2]];
-                    dstRow[x_2] = alpha >= 252
-                                      ? sourcePixel
-                                      : zVideo_BlendFramebufferPixelAlpha8(
-                                            dstRow[x_2],
-                                            sourcePixel,
-                                            alpha
-                                        );
+                    if (alpha >= 252) {
+                        dstRow[x_2] = sourcePixel;
+                    } else if (zRndr::g_pixelPackGreenBits == 6) {
+                        const int dstColor = (short)(dstRow[x_2]);
+                        const int srcColor = sourcePixel;
+                        const int greenDelta =
+                            (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                        const int redDelta =
+                            (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                        int blended = dstColor + (redDelta & 0xfffff800);
+                        const int blueDelta =
+                            (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                        blended += (greenDelta & 0xffffffe0) + blueDelta;
+                        dstRow[x_2] = (unsigned short)(blended);
+                    } else {
+                        const int dstColor = (short)(dstRow[x_2]);
+                        const int srcColor = sourcePixel;
+                        const int redDelta =
+                            (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                        int blended = dstColor + (redDelta & 0xfffffc00);
+                        const int greenDelta =
+                            (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                        const int blueDelta =
+                            (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                        blended += (greenDelta & 0xffffffe0) + blueDelta;
+                        dstRow[x_2] = (unsigned short)(blended);
+                    }
                 }
             }
 
@@ -5694,26 +5826,38 @@ void __cdecl SelectSpanRoutines() {
     g_pfnImmediateRaster5 = zRndr_DrawLine16_Clipped;
     g_pfnSelectedSpanOp = (SpanRoutineProc)zRndr_FillSpan16Opaque;
     g_pfnSelectedSpanOp_Mode0 = SpanMasked16FromTex16SwitchVShift;
-    g_pfnFlatImmediateSpanOp = g_pixelPackGreenBits == 5
-                                   ? (FlatImmediateSpanProc)zRndr_FillSpan555Solid
-                                   : (FlatImmediateSpanProc)zRndr_FillSpan565Solid;
-
-    if ((graphicsFlags & 0x4) != 0) {
-        g_pfnTexturedQueuedSpanOp_Mode0 = zSys::CheckCpuSignatureMask() != 0
-                                              ? SpanCopy16FromTex16ExplicitVShift
-                                              : SpanCopy16FromTex16;
-        g_pfnTexturedQueuedSpanOp_Mode1 = SpanCopy16FromPal8SwitchVShift;
-        g_pfnTexturedQueuedFinalize = g_pixelPackGreenBits == 5
-                                          ? (SpanRoutineProc)FogBlendSpan555Mmx
-                                          : (SpanRoutineProc)FogBlendSpan565Mmx;
-        g_pfnTexturedQueuedFinalizeAlt = (SpanRoutineProc)SpanMmxSetTexUvMasksAndVShift;
+    if (g_pixelPackGreenBits == 5) {
+        g_pfnFlatImmediateSpanOp = (FlatImmediateSpanProc)zRndr_FillSpan555Solid;
+        if ((graphicsFlags & 0x4) != 0) {
+            g_pfnTexturedQueuedSpanOp_Mode0 = zSys::CheckCpuSignatureMask() != 0
+                                                  ? SpanCopy16FromTex16ExplicitVShift
+                                                  : SpanCopy16FromTex16;
+            g_pfnTexturedQueuedSpanOp_Mode1 = SpanCopy16FromPal8SwitchVShift;
+            g_pfnTexturedQueuedFinalize = (SpanRoutineProc)FogBlendSpan555Mmx;
+            g_pfnTexturedQueuedFinalizeAlt =
+                (SpanRoutineProc)SpanMmxSetTexUvMasksAndVShift;
+        } else {
+            g_pfnTexturedQueuedSpanOp_Mode0 = SpanCopy16FromTex16SwitchVShift;
+            g_pfnTexturedQueuedSpanOp_Mode1 = SpanCopy16FromPal8SwitchVShift;
+            g_pfnTexturedQueuedFinalize = (SpanRoutineProc)FogBlendSpan555Scalar;
+            g_pfnTexturedQueuedFinalizeAlt = 0;
+        }
     } else {
-        g_pfnTexturedQueuedSpanOp_Mode0 = SpanCopy16FromTex16SwitchVShift;
-        g_pfnTexturedQueuedSpanOp_Mode1 = SpanCopy16FromPal8SwitchVShift;
-        g_pfnTexturedQueuedFinalize = g_pixelPackGreenBits == 5
-                                          ? (SpanRoutineProc)FogBlendSpan555Scalar
-                                          : (SpanRoutineProc)FogBlendSpan565Scalar;
-        g_pfnTexturedQueuedFinalizeAlt = 0;
+        g_pfnFlatImmediateSpanOp = (FlatImmediateSpanProc)zRndr_FillSpan565Solid;
+        if ((graphicsFlags & 0x4) != 0) {
+            g_pfnTexturedQueuedSpanOp_Mode0 = zSys::CheckCpuSignatureMask() != 0
+                                                  ? SpanCopy16FromTex16ExplicitVShift
+                                                  : SpanCopy16FromTex16;
+            g_pfnTexturedQueuedSpanOp_Mode1 = SpanCopy16FromPal8SwitchVShift;
+            g_pfnTexturedQueuedFinalize = (SpanRoutineProc)FogBlendSpan565Mmx;
+            g_pfnTexturedQueuedFinalizeAlt =
+                (SpanRoutineProc)SpanMmxSetTexUvMasksAndVShift;
+        } else {
+            g_pfnTexturedQueuedSpanOp_Mode0 = SpanCopy16FromTex16SwitchVShift;
+            g_pfnTexturedQueuedSpanOp_Mode1 = SpanCopy16FromPal8SwitchVShift;
+            g_pfnTexturedQueuedFinalize = (SpanRoutineProc)FogBlendSpan565Scalar;
+            g_pfnTexturedQueuedFinalizeAlt = 0;
+        }
     }
 
     if ((graphicsFlags & 0x4) != 0) {
@@ -6212,65 +6356,37 @@ int __fastcall zRndr_SpanOcclusion_TestSpanDepthOrderPair(
     }
 
     if (rhs->sampleXMin == rhs->sampleXMax) {
-        const float lhsDepth = zRndrSpanDepthAtXByPartsLocal(
-            lhs->sampleXMin,
-            lhs->invDepth,
-            lhs->depthSlope,
-            rhs->sampleXMax
-        );
+        const float lhsDepth = lhs->invDepth +
+                               (float)(rhs->sampleXMax - lhs->sampleXMin) *
+                                   lhs->depthSlope;
         return lhsDepth * zRndr::g_spanDepthBiasPlusOne >= rhs->invDepth ? 1 : 0;
     }
 
     if (lhs->sampleXMin == lhs->sampleXMax) {
-        const float rhsDepth = zRndrSpanDepthAtXByPartsLocal(
-            rhs->sampleXMin,
-            rhs->invDepth,
-            rhs->depthSlope,
-            lhs->sampleXMax
-        );
+        const float rhsDepth = rhs->invDepth +
+                               (float)(lhs->sampleXMax - rhs->sampleXMin) *
+                                   rhs->depthSlope;
         return lhs->invDepth >= rhsDepth * zRndr::g_spanDepthBiasPlusOneInv ? 1 : 0;
     }
 
-    const int overlapMin = MaxValue(
-        lhs->sampleXMin,
-        rhs->sampleXMin
-    );
-    const int overlapMax = MinValue(
-        lhs->sampleXMax,
-        rhs->sampleXMax
-    );
+    const int overlapMin = lhs->sampleXMin > rhs->sampleXMin
+                               ? lhs->sampleXMin
+                               : rhs->sampleXMin;
+    const int overlapMax = lhs->sampleXMax < rhs->sampleXMax
+                               ? lhs->sampleXMax
+                               : rhs->sampleXMax;
     if (overlapMin > overlapMax) {
         return 0;
     }
 
-    const float lhsStart =
-        zRndrSpanDepthAtXByPartsLocal(
-            lhs->sampleXMin,
-            lhs->invDepth,
-            lhs->depthSlope,
-            overlapMin
-        );
-    const float lhsEnd =
-        zRndrSpanDepthAtXByPartsLocal(
-            lhs->sampleXMin,
-            lhs->invDepth,
-            lhs->depthSlope,
-            overlapMax
-        );
-    const float rhsStart =
-        zRndrSpanDepthAtXByPartsLocal(
-            rhs->sampleXMin,
-            rhs->invDepth,
-            rhs->depthSlope,
-            overlapMin
-        );
-    const float rhsEnd =
-        zRndrSpanDepthAtXByPartsLocal(
-            rhs->sampleXMin,
-            rhs->invDepth,
-            rhs->depthSlope,
-            overlapMax
-        );
+    const float lhsStart = lhs->invDepth +
+                           (float)(overlapMin - lhs->sampleXMin) * lhs->depthSlope;
+    const float lhsEnd = lhs->invDepth +
+                         (float)(overlapMax - lhs->sampleXMin) * lhs->depthSlope;
+    const float rhsStart = rhs->invDepth +
+                           (float)(overlapMin - rhs->sampleXMin) * rhs->depthSlope;
+    const float rhsEnd = rhs->invDepth +
+                         (float)(overlapMax - rhs->sampleXMin) * rhs->depthSlope;
     const float startDelta = lhsStart - rhsStart;
     const float endDelta = lhsEnd - rhsEnd;
 
@@ -6282,20 +6398,10 @@ int __fastcall zRndr_SpanOcclusion_TestSpanDepthOrderPair(
     }
 
     const int midX = overlapMin + ((overlapMax - overlapMin) >> 1);
-    const float lhsMid =
-        zRndrSpanDepthAtXByPartsLocal(
-            lhs->sampleXMin,
-            lhs->invDepth,
-            lhs->depthSlope,
-            midX
-        );
-    const float rhsMid =
-        zRndrSpanDepthAtXByPartsLocal(
-            rhs->sampleXMin,
-            rhs->invDepth,
-            rhs->depthSlope,
-            midX
-        );
+    const float lhsMid = lhs->invDepth +
+                         (float)(midX - lhs->sampleXMin) * lhs->depthSlope;
+    const float rhsMid = rhs->invDepth +
+                         (float)(midX - rhs->sampleXMin) * rhs->depthSlope;
     return lhsMid >= rhsMid ? 1 : 0;
 }
 
@@ -6377,34 +6483,36 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
 
             if (currentMin < pendingMin) {
                 current->sampleXMax = pendingMin - 1;
-                current->invDepthStep = SpanDepthAtX(
-                    currentMin,
-                    currentInvDepth,
-                    currentDepthSlope,
-                    current->sampleXMax
-                );
+                current->invDepthStep = currentInvDepth +
+                                        (float)(current->sampleXMax - currentMin) *
+                                            currentDepthSlope;
 
                 if (currentMax > pendingMax) {
                     SpanNodePartial *rightSplit = pending + 1;
                     rightSplit->sampleXMin = pendingMax + 1;
                     rightSplit->sampleXMax = currentMax;
-                    rightSplit->invDepth = SpanDepthAtX(
-                        currentMin,
-                        currentInvDepth,
-                        currentDepthSlope,
-                        rightSplit->sampleXMin
-                    );
+                    rightSplit->invDepth = currentInvDepth +
+                                           (float)(rightSplit->sampleXMin - currentMin) *
+                                               currentDepthSlope;
                     rightSplit->invDepthStep = currentInvDepthStep;
                     rightSplit->depthSlope = currentDepthSlope;
                     rightSplit->next = current->next;
 
                     pending->next = rightSplit;
                     current->next = pending;
-                    AppendSpanListNode(
-                        spanList,
-                        spanCount,
-                        pending
-                    );
+                    if (*spanCount > 0 &&
+                        pending->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
+                        SpanNodePartial *lastVisible = spanList[*spanCount - 1];
+                        lastVisible->sampleXMax = pending->sampleXMax;
+                        lastVisible->invDepthStep = pending->invDepthStep;
+                        lastVisible->next = pending->next;
+                        g_spanLastNode = lastVisible;
+                        g_spanIterNode = lastVisible;
+                    } else {
+                        spanList[*spanCount] = pending;
+                        ++*spanCount;
+                        g_spanLastNode = pending;
+                    }
                     g_spanIterPrevLink = current;
                     g_spanIterNode = pending;
                     g_spanLastNode = rightSplit;
@@ -6429,13 +6537,9 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
             }
 
             current->sampleXMin = pendingMax + 1;
-            current->invDepth =
-                SpanDepthAtX(
-                    currentMin,
-                    currentInvDepth,
-                    currentDepthSlope,
-                    current->sampleXMin
-                );
+            current->invDepth = currentInvDepth +
+                                (float)(current->sampleXMin - currentMin) *
+                                    currentDepthSlope;
             break;
         }
 
@@ -6446,12 +6550,9 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
 
             if (current->sampleXMax >= pendingMin) {
                 pending->sampleXMin = current->sampleXMax + 1;
-                pending->invDepth = SpanDepthAtX(
-                    pendingMin,
-                    pendingInvDepth,
-                    pendingDepthSlope,
-                    pending->sampleXMin
-                );
+                pending->invDepth = pendingInvDepth +
+                                    (float)(pending->sampleXMin - pendingMin) *
+                                        pendingDepthSlope;
             }
 
             previous = current;
@@ -6462,24 +6563,29 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
         if (current->sampleXMin <= pendingMax) {
             const int leftMax = current->sampleXMin - 1;
             pending->sampleXMax = leftMax;
-            pending->invDepthStep =
-                SpanDepthAtX(
-                    pendingMin,
-                    pendingInvDepth,
-                    pendingDepthSlope,
-                    leftMax
-                );
-            LinkSpanNode(
-                columnIndex,
-                previous,
-                pending,
-                current
-            );
-            AppendSpanListNode(
-                spanList,
-                spanCount,
-                pending
-            );
+            pending->invDepthStep = pendingInvDepth +
+                                    (float)(leftMax - pendingMin) * pendingDepthSlope;
+            pending->next = current;
+            if (previous != 0) {
+                previous->next = pending;
+            } else {
+                g_spanColumnHeadTable[columnIndex] = pending;
+            }
+            g_spanIterPrevLink = previous;
+            g_spanIterNode = pending;
+            if (*spanCount > 0 &&
+                pending->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
+                SpanNodePartial *lastVisible = spanList[*spanCount - 1];
+                lastVisible->sampleXMax = pending->sampleXMax;
+                lastVisible->invDepthStep = pending->invDepthStep;
+                lastVisible->next = pending->next;
+                g_spanLastNode = lastVisible;
+                g_spanIterNode = lastVisible;
+            } else {
+                spanList[*spanCount] = pending;
+                ++*spanCount;
+                g_spanLastNode = pending;
+            }
             ++g_spanAllocCursor;
 
             if (current->sampleXMax >= pendingMax) {
@@ -6491,13 +6597,9 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
             pending->next = 0;
             pending->sampleXMin = current->sampleXMax + 1;
             pending->sampleXMax = pendingMax;
-            pending->invDepth =
-                SpanDepthAtX(
-                    pendingMin,
-                    pendingInvDepth,
-                    pendingDepthSlope,
-                    pending->sampleXMin
-                );
+            pending->invDepth = pendingInvDepth +
+                                (float)(pending->sampleXMin - pendingMin) *
+                                    pendingDepthSlope;
             pending->invDepthStep = pendingInvDepthStep;
             pending->depthSlope = pendingDepthSlope;
             current = current->next;
@@ -6508,17 +6610,27 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
         current = current->next;
     }
 
-    LinkSpanNode(
-        columnIndex,
-        previous,
-        pending,
-        current
-    );
-    AppendSpanListNode(
-        spanList,
-        spanCount,
-        pending
-    );
+    pending->next = current;
+    if (previous != 0) {
+        previous->next = pending;
+    } else {
+        g_spanColumnHeadTable[columnIndex] = pending;
+    }
+    g_spanIterPrevLink = previous;
+    g_spanIterNode = pending;
+    if (*spanCount > 0 &&
+        pending->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
+        SpanNodePartial *lastVisible = spanList[*spanCount - 1];
+        lastVisible->sampleXMax = pending->sampleXMax;
+        lastVisible->invDepthStep = pending->invDepthStep;
+        lastVisible->next = pending->next;
+        g_spanLastNode = lastVisible;
+        g_spanIterNode = lastVisible;
+    } else {
+        spanList[*spanCount] = pending;
+        ++*spanCount;
+        g_spanLastNode = pending;
+    }
     ++g_spanAllocCursor;
 }
 
@@ -6537,11 +6649,111 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
     int columnIndex,
     int *spanCount
 ) {
-    zRndr::SpanOcclusionInsertPendingSpanNoDepthTest(
-        spanList,
-        columnIndex,
-        spanCount
-    );
+    using namespace zRndr;
+
+    *spanCount = 0;
+    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0) {
+        return;
+    }
+
+    SpanNodePartial *pending = g_spanAllocCursor;
+    SpanNodePartial *previous = 0;
+    SpanNodePartial *current = g_spanColumnHeadTable[columnIndex];
+
+    while (current != 0 && pending->sampleXMin > current->sampleXMax) {
+        previous = current;
+        current = current->next;
+    }
+
+    if (current == 0 || pending->sampleXMax < current->sampleXMin) {
+        pending->next = current;
+        if (previous != 0) {
+            previous->next = pending;
+        } else {
+            g_spanColumnHeadTable[columnIndex] = pending;
+        }
+        g_spanIterPrevLink = previous;
+        g_spanIterNode = pending;
+        spanList[0] = pending;
+        *spanCount = 1;
+        g_spanLastNode = pending;
+        ++g_spanAllocCursor;
+        return;
+    }
+
+    while (current != 0 && current->sampleXMin <= pending->sampleXMax) {
+        const int currentMin = current->sampleXMin;
+        const int currentMax = current->sampleXMax;
+        const float currentInvDepth = current->invDepth;
+        const float currentInvDepthStep = current->invDepthStep;
+        const float currentDepthSlope = current->depthSlope;
+
+        if (currentMin < pending->sampleXMin) {
+            if (currentMax >= pending->sampleXMin) {
+                current->sampleXMax = pending->sampleXMin - 1;
+                current->invDepthStep =
+                    currentInvDepth +
+                    (float)(current->sampleXMax - currentMin) * currentDepthSlope;
+
+                if (currentMax > pending->sampleXMax) {
+                    SpanNodePartial *rightSplit = pending + 1;
+                    rightSplit->sampleXMin = pending->sampleXMax + 1;
+                    rightSplit->sampleXMax = currentMax;
+                    rightSplit->invDepth =
+                        currentInvDepth +
+                        (float)(rightSplit->sampleXMin - currentMin) * currentDepthSlope;
+                    rightSplit->invDepthStep = currentInvDepthStep;
+                    rightSplit->depthSlope = currentDepthSlope;
+                    rightSplit->next = current->next;
+
+                    pending->next = rightSplit;
+                    current->next = pending;
+                    spanList[0] = pending;
+                    *spanCount = 1;
+                    g_spanLastNode = pending;
+                    g_spanIterPrevLink = current;
+                    g_spanIterNode = pending;
+                    g_spanLastNode = rightSplit;
+                    g_spanAllocCursor += 2;
+                    return;
+                }
+            }
+
+            previous = current;
+            current = current->next;
+            continue;
+        }
+
+        if (currentMax <= pending->sampleXMax) {
+            SpanNodePartial *next = current->next;
+            if (previous != 0) {
+                previous->next = next;
+            } else {
+                g_spanColumnHeadTable[columnIndex] = next;
+            }
+            current = next;
+            continue;
+        }
+
+        current->sampleXMin = pending->sampleXMax + 1;
+        current->invDepth =
+            currentInvDepth +
+            (float)(current->sampleXMin - currentMin) * currentDepthSlope;
+        break;
+    }
+
+    pending->next = current;
+    if (previous != 0) {
+        previous->next = pending;
+    } else {
+        g_spanColumnHeadTable[columnIndex] = pending;
+    }
+    g_spanIterPrevLink = previous;
+    g_spanIterNode = pending;
+    spanList[0] = pending;
+    *spanCount = 1;
+    g_spanLastNode = pending;
+    ++g_spanAllocCursor;
 }
 
 /**
@@ -6560,11 +6772,165 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanList(
     int columnIndex,
     int *spanCount
 ) {
-    zRndr::SpanOcclusionBuildVisibleSpanListWithDepthTest(
-        spanList,
-        columnIndex,
-        spanCount
-    );
+    using namespace zRndr;
+
+    *spanCount = 0;
+    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0) {
+        return;
+    }
+
+    SpanNodePartial *pending = g_spanAllocCursor;
+    pending->next = 0;
+    SpanNodePartial *current = g_spanColumnHeadTable[columnIndex];
+
+    while (current != 0 && pending->sampleXMin > current->sampleXMax) {
+        current = current->next;
+    }
+
+    while (current != 0) {
+        if (pending->sampleXMax < current->sampleXMin) {
+            break;
+        }
+
+        SpanNodePartial occluder = *current;
+        const bool pendingInFront =
+            zRndr_SpanOcclusion_TestSpanDepthOrderPair(
+                pending,
+                &occluder
+            ) != 0;
+
+        const int pendingMin = pending->sampleXMin;
+        const int pendingMax = pending->sampleXMax;
+        const float pendingInvDepth = pending->invDepth;
+        const float pendingInvDepthStep = pending->invDepthStep;
+        const float pendingDepthSlope = pending->depthSlope;
+
+        if (pendingInFront) {
+            if (occluder.sampleXMax < pendingMax && occluder.sampleXMax >= pendingMin) {
+                const int splitMax = occluder.sampleXMax;
+                pending->sampleXMax = splitMax;
+                pending->invDepthStep =
+                    pendingInvDepth +
+                    (float)(splitMax - pendingMin) * pendingDepthSlope;
+                if (*spanCount > 0 &&
+                    pending->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
+                    SpanNodePartial *lastVisible = spanList[*spanCount - 1];
+                    lastVisible->sampleXMax = pending->sampleXMax;
+                    lastVisible->invDepthStep = pending->invDepthStep;
+                    lastVisible->next = pending->next;
+                    g_spanLastNode = lastVisible;
+                    g_spanIterNode = lastVisible;
+                } else {
+                    spanList[*spanCount] = pending;
+                    ++*spanCount;
+                    g_spanLastNode = pending;
+                }
+                ++g_spanAllocCursor;
+
+                pending = g_spanAllocCursor;
+                pending->next = 0;
+                pending->sampleXMin = splitMax + 1;
+                pending->sampleXMax = pendingMax;
+                pending->invDepth =
+                    pendingInvDepth +
+                    (float)(pending->sampleXMin - pendingMin) * pendingDepthSlope;
+                pending->invDepthStep = pendingInvDepthStep;
+                pending->depthSlope = pendingDepthSlope;
+                current = current->next;
+                continue;
+            }
+
+            if (occluder.sampleXMax >= pendingMax) {
+                if (*spanCount > 0 &&
+                    pending->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
+                    SpanNodePartial *lastVisible = spanList[*spanCount - 1];
+                    lastVisible->sampleXMax = pending->sampleXMax;
+                    lastVisible->invDepthStep = pending->invDepthStep;
+                    lastVisible->next = pending->next;
+                    g_spanLastNode = lastVisible;
+                    g_spanIterNode = lastVisible;
+                } else {
+                    spanList[*spanCount] = pending;
+                    ++*spanCount;
+                    g_spanLastNode = pending;
+                }
+                ++g_spanAllocCursor;
+                return;
+            }
+
+            current = current->next;
+            continue;
+        }
+
+        if (occluder.sampleXMin <= pendingMin) {
+            if (occluder.sampleXMax >= pendingMax) {
+                return;
+            }
+
+            if (occluder.sampleXMax >= pendingMin) {
+                pending->sampleXMin = occluder.sampleXMax + 1;
+                pending->invDepth =
+                    pendingInvDepth +
+                    (float)(pending->sampleXMin - pendingMin) * pendingDepthSlope;
+            }
+
+            current = current->next;
+            continue;
+        }
+
+        if (occluder.sampleXMin <= pendingMax) {
+            const int leftMax = occluder.sampleXMin - 1;
+            pending->sampleXMax = leftMax;
+            pending->invDepthStep =
+                pendingInvDepth +
+                (float)(leftMax - pendingMin) * pendingDepthSlope;
+            if (*spanCount > 0 &&
+                pending->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
+                SpanNodePartial *lastVisible = spanList[*spanCount - 1];
+                lastVisible->sampleXMax = pending->sampleXMax;
+                lastVisible->invDepthStep = pending->invDepthStep;
+                lastVisible->next = pending->next;
+                g_spanLastNode = lastVisible;
+                g_spanIterNode = lastVisible;
+            } else {
+                spanList[*spanCount] = pending;
+                ++*spanCount;
+                g_spanLastNode = pending;
+            }
+            ++g_spanAllocCursor;
+
+            if (occluder.sampleXMax >= pendingMax) {
+                return;
+            }
+
+            pending = g_spanAllocCursor;
+            pending->next = 0;
+            pending->sampleXMin = occluder.sampleXMax + 1;
+            pending->sampleXMax = pendingMax;
+            pending->invDepth =
+                pendingInvDepth +
+                (float)(pending->sampleXMin - pendingMin) * pendingDepthSlope;
+            pending->invDepthStep = pendingInvDepthStep;
+            pending->depthSlope = pendingDepthSlope;
+        }
+
+        current = current->next;
+    }
+
+    if (*spanCount > 0 &&
+        pending->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
+        SpanNodePartial *lastVisible = spanList[*spanCount - 1];
+        lastVisible->sampleXMax = pending->sampleXMax;
+        lastVisible->invDepthStep = pending->invDepthStep;
+        lastVisible->next = pending->next;
+        g_spanLastNode = lastVisible;
+        g_spanIterNode = lastVisible;
+    } else {
+        spanList[*spanCount] = pending;
+        ++*spanCount;
+        g_spanLastNode = pending;
+    }
+    ++g_spanAllocCursor;
 }
 
 /**
@@ -6645,12 +7011,11 @@ void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
 
             if (occluder.sampleXMax >= candidate.sampleXMin) {
                 candidate.sampleXMin = occluder.sampleXMax + 1;
-                candidate.invDepth = zRndrSpanDepthAtXByPartsLocal(
-                    zRndr::g_spanAllocCursor->sampleXMin,
-                    zRndr::g_spanAllocCursor->invDepth,
-                    zRndr::g_spanAllocCursor->depthSlope,
-                    candidate.sampleXMin
-                );
+                candidate.invDepth =
+                    zRndr::g_spanAllocCursor->invDepth +
+                    (float)(candidate.sampleXMin -
+                            zRndr::g_spanAllocCursor->sampleXMin) *
+                    zRndr::g_spanAllocCursor->depthSlope;
             }
         } else if (occluder.sampleXMin <= candidate.sampleXMax) {
             *isVisible = 1;
@@ -7281,50 +7646,136 @@ void __fastcall zRndr_DrawFlatImmediate(
 
     ScanConvertEdge edgeTableA[0x40] = {0};
     ScanConvertEdge edgeTableB[0x40] = {0};
-    int edgeCountA;
-    int edgeCountB;
+    int edgeCountA = 0;
+    int edgeCountB = 0;
+    int fixed16Value;
+    int edgeVertexIndex;
+    int edgeYStart;
+    float edgeSampleY;
+    int edgeStepA;
+    int edgeStepB;
     if (zRndr::g_scanConvertMode != 0) {
-        edgeCountA = BuildScanConvertEdges(
-            vertices,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            1,
-            edgeTableA
-        );
-        edgeCountB = BuildScanConvertEdges(
-            vertices,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            -1,
-            edgeTableB
-        );
+        edgeStepA = 1;
+        edgeStepB = -1;
     } else {
-        edgeCountA = BuildScanConvertEdges(
-            vertices,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            -1,
-            edgeTableA
-        );
-        edgeCountB = BuildScanConvertEdges(
-            vertices,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            1,
-            edgeTableB
-        );
+        edgeStepA = -1;
+        edgeStepB = 1;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        vertices[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepA;
+        if (nextIndex < 0) {
+            nextIndex += vertCount;
+        }
+        if (nextIndex >= vertCount) {
+            nextIndex -= vertCount;
+        }
+        const zVec3 &start = vertices[edgeVertexIndex];
+        const zVec3 &end = vertices[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableA[edgeCountA].yStart = edgeYStart;
+            edgeTableA[edgeCountA].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableA[edgeCountA].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountA;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        vertices[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepB;
+        if (nextIndex < 0) {
+            nextIndex += vertCount;
+        }
+        if (nextIndex >= vertCount) {
+            nextIndex -= vertCount;
+        }
+        const zVec3 &start = vertices[edgeVertexIndex];
+        const zVec3 &end = vertices[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableB[edgeCountB].yStart = edgeYStart;
+            edgeTableB[edgeCountB].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableB[edgeCountB].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountB;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
     }
 
     if (edgeCountA == 0 || edgeCountB == 0) {
         return;
     }
 
-    const int firstScanline = ScanlineStartFromY(vertices[topVertexIndex].y);
-    const int lastScanline = ScanlineEndFromY(vertices[bottomVertexIndex].y);
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        vertices[topVertexIndex].y
+    );
+    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        vertices[bottomVertexIndex].y
+    );
+    const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
     }
@@ -7449,50 +7900,136 @@ void __fastcall zRndr_RasterizePoly(
 
     ScanConvertEdge edgeTableA[0x40] = {0};
     ScanConvertEdge edgeTableB[0x40] = {0};
-    int edgeCountA;
-    int edgeCountB;
+    int edgeCountA = 0;
+    int edgeCountB = 0;
+    int fixed16Value;
+    int edgeVertexIndex;
+    int edgeYStart;
+    float edgeSampleY;
+    int edgeStepA;
+    int edgeStepB;
     if (zRndr::g_scanConvertMode != 0) {
-        edgeCountA = BuildScanConvertEdges(
-            reducedVerts,
-            reducedCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            1,
-            edgeTableA
-        );
-        edgeCountB = BuildScanConvertEdges(
-            reducedVerts,
-            reducedCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            -1,
-            edgeTableB
-        );
+        edgeStepA = 1;
+        edgeStepB = -1;
     } else {
-        edgeCountA = BuildScanConvertEdges(
-            reducedVerts,
-            reducedCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            -1,
-            edgeTableA
-        );
-        edgeCountB = BuildScanConvertEdges(
-            reducedVerts,
-            reducedCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            1,
-            edgeTableB
-        );
+        edgeStepA = -1;
+        edgeStepB = 1;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        reducedVerts[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepA;
+        if (nextIndex < 0) {
+            nextIndex += reducedCount;
+        }
+        if (nextIndex >= reducedCount) {
+            nextIndex -= reducedCount;
+        }
+        const zVec3 &start = reducedVerts[edgeVertexIndex];
+        const zVec3 &end = reducedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableA[edgeCountA].yStart = edgeYStart;
+            edgeTableA[edgeCountA].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableA[edgeCountA].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountA;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        reducedVerts[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepB;
+        if (nextIndex < 0) {
+            nextIndex += reducedCount;
+        }
+        if (nextIndex >= reducedCount) {
+            nextIndex -= reducedCount;
+        }
+        const zVec3 &start = reducedVerts[edgeVertexIndex];
+        const zVec3 &end = reducedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableB[edgeCountB].yStart = edgeYStart;
+            edgeTableB[edgeCountB].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableB[edgeCountB].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountB;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
     }
 
     if (edgeCountA == 0 || edgeCountB == 0) {
         return;
     }
 
-    const int firstScanline = ScanlineStartFromY(reducedVerts[topVertexIndex].y);
-    const int lastScanline = ScanlineEndFromY(reducedVerts[bottomVertexIndex].y);
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        reducedVerts[topVertexIndex].y
+    );
+    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        reducedVerts[bottomVertexIndex].y
+    );
+    const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
     }
@@ -7566,13 +8103,86 @@ void __fastcall zRndr_DrawFlatQueued(
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
 
-    TexturedPlanes planes = BuildQueuedTexturePlanes(
-        0,
-        triVerts,
-        triUVs,
-        imageWidth,
-        imageHeight
-    );
+    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
+    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
+    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
+    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
+    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
+    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
+
+    const float reciprocalValues[3] = {
+        triVerts[0].z,
+        triVerts[1].z,
+        triVerts[2].z
+    };
+    const float uValues[3] = {
+        gRndr_PerspTexScaledUOverZ0,
+        gRndr_PerspTexScaledUOverZ1,
+        gRndr_PerspTexScaledUOverZ2
+    };
+    const float vValues[3] = {
+        gRndr_PerspTexScaledVOverZ0,
+        gRndr_PerspTexScaledVOverZ1,
+        gRndr_PerspTexScaledVOverZ2
+    };
+    const float planeDx10 = triVerts[0].x - triVerts[1].x;
+    const float planeDx12 = triVerts[2].x - triVerts[1].x;
+    const float planeDy10 = triVerts[0].y - triVerts[1].y;
+    const float planeDy12 = triVerts[2].y - triVerts[1].y;
+    const float planeDeterminant = planeDy12 * planeDx10 - planeDy10 * planeDx12;
+    Plane2f reciprocalZ = {0};
+    Plane2f uOverZ = {0};
+    Plane2f vOverZ = {0};
+    if (planeDeterminant != 0.0f) {
+        const float inversePlaneDeterminant = -1.0f / planeDeterminant;
+        const float reciprocal10 = reciprocalValues[0] - reciprocalValues[1];
+        const float reciprocal12 = reciprocalValues[2] - reciprocalValues[1];
+        const float u10 = uValues[0] - uValues[1];
+        const float u12 = uValues[2] - uValues[1];
+        const float v10 = vValues[0] - vValues[1];
+        const float v12 = vValues[2] - vValues[1];
+        reciprocalZ.gradient.x =
+            (planeDy12 * reciprocal10 - planeDy10 * reciprocal12) * inversePlaneDeterminant;
+        reciprocalZ.gradient.y =
+            (planeDx10 * reciprocal12 - planeDx12 * reciprocal10) * inversePlaneDeterminant;
+        uOverZ.gradient.x =
+            (planeDy12 * u10 - planeDy10 * u12) * inversePlaneDeterminant;
+        uOverZ.gradient.y =
+            (planeDx10 * u12 - planeDx12 * u10) * inversePlaneDeterminant;
+        vOverZ.gradient.x =
+            (planeDy12 * v10 - planeDy10 * v12) * inversePlaneDeterminant;
+        vOverZ.gradient.y =
+            (planeDx10 * v12 - planeDx12 * v10) * inversePlaneDeterminant;
+    }
+    reciprocalZ.base = reciprocalValues[0];
+    uOverZ.base = uValues[0];
+    vOverZ.base = vValues[0];
+    gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
+    gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
+    gRndr_PerspInvDepthBase = reciprocalZ.base;
+    gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
+    gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
+    gRndr_PerspTexScaledUOverZBase = uOverZ.base;
+    gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
+    gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
+    gRndr_PerspTexScaledVOverZBase = vOverZ.base;
+    gRndr_PerspPlaneOriginX = triVerts[0].x;
+    gRndr_PerspPlaneOriginY = triVerts[0].y;
+
+    TexturedPlanes planes = {0};
+    planes.reciprocalZ = reciprocalZ;
+    planes.uOverZ = uOverZ;
+    planes.vOverZ = vOverZ;
+    planes.originX = gRndr_PerspPlaneOriginX;
+    planes.originY = gRndr_PerspPlaneOriginY;
+    const float adjustX = planes.originX - 0.5f;
+    const float adjustY = planes.originY - 0.5f;
+    planes.reciprocalZ.base -=
+        adjustX * planes.reciprocalZ.gradient.x + adjustY * planes.reciprocalZ.gradient.y;
+    planes.uOverZ.base -=
+        adjustX * planes.uOverZ.gradient.x + adjustY * planes.uOverZ.gradient.y;
+    planes.vOverZ.base -=
+        adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
 
     if (entry->nextVariant != 0) {
         selectedImage = zRndr_TextureMip_SelectVariantImage(
@@ -7599,50 +8209,136 @@ void __fastcall zRndr_DrawFlatQueued(
 
     ScanConvertEdge edgeTableA[0x40] = {0};
     ScanConvertEdge edgeTableB[0x40] = {0};
-    int edgeCountA;
-    int edgeCountB;
+    int edgeCountA = 0;
+    int edgeCountB = 0;
+    int fixed16Value;
+    int edgeVertexIndex;
+    int edgeYStart;
+    float edgeSampleY;
+    int edgeStepA;
+    int edgeStepB;
     if (zRndr::g_scanConvertMode != 0) {
-        edgeCountA = BuildScanConvertEdges(
-            polyVerts,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            1,
-            edgeTableA
-        );
-        edgeCountB = BuildScanConvertEdges(
-            polyVerts,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            -1,
-            edgeTableB
-        );
+        edgeStepA = 1;
+        edgeStepB = -1;
     } else {
-        edgeCountA = BuildScanConvertEdges(
-            polyVerts,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            -1,
-            edgeTableA
-        );
-        edgeCountB = BuildScanConvertEdges(
-            polyVerts,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            1,
-            edgeTableB
-        );
+        edgeStepA = -1;
+        edgeStepB = 1;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        polyVerts[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepA;
+        if (nextIndex < 0) {
+            nextIndex += vertCount;
+        }
+        if (nextIndex >= vertCount) {
+            nextIndex -= vertCount;
+        }
+        const zVec3 &start = polyVerts[edgeVertexIndex];
+        const zVec3 &end = polyVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableA[edgeCountA].yStart = edgeYStart;
+            edgeTableA[edgeCountA].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableA[edgeCountA].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountA;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        polyVerts[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepB;
+        if (nextIndex < 0) {
+            nextIndex += vertCount;
+        }
+        if (nextIndex >= vertCount) {
+            nextIndex -= vertCount;
+        }
+        const zVec3 &start = polyVerts[edgeVertexIndex];
+        const zVec3 &end = polyVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableB[edgeCountB].yStart = edgeYStart;
+            edgeTableB[edgeCountB].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableB[edgeCountB].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountB;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
     }
 
     if (edgeCountA == 0 || edgeCountB == 0) {
         return;
     }
 
-    const int firstScanline = ScanlineStartFromY(polyVerts[topVertexIndex].y);
-    const int lastScanline = ScanlineEndFromY(polyVerts[bottomVertexIndex].y);
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        polyVerts[topVertexIndex].y
+    );
+    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        polyVerts[bottomVertexIndex].y
+    );
+    const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
     }
@@ -7743,15 +8439,68 @@ void __fastcall zRndr_DrawFlatQueued(
                     zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    DispatchTexturedSpanChunks(
-                        spanProc,
-                        0,
-                        span,
-                        y,
-                        span->sampleXMax - span->sampleXMin + 1,
-                        1048576.0f,
-                        texVShift
-                    );
+                    const int count = span->sampleXMax - span->sampleXMin + 1;
+                    const float startX = (float)(span->sampleXMin);
+                    const float endX = (float)(span->sampleXMin + count);
+                    const float sampleY = (float)(y);
+                    const float startPlaneX = startX + 0.5f - gRndr_PerspPlaneOriginX;
+                    const float endPlaneX = endX + 0.5f - gRndr_PerspPlaneOriginX;
+                    const float planeY = sampleY + 0.5f - gRndr_PerspPlaneOriginY;
+                    const float startInvZ =
+                        startPlaneX * gRndr_PerspInvDepthStepX +
+                        planeY * gRndr_PerspInvDepthStepY +
+                        gRndr_PerspInvDepthBase;
+                    const float endInvZ =
+                        endPlaneX * gRndr_PerspInvDepthStepX +
+                        planeY * gRndr_PerspInvDepthStepY +
+                        gRndr_PerspInvDepthBase;
+                    if (startInvZ != 0.0f && endInvZ != 0.0f) {
+                        const float startU =
+                            (startPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            startInvZ;
+                        const float startV =
+                            (startPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            startInvZ;
+                        const float endU =
+                            (endPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            endInvZ;
+                        const float endV =
+                            (endPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            endInvZ;
+                        const float texUStep =
+                            (endU - startU) * 1048576.0f / (float)(count);
+                        const float texVStep =
+                            (endV - startV) * 1048576.0f / (float)(count);
+                        const float texUStart = startU * 1048576.0f;
+                        const float texVStart = startV * 1048576.0f;
+                        const double texUStepBits =
+                            (double)(texUStep) - -6755399441055744.0;
+                        const double texVStepBits =
+                            (double)(texVStep) - -6755399441055744.0;
+                        const double texUStartBits =
+                            (double)(texUStart) - -6755399441055744.0;
+                        const double texVStartBits =
+                            (double)(texVStart) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 =
+                            *(const int *)(&texUStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 =
+                            *(const int *)(&texVStepBits);
+                        spanProc(
+                            *(const int *)(&texUStartBits),
+                            *(const int *)(&texVStartBits),
+                            count,
+                            texVShift
+                        );
+                        zRndr::g_spanCurrentSpanBaseAddr += count;
+                    }
                 }
             }
         }
@@ -7783,15 +8532,87 @@ void __fastcall Renderer_DrawPolyTLV(
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
 
-    TexturedPlanes planes = BuildQueuedTexturePlanes(
-        0,
-        triVerts,
-        triUVs,
-        imageWidth,
-        imageHeight
-    );
+    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
+    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
+    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
+    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
+    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
+    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
 
-    float textureScale = 1048576.0f;
+    const float reciprocalValues[3] = {
+        triVerts[0].z,
+        triVerts[1].z,
+        triVerts[2].z
+    };
+    const float uValues[3] = {
+        gRndr_PerspTexScaledUOverZ0,
+        gRndr_PerspTexScaledUOverZ1,
+        gRndr_PerspTexScaledUOverZ2
+    };
+    const float vValues[3] = {
+        gRndr_PerspTexScaledVOverZ0,
+        gRndr_PerspTexScaledVOverZ1,
+        gRndr_PerspTexScaledVOverZ2
+    };
+    const float planeDx10 = triVerts[0].x - triVerts[1].x;
+    const float planeDx12 = triVerts[2].x - triVerts[1].x;
+    const float planeDy10 = triVerts[0].y - triVerts[1].y;
+    const float planeDy12 = triVerts[2].y - triVerts[1].y;
+    const float planeDeterminant = planeDy12 * planeDx10 - planeDy10 * planeDx12;
+    Plane2f reciprocalZ = {0};
+    Plane2f uOverZ = {0};
+    Plane2f vOverZ = {0};
+    if (planeDeterminant != 0.0f) {
+        const float inversePlaneDeterminant = -1.0f / planeDeterminant;
+        const float reciprocal10 = reciprocalValues[0] - reciprocalValues[1];
+        const float reciprocal12 = reciprocalValues[2] - reciprocalValues[1];
+        const float u10 = uValues[0] - uValues[1];
+        const float u12 = uValues[2] - uValues[1];
+        const float v10 = vValues[0] - vValues[1];
+        const float v12 = vValues[2] - vValues[1];
+        reciprocalZ.gradient.x =
+            (planeDy12 * reciprocal10 - planeDy10 * reciprocal12) * inversePlaneDeterminant;
+        reciprocalZ.gradient.y =
+            (planeDx10 * reciprocal12 - planeDx12 * reciprocal10) * inversePlaneDeterminant;
+        uOverZ.gradient.x =
+            (planeDy12 * u10 - planeDy10 * u12) * inversePlaneDeterminant;
+        uOverZ.gradient.y =
+            (planeDx10 * u12 - planeDx12 * u10) * inversePlaneDeterminant;
+        vOverZ.gradient.x =
+            (planeDy12 * v10 - planeDy10 * v12) * inversePlaneDeterminant;
+        vOverZ.gradient.y =
+            (planeDx10 * v12 - planeDx12 * v10) * inversePlaneDeterminant;
+    }
+    reciprocalZ.base = reciprocalValues[0];
+    uOverZ.base = uValues[0];
+    vOverZ.base = vValues[0];
+    gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
+    gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
+    gRndr_PerspInvDepthBase = reciprocalZ.base;
+    gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
+    gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
+    gRndr_PerspTexScaledUOverZBase = uOverZ.base;
+    gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
+    gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
+    gRndr_PerspTexScaledVOverZBase = vOverZ.base;
+    gRndr_PerspPlaneOriginX = triVerts[0].x;
+    gRndr_PerspPlaneOriginY = triVerts[0].y;
+
+    TexturedPlanes planes = {0};
+    planes.reciprocalZ = reciprocalZ;
+    planes.uOverZ = uOverZ;
+    planes.vOverZ = vOverZ;
+    planes.originX = gRndr_PerspPlaneOriginX;
+    planes.originY = gRndr_PerspPlaneOriginY;
+    const float adjustX = planes.originX - 0.5f;
+    const float adjustY = planes.originY - 0.5f;
+    planes.reciprocalZ.base -=
+        adjustX * planes.reciprocalZ.gradient.x + adjustY * planes.reciprocalZ.gradient.y;
+    planes.uOverZ.base -=
+        adjustX * planes.uOverZ.gradient.x + adjustY * planes.uOverZ.gradient.y;
+    planes.vOverZ.base -=
+        adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
+
     if (entry->nextVariant != 0) {
         selectedImage = zRndr_TextureMip_SelectVariantImage(
             entry,
@@ -7805,8 +8626,6 @@ void __fastcall Renderer_DrawPolyTLV(
         if (selectedImage == 0) {
             return;
         }
-        textureScale =
-            1048576.0f / (selectedImage->widthScale != 0.0f ? selectedImage->widthScale : 1.0f);
     }
 
     int topVertexIndex = 0;
@@ -7820,8 +8639,130 @@ void __fastcall Renderer_DrawPolyTLV(
         }
     }
 
-    const int firstScanline = ScanlineStartFromY(polyVerts[topVertexIndex].y);
-    const int lastScanline = ScanlineEndFromY(polyVerts[bottomVertexIndex].y);
+    ScanConvertEdge edgeTableA[0x40] = {0};
+    ScanConvertEdge edgeTableB[0x40] = {0};
+    int edgeCountA = 0;
+    int edgeCountB = 0;
+    int fixed16Value;
+    int edgeVertexIndex;
+    int edgeYStart;
+    float edgeSampleY;
+    int edgeStepA;
+    int edgeStepB;
+    if (zRndr::g_scanConvertMode != 0) {
+        edgeStepA = 1;
+        edgeStepB = -1;
+    } else {
+        edgeStepA = -1;
+        edgeStepB = 1;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        polyVerts[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepA;
+        if (nextIndex < 0) {
+            nextIndex += vertexCount;
+        }
+        if (nextIndex >= vertexCount) {
+            nextIndex -= vertexCount;
+        }
+        const zVec3 &start = polyVerts[edgeVertexIndex];
+        const zVec3 &end = polyVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableA[edgeCountA].yStart = edgeYStart;
+            edgeTableA[edgeCountA].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableA[edgeCountA].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x
+                );
+            }
+            ++edgeCountA;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        polyVerts[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepB;
+        if (nextIndex < 0) {
+            nextIndex += vertexCount;
+        }
+        if (nextIndex >= vertexCount) {
+            nextIndex -= vertexCount;
+        }
+        const zVec3 &start = polyVerts[edgeVertexIndex];
+        const zVec3 &end = polyVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableB[edgeCountB].yStart = edgeYStart;
+            edgeTableB[edgeCountB].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableB[edgeCountB].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x
+                );
+            }
+            ++edgeCountB;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    if (edgeCountA == 0 || edgeCountB == 0) {
+        return;
+    }
+
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        polyVerts[topVertexIndex].y
+    );
+    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        polyVerts[bottomVertexIndex].y
+    );
+    const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
     }
@@ -7844,8 +8785,10 @@ void __fastcall Renderer_DrawPolyTLV(
     } else {
         zRndr::g_spanActiveTexAlphaMap = 0;
         const double alphaScaled = (double)(alpha) * 255.0;
+        const double alphaFixedBits =
+            alphaScaled - -6755399441055744.0;
         zRndr::g_spanActiveConstAlphaBits =
-            (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5 : alphaScaled - 0.5);
+            *(const int *)(&alphaFixedBits);
         spanProc = zRndr::g_pfnPolyTlvSpanOp_Mode1;
         paletteSpanProc = zRndr::g_pfnPolyTlvSpanOpAlt_Mode1;
     }
@@ -7864,66 +8807,43 @@ void __fastcall Renderer_DrawPolyTLV(
     zRndr::g_spanActiveTexUMask = selectedImage->uMask;
     zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
 
-    if (spanProc == 0) {
-        return;
-    }
-
     zRndr::SpanNodePartial *visibleSpans[0x40] = {0};
-    zRndr::SpanBuildProc buildProc =
-        zRndr::g_pfnBuildSpanListSecondary != 0
-            ? zRndr::g_pfnBuildSpanListSecondary
-            : (zRndr::g_pfnBuildSpanList != 0 ? zRndr::g_pfnBuildSpanList
-                                              : zRndr_SpanOcclusion_InsertSpanNode_Local);
-    unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
+    int edgeIndexA = 0;
+    int edgeIndexB = 0;
+    int currentXFixedA = edgeTableA[0].currentXFixed;
+    int currentXFixedB = edgeTableB[0].currentXFixed;
+    int xStepFixedA = edgeTableA[0].xStepFixed;
+    int xStepFixedB = edgeTableB[0].xStepFixed;
+    unsigned char *scanlineBase =
+        (unsigned char *)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
     const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
-        float intersections[0x40] = {0};
-        int intersectionCount = 0;
-        const float sampleY = (float)(y) + 0.5f;
-        for (int i = 0; i < vertexCount; ++i) {
-            const zVec3 &a = polyVerts[i];
-            const zVec3 &b = polyVerts[(i + 1) % vertexCount];
-            if (a.y == b.y) {
-                continue;
-            }
-
-            const float minY = MinValue(
-                a.y,
-                b.y
-            );
-            const float maxY = MaxValue(
-                a.y,
-                b.y
-            );
-            if (sampleY < minY || sampleY >= maxY) {
-                continue;
-            }
-
-            const float t = (sampleY - a.y) / (b.y - a.y);
-            intersections[intersectionCount++] = a.x + (b.x - a.x) * t;
-            if (intersectionCount == 0x40) {
-                break;
-            }
+        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            ++edgeIndexA;
         }
 
-        if (intersectionCount < 2) {
-            continue;
+        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            ++edgeIndexB;
         }
 
-        sort(
-            intersections,
-            intersections + intersectionCount
-        );
-        unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
-        const int pairCount = intersectionCount & ~1;
-        for (int i_4808 = 0; i_4808 < pairCount; i_4808 += 2) {
-            const int xMin = SpanStartFromX(intersections[i_4808]);
-            const int xMax = SpanEndFromX(intersections[i_4808 + 1]);
-            if (xMin > xMax) {
-                continue;
-            }
+        int xMin;
+        int xMax;
+        if (currentXFixedA > currentXFixedB) {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedA + 0x7fff) >> 16;
+            xMax = (currentXFixedB - 0x8001) >> 16;
+        }
 
+        currentXFixedA += xStepFixedA;
+        currentXFixedB += xStepFixedB;
+        if (xMin <= xMax) {
             const float rowReciprocalZ =
                 (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
@@ -7939,7 +8859,7 @@ void __fastcall Renderer_DrawPolyTLV(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(
+            zRndr::g_pfnBuildSpanListSecondary(
                 visibleSpans,
                 y,
                 &spanCount
@@ -7954,18 +8874,73 @@ void __fastcall Renderer_DrawPolyTLV(
                     zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    DispatchTexturedSpanChunks(
-                        spanProc,
-                        0,
-                        span,
-                        y,
-                        span->sampleXMax - span->sampleXMin + 1,
-                        textureScale,
-                        texVShift
-                    );
+                    const int count = span->sampleXMax - span->sampleXMin + 1;
+                    const float startX = (float)(span->sampleXMin);
+                    const float endX = (float)(span->sampleXMin + count);
+                    const float sampleY = (float)(y);
+                    const float startPlaneX = startX + 0.5f - gRndr_PerspPlaneOriginX;
+                    const float endPlaneX = endX + 0.5f - gRndr_PerspPlaneOriginX;
+                    const float planeY = sampleY + 0.5f - gRndr_PerspPlaneOriginY;
+                    const float startInvZ =
+                        startPlaneX * gRndr_PerspInvDepthStepX +
+                        planeY * gRndr_PerspInvDepthStepY +
+                        gRndr_PerspInvDepthBase;
+                    const float endInvZ =
+                        endPlaneX * gRndr_PerspInvDepthStepX +
+                        planeY * gRndr_PerspInvDepthStepY +
+                        gRndr_PerspInvDepthBase;
+                    if (startInvZ != 0.0f && endInvZ != 0.0f) {
+                        const float startU =
+                            (startPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            startInvZ;
+                        const float startV =
+                            (startPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            startInvZ;
+                        const float endU =
+                            (endPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            endInvZ;
+                        const float endV =
+                            (endPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            endInvZ;
+                        const float texUStep =
+                            (endU - startU) * 1048576.0f / (float)(count);
+                        const float texVStep =
+                            (endV - startV) * 1048576.0f / (float)(count);
+                        const float texUStart = startU * 1048576.0f;
+                        const float texVStart = startV * 1048576.0f;
+                        const double texUStepBits =
+                            (double)(texUStep) - -6755399441055744.0;
+                        const double texVStepBits =
+                            (double)(texVStep) - -6755399441055744.0;
+                        const double texUStartBits =
+                            (double)(texUStart) - -6755399441055744.0;
+                        const double texVStartBits =
+                            (double)(texVStart) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 =
+                            *(const int *)(&texUStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 =
+                            *(const int *)(&texVStepBits);
+                        spanProc(
+                            *(const int *)(&texUStartBits),
+                            *(const int *)(&texVStartBits),
+                            count,
+                            texVShift
+                        );
+                        zRndr::g_spanCurrentSpanBaseAddr += count;
+                    }
                 }
             }
         }
+
+        scanlineBase += zRndr::g_pitchBytes;
     }
 }
 
@@ -7995,14 +8970,112 @@ void __fastcall zRndr_DrawTexturedQueued(
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
 
-    TexturedPlanes planes =
-        BuildQueuedTexturePlanes(
+    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
+    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
+    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
+    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
+    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
+    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
+
+    const bool useClippedNearPlane =
+        clippedTriVerts != 0 &&
+        (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f ||
+         clippedTriVerts[2].z < 10.0f);
+    if (useClippedNearPlane) {
+        zMath_BuildPerspectiveTextureInterpolants(
             clippedTriVerts,
-            triVerts,
             triUVs,
-            imageWidth,
-            imageHeight
+            (zVec2 *)(&gRndr_PerspInvDepthStepX),
+            &gRndr_PerspInvDepthBase,
+            (zVec2 *)(&gRndr_PerspTexScaledUOverZStepX),
+            &gRndr_PerspTexScaledUOverZBase,
+            (zVec2 *)(&gRndr_PerspTexScaledVOverZStepX),
+            &gRndr_PerspTexScaledVOverZBase
         );
+        gRndr_PerspTexScaledUOverZStepX *= imageWidth;
+        gRndr_PerspTexScaledUOverZStepY *= imageWidth;
+        gRndr_PerspTexScaledUOverZBase *= imageWidth;
+        gRndr_PerspTexScaledVOverZStepX *= imageHeight;
+        gRndr_PerspTexScaledVOverZStepY *= imageHeight;
+        gRndr_PerspTexScaledVOverZBase *= imageHeight;
+        gRndr_PerspPlaneOriginX = g_zMath_ProjOffsetX;
+        gRndr_PerspPlaneOriginY = g_zMath_ProjOffsetY;
+    } else {
+        const float reciprocalValues[3] = {
+            triVerts[0].z, triVerts[1].z, triVerts[2].z
+        };
+        const float uValues[3] = {
+            gRndr_PerspTexScaledUOverZ0,
+            gRndr_PerspTexScaledUOverZ1,
+            gRndr_PerspTexScaledUOverZ2
+        };
+        const float vValues[3] = {
+            gRndr_PerspTexScaledVOverZ0,
+            gRndr_PerspTexScaledVOverZ1,
+            gRndr_PerspTexScaledVOverZ2
+        };
+        const float dx10 = triVerts[0].x - triVerts[1].x;
+        const float dx12 = triVerts[2].x - triVerts[1].x;
+        const float dy10 = triVerts[0].y - triVerts[1].y;
+        const float dy12 = triVerts[2].y - triVerts[1].y;
+        const float determinant = dy12 * dx10 - dy10 * dx12;
+        Plane2f reciprocalZ = {0};
+        Plane2f uOverZ = {0};
+        Plane2f vOverZ = {0};
+        if (determinant != 0.0f) {
+            const float inverseDeterminant = -1.0f / determinant;
+            const float reciprocal10 = reciprocalValues[0] - reciprocalValues[1];
+            const float reciprocal12 = reciprocalValues[2] - reciprocalValues[1];
+            const float u10 = uValues[0] - uValues[1];
+            const float u12 = uValues[2] - uValues[1];
+            const float v10 = vValues[0] - vValues[1];
+            const float v12 = vValues[2] - vValues[1];
+            reciprocalZ.gradient.x =
+                (dy12 * reciprocal10 - dy10 * reciprocal12) * inverseDeterminant;
+            reciprocalZ.gradient.y =
+                (dx10 * reciprocal12 - dx12 * reciprocal10) * inverseDeterminant;
+            uOverZ.gradient.x =
+                (dy12 * u10 - dy10 * u12) * inverseDeterminant;
+            uOverZ.gradient.y =
+                (dx10 * u12 - dx12 * u10) * inverseDeterminant;
+            vOverZ.gradient.x =
+                (dy12 * v10 - dy10 * v12) * inverseDeterminant;
+            vOverZ.gradient.y =
+                (dx10 * v12 - dx12 * v10) * inverseDeterminant;
+        }
+        gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
+        gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
+        gRndr_PerspInvDepthBase = reciprocalValues[0];
+        gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
+        gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
+        gRndr_PerspTexScaledUOverZBase = uValues[0];
+        gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
+        gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
+        gRndr_PerspTexScaledVOverZBase = vValues[0];
+        gRndr_PerspPlaneOriginX = triVerts[0].x;
+        gRndr_PerspPlaneOriginY = triVerts[0].y;
+    }
+
+    TexturedPlanes planes = {0};
+    planes.reciprocalZ.gradient.x = gRndr_PerspInvDepthStepX;
+    planes.reciprocalZ.gradient.y = gRndr_PerspInvDepthStepY;
+    planes.reciprocalZ.base = gRndr_PerspInvDepthBase;
+    planes.uOverZ.gradient.x = gRndr_PerspTexScaledUOverZStepX;
+    planes.uOverZ.gradient.y = gRndr_PerspTexScaledUOverZStepY;
+    planes.uOverZ.base = gRndr_PerspTexScaledUOverZBase;
+    planes.vOverZ.gradient.x = gRndr_PerspTexScaledVOverZStepX;
+    planes.vOverZ.gradient.y = gRndr_PerspTexScaledVOverZStepY;
+    planes.vOverZ.base = gRndr_PerspTexScaledVOverZBase;
+    planes.originX = gRndr_PerspPlaneOriginX;
+    planes.originY = gRndr_PerspPlaneOriginY;
+    const float adjustX = planes.originX - 0.5f;
+    const float adjustY = planes.originY - 0.5f;
+    planes.reciprocalZ.base -=
+        adjustX * planes.reciprocalZ.gradient.x + adjustY * planes.reciprocalZ.gradient.y;
+    planes.uOverZ.base -=
+        adjustX * planes.uOverZ.gradient.x + adjustY * planes.uOverZ.gradient.y;
+    planes.vOverZ.base -=
+        adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
@@ -8027,21 +9100,34 @@ void __fastcall zRndr_DrawTexturedQueued(
         shadeTriplet->y,
         shadeTriplet->z,
     };
-    Plane2f shadePlane = BuildScreenPlaneFromTriangle(
-        projectedVerts,
-        shadeValues
-    );
+    const float shadeDx10 = projectedVerts[0].x - projectedVerts[1].x;
+    const float shadeDx12 = projectedVerts[2].x - projectedVerts[1].x;
+    const float shadeDy10 = projectedVerts[0].y - projectedVerts[1].y;
+    const float shadeDy12 = projectedVerts[2].y - projectedVerts[1].y;
+    const float shadeDeterminant =
+        shadeDy12 * shadeDx10 - shadeDy10 * shadeDx12;
+    Plane2f shadePlane = {0};
+    if (shadeDeterminant != 0.0f) {
+        const float inverseShadeDeterminant = -1.0f / shadeDeterminant;
+        const float shade10 = shadeValues[0] - shadeValues[1];
+        const float shade12 = shadeValues[2] - shadeValues[1];
+        shadePlane.gradient.x =
+            (shadeDy12 * shade10 - shadeDy10 * shade12) * inverseShadeDeterminant;
+        shadePlane.gradient.y =
+            (shadeDx10 * shade12 - shadeDx12 * shade10) * inverseShadeDeterminant;
+    }
+    shadePlane.base =
+        shadeValues[0] - projectedVerts[0].x * shadePlane.gradient.x -
+        projectedVerts[0].y * shadePlane.gradient.y;
 
     int topVertexIndex = 0;
     int bottomVertexIndex = 0;
     float minPositiveReciprocalZ = 1000.0f;
     for (int i_4544 = 0; i_4544 < vertCount; ++i_4544) {
         const float reciprocalZ =
-            EvalPlane(
-                planes.reciprocalZ,
-                projectedVerts[i_4544].x,
-                projectedVerts[i_4544].y
-            );
+            projectedVerts[i_4544].x * planes.reciprocalZ.gradient.x +
+            projectedVerts[i_4544].y * planes.reciprocalZ.gradient.y +
+            planes.reciprocalZ.base;
         if (reciprocalZ > 0.0f && reciprocalZ < minPositiveReciprocalZ) {
             minPositiveReciprocalZ = reciprocalZ;
         }
@@ -8053,8 +9139,88 @@ void __fastcall zRndr_DrawTexturedQueued(
         }
     }
 
-    const int firstScanline = (int)(floor(projectedVerts[topVertexIndex].y + 0.5f));
-    const int lastScanline = (int)(floor(projectedVerts[bottomVertexIndex].y - 0.5f));
+    ScanConvertEdge edgeTableA[0x40] = {0};
+    ScanConvertEdge edgeTableB[0x40] = {0};
+    int edgeCountA = 0;
+    int edgeCountB = 0;
+    int fixed16Value;
+    int edgeVertexIndex;
+    int edgeYStart;
+    float edgeSampleY;
+    const int edgeStepA = zRndr::g_scanConvertMode != 0 ? 1 : -1;
+    const int edgeStepB = -edgeStepA;
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepA;
+        if (nextIndex < 0) nextIndex += vertCount;
+        if (nextIndex >= vertCount) nextIndex -= vertCount;
+        const zVec3 &start = projectedVerts[edgeVertexIndex];
+        const zVec3 &end = projectedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableA[edgeCountA].yStart = edgeYStart;
+            edgeTableA[edgeCountA].reserved = 0;
+            if (dy != 0.0f) {
+                const float slope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, slope);
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * slope
+                );
+            } else {
+                edgeTableA[edgeCountA].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
+            }
+            ++edgeCountA;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepB;
+        if (nextIndex < 0) nextIndex += vertCount;
+        if (nextIndex >= vertCount) nextIndex -= vertCount;
+        const zVec3 &start = projectedVerts[edgeVertexIndex];
+        const zVec3 &end = projectedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableB[edgeCountB].yStart = edgeYStart;
+            edgeTableB[edgeCountB].reserved = 0;
+            if (dy != 0.0f) {
+                const float slope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, slope);
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * slope
+                );
+            } else {
+                edgeTableB[edgeCountB].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
+            }
+            ++edgeCountB;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+    if (edgeCountA == 0 || edgeCountB == 0) return;
+
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[bottomVertexIndex].y);
+    const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
     }
@@ -8091,66 +9257,62 @@ void __fastcall zRndr_DrawTexturedQueued(
         zRndr::g_spanActiveTexPalette = 0;
     }
 
-    if (spanProc == 0) {
-        return;
-    }
-
     zRndr::SpanNodePartial *visibleSpans[0x40] = {0};
-    zRndr::SpanBuildProc buildProc = zRndr::g_pfnBuildSpanList != 0
-                                         ? zRndr::g_pfnBuildSpanList
-                                         : zRndr_SpanOcclusion_InsertSpanNode_Local;
-    unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
-    const int chunkPixels =
-        SelectPerspectiveChunkPixels(
-            minPositiveReciprocalZ,
-            planes.reciprocalZ.gradient.x
-        );
+    int edgeIndexA = 0;
+    int edgeIndexB = 0;
+    int currentXFixedA = edgeTableA[0].currentXFixed;
+    int currentXFixedB = edgeTableB[0].currentXFixed;
+    int xStepFixedA = edgeTableA[0].xStepFixed;
+    int xStepFixedB = edgeTableB[0].xStepFixed;
+    unsigned char *scanlineBase =
+        (unsigned char *)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
+    int chunkPixels;
+    if (zRndr::g_perspectiveAdaptiveMinSpan == 0) {
+        chunkPixels = zRndr::g_perspectiveTextureDeltaXPow2;
+    } else {
+        float selectedChunk = (float)(zRndr::g_perspectiveAdaptiveMaxSpan);
+        if (planes.reciprocalZ.gradient.x != 0.0f) {
+            selectedChunk =
+                minPositiveReciprocalZ * zRndr::g_perspectiveAdaptiveSlope /
+                planes.reciprocalZ.gradient.x;
+            if (selectedChunk < 0.0f) selectedChunk = -selectedChunk;
+        }
+        const double selectedChunkBits =
+            (double)(selectedChunk) - -6755399441055744.0;
+        chunkPixels = *(const int *)(&selectedChunkBits);
+        if (chunkPixels > zRndr::g_perspectiveAdaptiveMaxSpan) {
+            chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
+        }
+        if (chunkPixels < zRndr::g_perspectiveAdaptiveMinSpan) {
+            chunkPixels = zRndr::g_perspectiveAdaptiveMinSpan;
+        }
+    }
+    if (chunkPixels < 1) chunkPixels = 1;
     const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
-        float intersections[0x40] = {0};
-        int intersectionCount = 0;
-        const float sampleY = (float)(y) + 0.5f;
-        for (int i = 0; i < vertCount; ++i) {
-            const zVec3 &a = projectedVerts[i];
-            const zVec3 &b = projectedVerts[(i + 1) % vertCount];
-            if (a.y == b.y) {
-                continue;
-            }
-            const float minY = MinValue(
-                a.y,
-                b.y
-            );
-            const float maxY = MaxValue(
-                a.y,
-                b.y
-            );
-            if (sampleY < minY || sampleY >= maxY) {
-                continue;
-            }
-            const float t = (sampleY - a.y) / (b.y - a.y);
-            intersections[intersectionCount++] = a.x + (b.x - a.x) * t;
-            if (intersectionCount == 0x40) {
-                break;
-            }
+        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            ++edgeIndexA;
         }
-
-        if (intersectionCount < 2) {
-            continue;
+        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            ++edgeIndexB;
         }
-
-        sort(
-            intersections,
-            intersections + intersectionCount
-        );
-        unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
-        const int pairCount = intersectionCount & ~1;
-        for (int i_4640 = 0; i_4640 < pairCount; i_4640 += 2) {
-            const int xMin = (int)(floor(intersections[i_4640] + 0.5f));
-            const int xMax = (int)(ceil(intersections[i_4640 + 1] - 0.5f)) - 1;
-            if (xMin > xMax) {
-                continue;
-            }
+        int xMin;
+        int xMax;
+        if (currentXFixedA > currentXFixedB) {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedA + 0x7fff) >> 16;
+            xMax = (currentXFixedB - 0x8001) >> 16;
+        }
+        currentXFixedA += xStepFixedA;
+        currentXFixedB += xStepFixedB;
+        if (xMin <= xMax) {
 
             const float rowReciprocalZ =
                 (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
@@ -8167,7 +9329,7 @@ void __fastcall zRndr_DrawTexturedQueued(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(
+            zRndr::g_pfnBuildSpanList(
                 visibleSpans,
                 y,
                 &spanCount
@@ -8182,18 +9344,213 @@ void __fastcall zRndr_DrawTexturedQueued(
                     zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    DispatchTexturedSpanChunks(
-                        spanProc,
-                        activeShadePlane,
-                        span,
-                        y,
-                        chunkPixels,
-                        textureScale,
-                        texVShift
-                    );
+                    int remaining = span->sampleXMax - span->sampleXMin + 1;
+                    int x = span->sampleXMin;
+                    while (remaining > chunkPixels) {
+                        const int count = chunkPixels;
+                        const float startX = (float)(x);
+                        const float endX = (float)(x + count);
+                        const float sampleY = (float)(y);
+                        const float startPlaneX =
+                            startX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float endPlaneX =
+                            endX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float planeY =
+                            sampleY + 0.5f - gRndr_PerspPlaneOriginY;
+                        const float startInvZ =
+                            startPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float endInvZ =
+                            endPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float startU =
+                            (startPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            startInvZ;
+                        const float startV =
+                            (startPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            startInvZ;
+                        const float endU =
+                            (endPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            endInvZ;
+                        const float endV =
+                            (endPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            endInvZ;
+                        const double uStepBits =
+                            (double)((endU - startU) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double vStepBits =
+                            (double)((endV - startV) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double uStartBits =
+                            (double)(startU * textureScale) - -6755399441055744.0;
+                        const double vStartBits =
+                            (double)(startV * textureScale) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 = *(const int *)(&uStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 = *(const int *)(&vStepBits);
+                        if (activeShadePlane != 0) {
+                            float startShade =
+                                startX * activeShadePlane->gradient.x +
+                                sampleY * activeShadePlane->gradient.y +
+                                activeShadePlane->base;
+                            float endShade =
+                                endX * activeShadePlane->gradient.x +
+                                sampleY * activeShadePlane->gradient.y +
+                                activeShadePlane->base;
+                            if (startShade < 0.0f) startShade = 0.0f;
+                            if (startShade > 255.0f) startShade = 255.0f;
+                            if (endShade < 0.0f) endShade = 0.0f;
+                            if (endShade > 255.0f) endShade = 255.0f;
+                            const double shadeStartBits =
+                                (double)(startShade * 65536.0f) - -6755399441055744.0;
+                            const double shadeStepBits =
+                                (double)((endShade - startShade) * 65536.0f /
+                                         (float)(count)) -
+                                -6755399441055744.0;
+                            zRndr::g_spanActiveShadeFixed16 =
+                                *(const int *)(&shadeStartBits);
+                            zRndr::g_spanActiveShadeStepFixed16 =
+                                *(const int *)(&shadeStepBits);
+                        }
+                        if (spanProc != zRndr::SpanShade16FromPal8SwitchVShift) {
+                            spanProc(
+                                *(const int *)(&uStartBits),
+                                *(const int *)(&vStartBits),
+                                count,
+                                texVShift
+                            );
+                            ((void (__fastcall *)(unsigned short *, int, int, int))
+                                (zRndr::g_pfnTexturedQueuedFinalize))(
+                                    zRndr::g_spanCurrentSpanBaseAddr,
+                                    count,
+                                    zRndr::g_spanActiveShadeFixed16,
+                                    zRndr::g_spanActiveShadeStepFixed16
+                                );
+                        } else {
+                            spanProc(
+                                *(const int *)(&uStartBits),
+                                *(const int *)(&vStartBits),
+                                count,
+                                texVShift
+                            );
+                        }
+                        zRndr::g_spanCurrentSpanBaseAddr += count;
+                        x += count;
+                        remaining -= count;
+                    }
+
+                    if (remaining > 0) {
+                        const int count = remaining;
+                        const float startX = (float)(x);
+                        const float endX = (float)(x + count);
+                        const float sampleY = (float)(y);
+                        const float startPlaneX =
+                            startX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float endPlaneX =
+                            endX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float planeY =
+                            sampleY + 0.5f - gRndr_PerspPlaneOriginY;
+                        const float startInvZ =
+                            startPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float endInvZ =
+                            endPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float startU =
+                            (startPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            startInvZ;
+                        const float startV =
+                            (startPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            startInvZ;
+                        const float endU =
+                            (endPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            endInvZ;
+                        const float endV =
+                            (endPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            endInvZ;
+                        const double uStepBits =
+                            (double)((endU - startU) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double vStepBits =
+                            (double)((endV - startV) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double uStartBits =
+                            (double)(startU * textureScale) - -6755399441055744.0;
+                        const double vStartBits =
+                            (double)(startV * textureScale) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 = *(const int *)(&uStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 = *(const int *)(&vStepBits);
+                        if (activeShadePlane != 0) {
+                            float startShade =
+                                startX * activeShadePlane->gradient.x +
+                                sampleY * activeShadePlane->gradient.y +
+                                activeShadePlane->base;
+                            float endShade =
+                                endX * activeShadePlane->gradient.x +
+                                sampleY * activeShadePlane->gradient.y +
+                                activeShadePlane->base;
+                            if (startShade < 0.0f) startShade = 0.0f;
+                            if (startShade > 255.0f) startShade = 255.0f;
+                            if (endShade < 0.0f) endShade = 0.0f;
+                            if (endShade > 255.0f) endShade = 255.0f;
+                            const double shadeStartBits =
+                                (double)(startShade * 65536.0f) - -6755399441055744.0;
+                            const double shadeStepBits =
+                                (double)((endShade - startShade) * 65536.0f /
+                                         (float)(count)) -
+                                -6755399441055744.0;
+                            zRndr::g_spanActiveShadeFixed16 =
+                                *(const int *)(&shadeStartBits);
+                            zRndr::g_spanActiveShadeStepFixed16 =
+                                *(const int *)(&shadeStepBits);
+                        }
+                        if (spanProc != zRndr::SpanShade16FromPal8SwitchVShift) {
+                            spanProc(
+                                *(const int *)(&uStartBits),
+                                *(const int *)(&vStartBits),
+                                count,
+                                texVShift
+                            );
+                            ((void (__fastcall *)(unsigned short *, int, int, int))
+                                (zRndr::g_pfnTexturedQueuedFinalize))(
+                                    zRndr::g_spanCurrentSpanBaseAddr,
+                                    count,
+                                    zRndr::g_spanActiveShadeFixed16,
+                                    zRndr::g_spanActiveShadeStepFixed16
+                                );
+                        } else {
+                            spanProc(
+                                *(const int *)(&uStartBits),
+                                *(const int *)(&vStartBits),
+                                count,
+                                texVShift
+                            );
+                        }
+                        zRndr::g_spanCurrentSpanBaseAddr += count;
+                    }
                 }
             }
         }
+        scanlineBase += zRndr::g_pitchBytes;
     }
 }
 
@@ -8220,14 +9577,112 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
 
-    TexturedPlanes planes =
-        BuildQueuedTexturePlanes(
+    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
+    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
+    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
+    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
+    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
+    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
+
+    const bool useClippedNearPlane =
+        clippedTriVerts != 0 &&
+        (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f ||
+         clippedTriVerts[2].z < 10.0f);
+    if (useClippedNearPlane) {
+        zMath_BuildPerspectiveTextureInterpolants(
             clippedTriVerts,
-            triVerts,
             triUVs,
-            imageWidth,
-            imageHeight
+            (zVec2 *)(&gRndr_PerspInvDepthStepX),
+            &gRndr_PerspInvDepthBase,
+            (zVec2 *)(&gRndr_PerspTexScaledUOverZStepX),
+            &gRndr_PerspTexScaledUOverZBase,
+            (zVec2 *)(&gRndr_PerspTexScaledVOverZStepX),
+            &gRndr_PerspTexScaledVOverZBase
         );
+        gRndr_PerspTexScaledUOverZStepX *= imageWidth;
+        gRndr_PerspTexScaledUOverZStepY *= imageWidth;
+        gRndr_PerspTexScaledUOverZBase *= imageWidth;
+        gRndr_PerspTexScaledVOverZStepX *= imageHeight;
+        gRndr_PerspTexScaledVOverZStepY *= imageHeight;
+        gRndr_PerspTexScaledVOverZBase *= imageHeight;
+        gRndr_PerspPlaneOriginX = g_zMath_ProjOffsetX;
+        gRndr_PerspPlaneOriginY = g_zMath_ProjOffsetY;
+    } else {
+        const float reciprocalValues[3] = {
+            triVerts[0].z, triVerts[1].z, triVerts[2].z
+        };
+        const float uValues[3] = {
+            gRndr_PerspTexScaledUOverZ0,
+            gRndr_PerspTexScaledUOverZ1,
+            gRndr_PerspTexScaledUOverZ2
+        };
+        const float vValues[3] = {
+            gRndr_PerspTexScaledVOverZ0,
+            gRndr_PerspTexScaledVOverZ1,
+            gRndr_PerspTexScaledVOverZ2
+        };
+        const float dx10 = triVerts[0].x - triVerts[1].x;
+        const float dx12 = triVerts[2].x - triVerts[1].x;
+        const float dy10 = triVerts[0].y - triVerts[1].y;
+        const float dy12 = triVerts[2].y - triVerts[1].y;
+        const float determinant = dy12 * dx10 - dy10 * dx12;
+        Plane2f reciprocalZ = {0};
+        Plane2f uOverZ = {0};
+        Plane2f vOverZ = {0};
+        if (determinant != 0.0f) {
+            const float inverseDeterminant = -1.0f / determinant;
+            const float reciprocal10 = reciprocalValues[0] - reciprocalValues[1];
+            const float reciprocal12 = reciprocalValues[2] - reciprocalValues[1];
+            const float u10 = uValues[0] - uValues[1];
+            const float u12 = uValues[2] - uValues[1];
+            const float v10 = vValues[0] - vValues[1];
+            const float v12 = vValues[2] - vValues[1];
+            reciprocalZ.gradient.x =
+                (dy12 * reciprocal10 - dy10 * reciprocal12) * inverseDeterminant;
+            reciprocalZ.gradient.y =
+                (dx10 * reciprocal12 - dx12 * reciprocal10) * inverseDeterminant;
+            uOverZ.gradient.x =
+                (dy12 * u10 - dy10 * u12) * inverseDeterminant;
+            uOverZ.gradient.y =
+                (dx10 * u12 - dx12 * u10) * inverseDeterminant;
+            vOverZ.gradient.x =
+                (dy12 * v10 - dy10 * v12) * inverseDeterminant;
+            vOverZ.gradient.y =
+                (dx10 * v12 - dx12 * v10) * inverseDeterminant;
+        }
+        gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
+        gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
+        gRndr_PerspInvDepthBase = reciprocalValues[0];
+        gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
+        gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
+        gRndr_PerspTexScaledUOverZBase = uValues[0];
+        gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
+        gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
+        gRndr_PerspTexScaledVOverZBase = vValues[0];
+        gRndr_PerspPlaneOriginX = triVerts[0].x;
+        gRndr_PerspPlaneOriginY = triVerts[0].y;
+    }
+
+    TexturedPlanes planes = {0};
+    planes.reciprocalZ.gradient.x = gRndr_PerspInvDepthStepX;
+    planes.reciprocalZ.gradient.y = gRndr_PerspInvDepthStepY;
+    planes.reciprocalZ.base = gRndr_PerspInvDepthBase;
+    planes.uOverZ.gradient.x = gRndr_PerspTexScaledUOverZStepX;
+    planes.uOverZ.gradient.y = gRndr_PerspTexScaledUOverZStepY;
+    planes.uOverZ.base = gRndr_PerspTexScaledUOverZBase;
+    planes.vOverZ.gradient.x = gRndr_PerspTexScaledVOverZStepX;
+    planes.vOverZ.gradient.y = gRndr_PerspTexScaledVOverZStepY;
+    planes.vOverZ.base = gRndr_PerspTexScaledVOverZBase;
+    planes.originX = gRndr_PerspPlaneOriginX;
+    planes.originY = gRndr_PerspPlaneOriginY;
+    const float adjustX = planes.originX - 0.5f;
+    const float adjustY = planes.originY - 0.5f;
+    planes.reciprocalZ.base -=
+        adjustX * planes.reciprocalZ.gradient.x + adjustY * planes.reciprocalZ.gradient.y;
+    planes.uOverZ.base -=
+        adjustX * planes.uOverZ.gradient.x + adjustY * planes.uOverZ.gradient.y;
+    planes.vOverZ.base -=
+        adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
@@ -8254,11 +9709,9 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
     float minPositiveReciprocalZ = 1000.0f;
     for (int i_4890 = 0; i_4890 < vertCount; ++i_4890) {
         const float reciprocalZ =
-            EvalPlane(
-                planes.reciprocalZ,
-                projectedVerts[i_4890].x,
-                projectedVerts[i_4890].y
-            );
+            projectedVerts[i_4890].x * planes.reciprocalZ.gradient.x +
+            projectedVerts[i_4890].y * planes.reciprocalZ.gradient.y +
+            planes.reciprocalZ.base;
         if (reciprocalZ > 0.0f && reciprocalZ < minPositiveReciprocalZ) {
             minPositiveReciprocalZ = reciprocalZ;
         }
@@ -8271,8 +9724,88 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
         }
     }
 
-    const int firstScanline = (int)(floor(projectedVerts[topVertexIndex].y + 0.5f));
-    const int lastScanline = (int)(floor(projectedVerts[bottomVertexIndex].y - 0.5f));
+    ScanConvertEdge edgeTableA[0x40] = {0};
+    ScanConvertEdge edgeTableB[0x40] = {0};
+    int edgeCountA = 0;
+    int edgeCountB = 0;
+    int fixed16Value;
+    int edgeVertexIndex;
+    int edgeYStart;
+    float edgeSampleY;
+    const int edgeStepA = zRndr::g_scanConvertMode != 0 ? 1 : -1;
+    const int edgeStepB = -edgeStepA;
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepA;
+        if (nextIndex < 0) nextIndex += vertCount;
+        if (nextIndex >= vertCount) nextIndex -= vertCount;
+        const zVec3 &start = projectedVerts[edgeVertexIndex];
+        const zVec3 &end = projectedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableA[edgeCountA].yStart = edgeYStart;
+            edgeTableA[edgeCountA].reserved = 0;
+            if (dy != 0.0f) {
+                const float slope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, slope);
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * slope
+                );
+            } else {
+                edgeTableA[edgeCountA].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
+            }
+            ++edgeCountA;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepB;
+        if (nextIndex < 0) nextIndex += vertCount;
+        if (nextIndex >= vertCount) nextIndex -= vertCount;
+        const zVec3 &start = projectedVerts[edgeVertexIndex];
+        const zVec3 &end = projectedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableB[edgeCountB].yStart = edgeYStart;
+            edgeTableB[edgeCountB].reserved = 0;
+            if (dy != 0.0f) {
+                const float slope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, slope);
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * slope
+                );
+            } else {
+                edgeTableB[edgeCountB].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
+            }
+            ++edgeCountB;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+    if (edgeCountA == 0 || edgeCountB == 0) return;
+
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[bottomVertexIndex].y);
+    const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
     }
@@ -8298,63 +9831,61 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
     }
 
     zRndr::SpanNodePartial *visibleSpans[0x40] = {0};
-    zRndr::SpanBuildProc buildProc = zRndr::g_pfnBuildSpanList != 0
-                                         ? zRndr::g_pfnBuildSpanList
-                                         : zRndr_SpanOcclusion_InsertSpanNode_Local;
-    unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
-    const int chunkPixels =
-        SelectPerspectiveChunkPixels(
-            minPositiveReciprocalZ,
-            planes.reciprocalZ.gradient.x
-        );
+    int edgeIndexA = 0;
+    int edgeIndexB = 0;
+    int currentXFixedA = edgeTableA[0].currentXFixed;
+    int currentXFixedB = edgeTableB[0].currentXFixed;
+    int xStepFixedA = edgeTableA[0].xStepFixed;
+    int xStepFixedB = edgeTableB[0].xStepFixed;
+    unsigned char *scanlineBase =
+        (unsigned char *)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
+    int chunkPixels;
+    if (zRndr::g_perspectiveAdaptiveMinSpan == 0) {
+        chunkPixels = zRndr::g_perspectiveTextureDeltaXPow2;
+    } else {
+        float selectedChunk = (float)(zRndr::g_perspectiveAdaptiveMaxSpan);
+        if (planes.reciprocalZ.gradient.x != 0.0f) {
+            selectedChunk =
+                minPositiveReciprocalZ * zRndr::g_perspectiveAdaptiveSlope /
+                planes.reciprocalZ.gradient.x;
+            if (selectedChunk < 0.0f) selectedChunk = -selectedChunk;
+        }
+        const double selectedChunkBits =
+            (double)(selectedChunk) - -6755399441055744.0;
+        chunkPixels = *(const int *)(&selectedChunkBits);
+        if (chunkPixels > zRndr::g_perspectiveAdaptiveMaxSpan) {
+            chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
+        }
+        if (chunkPixels < zRndr::g_perspectiveAdaptiveMinSpan) {
+            chunkPixels = zRndr::g_perspectiveAdaptiveMinSpan;
+        }
+    }
+    if (chunkPixels < 1) chunkPixels = 1;
     const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
-        float intersections[0x40] = {0};
-        int intersectionCount = 0;
-        const float sampleY = (float)(y) + 0.5f;
-        for (int i = 0; i < vertCount; ++i) {
-            const zVec3 &a = projectedVerts[i];
-            const zVec3 &b = projectedVerts[(i + 1) % vertCount];
-            if (a.y == b.y) {
-                continue;
-            }
-
-            const float minY = MinValue(
-                a.y,
-                b.y
-            );
-            const float maxY = MaxValue(
-                a.y,
-                b.y
-            );
-            if (sampleY < minY || sampleY >= maxY) {
-                continue;
-            }
-
-            const float t = (sampleY - a.y) / (b.y - a.y);
-            intersections[intersectionCount++] = a.x + (b.x - a.x) * t;
-            if (intersectionCount == 0x40) {
-                break;
-            }
+        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            ++edgeIndexA;
         }
-
-        if (intersectionCount < 2) {
-            continue;
+        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            ++edgeIndexB;
         }
-
-        sort(
-            intersections,
-            intersections + intersectionCount
-        );
-        unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
-        const int pairCount = intersectionCount & ~1;
-        for (int i_4973 = 0; i_4973 < pairCount; i_4973 += 2) {
-            const int xMin = (int)(floor(intersections[i_4973] + 0.5f));
-            const int xMax = (int)(ceil(intersections[i_4973 + 1] - 0.5f)) - 1;
-            if (xMin > xMax) {
-                continue;
-            }
+        int xMin;
+        int xMax;
+        if (currentXFixedA > currentXFixedB) {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedA + 0x7fff) >> 16;
+            xMax = (currentXFixedB - 0x8001) >> 16;
+        }
+        currentXFixedA += xStepFixedA;
+        currentXFixedB += xStepFixedB;
+        if (xMin <= xMax) {
 
             const float rowReciprocalZ =
                 (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
@@ -8371,7 +9902,7 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(
+            zRndr::g_pfnBuildSpanList(
                 visibleSpans,
                 y,
                 &spanCount
@@ -8386,18 +9917,133 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
                     zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    DispatchTexturedSpanChunks(
-                        spanProc,
-                        0,
-                        span,
-                        y,
-                        chunkPixels,
-                        textureScale,
-                        texVShift
-                    );
+                    int remaining = span->sampleXMax - span->sampleXMin + 1;
+                    int x = span->sampleXMin;
+                    while (remaining > chunkPixels) {
+                        const int count = chunkPixels;
+                        const float startX = (float)(x);
+                        const float endX = (float)(x + count);
+                        const float sampleY = (float)(y);
+                        const float startPlaneX =
+                            startX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float endPlaneX =
+                            endX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float planeY =
+                            sampleY + 0.5f - gRndr_PerspPlaneOriginY;
+                        const float startInvZ =
+                            startPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float endInvZ =
+                            endPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float startU =
+                            (startPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            startInvZ;
+                        const float startV =
+                            (startPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            startInvZ;
+                        const float endU =
+                            (endPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            endInvZ;
+                        const float endV =
+                            (endPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            endInvZ;
+                        const double uStepBits =
+                            (double)((endU - startU) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double vStepBits =
+                            (double)((endV - startV) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double uStartBits =
+                            (double)(startU * textureScale) - -6755399441055744.0;
+                        const double vStartBits =
+                            (double)(startV * textureScale) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 = *(const int *)(&uStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 = *(const int *)(&vStepBits);
+                        spanProc(
+                            *(const int *)(&uStartBits),
+                            *(const int *)(&vStartBits),
+                            count,
+                            texVShift
+                        );
+                        zRndr::g_spanCurrentSpanBaseAddr += count;
+                        x += count;
+                        remaining -= count;
+                    }
+
+                    if (remaining > 0) {
+                        const int count = remaining;
+                        const float startX = (float)(x);
+                        const float endX = (float)(x + count);
+                        const float sampleY = (float)(y);
+                        const float startPlaneX =
+                            startX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float endPlaneX =
+                            endX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float planeY =
+                            sampleY + 0.5f - gRndr_PerspPlaneOriginY;
+                        const float startInvZ =
+                            startPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float endInvZ =
+                            endPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float startU =
+                            (startPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            startInvZ;
+                        const float startV =
+                            (startPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            startInvZ;
+                        const float endU =
+                            (endPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            endInvZ;
+                        const float endV =
+                            (endPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            endInvZ;
+                        const double uStepBits =
+                            (double)((endU - startU) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double vStepBits =
+                            (double)((endV - startV) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double uStartBits =
+                            (double)(startU * textureScale) - -6755399441055744.0;
+                        const double vStartBits =
+                            (double)(startV * textureScale) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 = *(const int *)(&uStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 = *(const int *)(&vStepBits);
+                        spanProc(
+                            *(const int *)(&uStartBits),
+                            *(const int *)(&vStartBits),
+                            count,
+                            texVShift
+                        );
+                        zRndr::g_spanCurrentSpanBaseAddr += count;
+                    }
                 }
             }
         }
+        scanlineBase += zRndr::g_pitchBytes;
     }
 }
 
@@ -8425,14 +10071,112 @@ void __fastcall zRndr_DrawTexturedFanTri(
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
 
-    TexturedPlanes planes =
-        BuildQueuedTexturePlanes(
+    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
+    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
+    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
+    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
+    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
+    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
+
+    const bool useClippedNearPlane =
+        clippedTriVerts != 0 &&
+        (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f ||
+         clippedTriVerts[2].z < 10.0f);
+    if (useClippedNearPlane) {
+        zMath_BuildPerspectiveTextureInterpolants(
             clippedTriVerts,
-            triVerts,
             triUVs,
-            imageWidth,
-            imageHeight
+            (zVec2 *)(&gRndr_PerspInvDepthStepX),
+            &gRndr_PerspInvDepthBase,
+            (zVec2 *)(&gRndr_PerspTexScaledUOverZStepX),
+            &gRndr_PerspTexScaledUOverZBase,
+            (zVec2 *)(&gRndr_PerspTexScaledVOverZStepX),
+            &gRndr_PerspTexScaledVOverZBase
         );
+        gRndr_PerspTexScaledUOverZStepX *= imageWidth;
+        gRndr_PerspTexScaledUOverZStepY *= imageWidth;
+        gRndr_PerspTexScaledUOverZBase *= imageWidth;
+        gRndr_PerspTexScaledVOverZStepX *= imageHeight;
+        gRndr_PerspTexScaledVOverZStepY *= imageHeight;
+        gRndr_PerspTexScaledVOverZBase *= imageHeight;
+        gRndr_PerspPlaneOriginX = g_zMath_ProjOffsetX;
+        gRndr_PerspPlaneOriginY = g_zMath_ProjOffsetY;
+    } else {
+        const float reciprocalValues[3] = {
+            triVerts[0].z, triVerts[1].z, triVerts[2].z
+        };
+        const float uValues[3] = {
+            gRndr_PerspTexScaledUOverZ0,
+            gRndr_PerspTexScaledUOverZ1,
+            gRndr_PerspTexScaledUOverZ2
+        };
+        const float vValues[3] = {
+            gRndr_PerspTexScaledVOverZ0,
+            gRndr_PerspTexScaledVOverZ1,
+            gRndr_PerspTexScaledVOverZ2
+        };
+        const float dx10 = triVerts[0].x - triVerts[1].x;
+        const float dx12 = triVerts[2].x - triVerts[1].x;
+        const float dy10 = triVerts[0].y - triVerts[1].y;
+        const float dy12 = triVerts[2].y - triVerts[1].y;
+        const float determinant = dy12 * dx10 - dy10 * dx12;
+        Plane2f reciprocalZ = {0};
+        Plane2f uOverZ = {0};
+        Plane2f vOverZ = {0};
+        if (determinant != 0.0f) {
+            const float inverseDeterminant = -1.0f / determinant;
+            const float reciprocal10 = reciprocalValues[0] - reciprocalValues[1];
+            const float reciprocal12 = reciprocalValues[2] - reciprocalValues[1];
+            const float u10 = uValues[0] - uValues[1];
+            const float u12 = uValues[2] - uValues[1];
+            const float v10 = vValues[0] - vValues[1];
+            const float v12 = vValues[2] - vValues[1];
+            reciprocalZ.gradient.x =
+                (dy12 * reciprocal10 - dy10 * reciprocal12) * inverseDeterminant;
+            reciprocalZ.gradient.y =
+                (dx10 * reciprocal12 - dx12 * reciprocal10) * inverseDeterminant;
+            uOverZ.gradient.x =
+                (dy12 * u10 - dy10 * u12) * inverseDeterminant;
+            uOverZ.gradient.y =
+                (dx10 * u12 - dx12 * u10) * inverseDeterminant;
+            vOverZ.gradient.x =
+                (dy12 * v10 - dy10 * v12) * inverseDeterminant;
+            vOverZ.gradient.y =
+                (dx10 * v12 - dx12 * v10) * inverseDeterminant;
+        }
+        gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
+        gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
+        gRndr_PerspInvDepthBase = reciprocalValues[0];
+        gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
+        gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
+        gRndr_PerspTexScaledUOverZBase = uValues[0];
+        gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
+        gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
+        gRndr_PerspTexScaledVOverZBase = vValues[0];
+        gRndr_PerspPlaneOriginX = triVerts[0].x;
+        gRndr_PerspPlaneOriginY = triVerts[0].y;
+    }
+
+    TexturedPlanes planes = {0};
+    planes.reciprocalZ.gradient.x = gRndr_PerspInvDepthStepX;
+    planes.reciprocalZ.gradient.y = gRndr_PerspInvDepthStepY;
+    planes.reciprocalZ.base = gRndr_PerspInvDepthBase;
+    planes.uOverZ.gradient.x = gRndr_PerspTexScaledUOverZStepX;
+    planes.uOverZ.gradient.y = gRndr_PerspTexScaledUOverZStepY;
+    planes.uOverZ.base = gRndr_PerspTexScaledUOverZBase;
+    planes.vOverZ.gradient.x = gRndr_PerspTexScaledVOverZStepX;
+    planes.vOverZ.gradient.y = gRndr_PerspTexScaledVOverZStepY;
+    planes.vOverZ.base = gRndr_PerspTexScaledVOverZBase;
+    planes.originX = gRndr_PerspPlaneOriginX;
+    planes.originY = gRndr_PerspPlaneOriginY;
+    const float adjustX = planes.originX - 0.5f;
+    const float adjustY = planes.originY - 0.5f;
+    planes.reciprocalZ.base -=
+        adjustX * planes.reciprocalZ.gradient.x + adjustY * planes.reciprocalZ.gradient.y;
+    planes.uOverZ.base -=
+        adjustX * planes.uOverZ.gradient.x + adjustY * planes.uOverZ.gradient.y;
+    planes.vOverZ.base -=
+        adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
@@ -8459,11 +10203,9 @@ void __fastcall zRndr_DrawTexturedFanTri(
     float minPositiveReciprocalZ = 1000.0f;
     for (int i_5057 = 0; i_5057 < vertCount; ++i_5057) {
         const float reciprocalZ =
-            EvalPlane(
-                planes.reciprocalZ,
-                projectedVerts[i_5057].x,
-                projectedVerts[i_5057].y
-            );
+            projectedVerts[i_5057].x * planes.reciprocalZ.gradient.x +
+            projectedVerts[i_5057].y * planes.reciprocalZ.gradient.y +
+            planes.reciprocalZ.base;
         if (reciprocalZ > 0.0f && reciprocalZ < minPositiveReciprocalZ) {
             minPositiveReciprocalZ = reciprocalZ;
         }
@@ -8476,8 +10218,88 @@ void __fastcall zRndr_DrawTexturedFanTri(
         }
     }
 
-    const int firstScanline = (int)(floor(projectedVerts[topVertexIndex].y + 0.5f));
-    const int lastScanline = (int)(floor(projectedVerts[bottomVertexIndex].y - 0.5f));
+    ScanConvertEdge edgeTableA[0x40] = {0};
+    ScanConvertEdge edgeTableB[0x40] = {0};
+    int edgeCountA = 0;
+    int edgeCountB = 0;
+    int fixed16Value;
+    int edgeVertexIndex;
+    int edgeYStart;
+    float edgeSampleY;
+    const int edgeStepA = zRndr::g_scanConvertMode != 0 ? 1 : -1;
+    const int edgeStepB = -edgeStepA;
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepA;
+        if (nextIndex < 0) nextIndex += vertCount;
+        if (nextIndex >= vertCount) nextIndex -= vertCount;
+        const zVec3 &start = projectedVerts[edgeVertexIndex];
+        const zVec3 &end = projectedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableA[edgeCountA].yStart = edgeYStart;
+            edgeTableA[edgeCountA].reserved = 0;
+            if (dy != 0.0f) {
+                const float slope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, slope);
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * slope
+                );
+            } else {
+                edgeTableA[edgeCountA].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
+            }
+            ++edgeCountA;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepB;
+        if (nextIndex < 0) nextIndex += vertCount;
+        if (nextIndex >= vertCount) nextIndex -= vertCount;
+        const zVec3 &start = projectedVerts[edgeVertexIndex];
+        const zVec3 &end = projectedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableB[edgeCountB].yStart = edgeYStart;
+            edgeTableB[edgeCountB].reserved = 0;
+            if (dy != 0.0f) {
+                const float slope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, slope);
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * slope
+                );
+            } else {
+                edgeTableB[edgeCountB].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
+            }
+            ++edgeCountB;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+    if (edgeCountA == 0 || edgeCountB == 0) return;
+
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[bottomVertexIndex].y);
+    const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
     }
@@ -8504,60 +10326,61 @@ void __fastcall zRndr_DrawTexturedFanTri(
     }
 
     zRndr::SpanNodePartial *visibleSpans[0x40] = {0};
-    unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
-    const int chunkPixels =
-        SelectPerspectiveChunkPixels(
-            minPositiveReciprocalZ,
-            planes.reciprocalZ.gradient.x
-        );
+    int edgeIndexA = 0;
+    int edgeIndexB = 0;
+    int currentXFixedA = edgeTableA[0].currentXFixed;
+    int currentXFixedB = edgeTableB[0].currentXFixed;
+    int xStepFixedA = edgeTableA[0].xStepFixed;
+    int xStepFixedB = edgeTableB[0].xStepFixed;
+    unsigned char *scanlineBase =
+        (unsigned char *)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
+    int chunkPixels;
+    if (zRndr::g_perspectiveAdaptiveMinSpan == 0) {
+        chunkPixels = zRndr::g_perspectiveTextureDeltaXPow2;
+    } else {
+        float selectedChunk = (float)(zRndr::g_perspectiveAdaptiveMaxSpan);
+        if (planes.reciprocalZ.gradient.x != 0.0f) {
+            selectedChunk =
+                minPositiveReciprocalZ * zRndr::g_perspectiveAdaptiveSlope /
+                planes.reciprocalZ.gradient.x;
+            if (selectedChunk < 0.0f) selectedChunk = -selectedChunk;
+        }
+        const double selectedChunkBits =
+            (double)(selectedChunk) - -6755399441055744.0;
+        chunkPixels = *(const int *)(&selectedChunkBits);
+        if (chunkPixels > zRndr::g_perspectiveAdaptiveMaxSpan) {
+            chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
+        }
+        if (chunkPixels < zRndr::g_perspectiveAdaptiveMinSpan) {
+            chunkPixels = zRndr::g_perspectiveAdaptiveMinSpan;
+        }
+    }
+    if (chunkPixels < 1) chunkPixels = 1;
     const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
-        float intersections[0x40] = {0};
-        int intersectionCount = 0;
-        const float sampleY = (float)(y) + 0.5f;
-        for (int i = 0; i < vertCount; ++i) {
-            const zVec3 &a = projectedVerts[i];
-            const zVec3 &b = projectedVerts[(i + 1) % vertCount];
-            if (a.y == b.y) {
-                continue;
-            }
-
-            const float minY = MinValue(
-                a.y,
-                b.y
-            );
-            const float maxY = MaxValue(
-                a.y,
-                b.y
-            );
-            if (sampleY < minY || sampleY >= maxY) {
-                continue;
-            }
-
-            const float t = (sampleY - a.y) / (b.y - a.y);
-            intersections[intersectionCount++] = a.x + (b.x - a.x) * t;
-            if (intersectionCount == 0x40) {
-                break;
-            }
+        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            ++edgeIndexA;
         }
-
-        if (intersectionCount < 2) {
-            continue;
+        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            ++edgeIndexB;
         }
-
-        sort(
-            intersections,
-            intersections + intersectionCount
-        );
-        unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
-        const int pairCount = intersectionCount & ~1;
-        for (int i_5143 = 0; i_5143 < pairCount; i_5143 += 2) {
-            const int xMin = (int)(floor(intersections[i_5143] + 0.5f));
-            const int xMax = (int)(ceil(intersections[i_5143 + 1] - 0.5f)) - 1;
-            if (xMin > xMax) {
-                continue;
-            }
+        int xMin;
+        int xMax;
+        if (currentXFixedA > currentXFixedB) {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedA + 0x7fff) >> 16;
+            xMax = (currentXFixedB - 0x8001) >> 16;
+        }
+        currentXFixedA += xStepFixedA;
+        currentXFixedB += xStepFixedB;
+        if (xMin <= xMax) {
 
             const float rowReciprocalZ =
                 (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
@@ -8589,18 +10412,133 @@ void __fastcall zRndr_DrawTexturedFanTri(
                     zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    DispatchTexturedSpanChunks(
-                        spanProc,
-                        0,
-                        span,
-                        y,
-                        chunkPixels,
-                        textureScale,
-                        texVShift
-                    );
+                    int remaining = span->sampleXMax - span->sampleXMin + 1;
+                    int x = span->sampleXMin;
+                    while (remaining > chunkPixels) {
+                        const int count = chunkPixels;
+                        const float startX = (float)(x);
+                        const float endX = (float)(x + count);
+                        const float sampleY = (float)(y);
+                        const float startPlaneX =
+                            startX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float endPlaneX =
+                            endX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float planeY =
+                            sampleY + 0.5f - gRndr_PerspPlaneOriginY;
+                        const float startInvZ =
+                            startPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float endInvZ =
+                            endPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float startU =
+                            (startPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            startInvZ;
+                        const float startV =
+                            (startPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            startInvZ;
+                        const float endU =
+                            (endPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            endInvZ;
+                        const float endV =
+                            (endPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            endInvZ;
+                        const double uStepBits =
+                            (double)((endU - startU) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double vStepBits =
+                            (double)((endV - startV) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double uStartBits =
+                            (double)(startU * textureScale) - -6755399441055744.0;
+                        const double vStartBits =
+                            (double)(startV * textureScale) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 = *(const int *)(&uStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 = *(const int *)(&vStepBits);
+                        spanProc(
+                            *(const int *)(&uStartBits),
+                            *(const int *)(&vStartBits),
+                            count,
+                            texVShift
+                        );
+                        zRndr::g_spanCurrentSpanBaseAddr += count;
+                        x += count;
+                        remaining -= count;
+                    }
+
+                    if (remaining > 0) {
+                        const int count = remaining;
+                        const float startX = (float)(x);
+                        const float endX = (float)(x + count);
+                        const float sampleY = (float)(y);
+                        const float startPlaneX =
+                            startX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float endPlaneX =
+                            endX + 0.5f - gRndr_PerspPlaneOriginX;
+                        const float planeY =
+                            sampleY + 0.5f - gRndr_PerspPlaneOriginY;
+                        const float startInvZ =
+                            startPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float endInvZ =
+                            endPlaneX * gRndr_PerspInvDepthStepX +
+                            planeY * gRndr_PerspInvDepthStepY +
+                            gRndr_PerspInvDepthBase;
+                        const float startU =
+                            (startPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            startInvZ;
+                        const float startV =
+                            (startPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            startInvZ;
+                        const float endU =
+                            (endPlaneX * gRndr_PerspTexScaledUOverZStepX +
+                             planeY * gRndr_PerspTexScaledUOverZStepY +
+                             gRndr_PerspTexScaledUOverZBase) /
+                            endInvZ;
+                        const float endV =
+                            (endPlaneX * gRndr_PerspTexScaledVOverZStepX +
+                             planeY * gRndr_PerspTexScaledVOverZStepY +
+                             gRndr_PerspTexScaledVOverZBase) /
+                            endInvZ;
+                        const double uStepBits =
+                            (double)((endU - startU) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double vStepBits =
+                            (double)((endV - startV) * textureScale / (float)(count)) -
+                            -6755399441055744.0;
+                        const double uStartBits =
+                            (double)(startU * textureScale) - -6755399441055744.0;
+                        const double vStartBits =
+                            (double)(startV * textureScale) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 = *(const int *)(&uStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 = *(const int *)(&vStepBits);
+                        spanProc(
+                            *(const int *)(&uStartBits),
+                            *(const int *)(&vStartBits),
+                            count,
+                            texVShift
+                        );
+                        zRndr::g_spanCurrentSpanBaseAddr += count;
+                    }
                 }
             }
         }
+        scanlineBase += zRndr::g_pitchBytes;
     }
 }
 
@@ -8734,11 +10672,61 @@ void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
 
     if (g_overlayBlendEnabled != 0) {
         const int overlayAlpha = (int)(g_overlayBlendAlpha * 255.0);
-        packedColor = BlendLensFlarePixel(
-            packedColor,
-            (unsigned short)(g_overlayBlendPackedColor16),
-            overlayAlpha
-        );
+        const unsigned short overlayColor =
+            (unsigned short)(g_overlayBlendPackedColor16);
+        if (g_pixelPackGreenBits == 6) {
+            if (overlayAlpha >= 0xfc) {
+                packedColor = overlayColor;
+            } else if (overlayAlpha > 3) {
+                const int red =
+                    ((packedColor >> 11) & 0x1f) +
+                    ((((overlayColor >> 11) & 0x1f) -
+                      ((packedColor >> 11) & 0x1f)) *
+                         overlayAlpha >>
+                     8);
+                const int green =
+                    ((packedColor >> 5) & 0x3f) +
+                    ((((overlayColor >> 5) & 0x3f) -
+                      ((packedColor >> 5) & 0x3f)) *
+                         overlayAlpha >>
+                     8);
+                const int blue =
+                    (packedColor & 0x1f) +
+                    (((overlayColor & 0x1f) - (packedColor & 0x1f)) *
+                         overlayAlpha >>
+                     8);
+                packedColor = (unsigned short)(
+                    ((red & 0x1f) << 11) |
+                    ((green & 0x3f) << 5) |
+                    (blue & 0x1f)
+                );
+            }
+        } else if (overlayAlpha >= 0xfc) {
+            packedColor = overlayColor;
+        } else if (overlayAlpha > 7) {
+            const int red =
+                ((packedColor >> 10) & 0x1f) +
+                ((((overlayColor >> 10) & 0x1f) -
+                  ((packedColor >> 10) & 0x1f)) *
+                     overlayAlpha >>
+                 8);
+            const int green =
+                ((packedColor >> 5) & 0x1f) +
+                ((((overlayColor >> 5) & 0x1f) -
+                  ((packedColor >> 5) & 0x1f)) *
+                     overlayAlpha >>
+                 8);
+            const int blue =
+                (packedColor & 0x1f) +
+                (((overlayColor & 0x1f) - (packedColor & 0x1f)) *
+                     overlayAlpha >>
+                 8);
+            packedColor = (unsigned short)(
+                ((red & 0x1f) << 10) |
+                ((green & 0x1f) << 5) |
+                (blue & 0x1f)
+            );
+        }
     }
 
     if (!blendTowardFramebuffer) {
@@ -8757,11 +10745,46 @@ void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
         return;
     }
 
-    *pixel = BlendLensFlarePixel(
-        *pixel,
-        packedColor,
-        fadeAlpha
-    );
+    const unsigned short frameColor = *pixel;
+    if (g_pixelPackGreenBits == 6) {
+        const int red =
+            ((frameColor >> 11) & 0x1f) +
+            ((((packedColor >> 11) & 0x1f) - ((frameColor >> 11) & 0x1f)) *
+                 fadeAlpha >>
+             8);
+        const int green =
+            ((frameColor >> 5) & 0x3f) +
+            ((((packedColor >> 5) & 0x3f) - ((frameColor >> 5) & 0x3f)) *
+                 fadeAlpha >>
+             8);
+        const int blue =
+            (frameColor & 0x1f) +
+            (((packedColor & 0x1f) - (frameColor & 0x1f)) * fadeAlpha >> 8);
+        *pixel = (unsigned short)(
+            ((red & 0x1f) << 11) |
+            ((green & 0x3f) << 5) |
+            (blue & 0x1f)
+        );
+    } else {
+        const int red =
+            ((frameColor >> 10) & 0x1f) +
+            ((((packedColor >> 10) & 0x1f) - ((frameColor >> 10) & 0x1f)) *
+                 fadeAlpha >>
+             8);
+        const int green =
+            ((frameColor >> 5) & 0x1f) +
+            ((((packedColor >> 5) & 0x1f) - ((frameColor >> 5) & 0x1f)) *
+                 fadeAlpha >>
+             8);
+        const int blue =
+            (frameColor & 0x1f) +
+            (((packedColor & 0x1f) - (frameColor & 0x1f)) * fadeAlpha >> 8);
+        *pixel = (unsigned short)(
+            ((red & 0x1f) << 10) |
+            ((green & 0x1f) << 5) |
+            (blue & 0x1f)
+        );
+    }
 }
 } // namespace zRndr
 
@@ -9730,6 +11753,23 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
                 shadeBucket = 0;
             }
             texKey = (texKey << 5) + shadeBucket;
+
+            if ((image->formatFlagsPacked == 0) & 2) {
+                if (queueOverwrite != 0) {
+                    usingDerivedPaletteKey = 1;
+                } else {
+                    zRndr_DrawTexturedQueuedAlpha(
+                        entry,
+                        projectedPolyVerts,
+                        clippedTriVerts,
+                        triData9f,
+                        triUVs,
+                        vertexCount,
+                        texKey
+                    );
+                    return;
+                }
+            }
         }
     }
 
@@ -9898,61 +11938,61 @@ void __cdecl zRndr_FlushTransparentQueue() {
             zRndr::g_inverseDepthScale = cmd.savedInvDepthScale;
             zRndr::g_scanConvertMode = cmd.scanConvertMode;
 
-            if (cmd.materialRef == 0) {
+            if (cmd.materialRef != 0) {
+                zVec3 *clippedTriVerts =
+                    cmd.hasClippedTriVerts != 0
+                        ? (zVec3 *)(cmd.clippedTriVertOverlay.clippedTriVerts)
+                        : 0;
+                zVec3 *polyVerts = (zVec3 *)(cmd.polyVerts);
+                zVec3 *triVerts = (zVec3 *)(cmd.triVerts);
+                zVec2 *triUVs = (zVec2 *)(cmd.triUVs);
+
+                if ((cmd.materialRef->image->formatFlagsPacked & 2) != 0) {
+                    float alpha = 0.0f;
+                    memcpy(
+                        &alpha,
+                        &cmd.alphaOrShadeBits,
+                        sizeof(float)
+                    );
+                    if (alpha >= 1.0f) {
+                        zRndr_DrawFlatQueued(
+                            cmd.materialRef,
+                            polyVerts,
+                            triVerts,
+                            triUVs,
+                            cmd.vertexCount,
+                            cmd.texKey
+                        );
+                    } else {
+                        Renderer_DrawPolyTLV(
+                            cmd.materialRef,
+                            polyVerts,
+                            triVerts,
+                            triUVs,
+                            cmd.vertexCount,
+                            alpha,
+                            cmd.texKey
+                        );
+                    }
+                } else {
+                    zRndr_DrawTexturedFanTri(
+                        cmd.materialRef,
+                        polyVerts,
+                        clippedTriVerts,
+                        triVerts,
+                        triUVs,
+                        cmd.vertexCount,
+                        cmd.alphaOrShadeBits,
+                        cmd.texKey
+                    );
+                }
+            } else {
                 zRndr_DrawFlatImmediate(
                     (zVec3 *)(cmd.polyVerts),
                     (zVec3 *)(cmd.triVerts),
                     cmd.vertexCount,
                     cmd.alphaOrShadeBits,
                     cmd.shadeOrSpanMode
-                );
-                continue;
-            }
-
-            zVec3 *clippedTriVerts =
-                cmd.hasClippedTriVerts != 0
-                    ? (zVec3 *)(cmd.clippedTriVertOverlay.clippedTriVerts)
-                    : 0;
-            zVec3 *polyVerts = (zVec3 *)(cmd.polyVerts);
-            zVec3 *triVerts = (zVec3 *)(cmd.triVerts);
-            zVec2 *triUVs = (zVec2 *)(cmd.triUVs);
-            if ((cmd.materialRef->image->formatFlagsPacked & 2) == 0) {
-                float alpha = 0.0f;
-                memcpy(
-                    &alpha,
-                    &cmd.alphaOrShadeBits,
-                    sizeof(float)
-                );
-                if (alpha < 1.0f) {
-                    Renderer_DrawPolyTLV(
-                        cmd.materialRef,
-                        polyVerts,
-                        triVerts,
-                        triUVs,
-                        cmd.vertexCount,
-                        alpha,
-                        cmd.texKey
-                    );
-                } else {
-                    zRndr_DrawFlatQueued(
-                        cmd.materialRef,
-                        polyVerts,
-                        triVerts,
-                        triUVs,
-                        cmd.vertexCount,
-                        cmd.texKey
-                    );
-                }
-            } else {
-                zRndr_DrawTexturedFanTri(
-                    cmd.materialRef,
-                    polyVerts,
-                    clippedTriVerts,
-                    triVerts,
-                    triUVs,
-                    cmd.vertexCount,
-                    cmd.alphaOrShadeBits,
-                    cmd.texKey
                 );
             }
         }
@@ -9992,7 +12032,8 @@ void __cdecl zRndr_FlushOverwriteQueue() {
             zVidImagePartial *image = cmd.materialRef != 0 ? cmd.materialRef->image : 0;
             bool useFallback = false;
 
-            if (commandTag == 0) {
+            switch (commandTag) {
+            case 0:
                 if (cmd.alphaOrShadeF >= 255.0f) {
                     zRndr_RasterizePolyWithSpanList(
                         polyVerts,
@@ -10000,30 +12041,32 @@ void __cdecl zRndr_FlushOverwriteQueue() {
                         cmd.vertexCount,
                         cmd.shadeOrSpanMode
                     );
-                    continue;
+                } else {
+                    useFallback = true;
                 }
-                useFallback = true;
-            } else if (commandTag == 1) {
-                if (image != 0 && (image->formatFlagsPacked & 2) == 0 &&
-                    cmd.alphaOrShadeF >= 1.0f) {
-                    zRndr_DrawTexturedQueuedAlpha(
-                        cmd.materialRef,
-                        polyVerts,
-                        clippedTriVerts,
-                        triVerts,
-                        triUVs,
-                        cmd.vertexCount,
-                        texKey
-                    );
-                    continue;
-                }
+                break;
 
-                if (image != 0 && (image->formatFlagsPacked & 2) != 0) {
+            case 1:
+                if ((image->formatFlagsPacked & 2) == 0) {
+                    if (cmd.alphaOrShadeF >= 1.0f) {
+                        zRndr_DrawTexturedQueuedAlpha(
+                            cmd.materialRef,
+                            polyVerts,
+                            clippedTriVerts,
+                            triVerts,
+                            triUVs,
+                            cmd.vertexCount,
+                            texKey
+                        );
+                        break;
+                    }
                     cmd.alphaOrShadeF *= 255.0f;
                 }
                 useFallback = true;
-            } else if (commandTag == 2) {
-                if (image != 0 && (image->formatFlagsPacked & 2) == 0) {
+                break;
+
+            case 2:
+                if ((image->formatFlagsPacked & 2) == 0) {
                     if (cmd.vertexCount - 2 > 0) {
                         zVec3 fanVerts[3];
                         zVec3 shadeTriplet;
@@ -10048,56 +12091,58 @@ void __cdecl zRndr_FlushOverwriteQueue() {
                             );
                         }
                     }
-                    continue;
+                } else {
+                    cmd.alphaOrShadeF = 255.0f;
+                    useFallback = true;
                 }
-
-                cmd.alphaOrShadeF = 255.0f;
-                useFallback = true;
+                break;
             }
 
             if (!useFallback) {
                 continue;
             }
 
-            if (image == 0) {
+            if (image != 0) {
+                if ((image->formatFlagsPacked & 2) != 0) {
+                    if (cmd.alphaOrShadeF >= 1.0f) {
+                        zRndr_DrawFlatQueued(
+                            cmd.materialRef,
+                            polyVerts,
+                            triVerts,
+                            triUVs,
+                            cmd.vertexCount,
+                            texKey
+                        );
+                    } else {
+                        Renderer_DrawPolyTLV(
+                            cmd.materialRef,
+                            polyVerts,
+                            triVerts,
+                            triUVs,
+                            cmd.vertexCount,
+                            cmd.alphaOrShadeF,
+                            texKey
+                        );
+                    }
+                } else {
+                    zRndr_DrawTexturedFanTri(
+                        cmd.materialRef,
+                        polyVerts,
+                        clippedTriVerts,
+                        triVerts,
+                        triUVs,
+                        cmd.vertexCount,
+                        (int)(cmd.alphaOrShadeF),
+                        texKey
+                    );
+                }
+            } else {
                 zRndr_DrawFlatImmediate(
                     polyVerts,
                     triVerts,
                     cmd.vertexCount,
                     (int)(cmd.alphaOrShadeF),
                     cmd.shadeOrSpanMode
-                );
-            } else if ((image->formatFlagsPacked & 2) == 0) {
-                if (cmd.alphaOrShadeF < 1.0f) {
-                    Renderer_DrawPolyTLV(
-                        cmd.materialRef,
-                        polyVerts,
-                        triVerts,
-                        triUVs,
-                        cmd.vertexCount,
-                        cmd.alphaOrShadeF,
-                        texKey
-                    );
-                } else {
-                    zRndr_DrawFlatQueued(
-                        cmd.materialRef,
-                        polyVerts,
-                        triVerts,
-                        triUVs,
-                        cmd.vertexCount,
-                        texKey
-                    );
-                }
-            } else {
-                zRndr_DrawTexturedFanTri(
-                    cmd.materialRef,
-                    polyVerts,
-                    clippedTriVerts,
-                    triVerts,
-                    triUVs,
-                    cmd.vertexCount,
-                    (int)(cmd.alphaOrShadeF),
-                    texKey
                 );
             }
         }
@@ -10687,7 +12732,15 @@ namespace zRndr {
  * Purpose: Copy direct fog target parameters into the active fog state when they differ.
  */
 void __cdecl CommitDirectFogParamsIfChanged() {
-    CommitFogParamsIfChanged(g_fogTargetParamsDirect);
+    if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogTargetParamsDirect.colorRgb01[0]) >= 0.01f ||
+        fabs(g_fogParamsActive.colorRgb01[1] - g_fogTargetParamsDirect.colorRgb01[1]) >= 0.01f ||
+        fabs(g_fogParamsActive.colorRgb01[2] - g_fogTargetParamsDirect.colorRgb01[2]) >= 0.01f) {
+        memcpy(
+            &g_fogParamsActive,
+            &g_fogTargetParamsDirect,
+            sizeof(g_fogParamsActive)
+        );
+    }
 }
 } // namespace zRndr
 
@@ -10698,7 +12751,15 @@ namespace zRndr {
  * Purpose: Copy fog color parameters into the active fog state when they differ.
  */
 void __cdecl CommitFogColorParamsIfChanged() {
-    CommitFogParamsIfChanged(g_fogColorParams);
+    if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogColorParams.colorRgb01[0]) >= 0.01f ||
+        fabs(g_fogParamsActive.colorRgb01[1] - g_fogColorParams.colorRgb01[1]) >= 0.01f ||
+        fabs(g_fogParamsActive.colorRgb01[2] - g_fogColorParams.colorRgb01[2]) >= 0.01f) {
+        memcpy(
+            &g_fogParamsActive,
+            &g_fogColorParams,
+            sizeof(g_fogParamsActive)
+        );
+    }
 }
 } // namespace zRndr
 
@@ -10761,7 +12822,15 @@ namespace zRndr {
  * Purpose: Copy staged fog target parameters into the active fog state when they differ.
  */
 void __cdecl CommitStagedFogParamsIfChanged() {
-    CommitFogParamsIfChanged(g_fogTargetParamsStaged);
+    if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogTargetParamsStaged.colorRgb01[0]) >= 0.01f ||
+        fabs(g_fogParamsActive.colorRgb01[1] - g_fogTargetParamsStaged.colorRgb01[1]) >= 0.01f ||
+        fabs(g_fogParamsActive.colorRgb01[2] - g_fogTargetParamsStaged.colorRgb01[2]) >= 0.01f) {
+        memcpy(
+            &g_fogParamsActive,
+            &g_fogTargetParamsStaged,
+            sizeof(g_fogParamsActive)
+        );
+    }
 }
 } // namespace zRndr
 
@@ -12024,23 +14093,26 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourceTexel = texels16[sourceIndex];
             if (alpha >= 0xf8) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel565Alpha8(
-                    *dst,
-                    sourceTexel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourceTexel;
+                const int greenDelta =
+                    (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                const int redDelta =
+                    (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffff800);
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -12051,13 +14123,9 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(
 
     {
         for (int pairCount = pixelCount >> 1; pairCount != 0; --pairCount) {
-            const int sourceIndex =
-                SpanTex16SampleIndex(
-                    texU,
-                    texV,
-                    texVShift,
-                    g_spanActiveTexUMask
-                );
+            const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+            const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+            const int sourceIndex = vIndex + uIndex;
             const int alpha = alphaMap[sourceIndex];
             if (alpha >= 8) {
                 const unsigned short sourceTexel = texels16[sourceIndex];
@@ -12071,11 +14139,20 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(
                         dst,
                         sizeof(packedPixels)
                     );
-                    packedPixels = BlendPair565Alpha5(
-                        packedPixels,
-                        sourceTexel,
-                        alpha
-                    );
+                    const unsigned int sourcePair =
+                        (unsigned int)(sourceTexel) |
+                        ((unsigned int)(sourceTexel) << 16);
+                    const unsigned int alpha5 = (unsigned int)(alpha >> 3);
+                    const unsigned int inverseAlpha5 = 0x1fu - alpha5;
+                    const unsigned int lowTerms =
+                        ((((packedPixels & 0x07e0f81fu) * inverseAlpha5) +
+                          ((sourcePair & 0x07e0f81fu) * alpha5)) >> 5) &
+                        0x07e0f81fu;
+                    const unsigned int highTerms =
+                        ((((packedPixels >> 5) & 0x07c0f83fu) * inverseAlpha5) +
+                         (((sourcePair >> 5) & 0x07c0f83fu) * alpha5)) &
+                        0xf81f07e0u;
+                    packedPixels = lowTerms | highTerms;
                 }
 
                 memcpy(
@@ -12112,23 +14189,26 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourceTexel = texels16[sourceIndex];
             if (alpha >= 0xf8) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel555Alpha8(
-                    *dst,
-                    sourceTexel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourceTexel;
+                const int redDelta =
+                    (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffffc00);
+                const int greenDelta =
+                    (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -12139,13 +14219,9 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(
 
     {
         for (int pairCount = pixelCount >> 1; pairCount != 0; --pairCount) {
-            const int sourceIndex =
-                SpanTex16SampleIndex(
-                    texU,
-                    texV,
-                    texVShift,
-                    g_spanActiveTexUMask
-                );
+            const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+            const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+            const int sourceIndex = vIndex + uIndex;
             const int alpha = alphaMap[sourceIndex];
             if (alpha >= 8) {
                 const unsigned short sourceTexel = texels16[sourceIndex];
@@ -12159,11 +14235,20 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(
                         dst,
                         sizeof(packedPixels)
                     );
-                    packedPixels = BlendPair555Alpha5(
-                        packedPixels,
-                        sourceTexel,
-                        alpha
-                    );
+                    const unsigned int sourcePair =
+                        (unsigned int)(sourceTexel) |
+                        ((unsigned int)(sourceTexel) << 16);
+                    const unsigned int alpha5 = (unsigned int)(alpha >> 3);
+                    const unsigned int inverseAlpha5 = 0x1fu - alpha5;
+                    const unsigned int lowTerms =
+                        ((((packedPixels & 0x03e07c1fu) * inverseAlpha5) +
+                          ((sourcePair & 0x03e07c1fu) * alpha5)) >> 5) &
+                        0x03e07c1fu;
+                    const unsigned int highTerms =
+                        ((((packedPixels >> 5) & 0x03e0f81fu) * inverseAlpha5) +
+                         (((sourcePair >> 5) & 0x03e0f81fu) * alpha5)) &
+                        0x7c1f03e0u;
+                    packedPixels = highTerms | lowTerms;
                 }
 
                 memcpy(
@@ -12297,24 +14382,29 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
     );
 
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
-        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5 : alphaScaled - 0.5);
+        const double alphaFixedBits =
+            alphaScaled - -6755399441055744.0;
+        const int alpha = *(const int *)(&alphaFixedBits);
         const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 3) {
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel565Alpha8(
-                    *dst,
-                    sourceTexel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourceTexel;
+                const int greenDelta =
+                    (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                const int redDelta =
+                    (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffff800);
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -12350,23 +14440,31 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
     );
 
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
-        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5 : alphaScaled - 0.5);
+        const double alphaFixedBits =
+            alphaScaled - -6755399441055744.0;
+        const int alpha = *(const int *)(&alphaFixedBits);
         const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 7) {
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel555ConstAlphaMap(
-                    *dst,
-                    sourceTexel,
-                    alpha
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourceTexel;
+                const int redDelta =
+                    (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                const int greenDelta =
+                    (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
+                *dst = (unsigned short)(
+                    dstColor +
+                    (redDelta & 0xfffffc00) +
+                    (greenDelta & 0xffffffe0) +
+                    blueDelta
                 );
             }
         }
@@ -12467,13 +14565,15 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
     }
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(
-                texU + pairPixels * g_spanActiveTexUStepFixed20,
-                texV + pairPixels * g_spanActiveTexVStepFixed20,
-                texVShift,
-                g_spanActiveTexUMask
-            );
+        const int tailTexU =
+            texU + pairPixels * g_spanActiveTexUStepFixed20;
+        const int tailTexV =
+            texV + pairPixels * g_spanActiveTexVStepFixed20;
+        const int vIndex =
+            (tailTexV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex =
+            (tailTexU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         texelScratch[pairPixels] = texels16[sourceIndex];
         alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
     }
@@ -12537,11 +14637,17 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel565Alpha8(
-                    *dst,
-                    sourceTexel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourceTexel;
+                const int greenDelta =
+                    (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                const int redDelta =
+                    (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffff800);
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -12684,13 +14790,15 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
     }
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(
-                texU + pairPixels * g_spanActiveTexUStepFixed20,
-                texV + pairPixels * g_spanActiveTexVStepFixed20,
-                texVShift,
-                g_spanActiveTexUMask
-            );
+        const int tailTexU =
+            texU + pairPixels * g_spanActiveTexUStepFixed20;
+        const int tailTexV =
+            texV + pairPixels * g_spanActiveTexVStepFixed20;
+        const int vIndex =
+            (tailTexV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex =
+            (tailTexU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         texelScratch[pairPixels] = texels16[sourceIndex];
         alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
     }
@@ -12754,11 +14862,17 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel555Alpha8(
-                    *dst,
-                    sourceTexel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourceTexel;
+                const int redDelta =
+                    (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffffc00);
+                const int greenDelta =
+                    (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -12833,23 +14947,26 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(
     const unsigned short *palette = g_spanActiveTexPalette;
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourcePixel = palette[texels8[sourceIndex]];
             if (alpha >= 0xf8) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel565Alpha8(
-                    *dst,
-                    sourcePixel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourcePixel;
+                const int greenDelta =
+                    (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                const int redDelta =
+                    (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffff800);
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -12859,12 +14976,9 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(
     }
 
     for (int i = pixelCount >> 1; i != 0; --i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourcePixel = palette[texels8[sourceIndex]];
@@ -12878,11 +14992,20 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(
                     dst,
                     sizeof(packedPixels)
                 );
-                packedPixels = BlendPair565Alpha5(
-                    packedPixels,
-                    sourcePixel,
-                    alpha
-                );
+                const unsigned int sourcePair =
+                    (unsigned int)(sourcePixel) |
+                    ((unsigned int)(sourcePixel) << 16);
+                const unsigned int alpha5 = (unsigned int)(alpha >> 3);
+                const unsigned int inverseAlpha5 = 0x1fu - alpha5;
+                const unsigned int lowTerms =
+                    ((((packedPixels & 0x07e0f81fu) * inverseAlpha5) +
+                      ((sourcePair & 0x07e0f81fu) * alpha5)) >> 5) &
+                    0x07e0f81fu;
+                const unsigned int highTerms =
+                    ((((packedPixels >> 5) & 0x07c0f83fu) * inverseAlpha5) +
+                     (((sourcePair >> 5) & 0x07c0f83fu) * alpha5)) &
+                    0xf81f07e0u;
+                packedPixels = lowTerms | highTerms;
                 memcpy(
                     dst,
                     &packedPixels,
@@ -12918,23 +15041,26 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(
     const unsigned short *palette = g_spanActiveTexPalette;
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourcePixel = palette[texels8[sourceIndex]];
             if (alpha >= 0xf8) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel555Alpha8(
-                    *dst,
-                    sourcePixel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourcePixel;
+                const int redDelta =
+                    (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffffc00);
+                const int greenDelta =
+                    (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -12944,12 +15070,9 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(
     }
 
     for (int i = pixelCount >> 1; i != 0; --i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourcePixel = palette[texels8[sourceIndex]];
@@ -12963,11 +15086,20 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(
                     dst,
                     sizeof(packedPixels)
                 );
-                packedPixels = BlendPair555Alpha5(
-                    packedPixels,
-                    sourcePixel,
-                    alpha
-                );
+                const unsigned int sourcePair =
+                    (unsigned int)(sourcePixel) |
+                    ((unsigned int)(sourcePixel) << 16);
+                const unsigned int alpha5 = (unsigned int)(alpha >> 3);
+                const unsigned int inverseAlpha5 = 0x1fu - alpha5;
+                const unsigned int lowTerms =
+                    ((((packedPixels & 0x03e07c1fu) * inverseAlpha5) +
+                      ((sourcePair & 0x03e07c1fu) * alpha5)) >> 5) &
+                    0x03e07c1fu;
+                const unsigned int highTerms =
+                    ((((packedPixels >> 5) & 0x03e0f81fu) * inverseAlpha5) +
+                     (((sourcePair >> 5) & 0x03e0f81fu) * alpha5)) &
+                    0x7c1f03e0u;
+                packedPixels = highTerms | lowTerms;
                 memcpy(
                     dst,
                     &packedPixels,
@@ -13100,24 +15232,29 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
     );
 
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const unsigned short sourcePixel = palette[texels8[sourceIndex]];
         const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
-        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5 : alphaScaled - 0.5);
+        const double alphaFixedBits =
+            alphaScaled - -6755399441055744.0;
+        const int alpha = *(const int *)(&alphaFixedBits);
         if (alpha > 3) {
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel565Alpha8(
-                    *dst,
-                    sourcePixel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourcePixel;
+                const int greenDelta =
+                    (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                const int redDelta =
+                    (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffff800);
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -13155,23 +15292,31 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
     );
 
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         const unsigned short sourcePixel = palette[texels8[sourceIndex]];
         const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
-        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5 : alphaScaled - 0.5);
+        const double alphaFixedBits =
+            alphaScaled - -6755399441055744.0;
+        const int alpha = *(const int *)(&alphaFixedBits);
         if (alpha > 7) {
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel555ConstAlphaMap(
-                    *dst,
-                    sourcePixel,
-                    alpha
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourcePixel;
+                const int redDelta =
+                    (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                const int greenDelta =
+                    (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
+                *dst = (unsigned short)(
+                    dstColor +
+                    (redDelta & 0xfffffc00) +
+                    (greenDelta & 0xffffffe0) +
+                    blueDelta
                 );
             }
         }
@@ -13280,13 +15425,15 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
     }
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(
-                texU + pairPixels * g_spanActiveTexUStepFixed20,
-                texV + pairPixels * g_spanActiveTexVStepFixed20,
-                texVShift,
-                g_spanActiveTexUMask
-            );
+        const int tailTexU =
+            texU + pairPixels * g_spanActiveTexUStepFixed20;
+        const int tailTexV =
+            texV + pairPixels * g_spanActiveTexVStepFixed20;
+        const int vIndex =
+            (tailTexV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex =
+            (tailTexU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         texelScratch[pairPixels] = palette[texels8[sourceIndex]];
         alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
     }
@@ -13350,11 +15497,17 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel565Alpha8(
-                    *dst,
-                    sourcePixel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourcePixel;
+                const int greenDelta =
+                    (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                const int redDelta =
+                    (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffff800);
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -13505,13 +15658,15 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
     }
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(
-                texU + pairPixels * g_spanActiveTexUStepFixed20,
-                texV + pairPixels * g_spanActiveTexVStepFixed20,
-                texVShift,
-                g_spanActiveTexUMask
-            );
+        const int tailTexU =
+            texU + pairPixels * g_spanActiveTexUStepFixed20;
+        const int tailTexV =
+            texV + pairPixels * g_spanActiveTexVStepFixed20;
+        const int vIndex =
+            (tailTexV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex =
+            (tailTexU >> 20) & g_spanActiveTexUMask;
+        const int sourceIndex = vIndex + uIndex;
         texelScratch[pairPixels] = palette[texels8[sourceIndex]];
         alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
     }
@@ -13575,11 +15730,17 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel555Alpha8(
-                    *dst,
-                    sourcePixel,
-                    alpha
-                );
+                const int dstColor = (short)(*dst);
+                const int srcColor = sourcePixel;
+                const int redDelta =
+                    (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                int blended = dstColor + (redDelta & 0xfffffc00);
+                const int greenDelta =
+                    (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
             }
         }
 
@@ -13727,10 +15888,24 @@ void __fastcall FogBlendSpan565Scalar(
     unsigned int pairCount = (unsigned int)(pixelCount) >> 1;
 
     if ((pixelCount & 1) != 0) {
-        *pixels = FogBlendPixel565(
-            *pixels,
-            fogCoord
-        );
+        if ((int)(fogCoord) >= 0x1000000) {
+            *pixels = (unsigned short)(g_fogParamsActive.packedColor16);
+        } else if ((int)(fogCoord) >= 0x80000) {
+            const unsigned int rampIndex =
+                (0x1000000u - fogCoord) >> 19;
+            const unsigned int rampValue =
+                (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
+            const unsigned int pixel = *pixels;
+            const unsigned int green =
+                ((((pixel & 0x07e0u) >> 5) * rampIndex) + rampValue) &
+                0x07e0u;
+            const unsigned int rotatedRamp =
+                (rampValue >> 11) | (rampValue << 21);
+            const unsigned int redBlue =
+                (((pixel & 0xf81fu) * rampIndex + rotatedRamp) >> 5) &
+                0xf81fu;
+            *pixels = (unsigned short)(green + redBlue);
+        }
         ++pixels;
         fogCoord += fogStep;
     }
@@ -13739,10 +15914,25 @@ void __fastcall FogBlendSpan565Scalar(
     while (pairCount != 0) {
         const unsigned int packedPixels =
             (unsigned int)(pixels[0]) | ((unsigned int)(pixels[1]) << 16);
-        const unsigned int blended = FogBlendPair565(
-            packedPixels,
-            fogCoord
-        );
+        unsigned int blended = packedPixels;
+        if ((int)(fogCoord) >= 0x1000000) {
+            blended = (unsigned int)(g_fogParamsActive.packedColor16Dup);
+        } else if ((int)(fogCoord) >= 0x80000) {
+            const unsigned int rampIndex =
+                (0x1000000u - fogCoord) >> 19;
+            const unsigned int rampValue =
+                (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
+            const unsigned int green =
+                ((((packedPixels & 0xf81f07e0u) >> 5) * rampIndex) +
+                 rampValue) &
+                0xf81f07e0u;
+            const unsigned int rotatedRamp =
+                (rampValue >> 11) | (rampValue << 21);
+            const unsigned int redBlue =
+                (((packedPixels & 0x07e0f81fu) * rampIndex + rotatedRamp) >> 5) &
+                0x07e0f81fu;
+            blended = green + redBlue;
+        }
         pixels[0] = (unsigned short)(blended);
         pixels[1] = (unsigned short)(blended >> 16);
 
@@ -13770,10 +15960,24 @@ void __fastcall FogBlendSpan555Scalar(
     unsigned int pairCount = (unsigned int)(pixelCount) >> 1;
 
     if ((pixelCount & 1) != 0) {
-        *pixels = FogBlendPixel555(
-            *pixels,
-            fogCoord
-        );
+        if ((int)(fogCoord) >= 0x1000000) {
+            *pixels = (unsigned short)(g_fogParamsActive.packedColor16);
+        } else if ((int)(fogCoord) >= 0x80000) {
+            const unsigned int rampIndex =
+                (0x1000000u - fogCoord) >> 19;
+            const unsigned int rampValue =
+                (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
+            const unsigned int pixel = *pixels;
+            const unsigned int green =
+                ((((pixel & 0x03e0u) >> 5) * rampIndex) + rampValue) &
+                0x03e0u;
+            const unsigned int rotatedRamp =
+                (rampValue >> 11) | (rampValue << 21);
+            const unsigned int redBlue =
+                (((pixel & 0x7c1fu) * rampIndex + rotatedRamp) >> 5) &
+                0x7c1fu;
+            *pixels = (unsigned short)(green + redBlue);
+        }
         ++pixels;
         fogCoord += fogStep;
     }
@@ -13782,10 +15986,25 @@ void __fastcall FogBlendSpan555Scalar(
     while (pairCount != 0) {
         const unsigned int packedPixels =
             (unsigned int)(pixels[0]) | ((unsigned int)(pixels[1]) << 16);
-        const unsigned int blended = FogBlendPair555(
-            packedPixels,
-            fogCoord
-        );
+        unsigned int blended = packedPixels;
+        if ((int)(fogCoord) >= 0x1000000) {
+            blended = (unsigned int)(g_fogParamsActive.packedColor16Dup);
+        } else if ((int)(fogCoord) >= 0x80000) {
+            const unsigned int rampIndex =
+                (0x1000000u - fogCoord) >> 19;
+            const unsigned int rampValue =
+                (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
+            const unsigned int green =
+                ((((packedPixels & 0x7c1f03e0u) >> 5) * rampIndex) +
+                 rampValue) &
+                0x7c1f03e0u;
+            const unsigned int rotatedRamp =
+                (rampValue >> 11) | (rampValue << 21);
+            const unsigned int redBlue =
+                (((packedPixels & 0x03e07c1fu) * rampIndex + rotatedRamp) >> 5) &
+                0x03e07c1fu;
+            blended = green + redBlue;
+        }
         pixels[0] = (unsigned short)(blended);
         pixels[1] = (unsigned short)(blended >> 16);
 

@@ -764,7 +764,6 @@ zVec3 TransformPointByMatrix(
     const zVec3 &point,
     const zMat4x3 &matrix
 );
-void ResetAltGunAttachNode(PlayerGunFireController *controller);
 static int IsUsableAltWeaponController(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *controller
@@ -1326,9 +1325,7 @@ void __fastcall HandlePrimaryWeaponVariantToggleInput(
     PlayerGunFireController *const previousController = playerState->activePrimaryGunController;
     PlayerGunFireController *newController = 0;
 
-    if (previousController->weaponSideIndex != 0) {
-        newController = &playerState->altWeaponBanks[1].controllerA;
-    } else {
+    if (previousController->weaponSideIndex == 0) {
         newController = &playerState->altWeaponBanks[1].controllerB;
 
         if ((newController->flags & 4) == 0) {
@@ -1354,6 +1351,8 @@ void __fastcall HandlePrimaryWeaponVariantToggleInput(
             );
             return;
         }
+    } else {
+        newController = &playerState->altWeaponBanks[1].controllerA;
     }
 
     saveState->StartMasterTypeLoopSfxHandle(
@@ -1774,17 +1773,17 @@ void __fastcall SetLoopActive(
     int enabled
 ) {
     const int wasActive = g_Hud_LowMeterLoopActive;
-    if (enabled == 0) {
-        if (wasActive != 0) {
-            g_Hud_LowMeterLoopSample->StopActiveVoicesIfPlaying();
-            g_Hud_LowMeterLoopActive = 0;
+    if (enabled != 0) {
+        if (wasActive == 0) {
+            g_Hud_LowMeterLoopSample->PlayA3DSimple(1.0f);
+            g_Hud_LowMeterLoopActive = 1;
         }
         return;
     }
 
-    if (wasActive == 0) {
-        g_Hud_LowMeterLoopSample->PlayA3DSimple(1.0f);
-        g_Hud_LowMeterLoopActive = 1;
+    if (wasActive != 0) {
+        g_Hud_LowMeterLoopSample->StopActiveVoicesIfPlaying();
+        g_Hud_LowMeterLoopActive = 0;
     }
 }
 
@@ -1841,12 +1840,359 @@ void __fastcall TickAltGunRuntimeState(
         }
 
         if ((playerState->altGunTransitionState & 0x180) != 0) {
-            TickAltGunTetherCleanup(saveState);
+            OptCatalogRuntimeInstanceStorage *const attachState =
+                (OptCatalogRuntimeInstanceStorage *)activeAltGunController->attachState;
+
+            if (attachState->ownerNode == 0) {
+                if (playerState->cameraState == kPlayerTickCameraStateProjectileAttached) {
+                    HudUiMgr::EnableHud();
+                    Player::ApplyCameraState(kPlayerTickCameraStateRestorePrevious);
+                }
+                playerState->pendingAltCameraToggle = 0;
+                OptCatalog::RecycleRuntimeInstanceStorage(
+                    activeAltGunController->optCatalogEntry,
+                    attachState
+                );
+                activeAltGunController->attachState = 0;
+                playerState->altGunTransitionState =
+                    activeAltGunController->ammoOrCharge > 0.0f ? 4 : 1;
+            } else if (playerState->pendingAltCameraToggle != 0) {
+                if (playerState->cameraState != kPlayerTickCameraStateProjectileAttached) {
+                    HudUiMgr::DisableHud();
+                    Player::ApplyCameraState(kPlayerTickCameraStateProjectileAttached);
+                    playerState->altGunTransitionState = 128;
+                } else {
+                    HudUiMgr::EnableHud();
+                    Player::ApplyCameraState(kPlayerTickCameraStateRestorePrevious);
+                    playerState->altGunTransitionState = 256;
+                }
+                playerState->pendingAltCameraToggle = 0;
+            }
         }
 
-        TickAltGunTriggerProcessCleanup(saveState);
+        if (playerState->altGunTriggerProcessFlag != 0) {
+            char message[0x50] = {0};
+            int removedA = 0;
+            int removedB = 0;
+            OptCatalogEntryDef *const entryA =
+                playerState->altWeaponBanks[5].controllerA.optCatalogEntry;
+            if (entryA != 0) {
+                removedA = OptCatalog::RemoveRuntimeInstance(
+                    entryA,
+                    0,
+                    playerState->rootNode
+                );
+                if (removedA != 0) {
+                    zLoc::FormatMessage(
+                        message,
+                        sizeof(message),
+                        0x248,
+                        removedA
+                    );
+                    HudUi::ShowTopMessageLine(
+                        message,
+                        5.0f
+                    );
+                }
+            }
+
+            OptCatalogEntryDef *const entryB =
+                playerState->altWeaponBanks[5].controllerB.optCatalogEntry;
+            if (entryB != 0) {
+                removedB = OptCatalog::RemoveRuntimeInstance(
+                    entryB,
+                    0,
+                    playerState->rootNode
+                );
+                if (removedB != 0) {
+                    zLoc::FormatMessage(
+                        message,
+                        sizeof(message),
+                        0x249,
+                        removedB
+                    );
+                    HudUi::ShowTopMessageLine(
+                        message,
+                        5.0f
+                    );
+                }
+            }
+
+            if (removedA == 0 && removedB == 0) {
+                OptCatalog::PlayWeaponInactiveWarning();
+            }
+            playerState->altGunTriggerProcessFlag = 0;
+        }
     } else {
-        TickAltGunTransitionAnimation(saveState);
+        PlayerGunFireController *const transitionController =
+            playerState->altGunTransitionController;
+
+        switch (playerState->altGunTransitionState) {
+        case 2:
+            playerState->altGunTransitionTimerA += g_FrameDeltaTimeSec;
+            if (playerState->altGunTransitionTimerA > 0.300000012f) {
+                playerState->altGunTransitionTimerA = 0.0f;
+                playerState->altGunTransitionState = 4;
+                saveState->StartMasterTypeLoopSfxHandle(
+                    0,
+                    1.0f
+                );
+            }
+            break;
+
+        case 4: {
+            playerState->altGunTransitionTimerA += g_FrameDeltaTimeSec;
+            const float progress = playerState->altGunTransitionTimerA * 4.0f;
+            const float targetY = transitionController->attachPosY - 0.400000006f;
+            const float animScale = progress * 0.400000006f;
+            playerState->altGunTransitionAnimScale = animScale;
+
+            const float y = transitionController->attachPosY - animScale;
+            if (y <= targetY) {
+                zClass_Object3D::gwObject3DSetPosition(
+                    transitionController->attachNodePrimary,
+                    transitionController->attachPosX,
+                    targetY,
+                    transitionController->attachPosZ
+                );
+                zClass_Object3D::gwObject3DSetScale(
+                    transitionController->attachNodePrimary,
+                    1.0f,
+                    0.600000024f,
+                    0.600000024f
+                );
+                playerState->altGunTransitionState = 8;
+                playerState->altGunTransitionTimerA = 0.0f;
+                break;
+            }
+
+            zClass_Object3D::gwObject3DSetPosition(
+                transitionController->attachNodePrimary,
+                transitionController->attachPosX,
+                y,
+                transitionController->attachPosZ
+            );
+            const float scale = 1.0f - progress * 0.399999976f;
+            zClass_Object3D::gwObject3DSetScale(
+                transitionController->attachNodePrimary,
+                1.0f,
+                scale,
+                scale
+            );
+            zClass_Object3D::gwObject3DSetRotation(
+                transitionController->attachNodePrimary,
+                0.0f,
+                0.0f,
+                0.0f
+            );
+            break;
+        }
+
+        case 8: {
+            playerState->altGunTransitionTimerB += g_FrameDeltaTimeSec;
+            float xScale = playerState->altGunTransitionTimerB * 4.0f;
+            if (xScale >= 1.0f) {
+                xScale = 1.0f;
+                playerState->altGunTransitionState = 16;
+                playerState->altGunTransitionTimerB = 0.0f;
+            }
+
+            zClass_Object3D::gwObject3DSetScale(
+                playerState->doorLeftNode,
+                xScale,
+                1.0f,
+                1.0f
+            );
+            zClass_Object3D::gwObject3DSetScale(
+                playerState->doorRightNode,
+                xScale,
+                1.0f,
+                1.0f
+            );
+            break;
+        }
+
+        case 16: {
+            if (transitionController != 0 && transitionController->attachNodePrimary != 0 &&
+                (transitionController->flags & kPlayerGunControllerDualMountFlag) == 0) {
+                OptCatalogRuntimeInstanceStorage *const attachState =
+                    (OptCatalogRuntimeInstanceStorage *)transitionController->attachState;
+                if (attachState != 0) {
+                    zClass_Class::RemoveChild(
+                        transitionController->attachNodePrimary,
+                        attachState->projectileNode
+                    );
+                    OptCatalog::RecycleRuntimeInstanceStorage(
+                        transitionController->optCatalogEntry,
+                        attachState
+                    );
+                    transitionController->attachState = 0;
+                }
+
+                zClass_Class::gwNodeSetActive(
+                    transitionController->attachNodePrimary,
+                    0
+                );
+                zClass_Object3D::gwObject3DSetPosition(
+                    transitionController->attachNodePrimary,
+                    transitionController->attachPosX,
+                    transitionController->attachPosY,
+                    transitionController->attachPosZ
+                );
+            }
+
+            PlayerGunFireController *const activeController =
+                playerState->activeAltGunController;
+            if (activeController == 0 || activeController->attachNodePrimary == 0) {
+                playerState->altGunTransitionState = 1;
+                break;
+            }
+
+            if ((activeController->flags & kPlayerGunControllerDualMountFlag) != 0) {
+                saveState->StartMasterTypeLoopSfxHandle(
+                    2,
+                    1.0f
+                );
+                PlayerAltWeaponBank *const bank =
+                    &playerState->altWeaponBanks[activeController->weaponBankIndex];
+                PlayerGunFireController *const oppositeController =
+                    activeController->weaponSideIndex == 0
+                        ? &bank->controllerB
+                        : &bank->controllerA;
+                if (oppositeController->attachNodePrimary != 0) {
+                    zClass_Class::gwNodeSetActive(
+                        oppositeController->attachNodePrimary,
+                        0
+                    );
+                }
+                if (oppositeController->attachNodeSecondary != 0) {
+                    zClass_Class::gwNodeSetActive(
+                        oppositeController->attachNodeSecondary,
+                        0
+                    );
+                }
+                if (activeController->attachNodePrimary != 0) {
+                    zClass_Class::gwNodeSetActive(
+                        activeController->attachNodePrimary,
+                        1
+                    );
+                }
+                if (activeController->attachNodeSecondary != 0) {
+                    zClass_Class::gwNodeSetActive(
+                        activeController->attachNodeSecondary,
+                        1
+                    );
+                }
+                playerState->altGunTransitionState = 1;
+                break;
+            }
+
+            OptCatalogEntryDef *const entry = activeController->optCatalogEntry;
+            if ((entry->flags & kOptCatalogFlagReload) != 0 &&
+                activeController->ammoOrCharge > 0.0f) {
+                activeController->attachState =
+                    OptCatalog::AllocOrReuseAttachNodeClone(entry);
+                OptCatalogRuntimeInstanceStorage *const attachState =
+                    (OptCatalogRuntimeInstanceStorage *)activeController->attachState;
+                zClass_Class::AddChild(
+                    activeController->attachNodePrimary,
+                    attachState->projectileNode
+                );
+                attachState->ownerNode = playerState->rootNode;
+            }
+
+            zClass_Class::gwNodeSetActive(
+                activeController->attachNodePrimary,
+                1
+            );
+            zClass_Object3D::gwObject3DSetPosition(
+                activeController->attachNodePrimary,
+                activeController->attachPosX,
+                activeController->attachPosY - 0.400000006f,
+                activeController->attachPosZ
+            );
+            zClass_Object3D::gwObject3DSetScale(
+                activeController->attachNodePrimary,
+                1.0f,
+                0.600000024f,
+                0.600000024f
+            );
+            playerState->altGunTransitionState = 32;
+            saveState->StartMasterTypeLoopSfxHandle(
+                0,
+                1.0f
+            );
+            break;
+        }
+
+        case 32: {
+            playerState->altGunTransitionTimerB += g_FrameDeltaTimeSec;
+            float xScale = 1.0f - playerState->altGunTransitionTimerB * 4.0f;
+            if (xScale <= 0.00100000005f) {
+                xScale = 0.00100000005f;
+                playerState->altGunTransitionState = 64;
+                playerState->altGunTransitionTimerB = 0.0f;
+            }
+
+            zClass_Object3D::gwObject3DSetScale(
+                playerState->doorLeftNode,
+                xScale,
+                1.0f,
+                1.0f
+            );
+            zClass_Object3D::gwObject3DSetScale(
+                playerState->doorRightNode,
+                xScale,
+                1.0f,
+                1.0f
+            );
+            break;
+        }
+
+        case 64: {
+            PlayerGunFireController *const activeController =
+                playerState->activeAltGunController;
+            playerState->altGunTransitionTimerA += g_FrameDeltaTimeSec;
+            const float progress = playerState->altGunTransitionTimerA * 4.0f;
+            const float animScale = progress * 0.400000006f;
+            playerState->altGunTransitionAnimScale = animScale;
+            const float y =
+                animScale + activeController->attachPosY - 0.400000006f;
+            if (y >= activeController->attachPosY) {
+                playerState->altGunTransitionAnimScale = 0.400000006f;
+                playerState->altGunTransitionState = 1;
+                playerState->altGunTransitionTimerA = 0.0f;
+                zClass_Object3D::gwObject3DSetPosition(
+                    activeController->attachNodePrimary,
+                    activeController->attachPosX,
+                    activeController->attachPosY,
+                    activeController->attachPosZ
+                );
+                zClass_Object3D::gwObject3DSetScale(
+                    activeController->attachNodePrimary,
+                    1.0f,
+                    1.0f,
+                    1.0f
+                );
+                break;
+            }
+
+            zClass_Object3D::gwObject3DSetPosition(
+                activeController->attachNodePrimary,
+                activeController->attachPosX,
+                y,
+                activeController->attachPosZ
+            );
+            const float scale = progress * 0.399999976f + 0.600000024f;
+            zClass_Object3D::gwObject3DSetScale(
+                activeController->attachNodePrimary,
+                1.0f,
+                scale,
+                scale
+            );
+            break;
+        }
+        }
     }
 
     OptCatalog::SetPendingSpawnTargetOverrides(
@@ -1858,11 +2204,77 @@ void __fastcall TickAltGunRuntimeState(
         return;
     }
 
-    if (TickAltGunLocalAmmoState(saveState) == 0) {
-        return;
+    OptCatalogEntryDef *const activeEntry =
+        activeAltGunController->optCatalogEntry;
+    if (playerState->altGunFireHeldFlag != 0 &&
+        activeAltGunController->ammoOrCharge != kPlayerAltAmmoDisabledSentinel) {
+        activeAltGunController->ammoOrCharge -=
+            g_FrameDeltaTimeSec / activeEntry->fireRateInterval;
+        if (activeAltGunController->ammoOrCharge < 0.0f) {
+            activeAltGunController->ammoOrCharge = 0.0f;
+        }
+        activeAltGunController->trailRuntimeState->ammoOrChargeMirror =
+            activeAltGunController->ammoOrCharge;
     }
 
-    TickAltGunLocalSlotAndPrimaryState(saveState);
+    if (activeAltGunController->ammoOrCharge <= 0.0f) {
+        if ((activeEntry->flags & kOptCatalogFlagReload) != 0 &&
+            playerState->altGunTransitionState != 1) {
+            return;
+        }
+
+        activeAltGunController->ammoOrCharge = 0.0f;
+        if (playerState->altGunFireHeldFlag != 0) {
+            activeAltGunController->trailRuntimeState->ammoOrChargeMirror = 0.0f;
+            playerState->altGunFireHeldFlag = 0;
+            playerState->altGunDispatchRequested = 0;
+            OptCatalog::DeactivateTrailRuntimeState(
+                activeAltGunController->trailRuntimeState
+            );
+        }
+
+        HudUiMessage::SetValueIfOwnerMatches(
+            activeAltGunController->weaponBankIndex,
+            activeAltGunController->weaponSideIndex,
+            0.0f
+        );
+        Player::AutoSwitchToNextUsableAltWeapon(saveState);
+    } else if ((activeEntry->flags & kOptCatalogFlagReload) != 0 &&
+               playerState->altGunTransitionState == 1 &&
+               activeAltGunController->attachState == 0) {
+        playerState->altGunTransitionState = 2;
+    }
+
+    if (playerState->gunNode != 0) {
+        if (playerState->altFireSlotLeft.offset != 0.0f) {
+            Player::DecayAndApplyAltFireSlotOffsetToNode(
+                &playerState->altFireSlotLeft,
+                playerState->altFireSlotLeft.attachNode,
+                playerState->gunFireDir.y,
+                1
+            );
+        }
+        if (playerState->altFireSlotRight.offset != 0.0f) {
+            Player::DecayAndApplyAltFireSlotOffsetToNode(
+                &playerState->altFireSlotRight,
+                playerState->altFireSlotRight.attachNode,
+                playerState->gunFireDir.y,
+                1
+            );
+        }
+        if (playerState->altFireSlotCenter.offset != 0.0f) {
+            Player::DecayAndApplyAltFireSlotOffsetToNode(
+                &playerState->altFireSlotCenter,
+                playerState->altFireSlotCenter.attachNode,
+                playerState->gunFireDir.y,
+                0
+            );
+        }
+    }
+
+    if (playerState->activePrimaryGunController != 0) {
+        Player::ProcessPrimaryGunDispatchTick(saveState);
+    }
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-processprimarygundispatchtick
@@ -1952,8 +2364,19 @@ void __fastcall UpdateGunAndTurretAimNodes(
         return;
     }
 
-    const float horizontalLength = PlayerFastSqrtEstimate(
-        aimDirection->x * aimDirection->x + aimDirection->z * aimDirection->z
+    float horizontalLength =
+        aimDirection->x * aimDirection->x + aimDirection->z * aimDirection->z;
+    int horizontalLengthBits = 0;
+    memcpy(
+        &horizontalLengthBits,
+        &horizontalLength,
+        sizeof(horizontalLengthBits)
+    );
+    horizontalLengthBits = (horizontalLengthBits >> 1) + 0x1fc00000;
+    memcpy(
+        &horizontalLength,
+        &horizontalLengthBits,
+        sizeof(horizontalLength)
     );
 
     zMat4x3 *const gunMatrix = (zMat4x3 *)zClass_Object3D::gwObject3DGetMatrixPtr(gunNode);
@@ -2062,10 +2485,17 @@ void __fastcall UpdateAltGunAimDirection(
         }
     }
 
-    aimDirection = TransformWorldVectorToLocal(
-        aimDirection,
-        playerState->gunFireTransform
-    );
+    const zVec3 worldAimDirection = aimDirection;
+    const zMat4x3 &gunFireTransform = playerState->gunFireTransform;
+    aimDirection.x = worldAimDirection.x * gunFireTransform.xx +
+                     worldAimDirection.y * gunFireTransform.xy +
+                     worldAimDirection.z * gunFireTransform.xz;
+    aimDirection.y = worldAimDirection.x * gunFireTransform.yx +
+                     worldAimDirection.y * gunFireTransform.yy +
+                     worldAimDirection.z * gunFireTransform.yz;
+    aimDirection.z = worldAimDirection.x * gunFireTransform.zx +
+                     worldAimDirection.y * gunFireTransform.zy +
+                     worldAimDirection.z * gunFireTransform.zz;
     if (aimDirection.y > masterModalData->gunPitchRate) {
         ApplyAimPitchToDirection(
             &aimDirection,
@@ -2079,11 +2509,18 @@ void __fastcall UpdateAltGunAimDirection(
         );
     }
 
-    const int smoothingBits = (int)(g_FrameDeltaTimeSec * -8.0f * 12102200.0f) + 0x3f800000;
+    const int smoothingBits =
+        (int)(g_FrameDeltaTimeSec * -8.0f * 12102200.0f) + 0x3f800000;
+    float smoothingFactor = 0.0f;
+    memcpy(
+        &smoothingFactor,
+        &smoothingBits,
+        sizeof(smoothingFactor)
+    );
     zMath::Vec3LerpNormalize(
         &playerState->altGunAimOrigin,
         &aimDirection,
-        PlayerFloatFromBits(smoothingBits)
+        smoothingFactor
     );
     aimDirection = playerState->altGunAimOrigin;
 
@@ -2092,11 +2529,15 @@ void __fastcall UpdateAltGunAimDirection(
         playerState->gunNode,
         playerState->turretNode
     );
-    playerState->gunFireDir =
-        TransformLocalVectorToWorld(
-            aimDirection,
-            playerState->gunFireTransform
-        );
+    playerState->gunFireDir.x = aimDirection.x * gunFireTransform.xx +
+                                aimDirection.y * gunFireTransform.yx +
+                                aimDirection.z * gunFireTransform.zx;
+    playerState->gunFireDir.y = aimDirection.x * gunFireTransform.xy +
+                                aimDirection.y * gunFireTransform.yy +
+                                aimDirection.z * gunFireTransform.zy;
+    playerState->gunFireDir.z = aimDirection.x * gunFireTransform.xz +
+                                aimDirection.y * gunFireTransform.yz +
+                                aimDirection.z * gunFireTransform.zz;
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-decayandapplyaltfireslotoffsettonode
@@ -2112,8 +2553,14 @@ void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
     int applyMatrix
 ) {
     const int dampingBits = (int)(g_FrameDeltaTimeSec * -8.09f * 12102200.0f) + 0x3f800000;
-    slot->offset *= PlayerFloatFromBits(dampingBits);
-    if (fabsf(slot->offset) < 0.01f) {
+    float dampingFactor = 0.0f;
+    memcpy(
+        &dampingFactor,
+        &dampingBits,
+        sizeof(dampingFactor)
+    );
+    slot->offset *= dampingFactor;
+    if (slot->offset > -0.01f && slot->offset < 0.01f) {
         slot->offset = 0.0f;
     }
 
@@ -2209,33 +2656,63 @@ void __fastcall SelectAltGunFirePointAndSlot(
             playerState->altFireOrigin.y = aimBasisWorldMatrix.posY;
             playerState->altFireOrigin.z = aimBasisWorldMatrix.posZ;
         } else {
-            playerState->altFireOrigin =
-                TransformPointByMatrix(
-                    playerState->firePointCenter,
-                    aimBasisWorldMatrix
-                );
+            playerState->altFireOrigin.x =
+                playerState->firePointCenter.x * aimBasisWorldMatrix.xx +
+                playerState->firePointCenter.y * aimBasisWorldMatrix.yx +
+                playerState->firePointCenter.z * aimBasisWorldMatrix.zx +
+                aimBasisWorldMatrix.posX;
+            playerState->altFireOrigin.y =
+                playerState->firePointCenter.x * aimBasisWorldMatrix.xy +
+                playerState->firePointCenter.y * aimBasisWorldMatrix.yy +
+                playerState->firePointCenter.z * aimBasisWorldMatrix.zy +
+                aimBasisWorldMatrix.posY;
+            playerState->altFireOrigin.z =
+                playerState->firePointCenter.x * aimBasisWorldMatrix.xz +
+                playerState->firePointCenter.y * aimBasisWorldMatrix.yz +
+                playerState->firePointCenter.z * aimBasisWorldMatrix.zz +
+                aimBasisWorldMatrix.posZ;
         }
         playerState->altFireSlotCenter.attachNode = activeAltGunController->attachNodePrimary;
         *outActiveFireSlotPtr = &playerState->altFireSlotCenter;
         return;
 
     case 1:
-        playerState->altFireOrigin =
-            TransformPointByMatrix(
-                playerState->firePointRight,
-                aimBasisWorldMatrix
-            );
+        playerState->altFireOrigin.x =
+            playerState->firePointRight.x * aimBasisWorldMatrix.xx +
+            playerState->firePointRight.y * aimBasisWorldMatrix.yx +
+            playerState->firePointRight.z * aimBasisWorldMatrix.zx +
+            aimBasisWorldMatrix.posX;
+        playerState->altFireOrigin.y =
+            playerState->firePointRight.x * aimBasisWorldMatrix.xy +
+            playerState->firePointRight.y * aimBasisWorldMatrix.yy +
+            playerState->firePointRight.z * aimBasisWorldMatrix.zy +
+            aimBasisWorldMatrix.posY;
+        playerState->altFireOrigin.z =
+            playerState->firePointRight.x * aimBasisWorldMatrix.xz +
+            playerState->firePointRight.y * aimBasisWorldMatrix.yz +
+            playerState->firePointRight.z * aimBasisWorldMatrix.zz +
+            aimBasisWorldMatrix.posZ;
         playerState->altFireSlotRight.attachNode = activeAltGunController->attachNodeSecondary;
         *outActiveFireSlotPtr = &playerState->altFireSlotRight;
         playerState->altHardpointSelectState = 2;
         return;
 
     case 2:
-        playerState->altFireOrigin =
-            TransformPointByMatrix(
-                playerState->firePointLeft,
-                aimBasisWorldMatrix
-            );
+        playerState->altFireOrigin.x =
+            playerState->firePointLeft.x * aimBasisWorldMatrix.xx +
+            playerState->firePointLeft.y * aimBasisWorldMatrix.yx +
+            playerState->firePointLeft.z * aimBasisWorldMatrix.zx +
+            aimBasisWorldMatrix.posX;
+        playerState->altFireOrigin.y =
+            playerState->firePointLeft.x * aimBasisWorldMatrix.xy +
+            playerState->firePointLeft.y * aimBasisWorldMatrix.yy +
+            playerState->firePointLeft.z * aimBasisWorldMatrix.zy +
+            aimBasisWorldMatrix.posY;
+        playerState->altFireOrigin.z =
+            playerState->firePointLeft.x * aimBasisWorldMatrix.xz +
+            playerState->firePointLeft.y * aimBasisWorldMatrix.yz +
+            playerState->firePointLeft.z * aimBasisWorldMatrix.zz +
+            aimBasisWorldMatrix.posZ;
         playerState->altFireSlotLeft.attachNode = activeAltGunController->attachNodePrimary;
         *outActiveFireSlotPtr = &playerState->altFireSlotLeft;
         playerState->altHardpointSelectState = 1;
@@ -2290,33 +2767,63 @@ void __fastcall SelectPrimaryGunFirePointAndSlot(
             playerState->primaryFireOrigin.y = aimBasisWorldMatrix.posY;
             playerState->primaryFireOrigin.z = aimBasisWorldMatrix.posZ;
         } else {
-            playerState->primaryFireOrigin =
-                TransformPointByMatrix(
-                    playerState->firePointCenter,
-                    aimBasisWorldMatrix
-                );
+            playerState->primaryFireOrigin.x =
+                playerState->firePointCenter.x * aimBasisWorldMatrix.xx +
+                playerState->firePointCenter.y * aimBasisWorldMatrix.yx +
+                playerState->firePointCenter.z * aimBasisWorldMatrix.zx +
+                aimBasisWorldMatrix.posX;
+            playerState->primaryFireOrigin.y =
+                playerState->firePointCenter.x * aimBasisWorldMatrix.xy +
+                playerState->firePointCenter.y * aimBasisWorldMatrix.yy +
+                playerState->firePointCenter.z * aimBasisWorldMatrix.zy +
+                aimBasisWorldMatrix.posY;
+            playerState->primaryFireOrigin.z =
+                playerState->firePointCenter.x * aimBasisWorldMatrix.xz +
+                playerState->firePointCenter.y * aimBasisWorldMatrix.yz +
+                playerState->firePointCenter.z * aimBasisWorldMatrix.zz +
+                aimBasisWorldMatrix.posZ;
         }
         playerState->altFireSlotCenter.attachNode = activePrimaryGunController->attachNodePrimary;
         *outActiveFireSlotPtr = &playerState->altFireSlotCenter;
         return;
 
     case 1:
-        playerState->primaryFireOrigin =
-            TransformPointByMatrix(
-                playerState->firePointRight,
-                aimBasisWorldMatrix
-            );
+        playerState->primaryFireOrigin.x =
+            playerState->firePointRight.x * aimBasisWorldMatrix.xx +
+            playerState->firePointRight.y * aimBasisWorldMatrix.yx +
+            playerState->firePointRight.z * aimBasisWorldMatrix.zx +
+            aimBasisWorldMatrix.posX;
+        playerState->primaryFireOrigin.y =
+            playerState->firePointRight.x * aimBasisWorldMatrix.xy +
+            playerState->firePointRight.y * aimBasisWorldMatrix.yy +
+            playerState->firePointRight.z * aimBasisWorldMatrix.zy +
+            aimBasisWorldMatrix.posY;
+        playerState->primaryFireOrigin.z =
+            playerState->firePointRight.x * aimBasisWorldMatrix.xz +
+            playerState->firePointRight.y * aimBasisWorldMatrix.yz +
+            playerState->firePointRight.z * aimBasisWorldMatrix.zz +
+            aimBasisWorldMatrix.posZ;
         playerState->altFireSlotRight.attachNode = activePrimaryGunController->attachNodeSecondary;
         *outActiveFireSlotPtr = &playerState->altFireSlotRight;
         playerState->primaryHardpointSelectState = 2;
         return;
 
     case 2:
-        playerState->primaryFireOrigin =
-            TransformPointByMatrix(
-                playerState->firePointLeft,
-                aimBasisWorldMatrix
-            );
+        playerState->primaryFireOrigin.x =
+            playerState->firePointLeft.x * aimBasisWorldMatrix.xx +
+            playerState->firePointLeft.y * aimBasisWorldMatrix.yx +
+            playerState->firePointLeft.z * aimBasisWorldMatrix.zx +
+            aimBasisWorldMatrix.posX;
+        playerState->primaryFireOrigin.y =
+            playerState->firePointLeft.x * aimBasisWorldMatrix.xy +
+            playerState->firePointLeft.y * aimBasisWorldMatrix.yy +
+            playerState->firePointLeft.z * aimBasisWorldMatrix.zy +
+            aimBasisWorldMatrix.posY;
+        playerState->primaryFireOrigin.z =
+            playerState->firePointLeft.x * aimBasisWorldMatrix.xz +
+            playerState->firePointLeft.y * aimBasisWorldMatrix.yz +
+            playerState->firePointLeft.z * aimBasisWorldMatrix.zz +
+            aimBasisWorldMatrix.posZ;
         playerState->altFireSlotLeft.attachNode = activePrimaryGunController->attachNodePrimary;
         *outActiveFireSlotPtr = &playerState->altFireSlotLeft;
         playerState->primaryHardpointSelectState = 1;
@@ -2505,14 +3012,38 @@ void __fastcall ApplyAimPitchToDirection(
             return;
         }
 
-        const float diagonal = PlayerFastSqrtEstimate((1.0f - pitchY * pitchY) * 0.5f);
+        float diagonal = (1.0f - pitchY * pitchY) * 0.5f;
+        int diagonalBits = 0;
+        memcpy(
+            &diagonalBits,
+            &diagonal,
+            sizeof(diagonalBits)
+        );
+        diagonalBits = (diagonalBits >> 1) + 0x1fc00000;
+        memcpy(
+            &diagonal,
+            &diagonalBits,
+            sizeof(diagonal)
+        );
         direction->x = diagonal;
         direction->y = pitchY;
         direction->z = diagonal;
         return;
     }
 
-    const float scale = PlayerFastSqrtEstimate((1.0f - pitchY * pitchY) / horizontalLenSq);
+    float scale = (1.0f - pitchY * pitchY) / horizontalLenSq;
+    int scaleBits = 0;
+    memcpy(
+        &scaleBits,
+        &scale,
+        sizeof(scaleBits)
+    );
+    scaleBits = (scaleBits >> 1) + 0x1fc00000;
+    memcpy(
+        &scale,
+        &scaleBits,
+        sizeof(scale)
+    );
     direction->x *= scale;
     direction->y = pitchY;
     direction->z *= scale;
@@ -3322,57 +3853,57 @@ void __fastcall ProcessAltGunDispatchRequest(
     }
 
     playerState->altGunDispatchRequested = 0;
-    if (activeAltGunController->ammoOrCharge <= 0.0f) {
-        if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-            OptCatalog::PlayTriggerInactiveWarning();
-        }
-        return;
-    }
-
-    int didFire = 0;
-    if (playerState->activeAltBankIndex == 1) {
-        didFire = EnsureGunAuxEffectActive(
-            saveState,
-            activeAltGunController,
-            &playerState->altFireOrigin
-        );
-    } else if ((activeAltGunController->optCatalogEntry->flags & kOptCatalogFlagCreateTrail) != 0) {
-        UpdateContinuousAltGunFireController(saveState);
-        didFire = activeFireSlot != 0;
-    } else {
-        if (activeAltGunController->attachState != 0) {
-            didFire = AltGunLaunchProjectile(saveState);
-        } else {
-            didFire = AltGunFireSimpleProjectile(saveState);
-        }
-
-        if (didFire != 0 && saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable &&
-            zInput_DI_IsForceFeedbackEnabled() != 0) {
-            zInput_DI_PlayAltFireEffect(
-                g_zInputFfEffectSet,
-                activeAltGunController->optCatalogEntry->damage * 0.0151515156f
+    if (activeAltGunController->ammoOrCharge > 0.0f) {
+        int didFire = 0;
+        if (playerState->activeAltBankIndex == 1) {
+            didFire = EnsureGunAuxEffectActive(
+                saveState,
+                activeAltGunController,
+                &playerState->altFireOrigin
             );
-        }
-    }
+        } else if ((activeAltGunController->optCatalogEntry->flags & kOptCatalogFlagCreateTrail) != 0) {
+            UpdateContinuousAltGunFireController(saveState);
+            didFire = activeFireSlot != 0;
+        } else {
+            if (activeAltGunController->attachState != 0) {
+                didFire = AltGunLaunchProjectile(saveState);
+            } else {
+                didFire = AltGunFireSimpleProjectile(saveState);
+            }
 
-    if (didFire == 0) {
+            if (didFire != 0 && saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable &&
+                zInput_DI_IsForceFeedbackEnabled() != 0) {
+                zInput_DI_PlayAltFireEffect(
+                    g_zInputFfEffectSet,
+                    activeAltGunController->optCatalogEntry->damage * 0.0151515156f
+                );
+            }
+        }
+
+        if (didFire == 0) {
+            return;
+        }
+
+        if ((activeAltGunController->flags & 1) != 0 &&
+            activeAltGunController->attachNodePrimary != 0) {
+            activeFireSlot->offset = 1.5f;
+        }
+
+        if (activeAltGunController->ammoOrCharge != kPlayerAltAmmoDisabledSentinel) {
+            activeAltGunController->ammoOrCharge -= 1.0f;
+            if (activeAltGunController->ammoOrCharge < 0.0f) {
+                activeAltGunController->ammoOrCharge = 0.0f;
+            }
+        }
+
+        if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
+            ++g_HudSensorTracker.primaryGunDispatchCount;
+        }
         return;
-    }
-
-    if ((activeAltGunController->flags & 1) != 0 &&
-        activeAltGunController->attachNodePrimary != 0) {
-        activeFireSlot->offset = 1.5f;
-    }
-
-    if (activeAltGunController->ammoOrCharge != kPlayerAltAmmoDisabledSentinel) {
-        activeAltGunController->ammoOrCharge -= 1.0f;
-        if (activeAltGunController->ammoOrCharge < 0.0f) {
-            activeAltGunController->ammoOrCharge = 0.0f;
-        }
     }
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-        ++g_HudSensorTracker.primaryGunDispatchCount;
+        OptCatalog::PlayTriggerInactiveWarning();
     }
 }
 /**
@@ -3603,41 +4134,59 @@ void __fastcall AutoSwitchToNextUsableAltWeapon(
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerGunFireController *const activeController = playerState->activeAltGunController;
-    const int activeBankIndex = activeController->weaponBankIndex;
+    int activeBankIndex = activeController->weaponBankIndex;
     if (activeBankIndex == 0) {
         return;
     }
 
     PlayerAltWeaponBank *bank = &playerState->altWeaponBanks[activeBankIndex];
-    PlayerGunFireController *candidate =
-        activeController->weaponSideIndex == 0 ? &bank->controllerB : &bank->controllerA;
-    if (IsUsableAltWeaponController(
-        saveState,
-        candidate
-    ) != 0) {
+    const int oppositeSideIndex = activeController->weaponSideIndex == 0;
+    PlayerGunFireController *candidate = &bank->controllerA + oppositeSideIndex;
+    if ((candidate->flags & 4) != 0 &&
+        IsAltWeaponAllowedInCurrentMasterMode(
+            saveState,
+            candidate->optCatalogEntry
+        ) != 0 &&
+        candidate->ammoOrCharge > 0.0f) {
         HandleAltWeaponBankSelectInput(activeBankIndex + 14);
         return;
     }
 
-    for (int bankIndex = activeBankIndex - 1; bankIndex > 1; --bankIndex) {
-        bank = &playerState->altWeaponBanks[bankIndex];
-        if (IsUsableAltWeaponController(saveState, &bank->controllerA) != 0 ||
-            IsUsableAltWeaponController(
-                saveState,
-                &bank->controllerB
-            ) != 0) {
-            HandleAltWeaponBankSelectInput(bankIndex + 14);
+    for (--activeBankIndex; activeBankIndex > 1; --activeBankIndex) {
+        bank = &playerState->altWeaponBanks[activeBankIndex];
+        if (((bank->controllerA.flags & 4) != 0 &&
+             IsAltWeaponAllowedInCurrentMasterMode(
+                 saveState,
+                 bank->controllerA.optCatalogEntry
+             ) != 0 &&
+             bank->controllerA.ammoOrCharge > 0.0f) ||
+            ((bank->controllerB.flags & 4) != 0 &&
+             IsAltWeaponAllowedInCurrentMasterMode(
+                 saveState,
+                 bank->controllerB.optCatalogEntry
+             ) != 0 &&
+             bank->controllerB.ammoOrCharge > 0.0f)) {
+            HandleAltWeaponBankSelectInput(activeBankIndex + 14);
             return;
         }
     }
 
-    for (int nextBankIndex = activeBankIndex + 1; nextBankIndex < 10; ++nextBankIndex) {
+    for (int nextBankIndex = activeController->weaponBankIndex + 1;
+         nextBankIndex < 10;
+         ++nextBankIndex) {
         bank = &playerState->altWeaponBanks[nextBankIndex];
-        if (IsUsableAltWeaponController(saveState, &bank->controllerA) != 0 ||
-            IsUsableAltWeaponController(
-                saveState,
-                &bank->controllerB
-            ) != 0) {
+        if (((bank->controllerA.flags & 4) != 0 &&
+             IsAltWeaponAllowedInCurrentMasterMode(
+                 saveState,
+                 bank->controllerA.optCatalogEntry
+             ) != 0 &&
+             bank->controllerA.ammoOrCharge > 0.0f) ||
+            ((bank->controllerB.flags & 4) != 0 &&
+             IsAltWeaponAllowedInCurrentMasterMode(
+                 saveState,
+                 bank->controllerB.optCatalogEntry
+             ) != 0 &&
+             bank->controllerB.ammoOrCharge > 0.0f)) {
             HandleAltWeaponBankSelectInput(nextBankIndex + 14);
             return;
         }
@@ -3720,8 +4269,41 @@ void __fastcall ResetAltGunRuntimeState(
 
     PlayerAltWeaponBank *bank = &playerState->altWeaponBanks[2];
     for (int i = 0; i < 8; ++i, ++bank) {
-        ResetAltGunAttachNode(&bank->controllerA);
-        ResetAltGunAttachNode(&bank->controllerB);
+        PlayerGunFireController *controller = &bank->controllerA;
+        zClass_NodePartial *attachNode = controller->attachNodePrimary;
+        if (attachNode != 0) {
+            zClass_Class::gwNodeSetActive(attachNode, 0);
+            zClass_Object3D::gwObject3DSetPosition(
+                attachNode,
+                controller->attachPosX,
+                controller->attachPosY,
+                controller->attachPosZ
+            );
+            zClass_Object3D::gwObject3DSetScale(
+                attachNode,
+                1.0f,
+                1.0f,
+                1.0f
+            );
+        }
+
+        controller = &bank->controllerB;
+        attachNode = controller->attachNodePrimary;
+        if (attachNode != 0) {
+            zClass_Class::gwNodeSetActive(attachNode, 0);
+            zClass_Object3D::gwObject3DSetPosition(
+                attachNode,
+                controller->attachPosX,
+                controller->attachPosY,
+                controller->attachPosZ
+            );
+            zClass_Object3D::gwObject3DSetScale(
+                attachNode,
+                1.0f,
+                1.0f,
+                1.0f
+            );
+        }
     }
 }
 /**

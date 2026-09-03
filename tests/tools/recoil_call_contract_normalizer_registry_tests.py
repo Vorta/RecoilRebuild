@@ -59,7 +59,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
             },
             registry.normalizer_identity(NORMALIZER_ID),
         )
-        self.assertEqual(15, NORMALIZER_REGISTRY_GENERATION)
+        self.assertEqual(31, NORMALIZER_REGISTRY_GENERATION)
 
     def test_catalog_is_sorted_and_generation_scoped(self):
         registry = NormalizerRegistry(REGISTRY_ID)
@@ -146,7 +146,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
         record = use.receipt()
         stale = deepcopy(record)
         stale["registry_generation"] = NORMALIZER_REGISTRY_GENERATION - 1
-        self.assertEqual(14, stale["registry_generation"])
+        self.assertEqual(30, stale["registry_generation"])
         with self.assertRaisesRegex(NormalizerUseReceiptError, "stale or malformed"):
             registry.validate_use_receipt(stale)
         stale_row = deepcopy(record)
@@ -154,7 +154,7 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
             NORMALIZER_REGISTRY_GENERATION - 1
         )
         self.assertEqual(
-            14,
+            30,
             stale_row["normalizers"][0]["component_generation"],
         )
         with self.assertRaisesRegex(NormalizerUseReceiptError, "stale or malformed"):
@@ -228,9 +228,9 @@ class CallContractNormalizerRegistryTests(unittest.TestCase):
         self.assertEqual(projection, current_call_contract_verifier_components())
 
     def test_live_generation_coordinates_are_current(self):
-        self.assertEqual(18, CALL_CONTRACT_VERIFIER_GENERATION)
-        self.assertEqual(15, NORMALIZER_REGISTRY_GENERATION)
-        self.assertEqual(16, EXPECTED_FACT_SCHEMA_VERSION)
+        self.assertEqual(35, CALL_CONTRACT_VERIFIER_GENERATION)
+        self.assertEqual(31, NORMALIZER_REGISTRY_GENERATION)
+        self.assertEqual(32, EXPECTED_FACT_SCHEMA_VERSION)
         self.assertNotIn(
             "tools/_recoil/commands/binja_preflight.py",
             CALL_CONTRACT_VERIFIER_COMPONENT_PATHS,

@@ -28,6 +28,7 @@ from _recoil.commands.vc5_verify import (
     function_required_in_scope,
     load_manifest as load_vc5_verify_manifest,
     load_manifests as load_vc5_verify_manifests,
+    safe_path_component,
 )
 
 from _recoil.lib.tooling import (
@@ -951,7 +952,19 @@ def finalize_diagnostic_build_dir(config: FinalBuildConfig) -> FinalBuildConfig:
         compile_tag = config.compile_profile or "default"
     suffix = "-".join((compile_tag, config.library_profile or "canonical", config.link_profile or "manifest-link"))
     expected_root = REPO_ROOT / "build" / "vc5-probes" / "full-link" / "link-runs"
-    return replace(config, build_dir=expected_root / suffix)
+    build_dir = expected_root / safe_path_component(config.name) / suffix
+    topology = config.pch_topology
+    if topology is not None:
+        try:
+            relative_pch = topology.pch_path.resolve().relative_to(
+                config.build_dir.resolve()
+            )
+        except ValueError as exc:
+            raise ValueError(
+                "diagnostic PCH output must stay inside the manifest build directory"
+            ) from exc
+        topology = replace(topology, pch_path=build_dir / relative_pch)
+    return replace(config, build_dir=build_dir, pch_topology=topology)
 
 
 def parse_link_map(path: Path) -> ParsedLinkMap:

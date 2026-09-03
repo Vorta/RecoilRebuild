@@ -34,9 +34,13 @@ from _recoil.commands.progress_v2 import (
     add_live_evidence,
 )
 from _recoil.commands.call_contract_verify import (
+    CallContractSourceClosure,
     _decorated_coff_name,
     _finite_literal_symbol_regex_alternatives,
+    _resolve_phase_all_authored_bodies,
     call_contract_source_closure,
+    file_dependency_states,
+    live_call_contract_result,
 )
 from _recoil.commands import storage_contribution_progress as _authored_storage_progress
 from _recoil.commands.storage_contribution_progress import (
@@ -81,6 +85,8 @@ from _recoil.lib.progress_sqlite import (
 from _recoil.lib.call_contract_generations import (
     current_generations,
     evidence_generations_current,
+    required_call_contract_verifier_component_findings,
+    required_call_contract_verifier_component_graph,
 )
 from _recoil.commands.source_trace_progress import normalize_source_traceability
 from _recoil.lib.authored_icf import (
@@ -90,6 +96,7 @@ from _recoil.lib.authored_icf import (
     validate_authored_icf_proof,
     validate_authored_icf_source_mirrors,
 )
+from _recoil.lib.binja import BridgeError
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
 PROGRESS_AUTHORITY_RELATIVE_PATH = ".agent/RECONSTRUCTION_PROGRESS.sqlite3"
 DEFAULT_PROGRESS = REPO_ROOT / PROGRESS_AUTHORITY_RELATIVE_PATH
@@ -206,15 +213,15 @@ def _json_pointer_token(value: str) -> str:
     return value.replace("~", "~0").replace("/", "~1")
 
 
-def _call_contract_scoped_patch_commit(
-    *,
-    args: argparse.Namespace,
+def _call_contract_scoped_patch_plan(
     document: ProgressDocument,
     transform: Any,
-    expected_domains: Mapping[str, int],
-    increment_domains: Iterable[str] | None = None,
-) -> Any:
-    """Apply one transform as narrow entity/facet patches under domain CAS."""
+) -> tuple[
+    dict[str, Any],
+    dict[str, dict[str, dict[str, Any]]],
+    dict[str, dict[str, Any]],
+]:
+    """Build the exact narrow patch set for one call-contract transform."""
 
     proposed = deepcopy(document.data)
     transform(proposed)
@@ -255,6 +262,22 @@ def _call_contract_scoped_patch_commit(
             top_level_patches.setdefault(top_key, {})[
                 "/" + _json_pointer_token(str(child_key))
             ] = DELETE_FACET if new is DELETE_FACET else deepcopy(new)
+    return proposed, entity_patches, top_level_patches
+
+
+def _call_contract_scoped_patch_commit(
+    *,
+    args: argparse.Namespace,
+    document: ProgressDocument,
+    transform: Any,
+    expected_domains: Mapping[str, int],
+    increment_domains: Iterable[str] | None = None,
+) -> Any:
+    """Apply one transform as narrow entity/facet patches under domain CAS."""
+
+    _proposed, entity_patches, top_level_patches = (
+        _call_contract_scoped_patch_plan(document, transform)
+    )
     sql = ProgressSQLiteStore(Path(args.progress))
     return sql.persist_scoped_changes(
         expected_domain_revisions=dict(expected_domains),
@@ -729,10 +752,11 @@ def _print_pipeline(value: Mapping[str, Any]) -> None:
         "cursor",
         "objective",
         "check_command",
+        "stage_runner_command",
         "acceptance_command",
         "blocker",
     ):
-        if key in value:
+        if key in value and value[key] is not None:
             print(f"{key}={value[key]}")
 
 
@@ -2887,6 +2911,21 @@ def advance_live_byte(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
     return (0 if result["passed"] else 1), _commit_payload(commit, details)
 
 
+def _call_contract_separate_definition_compile_sources(
+    closure: CallContractSourceClosure,
+) -> list[str]:
+    """Return definition TUs not already compiled by registered targets."""
+
+    registered = {
+        path.casefold() for path in closure.registered_source_paths
+    }
+    return [
+        path
+        for path in closure.definition_source_paths
+        if path.casefold() not in registered
+    ]
+
+
 def _validate_call_contract_result(
     result: Mapping[str, Any],
     *,
@@ -2926,7 +2965,15 @@ def _validate_call_contract_result(
         for row in compile_rows
         if isinstance(row, Mapping) and row.get("returncode") == 0
     ]
-    if compiled_sources != expected_compiled_definition_sources:
+    result_passed = result.get("passed") is True
+    if (
+        result_passed
+        and compiled_sources != expected_compiled_definition_sources
+    ) or (
+        not result_passed
+        and compiled_sources
+        and compiled_sources != expected_compiled_definition_sources
+    ):
         raise ProgressError("call-contract direct result did not compile the exact definition closure")
     raw_results = result.get("body_results")
     symbol_ids = list(expected_slice.get("symbol_ids", []))
@@ -2937,59 +2984,110 @@ def _validate_call_contract_result(
     provider_transcript = result.get("provider_fact_transcript")
     if (
         not isinstance(raw_transcript, list)
-        or len(raw_transcript) != len(symbol_ids)
         or not isinstance(provider_transcript, list)
+        or (result_passed and len(raw_transcript) != len(symbol_ids))
+        or (not result_passed and len(raw_transcript) > len(symbol_ids))
     ):
         raise ProgressError(
             "call-contract direct result lacks one exact expected-fact transcript row per selected body"
         )
+    coordinate_indexes = {
+        (str(symbol_id), normalize_address(str(address))): index
+        for index, (symbol_id, address) in enumerate(zip(symbol_ids, addresses))
+    }
     transcript: list[dict[str, Any]] = []
-    for symbol_id, address, raw_row in zip(
-        symbol_ids, addresses, raw_transcript
-    ):
-        normalized_address = normalize_address(str(address))
+    transcript_by_symbol: dict[str, dict[str, Any]] = {}
+    prior_index = -1
+    for raw_row in raw_transcript:
+        symbol_id = raw_row.get("symbol_id") if isinstance(raw_row, Mapping) else None
+        raw_address = raw_row.get("address") if isinstance(raw_row, Mapping) else None
+        try:
+            normalized_address = normalize_address(str(raw_address))
+        except (ProgressError, ValueError):
+            normalized_address = ""
+        coordinate = (str(symbol_id), normalized_address)
+        coordinate_index = coordinate_indexes.get(coordinate)
         if (
             not isinstance(raw_row, Mapping)
-            or raw_row.get("symbol_id") != symbol_id
-            or raw_row.get("address") != normalized_address
+            or coordinate_index is None
+            or coordinate_index <= prior_index
+            or str(symbol_id) in transcript_by_symbol
             or not isinstance(raw_row.get("expected_fact_row"), Mapping)
         ):
             raise ProgressError(
                 "call-contract expected-fact transcript disagrees with the current slice"
             )
-        transcript.append(deepcopy(dict(raw_row)))
+        copied_row = deepcopy(dict(raw_row))
+        transcript.append(copied_row)
+        transcript_by_symbol[str(symbol_id)] = copied_row
+        prior_index = coordinate_index
     body_results: list[dict[str, Any]] = []
     passing: list[str] = []
-    for symbol_id, address, raw, transcript_row in zip(
-        symbol_ids, addresses, raw_results, transcript
-    ):
-        expected_fact_row = transcript_row["expected_fact_row"]
+    for symbol_id, address, raw in zip(symbol_ids, addresses, raw_results):
+        normalized_address = normalize_address(str(address))
         if (
             not isinstance(raw, Mapping)
             or raw.get("symbol_id") != symbol_id
-            or raw.get("address") != normalize_address(str(address))
-            or raw.get("expected_fact_row") != expected_fact_row
-            or raw.get("expected_contract") is None
-            or raw.get("candidate_contract") is None
-            or not evidence_generations_current(raw)
-            or not evidence_generations_current(expected_fact_row)
-            or expected_fact_row.get("symbol_id") != symbol_id
-            or expected_fact_row.get("address") != normalize_address(str(address))
-            or expected_fact_row.get("calls") != raw.get("expected_contract")
+            or raw.get("address") != normalized_address
         ):
             raise ProgressError(f"call-contract direct body result is incomplete for {symbol_id}")
         status = raw.get("status")
         if status not in {"passed", "divergent", "blocked", "not-evaluated"}:
             raise ProgressError(f"call-contract body result has invalid status {status!r}")
+        transcript_row = transcript_by_symbol.get(str(symbol_id))
+        if status == "not-evaluated":
+            if raw.get("comparison_passed") is True:
+                raise ProgressError(
+                    f"call-contract not-evaluated body claims equality: {symbol_id}"
+                )
+            body_results.append(deepcopy(dict(raw)))
+            continue
+        if transcript_row is None:
+            if status == "blocked":
+                if (
+                    raw.get("comparison_passed") is True
+                    or not isinstance(raw.get("divergence"), Mapping)
+                ):
+                    raise ProgressError(
+                        "call-contract blocked body without expected truth is "
+                        f"malformed: {symbol_id}"
+                    )
+                body_results.append(deepcopy(dict(raw)))
+                continue
+            raise ProgressError(
+                f"call-contract evaluated body lacks an exact fact transcript: {symbol_id}"
+            )
+        expected_fact_row = transcript_row["expected_fact_row"]
+        if (
+            raw.get("expected_fact_row") != expected_fact_row
+            or raw.get("expected_contract") is None
+            or raw.get("candidate_contract") is None
+            or not evidence_generations_current(raw)
+            or not evidence_generations_current(expected_fact_row)
+            or expected_fact_row.get("symbol_id") != symbol_id
+            or expected_fact_row.get("address") != normalized_address
+            or expected_fact_row.get("calls") != raw.get("expected_contract")
+        ):
+            raise ProgressError(f"call-contract direct body result is incomplete for {symbol_id}")
         if status == "passed":
-            if raw.get("comparison_passed") is not True or raw.get("expected_contract") != raw.get("candidate_contract"):
-                raise ProgressError(f"call-contract passing body lacks exact direct equality: {symbol_id}")
+            if (
+                raw.get("comparison_passed") is not True
+                or raw.get("divergence") is not None
+            ):
+                raise ProgressError(
+                    "call-contract passing body lacks a passing direct "
+                    f"comparison: {symbol_id}"
+                )
             passing.append(str(symbol_id))
         elif raw.get("comparison_passed") is True:
             raise ProgressError(f"call-contract nonpassing body claims equality: {symbol_id}")
         body_results.append(deepcopy(dict(raw)))
+    if result_passed and passing != symbol_ids:
+        raise ProgressError(
+            "call-contract passing result does not pass every selected body"
+        )
     return {
-        "passed": result.get("passed") is True,
+        "passed": result_passed,
         "first_divergence": deepcopy(result.get("first_divergence")),
         "body_results": body_results,
         "passing_symbol_ids": passing,
@@ -2998,9 +3096,857 @@ def _validate_call_contract_result(
     }
 
 
+_CALL_CONTRACT_REPLAY_SCHEMA = "recoil-authored-call-contract-stage-replay-v2"
+_CALL_CONTRACT_REPLAY_KIND = "authored-call-contract-stage-replay"
+_CALL_CONTRACT_SLICE_ACCEPTANCE_RE = re.compile(
+    r"^python tools/recoil\.py progress advance-live-call-contract "
+    r"--slice (?P<slice>\S+) --build-root (?P<root>\S+) "
+    r"--expected-semantic-revision (?P<semantic>\d+) "
+    r"--expected-evidence-generation-revision (?P<evidence>\d+) "
+    r"--apply --json$"
+)
+_CALL_CONTRACT_CLOSEOUT_ACCEPTANCE_RE = re.compile(
+    r"^python tools/recoil\.py progress call-contract close-live "
+    r"--build-root (?P<root>\S+) "
+    r"--expected-semantic-revision (?P<semantic>\d+) "
+    r"--expected-evidence-generation-revision (?P<evidence>\d+) "
+    r"--apply --json$"
+)
+
+
+def _call_contract_replay_current_action(
+    document: ProgressDocument,
+    revision_vector: Mapping[str, int],
+) -> dict[str, Any]:
+    task = document.current_task("recoil")
+    if (
+        task.get("schema") != "recoil-current-task-v2"
+        or task.get("stage") != "authored-call-contract"
+        or task.get("state") != "ready"
+    ):
+        raise ProgressError(
+            "call-contract replay requires one ready authored-call-contract task"
+        )
+    command = task.get("acceptance_command")
+    if not isinstance(command, str):
+        raise ProgressError("call-contract replay current task lacks an acceptance command")
+    if task.get("revision_vector") != dict(revision_vector):
+        raise ConcurrentProgressUpdate(
+            "call-contract replay tracker changed after the atomic task snapshot"
+        )
+    slice_match = _CALL_CONTRACT_SLICE_ACCEPTANCE_RE.fullmatch(command)
+    closeout_match = _CALL_CONTRACT_CLOSEOUT_ACCEPTANCE_RE.fullmatch(command)
+    if slice_match is None and closeout_match is None:
+        raise ProgressError(
+            "call-contract replay current acceptance is neither a direct slice nor close-live"
+        )
+    match = slice_match or closeout_match
+    assert match is not None
+    semantic = int(match.group("semantic"))
+    evidence = int(match.group("evidence"))
+    if (
+        semantic != int(revision_vector["semantic_revision"])
+        or evidence != int(revision_vector["evidence_generation_revision"])
+    ):
+        raise ProgressError(
+            "call-contract replay scheduler guards disagree with the atomic tracker snapshot"
+        )
+    if closeout_match is not None:
+        return {
+            "kind": "closeout",
+            "acceptance_command": command,
+            "revision_vector": dict(revision_vector),
+        }
+    slice_id = str(match.group("slice"))
+    if task.get("task_id") != slice_id:
+        raise ProgressError(
+            "call-contract replay slice acceptance disagrees with the current task identity"
+        )
+    direct_root = _absolute_fresh_build_root(Path(str(match.group("root"))))
+    return {
+        "kind": "slice",
+        "slice_id": slice_id,
+        "direct_build_root": direct_root,
+        "acceptance_command": command,
+        "revision_vector": dict(revision_vector),
+    }
+
+
+def _call_contract_replay_root(direct_root: Path, *, create: bool) -> Path:
+    base = (REPO_ROOT / "build" / "live-validation" / "call-contract").resolve()
+    try:
+        direct_root.resolve().relative_to(base)
+    except ValueError as exc:
+        raise ProgressError(
+            "call-contract replay scheduler root escaped the governed stage root"
+        ) from exc
+    for ordinal in range(1, 1000):
+        candidate = direct_root.with_name(
+            f"{direct_root.name}-replay-{ordinal:03d}"
+        )
+        if candidate.exists():
+            continue
+        if create:
+            try:
+                candidate.mkdir(parents=True, exist_ok=False)
+            except FileExistsError:
+                continue
+        return candidate
+    raise ProgressError("call-contract replay exhausted fresh sibling build roots")
+
+
+def _call_contract_replay_component_state(
+    repository_path_inventory: RepositoryPathInventory | None = None,
+) -> dict[str, Any]:
+    findings = required_call_contract_verifier_component_findings(REPO_ROOT)
+    if findings:
+        first = findings[0]
+        raise ProgressError(
+            "required call-contract verifier component is not operational: "
+            f"{first.get('path')}: {first.get('detail')}"
+        )
+    graph = required_call_contract_verifier_component_graph()
+    paths = [str(row["path"]) for row in graph]
+    inventory = (
+        repository_path_inventory
+        or load_repository_path_inventory(REPO_ROOT)
+    )
+    return {
+        "generations": current_generations(),
+        "paths": paths,
+        "states": file_dependency_states(
+            paths,
+            repository_path_inventory=inventory,
+        ),
+    }
+
+
+def _call_contract_replay_require_unchanged(
+    expected: Mapping[str, Any],
+    *,
+    dependency_paths: Iterable[str],
+    expected_dependency_states: list[dict[str, Any]],
+    repository_path_inventory: RepositoryPathInventory | None = None,
+) -> None:
+    if (
+        _call_contract_replay_component_state(repository_path_inventory)
+        != expected
+    ):
+        raise ProgressError(
+            "call-contract verifier components or generation coordinates changed during replay"
+        )
+    current_dependencies = file_dependency_states(
+        list(dependency_paths),
+        repository_path_inventory=repository_path_inventory,
+    )
+    if current_dependencies != expected_dependency_states:
+        raise ProgressError(
+            "call-contract source dependency state changed after the full-census proof"
+        )
+
+
+def _call_contract_phase_compile_rows_by_source(
+    result: Mapping[str, Any],
+) -> dict[str, dict[str, Any]]:
+    raw_rows = result.get("definition_compile_results")
+    if not isinstance(raw_rows, list):
+        raise ProgressError("call-contract phase result lacks definition compile rows")
+    rows: dict[str, dict[str, Any]] = {}
+    for raw in raw_rows:
+        if not isinstance(raw, Mapping) or raw.get("returncode") != 0:
+            raise ProgressError(
+                "call-contract phase result contains an unsuccessful definition compile"
+            )
+        source = str(raw.get("source", ""))
+        key = source.casefold()
+        if not source or key in rows:
+            raise ProgressError(
+                "call-contract phase result repeats or omits a definition source"
+            )
+        rows[key] = deepcopy(dict(raw))
+    return rows
+
+
+def _project_call_contract_phase_result(
+    document: ProgressDocument,
+    result: Mapping[str, Any],
+    *,
+    repository_path_inventory: RepositoryPathInventory | None = None,
+) -> tuple[list[dict[str, Any]], CallContractSourceClosure]:
+    """Validate one complete proof and project it to the existing slice contract."""
+
+    phase_scope = _resolve_phase_all_authored_bodies(document)
+    if (
+        result.get("kind") != "authored-call-contract-phase-replay-result"
+        or result.get("contract_version") != CALL_CONTRACT_CONTRACT_VERSION
+        or result.get("phase_all_authored_bodies") is not True
+        or result.get("nonaccepting") is not True
+        or result.get("acceptance_eligible") is not False
+        or result.get("acceptance_route") != "project-to-original-slices"
+        or result.get("all_caller_divergences_collected") is not True
+        or result.get("candidate_expected_truth") is not False
+    ):
+        raise ProgressError("call-contract phase verifier returned the wrong governed result")
+    exact_fields = (
+        "body_count",
+        "symbol_ids",
+        "target_ids",
+        "physical_block_ids",
+        "original_slice_ids",
+        "slice_boundaries",
+    )
+    for field in exact_fields:
+        if result.get(field) != phase_scope.get(field):
+            raise ProgressError(
+                f"call-contract phase result {field} disagrees with the tracker census"
+            )
+    attempted_target_ids = result.get("attempted_target_ids")
+    compiled_target_ids = result.get("compiled_target_ids")
+    if (
+        not isinstance(attempted_target_ids, list)
+        or len(attempted_target_ids) != len(set(attempted_target_ids))
+        or set(attempted_target_ids) != set(phase_scope["target_ids"])
+        or not isinstance(compiled_target_ids, list)
+        or len(compiled_target_ids) != len(set(compiled_target_ids))
+        or not set(compiled_target_ids).issubset(set(attempted_target_ids))
+    ):
+        raise ProgressError(
+            "call-contract phase did not attempt every unique target exactly once"
+        )
+    if (
+        result.get("source_changed_during_validation") is not False
+        or result.get("dependency_states_before")
+        != result.get("dependency_states_after")
+    ):
+        raise ProgressError("call-contract phase lacks one stable exact source closure")
+
+    inventory = (
+        repository_path_inventory
+        or load_repository_path_inventory(REPO_ROOT)
+    )
+    phase_closure = call_contract_source_closure(
+        document,
+        phase_scope,
+        repository_path_inventory=inventory,
+    )
+    if (
+        result.get("source_edit_paths") != list(phase_closure.source_edit_paths)
+        or result.get("definition_source_paths")
+        != list(phase_closure.definition_source_paths)
+        or result.get("dependency_paths") != list(phase_closure.dependency_paths)
+    ):
+        raise ProgressError("call-contract phase source closure disagrees with live discovery")
+    compile_rows = _call_contract_phase_compile_rows_by_source(result)
+    expected_phase_compiles = _call_contract_separate_definition_compile_sources(
+        phase_closure
+    )
+    if list(compile_rows) != [path.casefold() for path in expected_phase_compiles]:
+        raise ProgressError(
+            "call-contract phase did not compile each separate definition TU exactly once"
+        )
+    phase_registered_source_keys = {
+        path.casefold() for path in phase_closure.registered_source_paths
+    }
+    phase_definition_source_keys = {
+        path.casefold() for path in phase_closure.definition_source_paths
+    }
+
+    raw_bodies = result.get("body_results")
+    raw_transcript = result.get("exact_fact_transcript")
+    provider_transcript = result.get("provider_fact_transcript")
+    raw_caller_divergences = result.get("caller_divergences")
+    if (
+        not isinstance(raw_bodies, list)
+        or len(raw_bodies) != int(phase_scope["body_count"])
+        or not isinstance(raw_transcript, list)
+        or not isinstance(provider_transcript, list)
+        or not isinstance(raw_caller_divergences, list)
+    ):
+        raise ProgressError("call-contract phase result lacks its complete body census")
+    bodies_by_symbol = {
+        str(row.get("symbol_id")): deepcopy(dict(row))
+        for row in raw_bodies
+        if isinstance(row, Mapping)
+    }
+    transcript_by_symbol = {
+        str(row.get("symbol_id")): deepcopy(dict(row))
+        for row in raw_transcript
+        if isinstance(row, Mapping)
+    }
+    divergence_by_symbol = {
+        str(row.get("symbol_id")): deepcopy(dict(row))
+        for row in raw_caller_divergences
+        if isinstance(row, Mapping) and row.get("symbol_id")
+    }
+    if len(bodies_by_symbol) != len(raw_bodies):
+        raise ProgressError("call-contract phase body census repeats an identity")
+    state_before_by_path = {
+        str(row.get("path", "")).casefold(): deepcopy(dict(row))
+        for row in result["dependency_states_before"]
+        if isinstance(row, Mapping)
+    }
+    state_after_by_path = {
+        str(row.get("path", "")).casefold(): deepcopy(dict(row))
+        for row in result["dependency_states_after"]
+        if isinstance(row, Mapping)
+    }
+
+    projections: list[dict[str, Any]] = []
+    first_projected_divergence: Any = None
+    for slice_row in document.authored_call_contract_slices():
+        closure = call_contract_source_closure(
+            document,
+            slice_row,
+            repository_path_inventory=inventory,
+        )
+        symbol_ids = [str(value) for value in slice_row["symbol_ids"]]
+        slice_bodies = [bodies_by_symbol.get(symbol_id) for symbol_id in symbol_ids]
+        if any(row is None for row in slice_bodies):
+            raise ProgressError(
+                f"call-contract phase omitted bodies from {slice_row['id']}"
+            )
+        slice_transcript = [
+            transcript_by_symbol[symbol_id]
+            for symbol_id in symbol_ids
+            if symbol_id in transcript_by_symbol
+        ]
+        first_nonpassing = next(
+            (
+                row
+                for row in slice_bodies
+                if isinstance(row, Mapping) and row.get("status") != "passed"
+            ),
+            None,
+        )
+        slice_first_divergence = (
+            deepcopy(
+                divergence_by_symbol.get(
+                    str(first_nonpassing.get("symbol_id", "")),
+                    first_nonpassing.get("divergence"),
+                )
+            )
+            if isinstance(first_nonpassing, Mapping)
+            else None
+        )
+        if first_projected_divergence is None and slice_first_divergence is not None:
+            first_projected_divergence = deepcopy(slice_first_divergence)
+        expected_compiles: list[str] = []
+        for path in closure.definition_source_paths:
+            key = path.casefold()
+            if key not in phase_definition_source_keys:
+                raise ProgressError(
+                    "call-contract slice definition closure escapes the complete phase"
+                )
+            compile_routes = int(key in phase_registered_source_keys) + int(
+                key in compile_rows
+            )
+            if compile_routes != 1:
+                raise ProgressError(
+                    "call-contract slice definition source lacks one exact complete-phase "
+                    "compile route"
+                )
+            if key in compile_rows:
+                expected_compiles.append(path)
+        dependency_keys = [path.casefold() for path in closure.dependency_paths]
+        projected_raw = {
+            "kind": "authored-call-contract-live-result",
+            "contract_version": CALL_CONTRACT_CONTRACT_VERSION,
+            "slice_id": str(slice_row["id"]),
+            "body_count": int(slice_row["body_count"]),
+            "symbol_ids": symbol_ids,
+            "target_ids": list(slice_row["target_ids"]),
+            "physical_block_ids": list(slice_row["physical_block_ids"]),
+            "source_edit_paths": list(closure.source_edit_paths),
+            "definition_source_paths": list(closure.definition_source_paths),
+            "definition_compile_results": [
+                deepcopy(compile_rows[path.casefold()])
+                for path in expected_compiles
+            ],
+            "dependency_paths": list(closure.dependency_paths),
+            "dependency_states_before": [
+                deepcopy(state_before_by_path[key]) for key in dependency_keys
+            ],
+            "dependency_states_after": [
+                deepcopy(state_after_by_path[key]) for key in dependency_keys
+            ],
+            "source_changed_during_validation": False,
+            "passed": first_nonpassing is None,
+            "body_results": slice_bodies,
+            "exact_fact_transcript": slice_transcript,
+            "provider_fact_transcript": deepcopy(provider_transcript),
+            "first_divergence": slice_first_divergence,
+            "candidate_expected_truth": False,
+            "all_caller_divergences_collected": True,
+        }
+        validated = _validate_call_contract_result(
+            projected_raw,
+            expected_slice=slice_row,
+            expected_source_write_paths=list(closure.source_edit_paths),
+            expected_definition_source_paths=list(closure.definition_source_paths),
+            expected_compiled_definition_sources=expected_compiles,
+            expected_dependency_paths=list(closure.dependency_paths),
+        )
+        projections.append(
+            {
+                "slice_row": deepcopy(dict(slice_row)),
+                "closure": closure,
+                "result": validated,
+            }
+        )
+    if (result.get("passed") is True) != all(
+        row["result"]["passed"] for row in projections
+    ):
+        raise ProgressError("call-contract phase pass state disagrees with slice projections")
+    phase_first = result.get("first_divergence")
+    if phase_first != first_projected_divergence:
+        raise ProgressError(
+            "call-contract phase first divergence disagrees with retail slice order"
+        )
+    return projections, phase_closure
 
 
 
+
+
+
+
+def _commit_validated_call_contract_slice(
+    *,
+    args: argparse.Namespace,
+    document: ProgressDocument,
+    slice_row: Mapping[str, Any],
+    result: Mapping[str, Any],
+    build_root: Path,
+    expected_domains: Mapping[str, int],
+) -> tuple[int, dict[str, Any], ProgressDocument]:
+    """Commit one already-governed slice result with the direct evidence shape."""
+
+    slice_id = str(slice_row["id"])
+    _require_current_call_contract_action(document, requested_slice=slice_id)
+    passing = [
+        symbol_id
+        for symbol_id in result["passing_symbol_ids"]
+        if not document.call_contract_body_currentness(symbol_id).get("current")
+    ]
+    details = {
+        "kind": "live-call-contract-advance",
+        "status": "passed" if result["passed"] else "diverged",
+        "slice_id": slice_id,
+        "build_root": display_path(build_root),
+        "fresh_build": True,
+        "reuse": False,
+        "passing_symbol_ids": passing,
+        "first_divergence": result["first_divergence"],
+        "mutation_planned": bool(passing),
+    }
+    if not passing:
+        details["commit"] = {
+            "applied": False,
+            "path": args.progress.as_posix(),
+            "previous_revision": document.revision,
+            "revision": document.revision,
+        }
+        return (0 if result["passed"] else 1), details, document
+
+    results_by_symbol = {
+        str(row["symbol_id"]): deepcopy(dict(row))
+        for row in result["body_results"]
+        if isinstance(row, Mapping) and str(row.get("symbol_id", "")) in passing
+    }
+
+    def transform(data: dict[str, Any]) -> None:
+        evidence_ids: dict[str, str] = {}
+        for symbol_id in passing:
+            body = results_by_symbol[symbol_id]
+            symbol = data["symbols"].get(symbol_id, {})
+            transcript = [
+                deepcopy(row)
+                for row in result["exact_fact_transcript"]
+                if isinstance(row, Mapping) and row.get("symbol_id") == symbol_id
+            ]
+            provenance = {
+                "symbol_id": symbol_id,
+                "address": body["address"],
+                "target_id": body["target_id"],
+                "physical_block_id": str(symbol.get("physical_block_id", "")),
+                "slice_id": slice_id,
+                "expected_truth": CALL_CONTRACT_EXPECTED_TRUTH,
+                "fresh_build": True,
+                "reuse": False,
+                "comparison_passed": True,
+                "expected_contract": deepcopy(body["expected_contract"]),
+                "candidate_contract": deepcopy(body["candidate_contract"]),
+                "normalizers": deepcopy(body["normalizers"]),
+                "exact_fact_transcript": transcript,
+                **current_generations(),
+            }
+            evidence_id = add_live_evidence(
+                data,
+                kind="live-authored-call-contract-validation",
+                summary=f"Fresh direct retail comparison accepted {symbol_id}",
+                scope_ids=[symbol_id],
+                provenance=provenance,
+            )
+            accept_live_call_contract_symbols(
+                data,
+                symbol_ids=[symbol_id],
+                evidence_id=evidence_id,
+                facts={
+                    "validation_mode": "live",
+                    "slice_id": slice_id,
+                    **current_generations(),
+                },
+            )
+            evidence_ids[symbol_id] = evidence_id
+        details["evidence_ids"] = evidence_ids
+    proposed, entity_patches, top_level_patches = _call_contract_scoped_patch_plan(
+        document,
+        transform,
+    )
+    commit = ProgressSQLiteStore(Path(args.progress)).persist_scoped_changes(
+        expected_domain_revisions=dict(expected_domains),
+        entity_patches=entity_patches,
+        top_level_patches=top_level_patches,
+        increment_domains={"semantic", "evidence_generation"},
+        apply=bool(args.apply),
+    )
+    next_document = document
+    if commit.applied:
+        proposed["revision"] = commit.revision
+        next_document = ProgressDocument._from_owned_data(
+            proposed,
+            path=Path(args.progress),
+        )
+    return (
+        0 if result["passed"] else 1,
+        _commit_payload(commit, details),
+        next_document,
+    )
+
+
+def _call_contract_replay_payload(
+    *,
+    mode: str,
+    status: str,
+    initial_vector: Mapping[str, int],
+    final_vector: Mapping[str, int],
+    proof_session: Mapping[str, Any],
+    slice_results: list[dict[str, Any]],
+    first_divergence: Any = None,
+    closeout_command: str | None = None,
+) -> dict[str, Any]:
+    return {
+        "schema": _CALL_CONTRACT_REPLAY_SCHEMA,
+        "kind": _CALL_CONTRACT_REPLAY_KIND,
+        "mode": mode,
+        "status": status,
+        "slice_count": len(slice_results),
+        "passing_body_count": sum(
+            int(row.get("passing_body_count", 0)) for row in slice_results
+        ),
+        "slice_results": slice_results,
+        "first_divergence": deepcopy(first_divergence),
+        "initial_revision_vector": dict(initial_vector),
+        "final_revision_vector": dict(final_vector),
+        "proof_session": deepcopy(dict(proof_session)),
+        "closeout_command": closeout_command,
+    }
+
+
+def replay_live_call_contract(
+    args: argparse.Namespace,
+    *,
+    status_sink: Any | None = None,
+) -> tuple[int, dict[str, Any]]:
+    """Run one fresh full-census proof and serially commit slice projections."""
+
+    emit = status_sink or (lambda _message: None)
+    progress = Path(args.progress).resolve(strict=True)
+    store = ProgressSQLiteStore(progress)
+    raw_document, vector = store.materialize_with_revision_vector()
+    document = ProgressDocument._from_owned_data(raw_document, path=progress)
+    initial_vector = vector.to_dict()
+    action = _call_contract_replay_current_action(document, initial_vector)
+    mode = "apply" if bool(args.apply) else "dry-run"
+    slices = document.authored_call_contract_slices()
+    ordered_symbol_ids = [
+        str(symbol_id)
+        for slice_row in slices
+        for symbol_id in slice_row["symbol_ids"]
+    ]
+    pending_symbol_ids = [
+        symbol_id
+        for symbol_id in ordered_symbol_ids
+        if not document.call_contract_body_currentness(symbol_id).get("current")
+    ]
+    pending_slice_ids = [
+        str(slice_row["id"])
+        for slice_row in slices
+        if any(
+            not document.call_contract_body_currentness(str(symbol_id)).get("current")
+            for symbol_id in slice_row["symbol_ids"]
+        )
+    ]
+    base_proof_session = {
+        "scope": "full-authored-call-contract-census",
+        "original_slice_count": len(slices),
+        "body_count": len(ordered_symbol_ids),
+        "unique_target_count": len(
+            {
+                str(target_id)
+                for slice_row in slices
+                for target_id in slice_row["target_ids"]
+            }
+        ),
+        "pending_slice_count": len(pending_slice_ids),
+        "pending_body_count": len(pending_symbol_ids),
+        "fresh_build": mode == "apply",
+        "reuse": False,
+        "candidate_expected_truth": False,
+        **current_generations(),
+    }
+    if action["kind"] == "closeout":
+        return 0, _call_contract_replay_payload(
+            mode=mode,
+            status="closeout-ready",
+            initial_vector=initial_vector,
+            final_vector=initial_vector,
+            proof_session={**base_proof_session, "executed": False},
+            slice_results=[],
+            closeout_command=str(action["acceptance_command"]),
+        )
+    current_slice_id = str(action["slice_id"])
+    current_index = next(
+        (
+            index
+            for index, slice_row in enumerate(slices)
+            if slice_row.get("id") == current_slice_id
+        ),
+        None,
+    )
+    if current_index is None:
+        raise ProgressError("call-contract replay current slice is absent from the census")
+    replay_root = _call_contract_replay_root(
+        Path(action["direct_build_root"]),
+        create=mode == "apply",
+    )
+    if mode == "dry-run":
+        planned_rows = [
+            {
+                "slice_id": str(slice_row["id"]),
+                "status": (
+                    "revalidate-current"
+                    if index < current_index
+                    else "planned"
+                ),
+                "body_count": int(slice_row["body_count"]),
+                "passing_body_count": 0,
+            }
+            for index, slice_row in enumerate(slices)
+            if index <= current_index or str(slice_row["id"]) in pending_slice_ids
+        ]
+        return 0, _call_contract_replay_payload(
+            mode=mode,
+            status="planned",
+            initial_vector=initial_vector,
+            final_vector=initial_vector,
+            proof_session={
+                **base_proof_session,
+                "executed": False,
+                "build_root": display_path(replay_root),
+                "direct_scheduler_root_consumed": False,
+            },
+            slice_results=planned_rows,
+        )
+
+    repository_path_inventory = load_repository_path_inventory(REPO_ROOT)
+    component_state = _call_contract_replay_component_state(
+        repository_path_inventory
+    )
+    emit(
+        "call-contract replay START full-census "
+        f"bodies={len(ordered_symbol_ids)} root={display_path(replay_root)}"
+    )
+    phase_result = live_call_contract_result(
+        document=document,
+        phase_all_authored_bodies=True,
+        build_root=replay_root,
+        collect_all_divergences=True,
+        compile_definition_closure=True,
+        compile_definition_closure_on_divergence=True,
+        _repository_path_inventory=repository_path_inventory,
+    )
+    projections, phase_closure = _project_call_contract_phase_result(
+        document,
+        phase_result,
+        repository_path_inventory=repository_path_inventory,
+    )
+    _call_contract_replay_require_unchanged(
+        component_state,
+        dependency_paths=phase_closure.dependency_paths,
+        expected_dependency_states=phase_result["dependency_states_after"],
+        repository_path_inventory=repository_path_inventory,
+    )
+    emit(
+        "call-contract replay PROOF "
+        f"{'PASS' if phase_result.get('passed') else 'DIVERGED'} "
+        f"targets={len(phase_result.get('attempted_target_ids', []))}"
+    )
+
+    proof_session = {
+        **base_proof_session,
+        "executed": True,
+        "build_root": display_path(replay_root),
+        "direct_scheduler_root_consumed": False,
+        "passed": phase_result.get("passed") is True,
+        "attempted_target_count": len(phase_result["attempted_target_ids"]),
+        "compiled_target_count": len(phase_result["compiled_target_ids"]),
+        "compiled_definition_count": len(
+            phase_result["definition_compile_results"]
+        ),
+        "binary_ninja_fact_cache": deepcopy(
+            phase_result.get("binary_ninja_fact_cache", {})
+        ),
+        "candidate_cod_index": deepcopy(
+            phase_result.get("candidate_cod_index", {})
+        ),
+        "timings_ms": deepcopy(phase_result.get("timings_ms", {})),
+    }
+
+    slice_results: list[dict[str, Any]] = []
+    for index in range(current_index):
+        projected = projections[index]
+        slice_row = projected["slice_row"]
+        result = projected["result"]
+        current_symbols = all(
+            document.call_contract_body_currentness(str(symbol_id)).get("current")
+            for symbol_id in slice_row["symbol_ids"]
+        )
+        summary = {
+            "slice_id": str(slice_row["id"]),
+            "status": "revalidated" if result["passed"] and current_symbols else "diverged",
+            "body_count": int(slice_row["body_count"]),
+            "passing_body_count": len(result["passing_symbol_ids"]),
+            "first_divergence": result["first_divergence"],
+            "committed": False,
+        }
+        slice_results.append(summary)
+        if summary["status"] == "diverged":
+            return 1, _call_contract_replay_payload(
+                mode=mode,
+                status="diverged-before-current-slice",
+                initial_vector=initial_vector,
+                final_vector=initial_vector,
+                proof_session=proof_session,
+                slice_results=slice_results,
+                first_divergence=result["first_divergence"],
+            )
+
+    current_vector = dict(initial_vector)
+    for index in range(current_index, len(projections)):
+        projected = projections[index]
+        slice_row = projected["slice_row"]
+        result = projected["result"]
+        _call_contract_replay_require_unchanged(
+            component_state,
+            dependency_paths=phase_closure.dependency_paths,
+            expected_dependency_states=phase_result["dependency_states_after"],
+            repository_path_inventory=repository_path_inventory,
+        )
+        expected_current_slice = str(
+            document.pipeline("recoil", resolve_order_target=False).get(
+                "authored_call_contract_slice_id", ""
+            )
+        )
+        if expected_current_slice != str(slice_row["id"]):
+            raise ProgressError(
+                "call-contract replay in-memory scheduler did not advance to the next projection"
+            )
+        commit_args = argparse.Namespace(
+            progress=progress,
+            apply=True,
+        )
+        returncode, details, document = _commit_validated_call_contract_slice(
+            args=commit_args,
+            document=document,
+            slice_row=slice_row,
+            result=result,
+            build_root=replay_root,
+            expected_domains={
+                "semantic": current_vector["semantic_revision"],
+                "evidence_generation": current_vector[
+                    "evidence_generation_revision"
+                ],
+            },
+        )
+        commit = details.get("commit")
+        if not isinstance(commit, Mapping):
+            raise ProgressError("call-contract replay slice lacks a commit result")
+        if commit.get("applied") is True:
+            next_vector = commit.get("revision_vector")
+            previous_vector = commit.get("previous_revision_vector")
+            if previous_vector != current_vector or not isinstance(next_vector, Mapping):
+                raise ProgressError(
+                    "call-contract replay slice commit broke the serial revision chain"
+                )
+            current_vector = {
+                key: int(next_vector[key])
+                for key in (
+                    "transaction_revision",
+                    "semantic_revision",
+                    "evidence_generation_revision",
+                )
+            }
+        summary = {
+            "slice_id": str(slice_row["id"]),
+            "status": str(details["status"]),
+            "body_count": int(slice_row["body_count"]),
+            "passing_body_count": len(details["passing_symbol_ids"]),
+            "first_divergence": deepcopy(details["first_divergence"]),
+            "committed": commit.get("applied") is True,
+            "previous_revision_vector": deepcopy(
+                commit.get("previous_revision_vector")
+            ),
+            "revision_vector": deepcopy(commit.get("revision_vector")),
+        }
+        slice_results.append(summary)
+        emit(
+            "call-contract replay "
+            f"{'PASS' if returncode == 0 else 'DIVERGED'} "
+            f"slice={slice_row['id']} passing={summary['passing_body_count']}"
+        )
+        if returncode != 0:
+            return 1, _call_contract_replay_payload(
+                mode=mode,
+                status="diverged",
+                initial_vector=initial_vector,
+                final_vector=current_vector,
+                proof_session=proof_session,
+                slice_results=slice_results,
+                first_divergence=details["first_divergence"],
+            )
+
+    final_raw, final_sql_vector = store.materialize_with_revision_vector()
+    final_vector = final_sql_vector.to_dict()
+    if final_vector != current_vector:
+        raise ConcurrentProgressUpdate(
+            "call-contract replay tracker changed after the final serial commit"
+        )
+    final_document = ProgressDocument._from_owned_data(final_raw, path=progress)
+    final_action = _call_contract_replay_current_action(final_document, final_vector)
+    if final_action["kind"] != "closeout":
+        raise ProgressError(
+            "call-contract replay completed every projection without reaching close-live"
+        )
+    return 0, _call_contract_replay_payload(
+        mode=mode,
+        status="closeout-ready",
+        initial_vector=initial_vector,
+        final_vector=final_vector,
+        proof_session=proof_session,
+        slice_results=slice_results,
+        closeout_command=str(final_action["acceptance_command"]),
+    )
 
 
 def advance_live_call_contract(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
@@ -3037,96 +3983,22 @@ def advance_live_call_contract(args: argparse.Namespace) -> tuple[int, dict[str,
         expected_slice=slice_row,
         expected_source_write_paths=list(closure.source_edit_paths),
         expected_definition_source_paths=list(closure.definition_source_paths),
-        expected_compiled_definition_sources=list(closure.definition_source_paths),
+        expected_compiled_definition_sources=(
+            _call_contract_separate_definition_compile_sources(closure)
+        ),
         expected_dependency_paths=list(closure.dependency_paths),
     )
     if returncode not in ({0} if result["passed"] else {1}):
         raise ProgressError(f"live call-contract validator exited {returncode}: {stderr}")
-    passing = [
-        symbol_id
-        for symbol_id in result["passing_symbol_ids"]
-        if not document.call_contract_body_currentness(symbol_id).get("current")
-    ]
-    details = {
-        "kind": "live-call-contract-advance",
-        "status": "passed" if result["passed"] else "diverged",
-        "slice_id": str(args.slice),
-        "build_root": display_path(build_root),
-        "fresh_build": True,
-        "reuse": False,
-        "passing_symbol_ids": passing,
-        "first_divergence": result["first_divergence"],
-        "mutation_planned": bool(passing),
-    }
-    if not passing:
-        details["commit"] = {
-            "applied": False,
-            "path": args.progress.as_posix(),
-            "previous_revision": document.revision,
-            "revision": document.revision,
-        }
-        return (0 if result["passed"] else 1), details
-
-    results_by_symbol = {
-        str(row["symbol_id"]): deepcopy(dict(row))
-        for row in result["body_results"]
-        if isinstance(row, Mapping) and str(row.get("symbol_id", "")) in passing
-    }
-
-    def transform(data: dict[str, Any]) -> None:
-        evidence_ids: dict[str, str] = {}
-        for symbol_id in passing:
-            body = results_by_symbol[symbol_id]
-            symbol = data["symbols"].get(symbol_id, {})
-            transcript = [
-                deepcopy(row)
-                for row in result["exact_fact_transcript"]
-                if isinstance(row, Mapping) and row.get("symbol_id") == symbol_id
-            ]
-            provenance = {
-                "symbol_id": symbol_id,
-                "address": body["address"],
-                "target_id": body["target_id"],
-                "physical_block_id": str(symbol.get("physical_block_id", "")),
-                "slice_id": str(args.slice),
-                "expected_truth": CALL_CONTRACT_EXPECTED_TRUTH,
-                "fresh_build": True,
-                "reuse": False,
-                "comparison_passed": True,
-                "expected_contract": deepcopy(body["expected_contract"]),
-                "candidate_contract": deepcopy(body["candidate_contract"]),
-                "normalizers": deepcopy(body["normalizers"]),
-                "exact_fact_transcript": transcript,
-                **current_generations(),
-            }
-            evidence_id = add_live_evidence(
-                data,
-                kind="live-authored-call-contract-validation",
-                summary=f"Fresh direct retail comparison accepted {symbol_id}",
-                scope_ids=[symbol_id],
-                provenance=provenance,
-            )
-            accept_live_call_contract_symbols(
-                data,
-                symbol_ids=[symbol_id],
-                evidence_id=evidence_id,
-                facts={
-                    "validation_mode": "live",
-                    "slice_id": str(args.slice),
-                    **current_generations(),
-                },
-            )
-            evidence_ids[symbol_id] = evidence_id
-        details["evidence_ids"] = evidence_ids
-    increment_domains = {"semantic", "evidence_generation"}
-    commit = _call_contract_scoped_patch_commit(
+    returncode, details, _next_document = _commit_validated_call_contract_slice(
         args=args,
         document=document,
-        transform=transform,
+        slice_row=slice_row,
+        result=result,
+        build_root=build_root,
         expected_domains=expected_domains,
-        increment_domains=increment_domains,
     )
-    return (0 if result["passed"] else 1), _commit_payload(commit, details)
+    return returncode, details
 
 
 def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:

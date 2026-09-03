@@ -250,10 +250,17 @@ class RecoilCliTests(unittest.TestCase):
         self.assertIn("next", stdout)
         self.assertIn("advance-live-order", stdout)
         self.assertIn("advance-live-call-contract", stdout)
+        self.assertIn("call-contract replay-live", stdout)
         self.assertIn("advance-live-authored-byte", stdout)
         self.assertIn("advance-live-linked-byte", stdout)
         for retired in ("claim-current", "handoff", " work ", "lease"):
             self.assertNotIn(retired, stdout)
+
+        rc, stdout, stderr = self.run_cli("help", "progress", "next")
+        self.assertEqual(0, rc)
+        self.assertEqual("", stderr)
+        self.assertIn("stage_runner_command", stdout)
+        self.assertIn("replay-live", stdout)
 
     def test_live_next_exposes_only_the_serial_contract(self) -> None:
         rc, stdout, stderr = self.run_cli("progress", "next", "--json")
@@ -271,6 +278,7 @@ class RecoilCliTests(unittest.TestCase):
                 "scope",
                 "objective",
                 "check_command",
+                "stage_runner_command",
                 "acceptance_command",
                 "blocker",
                 "revision_vector",

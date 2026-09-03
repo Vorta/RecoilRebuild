@@ -111,6 +111,30 @@ python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --
 Only bodies passing in that invocation advance. An unrelated divergent body
 stays pending and keeps the cursor on its first slice.
 
+The normal authored-call-contract route is the serial replay command; it
+replaces ad hoc shell loops across the complete original-slice census:
+
+```powershell
+python tools/recoil.py progress call-contract replay-live --dry-run --json
+python tools/recoil.py progress call-contract replay-live --apply --json
+```
+
+Dry-run plans the complete original-slice census and fresh replay sibling root
+without building, querying Binary Ninja, or mutating. Apply loads the serial
+task once, creates an exclusive `-replay-NNN` sibling without consuming the
+scheduler-selected direct root, and performs one invocation-local complete
+proof. Repository/source discovery, each unique target build, each separate
+definition-TU build, the COD index, and target-qualified immutable Binary Ninja
+facts are shared across the census. The proof is projected back into the exact
+original slices and committed serially through the same per-body evidence and
+semantic/evidence CAS path as direct acceptance. Already-current predecessor
+slices are revalidated. The first divergent current slice commits only its
+passing non-current bodies and stops; later slices remain untouched. Interrupted
+roots are inert, and a resumed invocation uses a new sibling. Replay neither
+supplies expected truth nor performs the mandatory closeout. After the last
+slice passes, it returns the scheduler-selected `close-live` command without
+running it.
+
 After all bodies are current:
 
 ```powershell
@@ -120,7 +144,7 @@ python tools/recoil.py progress call-contract close-live --build-root <fresh-roo
 The closeout runs the complete current census from fresh output, forbids reuse,
 requires zero divergence, queries the target-qualified canonical BN database
 directly without repeating database preflight per slice, records each slice's
-exact expected-fact transcript, and records generation 18/15/16 currency. It is
+exact expected-fact transcript, and records generation 34/30/31 currency. It is
 the only route to stage completion.
 
 ## Stage 3: Authored Bytes

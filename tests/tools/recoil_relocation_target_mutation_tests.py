@@ -130,7 +130,19 @@ def registered_provider_fixture(
             address=address,
             symbol=symbol,
         )
-        data["verification_targets"][target_id] = record
+        tracked_record = deepcopy(record)
+        tracked_record.pop("registered_addresses", None)
+        tracked_record.update(
+            state={
+                "disposition": "claim",
+                "evidence_ids": [],
+                "freshness": "current-unhashed",
+                "result": "pending",
+            },
+            symbol_ids=[PROVIDER_TARGET_ID],
+            unresolved_addresses=[],
+        )
+        data["verification_targets"][target_id] = tracked_record
         provider["verification_target_ids"].append(target_id)
         manifests.append(path)
         current_bindings[PROVIDER_TARGET_ID].append(target_binding(symbol))
@@ -583,30 +595,38 @@ class RelocationTargetMutationTests(unittest.TestCase):
                     )
                 self.assertEqual(before, progress.read_bytes())
 
-    def test_existing_target_accepts_one_exact_synchronized_vc5_registration(self) -> None:
-        with TemporaryDirectory() as temp:
-            root = Path(temp)
-            data, current_bindings, _manifests = registered_provider_fixture(
-                root,
-                target_specs=[("provider_exact", "0x4c5b64", PROVIDER_OBJECT)],
-            )
-            progress = root / "progress.sqlite3"
-            write_progress(progress, data)
-            before = progress.read_bytes()
-            report = bind_relocation_target(
-                progress=progress,
-                reference=REFERENCE,
-                manifest_dir=root,
-                source_symbol_id=SOURCE_ID,
-                source_address="0x401000",
-                payload=provider_payload(),
-                expected_revision=7,
-                apply=False,
-                bindings=current_bindings,
-            )
-            self.assertFalse(report["commit"]["applied"])
-            self.assertEqual(PROVIDER_OBJECT, report["binding"]["object_symbol"])
-            self.assertEqual(before, progress.read_bytes())
+    def test_existing_target_accepts_converged_synchronized_vc5_registrations(self) -> None:
+        cases = (
+            [("provider_exact", "0x4c5b64", PROVIDER_OBJECT)],
+            [
+                ("provider_exact_a", "0x4c5b64", PROVIDER_OBJECT),
+                ("provider_exact_b", "0x4c5b64", PROVIDER_OBJECT),
+            ],
+        )
+        for target_specs in cases:
+            with self.subTest(supplier_count=len(target_specs)), TemporaryDirectory() as temp:
+                root = Path(temp)
+                data, current_bindings, _manifests = registered_provider_fixture(
+                    root,
+                    target_specs=target_specs,
+                )
+                progress = root / "progress.sqlite3"
+                write_progress(progress, data)
+                before = progress.read_bytes()
+                report = bind_relocation_target(
+                    progress=progress,
+                    reference=REFERENCE,
+                    manifest_dir=root,
+                    source_symbol_id=SOURCE_ID,
+                    source_address="0x401000",
+                    payload=provider_payload(),
+                    expected_revision=7,
+                    apply=False,
+                    bindings=current_bindings,
+                )
+                self.assertFalse(report["commit"]["applied"])
+                self.assertEqual(PROVIDER_OBJECT, report["binding"]["object_symbol"])
+                self.assertEqual(before, progress.read_bytes())
 
     def test_existing_target_rejects_non_authoritative_vc5_registration_states(self) -> None:
         cases: list[tuple[str, list[tuple[str, str, str]]]] = [
@@ -620,13 +640,6 @@ class RelocationTargetMutationTests(unittest.TestCase):
             (
                 "wrong-address",
                 [("provider_wrong_address", "0x4c5b65", PROVIDER_OBJECT)],
-            ),
-            (
-                "ambiguous",
-                [
-                    ("provider_exact_a", "0x4c5b64", PROVIDER_OBJECT),
-                    ("provider_exact_b", "0x4c5b64", PROVIDER_OBJECT),
-                ],
             ),
         ]
         for name, target_specs in cases:
