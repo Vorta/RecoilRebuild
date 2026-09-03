@@ -1331,6 +1331,11 @@ HUD_PANEL_LAYOUT_VECTOR_DESTROY_SYMBOL = (
     "V?$allocator@UHudUiPanelLayoutEntry@@@std@@@std@@"
     "IAEXPAUHudUiPanelLayoutEntry@@0@Z"
 )
+HUD_COMPOSITE_PANEL_VECTOR_DESTROY_SYMBOL = (
+    "?_Destroy@?$vector@UHudUiCompositePanelEntry@@"
+    "V?$allocator@UHudUiCompositePanelEntry@@@std@@@std@@"
+    "IAEXPAUHudUiCompositePanelEntry@@0@Z"
+)
 HUD_PANEL_LAYOUT_ENTRY_DESTRUCTOR_SYMBOL = (
     "??1HudUiPanelLayoutEntry@@QAE@XZ"
 )
@@ -1398,6 +1403,15 @@ HUD_ELEMENT_SET_BLT_SYMBOL = (
     "?SetBltSourceAndClipRect@HudUiElement@@UAEXPAXPBUHudUiRect@@@Z"
 )
 HUD_ELEMENT_SET_BLT_IDENTITY = "symbol:recoil:function:0x4b4190"
+HUD_CONTAINER_CONSTRUCTOR_CALLER_START = "0x4bc780"
+HUD_CONTAINER_CONSTRUCTOR_CALLER_END_EXCLUSIVE = "0x4bc7b0"
+HUD_CONTAINER_CONSTRUCTOR_SYMBOL = "??0HudUiContainer@@QAE@XZ"
+HUD_CONTAINER_VFTABLE_SYMBOL = "??_7HudUiContainer@@6B@"
+HUD_CONTAINER_VFTABLE_RETAIL_ADDRESS = "0x4d3c58"
+HUD_CONTAINER_VFTABLE_STORAGE_IDENTITY = "storage:recoil:data:0x4d3c58"
+HUD_CONTAINER_VFTABLE_SIZE = 0x08
+HUD_CONTAINER_SET_ENABLED_SYMBOL = "?SetEnabled@HudUiContainer@@UAEXH@Z"
+HUD_CONTAINER_UPDATE_ALL_SYMBOL = "?UpdateAll@HudUiContainer@@UAEXM@Z"
 HUD_BRIEFING_RUNTIME_VFTABLE = "??_7HudUiBriefingRuntime@@6B@"
 HUD_BRIEFING_RUNTIME_DESTRUCTOR_SYMBOL = (
     "??1HudUiBriefingRuntime@@UAE@XZ"
@@ -9164,47 +9178,67 @@ HUD_ZRD_WIDGET_CONSTRUCTOR_SOURCE_PATH = (
     "src/GameZRecoil/zUI/zui_widgets.cpp"
 )
 HUD_ZRD_WIDGET_CONSTRUCTOR_BODY = bytes.fromhex(
-    "6aff680000000064a100000000506489250000000083ec0c565733ff8bf15789742410e8000000008a44240b897c241c8886"
-    "0c01000089be1001000089be1401000089be180100008a4c240b89be20010000888e1c01000089be2401000089be28010000"
-    "8a54240b89be3001000088962c01000089be3401000089be380100008a44240b89be4001000088863c01000089be44010000"
-    "89be48010000b80000803fc70600000000c786c40000000100000089bec000000089bebc00000089bec800000089bedc0000"
-    "0089bee400000089bee000000089bee80000008986f000000089beec00000089bef400000089bef800000089860001000089"
-    "befc0000008b96140100008b8e100100008bc2c644241c043bc2740e8b3883c004893983c1043bc275f28b9614010000898e"
-    "140100008b8e20010000895424108b96240100008bc23bc2740e8b3883c004893983c1043bc275f28b8624010000898e2401"
-    "00008b96340100008b8e30010000894424108bc23bc2740e8b3883c004893983c1043bc275f28b9634010000898e34010000"
-    "8b068bce8954241066c746400100ff50208a4e0c8bc683e1105f83c902894e0c8b4c241064890d000000005e83c418c3"
+    "6aff680000000064a100000000506489250000000083ec085355565733ff8bf15789742418e8000000008a4424138d9e0c01"
+    "0000897c24208803897b04897b08897b0c8a4c24138dae1c010000884d00897d04897d08897d0c8a54241389be30010000"
+    "88962c01000089be3401000089be380100008a44241389be4001000088863c01000089be4401000089be48010000b80000"
+    "803fc70600000000c786c40000000100000089bec000000089bebc00000089bec800000089bedc00000089bee400000089"
+    "bee000000089bee80000008986f000000089beec00000089bef400000089bef800000089860001000089befc0000008b43"
+    "088b7b043bc0c6442420048bc8740e8b1183c104891783c7043bc875f28b43088bcb5057e800000000897b088b4d088b7d"
+    "043bc98bc1740e8b1083c004891783c7043bc175f28b45088bcd5057e800000000897d088b8e340100008bbe300100003b"
+    "c98bc1740e8b1083c004891783c7043bc175f28b86340100008d9e2c01000050578bcbe800000000897b088b168bce66c7"
+    "46400100ff52208a460c8b4c241883e0105f0c0289460c8bc65e5d64890d000000005b83c414c3"
 )
 HUD_ZRD_WIDGET_CONSTRUCTOR_RELOCATIONS = (
-    (0x3, IMAGE_REL_I386_DIR32, '$L84113'),
+    (0x3, IMAGE_REL_I386_DIR32, '$L84570'),
     (0x9, IMAGE_REL_I386_DIR32, '__except_list'),
     (0x11, IMAGE_REL_I386_DIR32, '__except_list'),
-    (0x24, IMAGE_REL_I386_REL32, '??0HudUiWidget@@QAE@I@Z'),
-    (0xA3, IMAGE_REL_I386_DIR32, '??_7HudUiZrdWidget@@6B@'),
-    (0x1B7, IMAGE_REL_I386_DIR32, '__except_list'),
+    (0x26, IMAGE_REL_I386_REL32, '??0HudUiWidget@@QAE@I@Z'),
+    (0x98, IMAGE_REL_I386_DIR32, '??_7HudUiZrdWidget@@6B@'),
+    (
+        0x11B,
+        IMAGE_REL_I386_REL32,
+        '?_Destroy@?$vector@PAUHudUiPanel@@V?$allocator@PAUHudUiPanel@@@std@@@std@@IAEXPAPAUHudUiPanel@@0@Z',
+    ),
+    (
+        0x144,
+        IMAGE_REL_I386_REL32,
+        '?_Destroy@?$vector@PAUHudUiPanel@@V?$allocator@PAUHudUiPanel@@@std@@@std@@IAEXPAPAUHudUiPanel@@0@Z',
+    ),
+    (
+        0x17C,
+        IMAGE_REL_I386_REL32,
+        '?_Destroy@?$vector@PAUHudUiPanel@@V?$allocator@PAUHudUiPanel@@@std@@@std@@IAEXPAPAUHudUiPanel@@0@Z',
+    ),
+    (0x1A7, IMAGE_REL_I386_DIR32, '__except_list'),
 )
 HUD_ZRD_WIDGET_CONSTRUCTOR_COD_OFFSETS = (
-    0x0, 0x2, 0x7, 0xD, 0xE, 0x15, 0x18, 0x19, 0x1A, 0x1C, 0x1E, 0x1F,
-    0x23, 0x28, 0x2C, 0x30, 0x36, 0x3C, 0x42, 0x48, 0x4C, 0x52, 0x58, 0x5E,
-    0x64, 0x68, 0x6E, 0x74, 0x7A, 0x80, 0x84, 0x8A, 0x90, 0x96, 0x9C, 0xA1,
-    0xA7, 0xB1, 0xB7, 0xBD, 0xC3, 0xC9, 0xCF, 0xD5, 0xDB, 0xE1, 0xE7, 0xED,
-    0xF3, 0xF9, 0xFF, 0x105, 0x10B, 0x10D, 0x112, 0x114, 0x116, 0x118, 0x11B, 0x11D,
-    0x120, 0x122, 0x124, 0x12A, 0x130, 0x136, 0x13A, 0x140, 0x142, 0x144, 0x146, 0x148,
-    0x14B, 0x14D, 0x150, 0x152, 0x154, 0x15A, 0x160, 0x166, 0x16C, 0x170, 0x172, 0x174,
-    0x176, 0x178, 0x17B, 0x17D, 0x180, 0x182, 0x184, 0x18A, 0x190, 0x192, 0x194, 0x198,
-    0x19E, 0x1A1, 0x1A4, 0x1A6, 0x1A9, 0x1AA, 0x1AD, 0x1B0, 0x1B4, 0x1BB, 0x1BC, 0x1BF,
+    0x0, 0x2, 0x7, 0xD, 0xE, 0x15, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1E,
+    0x20, 0x21, 0x25, 0x2A, 0x2E, 0x34, 0x38, 0x3A, 0x3D, 0x40, 0x43,
+    0x47, 0x4D, 0x50, 0x53, 0x56, 0x59, 0x5D, 0x63, 0x69, 0x6F, 0x75,
+    0x79, 0x7F, 0x85, 0x8B, 0x91, 0x96, 0x9C, 0xA6, 0xAC, 0xB2, 0xB8,
+    0xBE, 0xC4, 0xCA, 0xD0, 0xD6, 0xDC, 0xE2, 0xE8, 0xEE, 0xF4, 0xF7,
+    0xFA, 0xFC, 0x101, 0x103, 0x105, 0x107, 0x10A, 0x10C, 0x10F, 0x111,
+    0x113, 0x116, 0x118, 0x119, 0x11A, 0x11F, 0x122, 0x125, 0x128, 0x12A,
+    0x12C, 0x12E, 0x130, 0x133, 0x135, 0x138, 0x13A, 0x13C, 0x13F, 0x141,
+    0x142, 0x143, 0x148, 0x14B, 0x151, 0x157, 0x159, 0x15B, 0x15D, 0x15F,
+    0x162, 0x164, 0x167, 0x169, 0x16B, 0x171, 0x177, 0x178, 0x179, 0x17B,
+    0x180, 0x183, 0x185, 0x187, 0x18D, 0x190, 0x193, 0x197, 0x19A, 0x19B,
+    0x19D, 0x1A0, 0x1A2, 0x1A3, 0x1A4, 0x1AB, 0x1AC, 0x1AF,
 )
 HUD_ZRD_WIDGET_CONSTRUCTOR_COD_MNEMONICS = (
-    'push', 'push', 'mov', 'push', 'mov', 'sub', 'push', 'push', 'xor', 'mov',
-    'push', 'mov', 'call', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov',
+    'push', 'push', 'mov', 'push', 'mov', 'sub', 'push', 'push', 'push', 'push',
+    'xor', 'mov', 'push', 'mov', 'call', 'mov', 'lea', 'mov', 'mov', 'mov',
+    'mov', 'mov', 'mov', 'lea', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov',
     'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov',
     'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov',
-    'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov',
-    'mov', 'mov', 'mov', 'mov', 'cmp', 'je', 'mov', 'add', 'mov', 'add',
-    'cmp', 'jne', 'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'cmp', 'je',
-    'mov', 'add', 'mov', 'add', 'cmp', 'jne', 'mov', 'mov', 'mov', 'mov',
-    'mov', 'mov', 'cmp', 'je', 'mov', 'add', 'mov', 'add', 'cmp', 'jne',
-    'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'call', 'mov', 'mov', 'and',
-    'pop', 'or', 'mov', 'mov', 'mov', 'pop', 'add', 'ret',
+    'mov', 'mov', 'mov', 'mov', 'mov', 'mov', 'cmp', 'mov', 'mov', 'je',
+    'mov', 'add', 'mov', 'add', 'cmp', 'jne', 'mov', 'mov', 'push', 'push',
+    'call', 'mov', 'mov', 'mov', 'cmp', 'mov', 'je', 'mov', 'add', 'mov',
+    'add', 'cmp', 'jne', 'mov', 'mov', 'push', 'push', 'call', 'mov', 'mov',
+    'mov', 'cmp', 'mov', 'je', 'mov', 'add', 'mov', 'add', 'cmp', 'jne',
+    'mov', 'lea', 'push', 'push', 'mov', 'call', 'mov', 'mov', 'mov', 'mov',
+    'call', 'mov', 'mov', 'and', 'pop', 'or', 'mov', 'mov', 'pop', 'pop',
+    'mov', 'pop', 'add', 'ret',
 )
 HUD_TRIPLET_PANEL_CONSTRUCTOR_CALLER_IDENTITY = (
     "symbol:recoil:function:0x40d7e0"
@@ -21791,7 +21825,10 @@ def _pointer_vector_destroy_provider_identity(
 
     if not name.startswith(MSVC_VECTOR_DESTROY_PREFIX):
         return ""
-    if name == HUD_PANEL_LAYOUT_VECTOR_DESTROY_SYMBOL:
+    if name in {
+        HUD_PANEL_LAYOUT_VECTOR_DESTROY_SYMBOL,
+        HUD_COMPOSITE_PANEL_VECTOR_DESTROY_SYMBOL,
+    }:
         # This specialization destroys nontrivial values and therefore cannot
         # share the pointer/no-op supplier.  Its exact same-object sentinel is
         # resolved only by the later comparison-scoped retail COMDAT gate.
@@ -22520,7 +22557,7 @@ def _canonical_direct_identity(
                 and call_site_unique is True
                 and call_site_address is not None
                 and normalize_address(call_site_address)
-                in {"0x4b9e67", "0x4b9e88"}
+                == "0x4b9e67"
                 and indexes.reviewed_authored_icf_physical_by_logical_identity.get(
                     r4564_set_enabled_identity
                 )
@@ -28877,7 +28914,7 @@ def _candidate_iat_load_reached_transfer_offsets(
             return False
         for definition_index in range(transfer_index - 1, load_index, -1):
             instruction = candidate.instructions[definition_index]
-            if _written_full_register(instruction) != register:
+            if _explicit_written_full_register(instruction) != register:
                 continue
             operands = _instruction_operand(instruction).split(",", 1)
             try:
@@ -28896,6 +28933,12 @@ def _candidate_iat_load_reached_transfer_offsets(
                 operands[1].strip(),
                 flags=re.IGNORECASE,
             )
+            absolute_memory = re.fullmatch(
+                r"\[(?P<symbol>[_?@$A-Za-z][_?@$A-Za-z0-9]*)\]",
+                source_operand,
+            )
+            if absolute_memory is not None:
+                source_operand = absolute_memory.group("symbol")
             if not re.fullmatch(r"[_?@$A-Za-z][_?@$A-Za-z0-9]*", source_operand):
                 return False
             immediate_offset = (
@@ -28925,7 +28968,7 @@ def _candidate_iat_load_reached_transfer_offsets(
                 len(relocations) == 1
                 and relocations[0].type == IMAGE_REL_I386_DIR32
                 and relocations[0].symbol_name == source_operand
-                and _candidate_iat_import_name(source_operand) is None
+                and not _candidate_iat_import_name(source_operand)
             )
         return False
 
@@ -29081,7 +29124,11 @@ def _candidate_iat_load_reached_transfer_offsets(
                     )
                     raise CandidateCallContractEvidenceError(
                         "candidate exact-IAT register load has "
-                        f"{detail} while its definition remains live"
+                        f"{detail} while its definition remains live: "
+                        f"load_offset={offsets[load_index]!r}/{destination}, "
+                        f"transfer_offset={offsets[index]!r}/{operand}, "
+                        f"covered_routes={covered_routes!r}, "
+                        f"independent_non_iat={independent_non_iat!r}"
                     )
             if mnemonic == "call":
                 next_registers.difference_update(volatile)
@@ -29804,6 +29851,9 @@ _VC5_COMPLETE_CONSTRUCTOR_IDENTITY_RE = re.compile(
     r"^\?\?0(?P<scope>[A-Za-z_][A-Za-z0-9_]*"
     r"(?:@[A-Za-z_][A-Za-z0-9_]*)*)@@QAE@XZ$"
 )
+_REVIEWED_VC5_COMPLETE_CONSTRUCTOR_IDENTITY_NAMES = {
+    "??0HudUiElement@@QAE@HH@Z": "HudUiElement::Constructor",
+}
 
 
 def _candidate_expected_direct_identity_name(
@@ -29816,6 +29866,13 @@ def _candidate_expected_direct_identity_name(
     )
     if decoded is not None:
         return decoded.callable_key.qualified_name
+    reviewed_constructor = (
+        _REVIEWED_VC5_COMPLETE_CONSTRUCTOR_IDENTITY_NAMES.get(
+            decorated_identity
+        )
+    )
+    if reviewed_constructor is not None:
+        return reviewed_constructor
     constructor = _VC5_COMPLETE_CONSTRUCTOR_IDENTITY_RE.fullmatch(
         decorated_identity
     )
@@ -29933,7 +29990,7 @@ def _expected_direct_candidate_identity_bridges(
             "symbol:recoil:function:0x4bef90",
             "0x4bef90",
             "0x4bf060",
-        ): frozenset({"?Constructor@HudUiElement@@QAEPAU1@HH@Z"}),
+        ): frozenset({"??0HudUiElement@@QAE@HH@Z"}),
         (
             "symbol:recoil:function:0x4bf560",
             "0x4bf560",
@@ -30029,10 +30086,10 @@ def _expected_direct_candidate_identity_bridges(
             "symbol:recoil:function:0x4bef90",
             "0x4bef90",
             "0x4bf060",
-            "?Constructor@HudUiElement@@QAEPAU1@HH@Z",
+            "??0HudUiElement@@QAE@HH@Z",
         ): (
             "??0zVideoFxPass3Config@@QAE@XZ",
-            (0x5F,),
+            (0x32,),
             "",
         ),
     }
@@ -36673,6 +36730,418 @@ def _zui_relocation_payload(
     ).encode("utf-8")
 
 
+def _zui_message_box_widget_constructor_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+) -> list[dict[str, Any]]:
+    """Join exact message-box same-object constructors to authored truth."""
+
+    result = [dict(row) for row in candidate_contract]
+    if (
+        caller_identity != "symbol:recoil:function:0x4bf060"
+        or normalize_address(caller_start) != "0x4bf060"
+        or normalize_address(caller_end_exclusive) != "0x4bf540"
+    ):
+        return result
+
+    prefix = "zUI message-box widget constructor occurrence"
+    caller = candidate.caller_definition
+    name = "?Constructor@HudUiWidget@@QAEPAU1@I@Z"
+    helper = candidate.tu_local_function_definitions.get(name)
+    zrd_name = "?Constructor@HudUiZrdWidget@@QAEPAU1@XZ"
+    zrd_helper = candidate.tu_local_function_definitions.get(zrd_name)
+    target_identity = "symbol:recoil:function:0x4b3d00"
+    zrd_target_identity = "symbol:recoil:function:0x4b4ee0"
+    expected_row = {
+        "ordinal": 1,
+        "form": "call",
+        "dispatch": "direct",
+        "identity_kind": "direct",
+        "target_identity": target_identity,
+        "storage_identity": "",
+        "slot_displacement": None,
+        "cleanup_bytes": None,
+    }
+    candidate_row = {
+        **expected_row,
+        "target_identity": f"candidate-local-coff:{name}",
+        "cleanup_bytes": 4,
+    }
+    zrd_expected_rows = {
+        ordinal: {
+            **expected_row,
+            "ordinal": ordinal,
+            "target_identity": zrd_target_identity,
+        }
+        for ordinal in (4, 5)
+    }
+    zrd_candidate_rows = {
+        ordinal: {
+            **row,
+            "target_identity": f"candidate-local-coff:{zrd_name}",
+        }
+        for ordinal, row in zrd_expected_rows.items()
+    }
+    invocation_indices = _candidate_static_invocation_indices(
+        candidate,
+        caller_start="0x0",
+        caller_end_exclusive=(
+            hex(len(caller.data)) if caller is not None else "0x0"
+        ),
+    )
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    call_index = invocation_indices[1] if len(invocation_indices) > 1 else None
+    call_offset = (
+        offsets[call_index]
+        if call_index is not None and call_index < len(offsets)
+        else None
+    )
+    call_instruction = (
+        candidate.instructions[call_index]
+        if call_index is not None and call_index < len(candidate.instructions)
+        else None
+    )
+    zrd_call_sites = tuple(
+        (
+            offsets[invocation_indices[ordinal]],
+            candidate.instructions[invocation_indices[ordinal]],
+        )
+        for ordinal in (4, 5)
+        if len(invocation_indices) > ordinal
+        and invocation_indices[ordinal] < len(offsets)
+        and invocation_indices[ordinal] < len(candidate.instructions)
+    )
+    caller_relocation_payload = (
+        _zui_relocation_payload(caller.relocations)
+        if caller is not None
+        else b""
+    )
+    exact_call_relocations = (
+        tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in caller.relocations
+            if row.offset == 0x1C
+        )
+        if caller is not None
+        else ()
+    )
+    helper_relocations = (
+        tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in helper.relocations
+        )
+        if helper is not None
+        else ()
+    )
+    zrd_helper_relocations = (
+        tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in zrd_helper.relocations
+        )
+        if zrd_helper is not None
+        else ()
+    )
+    helper_symbols = (
+        tuple(row for row in caller.coff_symbols if row.name == name)
+        if caller is not None
+        else ()
+    )
+    helper_symbol = helper_symbols[0] if len(helper_symbols) == 1 else None
+    zrd_helper_symbols = (
+        tuple(row for row in caller.coff_symbols if row.name == zrd_name)
+        if caller is not None
+        else ()
+    )
+    zrd_helper_symbol = (
+        zrd_helper_symbols[0] if len(zrd_helper_symbols) == 1 else None
+    )
+    if (
+        caller is None
+        or caller.symbol
+        != "?Constructor@HudUiMessageBoxDialog@@QAEPAU1@PBD0@Z"
+        or caller.section_start != 0
+        or caller.section_end != 0x480
+        or len(caller.data) != 0x480
+        or hashlib.sha256(caller.data).hexdigest()
+        != "56d1f25972de450f55fe03cfd826573fd26b1eb260991d74808c2e28672de230"
+        or len(caller.relocations) != 47
+        or hashlib.sha256(caller_relocation_payload).hexdigest()
+        != "c7435bff5823e041bb2476c7ccf43cb089cbadbe4ac766d3bca61fa03a574812"
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in caller.relocations
+            )
+            for index in range(len(caller.data))
+        )
+        or len(invocation_indices) != len(result)
+        or len(expected) != len(result)
+        or call_offset != 0x1B
+        or call_instruction is None
+        or _instruction_mnemonic(call_instruction) != "call"
+        or _instruction_operand(call_instruction).strip() != name
+        or bytes(int(value, 16) for value in call_instruction.bytes)
+        != b"\xe8\0\0\0\0"
+        or exact_call_relocations
+        != ((0x1C, IMAGE_REL_I386_REL32, name),)
+        or tuple(offset for offset, _instruction in zrd_call_sites)
+        != (0x4E, 0x59)
+        or any(
+            _instruction_mnemonic(instruction) != "call"
+            or _instruction_operand(instruction).strip() != zrd_name
+            or bytes(int(value, 16) for value in instruction.bytes)
+            != b"\xe8\0\0\0\0"
+            for _offset, instruction in zrd_call_sites
+        )
+        or tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in caller.relocations
+            if row.offset in {0x4F, 0x5A}
+        )
+        != (
+            (0x4F, IMAGE_REL_I386_REL32, zrd_name),
+            (0x5A, IMAGE_REL_I386_REL32, zrd_name),
+        )
+        or dict(expected[1]) != expected_row
+        or result[1] != candidate_row
+        or any(
+            dict(expected[ordinal]) != zrd_expected_rows[ordinal]
+            or result[ordinal] != zrd_candidate_rows[ordinal]
+            for ordinal in (4, 5)
+        )
+        or indexes.by_address.get("0x4b3d00") != target_identity
+        or target_identity in indexes.provider_ids
+        or indexes.by_address.get("0x4b4ee0") != zrd_target_identity
+        or zrd_target_identity in indexes.provider_ids
+        or helper is None
+        or helper.symbol != name
+        or len(helper.data) != 0x20
+        or hashlib.sha256(helper.data).hexdigest()
+        != "66eacedfb698a0ab1d1c28bbb2c034119600403b599cc4f24f931ddb7bd9b8ab"
+        or helper.section_size != 0x20
+        or helper.section_is_comdat is not True
+        or helper.comdat_selection != 1
+        or helper.section_external_functions != (name,)
+        or helper_relocations
+        != ((0x0D, IMAGE_REL_I386_REL32, "??0HudUiWidget@@QAE@I@Z"),)
+        or len(helper.relocation_mask) != len(helper.data)
+        or any(
+            helper.relocation_mask[index]
+            != (0x0D <= index < 0x11)
+            for index in range(len(helper.data))
+        )
+        or not helper.source_provenance.replace("\\", "/").endswith(
+            "/src/GameZRecoil/zUI/zui.cpp"
+        )
+        or helper_symbol is None
+        or helper_symbol.value != 0
+        or helper_symbol.section_number <= 0
+        or helper_symbol.symbol_type != 0x20
+        or helper_symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
+        or helper_symbol.natural_end != 0x20
+        or helper_symbol.section_size != 0x20
+        or not (helper_symbol.section_characteristics & IMAGE_SCN_LNK_COMDAT)
+        or zrd_helper is None
+        or zrd_helper.symbol != zrd_name
+        or len(zrd_helper.data) != 0x10
+        or hashlib.sha256(zrd_helper.data).hexdigest()
+        != "b12fe2009a18468af0bd42df51ec6a5f24ac995439943f5128711f6fa22ee75e"
+        or zrd_helper.section_size != 0x10
+        or zrd_helper.section_is_comdat is not True
+        or zrd_helper.comdat_selection != 1
+        or zrd_helper.section_external_functions != (zrd_name,)
+        or zrd_helper_relocations
+        != ((0x08, IMAGE_REL_I386_REL32, "??0HudUiZrdWidget@@QAE@XZ"),)
+        or len(zrd_helper.relocation_mask) != len(zrd_helper.data)
+        or any(
+            zrd_helper.relocation_mask[index]
+            != (0x08 <= index < 0x0C)
+            for index in range(len(zrd_helper.data))
+        )
+        or not zrd_helper.source_provenance.replace("\\", "/").endswith(
+            "/src/GameZRecoil/zUI/zui.cpp"
+        )
+        or zrd_helper_symbol is None
+        or zrd_helper_symbol.value != 0
+        or zrd_helper_symbol.section_number <= 0
+        or zrd_helper_symbol.symbol_type != 0x20
+        or zrd_helper_symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
+        or zrd_helper_symbol.natural_end != 0x10
+        or zrd_helper_symbol.section_size != 0x10
+        or not (
+            zrd_helper_symbol.section_characteristics & IMAGE_SCN_LNK_COMDAT
+        )
+    ):
+        raise ValueError(
+            f"{prefix} rejects caller/helper body, relocation, COMDAT, "
+            "call-site, expected identity, or occurrence drift"
+        )
+    result[1] = deepcopy(expected_row)
+    for ordinal in (4, 5):
+        result[ordinal] = deepcopy(zrd_expected_rows[ordinal])
+    return result
+
+
+def _zui_message_box_destructor_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+) -> list[dict[str, Any]]:
+    """Join the exact same-object zrd destructors to authored truth."""
+
+    result = [dict(row) for row in candidate_contract]
+    if (
+        caller_identity != "symbol:recoil:function:0x4bf560"
+        or normalize_address(caller_start) != "0x4bf560"
+        or normalize_address(caller_end_exclusive) != "0x4bf630"
+    ):
+        return result
+
+    prefix = "zUI message-box zrd destructor occurrence"
+    caller = candidate.caller_definition
+    name = "?DestructorCore@HudUiZrdWidget@@QAEXXZ"
+    helper = candidate.tu_local_function_definitions.get(name)
+    target_identity = "symbol:recoil:function:0x4b50c0"
+    expected_rows = {
+        ordinal: {
+            "ordinal": ordinal,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "direct",
+            "target_identity": target_identity,
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": None,
+        }
+        for ordinal in (2, 3)
+    }
+    candidate_rows = {
+        ordinal: {
+            **row,
+            "target_identity": f"candidate-local-coff:{name}",
+        }
+        for ordinal, row in expected_rows.items()
+    }
+    invocation_indices = _candidate_static_invocation_indices(
+        candidate,
+        caller_start="0x0",
+        caller_end_exclusive=(
+            hex(len(caller.data)) if caller is not None else "0x0"
+        ),
+    )
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    sites = tuple(
+        (
+            offsets[invocation_indices[ordinal]],
+            candidate.instructions[invocation_indices[ordinal]],
+        )
+        for ordinal in (2, 3)
+        if len(invocation_indices) > ordinal
+        and invocation_indices[ordinal] < len(offsets)
+        and invocation_indices[ordinal] < len(candidate.instructions)
+    )
+    caller_relocation_payload = (
+        _zui_relocation_payload(caller.relocations)
+        if caller is not None
+        else b""
+    )
+    helper_symbols = (
+        tuple(row for row in caller.coff_symbols if row.name == name)
+        if caller is not None
+        else ()
+    )
+    helper_symbol = helper_symbols[0] if len(helper_symbols) == 1 else None
+    if (
+        caller is None
+        or caller.symbol != "?Destructor@HudUiMessageBoxDialog@@QAEXXZ"
+        or caller.section_start != 0
+        or caller.section_end != 0x80
+        or len(caller.data) != 0x80
+        or hashlib.sha256(caller.data).hexdigest()
+        != "68015a679fa5fc7c2a957aec60e384918861808753c18831a75b04aa9c5aeda8"
+        or len(caller.relocations) != 8
+        or hashlib.sha256(caller_relocation_payload).hexdigest()
+        != "6186105d379da8374cff0f301accc69d118f3a59c36b6436d24adb33dd0cd1bf"
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in caller.relocations
+            )
+            for index in range(len(caller.data))
+        )
+        or len(invocation_indices) != len(result)
+        or len(expected) != len(result)
+        or tuple(offset for offset, _instruction in sites) != (0x46, 0x51)
+        or any(
+            _instruction_mnemonic(instruction) != "call"
+            or _instruction_operand(instruction).strip() != name
+            or bytes(int(value, 16) for value in instruction.bytes)
+            != b"\xe8\0\0\0\0"
+            for _offset, instruction in sites
+        )
+        or tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in caller.relocations
+            if row.offset in {0x47, 0x52}
+        )
+        != (
+            (0x47, IMAGE_REL_I386_REL32, name),
+            (0x52, IMAGE_REL_I386_REL32, name),
+        )
+        or any(
+            dict(expected[ordinal]) != expected_rows[ordinal]
+            or result[ordinal] != candidate_rows[ordinal]
+            for ordinal in (2, 3)
+        )
+        or indexes.by_address.get("0x4b50c0") != target_identity
+        or target_identity in indexes.provider_ids
+        or helper is None
+        or helper.symbol != name
+        or len(helper.data) != 0x10
+        or hashlib.sha256(helper.data).hexdigest()
+        != "49d8ae08de35cc5eb5e48e218fb1d69c89e98bb0e0d2bd17447a7876a06eb8b6"
+        or helper.section_size != 0x10
+        or helper.section_is_comdat is not True
+        or helper.comdat_selection != 1
+        or helper.section_external_functions != (name,)
+        or helper.relocations
+        or any(helper.relocation_mask)
+        or not helper.source_provenance.replace("\\", "/").endswith(
+            "/src/GameZRecoil/zUI/zui.cpp"
+        )
+        or helper_symbol is None
+        or helper_symbol.value != 0
+        or helper_symbol.section_number <= 0
+        or helper_symbol.symbol_type != 0x20
+        or helper_symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
+        or helper_symbol.natural_end != 0x10
+        or helper_symbol.section_size != 0x10
+        or not (helper_symbol.section_characteristics & IMAGE_SCN_LNK_COMDAT)
+    ):
+        raise ValueError(
+            f"{prefix} rejects caller/helper body, relocation, COMDAT, "
+            "call-site, expected identity, or occurrence drift"
+        )
+    for ordinal in (2, 3):
+        result[ordinal] = deepcopy(expected_rows[ordinal])
+    return result
+
+
 def _zui_candidate_local_vector_occurrence_projection(
     expected: Sequence[Mapping[str, Any]],
     candidate_contract: Sequence[Mapping[str, Any]],
@@ -36940,6 +37409,547 @@ def _zui_candidate_local_vector_occurrence_projection(
         "projected_contract": deepcopy(projected),
         "definition_symbols": sorted(helper_specs),
         "helper_graph": helper_receipts,
+        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
+    }
+
+
+def _zui_composite_vector_occurrence_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    """Project two exact VC5 composite-entry vector occurrences.
+
+    Retail retains the zero-range ``std::copy`` occurrence in the composite
+    constructor but inlines that call in the governed candidate.  Conversely,
+    retail retains the source-level ``vector::insert`` occurrence in
+    ``ResizeEntryVectorAndRelayout`` while the governed candidate exposes its
+    complete VC5 helper graph.  Authenticate the exact callers, call sites,
+    relocation transcripts, and (for insert) every reachable compiler-local
+    definition before projecting only those two occurrence boundaries.  The
+    projected rows are copied from retail expected truth and remain subject to
+    the ordinary full-contract comparator.
+    """
+
+    result = [dict(row) for row in candidate_contract]
+    start = normalize_address(caller_start)
+    profiles: Mapping[str, Mapping[str, Any]] = {
+        "0x4bb790": {
+            "end": "0x4bb960",
+            "identity": "symbol:recoil:function:0x4bb790",
+            "symbol": "??0HudUiCompositePanel@@QAE@H@Z",
+            "size": 0x1F0,
+            "body_sha256": (
+                "6a36d3345ab2ff81e0abbbf8a6d8729ec7d19a47adfc1ca30e43864b5f4bbf41"
+            ),
+            "relocation_count": 16,
+            "relocation_sha256": (
+                "b8e9cdea820b5a1a1f863fb87fcce958a2a5c6353d96346ca5d4967e4d564c4f"
+            ),
+            "invocation_offsets": (
+                0x2A,
+                0x67,
+                0x108,
+                0x148,
+                0x16C,
+                0x19C,
+                0x1A7,
+                0x1B3,
+                0x1BB,
+                0x1C6,
+            ),
+            "mode": "copy",
+        },
+        "0x4bbca0": {
+            "end": "0x4bbe90",
+            "identity": "symbol:recoil:function:0x4bbca0",
+            "symbol": (
+                "?ResizeEntryVectorAndRelayout@HudUiCompositePanel@@QAEXH@Z"
+            ),
+            "size": 0x350,
+            "body_sha256": (
+                "b9bc308e9421a4acbf657efe8cad9eddce25512e5c7833012a8d36eedc3c018c"
+            ),
+            "relocation_count": 26,
+            "relocation_sha256": (
+                "aa83615f2df0ef206e925d5aefc6c202df67438245af67dac0b6397934699c21"
+            ),
+            "invocation_offsets": (
+                0x72,
+                0x117,
+                0x124,
+                0x13D,
+                0x14F,
+                0x161,
+                0x17D,
+                0x18C,
+                0x195,
+                0x1B1,
+                0x1F8,
+                0x220,
+                0x22F,
+                0x254,
+                0x261,
+                0x270,
+                0x2A6,
+                0x2CA,
+                0x2F4,
+                0x308,
+                0x311,
+                0x31B,
+                0x324,
+                0x32A,
+            ),
+            "mode": "insert",
+        },
+    }
+    profile = profiles.get(start)
+    if profile is None:
+        return result, None
+
+    prefix = "zUI composite-entry vector occurrence graph"
+    caller = candidate.caller_definition
+    relocation_payload = (
+        _zui_relocation_payload(caller.relocations)
+        if caller is not None
+        else b""
+    )
+    invocation_indices = _candidate_static_invocation_indices(
+        candidate,
+        caller_start="0x0",
+        caller_end_exclusive=(
+            hex(len(caller.data)) if caller is not None else "0x0"
+        ),
+    )
+    instruction_offsets = _candidate_complete_instruction_offsets(candidate)
+    invocation_offsets = tuple(
+        int(instruction_offsets[index])
+        for index in invocation_indices
+        if index < len(instruction_offsets)
+        and instruction_offsets[index] is not None
+    )
+    if (
+        caller_identity != profile["identity"]
+        or indexes.by_address.get(start) != caller_identity
+        or caller_identity in indexes.provider_ids
+        or normalize_address(caller_end_exclusive) != profile["end"]
+        or caller is None
+        or caller.symbol != profile["symbol"]
+        or len(caller.data) != profile["size"]
+        or hashlib.sha256(caller.data).hexdigest()
+        != profile["body_sha256"]
+        or len(caller.relocations) != profile["relocation_count"]
+        or hashlib.sha256(relocation_payload).hexdigest()
+        != profile["relocation_sha256"]
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in caller.relocations
+            )
+            for index in range(len(caller.data))
+        )
+        or len(invocation_indices) != len(result)
+        or invocation_offsets != profile["invocation_offsets"]
+    ):
+        raise ValueError(
+            f"{prefix} rejects caller identity, boundary, body, relocation, "
+            f"mask, or invocation drift at {start}: "
+            f"identity={caller_identity!r}, "
+            f"tracker_identity={indexes.by_address.get(start)!r}, "
+            f"end={normalize_address(caller_end_exclusive)!r}, "
+            f"symbol={getattr(caller, 'symbol', None)!r}, "
+            f"size={len(caller.data) if caller is not None else None!r}, "
+            f"body_sha256={hashlib.sha256(caller.data).hexdigest() if caller is not None else None!r}, "
+            f"relocation_count={len(caller.relocations) if caller is not None else None!r}, "
+            f"relocation_sha256={hashlib.sha256(relocation_payload).hexdigest()!r}, "
+            f"invocation_offsets={invocation_offsets!r}"
+        )
+
+    operator_symbol = "??4HudUiCompositePanelEntry@@QAEAAU0@ABU0@@Z"
+    operator_identity = "symbol:recoil:function:0x4bc3a0"
+    if profile["mode"] == "copy":
+        copy_identity = "symbol:recoil:function:0x4bc320"
+        required_expected = {
+            "ordinal": 3,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "direct",
+            "target_identity": copy_identity,
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": None,
+        }
+        required_candidate = {
+            **required_expected,
+            "target_identity": operator_identity,
+        }
+        relocation_rows = tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in caller.relocations
+            if row.offset == 0x149
+        )
+        if (
+            len(expected) != 10
+            or len(result) != 10
+            or dict(expected[3]) != required_expected
+            or result[3] != required_candidate
+            or indexes.by_address.get("0x4bc320") != copy_identity
+            or indexes.by_address.get("0x4bc3a0") != operator_identity
+            or relocation_rows
+            != ((0x149, IMAGE_REL_I386_REL32, operator_symbol),)
+        ):
+            raise ValueError(
+                f"{prefix} rejects the exact zero-range copy occurrence: "
+                f"expected={dict(expected[3]) if len(expected) > 3 else None!r}, "
+                f"candidate={result[3] if len(result) > 3 else None!r}, "
+                f"relocations={relocation_rows!r}"
+            )
+        projected = deepcopy(result)
+        projected[3] = deepcopy(required_expected)
+        return projected, {
+            "kind": "candidate-local-helper-graph-expansion-receipt",
+            "contract_version": 1,
+            "candidate_expected_truth": False,
+            "caller_identity": caller_identity,
+            "raw_physical_calls": deepcopy(result),
+            "excluded_raw_physical_calls": [deepcopy(result[3])],
+            "expanded_invocation_leaves": [deepcopy(required_expected)],
+            "projected_contract": deepcopy(projected),
+            "definition_symbols": [],
+            "helper_graph": [],
+            "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
+        }
+
+    size_symbol = (
+        "?size@?$vector@UHudUiCompositePanelEntry@@"
+        "V?$allocator@UHudUiCompositePanelEntry@@@std@@@std@@QBEIXZ"
+    )
+    ucopy_symbol = (
+        "?_Ucopy@?$vector@UHudUiCompositePanelEntry@@"
+        "V?$allocator@UHudUiCompositePanelEntry@@@std@@@std@@"
+        "IAEPAUHudUiCompositePanelEntry@@PBU3@0PAU3@@Z"
+    )
+    ufill_symbol = (
+        "?_Ufill@?$vector@UHudUiCompositePanelEntry@@"
+        "V?$allocator@UHudUiCompositePanelEntry@@@std@@@std@@"
+        "IAEXPAUHudUiCompositePanelEntry@@IABU3@@Z"
+    )
+    destroy_symbol = (
+        "?_Destroy@?$vector@UHudUiCompositePanelEntry@@"
+        "V?$allocator@UHudUiCompositePanelEntry@@@std@@@std@@"
+        "IAEXPAUHudUiCompositePanelEntry@@0@Z"
+    )
+    fill_symbol = "?fill@std@@YIXPAUHudUiCompositePanelEntry@@0ABU2@@Z"
+    copy_backward_symbol = (
+        "?copy_backward@std@@YIPAUHudUiCompositePanelEntry@@PAU2@00@Z"
+    )
+    copy_constructor_symbol = "??0HudUiCompositePanelEntry@@QAE@ABU0@@Z"
+    helper_specs: Mapping[str, tuple[int, str, tuple[tuple[int, int, str], ...], str]] = {
+        size_symbol: (
+            0x30,
+            "24b4899039faffc43f6b37a3c3c414a8b9d7f9d23d21a5f14767c3c2362c6c45",
+            (),
+            "/VC/INCLUDE/vector",
+        ),
+        ucopy_symbol: (
+            0x40,
+            "9e99f0ab9bba59123f48ea5639e4afd628d62a0b3fe3820fa0fe734da63de6d2",
+            ((0x1B, IMAGE_REL_I386_REL32, copy_constructor_symbol),),
+            "/VC/INCLUDE/vector",
+        ),
+        ufill_symbol: (
+            0x30,
+            "40ca2b6792c1941b7e383111a4504c8b93a308514c674c3b48f04f2db64bca99",
+            ((0x1B, IMAGE_REL_I386_REL32, copy_constructor_symbol),),
+            "/VC/INCLUDE/vector",
+        ),
+        destroy_symbol: (
+            0x30,
+            "e328be44293829469fa56b44003ad24c16872a2e856b990665b3141e92f229ef",
+            (),
+            "/VC/INCLUDE/vector",
+        ),
+        fill_symbol: (
+            0x30,
+            "6ee2f8372287d4e6cf19f99b74ea4e9b88cc5504ecd630d59b04339ae27b3512",
+            ((0x13, IMAGE_REL_I386_REL32, operator_symbol),),
+            "/src/GameZRecoil/zHud/zhud_ui.h",
+        ),
+        copy_backward_symbol: (
+            0x30,
+            "ce96981769aa320f8abd0055035c6e6047aeaf43668e9c3c38cb4e6b176d8c67",
+            ((0x1F, IMAGE_REL_I386_REL32, operator_symbol),),
+            "/src/GameZRecoil/zHud/zhud_ui.h",
+        ),
+    }
+    helper_receipts: list[dict[str, Any]] = []
+    for name, (size, body_sha256, relocations, provenance) in helper_specs.items():
+        definition = candidate.tu_local_function_definitions.get(name)
+        observed_relocations = (
+            tuple(
+                (row.offset, row.type, row.symbol_name)
+                for row in definition.relocations
+            )
+            if definition is not None
+            else ()
+        )
+        if (
+            definition is None
+            or definition.symbol != name
+            or len(definition.data) != size
+            or hashlib.sha256(definition.data).hexdigest() != body_sha256
+            or definition.section_size != size
+            or definition.section_is_comdat is not True
+            or definition.comdat_selection != 2
+            or definition.section_external_functions != (name,)
+            or observed_relocations != relocations
+            or len(definition.relocation_mask) != len(definition.data)
+            or any(
+                definition.relocation_mask[index]
+                != any(
+                    row.offset <= index < row.offset + 4
+                    for row in definition.relocations
+                )
+                for index in range(len(definition.data))
+            )
+            or not definition.source_provenance.replace("\\", "/").endswith(
+                provenance
+            )
+        ):
+            raise ValueError(
+                f"{prefix} rejects helper body, relocation, COMDAT, or "
+                f"provenance drift for {name!r}: "
+                f"size={len(definition.data) if definition is not None else None!r}, "
+                f"body_sha256={hashlib.sha256(definition.data).hexdigest() if definition is not None else None!r}, "
+                f"relocations={observed_relocations!r}, "
+                f"provenance={getattr(definition, 'source_provenance', None)!r}"
+            )
+        helper_receipts.append({
+            "symbol": name,
+            "body_bytes_hex": _direct_bytes(definition.data).hex(),
+            "relocations": [
+                {"offset": offset, "type": kind, "symbol": target}
+                for offset, kind, target in relocations
+            ],
+        })
+
+    exact_insert_relocations = (
+        (0x118, size_symbol),
+        (0x125, size_symbol),
+        (0x13E, "??2@YAPAXI@Z"),
+        (0x150, ucopy_symbol),
+        (0x162, ufill_symbol),
+        (0x17E, ucopy_symbol),
+        (0x18D, destroy_symbol),
+        (0x196, "??3@YAXPAX@Z"),
+        (0x1B2, size_symbol),
+        (0x1F9, ucopy_symbol),
+        (0x221, ufill_symbol),
+        (0x230, fill_symbol),
+        (0x255, ucopy_symbol),
+        (0x262, copy_backward_symbol),
+        (0x271, fill_symbol),
+    )
+    observed_insert_relocations = tuple(
+        (row.offset, row.symbol_name)
+        for row in caller.relocations
+        if any(row.offset == offset for offset, _ in exact_insert_relocations)
+        and row.type == IMAGE_REL_I386_REL32
+    )
+    insert_identity = "symbol:recoil:function:0x4bbff0"
+    required_insert = {
+        "ordinal": 1,
+        "form": "call",
+        "dispatch": "direct",
+        "identity_kind": "direct",
+        "target_identity": insert_identity,
+        "storage_identity": "",
+        "slot_displacement": None,
+        "cleanup_bytes": None,
+    }
+    raw_insert_rows = result[1:16]
+    if (
+        len(expected) != 10
+        or len(result) != 24
+        or dict(expected[1]) != required_insert
+        or indexes.by_address.get("0x4bbff0") != insert_identity
+        or observed_insert_relocations != exact_insert_relocations
+        or len(raw_insert_rows) != 15
+        or any(
+            row.get("form") != "call"
+            or row.get("dispatch") != "direct"
+            or row.get("identity_kind") not in {"direct", "provider"}
+            or row.get("storage_identity")
+            or row.get("slot_displacement") is not None
+            for row in raw_insert_rows
+        )
+    ):
+        raise ValueError(
+            f"{prefix} rejects the exact vector-insert occurrence: "
+            f"expected={dict(expected[1]) if len(expected) > 1 else None!r}, "
+            f"candidate_count={len(result)}, "
+            f"raw_rows={raw_insert_rows!r}, "
+            f"relocations={observed_insert_relocations!r}"
+        )
+    projected = [deepcopy(result[0]), deepcopy(required_insert)]
+    for row in result[16:]:
+        projected_row = deepcopy(row)
+        projected_row["ordinal"] = len(projected)
+        projected.append(projected_row)
+    if len(projected) != len(expected):
+        raise ValueError(f"{prefix} rejects projected population drift")
+    return projected, {
+        "kind": "candidate-local-helper-graph-expansion-receipt",
+        "contract_version": 1,
+        "candidate_expected_truth": False,
+        "caller_identity": caller_identity,
+        "raw_physical_calls": deepcopy(result),
+        "excluded_raw_physical_calls": deepcopy(raw_insert_rows),
+        "expanded_invocation_leaves": [deepcopy(required_insert)],
+        "projected_contract": deepcopy(projected),
+        "definition_symbols": sorted(helper_specs),
+        "helper_graph": helper_receipts,
+        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
+    }
+
+
+def _zui_rebuild_text_rect_tail_merge_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    """Expand one exact VC5-folded image-allocation branch occurrence."""
+
+    result = [dict(row) for row in candidate_contract]
+    if (
+        caller_identity != "symbol:recoil:function:0x4bac10"
+        or normalize_address(caller_start) != "0x4bac10"
+        or normalize_address(caller_end_exclusive) != "0x4bb0c0"
+    ):
+        return result, None
+
+    prefix = "zUI RebuildTextRect tail-merged allocation occurrence"
+    caller = candidate.caller_definition
+    relocation_payload = (
+        _zui_relocation_payload(caller.relocations)
+        if caller is not None
+        else b""
+    )
+    create_symbol = "?Create@zVid_Image@@YAPAUzVidImagePartial@@XZ"
+    format_symbol = "?SetFormatCode@zVid_Image@@YIHPAUzVidImagePartial@@E@Z"
+    destroy_symbol = "?Destroy@zVid_Image@@YIHPAUzVidImagePartial@@@Z"
+    set_size_symbol = "?SetSize@zVid_Image@@YIHPAUzVidImagePartial@@FF@Z"
+    reviewed_relocations = tuple(
+        (row.offset, row.type, row.symbol_name)
+        for row in (caller.relocations if caller is not None else ())
+        if row.symbol_name
+        in {destroy_symbol, create_symbol, format_symbol, set_size_symbol}
+    )
+    required_relocations = (
+        (0x131, IMAGE_REL_I386_REL32, destroy_symbol),
+        (0x136, IMAGE_REL_I386_REL32, create_symbol),
+        (0x145, IMAGE_REL_I386_REL32, format_symbol),
+        (0x153, IMAGE_REL_I386_REL32, set_size_symbol),
+    )
+    if (
+        indexes.by_address.get("0x4bac10") != caller_identity
+        or caller_identity in indexes.provider_ids
+        or caller is None
+        or caller.symbol != "?RebuildTextRect@HudUiPanel@@UAEXXZ"
+        or len(caller.data) != 0x460
+        or hashlib.sha256(caller.data).hexdigest()
+        != "3438ff84b76127e8b6e814cb4199b6215171624100650115452d0babf3a69f18"
+        or len(caller.relocations) != 25
+        or hashlib.sha256(relocation_payload).hexdigest()
+        != "0dae4f69748db31d411ddcdc1adc6498b6e38a811c3683c1e465a10683ea8f4a"
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in caller.relocations
+            )
+            for index in range(len(caller.data))
+        )
+        or reviewed_relocations != required_relocations
+    ):
+        raise ValueError(
+            f"{prefix} rejects caller body, relocation, mask, or identity "
+            f"drift: size={len(caller.data) if caller is not None else None!r}, "
+            f"body_sha256={hashlib.sha256(caller.data).hexdigest() if caller is not None else None!r}, "
+            f"relocation_count={len(caller.relocations) if caller is not None else None!r}, "
+            f"relocation_sha256={hashlib.sha256(relocation_payload).hexdigest()!r}, "
+            f"reviewed_relocations={reviewed_relocations!r}"
+        )
+
+    create_identity = "symbol:recoil:function:0x46ec00"
+    format_identity = "symbol:recoil:function:0x46ec60"
+    required_create = {
+        "form": "call",
+        "dispatch": "direct",
+        "identity_kind": "direct",
+        "target_identity": create_identity,
+        "storage_identity": "",
+        "slot_displacement": None,
+        "cleanup_bytes": None,
+    }
+    required_format = {
+        **required_create,
+        "target_identity": format_identity,
+    }
+    if (
+        len(expected) != 30
+        or len(result) != 28
+        or indexes.by_address.get("0x46ec00") != create_identity
+        or indexes.by_address.get("0x46ec60") != format_identity
+        or dict(expected[4]) != {"ordinal": 4, **required_create}
+        or dict(expected[5]) != {"ordinal": 5, **required_format}
+        or dict(expected[6]) != {"ordinal": 6, **required_create}
+        or dict(expected[7]) != {"ordinal": 7, **required_format}
+        or result[4] != {"ordinal": 4, **required_create}
+        or result[5] != {"ordinal": 5, **required_format}
+    ):
+        raise ValueError(
+            f"{prefix} rejects retail/candidate occurrence population: "
+            f"expected_count={len(expected)}, candidate_count={len(result)}, "
+            f"expected_rows={[dict(row) for row in expected[4:8]]!r}, "
+            f"candidate_rows={result[4:6]!r}"
+        )
+
+    expanded = [
+        {"ordinal": 6, **required_create},
+        {"ordinal": 7, **required_format},
+    ]
+    projected = deepcopy(result[:6]) + deepcopy(expanded)
+    for row in result[6:]:
+        projected_row = deepcopy(row)
+        projected_row["ordinal"] = len(projected)
+        projected.append(projected_row)
+    if len(projected) != len(expected):
+        raise ValueError(f"{prefix} rejects projected population drift")
+    return projected, {
+        "kind": "candidate-local-helper-graph-expansion-receipt",
+        "contract_version": 1,
+        "candidate_expected_truth": False,
+        "caller_identity": caller_identity,
+        "raw_physical_calls": deepcopy(result),
+        "excluded_raw_physical_calls": [],
+        "expanded_invocation_leaves": deepcopy(expanded),
+        "projected_contract": deepcopy(projected),
+        "definition_symbols": [],
+        "helper_graph": [],
         "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
     }
 
@@ -37265,6 +38275,250 @@ def _zui_check_toggle_inline_helper_occurrence_projection(
     }
 
 
+def _zui_message_stack_constructor_occurrence_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    """Expand one exact implicit message-stack constructor occurrence.
+
+    The recovered source uses ordinary C++ construction, so VC5 keeps the
+    implicit class constructor as a same-object SELECT_ANY COMDAT.  Retail
+    inlined its two semantic leaves into the authored ``Constructor`` body.
+    Authenticate the complete caller, local constructor definition, and its
+    relocation graph before replacing only that physical wrapper call with
+    the container-constructor and EH-array-constructor leaves.
+    """
+
+    result = [dict(row) for row in candidate_contract]
+    start = normalize_address(caller_start)
+    cases: Mapping[str, Mapping[str, Any]] = {
+        "0x4bd020": {
+            "end": "0x4bd100",
+            "caller_identity": "symbol:recoil:function:0x4bd020",
+            "caller_symbol": "?Constructor@HudUiTopMessageStack@@QAEPAU1@XZ",
+            "caller_size": 0xA0,
+            "caller_sha256": "6461f2733ec1d320e8727394a12f272c6332463eba3fb9c707fd3e06fbba2911",
+            "caller_relocation_count": 3,
+            "caller_relocation_sha256": "b8b04d2f395096eb27f7b94a19ebc60c352b86df598f00389b7a2bba9c6e38d3",
+            "helper_symbol": "??0HudUiTopMessageStack@@QAE@XZ",
+            "vftable_symbol": "??_7HudUiTopMessageStack@@6B@",
+            "wrapper_offset": 0x0B,
+        },
+        "0x4bd2d0": {
+            "end": "0x4bd3d0",
+            "caller_identity": "symbol:recoil:function:0x4bd2d0",
+            "caller_symbol": "?Constructor@HudUiChatMessageStack@@QAEPAU1@XZ",
+            "caller_size": 0xC0,
+            "caller_sha256": "d3b45ea0e1f608c9d493cc2e59fd1fe34f2540e79e725fd00f826c622e8c1c0b",
+            "caller_relocation_count": 3,
+            "caller_relocation_sha256": "35bcb38b703f676b70cf679b805f0f237f896fd51bd91fec4a58559b4421d18c",
+            "helper_symbol": "??0HudUiChatMessageStack@@QAE@XZ",
+            "vftable_symbol": "??_7HudUiChatMessageStack@@6B@",
+            "wrapper_offset": 0x0B,
+        },
+    }
+    spec = cases.get(start)
+    if spec is None:
+        return result, None
+    prefix = "zUI message-stack implicit-constructor occurrence graph"
+    caller = candidate.caller_definition
+    helper_name = str(spec["helper_symbol"])
+    helper = candidate.tu_local_function_definitions.get(helper_name)
+    caller_relocation_payload = (
+        _zui_relocation_payload(caller.relocations)
+        if caller is not None
+        else b""
+    )
+    helper_relocation_rows = (
+        tuple((row.offset, row.type, row.symbol_name) for row in helper.relocations)
+        if helper is not None
+        else ()
+    )
+    helper_label = (
+        helper_relocation_rows[0][2]
+        if helper_relocation_rows
+        else ""
+    )
+    required_helper_relocations = (
+        (0x03, IMAGE_REL_I386_DIR32, helper_label),
+        (0x09, IMAGE_REL_I386_DIR32, "__except_list"),
+        (0x11, IMAGE_REL_I386_DIR32, "__except_list"),
+        (0x1E, IMAGE_REL_I386_REL32, HUD_CONTAINER_CONSTRUCTOR_SYMBOL),
+        (0x23, IMAGE_REL_I386_DIR32, "??1HudUiPanel@@UAE@XZ"),
+        (0x28, IMAGE_REL_I386_DIR32, "??_FHudUiPanel@@QAEXXZ"),
+        (0x40, IMAGE_REL_I386_REL32, "??_L@YGXPAXIHP6EX0@Z1@Z"),
+        (0x4A, IMAGE_REL_I386_DIR32, str(spec["vftable_symbol"])),
+        (0x53, IMAGE_REL_I386_DIR32, "__except_list"),
+    )
+    if (
+        caller_identity != spec["caller_identity"]
+        or indexes.by_address.get(start) != caller_identity
+        or caller_identity in indexes.provider_ids
+        or normalize_address(caller_end_exclusive) != spec["end"]
+        or caller is None
+        or caller.symbol != spec["caller_symbol"]
+        or len(caller.data) != spec["caller_size"]
+        or hashlib.sha256(caller.data).hexdigest()
+        != spec["caller_sha256"]
+        or len(caller.relocations) != spec["caller_relocation_count"]
+        or hashlib.sha256(caller_relocation_payload).hexdigest()
+        != spec["caller_relocation_sha256"]
+        or len(caller.relocation_mask) != len(caller.data)
+        or helper is None
+        or helper.symbol != helper_name
+        or len(helper.data) != 0x60
+        or hashlib.sha256(helper.data).hexdigest()
+        != "6b8bbbeac5c5ef39470362e1fa9b3cfb3e947544572f9b7f8db28ceccc313bae"
+        or helper.section_size != 0x60
+        or helper.section_is_comdat is not True
+        or helper.comdat_selection != 2
+        or helper.section_external_functions != (helper_name,)
+        or not re.fullmatch(r"\$L[0-9]+", helper_label)
+        or helper_relocation_rows != required_helper_relocations
+        or len(helper.relocation_mask) != len(helper.data)
+        or any(
+            helper.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in helper.relocations
+            )
+            for index in range(len(helper.data))
+        )
+        or not helper.source_provenance.replace("\\", "/").endswith(
+            "/src/GameZRecoil/zUI/zui.cpp"
+        )
+    ):
+        raise ValueError(
+            f"{prefix} rejects caller/helper body, relocation, COMDAT, "
+            "identity, boundary, or provenance drift: "
+            f"caller_identity={caller_identity!r}, "
+            f"tracker_identity={indexes.by_address.get(start)!r}, "
+            f"end={normalize_address(caller_end_exclusive)!r}, "
+            f"caller_symbol={getattr(caller, 'symbol', None)!r}, "
+            f"caller_size={len(caller.data) if caller is not None else None!r}, "
+            f"caller_sha256={hashlib.sha256(caller.data).hexdigest() if caller is not None else None!r}, "
+            f"caller_relocation_count={len(caller.relocations) if caller is not None else None!r}, "
+            f"caller_relocation_sha256={hashlib.sha256(caller_relocation_payload).hexdigest()!r}, "
+            f"caller_mask_count={len(caller.relocation_mask) if caller is not None else None!r}, "
+            f"helper_symbol={getattr(helper, 'symbol', None)!r}, "
+            f"helper_size={len(helper.data) if helper is not None else None!r}, "
+            f"helper_sha256={hashlib.sha256(helper.data).hexdigest() if helper is not None else None!r}, "
+            f"helper_section_size={getattr(helper, 'section_size', None)!r}, "
+            f"helper_comdat={getattr(helper, 'section_is_comdat', None)!r}/"
+            f"{getattr(helper, 'comdat_selection', None)!r}, "
+            f"helper_external_functions={getattr(helper, 'section_external_functions', None)!r}, "
+            f"helper_label={helper_label!r}, "
+            f"helper_relocations={helper_relocation_rows!r}, "
+            f"helper_mask_count={len(helper.relocation_mask) if helper is not None else None!r}, "
+            f"helper_provenance={getattr(helper, 'source_provenance', None)!r}"
+        )
+    caller_helper_rows = tuple(
+        row
+        for row in caller.relocations
+        if row.symbol_name == helper_name
+    )
+    wrapper_offset = int(spec["wrapper_offset"])
+    if (
+        len(caller_helper_rows) != 1
+        or caller_helper_rows[0].offset - caller.section_start
+        != wrapper_offset + 1
+        or caller_helper_rows[0].type != IMAGE_REL_I386_REL32
+        or caller_helper_rows[0].symbol_name != helper_name
+    ):
+        raise ValueError(f"{prefix} rejects the exact caller wrapper site")
+    if (
+        not caller_helper_rows
+        or caller.data[wrapper_offset:wrapper_offset + 5]
+        != b"\xe8\x00\x00\x00\x00"
+        or not all(
+            caller.relocation_mask[wrapper_offset + 1:wrapper_offset + 5]
+        )
+        or caller.relocation_mask[wrapper_offset]
+    ):
+        raise ValueError(f"{prefix} rejects the exact caller wrapper encoding")
+
+    direct_container_identity = "symbol:recoil:function:0x4bc780"
+    eh_array_identity = "provider:recoil:function:0x4c6000"
+    required_leaves = [
+        {
+            "ordinal": 0,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "direct",
+            "target_identity": direct_container_identity,
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": None,
+        },
+        {
+            "ordinal": 1,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "provider",
+            "target_identity": eh_array_identity,
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": None,
+        },
+    ]
+    raw_wrapper = {
+        "ordinal": 0,
+        "form": "call",
+        "dispatch": "direct",
+        "identity_kind": "direct",
+        "target_identity": f"candidate-local-coff:{helper_name}",
+        "storage_identity": "",
+        "slot_displacement": None,
+        "cleanup_bytes": None,
+    }
+    if (
+        indexes.by_address.get("0x4bc780") != direct_container_identity
+        or direct_container_identity in indexes.provider_ids
+        or indexes.by_address.get("0x4c6000") != eh_array_identity
+        or eh_array_identity not in indexes.provider_ids
+        or len(expected) != len(result) + 1
+        or [dict(row) for row in expected[:2]] != required_leaves
+        or not result
+        or result[0] != raw_wrapper
+    ):
+        raise ValueError(
+            f"{prefix} rejects retail leaves or raw wrapper population drift: "
+            f"expected_count={len(expected)}, candidate_count={len(result)}, "
+            f"expected_prefix={[dict(row) for row in expected[:2]]!r}, "
+            f"raw_prefix={result[:2]!r}, "
+            f"container_identity={indexes.by_address.get('0x4bc780')!r}, "
+            f"eh_identity={indexes.by_address.get('0x4c6000')!r}"
+        )
+    projected = [dict(row) for row in required_leaves]
+    for row in result[1:]:
+        projected_row = dict(row)
+        projected_row["ordinal"] = len(projected)
+        projected.append(projected_row)
+    return projected, {
+        "kind": "candidate-local-helper-graph-expansion-receipt",
+        "contract_version": 1,
+        "candidate_expected_truth": False,
+        "caller_identity": caller_identity,
+        "raw_physical_calls": deepcopy(result),
+        "excluded_raw_physical_calls": [deepcopy(result[0])],
+        "expanded_invocation_leaves": deepcopy(required_leaves),
+        "projected_contract": deepcopy(projected),
+        "helper_graph": [{
+            "symbol": helper_name,
+            "body_sha256": hashlib.sha256(helper.data).hexdigest(),
+            "relocations": [list(row) for row in helper_relocation_rows],
+            "invocation_offsets": [0x1D, 0x3F],
+        }],
+        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
+    }
+
+
 def _zui_exact_stack_receiver_storage_projection(
     expected: Sequence[Mapping[str, Any]],
     candidate_contract: Sequence[Mapping[str, Any]],
@@ -37375,6 +38629,141 @@ def _zui_exact_stack_receiver_storage_projection(
             f"{prefix} rejects exact bridge population drift: "
             f"observed={tuple(bridged_ordinals)!r}"
         )
+    return result
+
+
+def _zui_r4905_exact_receiver_rendering_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+) -> list[dict[str, Any]]:
+    """Normalize two exact equivalent receiver renderings in frozen callers.
+
+    VC5 expresses the same ``this`` member once through an address-valued
+    intermediate and renders one cdecl entry argument after a four-byte push
+    delta.  Both candidate bodies and relocation transcripts are frozen here;
+    only the single otherwise-identical retail row may supply its storage
+    spelling.
+    """
+
+    result = [dict(row) for row in candidate_contract]
+    start = normalize_address(caller_start)
+    cases: Mapping[str, tuple[int, str, str]] = {
+        "0x4b8de0": (
+            2,
+            "load(address(this+0x16c))",
+            "load(this+0x16c)",
+        ),
+        "0x4bbac0": (
+            2,
+            "load(load(stack+0xc))",
+            "load(load(stack+0x8))",
+        ),
+        "0x4bf800": (
+            0,
+            "load(load(this+0xc8))",
+            "load(exact-receiver-field(this,+0xc8))",
+        ),
+        "0x4bf820": (
+            0,
+            "load(load(this+0xc8))",
+            "load(exact-receiver-field(this,+0xc8))",
+        ),
+    }
+    case = cases.get(start)
+    if case is None:
+        return result
+    receiver_profiles: Mapping[str, Mapping[str, Any]] = {
+        "0x4bf800": {
+            "end": "0x4bf820",
+            "symbol": "?OnActivate@HudUiMessageBoxOkButton@@UAEXXZ",
+            "size": 0x20,
+            "body_sha256": (
+                "85050db204030aff0f966fc12b97b709e"
+                "65a262224f33a1df7b4254a5acf8afa"
+            ),
+            "relocation_count": 1,
+            "relocation_sha256": (
+                "a27124e9a3670d84fffc55e4e0c94fe"
+                "2aa4668bb1b5dd4c8d10e0b9d0f3af8d5"
+            ),
+        },
+        "0x4bf820": {
+            "end": "0x4bf840",
+            "symbol": "?OnActivate@HudUiMessageBoxCancelButton@@UAEXXZ",
+            "size": 0x20,
+            "body_sha256": (
+                "4fb576450a503a882c482bb5009edbf973"
+                "ca442e3e198c85f75aaa47364750fe"
+            ),
+            "relocation_count": 1,
+            "relocation_sha256": (
+                "a27124e9a3670d84fffc55e4e0c94fe"
+                "2aa4668bb1b5dd4c8d10e0b9d0f3af8d5"
+            ),
+        },
+    }
+    profile = receiver_profiles.get(
+        start, _ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES.get(start)
+    )
+    if profile is None:
+        raise ValueError(
+            "zUI exact receiver-rendering projection lacks its caller profile"
+        )
+    caller = candidate.caller_definition
+    relocation_payload = (
+        _zui_relocation_payload(caller.relocations)
+        if caller is not None
+        else b""
+    )
+    if (
+        caller_identity != indexes.by_address.get(start)
+        or caller_identity in indexes.provider_ids
+        or normalize_address(caller_end_exclusive) != profile["end"]
+        or caller is None
+        or caller.symbol != profile["symbol"]
+        or len(caller.data) != profile["size"]
+        or hashlib.sha256(caller.data).hexdigest()
+        != profile["body_sha256"]
+        or len(caller.relocations) != profile["relocation_count"]
+        or hashlib.sha256(relocation_payload).hexdigest()
+        != profile["relocation_sha256"]
+        or len(caller.relocation_mask) != len(caller.data)
+        or len(expected) != len(result)
+    ):
+        raise ValueError(
+            "zUI exact receiver-rendering projection rejects caller, "
+            "relocation, boundary, identity, or population drift"
+        )
+    ordinal, candidate_storage, retail_storage = case
+    if ordinal >= len(result):
+        raise ValueError(
+            "zUI exact receiver-rendering projection lacks its reviewed row"
+        )
+    retail_row = dict(expected[ordinal])
+    candidate_row = dict(result[ordinal])
+    if (
+        candidate_row.get("storage_identity") != candidate_storage
+        or retail_row.get("storage_identity") != retail_storage
+    ):
+        raise ValueError(
+            "zUI exact receiver-rendering projection rejects storage drift"
+        )
+    candidate_without_storage = dict(candidate_row)
+    retail_without_storage = dict(retail_row)
+    candidate_without_storage["storage_identity"] = ""
+    retail_without_storage["storage_identity"] = ""
+    if candidate_without_storage != retail_without_storage:
+        raise ValueError(
+            "zUI exact receiver-rendering projection rejects semantic row drift"
+        )
+    candidate_row["storage_identity"] = retail_storage
+    result[ordinal] = candidate_row
     return result
 
 
@@ -38247,21 +39636,13 @@ def _candidate_exact_iat_register_load_proofs(
         object_symbol,
     ) in validated_rows:
         import_name = _candidate_iat_import_name(object_symbol)
-        canonical_rows = [
-            (published_name, published_identity)
-            for published_name, published_identity in indexes.storage_by_name.items()
-            if not _candidate_iat_import_name(published_name)
-            and published_name.casefold() == import_name.casefold()
-            and published_identity == f"iat:{published_name}"
-        ]
-        if len(canonical_rows) != 1:
-            continue
-        canonical_import_name, published_identity = canonical_rows[0]
         route_rows = [
             target
             for target in supplied_targets
             if getattr(target, "import_ordinal", None) is None
-            and getattr(target, "import_name", None) == canonical_import_name
+            and isinstance(getattr(target, "import_name", None), str)
+            and str(getattr(target, "import_name")).casefold()
+            == import_name.casefold()
         ]
         route_keys = {
             (
@@ -38273,16 +39654,21 @@ def _candidate_exact_iat_register_load_proofs(
         }
         if len(route_rows) != 1 or len(route_keys) != 1:
             continue
-        slot, import_dll, _route_name = next(iter(route_keys))
+        _slot, import_dll, route_name = next(iter(route_keys))
         if (
             not import_dll
             or "/" in import_dll
             or "\\" in import_dll
-            or indexes.storage_by_address.get(slot) != published_identity
-            or indexes.storage_by_name.get(canonical_import_name)
-            != published_identity
+            or not route_name
         ):
             continue
+        # This sibling definition is only a negative-lineage guard for the
+        # current load: it proves that a differently named register transfer
+        # has its own unique immutable import producer.  Its own iteration
+        # below must still join the retail-published IAT identity before any
+        # call row is emitted, so this cannot authorize a candidate-only
+        # import or let one import borrow another's identity.
+        published_identity = f"iat:{route_name}"
         independent_iat_definitions.append(
             (
                 instruction_index,
@@ -69638,6 +71024,666 @@ def _zui_cycle_bitmap_entry_candidate_vptr_bridges(
     return result
 
 
+_ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES: Mapping[
+    str, Mapping[str, Any]
+] = {
+    "0x4b8de0": {
+        "end": "0x4b90e0",
+        "symbol": (
+            "?LoadFromZrd@HudCmdBindButtonBase@@UAEHPAUNode@zReader@@"
+            "PAUHudUiBackground@@@Z"
+        ),
+        "size": 0x360,
+        "body_sha256": "74aa09dd1698a8297181264a4702a5bd67452c6bbde04dcc7154c9e2beb3350d",
+        "relocation_count": 16,
+        "relocation_sha256": "ea3d8cfebf1dcbadad9b18ded474af196a63313adc37f08e0dd1991fb952cc42",
+        "sites": (("0x4b8f91", 0x287), ("0x4b9014", 0x2C1)),
+    },
+    "0x4b90e0": {
+        "end": "0x4b92a0",
+        "symbol": "?RebuildBindingSlotWidgets@HudCmdBindButtonBase@@QAEXHH@Z",
+        "size": 0x1C0,
+        "body_sha256": "3b6aa793d37afa076a5e95bc0d4214d66578b05d69c47fc49c18d9c1b635f71e",
+        "relocation_count": 12,
+        "relocation_sha256": "87dbabbc6e25f1652afa3fb8099557cae324be0c86f643479488d59d488e34d4",
+        "sites": (
+            ("0x4b910b", 0x2B),
+            ("0x4b91c8", 0xE8),
+            ("0x4b926b", 0x18D),
+        ),
+    },
+    "0x4b9330": {
+        "end": "0x4b9520",
+        "symbol": "?SetSelectedEntry@HudCmdBindButtonBase@@QAEXH@Z",
+        "size": 0x200,
+        "body_sha256": "6c1ba8248cc3049d9dd163078020a2e8db41281fda6649569061f46721f80ea3",
+        "relocation_count": 3,
+        "relocation_sha256": "749d7d562acbdf6744b45f5930bb7d5a183ce24e3b461a9c34b17e969f97708e",
+        "sites": (
+            ("0x4b9399", 0x69),
+            ("0x4b93ad", 0x7B),
+            ("0x4b93c0", 0x92),
+        ),
+    },
+    "0x4bb980": {
+        "end": "0x4bb9f0",
+        "symbol": "?Update@HudUiCompositePanel@@UAEXM@Z",
+        "size": 0x60,
+        "body_sha256": "f3311dd1004c9120745cc380c381f9ef867d26e8153d58dc75c13c8d866900e0",
+        "relocation_count": 0,
+        "relocation_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "sites": (("0x4bb9cf", 0x4A),),
+    },
+    "0x4bb9f0": {
+        "end": "0x4bbaa0",
+        "symbol": "?SetPos@HudUiCompositePanel@@UAEXHH@Z",
+        "size": 0x70,
+        "body_sha256": "1a4d3564b747b7c25ec5ee1874227754d4f67a503e318a32e12357c1befd377f",
+        "relocation_count": 1,
+        "relocation_sha256": "8e984150e2b1eb5dc99634ec7f754c0cb854e78ad856c5695949d4f58b24a550",
+        "sites": (("0x4bba72", 0x4E),),
+    },
+    "0x4bbac0": {
+        "end": "0x4bbb20",
+        "symbol": "?SetTextFmtV@HudUiCompositePanel@@UAAXPBDPAD@Z",
+        "size": 0x50,
+        "body_sha256": "eaf971a4da53a09dea5b86c83086013a5450415155920d28201786ed90fc2db5",
+        "relocation_count": 0,
+        "relocation_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "sites": (("0x4bbae9", 0x2A), ("0x4bbb0d", 0x39)),
+    },
+    "0x4bbb20": {
+        "end": "0x4bbbe0",
+        "symbol": "?ScrollHistory@HudUiCompositePanel@@UAEXXZ",
+        "size": 0xC0,
+        "body_sha256": "fa8115a96616719dad11a8d46305459c14ef52d7732a3e39787c4be1d2c882b6",
+        "relocation_count": 1,
+        "relocation_sha256": "430ef8ae7d926e9632c53bcfac53faf6adc014b2ca7e21381b7c5c2a82b6e737",
+        "sites": (("0x4bbbb2", 0x92),),
+    },
+    "0x4bbbe0": {
+        "end": "0x4bbca0",
+        "symbol": "?SetFont@HudUiCompositePanel@@UAEXPBDHHHHHH@Z",
+        "size": 0xC0,
+        "body_sha256": "1987c6fe4f1c0a88d52ceb997dfa0c62518c71f745cc7b97b1bc6e7acc810846",
+        "relocation_count": 1,
+        "relocation_sha256": "73a0a57455d06ee4f4a200686b54122d1405fabfc27fd1053d22aa43dc421870",
+        "sites": (("0x4bbc42", 0x62),),
+    },
+    "0x4bbca0": {
+        "end": "0x4bbe90",
+        "symbol": "?ResizeEntryVectorAndRelayout@HudUiCompositePanel@@QAEXH@Z",
+        "size": 0x350,
+        "body_sha256": "b9bc308e9421a4acbf657efe8cad9eddce25512e5c7833012a8d36eedc3c018c",
+        "relocation_count": 26,
+        "relocation_sha256": "aa83615f2df0ef206e925d5aefc6c202df67438245af67dac0b6397934699c21",
+        "sites": (
+            ("0x4bbe12", 0x2CA),
+            ("0x4bbe5a", 0x31B),
+            ("0x4bbe62", 0x324),
+            ("0x4bbe68", 0x32A),
+        ),
+    },
+    "0x4bbed0": {
+        "end": "0x4bbfa0",
+        "symbol": "?ResizeEntryCount@HudUiCompositePanel@@QAEXHH@Z",
+        "size": 0xA0,
+        "body_sha256": "fb7a14bc85fa48ba56c61b5467ed97ab76d3c554c3a68a92f4f827444d5a5906",
+        "relocation_count": 1,
+        "relocation_sha256": "b84560df715ddb9bf2ffb9eaaae7587f0328fead1447750f24cb910cec40f616",
+        "sites": (("0x4bbf69", 0x6C), ("0x4bbf7b", 0x78)),
+    },
+    "0x4bbff0": {
+        "end": "0x4bc320",
+        "symbol": (
+            "?insert@?$vector@UHudUiCompositePanelEntry@@"
+            "V?$allocator@UHudUiCompositePanelEntry@@@std@@@std@@"
+            "QAEXPAUHudUiCompositePanelEntry@@IABU3@@Z"
+        ),
+        "size": 0x330,
+        "body_sha256": "4d2a6e52de63810fe58c3cd16ad8db397114a263794002321a31765509597486",
+        "relocation_count": 11,
+        "relocation_sha256": "e6263f43330c2af0c06245f4ef915cce228197eca29407ad24172af82fe09cdf",
+        "sites": (("0x4bc14e", 0x15D),),
+    },
+    "0x4bd160": {
+        "end": "0x4bd280",
+        "symbol": "?PushLine@HudUiTextStack4@@QAEPAUHudUiPanel@@PBDM@Z",
+        "size": 0x120,
+        "body_sha256": "38a3706e780bc37060610966f96bffab47e620c5026ba0a99062b873931bff23",
+        "relocation_count": 5,
+        "relocation_sha256": "9f554720f9e851dc5fb818435696ddffc1ea25e3a80c472caabb6c2fcaf62351",
+        "sites": (
+            ("0x4bd16d", 0x0D),
+            ("0x4bd1e3", 0x83),
+            ("0x4bd202", 0x9F),
+            ("0x4bd230", 0xCD),
+            ("0x4bd265", 0x102),
+            ("0x4bd271", 0x10E),
+        ),
+    },
+    "0x4bed90": {
+        "end": "0x4bee00",
+        "symbol": (
+            "?zVideoFxPass3Config_QueueElementLocal@zVideo@@YIX"
+            "PAUzVideoFxPass3Config@@HHHHHMM@Z"
+        ),
+        "size": 0x60,
+        "body_sha256": (
+            "bf822d8a52311d2f1a073cdf57f7c2e5"
+            "8b5aa14e87c37fd3e04b23ce4bc5a21e"
+        ),
+        "relocation_count": 1,
+        "relocation_sha256": (
+            "968228cdbc641d4a1e61a91cd22d0bdb"
+            "597b10cf476636efadcf88ffd1f24b08"
+        ),
+        "sites": (("0x4beddd", 0x49),),
+    },
+    "0x4bf060": {
+        "end": "0x4bf540",
+        "symbol": (
+            "?Constructor@HudUiMessageBoxDialog@@QAEPAU1@PBD0@Z"
+        ),
+        "size": 0x480,
+        "body_sha256": (
+            "56d1f25972de450f55fe03cfd826573fd"
+            "26b1eb260991d74808c2e28672de230"
+        ),
+        "relocation_count": 47,
+        "relocation_sha256": (
+            "c7435bff5823e041bb2476c7ccf43cb0"
+            "89cbadbe4ac766d3bca61fa03a574812"
+        ),
+        "sites": (
+            ("0x4bf1b4", 0x110),
+            ("0x4bf1c5", 0x11A),
+            ("0x4bf3f4", 0x334),
+            ("0x4bf40c", 0x34C),
+            ("0x4bf419", 0x363),
+            ("0x4bf44a", 0x39D),
+            ("0x4bf46d", 0x3B7),
+            ("0x4bf47d", 0x3CF),
+            ("0x4bf4cb", 0x41D),
+            ("0x4bf500", 0x452),
+            ("0x4bf50a", 0x45C),
+            ("0x4bf513", 0x465),
+        ),
+    },
+}
+
+
+def _zui_r4905_static_vptr_candidate_bridges(
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+    retail_vptr_bridges: Mapping[str, ReviewedLoopVptrStorageBridge],
+) -> dict[str, ReviewedLoopVptrStorageBridge]:
+    """Join exact current zUI caller sites to retail constructor tables.
+
+    These callers retain a vptr installed by one independently proven retail
+    constructor, but VC5 carries the object through loop/index registers that
+    the generic dataflow walk intentionally does not preserve.  The bridge is
+    available only for a frozen complete COFF body and relocation transcript;
+    each candidate call must retain the same encoded slot as its separately
+    derived retail table/cell proof.  The ordinary full-contract comparator
+    remains responsible for call population and order.
+    """
+
+    start = normalize_address(caller_start)
+    profile = _ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES.get(start)
+    if profile is None:
+        return {}
+
+    def reject(detail: str) -> NoReturn:
+        raise CandidateCallContractEvidenceError(
+            "zUI exact constructor-vptr candidate bridge requires " + detail
+        )
+
+    definition = candidate.caller_definition
+    if (
+        caller_identity != indexes.by_address.get(start)
+        or caller_identity in indexes.provider_ids
+        or normalize_address(caller_end_exclusive) != profile["end"]
+        or definition is None
+        or definition.symbol != profile["symbol"]
+        or len(definition.data) != profile["size"]
+        or hashlib.sha256(definition.data).hexdigest()
+        != profile["body_sha256"]
+        or len(definition.relocations) != profile["relocation_count"]
+        or hashlib.sha256(
+            _zui_relocation_payload(definition.relocations)
+        ).hexdigest()
+        != profile["relocation_sha256"]
+        or len(definition.relocation_mask) != len(definition.data)
+        or any(
+            definition.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in definition.relocations
+            )
+            for index in range(len(definition.data))
+        )
+    ):
+        reject("the exact authored caller, body, and relocation package")
+
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    counts = Counter(offset for offset in offsets if offset is not None)
+    by_offset = {
+        int(offset): instruction
+        for offset, instruction in zip(offsets, candidate.instructions)
+        if offset is not None and counts[offset] == 1
+    }
+    invocation_offsets = {
+        int(offsets[index])
+        for index in _candidate_static_invocation_indices(
+            candidate,
+            caller_start="0x0",
+            caller_end_exclusive=hex(len(definition.data)),
+        )
+        if offsets[index] is not None
+    }
+    result: dict[str, ReviewedLoopVptrStorageBridge] = {}
+    for retail_call, candidate_offset in profile["sites"]:
+        retail_bridge = retail_vptr_bridges.get(retail_call)
+        instruction = by_offset.get(candidate_offset)
+        if instruction is None:
+            reject(f"one unique candidate call at +0x{candidate_offset:x}")
+        expression, displacement = _memory_slot(
+            _instruction_operand(instruction)
+        )
+        candidate_register = expression.split("+", 1)[0].strip()
+        slot = (
+            retail_bridge.slot_displacement
+            if retail_bridge is not None
+            else None
+        )
+        required_displacements = {slot}
+        if slot == 0:
+            required_displacements.add(None)
+        candidate_expressions = {candidate_register}
+        if isinstance(slot, int):
+            candidate_expressions.update(
+                {
+                    f"{candidate_register}+0x{slot:x}",
+                    f"{candidate_register}+{slot}",
+                }
+            )
+        if (
+            retail_bridge is None
+            or retail_bridge.assembly_source != "bn"
+            or not retail_bridge.storage_identity
+            or not retail_bridge.target_identity
+            or retail_bridge.storage_identity.startswith("iat:")
+            or instruction is None
+            or candidate_offset not in invocation_offsets
+            or _instruction_mnemonic(instruction) != "call"
+            or not _exact_invocation_encoding(instruction, mnemonic="call")
+            or not re.fullmatch(
+                r"e(?:ax|bx|cx|dx|sp|bp|si|di)", candidate_register
+            )
+            or expression not in candidate_expressions
+            or displacement not in required_displacements
+        ):
+            reject(
+                f"the independently derived retail table/cell and exact "
+                f"candidate slot at +0x{candidate_offset:x}: "
+                f"retail_bridge={retail_bridge!r}, "
+                f"operand={_instruction_operand(instruction)!r}, "
+                f"expression={expression!r}, displacement={displacement!r}, "
+                f"required_displacements={required_displacements!r}"
+            )
+        result[hex(candidate_offset)] = ReviewedLoopVptrStorageBridge(
+            register=candidate_register,
+            storage_identity=retail_bridge.storage_identity,
+            slot_displacement=int(slot),
+            assembly_source="cod",
+            target_identity=retail_bridge.target_identity,
+        )
+    if len(result) != len(profile["sites"]):
+        reject("the complete reviewed candidate callsite population")
+    return result
+
+
+def _zui_r4907_dynamic_vptr_candidate_bridges(
+    expected: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+    retail_vptr_bridges: Mapping[str, ReviewedLoopVptrStorageBridge],
+) -> dict[str, ReviewedLoopVptrStorageBridge]:
+    """Preserve exact targetless dynamic zUI receiver dispatches.
+
+    Retail and the governed candidate carry the same runtime-selected object
+    through different volatile registers at these sites.  No immutable table
+    or target may be invented.  Freeze each complete candidate body and
+    relocation transcript, bind the site to its exact retail invocation
+    ordinal, and retain only the independently extracted targetless storage
+    and slot contract.
+    """
+
+    profiles: Mapping[str, Mapping[str, Any]] = {
+        "0x4b9330": {
+            "end": "0x4b9520",
+            "symbol": "?SetSelectedEntry@HudCmdBindButtonBase@@QAEXH@Z",
+            "size": 0x200,
+            "body_sha256": (
+                "6c1ba8248cc3049d9dd163078020a2e8d"
+                "b41281fda6649569061f46721f80ea3"
+            ),
+            "relocation_count": 3,
+            "relocation_sha256": (
+                "749d7d562acbdf6744b45f5930bb7d5a"
+                "183ce24e3b461a9c34b17e969f97708e"
+            ),
+            "invocation_count": 11,
+            "sites": (
+                (0xA1, 3, "0x4b93cd"),
+                (0xB0, 4, "0x4b93dc"),
+                (0x1B0, 8, "0x4b94da"),
+                (0x1BF, 9, "0x4b94e7"),
+                (0x1CE, 10, "0x4b94f6"),
+            ),
+        },
+        "0x4bb790": {
+            "end": "0x4bb960",
+            "symbol": "??0HudUiCompositePanel@@QAE@H@Z",
+            "size": 0x1F0,
+            "body_sha256": (
+                "6a36d3345ab2ff81e0abbbf8a6d8729e"
+                "c7d19a47adfc1ca30e43864b5f4bbf41"
+            ),
+            "relocation_count": 16,
+            "relocation_sha256": (
+                "b8e9cdea820b5a1a1f863fb87fcce958"
+                "a2a5c6353d96346ca5d4967e4d564c4f"
+            ),
+            "invocation_count": 10,
+            "sites": (
+                (0x16C, 4, "0x4bb8eb"),
+                (0x1C6, 9, "0x4bb93d"),
+            ),
+        },
+    }
+    start = normalize_address(caller_start)
+    profile = profiles.get(start)
+    if profile is None:
+        return {}
+
+    def reject(detail: str) -> NoReturn:
+        raise CandidateCallContractEvidenceError(
+            "zUI exact dynamic-vptr candidate bridge requires " + detail
+        )
+
+    definition = candidate.caller_definition
+    if (
+        caller_identity != indexes.by_address.get(start)
+        or caller_identity in indexes.provider_ids
+        or normalize_address(caller_end_exclusive) != profile["end"]
+        or definition is None
+        or definition.symbol != profile["symbol"]
+        or len(definition.data) != profile["size"]
+        or hashlib.sha256(definition.data).hexdigest()
+        != profile["body_sha256"]
+        or len(definition.relocations) != profile["relocation_count"]
+        or hashlib.sha256(
+            _zui_relocation_payload(definition.relocations)
+        ).hexdigest()
+        != profile["relocation_sha256"]
+        or len(definition.relocation_mask) != len(definition.data)
+        or any(
+            definition.relocation_mask[index]
+            != any(
+                row.offset <= index < row.offset + 4
+                for row in definition.relocations
+            )
+            for index in range(len(definition.data))
+        )
+    ):
+        reject("the exact authored caller, body, and relocation package")
+
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    counts = Counter(offset for offset in offsets if offset is not None)
+    by_offset = {
+        int(offset): instruction
+        for offset, instruction in zip(offsets, candidate.instructions)
+        if offset is not None and counts[offset] == 1
+    }
+    invocation_indices = _candidate_static_invocation_indices(
+        candidate,
+        caller_start="0x0",
+        caller_end_exclusive=hex(len(definition.data)),
+    )
+    invocation_offsets = tuple(
+        int(offsets[index])
+        for index in invocation_indices
+        if offsets[index] is not None
+    )
+    if (
+        len(invocation_indices) != profile["invocation_count"]
+        or len(invocation_offsets) != len(invocation_indices)
+    ):
+        reject("the complete candidate invocation population")
+    ordinal_by_offset = {
+        offset: ordinal for ordinal, offset in enumerate(invocation_offsets)
+    }
+
+    result: dict[str, ReviewedLoopVptrStorageBridge] = {}
+    for candidate_offset, ordinal, retail_call in profile["sites"]:
+        instruction = by_offset.get(candidate_offset)
+        row = expected[ordinal] if len(expected) > ordinal else None
+        retail_bridge = retail_vptr_bridges.get(retail_call)
+        expression, displacement = _memory_slot(
+            _instruction_operand(instruction)
+            if instruction is not None
+            else ""
+        )
+        register = expression.split("+", 1)[0].strip()
+        required_row = {
+            "ordinal": ordinal,
+            "form": "call",
+            "dispatch": "indirect",
+            "identity_kind": "virtual-slot",
+            "target_identity": "",
+            "storage_identity": (
+                row.get("storage_identity", "")
+                if isinstance(row, Mapping)
+                else ""
+            ),
+            "slot_displacement": (
+                row.get("slot_displacement")
+                if isinstance(row, Mapping)
+                else None
+            ),
+            "cleanup_bytes": None,
+        }
+        slot = required_row["slot_displacement"]
+        required_displacements = {slot}
+        if slot == 0:
+            required_displacements.add(None)
+        expression_spellings = {register}
+        if isinstance(slot, int):
+            expression_spellings.update(
+                {f"{register}+0x{slot:x}", f"{register}+{slot}"}
+            )
+        retail_matches = (
+            retail_bridge is not None
+            and retail_bridge.assembly_source == "bn"
+            and retail_bridge.storage_identity
+            == required_row["storage_identity"]
+            and retail_bridge.slot_displacement == slot
+            and not retail_bridge.target_identity
+        )
+        # The composite-panel constructor's retail site is deliberately not a
+        # static-table bridge.  Its expected row still comes directly from the
+        # retail extractor and must remain a non-IAT, targetless dynamic
+        # receiver contract.
+        if retail_bridge is None and start in {"0x4b9330", "0x4bb790"}:
+            retail_matches = (
+                retail_bridge is None
+                and bool(required_row["storage_identity"])
+                and not str(required_row["storage_identity"]).startswith(
+                    ("iat:", "storage:", "constructor-table:")
+                )
+                and isinstance(slot, int)
+            )
+        if (
+            ordinal_by_offset.get(candidate_offset) != ordinal
+            or not isinstance(row, Mapping)
+            or dict(row) != required_row
+            or not retail_matches
+            or instruction is None
+            or _instruction_mnemonic(instruction) != "call"
+            or not _exact_invocation_encoding(instruction, mnemonic="call")
+            or not re.fullmatch(r"e(?:ax|bx|cx|dx|sp|bp|si|di)", register)
+            or expression not in expression_spellings
+            or displacement not in required_displacements
+        ):
+            reject(
+                f"the retail ordinal and exact candidate slot at "
+                f"+0x{candidate_offset:x}: expected_row={row!r}, "
+                f"retail_bridge={retail_bridge!r}, "
+                f"operand={_instruction_operand(instruction)!r}"
+            )
+        result[hex(candidate_offset)] = ReviewedLoopVptrStorageBridge(
+            register=register,
+            storage_identity=str(required_row["storage_identity"]),
+            slot_displacement=int(slot),
+            assembly_source="cod",
+        )
+    if len(result) != len(profile["sites"]):
+        reject("the complete reviewed candidate callsite population")
+    return result
+
+
+def _zui_r4905_direct_static_dispatch_projection(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+    retail_vptr_bridges: Mapping[str, ReviewedLoopVptrStorageBridge],
+) -> list[dict[str, Any]]:
+    """Project three exact direct spellings to retail static-table dispatch."""
+
+    result = [dict(row) for row in candidate_contract]
+    start = normalize_address(caller_start)
+    direct_profiles: Mapping[str, Mapping[str, Any]] = {
+        "0x4b87f0": {
+            "end": "0x4b8850",
+            "symbol": "?OnActivateSelectSelf@HudUiZrdWidgetEx17C_Item@@QAEXXZ",
+            "size": 0x60,
+            "body_sha256": "b0d7d646f8436722ffecf8f8a16a8e4038274e7e08d03f2c2c9d488b714fe49e",
+            "relocation_count": 3,
+            "relocation_sha256": "18b8776df93659908ab9fa2f3feb7e08d9517037ed632105a088719b7bdc711f",
+            "direct_sites": (("0x4b8837", 3),),
+            "receiver_alias_ordinal": 1,
+        },
+        "0x4b8de0": {
+            **_ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES["0x4b8de0"],
+            "direct_sites": (("0x4b8fb9", 10), ("0x4b90c6", 14)),
+        },
+    }
+    profile = direct_profiles.get(start)
+    if profile is None:
+        return result
+
+    definition = candidate.caller_definition
+    if (
+        caller_identity != indexes.by_address.get(start)
+        or caller_identity in indexes.provider_ids
+        or normalize_address(caller_end_exclusive) != profile["end"]
+        or definition is None
+        or definition.symbol != profile["symbol"]
+        or len(definition.data) != profile["size"]
+        or hashlib.sha256(definition.data).hexdigest()
+        != profile["body_sha256"]
+        or len(definition.relocations) != profile["relocation_count"]
+        or hashlib.sha256(
+            _zui_relocation_payload(definition.relocations)
+        ).hexdigest()
+        != profile["relocation_sha256"]
+        or len(result) != len(expected)
+    ):
+        raise CandidateCallContractEvidenceError(
+            "zUI direct/static projection rejects caller, artifact, or call "
+            "population drift"
+        )
+
+    receiver_alias_ordinal = profile.get("receiver_alias_ordinal")
+    if receiver_alias_ordinal is not None:
+        ordinal = int(receiver_alias_ordinal)
+        expected_row = dict(expected[ordinal])
+        candidate_row = result[ordinal]
+        if (
+            expected_row.get("storage_identity")
+            != "load(exact-receiver-field(this,+0x150))"
+            or candidate_row.get("storage_identity")
+            != "load(load(this+0x150))"
+            or _contract_shape_without_storage(expected_row)
+            != _contract_shape_without_storage(candidate_row)
+        ):
+            raise CandidateCallContractEvidenceError(
+                "zUI receiver-field alias projection rejects exact ordinal-one "
+                "call shape"
+            )
+        result[ordinal]["storage_identity"] = expected_row["storage_identity"]
+
+    for retail_call, ordinal in profile["direct_sites"]:
+        retail_bridge = retail_vptr_bridges.get(retail_call)
+        expected_row = dict(expected[ordinal])
+        candidate_row = result[ordinal]
+        required_expected = {
+            "ordinal": ordinal,
+            "form": "call",
+            "dispatch": "indirect",
+            "identity_kind": "virtual-slot",
+            "target_identity": (
+                retail_bridge.target_identity if retail_bridge else ""
+            ),
+            "storage_identity": (
+                retail_bridge.storage_identity if retail_bridge else ""
+            ),
+            "slot_displacement": (
+                retail_bridge.slot_displacement if retail_bridge else None
+            ),
+            "cleanup_bytes": None,
+        }
+        required_candidate = {
+            "ordinal": ordinal,
+            "form": "call",
+            "dispatch": "direct",
+            "identity_kind": "direct",
+            "target_identity": (
+                retail_bridge.target_identity if retail_bridge else ""
+            ),
+            "storage_identity": "",
+            "slot_displacement": None,
+            "cleanup_bytes": None,
+        }
+        if (
+            retail_bridge is None
+            or retail_bridge.assembly_source != "bn"
+            or expected_row != required_expected
+            or candidate_row != required_candidate
+        ):
+            raise CandidateCallContractEvidenceError(
+                "zUI direct/static projection lacks the exact candidate "
+                f"callee and independent retail table proof at ordinal {ordinal}"
+            )
+        result[ordinal] = expected_row
+    return result
+
+
 def _exact_targetless_vptr_call_proofs(
     instructions: Sequence[Instruction],
     *,
@@ -94668,6 +96714,147 @@ def _hud_ui_element_constructor_absolute_table_candidate_storage_bridges(
         )
     return {
         HUD_ELEMENT_VFTABLE_SYMBOL: HUD_ELEMENT_VFTABLE_STORAGE_IDENTITY,
+    }
+
+
+def _hud_ui_container_constructor_absolute_table_candidate_storage_bridges(
+    expected: Sequence[Mapping[str, Any]],
+    candidate: CandidateAssembly,
+    *,
+    caller_identity: str,
+    caller_start: str,
+    caller_end_exclusive: str,
+    indexes: IdentityIndexes,
+) -> dict[str, str]:
+    """Bind the exact HudUiContainer slot-4 FF15 to its retail table."""
+
+    start = normalize_address(caller_start)
+    if start != HUD_CONTAINER_CONSTRUCTOR_CALLER_START:
+        return {}
+    required_expected = [{
+        "ordinal": 0,
+        "form": "call",
+        "dispatch": "indirect",
+        "identity_kind": "callback",
+        "target_identity": "",
+        "storage_identity": HUD_CONTAINER_VFTABLE_STORAGE_IDENTITY,
+        "slot_displacement": 4,
+        "cleanup_bytes": None,
+    }]
+    storage_start = address_value(HUD_CONTAINER_VFTABLE_RETAIL_ADDRESS)
+    containers = [
+        row for row in indexes.storage_containers
+        if row.start < storage_start + HUD_CONTAINER_VFTABLE_SIZE
+        and storage_start < row.end_exclusive
+    ]
+    caller = candidate.caller_definition
+    if (
+        normalize_address(caller_end_exclusive)
+        != HUD_CONTAINER_CONSTRUCTOR_CALLER_END_EXCLUSIVE
+        or indexes.by_address.get(start) != caller_identity
+        or caller_identity in indexes.provider_ids
+        or list(expected) != required_expected
+        or indexes.storage_by_address.get(
+            HUD_CONTAINER_VFTABLE_RETAIL_ADDRESS, ""
+        ) != HUD_CONTAINER_VFTABLE_STORAGE_IDENTITY
+        or HUD_CONTAINER_VFTABLE_SYMBOL in indexes.storage_by_name
+        or containers != [StorageContainer(
+            start=storage_start,
+            end_exclusive=storage_start + HUD_CONTAINER_VFTABLE_SIZE,
+            identity=HUD_CONTAINER_VFTABLE_STORAGE_IDENTITY,
+        )]
+        or caller is None
+        or caller.symbol != HUD_CONTAINER_CONSTRUCTOR_SYMBOL
+        or len(caller.data) != 0x30
+        or hashlib.sha256(caller.data).hexdigest()
+        != "2edb52c9cba3cd38da4588bfca19c2bea47a2b717c42d72bdac8d7075488a39c"
+        or tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in caller.relocations
+        ) != (
+            (0x07, IMAGE_REL_I386_DIR32, HUD_CONTAINER_VFTABLE_SYMBOL),
+            (0x0D, IMAGE_REL_I386_DIR32, HUD_CONTAINER_VFTABLE_SYMBOL),
+        )
+        or len(caller.relocation_mask) != len(caller.data)
+        or any(
+            caller.relocation_mask[index]
+            != (0x07 <= index < 0x0B or 0x0D <= index < 0x11)
+            for index in range(len(caller.data))
+        )
+        or caller.data[0x05:0x0B] != b"\xc7\x06\x00\x00\x00\x00"
+        or caller.data[0x0B:0x11] != b"\xff\x15\x04\x00\x00\x00"
+    ):
+        raise ValueError(
+            "HudUiContainer constructor-table candidate bridge rejects "
+            "retail storage, exact caller, FF15 slot, or relocation drift: "
+            f"expected={list(expected)!r}, "
+            f"caller_identity={caller_identity!r}, "
+            f"tracker_identity={indexes.by_address.get(start)!r}, "
+            f"storage_at_table={indexes.storage_by_address.get(HUD_CONTAINER_VFTABLE_RETAIL_ADDRESS, '')!r}, "
+            f"storage_by_name={indexes.storage_by_name.get(HUD_CONTAINER_VFTABLE_SYMBOL)!r}, "
+            f"containers={containers!r}, "
+            f"caller_symbol={getattr(caller, 'symbol', None)!r}, "
+            f"caller_size={len(caller.data) if caller is not None else None!r}, "
+            f"caller_sha256={hashlib.sha256(caller.data).hexdigest() if caller is not None else None!r}, "
+            f"relocations={tuple((row.offset, row.type, row.symbol_name) for row in caller.relocations) if caller is not None else None!r}"
+        )
+
+    offsets = _candidate_complete_instruction_offsets(candidate)
+    invocations = _candidate_static_invocation_indices(
+        candidate,
+        caller_start=caller_start,
+        caller_end_exclusive=caller_end_exclusive,
+    )
+    if (
+        len(invocations) != 1
+        or offsets[invocations[0]] != 0x0B
+        or bytes(
+            int(value, 16)
+            for value in candidate.instructions[invocations[0]].bytes
+        ) != b"\xff\x15\x04\x00\x00\x00"
+        or _memory_slot(
+            _instruction_operand(candidate.instructions[invocations[0]])
+        )[1] != 4
+    ):
+        raise ValueError(
+            "HudUiContainer constructor-table candidate bridge requires "
+            "one exact body+0xb slot-4 FF15 invocation"
+        )
+
+    definitions = [
+        (name, definition)
+        for name, definition in candidate.vftable_definitions.items()
+        if name.casefold() == HUD_CONTAINER_VFTABLE_SYMBOL.casefold()
+    ]
+    if len(definitions) != 1 or definitions[0][0] != HUD_CONTAINER_VFTABLE_SYMBOL:
+        raise ValueError(
+            "HudUiContainer constructor-table candidate bridge rejects a "
+            "missing, aliased, or ambiguous vftable definition"
+        )
+    vftable = definitions[0][1]
+    if (
+        vftable.symbol != HUD_CONTAINER_VFTABLE_SYMBOL
+        or vftable.section_name != ".rdata"
+        or vftable.section_size != HUD_CONTAINER_VFTABLE_SIZE
+        or vftable.data != b"\x00" * HUD_CONTAINER_VFTABLE_SIZE
+        or vftable.relocation_mask != (True,) * HUD_CONTAINER_VFTABLE_SIZE
+        or not vftable.section_is_comdat
+        or vftable.comdat_selection != 2
+        or vftable.section_external_symbols != (HUD_CONTAINER_VFTABLE_SYMBOL,)
+        or tuple(
+            (row.offset, row.type, row.symbol_name)
+            for row in vftable.relocations
+        ) != (
+            (0, IMAGE_REL_I386_DIR32, HUD_CONTAINER_UPDATE_ALL_SYMBOL),
+            (4, IMAGE_REL_I386_DIR32, HUD_CONTAINER_SET_ENABLED_SYMBOL),
+        )
+    ):
+        raise ValueError(
+            "HudUiContainer constructor-table candidate bridge requires the "
+            "exact two-slot SELECT_ANY vftable definition"
+        )
+    return {
+        HUD_CONTAINER_VFTABLE_SYMBOL: HUD_CONTAINER_VFTABLE_STORAGE_IDENTITY,
     }
 
 
@@ -136834,9 +139021,13 @@ def _candidate_local_coff_callable_bridges(
         is_hud_panel_layout_vector_destroy = (
             name == HUD_PANEL_LAYOUT_VECTOR_DESTROY_SYMBOL
         )
+        is_hud_composite_panel_vector_destroy = (
+            name == HUD_COMPOSITE_PANEL_VECTOR_DESTROY_SYMBOL
+        )
         is_noop_vector_destroy = (
             is_vector_destroy
             and not is_hud_panel_layout_vector_destroy
+            and not is_hud_composite_panel_vector_destroy
         )
         is_hud_cmd_binding_ptr_vector_erase = (
             name == HUD_CMD_BINDING_PTR_VECTOR_ERASE_SYMBOL
@@ -136852,6 +139043,7 @@ def _candidate_local_coff_callable_bridges(
         is_reviewed_candidate_local_provider = (
             is_noop_vector_destroy
             or is_hud_panel_layout_vector_destroy
+            or is_hud_composite_panel_vector_destroy
             or is_hud_cmd_binding_ptr_vector_erase
             or is_player_bind_group_scalar_destructor
             or is_player_bind_group_int_vector_destructor
@@ -137104,7 +139296,10 @@ def _candidate_local_coff_callable_bridges(
             )
             continue
 
-        if is_hud_panel_layout_vector_destroy:
+        if (
+            is_hud_panel_layout_vector_destroy
+            or is_hud_composite_panel_vector_destroy
+        ):
             # This value-vector specialization is not the established
             # pointer/no-op provider.  Preserve its exact same-object COMDAT
             # as a comparison-only sentinel; the later retail-scoped arbiter
@@ -149825,7 +152020,7 @@ def _hud_net_game_setup_next_world_base_constructor_candidate_bridge(
             if masked
         }
         != expected_masked_offsets
-        or natural.section_size != 0x1C0
+        or natural.section_size != 0x1B0
         or not natural.section_is_comdat
         or natural.comdat_selection != 1
         or natural.section_external_functions != (natural_symbol,)
@@ -149845,16 +152040,16 @@ def _hud_net_game_setup_next_world_base_constructor_candidate_bridge(
             _instruction_mnemonic(item) for item in natural.instructions
         )
         != HUD_ZRD_WIDGET_CONSTRUCTOR_COD_MNEMONICS
-        or len(natural.instructions) != 108
-        or _instruction_operand(natural.instructions[12]).strip()
+        or len(natural.instructions) != 124
+        or _instruction_operand(natural.instructions[14]).strip()
         != "??0HudUiWidget@@QAE@I@Z"
         or "??_7HudUiZrdWidget@@6B@"
-        not in _instruction_operand(natural.instructions[35])
+        not in _instruction_operand(natural.instructions[39])
     ):
         raise ValueError(
-            "HUD net-game setup NextWorld bridge requires the exact 0x1c0 "
+            "HUD net-game setup NextWorld bridge requires the exact 0x1b0 "
             "natural ZrdWidget constructor COMDAT, ordered relocations/"
-            "addends/mask, and 108-instruction COD topology"
+            "addends/mask, and 124-instruction COD topology"
         )
 
     call_prefix = extract_invocation_contract(
@@ -170947,10 +173142,21 @@ def live_call_contract_result(
                     indexes=indexes,
                 )
             )
+            hud_container_constructor_table_bridges = (
+                _hud_ui_container_constructor_absolute_table_candidate_storage_bridges(
+                    expected,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                )
+            )
             for reviewed_bridges in (
                 locator_panel_bridges,
                 runtime_bridges,
                 hud_element_constructor_table_bridges,
+                hud_container_constructor_table_bridges,
             ):
                 storage_conflicts = (
                     candidate_storage_bridges.keys()
@@ -174739,6 +176945,63 @@ def live_call_contract_result(
             candidate_layout_loop_vptr_bridges.update(
                 cycle_bitmap_entry_candidate_vptr_bridges
             )
+            zui_r4905_candidate_vptr_bridges = (
+                _zui_r4905_static_vptr_candidate_bridges(
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                    retail_vptr_bridges=(
+                        reviewed_retail_adapters.vptr_storage_bridges
+                    ),
+                )
+            )
+            loop_vptr_conflicts = (
+                candidate_layout_loop_vptr_bridges.keys()
+                & zui_r4905_candidate_vptr_bridges.keys()
+            )
+            if any(
+                candidate_layout_loop_vptr_bridges[key]
+                != zui_r4905_candidate_vptr_bridges[key]
+                for key in loop_vptr_conflicts
+            ):
+                raise ValueError(
+                    "zUI exact constructor-vptr candidate bridge conflicts "
+                    "with another reviewed loop-vptr bridge"
+                )
+            candidate_layout_loop_vptr_bridges.update(
+                zui_r4905_candidate_vptr_bridges
+            )
+            zui_r4907_dynamic_vptr_bridges = (
+                _zui_r4907_dynamic_vptr_candidate_bridges(
+                    expected,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                    retail_vptr_bridges=(
+                        reviewed_retail_adapters.vptr_storage_bridges
+                    ),
+                )
+            )
+            loop_vptr_conflicts = (
+                candidate_layout_loop_vptr_bridges.keys()
+                & zui_r4907_dynamic_vptr_bridges.keys()
+            )
+            if any(
+                candidate_layout_loop_vptr_bridges[key]
+                != zui_r4907_dynamic_vptr_bridges[key]
+                for key in loop_vptr_conflicts
+            ):
+                raise ValueError(
+                    "zUI exact dynamic-vptr candidate bridge conflicts "
+                    "with another reviewed loop-vptr bridge"
+                )
+            candidate_layout_loop_vptr_bridges.update(
+                zui_r4907_dynamic_vptr_bridges
+            )
             zwep_damage_candidate_vptr_bridges = (
                 _zwep_damage_handler_candidate_vptr_bridge(
                     expected,
@@ -175274,6 +177537,36 @@ def live_call_contract_result(
                 candidate_cleanup_receipts_by_symbol[symbol_id] = (
                     cleanup_receipts
                 )
+            candidate = _zui_r4905_direct_static_dispatch_projection(
+                expected,
+                candidate,
+                candidate_assembly,
+                caller_identity=caller_identity,
+                caller_start=address,
+                caller_end_exclusive=end_exclusive,
+                indexes=indexes,
+                retail_vptr_bridges=(
+                    reviewed_retail_adapters.vptr_storage_bridges
+                ),
+            )
+            candidate = _zui_message_box_widget_constructor_projection(
+                expected,
+                candidate,
+                candidate_assembly,
+                caller_identity=caller_identity,
+                caller_start=address,
+                caller_end_exclusive=end_exclusive,
+                indexes=indexes,
+            )
+            candidate = _zui_message_box_destructor_projection(
+                expected,
+                candidate,
+                candidate_assembly,
+                caller_identity=caller_identity,
+                caller_start=address,
+                caller_end_exclusive=end_exclusive,
+                indexes=indexes,
+            )
             candidate = _player_top_message_static_indirect_candidate_projection(
                 expected,
                 candidate,
@@ -175326,6 +177619,26 @@ def live_call_contract_result(
                 candidate_expansion_receipts_by_symbol[symbol_id] = (
                     zui_helper_receipt
                 )
+            candidate, zui_stack_constructor_receipt = (
+                _zui_message_stack_constructor_occurrence_projection(
+                    expected,
+                    candidate,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                )
+            )
+            if zui_stack_constructor_receipt is not None:
+                if symbol_id in candidate_expansion_receipts_by_symbol:
+                    raise ValueError(
+                        "zUI caller emitted overlapping finite helper-graph "
+                        "expansions"
+                    )
+                candidate_expansion_receipts_by_symbol[symbol_id] = (
+                    zui_stack_constructor_receipt
+                )
             candidate, zui_vector_receipt = (
                 _zui_candidate_local_vector_occurrence_projection(
                     expected,
@@ -175345,6 +177658,46 @@ def live_call_contract_result(
                     )
                 candidate_expansion_receipts_by_symbol[symbol_id] = (
                     zui_vector_receipt
+                )
+            candidate, zui_composite_vector_receipt = (
+                _zui_composite_vector_occurrence_projection(
+                    expected,
+                    candidate,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                )
+            )
+            if zui_composite_vector_receipt is not None:
+                if symbol_id in candidate_expansion_receipts_by_symbol:
+                    raise ValueError(
+                        "zUI caller emitted overlapping finite helper-graph "
+                        "expansions"
+                    )
+                candidate_expansion_receipts_by_symbol[symbol_id] = (
+                    zui_composite_vector_receipt
+                )
+            candidate, zui_rebuild_text_receipt = (
+                _zui_rebuild_text_rect_tail_merge_projection(
+                    expected,
+                    candidate,
+                    candidate_assembly,
+                    caller_identity=caller_identity,
+                    caller_start=address,
+                    caller_end_exclusive=end_exclusive,
+                    indexes=indexes,
+                )
+            )
+            if zui_rebuild_text_receipt is not None:
+                if symbol_id in candidate_expansion_receipts_by_symbol:
+                    raise ValueError(
+                        "zUI caller emitted overlapping finite helper-graph "
+                        "expansions"
+                    )
+                candidate_expansion_receipts_by_symbol[symbol_id] = (
+                    zui_rebuild_text_receipt
                 )
             candidate, node_flag_pushback_receipt = (
                 _player_node_flag_pushback_graph_expansion(
@@ -175816,6 +178169,15 @@ def live_call_contract_result(
                 caller_identity=caller_identity,
                 caller_start=address,
                 caller_end_exclusive=end_exclusive,
+            )
+            candidate = _zui_r4905_exact_receiver_rendering_projection(
+                expected,
+                candidate,
+                candidate_assembly,
+                caller_identity=caller_identity,
+                caller_start=address,
+                caller_end_exclusive=end_exclusive,
+                indexes=indexes,
             )
             candidate = _zui_check_toggle_receiver_storage_projection(
                 expected,

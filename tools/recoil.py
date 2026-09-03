@@ -106,16 +106,18 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec(
         "verify zui-inline-context",
         "zui_inline_context",
-        summary="Compile the authentic zUI target and report the 0x4b59f0 vector-insert call, related emitter, and local-COMDAT context.",
+        summary="Compile the authentic zUI target once and report either its canonical vector-insert context or selected caller/local-helper graphs.",
         description=(
             "Run a nonaccepting diagnostic compile of the registered zui_widgets.cpp target. "
-            "The report retains exact caller and authentic-emitter relocation offsets plus matching TU-local provider "
-            "extent, COMDAT selection, provenance, and relocation facts without weakening the "
-            "call-contract provider gate."
+            "Without --address, the report retains the canonical vector-insert caller and authentic-emitter facts. "
+            "Repeat --address to inspect several authored callers and their reachable TU-local helper graph from one "
+            "compile; --summary bounds the JSON to identity, extent, selection, provenance, and call/relocation counts. "
+            "The diagnostic never weakens the call-contract provider gate."
         ),
         category="verification",
         examples=(
             "python tools/recoil.py verify zui-inline-context --build-root build/live-validation/zui-inline-context/<fresh-root> --json",
+            "python tools/recoil.py verify zui-inline-context --build-root build/live-validation/zui-inline-context/<fresh-root> --address 0x4bb790 --address 0x4bc780 --summary --json",
         ),
     ),
       spec(

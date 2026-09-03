@@ -7,7 +7,7 @@ import io
 import json
 from pathlib import Path
 import sys
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from _recoil.commands.call_contract_verify import (
     DEFAULT_PROGRESS,
@@ -93,6 +93,9 @@ def _definition_summary(symbol: str, helper: Any) -> dict[str, Any]:
         "section_size": _hex_offset(helper.section_size),
         "section_is_comdat": helper.section_is_comdat,
         "comdat_selection": helper.comdat_selection,
+        "section_external_functions": list(
+            helper.section_external_functions
+        ),
         "source_provenance": helper.source_provenance,
         "relocations": [
             {
@@ -194,12 +197,128 @@ def compact_zui_inline_summary(summary: Mapping[str, Any]) -> dict[str, Any]:
                 "section_size": row["section_size"],
                 "section_is_comdat": row["section_is_comdat"],
                 "comdat_selection": row["comdat_selection"],
+                "section_external_functions": row.get(
+                    "section_external_functions", []
+                ),
                 "source_provenance": row["source_provenance"],
                 "relocation_count": len(row.get("relocations", [])),
                 "direct_call_count": len(row.get("direct_calls", [])),
             }
             for row in definitions
         ]
+    return result
+
+
+def summarize_zui_local_helper_graph(candidate: Any) -> dict[str, Any]:
+    """Report one selected caller and its finite reachable local COMDAT graph.
+
+    This is diagnostic-only candidate evidence.  It deliberately publishes no
+    retail identity and performs no normalization; the call-contract verifier
+    remains the sole acceptance path.
+    """
+
+    caller = candidate.caller_definition
+    if caller is None:
+        raise ValueError("zUI local-helper probe has no complete caller definition")
+    definitions = candidate.tu_local_function_definitions
+    direct_relocations = [
+        row
+        for row in caller.relocations
+        if 0 < row.offset - caller.section_start <= len(caller.data)
+        and caller.data[row.offset - caller.section_start - 1]
+        in {0xE8, 0xE9}
+    ]
+    pending = [
+        row.symbol_name
+        for row in direct_relocations
+        if row.symbol_name in definitions
+    ]
+    reached: set[str] = set()
+    summaries: list[dict[str, Any]] = []
+    while pending:
+        symbol = pending.pop(0)
+        if symbol in reached:
+            continue
+        helper = definitions.get(symbol)
+        if helper is None:
+            continue
+        reached.add(symbol)
+        summary = _definition_summary(symbol, helper)
+        summaries.append(summary)
+        pending.extend(
+            row["symbol"]
+            for row in summary["direct_calls"]
+            if row["symbol"] in definitions
+            and row["symbol"] not in reached
+        )
+    return {
+        "caller_symbol": caller.symbol,
+        "caller_extent": _hex_offset(len(caller.data)),
+        "caller_section_start": _hex_offset(caller.section_start),
+        "caller_body_sha256": _artifact_digest(caller.data),
+        "caller_relocation_count": len(caller.relocations),
+        "caller_relocations_sha256": _relocation_digest(caller.relocations),
+        "caller_canonical_relocations_sha256": (
+            _canonical_relocation_digest(caller.relocations)
+        ),
+        "caller_relocations": [
+            {
+                "section_offset": _hex_offset(row.offset),
+                "body_offset": _hex_offset(row.offset - caller.section_start),
+                "type": row.type,
+                "symbol": row.symbol_name,
+            }
+            for row in caller.relocations
+        ],
+        "direct_symbol_calls": [
+            {
+                "instruction_offset": _hex_offset(
+                    row.offset - caller.section_start - 1
+                ),
+                "operand_offset": _hex_offset(
+                    row.offset - caller.section_start
+                ),
+                "relocation_type": row.type,
+                "symbol": row.symbol_name,
+                "form": (
+                    "call"
+                    if caller.data[row.offset - caller.section_start - 1]
+                    == 0xE8
+                    else "tail"
+                ),
+                "target_is_tu_local_function": row.symbol_name in definitions,
+            }
+            for row in direct_relocations
+        ],
+        "reachable_local_helper_count": len(summaries),
+        "reachable_local_helper_definitions": summaries,
+    }
+
+
+def compact_zui_local_helper_graph(summary: Mapping[str, Any]) -> dict[str, Any]:
+    result = dict(summary)
+    result.pop("caller_relocations", None)
+    result["direct_symbol_call_count"] = len(
+        result.pop("direct_symbol_calls", [])
+    )
+    definitions = result.get("reachable_local_helper_definitions", [])
+    result["reachable_local_helper_definitions"] = [
+        {
+            "symbol": row["symbol"],
+            "extent": row["extent"],
+            "body_sha256": row["body_sha256"],
+            "section_size": row["section_size"],
+            "section_is_comdat": row["section_is_comdat"],
+            "comdat_selection": row["comdat_selection"],
+            "section_external_functions": row.get(
+                "section_external_functions", []
+            ),
+            "source_provenance": row["source_provenance"],
+            "relocation_count": len(row.get("relocations", [])),
+            "direct_call_count": len(row.get("direct_calls", [])),
+        }
+        for row in definitions
+    ]
     return result
 
 
@@ -255,10 +374,17 @@ def _single_address_slice(
     )
 
 
-def _probe_slice(document: ProgressDocument) -> dict[str, Any]:
+def _probe_slice(
+    document: ProgressDocument,
+    addresses: Sequence[str] | None = None,
+) -> dict[str, Any]:
+    selected_addresses = list(addresses or (
+        ZUI_LOAD_FROM_ZRD_ADDRESS,
+        CHECK_TOGGLE_LOAD_FROM_ZRD_ADDRESS,
+    ))
     rows = [
-        _single_address_slice(document, ZUI_LOAD_FROM_ZRD_ADDRESS),
-        _single_address_slice(document, CHECK_TOGGLE_LOAD_FROM_ZRD_ADDRESS),
+        _single_address_slice(document, address)
+        for address in selected_addresses
     ]
     target_ids = list(
         dict.fromkeys(
@@ -358,6 +484,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--compiler-profile", default="")
     parser.add_argument("--allow-disqualified-profile", action="store_true")
     parser.add_argument(
+        "--address",
+        action="append",
+        default=[],
+        help=(
+            "select one zUI authored-body address; repeat to inspect several "
+            "callers in one authentic target compile"
+        ),
+    )
+    parser.add_argument(
         "--summary",
         action="store_true",
         help="omit full caller call rows and helper body hex from JSON output",
@@ -373,7 +508,13 @@ def main(argv: list[str] | None = None) -> int:
     try:
         build_root = _require_fresh_live_build_root(args.build_root)
         document = ProgressDocument.load(args.progress)
-        slice_row = _probe_slice(document)
+        selected_addresses = tuple(
+            dict.fromkeys(normalize_address(value) for value in args.address)
+        )
+        slice_row = _probe_slice(
+            document,
+            selected_addresses or None,
+        )
         if args.allow_disqualified_profile and not args.compiler_profile:
             raise ProgressError(
                 "--allow-disqualified-profile requires --compiler-profile"
@@ -392,6 +533,36 @@ def main(argv: list[str] | None = None) -> int:
                 vc5_env=args.vc5_env,
                 preloaded_targets=preloaded_targets,
             )
+        if selected_addresses:
+            caller_rows = []
+            for address in selected_addresses:
+                selected_candidate = candidates.get(address)
+                if selected_candidate is None:
+                    raise ProgressError(
+                        "zUI inline-context compile did not produce selected "
+                        f"caller {address}"
+                    )
+                summary = summarize_zui_local_helper_graph(selected_candidate)
+                if args.summary:
+                    summary = compact_zui_local_helper_graph(summary)
+                caller_rows.append({"address": address, **summary})
+            result = {
+                "kind": "zui-inline-context-diagnostic",
+                "passed": True,
+                "nonaccepting": True,
+                "acceptance_eligible": False,
+                "candidate_expected_truth": False,
+                "addresses": list(selected_addresses),
+                "target_ids": list(slice_row["target_ids"]),
+                "compiler_profile_override": args.compiler_profile or None,
+                "build_root": str(build_root),
+                "callers": caller_rows,
+            }
+            if diagnostics.getvalue():
+                print(diagnostics.getvalue(), end="", file=sys.stderr)
+            print(json.dumps(result, indent=2))
+            return 0
+
         candidate = candidates.get(ZUI_LOAD_FROM_ZRD_ADDRESS)
         if candidate is None:
             raise ProgressError(

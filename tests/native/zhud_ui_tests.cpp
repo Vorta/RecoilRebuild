@@ -12956,7 +12956,7 @@ extern "C" int zhud_composite_panel_entry_copy_smoke(void) {
     HudUiCompositePanelEntry assigned{};
     auto *assignedPanel = reinterpret_cast<HudUiPanel *>(&assigned);
     assignedPanel->vtbl = &g_HudUiCommon_FTable;
-    HudUiCompositePanelEntry *const assignedResult = assigned.AssignCopy(&source);
+    HudUiCompositePanelEntry *const assignedResult = &(assigned = source);
     const bool assignedOk =
         assignedResult == &assigned && assignedPanel->vtbl == &g_HudUiCommon_FTable &&
         TestFieldAt<std::uint32_t>(assignedPanel, 0x14c) == 0x010203 &&
@@ -12967,11 +12967,10 @@ extern "C" int zhud_composite_panel_entry_copy_smoke(void) {
         assigned.panel.flashEnabled == 3 && assigned.panel.flashMode == 4 &&
         assigned.panel.flashDirectionSign == -1;
 
-    HudUiCompositePanelEntry copied{};
+    HudUiCompositePanelEntry copied(source);
     auto *copiedPanel = reinterpret_cast<HudUiPanel *>(&copied);
-    HudUiCompositePanelEntry *const copiedResult = copied.ConstructorCopy(&source);
     const bool copiedOk =
-        copiedResult == &copied && copiedPanel->vtbl == &g_HudUiTransitionTextPanel_FTable &&
+        copiedPanel->vtbl == &g_HudUiTransitionTextPanel_FTable &&
         TestFieldAt<std::uint32_t>(copiedPanel, 0x14c) == 0x010203 &&
         TestFieldAt<std::uint32_t>(copiedPanel, 0x150) == 0x040506 &&
         TestFieldAt<std::uint32_t>(copiedPanel, 0x270) == 4 &&

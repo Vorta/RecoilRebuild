@@ -52,7 +52,7 @@ namespace {
  * Purpose: attach and initialize one message-stack row with the recovered
  * panel font, shadow, alignment, position, and hidden state.
  */
-void ConfigureTextStackLine(
+inline void ConfigureTextStackLine(
     HudUiTextStack4 *stack,
     HudUiPanel *panel,
     int y,
@@ -71,11 +71,9 @@ void ConfigureTextStackLine(
         0,
         2
     );
-    panel->SetShadow(
-        1,
-        -1,
-        -1
-    );
+    panel->shadowEnabled = 1;
+    panel->shadowOffsetX = -1;
+    panel->shadowOffsetY = -1;
     panel->alignMode = 1;
     element->SetPos(
         0x140,
@@ -114,41 +112,30 @@ HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRa
 }
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicompositepanelentry-assigncopy
- * @recoil-artifact defines .text recoil:function:0x4bc3a0: HudUiCompositePanelEntry::AssignCopy.
  * Purpose: copy one composite-panel entry into existing entry storage.
  */
-HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
-    const HudUiCompositePanelEntry *source
+HudUiCompositePanelEntry & HudUiCompositePanelEntry::operator=(
+    const HudUiCompositePanelEntry &source
 ) {
-    HudUiPanel::operator=(*source);
-    flashCountdown = source->flashCountdown;
-    flashResetValue = source->flashResetValue;
-    flashAltColor0 = source->flashAltColor0;
-    flashAltColor1 = source->flashAltColor1;
-    flashEnabled = source->flashEnabled;
-    flashMode = source->flashMode;
-    flashDirectionSign = source->flashDirectionSign;
-    return this;
+    HudUiPanel::operator=(source);
+    flashCountdown = source.flashCountdown;
+    flashResetValue = source.flashResetValue;
+    flashAltColor0 = source.flashAltColor0;
+    flashAltColor1 = source.flashAltColor1;
+    flashEnabled = source.flashEnabled;
+    flashMode = source.flashMode;
+    flashDirectionSign = source.flashDirectionSign;
+    return *this;
 }
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicompositepanelentry-constructorcopy
- * @recoil-artifact defines .text recoil:function:0x4bc410: HudUiCompositePanelEntry::ConstructorCopy.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicompositepanelentry-copy-constructor
+ * @recoil-artifact defines .text recoil:function:0x4bc410: HudUiCompositePanelEntry::HudUiCompositePanelEntry(const HudUiCompositePanelEntry &).
  * Purpose: copy-construct one composite-panel entry from another entry.
  */
-HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
-    const HudUiCompositePanelEntry *source
-) {
-    new ((HudUiPanel *)this) HudUiPanel(*source);
-    flashCountdown = source->flashCountdown;
-    flashResetValue = source->flashResetValue;
-    flashAltColor0 = source->flashAltColor0;
-    flashAltColor1 = source->flashAltColor1;
-    flashEnabled = source->flashEnabled;
-    flashMode = source->flashMode;
-    flashDirectionSign = source->flashDirectionSign;
-    return this;
+HudUiCompositePanelEntry::HudUiCompositePanelEntry(
+    const HudUiCompositePanelEntry &source
+) : HudUiTransitionTextPanel(source) {
 }
 
 /**
@@ -398,18 +385,11 @@ HudUiContainer::HudUiContainer() {
 }
 
 /**
- * Current BN assembly restores the base HudUiContainer vptr and returns.
- * Purpose: tear down the common container base after derived HUD UI cleanup.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-destructor
+ * @recoil-artifact defines .text recoil:function:0x4bc7b0: HudUiContainer::~HudUiContainer.
+ * Purpose: restore the container vptr during ordinary C++ teardown.
  */
 HudUiContainer::~HudUiContainer() {
-}
-
-/**
- * Purpose: route legacy native smoke call sites through the recovered C++
- * destructor so base vptr restoration remains compiler-owned.
- */
-void HudUiContainer::DestructorCore() {
-    this->HudUiContainer::~HudUiContainer();
 }
 
 /**
@@ -776,7 +756,7 @@ HudUiTextLabel & HudUiTextLabel::operator=(
  * Purpose: format label text, refresh centered extents when needed, and
  * invalidate the element.
  */
-void HudUiTextLabel::SetTextFmt(
+void __cdecl HudUiTextLabel::SetTextFmt(
     const char *format,
     ...
 ) {
@@ -1250,36 +1230,6 @@ void zTimedTask::RemoveFromActiveList() {
  */
 void zTimedTask::RunImmediateAction() {
     switch (kind) {
-    case 1:
-        if (actionArg2 != 0) {
-            zVid_Image::BlitToActiveTarget(
-                (zVidImagePartial *)(actionArg2),
-                actionArg0,
-                actionArg1,
-                (unsigned short)(actionArg3),
-                (zVidRect32 *)(actionArg4)
-            );
-        }
-        break;
-
-    case 2:
-        zRndr_DrawImmediateLine(
-            actionArg0,
-            actionArg1,
-            actionArg2,
-            actionArg3,
-            actionArg4
-        );
-        break;
-
-    case 3:
-        zRndr_RasterizePoly(
-            (zVec3 *)(&actionArg0),
-            rasterVertexCount,
-            rasterDrawParam
-        );
-        break;
-
     case 4: {
         const char *text = (const char *)(&actionArg2) + 2;
         if (*text != '\0') {
@@ -1306,11 +1256,33 @@ void zTimedTask::RunImmediateAction() {
         break;
     }
 
-    case 6:
-        zRndr_SpanOcclusion_TestSample(
+    case 1:
+        if (actionArg2 != 0) {
+            zVid_Image::BlitToActiveTarget(
+                (zVidImagePartial *)(actionArg2),
+                actionArg0,
+                actionArg1,
+                (unsigned short)(actionArg3),
+                (zVidRect32 *)(actionArg4)
+            );
+        }
+        break;
+
+    case 3:
+        zRndr_RasterizePoly(
+            (zVec3 *)(&actionArg0),
+            rasterVertexCount,
+            rasterDrawParam
+        );
+        break;
+
+    case 2:
+        zRndr_DrawImmediateLine(
             actionArg0,
             actionArg1,
-            actionArg2
+            actionArg2,
+            actionArg3,
+            actionArg4
         );
         break;
 
@@ -1340,6 +1312,14 @@ void zTimedTask::RunImmediateAction() {
         }
         break;
     }
+
+    case 6:
+        zRndr_SpanOcclusion_TestSample(
+            actionArg0,
+            actionArg1,
+            actionArg2
+        );
+        break;
 
     case 8:
         zRndr_DrawClippedImmediateLineStrip(
@@ -1659,30 +1639,29 @@ void zVideoFxPass3Element::Draw() {
     zVideoFxPass3Config *const parentConfig = (zVideoFxPass3Config *)(parent);
     DrawBase();
 
-    if (parentConfig == 0) {
-        ApplyPass3();
-        return;
-    }
-
-    if (parentConfig->surfacePixels != 0) {
-        zVideo::Fx_SetSurfaceState(
-            parentConfig->surfacePixels,
-            parentConfig->surfaceWidth,
-            parentConfig->surfaceHeight,
-            parentConfig->surfacePitchBytes
-        );
-    }
-
-    int index;
-    for (index = 0; index < 2; ++index) {
-        HudUiRect *const inputRect = parentConfig->inputRectsOrNull[index];
-        if (inputRect != 0) {
-            clipRectOrNull = inputRect;
-            ApplyPass3();
+    if (parentConfig != 0) {
+        if (parentConfig->surfacePixels != 0) {
+            zVideo::Fx_SetSurfaceState(
+                parentConfig->surfacePixels,
+                parentConfig->surfaceWidth,
+                parentConfig->surfaceHeight,
+                parentConfig->surfacePitchBytes
+            );
         }
-    }
 
-    clipRectOrNull = parentConfig->inputRectsOrNull[0];
+        int index;
+        for (index = 0; index < 2; ++index) {
+            HudUiRect *const inputRect = parentConfig->inputRectsOrNull[index];
+            if (inputRect != 0) {
+                clipRectOrNull = inputRect;
+                ApplyPass3();
+            }
+        }
+
+        clipRectOrNull = parentConfig->inputRectsOrNull[0];
+    } else {
+        ApplyPass3();
+    }
 }
 
 /**
@@ -1996,15 +1975,7 @@ void HudWeatherFx::ResetParticleSlot(
  * through the pass-3 HUD element callback.
  */
 void HudWeatherFx::ApplyPass3() {
-    if (g_zVideo_ActiveRendererPath == ZVID_RENDERER_BACKEND_SOFTWARE) {
-        zVideo_FxSurface::DrawColoredLinesBatch(
-            (zVideoFxColoredLineRecord *)(particleQuads),
-            particleCount,
-            (zVidRect32 *)(clipRectOrNull)
-        );
-        return;
-    }
-
+    if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
     const int swSurfaceWasLocked = zVideo::GetSwSurfaceLockedFlag();
     if (swSurfaceWasLocked != 0) {
         zVideo::Dispatch_UnlockSwSurfaceState();
@@ -2088,6 +2059,13 @@ void HudWeatherFx::ApplyPass3() {
     zVideoD3D::SceneLeave();
     if (swSurfaceWasLocked != 0) {
         zVideo::RunPostprocessOnSwBuffer();
+    }
+    } else {
+        zVideo_FxSurface::DrawColoredLinesBatch(
+            (zVideoFxColoredLineRecord *)(particleQuads),
+            particleCount,
+            (zVidRect32 *)(clipRectOrNull)
+        );
     }
 }
 
@@ -2681,13 +2659,6 @@ void __fastcall FxPass3_UpdateLocal(
  * retail source placement remains unresolved.
  */
 zVideoFxPass3Config::zVideoFxPass3Config() {
-    rootElement.HudUiElement::Constructor(
-        0,
-        0
-    );
-    rootElement.clipRectOrNull = 0;
-    new (&rootElement) zVideoFxPass3RootElement;
-
     int slotIndex;
     inputRectsOrNull[0] = 0;
     inputRectsOrNull[1] = 0;
@@ -2704,7 +2675,8 @@ zVideoFxPass3Config::zVideoFxPass3Config() {
     }
 
     slotWriteIndex = 0;
-    HudUiContainer::SetEnabled(1);
+    HudUiContainer *const container = this;
+    container->SetEnabled(1);
 }
 
 extern char k_msgBoxWidgetName_Message[8];
@@ -2951,8 +2923,8 @@ void HudUiMessageBoxDialog::Destructor() {
 
     cancelButton.DestructorCore();
     okButton.DestructorCore();
-    titlePanel.~HudUiPanel();
-    messagePanel.~HudUiPanel();
+    titlePanel.HudUiPanel::~HudUiPanel();
+    messagePanel.HudUiPanel::~HudUiPanel();
     backdropWidget.DestructorCore();
     this->HudUiBackground::~HudUiBackground();
 }
@@ -2999,14 +2971,14 @@ int HudUiMessageBoxDialog::RunModal(
     int dialogPitchBytes;
     int dialogBitsPerPixel;
     void *dialogPixels;
-    if (g_zVideo_ActiveRendererPath == 0) {
-        dialogPitchBytes = zVideo::GetSwSurfacePitch();
-        dialogBitsPerPixel = zVideo::GetDisplayModeBpp();
-        dialogPixels = zVideo::GetSwSurfacePixels();
-    } else {
+    if (g_zVideo_ActiveRendererPath != 0) {
         dialogPitchBytes = zVideo::GetPrimarySurfacePitch();
         dialogBitsPerPixel = zVideo::GetDisplayModeBpp();
         dialogPixels = zVideo::GetPrimarySurfacePixels();
+    } else {
+        dialogPitchBytes = zVideo::GetSwSurfacePitch();
+        dialogBitsPerPixel = zVideo::GetDisplayModeBpp();
+        dialogPixels = zVideo::GetSwSurfacePixels();
     }
 
     zRndr::SetFrameBufferRegion(
@@ -3264,7 +3236,7 @@ void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
     if (newCaptureEnabled == 0 && capturedImage != 0) {
         zVid_Image::Destroy(capturedImage);
         capturedImage = 0;
-        HudUiElement::SetBltSourceAndClipRect(
+        SetBltSourceAndClipRect(
             0,
             0
         );
@@ -3308,8 +3280,8 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
     );
     capturedImage->formatFlagsPacked = (unsigned char)(capturedImage->formatFlagsPacked | 0x20u);
 
-    const int y = HudUiElement::GetCenterY();
-    const int x = HudUiElement::GetCenterX();
+    const int y = GetCenterY();
+    const int x = GetCenterX();
     RebuildCapturedImage(
         x,
         y
@@ -3476,10 +3448,14 @@ void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
     }
 
     zFMV_Stream *const newStream = (zFMV_Stream *)(::operator new(sizeof(zFMV_Stream)));
-    stream = newStream != 0 ? newStream->Init(
-        mediaPath,
-        0
-    ) : 0;
+    zFMV_Stream *initializedStream = 0;
+    if (newStream != 0) {
+        initializedStream = newStream->Init(
+            mediaPath,
+            0
+        );
+    }
+    stream = initializedStream;
 
     RebuildBltRect();
 }
@@ -3828,17 +3804,6 @@ void HudUiZrdWidget::DestructorCore() {
 /**
  * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::HudUiCheckToggleWidget.
  */
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in transition-panel owners that destroy embedded panel members.
- * Evidence: destructor callers tear down the HudUiPanel base without a
- * separate retail HudUiTransitionTextPanel destructor body.
- * Purpose: restore the source-level destructor for transition text panels.
- */
-HudUiTransitionTextPanel::~HudUiTransitionTextPanel() {
-    HudUiPanel::~HudUiPanel();
-}
 
 /**
  * the command-binding cleanup now instantiates the

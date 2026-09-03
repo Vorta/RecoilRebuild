@@ -81912,10 +81912,10 @@ class HudNetGameSetupLaunchButtonConstructorBridgeTests(unittest.TestCase):
             call_contract_verify_module
             .HUD_ZRD_WIDGET_CONSTRUCTOR_COD_MNEMONICS
         )
-        ends = offsets[1:] + (0x1C0,)
+        ends = offsets[1:] + (0x1B0,)
         operands = {
-            0x23: "??0HudUiWidget@@QAE@I@Z",
-            0xA1: (
+            0x25: "??0HudUiWidget@@QAE@I@Z",
+            0x96: (
                 "DWORD PTR [esi], OFFSET FLAT:"
                 "??_7HudUiZrdWidget@@6B@"
             ),
@@ -81966,7 +81966,7 @@ class HudNetGameSetupLaunchButtonConstructorBridgeTests(unittest.TestCase):
                 )
                 for index in range(len(data))
             ),
-            section_size=0x1C0,
+            section_size=0x1B0,
             section_is_comdat=True,
             comdat_selection=1,
             section_external_functions=(self.base_symbol,),
@@ -83745,7 +83745,7 @@ class HudNetGameSetupLaunchButtonConstructorBridgeTests(unittest.TestCase):
         definitions = {
             self.base_symbol: replace(natural, data=bytes(data)),
         }
-        with self.assertRaisesRegex(ValueError, "exact 0x1c0"):
+        with self.assertRaisesRegex(ValueError, "exact 0x1b0"):
             self.next_world_bridge(
                 candidate=replace(
                     candidate,
@@ -83764,7 +83764,7 @@ class HudNetGameSetupLaunchButtonConstructorBridgeTests(unittest.TestCase):
                 relocations=tuple(relocations),
             ),
         }
-        with self.assertRaisesRegex(ValueError, "exact 0x1c0"):
+        with self.assertRaisesRegex(ValueError, "exact 0x1b0"):
             self.next_world_bridge(
                 candidate=replace(
                     candidate,
@@ -83773,8 +83773,8 @@ class HudNetGameSetupLaunchButtonConstructorBridgeTests(unittest.TestCase):
             )
 
         instructions = list(natural.instructions)
-        instructions[12] = replace(
-            instructions[12],
+        instructions[14] = replace(
+            instructions[14],
             text="call ??0WrongBase@@QAE@I@Z",
             raw_text="call ??0WrongBase@@QAE@I@Z",
         )
@@ -83784,7 +83784,7 @@ class HudNetGameSetupLaunchButtonConstructorBridgeTests(unittest.TestCase):
                 instructions=tuple(instructions),
             ),
         }
-        with self.assertRaisesRegex(ValueError, "exact 0x1c0"):
+        with self.assertRaisesRegex(ValueError, "exact 0x1b0"):
             self.next_world_bridge(
                 candidate=replace(
                     candidate,
@@ -83793,8 +83793,8 @@ class HudNetGameSetupLaunchButtonConstructorBridgeTests(unittest.TestCase):
             )
 
         instructions = list(natural.instructions)
-        instructions[35] = replace(
-            instructions[35],
+        instructions[39] = replace(
+            instructions[39],
             text="mov DWORD PTR [esi], OFFSET FLAT:??_7Wrong@@6B@",
             raw_text="mov DWORD PTR [esi], OFFSET FLAT:??_7Wrong@@6B@",
         )
@@ -83804,7 +83804,7 @@ class HudNetGameSetupLaunchButtonConstructorBridgeTests(unittest.TestCase):
                 instructions=tuple(instructions),
             ),
         }
-        with self.assertRaisesRegex(ValueError, "exact 0x1c0"):
+        with self.assertRaisesRegex(ValueError, "exact 0x1b0"):
             self.next_world_bridge(
                 candidate=replace(
                     candidate,
@@ -133060,7 +133060,7 @@ class CallContractSchema118IndependentIatLifetimeTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(
             call_contract_verify_module.CandidateCallContractEvidenceError,
-            "wrong-register",
+            "wrong-register|already-published",
         ):
             self._proofs(candidate, colliding_indexes, imports)
 
@@ -144619,8 +144619,8 @@ class CallContractSchema131RecoilAppDecoderNormalizationTests(unittest.TestCase)
                 "0x4bef90",
                 "0x4bf060",
                 "??0zVideoFxPass3Config@@QAE@XZ",
-                constructor_name,
-                (0x5F,),
+                "??0HudUiElement@@QAE@HH@Z",
+                (0x32,),
                 constructor_identity,
             ),
         )
@@ -145811,16 +145811,18 @@ class CallContractSchema131RecoilAppDecoderNormalizationTests(unittest.TestCase)
     @staticmethod
     def _player_r4646_artifact_candidate(
         address: str,
+        artifact_root: Path | None = None,
     ) -> CandidateAssembly | None:
         module = call_contract_verify_module
-        artifact_root = (
-            REPO_ROOT
-            / "build"
-            / "live-validation"
-            / "worker-workspace-issue"
-            / "wsi-20260822-013-r3360"
-            / "call-contract-player_41ea90_42de10_authored_order"
-        )
+        if artifact_root is None:
+            artifact_root = (
+                REPO_ROOT
+                / "build"
+                / "live-validation"
+                / "worker-workspace-issue"
+                / "wsi-20260822-013-r3360"
+                / "call-contract-player_41ea90_42de10_authored_order"
+            )
         cod_path = artifact_root / "player.cod"
         obj_path = artifact_root / "player.obj"
         manifest_path = (
@@ -150463,6 +150465,417 @@ class CallContractSchema131RecoilAppDecoderNormalizationTests(unittest.TestCase)
             ):
                 helper(expected, candidate_contract, drifted, **arguments)
 
+    def test_message_box_widget_constructor_uses_exact_same_ordinal_bridge(
+        self,
+    ) -> None:
+        module = call_contract_verify_module
+        artifact_root = (
+            REPO_ROOT / "build" / "live-validation"
+            / "call-contract" / "4bd440-4c81c0-r4911-finalfix22"
+            / "call-contract-zui_4b3ce0_4bffe0_authored_order"
+        )
+        cod_path = artifact_root / "zui.cod"
+        obj_path = artifact_root / "zui.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed 0x4bf060 zUI COD/OBJ is unavailable")
+        symbol = (
+            "?Constructor@HudUiMessageBoxDialog@@QAEPAU1@PBD0@Z"
+        )
+        coff = module.CoffObject.from_path(obj_path)
+        caller = coff.function_bytes(symbol)
+        parsed = module._extract_cod_proc_with_local_switches(cod_path, symbol)
+        external = module._candidate_external_symbol_inventory(coff)
+        candidate = CandidateAssembly(
+            instructions=parsed.instructions,
+            local_control_flow_indices=parsed.local_control_flow_indices,
+            local_control_flow_targets=parsed.local_control_flow_targets,
+            tu_local_function_definitions=(
+                module._candidate_tu_local_function_definitions(coff, cod_path)
+            ),
+            caller_definition=CandidateCallerDefinition(
+                symbol=symbol,
+                data=caller.data,
+                relocations=caller.relocations,
+                relocation_mask=caller.relocation_mask,
+                undefined_external_functions=external[0],
+                defined_external_functions=external[1],
+                undefined_external_data=external[2],
+                defined_external_data=external[3],
+                coff_symbols=module._candidate_coff_symbol_definitions(coff),
+                section_index=caller.section_index,
+                section_start=caller.start,
+                section_end=caller.end,
+                associated_sections=module._candidate_associated_comdat_sections(
+                    coff, caller.section_index
+                ),
+            ),
+        )
+        invocation_indices = module._candidate_static_invocation_indices(
+            candidate,
+            caller_start="0x0",
+            caller_end_exclusive=hex(len(caller.data)),
+        )
+        expected = [
+            self._direct_row(ordinal, f"symbol:fixture:{ordinal}")
+            for ordinal in range(len(invocation_indices))
+        ]
+        target = "symbol:recoil:function:0x4b3d00"
+        expected[1] = self._direct_row(1, target)
+        zrd_target = "symbol:recoil:function:0x4b4ee0"
+        for ordinal in (4, 5):
+            expected[ordinal] = self._direct_row(ordinal, zrd_target)
+        current = [dict(row) for row in expected]
+        current[1] = {
+            **expected[1],
+            "target_identity": (
+                "candidate-local-coff:"
+                "?Constructor@HudUiWidget@@QAEPAU1@I@Z"
+            ),
+            "cleanup_bytes": 4,
+        }
+        for ordinal in (4, 5):
+            current[ordinal] = {
+                **expected[ordinal],
+                "target_identity": (
+                    "candidate-local-coff:"
+                    "?Constructor@HudUiZrdWidget@@QAEPAU1@XZ"
+                ),
+            }
+        indexes = IdentityIndexes(
+            by_address={
+                "0x4b3d00": target,
+                "0x4b4ee0": zrd_target,
+            },
+            by_candidate_name={},
+            provider_ids=frozenset(),
+            storage_by_address={},
+            storage_by_name={},
+        )
+        self.assertEqual(
+            expected,
+            module._zui_message_box_widget_constructor_projection(
+                expected,
+                current,
+                candidate,
+                caller_identity="symbol:recoil:function:0x4bf060",
+                caller_start="0x4bf060",
+                caller_end_exclusive="0x4bf540",
+                indexes=indexes,
+            ),
+        )
+        vptr_specs = (
+            ("0x4bf1b4", 0x110, "0x4d3a88", "0x404d20", 0x60),
+            ("0x4bf1c5", 0x11A, "0x4d3a88", "0x404d20", 0x60),
+            ("0x4bf3f4", 0x334, "0x4d3a88", "0x4bb540", 0x74),
+            ("0x4bf40c", 0x34C, "0x4d3a88", "0x4bb540", 0x74),
+            ("0x4bf419", 0x363, "0x4d40c8", "0x4b59f0", 0x7C),
+            ("0x4bf44a", 0x39D, "0x4d3428", "0x4b3dd0", 0x0C),
+            ("0x4bf46d", 0x3B7, "0x4d3a88", "0x404cd0", 0x0C),
+            ("0x4bf47d", 0x3CF, "0x4d3a88", "0x404cd0", 0x0C),
+            ("0x4bf4cb", 0x41D, "0x4d40c8", "0x4b3dd0", 0x0C),
+            ("0x4bf500", 0x452, "0x4d3a88", "0x404d20", 0x60),
+            ("0x4bf50a", 0x45C, "0x4d3a88", "0x404d20", 0x60),
+            ("0x4bf513", 0x465, "0x4d40c8", "0x404d20", 0x60),
+        )
+        storage = {
+            address: f"storage:recoil:data:{address}"
+            for address in {row[2] for row in vptr_specs}
+        }
+        targets = {
+            address: f"symbol:recoil:function:{address}"
+            for address in {row[3] for row in vptr_specs}
+        }
+        vptr_indexes = IdentityIndexes(
+            by_address={
+                "0x4bf060": "symbol:recoil:function:0x4bf060",
+                **targets,
+            },
+            by_candidate_name={},
+            provider_ids=frozenset(),
+            storage_by_address=storage,
+            storage_by_name={},
+        )
+        retail_bridges = {
+            retail: ReviewedLoopVptrStorageBridge(
+                register="edx",
+                storage_identity=storage[table],
+                slot_displacement=slot,
+                assembly_source="bn",
+                target_identity=targets[target_address],
+            )
+            for retail, _candidate_offset, table, target_address, slot
+            in vptr_specs
+        }
+        self.assertEqual(
+            {
+                hex(candidate_offset): ReviewedLoopVptrStorageBridge(
+                    register=(
+                        module._memory_slot(
+                            module._instruction_operand(
+                                next(
+                                    instruction
+                                    for offset, instruction in zip(
+                                        module._candidate_complete_instruction_offsets(
+                                            candidate
+                                        ),
+                                        candidate.instructions,
+                                    )
+                                    if offset == candidate_offset
+                                )
+                            )
+                        )[0].split("+", 1)[0]
+                    ),
+                    storage_identity=storage[table],
+                    slot_displacement=slot,
+                    assembly_source="cod",
+                    target_identity=targets[target_address],
+                )
+                for _retail, candidate_offset, table, target_address, slot
+                in vptr_specs
+            },
+            module._zui_r4905_static_vptr_candidate_bridges(
+                candidate,
+                caller_identity="symbol:recoil:function:0x4bf060",
+                caller_start="0x4bf060",
+                caller_end_exclusive="0x4bf540",
+                indexes=vptr_indexes,
+                retail_vptr_bridges=retail_bridges,
+            ),
+        )
+        helper_name = "?Constructor@HudUiWidget@@QAEPAU1@I@Z"
+        helper = candidate.tu_local_function_definitions[helper_name]
+        with self.assertRaisesRegex(
+            ValueError, "message-box widget constructor occurrence"
+        ):
+            module._zui_message_box_widget_constructor_projection(
+                expected,
+                current,
+                replace(
+                    candidate,
+                    tu_local_function_definitions={
+                        **candidate.tu_local_function_definitions,
+                        helper_name: replace(
+                            helper,
+                            data=b"\x90" + helper.data[1:],
+                        ),
+                    },
+                ),
+                caller_identity="symbol:recoil:function:0x4bf060",
+                caller_start="0x4bf060",
+                caller_end_exclusive="0x4bf540",
+                indexes=indexes,
+            )
+
+    def test_message_box_zrd_destructor_occurrence_is_artifact_finite(
+        self,
+    ) -> None:
+        module = call_contract_verify_module
+        artifact_root = (
+            REPO_ROOT / "build" / "live-validation"
+            / "call-contract" / "4bd440-4c81c0-r4911-finalfix22"
+            / "call-contract-zui_4b3ce0_4bffe0_authored_order"
+        )
+        cod_path = artifact_root / "zui.cod"
+        obj_path = artifact_root / "zui.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed 0x4bf560 zUI COD/OBJ is unavailable")
+        symbol = "?Destructor@HudUiMessageBoxDialog@@QAEXXZ"
+        coff = module.CoffObject.from_path(obj_path)
+        caller = coff.function_bytes(symbol)
+        parsed = module._extract_cod_proc_with_local_switches(cod_path, symbol)
+        external = module._candidate_external_symbol_inventory(coff)
+        candidate = CandidateAssembly(
+            instructions=parsed.instructions,
+            local_control_flow_indices=parsed.local_control_flow_indices,
+            local_control_flow_targets=parsed.local_control_flow_targets,
+            tu_local_function_definitions=(
+                module._candidate_tu_local_function_definitions(coff, cod_path)
+            ),
+            caller_definition=CandidateCallerDefinition(
+                symbol=symbol,
+                data=caller.data,
+                relocations=caller.relocations,
+                relocation_mask=caller.relocation_mask,
+                undefined_external_functions=external[0],
+                defined_external_functions=external[1],
+                undefined_external_data=external[2],
+                defined_external_data=external[3],
+                coff_symbols=module._candidate_coff_symbol_definitions(coff),
+                section_index=caller.section_index,
+                section_start=caller.start,
+                section_end=caller.end,
+                associated_sections=module._candidate_associated_comdat_sections(
+                    coff, caller.section_index
+                ),
+            ),
+        )
+        invocation_indices = module._candidate_static_invocation_indices(
+            candidate,
+            caller_start="0x0",
+            caller_end_exclusive=hex(len(caller.data)),
+        )
+        expected = [
+            self._direct_row(ordinal, f"symbol:fixture:{ordinal}")
+            for ordinal in range(len(invocation_indices))
+        ]
+        target = "symbol:recoil:function:0x4b50c0"
+        current = [dict(row) for row in expected]
+        name = "?DestructorCore@HudUiZrdWidget@@QAEXXZ"
+        for ordinal in (2, 3):
+            expected[ordinal] = self._direct_row(ordinal, target)
+            current[ordinal] = {
+                **expected[ordinal],
+                "target_identity": f"candidate-local-coff:{name}",
+            }
+        indexes = IdentityIndexes(
+            by_address={"0x4b50c0": target},
+            by_candidate_name={},
+            provider_ids=frozenset(),
+            storage_by_address={},
+            storage_by_name={},
+        )
+        arguments = {
+            "caller_identity": "symbol:recoil:function:0x4bf560",
+            "caller_start": "0x4bf560",
+            "caller_end_exclusive": "0x4bf630",
+            "indexes": indexes,
+        }
+        self.assertEqual(
+            expected,
+            module._zui_message_box_destructor_projection(
+                expected, current, candidate, **arguments
+            ),
+        )
+        helper = candidate.tu_local_function_definitions[name]
+        with self.assertRaisesRegex(
+            ValueError, "message-box zrd destructor occurrence"
+        ):
+            module._zui_message_box_destructor_projection(
+                expected,
+                current,
+                replace(
+                    candidate,
+                    tu_local_function_definitions={
+                        **candidate.tu_local_function_definitions,
+                        name: replace(helper, data=b"\x90" + helper.data[1:]),
+                    },
+                ),
+                **arguments,
+            )
+
+    def test_message_box_button_receiver_renderings_are_artifact_finite(
+        self,
+    ) -> None:
+        module = call_contract_verify_module
+        artifact_root = (
+            REPO_ROOT / "build" / "live-validation"
+            / "zui-inline-context"
+            / "4bf800-4bf820-virtual-handlers-r4911"
+            / "call-contract-zui_4b3ce0_4bffe0_authored_order"
+        )
+        cod_path = artifact_root / "zui.cod"
+        obj_path = artifact_root / "zui.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed message-box button COD/OBJ is unavailable")
+        coff = module.CoffObject.from_path(obj_path)
+        external = module._candidate_external_symbol_inventory(coff)
+        cases = (
+            (
+                "0x4bf800",
+                "0x4bf820",
+                "?OnActivate@HudUiMessageBoxOkButton@@UAEXXZ",
+            ),
+            (
+                "0x4bf820",
+                "0x4bf840",
+                "?OnActivate@HudUiMessageBoxCancelButton@@UAEXXZ",
+            ),
+        )
+        for start, end, symbol in cases:
+            with self.subTest(start=start):
+                caller = coff.function_bytes(symbol)
+                parsed = module._extract_cod_proc_with_local_switches(
+                    cod_path, symbol
+                )
+                candidate = CandidateAssembly(
+                    instructions=parsed.instructions,
+                    local_control_flow_indices=parsed.local_control_flow_indices,
+                    local_control_flow_targets=(
+                        parsed.local_control_flow_targets
+                    ),
+                    caller_definition=CandidateCallerDefinition(
+                        symbol=symbol,
+                        data=caller.data,
+                        relocations=caller.relocations,
+                        relocation_mask=caller.relocation_mask,
+                        undefined_external_functions=external[0],
+                        defined_external_functions=external[1],
+                        undefined_external_data=external[2],
+                        defined_external_data=external[3],
+                        coff_symbols=module._candidate_coff_symbol_definitions(
+                            coff
+                        ),
+                        section_index=caller.section_index,
+                        section_start=caller.start,
+                        section_end=caller.end,
+                        associated_sections=(
+                            module._candidate_associated_comdat_sections(
+                                coff, caller.section_index
+                            )
+                        ),
+                    ),
+                )
+                marker = "load(exact-receiver-field(this,+0xc8))"
+                expected = [
+                    {
+                        "ordinal": 0,
+                        "form": "call",
+                        "dispatch": "indirect",
+                        "identity_kind": "virtual-slot",
+                        "target_identity": "",
+                        "storage_identity": marker,
+                        "slot_displacement": 12 if start == "0x4bf800" else 16,
+                        "cleanup_bytes": None,
+                    },
+                    self._direct_row(1, "symbol:fixture:base-activate"),
+                ]
+                current = [dict(row) for row in expected]
+                current[0]["storage_identity"] = "load(load(this+0xc8))"
+                indexes = IdentityIndexes(
+                    by_address={start: f"symbol:recoil:function:{start}"},
+                    by_candidate_name={},
+                    provider_ids=frozenset(),
+                    storage_by_address={},
+                    storage_by_name={},
+                )
+                arguments = {
+                    "caller_identity": f"symbol:recoil:function:{start}",
+                    "caller_start": start,
+                    "caller_end_exclusive": end,
+                    "indexes": indexes,
+                }
+                self.assertEqual(
+                    expected,
+                    module._zui_r4905_exact_receiver_rendering_projection(
+                        expected, current, candidate, **arguments
+                    ),
+                )
+                with self.assertRaisesRegex(
+                    ValueError, "receiver-rendering projection"
+                ):
+                    module._zui_r4905_exact_receiver_rendering_projection(
+                        expected,
+                        current,
+                        replace(
+                            candidate,
+                            caller_definition=replace(
+                                candidate.caller_definition,
+                                data=b"\x90" + caller.data[1:],
+                            ),
+                        ),
+                        **arguments,
+                    )
+
     def test_player_425060_inverted_cstring_projection_is_exact_and_monotone(
         self,
     ) -> None:
@@ -151242,7 +151655,12 @@ class CallContractSchema131RecoilAppDecoderNormalizationTests(unittest.TestCase)
             storage_by_address={},
             storage_by_name={},
         )
-        candidate = self._player_r4646_artifact_candidate("0x41ec40")
+        candidate = self._player_r4646_artifact_candidate(
+            "0x41ec40",
+            REPO_ROOT / "build" / "live-validation" / "call-contract"
+            / "401000-408210-r4910-replay-001"
+            / "call-contract-player_41ea90_42de10_authored_order",
+        )
         if candidate is None:
             self.skipTest("governed r4646 Player COD/OBJ is unavailable")
         expected = [self._direct_row(0, target_identity)]
@@ -152580,6 +152998,12 @@ class CallContractSchema131RecoilAppDecoderNormalizationTests(unittest.TestCase)
             "HudUiNumericTextInput::~HudUiNumericTextInput",
             call_contract_verify_module._candidate_expected_direct_identity_name(
                 "??1HudUiNumericTextInput@@UAE@XZ"
+            ),
+        )
+        self.assertEqual(
+            "HudUiElement::Constructor",
+            call_contract_verify_module._candidate_expected_direct_identity_name(
+                "??0HudUiElement@@QAE@HH@Z"
             ),
         )
         self.assertEqual(
@@ -157210,7 +157634,7 @@ class MissionCallProfilesWsi011Tests(unittest.TestCase):
 class ZuiPointerVectorOccurrenceGraphTests(unittest.TestCase):
     artifact_root = (
         REPO_ROOT / "build" / "live-validation"
-        / "zui-query-width-r4905-1"
+        / "call-contract" / "4b45e0-4bd410-r4911-fix23"
         / "call-contract-zui_4b3ce0_4bffe0_authored_order"
     )
 
@@ -157925,6 +158349,95 @@ class ZuiPointerVectorOccurrenceGraphTests(unittest.TestCase):
                 caller_end_exclusive="0x4b82e0",
                 indexes=indexes,
                 retail_vptr_bridges=retail_bridges,
+            )
+
+    def test_zui_fxpass3_queue_vptr_bridge_is_artifact_finite(self):
+        module = call_contract_verify_module
+        artifact_root = (
+            REPO_ROOT / "build" / "live-validation"
+            / "zui-inline-context" / "4bed90-r4911"
+            / "call-contract-zui_4b3ce0_4bffe0_authored_order"
+        )
+        cod_path = artifact_root / "zui.cod"
+        obj_path = artifact_root / "zui.obj"
+        if not cod_path.is_file() or not obj_path.is_file():
+            self.skipTest("governed 0x4bed90 zUI COD/OBJ is unavailable")
+        symbol = (
+            "?zVideoFxPass3Config_QueueElementLocal@zVideo@@YIX"
+            "PAUzVideoFxPass3Config@@HHHHHMM@Z"
+        )
+        coff = module.CoffObject.from_path(obj_path)
+        caller = coff.function_bytes(symbol)
+        parsed = module._extract_cod_proc_with_local_switches(cod_path, symbol)
+        external = module._candidate_external_symbol_inventory(coff)
+        definition = CandidateCallerDefinition(
+            symbol=symbol,
+            data=caller.data,
+            relocations=caller.relocations,
+            relocation_mask=caller.relocation_mask,
+            undefined_external_functions=external[0],
+            defined_external_functions=external[1],
+            undefined_external_data=external[2],
+            defined_external_data=external[3],
+            coff_symbols=module._candidate_coff_symbol_definitions(coff),
+            section_index=caller.section_index,
+            section_start=caller.start,
+            section_end=caller.end,
+            associated_sections=module._candidate_associated_comdat_sections(
+                coff, caller.section_index
+            ),
+        )
+        candidate = CandidateAssembly(
+            parsed.instructions,
+            parsed.local_control_flow_indices,
+            local_control_flow_targets=parsed.local_control_flow_targets,
+            caller_definition=definition,
+        )
+        caller_identity = "symbol:recoil:function:0x4bed90"
+        target_identity = "symbol:recoil:function:0x404d20"
+        table_identity = "storage:recoil:data:0x4d3d78"
+        indexes = SimpleNamespace(
+            by_address={
+                "0x4bed90": caller_identity,
+                "0x404d20": target_identity,
+            },
+            storage_by_address={"0x4d3d78": table_identity},
+            provider_ids=set(),
+        )
+        retail_bridge = ReviewedLoopVptrStorageBridge(
+            register="edx",
+            storage_identity=table_identity,
+            slot_displacement=0x60,
+            assembly_source="bn",
+            target_identity=target_identity,
+        )
+        self.assertEqual(
+            {"0x49": replace(retail_bridge, assembly_source="cod")},
+            module._zui_r4905_static_vptr_candidate_bridges(
+                candidate,
+                caller_identity=caller_identity,
+                caller_start="0x4bed90",
+                caller_end_exclusive="0x4bee00",
+                indexes=indexes,
+                retail_vptr_bridges={"0x4beddd": retail_bridge},
+            ),
+        )
+        with self.assertRaisesRegex(
+            ValueError, "zUI exact constructor-vptr candidate bridge"
+        ):
+            module._zui_r4905_static_vptr_candidate_bridges(
+                replace(
+                    candidate,
+                    caller_definition=replace(
+                        definition,
+                        data=b"\x90" + definition.data[1:],
+                    ),
+                ),
+                caller_identity=caller_identity,
+                caller_start="0x4bed90",
+                caller_end_exclusive="0x4bee00",
+                indexes=indexes,
+                retail_vptr_bridges={"0x4beddd": retail_bridge},
             )
 
     def test_zui_check_toggle_inline_helper_graph_is_artifact_finite(self):

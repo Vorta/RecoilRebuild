@@ -1206,7 +1206,7 @@
     },
     {
       "address": "0x4bb5e0",
-      "symbol": "?SetTextFmtV@HudUiPanel@@UAEXPBDPAD@Z",
+      "symbol": "?SetTextFmtV@HudUiPanel@@UAAXPBDPAD@Z",
       "name": "HudUiPanel::SetTextFmtV",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -1278,7 +1278,7 @@
     },
     {
       "address": "0x4bbac0",
-      "symbol": "?SetTextFmtV@HudUiCompositePanel@@UAEXPBDPAD@Z",
+      "symbol": "?SetTextFmtV@HudUiCompositePanel@@UAAXPBDPAD@Z",
       "name": "HudUiCompositePanel::SetTextFmtV",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -1359,8 +1359,8 @@
     },
     {
       "address": "0x4bc3a0",
-      "symbol": "?AssignCopy@HudUiCompositePanelEntry@@QAEPAU1@PBU1@@Z",
-      "name": "HudUiCompositePanelEntry::AssignCopy",
+      "symbol": "??4HudUiCompositePanelEntry@@QAEAAU0@ABU0@@Z",
+      "name": "HudUiCompositePanelEntry::operator=",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -1368,8 +1368,8 @@
     },
     {
       "address": "0x4bc410",
-      "symbol": "?ConstructorCopy@HudUiCompositePanelEntry@@QAEPAU1@PBU1@@Z",
-      "name": "HudUiCompositePanelEntry::ConstructorCopy",
+      "symbol": "??0HudUiCompositePanelEntry@@QAE@ABU0@@Z",
+      "name": "HudUiCompositePanelEntry::HudUiCompositePanelEntry(const HudUiCompositePanelEntry &)",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "authored-lifecycle-body",
       "required_presence": true,
@@ -1467,8 +1467,8 @@
     },
     {
       "address": "0x4bc7b0",
-      "symbol": "?DestructorCore@HudUiContainer@@QAEXXZ",
-      "name": "HudUiContainer::DestructorCore",
+      "symbol": "??1HudUiContainer@@QAE@XZ",
+      "name": "HudUiContainer::~HudUiContainer",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "authored-lifecycle-body",
       "required_presence": true,
@@ -2133,7 +2133,7 @@
     },
     {
       "address": "0x4bf7c0",
-      "symbol": "?OnOk@HudUiMessageBoxDialog@@QAEXXZ",
+      "symbol": "?OnOk@HudUiMessageBoxDialog@@UAEXXZ",
       "name": "HudUiMessageBoxDialog::OnOk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -2142,7 +2142,7 @@
     },
     {
       "address": "0x4bf7e0",
-      "symbol": "?OnCancel@HudUiMessageBoxDialog@@QAEXXZ",
+      "symbol": "?OnCancel@HudUiMessageBoxDialog@@UAEXXZ",
       "name": "HudUiMessageBoxDialog::OnCancel",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

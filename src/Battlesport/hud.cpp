@@ -8920,7 +8920,7 @@ void __fastcall InsertionSortRange(
  */
 void HudLayoutBase::Destructor() {
     widget0.DestructorCore();
-    HudUiContainer::DestructorCore();
+    this->HudUiContainer::~HudUiContainer();
 }
 
 #if defined(_MSC_VER) && defined(_M_IX86)
