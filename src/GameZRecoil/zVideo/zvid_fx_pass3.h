@@ -45,6 +45,16 @@ struct zVideoFxPass3RootElement : zVideoFxPass3Element {
     unsigned char unknown_3a[0x06];
     double alpha;
 
+    /**
+     * Original inline helper; no standalone retail body exists. The enclosing
+     * config constructor at 0x4bef90 emits this base construction before the
+     * following five-element slot array construction.
+     */
+    zVideoFxPass3RootElement() : zVideoFxPass3Element(
+        0,
+        0
+    ) {}
+
     void ApplyPass3();
 };
 

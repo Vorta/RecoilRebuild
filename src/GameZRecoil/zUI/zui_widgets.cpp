@@ -1005,10 +1005,6 @@ inline float ZrdArrayFloat(
 
 namespace {
 
-struct HudUiListSelectorItemArrayHeader {
-    int count;
-};
-
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
@@ -1083,30 +1079,6 @@ inline void ApplyHudFontStyleTextOnly(
     panel->shadowEnabled = style->shadowEnabled;
     panel->shadowOffsetX = 1;
     panel->shadowOffsetY = 1;
-}
-
-/**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
- * Purpose: preserve the recovered HUD behavior for DeleteHudUiListSelectorItemArray.
- */
-inline void DeleteHudUiListSelectorItemArray(
-    HudUiListSelectorItem *items
-) {
-    if (items == 0) {
-        return;
-    }
-
-    HudUiListSelectorItemArrayHeader *const header =
-        ((HudUiListSelectorItemArrayHeader *)(items)) - 1;
-    const int count = header->count;
-    {
-        for (int index = 0; index < count; ++index) {
-            ((HudUiPanel *)(&items[index]))->~HudUiPanel();
-        }
-    }
-
-    ::operator delete(header);
 }
 
 /**
@@ -1682,7 +1654,7 @@ void HudUiSetFontFromRect(
  * Evidence: recovered in the HUD source cluster near address-backed 0x40d7e0 HudUiMgr::Constructor callers.
  * Purpose: preserve the recovered HUD behavior for HudUiSetPanelClipWithSource.
  */
-void HudUiSetPanelClipWithSource(
+inline void HudUiSetPanelClipWithSource(
     HudUiPanel *panel,
     void *source,
     const HudUiRect *clipRect
@@ -4192,7 +4164,10 @@ int HudUiZrdWidgetEx17C_Item::LoadFromZrd(
 
             const int right = panel->textWidthPx + boundsRect.left;
             if (right > boundsRect.right) {
-                boundsRect.right = right;
+                if (panel->textDirty != 0) {
+                    panel->RebuildTextRect();
+                }
+                boundsRect.right = panel->textWidthPx + boundsRect.left;
             }
 
             ++panelIt;
@@ -4572,22 +4547,8 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
     int totalCount,
     int visibleCount
 ) {
-    DeleteHudUiListSelectorItemArray(bindingSlotPanels);
-    bindingSlotPanels = 0;
-
-    const unsigned int allocationSize =
-        sizeof(int) + (unsigned int)(totalCount) * sizeof(HudUiListSelectorItem);
-    HudUiListSelectorItemArrayHeader *const header =
-        (HudUiListSelectorItemArrayHeader *)(::operator new(allocationSize));
-    header->count = totalCount;
-    HudUiListSelectorItem *const items = (HudUiListSelectorItem *)(header + 1);
-    {
-        for (int index = 0; index < totalCount; ++index) {
-            new (&items[index]) HudUiListSelectorItem;
-        }
-    }
-
-    bindingSlotPanels = items;
+    delete [] bindingSlotPanels;
+    bindingSlotPanels = new HudUiListSelectorItem[totalCount];
     bindingSlotTotalCount = totalCount;
     visibleBindingSlotCount = visibleCount;
 
@@ -5028,6 +4989,13 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
 
                 child.SetVisible(1);
                 child.Invalidate();
+                // Retail preserves these four polymorphic queries before the
+                // blit-source update even though their return values are not
+                // retained by the surrounding path.
+                child.GetCenterX();
+                child.GetCenterY();
+                child.GetCenterX();
+                child.GetCenterY();
                 child.SetBltSourceAndClipRect(
                     primaryClipImage,
                     0
@@ -5090,10 +5058,10 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
         }
 
         if (capturePrimary == 0) {
-            HudUiBackgroundContainer::SetEnabled(1);
+            SetEnabled(1);
             UpdateAll(0.0f);
             capturedCompositeImage = zVideo_buff_CaptureSurfaceToImage(1);
-            HudUiBackgroundContainer::SetEnabled(0);
+            SetEnabled(0);
             ((HudUiDialogController *)(this))->BlitOwnedSurfaceToPrimary();
         }
 
@@ -5733,9 +5701,7 @@ void HudUiPanel::RebuildTextRect() {
         );
     }
 
-    if (measured == 0) {
-        GetLastError();
-    } else {
+    if (measured != 0) {
         if (shadowEnabled != 0) {
             textRectRef.bottom += abs(shadowOffsetY);
             textRectRef.right += abs(shadowOffsetX);
@@ -5746,12 +5712,29 @@ void HudUiPanel::RebuildTextRect() {
         textWidthPx = textWidth;
         textHeightPx = textHeight;
 
-        if (textPick != 0 && (textWidth > textPick->width || textHeight > textPick->height)) {
-            zVid_Image::Destroy(textPick);
-            textPick = 0;
-        }
-
-        if (textPick == 0) {
+        if (textPick != 0) {
+            if (textWidth > textPick->width || textHeight > textPick->height) {
+                zVid_Image::Destroy(textPick);
+                textPick = zVid_Image::Create();
+                zVid_Image::SetFormatCode(
+                    textPick,
+                    3
+                );
+                zVid_Image::SetSize(
+                    textPick,
+                    (short)(textWidth),
+                    (short)(textHeight)
+                );
+                void *const pixels =
+                    malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidth * textHeight);
+                zVid_Image_SetPixels(
+                    textPick,
+                    pixels,
+                    0
+                );
+                textPick->formatFlagsPacked |= 0x20;
+            }
+        } else {
             textPick = zVid_Image::Create();
             zVid_Image::SetFormatCode(
                 textPick,
@@ -5781,8 +5764,7 @@ void HudUiPanel::RebuildTextRect() {
             );
 
             HDC drawDc = 0;
-            zVideo_ImageUploadPixelsProc uploadPixels = g_zVideo_pfnImageUploadPixelsToSurface;
-            if (uploadPixels != 0 && uploadPixels(
+            if (g_zVideo_pfnImageUploadPixelsToSurface(
                 textPick,
                 &drawDc
             ) != 0) {
@@ -5853,13 +5835,10 @@ void HudUiPanel::RebuildTextRect() {
                     drawFormat
                 );
 
-                zVideo_ImageReleaseSurfaceProc releaseSurface = g_zVideo_pfnImageReleaseSurface;
-                if (releaseSurface != 0) {
-                    releaseSurface(
-                        textPick,
-                        drawDc
-                    );
-                }
+                g_zVideo_pfnImageReleaseSurface(
+                    textPick,
+                    drawDc
+                );
             }
 
             TEXTMETRICA metrics = {0};
@@ -5911,6 +5890,8 @@ void HudUiPanel::RebuildTextRect() {
                 unknown274 = (int)(metrics.tmExternalLeading);
             }
         }
+    } else {
+        GetLastError();
     }
 
     DeleteDC(measureDc);
@@ -6036,20 +6017,20 @@ void HudUiPanel::UpdateTextBoundsFromContent() {
         &textSize
     ) != 0) {
         int left;
-        if (alignMode == 1) {
+        if (alignMode != 0) {
             if (textDirty != 0) {
                 RebuildTextRect();
             }
 
-            left = clipRect.left + ((clipRect.right - clipRect.left) / 2) - (textWidthPx / 2);
-        } else if (alignMode == 0) {
-            left = clipRect.left;
+            if (alignMode == 1) {
+                left = clipRect.left +
+                    ((clipRect.right - clipRect.left) / 2) -
+                    (textWidthPx / 2);
+            } else {
+                left = clipRect.right - textWidthPx;
+            }
         } else {
-            if (textDirty != 0) {
-                RebuildTextRect();
-            }
-
-            left = clipRect.right - textWidthPx;
+            left = clipRect.left;
         }
 
         clipRect.left = left;
@@ -6116,12 +6097,35 @@ void HudUiPanel::Draw() {
         return;
     }
 
-    if (textBuffer[0] == '\0') {
-        DrawBase();
-        return;
-    }
+    if (textBuffer[0] != '\0') {
+        if (alignMode != 0) {
+            if (textDirty != 0) {
+                RebuildTextRect();
+            }
 
-    if (alignMode == 0) {
+            int frameWidth = clipRect.right - clipRect.left;
+            int textWidth = textWidthPx;
+            if (alignMode == 1) {
+                frameWidth >>= 1;
+                textWidth >>= 1;
+            }
+
+            x -= frameWidth;
+            DrawBase();
+
+            const int dstX = x + frameWidth - textWidth;
+            x = dstX;
+            zVid_Image::BlitToActiveTarget(
+                textPick,
+                dstX,
+                y,
+                0,
+                (zVidRect32 *)(&textRect)
+            );
+            x += textWidth;
+            return;
+        }
+
         DrawBase();
         zVid_Image::BlitToActiveTarget(
             textPick,
@@ -6133,30 +6137,7 @@ void HudUiPanel::Draw() {
         return;
     }
 
-    if (textDirty != 0) {
-        RebuildTextRect();
-    }
-
-    int frameWidth = clipRect.right - clipRect.left;
-    int textWidth = textWidthPx;
-    if (alignMode == 1) {
-        frameWidth >>= 1;
-        textWidth >>= 1;
-    }
-
-    x -= frameWidth;
     DrawBase();
-
-    const int dstX = x + frameWidth - textWidth;
-    x = dstX;
-    zVid_Image::BlitToActiveTarget(
-        textPick,
-        dstX,
-        y,
-        0,
-        (zVidRect32 *)(&textRect)
-    );
-    x += textWidth;
 }
 
 /**
@@ -6165,7 +6146,7 @@ void HudUiPanel::Draw() {
  * Purpose: format stack varargs into the panel text buffer and refresh cached
  * panel text state when the content changes.
  */
-void HudUiPanel::SetTextFmt(
+void __cdecl HudUiPanel::SetTextFmt(
     const char *format,
     ...
 ) {
@@ -6357,21 +6338,23 @@ HudUiCompositePanel::HudUiCompositePanel(
         0,
         0,
         0
-    ) {
+) {
     activeEntryCount = 0;
-    HudUiCompositePanelEntry templateEntry;
-    entryVector.resize(
-        (unsigned int)(entryCount),
-        templateEntry
-    );
+    {
+        HudUiCompositePanelEntry templateEntry;
+        entryVector.resize(
+            (unsigned int)(entryCount),
+            templateEntry
+        );
+    }
 
     HudUiPanel::SetTextFmt("W");
-    LayoutEntries(
+    HudUiCompositePanel::SetPos(
         0,
         0
     );
     ResizeEntryVectorAndRelayout(entryCount);
-    SetVisible(1);
+    ((HudUiElement *)(this))->SetVisible(1);
 }
 
 /**
@@ -6428,7 +6411,7 @@ void HudUiCompositePanel::SetPos(
  * @recoil-artifact defines .text recoil:function:0x4bbaa0: HudUiCompositePanel::SetTextFmt.
  * Purpose: format text into the next composite-panel history entry.
  */
-void HudUiCompositePanel::SetTextFmt(
+void __cdecl HudUiCompositePanel::SetTextFmt(
     const char *format,
     ...
 ) {
@@ -6547,19 +6530,21 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
     const int oldCount = (int)(entryVector.size());
 
     if (entryCount != oldCount) {
-        HudUiCompositePanelEntry templateEntry;
+        {
+            HudUiCompositePanelEntry templateEntry;
 
-        if (entryCount > oldCount) {
-            entryVector.insert(
-                entryVector.end(),
-                (unsigned int)(entryCount - oldCount),
-                templateEntry
-            );
-        } else {
-            entryVector.erase(
-                entryVector.begin() + entryCount,
-                entryVector.end()
-            );
+            if (entryCount > oldCount) {
+                entryVector.insert(
+                    entryVector.end(),
+                    (unsigned int)(entryCount - oldCount),
+                    templateEntry
+                );
+            } else {
+                entryVector.erase(
+                    entryVector.begin() + entryCount,
+                    entryVector.end()
+                );
+            }
         }
 
         ResizeEntryCount(

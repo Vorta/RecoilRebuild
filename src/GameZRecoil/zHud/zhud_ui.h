@@ -361,7 +361,6 @@ struct HudUiContainer {
     HudUiElement *childHead;
     HudUiElement *childTail;
 
-    void DestructorCore();
     int AddChild(HudUiElement *child);
     int FindChildWithPrev(
         HudUiElement *child,
@@ -1961,7 +1960,7 @@ struct HudUiTransitionTextPanel : HudUiPanel {
     int flashDirectionSign;
 
     HudUiTransitionTextPanel();
-    ~HudUiTransitionTextPanel();
+    ~HudUiTransitionTextPanel() {}
     void Update(float deltaSeconds);
     void ResetFlashState(float flashRate);
     void SetFlashRate(float flashRate);
@@ -2146,10 +2145,9 @@ struct HudUiFlashPanel {
 };
 
 struct HudUiCompositePanelEntry : HudUiTransitionTextPanel {
-    HudUiCompositePanelEntry * AssignCopy(const HudUiCompositePanelEntry *source);
-    HudUiCompositePanelEntry * ConstructorCopy(
-        const HudUiCompositePanelEntry *source
-    );
+    HudUiCompositePanelEntry() {}
+    HudUiCompositePanelEntry(const HudUiCompositePanelEntry &source);
+    HudUiCompositePanelEntry &operator=(const HudUiCompositePanelEntry &source);
     static HudUiCompositePanelEntry *__fastcall ConstructorCopyRange(
         const HudUiCompositePanelEntry *sourceBegin,
         const HudUiCompositePanelEntry *sourceEnd,
@@ -2724,8 +2722,8 @@ struct HudUiMessageBoxDialog : HudUiBackground {
         void *modalContext = 0,
         float timeoutSeconds = -1.0f
     );
-    void OnOk();
-    void OnCancel();
+    virtual void OnOk();
+    virtual void OnCancel();
 };
 
 struct HudUiPanelLayoutEntry {
