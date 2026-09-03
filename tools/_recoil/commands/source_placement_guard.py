@@ -26,19 +26,12 @@ CONFIG_SUFFIXES = {
     ".yaml",
     ".yml",
 }
-ROOT_CONFIG_FILES = (
-    Path("CMakeLists.txt"),
-    Path("CMakePresets.json"),
-)
+ROOT_CONFIG_FILES: tuple[Path, ...] = ()
 ACTIVE_CONFIG_TREES = (
-    Path("cmake"),
     Path("tools/_recoil/config"),
-    Path("tools/functional_verify_targets"),
     Path("tools/vc5_verify_targets"),
 )
-ACTIVE_CONFIG_FILES = (
-    Path("tests/native/CMakeLists.txt"),
-)
+ACTIVE_CONFIG_FILES: tuple[Path, ...] = ()
 FORBIDDEN_SUBTREES = (
     Path("Battlesport/zModel"),
     Path("Battlesport/zUtil"),

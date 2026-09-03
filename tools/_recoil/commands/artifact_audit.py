@@ -28,9 +28,7 @@ SESSION_SCRATCH_NAME = ".devspace"
 
 DURABLE_REFERENCE_ROOTS = (
     "src",
-    "tests/native",
     "docs/reconstruction",
-    "tools/functional_verify_targets",
     "tools/vc5_verify_targets",
 )
 

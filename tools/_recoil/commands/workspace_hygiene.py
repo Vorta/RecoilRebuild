@@ -14,11 +14,9 @@ if __package__ in {None, ""}:
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
 
 
-AUTHORED_SCAN_ROOTS = (".codex", "cmake", "docs", "src", "tests", "tools")
+AUTHORED_SCAN_ROOTS = (".codex", "docs", "src", "tests", "tools")
 AUTHORED_ROOT_FILES = (
     "AGENTS.md",
-    "CMakeLists.txt",
-    "CMakePresets.json",
     "README.md",
 )
 MACHINE_LOCAL_OR_OUTPUT_ROOTS = frozenset(

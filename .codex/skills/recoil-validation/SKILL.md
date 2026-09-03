@@ -9,13 +9,20 @@ Validate the changed dimension directly in the canonical checkout. Use a fresh b
 
 ## Selection
 
-- Tool, command, docs, skill, or policy changes: focused unit tests plus infrastructure audits.
+- Tool, command, docs, skill, or policy changes: the smallest focused proof-kernel test that exercises the changed acceptance boundary, then the infrastructure aggregate. Do not add tests for ordinary reconstruction source work.
+- VC5 compiler-driver changes: also run `verify vc5 --smoke` in a fresh
+  `build/live-validation` root.
 - Source/order changes: the registered `verify vc5-order` target, then the direct live order command when acceptance is authorized.
-- Call contracts: `verify call-contract --slice ... --json`, then direct live acceptance; complete the phase with `progress call-contract close-live`.
+- Call contracts: `verify call-contract --slice ... --json --summary`, then direct live acceptance; complete the phase with `progress call-contract close-live`.
 - Authored bytes: object feedback as useful, then direct authored-byte live acceptance.
 - Linked bytes: direct linked-byte acceptance after strict prerequisites.
-- Functional behavior: registered functional target and native smoke where required.
 - Final candidate: PE manifest check, final-image catalog audit, and typed final-image validation.
+
+Production source is accepted only through the registered VC5/order,
+call-contract, byte, linked-image, and final typed comparisons. The retired
+native/functional smoke lane is not an acceptance prerequisite and must not be
+recreated. Source-policy guards run automatically on live acceptance and final
+validation; use `audit source-policy` only for focused diagnosis.
 
 Infrastructure gates:
 
@@ -23,7 +30,8 @@ Infrastructure gates:
 python tools/recoil.py doctor
 ```
 
-`doctor` owns the sequential, fail-fast infrastructure matrix. Run an individual
+`doctor` owns the sequential, fail-fast infrastructure matrix; it does not
+compile or accept reconstruction source. Run an individual
 underlying audit only to diagnose its reported failure, not in addition to a
 passing doctor run. A workspace-wide maintenance pass runs doctor once after
 focused tests; individual skills and runbooks should refer here instead of

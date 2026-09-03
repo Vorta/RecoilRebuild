@@ -1,12 +1,4 @@
 {
-  "authored_order_scaffold": {
-    "agent_source_path": "src/Battlesport/player.cpp",
-    "block_id": "recoil:block:0x41ea90",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "physical_compile_host": "src/Battlesport/player.cpp",
-    "tracker_revision": 820,
-    "version": 1
-  },
   "check_translation_unit_function_order": true,
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "description": "Exact authored-order target for the retail literal-backed player.cpp physical block [0x41ea90,0x42de10). The 165 authored gating identities, ten compiler-generated/non-authored full-order rows, immediate pickup/player and player/RecoilApp seams, and cross-host semantic exceptions are retail-reviewed. This target checks natural VC5 translation-unit order and linked authored projection only; it accepts no bytes, owner, provider, data, linkage, or tier fact.",

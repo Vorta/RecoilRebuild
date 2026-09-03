@@ -1,4 +1,0 @@
-interface:
-  display_name: "Recoil Workspace Audit"
-  short_description: "Audit Recoil agent workspace health"
-  default_prompt: "Use $recoil-workspace-audit to audit Recoil workspace instructions, skills, and non-address process health."

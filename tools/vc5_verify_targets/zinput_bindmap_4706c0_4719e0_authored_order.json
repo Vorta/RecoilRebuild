@@ -687,20 +687,5 @@
         "full_order_gate": true
       }
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x4706c0",
-    "agent_source_path": "src/GameZRecoil/zInput/zInput.cpp",
-    "physical_compile_host": "src/GameZRecoil/zInput/zInput.cpp",
-    "candidate_header_contributors": [
-      "src/GameZRecoil/zInput/zInput.h",
-      "src/GameZRecoil/zInput/zbindmap.h"
-    ],
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1078,
-    "covered_block_ids": [
-      "recoil:block:0x4706c0"
-    ]
-  }
+  ]
 }

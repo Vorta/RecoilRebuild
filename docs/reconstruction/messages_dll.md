@@ -59,7 +59,7 @@ Run focused source-surface checks for the companion source with:
 ```powershell
 python tools/recoil.py guard original-symbol --root src/Messages --max 20
 python tools/recoil.py audit source-trace --json
-python tools/recoil.py doctor --infrastructure-only
+python tools/recoil.py doctor
 ```
 
 Known retail facts from the current generator/tests:
@@ -105,7 +105,7 @@ python tools/recoil.py verify final-build --manifest tools/_recoil/config/vc5_me
 Obtain live companion status from current commands rather than this note:
 
 ```powershell
-python tools/recoil.py doctor --infrastructure-only
+python tools/recoil.py doctor
 python tools/recoil.py progress show messages:0x10001010
 python tools/recoil.py verify final-build --manifest tools/_recoil/config/vc5_messages_build.json --dry-run
 ```

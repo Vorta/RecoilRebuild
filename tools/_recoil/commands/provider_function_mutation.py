@@ -1225,7 +1225,6 @@ def register_provider_function(
             "boundary": "accepted",
             "byte": "deferred",
             "data": "none",
-            "functional": "none",
             "owner_linkage": "accepted",
             "source": "accepted",
         },

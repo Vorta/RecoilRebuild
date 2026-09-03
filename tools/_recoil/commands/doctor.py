@@ -17,7 +17,7 @@ def _command(*args: str) -> list[str]:
     return [sys.executable, str(REPO_ROOT / "tools/recoil.py"), *args]
 
 
-def _steps(*, infrastructure_only: bool) -> list[tuple[str, list[str]]]:
+def _steps() -> list[tuple[str, list[str]]]:
     steps: list[tuple[str, list[str]]] = [
         ("agent surface", _command("audit", "agent-surface", "--strict")),
         ("serial pipeline contract", _command("audit", "pipeline-contracts", "--strict")),
@@ -25,26 +25,19 @@ def _steps(*, infrastructure_only: bool) -> list[tuple[str, list[str]]]:
         ("issue ledger", _command("issue", "audit", "--strict", "--json")),
         ("progress tracker", _command("progress", "audit", "--scope", "pipeline", "--strict", "--json")),
         ("live validation surface", _command("audit", "live-validation-surface", "--strict")),
+        ("source policy", _command("audit", "source-policy")),
     ]
-    if not infrastructure_only:
-        steps.extend(
-            [
-                ("workspace hygiene", _command("audit", "workspace", "--strict")),
-                ("VC5 manifest source policy", _command("guard", "vc5-manifest")),
-            ]
-        )
     return steps
 
 
 def main(argv: list[str] | None = None) -> int:
     configure_stdio()
     parser = argparse.ArgumentParser(description="Run Recoil health checks one at a time.")
-    parser.add_argument("--infrastructure-only", action="store_true")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
     results: list[dict[str, object]] = []
-    for label, command in _steps(infrastructure_only=args.infrastructure_only):
+    for label, command in _steps():
         started = time.monotonic()
         completed = subprocess.run(
             command,
@@ -77,7 +70,7 @@ def main(argv: list[str] | None = None) -> int:
 
     payload = {
         "passed": all(bool(row["passed"]) for row in results),
-        "mode": "infrastructure-only" if args.infrastructure_only else "full",
+        "mode": "infrastructure",
         "execution": "sequential-fail-fast",
         "results": results,
     }

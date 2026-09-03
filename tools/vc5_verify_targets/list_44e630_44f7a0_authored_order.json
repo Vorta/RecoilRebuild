@@ -73,14 +73,5 @@
       ],
       "successor": {"address":"0x44f7a0","symbol":"?gwWindowNew@zClass_Window@@YAPAUzClass_NodePartial@@XZ","name":"zClass_Window::gwWindowNew","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x44e630",
-    "agent_source_path": "src/GameZRecoil/zClass/List.c",
-    "physical_compile_host": "src/GameZRecoil/zClass/List.c",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 907,
-    "covered_block_ids": ["recoil:block:0x44e630"]
-  }
+  ]
 }

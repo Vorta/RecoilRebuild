@@ -54,14 +54,5 @@
       ],
       "successor": {"address":"0x4706c0","symbol":"?InitFromTemplate@zInput_BindMapContext@@QAEPAU1@PBU1@@Z","name":"zInput_BindMapContext::InitFromTemplate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x470020",
-    "agent_source_path": "src/GameZRecoil/zInput/zin_mouse.cpp",
-    "physical_compile_host": "src/GameZRecoil/zInput/zin_mouse.cpp",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1066,
-    "covered_block_ids": ["recoil:block:0x470020"]
-  }
+  ]
 }

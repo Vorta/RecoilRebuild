@@ -15,15 +15,13 @@ from typing import Iterable, Mapping
 from _recoil.lib.tooling import REPO_ROOT
 
 
-CALL_CONTRACT_VERIFIER_GENERATION = 38
-NORMALIZER_REGISTRY_GENERATION = 31
-EXPECTED_FACT_SCHEMA_VERSION = 32
+CALL_CONTRACT_VERIFIER_GENERATION = 40
+EXPECTED_FACT_SCHEMA_VERSION = 34
 
 
 CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
     {
         "tools/_recoil/commands/asm_verify.py",
-        "tools/_recoil/commands/call_contract_readiness_audit.py",
         "tools/_recoil/commands/call_contract_verify.py",
         "tools/_recoil/commands/progress_cli.py",
         "tools/_recoil/commands/provider_function_mutation.py",
@@ -31,25 +29,21 @@ CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
         "tools/_recoil/commands/progress_v2.py",
         "tools/_recoil/commands/vc5_verify.py",
         "tools/_recoil/lib/binja.py",
+        "tools/_recoil/lib/call_contract_evidence.py",
         "tools/_recoil/lib/call_contract_generations.py",
-        "tools/_recoil/lib/call_contract_normalizers.py",
         "tools/_recoil/lib/progress.py",
         "tools/_recoil/lib/progress_sqlite.py",
         "tools/_recoil/lib/reference_images.py",
         "tools/_recoil/lib/repository_paths.py",
         "tools/_recoil/lib/windows_identity.py",
-    }
-)
-NORMALIZER_REGISTRY_COMPONENT_PATHS = frozenset(
-    {
-        "tools/_recoil/lib/call_contract_generations.py",
-        "tools/_recoil/lib/call_contract_normalizers.py",
+        "tools/_recoil/lib/zeroarg_abi.py",
     }
 )
 EXPECTED_FACT_COMPONENT_PATHS = frozenset(
     {
         "tools/_recoil/commands/call_contract_verify.py",
         "tools/_recoil/lib/binja.py",
+        "tools/_recoil/lib/call_contract_evidence.py",
         "tools/_recoil/lib/call_contract_generations.py",
         "tools/_recoil/lib/repository_paths.py",
         "tools/_recoil/lib/windows_identity.py",
@@ -166,7 +160,6 @@ def require_call_contract_verifier_components(
 def current_generations() -> dict[str, int]:
     return {
         "call_contract_verifier_generation": CALL_CONTRACT_VERIFIER_GENERATION,
-        "normalizer_registry_generation": NORMALIZER_REGISTRY_GENERATION,
         "expected_fact_schema_version": EXPECTED_FACT_SCHEMA_VERSION,
     }
 
@@ -194,7 +187,6 @@ def generation_increment_findings(
             "call_contract_verifier_generation",
             CALL_CONTRACT_VERIFIER_COMPONENT_PATHS,
         ),
-        ("normalizer_registry_generation", NORMALIZER_REGISTRY_COMPONENT_PATHS),
         ("expected_fact_schema_version", EXPECTED_FACT_COMPONENT_PATHS),
     )
     findings: list[str] = []
@@ -228,8 +220,6 @@ __all__ = [
     "EXPECTED_FACT_COMPONENT_PATHS",
     "EXPECTED_FACT_SCHEMA_VERSION",
     "GenerationError",
-    "NORMALIZER_REGISTRY_COMPONENT_PATHS",
-    "NORMALIZER_REGISTRY_GENERATION",
     "current_generations",
     "evidence_generations_current",
     "generation_increment_findings",

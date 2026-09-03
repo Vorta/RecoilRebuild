@@ -73,16 +73,5 @@
       "function_address_refs": ["0x4c0d20","0x4c0e50","0x4c0f70","0x4c1020","0x4c1090","0x4c1160","0x4c1250","0x4c13c0","0x4c1500","0x4c15f0","0x4c1670","0x4c16c0","0x4c1710","0x4c1780","0x4c1870","0x4c18c0","0x4c1940","0x4c1960","0x4c1990","0x4c19c0","0x4c1a00","0x4c1a20","0x4c1a40","0x4c1ab0","0x4c1b20","0x4c1b30","0x4c1b50","0x4c1c50","0x4c2030","0x4c2090","0x4c20a0","0x4c5480","0x4c54b0","0x4c5510","0x4c5520","0x4c5550","0x4c5740","0x4c5820","0x4c58c0","0x4c58e0","0x4c59e0","0x4c5a00"],
       "successor": {"address":"0x4c5a50","symbol":"?PreInitDialog@CDialog@@MAEXXZ","name":"CDialog::PreInitDialog","pipeline_class":"non-authored","authored_order_role":"non-authored","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x4c0d20",
-    "agent_source_path": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
-    "physical_compile_host": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
-    "candidate_source_contributors": [],
-    "candidate_header_contributors": ["src/GameZRecoil/zInterp/zInterp.h"],
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1315,
-    "covered_block_ids": ["recoil:block:0x4c0d20"]
-  }
+  ]
 }

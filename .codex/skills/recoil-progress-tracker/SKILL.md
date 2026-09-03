@@ -7,7 +7,8 @@ description: Inspect and safely update the serial Recoil reconstruction tracker,
 
 `.agent/RECONSTRUCTION_PROGRESS.sqlite3` is the sole reconstruction-progress authority. Never edit it with SQLite tools or application code. Use `python tools/recoil.py progress ...` only.
 
-The tracker is schema 6/user version 3. Its revision vector contains exactly:
+Schema versions are owned by tool migrations. Its revision vector contains
+exactly:
 
 - `transaction_revision`
 - `semantic_revision`

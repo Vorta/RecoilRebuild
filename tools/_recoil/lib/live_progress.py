@@ -11,7 +11,7 @@ import time
 from typing import Any, Callable, Iterator, Mapping
 
 
-TRACKER_SCHEMA_VERSION = 6
+TRACKER_SCHEMA_VERSION = 7
 ISSUE_LEDGER_VERSION = 2
 
 REVISION_ENTITY_RE = re.compile(
@@ -221,7 +221,7 @@ def validate_tracker_v5(data: Mapping[str, Any]) -> None:
     """Validate the current tracker (the historical function name is API-only)."""
 
     if data.get("schema_version") != TRACKER_SCHEMA_VERSION:
-        raise LiveProgressError("tracker schema_version must be 6")
+        raise LiveProgressError("tracker schema_version must be 7")
     evidence = data.get("evidence")
     if not isinstance(evidence, Mapping):
         raise LiveProgressError("tracker evidence must be an object")

@@ -97,43 +97,23 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
             "python tools/recoil.py progress next --json",
         ),
     ),
-    spec("progress status", "progress_cli", prepend=("status",), summary="Show derived unified pipeline or selector status.", category="progress", examples=("python tools/recoil.py progress status", "python tools/recoil.py progress status --binary messages", "python tools/recoil.py progress status 0x401060 --json")),
     spec("progress show", "progress_cli", prepend=("show",), summary="Show a joined owner/block/semantic/order/link/byte view.", category="progress", examples=("python tools/recoil.py progress show 0x401000", "python tools/recoil.py progress show recoil:owner:misc_unresolved.cabout_dlg")),
     spec("progress find", "progress_cli", prepend=("find",), summary="Search all unified reconstruction progress entities.", category="progress", examples=("python tools/recoil.py progress find CAboutDlg",)),
     spec("progress audit", "progress_cli", prepend=("audit",), summary="Audit unified tracker schema, relationships, evidence, and derived pipeline invariants.", category="progress", examples=("python tools/recoil.py progress audit --strict", "python tools/recoil.py progress audit --scope evidence --strict")),
     spec("verify linked-byte", "live_byte_verify", prepend=("linked",), summary="Freshly rebuild and directly scan linked bytes, stopping at the earliest real divergence.", category="verification", examples=("python tools/recoil.py verify linked-byte", "python tools/recoil.py verify linked-byte --at 0x401000")),
     spec("verify authored-byte", "live_byte_verify", prepend=("authored",), summary="Freshly rebuild and directly scan authored object, relocation, target, and linked-body semantics.", category="verification", examples=("python tools/recoil.py verify authored-byte", "python tools/recoil.py verify authored-byte --at 0x401000")),
-    spec(
-        "verify zui-inline-context",
-        "zui_inline_context",
-        summary="Compile the authentic zUI target once and report either its canonical vector-insert context or selected caller/local-helper graphs.",
-        description=(
-            "Run a nonaccepting diagnostic compile of the registered zui_widgets.cpp target. "
-            "Without --address, the report retains the canonical vector-insert caller and authentic-emitter facts. "
-            "Repeat --address to inspect several authored callers and their reachable TU-local helper graph from one "
-            "compile; --summary bounds the JSON to identity, extent, selection, provenance, and call/relocation counts. "
-            "The diagnostic never weakens the call-contract provider gate."
-        ),
-        category="verification",
-        examples=(
-            "python tools/recoil.py verify zui-inline-context --build-root build/live-validation/zui-inline-context/<fresh-root> --json",
-            "python tools/recoil.py verify zui-inline-context --build-root build/live-validation/zui-inline-context/<fresh-root> --address 0x4bb790 --address 0x4bc780 --summary --json",
-        ),
-    ),
       spec(
           "verify call-contract",
           "call_contract_verify",
           summary="Freshly compile one deterministic authored-body slice, or one nonaccepting registered-target convergence scope, and compare exact static invocation contracts with retail Binary Ninja evidence.",
           category="verification",
           examples=(
-              "python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json",
-              "python tools/recoil.py verify call-contract --target <target-id> --all-authored-bodies --build-root <fresh-root> --json",
+              "python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json --summary",
+              "python tools/recoil.py verify call-contract --target <target-id> --all-authored-bodies --build-root <fresh-root> --json --summary",
           ),
         needs_binja=True,
     ),
     spec("verify final-image", "live_final_verify", summary="Freshly build and validate complete typed PE semantics against retail; raw file differences and COFF time are diagnostic only.", category="verification", examples=("python tools/recoil.py verify final-image", "python tools/recoil.py verify final-image --candidate build/vc5-final/Recoil.exe --map build/vc5-final/Recoil.map --json"), mutates=True),
-    spec("verify authored-order scaffold", "authored_order", prepend=("scaffold",), summary="Draft or explicitly write a fail-closed current-block authored-order VC5 manifest candidate.", category="verification", examples=("python tools/recoil.py verify authored-order scaffold 0x401060 --json", "python tools/recoil.py verify authored-order scaffold 0x401060 --output build/reconstruction-evidence/candidates/order_401060.json --json"), mutates=True),
-    spec("verify authored-order sweep", "authored_order", prepend=("sweep",), summary="Read-only mechanical scaffold-readiness sweep across remaining authored-order blocks.", category="verification", examples=("python tools/recoil.py verify authored-order sweep --from-current --json",)),
     spec("issue report", "workspace_issues", prepend=("report",), summary="Record an agent tooling/process problem for a future work session.", category="issue", examples=("python tools/recoil.py issue report --kind tool-error --severity high --summary \"...\" --area tools/recoil.py --impact \"...\" --actual \"...\" --repro \"...\" --next-action \"...\"",), mutates=True),
     spec("issue request", "workspace_issues", prepend=("request",), summary="Record an agent tooling/process improvement request.", category="issue", examples=("python tools/recoil.py issue request --severity medium --summary \"...\" --area tools/recoil.py --impact \"...\" --requested-change \"...\" --benefit \"...\" --next-action \"...\"",), mutates=True),
     spec("issue list", "workspace_issues", prepend=("list",), summary="List open agent tooling/process issue reports.", category="issue", examples=("python tools/recoil.py issue list --status open",)),
@@ -151,24 +131,14 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
             "python tools/recoil.py doctor",
         ),
     ),
-    spec("env", "env_check", summary="Check local native build environment.", category="validation", examples=("python tools/recoil.py env --native-x86",)),
-    spec("verify functional", "functional_verify", summary="List or run tier C functional smoke evidence.", category="verification", examples=("python tools/recoil.py verify functional 0xNNNNNN",)),
-    spec(
-        "verify functional-batch",
-        "functional_verify",
-        prepend=("batch",),
-        summary="Run multiple tier C functional smoke targets.",
-        description="Run the same functional manifest checks as verify functional for each supplied target, then print a per-target pass/fail summary and return nonzero if any target fails.",
-        category="verification",
-        examples=("python tools/recoil.py verify functional-batch --dry-run 0x401060 0x401180",),
-    ),
     spec(
         "verify vc5",
         "vc5_verify",
-        summary="List or run owner-scoped VC5SP3 COFF function/data-symbol verification.",
+        summary="Run a VC5SP3 toolchain smoke or owner-scoped COFF function/data verification.",
         description="List or run VC5SP3 COFF function/data-symbol verification. Tier S owner byte-gate evidence should use --owner so every linked source-owner row is covered before compilation; owner rows with duplicate diagnostic data-symbol coverage prefer the row's owner target metadata when it uniquely identifies a manifest. Explicit target/address selectors remain available for diagnostics and manifest development. Multiple explicit target/address selectors are grouped by identical compiles; multi-data-symbol BN comparisons are internally auto-chunked under the bridge call budget; live BN hexdumps route through the manifest target_binary or --binary override.",
         category="verification",
         examples=(
+            "python tools/recoil.py verify vc5 --smoke --build-root build/live-validation/vc5-smoke/<fresh-root>",
             "python tools/recoil.py verify vc5 --owner source.owner_id --auto-chunk",
             "python tools/recoil.py verify vc5 0xNNNNNN",
             "python tools/recoil.py verify vc5 data_target_name",
@@ -199,24 +169,6 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
             "python tools/recoil.py verify vc5-order object_target --linked-target linked_target --build-root build/vc5-order/full-target",
         ),
         needs_binja=False,
-    ),
-    spec(
-        "verify vc5-abi-equivalence",
-        "vc5_abi_equivalence",
-        summary="Prove one manifest-owned zero-argument identity is mechanically equivalent under fresh VC5 /Gd and /Gr builds.",
-        description=(
-            "Compile the selected manifest zeroarg_abi_equivalence identity under paired /Gd and /Gr "
-            "profiles, using its exact callee_source and each caller row's exact source, and compare "
-            "eligibility, callee/callsite bytes, relocation semantics, EH shape, translation-unit-wide "
-            "raw definition order normalized over exact manifest pairs plus mechanically unique VC5 "
-            "zero-argument definition counterparts, and COMDAT selection. "
-            "A PASS authorizes only mechanical explicit __cdecl normalization for the one selected "
-            "identity; it does not establish original ABI or mutate acceptance state."
-        ),
-        category="verification",
-        examples=(
-            "python tools/recoil.py verify vc5-abi-equivalence --target <target> --build-root build/vc5-abi/<target> --json",
-        ),
     ),
     spec("verify asm", "asm_verify", summary="Extract or compare Binary Ninja assembly/bytes.", category="verification", examples=("python tools/recoil.py verify asm 0xNNNNNN",), needs_binja=True),
     spec(
@@ -256,7 +208,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
         mutates=True,
     ),
     spec("audit artifacts", "artifact_audit", summary="Dry-run or empty the complete direct build directory while retaining build/, with explicit local-root and session-scratch modes.", category="audit", examples=("python tools/recoil.py audit artifacts", "python tools/recoil.py audit artifacts --delete", "python tools/recoil.py audit artifacts --include-vs --older-than-days 30", "python tools/recoil.py audit artifacts --session-only", "python tools/recoil.py audit artifacts --session-only --delete"), mutates=True),
-    spec("audit state-performance", "state_performance_audit", summary="Measure fresh-process SQLite ledger reads and bounded scratch-copy transactions against governed performance ceilings.", category="audit", examples=("python tools/recoil.py audit state-performance --strict", "python tools/recoil.py audit state-performance --json")),
+    spec("audit source-policy", "source_policy", summary="Run the complete production-source policy gate once.", category="audit", examples=("python tools/recoil.py audit source-policy",)),
     spec("audit final-image-catalog", "final_image_catalog_audit", summary="Derive and audit complete typed final-image coverage live from retail plus accepted tracker facts, without building a candidate.", category="audit", examples=("python tools/recoil.py audit final-image-catalog --json",)),
     spec("audit relocation-expectations", "relocation_expectations", summary="Derive candidate-independent authored relocation expectations live from retail and accepted typed identities.", category="audit", examples=("python tools/recoil.py audit relocation-expectations --at 0x401000 --json",)),
     spec(
@@ -307,7 +259,6 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec("audit workspace", "workspace_hygiene", summary="Detect generated artifacts outside approved output roots.", category="audit", examples=("python tools/recoil.py audit workspace --strict",)),
     spec("audit agent-surface", "agent_surface_audit", summary="Audit the serial agent-facing tool, documentation, and skill surface.", category="audit", examples=("python tools/recoil.py audit agent-surface --strict",)),
     spec("audit pipeline-contracts", "pipeline_contract_audit", summary="Audit the one serial task projection and its direct validation/acceptance command contracts.", category="audit", examples=("python tools/recoil.py audit pipeline-contracts --strict", "python tools/recoil.py audit pipeline-contracts --json")),
-    spec("audit call-contract-readiness", "call_contract_readiness_audit", summary="Audit exact dependency closure for original authored call-contract slices.", category="audit", examples=("python tools/recoil.py audit call-contract-readiness --all-slices --strict --json", "python tools/recoil.py audit call-contract-readiness --slice recoil:call-contract-slice:0x401000-0x408210 --json")),
     spec("audit pipeline-reachability", "pipeline_reachability_audit", summary="Prove every fail-closed live pipeline consumer has a reachable candidate-independent expected-fact producer.", category="audit", examples=("python tools/recoil.py audit pipeline-reachability --strict", "python tools/recoil.py audit pipeline-reachability --json")),
     spec(
         "audit live-validation-surface",
@@ -325,21 +276,18 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
             "python tools/recoil.py audit source-trace --json",
         ),
     ),
-    spec("audit zinterp", "zinterp_dispatch_audit", summary="Audit zInterp dispatch literals against optional BN text dumps.", category="audit", examples=("python tools/recoil.py audit zinterp",)),
     spec("guard source-shape", "no_source_shape_scaffolds", summary="Reject source-shape scaffolds in production source.", category="guard", examples=("python tools/recoil.py guard source-shape --root src --summary",)),
     spec("guard raw-offset", "raw_offset_guard", summary="Reject raw authored runtime-state offset access.", category="guard", examples=("python tools/recoil.py guard raw-offset --root src --summary",)),
     spec("guard raw-image", "no_raw_image_addresses", summary="Reject raw original-image addresses.", category="guard", examples=("python tools/recoil.py guard raw-image --root src --allowlist .agent/RAW_ADDRESS_ALLOWLIST.txt",)),
     spec("guard raw-assembly", "no_raw_assembly", summary="Reject unallowlisted or undocumented raw assembly and naked stubs.", category="guard", examples=("python tools/recoil.py guard raw-assembly --root src --allowlist .agent/RAW_ASSEMBLY_ALLOWLIST.txt",)),
     spec("guard source-goto", "no_source_goto", summary="Reject source-level goto in production source.", category="guard", examples=("python tools/recoil.py guard source-goto --root src --summary",)),
     spec("guard modern-cpp", "no_modern_cpp_constructs", summary="Reject post-VC5 C++ constructs and forbidden call-convention helpers.", category="guard", examples=("python tools/recoil.py guard modern-cpp --root src --summary",)),
-    spec("guard reinterpret-cast", "no_reinterpret_cast", summary="Reject named reinterpret_cast usage.", category="guard", examples=("python tools/recoil.py guard reinterpret-cast --root src",)),
     spec("guard provider", "provider_boundary_guard", summary="Reject fake provider internals and provider ABI shims.", category="guard", examples=("python tools/recoil.py guard provider --root src --summary",)),
     spec("guard original-symbol", "original_source_symbol_guard", summary="Audit unsupported reconstruction helper dependencies.", category="guard", examples=("python tools/recoil.py guard original-symbol --root src --max 50",)),
     spec("guard source-data", "source_data_initializer_guard", summary="Validate source data initializer rules recorded in unified progress.", category="guard", examples=("python tools/recoil.py guard source-data", "python tools/recoil.py guard source-data --path src/Battlesport/CZRecoilFrame.cpp"), ledger_routing="canonical-machine-local-default"),
     spec("guard source-placement", "source_placement_guard", summary="Check source placement and provenance conventions.", category="guard", examples=("python tools/recoil.py guard source-placement --root src",)),
     spec("guard vc5-manifest", "vc5_manifest_source_guard", summary="Reject VC manifest-local source and generated header shadows.", category="guard", examples=("python tools/recoil.py guard vc5-manifest", "python tools/recoil.py guard vc5-manifest --path tools/vc5_verify_targets/target.json")),
     spec("guard source-fragments", "source_fragments", summary="Reject temporary production source fragments, quoted source includes, and .inl files.", category="guard", examples=("python tools/recoil.py guard source-fragments --root src",)),
-    spec("build msvc-x86", "msvc_x86_run", summary="Run an arbitrary command through the x86 MSVC environment wrapper.", category="build", examples=("python tools/recoil.py build msvc-x86 -- ctest --preset ninja-x86-debug",), mutates=True),
     spec(
         "build resource",
         "resource_extract",
@@ -359,22 +307,6 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
         examples=(
             "python tools/recoil.py binja preflight --strict",
             "python tools/recoil.py binja preflight --binary messages --strict",
-        ),
-        needs_binja=True,
-    ),
-    spec(
-        "binja data-overlap",
-        "binja_data_overlap",
-        summary="Report overlapping Binary Ninja data-variable roots.",
-        description=(
-            "Read-only diagnostic for stale or ambiguous interior Binary Ninja data variables, including cases where "
-            "a typed root data variable coexists with same-range interior symbols after bridge deletion limitations. "
-            "It reports overlaps and never edits BN state; unresolved findings block data-gate reliance on those facts."
-        ),
-        category="binja",
-        examples=(
-            "python tools/recoil.py binja data-overlap 0x4d21d8 0x4d22d4 0x4d22d8 --strict",
-            "python tools/recoil.py binja data-overlap 0x4f52c8 0x4f53ac 0x4f53b6 0x4f53d0 --strict",
         ),
         needs_binja=True,
     ),
@@ -408,8 +340,6 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         mutates=True,
     ),
     spec("progress owner show", "progress_cli", prepend=("owner", "show"), summary="Show one unified source owner or address-linked owner set.", category="progress"),
-    spec("progress owner find", "progress_cli", prepend=("owner", "find"), summary="Search unified source owners.", category="progress"),
-    spec("progress owner relationships", "progress_cli", prepend=("owner", "relationships"), summary="Show normalized unified owner relationships.", category="progress"),
     spec("progress owner audit", "progress_cli", prepend=("owner", "audit"), summary="Audit unified source-owner invariants.", category="progress"),
     spec(
         "progress owner downgrade",
@@ -969,6 +899,24 @@ def internal_command_env() -> dict[str, str]:
     return env
 
 
+SOURCE_POLICY_APPLY_COMMANDS = frozenset(
+    {
+        ("progress", "advance-live-order"),
+        ("progress", "advance-live-call-contract"),
+        ("progress", "advance-live-authored-byte"),
+        ("progress", "advance-live-linked-byte"),
+        ("progress", "call-contract", "replay-live"),
+        ("progress", "call-contract", "close-live"),
+    }
+)
+
+
+def requires_source_policy(item: CommandSpec, forwarded: list[str]) -> bool:
+    if item.path == ("verify", "final-image"):
+        return True
+    return item.path in SOURCE_POLICY_APPLY_COMMANDS and "--apply" in forwarded
+
+
 def rejected_json_ledger_argument(args: list[str], item: CommandSpec) -> str | None:
     """Reject legacy JSON authorities on ordinary runtime command routes."""
     if item.path[:1] == ("maintenance",):
@@ -1066,6 +1014,25 @@ def main(argv: list[str] | None = None) -> int:
     if show_command:
         print(format_command(command))
         return 0
+
+    if requires_source_policy(item, forward_rest):
+        policy_command = [
+            sys.executable,
+            "-B",
+            "-m",
+            "_recoil.commands.source_policy",
+        ]
+        policy = subprocess.run(
+            policy_command,
+            cwd=str(REPO_ROOT),
+            env=internal_command_env(),
+        )
+        if policy.returncode:
+            print(
+                "recoil: source-policy gate failed before " + item.name,
+                file=sys.stderr,
+            )
+            return policy.returncode
 
     completed = subprocess.run(command, cwd=str(REPO_ROOT), env=internal_command_env())
     if completed.returncode:

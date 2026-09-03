@@ -46,15 +46,6 @@
       "function_address_refs": ["0x46bd50","0x46be20","0x46bf30","0x46bf70","0x46bfc0","0x46c070","0x46c390","0x46c3a0","0x46c570","0x46c5b0","0x46c620","0x46c720","0x46c760","0x46cb50","0x46ced0"],
       "successor": {"address":"0x46d310","symbol":"?TexDirEntryToIndex@zImage@@YIHPAUzImage_TexDirEntryPartial@@@Z","name":"zImage::TexDirEntryToIndex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x46bd50",
-    "agent_source_path": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
-    "physical_compile_host": "src/GameZRecoil/zGeometry/zgeo_convexify.cpp",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1042,
-    "covered_block_ids": ["recoil:block:0x46bd50"]
-  }
+  ]
 }
 

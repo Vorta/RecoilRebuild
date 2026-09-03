@@ -22,9 +22,9 @@ Repository-local authority, subject to system/developer/host constraints:
 3. `.agent/RECONSTRUCTION_PROGRESS.sqlite3` through `tools/recoil.py`;
 4. the canonical skill or runbook that owns a specialized procedure.
 
-Never hand-edit either SQLite authority. Progress uses semantic schema 6 and
-SQLite user-version 3. Workspace issues use SQLite user-version 2. The
-authoritative progress concurrency coordinates are transaction, semantic, and
+Never hand-edit either SQLite authority. Their current schema versions are
+owned by tool migrations, not copied into instructions. The authoritative
+progress concurrency coordinates are transaction, semantic, and
 evidence-generation revision. There is no scheduler revision, work-item
 collection, packet/reservation schema, current-metadata cache, JSON backend,
 mirror, or export.
@@ -120,7 +120,7 @@ the mandatory closeout. Use the direct current-slice commands to diagnose that
 first divergence:
 
 ```powershell
-python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json
+python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json --summary
 python tools/recoil.py progress advance-live-call-contract --slice <slice-id> --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 ```
 
@@ -132,11 +132,10 @@ record the required fresh, complete, no-reuse, zero-divergence scan:
 python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 ```
 
-The reviewed implementation coordinates are
-`CALL_CONTRACT_VERIFIER_GENERATION = 35`,
-`NORMALIZER_REGISTRY_GENERATION = 31`, and
-`EXPECTED_FACT_SCHEMA_VERSION = 32`. A governed component edit increments its
-coordinate and conservatively invalidates affected evidence.
+The verifier and expected-fact generations live only in
+`tools/_recoil/lib/call_contract_generations.py`. A governed component edit
+increments its owning coordinate and conservatively invalidates affected
+evidence; instructions never duplicate the current integers.
 
 For bytes:
 
@@ -309,6 +308,12 @@ record.
 Use `recoil-validation` as the single validation matrix for tool, skill,
 instruction, tracker, build, and final-image changes. Other skills and runbooks
 must refer to it rather than copying maintenance command lists.
+
+Do not create native smoke tests, functional-target manifests, parallel CMake
+targets, or per-function reconstruction tests. Ordinary reconstruction is
+validated by the registered VC5/order, call-contract, byte, linked-image, and
+final typed comparisons. Retained `tests/tools` cover only the proof kernel and
+are changed when that infrastructure itself changes.
 
 Report reproducible tool/rule defects through `issue report`. Workspace issues
 track broken tools, validation paths, environment/setup, or rules—not ordinary

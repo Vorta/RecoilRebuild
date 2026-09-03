@@ -80,15 +80,5 @@
       "function_address_refs": ["0x49f620","0x49f6d0","0x49f6f0","0x49f830","0x49f960","0x49f9a0","0x49fa00","0x49fa10","0x49fa60","0x49fbb0","0x49fcf0","0x49fd50","0x49fda0","0x49fec0","0x49fff0","0x4a0300","0x4a0380","0x4a0400","0x4a0490","0x4a0500","0x4a0590","0x4a05f0","0x4a0670","0x4a07a0","0x4a07c0","0x4a07f0","0x4a0800","0x4a0810","0x4a0830","0x4a0840","0x4a0860","0x4a0870","0x4a0880","0x4a08d0","0x4a0900","0x4a0920","0x4a0990","0x4a09e0","0x4a0c00","0x4a0c40","0x4a0e40","0x4a0e90","0x4a0ec0","0x4a0fb0","0x4a1090","0x4a10b0","0x4a10d0"],
       "successor": {"address":"0x4a10e0","symbol":"?SetFreqScaled@zSndPlayHandle@@QAEHM@Z","name":"zSndPlayHandle::SetFreqScaled","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x49f614",
-    "agent_source_path": "src/GameZRecoil/zSound/zsnd_play.cpp",
-    "physical_compile_host": "src/GameZRecoil/zSound/zsnd_play.cpp",
-    "candidate_source_contributors": ["src/GameZRecoil/zSound/zsnd_fade.cpp","src/GameZRecoil/zSound/zsnd_cd.cpp"],
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1158,
-    "covered_block_ids": ["recoil:block:0x49f614"]
-  }
+  ]
 }

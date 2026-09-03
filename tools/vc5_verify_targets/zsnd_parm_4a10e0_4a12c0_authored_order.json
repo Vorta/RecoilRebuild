@@ -39,15 +39,5 @@
       "function_address_refs": ["0x4a10e0","0x4a11d0","0x4a1240","0x4a1250","0x4a1270","0x4a1290","0x4a12b0"],
       "successor": {"address":"0x4a12c0","symbol":"@zSnd_PreInitializeRuntimeState@4","name":"zSnd::PreInitializeRuntimeState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x4a10e0",
-    "agent_source_path": "src/GameZRecoil/zSound/zsnd_parm.cpp",
-    "physical_compile_host": "src/GameZRecoil/zSound/zsnd_parm.cpp",
-    "candidate_source_contributors": ["src/GameZRecoil/zSound/zsnd_cd.cpp"],
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1163,
-    "covered_block_ids": ["recoil:block:0x4a10e0"]
-  }
+  ]
 }

@@ -797,19 +797,5 @@
         "full_order_gate": true
       }
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x472670",
-    "agent_source_path": "src/GameZRecoil/zMath/zmth_main.c",
-    "physical_compile_host": "src/GameZRecoil/zMath/zmth_main.c",
-    "candidate_header_contributors": [
-      "src/GameZRecoil/zMath/zmth.h"
-    ],
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1088,
-    "covered_block_ids": [
-      "recoil:block:0x472670"
-    ]
-  }
+  ]
 }

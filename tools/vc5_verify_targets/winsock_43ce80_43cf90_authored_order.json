@@ -82,13 +82,5 @@
         "full_order_gate": true
       }
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x43ce80",
-    "agent_source_path": "src/Battlesport/WinSock.cpp",
-    "physical_compile_host": "src/Battlesport/WinSock.cpp",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 884
-  }
+  ]
 }

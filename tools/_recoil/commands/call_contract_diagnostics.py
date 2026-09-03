@@ -274,10 +274,7 @@ def build_call_contract_divergence_diagnostic(
     first_divergence = base_result.get("first_divergence")
     if not isinstance(first_divergence, Mapping):
         return _diagnostic_status("blocked", "comparison_not_reached")
-    if first_divergence.get("kind") in {
-        "verifier-blocked",
-        "profile-matrix-blocked",
-    }:
+    if first_divergence.get("kind") == "verifier-blocked":
         return _diagnostic_status("blocked", "base_verifier_blocked")
     if not isinstance(comparison_context, Mapping):
         return _diagnostic_status("blocked", "caller_contract_unavailable")

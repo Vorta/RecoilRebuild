@@ -763,25 +763,5 @@
         "full_order_gate": true
       }
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x481530",
-    "agent_source_path": "src/GameZRecoil/zModel/gmod_const.c",
-    "physical_compile_host": "src/GameZRecoil/zModel/gmod_const.c",
-    "candidate_header_contributors": [],
-    "semantic_donor_translation_units": [],
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1119,
-    "covered_block_ids": [
-      "recoil:block:0x481530"
-    ],
-    "prepared_scratch_root": "build/reconstruction-evidence/scratch/zmodel-gmod-const-order-prep-r1117",
-    "stability_recheck": {
-      "initial_scan_revision": 1117,
-      "final_zero_lease_revision": 1119,
-      "selected_definition_count": 65,
-      "closure_unchanged": true
-    }
-  }
+  ]
 }

@@ -57,10 +57,5 @@
       "function_address_refs":["0x4a9ac0","0x4a9b40","0x4a9b70","0x4a9c20","0x4aa0f0","0x4aa600","0x4aa6f0","0x4aa8b0","0x4aa8f0","0x4aa900","0x4aa920","0x4aa980","0x4aa9d0","0x4aa9e0","0x4aaa30","0x4aaa60","0x4aaa90","0x4aab30","0x4aab90","0x4aaef0","0x4ab320","0x4ab6d0","0x4abb20","0x4ac370","0x4acbd0","0x4accc0","0x4acd00","0x4ace30","0x4ad120","0x4ad250","0x4ad680","0x4ad6a0"],
       "successor":{"address":"0x4ae380","symbol":"?BlendDirectionTowardTarget@OptCatalog@@YIXPAUzVec3@@PBU2@MMM@Z","name":"OptCatalog::BlendDirectionTowardTarget","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version":1,"block_id":"recoil:block:0x4a9ac0","agent_source_path":"src/GameZRecoil/zVideo/zvid_ddd3d.c","physical_compile_host":"src/GameZRecoil/zVideo/zvid_ddd3d.c",
-    "candidate_source_contributors":["src/GameZRecoil/zVideo/zvid_main.c"],"candidate_header_contributors":["src/GameZRecoil/zVideo/zvid.h"],
-    "canonical_mfc_include_root":"D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE","tracker_revision":1275,"covered_block_ids":["recoil:block:0x4a9ac0"]
-  }
+  ]
 }

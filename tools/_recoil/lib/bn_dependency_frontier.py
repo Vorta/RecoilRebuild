@@ -17,7 +17,7 @@ import sys
 from _recoil.lib.binja import DEFAULT_BRIDGE_URL, BinaryNinjaBridge, BridgeError, Symbol
 from _recoil.lib.owner_entries import (
     FIELD_LABELS,
-    FUNCTIONAL_LANE,
+    COVERAGE_LANE,
     LANE_CHOICES,
     OwnerEntry,
     blocker_field,
@@ -26,10 +26,6 @@ from _recoil.lib.owner_entries import (
     normalize_address,
     normalize_lane,
     status_summary,
-)
-from _recoil.commands.functional_verify import (
-    DEFAULT_MANIFEST_DIR as DEFAULT_FUNCTIONAL_MANIFEST_DIR,
-    load_manifest as load_functional_manifest,
 )
 from _recoil.lib.reference_images import reference_image, reference_image_keys, resolve_owner_ledger_path
 from _recoil.commands.vc5_verify import (
@@ -61,7 +57,7 @@ COMPILER_GENERATED_SYMBOL_PREFIXES = (
     "__alloca_probe",
 )
 SOURCE_BLOCKER_FIELDS = {"recon", "provider", "deps", "owner", "impl"}
-VERIFICATION_BLOCKER_FIELDS = {"functional", "owner", "data", "verify"}
+VERIFICATION_BLOCKER_FIELDS = {"coverage", "owner", "data", "verify"}
 
 
 @dataclass
@@ -78,21 +74,21 @@ class Node:
     indirect_calls: list[str] = field(default_factory=list)
     bridge_error: str = ""
 
-    def status_summary(self, *, lane: str = FUNCTIONAL_LANE) -> str:
+    def status_summary(self, *, lane: str = COVERAGE_LANE) -> str:
         if self.entry is None and self.forwarded_entry is not None:
             return f"forwarder to {self.forwarded_to} {status_summary(self.forwarded_entry)}"
         if self.entry is None:
             return "provided by compiler/runtime" if self.kind == "compiler" else "not tracked by an owner entry"
         return status_summary(self.entry)
 
-    def blocks_source(self, *, lane: str = FUNCTIONAL_LANE) -> bool:
+    def blocks_source(self, *, lane: str = COVERAGE_LANE) -> bool:
         if self.entry is None and self.forwarded_entry is not None:
             return _source_block_field(self.forwarded_entry, lane=lane) != ""
         if self.entry is None:
             return self.kind not in PROVIDER_KINDS
         return _source_block_field(self.entry, lane=lane) != ""
 
-    def source_block_reason(self, *, lane: str = FUNCTIONAL_LANE) -> str:
+    def source_block_reason(self, *, lane: str = COVERAGE_LANE) -> str:
         if self.entry is None and self.forwarded_entry is not None:
             field = _source_block_field(self.forwarded_entry, lane=lane)
             reason = _block_reason(self.forwarded_entry, field)
@@ -102,7 +98,7 @@ class Node:
         field = _source_block_field(self.entry, lane=lane)
         return _block_reason(self.entry, field)
 
-    def blocks_verification(self, *, lane: str = FUNCTIONAL_LANE) -> bool:
+    def blocks_verification(self, *, lane: str = COVERAGE_LANE) -> bool:
         if self.entry is None and self.forwarded_entry is not None:
             return blocker_field(self.forwarded_entry, lane=lane) in VERIFICATION_BLOCKER_FIELDS
         if self.entry is None:
@@ -111,7 +107,7 @@ class Node:
             return False
         return blocker_field(self.entry, lane=lane) in VERIFICATION_BLOCKER_FIELDS
 
-    def verification_block_reason(self, *, lane: str = FUNCTIONAL_LANE) -> str:
+    def verification_block_reason(self, *, lane: str = COVERAGE_LANE) -> str:
         if self.entry is None and self.forwarded_entry is not None:
             field = blocker_field(self.forwarded_entry, lane=lane)
             if field not in VERIFICATION_BLOCKER_FIELDS:
@@ -130,19 +126,19 @@ class Node:
             return ""
         return f"{FIELD_LABELS.get(field, field)}={_status_value(self.entry, field)}"
 
-    def blocks_binary_verification(self, *, lane: str = FUNCTIONAL_LANE) -> bool:
+    def blocks_binary_verification(self, *, lane: str = COVERAGE_LANE) -> bool:
         return self.blocks_verification(lane=lane)
 
 
 def _status_attr(field: str) -> str:
-    if field == "functional":
-        return "functional_equivalent_status"
+    if field == "coverage":
+        return "coverage_status"
     if field == "verify":
         return "binary_verified_status"
     return ""
 
 
-def _source_block_field(entry: OwnerEntry, *, lane: str = FUNCTIONAL_LANE) -> str:
+def _source_block_field(entry: OwnerEntry, *, lane: str = COVERAGE_LANE) -> str:
     if is_provider_source_ready(entry):
         return ""
     field = blocker_field(entry, lane=lane)
@@ -150,7 +146,7 @@ def _source_block_field(entry: OwnerEntry, *, lane: str = FUNCTIONAL_LANE) -> st
 
 
 def _status_value(entry: OwnerEntry, field: str) -> str:
-    if field in {"functional", "verify"}:
+    if field in {"coverage", "verify"}:
         return entry.reimplementation_tier
     if field == "owner":
         return f"{entry.source_owner_status or 'pending'}/{entry.source_owner or 'pending'}"
@@ -177,7 +173,7 @@ def _block_reason(entry: OwnerEntry, field: str) -> str:
 def _verification_block_label(node: Node, *, lane: str) -> str:
     entry = node.entry or node.forwarded_entry
     field = blocker_field(entry, lane=lane) if entry is not None else ""
-    if lane == FUNCTIONAL_LANE:
+    if lane == COVERAGE_LANE:
         return "tier C blocks caller"
     if field == "owner":
         return "Source owner blocks caller"
@@ -189,7 +185,7 @@ def _verification_block_label(node: Node, *, lane: str) -> str:
 def _anchor_verification_label(node: Node, *, lane: str) -> str:
     entry = node.entry or node.forwarded_entry
     field = blocker_field(entry, lane=lane) if entry is not None else ""
-    if lane == FUNCTIONAL_LANE:
+    if lane == COVERAGE_LANE:
         return "raise this anchor to tier C"
     if field == "owner":
         return "audit and reimplement the source owner before data or tier S work"
@@ -205,7 +201,7 @@ def _node_blocker_priority(node: Node, *, lane: str) -> int:
     return blocker_priority(entry, lane=lane)
 
 
-def node_to_dict(node: Node, *, lane: str = FUNCTIONAL_LANE) -> dict[str, object]:
+def node_to_dict(node: Node, *, lane: str = COVERAGE_LANE) -> dict[str, object]:
     return {
         "address": node.address,
         "name": node.name,
@@ -225,18 +221,6 @@ def node_to_dict(node: Node, *, lane: str = FUNCTIONAL_LANE) -> dict[str, object
     }
 
 
-def functional_coverage_by_address(manifest_dir: Path) -> dict[str, list[str]]:
-    coverage: dict[str, list[str]] = {}
-    for manifest_path in sorted(manifest_dir.glob("*.json")):
-        try:
-            manifest = load_functional_manifest(manifest_path)
-        except FileNotFoundError:
-            continue
-        for address in manifest.covered_addresses:
-            coverage.setdefault(address, []).append(manifest.name)
-    return coverage
-
-
 def vc5_coverage_by_address(manifest_dir: Path) -> dict[str, list[str]]:
     coverage: dict[str, list[str]] = {}
     for manifest_path in sorted(manifest_dir.glob("*.json")):
@@ -250,18 +234,9 @@ def vc5_coverage_by_address(manifest_dir: Path) -> dict[str, list[str]]:
 
 
 def verification_coverage_by_address(
-    functional_manifest_dir: Path,
-    vc5_manifest_dir: Path | None = None,
+    vc5_manifest_dir: Path,
 ) -> dict[str, list[str]]:
-    coverage = functional_coverage_by_address(functional_manifest_dir)
-    if vc5_manifest_dir is None:
-        return coverage
-    for address, target_names in vc5_coverage_by_address(vc5_manifest_dir).items():
-        merged = coverage.setdefault(address, [])
-        for target_name in target_names:
-            if target_name not in merged:
-                merged.append(target_name)
-    return coverage
+    return vc5_coverage_by_address(vc5_manifest_dir)
 
 
 def extract_call_tokens(assembly: str, mlil: str) -> list[str]:
@@ -466,7 +441,7 @@ def is_budget_error_text(text: str) -> bool:
     return "bridge call budget exhausted" in text.lower()
 
 
-def recommendation(root: str, nodes: dict[str, Node], *, lane: str = FUNCTIONAL_LANE) -> str:
+def recommendation(root: str, nodes: dict[str, Node], *, lane: str = COVERAGE_LANE) -> str:
     lane = normalize_lane(lane)
     root_node = nodes[root]
     dependencies = [*root_node.callees, *root_node.function_refs]
@@ -523,7 +498,7 @@ def print_report(
     nodes: dict[str, Node],
     *,
     verification_coverage: dict[str, list[str]] | None = None,
-    lane: str = FUNCTIONAL_LANE,
+    lane: str = COVERAGE_LANE,
     include_title: bool = True,
 ) -> None:
     lane = normalize_lane(lane)
@@ -638,7 +613,7 @@ def report_to_dict(
     nodes: dict[str, Node],
     *,
     verification_coverage: dict[str, list[str]] | None = None,
-    lane: str = FUNCTIONAL_LANE,
+    lane: str = COVERAGE_LANE,
 ) -> dict[str, object]:
     lane = normalize_lane(lane)
     verification_coverage = verification_coverage or {}
@@ -710,14 +685,13 @@ def main(argv: list[str] | None = None) -> int:
         default=DEFAULT_BRIDGE_URL,
         help="Binary Ninja bridge URL",
     )
-    parser.add_argument("--functional-manifest-dir", default=str(DEFAULT_FUNCTIONAL_MANIFEST_DIR))
     parser.add_argument("--vc5-manifest-dir", default=str(DEFAULT_VC5_MANIFEST_DIR))
     parser.add_argument("--json", action="store_true", help="Emit a machine-readable frontier report.")
     parser.add_argument(
         "--lane",
         choices=LANE_CHOICES,
-        default=FUNCTIONAL_LANE,
-        help="functional requires tier C; binary prioritizes source-owner before implementation and data before tier S verification.",
+        default=COVERAGE_LANE,
+        help="coverage requires tier C; binary prioritizes source-owner before implementation and data before tier S verification.",
     )
     args = parser.parse_args(argv)
 
@@ -730,10 +704,7 @@ def main(argv: list[str] | None = None) -> int:
         roots = load_frontier_addresses(args)
         image = reference_image(args.binary)
         bridge = BinaryNinjaBridge(args.bridge_url, binary=Path(image.bndb_path).name)
-        coverage = verification_coverage_by_address(
-            Path(args.functional_manifest_dir),
-            Path(args.vc5_manifest_dir),
-        )
+        coverage = verification_coverage_by_address(Path(args.vc5_manifest_dir))
         lane = normalize_lane(args.lane)
         reports: list[dict[str, object]] = []
         multi_entry = len(roots) > 1

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Recoil Durable Notes"
-  short_description: "Capture durable Recoil reconstruction notes"
-  default_prompt: "Use $recoil-durable-notes to decide where durable reconstruction facts should be recorded."

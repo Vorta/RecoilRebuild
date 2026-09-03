@@ -16,7 +16,7 @@ from pathlib import Path
 import re
 import sys
 
-from _recoil.lib.owner_entries import DONE_STATUS, TIER_FUNCTIONAL, load_owner_entries, tier_at_least
+from _recoil.lib.owner_entries import DONE_STATUS, TIER_COVERAGE, load_owner_entries, tier_at_least
 from _recoil.lib.progress import DEFAULT_PROGRESS_PATH
 from _recoil.lib.source_constructs import (
     adjacent_comment,
@@ -217,7 +217,7 @@ def tier_c_or_better_files(owners_path: Path) -> set[str]:
     for entry in load_owner_entries(owners_path).values():
         if entry.is_provider_boundary:
             continue
-        if not tier_at_least(entry.reimplementation_tier, TIER_FUNCTIONAL):
+        if not tier_at_least(entry.reimplementation_tier, TIER_COVERAGE):
             continue
         rel = normalize_source_path(entry.reimplemented_file)
         if rel and rel not in {"pending", "external"}:
@@ -232,7 +232,7 @@ def tier_c_or_better_source_symbol_keys(
     for entry in load_owner_entries(owners_path).values():
         if entry.is_provider_boundary:
             continue
-        if not tier_at_least(entry.reimplementation_tier, TIER_FUNCTIONAL):
+        if not tier_at_least(entry.reimplementation_tier, TIER_COVERAGE):
             continue
         rel = normalize_source_path(entry.reimplemented_file)
         if not rel or rel in {"pending", "external"}:

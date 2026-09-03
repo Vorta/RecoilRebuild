@@ -21,13 +21,11 @@ ROOTS = (
     REPO_ROOT / "tools",
     REPO_ROOT / ".codex",
     REPO_ROOT / "docs" / "reconstruction",
-    REPO_ROOT / "cmake",
     REPO_ROOT / "AGENTS.md",
     REPO_ROOT / "README.md",
 )
 STRUCTURED_SQLITE_TEST_PATHS = (
-    REPO_ROOT / "tests" / "tools" / "recoil_explicit_maintenance_work_tests.py",
-    REPO_ROOT / "tests" / "tools" / "recoil_progress_revision_domain_tests.py",
+    REPO_ROOT / "tests" / "tools" / "test_tracker_transactions.py",
 )
 CALL_CONTRACT_AUTHORITY_PATH = (
     REPO_ROOT / "tools" / "_recoil" / "commands" / "call_contract_verify.py"
@@ -54,7 +52,6 @@ REPOSITORY_LOGICAL_CONSUMERS = frozenset(
     {
         "tools/_recoil/commands/vc5_verify.py",
         "tools/_recoil/commands/call_contract_verify.py",
-        "tools/_recoil/commands/call_contract_readiness_audit.py",
         "tools/_recoil/lib/progress.py",
         "tools/_recoil/commands/progress_cli.py",
     }

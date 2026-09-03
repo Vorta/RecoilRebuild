@@ -72,7 +72,6 @@ class GeneratedRepositoryPath:
 
 AUTHORED_REPOSITORY_ROOTS = (
     ".codex",
-    "cmake",
     "docs",
     "src",
     "tests",
@@ -82,8 +81,6 @@ AUTHORED_REPOSITORY_FILES = (
     ".gitattributes",
     ".gitignore",
     "AGENTS.md",
-    "CMakeLists.txt",
-    "CMakePresets.json",
     "README.md",
 )
 MACHINE_LOCAL_OR_GENERATED_ROOTS = frozenset(

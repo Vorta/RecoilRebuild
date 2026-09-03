@@ -45,12 +45,10 @@ substitutes for source-faithful production reconstruction under `src/`.
 
 - `src/Battlesport` — reconstructed game shell and gameplay-facing source.
 - `src/GameZRecoil` — reconstructed engine subsystems.
-- `cmake/recoil_native` — native target wiring outside the reconstructed
-  production source tree.
 - `tools/_recoil/compat/include` — compiler, calling-convention, and ABI
   compatibility bridges used by governed builds.
-- `tests/native` and `tests/tools` — focused behavior, ABI, guard, and tooling
-  verification.
+- `tests/tools` — the compact proof-kernel suite for tracker transactions,
+  retail comparison, compiler/linker validation, and policy enforcement.
 - `tools` — local reconstruction and verification infrastructure.
 - `docs/reconstruction` — durable evidence and reconstruction runbooks.
 - `export` — analysis exports used as supporting recovery evidence.
@@ -59,7 +57,7 @@ The canonical reproduction runbook is
 [`docs/reconstruction/retail_executable_reproduction.md`](docs/reconstruction/retail_executable_reproduction.md).
 Physical source-block and semantic-span mapping are internal reconstruction
 state; durable placement evidence is documented in
-[`source_file_layout_audit.md`](docs/reconstruction/source_file_layout_audit.md).
+[`source_naming_conventions.md`](docs/reconstruction/source_naming_conventions.md).
 The tool-managed unified tracker is the only progress authority.
 
 The public repository is source-only. It does not redistribute the original

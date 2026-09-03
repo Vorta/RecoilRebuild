@@ -7,7 +7,6 @@ from contextlib import redirect_stdout
 from copy import deepcopy
 import ctypes
 from dataclasses import dataclass, field, replace
-import hashlib
 import io
 import json
 import os
@@ -78,11 +77,7 @@ from _recoil.lib.binja import (
     BridgeError,
     Symbol,
 )
-from _recoil.lib.call_contract_normalizers import (
-    LIVE_CALL_CONTRACT_NORMALIZER_REGISTRY as CALL_CONTRACT_NORMALIZER_REGISTRY,
-    current_call_contract_verifier_components,
-    normalize_emitted_call_rows as _normalize_emitted_call_rows,
-)
+from _recoil.lib.call_contract_evidence import json_evidence_value
 from _recoil.lib.call_contract_generations import (
     EXPECTED_FACT_SCHEMA_VERSION,
     current_generations,
@@ -157,17 +152,17 @@ def _build_call_contract_expected_fact_row(
 ) -> dict[str, Any]:
     """Build one typed retail row without deriving a content identity."""
 
-    return {
+    return json_evidence_value({
         "schema_version": EXPECTED_FACT_SCHEMA_VERSION,
         **current_generations(),
         "symbol_id": symbol_id,
         "address": address,
         "calls": [
-            dict(row)
+            row
             for row in (calls if calls is not None else expected_contract or ())
         ],
         **facts,
-    }
+    })
 
 
 CALL_CONTRACT_MEMORY_TRACE_ENV = "RECOIL_CALL_CONTRACT_MEMORY_TRACE"
@@ -629,7 +624,7 @@ from _recoil.commands.vc5_build import (
     run_command as run_final_build_command,
     with_explicit_build_dir as with_final_build_dir,
 )
-from _recoil.commands.vc5_abi_equivalence import (
+from _recoil.lib.zeroarg_abi import (
     ZeroArgAbiTarget,
     eligibility_gates as zeroarg_abi_eligibility_gates,
     load_zeroarg_targets,
@@ -1522,7 +1517,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "saveanimrecords"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:zeffect_anim_save_anim_records",
             (
                 "recoil:vc5-target:"
                 "zeffect_anim_save_4603d0_4622f0_authored_order"
@@ -1560,9 +1554,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "SubmitVisibleSessionRequestsAndStatusText"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "westwood_online_upgrade_dialog_"
-            "submit_visible_session_requests_status",
             "recoil:vc5-target:westwood_online_upgrade_dialog_functions",
             "recoil:vc5-target:wol_43cf90_442890_authored_order",
         ),
@@ -1593,8 +1584,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "westwood_online_upgrade_dialog_queue_visible_session_requests",
             "recoil:vc5-target:westwood_online_upgrade_dialog_functions",
             "recoil:vc5-target:wol_43cf90_442890_authored_order",
         ),
@@ -1626,9 +1615,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "QueueVisibleSessionRequestsAndLookupBrowseRecords"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "westwood_online_upgrade_dialog_"
-            "queue_visible_session_requests_lookup",
             "recoil:vc5-target:westwood_online_upgrade_dialog_functions",
             "recoil:vc5-target:wol_43cf90_442890_authored_order",
         ),
@@ -1659,9 +1645,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "WestwoodOnlineUpgradeDialog::OnBootstrapServerList"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "westwood_online_upgrade_api_event_sink_"
-            "on_bootstrap_server_list",
             "recoil:vc5-target:wol_43cf90_442890_authored_order",
         ),
     },
@@ -1697,7 +1680,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "zmodel-rendernodehardware"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:zmodel_render_node_hardware",
             (
                 "recoil:vc5-target:"
                 "zmodel_gmod_init_475c40_4805b0_authored_order"
@@ -1731,7 +1713,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "zmodel-light-setactivelights"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:zmodel_light_set_active_lights",
             (
                 "recoil:vc5-target:"
                 "zmodel_gmod_light_487a30_489d00_authored_order"
@@ -1764,7 +1745,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "zmodel-light-buildlightweights"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:zmodel_light_build_light_weights",
             (
                 "recoil:vc5-target:"
                 "zmodel_gmod_light_487a30_489d00_authored_order"
@@ -1826,8 +1806,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "fxpass3-applytocurrentsurface"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "zvideo_fxpass3_apply_to_current_surface",
             (
                 "recoil:vc5-target:"
                 "zrender_zrndr_draw_48d340_49f614_authored_order"
@@ -1873,8 +1851,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "spanalphablend565mmxfromtex16alpha8"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "zrndr_span_alpha_blend_565_mmx_from_tex16_alpha8",
             (
                 "recoil:vc5-target:"
                 "zrender_zrndr_draw_48d340_49f614_authored_order"
@@ -1923,8 +1899,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "spanalphablend555mmxfromtex16alpha8"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "zrndr_span_alpha_blend_555_mmx_from_tex16_alpha8",
             (
                 "recoil:vc5-target:"
                 "zrender_zrndr_draw_48d340_49f614_authored_order"
@@ -1973,8 +1947,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "spanalphablend565mmxfrompal8alpha8"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "zrndr_span_alpha_blend_565_mmx_from_pal8_alpha8",
             (
                 "recoil:vc5-target:"
                 "zrender_zrndr_draw_48d340_49f614_authored_order"
@@ -2023,8 +1995,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "spanalphablend555mmxfrompal8alpha8"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "zrndr_span_alpha_blend_555_mmx_from_pal8_alpha8",
             (
                 "recoil:vc5-target:"
                 "zrender_zrndr_draw_48d340_49f614_authored_order"
@@ -2079,7 +2049,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "processruntimeinstances"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:optcatalog_process_runtime_instances",
             (
                 "recoil:vc5-target:"
                 "zwep_init_4ae380_4b2960_authored_order"
@@ -2132,7 +2101,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "options_loadfromregistry"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:zgame_options_load_from_registry",
             (
                 "recoil:vc5-target:"
                 "late_shelf_zgame_zsys_zui_zbd_order_current_shape"
@@ -2187,7 +2155,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "options_savetoregistry"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:zgame_options_save_to_registry",
             (
                 "recoil:vc5-target:"
                 "late_shelf_zgame_zsys_zui_zbd_order_current_shape"
@@ -2674,8 +2641,6 @@ WOL_CATEGORY_A_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "westwoodonlineupgradeapieventsink-onapistatus"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "westwood_online_upgrade_api_event_sink_on_api_status",
             WOL_CEDIT_TARGET_ID,
         ),
     },
@@ -2697,8 +2662,6 @@ WOL_CATEGORY_A_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "westwoodonlineupgradeapieventsink-applyencodedquerystring1"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:westwood_online_upgrade_api_event_sink_"
-            "apply_encoded_query_string1",
             WOL_CEDIT_TARGET_ID,
         ),
     },
@@ -2720,8 +2683,6 @@ WOL_CATEGORY_A_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "westwoodonlineupgradeapieventsink-applyencodedquerystring0"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:westwood_online_upgrade_api_event_sink_"
-            "apply_encoded_query_string0",
             WOL_CEDIT_TARGET_ID,
         ),
     },
@@ -2743,8 +2704,6 @@ WOL_CATEGORY_A_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "westwoodonlineupgradeconfigdialog"
         ),
         "verification_target_ids": (
-            "recoil:functional-target:"
-            "westwood_online_upgrade_config_dialog_constructor",
             WOL_CEDIT_TARGET_ID,
         ),
     },
@@ -2807,289 +2766,6 @@ WOL_CONFIG_CEDIT_INVOCATION_ORDER = (
 )
 WOL_CONFIG_CSTRING_CALL_RELOCATION_OFFSETS = (0x59, 0x6B)
 WOL_CONFIG_CSTRING_CALLBACK_RELOCATION_OFFSETS = (0x75, 0x94, 0xB3, 0xD2)
-WOL_PROFILE_MATRIX_CONTRACT_VERSION = 4
-WOL_PROFILE_MATRIX_TARGET_ID = WOL_CEDIT_TARGET_ID
-WOL_PROFILE_MATRIX_WOL_SOURCE = WOL_CEDIT_CALLER_SOURCE_PATH
-WOL_PROFILE_MATRIX_COMPANION_SOURCE = WOL_PROGRESS_DIALOG_SOURCE_PATH
-WOL_PROFILE_MATRIX_BODY_COUNT = 109
-WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS = "0x43e1c0"
-WOL_PROFILE_MATRIX_EMPTY_CHECK_SYMBOL = (
-    "?SubmitVisibleSessionRequestsAndStatusText@"
-    "WestwoodOnlineUpgradeDialog@@QAEXXZ"
-)
-WOL_PROFILE_MATRIX_PROFILES = (
-    ("P0", "/Ob0"),
-    ("P1", "/Ob1"),
-    ("P2", "/Ob2"),
-    ("implicit", ""),
-)
-WOL_PROFILE_MATRIX_SCOPES = ("wol-only", "both-tu")
-WOL_PROFILE_REGISTERED_SOURCE_PATHS = (
-    WOL_PROFILE_MATRIX_WOL_SOURCE,
-    WOL_PROFILE_MATRIX_COMPANION_SOURCE,
-    "src/Battlesport/wol_api.h",
-    "src/Battlesport/wol_api_event_sink.h",
-    "src/Battlesport/wol_ref_count_and_lock.h",
-    "src/Battlesport/wol_config_dialog.h",
-    "src/Battlesport/wol_dialog.h",
-    "src/Battlesport/wol_download.h",
-)
-
-ZEFFECT_PROFILE_MATRIX_CONTRACT_VERSION = 2
-ZEFFECT_PROFILE_MATRIX_TARGET_ID = (
-    "recoil:vc5-target:zeffect_anim_run_458af0_45e100_authored_order"
-)
-ZEFFECT_PROFILE_MATRIX_TARGET_NAME = (
-    "zeffect_anim_run_458af0_45e100_authored_order"
-)
-ZEFFECT_PROFILE_MATRIX_MANIFEST = (
-    REPO_ROOT
-    / "tools/vc5_verify_targets/zeffect_anim_run_458af0_45e100_authored_order.json"
-)
-ZEFFECT_PROFILE_MATRIX_SOURCE = "src/GameZRecoil/zEffect/zeff_anim_run.c"
-ZEFFECT_PROFILE_MATRIX_BODY_COUNT = 75
-ZEFFECT_PROFILE_MATRIX_CALLER_ID = "recoil:function:0x45d570"
-ZEFFECT_PROFILE_MATRIX_CALLER_ADDRESS = "0x45d570"
-ZEFFECT_PROFILE_MATRIX_FLAGS = (
-    "/nologo", "/TP", "/W3", "/G5", "/O2", "/Ob0", "/MD", "/GX",
-    "/Gr", "/Zp4", "/DWIN32", "/D_WINDOWS", "/DNDEBUG", "/D_AFXDLL",
-    "/D_MBCS", "/DSTRICT", "/D_CRT_SECURE_NO_WARNINGS",
-    "/DWINDOWS_IGNORE_PACKING_MISMATCH", "/DWIN32_LEAN_AND_MEAN",
-    "/DNOMINMAX", "/DRECOIL_ENABLE_ZSYS_CPU_RAW_ASM",
-    "/DRECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM",
-    "/DRECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM", "/FAcs",
-)
-ZEFFECT_PROFILE_MATRIX_RETAIL_ORDER = (
-    ("Stop", "symbol:recoil:function:0x45c040"),
-    ("Restore", "symbol:recoil:function:0x45d310"),
-    ("EmitterReset", "symbol:recoil:function:0x45c2f0"),
-    ("RunSequenceEvents", "symbol:recoil:function:0x45cc00"),
-    ("callback", "symbol:recoil:function:0x447fe0"),
-    ("Finalize", "symbol:recoil:function:0x45d3d0"),
-    ("Clone", "symbol:recoil:function:0x45e730"),
-    ("Rebind", "symbol:recoil:function:0x45ed80"),
-)
-ZEFFECT_PROFILE_MATRIX_BACKENDS = (
-    {
-        "backend_id": "vc5sp3-c2-7303",
-        "c2_path": DEFAULT_VC5_ENV.parent / "VC/BIN/C2.EXE",
-        "c2_version": [11, 0, 0, 7303],
-        "diagnostic_only": False,
-    },
-    {
-        "backend_id": "vc5-rtm-c2-1100-diagnostic",
-        "c2_path": (
-            DEFAULT_VC5_ENV.parents[2]
-            / "Visual C++ 5.0/DEVSTUDIO/VC/BIN/C2.EXE"
-        ),
-        "c2_version": [11, 0, 0, 0],
-        "diagnostic_only": True,
-    },
-)
-PLAYER_PROFILE_MATRIX_CONTRACT_VERSION = 5
-PLAYER_PROFILE_MATRIX_TARGET_ID = (
-    "recoil:vc5-target:player_41ea90_42de10_authored_order"
-)
-PLAYER_PROFILE_MATRIX_TARGET_NAME = "player_41ea90_42de10_authored_order"
-PLAYER_PROFILE_MATRIX_MANIFEST = (
-    REPO_ROOT
-    / "tools/vc5_verify_targets/player_41ea90_42de10_authored_order.json"
-)
-PLAYER_PROFILE_MATRIX_SOURCE = "src/Battlesport/player.cpp"
-PLAYER_PROFILE_MATRIX_BODY_COUNT = 165
-PLAYER_PROFILE_MATRIX_REVIEWED_NON_AUTHORED_KEYS = (
-    (
-        "0x41ef30",
-        "_$E202",
-        None,
-        "Player node-flag restore vector compiler static initializer "
-        "coordinator",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-    (
-        "0x41ef40",
-        "_$E199",
-        None,
-        "Player node-flag restore vector compiler constructor thunk",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-    (
-        "0x41ef60",
-        "_$E201",
-        None,
-        "Player node-flag restore vector compiler atexit registration helper",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-    (
-        "0x41ef70",
-        "_$E200",
-        None,
-        "Player node-flag restore vector compiler atexit destructor thunk",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-    (
-        "0x42a9d0",
-        (
-            "?size@?$vector@PAUHudCmdBindingEntry@@"
-            "V?$allocator@PAUHudCmdBindingEntry@@@std@@@std@@QBEIXZ"
-        ),
-        ".*\\?size@\\?\\$vector@PAUzInput_BindGroupInfo@@.*",
-        "MSVC_STL::VectorPointerSize_COMDAT",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-    (
-        "0x42db50",
-        (
-            "?QueryInterfaceFromInterfaceMap@zCom@@YGJPAX"
-            "PBUInterfaceMapEntry@1@PBU_GUID@@PAPAX@Z"
-        ),
-        None,
-        "VC5 ATL::AtlInternalQueryInterface provider",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-    (
-        "0x42dc30",
-        (
-            "?ConnectionPointContainer_Advise@zCom@@YGJPAUIUnknown@@"
-            "0ABU_GUID@@PAK@Z"
-        ),
-        None,
-        "VC5 ATL::AtlAdvise provider",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-    (
-        "0x42dcf0",
-        (
-            "?ConnectionPointContainer_Unadvise@zCom@@YGJPAUIUnknown@@"
-            "ABU_GUID@@K@Z"
-        ),
-        None,
-        "VC5 ATL::AtlUnadvise provider",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-    (
-        "0x4233b0",
-        (
-            "?_Ucopy@?$vector@UPlayerNodeFlagRestoreEntry@@"
-            "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
-            "IAEPAUPlayerNodeFlagRestoreEntry@@PBU3@0PAU3@@Z"
-        ),
-        None,
-        "std::vector<PlayerNodeFlagRestoreEntry>::_Ucopy provider",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-    (
-        "0x423400",
-        (
-            "?_Ufill@?$vector@UPlayerNodeFlagRestoreEntry@@"
-            "V?$allocator@UPlayerNodeFlagRestoreEntry@@@std@@@std@@"
-            "IAEXPAUPlayerNodeFlagRestoreEntry@@IABU3@@Z"
-        ),
-        None,
-        "std::vector<PlayerNodeFlagRestoreEntry>::_Ufill provider",
-        "non-authored",
-        "non-authored",
-        True,
-        True,
-        "",
-        "",
-    ),
-)
-PLAYER_PROFILE_MATRIX_REGISTERED_COUNT = (
-    PLAYER_PROFILE_MATRIX_BODY_COUNT
-    + len(PLAYER_PROFILE_MATRIX_REVIEWED_NON_AUTHORED_KEYS)
-)
-PLAYER_PROFILE_MATRIX_CALLER_ID = "recoil:function:0x42a070"
-PLAYER_PROFILE_MATRIX_CALLER_ADDRESS = "0x42a070"
-PLAYER_PROFILE_MATRIX_CALLER_SYMBOL = (
-    "?BindGroupList_AddGroup@zInput@@YIHPBD@Z"
-)
-PLAYER_PROFILE_MATRIX_VECTOR_ROOT_SYMBOL = (
-    "?push_back@?$vector@PAUzInput_BindGroupInfo@@"
-    "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-    "QAEXABQAUzInput_BindGroupInfo@@@Z"
-)
-PLAYER_PROFILE_MATRIX_VECTOR_ROOT_INSTRUCTION_OFFSET = 0x84
-PLAYER_PROFILE_MATRIX_VECTOR_ROOT_RELOCATION_OFFSET = 0x85
-PLAYER_PROFILE_MATRIX_PROFILES = (
-    ("ob0", "/Ob0", False),
-    ("ob1-diagnostic", "/Ob1", True),
-)
-PLAYER_PROFILE_MATRIX_FLAGS_OB0 = (
-    "/nologo", "/TP", "/W3", "/G5", "/O2", "/Ob0", "/MD", "/GX",
-    "/Gr", "/Zp4", "/DWIN32", "/D_WINDOWS", "/DNDEBUG", "/D_AFXDLL",
-    "/D_MBCS", "/DSTRICT", "/D_CRT_SECURE_NO_WARNINGS",
-    "/DWINDOWS_IGNORE_PACKING_MISMATCH", "/DWIN32_LEAN_AND_MEAN",
-    "/DNOMINMAX", "/DRECOIL_ENABLE_ZSYS_CPU_RAW_ASM",
-    "/DRECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM",
-    "/DRECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM", "/FAcs",
-)
-PLAYER_PROFILE_MATRIX_ORDER_EDIT_PATHS = (
-    "src/Battlesport/player.cpp",
-    "src/Battlesport/player.h",
-    "src/Battlesport/WOL.cpp",
-    "src/Battlesport/wol_api.h",
-    "src/GameZRecoil/zCom/zcom.h",
-    "src/GameZRecoil/zUI/zui.cpp",
-    "src/GameZRecoil/zHud/zhud_ui.h",
-    "src/GameZRecoil/zReader/zreader.cpp",
-    "src/GameZRecoil/zReader/zreader.h",
-    "src/GameZRecoil/zClass/Class.c",
-    "src/GameZRecoil/zClass/cls_di.c",
-    "src/GameZRecoil/include/zClass.h",
-    "src/GameZRecoil/include/zDi.h",
-    "src/GameZRecoil/zInput/zInput.cpp",
-    "src/GameZRecoil/zInput/zInput.h",
-    "src/GameZRecoil/zInput/zin_init.cpp",
-    "src/GameZRecoil/zMath/zmth_main.c",
-    "src/GameZRecoil/zMath/zmth_decls.h",
-    "src/GameZRecoil/zMath/zmth.h",
-)
 ZCLASS_FREEALL_CALLER_IDENTITY = "symbol:recoil:function:0x451a00"
 ZCLASS_FREEALL_CALLER_SYMBOL_ID = "recoil:function:0x451a00"
 ZCLASS_FREEALL_CALLER_ADDRESS = "0x451a00"
@@ -3255,7 +2931,6 @@ CACHED_FREAD_CALLER_ANCHOR_ID = (
 CACHED_FREAD_CALLER_SOURCE_PATH = "src/Battlesport/map.cpp"
 CACHED_FREAD_CALLER_PHYSICAL_BLOCK_ID = "recoil:block:0x415ab0"
 CACHED_FREAD_CALLER_TARGET_IDS = (
-    "recoil:functional-target:hud_sensor_map_node_load_from_stream",
     "recoil:vc5-target:map_text_block_order_current_shape",
 )
 CACHED_FREAD_IAT_ADDRESS = "0x4cc4e0"
@@ -3736,8 +3411,6 @@ HUD_UI_MGR_TRIGGER_CURRENT_LAYOUT_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.triggercurrentlayoutonactivated"
 )
 HUD_UI_MGR_TRIGGER_CURRENT_LAYOUT_VERIFICATION_TARGET_IDS = (
-    "recoil:functional-target:"
-    "hud_ui_mgr_trigger_current_layout_on_activated",
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
     "recoil:vc5-target:"
     "hud_ui_mgr_trigger_current_layout_on_activated",
@@ -3763,7 +3436,6 @@ HUD_UI_MGR_SWITCH_ACTIVE_DIALOG_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.switchactivedialog"
 )
 HUD_UI_MGR_SWITCH_ACTIVE_DIALOG_VERIFICATION_TARGET_IDS = (
-    "recoil:functional-target:hud_ui_mgr_switch_active_dialog",
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
 )
 HUD_UI_MGR_SWITCH_ACTIVE_DIALOG_DISPLACEMENT = 0x18
@@ -3788,7 +3460,6 @@ HUD_UI_MGR_SET_FLOAT_TIMER_VISIBLE_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.setfloattimervisible"
 )
 HUD_UI_MGR_SET_FLOAT_TIMER_VISIBLE_VERIFICATION_TARGET_IDS = (
-    "recoil:functional-target:hud_ui_mgr_set_float_timer_visible",
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
 )
 HUD_UI_MGR_SET_FLOAT_TIMER_VISIBLE_DISPLACEMENT = 0x4788
@@ -3820,7 +3491,6 @@ HUD_UI_MGR_SET_AUX_OVERLAY_VISIBLE_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.setauxoverlayvisible"
 )
 HUD_UI_MGR_SET_AUX_OVERLAY_VISIBLE_VERIFICATION_TARGET_IDS = (
-    "recoil:functional-target:hud_ui_mgr_set_aux_overlay_visible",
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
 )
 HUD_UI_MGR_SET_AUX_OVERLAY_VISIBLE_DISPLACEMENT = 0x0EE0
@@ -3846,7 +3516,6 @@ HUD_UI_AUX_OVERLAY_APPLY_TEXT_LINE_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.updatetextline"
 )
 HUD_UI_AUX_OVERLAY_APPLY_TEXT_LINE_VERIFICATION_TARGET_IDS = (
-    "recoil:functional-target:hud_ui_aux_overlay_apply_text_line_op",
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
 )
 HUD_UI_AUX_OVERLAY_APPLY_TEXT_LINE_DISPLACEMENT = 0x0EE0
@@ -3890,7 +3559,6 @@ HUD_UI_MGR_ENABLE_STACKS_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.enabletopandchatstacks"
 )
 HUD_UI_MGR_ENABLE_STACKS_VERIFICATION_TARGET_IDS = (
-    "recoil:functional-target:zhud_mgr_enable_top_and_chat_stacks",
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
     "recoil:vc5-target:hud_ui_text_stack_show_enable",
 )
@@ -3925,7 +3593,6 @@ HUD_UI_MGR_DISABLE_STACKS_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.disabletopandchatstacks"
 )
 HUD_UI_MGR_DISABLE_STACKS_VERIFICATION_TARGET_IDS = (
-    "recoil:functional-target:zhud_mgr_disable_top_and_chat_stacks",
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
 )
 HUD_UI_MGR_DISABLE_STACKS_RETAIL_VIRTUAL_CALLS = (
@@ -3949,7 +3616,6 @@ HUD_LAYOUT_APPLY_TEXT_LABEL_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.applytextlabel"
 )
 HUD_LAYOUT_APPLY_TEXT_LABEL_VERIFICATION_TARGET_IDS = (
-    "recoil:functional-target:hud_layout_node_apply_text_label",
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
 )
 HUD_LAYOUT_APPLY_TEXT_LABEL_EMPTY_LITERAL_SYMBOL = "??_C@_00A@?$AA@"
@@ -4515,9 +4181,6 @@ HUD_UI_MESSAGE_CLEAR_DISPLAY_CALLER_SYMBOL = (
 HUD_UI_MESSAGE_CLEAR_DISPLAY_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.huduimessage-cleardisplay"
 )
-HUD_UI_MESSAGE_CLEAR_DISPLAY_FUNCTIONAL_TARGET_ID = (
-    "recoil:functional-target:hud_ui_message_clear_display"
-)
 HUD_UI_MESSAGE_CLEAR_DISPLAY_ORDER_TARGET_ID = (
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order"
 )
@@ -4707,9 +4370,6 @@ HUD_UI_MESSAGE_REBUILD_WEAPON_CALLER_SYMBOL = (
 HUD_UI_MESSAGE_REBUILD_WEAPON_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.huduimessage-rebuildweaponlayout"
 )
-HUD_UI_MESSAGE_REBUILD_WEAPON_FUNCTIONAL_TARGET_ID = (
-    "recoil:functional-target:hud_ui_message_rebuild_weapon_layout"
-)
 HUD_UI_MESSAGE_REBUILD_WEAPON_ORDER_TARGET_ID = (
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order"
 )
@@ -4783,9 +4443,6 @@ HUD_LOADING_CHECKPOINT_CALLER_SYMBOL = (
 HUD_LOADING_CHECKPOINT_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.advanceandlog"
 )
-HUD_LOADING_CHECKPOINT_FUNCTIONAL_TARGET_ID = (
-    "recoil:functional-target:hud_ui_loading_checkpoint_advance_and_log"
-)
 HUD_LOADING_CHECKPOINT_TRIGGER_TARGET_ID = (
     "recoil:vc5-target:hud_ui_mgr_trigger_current_layout_on_activated"
 )
@@ -4838,9 +4495,6 @@ GAMENET_CHAT_COMPOSE_CALLER_SYMBOL = (
 GAMENET_CHAT_COMPOSE_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.chatcomposekeycallback"
 )
-GAMENET_CHAT_COMPOSE_FUNCTIONAL_TARGET_ID = (
-    "recoil:functional-target:gamenet_chat_compose_key_callback"
-)
 GAMENET_CHAT_COMPOSE_CONTRIBUTION_SYMBOL_RE = (
     r"\?ChatComposeKeyCallback@GameNet@@.*"
 )
@@ -4879,9 +4533,6 @@ GAMENET_END_CHAT_COMPOSE_CALLER_SYMBOL = (
 )
 GAMENET_END_CHAT_COMPOSE_CALLER_ANCHOR_ID = (
     "recoil:anchor:battlesport.hud.endchatcomposeandsend"
-)
-GAMENET_END_CHAT_COMPOSE_FUNCTIONAL_TARGET_ID = (
-    "recoil:functional-target:gamenet_end_chat_compose_and_send"
 )
 GAMENET_END_CHAT_COMPOSE_CONTRIBUTION_SYMBOL_RE = (
     r"\?EndChatComposeAndSend@GameNet@@.*"
@@ -5663,16 +5314,6 @@ HUD_NET_GAME_SETUP_CONSTRUCTOR_CALLER_SYMBOL = (
     "??0HudUiNetGameSetupPanel@@QAE@H@Z"
 )
 HUD_NET_GAME_SETUP_CONSTRUCTOR_CALLER_BLOCK_ID = "recoil:block:0x417350"
-HUD_NET_GAME_SETUP_CONSTRUCTOR_FUNCTIONAL_TARGET_ID = (
-    "recoil:functional-target:hud_ui_net_game_setup_panel_constructor"
-)
-HUD_NET_GAME_SETUP_CONSTRUCTOR_FUNCTIONAL_TARGET_NAME = (
-    "hud_ui_net_game_setup_panel_constructor"
-)
-HUD_NET_GAME_SETUP_CONSTRUCTOR_FUNCTIONAL_TARGET_MANIFEST = (
-    "tools/functional_verify_targets/"
-    "hud_ui_net_game_setup_panel_constructor.json"
-)
 HUD_NET_GAME_SETUP_LAUNCH_BUTTON_CONSTRUCTOR_SYMBOL = (
     "??0HudUiNetGameSetupPanel_LaunchButton@@QAE@XZ"
 )
@@ -6134,16 +5775,6 @@ HUD_NET_GAME_SETUP_TOGGLE_VFTABLE_COMMON_RELOCATIONS = (
         '?PostLoadFromZrd@HudUiZrdWidget@@UAEXXZ',
     ),
 )
-HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FUNCTIONAL_TARGET_ID = (
-    "recoil:functional-target:hud_ui_cycle_selector_widget_constructor"
-)
-HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FUNCTIONAL_TARGET_NAME = (
-    "hud_ui_cycle_selector_widget_constructor"
-)
-HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FUNCTIONAL_TARGET_MANIFEST = (
-    "tools/functional_verify_targets/"
-    "hud_ui_cycle_selector_widget_constructor.json"
-)
 HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FOCUSED_TARGET_ID = (
     "recoil:vc5-target:hud_ui_cycle_selector_widget_constructor"
 )
@@ -6167,16 +5798,6 @@ HUD_NET_GAME_SETUP_NUMERIC_CONSTRUCTOR_SYMBOL_ID = (
 )
 HUD_NET_GAME_SETUP_NUMERIC_CONSTRUCTOR_SOURCE_PATH = (
     "src/GameZRecoil/zUI/zui_widgets.cpp"
-)
-HUD_NET_GAME_SETUP_NUMERIC_FUNCTIONAL_TARGET_ID = (
-    "recoil:functional-target:hud_ui_numeric_text_input_base_constructor"
-)
-HUD_NET_GAME_SETUP_NUMERIC_FUNCTIONAL_TARGET_NAME = (
-    "hud_ui_numeric_text_input_base_constructor"
-)
-HUD_NET_GAME_SETUP_NUMERIC_FUNCTIONAL_TARGET_MANIFEST = (
-    "tools/functional_verify_targets/"
-    "hud_ui_numeric_text_input_base_constructor.json"
 )
 HUD_NET_GAME_SETUP_NUMERIC_FOCUSED_TARGET_ID = (
     "recoil:vc5-target:hud_ui_numeric_text_input_cluster"
@@ -9149,15 +8770,6 @@ HUD_NET_GAME_SETUP_LAUNCH_BUTTON_CONSTRUCTOR_COD_MNEMONICS = (
     "pop",
     "ret",
 )
-HUD_ZRD_WIDGET_CONSTRUCTOR_FUNCTIONAL_TARGET_ID = (
-    "recoil:functional-target:hud_ui_zrd_widget_constructor"
-)
-HUD_ZRD_WIDGET_CONSTRUCTOR_FUNCTIONAL_TARGET_NAME = (
-    "hud_ui_zrd_widget_constructor"
-)
-HUD_ZRD_WIDGET_CONSTRUCTOR_FUNCTIONAL_TARGET_MANIFEST = (
-    "tools/functional_verify_targets/hud_ui_zrd_widget_constructor.json"
-)
 HUD_ZRD_WIDGET_CONSTRUCTOR_VC5_TARGET_ID = (
     "recoil:vc5-target:hud_ui_zrd_widget_constructor"
 )
@@ -12129,18 +11741,11 @@ def _call_contract_body_results(
             status = "passed"
         else:
             status = "not-evaluated"
-        normalized_candidate: list[dict[str, Any]] | None = None
-        normalizers: list[dict[str, Any]] = []
-        if candidate_contract is not None:
-            with CALL_CONTRACT_NORMALIZER_REGISTRY.record_body(symbol_id) as use:
-                normalized_candidate = _normalize_emitted_call_rows(candidate_contract)
-            normalizers = [
-                {
-                    "id": str(row["normalizer_id"]),
-                    "generation": int(row["component_generation"]),
-                }
-                for row in use.receipt().get("normalizers", [])
-            ]
+        normalized_candidate = (
+            json_evidence_value(candidate_contract)
+            if candidate_contract is not None
+            else None
+        )
         normalized_expected = (
             _build_call_contract_expected_fact_row(
                 symbol_id=symbol_id,
@@ -12160,9 +11765,10 @@ def _call_contract_body_results(
                 "comparison_passed": status == "passed",
                 "divergence": deepcopy(dict(divergence)) if divergence else None,
                 "expected_fact_row": normalized_expected,
-                "expected_contract": deepcopy(expected),
-                "candidate_contract": deepcopy(normalized_candidate),
-                "normalizers": normalizers,
+                "expected_contract": (
+                    json_evidence_value(expected) if expected is not None else None
+                ),
+                "candidate_contract": normalized_candidate,
                 **current_generations(),
             }
         )
@@ -23065,7 +22671,6 @@ def _hud_loading_checkpoint_stdio_iat_indexes(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            HUD_LOADING_CHECKPOINT_FUNCTIONAL_TARGET_ID,
             HUD_UI_MESSAGE_REBUILD_WEAPON_ORDER_TARGET_ID,
             HUD_LOADING_CHECKPOINT_TRIGGER_TARGET_ID,
         )
@@ -23419,7 +23024,6 @@ def _gamenet_chat_compose_candidate_register_storage_bridges(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            GAMENET_CHAT_COMPOSE_FUNCTIONAL_TARGET_ID,
             HUD_UI_MESSAGE_REBUILD_WEAPON_ORDER_TARGET_ID,
         )
         or not isinstance(trace, Mapping)
@@ -23997,7 +23601,6 @@ def _gamenet_end_chat_compose_strncat_register_storage_bridges(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            GAMENET_END_CHAT_COMPOSE_FUNCTIONAL_TARGET_ID,
             HUD_UI_MESSAGE_REBUILD_WEAPON_ORDER_TARGET_ID,
         )
         or not isinstance(trace, Mapping)
@@ -24541,8 +24144,6 @@ RECOIL_MAIN_MENU_TRANSITION_CALLER_ANCHOR_ID = (
     "recoilstatemainmenutransition-ontrybecomecurrent"
 )
 RECOIL_MAIN_MENU_TRANSITION_VERIFICATION_TARGET_IDS = (
-    "recoil:functional-target:"
-    "recoil_state_main_menu_transition_on_try_become_current",
     "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
     "recoil:vc5-target:"
     "recoil_state_main_menu_transition_on_try_become_current",
@@ -33055,1092 +32656,6 @@ def _r4572_player_compiler_provider_candidate_bridges(
     return {name: provider_identity}
 
 
-def _player_ob1_finite_profile_active(candidate: CandidateAssembly) -> bool:
-    """Select only the governed in-memory Player `/Ob1` matrix variant."""
-
-    target = candidate.target
-    if (
-        target is None
-        or getattr(target, "name", "") != PLAYER_PROFILE_MATRIX_TARGET_NAME
-        or getattr(target, "source_from", "") != PLAYER_PROFILE_MATRIX_SOURCE
-    ):
-        return False
-    profile, flags = effective_source_compile_context(
-        target, PLAYER_PROFILE_MATRIX_SOURCE
-    )
-    expected_flags = _wol_profile_matrix_inline_flags(
-        PLAYER_PROFILE_MATRIX_FLAGS_OB0, "/Ob1"
-    )
-    if profile == "player-profile-matrix-ob1-diagnostic":
-        if tuple(flags) != expected_flags:
-            raise ValueError(
-                "Player /Ob1 finite profile rejects effective option drift"
-            )
-        return True
-    if any(str(flag).upper() == "/OB1" for flag in flags):
-        raise ValueError(
-            "Player /Ob1 finite profile rejects unregistered profile identity"
-        )
-    return False
-
-
-def _player_ob1_finite_caller_profiles() -> dict[
-    tuple[str, str, str], dict[str, Any]
-]:
-    """Return immutable caller packages transcribed from the r4732 raw sets."""
-
-    restore_storage = (
-        "?g_PlayerNodeFlagRestoreEntries@@3V?$vector@"
-        "UPlayerNodeFlagRestoreEntry@@V?$allocator@"
-        "UPlayerNodeFlagRestoreEntry@@@std@@@std@@A"
-    )
-    construct = "?_Construct@std@@YIXPAHABH@Z"
-    ufill = (
-        "?_Ufill@?$vector@HV?$allocator@H@std@@@std@@"
-        "IAEXPAHIABH@Z"
-    )
-    ucopy = (
-        "?_Ucopy@?$vector@HV?$allocator@H@std@@@std@@"
-        "IAEPAHPBH0PAH@Z"
-    )
-    destroy = (
-        "?_Destroy@?$vector@HV?$allocator@H@std@@@std@@IAEXPAH0@Z"
-    )
-    pointer_ucopy = (
-        "?_Ucopy@?$vector@PAUzInput_BindGroupInfo@@"
-        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-        "IAEPAPAUzInput_BindGroupInfo@@PBQAU3@0PAPAU3@@Z"
-    )
-    pointer_ufill = (
-        "?_Ufill@?$vector@PAUzInput_BindGroupInfo@@"
-        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-        "IAEXPAPAUzInput_BindGroupInfo@@IABQAU3@@Z"
-    )
-    pointer_destroy = (
-        "?_Destroy@?$vector@PAUzInput_BindGroupInfo@@"
-        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-        "IAEXPAPAUzInput_BindGroupInfo@@0@Z"
-    )
-    pointer_size = (
-        "?size@?$vector@PAUzInput_BindGroupInfo@@"
-        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@QBEIXZ"
-    )
-    common_pass3 = {
-        "body": bytes.fromhex(
-            "568bf185f67405e8000000008bc65ec3"
-        ),
-    }
-    common_panel = {
-        "body": bytes.fromhex(
-            "b80000000085c0740d6a006a006a008bc8e800000000c3"
-            + "90" * 9
-        ),
-    }
-    profiles: dict[tuple[str, str, str], dict[str, Any]] = {
-        (
-            "symbol:recoil:function:0x41eb30", "0x41eb30", "0x41eb50"
-        ): {
-            **common_pass3,
-            "symbol": "?Constructor@Player_UnderwaterFxPass3Ui@@QAEPAU1@XZ",
-            "relocations": ((8, IMAGE_REL_I386_REL32,
-                "??0Player_UnderwaterFxPass3Ui@@QAE@XZ", 0),),
-            "calls": ((7, "call",
-                "??0Player_UnderwaterFxPass3Ui@@QAE@XZ", None),),
-            "contract_count": 1,
-        },
-        (
-            "symbol:recoil:function:0x41eb90", "0x41eb90", "0x41ebb0"
-        ): {
-            **common_pass3,
-            "symbol": (
-                "?Constructor@Player_ProjectileCameraFxPass3Ui@@QAEPAU1@XZ"
-            ),
-            "relocations": ((8, IMAGE_REL_I386_REL32,
-                "??0Player_ProjectileCameraFxPass3Ui@@QAE@XZ", 0),),
-            "calls": ((7, "call",
-                "??0Player_ProjectileCameraFxPass3Ui@@QAE@XZ", None),),
-            "contract_count": 1,
-        },
-        (
-            "symbol:recoil:function:0x41ec40", "0x41ec40", "0x41ec60"
-        ): {
-            **common_panel,
-            "symbol": "?Constructor@Player_TopMsgPanel1@@YAXXZ",
-            "relocations": (
-                (1, IMAGE_REL_I386_DIR32, "_g_Player_TopMsgPanel1", 0),
-                (18, IMAGE_REL_I386_REL32,
-                 "??0HudUiPanel@@QAE@PBDHH@Z", 0),
-            ),
-            "calls": ((17, "call", "??0HudUiPanel@@QAE@PBDHH@Z", None),),
-            "contract_count": 1,
-        },
-        (
-            "symbol:recoil:function:0x41ec90", "0x41ec90", "0x41ecb0"
-        ): {
-            **common_panel,
-            "symbol": "?Constructor@Player_TopMsgPanel2@@YAXXZ",
-            "relocations": (
-                (1, IMAGE_REL_I386_DIR32, "_g_Player_TopMsgPanel2", 0),
-                (18, IMAGE_REL_I386_REL32,
-                 "??0HudUiPanel@@QAE@PBDHH@Z", 0),
-            ),
-            "calls": ((17, "call", "??0HudUiPanel@@QAE@PBDHH@Z", None),),
-            "contract_count": 1,
-        },
-        (
-            "symbol:recoil:function:0x41efa0", "0x41efa0", "0x41f010"
-        ): {
-            "symbol": "?RestoreRecordedNodeFlags@Player@@YAXXZ",
-            "body": bytes.fromhex(
-                "a108000000568b35040000003bf07449578b46048b3e85c0740cba01000000"
-                "8bcfe8000000008b460885c0740cba010000008bcfe8000000008b460c85c0"
-                "740cba010000008bcfe800000000a10800000083c6103bf075b95f5ec3"
-                + "90" * 5
-            ),
-            "relocations": (
-                (1, IMAGE_REL_I386_DIR32, restore_storage, 8),
-                (8, IMAGE_REL_I386_DIR32, restore_storage, 4),
-                (34, IMAGE_REL_I386_REL32,
-                 "?gwNodeSetCellPickable@zClass_Class@@"
-                 "YIHPAUzClass_NodePartial@@H@Z", 0),
-                (53, IMAGE_REL_I386_REL32,
-                 "?gwNodeSetRaycastable@zClass_Class@@"
-                 "YIHPAUzClass_NodePartial@@H@Z", 0),
-                (72, IMAGE_REL_I386_REL32,
-                 "?gwNodeSetPickable@zClass_Class@@"
-                 "YIHPAUzClass_NodePartial@@H@Z", 0),
-                (77, IMAGE_REL_I386_DIR32, restore_storage, 8),
-            ),
-            "calls": (
-                (33, "call", "?gwNodeSetCellPickable@zClass_Class@@"
-                 "YIHPAUzClass_NodePartial@@H@Z", None),
-                (52, "call", "?gwNodeSetRaycastable@zClass_Class@@"
-                 "YIHPAUzClass_NodePartial@@H@Z", None),
-                (71, "call", "?gwNodeSetPickable@zClass_Class@@"
-                 "YIHPAUzClass_NodePartial@@H@Z", None),
-            ),
-            "contract_count": 3,
-            "retail_identities": (
-                "symbol:recoil:function:0x448100",
-                "symbol:recoil:function:0x4481b0",
-                "symbol:recoil:function:0x448230",
-            ),
-        },
-        (
-            "symbol:recoil:function:0x420c60", "0x420c60", "0x420d10"
-        ): {
-            "symbol": "?InstantiateNamedObjects@Checkpoint@@YAXXZ",
-            "body": bytes.fromhex(
-                "6aff680000000064a10000000050648925000000005153578d4c2408e8000000"
-                "008b1d6c240000bf010000003bdfc7442414000000007c5456578d4424106800"
-                "00000050e8000000008b54241883c40cb906000000e8000000008bf085f67426"
-                "ba020000008bcee800000000ba000004008bcee80000000068000020008bd68b"
-                "cee800000000473bfb7eae5e8d4c2408c7442414ffffffffe8000000008b4c24"
-                "0c5f64890d000000005b83c410c39090"
-            ),
-            "relocations": (
-                (3, IMAGE_REL_I386_DIR32, "$L91038", 0),
-                (9, IMAGE_REL_I386_DIR32, "__except_list", 0),
-                (17, IMAGE_REL_I386_DIR32, "__except_list", 0),
-                (29, IMAGE_REL_I386_REL32, "??0CString@@QAE@XZ", 0),
-                (35, IMAGE_REL_I386_DIR32, "_g_HudSensorTracker", 9324),
-                (63, IMAGE_REL_I386_DIR32, "_g_Checkpoint_NodeNameFmt", 0),
-                (69, IMAGE_REL_I386_REL32,
-                 "?Format@CString@@QAAXPBDZZ", 0),
-                (86, IMAGE_REL_I386_REL32,
-                 "?FindByTypeAndName@zClass@@"
-                 "YIPAUzClass_NodePartial@@HPBD@Z", 0),
-                (104, IMAGE_REL_I386_REL32,
-                 "?PropagateExtraFlagsRecursive@zClass_Node@@"
-                 "YIXPAUzClass_NodePartial@@H@Z", 0),
-                (116, IMAGE_REL_I386_REL32,
-                 "?PropagateFlagsRecursive@zClass_Node@@"
-                 "YIXPAUzClass_NodePartial@@H@Z", 0),
-                (130, IMAGE_REL_I386_REL32,
-                 "?SetContextRecursive@zClass_Node@@"
-                 "YIXPAUzClass_NodePartial@@0H@Z", 0),
-                (153, IMAGE_REL_I386_REL32, "??1CString@@QAE@XZ", 0),
-                (165, IMAGE_REL_I386_DIR32, "__except_list", 0),
-            ),
-            "calls": (
-                (28, "call", "??0CString@@QAE@XZ", None),
-                (68, "call", "?Format@CString@@QAAXPBDZZ", 12),
-                (85, "call", "?FindByTypeAndName@zClass@@"
-                 "YIPAUzClass_NodePartial@@HPBD@Z", None),
-                (103, "call", "?PropagateExtraFlagsRecursive@zClass_Node@@"
-                 "YIXPAUzClass_NodePartial@@H@Z", None),
-                (115, "call", "?PropagateFlagsRecursive@zClass_Node@@"
-                 "YIXPAUzClass_NodePartial@@H@Z", None),
-                (129, "call", "?SetContextRecursive@zClass_Node@@"
-                 "YIXPAUzClass_NodePartial@@0H@Z", None),
-                (152, "call", "??1CString@@QAE@XZ", None),
-            ),
-            "contract_count": 7,
-        },
-        (
-            "symbol:recoil:function:0x425060", "0x425060", "0x425150"
-        ): {
-            "symbol": (
-                "?ParseCheckpointNumberFromNode@HudSensorTracker@@"
-                "SIHPAUzClass_NodePartial@@@Z"
-            ),
-            "body": bytes.fromhex(
-                "64a1000000006aff680000000050648925000000008b412483ec08a900002000"
-                "560f84b00000008b4140f64028020f84a3000000508d4c2408e8000000008b"
-                "442404c7442414000000008b40f883e80a790233c08d4c240850518d4c240ce8"
-                "000000008b442408c6442414018b48f885c9744550ff150000000083c4048d4c"
-                "24088bf0c644241400e8000000008d4c2404c7442414ffffffffe80000000033"
-                "c085f60f9cc04823c68b4c240c64890d000000005e83c414c38d4c2408c644"
-                "241400e8000000008d4c2404c7442414ffffffffe8000000008b4c240c33c064"
-                "890d000000005e83c414c390909090909090"
-            ),
-            "relocations": (
-                (2, IMAGE_REL_I386_DIR32, "__except_list", 0),
-                (9, IMAGE_REL_I386_DIR32, "$L91338", 0),
-                (17, IMAGE_REL_I386_DIR32, "__except_list", 0),
-                (58, IMAGE_REL_I386_REL32, "??0CString@@QAE@PBD@Z", 0),
-                (95, IMAGE_REL_I386_REL32,
-                 "?Right@CString@@QBE?AV1@H@Z", 0),
-                (118, IMAGE_REL_I386_DIR32, "__imp__atol", 0),
-                (137, IMAGE_REL_I386_REL32, "??1CString@@QAE@XZ", 0),
-                (154, IMAGE_REL_I386_REL32, "??1CString@@QAE@XZ", 0),
-                (175, IMAGE_REL_I386_DIR32, "__except_list", 0),
-                (194, IMAGE_REL_I386_REL32, "??1CString@@QAE@XZ", 0),
-                (211, IMAGE_REL_I386_REL32, "??1CString@@QAE@XZ", 0),
-                (224, IMAGE_REL_I386_DIR32, "__except_list", 0),
-            ),
-            "calls": (
-                (57, "call", "??0CString@@QAE@PBD@Z", None),
-                (94, "call", "?Right@CString@@QBE?AV1@H@Z", None),
-                (116, "call", "dword __imp__atol", 4),
-                (136, "call", "??1CString@@QAE@XZ", None),
-                (153, "call", "??1CString@@QAE@XZ", None),
-                (193, "call", "??1CString@@QAE@XZ", None),
-                (210, "call", "??1CString@@QAE@XZ", None),
-            ),
-            "contract_count": 7,
-            "contract_dispatches": (
-                "direct", "direct", "indirect", "direct",
-                "direct", "direct", "direct",
-            ),
-        },
-        (
-            "symbol:recoil:function:0x42a2c0", "0x42a2c0", "0x42a480"
-        ): {
-            "symbol": "?BindGroupList_AddCommandToGroup@zInput@@YIXHH@Z",
-            "body": bytes.fromhex(
-                "83ec0ca1040000005355568954240c8b3488bb040000005703f38b46088b4e0c"
-                "2bc88bf8c1f90283f9010f83f30000008b560485d2750433c9eb078bc82bcac1"
-                "f90283f901761185d2750433c9eb0e8bc82bcac1f902eb05b90100000085d275"
-                "0433c0eb052bc2c1f80203c185c0894424187d0233c08d14850000000052e800"
-                "0000008b5e0483c4043bdf894424148be874138bd38bcde80000000083c30483"
-                "c5043bdf75ed8d4424108bce506a0155e8000000008b4e0883c5045551578bce"
-                "e8000000008b56088b460452508bcee8000000008b460450e8000000008b5424"
-                "188b4c241c83c4048d048a89460c8b460485c0751433c98956048d4c8a04894e"
-                "085f5e5d5b83c40cc38b4e088956042bc8c1f9028d4c8a04894e085f5e5d5b"
-                "83c40cc38bd02bd7c1fa0283fa01734a8d4f045150578bcee8000000008b4608"
-                "8d5424108bc8522bcfba01000000c1f9022bd18bce5250e8000000008b46083b"
-                "f8744d8b4c2410890f03fb3bf875f4015e085f5e5d5b83c40cc3505083c0fc8b"
-                "ce50e8000000008b4e088d41fc3bf8740c2bc32bcb3bc78b10891175f48d4704"
-                "3bf8740c8b4c2410890f03fb3bf875f48b46085f03c38946085e5d5b83c40cc3"
-                "90"
-            ),
-            "relocations": (
-                (4, IMAGE_REL_I386_DIR32,
-                 "_g_zInput_BindGroupInfoList", 4),
-                (127, IMAGE_REL_I386_REL32, "??2@YAPAXI@Z", 0),
-                (152, IMAGE_REL_I386_REL32, construct, 0),
-                (177, IMAGE_REL_I386_REL32, ufill, 0),
-                (193, IMAGE_REL_I386_REL32, ucopy, 0),
-                (208, IMAGE_REL_I386_REL32, destroy, 0),
-                (217, IMAGE_REL_I386_REL32, "??3@YAXPAX@Z", 0),
-                (312, IMAGE_REL_I386_REL32, ucopy, 0),
-                (343, IMAGE_REL_I386_REL32, ufill, 0),
-                (386, IMAGE_REL_I386_REL32, ucopy, 0),
-            ),
-            "calls": (
-                (126, "call", "??2@YAPAXI@Z", 4),
-                (151, "call", construct, None),
-                (176, "call", ufill, None),
-                (192, "call", ucopy, None),
-                (207, "call", destroy, None),
-                (216, "call", "??3@YAXPAX@Z", 4),
-                (311, "call", ucopy, None),
-                (342, "call", ufill, None),
-                (385, "call", ucopy, None),
-            ),
-            "contract_count": 9,
-            "retail_identities": (
-                "provider:recoil:function:0x4c5b76",
-                "provider:recoil:function:0x40c1c0",
-                "provider:recoil:function:0x40c190",
-                "provider:recoil:function:0x48bf10",
-                "provider:recoil:function:0x40bdf0",
-                "provider:recoil:function:0x4c5b6a",
-                "provider:recoil:function:0x48bf10",
-                "provider:recoil:function:0x40c190",
-                "provider:recoil:function:0x48bf10",
-            ),
-            "retail_identity_kinds": ("provider",) * 9,
-        },
-        (
-            "symbol:recoil:function:0x42a070", "0x42a070", "0x42a2c0"
-        ): {
-            "symbol": "?BindGroupList_AddGroup@zInput@@YIHPBD@Z",
-            "body": bytes.fromhex(
-                "64a1000000006aff6800000000506489250000000083ec10535556578bf933db"
-                "8b0d040000003bcb7506895c2418eb0ea1080000002bc1c1f802894424186a"
-                "14e8000000008bf083c4048974241c3bf3895c242874268bcee8000000008a"
-                "442413895e08884604895e0c895e10578bcec644242c02e800000000eb0233"
-                "f6a1080000008b0d0c0000002bc889742414c1f90283f901c7442428ffffff"
-                "ff8bf00f83e20000008b15040000003bd3750433c9eb078bc82bcac1f90283"
-                "f90176113bd3750433c9eb0e8bc82bcac1f902eb05b9010000003bd3750433"
-                "c0eb052bc2c1f8028d2c083beb8bc57d0233c08d14850000000052e8000000"
-                "0083c4048bf8a104000000b900000000575650e8000000008d4c24148bd851"
-                "6a0153b900000000e8000000008b150800000083c304535256b900000000e8"
-                "00000000a1080000008b0d040000005051b900000000e800000000a1040000"
-                "0050e8000000008d14af83c404b90000000089150c000000e8000000008d44"
-                "8704893d04000000a308000000e9a50000008bc82bcec1f90283f901734f8d"
-                "5604b900000000525056e8000000008d442414ba0100000050a1080000008b"
-                "c82bcec1f9022bd1b9000000005250e8000000008b0d080000008bc63bf174"
-                "528b542414891083c0043bc175f3eb43505083c0fcb90000000050e8000000"
-                "00a1080000008bc883c0fc3bf0740f8b50fc83e80483e9043bc6891175f18d"
-                "4e048bc63bf1740d8b542414891083c0043bc175f3830508000000048b4c24"
-                "208b4424185f5e5d64890d000000005b83c41cc3" + "90" * 13
-            ),
-            "relocations": (
-                (2, IMAGE_REL_I386_DIR32, "__except_list", 0),
-                (9, IMAGE_REL_I386_DIR32, "$L91827", 0),
-                (17, IMAGE_REL_I386_DIR32, "__except_list", 0),
-                (34, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),
-                (49, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8),
-                (65, IMAGE_REL_I386_REL32, "??2@YAPAXI@Z", 0),
-                (89, IMAGE_REL_I386_REL32, "??0CString@@QAE@XZ", 0),
-                (118, IMAGE_REL_I386_REL32,
-                 "??4CString@@QAEABV0@PBD@Z", 0),
-                (127, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8),
-                (133, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 12),
-                (167, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),
-                (246, IMAGE_REL_I386_REL32, "??2@YAPAXI@Z", 0),
-                (256, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),
-                (261, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 0),
-                (269, IMAGE_REL_I386_REL32, pointer_ucopy, 0),
-                (284, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 0),
-                (289, IMAGE_REL_I386_REL32, pointer_ufill, 0),
-                (295, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8),
-                (306, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 0),
-                (311, IMAGE_REL_I386_REL32, pointer_ucopy, 0),
-                (316, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8),
-                (322, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),
-                (329, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 0),
-                (334, IMAGE_REL_I386_REL32, pointer_destroy, 0),
-                (339, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),
-                (345, IMAGE_REL_I386_REL32, "??3@YAXPAX@Z", 0),
-                (356, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 0),
-                (362, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 12),
-                (367, IMAGE_REL_I386_REL32, pointer_size, 0),
-                (377, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),
-                (382, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8),
-                (407, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 0),
-                (415, IMAGE_REL_I386_REL32, pointer_ucopy, 0),
-                (430, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8),
-                (444, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 0),
-                (451, IMAGE_REL_I386_REL32, pointer_ufill, 0),
-                (457, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8),
-                (488, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 0),
-                (494, IMAGE_REL_I386_REL32, pointer_ucopy, 0),
-                (499, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8),
-                (551, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8),
-                (570, IMAGE_REL_I386_DIR32, "__except_list", 0),
-            ),
-            "calls": (
-                (64, "call", "??2@YAPAXI@Z", 4),
-                (88, "call", "??0CString@@QAE@XZ", None),
-                (117, "call", "??4CString@@QAEABV0@PBD@Z", None),
-                (245, "call", "??2@YAPAXI@Z", 4),
-                (268, "call", pointer_ucopy, None),
-                (288, "call", pointer_ufill, None),
-                (310, "call", pointer_ucopy, None),
-                (333, "call", pointer_destroy, None),
-                (344, "call", "??3@YAXPAX@Z", 4),
-                (366, "call", pointer_size, None),
-                (414, "call", pointer_ucopy, None),
-                (450, "call", pointer_ufill, None),
-                (493, "call", pointer_ucopy, None),
-            ),
-            "contract_count": 13,
-            "retail_identities": (
-                "provider:recoil:function:0x4c5b76",
-                "provider:recoil:function:0x4c5ba0",
-                "provider:recoil:function:0x4c5b9a",
-                "provider:recoil:function:0x4c5b76",
-                "provider:recoil:function:0x48bf10",
-                "provider:recoil:function:0x40c190",
-                "provider:recoil:function:0x48bf10",
-                "provider:recoil:function:0x40bdf0",
-                "provider:recoil:function:0x4c5b6a",
-                "provider:recoil:function:0x42a9d0",
-                "provider:recoil:function:0x48bf10",
-                "provider:recoil:function:0x40c190",
-                "provider:recoil:function:0x48bf10",
-            ),
-            "retail_identity_kinds": ("provider",) * 13,
-        },
-    }
-    call_free = (
-        ("0x42a480", "0x42a4a0", "?BindGroupList_GetCount@zInput@@YAHXZ",
-         "8b0d0400000085c9750333c0c3a1080000002bc1c1f802c3" + "90" * 8,
-         ((2, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),
-          (14, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 8))),
-        ("0x42a4a0", "0x42a4b0", "?BindGroupList_GetGroupTitle@zInput@@YIPADH@Z",
-         "a1040000008b04888b00c3" + "90" * 5,
-         ((1, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),)),
-        ("0x42a4b0", "0x42a4d0", "?BindGroupList_GetGroupCommandCount@zInput@@YIHH@Z",
-         "a1040000008b04888b480883c00485c9750333c0c38b40082bc1c1f802c3" + "90" * 2,
-         ((1, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),)),
-        ("0x42a4d0", "0x42a4e0", "?BindGroupList_GetGroupCommandId@zInput@@YIHHH@Z",
-         "a1040000008b04888b48088b0491c3" + "90",
-         ((1, IMAGE_REL_I386_DIR32, "_g_zInput_BindGroupInfoList", 4),)),
-    )
-    for start, end, symbol, body_hex, relocations in call_free:
-        profiles[(f"symbol:recoil:function:{start}", start, end)] = {
-            "symbol": symbol,
-            "body": bytes.fromhex(body_hex),
-            "relocations": relocations,
-            "calls": (),
-            "contract_count": 0,
-        }
-    return profiles
-
-
-def _player_ob1_require_exact_caller_package(
-    candidate: CandidateAssembly,
-    *,
-    caller_identity: str,
-    caller_start: str,
-    caller_end_exclusive: str,
-) -> dict[str, Any] | None:
-    """Authenticate one complete immutable r4732 `/Ob1` caller package."""
-
-    if not _player_ob1_finite_profile_active(candidate):
-        return None
-    key = (
-        caller_identity,
-        normalize_address(caller_start),
-        normalize_address(caller_end_exclusive),
-    )
-    spec = _player_ob1_finite_caller_profiles().get(key)
-    if spec is None:
-        return None
-    prefix = f"Player /Ob1 finite caller profile {caller_start}"
-    caller = candidate.caller_definition
-    if caller is None:
-        raise ValueError(f"{prefix} requires a complete caller definition")
-    relocations = tuple(sorted(caller.relocations, key=lambda row: row.offset))
-    try:
-        actual_relocations = tuple(
-            (
-                row.offset,
-                row.type,
-                row.symbol_name,
-                struct.unpack_from("<i", caller.data, row.offset)[0],
-            )
-            for row in relocations
-        )
-    except (IndexError, struct.error) as exc:
-        raise ValueError(f"{prefix} rejects corrupt relocation fields") from exc
-    expected_relocations = tuple(spec["relocations"])
-    expected_mask = {
-        index
-        for offset, _kind, _symbol, _addend in expected_relocations
-        for index in range(offset, offset + 4)
-    }
-    root_symbols = [
-        row for row in caller.coff_symbols if row.name == spec["symbol"]
-    ]
-    root = root_symbols[0] if len(root_symbols) == 1 else None
-    section_callables = tuple(
-        row.name
-        for row in caller.coff_symbols
-        if root is not None
-        and row.section_number == root.section_number
-        and row.symbol_type == 0x20
-        and row.storage_class == IMAGE_SYM_CLASS_EXTERNAL
-    )
-    symbol_by_index = {row.index: row for row in caller.coff_symbols}
-    if (
-        caller.symbol != spec["symbol"]
-        or caller.data != spec["body"]
-        or caller.section_index <= 0
-        or caller.section_start != 0
-        or caller.section_end != len(caller.data)
-        or len(caller.relocation_mask) != len(caller.data)
-        or actual_relocations != expected_relocations
-        or {
-            index
-            for index, masked in enumerate(caller.relocation_mask)
-            if masked
-        } != expected_mask
-        or root is None
-        or root.value != 0
-        or root.section_number != caller.section_index
-        or root.symbol_type != 0x20
-        or root.storage_class != IMAGE_SYM_CLASS_EXTERNAL
-        or root.natural_end != len(caller.data)
-        or root.section_size != len(caller.data)
-        or not (root.section_characteristics & IMAGE_SCN_CNT_CODE)
-        or section_callables != (spec["symbol"],)
-        or len(symbol_by_index) != len(caller.coff_symbols)
-        or any(
-            symbol_by_index.get(row.symbol_index) is None
-            or symbol_by_index[row.symbol_index].name != row.symbol_name
-            for row in relocations
-        )
-        or candidate.local_control_flow_indices
-        or candidate.local_control_flow_targets
-    ):
-        raise ValueError(
-            f"{prefix} rejects exact body/extent, ordered relocation "
-            "type/target/addend/mask, COFF symbol population, or COD topology drift"
-        )
-    offsets = _candidate_complete_instruction_offsets(candidate)
-    invocations = _candidate_static_invocation_indices(
-        candidate,
-        caller_start="0x0",
-        caller_end_exclusive=hex(len(caller.data)),
-    )
-    actual_calls = tuple(
-        (
-            offsets[index],
-            _instruction_mnemonic(candidate.instructions[index]),
-            _instruction_operand(candidate.instructions[index]).strip(),
-            _cleanup_after(candidate.instructions, index),
-        )
-        for index in invocations
-    )
-    if actual_calls != tuple(spec["calls"]):
-        raise ValueError(
-            f"{prefix} rejects physical call/tail population, order, target, "
-            "form, or cleanup drift"
-        )
-    return spec
-
-
-def _player_ob1_require_helper_definition(
-    candidate: CandidateAssembly,
-    *,
-    name: str,
-    body: bytes,
-    relocations: tuple[tuple[int, int, str, int], ...] = (),
-    selection: int,
-    source_suffix: str,
-    calls: tuple[tuple[int, str, str, int | None], ...] = (),
-) -> None:
-    """Require one complete reachable same-object COMDAT definition."""
-
-    prefix = f"Player /Ob1 finite helper {name!r}"
-    definition = candidate.tu_local_function_definitions.get(name)
-    if definition is None:
-        raise ValueError(f"{prefix} is missing")
-    caller = candidate.caller_definition
-    helper_symbols = (
-        [row for row in caller.coff_symbols if row.name == name]
-        if caller is not None else []
-    )
-    helper_symbol = helper_symbols[0] if len(helper_symbols) == 1 else None
-    same_section_externals = tuple(
-        row.name
-        for row in caller.coff_symbols
-        if helper_symbol is not None
-        and row.section_number == helper_symbol.section_number
-        and row.storage_class == IMAGE_SYM_CLASS_EXTERNAL
-    ) if caller is not None else ()
-    try:
-        actual_relocations = tuple(
-            (
-                row.offset,
-                row.type,
-                row.symbol_name,
-                struct.unpack_from("<i", definition.data, row.offset)[0],
-            )
-            for row in definition.relocations
-        )
-    except (IndexError, struct.error) as exc:
-        raise ValueError(f"{prefix} has corrupt relocation fields") from exc
-    mask = {
-        index
-        for offset, _kind, _symbol, _addend in relocations
-        for index in range(offset, offset + 4)
-    }
-    helper_candidate = CandidateAssembly(
-        instructions=definition.instructions,
-        local_control_flow_indices=definition.local_control_flow_indices,
-        local_control_flow_targets=definition.local_control_flow_targets,
-    )
-    offsets = _candidate_complete_instruction_offsets(helper_candidate)
-    invocations = _candidate_static_invocation_indices(
-        helper_candidate,
-        caller_start="0x0",
-        caller_end_exclusive=hex(len(definition.data)),
-    )
-    actual_calls = tuple(
-        (
-            offsets[index],
-            _instruction_mnemonic(definition.instructions[index]),
-            _instruction_operand(definition.instructions[index]).strip(),
-            _cleanup_after(definition.instructions, index),
-        )
-        for index in invocations
-    )
-    if (
-        definition.symbol != name
-        or definition.data != body
-        or _direct_bytes(definition.data)
-        != _direct_bytes(body)
-        or definition.section_size != len(body)
-        or definition.section_is_comdat is not True
-        or definition.comdat_selection != selection
-        or definition.section_external_functions != (name,)
-        or helper_symbol is None
-        or helper_symbol.value != 0
-        or helper_symbol.symbol_type != 0x20
-        or helper_symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
-        or helper_symbol.natural_end != len(body)
-        or helper_symbol.section_size != len(body)
-        or not (helper_symbol.section_characteristics & IMAGE_SCN_LNK_COMDAT)
-        or same_section_externals != (name,)
-        or actual_relocations != relocations
-        or {
-            index
-            for index, value in enumerate(definition.relocation_mask)
-            if value
-        } != mask
-        or definition.local_control_flow_indices
-        or definition.local_control_flow_targets
-        or actual_calls != calls
-        or not definition.source_provenance.replace("\\", "/").endswith(
-            source_suffix
-        )
-    ):
-        raise ValueError(
-            f"{prefix} rejects body/hash/extent, relocations, selection, "
-            "external population, COD calls, CFG, or provenance drift"
-        )
-
-
-def _player_ob1_require_pass3_helper(
-    candidate: CandidateAssembly,
-    derived_name: str,
-    derived_vftable: str,
-) -> None:
-    _player_ob1_require_helper_definition(
-        candidate,
-        name=derived_name,
-        body=bytes.fromhex(
-            "566a008bf16a00e800000000c7463400000000c706000000008bc65ec3"
-            + "90" * 3
-        ),
-        relocations=(
-            (8, IMAGE_REL_I386_REL32, "??0HudUiElement@@QAE@HH@Z", 0),
-            (21, IMAGE_REL_I386_DIR32, derived_vftable, 0),
-        ),
-        selection=1,
-        source_suffix="/src/GameZRecoil/zVideo/zvid_fx_pass3.h",
-        calls=((7, "call", "??0HudUiElement@@QAE@HH@Z", None),),
-    )
-
-
-def _player_ob1_require_int_vector_helpers(candidate: CandidateAssembly) -> None:
-    construct = "?_Construct@std@@YIXPAHABH@Z"
-    ufill = (
-        "?_Ufill@?$vector@HV?$allocator@H@std@@@std@@IAEXPAHIABH@Z"
-    )
-    ucopy = (
-        "?_Ucopy@?$vector@HV?$allocator@H@std@@@std@@IAEPAHPBH0PAH@Z"
-    )
-    destroy = (
-        "?_Destroy@?$vector@HV?$allocator@H@std@@@std@@IAEXPAH0@Z"
-    )
-    for name, body, source in (
-        (construct, bytes.fromhex(
-            "85c974048b028901c3" + "90" * 7
-        ), "/VC/INCLUDE/xmemory"),
-        (ufill, bytes.fromhex(
-            "8b4c240885c976188b54240c8b4424045685c074048b32893083c0044975f2"
-            "5ec20c00" + "90" * 13
-        ), "/VC/INCLUDE/vector"),
-        (ucopy, bytes.fromhex(
-            "8b4c24048b5424083bca741b8b44240c5685c074048b31893083c10483c004"
-            "3bca75ee5ec20c008b44240cc20c00" + "90" * 2
-        ), "/VC/INCLUDE/vector"),
-        (destroy, b"\xc2\x08\x00" + b"\x90" * 13,
-         "/VC/INCLUDE/vector"),
-    ):
-        _player_ob1_require_helper_definition(
-            candidate,
-            name=name,
-            body=body,
-            selection=2,
-            source_suffix=source,
-        )
-
-
-def _player_ob1_require_cstring_recursive_helpers(
-    candidate: CandidateAssembly,
-) -> None:
-    helpers = (
-        (
-            "?PropagateExtraFlagsRecursive@zClass_Node@@"
-            "YIXPAUzClass_NodePartial@@H@Z",
-            bytes.fromhex(
-                "5356578bf98bda33f68b4f288b475c0bcb85c0894f287e158b47608bd38b0c"
-                "b0e8000000008b475c463bf07ceb5f5e5bc3" + "90" * 15
-            ),
-        ),
-        (
-            "?PropagateFlagsRecursive@zClass_Node@@"
-            "YIXPAUzClass_NodePartial@@H@Z",
-            bytes.fromhex(
-                "5356578bf98bda33f68b4f248b475c0bcb85c0894f247e158b47608bd38b0c"
-                "b0e8000000008b475c463bf07ceb5f5e5bc3" + "90" * 15
-            ),
-        ),
-    )
-    for name, body in helpers:
-        _player_ob1_require_helper_definition(
-            candidate,
-            name=name,
-            body=body,
-            relocations=((33, IMAGE_REL_I386_REL32, name, 0),),
-            selection=1,
-            source_suffix="/src/Battlesport/player.cpp",
-            calls=((32, "call", name, None),),
-        )
-
-
-def _player_ob1_require_pointer_vector_helpers(
-    candidate: CandidateAssembly,
-) -> None:
-    ucopy = (
-        "?_Ucopy@?$vector@PAUzInput_BindGroupInfo@@"
-        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-        "IAEPAPAUzInput_BindGroupInfo@@PBQAU3@0PAPAU3@@Z"
-    )
-    ufill = (
-        "?_Ufill@?$vector@PAUzInput_BindGroupInfo@@"
-        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-        "IAEXPAPAUzInput_BindGroupInfo@@IABQAU3@@Z"
-    )
-    destroy = (
-        "?_Destroy@?$vector@PAUzInput_BindGroupInfo@@"
-        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-        "IAEXPAPAUzInput_BindGroupInfo@@0@Z"
-    )
-    size = (
-        "?size@?$vector@PAUzInput_BindGroupInfo@@"
-        "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@QBEIXZ"
-    )
-    definitions = (
-        (ucopy, bytes.fromhex(
-            "8b4c24048b5424083bca741b8b44240c5685c074048b31893083c10483c004"
-            "3bca75ee5ec20c008b44240cc20c00" + "90" * 2
-        )),
-        (ufill, bytes.fromhex(
-            "8b4c240885c976188b54240c8b4424045685c074048b32893083c0044975f2"
-            "5ec20c00" + "90" * 13
-        )),
-        (destroy, b"\xc2\x08\x00" + b"\x90" * 13),
-        (size, bytes.fromhex(
-            "8b510485d2750333c0c38b41082bc2c1f802c3" + "90" * 13
-        )),
-    )
-    for name, body in definitions:
-        _player_ob1_require_helper_definition(
-            candidate,
-            name=name,
-            body=body,
-            selection=2,
-            source_suffix="/VC/INCLUDE/vector",
-        )
-    caller = candidate.caller_definition
-    if caller is None:
-        raise ValueError("Player /Ob1 pointer-vector helper graph lacks caller")
-    helper_names = {name for name, _body in definitions}
-    actual_pointer_vector_helpers = {
-        name
-        for name in candidate.tu_local_function_definitions
-        if "?$vector@PAUzInput_BindGroupInfo@@" in name
-    }
-    occurrences = Counter(
-        relocation.symbol_name
-        for relocation in caller.relocations
-        if relocation.symbol_name in helper_names
-    )
-    if (
-        actual_pointer_vector_helpers != helper_names
-        or occurrences != Counter({
-            ucopy: 4, ufill: 2, destroy: 1, size: 1
-        })
-    ):
-        raise ValueError(
-            "Player /Ob1 pointer-vector helper graph rejects unique helper "
-            "identity or complete occurrence population drift"
-        )
-    forbidden = (
-        "??0zInput_BindGroupInfo@@QAE@XZ",
-        "?_Construct@std@@YIXPAPAUzInput_BindGroupInfo@@"
-        "ABQAU2@@Z",
-    )
-    if any(
-        name in candidate.tu_local_function_definitions
-        or any(row.symbol_name == name for row in caller.relocations)
-        for name in forbidden
-    ):
-        raise ValueError(
-            "Player /Ob1 pointer-vector helper graph rejects retired local "
-            "record-constructor or single-value _Construct interpretation"
-        )
-
-
-def _player_ob1_finite_identity_projection(
-    expected: Sequence[Mapping[str, Any]],
-    candidate_contract: Sequence[Mapping[str, Any]],
-    candidate: CandidateAssembly,
-    *,
-    caller_identity: str,
-    caller_start: str,
-    caller_end_exclusive: str,
-) -> list[dict[str, Any]]:
-    """Qualify only unchanged semantic rows from exact finite `/Ob1` packages."""
-
-    spec = _player_ob1_require_exact_caller_package(
-        candidate,
-        caller_identity=caller_identity,
-        caller_start=caller_start,
-        caller_end_exclusive=caller_end_exclusive,
-    )
-    if spec is None:
-        return [dict(row) for row in candidate_contract]
-    if normalize_address(caller_start) in {"0x41eb30", "0x41eb90",
-                                           "0x41ec40", "0x41ec90"}:
-        # Those four rows are qualified by their dedicated retail-target
-        # bridges, which also prove their nested constructor package.
-        return [dict(row) for row in candidate_contract]
-    if normalize_address(caller_start) == "0x420c60":
-        _player_ob1_require_cstring_recursive_helpers(candidate)
-    elif normalize_address(caller_start) == "0x42a070":
-        _player_ob1_require_pointer_vector_helpers(candidate)
-    elif normalize_address(caller_start) == "0x42a2c0":
-        _player_ob1_require_int_vector_helpers(candidate)
-    expected_rows = [dict(row) for row in expected]
-    candidate_rows = [dict(row) for row in candidate_contract]
-    count = int(spec["contract_count"])
-    dispatches = tuple(
-        spec.get("contract_dispatches", ("direct",) * count)
-    )
-    if (
-        len(expected_rows) != count
-        or len(candidate_rows) != count
-        or expected_rows != candidate_rows
-        or len(dispatches) != count
-        or any(row.get("ordinal") != ordinal
-               for ordinal, row in enumerate(expected_rows))
-        or any(
-            row.get("form") != call[1]
-            or row.get("dispatch") != dispatch
-            or row.get("cleanup_bytes") != call[3]
-            for row, call, dispatch in zip(
-                expected_rows, spec["calls"], dispatches
-            )
-        )
-    ):
-        raise ValueError(
-            f"Player /Ob1 finite caller profile {caller_start} rejects "
-            "immutable retail cardinality/identity/form/order or candidate "
-            "row deletion, reorder, substitution, dispatch, or cleanup drift"
-        )
-    retail_identities = tuple(spec.get("retail_identities", ()))
-    if retail_identities and tuple(
-        row.get("target_identity") for row in expected_rows
-    ) != retail_identities:
-        raise ValueError(
-            f"Player /Ob1 finite caller profile {caller_start} rejects "
-            "immutable retail target identity drift"
-        )
-    retail_identity_kinds = tuple(spec.get("retail_identity_kinds", ()))
-    if retail_identity_kinds and tuple(
-        row.get("identity_kind") for row in expected_rows
-    ) != retail_identity_kinds:
-        raise ValueError(
-            f"Player /Ob1 finite caller profile {caller_start} rejects "
-            "immutable retail identity-kind drift"
-        )
-    if normalize_address(caller_start) in {"0x42a070", "0x42a2c0"} and (
-        expected_rows[4].get("identity_kind") != "provider"
-        or expected_rows[4].get("dispatch") != "direct"
-    ):
-        raise ValueError(
-            "Player /Ob1 vector profile requires the exact reviewed "
-            "compiler-provider identity at physical ordinal 4"
-        )
-    return candidate_rows
-
-
-def _player_ob1_finite_provider_comdat_map(
-    expected: Sequence[Mapping[str, Any]],
-    candidate_contract: Sequence[Mapping[str, Any]],
-    candidate: CandidateAssembly,
-    *,
-    document: ProgressDocument,
-    indexes: IdentityIndexes,
-    bridge: BinaryNinjaBridge,
-    caller_identity: str,
-    caller_start: str,
-    caller_end_exclusive: str,
-) -> dict[str, str]:
-    """Authenticate exact finite `/Ob1` COMDATs against retail bodies."""
-
-    spec = _player_ob1_require_exact_caller_package(
-        candidate,
-        caller_identity=caller_identity,
-        caller_start=caller_start,
-        caller_end_exclusive=caller_end_exclusive,
-    )
-    address = normalize_address(caller_start)
-    if spec is None or address not in {"0x42a070", "0x42a2c0"}:
-        return {}
-    pointer = address == "0x42a070"
-    if pointer:
-        _player_ob1_require_pointer_vector_helpers(candidate)
-        ucopy = (
-            "?_Ucopy@?$vector@PAUzInput_BindGroupInfo@@"
-            "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-            "IAEPAPAUzInput_BindGroupInfo@@PBQAU3@0PAPAU3@@Z"
-        )
-        ufill = (
-            "?_Ufill@?$vector@PAUzInput_BindGroupInfo@@"
-            "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-            "IAEXPAPAUzInput_BindGroupInfo@@IABQAU3@@Z"
-        )
-        destroy = (
-            "?_Destroy@?$vector@PAUzInput_BindGroupInfo@@"
-            "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@"
-            "IAEXPAPAUzInput_BindGroupInfo@@0@Z"
-        )
-        size = (
-            "?size@?$vector@PAUzInput_BindGroupInfo@@"
-            "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@QBEIXZ"
-        )
-        provider_specs = (
-            (ucopy, "provider:recoil:function:0x48bf10", "0x48bf10",
-             bytes.fromhex(
-                 "8b4c24048b5424083bca741b8b44240c5685c074048b31893083c10483c004"
-                 "3bca75ee5ec20c008b44240cc20c00" + "90" * 2
-             )),
-            (ufill, "provider:recoil:function:0x40c190", "0x40c190",
-             bytes.fromhex(
-                 "8b4c240885c976188b54240c8b4424045685c074048b32893083c0044975f2"
-                 "5ec20c00" + "90" * 13
-             )),
-            (destroy, "provider:recoil:function:0x40bdf0", "0x40bdf0",
-             b"\xc2\x08\x00" + b"\x90" * 13),
-            (size, "provider:recoil:function:0x42a9d0", "0x42a9d0",
-             bytes.fromhex(
-                 "8b510485d2750333c0c38b41082bc2c1f802c3" + "90" * 13
-             )),
-        )
-    else:
-        _player_ob1_require_int_vector_helpers(candidate)
-        construct = "?_Construct@std@@YIXPAHABH@Z"
-        ufill = (
-            "?_Ufill@?$vector@HV?$allocator@H@std@@@std@@IAEXPAHIABH@Z"
-        )
-        ucopy = (
-            "?_Ucopy@?$vector@HV?$allocator@H@std@@@std@@"
-            "IAEPAHPBH0PAH@Z"
-        )
-        destroy = (
-            "?_Destroy@?$vector@HV?$allocator@H@std@@@std@@IAEXPAH0@Z"
-        )
-        provider_specs = (
-            (construct, "provider:recoil:function:0x40c1c0", "0x40c1c0",
-             bytes.fromhex("85c974048b028901c3" + "90" * 7)),
-            (ufill, "provider:recoil:function:0x40c190", "0x40c190",
-             bytes.fromhex(
-                 "8b4c240885c976188b54240c8b4424045685c074048b32893083c0044975f2"
-                 "5ec20c00" + "90" * 13
-             )),
-            (ucopy, "provider:recoil:function:0x48bf10", "0x48bf10",
-             bytes.fromhex(
-                 "8b4c24048b5424083bca741b8b44240c5685c074048b31893083c10483c004"
-                 "3bca75ee5ec20c008b44240cc20c00" + "90" * 2
-             )),
-            (destroy, "provider:recoil:function:0x40bdf0", "0x40bdf0",
-             b"\xc2\x08\x00" + b"\x90" * 13),
-        )
-
-    rows = [dict(row) for row in candidate_contract]
-    symbols = document.collection("symbols")
-    result: dict[str, str] = {}
-    for name, identity, retail_address, retail_body in provider_specs:
-        matching_candidate = [
-            row
-            for row in rows
-            if row.get("target_identity")
-            in {f"candidate-local-coff:{name}", identity}
-            and 0 <= int(row.get("ordinal", -1)) < len(expected)
-        ]
-        matching_expected = [
-            expected[int(row["ordinal"])] for row in matching_candidate
-        ]
-        physical = symbols.get(identity.removeprefix("provider:"))
-        retail_end = hex(address_value(retail_address) + len(retail_body))
-        if (
-            not matching_candidate
-            or any(
-                row.get("form") != "call"
-                or row.get("dispatch") != "direct"
-                or (
-                    row.get("target_identity") == identity
-                    and row.get("identity_kind") != "provider"
-                )
-                for row in matching_candidate
-            )
-            or any(
-                row.get("form") != "call"
-                or row.get("dispatch") != "direct"
-                or row.get("identity_kind") != "provider"
-                or row.get("target_identity") != identity
-                or row.get("storage_identity") != ""
-                or row.get("slot_displacement") is not None
-                for row in matching_expected
-            )
-            or identity not in indexes.provider_ids
-            or indexes.by_address.get(retail_address) != identity
-            or not isinstance(physical, Mapping)
-            or physical.get("binary") != "recoil"
-            or physical.get("pipeline_class") != "non-authored"
-            or physical.get("extent_state") != "known"
-            or normalize_address(str(physical.get("address", "")))
-            != retail_address
-            or normalize_address(str(physical.get("end_exclusive", "")))
-            != retail_end
-            or physical.get("size") != len(retail_body)
-            or physical.get("output_section_id") != "recoil:section:.text"
-            or _hexdump_bytes(
-                bridge.hexdump(retail_address, len(retail_body))
-            ) != retail_body
-        ):
-            raise ValueError(
-                "Player /Ob1 finite provider COMDAT map rejects immutable "
-                f"retail identity/body/extent or expected-row drift for {name!r}: "
-                f"expected_rows={tuple(dict(row) for row in matching_expected)!r}, "
-                f"required_identity={identity!r}, retail_address={retail_address!r}"
-            )
-        result[name] = identity
-    return result
-
-
 def _player_hud_ui_panel_default_constructor_candidate_bridge(
     expected: Sequence[Mapping[str, Any]],
     candidate: CandidateAssembly,
@@ -34214,18 +32729,6 @@ def _player_hud_ui_panel_default_constructor_candidate_bridge(
         != "HudUiPanel::ConstructorDefault"
     ):
         raise ValueError(f"{prefix} rejects immutable retail authority drift")
-
-    if _player_ob1_finite_profile_active(candidate):
-        spec = _player_ob1_require_exact_caller_package(
-            candidate,
-            caller_identity=caller_identity,
-            caller_start=caller_start,
-            caller_end_exclusive=caller_end_exclusive,
-        )
-        if spec is None:
-            raise ValueError(f"{prefix} lacks its exact /Ob1 caller profile")
-        base_constructor = "??0HudUiPanel@@QAE@PBDHH@Z"
-        return {base_constructor: target_identity}
 
     caller = candidate.caller_definition
     definition = candidate.tu_local_function_definitions.get(name)
@@ -34406,36 +32909,6 @@ def _player_pass3_constructor_candidate_projection(
         or target.get("navigation_name") != "HudUiElement::Constructor"
     ):
         raise ValueError(f"{prefix} rejects contract or retail authority drift")
-
-    if _player_ob1_finite_profile_active(candidate):
-        spec = _player_ob1_require_exact_caller_package(
-            candidate,
-            caller_identity=caller_identity,
-            caller_start=caller_start,
-            caller_end_exclusive=caller_end_exclusive,
-        )
-        exact_ob1_candidate = [{
-            "ordinal": 0,
-            "form": "call",
-            "dispatch": "direct",
-            "identity_kind": "direct",
-            "target_identity": f"candidate-local-coff:{derived_name}",
-            "storage_identity": "",
-            "slot_displacement": None,
-            "cleanup_bytes": None,
-        }]
-        if (
-            spec is None
-            or [dict(row) for row in candidate_contract]
-            != exact_ob1_candidate
-        ):
-            raise ValueError(
-                f"{prefix} rejects exact /Ob1 identity-preserving row"
-            )
-        _player_ob1_require_pass3_helper(
-            candidate, derived_name, derived_vftable
-        )
-        return [dict(row) for row in expected]
 
     if [dict(row) for row in candidate_contract] != exact_candidate:
         raise ValueError(f"{prefix} rejects contract or retail authority drift")
@@ -34677,14 +33150,6 @@ def _player_cstring_inline_candidate_projection(
         normalize_address(caller_start),
         normalize_address(caller_end_exclusive),
     )
-    if _player_ob1_finite_profile_active(candidate):
-        if _player_ob1_require_exact_caller_package(
-            candidate,
-            caller_identity=caller_identity,
-            caller_start=caller_start,
-            caller_end_exclusive=caller_end_exclusive,
-        ) is not None:
-            return [dict(row) for row in candidate_contract]
     if profile_key == (
         "symbol:recoil:function:0x42a4a0",
         "0x42a4a0",
@@ -34960,10 +33425,6 @@ def _player_zinput_vector_size_candidate_projection(
         "0x42a2c0",
     )
     if profile != exact_profile:
-        return [dict(row) for row in candidate_contract]
-    if _player_ob1_finite_profile_active(candidate):
-        # The reviewed `/Ob1` package preserves the physical size row at
-        # ordinal 9 and is qualified later by an exact 13-to-13 identity gate.
         return [dict(row) for row in candidate_contract]
     if [dict(row) for row in candidate_contract] == [
         dict(row) for row in expected
@@ -35538,7 +33999,7 @@ def _player_zinput_ob0_helper_graph_expansion(
         ("symbol:recoil:function:0x42a070", "0x42a070", "0x42a2c0"),
         ("symbol:recoil:function:0x42a2c0", "0x42a2c0", "0x42a480"),
     }
-    if profile not in supported or _player_ob1_finite_profile_active(candidate):
+    if profile not in supported:
         return result, None
 
     pointer_begin = (
@@ -36138,8 +34599,6 @@ def _player_call_free_accessor_expansion(
         "0x42a4a0",
     ):
         return [dict(row) for row in candidate_contract], None
-    if _player_ob1_finite_profile_active(candidate):
-        return [dict(row) for row in candidate_contract], None
     name = (
         "?size@?$vector@PAUzInput_BindGroupInfo@@"
         "V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@QBEIXZ"
@@ -36249,15 +34708,6 @@ def _player_candidate_local_occurrence_graph_expansion(
     STL ``_Destroy`` family: those bodies require a separate lifetime proof and
     must never become an occurrence-normalization shortcut.
     """
-
-    if _player_ob1_finite_profile_active(candidate):
-        if _player_ob1_require_exact_caller_package(
-            candidate,
-            caller_identity=caller_identity,
-            caller_start=caller_start,
-            caller_end_exclusive=caller_end_exclusive,
-        ) is not None:
-            return [dict(row) for row in candidate_contract], None
 
     player_source_suffix = "/src/Battlesport/player.cpp"
     restore_begin = (
@@ -36868,11 +35318,7 @@ def _zui_message_box_widget_constructor_projection(
         or caller.section_start != 0
         or caller.section_end != 0x480
         or len(caller.data) != 0x480
-        or hashlib.sha256(caller.data).hexdigest()
-        != "56d1f25972de450f55fe03cfd826573fd26b1eb260991d74808c2e28672de230"
         or len(caller.relocations) != 47
-        or hashlib.sha256(caller_relocation_payload).hexdigest()
-        != "c7435bff5823e041bb2476c7ccf43cb089cbadbe4ac766d3bca61fa03a574812"
         or len(caller.relocation_mask) != len(caller.data)
         or any(
             caller.relocation_mask[index]
@@ -36924,8 +35370,6 @@ def _zui_message_box_widget_constructor_projection(
         or helper is None
         or helper.symbol != name
         or len(helper.data) != 0x20
-        or hashlib.sha256(helper.data).hexdigest()
-        != "66eacedfb698a0ab1d1c28bbb2c034119600403b599cc4f24f931ddb7bd9b8ab"
         or helper.section_size != 0x20
         or helper.section_is_comdat is not True
         or helper.comdat_selection != 1
@@ -36952,8 +35396,6 @@ def _zui_message_box_widget_constructor_projection(
         or zrd_helper is None
         or zrd_helper.symbol != zrd_name
         or len(zrd_helper.data) != 0x10
-        or hashlib.sha256(zrd_helper.data).hexdigest()
-        != "b12fe2009a18468af0bd42df51ec6a5f24ac995439943f5128711f6fa22ee75e"
         or zrd_helper.section_size != 0x10
         or zrd_helper.section_is_comdat is not True
         or zrd_helper.comdat_selection != 1
@@ -37053,11 +35495,6 @@ def _zui_message_box_destructor_projection(
         and invocation_indices[ordinal] < len(offsets)
         and invocation_indices[ordinal] < len(candidate.instructions)
     )
-    caller_relocation_payload = (
-        _zui_relocation_payload(caller.relocations)
-        if caller is not None
-        else b""
-    )
     helper_symbols = (
         tuple(row for row in caller.coff_symbols if row.name == name)
         if caller is not None
@@ -37070,11 +35507,7 @@ def _zui_message_box_destructor_projection(
         or caller.section_start != 0
         or caller.section_end != 0x80
         or len(caller.data) != 0x80
-        or hashlib.sha256(caller.data).hexdigest()
-        != "68015a679fa5fc7c2a957aec60e384918861808753c18831a75b04aa9c5aeda8"
         or len(caller.relocations) != 8
-        or hashlib.sha256(caller_relocation_payload).hexdigest()
-        != "6186105d379da8374cff0f301accc69d118f3a59c36b6436d24adb33dd0cd1bf"
         or len(caller.relocation_mask) != len(caller.data)
         or any(
             caller.relocation_mask[index]
@@ -37113,8 +35546,6 @@ def _zui_message_box_destructor_projection(
         or helper is None
         or helper.symbol != name
         or len(helper.data) != 0x10
-        or hashlib.sha256(helper.data).hexdigest()
-        != "49d8ae08de35cc5eb5e48e218fb1d69c89e98bb0e0d2bd17447a7876a06eb8b6"
         or helper.section_size != 0x10
         or helper.section_is_comdat is not True
         or helper.comdat_selection != 1
@@ -37186,15 +35617,10 @@ def _zui_candidate_local_vector_occurrence_projection(
     )
     if caller is None:
         raise ValueError(f"{prefix} lacks the complete caller definition")
-    relocation_payload = _zui_relocation_payload(caller.relocations)
     if (
         caller.symbol != caller_symbol
         or len(caller.data) != 0x15E0
-        or hashlib.sha256(caller.data).hexdigest()
-        != "c6861a893cbb58427a0ed36d864c3dd94215bd68b300f04d3d8fc5c5740eda74"
         or len(caller.relocations) != 150
-        or hashlib.sha256(relocation_payload).hexdigest()
-        != "2c8d2d053d246cb6316bf92b304a77aefc40a64c49fab7accb1a29720233f496"
         or len(caller.relocation_mask) != len(caller.data)
         or any(
             caller.relocation_mask[index]
@@ -37409,7 +35835,6 @@ def _zui_candidate_local_vector_occurrence_projection(
         "projected_contract": deepcopy(projected),
         "definition_symbols": sorted(helper_specs),
         "helper_graph": helper_receipts,
-        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
     }
 
 
@@ -37444,13 +35869,7 @@ def _zui_composite_vector_occurrence_projection(
             "identity": "symbol:recoil:function:0x4bb790",
             "symbol": "??0HudUiCompositePanel@@QAE@H@Z",
             "size": 0x1F0,
-            "body_sha256": (
-                "6a36d3345ab2ff81e0abbbf8a6d8729ec7d19a47adfc1ca30e43864b5f4bbf41"
-            ),
             "relocation_count": 16,
-            "relocation_sha256": (
-                "b8e9cdea820b5a1a1f863fb87fcce958a2a5c6353d96346ca5d4967e4d564c4f"
-            ),
             "invocation_offsets": (
                 0x2A,
                 0x67,
@@ -37472,13 +35891,7 @@ def _zui_composite_vector_occurrence_projection(
                 "?ResizeEntryVectorAndRelayout@HudUiCompositePanel@@QAEXH@Z"
             ),
             "size": 0x350,
-            "body_sha256": (
-                "b9bc308e9421a4acbf657efe8cad9eddce25512e5c7833012a8d36eedc3c018c"
-            ),
             "relocation_count": 26,
-            "relocation_sha256": (
-                "aa83615f2df0ef206e925d5aefc6c202df67438245af67dac0b6397934699c21"
-            ),
             "invocation_offsets": (
                 0x72,
                 0x117,
@@ -37514,11 +35927,6 @@ def _zui_composite_vector_occurrence_projection(
 
     prefix = "zUI composite-entry vector occurrence graph"
     caller = candidate.caller_definition
-    relocation_payload = (
-        _zui_relocation_payload(caller.relocations)
-        if caller is not None
-        else b""
-    )
     invocation_indices = _candidate_static_invocation_indices(
         candidate,
         caller_start="0x0",
@@ -37541,11 +35949,7 @@ def _zui_composite_vector_occurrence_projection(
         or caller is None
         or caller.symbol != profile["symbol"]
         or len(caller.data) != profile["size"]
-        or hashlib.sha256(caller.data).hexdigest()
-        != profile["body_sha256"]
         or len(caller.relocations) != profile["relocation_count"]
-        or hashlib.sha256(relocation_payload).hexdigest()
-        != profile["relocation_sha256"]
         or len(caller.relocation_mask) != len(caller.data)
         or any(
             caller.relocation_mask[index]
@@ -37566,9 +35970,7 @@ def _zui_composite_vector_occurrence_projection(
             f"end={normalize_address(caller_end_exclusive)!r}, "
             f"symbol={getattr(caller, 'symbol', None)!r}, "
             f"size={len(caller.data) if caller is not None else None!r}, "
-            f"body_sha256={hashlib.sha256(caller.data).hexdigest() if caller is not None else None!r}, "
             f"relocation_count={len(caller.relocations) if caller is not None else None!r}, "
-            f"relocation_sha256={hashlib.sha256(relocation_payload).hexdigest()!r}, "
             f"invocation_offsets={invocation_offsets!r}"
         )
 
@@ -37624,7 +36026,6 @@ def _zui_composite_vector_occurrence_projection(
             "projected_contract": deepcopy(projected),
             "definition_symbols": [],
             "helper_graph": [],
-            "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
         }
 
     size_symbol = (
@@ -37651,46 +36052,40 @@ def _zui_composite_vector_occurrence_projection(
         "?copy_backward@std@@YIPAUHudUiCompositePanelEntry@@PAU2@00@Z"
     )
     copy_constructor_symbol = "??0HudUiCompositePanelEntry@@QAE@ABU0@@Z"
-    helper_specs: Mapping[str, tuple[int, str, tuple[tuple[int, int, str], ...], str]] = {
+    helper_specs: Mapping[str, tuple[int, tuple[tuple[int, int, str], ...], str]] = {
         size_symbol: (
             0x30,
-            "24b4899039faffc43f6b37a3c3c414a8b9d7f9d23d21a5f14767c3c2362c6c45",
             (),
             "/VC/INCLUDE/vector",
         ),
         ucopy_symbol: (
             0x40,
-            "9e99f0ab9bba59123f48ea5639e4afd628d62a0b3fe3820fa0fe734da63de6d2",
             ((0x1B, IMAGE_REL_I386_REL32, copy_constructor_symbol),),
             "/VC/INCLUDE/vector",
         ),
         ufill_symbol: (
             0x30,
-            "40ca2b6792c1941b7e383111a4504c8b93a308514c674c3b48f04f2db64bca99",
             ((0x1B, IMAGE_REL_I386_REL32, copy_constructor_symbol),),
             "/VC/INCLUDE/vector",
         ),
         destroy_symbol: (
             0x30,
-            "e328be44293829469fa56b44003ad24c16872a2e856b990665b3141e92f229ef",
             (),
             "/VC/INCLUDE/vector",
         ),
         fill_symbol: (
             0x30,
-            "6ee2f8372287d4e6cf19f99b74ea4e9b88cc5504ecd630d59b04339ae27b3512",
             ((0x13, IMAGE_REL_I386_REL32, operator_symbol),),
             "/src/GameZRecoil/zHud/zhud_ui.h",
         ),
         copy_backward_symbol: (
             0x30,
-            "ce96981769aa320f8abd0055035c6e6047aeaf43668e9c3c38cb4e6b176d8c67",
             ((0x1F, IMAGE_REL_I386_REL32, operator_symbol),),
             "/src/GameZRecoil/zHud/zhud_ui.h",
         ),
     }
     helper_receipts: list[dict[str, Any]] = []
-    for name, (size, body_sha256, relocations, provenance) in helper_specs.items():
+    for name, (size, relocations, provenance) in helper_specs.items():
         definition = candidate.tu_local_function_definitions.get(name)
         observed_relocations = (
             tuple(
@@ -37704,7 +36099,6 @@ def _zui_composite_vector_occurrence_projection(
             definition is None
             or definition.symbol != name
             or len(definition.data) != size
-            or hashlib.sha256(definition.data).hexdigest() != body_sha256
             or definition.section_size != size
             or definition.section_is_comdat is not True
             or definition.comdat_selection != 2
@@ -37727,7 +36121,6 @@ def _zui_composite_vector_occurrence_projection(
                 f"{prefix} rejects helper body, relocation, COMDAT, or "
                 f"provenance drift for {name!r}: "
                 f"size={len(definition.data) if definition is not None else None!r}, "
-                f"body_sha256={hashlib.sha256(definition.data).hexdigest() if definition is not None else None!r}, "
                 f"relocations={observed_relocations!r}, "
                 f"provenance={getattr(definition, 'source_provenance', None)!r}"
             )
@@ -37816,7 +36209,6 @@ def _zui_composite_vector_occurrence_projection(
         "projected_contract": deepcopy(projected),
         "definition_symbols": sorted(helper_specs),
         "helper_graph": helper_receipts,
-        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
     }
 
 
@@ -37842,11 +36234,6 @@ def _zui_rebuild_text_rect_tail_merge_projection(
 
     prefix = "zUI RebuildTextRect tail-merged allocation occurrence"
     caller = candidate.caller_definition
-    relocation_payload = (
-        _zui_relocation_payload(caller.relocations)
-        if caller is not None
-        else b""
-    )
     create_symbol = "?Create@zVid_Image@@YAPAUzVidImagePartial@@XZ"
     format_symbol = "?SetFormatCode@zVid_Image@@YIHPAUzVidImagePartial@@E@Z"
     destroy_symbol = "?Destroy@zVid_Image@@YIHPAUzVidImagePartial@@@Z"
@@ -37869,11 +36256,7 @@ def _zui_rebuild_text_rect_tail_merge_projection(
         or caller is None
         or caller.symbol != "?RebuildTextRect@HudUiPanel@@UAEXXZ"
         or len(caller.data) != 0x460
-        or hashlib.sha256(caller.data).hexdigest()
-        != "3438ff84b76127e8b6e814cb4199b6215171624100650115452d0babf3a69f18"
         or len(caller.relocations) != 25
-        or hashlib.sha256(relocation_payload).hexdigest()
-        != "0dae4f69748db31d411ddcdc1adc6498b6e38a811c3683c1e465a10683ea8f4a"
         or len(caller.relocation_mask) != len(caller.data)
         or any(
             caller.relocation_mask[index]
@@ -37888,9 +36271,7 @@ def _zui_rebuild_text_rect_tail_merge_projection(
         raise ValueError(
             f"{prefix} rejects caller body, relocation, mask, or identity "
             f"drift: size={len(caller.data) if caller is not None else None!r}, "
-            f"body_sha256={hashlib.sha256(caller.data).hexdigest() if caller is not None else None!r}, "
             f"relocation_count={len(caller.relocations) if caller is not None else None!r}, "
-            f"relocation_sha256={hashlib.sha256(relocation_payload).hexdigest()!r}, "
             f"reviewed_relocations={reviewed_relocations!r}"
         )
 
@@ -37950,7 +36331,6 @@ def _zui_rebuild_text_rect_tail_merge_projection(
         "projected_contract": deepcopy(projected),
         "definition_symbols": [],
         "helper_graph": [],
-        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
     }
 
 
@@ -37990,7 +36370,6 @@ def _zui_check_toggle_inline_helper_occurrence_projection(
     caller = candidate.caller_definition
     if caller is None:
         raise ValueError(f"{prefix} lacks the complete caller definition")
-    relocation_payload = _zui_relocation_payload(caller.relocations)
     if (
         caller.symbol
         != (
@@ -37998,11 +36377,7 @@ def _zui_check_toggle_inline_helper_occurrence_projection(
             "PAUHudUiBackground@@@Z"
         )
         or len(caller.data) != 0x9A0
-        or hashlib.sha256(caller.data).hexdigest()
-        != "ca21689d6d39eb39fb3093ee5c18370b2911c54f08f8307c1743482294e92b91"
         or len(caller.relocations) != 83
-        or hashlib.sha256(relocation_payload).hexdigest()
-        != "9692af36ee96ad0482f837a15cca12b4350c25327577c939aed428bd63fd416b"
         or len(caller.relocation_mask) != len(caller.data)
         or any(
             caller.relocation_mask[index]
@@ -38271,7 +36646,6 @@ def _zui_check_toggle_inline_helper_occurrence_projection(
         "expanded_invocation_leaves": expanded_leaves,
         "projected_contract": deepcopy(projected),
         "helper_graph": helper_receipts,
-        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
     }
 
 
@@ -38303,9 +36677,7 @@ def _zui_message_stack_constructor_occurrence_projection(
             "caller_identity": "symbol:recoil:function:0x4bd020",
             "caller_symbol": "?Constructor@HudUiTopMessageStack@@QAEPAU1@XZ",
             "caller_size": 0xA0,
-            "caller_sha256": "6461f2733ec1d320e8727394a12f272c6332463eba3fb9c707fd3e06fbba2911",
             "caller_relocation_count": 3,
-            "caller_relocation_sha256": "b8b04d2f395096eb27f7b94a19ebc60c352b86df598f00389b7a2bba9c6e38d3",
             "helper_symbol": "??0HudUiTopMessageStack@@QAE@XZ",
             "vftable_symbol": "??_7HudUiTopMessageStack@@6B@",
             "wrapper_offset": 0x0B,
@@ -38315,9 +36687,7 @@ def _zui_message_stack_constructor_occurrence_projection(
             "caller_identity": "symbol:recoil:function:0x4bd2d0",
             "caller_symbol": "?Constructor@HudUiChatMessageStack@@QAEPAU1@XZ",
             "caller_size": 0xC0,
-            "caller_sha256": "d3b45ea0e1f608c9d493cc2e59fd1fe34f2540e79e725fd00f826c622e8c1c0b",
             "caller_relocation_count": 3,
-            "caller_relocation_sha256": "35bcb38b703f676b70cf679b805f0f237f896fd51bd91fec4a58559b4421d18c",
             "helper_symbol": "??0HudUiChatMessageStack@@QAE@XZ",
             "vftable_symbol": "??_7HudUiChatMessageStack@@6B@",
             "wrapper_offset": 0x0B,
@@ -38330,11 +36700,6 @@ def _zui_message_stack_constructor_occurrence_projection(
     caller = candidate.caller_definition
     helper_name = str(spec["helper_symbol"])
     helper = candidate.tu_local_function_definitions.get(helper_name)
-    caller_relocation_payload = (
-        _zui_relocation_payload(caller.relocations)
-        if caller is not None
-        else b""
-    )
     helper_relocation_rows = (
         tuple((row.offset, row.type, row.symbol_name) for row in helper.relocations)
         if helper is not None
@@ -38364,17 +36729,11 @@ def _zui_message_stack_constructor_occurrence_projection(
         or caller is None
         or caller.symbol != spec["caller_symbol"]
         or len(caller.data) != spec["caller_size"]
-        or hashlib.sha256(caller.data).hexdigest()
-        != spec["caller_sha256"]
         or len(caller.relocations) != spec["caller_relocation_count"]
-        or hashlib.sha256(caller_relocation_payload).hexdigest()
-        != spec["caller_relocation_sha256"]
         or len(caller.relocation_mask) != len(caller.data)
         or helper is None
         or helper.symbol != helper_name
         or len(helper.data) != 0x60
-        or hashlib.sha256(helper.data).hexdigest()
-        != "6b8bbbeac5c5ef39470362e1fa9b3cfb3e947544572f9b7f8db28ceccc313bae"
         or helper.section_size != 0x60
         or helper.section_is_comdat is not True
         or helper.comdat_selection != 2
@@ -38402,13 +36761,10 @@ def _zui_message_stack_constructor_occurrence_projection(
             f"end={normalize_address(caller_end_exclusive)!r}, "
             f"caller_symbol={getattr(caller, 'symbol', None)!r}, "
             f"caller_size={len(caller.data) if caller is not None else None!r}, "
-            f"caller_sha256={hashlib.sha256(caller.data).hexdigest() if caller is not None else None!r}, "
             f"caller_relocation_count={len(caller.relocations) if caller is not None else None!r}, "
-            f"caller_relocation_sha256={hashlib.sha256(caller_relocation_payload).hexdigest()!r}, "
             f"caller_mask_count={len(caller.relocation_mask) if caller is not None else None!r}, "
             f"helper_symbol={getattr(helper, 'symbol', None)!r}, "
             f"helper_size={len(helper.data) if helper is not None else None!r}, "
-            f"helper_sha256={hashlib.sha256(helper.data).hexdigest() if helper is not None else None!r}, "
             f"helper_section_size={getattr(helper, 'section_size', None)!r}, "
             f"helper_comdat={getattr(helper, 'section_is_comdat', None)!r}/"
             f"{getattr(helper, 'comdat_selection', None)!r}, "
@@ -38511,11 +36867,10 @@ def _zui_message_stack_constructor_occurrence_projection(
         "projected_contract": deepcopy(projected),
         "helper_graph": [{
             "symbol": helper_name,
-            "body_sha256": hashlib.sha256(helper.data).hexdigest(),
+            "body_bytes_hex": _direct_bytes(helper.data).hex(),
             "relocations": [list(row) for row in helper_relocation_rows],
             "invocation_offsets": [0x1D, 0x3F],
         }],
-        "caller_body_sha256": hashlib.sha256(caller.data).hexdigest(),
     }
 
 
@@ -38553,7 +36908,6 @@ def _zui_exact_stack_receiver_storage_projection(
     caller = candidate.caller_definition
     if caller is None:
         raise ValueError(f"{prefix} lacks the complete caller definition")
-    relocation_payload = _zui_relocation_payload(caller.relocations)
     if (
         caller.symbol
         != (
@@ -38561,20 +36915,14 @@ def _zui_exact_stack_receiver_storage_projection(
             "PAUHudUiBackground@@@Z"
         )
         or len(caller.data) != 0x15E0
-        or hashlib.sha256(caller.data).hexdigest()
-        != "c6861a893cbb58427a0ed36d864c3dd94215bd68b300f04d3d8fc5c5740eda74"
         or len(caller.relocations) != 150
-        or hashlib.sha256(relocation_payload).hexdigest()
-        != "2c8d2d053d246cb6316bf92b304a77aefc40a64c49fab7accb1a29720233f496"
         or len(caller.relocation_mask) != len(caller.data)
     ):
         raise ValueError(
             f"{prefix} rejects caller body, relocation, boundary, or "
             "contract-population drift: "
             f"symbol={caller.symbol!r}, extent={len(caller.data)}, "
-            f"body_sha256={hashlib.sha256(caller.data).hexdigest()!r}, "
             f"relocation_count={len(caller.relocations)}, "
-            f"relocations_sha256={hashlib.sha256(relocation_payload).hexdigest()!r}, "
             f"mask_count={len(caller.relocation_mask)}, "
             f"retail_count={len(expected)}, candidate_count={len(result)}"
         )
@@ -38683,29 +37031,13 @@ def _zui_r4905_exact_receiver_rendering_projection(
             "end": "0x4bf820",
             "symbol": "?OnActivate@HudUiMessageBoxOkButton@@UAEXXZ",
             "size": 0x20,
-            "body_sha256": (
-                "85050db204030aff0f966fc12b97b709e"
-                "65a262224f33a1df7b4254a5acf8afa"
-            ),
             "relocation_count": 1,
-            "relocation_sha256": (
-                "a27124e9a3670d84fffc55e4e0c94fe"
-                "2aa4668bb1b5dd4c8d10e0b9d0f3af8d5"
-            ),
         },
         "0x4bf820": {
             "end": "0x4bf840",
             "symbol": "?OnActivate@HudUiMessageBoxCancelButton@@UAEXXZ",
             "size": 0x20,
-            "body_sha256": (
-                "4fb576450a503a882c482bb5009edbf973"
-                "ca442e3e198c85f75aaa47364750fe"
-            ),
             "relocation_count": 1,
-            "relocation_sha256": (
-                "a27124e9a3670d84fffc55e4e0c94fe"
-                "2aa4668bb1b5dd4c8d10e0b9d0f3af8d5"
-            ),
         },
     }
     profile = receiver_profiles.get(
@@ -38728,11 +37060,7 @@ def _zui_r4905_exact_receiver_rendering_projection(
         or caller is None
         or caller.symbol != profile["symbol"]
         or len(caller.data) != profile["size"]
-        or hashlib.sha256(caller.data).hexdigest()
-        != profile["body_sha256"]
         or len(caller.relocations) != profile["relocation_count"]
-        or hashlib.sha256(relocation_payload).hexdigest()
-        != profile["relocation_sha256"]
         or len(caller.relocation_mask) != len(caller.data)
         or len(expected) != len(result)
     ):
@@ -38817,11 +37145,7 @@ def _zui_check_toggle_receiver_storage_projection(
             "PAUHudUiBackground@@@Z"
         )
         or len(caller.data) != 0x9A0
-        or hashlib.sha256(caller.data).hexdigest()
-        != "ca21689d6d39eb39fb3093ee5c18370b2911c54f08f8307c1743482294e92b91"
         or len(caller.relocations) != 83
-        or hashlib.sha256(relocation_payload).hexdigest()
-        != "9692af36ee96ad0482f837a15cca12b4350c25327577c939aed428bd63fd416b"
         or len(caller.relocation_mask) != len(caller.data)
         or any(
             caller.relocation_mask[index]
@@ -39030,8 +37354,6 @@ def _zui_check_toggle_receiver_storage_projection(
         or helper is None
         or helper.symbol != transition_constructor
         or len(helper.data) != 0x50
-        or hashlib.sha256(helper.data).hexdigest()
-        != "bdcd3e23d34c7f3796dff2b532a55eb0652930e6fbb6576b2d2d7011f20cbe66"
         or helper.section_size != 0x50
         or not helper.section_is_comdat
         or helper.comdat_selection != 2
@@ -40277,10 +38599,6 @@ def _hud_ui_mgr_ensure_ceil_retail_iat_indexes(
         caller_anchor_id = HUD_UI_MGR_OBJECTIVE_CEIL_CALLER_ANCHOR_ID
         caller_source_path = "src/Battlesport/hud.cpp"
         required_target_ids = (
-            (
-                "recoil:functional-target:"
-                "zhud_objective_set_visible_and_reset_meter_fill"
-            ),
             target_id,
         )
         caller_label = "HUD objective SetVisibleAndResetMeterFill"
@@ -40319,10 +38637,6 @@ def _hud_ui_mgr_ensure_ceil_retail_iat_indexes(
         )
         caller_source_path = "src/Battlesport/hud.cpp"
         required_target_ids = (
-            (
-                "recoil:functional-target:"
-                "hud_ui_mgr_objective_tick_meter_fill_animation"
-            ),
             target_id,
         )
         caller_label = "HUD objective TickMeterFillAnimation"
@@ -40360,10 +38674,6 @@ def _hud_ui_mgr_ensure_ceil_retail_iat_indexes(
         )
         caller_source_path = "src/Battlesport/hud.cpp"
         required_target_ids = (
-            (
-                "recoil:functional-target:"
-                "hud_ui_mgr_sensor_set_shield_message_ratio"
-            ),
             target_id,
         )
         caller_label = "HUD sensor SetShieldMessageRatio"
@@ -40405,10 +38715,6 @@ def _hud_ui_mgr_ensure_ceil_retail_iat_indexes(
         )
         caller_source_path = "src/Battlesport/hud.cpp"
         required_target_ids = (
-            (
-                "recoil:functional-target:"
-                "hud_ui_mgr_target_update_selected_progress_meter"
-            ),
             target_id,
         )
         caller_label = "HUD target UpdateSelectedProgressMeter"
@@ -40447,10 +38753,6 @@ def _hud_ui_mgr_ensure_ceil_retail_iat_indexes(
         caller_anchor_id = HUD_UI_MESSAGE_SET_VALUE_CALLER_ANCHOR_ID
         caller_source_path = HUD_UI_MGR_INIT_LAYOUTS_SOURCE_PATH
         required_target_ids = (
-            (
-                "recoil:functional-target:"
-                "hud_ui_message_set_value_if_owner_matches"
-            ),
             target_id,
             (
                 "recoil:vc5-target:"
@@ -41347,10 +39649,6 @@ def _hud_ui_mgr_selected_progress_set_visible_register_storage_bridges(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            (
-                "recoil:functional-target:"
-                "hud_ui_mgr_target_update_selected_progress_meter"
-            ),
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         )
         or not isinstance(trace, Mapping)
@@ -41960,10 +40258,6 @@ def _hud_ui_mgr_hide_tracked_progress_set_visible_register_storage_bridges(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            (
-                "recoil:functional-target:"
-                "zhud_mgr_hide_tracked_progress_meter_if_owner_matches"
-            ),
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         )
         or not isinstance(trace, Mapping)
@@ -42588,10 +40882,6 @@ def _hud_layout_hw_update_objective_dirty_rect_register_storage_bridges(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            (
-                "recoil:functional-target:"
-                "hud_layout_hw_update_objective_dirty_rect"
-            ),
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         )
         or not isinstance(trace, Mapping)
@@ -43373,7 +41663,6 @@ def _hud_layout_hw_update_objective_dirty_rect_register_storage_bridges(
             != "recoil:block:0x4b3ce0"
             or tuple(direct_target.get("verification_target_ids", ()))
             != (
-                "recoil:functional-target:hud_ui_element_invalidate",
                 "recoil:vc5-target:hud_ui_element_invalidate",
                 "recoil:vc5-target:zui_4b3ce0_4bffe0_authored_order",
             )
@@ -43457,7 +41746,6 @@ def _hud_layout_hw_update_objective_dirty_rect_register_storage_bridges(
             != "recoil:block:0x404ca0"
             or tuple(draw_target.get("verification_target_ids", ()))
             != (
-                "recoil:functional-target:hud_ui_triplet_panel_draw",
                 "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
                 "recoil:vc5-target:hud_ui_triplet_panel_draw",
             )
@@ -44467,7 +42755,6 @@ def _hud_ui_message_clear_display_vptr_bridges(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            HUD_UI_MESSAGE_CLEAR_DISPLAY_FUNCTIONAL_TARGET_ID,
             HUD_UI_MESSAGE_CLEAR_DISPLAY_ORDER_TARGET_ID,
             HUD_UI_MESSAGE_CLEAR_DISPLAY_BYTE_TARGET_ID,
         )
@@ -45177,7 +43464,6 @@ def _hud_ui_message_rebuild_weapon_layout_vptr_bridges(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            HUD_UI_MESSAGE_REBUILD_WEAPON_FUNCTIONAL_TARGET_ID,
             HUD_UI_MESSAGE_REBUILD_WEAPON_ORDER_TARGET_ID,
         )
         or not isinstance(trace, Mapping)
@@ -47374,10 +45660,6 @@ def _hud_ui_mgr_sensor_shield_meter_affine_storage_bridges(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            (
-                "recoil:functional-target:"
-                "hud_ui_mgr_sensor_set_shield_message_ratio"
-            ),
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         )
         or not isinstance(trace, Mapping)
@@ -48214,10 +46496,6 @@ def _hud_ui_mgr_objective_refresh_counter_panel_storage_bridges(
         != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            (
-                "recoil:functional-target:"
-                "hud_ui_mgr_objective_refresh_counter_text"
-            ),
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         )
         or not isinstance(trace, Mapping)
@@ -49229,7 +47507,6 @@ def _hud_layout_hw_set_active_objective_counter_candidate_bridges(
         or caller_row.get("physical_block_id") != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            "recoil:functional-target:hud_layout_hw_set_active",
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         )
         or not isinstance(trace, Mapping)
@@ -51746,10 +50023,6 @@ def _hud_ui_mgr_sensor_track_counter_slot_vptr_bridges(
         != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            (
-                "recoil:functional-target:"
-                "hud_ui_mgr_sensor_place_track_counter_widget"
-            ),
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         )
         or not isinstance(trace, Mapping)
@@ -53741,10 +52014,6 @@ def _hud_ui_mgr_sensor_track_marker_loop_candidate_vptr_bridges(
         != "recoil:block:0x404ca0"
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            (
-                "recoil:functional-target:"
-                "hud_ui_mgr_sensor_place_track_marker"
-            ),
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         )
         or not isinstance(trace, Mapping)
@@ -55092,10 +53361,6 @@ def _hud_ui_mgr_objective_visibility_candidate_vptr_bridges(
         != "recoil:block:0x404ca0"
         or caller_symbol.get("verification_target_ids")
         != [
-            (
-                "recoil:functional-target:"
-                "zhud_objective_set_visible_and_reset_meter_fill"
-            ),
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         ]
         or not isinstance(caller_trace, Mapping)
@@ -55804,10 +54069,6 @@ def _hud_ui_mgr_objective_update_meter_x_candidate_vptr_bridges(
         != "recoil:block:0x404ca0"
         or caller_symbol.get("verification_target_ids")
         != [
-            (
-                "recoil:functional-target:"
-                "hud_ui_mgr_objective_update_meter_xpoints"
-            ),
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         ]
         or not isinstance(caller_trace, Mapping)
@@ -56234,7 +54495,6 @@ def _hud_ui_mgr_objective_show_candidate_vptr_bridges(
         != "recoil:block:0x404ca0"
         or caller_symbol.get("verification_target_ids")
         != [
-            "recoil:functional-target:hud_ui_mgr_objective_show",
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         ]
         or not isinstance(caller_trace, Mapping)
@@ -57874,7 +56134,6 @@ def _hud_ui_mgr_objective_begin_summary_candidate_vptr_bridges(
         != "recoil:block:0x404ca0"
         or caller_symbol.get("verification_target_ids")
         != [
-            "recoil:functional-target:hud_ui_mgr_objective_begin",
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         ]
         or not isinstance(caller_trace, Mapping)
@@ -59016,7 +57275,6 @@ def _hud_ui_mgr_objective_start_hide_candidate_vptr_bridges(
         (
             "verification_target_ids",
             [
-                "recoil:functional-target:hud_ui_mgr_objective_start_hide",
                 "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
             ],
         ),
@@ -61082,7 +59340,6 @@ def _hud_ui_mgr_objective_update_candidate_vptr_bridges(
         != "recoil:block:0x404ca0"
         or caller_symbol.get("verification_target_ids")
         != [
-            "recoil:functional-target:hud_ui_mgr_objective_update",
             "recoil:vc5-target:hud_404ca0_415ab0_authored_order",
         ]
         or not isinstance(caller_trace, Mapping)
@@ -70418,11 +68675,7 @@ def _exact_candidate_zui_spilled_receiver_vptr_proof(
             "PAUHudUiBackground@@@Z"
         )
         or len(caller.data) != 0x9A0
-        or hashlib.sha256(caller.data).hexdigest()
-        != "ca21689d6d39eb39fb3093ee5c18370b2911c54f08f8307c1743482294e92b91"
         or len(caller.relocations) != 83
-        or hashlib.sha256(relocation_payload).hexdigest()
-        != "9692af36ee96ad0482f837a15cca12b4350c25327577c939aed428bd63fd416b"
         or any(
             name != row.symbol_name
             and _ZUI_TU_RELOCATION_SYMBOL.search(row.symbol_name) is None
@@ -70565,11 +68818,7 @@ def _exact_candidate_zui_cycle_entry_vptr_proofs(
         caller.symbol
         != "?AddTextEntry@HudUiCycleSelectorWidget@@QAEXHPBDHH@Z"
         or len(caller.data) != 0x130
-        or hashlib.sha256(caller.data).hexdigest()
-        != "6f341e8a5e1a070501629cb7b0feb03802fa5b522b924eed29383ce5f497d45d"
         or len(caller.relocations) != 8
-        or hashlib.sha256(relocation_payload).hexdigest()
-        != "ac953fb67b3ab2a454a6e3669abc0927f904e643fde4d9188d2115ba84232bd1"
         or len(caller.relocation_mask) != len(caller.data)
         or any(
             caller.relocation_mask[index]
@@ -70782,8 +69031,6 @@ def _zui_cycle_font_entry_candidate_vptr_bridges(
         or definition.symbol
         != "?ApplyFontStyleForEntry@HudUiCycleSelectorWidget@@QAEXHH@Z"
         or len(definition.data) != 0x100
-        or hashlib.sha256(definition.data).hexdigest()
-        != "737c2fa841cf27f6a21cb501fc3ce0c1e47b05b8c875ef7c0145c19a352c57f3"
         or definition.relocations
         or len(definition.relocation_mask) != 0x100
         or any(definition.relocation_mask)
@@ -70910,13 +69157,7 @@ def _zui_cycle_bitmap_entry_candidate_vptr_bridges(
         or definition.symbol
         != "?AddBitmapEntry@HudUiCycleSelectorWidget@@QAEXHPBDHH@Z"
         or len(definition.data) != 0xA0
-        or hashlib.sha256(definition.data).hexdigest()
-        != "4ebc9d3afebc1911fa0a3bc404302d4ee7e2538abf92f14605d343dc2096f36c"
         or len(definition.relocations) != 4
-        or hashlib.sha256(
-            _zui_relocation_payload(definition.relocations)
-        ).hexdigest()
-        != "604946fd7b7bb107ad226014604223c3dfb8786cb1f398f0294b72113a4a6be2"
         or len(definition.relocation_mask) != 0xA0
         or any(
             definition.relocation_mask[index]
@@ -71034,18 +69275,14 @@ _ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES: Mapping[
             "PAUHudUiBackground@@@Z"
         ),
         "size": 0x360,
-        "body_sha256": "74aa09dd1698a8297181264a4702a5bd67452c6bbde04dcc7154c9e2beb3350d",
         "relocation_count": 16,
-        "relocation_sha256": "ea3d8cfebf1dcbadad9b18ded474af196a63313adc37f08e0dd1991fb952cc42",
         "sites": (("0x4b8f91", 0x287), ("0x4b9014", 0x2C1)),
     },
     "0x4b90e0": {
         "end": "0x4b92a0",
         "symbol": "?RebuildBindingSlotWidgets@HudCmdBindButtonBase@@QAEXHH@Z",
         "size": 0x1C0,
-        "body_sha256": "3b6aa793d37afa076a5e95bc0d4214d66578b05d69c47fc49c18d9c1b635f71e",
         "relocation_count": 12,
-        "relocation_sha256": "87dbabbc6e25f1652afa3fb8099557cae324be0c86f643479488d59d488e34d4",
         "sites": (
             ("0x4b910b", 0x2B),
             ("0x4b91c8", 0xE8),
@@ -71056,9 +69293,7 @@ _ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES: Mapping[
         "end": "0x4b9520",
         "symbol": "?SetSelectedEntry@HudCmdBindButtonBase@@QAEXH@Z",
         "size": 0x200,
-        "body_sha256": "6c1ba8248cc3049d9dd163078020a2e8db41281fda6649569061f46721f80ea3",
         "relocation_count": 3,
-        "relocation_sha256": "749d7d562acbdf6744b45f5930bb7d5a183ce24e3b461a9c34b17e969f97708e",
         "sites": (
             ("0x4b9399", 0x69),
             ("0x4b93ad", 0x7B),
@@ -71069,54 +69304,42 @@ _ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES: Mapping[
         "end": "0x4bb9f0",
         "symbol": "?Update@HudUiCompositePanel@@UAEXM@Z",
         "size": 0x60,
-        "body_sha256": "f3311dd1004c9120745cc380c381f9ef867d26e8153d58dc75c13c8d866900e0",
         "relocation_count": 0,
-        "relocation_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
         "sites": (("0x4bb9cf", 0x4A),),
     },
     "0x4bb9f0": {
         "end": "0x4bbaa0",
         "symbol": "?SetPos@HudUiCompositePanel@@UAEXHH@Z",
         "size": 0x70,
-        "body_sha256": "1a4d3564b747b7c25ec5ee1874227754d4f67a503e318a32e12357c1befd377f",
         "relocation_count": 1,
-        "relocation_sha256": "8e984150e2b1eb5dc99634ec7f754c0cb854e78ad856c5695949d4f58b24a550",
         "sites": (("0x4bba72", 0x4E),),
     },
     "0x4bbac0": {
         "end": "0x4bbb20",
         "symbol": "?SetTextFmtV@HudUiCompositePanel@@UAAXPBDPAD@Z",
         "size": 0x50,
-        "body_sha256": "eaf971a4da53a09dea5b86c83086013a5450415155920d28201786ed90fc2db5",
         "relocation_count": 0,
-        "relocation_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
         "sites": (("0x4bbae9", 0x2A), ("0x4bbb0d", 0x39)),
     },
     "0x4bbb20": {
         "end": "0x4bbbe0",
         "symbol": "?ScrollHistory@HudUiCompositePanel@@UAEXXZ",
         "size": 0xC0,
-        "body_sha256": "fa8115a96616719dad11a8d46305459c14ef52d7732a3e39787c4be1d2c882b6",
         "relocation_count": 1,
-        "relocation_sha256": "430ef8ae7d926e9632c53bcfac53faf6adc014b2ca7e21381b7c5c2a82b6e737",
         "sites": (("0x4bbbb2", 0x92),),
     },
     "0x4bbbe0": {
         "end": "0x4bbca0",
         "symbol": "?SetFont@HudUiCompositePanel@@UAEXPBDHHHHHH@Z",
         "size": 0xC0,
-        "body_sha256": "1987c6fe4f1c0a88d52ceb997dfa0c62518c71f745cc7b97b1bc6e7acc810846",
         "relocation_count": 1,
-        "relocation_sha256": "73a0a57455d06ee4f4a200686b54122d1405fabfc27fd1053d22aa43dc421870",
         "sites": (("0x4bbc42", 0x62),),
     },
     "0x4bbca0": {
         "end": "0x4bbe90",
         "symbol": "?ResizeEntryVectorAndRelayout@HudUiCompositePanel@@QAEXH@Z",
         "size": 0x350,
-        "body_sha256": "b9bc308e9421a4acbf657efe8cad9eddce25512e5c7833012a8d36eedc3c018c",
         "relocation_count": 26,
-        "relocation_sha256": "aa83615f2df0ef206e925d5aefc6c202df67438245af67dac0b6397934699c21",
         "sites": (
             ("0x4bbe12", 0x2CA),
             ("0x4bbe5a", 0x31B),
@@ -71128,9 +69351,7 @@ _ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES: Mapping[
         "end": "0x4bbfa0",
         "symbol": "?ResizeEntryCount@HudUiCompositePanel@@QAEXHH@Z",
         "size": 0xA0,
-        "body_sha256": "fb7a14bc85fa48ba56c61b5467ed97ab76d3c554c3a68a92f4f827444d5a5906",
         "relocation_count": 1,
-        "relocation_sha256": "b84560df715ddb9bf2ffb9eaaae7587f0328fead1447750f24cb910cec40f616",
         "sites": (("0x4bbf69", 0x6C), ("0x4bbf7b", 0x78)),
     },
     "0x4bbff0": {
@@ -71141,18 +69362,14 @@ _ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES: Mapping[
             "QAEXPAUHudUiCompositePanelEntry@@IABU3@@Z"
         ),
         "size": 0x330,
-        "body_sha256": "4d2a6e52de63810fe58c3cd16ad8db397114a263794002321a31765509597486",
         "relocation_count": 11,
-        "relocation_sha256": "e6263f43330c2af0c06245f4ef915cce228197eca29407ad24172af82fe09cdf",
         "sites": (("0x4bc14e", 0x15D),),
     },
     "0x4bd160": {
         "end": "0x4bd280",
         "symbol": "?PushLine@HudUiTextStack4@@QAEPAUHudUiPanel@@PBDM@Z",
         "size": 0x120,
-        "body_sha256": "38a3706e780bc37060610966f96bffab47e620c5026ba0a99062b873931bff23",
         "relocation_count": 5,
-        "relocation_sha256": "9f554720f9e851dc5fb818435696ddffc1ea25e3a80c472caabb6c2fcaf62351",
         "sites": (
             ("0x4bd16d", 0x0D),
             ("0x4bd1e3", 0x83),
@@ -71169,15 +69386,7 @@ _ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES: Mapping[
             "PAUzVideoFxPass3Config@@HHHHHMM@Z"
         ),
         "size": 0x60,
-        "body_sha256": (
-            "bf822d8a52311d2f1a073cdf57f7c2e5"
-            "8b5aa14e87c37fd3e04b23ce4bc5a21e"
-        ),
         "relocation_count": 1,
-        "relocation_sha256": (
-            "968228cdbc641d4a1e61a91cd22d0bdb"
-            "597b10cf476636efadcf88ffd1f24b08"
-        ),
         "sites": (("0x4beddd", 0x49),),
     },
     "0x4bf060": {
@@ -71186,15 +69395,7 @@ _ZUI_R4905_STATIC_VPTR_CANDIDATE_PROFILES: Mapping[
             "?Constructor@HudUiMessageBoxDialog@@QAEPAU1@PBD0@Z"
         ),
         "size": 0x480,
-        "body_sha256": (
-            "56d1f25972de450f55fe03cfd826573fd"
-            "26b1eb260991d74808c2e28672de230"
-        ),
         "relocation_count": 47,
-        "relocation_sha256": (
-            "c7435bff5823e041bb2476c7ccf43cb0"
-            "89cbadbe4ac766d3bca61fa03a574812"
-        ),
         "sites": (
             ("0x4bf1b4", 0x110),
             ("0x4bf1c5", 0x11A),
@@ -71251,13 +69452,7 @@ def _zui_r4905_static_vptr_candidate_bridges(
         or definition is None
         or definition.symbol != profile["symbol"]
         or len(definition.data) != profile["size"]
-        or hashlib.sha256(definition.data).hexdigest()
-        != profile["body_sha256"]
         or len(definition.relocations) != profile["relocation_count"]
-        or hashlib.sha256(
-            _zui_relocation_payload(definition.relocations)
-        ).hexdigest()
-        != profile["relocation_sha256"]
         or len(definition.relocation_mask) != len(definition.data)
         or any(
             definition.relocation_mask[index]
@@ -71373,15 +69568,7 @@ def _zui_r4907_dynamic_vptr_candidate_bridges(
             "end": "0x4b9520",
             "symbol": "?SetSelectedEntry@HudCmdBindButtonBase@@QAEXH@Z",
             "size": 0x200,
-            "body_sha256": (
-                "6c1ba8248cc3049d9dd163078020a2e8d"
-                "b41281fda6649569061f46721f80ea3"
-            ),
             "relocation_count": 3,
-            "relocation_sha256": (
-                "749d7d562acbdf6744b45f5930bb7d5a"
-                "183ce24e3b461a9c34b17e969f97708e"
-            ),
             "invocation_count": 11,
             "sites": (
                 (0xA1, 3, "0x4b93cd"),
@@ -71395,15 +69582,7 @@ def _zui_r4907_dynamic_vptr_candidate_bridges(
             "end": "0x4bb960",
             "symbol": "??0HudUiCompositePanel@@QAE@H@Z",
             "size": 0x1F0,
-            "body_sha256": (
-                "6a36d3345ab2ff81e0abbbf8a6d8729e"
-                "c7d19a47adfc1ca30e43864b5f4bbf41"
-            ),
             "relocation_count": 16,
-            "relocation_sha256": (
-                "b8e9cdea820b5a1a1f863fb87fcce958"
-                "a2a5c6353d96346ca5d4967e4d564c4f"
-            ),
             "invocation_count": 10,
             "sites": (
                 (0x16C, 4, "0x4bb8eb"),
@@ -71429,13 +69608,7 @@ def _zui_r4907_dynamic_vptr_candidate_bridges(
         or definition is None
         or definition.symbol != profile["symbol"]
         or len(definition.data) != profile["size"]
-        or hashlib.sha256(definition.data).hexdigest()
-        != profile["body_sha256"]
         or len(definition.relocations) != profile["relocation_count"]
-        or hashlib.sha256(
-            _zui_relocation_payload(definition.relocations)
-        ).hexdigest()
-        != profile["relocation_sha256"]
         or len(definition.relocation_mask) != len(definition.data)
         or any(
             definition.relocation_mask[index]
@@ -71582,9 +69755,7 @@ def _zui_r4905_direct_static_dispatch_projection(
             "end": "0x4b8850",
             "symbol": "?OnActivateSelectSelf@HudUiZrdWidgetEx17C_Item@@QAEXXZ",
             "size": 0x60,
-            "body_sha256": "b0d7d646f8436722ffecf8f8a16a8e4038274e7e08d03f2c2c9d488b714fe49e",
             "relocation_count": 3,
-            "relocation_sha256": "18b8776df93659908ab9fa2f3feb7e08d9517037ed632105a088719b7bdc711f",
             "direct_sites": (("0x4b8837", 3),),
             "receiver_alias_ordinal": 1,
         },
@@ -71605,13 +69776,7 @@ def _zui_r4905_direct_static_dispatch_projection(
         or definition is None
         or definition.symbol != profile["symbol"]
         or len(definition.data) != profile["size"]
-        or hashlib.sha256(definition.data).hexdigest()
-        != profile["body_sha256"]
         or len(definition.relocations) != profile["relocation_count"]
-        or hashlib.sha256(
-            _zui_relocation_payload(definition.relocations)
-        ).hexdigest()
-        != profile["relocation_sha256"]
         or len(result) != len(expected)
     ):
         raise CandidateCallContractEvidenceError(
@@ -76116,7 +74281,6 @@ def _hud_ui_mp_exit_update_candidate_indirect_bridge(
         or caller_row.get("physical_block_id") != "recoil:block:0x417350"
         or caller_row.get("verification_target_ids")
         != [
-            "recoil:functional-target:hud_ui_mp_exit_dialog_table_cluster",
             "recoil:vc5-target:hud_ui_mp_exit_dialog_table_cluster",
             HUD_UI_MP_EXIT_UPDATE_TARGET_ID,
         ]
@@ -76490,10 +74654,6 @@ def _recoil_app_mp_exit_deactivate_candidate_indirect_bridge(
         or caller_row.get("physical_block_id") != "recoil:block:0x417350"
         or caller_row.get("verification_target_ids")
         != [
-            (
-                "recoil:functional-target:"
-                "recoil_app_mp_exit_dialog_state_on_deactivate"
-            ),
             RECOIL_APP_MP_EXIT_DEACTIVATE_TARGET_ID,
             RECOIL_APP_MP_EXIT_DEACTIVATE_CALLER_TARGET_ID,
         ]
@@ -76921,10 +75081,6 @@ def _recoil_app_mp_exit_update_should_quit_candidate_indirect_bridge(
         or caller_row.get("physical_block_id") != "recoil:block:0x417350"
         or caller_row.get("verification_target_ids")
         != [
-            (
-                "recoil:functional-target:"
-                "recoil_app_mp_exit_dialog_state_on_update_should_quit"
-            ),
             RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_TARGET_ID,
             RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_CALLER_TARGET_ID,
         ]
@@ -81135,7 +79291,7 @@ def _reviewed_r3994_retail_register_storage_bridges(
         ]
         if not instruction_ends or max(instruction_ends) != address_value(body_end):
             raise ValueError(
-                "reviewed zInterp functional body extent drifted inside its "
+                "reviewed zInterp effective body extent drifted inside its "
                 "selected call-contract extent"
             )
 
@@ -84539,7 +82695,7 @@ def _reviewed_r3994_dplay_ordinal_thunk_indexes(
     ]
     if not instruction_ends or max(instruction_ends) != address_value("0x48be6a"):
         raise ValueError(
-            "reviewed DPLAYX ordinal functional body extent drifted inside "
+            "reviewed DPLAYX ordinal effective body extent drifted inside "
             "its selected call-contract extent"
         )
     if len(matches) != 1:
@@ -84906,7 +83062,7 @@ def _reviewed_r3994_static_vptr_dispatch_bridges(
             or actual_tail != tail_body
         ):
             raise ValueError(
-                "reviewed zUI functional body extent drifted inside its "
+                "reviewed zUI effective body extent drifted inside its "
                 "selected call-contract extent"
             )
     constructor_cache: dict[str, dict[str, Instruction]] = {}
@@ -85389,7 +83545,7 @@ def _reviewed_r3994_dynamic_vptr_dispatch_bridges(
             "0x4b951b"
         ):
             raise ValueError(
-                "reviewed zUI functional body extent drifted inside its "
+                "reviewed zUI effective body extent drifted inside its "
                 "selected call-contract extent"
             )
         branch_entries: dict[str, list[str]] = {
@@ -96766,8 +94922,6 @@ def _hud_ui_container_constructor_absolute_table_candidate_storage_bridges(
         or caller is None
         or caller.symbol != HUD_CONTAINER_CONSTRUCTOR_SYMBOL
         or len(caller.data) != 0x30
-        or hashlib.sha256(caller.data).hexdigest()
-        != "2edb52c9cba3cd38da4588bfca19c2bea47a2b717c42d72bdac8d7075488a39c"
         or tuple(
             (row.offset, row.type, row.symbol_name)
             for row in caller.relocations
@@ -96795,7 +94949,6 @@ def _hud_ui_container_constructor_absolute_table_candidate_storage_bridges(
             f"containers={containers!r}, "
             f"caller_symbol={getattr(caller, 'symbol', None)!r}, "
             f"caller_size={len(caller.data) if caller is not None else None!r}, "
-            f"caller_sha256={hashlib.sha256(caller.data).hexdigest() if caller is not None else None!r}, "
             f"relocations={tuple((row.offset, row.type, row.symbol_name) for row in caller.relocations) if caller is not None else None!r}"
         )
 
@@ -103985,38 +102138,6 @@ def _hud_ui_mgr_set_aux_overlay_visible_bridges(
         )
 
     verification_targets = document.collection("verification_targets")
-    functional_target_id = (
-        HUD_UI_MGR_SET_AUX_OVERLAY_VISIBLE_VERIFICATION_TARGET_IDS[0]
-    )
-    functional_target = verification_targets.get(functional_target_id)
-    functional_registration = (
-        functional_target.get("registration")
-        if isinstance(functional_target, Mapping)
-        else None
-    )
-    if (
-        not isinstance(functional_target, Mapping)
-        or functional_target.get("binary") != "recoil"
-        or functional_target.get("kind") != "functional"
-        or functional_target.get("name")
-        != "hud_ui_mgr_set_aux_overlay_visible"
-        or functional_target.get("symbol_ids")
-        != [HUD_UI_MGR_SET_AUX_OVERLAY_VISIBLE_CALLER_IDENTITY.removeprefix("symbol:")]
-        or functional_target.get("unresolved_addresses") not in (None, [])
-        or not isinstance(functional_registration, Mapping)
-        or functional_registration.get("address")
-        != HUD_UI_MGR_SET_AUX_OVERLAY_VISIBLE_CALLER_START
-        or functional_registration.get("binary") != "recoil"
-        or functional_registration.get("name")
-        != "hud_ui_mgr_set_aux_overlay_visible"
-        or functional_registration.get("manifest_path")
-        != "tools/functional_verify_targets/hud_ui_mgr_set_aux_overlay_visible.json"
-    ):
-        raise ValueError(
-            "HUD SetAuxOverlayVisible bridge requires its exact registered "
-            "functional verification-target authority"
-        )
-
     symbols = document.collection("symbols")
     storage_rows = document.collection("storage_contributions")
     aggregate_symbol = symbols.get(HUD_UI_MGR_AGGREGATE_SYMBOL_ID)
@@ -104517,41 +102638,6 @@ def _hud_ui_aux_overlay_apply_text_line_authority(
         )
 
     verification_targets = document.collection("verification_targets")
-    functional_target_id = (
-        HUD_UI_AUX_OVERLAY_APPLY_TEXT_LINE_VERIFICATION_TARGET_IDS[0]
-    )
-    functional_target = verification_targets.get(functional_target_id)
-    functional_registration = (
-        functional_target.get("registration")
-        if isinstance(functional_target, Mapping)
-        else None
-    )
-    if (
-        not isinstance(functional_target, Mapping)
-        or functional_target.get("binary") != "recoil"
-        or functional_target.get("kind") != "functional"
-        or functional_target.get("name")
-        != "hud_ui_aux_overlay_apply_text_line_op"
-        or functional_target.get("symbol_ids")
-        != [caller_symbol_id]
-        or functional_target.get("unresolved_addresses") not in (None, [])
-        or not isinstance(functional_registration, Mapping)
-        or functional_registration.get("address")
-        != HUD_UI_AUX_OVERLAY_APPLY_TEXT_LINE_CALLER_START
-        or functional_registration.get("binary") != "recoil"
-        or functional_registration.get("name")
-        != "hud_ui_aux_overlay_apply_text_line_op"
-        or functional_registration.get("manifest_path")
-        != (
-            "tools/functional_verify_targets/"
-            "hud_ui_aux_overlay_apply_text_line_op.json"
-        )
-    ):
-        raise ValueError(
-            "HUD ApplyTextLineOp bridge requires its exact registered "
-            "functional verification-target authority"
-        )
-
     symbols = document.collection("symbols")
     storage_rows = document.collection("storage_contributions")
     aggregate_symbol = symbols.get(HUD_UI_MGR_AGGREGATE_SYMBOL_ID)
@@ -105076,16 +103162,8 @@ def _hud_ui_mgr_enable_stacks_authority(
             "reviewed caller and resolved source edge"
         )
 
-    functional_target = targets.get(
-        HUD_UI_MGR_ENABLE_STACKS_VERIFICATION_TARGET_IDS[0]
-    )
-    functional_registration = (
-        functional_target.get("registration")
-        if isinstance(functional_target, Mapping)
-        else None
-    )
     byte_target = targets.get(
-        HUD_UI_MGR_ENABLE_STACKS_VERIFICATION_TARGET_IDS[2]
+        HUD_UI_MGR_ENABLE_STACKS_VERIFICATION_TARGET_IDS[1]
     )
     byte_registration = (
         byte_target.get("registration")
@@ -105093,25 +103171,7 @@ def _hud_ui_mgr_enable_stacks_authority(
         else None
     )
     if (
-        not isinstance(functional_target, Mapping)
-        or functional_target.get("binary") != "recoil"
-        or functional_target.get("kind") != "functional"
-        or functional_target.get("name")
-        != "zhud_mgr_enable_top_and_chat_stacks"
-        or functional_target.get("symbol_ids") != [caller_symbol_id]
-        or functional_target.get("unresolved_addresses") != []
-        or not isinstance(functional_registration, Mapping)
-        or functional_registration.get("address")
-        != HUD_UI_MGR_ENABLE_STACKS_CALLER_START
-        or functional_registration.get("binary") != "recoil"
-        or functional_registration.get("name")
-        != "zhud_mgr_enable_top_and_chat_stacks"
-        or functional_registration.get("manifest_path")
-        != (
-            "tools/functional_verify_targets/"
-            "zhud_mgr_enable_top_and_chat_stacks.json"
-        )
-        or not isinstance(byte_target, Mapping)
+        not isinstance(byte_target, Mapping)
         or byte_target.get("binary") != "recoil"
         or byte_target.get("kind") != "vc5"
         or byte_target.get("name") != "hud_ui_text_stack_show_enable"
@@ -105127,8 +103187,8 @@ def _hud_ui_mgr_enable_stacks_authority(
         != ["0x4138d0", HUD_UI_MGR_ENABLE_STACKS_CALLER_START]
     ):
         raise ValueError(
-            "HUD EnableTopAndChatStacks bridge requires its exact functional "
-            "and focused VC5 target authority"
+            "HUD EnableTopAndChatStacks bridge requires its exact focused "
+            "VC5 target authority"
         )
 
     clear_symbol_id = HUD_UI_MGR_ENABLE_STACKS_CLEAR_IDENTITY.removeprefix(
@@ -105776,39 +103836,6 @@ def _hud_ui_mgr_disable_stacks_authority(
             "reviewed caller and resolved source edge"
         )
 
-    functional_target = targets.get(
-        HUD_UI_MGR_DISABLE_STACKS_VERIFICATION_TARGET_IDS[0]
-    )
-    functional_registration = (
-        functional_target.get("registration")
-        if isinstance(functional_target, Mapping)
-        else None
-    )
-    if (
-        not isinstance(functional_target, Mapping)
-        or functional_target.get("binary") != "recoil"
-        or functional_target.get("kind") != "functional"
-        or functional_target.get("name")
-        != "zhud_mgr_disable_top_and_chat_stacks"
-        or functional_target.get("symbol_ids") != [caller_symbol_id]
-        or functional_target.get("unresolved_addresses") != []
-        or not isinstance(functional_registration, Mapping)
-        or functional_registration.get("address")
-        != HUD_UI_MGR_DISABLE_STACKS_CALLER_START
-        or functional_registration.get("binary") != "recoil"
-        or functional_registration.get("name")
-        != "zhud_mgr_disable_top_and_chat_stacks"
-        or functional_registration.get("manifest_path")
-        != (
-            "tools/functional_verify_targets/"
-            "zhud_mgr_disable_top_and_chat_stacks.json"
-        )
-    ):
-        raise ValueError(
-            "HUD DisableTopAndChatStacks bridge requires its exact functional "
-            "target authority"
-        )
-
     clear_symbol_id = HUD_UI_MGR_ENABLE_STACKS_CLEAR_IDENTITY.removeprefix(
         "symbol:"
     )
@@ -106438,41 +104465,8 @@ def _hud_layout_apply_text_label_authority(
             "caller and resolved source-anchor edge"
         )
 
-    functional_target = targets.get(
-        HUD_LAYOUT_APPLY_TEXT_LABEL_VERIFICATION_TARGET_IDS[0]
-    )
-    functional_registration = (
-        functional_target.get("registration")
-        if isinstance(functional_target, Mapping)
-        else None
-    )
-    if (
-        not isinstance(functional_target, Mapping)
-        or functional_target.get("binary") != "recoil"
-        or functional_target.get("kind") != "functional"
-        or functional_target.get("name")
-        != "hud_layout_node_apply_text_label"
-        or functional_target.get("symbol_ids") != [caller_symbol_id]
-        or functional_target.get("unresolved_addresses") != []
-        or not isinstance(functional_registration, Mapping)
-        or functional_registration.get("address")
-        != HUD_LAYOUT_APPLY_TEXT_LABEL_CALLER_START
-        or functional_registration.get("binary") != "recoil"
-        or functional_registration.get("name")
-        != "hud_layout_node_apply_text_label"
-        or functional_registration.get("manifest_path")
-        != (
-            "tools/functional_verify_targets/"
-            "hud_layout_node_apply_text_label.json"
-        )
-    ):
-        raise ValueError(
-            "HUD ApplyTextLabel bridge requires its exact functional target "
-            "authority"
-        )
-
     vc5_target = targets.get(
-        HUD_LAYOUT_APPLY_TEXT_LABEL_VERIFICATION_TARGET_IDS[1]
+        HUD_LAYOUT_APPLY_TEXT_LABEL_VERIFICATION_TARGET_IDS[0]
     )
     vc5_registration = (
         vc5_target.get("registration")
@@ -130105,7 +128099,6 @@ def _gettickcount_named_import_thunk_retail_bridge(
             "boundary": "accepted",
             "byte": "deferred",
             "data": "none",
-            "functional": "none",
             "owner_linkage": "none",
             "source": "accepted",
         }
@@ -134203,7 +132196,6 @@ def _zgameopt_renderer_count_candidate_projection(
         or source_trace.get("source_edges") != []
         or tuple(caller_row.get("verification_target_ids", ()))
         != (
-            "recoil:functional-target:zvid_has_accepted_hardware_renderer",
             "recoil:vc5-target:zgame_opt_4b2960_4b33f0_authored_order",
             (
                 "recoil:vc5-target:"
@@ -146130,17 +144122,6 @@ def _comparison_scoped_provider_comdat_contract(
 
     normalized_start = normalize_address(caller_start)
     normalized_end = normalize_address(caller_end_exclusive)
-    finite_player_provider_map = _player_ob1_finite_provider_comdat_map(
-        expected,
-        result,
-        candidate,
-        document=document,
-        indexes=indexes,
-        bridge=bridge,
-        caller_identity=caller_identity,
-        caller_start=caller_start,
-        caller_end_exclusive=caller_end_exclusive,
-    )
     if (
         caller_identity == "symbol:recoil:function:0x429f80"
         and normalized_start == "0x429f80"
@@ -146160,27 +144141,6 @@ def _comparison_scoped_provider_comdat_contract(
 
     symbols = document.collection("symbols")
     for ordinal, name, candidate_row in local_rows:
-        finite_identity = finite_player_provider_map.get(name)
-        if finite_identity is not None:
-            if ordinal < 0 or ordinal >= len(expected):
-                raise ValueError(
-                    "Player /Ob1 finite provider COMDAT map rejects ordinal drift"
-                )
-            expected_row = expected[ordinal]
-            if any(
-                candidate_row.get(field) != expected_row.get(field)
-                for field in (
-                    "form", "dispatch", "storage_identity",
-                    "slot_displacement", "cleanup_bytes",
-                )
-            ):
-                raise ValueError(
-                    "Player /Ob1 finite provider COMDAT map rejects invocation "
-                    f"form, dispatch, storage, slot, or cleanup drift for {name!r}"
-                )
-            candidate_row["identity_kind"] = "provider"
-            candidate_row["target_identity"] = finite_identity
-            continue
         if (
             caller_identity == "symbol:recoil:function:0x41efa0"
             and normalized_start == "0x41efa0"
@@ -147409,8 +145369,6 @@ def _comparison_scoped_provider_comdat_contract(
                     (offset, IMAGE_REL_I386_REL32, coff_symbol.index)
                     for offset in zui_insert_caller_sites
                 )
-                or hashlib.sha256(helper.data).hexdigest()
-                != "52953d5c4675eced536ed3521d05d03027e808234d68a85f7e51e104713ecaea"
                 or tuple(
                     (row.offset, row.type, row.symbol_name)
                     for row in helper_relocations
@@ -149844,14 +147802,6 @@ def _hud_net_game_setup_launch_button_constructor_candidate_bridge(
     caller_block = blocks.get(
         HUD_NET_GAME_SETUP_CONSTRUCTOR_CALLER_BLOCK_ID
     )
-    caller_functional = targets.get(
-        HUD_NET_GAME_SETUP_CONSTRUCTOR_FUNCTIONAL_TARGET_ID
-    )
-    caller_functional_registration = (
-        caller_functional.get("registration")
-        if isinstance(caller_functional, Mapping)
-        else None
-    )
     caller_order = targets.get(
         RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_TARGET_ID
     )
@@ -149901,7 +147851,6 @@ def _hud_net_game_setup_launch_button_constructor_candidate_bridge(
         != HUD_NET_GAME_SETUP_CONSTRUCTOR_CALLER_BLOCK_ID
         or caller_row.get("verification_target_ids")
         != [
-            HUD_NET_GAME_SETUP_CONSTRUCTOR_FUNCTIONAL_TARGET_ID,
             RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_TARGET_ID,
         ]
         or not isinstance(caller_block, Mapping)
@@ -149914,21 +147863,6 @@ def _hud_net_game_setup_launch_button_constructor_candidate_bridge(
         != RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_SOURCE_PATH
         or caller_block.get("original_source_path")
         != RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_SOURCE_PATH
-        or not isinstance(caller_functional, Mapping)
-        or caller_functional.get("binary") != "recoil"
-        or caller_functional.get("kind") != "functional"
-        or caller_functional.get("name")
-        != HUD_NET_GAME_SETUP_CONSTRUCTOR_FUNCTIONAL_TARGET_NAME
-        or caller_functional.get("symbol_ids")
-        != [HUD_NET_GAME_SETUP_CONSTRUCTOR_CALLER_SYMBOL_ID]
-        or caller_functional.get("unresolved_addresses") != []
-        or not isinstance(caller_functional_registration, Mapping)
-        or caller_functional_registration.get("binary") != "recoil"
-        or caller_functional_registration.get("name")
-        != HUD_NET_GAME_SETUP_CONSTRUCTOR_FUNCTIONAL_TARGET_NAME
-        or caller_functional_registration.get("address") != normalized_start
-        or caller_functional_registration.get("manifest_path")
-        != HUD_NET_GAME_SETUP_CONSTRUCTOR_FUNCTIONAL_TARGET_MANIFEST
         or not isinstance(caller_order, Mapping)
         or caller_order.get("binary") != "recoil"
         or caller_order.get("kind") != "vc5"
@@ -150003,14 +147937,6 @@ def _hud_net_game_setup_launch_button_constructor_candidate_bridge(
 
     target_row = symbols.get(HUD_CONFIRM_QUIT_BASE_CONSTRUCTOR_SYMBOL_ID)
     target_block = blocks.get(HUD_CONFIRM_QUIT_BASE_CONSTRUCTOR_BLOCK_ID)
-    target_functional = targets.get(
-        HUD_ZRD_WIDGET_CONSTRUCTOR_FUNCTIONAL_TARGET_ID
-    )
-    target_functional_registration = (
-        target_functional.get("registration")
-        if isinstance(target_functional, Mapping)
-        else None
-    )
     target_focused = targets.get(HUD_ZRD_WIDGET_CONSTRUCTOR_VC5_TARGET_ID)
     target_focused_registration = (
         target_focused.get("registration")
@@ -150047,7 +147973,6 @@ def _hud_net_game_setup_launch_button_constructor_candidate_bridge(
         != HUD_CONFIRM_QUIT_BASE_CONSTRUCTOR_BLOCK_ID
         or target_row.get("verification_target_ids")
         != [
-            HUD_ZRD_WIDGET_CONSTRUCTOR_FUNCTIONAL_TARGET_ID,
             HUD_ZRD_WIDGET_CONSTRUCTOR_VC5_TARGET_ID,
             HUD_ZRD_WIDGET_CONSTRUCTOR_ORDER_TARGET_ID,
         ]
@@ -150068,22 +147993,6 @@ def _hud_net_game_setup_launch_button_constructor_candidate_bridge(
         or target_block.get("end_exclusive") != "0x4bc320"
         or target_block.get("agent_source_path")
         != HUD_ZRD_WIDGET_CONSTRUCTOR_SOURCE_PATH
-        or not isinstance(target_functional, Mapping)
-        or target_functional.get("binary") != "recoil"
-        or target_functional.get("kind") != "functional"
-        or target_functional.get("name")
-        != HUD_ZRD_WIDGET_CONSTRUCTOR_FUNCTIONAL_TARGET_NAME
-        or target_functional.get("symbol_ids")
-        != [HUD_CONFIRM_QUIT_BASE_CONSTRUCTOR_SYMBOL_ID]
-        or target_functional.get("unresolved_addresses") != []
-        or not isinstance(target_functional_registration, Mapping)
-        or target_functional_registration.get("binary") != "recoil"
-        or target_functional_registration.get("name")
-        != HUD_ZRD_WIDGET_CONSTRUCTOR_FUNCTIONAL_TARGET_NAME
-        or target_functional_registration.get("address")
-        != HUD_CONFIRM_QUIT_BASE_CONSTRUCTOR_ADDRESS
-        or target_functional_registration.get("manifest_path")
-        != HUD_ZRD_WIDGET_CONSTRUCTOR_FUNCTIONAL_TARGET_MANIFEST
         or not isinstance(target_focused, Mapping)
         or target_focused.get("binary") != "recoil"
         or target_focused.get("kind") != "vc5"
@@ -150136,7 +148045,7 @@ def _hud_net_game_setup_launch_button_constructor_candidate_bridge(
         raise ValueError(
             "HUD net-game setup child-constructor bridge requires "
             "the exact reviewed authored 0x4b4ee0 identity, zUI physical "
-            "block, and functional/focused/order target authority"
+            "block, and focused/order target authority"
         )
 
     for constructor_symbol in constructor_symbols:
@@ -150523,15 +148432,6 @@ def _hud_net_game_setup_numeric_base_constructor_candidate_bridge(
         if isinstance(wrapper_trace, Mapping)
         else None
     )
-    wrapper_functional = targets.get(
-        "recoil:functional-target:"
-        "hud_ui_numeric_text_input_constructor_ftable"
-    )
-    wrapper_functional_registration = (
-        wrapper_functional.get("registration")
-        if isinstance(wrapper_functional, Mapping)
-        else None
-    )
     mission_target = targets.get(
         RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_TARGET_ID
     )
@@ -150571,8 +148471,6 @@ def _hud_net_game_setup_numeric_base_constructor_candidate_bridge(
         or wrapper_row.get("physical_block_id") != "recoil:block:0x417350"
         or wrapper_row.get("verification_target_ids")
         != [
-            "recoil:functional-target:"
-            "hud_ui_numeric_text_input_constructor_ftable",
             RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_TARGET_ID,
         ]
         or indexes.by_address.get("0x41a190")
@@ -150594,29 +148492,6 @@ def _hud_net_game_setup_numeric_base_constructor_candidate_bridge(
                 "relation": "defines",
             }
         ]
-        or not isinstance(wrapper_functional, Mapping)
-        or wrapper_functional.get("binary") != "recoil"
-        or wrapper_functional.get("kind") != "functional"
-        or wrapper_functional.get("name")
-        != "hud_ui_numeric_text_input_constructor_ftable"
-        or wrapper_functional.get("symbol_ids")
-        != [
-            HUD_NET_GAME_SETUP_NUMERIC_RETAIL_SYMBOL_ID,
-            "recoil:function:0x41a3f0",
-            "recoil:function:0x41a7b0",
-            "recoil:function:0x41c4a0",
-        ]
-        or wrapper_functional.get("unresolved_addresses") != []
-        or not isinstance(wrapper_functional_registration, Mapping)
-        or wrapper_functional_registration.get("binary") != "recoil"
-        or wrapper_functional_registration.get("name")
-        != "hud_ui_numeric_text_input_constructor_ftable"
-        or wrapper_functional_registration.get("address") != "0x41a190"
-        or wrapper_functional_registration.get("manifest_path")
-        != (
-            "tools/functional_verify_targets/"
-            "hud_ui_numeric_text_input_constructor_ftable.json"
-        )
         or not isinstance(mission_target, Mapping)
         or tuple(mission_target.get("registered_addresses", ())).count(
             "0x41a190"
@@ -150634,7 +148509,7 @@ def _hud_net_game_setup_numeric_base_constructor_candidate_bridge(
         raise ValueError(
             "HUD net-game setup numeric-constructor bridge requires the exact "
             "reviewed 0x41a190 wrapper identity, extent, block, source trace, "
-            "functional target, and mission target authority"
+            "and mission target authority"
         )
     wrapper_entry, wrapper_contribution = wrapper_contributions[0]
     if (
@@ -150661,14 +148536,6 @@ def _hud_net_game_setup_numeric_base_constructor_candidate_bridge(
         HUD_NET_GAME_SETUP_NUMERIC_CONSTRUCTOR_SYMBOL_ID
     )
     natural_block = blocks.get("recoil:block:0x4b3ce0")
-    natural_functional = targets.get(
-        HUD_NET_GAME_SETUP_NUMERIC_FUNCTIONAL_TARGET_ID
-    )
-    natural_functional_registration = (
-        natural_functional.get("registration")
-        if isinstance(natural_functional, Mapping)
-        else None
-    )
     natural_focused = targets.get(
         HUD_NET_GAME_SETUP_NUMERIC_FOCUSED_TARGET_ID
     )
@@ -150704,7 +148571,6 @@ def _hud_net_game_setup_numeric_base_constructor_candidate_bridge(
         or natural_row.get("physical_block_id") != "recoil:block:0x4b3ce0"
         or natural_row.get("verification_target_ids")
         != [
-            HUD_NET_GAME_SETUP_NUMERIC_FUNCTIONAL_TARGET_ID,
             HUD_NET_GAME_SETUP_NUMERIC_FOCUSED_TARGET_ID,
             HUD_ZRD_WIDGET_CONSTRUCTOR_ORDER_TARGET_ID,
         ]
@@ -150722,18 +148588,6 @@ def _hud_net_game_setup_numeric_base_constructor_candidate_bridge(
         or natural_block.get("end_exclusive") != "0x4bc320"
         or natural_block.get("agent_source_path")
         != HUD_NET_GAME_SETUP_NUMERIC_CONSTRUCTOR_SOURCE_PATH
-        or not isinstance(natural_functional, Mapping)
-        or natural_functional.get("binary") != "recoil"
-        or natural_functional.get("kind") != "functional"
-        or natural_functional.get("name")
-        != HUD_NET_GAME_SETUP_NUMERIC_FUNCTIONAL_TARGET_NAME
-        or natural_functional.get("symbol_ids")
-        != [HUD_NET_GAME_SETUP_NUMERIC_CONSTRUCTOR_SYMBOL_ID]
-        or natural_functional.get("unresolved_addresses") != []
-        or not isinstance(natural_functional_registration, Mapping)
-        or natural_functional_registration.get("address") != "0x4b49e0"
-        or natural_functional_registration.get("manifest_path")
-        != HUD_NET_GAME_SETUP_NUMERIC_FUNCTIONAL_TARGET_MANIFEST
         or not isinstance(natural_focused, Mapping)
         or natural_focused.get("binary") != "recoil"
         or natural_focused.get("kind") != "vc5"
@@ -150777,7 +148631,7 @@ def _hud_net_game_setup_numeric_base_constructor_candidate_bridge(
         raise ValueError(
             "HUD net-game setup numeric-constructor bridge requires the exact "
             "reviewed authored 0x4b49e0 identity, extent, zUI block, and "
-            "functional/focused/order target authority"
+            "focused/order target authority"
         )
 
     for name_map in (
@@ -151182,14 +149036,6 @@ def _hud_net_game_setup_world_selector_base_constructor_candidate_bridge(
         HUD_NET_GAME_SETUP_CYCLE_SELECTOR_CONSTRUCTOR_SYMBOL_ID
     )
     target_block = blocks.get("recoil:block:0x4b3ce0")
-    functional = targets.get(
-        HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FUNCTIONAL_TARGET_ID
-    )
-    functional_registration = (
-        functional.get("registration")
-        if isinstance(functional, Mapping)
-        else None
-    )
     focused = targets.get(HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FOCUSED_TARGET_ID)
     focused_registration = (
         focused.get("registration") if isinstance(focused, Mapping) else None
@@ -151224,7 +149070,6 @@ def _hud_net_game_setup_world_selector_base_constructor_candidate_bridge(
         or target_row.get("physical_block_id") != "recoil:block:0x4b3ce0"
         or target_row.get("verification_target_ids")
         != [
-            HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FUNCTIONAL_TARGET_ID,
             HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FOCUSED_TARGET_ID,
             HUD_ZRD_WIDGET_CONSTRUCTOR_ORDER_TARGET_ID,
         ]
@@ -151247,18 +149092,6 @@ def _hud_net_game_setup_world_selector_base_constructor_candidate_bridge(
         or target_block.get("end_exclusive") != "0x4bc320"
         or target_block.get("agent_source_path")
         != HUD_NET_GAME_SETUP_NUMERIC_CONSTRUCTOR_SOURCE_PATH
-        or not isinstance(functional, Mapping)
-        or functional.get("binary") != "recoil"
-        or functional.get("kind") != "functional"
-        or functional.get("name")
-        != HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FUNCTIONAL_TARGET_NAME
-        or functional.get("symbol_ids")
-        != [HUD_NET_GAME_SETUP_CYCLE_SELECTOR_CONSTRUCTOR_SYMBOL_ID]
-        or functional.get("unresolved_addresses") != []
-        or not isinstance(functional_registration, Mapping)
-        or functional_registration.get("address") != "0x4b7d60"
-        or functional_registration.get("manifest_path")
-        != HUD_NET_GAME_SETUP_CYCLE_SELECTOR_FUNCTIONAL_TARGET_MANIFEST
         or not isinstance(focused, Mapping)
         or focused.get("binary") != "recoil"
         or focused.get("kind") != "vc5"
@@ -151290,7 +149123,7 @@ def _hud_net_game_setup_world_selector_base_constructor_candidate_bridge(
         raise ValueError(
             "HUD net-game setup WorldSelector bridge requires the exact "
             "reviewed authored 0x4b7d60 identity, extent, zUI block, and "
-            "functional/focused/order target authority"
+            "focused/order target authority"
         )
 
     auxiliary_target = candidate.cycle_selector_constructor_target
@@ -152525,8 +150358,6 @@ def _hud_net_game_setup_inline_input_candidate_projection(
         != HUD_NET_GAME_SETUP_CONSTRUCTOR_CALLER_BLOCK_ID
         or clamped_row.get("verification_target_ids")
         != [
-            "recoil:functional-target:"
-            "hud_ui_clamped_int_text_input_constructor",
             "recoil:vc5-target:hud_ui_clamped_int_text_input_constructor",
             RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_TARGET_ID,
         ]
@@ -153180,7 +151011,6 @@ def _hud_net_game_setup_toggle_candidate_guard(
         or base_row.get("physical_block_id") != "recoil:block:0x4b3ce0"
         or base_row.get("verification_target_ids")
         != [
-            "recoil:functional-target:hud_ui_check_toggle_widget_constructor",
             "recoil:vc5-target:hud_ui_check_toggle_widget_constructor",
             "recoil:vc5-target:zui_4b3ce0_4bffe0_authored_order",
         ]
@@ -153559,7 +151389,6 @@ def _hud_net_game_setup_kills_switch_candidate_guard(
         or target_row.get("physical_block_id") != "recoil:block:0x4b3ce0"
         or target_row.get("verification_target_ids")
         != [
-            "recoil:functional-target:hud_ui_widget_constructor",
             "recoil:vc5-target:hud_ui_widget_constructor",
             (
                 "recoil:vc5-target:"
@@ -169986,7 +167815,6 @@ def _prove_player_hud_ui_element_generated_destructor_bridge(
         != "HudUiElement::ResetCommonFTable"
         or target.get("verification_target_ids")
         != [
-            "recoil:functional-target:hud_ui_element_destructor",
             "recoil:vc5-target:hud_ui_element_destructor",
         ]
         or invocation_row
@@ -178187,14 +176015,6 @@ def live_call_contract_result(
                 caller_start=address,
                 caller_end_exclusive=end_exclusive,
             )
-            candidate = _player_ob1_finite_identity_projection(
-                expected,
-                candidate,
-                candidate_assembly,
-                caller_identity=caller_identity,
-                caller_start=address,
-                caller_end_exclusive=end_exclusive,
-            )
             candidate = _mission_current_artifact_member_provenance_contract(
                 expected,
                 candidate,
@@ -178662,3290 +176482,6 @@ def live_call_contract_result(
     return result
 
 
-def _wol_profile_matrix_inline_flags(
-    flags: Sequence[str],
-    inline_flag: str,
-) -> tuple[str, ...]:
-    """Replace only the effective VC5 inline-expansion selection."""
-
-    folded = [str(flag).upper() for flag in flags]
-    if (
-        folded.count("/O2") != 1
-        or sum(value in {"/OB0", "/OB1", "/OB2"} for value in folded) > 1
-        or inline_flag not in {"", "/Ob0", "/Ob1", "/Ob2"}
-    ):
-        raise ValueError(
-            "WOL profile matrix requires one /O2 optimization selection and "
-            "at most one ordinary /Ob0, /Ob1, or /Ob2 flag"
-        )
-    result = [
-        str(flag)
-        for flag in flags
-        if str(flag).upper() not in {"/OB0", "/OB1", "/OB2"}
-    ]
-    if inline_flag:
-        optimization_index = next(
-            index
-            for index, flag in enumerate(result)
-            if flag.upper() == "/O2"
-        )
-        result.insert(optimization_index + 1, inline_flag)
-    return tuple(result)
-
-
-def _wol_profile_matrix_variant_target(
-    target: Any,
-    *,
-    profile_id: str,
-    inline_flag: str,
-    scope: str,
-) -> Any:
-    """Create one in-memory profile variant without changing the manifest."""
-
-    if scope not in WOL_PROFILE_MATRIX_SCOPES:
-        raise ValueError(f"unknown WOL profile matrix scope {scope!r}")
-    if (profile_id, inline_flag) not in WOL_PROFILE_MATRIX_PROFILES:
-        raise ValueError(f"unknown WOL profile matrix profile {profile_id!r}")
-    entries = tuple(getattr(target, "translation_unit_function_order", ()))
-    entry_sources = tuple(getattr(entry, "source_from", "") for entry in entries)
-    if entry_sources != (
-        WOL_PROFILE_MATRIX_WOL_SOURCE,
-        WOL_PROFILE_MATRIX_COMPANION_SOURCE,
-    ):
-        raise ValueError(
-            "WOL profile matrix requires the exact WOL.cpp and companion-TU order"
-        )
-
-    profiles: list[tuple[str, str]] = []
-    flags_by_source: list[tuple[str, tuple[str, ...]]] = []
-    for source_from in entry_sources:
-        current_profile, current_flags = effective_source_compile_context(
-            target,
-            source_from,
-        )
-        affected = (
-            source_from == WOL_PROFILE_MATRIX_WOL_SOURCE
-            or scope == "both-tu"
-        )
-        effective_flags = (
-            _wol_profile_matrix_inline_flags(current_flags, inline_flag)
-            if affected
-            else tuple(current_flags)
-        )
-        source_key = canonical_source_key(source_from)
-        profiles.append(
-            (
-                source_key,
-                (
-                    f"wol-profile-matrix-{scope}-{profile_id}"
-                    if affected
-                    else current_profile
-                ),
-            )
-        )
-        flags_by_source.append((source_key, effective_flags))
-    return replace(
-        target,
-        source_compile_profiles=tuple(profiles),
-        source_compile_flags=tuple(flags_by_source),
-    )
-
-
-def _wol_profile_matrix_authored_rows(
-    target: Any,
-) -> tuple[tuple[Any, Any], ...]:
-    """Select the exact 109 authored relative-order bodies for comparison."""
-
-    rows = tuple(
-        (entry, function)
-        for entry in getattr(target, "translation_unit_function_order", ())
-        for function in getattr(entry, "functions", ())
-        if getattr(function, "pipeline_class", "") == "authored"
-        and function_authored_relative_order_gate(function)
-    )
-    keys = [
-        (
-            getattr(function, "address", ""),
-            getattr(function, "symbol", ""),
-            getattr(function, "symbol_regex", None),
-        )
-        for _entry, function in rows
-    ]
-    if (
-        len(rows) != WOL_PROFILE_MATRIX_BODY_COUNT
-        or len(keys) != len(set(keys))
-    ):
-        raise ValueError(
-            "WOL profile matrix requires exactly 109 distinct authored "
-            "relative-order bodies"
-        )
-    return rows
-
-
-def _wol_profile_registered_source_paths(target: Any) -> tuple[str, ...]:
-    """Return the exact registered WOL matrix source/header population."""
-
-    paths = tuple(str(path) for path in getattr(target, "order_edit_paths", ()))
-    if (
-        paths != WOL_PROFILE_REGISTERED_SOURCE_PATHS
-        or len({path.casefold() for path in paths}) != len(paths)
-        or any(
-            not (REPO_ROOT / Path(path)).is_file()
-            for path in paths
-        )
-    ):
-        raise ValueError(
-            "WOL prospective profile routing requires the exact registered "
-            "source/header population"
-        )
-    return paths
-
-
-def _wol_profile_selected_row_key(
-    source_from: str,
-    row: Any,
-) -> tuple[Any, ...]:
-    getter = row.get if isinstance(row, Mapping) else lambda key, default=None: getattr(
-        row, key, default
-    )
-    return (
-        source_from,
-        getter("address", ""),
-        getter("symbol", ""),
-        getter("symbol_regex", None),
-        getter("name", ""),
-        getter("pipeline_class", ""),
-        getter("required_presence", None),
-        getter("full_order_gate", None),
-    )
-
-
-def _wol_profile_registration_authored_rows(
-    registration: Mapping[str, Any],
-) -> tuple[tuple[str, Mapping[str, Any]], ...]:
-    entries = registration.get("translation_unit_function_order")
-    if (
-        not isinstance(entries, list)
-        or len(entries) != 2
-        or tuple(
-            entry.get("source_from") if isinstance(entry, Mapping) else None
-            for entry in entries
-        )
-        != (WOL_PROFILE_MATRIX_WOL_SOURCE, WOL_PROFILE_MATRIX_COMPANION_SOURCE)
-        or any(
-            not isinstance(entry, Mapping)
-            or entry.get("order_scope") != "authored"
-            or entry.get("inventory_only") is not False
-            or not isinstance(entry.get("functions"), list)
-            for entry in entries
-        )
-    ):
-        raise ValueError(
-            "WOL prospective profile routing requires the exact synchronized "
-            "two-TU registration"
-        )
-    rows = tuple(
-        (str(entry["source_from"]), row)
-        for entry in entries
-        for row in entry["functions"]
-        if isinstance(row, Mapping)
-        and row.get("pipeline_class") == "authored"
-        and row.get("authored_relative_order_gate") is True
-    )
-    if len(rows) != WOL_PROFILE_MATRIX_BODY_COUNT:
-        raise ValueError(
-            "WOL prospective profile routing requires exactly 109 synchronized "
-            "registration bodies"
-        )
-    return rows
-
-
-_WOL_PROFILE_MATRIX_REGISTER_RE = re.compile(
-    r"^(?:e(?:ax|bx|cx|dx|si|di|bp|sp)|[abcd][lh])$",
-    re.IGNORECASE,
-)
-_WOL_PROFILE_MATRIX_TU_LOCAL_NUMBER_RE = re.compile(
-    r"(?i)(\.cpp)\d+(?=[^a-z0-9]|$)"
-)
-
-
-def _wol_profile_matrix_normalize_operand(operand: str) -> str:
-    value = re.sub(r"\s+", " ", operand.strip()).casefold()
-    value = _WOL_PROFILE_MATRIX_TU_LOCAL_NUMBER_RE.sub(r"\1#", value)
-    if _WOL_PROFILE_MATRIX_REGISTER_RE.fullmatch(value):
-        return "<register>"
-    if "[" in value and "]" in value:
-        value = re.sub(
-            r"\b(?:e(?:ax|bx|cx|dx|si|di|bp|sp)|[abcd][lh])\b",
-            "<register>",
-            value,
-        )
-    return value
-
-
-def _wol_profile_matrix_normalized_contract(
-    instructions: Sequence[Instruction],
-) -> tuple[dict[str, Any], ...]:
-    rows: list[dict[str, Any]] = []
-    for instruction in instructions:
-        mnemonic = _instruction_mnemonic(instruction)
-        if mnemonic not in {"call", "jmp"}:
-            continue
-        operand = _instruction_operand(instruction).strip()
-        if operand.casefold().startswith("$l"):
-            continue
-        normalized_operand = _wol_profile_matrix_normalize_operand(operand)
-        dispatch = (
-            "register-indirect"
-            if normalized_operand == "<register>"
-            else (
-                "memory-indirect"
-                if "[" in normalized_operand and "]" in normalized_operand
-                else (
-                    "iat-indirect"
-                    if normalized_operand.startswith("dword __imp_")
-                    else "direct"
-                )
-            )
-        )
-        rows.append(
-            {
-                "ordinal": len(rows),
-                "form": "call" if mnemonic == "call" else "tail",
-                "dispatch": dispatch,
-                "target": normalized_operand,
-            }
-        )
-    return tuple(rows)
-
-
-def _wol_profile_matrix_inline_empty_check(
-    parsed: CandidateAssembly,
-    body: CoffFunctionBytes,
-) -> dict[str, Any]:
-    candidate = CandidateAssembly(
-        instructions=parsed.instructions,
-        local_control_flow_indices=parsed.local_control_flow_indices,
-        local_control_flow_targets=parsed.local_control_flow_targets,
-    )
-    offsets = _candidate_complete_instruction_offsets(candidate)
-    by_offset = {
-        offset: parsed.instructions[index]
-        for index, offset in enumerate(offsets)
-        if offset is not None
-    }
-    load = by_offset.get(0x65)
-    length_load = by_offset.get(0x6A)
-    test = by_offset.get(0x6D)
-    branch = by_offset.get(0x6F)
-    isempty_mentions = [
-        instruction
-        for instruction in parsed.instructions
-        if "?isempty@cstring@@qbehxz" in _instruction_operand(
-            instruction
-        ).casefold()
-    ]
-    relocations = [
-        relocation
-        for relocation in body.relocations
-        if relocation.offset == 0x66
-    ]
-    matched = bool(
-        not isempty_mentions
-        and load is not None
-        and tuple(load.bytes) == ("a1", "00", "00", "00", "00")
-        and _instruction_mnemonic(load) == "mov"
-        and _instruction_operand(load).casefold().startswith("eax, dword ")
-        and "pendingstatustext" in _instruction_operand(load).casefold()
-        and length_load is not None
-        and tuple(length_load.bytes) == ("8b", "48", "f8")
-        and _instruction_mnemonic(length_load) == "mov"
-        and _instruction_operand(length_load).casefold()
-        == "ecx, dword [eax-8]"
-        and test is not None
-        and tuple(test.bytes) == ("85", "c9")
-        and _instruction_mnemonic(test) == "test"
-        and _instruction_operand(test).casefold() == "ecx, ecx"
-        and branch is not None
-        and tuple(branch.bytes[:2]) == ("0f", "84")
-        and _instruction_mnemonic(branch) in {"je", "jz"}
-        and _instruction_operand(branch).casefold().startswith("$l")
-        and len(relocations) == 1
-        and relocations[0].type == IMAGE_REL_I386_DIR32
-        and "pendingStatusText" in relocations[0].symbol_name
-        and len(body.data) >= 0x75
-        and body.data[0x65:0x6A] == b"\xa1\0\0\0\0"
-        and body.data[0x6A:0x6F] == b"\x8b\x48\xf8\x85\xc9"
-        and body.data[0x6F:0x71] == b"\x0f\x84"
-        and struct.unpack_from("<I", body.data, 0x66)[0] == 0
-        and len(body.relocation_mask) >= 0x6A
-        and all(body.relocation_mask[index] for index in range(0x66, 0x6A))
-    )
-    return {
-        "matched": matched,
-        "address": WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS,
-        "symbol": WOL_PROFILE_MATRIX_EMPTY_CHECK_SYMBOL,
-        "out_of_line_isempty_call_count": len(isempty_mentions),
-        "required_offsets": ["0x65", "0x6a", "0x6d", "0x6f"],
-        "required_dataflow": (
-            "absolute pendingStatusText load -> [eax-8] length load -> "
-            "test ecx,ecx -> zero branch"
-        ),
-        "candidate_expected_truth": False,
-    }
-
-
-def _wol_profile_matrix_selected_body_receipt(
-    *,
-    address: str,
-    symbol: str,
-    source_from: str,
-    parsed: CandidateAssembly,
-    body: CoffFunctionBytes,
-) -> dict[str, Any]:
-    """Return the complete normalized selected-body receipt for equivalence.
-
-    P1 and implicit are compiled independently, so compiler-local numeric
-    spellings may differ even when the emitted selected body is identical.
-    Only those spelling discriminators are normalized; body bytes, extent,
-    every relocation coordinate/type/target, mask bit, COD boundary/bytes/
-    mnemonic/operand, and local control-flow topology remain in the receipt.
-    """
-
-    def local_name(value: str) -> str:
-        normalized = _WOL_PROFILE_MATRIX_TU_LOCAL_NUMBER_RE.sub(
-            r"\1#", value.casefold()
-        )
-        return re.sub(r"(?i)\$l[0-9]+", "$L#", normalized)
-
-    offsets = _candidate_complete_instruction_offsets(parsed)
-    instructions = [
-        {
-            "offset": offset,
-            "bytes": list(instruction.bytes),
-            "mnemonic": _instruction_mnemonic(instruction),
-            "operand": _wol_profile_matrix_normalize_operand(
-                _instruction_operand(instruction)
-            ),
-        }
-        for offset, instruction in zip(offsets, parsed.instructions)
-    ]
-    return {
-        "address": address,
-        "symbol": local_name(symbol),
-        "source_from": source_from,
-        "section_name": body.section_name,
-        "start": body.start,
-        "end": body.end,
-        "natural_end": body.natural_end,
-        # Bounded per-body bytes are a diagnostic fact for this one profile
-        # comparison.  They are never collapsed into, or persisted as, an
-        # artifact identity.
-        "body_bytes": list(body.data),
-        "diagnostic_only": True,
-        "relocations": [
-            {
-                "offset": row.offset,
-                "type": row.type,
-                "symbol": local_name(row.symbol_name),
-            }
-            for row in body.relocations
-        ],
-        "relocation_mask": [
-            index for index, masked in enumerate(body.relocation_mask) if masked
-        ],
-        "excluded_tail_relocation_count": body.excluded_tail_relocation_count,
-        "instructions": instructions,
-        "local_control_flow_indices": sorted(parsed.local_control_flow_indices),
-        "local_control_flow_targets": {
-            str(index): list(targets)
-            for index, targets in sorted(parsed.local_control_flow_targets.items())
-        },
-    }
-
-
-def _wol_profile_matrix_candidate_snapshot(
-    target: Any,
-    units: Sequence[Any],
-) -> dict[str, Any]:
-    unit_by_source: dict[str, Any] = {}
-    for unit in units:
-        source_from = str(getattr(unit, "source_from", ""))
-        if source_from in unit_by_source:
-            raise ValueError(
-                "WOL profile matrix candidate has duplicate compiled TU sources"
-            )
-        unit_by_source[source_from] = unit
-    expected_sources = {
-        WOL_PROFILE_MATRIX_WOL_SOURCE,
-        WOL_PROFILE_MATRIX_COMPANION_SOURCE,
-    }
-    if set(unit_by_source) != expected_sources:
-        raise ValueError(
-            "WOL profile matrix candidate requires exactly the WOL and companion TUs"
-        )
-
-    contracts: dict[str, dict[str, Any]] = {}
-    selected_body_receipts: list[dict[str, Any]] = []
-    empty_check: dict[str, Any] | None = None
-    for entry, function in _wol_profile_matrix_authored_rows(target):
-        source_from = str(getattr(entry, "source_from", ""))
-        unit = unit_by_source[source_from]
-        coff_object = CoffObject.from_path(Path(unit.obj_path))
-        symbol = resolve_function_symbol_for_coff(coff_object, function)
-        body = coff_object.function_bytes(symbol)
-        parsed = _extract_cod_proc_with_local_switches(
-            Path(unit.cod_path),
-            symbol,
-        )
-        address = normalize_address(str(getattr(function, "address", "")))
-        key = f"{address}:{symbol}"
-        if key in contracts:
-            raise ValueError(
-                "WOL profile matrix candidate body identity is ambiguous"
-            )
-        normalized = _wol_profile_matrix_normalized_contract(
-            parsed.instructions
-        )
-        contracts[key] = {
-            "address": address,
-            "symbol": symbol,
-            "source_from": source_from,
-            "contract": list(normalized),
-        }
-        selected_body_receipts.append(
-            _wol_profile_matrix_selected_body_receipt(
-                address=address,
-                symbol=symbol,
-                source_from=source_from,
-                parsed=parsed,
-                body=body,
-            )
-        )
-        if address == WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS:
-            if symbol != WOL_PROFILE_MATRIX_EMPTY_CHECK_SYMBOL or empty_check is not None:
-                raise ValueError(
-                    "WOL profile matrix empty-check caller identity is ambiguous"
-                )
-            empty_check = _wol_profile_matrix_inline_empty_check(parsed, body)
-    if len(contracts) != WOL_PROFILE_MATRIX_BODY_COUNT or empty_check is None:
-        raise ValueError(
-            "WOL profile matrix candidate snapshot is not the complete 109-body census"
-        )
-    selected_body_receipts.sort(
-        key=lambda row: (row["address"], row["symbol"], row["source_from"])
-    )
-    return {
-        "body_count": len(contracts),
-        "contracts": contracts,
-        "inline_empty_check": empty_check,
-        "selected_body_diagnostic_facts": selected_body_receipts,
-    }
-
-
-def _wol_profile_matrix_body_deltas(
-    baseline: Mapping[str, Any],
-    candidate: Mapping[str, Any],
-) -> list[dict[str, Any]]:
-    if set(baseline) != set(candidate):
-        raise ValueError(
-            "WOL profile matrix profiles do not contain identical body identities"
-        )
-    deltas: list[dict[str, Any]] = []
-    for key in sorted(baseline):
-        before_row = baseline[key]
-        after_row = candidate[key]
-        before = list(before_row["contract"])
-        after = list(after_row["contract"])
-        if before == after:
-            continue
-        before_counter = Counter(
-            json.dumps(row, sort_keys=True, separators=(",", ":"))
-            for row in before
-        )
-        after_counter = Counter(
-            json.dumps(row, sort_keys=True, separators=(",", ":"))
-            for row in after
-        )
-        removed = list((before_counter - after_counter).elements())
-        added = list((after_counter - before_counter).elements())
-        deltas.append(
-            {
-                "body_identity": key,
-                "address": before_row["address"],
-                "symbol": before_row["symbol"],
-                "source_from": before_row["source_from"],
-                "before": before,
-                "after": after,
-                "removed": [json.loads(row) for row in removed],
-                "added": [json.loads(row) for row in added],
-            }
-        )
-    return deltas
-
-
-def _wol_profile_matrix_effective_unit_receipt(
-    scenario: Mapping[str, Any],
-) -> tuple[tuple[str, tuple[str, ...], str], ...] | None:
-    """Normalize explicit /Ob1 and /O2's implicit /Ob1 semantics exactly."""
-
-    units = scenario.get("unit_commands")
-    if not isinstance(units, list) or len(units) != 2:
-        return None
-    result: list[tuple[str, tuple[str, ...], str]] = []
-    for unit in units:
-        if not isinstance(unit, Mapping):
-            return None
-        source_from = unit.get("source_from")
-        flags = unit.get("effective_flags")
-        if not isinstance(source_from, str) or not isinstance(flags, list):
-            return None
-        folded = tuple(str(flag).upper() for flag in flags)
-        ob_flags = tuple(
-            flag for flag in folded if flag in {"/OB0", "/OB1", "/OB2"}
-        )
-        if folded.count("/O2") != 1 or len(ob_flags) > 1:
-            return None
-        effective_inline = ob_flags[0] if ob_flags else "/OB1"
-        non_inline = tuple(
-            flag for flag in folded if flag not in {"/OB0", "/OB1", "/OB2"}
-        )
-        result.append((source_from, non_inline, effective_inline))
-    return tuple(result)
-
-
-def _wol_profile_matrix_p1_implicit_equivalence(
-    scenarios: Sequence[Mapping[str, Any]],
-) -> dict[str, Any]:
-    """Coalesce implicit only after both scopes prove complete equivalence."""
-
-    by_key: dict[tuple[str, str], Mapping[str, Any]] = {}
-    for scenario in scenarios:
-        scope = scenario.get("scope")
-        profile_id = scenario.get("profile_id")
-        if not isinstance(scope, str) or not isinstance(profile_id, str):
-            continue
-        key = (scope, profile_id)
-        if key in by_key:
-            return {
-                "passed": False,
-                "failure_reasons": ["duplicate-scenario"],
-                "scope_receipts": [],
-            }
-        by_key[key] = scenario
-
-    failure_reasons: list[str] = []
-    scope_receipts: list[dict[str, Any]] = []
-    for scope in WOL_PROFILE_MATRIX_SCOPES:
-        p1 = by_key.get((scope, "P1"))
-        implicit = by_key.get((scope, "implicit"))
-        if p1 is None or implicit is None:
-            failure_reasons.append(f"{scope}:missing-profile")
-            continue
-        p1_units = _wol_profile_matrix_effective_unit_receipt(p1)
-        implicit_units = _wol_profile_matrix_effective_unit_receipt(implicit)
-        complete = bool(
-            p1.get("body_count") == WOL_PROFILE_MATRIX_BODY_COUNT
-            and implicit.get("body_count") == WOL_PROFILE_MATRIX_BODY_COUNT
-            and isinstance(p1.get("contracts"), Mapping)
-            and isinstance(implicit.get("contracts"), Mapping)
-            and len(p1["contracts"]) == WOL_PROFILE_MATRIX_BODY_COUNT
-            and len(implicit["contracts"]) == WOL_PROFILE_MATRIX_BODY_COUNT
-        )
-        contracts_equal = bool(
-            complete and p1.get("contracts") == implicit.get("contracts")
-        )
-        artifacts_equal = bool(
-            complete
-            and isinstance(p1.get("selected_body_diagnostic_facts"), list)
-            and p1.get("selected_body_diagnostic_facts")
-            == implicit.get("selected_body_diagnostic_facts")
-        )
-        options_equal = bool(
-            p1_units is not None
-            and p1_units == implicit_units
-            and all(unit[2] == "/OB1" for unit in p1_units)
-        )
-        inline_equal = bool(
-            p1.get("inline_empty_check")
-            == implicit.get("inline_empty_check")
-            and isinstance(p1.get("inline_empty_check"), Mapping)
-            and p1["inline_empty_check"].get("matched") is True
-        )
-        passed = bool(
-            complete
-            and contracts_equal
-            and artifacts_equal
-            and options_equal
-            and inline_equal
-        )
-        if not passed:
-            failure_reasons.append(f"{scope}:non-equivalent")
-        scope_receipts.append({
-            "scope": scope,
-            "complete_population": complete,
-            "contracts_identical": contracts_equal,
-            "selected_artifacts_identical": artifacts_equal,
-            "effective_options_equivalent": options_equal,
-            "inline_receipts_identical": inline_equal,
-            "passed": passed,
-        })
-
-    cross_scope_receipts: list[dict[str, Any]] = []
-    for profile_id in ("P1", "implicit"):
-        wol_only = by_key.get(("wol-only", profile_id))
-        both_tu = by_key.get(("both-tu", profile_id))
-        passed = bool(
-            wol_only is not None
-            and both_tu is not None
-            and wol_only.get("contracts") == both_tu.get("contracts")
-            and wol_only.get("selected_body_diagnostic_facts")
-            == both_tu.get("selected_body_diagnostic_facts")
-            and _wol_profile_matrix_effective_unit_receipt(wol_only)
-            == _wol_profile_matrix_effective_unit_receipt(both_tu)
-        )
-        if not passed:
-            failure_reasons.append(f"{profile_id}:scope-drift")
-        cross_scope_receipts.append({
-            "profile_id": profile_id,
-            "wol_only_equals_both_tu": passed,
-        })
-
-    return {
-        "kind": "wol-profile-equivalence-receipt",
-        "contract_version": 1,
-        "profile_id": "implicit",
-        "equivalent_to": "P1",
-        "scope_receipts": scope_receipts,
-        "cross_scope_receipts": cross_scope_receipts,
-        "failure_reasons": failure_reasons,
-        "passed": not failure_reasons,
-        "candidate_expected_truth": False,
-    }
-
-
-def _wol_profile_matrix_precompiled_target_units(
-    target: Any,
-    units: Sequence[Any],
-) -> tuple[Any, tuple[tuple[Any, Path, CoffObject], ...]]:
-    """Bind the exact two matrix units to their manifest TU identities."""
-
-    entries = tuple(getattr(target, "translation_unit_function_order", ()))
-    if tuple(getattr(entry, "source_from", "") for entry in entries) != (
-        WOL_PROFILE_MATRIX_WOL_SOURCE,
-        WOL_PROFILE_MATRIX_COMPANION_SOURCE,
-    ):
-        raise ValueError(
-            "WOL profile matrix retail normalization requires the exact two-TU target"
-        )
-    if len(units) != len(entries):
-        raise ValueError(
-            "WOL profile matrix retail normalization requires exactly two compiled units"
-        )
-    by_index: dict[int, Any] = {}
-    for unit in units:
-        manifest_index = getattr(unit, "manifest_index", None)
-        if (
-            not isinstance(manifest_index, int)
-            or manifest_index < 0
-            or manifest_index >= len(entries)
-            or manifest_index in by_index
-            or getattr(unit, "source_from", "")
-            != getattr(entries[manifest_index], "source_from", "")
-        ):
-            raise ValueError(
-                "WOL profile matrix retail normalization has ambiguous compiled TU identity"
-            )
-        by_index[manifest_index] = unit
-    if set(by_index) != set(range(len(entries))):
-        raise ValueError(
-            "WOL profile matrix retail normalization is missing a compiled TU"
-        )
-    prepared = tuple(
-        (
-            entries[index],
-            Path(by_index[index].cod_path),
-            CoffObject.from_path(Path(by_index[index].obj_path)),
-        )
-        for index in range(len(entries))
-    )
-    return target, prepared
-
-
-def _wol_profile_matrix_retail_normalization_qualification(
-    *,
-    target_id: str,
-    scope: str,
-    profile_id: str,
-    scenario: Mapping[str, Any],
-    live_result: Mapping[str, Any],
-    source_signatures_before: Sequence[Mapping[str, Any]],
-    source_signatures_after: Sequence[Mapping[str, Any]],
-    ambiguous_delta_count: int,
-) -> dict[str, Any]:
-    """Fail closed over the normal retail comparison of the selected P1 units."""
-
-    failure_reasons: list[str] = []
-    if (
-        target_id != WOL_PROFILE_MATRIX_TARGET_ID
-        or scope != "wol-only"
-        or profile_id != "P1"
-        or scenario.get("scope") != scope
-        or scenario.get("profile_id") != profile_id
-        or scenario.get("body_count") != WOL_PROFILE_MATRIX_BODY_COUNT
-    ):
-        failure_reasons.append("wrong-retail-normalization-scenario")
-
-    inline_empty_check = scenario.get("inline_empty_check")
-    inline_positive = bool(
-        isinstance(inline_empty_check, Mapping)
-        and inline_empty_check.get("matched") is True
-        and inline_empty_check.get("address")
-        == WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS
-    )
-    if not inline_positive:
-        failure_reasons.append("missing-positive-inline-dataflow")
-
-    divergences = live_result.get("caller_divergences")
-    divergence_rows = divergences if isinstance(divergences, list) else []
-    verifier_blocked = any(
-        isinstance(row, Mapping) and row.get("kind") == "verifier-blocked"
-        for row in divergence_rows
-    )
-    if verifier_blocked:
-        failure_reasons.append("retail-verifier-blocked")
-    elif (
-        live_result.get("passed") is not True
-        or live_result.get("first_divergence") is not None
-        or divergences != []
-    ):
-        failure_reasons.append("retail-contract-mismatch")
-
-    symbol_ids = live_result.get("symbol_ids")
-    expected_contracts = live_result.get("expected_contracts")
-    candidate_contracts = live_result.get("candidate_contracts")
-    complete_population = bool(
-        live_result.get("body_count") == WOL_PROFILE_MATRIX_BODY_COUNT
-        and isinstance(symbol_ids, list)
-        and len(symbol_ids) == WOL_PROFILE_MATRIX_BODY_COUNT
-        and len(set(str(value) for value in symbol_ids))
-        == WOL_PROFILE_MATRIX_BODY_COUNT
-        and isinstance(expected_contracts, Mapping)
-        and isinstance(candidate_contracts, Mapping)
-        and set(expected_contracts) == set(str(value) for value in symbol_ids)
-        and set(candidate_contracts) == set(str(value) for value in symbol_ids)
-    )
-    if not complete_population:
-        failure_reasons.append("incomplete-retail-population")
-
-    source_unchanged = bool(
-        list(source_signatures_after) == list(source_signatures_before)
-        and live_result.get("source_changed_during_validation") is False
-        and live_result.get("dependency_states_after")
-        == live_result.get("dependency_states_before")
-    )
-    if not source_unchanged:
-        failure_reasons.append("source-drift")
-
-    exact_precompiled_target_use = bool(
-        live_result.get("kind")
-        == "authored-call-contract-target-convergence-result"
-        and live_result.get("target_id") == target_id
-        and live_result.get("all_authored_bodies") is True
-        and live_result.get("compiled_target_ids") == [target_id]
-        and live_result.get("selected_target_compile_count") == 1
-        and live_result.get("all_caller_divergences_collected") is True
-        and live_result.get("definition_closure_deferred") is True
-    )
-    if not exact_precompiled_target_use:
-        failure_reasons.append("precompiled-target-misuse")
-
-    retail_truth_unchanged = bool(
-        live_result.get("expected_truth")
-        == "retail-binary-ninja-plus-reviewed-tracker-identities"
-        and live_result.get("candidate_expected_truth") is False
-    )
-    if not retail_truth_unchanged:
-        failure_reasons.append("retail-truth-provenance-drift")
-
-    selection_eligible = not failure_reasons
-    return {
-        "kind": "wol-profile-retail-normalization",
-        "scope": scope,
-        "profile_id": profile_id,
-        "passed": bool(
-            live_result.get("passed") is True
-            and complete_population
-            and not verifier_blocked
-            and "retail-contract-mismatch" not in failure_reasons
-            and source_unchanged
-            and exact_precompiled_target_use
-            and retail_truth_unchanged
-        ),
-        "retail_verifier_passed": live_result.get("passed") is True,
-        "expected_body_count": (
-            len(expected_contracts)
-            if isinstance(expected_contracts, Mapping)
-            else 0
-        ),
-        "candidate_body_count": (
-            len(candidate_contracts)
-            if isinstance(candidate_contracts, Mapping)
-            else 0
-        ),
-        "complete_population": complete_population,
-        "caller_divergences": divergence_rows,
-        "first_divergence": live_result.get("first_divergence"),
-        "inline_empty_check_positive": inline_positive,
-        "source_unchanged": source_unchanged,
-        "exact_precompiled_target_use": exact_precompiled_target_use,
-        "retail_truth_unchanged": retail_truth_unchanged,
-        # This is the selected scenario's local P0->P1 diagnostic population.
-        # Exact 109/109 retail comparison is decisive; P2 or duplicate implicit
-        # deltas must never veto this P1 qualification.
-        "scenario_ambiguous_delta_count": ambiguous_delta_count,
-        "failure_reasons": failure_reasons,
-        "selection_eligible": selection_eligible,
-        "manifest_mutation_allowed": selection_eligible,
-    }
-
-
-def _zeffect_profile_matrix_authored_rows(
-    target: Any,
-) -> tuple[tuple[Any, Any], ...]:
-    rows = tuple(
-        (entry, function)
-        for entry in getattr(target, "translation_unit_function_order", ())
-        for function in getattr(entry, "functions", ())
-        if getattr(function, "pipeline_class", "") == "authored"
-        and function_authored_relative_order_gate(function)
-    )
-    keys = tuple(
-        (
-            str(getattr(function, "address", "")),
-            str(getattr(function, "symbol", "")),
-            getattr(function, "symbol_regex", None),
-        )
-        for _entry, function in rows
-    )
-    if (
-        len(rows) != ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-        or len(keys) != len(set(keys))
-        or not any(
-            address == ZEFFECT_PROFILE_MATRIX_CALLER_ADDRESS
-            for address, _symbol, _regex in keys
-        )
-    ):
-        raise ValueError(
-            "zEffect profile matrix requires the exact distinct 75-body "
-            "authored target population"
-        )
-    return rows
-
-
-def _zeffect_profile_matrix_target(
-    document: ProgressDocument,
-    target_id: str,
-) -> Any:
-    target_row = document.collection("verification_targets").get(target_id)
-    registration = (
-        target_row.get("registration")
-        if isinstance(target_row, Mapping)
-        else None
-    )
-    expected_manifest = ZEFFECT_PROFILE_MATRIX_MANIFEST.relative_to(
-        REPO_ROOT
-    ).as_posix()
-    if (
-        target_id != ZEFFECT_PROFILE_MATRIX_TARGET_ID
-        or not isinstance(target_row, Mapping)
-        or target_row.get("binary") != "recoil"
-        or target_row.get("kind") != "vc5"
-        or target_row.get("name") != ZEFFECT_PROFILE_MATRIX_TARGET_NAME
-        or not isinstance(target_row.get("registered_addresses"), list)
-        or len(target_row["registered_addresses"])
-        != ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-        or len(set(target_row["registered_addresses"]))
-        != ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-        or not isinstance(registration, Mapping)
-        or registration.get("manifest_path") != expected_manifest
-        or registration.get("source_from") != ZEFFECT_PROFILE_MATRIX_SOURCE
-        or registration.get("order_edit_paths")
-        != [ZEFFECT_PROFILE_MATRIX_SOURCE]
-        or registration.get("check_translation_unit_function_order") is not True
-        or registration.get("function_order_scope") != "authored"
-    ):
-        raise ProgressError(
-            "zEffect profile matrix requires the synchronized exact governed "
-            "75-body target and registration"
-        )
-    target = load_manifest(ZEFFECT_PROFILE_MATRIX_MANIFEST)
-    require_clean_target_source_fragments(target)
-    entries = tuple(getattr(target, "translation_unit_function_order", ()))
-    if (
-        getattr(target, "name", "") != ZEFFECT_PROFILE_MATRIX_TARGET_NAME
-        or getattr(target, "target_binary", "") != "recoil"
-        or Path(str(getattr(target, "manifest_path", ""))).resolve()
-        != ZEFFECT_PROFILE_MATRIX_MANIFEST.resolve()
-        or getattr(target, "source_from", "") != ZEFFECT_PROFILE_MATRIX_SOURCE
-        or tuple(getattr(target, "order_edit_paths", ()))
-        != (ZEFFECT_PROFILE_MATRIX_SOURCE,)
-        or len(entries) != 1
-        or getattr(entries[0], "source_from", "")
-        != ZEFFECT_PROFILE_MATRIX_SOURCE
-        or getattr(entries[0], "inventory_only", True)
-        or getattr(entries[0], "order_scope", "") != "authored"
-        or Path(str(compiler_env_path(target, DEFAULT_VC5_ENV))).resolve()
-        != DEFAULT_VC5_ENV.resolve()
-    ):
-        raise ProgressError(
-            "zEffect profile matrix requires the exact one-TU canonical "
-            "VC5SP3 target package"
-        )
-    rows = _zeffect_profile_matrix_authored_rows(target)
-    if [str(function.address) for _entry, function in rows] != list(
-        target_row["registered_addresses"]
-    ):
-        raise ProgressError(
-            "zEffect profile matrix target and registered body order drifted"
-        )
-    return target
-
-
-def _profile_matrix_file_stat(path: Path) -> dict[str, Any]:
-    """Return one stable physical tool identity for the local operation."""
-
-    canonical = path.resolve()
-    with StableReadHandle(canonical) as handle:
-        stat = os.fstat(handle.stream.fileno())
-        return {
-            "path": str(canonical),
-            "physical_identity": handle.identity.to_dict(),
-            "size": int(stat.st_size),
-            "mtime_ns": int(stat.st_mtime_ns),
-            "ctime_ns": int(stat.st_ctime_ns),
-        }
-
-
-class _VSFixedFileInfo(ctypes.Structure):
-    _fields_ = [(name, ctypes.c_uint32) for name in (
-        "signature", "struct_version", "file_version_ms", "file_version_ls",
-        "product_version_ms", "product_version_ls", "file_flags_mask",
-        "file_flags", "file_os", "file_type", "file_subtype",
-        "file_date_ms", "file_date_ls",
-    )]
-
-
-def _profile_matrix_fixed_file_version(path: Path) -> list[int]:
-    """Read the normalized four-part fixed PE FILEVERSION through version.dll."""
-
-    canonical = path.resolve()
-    version = ctypes.windll.version
-    ignored = ctypes.c_uint32(0)
-    size = int(version.GetFileVersionInfoSizeW(str(canonical), ctypes.byref(ignored)))
-    if size <= 0:
-        raise ValueError(f"profile matrix tool lacks fixed version metadata: {canonical}")
-    buffer = ctypes.create_string_buffer(size)
-    if not version.GetFileVersionInfoW(str(canonical), 0, size, buffer):
-        raise ValueError(f"cannot read profile matrix tool version metadata: {canonical}")
-    value = ctypes.c_void_p()
-    value_size = ctypes.c_uint32(0)
-    if not version.VerQueryValueW(
-        buffer, "\\", ctypes.byref(value), ctypes.byref(value_size)
-    ) or value_size.value < ctypes.sizeof(_VSFixedFileInfo):
-        raise ValueError(f"profile matrix tool has malformed fixed version metadata: {canonical}")
-    fixed = ctypes.cast(value, ctypes.POINTER(_VSFixedFileInfo)).contents
-    if fixed.signature != 0xFEEF04BD:
-        raise ValueError(f"profile matrix tool has invalid fixed version metadata: {canonical}")
-    return [
-        int(fixed.file_version_ms >> 16),
-        int(fixed.file_version_ms & 0xFFFF),
-        int(fixed.file_version_ls >> 16),
-        int(fixed.file_version_ls & 0xFFFF),
-    ]
-
-
-def _zeffect_profile_matrix_tool_proof(
-    backend: Mapping[str, Any],
-) -> dict[str, Any]:
-    backend_id = str(backend.get("backend_id", ""))
-    c2_path = Path(str(backend.get("c2_path", ""))).resolve()
-    cl_path = (DEFAULT_VC5_ENV.parent / "VC/BIN/CL.EXE").resolve()
-    if (
-        backend not in ZEFFECT_PROFILE_MATRIX_BACKENDS
-        or not backend_id
-        or not c2_path.is_file()
-        or not cl_path.is_file()
-        or not DEFAULT_VC5_ENV.resolve().is_file()
-    ):
-        raise ValueError(
-            "zEffect profile matrix backend lacks the exact installed tool "
-            "package"
-        )
-    cl_version = _profile_matrix_fixed_file_version(cl_path)
-    c2_version = _profile_matrix_fixed_file_version(c2_path)
-    if cl_version != [11, 0, 0, 7022] or c2_version != list(
-        backend.get("c2_version", [])
-    ):
-        raise ValueError(
-            "zEffect profile matrix backend fixed FILEVERSION drifted"
-        )
-    return {
-        "backend_id": backend_id,
-        "diagnostic_only": bool(backend.get("diagnostic_only")),
-        "cl": {
-            **_profile_matrix_file_stat(cl_path),
-            "file_version": cl_version,
-        },
-        "c2": {
-            **_profile_matrix_file_stat(c2_path),
-            "file_version": c2_version,
-        },
-        "environment": _profile_matrix_file_stat(DEFAULT_VC5_ENV.resolve()),
-    }
-
-
-def _zeffect_profile_matrix_backend_target(
-    target: Any,
-    backend: Mapping[str, Any],
-    build_dir: Path,
-) -> tuple[Any, Path, dict[str, Any] | None]:
-    proof = _zeffect_profile_matrix_tool_proof(backend)
-    if not proof["diagnostic_only"]:
-        return target, DEFAULT_VC5_ENV.resolve(), None
-    backend_bin = build_dir / "backend-bin"
-    backend_bin.mkdir(parents=True, exist_ok=False)
-    staged_c2 = backend_bin / "C2.EXE"
-    shutil.copy2(Path(proof["c2"]["path"]), staged_c2)
-    staged_proof = {
-        **_profile_matrix_file_stat(staged_c2),
-        "file_version": _profile_matrix_fixed_file_version(staged_c2),
-    }
-    if (
-        staged_proof["size"] != proof["c2"]["size"]
-        or staged_proof["mtime_ns"] != proof["c2"]["mtime_ns"]
-        or staged_proof["file_version"] != proof["c2"]["file_version"]
-    ):
-        raise ValueError(
-            "zEffect profile matrix staged backend stat/version drifted"
-        )
-    wrapper = build_dir / "compiler-backend-env.cmd"
-    wrapper.write_text(
-        "@echo off\n"
-        f'call "{DEFAULT_VC5_ENV.resolve()}"\n'
-        "if errorlevel 1 exit /b %errorlevel%\n"
-        f'set "PATH={backend_bin.resolve()};%PATH%"\n',
-        encoding="ascii",
-        newline="\r\n",
-    )
-    return (
-        replace(target, compiler_env=str(wrapper.resolve())),
-        wrapper.resolve(),
-        staged_proof,
-    )
-
-
-def _zeffect_profile_matrix_precompiled_target_units(
-    target: Any,
-    units: Sequence[Any],
-) -> tuple[Any, tuple[tuple[Any, Path, CoffObject], ...]]:
-    entries = tuple(getattr(target, "translation_unit_function_order", ()))
-    if (
-        len(entries) != 1
-        or len(units) != 1
-        or getattr(entries[0], "source_from", "")
-        != ZEFFECT_PROFILE_MATRIX_SOURCE
-        or getattr(units[0], "manifest_index", None) != 0
-        or getattr(units[0], "source_from", "")
-        != ZEFFECT_PROFILE_MATRIX_SOURCE
-    ):
-        raise ValueError(
-            "zEffect profile matrix requires exact complete one-TU "
-            "precompiled consumption"
-        )
-    return (
-        target,
-        (
-            (
-                entries[0],
-                Path(units[0].cod_path),
-                CoffObject.from_path(Path(units[0].obj_path)),
-            ),
-        ),
-    )
-
-
-def _zeffect_profile_matrix_retail_contract_exact(
-    live_result: Mapping[str, Any],
-) -> bool:
-    expected_contracts = live_result.get("expected_contracts")
-    if not isinstance(expected_contracts, Mapping):
-        return False
-    rows = expected_contracts.get(ZEFFECT_PROFILE_MATRIX_CALLER_ID)
-    if not isinstance(rows, list) or len(rows) != len(
-        ZEFFECT_PROFILE_MATRIX_RETAIL_ORDER
-    ):
-        return False
-    return all(
-        row
-        == {
-            "ordinal": ordinal,
-            "form": "call",
-            "dispatch": "direct",
-            "identity_kind": "direct",
-            "target_identity": target_identity,
-            "storage_identity": "",
-            "slot_displacement": None,
-            "cleanup_bytes": None,
-        }
-        for ordinal, (row, (_name, target_identity)) in enumerate(
-            zip(rows, ZEFFECT_PROFILE_MATRIX_RETAIL_ORDER)
-        )
-    )
-
-
-def _zeffect_profile_matrix_first_divergence_exact(value: Any) -> bool:
-    """Recognize only the evidence-closed r3671 Stop-versus-Clone row."""
-
-    if not isinstance(value, Mapping):
-        return False
-    expected = value.get("expected")
-    candidate = value.get("candidate")
-    common = {
-        "ordinal": 0,
-        "form": "call",
-        "dispatch": "direct",
-        "identity_kind": "direct",
-        "storage_identity": "",
-        "slot_displacement": None,
-        "cleanup_bytes": None,
-    }
-    return bool(
-        value.get("kind") == "mismatch"
-        and value.get("symbol_id") == ZEFFECT_PROFILE_MATRIX_CALLER_ID
-        and value.get("address") == ZEFFECT_PROFILE_MATRIX_CALLER_ADDRESS
-        and value.get("ordinal") == 0
-        and isinstance(expected, Mapping)
-        and isinstance(candidate, Mapping)
-        and dict(expected)
-        == {
-            **common,
-            "target_identity": ZEFFECT_PROFILE_MATRIX_RETAIL_ORDER[0][1],
-        }
-        and dict(candidate)
-        == {
-            **common,
-            "target_identity": ZEFFECT_PROFILE_MATRIX_RETAIL_ORDER[6][1],
-        }
-    )
-
-
-def _zeffect_profile_matrix_backend_qualification(
-    *,
-    target_id: str,
-    live_result: Mapping[str, Any],
-    source_signatures_before: Sequence[Mapping[str, Any]],
-    source_signatures_after: Sequence[Mapping[str, Any]],
-) -> dict[str, Any]:
-    symbol_ids = live_result.get("symbol_ids")
-    expected_contracts = live_result.get("expected_contracts")
-    candidate_contracts = live_result.get("candidate_contracts")
-    complete_population = bool(
-        live_result.get("body_count") == ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-        and isinstance(symbol_ids, list)
-        and len(symbol_ids) == ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-        and len(set(symbol_ids)) == ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-        and isinstance(expected_contracts, Mapping)
-        and isinstance(candidate_contracts, Mapping)
-        and set(expected_contracts) == set(symbol_ids)
-        and set(candidate_contracts) == set(symbol_ids)
-    )
-    source_unchanged = bool(
-        list(source_signatures_before) == list(source_signatures_after)
-        and live_result.get("source_changed_during_validation") is False
-        and live_result.get("dependency_states_before")
-        == live_result.get("dependency_states_after")
-    )
-    exact_precompiled_consumption = bool(
-        live_result.get("kind")
-        == "authored-call-contract-target-convergence-result"
-        and live_result.get("target_id") == target_id
-        and live_result.get("all_authored_bodies") is True
-        and live_result.get("compiled_target_ids") == [target_id]
-        and live_result.get("selected_target_compile_count") == 1
-        and live_result.get("all_caller_divergences_collected") is True
-        and live_result.get("definition_closure_deferred") is True
-    )
-    retail_truth_unchanged = bool(
-        live_result.get("expected_truth")
-        == "retail-binary-ninja-plus-reviewed-tracker-identities"
-        and live_result.get("candidate_expected_truth") is False
-        and _zeffect_profile_matrix_retail_contract_exact(live_result)
-    )
-    proof_complete = bool(
-        complete_population
-        and source_unchanged
-        and exact_precompiled_consumption
-        and retail_truth_unchanged
-    )
-    return {
-        "proof_complete": proof_complete,
-        "fully_passed": bool(proof_complete and live_result.get("passed") is True),
-        "complete_population": complete_population,
-        "source_unchanged": source_unchanged,
-        "exact_precompiled_consumption": exact_precompiled_consumption,
-        "retail_truth_unchanged": retail_truth_unchanged,
-        "first_divergence": deepcopy(live_result.get("first_divergence")),
-        "caller_divergences": deepcopy(
-            live_result.get("caller_divergences", [])
-        ),
-        "expected_body_count": (
-            len(expected_contracts)
-            if isinstance(expected_contracts, Mapping)
-            else 0
-        ),
-        "candidate_body_count": (
-            len(candidate_contracts)
-            if isinstance(candidate_contracts, Mapping)
-            else 0
-        ),
-        "ordered_symbol_ids": deepcopy(symbol_ids),
-        "candidate_contracts": deepcopy(candidate_contracts),
-    }
-
-
-def zeffect_call_contract_profile_matrix(
-    *,
-    document: ProgressDocument,
-    target_id: str,
-    build_root: Path,
-    vc5_env: Path = DEFAULT_VC5_ENV,
-) -> dict[str, Any]:
-    """Run the exact source-stable zEffect compiler-backend matrix."""
-
-    if Path(vc5_env).resolve() != DEFAULT_VC5_ENV.resolve():
-        raise ProgressError(
-            "zEffect profile matrix requires the canonical installed VC5SP3 "
-            "environment"
-        )
-    target = _zeffect_profile_matrix_target(document, target_id)
-    rows = _zeffect_profile_matrix_authored_rows(target)
-    sources = (ZEFFECT_PROFILE_MATRIX_SOURCE,)
-    signatures_before = file_dependency_states(sources)
-    expected_flags = effective_source_compile_context(
-        target, ZEFFECT_PROFILE_MATRIX_SOURCE
-    )[1]
-    if tuple(expected_flags) != ZEFFECT_PROFILE_MATRIX_FLAGS:
-        raise ProgressError(
-            "zEffect profile matrix effective canonical compiler flags drifted"
-        )
-    scenarios: list[dict[str, Any]] = []
-    for backend in ZEFFECT_PROFILE_MATRIX_BACKENDS:
-        backend_id = str(backend["backend_id"])
-        build_dir = prepare_clean_build_dir(
-            build_root, f"zeffect-profile-matrix-{backend_id}"
-        )
-        tool_proof = _zeffect_profile_matrix_tool_proof(backend)
-        variant, effective_environment, staged_c2_proof = (
-            _zeffect_profile_matrix_backend_target(target, backend, build_dir)
-        )
-        effective_environment_proof = _profile_matrix_file_stat(
-            effective_environment
-        )
-        units, returncode = compile_translation_unit_order(
-            target=variant,
-            build_dir=build_dir,
-            compiler_env=compiler_env_path(variant, vc5_env),
-            capture_verification_receipt=True,
-        )
-        if returncode != 0 or len(units) != 1:
-            raise ValueError(
-                "zEffect profile matrix backend compilation failed or was "
-                f"partial for {backend_id}: returncode={returncode}"
-            )
-        unit = units[0]
-        compile_command = str(getattr(unit, "compile_command", ""))
-        if (
-            getattr(unit, "source_from", "") != ZEFFECT_PROFILE_MATRIX_SOURCE
-            or tuple(getattr(unit, "effective_compiler_flags", ()))
-            != tuple(expected_flags)
-            or not compile_command
-            or str(effective_environment) not in compile_command
-            or "/c" not in compile_command.casefold()
-            or not Path(unit.obj_path).is_file()
-            or not Path(unit.cod_path).is_file()
-        ):
-            raise ValueError(
-                "zEffect profile matrix backend effective command or complete "
-                "compiled target consumption drifted"
-            )
-        precompiled = _zeffect_profile_matrix_precompiled_target_units(
-            variant, units
-        )
-        live_result = live_call_contract_result(
-            document=document,
-            target_id=target_id,
-            all_authored_bodies=True,
-            build_root=build_dir / "retail-normalized",
-            vc5_env=vc5_env,
-            collect_all_divergences=True,
-            compile_definition_closure=False,
-            precompiled_target_units={target_id: precompiled},
-        )
-        signatures_after = file_dependency_states(sources)
-        staged_c2_after = (
-            {
-                **_profile_matrix_file_stat(Path(staged_c2_proof["path"])),
-                "file_version": _profile_matrix_fixed_file_version(
-                    Path(staged_c2_proof["path"])
-                ),
-            }
-            if staged_c2_proof is not None
-            else None
-        )
-        if (
-            _zeffect_profile_matrix_tool_proof(backend) != tool_proof
-            or _profile_matrix_file_stat(effective_environment)
-            != effective_environment_proof
-            or staged_c2_after != staged_c2_proof
-        ):
-            raise ValueError(
-                "zEffect profile matrix tool source changed during compilation"
-            )
-        qualification = _zeffect_profile_matrix_backend_qualification(
-            target_id=target_id,
-            live_result=live_result,
-            source_signatures_before=signatures_before,
-            source_signatures_after=signatures_after,
-        )
-        if not qualification["proof_complete"]:
-            raise ValueError(
-                "zEffect profile matrix backend proof is ambiguous, partial, "
-                "source-drifted, or lacks candidate-independent retail truth"
-            )
-        scenarios.append(
-            {
-                "backend_id": backend_id,
-                "diagnostic_only": tool_proof["diagnostic_only"],
-                "tool_proof": tool_proof,
-                "effective_environment": str(effective_environment),
-                "effective_environment_proof": effective_environment_proof,
-                "staged_c2_proof": staged_c2_proof,
-                "effective_profile": str(
-                    getattr(unit, "effective_compiler_profile", "")
-                ),
-                "effective_flags": list(unit.effective_compiler_flags),
-                "effective_command": compile_command,
-                "body_count": len(rows),
-                **qualification,
-            }
-        )
-    signatures_after = file_dependency_states(sources)
-    if signatures_after != signatures_before:
-        raise ValueError(
-            "zEffect profile matrix source changed during nonaccepting compilation"
-        )
-    passing = [row for row in scenarios if row["fully_passed"]]
-    selection_eligible = len(passing) == 1 and not passing[0]["diagnostic_only"]
-    return {
-        "kind": "zeffect-call-contract-compiler-profile-matrix",
-        "contract_version": ZEFFECT_PROFILE_MATRIX_CONTRACT_VERSION,
-        "passed": True,
-        "matrix_completed": True,
-        "nonaccepting": True,
-        "acceptance_eligible": False,
-        "acceptance_route": None,
-        "candidate_expected_truth": False,
-        "expected_truth": "retail-binary-ninja-plus-reviewed-tracker-identities",
-        "target_id": target_id,
-        "body_count": ZEFFECT_PROFILE_MATRIX_BODY_COUNT,
-        "source_signatures_before": signatures_before,
-        "source_signatures_after": signatures_after,
-        "source_changed_during_matrix": False,
-        "retail_call_order": [
-            {"ordinal": ordinal, "name": name, "target_identity": identity}
-            for ordinal, (name, identity) in enumerate(
-                ZEFFECT_PROFILE_MATRIX_RETAIL_ORDER
-            )
-        ],
-        "backends": scenarios,
-        "fully_passing_backend_count": len(passing),
-        "selection_eligible": selection_eligible,
-        "manifest_mutation_allowed": False,
-        "profile_mutation_allowed": False,
-        "ordinary_source_relaunch_allowed": bool(passing),
-        "non_source_blocker": (
-            None
-            if passing
-            else {
-                "kind": "compiler-profile-backend-matrix-exhausted",
-                "target_id": target_id,
-                "evidence_revision": 3671,
-                "reason": (
-                    "no exact installed compiler backend reproduces the "
-                    "candidate-independent retail call contract"
-                ),
-                "source_repairable": False,
-            }
-        ),
-    }
-
-
-def _valid_zeffect_profile_matrix_result(value: Any) -> bool:
-    """Validate the complete report-only zEffect backend proof.
-
-    The report may show a passing backend in a future diagnostic run, but it
-    never authorizes selection or a manifest/profile mutation.  Convergence
-    applies the narrower zero-pass condition before classifying a non-source
-    blocker.
-    """
-
-    if not isinstance(value, Mapping):
-        return False
-    source_before = value.get("source_signatures_before")
-    source_after = value.get("source_signatures_after")
-    source_signature = source_before[0] if isinstance(source_before, list) and len(source_before) == 1 else None
-    valid_source_signature = bool(
-        isinstance(source_signature, Mapping)
-        and set(source_signature)
-        == {
-            "path", "exists", "physical_identity", "size",
-            "mtime_ns", "ctime_ns",
-        }
-        and source_signature.get("path") == ZEFFECT_PROFILE_MATRIX_SOURCE
-        and source_signature.get("exists") is True
-        and type(source_signature.get("size")) is int
-        and type(source_signature.get("mtime_ns")) is int
-        and isinstance(source_signature.get("physical_identity"), Mapping)
-        and source_after == source_before
-    )
-    backends = value.get("backends")
-    passing_count = value.get("fully_passing_backend_count")
-    if (
-        value.get("kind")
-        != "zeffect-call-contract-compiler-profile-matrix"
-        or value.get("contract_version")
-        != ZEFFECT_PROFILE_MATRIX_CONTRACT_VERSION
-        or value.get("passed") is not True
-        or value.get("matrix_completed") is not True
-        or value.get("nonaccepting") is not True
-        or value.get("acceptance_eligible") is not False
-        or value.get("acceptance_route") is not None
-        or value.get("candidate_expected_truth") is not False
-        or value.get("expected_truth")
-        != "retail-binary-ninja-plus-reviewed-tracker-identities"
-        or value.get("target_id") != ZEFFECT_PROFILE_MATRIX_TARGET_ID
-        or value.get("body_count") != ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-        or not valid_source_signature
-        or value.get("source_changed_during_matrix") is not False
-        or value.get("retail_call_order")
-        != [
-            {"ordinal": ordinal, "name": name, "target_identity": identity}
-            for ordinal, (name, identity) in enumerate(
-                ZEFFECT_PROFILE_MATRIX_RETAIL_ORDER
-            )
-        ]
-        or not isinstance(backends, list)
-        or len(backends) != len(ZEFFECT_PROFILE_MATRIX_BACKENDS)
-        or not isinstance(passing_count, int)
-        or isinstance(passing_count, bool)
-        or passing_count < 0
-        or value.get("selection_eligible")
-        is not (
-            passing_count == 1
-            and any(
-                row.get("fully_passed") is True
-                and row.get("diagnostic_only") is False
-                for row in backends
-                if isinstance(row, Mapping)
-            )
-        )
-        or value.get("manifest_mutation_allowed") is not False
-        or value.get("profile_mutation_allowed") is not False
-        or value.get("ordinary_source_relaunch_allowed")
-        is not (passing_count > 0)
-    ):
-        return False
-
-    scenario_flags: tuple[str, ...] | None = None
-    actual_passing = 0
-    for backend, scenario in zip(ZEFFECT_PROFILE_MATRIX_BACKENDS, backends):
-        if not isinstance(scenario, Mapping):
-            return False
-        proof = scenario.get("tool_proof")
-        cl_proof = proof.get("cl") if isinstance(proof, Mapping) else None
-        c2_proof = proof.get("c2") if isinstance(proof, Mapping) else None
-        env_proof = (
-            proof.get("environment") if isinstance(proof, Mapping) else None
-        )
-        effective_environment_proof = scenario.get(
-            "effective_environment_proof"
-        )
-        staged_c2_proof = scenario.get("staged_c2_proof")
-        flags = scenario.get("effective_flags")
-        command = scenario.get("effective_command")
-        effective_environment = scenario.get("effective_environment")
-        first_divergence = scenario.get("first_divergence")
-        divergences = scenario.get("caller_divergences")
-        if scenario.get("fully_passed") is True:
-            actual_passing += 1
-        try:
-            current_tool_proof = _zeffect_profile_matrix_tool_proof(backend)
-            current_environment_proof = _profile_matrix_file_stat(
-                Path(str(effective_environment))
-            )
-        except (OSError, RuntimeError, ValueError):
-            return False
-        if bool(backend["diagnostic_only"]):
-            try:
-                current_staged_c2_proof = {
-                    **_profile_matrix_file_stat(
-                        Path(str(staged_c2_proof.get("path", "")))
-                    ),
-                    "file_version": _profile_matrix_fixed_file_version(
-                        Path(str(staged_c2_proof.get("path", "")))
-                    ),
-                } if isinstance(staged_c2_proof, Mapping) else None
-            except (OSError, RuntimeError, ValueError):
-                return False
-        else:
-            current_staged_c2_proof = None
-        candidate_contracts = scenario.get("candidate_contracts")
-        ordered_symbol_ids = scenario.get("ordered_symbol_ids")
-        if (
-            scenario.get("backend_id") != backend["backend_id"]
-            or scenario.get("diagnostic_only")
-            is not bool(backend["diagnostic_only"])
-            or not isinstance(proof, Mapping)
-            or proof.get("backend_id") != backend["backend_id"]
-            or proof.get("diagnostic_only")
-            is not bool(backend["diagnostic_only"])
-            or proof != current_tool_proof
-            or cl_proof != current_tool_proof["cl"]
-            or c2_proof != current_tool_proof["c2"]
-            or env_proof != current_tool_proof["environment"]
-            or not isinstance(effective_environment, str)
-            or not effective_environment
-            or effective_environment_proof != current_environment_proof
-            or staged_c2_proof != current_staged_c2_proof
-            or not isinstance(flags, list)
-            or tuple(flags) != ZEFFECT_PROFILE_MATRIX_FLAGS
-            or not isinstance(command, str)
-            or effective_environment not in command
-            or "/c" not in command.casefold()
-            or scenario.get("body_count") != ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-            or scenario.get("proof_complete") is not True
-            or scenario.get("complete_population") is not True
-            or scenario.get("source_unchanged") is not True
-            or scenario.get("exact_precompiled_consumption") is not True
-            or scenario.get("retail_truth_unchanged") is not True
-            or scenario.get("expected_body_count")
-            != ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-            or scenario.get("candidate_body_count")
-            != ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-            or not isinstance(ordered_symbol_ids, list)
-            or len(ordered_symbol_ids) != ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-            or len(set(ordered_symbol_ids)) != ZEFFECT_PROFILE_MATRIX_BODY_COUNT
-            or not isinstance(candidate_contracts, Mapping)
-            or set(candidate_contracts) != set(ordered_symbol_ids)
-            or scenario.get("fully_passed")
-            is not (first_divergence is None)
-            or not isinstance(divergences, list)
-            or (
-                first_divergence is not None
-                and (
-                    not divergences
-                    or divergences[0] != first_divergence
-                )
-            )
-        ):
-            return False
-        current_flags = tuple(flags)
-        if scenario_flags is None:
-            scenario_flags = current_flags
-        elif current_flags != scenario_flags:
-            return False
-        if bool(backend["diagnostic_only"]):
-            if not Path(effective_environment).name.casefold().endswith(
-                "compiler-backend-env.cmd"
-            ):
-                return False
-        elif Path(effective_environment).resolve() != DEFAULT_VC5_ENV.resolve():
-            return False
-    if actual_passing != passing_count:
-        return False
-    blocker = value.get("non_source_blocker")
-    if passing_count:
-        return blocker is None
-    return blocker == {
-        "kind": "compiler-profile-backend-matrix-exhausted",
-        "target_id": ZEFFECT_PROFILE_MATRIX_TARGET_ID,
-        "evidence_revision": 3671,
-        "reason": (
-            "no exact installed compiler backend reproduces the "
-            "candidate-independent retail call contract"
-        ),
-        "source_repairable": False,
-    }
-
-
-def _player_profile_matrix_function_key(row: Any) -> tuple[Any, ...]:
-    getter = (
-        row.get
-        if isinstance(row, Mapping)
-        else lambda key, default=None: getattr(row, key, default)
-    )
-    return (
-        str(getter("address", "")),
-        str(getter("symbol", "")),
-        getter("symbol_regex", None),
-        str(getter("name", "")),
-        str(getter("pipeline_class", "")),
-        str(getter("authored_order_role", "")),
-        bool(getter("required_presence", False)),
-        bool(getter("full_order_gate", False)),
-        str(getter("logical_identity_key", "")),
-        str(getter("icf_fold_status", "")),
-    )
-
-
-def _player_profile_matrix_non_authored_keys(
-    rows: Sequence[Any],
-) -> tuple[tuple[Any, ...], ...]:
-    result = []
-    for row in rows:
-        key = _player_profile_matrix_function_key(row)
-        if key[4] != "authored" or key[5] not in {
-            "authored-body",
-            "authored-lifecycle-body",
-        }:
-            result.append(key)
-    return tuple(result)
-
-
-def _player_profile_matrix_authored_rows(
-    target: Any,
-) -> tuple[tuple[Any, Any], ...]:
-    rows = tuple(
-        (entry, function)
-        for entry in getattr(target, "translation_unit_function_order", ())
-        for function in getattr(entry, "functions", ())
-        if getattr(function, "pipeline_class", "") == "authored"
-        and function_authored_relative_order_gate(function)
-    )
-    keys = tuple(
-        _player_profile_matrix_function_key(function)
-        for _entry, function in rows
-    )
-    matching_callers = tuple(
-        function
-        for _entry, function in rows
-        if str(getattr(function, "address", ""))
-        == PLAYER_PROFILE_MATRIX_CALLER_ADDRESS
-        and str(getattr(function, "symbol", ""))
-        == PLAYER_PROFILE_MATRIX_CALLER_SYMBOL
-    )
-    if (
-        len(rows) != PLAYER_PROFILE_MATRIX_BODY_COUNT
-        or len(keys) != len(set(keys))
-        or len(matching_callers) != 1
-    ):
-        raise ValueError(
-            "Player profile matrix requires the exact distinct 165-body "
-            "authored target population and caller 0x42a070"
-        )
-    return rows
-
-
-def _player_profile_matrix_target(
-    document: ProgressDocument,
-    target_id: str,
-) -> Any:
-    target_row = document.collection("verification_targets").get(target_id)
-    registration = (
-        target_row.get("registration")
-        if isinstance(target_row, Mapping)
-        else None
-    )
-    expected_manifest = PLAYER_PROFILE_MATRIX_MANIFEST.relative_to(
-        REPO_ROOT
-    ).as_posix()
-    registration_entries = (
-        registration.get("translation_unit_function_order")
-        if isinstance(registration, Mapping)
-        else None
-    )
-    registration_entry = (
-        registration_entries[0]
-        if isinstance(registration_entries, list)
-        and len(registration_entries) == 1
-        and isinstance(registration_entries[0], Mapping)
-        else None
-    )
-    registered_addresses = (
-        target_row.get("registered_addresses")
-        if isinstance(target_row, Mapping)
-        else None
-    )
-    if (
-        target_id != PLAYER_PROFILE_MATRIX_TARGET_ID
-        or not isinstance(target_row, Mapping)
-        or target_row.get("binary") != "recoil"
-        or target_row.get("kind") != "vc5"
-        or target_row.get("name") != PLAYER_PROFILE_MATRIX_TARGET_NAME
-        or not isinstance(registered_addresses, list)
-        or len(registered_addresses) != PLAYER_PROFILE_MATRIX_REGISTERED_COUNT
-        or len(set(registered_addresses))
-        != PLAYER_PROFILE_MATRIX_REGISTERED_COUNT
-        or not isinstance(registration, Mapping)
-        or registration.get("manifest_path") != expected_manifest
-        or registration.get("source_from") != PLAYER_PROFILE_MATRIX_SOURCE
-        or tuple(registration.get("order_edit_paths", ()))
-        != PLAYER_PROFILE_MATRIX_ORDER_EDIT_PATHS
-        or registration.get("check_translation_unit_function_order") is not True
-        or registration.get("function_order_scope") != "authored"
-        or not isinstance(registration_entry, Mapping)
-        or registration_entry.get("source_from")
-        != PLAYER_PROFILE_MATRIX_SOURCE
-        or registration_entry.get("order_scope") != "authored"
-        or registration_entry.get("inventory_only") is not False
-        or not isinstance(registration_entry.get("functions"), list)
-        or len(registration_entry["functions"])
-        != PLAYER_PROFILE_MATRIX_REGISTERED_COUNT
-    ):
-        raise ProgressError(
-            "Player profile matrix requires the synchronized exact governed "
-            "reviewed target registration population"
-        )
-
-    target = load_manifest(PLAYER_PROFILE_MATRIX_MANIFEST)
-    require_clean_target_source_fragments(target)
-    entries = tuple(getattr(target, "translation_unit_function_order", ()))
-    entry = entries[0] if len(entries) == 1 else None
-    manifest_functions = (
-        tuple(getattr(entry, "functions", ())) if entry is not None else ()
-    )
-    if (
-        getattr(target, "name", "") != PLAYER_PROFILE_MATRIX_TARGET_NAME
-        or getattr(target, "target_binary", "") != "recoil"
-        or Path(str(getattr(target, "manifest_path", ""))).resolve()
-        != PLAYER_PROFILE_MATRIX_MANIFEST.resolve()
-        or getattr(target, "source_from", "") != PLAYER_PROFILE_MATRIX_SOURCE
-        or tuple(getattr(target, "order_edit_paths", ()))
-        != PLAYER_PROFILE_MATRIX_ORDER_EDIT_PATHS
-        or entry is None
-        or getattr(entry, "source_from", "") != PLAYER_PROFILE_MATRIX_SOURCE
-        or getattr(entry, "inventory_only", True)
-        or getattr(entry, "order_scope", "") != "authored"
-        or len(manifest_functions) != PLAYER_PROFILE_MATRIX_REGISTERED_COUNT
-        or _player_profile_matrix_non_authored_keys(manifest_functions)
-        != PLAYER_PROFILE_MATRIX_REVIEWED_NON_AUTHORED_KEYS
-        or Path(str(compiler_env_path(target, DEFAULT_VC5_ENV))).resolve()
-        != DEFAULT_VC5_ENV.resolve()
-    ):
-        raise ProgressError(
-            "Player profile matrix requires the exact one-TU canonical "
-            "VC5SP3 target package"
-        )
-    registration_functions = tuple(registration_entry["functions"])
-    if (
-        tuple(str(function.address) for function in manifest_functions)
-        != tuple(registered_addresses)
-        or tuple(
-            _player_profile_matrix_function_key(function)
-            for function in manifest_functions
-        )
-        != tuple(
-            _player_profile_matrix_function_key(function)
-            for function in registration_functions
-        )
-        or _player_profile_matrix_non_authored_keys(registration_functions)
-        != PLAYER_PROFILE_MATRIX_REVIEWED_NON_AUTHORED_KEYS
-    ):
-        raise ProgressError(
-            "Player profile matrix target registration and manifest rows drifted"
-        )
-    _player_profile_matrix_authored_rows(target)
-    profile, flags = effective_source_compile_context(
-        target, PLAYER_PROFILE_MATRIX_SOURCE
-    )
-    if (
-        profile != "vc5_o2_ob0_md_gx_fastcall_facs"
-        or tuple(flags) != PLAYER_PROFILE_MATRIX_FLAGS_OB0
-    ):
-        raise ProgressError(
-            "Player profile matrix canonical /O2 /Ob0 compile context drifted"
-        )
-    return target
-
-
-def _player_profile_matrix_variant_target(
-    target: Any,
-    *,
-    profile_id: str,
-    inline_flag: str,
-) -> Any:
-    profile_rows = {
-        (row[0], row[1]) for row in PLAYER_PROFILE_MATRIX_PROFILES
-    }
-    if (profile_id, inline_flag) not in profile_rows:
-        raise ValueError(f"unknown Player profile matrix profile {profile_id!r}")
-    entries = tuple(getattr(target, "translation_unit_function_order", ()))
-    if (
-        len(entries) != 1
-        or getattr(entries[0], "source_from", "")
-        != PLAYER_PROFILE_MATRIX_SOURCE
-    ):
-        raise ValueError(
-            "Player profile matrix variant requires the exact one-TU target"
-        )
-    _profile, current_flags = effective_source_compile_context(
-        target, PLAYER_PROFILE_MATRIX_SOURCE
-    )
-    flags = _wol_profile_matrix_inline_flags(current_flags, inline_flag)
-    source_key = canonical_source_key(PLAYER_PROFILE_MATRIX_SOURCE)
-    return replace(
-        target,
-        source_compile_profiles=(
-            (source_key, f"player-profile-matrix-{profile_id}"),
-        ),
-        source_compile_flags=((source_key, flags),),
-    )
-
-
-def _player_profile_matrix_precompiled_target_units(
-    target: Any,
-    units: Sequence[Any],
-) -> tuple[Any, tuple[tuple[Any, Path, CoffObject], ...]]:
-    entries = tuple(getattr(target, "translation_unit_function_order", ()))
-    if (
-        len(entries) != 1
-        or len(units) != 1
-        or getattr(entries[0], "source_from", "")
-        != PLAYER_PROFILE_MATRIX_SOURCE
-        or getattr(units[0], "manifest_index", None) != 0
-        or getattr(units[0], "source_from", "")
-        != PLAYER_PROFILE_MATRIX_SOURCE
-    ):
-        raise ValueError(
-            "Player profile matrix requires exact complete one-TU precompiled "
-            "consumption"
-        )
-    return (
-        target,
-        ((
-            entries[0],
-            Path(units[0].cod_path),
-            CoffObject.from_path(Path(units[0].obj_path)),
-        ),),
-    )
-
-
-def _player_profile_matrix_instruction_rows(
-    definition: Any,
-) -> list[dict[str, Any]]:
-    assembly = CandidateAssembly(
-        instructions=tuple(getattr(definition, "instructions", ())),
-        local_control_flow_indices=frozenset(
-            getattr(definition, "local_control_flow_indices", frozenset())
-        ),
-        local_control_flow_targets=dict(
-            getattr(definition, "local_control_flow_targets", {})
-        ),
-    )
-    offsets = list(_candidate_complete_instruction_offsets(assembly))
-    if (
-        offsets
-        and offsets[0] is None
-        and len(offsets) > 1
-        and offsets[1] == len(assembly.instructions[0].bytes)
-    ):
-        offsets[0] = 0
-    if (
-        not assembly.instructions
-        or len(offsets) != len(assembly.instructions)
-        or any(offset is None for offset in offsets)
-    ):
-        raise ValueError(
-            "Player profile matrix caller snapshot requires one complete "
-            "offset-bound COD instruction population"
-        )
-    return [
-        {
-            "index": index,
-            "offset": offset,
-            "text": instruction.text,
-            "raw_text": instruction.raw_text,
-            "bytes": list(instruction.bytes),
-            "source_line": instruction.source_line,
-        }
-        for index, (offset, instruction) in enumerate(
-            zip(offsets, assembly.instructions)
-        )
-    ]
-
-
-def _player_profile_matrix_physical_snapshot(
-    definition: Any,
-) -> dict[str, Any]:
-    data = bytes(getattr(definition, "data", b""))
-    relocation_mask = tuple(
-        bool(value)
-        for value in getattr(definition, "relocation_mask", ())
-    )
-    if not data or len(relocation_mask) != len(data):
-        raise ValueError(
-            "Player profile matrix caller snapshot requires exact nonempty "
-            "body bytes and a complete relocation mask"
-        )
-    instructions = _player_profile_matrix_instruction_rows(definition)
-    covered_instruction_bytes: set[int] = set()
-    for instruction in instructions:
-        offset = int(instruction["offset"])
-        instruction_bytes = bytes.fromhex(" ".join(instruction["bytes"]))
-        end = offset + len(instruction_bytes)
-        if (
-            offset < 0
-            or not instruction_bytes
-            or end > len(data)
-            or any(index in covered_instruction_bytes for index in range(offset, end))
-            or data[offset:end] != instruction_bytes
-        ):
-            raise ValueError(
-                "Player profile matrix caller snapshot COD/COFF instruction "
-                "population is missing, overlapping, or byte-inconsistent"
-            )
-        covered_instruction_bytes.update(range(offset, end))
-    missing_instruction_bytes = sorted(
-        set(range(len(data))) - covered_instruction_bytes
-    )
-    trailing_padding_start = (
-        max(covered_instruction_bytes) + 1
-        if covered_instruction_bytes
-        else 0
-    )
-    if (
-        missing_instruction_bytes
-        and (
-            missing_instruction_bytes
-            != list(range(trailing_padding_start, len(data)))
-            or any(value not in {0x90, 0xCC} for value in data[trailing_padding_start:])
-        )
-    ):
-        raise ValueError(
-            "Player profile matrix caller snapshot COD instructions do not "
-            "cover the exact executable COFF body plus terminal alignment"
-        )
-
-    relocations: list[dict[str, Any]] = []
-    expected_mask = [False] * len(data)
-    for row in getattr(definition, "relocations", ()):
-        offset = int(row.offset)
-        width = relocation_size(int(row.type))
-        end = offset + width
-        if offset < 0 or end > len(data):
-            raise ValueError(
-                "Player profile matrix caller snapshot has a relocation "
-                "outside the exact natural body"
-            )
-        if any(expected_mask[index] for index in range(offset, end)):
-            raise ValueError(
-                "Player profile matrix caller snapshot has overlapping "
-                "relocation fields"
-            )
-        for index in range(offset, end):
-            expected_mask[index] = True
-        field = data[offset:end]
-        relocations.append({
-            "offset": offset,
-            "type": int(row.type),
-            "symbol_index": int(row.symbol_index),
-            "symbol": str(row.symbol_name),
-            "width": width,
-            "field_data_hex": field.hex(),
-            "addend_unsigned": int.from_bytes(field, "little", signed=False),
-            "addend_signed": int.from_bytes(field, "little", signed=True),
-        })
-    if tuple(expected_mask) != relocation_mask:
-        raise ValueError(
-            "Player profile matrix caller snapshot relocation rows and mask "
-            "are not an exact complete population"
-        )
-    relocation_by_offset = {row["offset"]: row for row in relocations}
-    if len(relocation_by_offset) != len(relocations):
-        raise ValueError(
-            "Player profile matrix caller snapshot has duplicate relocation "
-            "field offsets"
-        )
-    call_sites: list[dict[str, Any]] = []
-    for instruction in instructions:
-        parts = str(instruction["text"]).strip().split(None, 1)
-        mnemonic = parts[0].casefold() if parts else ""
-        if mnemonic not in {"call", "jmp"}:
-            continue
-        offset = instruction["offset"]
-        relocation = (
-            relocation_by_offset.get(int(offset) + 1)
-            if isinstance(offset, int)
-            else None
-        )
-        call_sites.append(
-            {
-                "instruction_index": instruction["index"],
-                "instruction_offset": offset,
-                "form": "call" if mnemonic == "call" else "tail",
-                "operand": parts[1].strip() if len(parts) == 2 else "",
-                "raw_text": instruction["raw_text"],
-                "relocation": deepcopy(relocation),
-            }
-        )
-    return {
-        "symbol": str(getattr(definition, "symbol", "")),
-        "size": len(data),
-        "relocation_mask": list(relocation_mask),
-        "relocations": relocations,
-        "relocation_count": len(relocations),
-        "relocation_targets": [row["symbol"] for row in relocations],
-        "instructions": instructions,
-        "instruction_covered_size": len(covered_instruction_bytes),
-        "terminal_alignment_offset": trailing_padding_start,
-        "terminal_alignment_size": len(data[trailing_padding_start:]),
-        "call_sites": call_sites,
-        "call_count": sum(row["form"] == "call" for row in call_sites),
-        "tail_count": sum(row["form"] == "tail" for row in call_sites),
-        "call_tail_count": len(call_sites),
-        "section_size": int(getattr(definition, "section_size", 0)),
-        "section_is_comdat": bool(
-            getattr(definition, "section_is_comdat", False)
-        ),
-        "comdat_selection": getattr(definition, "comdat_selection", None),
-        "section_external_functions": list(
-            getattr(definition, "section_external_functions", ())
-        ),
-        "source_provenance": str(
-            getattr(definition, "source_provenance", "")
-        ),
-        "local_control_flow_indices": sorted(
-            int(value)
-            for value in getattr(
-                definition, "local_control_flow_indices", frozenset()
-            )
-        ),
-        "local_control_flow_targets": {
-            str(index): [int(value) for value in targets]
-            for index, targets in sorted(
-                dict(
-                    getattr(definition, "local_control_flow_targets", {})
-                ).items()
-            )
-        },
-    }
-
-
-def _player_profile_matrix_coff_symbol_row(symbol: CoffSymbol) -> dict[str, Any]:
-    return {
-        "index": int(symbol.index),
-        "name": str(symbol.name),
-        "value": int(symbol.value),
-        "section_number": int(symbol.section_number),
-        "type": int(symbol.type),
-        "storage_class": int(symbol.storage_class),
-        "aux_count": int(symbol.aux_count),
-        "section_definition_selection": (
-            int(symbol.section_definition_selection)
-            if symbol.section_definition_selection is not None
-            else None
-        ),
-    }
-
-
-def _player_profile_matrix_candidate_snapshot(unit: Any) -> dict[str, Any]:
-    """Snapshot raw caller 0x42a070 facts before any retail comparison.
-
-    This is mandatory candidate observation for both profiles.  It is not an
-    expected-contract producer and grants no profile-selection authority.
-    """
-
-    obj_path = Path(getattr(unit, "obj_path", ""))
-    cod_path = Path(getattr(unit, "cod_path", ""))
-    if not obj_path.is_file() or not cod_path.is_file():
-        raise ValueError(
-            "Player profile matrix caller snapshot requires fresh object and "
-            "COD artifacts"
-        )
-    coff = CoffObject.from_path(obj_path)
-    caller_symbols = tuple(
-        symbol
-        for symbol in coff.symbols
-        if symbol.name == PLAYER_PROFILE_MATRIX_CALLER_SYMBOL
-    )
-    if len(caller_symbols) != 1:
-        raise ValueError(
-            "Player profile matrix caller snapshot requires one exact COFF "
-            "caller symbol"
-        )
-    caller_symbol = caller_symbols[0]
-    if (
-        caller_symbol.section_number <= 0
-        or caller_symbol.type != 0x20
-        or caller_symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
-    ):
-        raise ValueError(
-            "Player profile matrix caller snapshot requires one defined "
-            "external function symbol"
-        )
-    section = coff.section(caller_symbol.section_number)
-    function = coff.function_bytes(PLAYER_PROFILE_MATRIX_CALLER_SYMBOL)
-    if (
-        function.symbol != PLAYER_PROFILE_MATRIX_CALLER_SYMBOL
-        or function.section_index != caller_symbol.section_number
-        or function.start != caller_symbol.value
-        or function.end != function.natural_end
-        or function.end <= function.start
-        or len(function.data) != function.end - function.start
-    ):
-        raise ValueError(
-            "Player profile matrix caller snapshot lacks one exact natural "
-            "COFF body extent"
-        )
-    parsed = _extract_cod_proc_with_local_switches(
-        cod_path, PLAYER_PROFILE_MATRIX_CALLER_SYMBOL
-    )
-    relative_relocations = tuple(
-        CoffRelocation(
-            offset=int(row.offset) - int(function.start),
-            symbol_index=int(row.symbol_index),
-            type=int(row.type),
-            symbol_name=str(row.symbol_name),
-        )
-        for row in function.relocations
-    )
-    external_functions = tuple(
-        sorted(
-            symbol.name
-            for symbol in coff.symbols
-            if symbol.section_number == caller_symbol.section_number
-            and symbol.storage_class == IMAGE_SYM_CLASS_EXTERNAL
-            and symbol.type == 0x20
-        )
-    )
-    definition = CandidateTuLocalFunctionDefinition(
-        symbol=PLAYER_PROFILE_MATRIX_CALLER_SYMBOL,
-        data=function.data,
-        relocations=relative_relocations,
-        relocation_mask=function.relocation_mask,
-        section_size=len(section.raw_data),
-        section_external_functions=external_functions,
-        section_is_comdat=bool(section.characteristics & IMAGE_SCN_LNK_COMDAT),
-        instructions=parsed.instructions,
-        local_control_flow_indices=parsed.local_control_flow_indices,
-        local_control_flow_targets=parsed.local_control_flow_targets,
-        source_provenance=PLAYER_PROFILE_MATRIX_SOURCE,
-    )
-    physical = _player_profile_matrix_physical_snapshot(definition)
-    coincident = tuple(
-        symbol
-        for symbol in coff.symbols
-        if symbol.section_number == caller_symbol.section_number
-        and symbol.value == caller_symbol.value
-    )
-    section_symbols = tuple(
-        symbol
-        for symbol in coff.symbols
-        if symbol.section_number == caller_symbol.section_number
-    )
-    return {
-        "kind": "player-profile-matrix-raw-physical-caller-snapshot",
-        "contract_version": 1,
-        "candidate_expected_truth": False,
-        "proof_authority": "raw-candidate-observation-only",
-        "used_for_candidate_contract": False,
-        "used_for_profile_selection": False,
-        "caller_symbol": PLAYER_PROFILE_MATRIX_CALLER_SYMBOL,
-        "caller_address": PLAYER_PROFILE_MATRIX_CALLER_ADDRESS,
-        "object_path": str(obj_path.resolve()),
-        "cod_path": str(cod_path.resolve()),
-        "body_extent": {
-            "section_index": int(function.section_index),
-            "section_name": str(function.section_name),
-            "section_start": int(function.start),
-            "section_end": int(function.end),
-            "natural_end": int(function.natural_end),
-            "natural_size": int(function.natural_end - function.start),
-            "section_size": len(section.raw_data),
-            "section_characteristics": int(section.characteristics),
-        },
-        "caller_coff_symbol": _player_profile_matrix_coff_symbol_row(
-            caller_symbol
-        ),
-        "coincident_symbols": [
-            _player_profile_matrix_coff_symbol_row(symbol)
-            for symbol in coincident
-        ],
-        "section_defined_symbols": [
-            _player_profile_matrix_coff_symbol_row(symbol)
-            for symbol in section_symbols
-        ],
-        **physical,
-    }
-
-
-def _player_profile_matrix_recursive_graph(
-    caller: Any,
-    definitions: Mapping[str, CandidateTuLocalFunctionDefinition],
-) -> dict[str, Any]:
-    """Return the raw candidate relocation graph without semantic projection."""
-
-    caller_snapshot = _player_profile_matrix_physical_snapshot(caller)
-    definition_order: list[str] = []
-    definition_rows: dict[str, Any] = {}
-    edges: list[dict[str, Any]] = []
-    external_relocations: list[dict[str, Any]] = []
-    visiting: set[str] = set()
-    visited: set[str] = set()
-
-    def visit(symbol: str) -> None:
-        if symbol in visited:
-            return
-        definition = definitions.get(symbol)
-        if definition is None:
-            return
-        if symbol in visiting:
-            return
-        visiting.add(symbol)
-        definition_order.append(symbol)
-        snapshot = _player_profile_matrix_physical_snapshot(definition)
-        definition_rows[symbol] = snapshot
-        for relocation in snapshot["relocations"]:
-            target_symbol = str(relocation["symbol"])
-            local = target_symbol in definitions
-            edge = {
-                "source": symbol,
-                "offset": relocation["offset"],
-                "type": relocation["type"],
-                "symbol_index": relocation["symbol_index"],
-                "target": target_symbol,
-                "target_is_tu_local_function": local,
-                "cycle": bool(local and target_symbol in visiting),
-            }
-            edges.append(edge)
-            if local:
-                visit(target_symbol)
-            else:
-                external_relocations.append(deepcopy(edge))
-        visiting.remove(symbol)
-        visited.add(symbol)
-
-    roots: list[dict[str, Any]] = []
-    for relocation in caller_snapshot["relocations"]:
-        target_symbol = str(relocation["symbol"])
-        local = target_symbol in definitions
-        root = {
-            "source": caller_snapshot["symbol"],
-            "offset": relocation["offset"],
-            "type": relocation["type"],
-            "symbol_index": relocation["symbol_index"],
-            "target": target_symbol,
-            "target_is_tu_local_function": local,
-        }
-        roots.append(root)
-        if local:
-            visit(target_symbol)
-    return {
-        "raw_unprojected": True,
-        "candidate_expected_truth": False,
-        "proof_authority": "none",
-        "used_for_candidate_contract": False,
-        "used_for_profile_selection": False,
-        "caller": caller_snapshot,
-        "root_relocations": roots,
-        "root_local_symbols": [
-            row["target"]
-            for row in roots
-            if row["target_is_tu_local_function"]
-        ],
-        "definition_order": definition_order,
-        "definitions": definition_rows,
-        "edges": edges,
-        "external_relocations": external_relocations,
-    }
-
-
-def _player_profile_matrix_invocation_occurrences(
-    graph: Mapping[str, Any],
-) -> tuple[list[dict[str, Any]], bool]:
-    """Expand a candidate-only call-occurrence graph with multiplicity."""
-
-    definitions = graph.get("definitions")
-    caller = graph.get("caller")
-    if not isinstance(definitions, Mapping) or not isinstance(caller, Mapping):
-        return [], False
-    result: list[dict[str, Any]] = []
-    complete = True
-
-    def walk(snapshot: Mapping[str, Any], path: tuple[str, ...]) -> None:
-        nonlocal complete
-        sites = snapshot.get("call_sites")
-        if not isinstance(sites, list):
-            complete = False
-            return
-        for occurrence, site in enumerate(sites):
-            if not isinstance(site, Mapping):
-                complete = False
-                continue
-            relocation = site.get("relocation")
-            if not isinstance(relocation, Mapping):
-                complete = False
-                continue
-            target = str(relocation.get("symbol", ""))
-            form = str(site.get("form", ""))
-            origin = (*path, f"{site.get('instruction_offset')}:{occurrence}")
-            nested = definitions.get(target)
-            if isinstance(nested, Mapping):
-                if target in path:
-                    complete = False
-                    continue
-                walk(nested, (*origin, target))
-                continue
-            result.append({
-                "origin": list(origin),
-                "form": form,
-                "target": target,
-                "relocation_offset": relocation.get("offset"),
-                "relocation_type": relocation.get("type"),
-            })
-
-    walk(caller, (str(caller.get("symbol", "")),))
-    return result, complete
-
-
-def _player_strict_paired_profile_proof(
-    ob0_graph: Mapping[str, Any],
-    ob1_graph: Mapping[str, Any],
-    *,
-    same_preprocessed_source_receipt: Mapping[str, Any] | None,
-    stage_c_exact_retail: bool,
-) -> dict[str, Any]:
-    """Evaluate the strict nonaccepting /Ob0 -> /Ob1 -> retail chain."""
-
-    projected, projection_complete = (
-        _player_profile_matrix_invocation_occurrences(ob0_graph)
-    )
-    ob1_caller = ob1_graph.get("caller")
-    physical = (
-        [deepcopy(row) for row in ob1_caller.get("call_sites", ())]
-        if isinstance(ob1_caller, Mapping)
-        else []
-    )
-    receipt = same_preprocessed_source_receipt
-    same_source = bool(
-        isinstance(receipt, Mapping)
-        and receipt.get("kind") == "vc5-preprocess-once-paired-input-receipt"
-        and receipt.get("contract_version") == 1
-        and receipt.get("candidate_expected_truth") is False
-        and receipt.get("preprocess_invocation_count") == 1
-        and receipt.get("preprocessed_input_equal_direct") is True
-        and receipt.get("non_ob_options_equal") is True
-        and receipt.get("ob0_inline_option") == "/Ob0"
-        and receipt.get("ob1_inline_option") == "/Ob1"
-        and receipt.get("toolchain_components_equal") is True
-        and receipt.get("fresh_exclusive_artifacts") is True
-    )
-    cardinality_equal = len(projected) == len(physical)
-    pairs = []
-    ordered_equal = cardinality_equal
-    if cardinality_equal:
-        for index, (left, right) in enumerate(zip(projected, physical)):
-            relocation = right.get("relocation")
-            right_target = (
-                str(relocation.get("symbol", ""))
-                if isinstance(relocation, Mapping) else ""
-            )
-            match = bool(
-                left.get("form") == right.get("form")
-                and left.get("target") == right_target
-            )
-            ordered_equal = ordered_equal and match
-            pairs.append({
-                "ob0_origin_index": index,
-                "ob1_physical_index": index,
-                "form_and_identity_equal": match,
-            })
-    stage_b = bool(
-        same_source
-        and projection_complete
-        and cardinality_equal
-        and ordered_equal
-        and len(pairs) == len(projected) == len(physical)
-    )
-    return {
-        "kind": "player-strict-preprocess-once-ob0-ob1-retail-proof",
-        "contract_version": 1,
-        "nonaccepting": True,
-        "acceptance_eligible": False,
-        "candidate_expected_truth": False,
-        "same_preprocessed_source": same_source,
-        "same_preprocessed_source_receipt": deepcopy(receipt),
-        "stage_a_complete_candidate_projection": projection_complete,
-        "stage_a_projected_invocation_count": len(projected),
-        "stage_a_projected_invocations": projected,
-        "stage_b_ob1_physical_invocation_count": len(physical),
-        "stage_b_cardinality_equal": cardinality_equal,
-        "stage_b_unique_ordered_bijection": stage_b,
-        "stage_b_origin_pairs": pairs,
-        "stage_c_exact_retail_artifact": bool(stage_c_exact_retail),
-        "passed": bool(stage_b and stage_c_exact_retail),
-        "failure": (
-            None
-            if stage_b and stage_c_exact_retail
-            else {
-                "kind": "stage-b-proof-failure",
-                "reason": (
-                    f"strict invocation bijection requires equal populations; "
-                    f"projected_ob0={len(projected)}, physical_ob1={len(physical)}"
-                    if not cardinality_equal
-                    else "same-preprocessed-source or unique ordered origin proof failed"
-                ),
-            }
-        ),
-    }
-
-
-def _player_profile_matrix_candidate_graph(
-    unit: Any,
-    *,
-    canonical_ob0: bool,
-) -> dict[str, Any]:
-    coff = CoffObject.from_path(Path(unit.obj_path))
-    cod_path = Path(unit.cod_path)
-    caller_bytes = coff.function_bytes(PLAYER_PROFILE_MATRIX_CALLER_SYMBOL)
-    parsed = _extract_cod_proc_with_local_switches(
-        cod_path, PLAYER_PROFILE_MATRIX_CALLER_SYMBOL
-    )
-    caller = CandidateTuLocalFunctionDefinition(
-        symbol=PLAYER_PROFILE_MATRIX_CALLER_SYMBOL,
-        data=caller_bytes.data,
-        relocations=caller_bytes.relocations,
-        relocation_mask=caller_bytes.relocation_mask,
-        section_size=len(caller_bytes.data),
-        section_external_functions=(PLAYER_PROFILE_MATRIX_CALLER_SYMBOL,),
-        instructions=parsed.instructions,
-        local_control_flow_indices=parsed.local_control_flow_indices,
-        local_control_flow_targets=parsed.local_control_flow_targets,
-        source_provenance=PLAYER_PROFILE_MATRIX_SOURCE,
-    )
-    definitions = _candidate_tu_local_function_definitions(coff, cod_path)
-    graph = _player_profile_matrix_recursive_graph(caller, definitions)
-    return graph
-
-
-def _player_profile_matrix_qualification(
-    *,
-    target_id: str,
-    live_result: Mapping[str, Any],
-    signatures_before: Sequence[Mapping[str, Any]],
-    signatures_after: Sequence[Mapping[str, Any]],
-) -> dict[str, Any]:
-    symbol_ids = live_result.get("symbol_ids")
-    expected_contracts = live_result.get("expected_contracts")
-    candidate_contracts = live_result.get("candidate_contracts")
-    census = live_result.get("caller_census")
-    divergence_symbols = {
-        str(row.get("symbol_id", ""))
-        for row in (
-            census.get("divergences", ())
-            if isinstance(census, Mapping)
-            else ()
-        )
-        if isinstance(row, Mapping)
-    }
-    exact_symbol_ids = (
-        [str(value) for value in symbol_ids]
-        if isinstance(symbol_ids, list)
-        else []
-    )
-    passing_symbol_ids = [
-        symbol_id
-        for symbol_id in exact_symbol_ids
-        if symbol_id not in divergence_symbols
-    ]
-    census_value = census if isinstance(census, Mapping) else {}
-    complete_population = bool(
-        live_result.get("body_count") == PLAYER_PROFILE_MATRIX_BODY_COUNT
-        and isinstance(symbol_ids, list)
-        and len(symbol_ids) == PLAYER_PROFILE_MATRIX_BODY_COUNT
-        and len(set(symbol_ids)) == PLAYER_PROFILE_MATRIX_BODY_COUNT
-        and all(
-            isinstance(symbol_id, str) and symbol_id.startswith("recoil:")
-            for symbol_id in symbol_ids
-        )
-        and isinstance(expected_contracts, Mapping)
-        and isinstance(candidate_contracts, Mapping)
-        and set(expected_contracts) == set(candidate_contracts)
-        and set(expected_contracts).issubset(set(symbol_ids))
-        and set(expected_contracts) | divergence_symbols == set(symbol_ids)
-        and divergence_symbols.issubset(set(symbol_ids))
-        and isinstance(census, Mapping)
-        and census.get("complete") is True
-        and census.get("ordered_caller_count")
-        == PLAYER_PROFILE_MATRIX_BODY_COUNT
-        and census.get("evaluated_caller_count")
-        == PLAYER_PROFILE_MATRIX_BODY_COUNT
-        and census.get("passing_caller_count", 0)
-        + census.get("semantic_mismatch_caller_count", 0)
-        + census.get("verifier_blocked_caller_count", 0)
-        == PLAYER_PROFILE_MATRIX_BODY_COUNT
-        and census.get("passing_caller_count", 0)
-        == len(passing_symbol_ids)
-        and census.get("divergent_caller_count", 0)
-        == len(divergence_symbols)
-        and census.get("divergent_caller_count", 0)
-        == census.get("semantic_mismatch_caller_count", 0)
-        + census.get("verifier_blocked_caller_count", 0)
-    )
-    source_unchanged = bool(
-        list(signatures_before) == list(signatures_after)
-        and live_result.get("source_changed_during_validation") is False
-        and live_result.get("dependency_states_before")
-        == live_result.get("dependency_states_after")
-    )
-    exact_precompiled_consumption = bool(
-        live_result.get("kind")
-        == "authored-call-contract-target-convergence-result"
-        and live_result.get("target_id") == target_id
-        and live_result.get("all_authored_bodies") is True
-        and live_result.get("compiled_target_ids") == [target_id]
-        and live_result.get("selected_target_compile_count") == 1
-        and live_result.get("all_caller_divergences_collected") is True
-        and live_result.get("definition_closure_deferred") is True
-    )
-    retail_truth_unchanged = bool(
-        live_result.get("expected_truth")
-        == "retail-binary-ninja-plus-reviewed-tracker-identities"
-        and live_result.get("candidate_expected_truth") is False
-    )
-    proof_complete = bool(
-        complete_population
-        and source_unchanged
-        and exact_precompiled_consumption
-        and retail_truth_unchanged
-    )
-    raw_divergences = (
-        census.get("divergences", [])
-        if isinstance(census, Mapping)
-        else []
-    )
-    divergences = (
-        list(raw_divergences)
-        if isinstance(raw_divergences, (list, tuple))
-        else []
-    )
-    ordered_divergent_symbol_ids = [
-        symbol_id
-        for symbol_id in exact_symbol_ids
-        if symbol_id in divergence_symbols
-    ]
-    divergent_expected_contracts = {
-        symbol_id: deepcopy(expected_contracts[symbol_id])
-        for symbol_id in ordered_divergent_symbol_ids
-        if isinstance(expected_contracts, Mapping)
-        and symbol_id in expected_contracts
-    }
-    divergent_candidate_contracts = {
-        symbol_id: deepcopy(candidate_contracts[symbol_id])
-        for symbol_id in ordered_divergent_symbol_ids
-        if isinstance(candidate_contracts, Mapping)
-        and symbol_id in candidate_contracts
-    }
-    caller_divergences = [
-        deepcopy(row)
-        for row in divergences
-        if isinstance(row, Mapping)
-        and row.get("symbol_id") == PLAYER_PROFILE_MATRIX_CALLER_ID
-        and row.get("address") == PLAYER_PROFILE_MATRIX_CALLER_ADDRESS
-    ]
-    caller_expected = (
-        expected_contracts.get(PLAYER_PROFILE_MATRIX_CALLER_ID)
-        if isinstance(expected_contracts, Mapping)
-        else None
-    )
-    caller_candidate = (
-        candidate_contracts.get(PLAYER_PROFILE_MATRIX_CALLER_ID)
-        if isinstance(candidate_contracts, Mapping)
-        else None
-    )
-    return {
-        "proof_complete": proof_complete,
-        "complete_population": complete_population,
-        "source_unchanged": source_unchanged,
-        "exact_precompiled_consumption": exact_precompiled_consumption,
-        "retail_truth_unchanged": retail_truth_unchanged,
-        "passing_symbol_ids": passing_symbol_ids,
-        "divergent_symbol_ids": [
-            symbol_id
-            for symbol_id in exact_symbol_ids
-            if symbol_id in divergence_symbols
-        ],
-        "caller_divergences": deepcopy(divergences),
-        "divergent_expected_contracts": divergent_expected_contracts,
-        "divergent_candidate_contracts": divergent_candidate_contracts,
-        "complete_target_result": {
-            "passed": live_result.get("passed") is True,
-            "ordered_caller_count": census_value.get(
-                "ordered_caller_count", 0
-            ),
-            "evaluated_caller_count": census_value.get(
-                "evaluated_caller_count", 0
-            ),
-            "passing_caller_count": census_value.get(
-                "passing_caller_count", 0
-            ),
-            "divergent_caller_count": census_value.get(
-                "divergent_caller_count", 0
-            ),
-            "semantic_mismatch_caller_count": census_value.get(
-                "semantic_mismatch_caller_count", 0
-            ),
-            "verifier_blocked_caller_count": census_value.get(
-                "verifier_blocked_caller_count", 0
-            ),
-            "first_divergence": deepcopy(live_result.get("first_divergence")),
-        },
-        "caller_0x42a070_result": {
-            "passed": bool(
-                caller_expected == caller_candidate
-                and not caller_divergences
-            ),
-            "expected": deepcopy(caller_expected),
-            "candidate": deepcopy(caller_candidate),
-            "divergences": caller_divergences,
-        },
-    }
-
-
-def _player_profile_matrix_profile_comparison(
-    ob0: Mapping[str, Any],
-    ob1: Mapping[str, Any],
-    *,
-    strict_paired_proof: Mapping[str, Any],
-) -> dict[str, Any]:
-    """Compare exact retail-passing symbol populations, never just counts."""
-
-    ob0_rows = ob0.get("passing_symbol_ids")
-    ob1_rows = ob1.get("passing_symbol_ids")
-    if (
-        ob0.get("proof_complete") is not True
-        or ob1.get("proof_complete") is not True
-        or not isinstance(ob0_rows, list)
-        or not isinstance(ob1_rows, list)
-        or any(not isinstance(value, str) for value in (*ob0_rows, *ob1_rows))
-        or len(ob0_rows) != len(set(ob0_rows))
-        or len(ob1_rows) != len(set(ob1_rows))
-    ):
-        raise ValueError(
-            "Player profile comparison requires two exact complete passing-symbol sets"
-        )
-    ob0_set = set(ob0_rows)
-    ob1_set = set(ob1_rows)
-    repaired = [value for value in ob1_rows if value not in ob0_set]
-    regressed = [value for value in ob0_rows if value not in ob1_set]
-    strict = bool(strict_paired_proof.get("passed") is True)
-    no_regressions = not regressed
-    selection_eligible = bool(strict and no_regressions)
-    disposition = (
-        "regressed"
-        if regressed
-        else "improved"
-        if repaired
-        else "unchanged"
-    )
-    return {
-        "ob1_disposition": disposition,
-        "ob0_pass_set": list(ob0_rows),
-        "ob1_pass_set": list(ob1_rows),
-        "repaired_by_ob1": repaired,
-        "regressed_by_ob1": regressed,
-        "strict_paired_proof_passed": strict,
-        "zero_regressions": no_regressions,
-        "selection_eligible": selection_eligible,
-        "naturally_explains": selection_eligible,
-    }
-
-
-def player_call_contract_profile_matrix(
-    *,
-    document: ProgressDocument,
-    target_id: str,
-    build_root: Path,
-    vc5_env: Path = DEFAULT_VC5_ENV,
-) -> dict[str, Any]:
-    """Freshly audit Player /Ob0 and diagnostic /Ob1 without accepting either."""
-
-    if Path(vc5_env).resolve() != DEFAULT_VC5_ENV.resolve():
-        raise ProgressError(
-            "Player profile matrix requires the canonical installed VC5SP3 "
-            "environment"
-        )
-    target = _player_profile_matrix_target(document, target_id)
-    rows = _player_profile_matrix_authored_rows(target)
-    evidence_paths = (
-        *PLAYER_PROFILE_MATRIX_ORDER_EDIT_PATHS,
-        PLAYER_PROFILE_MATRIX_MANIFEST.relative_to(REPO_ROOT).as_posix(),
-    )
-    signatures_before = file_dependency_states(evidence_paths)
-    scenarios: list[dict[str, Any]] = []
-    for profile_id, inline_flag, diagnostic_only in PLAYER_PROFILE_MATRIX_PROFILES:
-        build_dir = prepare_clean_build_dir(
-            build_root, f"player-profile-matrix-{profile_id}"
-        )
-        variant = _player_profile_matrix_variant_target(
-            target,
-            profile_id=profile_id,
-            inline_flag=inline_flag,
-        )
-        expected_flags = _wol_profile_matrix_inline_flags(
-            PLAYER_PROFILE_MATRIX_FLAGS_OB0, inline_flag
-        )
-        units, returncode = compile_translation_unit_order(
-            target=variant,
-            build_dir=build_dir,
-            compiler_env=compiler_env_path(variant, vc5_env),
-            capture_verification_receipt=True,
-        )
-        if returncode != 0 or len(units) != 1:
-            raise ValueError(
-                "Player profile matrix compilation failed or was partial for "
-                f"{profile_id}: returncode={returncode}"
-            )
-        unit = units[0]
-        compile_command = str(getattr(unit, "compile_command", ""))
-        if (
-            getattr(unit, "manifest_index", None) != 0
-            or getattr(unit, "source_from", "")
-            != PLAYER_PROFILE_MATRIX_SOURCE
-            or tuple(getattr(unit, "effective_compiler_flags", ()))
-            != tuple(expected_flags)
-            or str(getattr(unit, "effective_compiler_profile", ""))
-            != f"player-profile-matrix-{profile_id}"
-            or not compile_command
-            or "/c" not in compile_command.casefold()
-            or not Path(unit.obj_path).is_file()
-            or not Path(unit.cod_path).is_file()
-        ):
-            raise ValueError(
-                "Player profile matrix effective command, context, or exact "
-                "compiled TU identity drifted"
-            )
-        snapshot = _player_profile_matrix_candidate_snapshot(unit)
-        precompiled = _player_profile_matrix_precompiled_target_units(
-            variant, units
-        )
-        live_result = live_call_contract_result(
-            document=document,
-            target_id=target_id,
-            all_authored_bodies=True,
-            build_root=build_dir / "retail-comparison",
-            vc5_env=vc5_env,
-            collect_all_divergences=True,
-            compile_definition_closure=False,
-            precompiled_target_units={target_id: precompiled},
-        )
-        signatures_after = file_dependency_states(evidence_paths)
-        qualification = _player_profile_matrix_qualification(
-            target_id=target_id,
-            live_result=live_result,
-            signatures_before=signatures_before,
-            signatures_after=signatures_after,
-        )
-        if not qualification["proof_complete"]:
-            raise ValueError(
-                "Player profile matrix result is partial, source-drifted, "
-                "compile-context-drifted, or lacks candidate-independent "
-                "retail truth"
-            )
-        scenarios.append({
-            "profile_id": profile_id,
-            "inline_flag": inline_flag,
-            "diagnostic_only": diagnostic_only,
-            "effective_profile": str(unit.effective_compiler_profile),
-            "effective_flags": list(unit.effective_compiler_flags),
-            "effective_command": compile_command,
-            "body_count": len(rows),
-            "raw_physical_snapshot_0x42a070": snapshot,
-            **qualification,
-        })
-    signatures_after = file_dependency_states(evidence_paths)
-    if signatures_after != signatures_before:
-        raise ValueError(
-            "Player profile matrix source or manifest changed during compilation"
-        )
-    ob0, ob1 = scenarios
-    ob0_result = ob0["complete_target_result"]
-    ob1_result = ob1["complete_target_result"]
-    ob0_bad = int(ob0_result["divergent_caller_count"])
-    ob1_bad = int(ob1_result["divergent_caller_count"])
-    strict_paired_proof = _player_strict_paired_profile_proof(
-        {
-            "caller": ob0["raw_physical_snapshot_0x42a070"],
-            "definitions": {},
-        },
-        {
-            "caller": ob1["raw_physical_snapshot_0x42a070"],
-            "definitions": {},
-        },
-        # The current compiler wrapper still invokes preprocessing once per
-        # profile.  Stat/content equality is not a preprocess-once receipt, so
-        # this stays explicitly unauthenticated until both objects are built
-        # from one immutable .i stream.
-        same_preprocessed_source_receipt=None,
-        stage_c_exact_retail=bool(
-            ob1["caller_0x42a070_result"]["passed"]
-        ),
-    )
-    strict_paired_proof["input_authority"] = (
-        "raw-physical-caller-snapshots-only"
-    )
-    strict_paired_proof["recursive_candidate_graph_used"] = False
-    profile_comparison = _player_profile_matrix_profile_comparison(
-        ob0,
-        ob1,
-        strict_paired_proof=strict_paired_proof,
-    )
-    return {
-        "kind": "player-call-contract-compiler-profile-matrix",
-        "contract_version": PLAYER_PROFILE_MATRIX_CONTRACT_VERSION,
-        "passed": True,
-        "matrix_completed": True,
-        "nonaccepting": True,
-        "acceptance_eligible": False,
-        "acceptance_route": None,
-        "candidate_expected_truth": False,
-        "expected_truth": "retail-binary-ninja-plus-reviewed-tracker-identities",
-        "target_id": target_id,
-        "body_count": PLAYER_PROFILE_MATRIX_BODY_COUNT,
-        "registered_body_count": PLAYER_PROFILE_MATRIX_REGISTERED_COUNT,
-        "registration_rows_equal": True,
-        "source_signatures_before": signatures_before,
-        "source_signatures_after": signatures_after,
-        "source_changed_during_matrix": False,
-        "profiles": scenarios,
-        "complete_target_comparison": {
-            **profile_comparison,
-            "ob0_divergent_caller_count": ob0_bad,
-            "ob1_divergent_caller_count": ob1_bad,
-            "passing_caller_delta": (
-                int(ob1_result["passing_caller_count"])
-                - int(ob0_result["passing_caller_count"])
-            ),
-            "semantic_mismatch_caller_delta": (
-                int(ob1_result["semantic_mismatch_caller_count"])
-                - int(ob0_result["semantic_mismatch_caller_count"])
-            ),
-            "verifier_blocked_caller_delta": (
-                int(ob1_result["verifier_blocked_caller_count"])
-                - int(ob0_result["verifier_blocked_caller_count"])
-            ),
-        },
-        "ob0_pass_set": profile_comparison["ob0_pass_set"],
-        "ob1_pass_set": profile_comparison["ob1_pass_set"],
-        "repaired_by_ob1": profile_comparison["repaired_by_ob1"],
-        "regressed_by_ob1": profile_comparison["regressed_by_ob1"],
-        "caller_0x42a070_ob1_naturally_explains_retail": (
-            profile_comparison["naturally_explains"]
-        ),
-        "caller_0x42a070_strict_paired_proof": strict_paired_proof,
-        "manifest_mutation_allowed": False,
-        "profile_mutation_allowed": False,
-        "selection_eligible": profile_comparison["selection_eligible"],
-    }
-
-
-def wol_call_contract_profile_matrix(
-    *,
-    document: ProgressDocument,
-    target_id: str,
-    build_root: Path,
-    vc5_env: Path = DEFAULT_VC5_ENV,
-) -> dict[str, Any]:
-    """Compile and compare the nonaccepting WOL inline-profile matrix."""
-
-    if target_id != WOL_PROFILE_MATRIX_TARGET_ID:
-        raise ProgressError(
-            "WOL profile matrix accepts only the exact governed WOL target"
-        )
-    target_row = document.collection("verification_targets").get(target_id)
-    registration = (
-        target_row.get("registration")
-        if isinstance(target_row, Mapping)
-        else None
-    )
-    expected_manifest = WOL_CEDIT_TARGET_MANIFEST.relative_to(REPO_ROOT).as_posix()
-    if (
-        not isinstance(target_row, Mapping)
-        or target_row.get("binary") != "recoil"
-        or target_row.get("kind") != "vc5"
-        or target_row.get("name") != WOL_CEDIT_TARGET_NAME
-        or not isinstance(registration, Mapping)
-        or registration.get("manifest_path") != expected_manifest
-        or registration.get("source_from") != WOL_PROFILE_MATRIX_WOL_SOURCE
-        or registration.get("check_translation_unit_function_order") is not True
-        or registration.get("function_order_scope") != "authored"
-    ):
-        raise ProgressError(
-            "WOL profile matrix requires the synchronized exact governed target"
-        )
-    target = load_manifest(WOL_CEDIT_TARGET_MANIFEST)
-    require_clean_target_source_fragments(target)
-    _wol_profile_matrix_authored_rows(target)
-    sources = _wol_profile_registered_source_paths(target)
-    signatures_before = file_dependency_states(sources)
-    scenarios: list[dict[str, Any]] = []
-    snapshots: dict[tuple[str, str], dict[str, Any]] = {}
-    retail_normalization_variant: Any | None = None
-    retail_normalization_units: tuple[Any, ...] | None = None
-    compiler_env = compiler_env_path(target, vc5_env)
-    for scope in WOL_PROFILE_MATRIX_SCOPES:
-        for profile_id, inline_flag in WOL_PROFILE_MATRIX_PROFILES:
-            variant = _wol_profile_matrix_variant_target(
-                target,
-                profile_id=profile_id,
-                inline_flag=inline_flag,
-                scope=scope,
-            )
-            build_dir = prepare_clean_build_dir(
-                build_root,
-                f"wol-profile-matrix-{scope}-{profile_id.casefold()}",
-            )
-            units, returncode = compile_translation_unit_order(
-                target=variant,
-                build_dir=build_dir,
-                compiler_env=compiler_env,
-                capture_verification_receipt=True,
-            )
-            if returncode != 0 or len(units) != 2:
-                raise ValueError(
-                    "WOL profile matrix compilation failed or did not emit "
-                    f"both TUs for {scope}/{profile_id}: returncode={returncode}"
-                )
-            snapshot = _wol_profile_matrix_candidate_snapshot(variant, units)
-            snapshots[(scope, profile_id)] = snapshot
-            if scope == "wol-only" and profile_id == "P1":
-                if (
-                    retail_normalization_variant is not None
-                    or retail_normalization_units is not None
-                ):
-                    raise ValueError(
-                        "WOL profile matrix repeated the retail-normalization scenario"
-                    )
-                retail_normalization_variant = variant
-                retail_normalization_units = tuple(units)
-            unit_rows = []
-            for unit in units:
-                folded_flags = [
-                    str(flag).upper()
-                    for flag in unit.effective_compiler_flags
-                ]
-                affected = (
-                    unit.source_from == WOL_PROFILE_MATRIX_WOL_SOURCE
-                    or scope == "both-tu"
-                )
-                expected_ob_count = 0 if affected and not inline_flag else 1
-                actual_ob_flags = [
-                    flag
-                    for flag in folded_flags
-                    if flag in {"/OB0", "/OB1", "/OB2"}
-                ]
-                if (
-                    folded_flags.count("/O2") != 1
-                    or len(actual_ob_flags) != expected_ob_count
-                    or (
-                        affected
-                        and inline_flag
-                        and actual_ob_flags != [inline_flag.upper()]
-                    )
-                ):
-                    raise ValueError(
-                        "WOL profile matrix effective compiler flags drifted "
-                        f"for {scope}/{profile_id}/{unit.source_from}"
-                    )
-                unit_rows.append(
-                    {
-                        "source_from": unit.source_from,
-                        "effective_profile": unit.effective_compiler_profile,
-                        "effective_flags": list(unit.effective_compiler_flags),
-                        "compile_command": unit.compile_command,
-                        "object_path": _candidate_artifact_path(unit.obj_path),
-                        "cod_path": _candidate_artifact_path(unit.cod_path),
-                    }
-                )
-            scenarios.append(
-                {
-                    "scope": scope,
-                    "profile_id": profile_id,
-                    "requested_inline_flag": inline_flag,
-                    "unit_commands": unit_rows,
-                    "body_count": snapshot["body_count"],
-                    "contracts": deepcopy(snapshot["contracts"]),
-                    "inline_empty_check": snapshot["inline_empty_check"],
-                    "selected_body_diagnostic_facts": deepcopy(
-                        snapshot["selected_body_diagnostic_facts"]
-                    ),
-                }
-            )
-
-    for scenario in scenarios:
-        scope = str(scenario["scope"])
-        profile_id = str(scenario["profile_id"])
-        baseline = snapshots[(scope, "P0")]["contracts"]
-        current = snapshots[(scope, profile_id)]["contracts"]
-        deltas = _wol_profile_matrix_body_deltas(baseline, current)
-        positive = bool(scenario["inline_empty_check"]["matched"])
-        baseline_positive = bool(
-            snapshots[(scope, "P0")]["inline_empty_check"]["matched"]
-        )
-        repairs = (
-            [
-                {
-                    "address": WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS,
-                    "kind": "inline-empty-check-dataflow",
-                    "basis": "reviewed retail IsEmpty branch/dataflow",
-                }
-            ]
-            if positive and not baseline_positive
-            else []
-        )
-        regressions = (
-            [
-                {
-                    "address": WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS,
-                    "kind": "lost-inline-empty-check-dataflow",
-                }
-            ]
-            if baseline_positive and not positive
-            else []
-        )
-        ambiguous_deltas = [
-            row
-            for row in deltas
-            if row["address"] != WOL_PROFILE_MATRIX_EMPTY_CHECK_ADDRESS
-        ]
-        scenario.update(
-            {
-                "baseline_profile_id": "P0",
-                "changed_body_count": len(deltas),
-                "unchanged_body_count": WOL_PROFILE_MATRIX_BODY_COUNT - len(deltas),
-                "body_deltas": deltas,
-                "repairs": repairs,
-                "regressions": regressions,
-                "ambiguous_delta_count": len(ambiguous_deltas),
-                "hard_regression_count": len(regressions),
-                "zero_hard_regression_threshold": 0,
-                "meets_zero_hard_regression_threshold": not regressions,
-            }
-        )
-
-    signatures_after = file_dependency_states(sources)
-    if signatures_after != signatures_before:
-        raise ValueError(
-            "WOL profile matrix source changed during nonaccepting compilation"
-        )
-    scenario_by_key = {
-        (str(row["scope"]), str(row["profile_id"])): row
-        for row in scenarios
-    }
-    if len(scenario_by_key) != len(scenarios):
-        raise ValueError("WOL profile matrix produced duplicate scenario state")
-    p1_rows = [row for row in scenarios if row["profile_id"] == "P1"]
-    p1_local_supported = bool(
-        len(p1_rows) == 2
-        and all(row["inline_empty_check"]["matched"] for row in p1_rows)
-        and all(row["hard_regression_count"] == 0 for row in p1_rows)
-    )
-    equivalence_receipt = _wol_profile_matrix_p1_implicit_equivalence(
-        scenarios
-    )
-    profile_supported_for_source_repair = bool(
-        p1_local_supported and equivalence_receipt["passed"]
-    )
-    diagnostic_ambiguity_count = sum(
-        int(row["ambiguous_delta_count"])
-        for row in scenarios
-        if row["profile_id"] != "P0"
-    )
-    retail_scenarios = [
-        row
-        for row in scenarios
-        if row["scope"] == "wol-only" and row["profile_id"] == "P1"
-    ]
-    if (
-        len(retail_scenarios) != 1
-        or retail_normalization_variant is None
-        or retail_normalization_units is None
-    ):
-        raise ValueError(
-            "WOL profile matrix requires exactly one WOL-only P1 retail scenario"
-        )
-    precompiled_target = _wol_profile_matrix_precompiled_target_units(
-        retail_normalization_variant,
-        retail_normalization_units,
-    )
-    retail_live_result = live_call_contract_result(
-        document=document,
-        target_id=target_id,
-        all_authored_bodies=True,
-        build_root=(build_root / "wol-profile-matrix-retail-normalized"),
-        vc5_env=vc5_env,
-        collect_all_divergences=True,
-        compile_definition_closure=False,
-        precompiled_target_units={target_id: precompiled_target},
-    )
-    retail_source_signatures_after = file_dependency_states(sources)
-    retail_normalization = (
-        _wol_profile_matrix_retail_normalization_qualification(
-            target_id=target_id,
-            scope="wol-only",
-            profile_id="P1",
-            scenario=retail_scenarios[0],
-            live_result=retail_live_result,
-            source_signatures_before=signatures_before,
-            source_signatures_after=retail_source_signatures_after,
-            ambiguous_delta_count=int(
-                retail_scenarios[0]["ambiguous_delta_count"]
-            ),
-        )
-    )
-    p1_divergent_addresses = {
-        normalize_address(str(row.get("address")))
-        for row in retail_normalization["caller_divergences"]
-        if isinstance(row, Mapping)
-        and isinstance(row.get("address"), str)
-    }
-    for scenario in scenarios:
-        profile_id = str(scenario["profile_id"])
-        if profile_id == "P0":
-            scenario["profile_status"] = "baseline"
-            scenario["diagnostic_only"] = True
-        elif profile_id == "P1":
-            scenario["profile_status"] = (
-                "supported-for-source-repair"
-                if profile_supported_for_source_repair
-                else "unsupported"
-            )
-            scenario["diagnostic_only"] = False
-        elif profile_id == "implicit":
-            scenario["profile_status"] = (
-                "equivalent-to-P1"
-                if equivalence_receipt["passed"]
-                else "non-equivalent"
-            )
-            scenario["implicit_profile_equivalent_to"] = (
-                "P1" if equivalence_receipt["passed"] else None
-            )
-            scenario["diagnostic_only"] = True
-        else:
-            p1 = scenario_by_key[(str(scenario["scope"]), "P1")]
-            p2_deltas = _wol_profile_matrix_body_deltas(
-                p1["contracts"], scenario["contracts"]
-            )
-            hard_regressions = [
-                row for row in p2_deltas
-                if normalize_address(str(row["address"]))
-                not in p1_divergent_addresses
-            ]
-            scenario.update({
-                "profile_status": "falsified",
-                "diagnostic_only": True,
-                "changed_body_count_from_p1": len(p2_deltas),
-                "hard_regressions": hard_regressions,
-                "hard_regression_count": len(hard_regressions),
-            })
-    retail_selection_eligible = bool(
-        profile_supported_for_source_repair
-        and retail_normalization["selection_eligible"]
-    )
-    return {
-        "kind": "wol-call-contract-compiler-profile-matrix",
-        "contract_version": WOL_PROFILE_MATRIX_CONTRACT_VERSION,
-        # Matrix completion and working-profile support are distinct from the
-        # final 109/109 retail selector.  Residual source/provider divergences
-        # remain visible in retail_normalization while the nonaccepting matrix
-        # may still be a successful source-repair validator.
-        "passed": profile_supported_for_source_repair,
-        "nonaccepting": True,
-        "acceptance_eligible": False,
-        "acceptance_route": None,
-        "candidate_expected_truth": False,
-        "target_id": target_id,
-        "profile_order": [row[0] for row in WOL_PROFILE_MATRIX_PROFILES],
-        "scope_order": list(WOL_PROFILE_MATRIX_SCOPES),
-        "body_count": WOL_PROFILE_MATRIX_BODY_COUNT,
-        "source_signatures_before": signatures_before,
-        "source_signatures_after": signatures_after,
-        "source_signatures_after_retail_normalization": (
-            retail_source_signatures_after
-        ),
-        "source_changed_during_matrix": False,
-        "scenarios": scenarios,
-        "provisional_effective_profile": {
-            "scope": "wol-only",
-            "profile_id": "P1",
-            "inline_flag": "/Ob1",
-            "qualified_positive": profile_supported_for_source_repair,
-            "rank": 1,
-        },
-        "profile_ranking": ["P1", "P0"],
-        "zero_hard_regression_threshold": 0,
-        "p1_meets_zero_hard_regression_threshold": p1_local_supported,
-        "p1_implicit_equivalence": equivalence_receipt,
-        "profile_supported_for_source_repair": (
-            profile_supported_for_source_repair
-        ),
-        "retail_selection_eligible": retail_selection_eligible,
-        "diagnostic_ambiguous_delta_count": diagnostic_ambiguity_count,
-        "ambiguity_disposition": (
-            "scope-profile-local-report-only"
-            if diagnostic_ambiguity_count
-            else "none"
-        ),
-        "retail_normalization": retail_normalization,
-        "selection_eligible": retail_selection_eligible,
-        "manifest_mutation_allowed": retail_selection_eligible,
-    }
-
-
-def call_contract_profile_matrix(
-    *,
-    document: ProgressDocument,
-    target_id: str,
-    build_root: Path,
-    vc5_env: Path = DEFAULT_VC5_ENV,
-) -> dict[str, Any]:
-    if target_id == WOL_PROFILE_MATRIX_TARGET_ID:
-        return wol_call_contract_profile_matrix(
-            document=document,
-            target_id=target_id,
-            build_root=build_root,
-            vc5_env=vc5_env,
-        )
-    if target_id == ZEFFECT_PROFILE_MATRIX_TARGET_ID:
-        return zeffect_call_contract_profile_matrix(
-            document=document,
-            target_id=target_id,
-            build_root=build_root,
-            vc5_env=vc5_env,
-        )
-    if target_id == PLAYER_PROFILE_MATRIX_TARGET_ID:
-        return player_call_contract_profile_matrix(
-            document=document,
-            target_id=target_id,
-            build_root=build_root,
-            vc5_env=vc5_env,
-        )
-    raise ProgressError(
-        "profile matrix requires one exact governed WOL, zEffect, or Player target"
-    )
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
@@ -181964,13 +176500,6 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "evaluate every selected caller and emit exhaustive per-body "
             "outcomes; required by incremental verification acceptance"
-        ),
-    )
-    parser.add_argument(
-        "--profile-matrix",
-        action="store_true",
-        help=(
-            "nonacceptingly compare an exact governed compiler-profile target"
         ),
     )
     parser.add_argument(
@@ -182191,68 +176720,13 @@ def main(argv: list[str] | None = None) -> int:
                 build_root=args.build_root,
             )
         memory_trace.emit("cli-start")
-        if args.profile_matrix and args.diagnostic_window is not None:
-            raise ProgressError(
-                "diagnostic window is not available with --profile-matrix"
-            )
-        if args.profile_matrix and (
-            args.slice is not None
-            or args.target is None
-            or args.all_authored_bodies
-        ):
-            raise ProgressError(
-                "profile matrix requires --target without --slice or "
-                "--all-authored-bodies"
-            )
         if args.json:
             # VC5 helpers intentionally print useful compile transcripts. Keep
             # JSON stdout machine-readable while preserving that transcript on
             # stderr for direct live invocations.
             with redirect_stdout(diagnostics):
                 document = ProgressDocument.load(args.progress)
-                result = (
-                    call_contract_profile_matrix(
-                        document=document,
-                        target_id=str(args.target),
-                        build_root=args.build_root,
-                        vc5_env=args.vc5_env,
-                    )
-                    if args.profile_matrix
-                    else live_call_contract_result(
-                        document=document,
-                        slice_id=args.slice,
-                        target_id=args.target,
-                        all_authored_bodies=args.all_authored_bodies,
-                        build_root=args.build_root,
-                        vc5_env=args.vc5_env,
-                        bridge_url=args.bridge_url,
-                        _memory_trace=memory_trace,
-                        **_direct_cli_target_census_options(
-                            target_id=args.target,
-                            all_authored_bodies=args.all_authored_bodies,
-                            collect_all_divergences=args.collect_all_divergences,
-                        ),
-                        **(
-                            {
-                                "_diagnostic_comparison_context":
-                                diagnostic_comparison_context
-                            }
-                            if diagnostic_comparison_context is not None
-                            else {}
-                        ),
-                    )
-                )
-        else:
-            document = ProgressDocument.load(args.progress)
-            result = (
-                call_contract_profile_matrix(
-                    document=document,
-                    target_id=str(args.target),
-                    build_root=args.build_root,
-                    vc5_env=args.vc5_env,
-                )
-                if args.profile_matrix
-                else live_call_contract_result(
+                result = live_call_contract_result(
                     document=document,
                     slice_id=args.slice,
                     target_id=args.target,
@@ -182275,52 +176749,42 @@ def main(argv: list[str] | None = None) -> int:
                         else {}
                     ),
                 )
+        else:
+            document = ProgressDocument.load(args.progress)
+            result = live_call_contract_result(
+                document=document,
+                slice_id=args.slice,
+                target_id=args.target,
+                all_authored_bodies=args.all_authored_bodies,
+                build_root=args.build_root,
+                vc5_env=args.vc5_env,
+                bridge_url=args.bridge_url,
+                _memory_trace=memory_trace,
+                **_direct_cli_target_census_options(
+                    target_id=args.target,
+                    all_authored_bodies=args.all_authored_bodies,
+                    collect_all_divergences=args.collect_all_divergences,
+                ),
+                **(
+                    {
+                        "_diagnostic_comparison_context":
+                        diagnostic_comparison_context
+                    }
+                    if diagnostic_comparison_context is not None
+                    else {}
+                ),
             )
     except (BridgeError, OSError, ProgressError, RuntimeError, ValueError) as exc:
         memory_trace.emit(
             "verification-error",
             error_type=type(exc).__name__,
         )
-        result = (
-            {
-                "kind": (
-                    "zeffect-call-contract-compiler-profile-matrix"
-                    if args.target == ZEFFECT_PROFILE_MATRIX_TARGET_ID
-                    else (
-                        "player-call-contract-compiler-profile-matrix"
-                        if args.target == PLAYER_PROFILE_MATRIX_TARGET_ID
-                        else "wol-call-contract-compiler-profile-matrix"
-                    )
-                ),
-                "contract_version": (
-                    ZEFFECT_PROFILE_MATRIX_CONTRACT_VERSION
-                    if args.target == ZEFFECT_PROFILE_MATRIX_TARGET_ID
-                    else (
-                        PLAYER_PROFILE_MATRIX_CONTRACT_VERSION
-                        if args.target == PLAYER_PROFILE_MATRIX_TARGET_ID
-                        else WOL_PROFILE_MATRIX_CONTRACT_VERSION
-                    )
-                ),
-                "passed": False,
-                "nonaccepting": True,
-                "acceptance_eligible": False,
-                "acceptance_route": None,
-                "candidate_expected_truth": False,
-                "target_id": args.target,
-                "first_divergence": {
-                    "kind": "profile-matrix-blocked",
-                    "message": str(exc),
-                },
-                "timings_ms": _empty_call_contract_timings_ms(),
-            }
-            if args.profile_matrix
-            else _blocked_call_contract_result(
-                document,
-                slice_id=args.slice,
-                target_id=args.target,
-                all_authored_bodies=args.all_authored_bodies,
-                error=exc,
-            )
+        result = _blocked_call_contract_result(
+            document,
+            slice_id=args.slice,
+            target_id=args.target,
+            all_authored_bodies=args.all_authored_bodies,
+            error=exc,
         )
     timings_ms = result.get("timings_ms")
     if not isinstance(timings_ms, dict):
@@ -182381,30 +176845,22 @@ def main(argv: list[str] | None = None) -> int:
             result_key_count=len(output_result),
             output_format="text",
         )
-        if args.profile_matrix:
+        print(
+            "authored call-contract PASS"
+            if result["passed"]
+            else f"authored call-contract FAIL: {result.get('first_divergence')}"
+        )
+        if args.diagnostic_window is not None:
             print(
-                "call-contract profile matrix PASS (nonaccepting)"
-                if result["passed"]
-                else "call-contract profile matrix FAIL: "
-                f"{result.get('first_divergence')}"
-            )
-        else:
-            print(
-                "authored call-contract PASS"
-                if result["passed"]
-                else f"authored call-contract FAIL: {result.get('first_divergence')}"
-            )
-            if args.diagnostic_window is not None:
-                print(
-                    "call-contract diagnostic: "
-                    + json.dumps(
-                        output_result["diagnostics"][
-                            "call_contract_divergence"
-                        ],
-                        ensure_ascii=False,
-                        sort_keys=True,
-                    )
+                "call-contract diagnostic: "
+                + json.dumps(
+                    output_result["diagnostics"][
+                        "call_contract_divergence"
+                    ],
+                    ensure_ascii=False,
+                    sort_keys=True,
                 )
+            )
         memory_trace.emit(
             "serialization-complete",
             output_format="text",

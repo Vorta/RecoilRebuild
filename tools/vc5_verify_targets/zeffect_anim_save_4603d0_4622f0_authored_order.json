@@ -63,14 +63,5 @@
       ],
       "successor": {"address":"0x4622f0","symbol":"?EmitDebugBuffer@zError@@YIXH@Z","name":"zError::EmitDebugBuffer","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x4603d0",
-    "agent_source_path": "src/GameZRecoil/zEffect/zeff_anim_save.c",
-    "physical_compile_host": "src/GameZRecoil/zEffect/zeff_anim_save.c",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 992,
-    "covered_block_ids": ["recoil:block:0x4603d0"]
-  }
+  ]
 }

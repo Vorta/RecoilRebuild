@@ -1,6 +1,6 @@
 {
   "name": "hud_ui_background_confirm_quit_lifecycle",
-  "description": "HudUiBackgroundConfirmQuit constructor/destructor VC byte attempt with current functional source shape.",
+  "description": "HudUiBackgroundConfirmQuit constructor/destructor VC byte attempt with the current behavior-preserving source shape.",
   "source_filename": "hud.cpp",
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "source_from": "src/Battlesport/hud.cpp",

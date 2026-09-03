@@ -873,18 +873,7 @@
         "full_order_gate": true
       }
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x458af0",
-    "agent_source_path": "src/GameZRecoil/zEffect/zeff_anim_run.c",
-    "physical_compile_host": "src/GameZRecoil/zEffect/zeff_anim_run.c",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 958,
-    "covered_block_ids": [
-      "recoil:block:0x458af0"
-    ]
-  }
+  ]
 }
 
 

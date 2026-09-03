@@ -21,12 +21,6 @@ RETIRED_PUBLIC_REFERENCES = (
     "audit workflow-contracts",
     "progress owner set-address-meta",
 )
-HISTORICAL_PROCESS_RECORDS = {
-    "docs/reconstruction/final_executable_repro_history.md": (
-        "docs/reconstruction/final_executable_repro.md"
-    ),
-}
-HISTORICAL_BANNER = "> **Historical process record — not current operating guidance.**"
 HARD_OPERATIONAL_PATTERNS = {
     "source-worker-role": re.compile(r"\bsource[- ]workers?\b", re.IGNORECASE),
     "fact-mapper-role": re.compile(r"\bfact[- ]mappers?\b", re.IGNORECASE),
@@ -275,14 +269,6 @@ def _retired_language_findings(
             findings.append(
                 f"{location}:{line_number + line_offset} [packet-lane-process] {segment!r}; use task, evidence, group, or comparison-mode wording"
             )
-        if re.search(r"verify functional(?!-batch)[^`\n]*--target\b", segment, re.IGNORECASE):
-            findings.append(
-                f"{location}:{line_number + line_offset} [invalid-command] verify functional takes a positional target"
-            )
-        if re.search(r"verify functional(?!-batch)[^`\n]*--json\b", segment, re.IGNORECASE):
-            findings.append(
-                f"{location}:{line_number + line_offset} [invalid-command] verify functional has no --json option"
-            )
     return findings
 
 
@@ -298,40 +284,11 @@ def _json_strings(value: Any, pointer: str = "") -> Iterable[tuple[str, str]]:
             yield from _json_strings(item, f"{pointer}/{escaped}")
 
 
-def _historical_record_findings(root: Path, path: Path, expected_superseder: str) -> list[str]:
-    relative = _relative(path, root)
-    findings: list[str] = []
-    if not path.is_file():
-        return [f"{relative} [historical-record] file is missing"]
-    text = path.read_text(encoding="utf-8", errors="replace")
-    metadata, _body_start = _front_matter(text)
-    expected = {
-        "document_status": "historical-process-record",
-        "operational_guidance": "false",
-        "superseded_by": expected_superseder,
-    }
-    for key, value in expected.items():
-        if metadata.get(key) != value:
-            findings.append(
-                f"{relative} [historical-metadata] {key} must be {value!r}"
-            )
-    if HISTORICAL_BANNER not in text:
-        findings.append(
-            f"{relative} [historical-banner] visible non-operational banner is missing"
-        )
-    if not (root / expected_superseder).is_file():
-        findings.append(
-            f"{relative} [historical-superseder] {expected_superseder} does not exist"
-        )
-    return findings
-
-
 def _active_surface_paths(root: Path, canonical: Mapping[str, Path]) -> list[Path]:
     paths = {
         root / "AGENTS.md",
         root / "README.md",
         root / "tools" / "README.md",
-        root / "tools" / "functional_verify_targets" / "README.md",
         root / "tools" / "vc5_verify_targets" / "README.md",
         *canonical.values(),
     }
@@ -409,17 +366,11 @@ def audit_agent_surface(root: Path = REPO_ROOT) -> dict[str, object]:
         if path.exists() and any(path.rglob("*")):
             findings.append(f"retired address-handoff skill still exists: {_relative(path, root)}")
 
-    for relative, superseder in HISTORICAL_PROCESS_RECORDS.items():
-        findings.extend(_historical_record_findings(root, root / relative, superseder))
-
     active_paths = _active_surface_paths(root, canonical)
-    historical_paths = {root / relative for relative in HISTORICAL_PROCESS_RECORDS}
     for path in active_paths:
         relative = _relative(path, root)
         if not path.is_file():
             findings.append(f"active agent surface file is missing: {relative}")
-            continue
-        if path in historical_paths:
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
         metadata, _body_start = _front_matter(text)
@@ -429,10 +380,7 @@ def audit_agent_surface(root: Path = REPO_ROOT) -> dict[str, object]:
             )
         findings.extend(_retired_language_findings(text, location=relative))
 
-    for manifest_directory in (
-        root / "tools" / "functional_verify_targets",
-        root / "tools" / "vc5_verify_targets",
-    ):
+    for manifest_directory in (root / "tools" / "vc5_verify_targets",):
         if not manifest_directory.is_dir():
             findings.append(
                 f"active agent surface directory is missing: {_relative(manifest_directory, root)}"
@@ -475,20 +423,6 @@ def audit_agent_surface(root: Path = REPO_ROOT) -> dict[str, object]:
         if required_prerequisite not in folded:
             findings.append(
                 "README.md [full-order-prerequisite] must require call-contract closeout and all authored bytes"
-            )
-
-    functional_skill = canonical.get("recoil-functional-targets")
-    if functional_skill is not None:
-        normalized = " ".join(
-            functional_skill.read_text(encoding="utf-8", errors="replace").split()
-        )
-        required_sync = (
-            "python tools/recoil.py progress verification-target sync --target <target-id> "
-            "--expected-revision <revision> --dry-run --json"
-        )
-        if required_sync not in normalized:
-            findings.append(
-                f"{_relative(functional_skill, root)} [sync-command] must show a targeted revision-guarded dry-run"
             )
 
     return {

@@ -55,15 +55,6 @@
       "function_address_refs": ["0x46a690","0x46a770","0x46a7f0","0x46a8e0","0x46a9c0","0x46aa40","0x46aab0","0x46ab10","0x46ab40","0x46ab90","0x46ac80","0x46ae40","0x46af00","0x46af20","0x46af40","0x46b030","0x46b1f0","0x46b550","0x46b650","0x46b6d0","0x46ba90","0x46bb30","0x46bb90"],
       "successor": {"address":"0x46bd50","symbol":"?TryAppendBridgeEdge@zGeometry_TriangulateHole@@YIHPAUzGeometry_TriangulateHole_EdgeState@@H0@Z","name":"zGeometry_TriangulateHole::TryAppendBridgeEdge","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x46a690",
-    "agent_source_path": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
-    "physical_compile_host": "src/GameZRecoil/zGeometry/zgeo_model.cpp",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1039,
-    "covered_block_ids": ["recoil:block:0x46a690"]
-  }
+  ]
 }
 

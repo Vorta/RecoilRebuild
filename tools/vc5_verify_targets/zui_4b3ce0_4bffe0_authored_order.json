@@ -2927,32 +2927,5 @@
         "full_order_gate": true
       }
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x4b3ce0",
-    "agent_source_path": "src/GameZRecoil/zUI/zui_widgets.cpp",
-    "physical_compile_host": "src/GameZRecoil/zUI/zui_widgets.cpp",
-    "candidate_source_contributors": [
-      "src/Battlesport/mission.cpp",
-      "src/Battlesport/util.cpp",
-      "src/Battlesport/map.cpp",
-      "src/GameZRecoil/zMath/zmth_main.c",
-      "src/GameZRecoil/zVideo/zvid_main.c"
-    ],
-    "candidate_header_contributors": [
-      "src/Battlesport/hud_sensor_tracker.h",
-      "src/GameZRecoil/zHud/zhud_ui.h",
-      "src/GameZRecoil/zMath/zmth.h",
-      "src/GameZRecoil/zMath/zmth_decls.h",
-      "src/GameZRecoil/zVideo/zvid.h",
-      "src/GameZRecoil/zVideo/zvid_fx_pass3.h"
-    ],
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1307,
-    "covered_block_ids": [
-      "recoil:block:0x4b3ce0",
-      "recoil:block:0x4bc320"
-    ]
-  }
+  ]
 }

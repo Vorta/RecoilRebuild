@@ -3576,7 +3576,6 @@ def _commit_validated_call_contract_slice(
                 "comparison_passed": True,
                 "expected_contract": deepcopy(body["expected_contract"]),
                 "candidate_contract": deepcopy(body["candidate_contract"]),
-                "normalizers": deepcopy(body["normalizers"]),
                 "exact_fact_transcript": transcript,
                 **current_generations(),
             }
@@ -4517,7 +4516,6 @@ def _sync_verification_targets(
     from _recoil.lib.verification_targets import load_target_registrations
 
     registrations = load_target_registrations(
-        functional_manifest_dir=REPO_ROOT / "tools" / "functional_verify_targets",
         vc5_manifest_dir=REPO_ROOT / "tools" / "vc5_verify_targets",
     )
     repository_inventory = _load_progress_repository_inventory()
@@ -7480,7 +7478,6 @@ _OWNER_GATE_NAMES = {
     "boundary",
     "source",
     "data",
-    "functional",
     "linkage",
     "owner_linkage",
     "byte",

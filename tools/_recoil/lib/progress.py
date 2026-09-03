@@ -20,7 +20,7 @@ from _recoil.lib.repository_paths import (
 )
 
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 DEFAULT_PROGRESS_PATH = REPO_ROOT / ".agent" / "RECONSTRUCTION_PROGRESS.sqlite3"
 SQLITE_PROGRESS_SUFFIXES = frozenset({".sqlite", ".sqlite3", ".db"})
 TOP_LEVEL_COLLECTIONS = (
@@ -42,7 +42,7 @@ RESULT_STATES = frozenset({"pending", "passed", "failed", "blocked", "not-applic
 DISPOSITIONS = frozenset({"claim", "observed", "accepted", "stale", "superseded"})
 FRESHNESS_STATES = frozenset({"current", "historical", "changed", "missing"})
 OWNER_GATE_STATES = frozenset({"pending", "accepted", "blocked", "none", "deferred"})
-OWNER_GATES = ("boundary", "source", "data", "functional", "owner_linkage", "byte")
+OWNER_GATES = ("boundary", "source", "data", "owner_linkage", "byte")
 OWNER_LIFECYCLE_STATES = frozenset({"discovered", "mapped", "active", "accepted", "blocked"})
 TIERS = ("X", "C", "B", "A", "S")
 TIER_INDEX = {tier: index for index, tier in enumerate(TIERS)}
@@ -1483,7 +1483,7 @@ class ProgressDocument:
         if stage == "authored-call-contract" and slice_id:
             check_command = (
                 "python tools/recoil.py verify call-contract "
-                f"--slice {slice_id} --build-root <fresh-root> --json"
+                f"--slice {slice_id} --build-root <fresh-root> --json --summary"
             )
         elif stage == "authored-byte-match":
             check_command = "python tools/recoil.py verify authored-byte --at " + cursor

@@ -96,7 +96,7 @@ The direct verifier compares:
 - current direct Binary Ninja facts from the target-qualified loaded database.
 
 ```powershell
-python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json
+python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fresh-root> --json --summary
 ```
 
 Unresolved target, storage, provider, import, ICF/logical-alias identity, or
@@ -144,8 +144,8 @@ python tools/recoil.py progress call-contract close-live --build-root <fresh-roo
 The closeout runs the complete current census from fresh output, forbids reuse,
 requires zero divergence, queries the target-qualified canonical BN database
 directly without repeating database preflight per slice, records each slice's
-exact expected-fact transcript, and records generation 34/30/31 currency. It is
-the only route to stage completion.
+exact JSON-native expected-fact transcript, and records the current verifier
+and expected-fact generations. It is the only route to stage completion.
 
 ## Stage 3: Authored Bytes
 
@@ -208,6 +208,12 @@ groups before the first typed divergence.
 The live catalog partitions file-backed and loaded RVA intervals and joins
 accepted tracker facts for functions, variables, providers, resources, storage,
 directories, padding, zero-fill, relocations, and overlay.
+
+Coverage includes headers and section tables, linker-produced seams and
+directories, import/export/provider boundaries, resources, initialized data,
+BSS and other loaded zero-fill, base relocations, file/alignment padding, and
+overlay bytes. Each file-backed or loaded-RVA interval has exactly one typed
+owner; neither an unmapped gap nor two overlapping explanations may pass.
 
 ```powershell
 python tools/recoil.py verify pe --reference support/Recoil.exe --manifest .agent/REFERENCE_EXECUTABLE.json --verify

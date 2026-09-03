@@ -4461,7 +4461,7 @@ def direct_owner_issue_record(
     status: str,
 ) -> DirectOwnerIssue:
     owner_address = entry.address if entry is not None else ""
-    owner_target = entry.functional_target if entry is not None else ""
+    owner_target = entry.preferred_vc5_target if entry is not None else ""
     owner_name = entry.reconstructed_name if entry is not None else ""
     owner_group = entry.entry_group if entry is not None else ""
     owner_tier = entry.reimplementation_tier if entry is not None else ""

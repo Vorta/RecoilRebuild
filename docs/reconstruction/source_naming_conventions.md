@@ -41,16 +41,16 @@ its source owner, or accepts source shape, order, provider status, or tier.
 
 Before adding or renaming a class, type, namespace, subsystem, folder, or file:
 
-1. Classify the source construct through `original_classes.md` and current
-   Recoil evidence. Prove class/interface ownership before applying a class
-   prefix.
+1. Classify the source construct from current Recoil construction,
+   destruction, table-write, `this`-use, layout, and dispatch evidence. Prove
+   class/interface ownership before applying a class prefix.
 2. Search Recoil Binary Ninja facts and source-path/name literals.
 3. Search `support/engine_terminology/cpp_names.tsv`,
    `source_files.tsv`, and `identifier_terms.tsv` before inventing a spelling.
 4. Identify the evidence label above and use the strongest available spelling
    or family.
 5. Apply a default below only when the exact spelling remains unknown.
-6. Check `source_file_layout_audit.md` and the registered VC5 order target
+6. Check the registered VC5 order target and neighboring retail evidence
    before treating a path or order hypothesis as physical placement.
 
 If evidence remains contradictory, keep the name or placement unresolved.
@@ -159,8 +159,57 @@ Do not infer global alphabetical link order across application, GameZ,
 provider, CRT, or compiler boundaries. The no-literal shelf
 `[0x4b2960,0x4c0d20)` is a known global exception: its internal
 `zGame -> zSys -> zUI -> zUtil` sequence is alphabetic, but the shelf itself is
-out of global alphabetical position. Preserve the physical-block guidance in
-`source_file_layout_audit.md`.
+out of global alphabetical position.
+
+## Source Model And Placement
+
+An address is an evidence key, not a default source unit. Recover the strongest
+supported owner: class/interface, translation-unit cluster, record/table/
+callback group, global object or static-member group, provider boundary,
+subsystem, or strongly connected dependency group.
+
+Prefer class recovery when constructors/destructors, offset-zero table writes,
+stable `this` use, inherited cleanup, or dispatch xrefs agree. Do not encode an
+authored class as a hand-written vtable, slot array, raw-offset view, ABI shim,
+or collection of address-named helpers. Scalar deleting destructors and other
+compiler lifecycle artifacts remain distinct from the authored destructor
+body; provider-supplied variants remain provider facts.
+
+Retail source-path literals outrank inferred layout. When literals are absent,
+combine contiguous function/data order, xrefs, include and template emission,
+VC5 object order, tables, and neighboring owners. Record an exact historical
+path as `provisional_original_path` only while its evidence remains
+provisional; `agent_source_path` names the current implementation location and
+never proves the original path. A partial header or semantic block may span
+several physical contributions, but each attached artifact must still name its
+actual source construct and section.
+
+Generated inline/template/COMDAT bodies belong with the source construct or
+provider that caused their emission. Validate complete invocation leaves,
+relocations, selection, provenance, and call-free topology before projecting a
+compiler-local helper. VC5 tail merging may explain shared physical tails, but
+does not merge source owners or authorize wrong-file helper placement.
+
+## Source Trace Attachments
+
+Attach durable trace rows directly to the owning declaration, definition,
+table, or global object:
+
+```cpp
+/**
+ * @recoil-anchor recoil:anchor:<stable-source-construct-id>
+ * @recoil-artifact defines .text recoil:function:0xNNNNNN: Primary authored body.
+ * @recoil-artifact emits .rdata recoil:data:0xNNNNNN: VC5-generated table.
+ * Purpose: Explains why this source construct emits the artifact.
+ */
+```
+
+Use `defines` for a primary authored definition and `emits` for an auxiliary
+artifact caused by it. Data may be a primary source owner or an auxiliary
+emission; decide from source semantics, linkage, xrefs, layout, and generation
+cause rather than its section alone. Comments mirror tracker topology and
+accept nothing by themselves. Contradictory ownership, placement, section,
+extent, alias, or emission cause stays unresolved.
 
 ## Adding A Convention
 

@@ -6,7 +6,8 @@ This ledger records the current compiler/linker assumptions used for source-fait
 
 - VC5SP3 `cl` 11.00.7022 is the only tier `S` compiler for authored production source.
 - Current executable provenance points to VS97 SP3: VS97 SP3 `cvtres` produced 1 object and VS97 SP3 `link` 5.10.7303 linked the executable.
-- Modern MSVC/CMake builds are smoke and guard builds only. They prove compile/link/test health, not tier `S` equivalence.
+- Host-side checks prove tool and policy health only. They do not establish
+  VC5 code generation, authored order, or tier `S` equivalence.
 - Tier `S` acceptance normally requires relocation-masked COFF byte comparison. VC5 manifests can also compare generated `.data`/`.rdata` data symbols for data-gate evidence. Listings, normalized text diffs, and relocation identity reports are triage/review aids, not source-shape acceptance modes.
 
 ## Final Candidate Build Assumptions

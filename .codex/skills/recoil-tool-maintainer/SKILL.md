@@ -17,10 +17,17 @@ Before a ledger schema or migration change, create verified SQLite backup-API co
 
 Keep repository-local skills under `.codex/skills/recoil-*`. Do not add agent role files or duplicate skill mirrors.
 
+For a workspace audit, inspect instructions, the public command registry,
+route reachability, the issue ledger, retained docs/skills, and the proof
+kernel together. Remove duplicated or unreachable surfaces instead of adding
+compatibility aliases. Keep `tests/tools` to at most eight compact modules and
+250 collected cases; they test generic proof infrastructure, never one retail
+address or reconstruction backlog item.
+
 ## Validation
 
-Run focused tests first. Use `recoil-validation` for the canonical infrastructure
-matrix and add the full tool unit suite only when the change spans shared command
-or ledger infrastructure.
+Run focused tests first. Use `recoil-validation` for the canonical
+infrastructure matrix. Run the full compact proof kernel only when a change
+spans shared command or ledger infrastructure.
 
 Report commands run, results, remaining failures, ledger mutations, and any material deletion or rollback limitation.

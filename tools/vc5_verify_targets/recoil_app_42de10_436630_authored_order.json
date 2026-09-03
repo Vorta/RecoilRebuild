@@ -1,12 +1,4 @@
 {
-  "authored_order_scaffold": {
-    "agent_source_path": "src/Battlesport/RecoilApp.cpp",
-    "block_id": "recoil:block:0x42de10",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "physical_compile_host": "src/Battlesport/RecoilApp.cpp",
-    "tracker_revision": 827,
-    "version": 1
-  },
   "check_translation_unit_function_order": true,
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "description": "Reviewed fail-closed RecoilApp.cpp authored-order target for [0x42de10,0x436630). The GameNet contribution now compiles directly through RecoilApp.cpp without a preservation fragment. The non-gating 0x42de00 predecessor uses a bounded ComReleaseOnExit provider-family regex because retail proves one folded body but cannot select either compiler-local specialization identity.",

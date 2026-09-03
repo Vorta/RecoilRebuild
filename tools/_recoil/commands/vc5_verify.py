@@ -6156,11 +6156,11 @@ def resolve_owner_vc5_scope(
                     )
                 )
             continue
-        if len(correct_matches) > 1 and entry.functional_target and entry.functional_target != "pending":
+        if len(correct_matches) > 1 and entry.preferred_vc5_target and entry.preferred_vc5_target != "pending":
             target_matches = [
                 (target, item)
                 for target, item in correct_matches
-                if target.name == entry.functional_target
+                if target.name == entry.preferred_vc5_target
             ]
             if target_matches:
                 correct_matches = target_matches
@@ -8064,6 +8064,56 @@ def run_owner_mode(
     )
 
 
+def run_vc5_smoke(*, build_root: Path, vc5_env: Path) -> dict[str, Any]:
+    """Compile and parse one tiny C object with the configured VC5 toolchain."""
+
+    build_dir = prepare_clean_build_dir(build_root, "smoke")
+    environment = vc5_env.resolve()
+    if not environment.is_file():
+        raise ValueError(f"VC environment not found: {environment}")
+    source = build_dir / "vc5_smoke.c"
+    source.write_text(
+        "int __cdecl recoil_vc5_smoke(int value) { return value + 1; }\n",
+        encoding="ascii",
+    )
+    command = (
+        f"call {quote_cmd_arg(environment)} && "
+        "cl /nologo /TC /W3 /G5 /O2 /Ob0 /MD /Zp4 /FAcs /c vc5_smoke.c"
+    )
+    completed = run_vc5_script(
+        command,
+        cwd=build_dir,
+        diagnostic_stem="vc5-smoke",
+    )
+    obj_path = source.with_suffix(".obj")
+    cod_path = source.with_suffix(".cod")
+    if completed.returncode != 0:
+        raise ValueError(f"VC5 smoke compile exited {completed.returncode}")
+    if not obj_path.is_file() or not cod_path.is_file():
+        raise ValueError("VC5 smoke compile did not emit both .obj and .cod")
+    coff = CoffObject.from_path(obj_path)
+    symbol = coff.symbols_by_name.get("_recoil_vc5_smoke")
+    function = coff.function_bytes("_recoil_vc5_smoke")
+    if (
+        symbol is None
+        or symbol.section_number <= 0
+        or function is None
+        or not function.data
+        or not any(section.name == ".text" for section in coff.sections)
+    ):
+        raise ValueError("VC5 smoke object lacks the expected callable COFF symbol")
+    return {
+        "kind": "vc5-toolchain-smoke",
+        "passed": True,
+        "compiler_version": detect_compiler_version(environment, cwd=build_dir),
+        "build_dir": display_path(build_dir),
+        "object": display_path(obj_path),
+        "listing": display_path(cod_path),
+        "symbol": symbol.name,
+        "body_size": len(function.data),
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
@@ -8086,6 +8136,11 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Compile and parse one tiny C object to prove the configured VC5 toolchain works.",
+    )
+    parser.add_argument(
         "--linked-target",
         metavar="TARGET",
         help=(
@@ -8097,7 +8152,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--json",
         action="store_true",
-        help="Emit the live vc5-order result as one JSON object (valid only with --order-only).",
+        help="Emit the vc5-order or VC5 smoke result as one JSON object.",
     )
     parser.add_argument(
         "--owner",
@@ -8235,8 +8290,41 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
-        if args.json and not args.order_only:
-            parser.error("--json is valid only with --order-only")
+        if args.json and not (args.order_only or args.smoke):
+            parser.error("--json is valid only with --order-only or --smoke")
+        if args.smoke:
+            incompatible = [
+                (args.order_only, "--order-only"),
+                (args.linked_target, "--linked-target"),
+                (args.targets, "target"),
+                (args.target_aliases, "--target"),
+                (args.targets_json, "--targets-json"),
+                (args.owner, "--owner"),
+                (args.all, "--all"),
+                (args.source_from, "--source-from"),
+                (args.all_covering, "--all-covering"),
+                (args.list, "--list"),
+                (args.explain_missing, "--explain-missing"),
+                (args.compiler_profile, "--compiler-profile"),
+                (args.profile_sweep, "--profile-sweep"),
+                (args.chunk_size, "--chunk-size"),
+                (args.auto_chunk, "--auto-chunk"),
+            ]
+            rejected = [name for value, name in incompatible if value]
+            if rejected:
+                parser.error("--smoke cannot be combined with " + ", ".join(rejected))
+            result = run_vc5_smoke(
+                build_root=Path(args.build_root),
+                vc5_env=Path(args.vc5_env),
+            )
+            if args.json:
+                print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+            else:
+                print(
+                    "VC5 toolchain smoke PASS: "
+                    f"{result['compiler_version']} ({result['object']})"
+                )
+            return 0
         if args.linked_target and not args.order_only:
             parser.error("--linked-target is valid only with --order-only")
         if args.order_only:

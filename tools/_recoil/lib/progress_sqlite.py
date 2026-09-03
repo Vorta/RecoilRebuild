@@ -13,7 +13,7 @@ APPLICATION_ID = 0x52434C50  # "RCLP"
 USER_VERSION = 3
 LEGACY_USER_VERSIONS = frozenset({1, 2})
 BUSY_TIMEOUT_MS = 10_000
-SEMANTIC_SCHEMA_VERSION = 6
+SEMANTIC_SCHEMA_VERSION = 7
 
 REVISION_DOMAIN_SEMANTIC = "semantic"
 REVISION_DOMAIN_EVIDENCE_GENERATION = "evidence_generation"
@@ -22,7 +22,7 @@ REVISION_DOMAIN_COLUMNS = {
     REVISION_DOMAIN_EVIDENCE_GENERATION: "evidence_generation_revision",
 }
 
-# These are the entity maps in progress schema v6. They remain distinct
+# These are the entity maps in progress schema v7. They remain distinct
 # tablespace keys: a physical block is not a semantic span, an owner, or an
 # evidence observation merely because their payloads link.
 ENTITY_COLLECTIONS = (

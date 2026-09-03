@@ -40,17 +40,5 @@
       ]
     }
   ],
-  "source_from": "src/WinMain.cpp",
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x4c81c0",
-    "agent_source_path": "src/WinMain.cpp",
-    "physical_compile_host": "src/WinMain.cpp",
-    "candidate_source_contributors": [],
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1225,
-    "covered_block_ids": [
-      "recoil:block:0x4c81c0"
-    ]
-  }
+  "source_from": "src/WinMain.cpp"
 }

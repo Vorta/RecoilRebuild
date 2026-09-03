@@ -73,7 +73,7 @@ the unified reconstruction tracker, or per-target VC verification evidence.
 
 ## Verification Notes
 
-- Native CMake builds and CTest are smoke and guard checks, not tier `S`
+- Host-side proof-kernel checks are infrastructure guards, not tier `S`
   acceptance.
 - VC verification manifests should compile production source through
   `source_from`.

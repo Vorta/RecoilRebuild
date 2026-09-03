@@ -30,7 +30,7 @@ VALID_OWNER_KINDS = {
 }
 VALID_OWNER_STATES = {"discovered", "mapped", "active", "accepted", "blocked", "deferred"}
 VALID_OWNER_BINARIES = {"recoil", "messages"}
-OWNER_GATES = ("boundary", "source", "data", "functional", "linkage", "byte")
+OWNER_GATES = ("boundary", "source", "data", "linkage", "byte")
 VALID_GATE_STATES = {"pending", "accepted", "blocked", "none", "deferred"}
 OWNER_REIMPLEMENTATION_TIERS = ("X", "C", "B", "A", "S")
 VALID_OWNER_REIMPLEMENTATION_TIERS = set(OWNER_REIMPLEMENTATION_TIERS)
@@ -344,12 +344,9 @@ def derive_owner_reimplementation_tier(owner: SourceOwner) -> str:
         return "A"
     if floor in {"B", "A", "S"} and b_gates_ready:
         return "B"
-    # C deliberately precedes the structural/data/linkage source-owner gates.
-    # Data owners may carry one accessor/initializer function while behavior is
-    # certified through their data gate rather than a standalone functional gate.
-    has_functions = bool(owner_member_addresses(owner)) and owner.kind != "data-owner"
-    if has_functions and owner.gate("functional") != "accepted":
-        return "X"
+    # C is the floor supplied by reviewed primary-entry source/behavior
+    # coverage.  It deliberately precedes the structural/data/linkage gates
+    # and has no separate surrogate-runtime acceptance gate.
     return "C"
 
 
@@ -366,6 +363,16 @@ def _project_progress_owners(progress: dict[str, Any]) -> dict[str, Any]:
         for owner_id, raw in raw_owners.items()
         if isinstance(raw, dict)
     }
+    verification_targets = progress.get("verification_targets", {})
+    vc5_target_names: dict[str, str] = {}
+    if isinstance(verification_targets, dict):
+        for target_id, target in verification_targets.items():
+            if not isinstance(target, dict) or target.get("kind") != "vc5":
+                continue
+            name = str(target.get("name", "") or "")
+            if name:
+                vc5_target_names[str(target_id)] = name
+                vc5_target_names[name] = name
 
     def summaries(ids: Any) -> list[str]:
         result: list[str] = []
@@ -423,6 +430,20 @@ def _project_progress_owners(progress: dict[str, Any]) -> dict[str, Any]:
 
         gates = dict(raw.get("gates", {})) if isinstance(raw.get("gates"), dict) else {}
         gates["linkage"] = gates.pop("owner_linkage", gates.get("linkage", "pending"))
+        address_metadata = dict(raw.get("address_metadata", {}))
+        for address, metadata in list(address_metadata.items()):
+            if not isinstance(metadata, dict):
+                continue
+            target = str(metadata.get("target", "") or "")
+            normalized_target = vc5_target_names.get(target, "")
+            if target and not normalized_target:
+                metadata = dict(metadata)
+                metadata.pop("target", None)
+                address_metadata[address] = metadata
+            elif normalized_target and normalized_target != target:
+                metadata = dict(metadata)
+                metadata["target"] = normalized_target
+                address_metadata[address] = metadata
         owner: dict[str, Any] = {
             "id": legacy_id,
             "binary": str(raw.get("binary", "recoil")),
@@ -438,7 +459,7 @@ def _project_progress_owners(progress: dict[str, Any]) -> dict[str, Any]:
             "relationships": relationships,
             "gates": gates,
             "blocker": str(raw.get("blocker", "")),
-            "address_metadata": dict(raw.get("address_metadata", {})),
+            "address_metadata": address_metadata,
             "evidence": summaries(raw.get("evidence_ids", [])),
         }
         if raw.get("kind") != "provider-boundary":

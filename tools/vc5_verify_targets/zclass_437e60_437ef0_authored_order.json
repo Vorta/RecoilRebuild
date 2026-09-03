@@ -83,13 +83,5 @@
         "full_order_gate": true
       }
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x437e60",
-    "agent_source_path": "src/GameZRecoil/zClass/Class.c",
-    "physical_compile_host": "src/GameZRecoil/zClass/Class.c",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 846
-  }
+  ]
 }

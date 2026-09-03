@@ -1492,7 +1492,6 @@ def register_provider_target(
             "boundary": "accepted",
             "byte": "deferred",
             "data": "accepted",
-            "functional": "none",
             "owner_linkage": "none",
             "source": "accepted",
         },

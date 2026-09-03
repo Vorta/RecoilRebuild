@@ -81,15 +81,6 @@
       "function_address_refs": ["0x464670","0x464680","0x464790","0x4647d0","0x464810","0x464b30","0x464b90","0x464c90","0x464ea0","0x464f70","0x465ac0","0x467600","0x467630","0x467660","0x4676c0","0x467710","0x4680b0","0x4681a0","0x4682c0","0x4683a0","0x468410","0x468470","0x468580","0x468650","0x468700","0x4687b0","0x468a10","0x468c40","0x468fa0","0x4693a0","0x4693c0","0x469430","0x469450","0x469560","0x469960","0x469a30","0x469ae0","0x469af0","0x469b60","0x469ca0","0x469d60","0x469e50","0x469e90","0x46a080","0x46a130","0x46a1f0","0x46a5e0","0x46a600","0x46a620"],
       "successor": {"address":"0x46a690","symbol":"?FindOrCreateRandomDebugMaterial@zGeometry_Model@@YAPAUzModel_MaterialPartial@@XZ","name":"zGeometry_Model::FindOrCreateRandomDebugMaterial","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
-  ],
-  "authored_order_scaffold": {
-    "version": 1,
-    "block_id": "recoil:block:0x464670",
-    "agent_source_path": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
-    "physical_compile_host": "src/GameZRecoil/zGeometry/zgeo_weiler.cpp",
-    "canonical_mfc_include_root": "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE",
-    "tracker_revision": 1033,
-    "covered_block_ids": ["recoil:block:0x464670"]
-  }
+  ]
 }
 

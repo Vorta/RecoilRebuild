@@ -17,26 +17,26 @@ ACCEPTED_DATA_STATUSES = {DONE_STATUS, NO_GLOBALS_STATUS}
 VALID_OWNER_STATUSES = {DONE_STATUS, NOT_DONE_STATUS}
 ACCEPTED_OWNER_STATUSES = {DONE_STATUS}
 
-FUNCTIONAL_LANE = "functional"
+COVERAGE_LANE = "coverage"
 BINARY_LANE = "binary"
-LANE_ALIASES = {FUNCTIONAL_LANE: FUNCTIONAL_LANE, BINARY_LANE: BINARY_LANE}
+LANE_ALIASES = {COVERAGE_LANE: COVERAGE_LANE, BINARY_LANE: BINARY_LANE}
 LANE_CHOICES = sorted(LANE_ALIASES)
 
 TIER_NONE = "X"
-TIER_FUNCTIONAL = "C"
+TIER_COVERAGE = "C"
 TIER_DATA_EQUIVALENT = "B"
 TIER_REGISTER_MATCH = "A"
 TIER_BINARY_SAFE = "S"
 VALID_REIMPLEMENTATION_TIERS = {
     TIER_NONE,
-    TIER_FUNCTIONAL,
+    TIER_COVERAGE,
     TIER_DATA_EQUIVALENT,
     TIER_REGISTER_MATCH,
     TIER_BINARY_SAFE,
 }
 TIER_ORDER = {
     TIER_NONE: 0,
-    TIER_FUNCTIONAL: 1,
+    TIER_COVERAGE: 1,
     TIER_DATA_EQUIVALENT: 2,
     TIER_REGISTER_MATCH: 3,
     TIER_BINARY_SAFE: 4,
@@ -48,7 +48,7 @@ BINARY_BLOCKER_PRIORITY = {
     "deps": 1,
     "owner": 2,
     "impl": 3,
-    "functional": 4,
+    "coverage": 4,
     "data": 5,
     "verify": 6,
 }
@@ -60,7 +60,7 @@ FIELD_LABELS = {
     "owner": "Source owner",
     "data": "Data reimplemented",
     "impl": "Reimplemented",
-    "functional": "Reimplemented [C]",
+    "coverage": "Reimplemented [C]",
     "verify": "Reimplemented [S]",
     "provider": "Provider-boundary",
 }
@@ -101,8 +101,8 @@ class OwnerEntry:
     provider_file: str = ""
     provider_target: str = ""
     binary_verified_status: str = NOT_DONE_STATUS
-    functional_equivalent_status: str = NOT_DONE_STATUS
-    functional_target: str = ""
+    coverage_status: str = NOT_DONE_STATUS
+    preferred_vc5_target: str = ""
     reimplementation_tier: str = TIER_NONE
     entry_group: str = ""
     source_model: str = "pending"
@@ -168,12 +168,12 @@ class OwnerEntry:
         return self.reimplementation_tier
 
     @property
-    def is_functionally_accepted(self) -> bool:
-        return tier_at_least(self.accepted_reimplementation_tier, TIER_FUNCTIONAL)
+    def is_coverage_accepted(self) -> bool:
+        return tier_at_least(self.accepted_reimplementation_tier, TIER_COVERAGE)
 
     @property
-    def is_functionally_equivalent(self) -> bool:
-        return self.is_functionally_accepted
+    def is_coverage_equivalent(self) -> bool:
+        return self.is_coverage_accepted
 
     @property
     def is_data_equivalent(self) -> bool:
@@ -301,7 +301,7 @@ class OwnerEntryIndex:
             or needle in self.entries[address].group_title.lower()
         ]
 
-    def first_unfinished(self, *, lane: str = FUNCTIONAL_LANE) -> OwnerEntry | None:
+    def first_unfinished(self, *, lane: str = COVERAGE_LANE) -> OwnerEntry | None:
         return first_unfinished((self.entries[address] for address in self.order), lane=lane)
 
 
@@ -340,8 +340,8 @@ def _entry_from_owner(owner, entry_kind: str, address: str, relationship_name: s
         provider_file="external" if provider else "",
         provider_target=target if provider else "",
         binary_verified_status=DONE_STATUS if tier == TIER_BINARY_SAFE else NOT_DONE_STATUS,
-        functional_equivalent_status=DONE_STATUS if tier_at_least(tier, TIER_FUNCTIONAL) else NOT_DONE_STATUS,
-        functional_target=str(meta.get("target", "") or ""),
+        coverage_status=DONE_STATUS if tier_at_least(tier, TIER_COVERAGE) else NOT_DONE_STATUS,
+        preferred_vc5_target=str(meta.get("target", "") or ""),
         reimplementation_tier=tier,
         entry_group=section,
         source_model="source-faithful" if owner_ready else "pending",
@@ -426,8 +426,7 @@ def normalize_lane(value: str) -> str:
     return lane
 
 
-def status_summary(entry: OwnerEntry, *, include_functional: bool = True) -> str:
-    _ = include_functional
+def status_summary(entry: OwnerEntry) -> str:
     if entry.is_provider_boundary:
         return f"recon={entry.reconstructed_status} provider={entry.provider_boundary_status} kind={entry.provider_kind}"
     if entry.is_data_entry:
@@ -443,7 +442,7 @@ def status_summary(entry: OwnerEntry, *, include_functional: bool = True) -> str
     )
 
 
-def blocker_field(entry: OwnerEntry, *, lane: str = FUNCTIONAL_LANE) -> str | None:
+def blocker_field(entry: OwnerEntry, *, lane: str = COVERAGE_LANE) -> str | None:
     lane = normalize_lane(lane)
     if entry.reconstructed_status in {NOT_DONE_STATUS, UNKNOWN_STATUS, "?"}:
         return "recon"
@@ -463,8 +462,8 @@ def blocker_field(entry: OwnerEntry, *, lane: str = FUNCTIONAL_LANE) -> str | No
         return "owner"
     if entry.reimplemented_status != DONE_STATUS:
         return "impl"
-    if not entry.is_functionally_accepted:
-        return "functional"
+    if not entry.is_coverage_accepted:
+        return "coverage"
     if lane == BINARY_LANE and (not entry.has_accepted_data_state or not entry.is_data_equivalent):
         return "data"
     if lane == BINARY_LANE and not entry.is_binary_verified:
@@ -474,7 +473,7 @@ def blocker_field(entry: OwnerEntry, *, lane: str = FUNCTIONAL_LANE) -> str | No
     return None
 
 
-def blocker_priority(entry: OwnerEntry, *, lane: str = FUNCTIONAL_LANE) -> int:
+def blocker_priority(entry: OwnerEntry, *, lane: str = COVERAGE_LANE) -> int:
     field = blocker_field(entry, lane=lane)
     if field is None:
         return DEFAULT_BLOCKER_PRIORITY
@@ -501,7 +500,7 @@ def tier_s_priority_ready(entries: Iterable[OwnerEntry]) -> bool:
     return counts["owner"] == 0 and counts["data"] == 0
 
 
-def first_unfinished(entries: Iterable[OwnerEntry], *, lane: str = FUNCTIONAL_LANE) -> OwnerEntry | None:
+def first_unfinished(entries: Iterable[OwnerEntry], *, lane: str = COVERAGE_LANE) -> OwnerEntry | None:
     lane = normalize_lane(lane)
     pending = [(index, entry) for index, entry in enumerate(entries) if blocker_field(entry, lane=lane)]
     if not pending:

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Recoil VC5 Final Build"
-  short_description: "Run the Recoil VC5SP3 final build"
-  default_prompt: "Use $recoil-vc5-final-build to build or diagnose the VC5SP3 final Recoil.exe candidate."

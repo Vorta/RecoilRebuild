@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from _recoil.commands.functional_verify import load_manifest as load_functional_manifest
 from _recoil.commands.vc5_verify import (
     function_authored_order_gate,
     function_authored_relative_order_gate,
@@ -19,27 +18,6 @@ def _manifest_path(path: Path) -> str:
         return display_path(resolved.relative_to(REPO_ROOT))
     except ValueError:
         return resolved.as_posix()
-
-
-def functional_target_registration(path: Path) -> tuple[str, dict[str, Any]]:
-    target = load_functional_manifest(path)
-    target_id = f"{target.target_binary}:functional-target:{target.name}"
-    registration = {
-        "address": target.address,
-        "binary": target.target_binary,
-        "covered_addresses": list(target.covered_addresses),
-        "manifest_path": _manifest_path(target.path),
-        "name": target.name,
-        "smoke_tests": list(target.smoke_tests),
-        "source_from": target.source_from,
-    }
-    return target_id, {
-        "binary": target.target_binary,
-        "kind": "functional",
-        "name": target.name,
-        "registration": registration,
-        "registered_addresses": list(target.covered_addresses),
-    }
 
 
 def _linked_interval_registration(interval: Any) -> dict[str, Any]:
@@ -197,15 +175,9 @@ def vc5_target_registration(path: Path) -> tuple[str, dict[str, Any]]:
 
 def load_target_registrations(
     *,
-    functional_manifest_dir: Path,
     vc5_manifest_dir: Path,
 ) -> dict[str, dict[str, Any]]:
     registrations: dict[str, dict[str, Any]] = {}
-    for path in sorted(functional_manifest_dir.glob("*.json")):
-        target_id, record = functional_target_registration(path)
-        if target_id in registrations:
-            raise ValueError(f"duplicate verification target id {target_id}")
-        registrations[target_id] = record
     for path in sorted(vc5_manifest_dir.glob("*.json")):
         target_id, record = vc5_target_registration(path)
         if target_id in registrations:
