@@ -3243,12 +3243,6 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
             failureMessageId = kBrowseSessionResolvedFailure71MessageId;
         } else if (status == kBrowseSessionResolvedFailure6e) {
             failureMessageId = kBrowseSessionResolvedFailure6eMessageId;
-        } else {
-            g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
-                kBrowseSessionResolvedStatusCodeFmt,
-                zLoc::GetMessageString(kBrowseSessionResolvedFailurePrefixMessageId),
-                status
-            );
         }
 
         if (failureMessageId != 0) {
@@ -3257,6 +3251,12 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
                 zLoc::GetMessageString(failureMessageId)
             );
             g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusText);
+        } else {
+            g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
+                kBrowseSessionResolvedStatusCodeFmt,
+                zLoc::GetMessageString(kBrowseSessionResolvedFailurePrefixMessageId),
+                status
+            );
         }
 
         g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;

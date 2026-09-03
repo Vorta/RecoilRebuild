@@ -3003,50 +3003,6 @@ namespace Player {
 
 
 
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed caller 0x43c850 Player::ResetAltGunRuntimeState.
- * Purpose: provide the recovered reset alt gun attach node helper for
- * the Player/Pickup gameplay source cluster.
- */
-void ResetAltGunAttachNode(
-    PlayerGunFireController *controller
-) {
-    zClass_NodePartial *const attachNode = controller->attachNodePrimary;
-    if (attachNode == 0) {
-        return;
-    }
-
-    zClass_Class::gwNodeSetActive(
-        attachNode,
-        0
-    );
-    zClass_Object3D::gwObject3DSetPosition(
-        attachNode,
-        controller->attachPosX,
-        controller->attachPosY,
-        controller->attachPosZ
-    );
-    zClass_Object3D::gwObject3DSetScale(
-        attachNode,
-        1.0f,
-        1.0f,
-        1.0f
-    );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
