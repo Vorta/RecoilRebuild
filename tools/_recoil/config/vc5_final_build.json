@@ -617,7 +617,7 @@
     {
       "id": "time_tick",
       "identity": "recoil:function:0x4a56d0",
-      "callee_source": "src/GameZRecoil/Time/Time.cpp",
+      "callee_source": "src/GameZRecoil/zTime/Time.cpp",
       "cdecl_symbol": "?Tick@Time@@YAXXZ",
       "fastcall_symbol": "?Tick@Time@@YIXXZ",
       "callers": [
@@ -851,7 +851,7 @@
     "src/GameZRecoil/zSound/zsnd_parm.cpp",
     "src/GameZRecoil/zSound/zsnd_play.cpp",
     "src/GameZRecoil/zSound/zsnd.cpp",
-    "src/GameZRecoil/Time/Time.cpp",
+    "src/GameZRecoil/zTime/Time.cpp",
     "src/GameZRecoil/zSys/zsys_cpu.cpp",
     "src/GameZRecoil/zSys/zsys.cpp",
     "src/GameZRecoil/zUI/zui_widgets.cpp",

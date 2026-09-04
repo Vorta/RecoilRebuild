@@ -5,7 +5,7 @@
   "retail_start": "0x4a59d0",
   "retail_end_exclusive": "0x4a59e0",
   "source_filename": "Time.cpp",
-  "source_from": "src/GameZRecoil/Time/Time.cpp",
+  "source_from": "src/GameZRecoil/zTime/Time.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "check_translation_unit_function_order": true,
   "functions": [
@@ -22,7 +22,7 @@
   ],
   "translation_unit_function_order": [
     {
-      "source_from": "src/GameZRecoil/Time/Time.cpp",
+      "source_from": "src/GameZRecoil/zTime/Time.cpp",
       "order_scope": "authored",
       "function_address_refs": [
         "0x4a59d0"

@@ -7,7 +7,7 @@
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
-    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zTime",
     "src/GameZRecoil/include",
     "support/sdk/DirectX6/include",
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"

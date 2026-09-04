@@ -8,7 +8,7 @@
     "src",
     "tools/_recoil/compat/include",
     "src/Battlesport",
-    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zTime",
     "src/GameZRecoil/include",
     "src/GameZRecoil/zError",
     "src/GameZRecoil/zGame",
@@ -23,7 +23,7 @@
   ],
   "source_files": [
     "src/GameZRecoil/zSound/zsnd.cpp",
-    "src/GameZRecoil/Time/Time.cpp",
+    "src/GameZRecoil/zTime/Time.cpp",
     "src/GameZRecoil/zSys/zsys.cpp",
     "src/Battlesport/RecoilApp.cpp"
   ],
@@ -64,7 +64,7 @@
       ]
     },
     {
-      "source_from": "src/GameZRecoil/Time/Time.cpp",
+      "source_from": "src/GameZRecoil/zTime/Time.cpp",
       "functions": [
         {
           "address": "0x4a5670",

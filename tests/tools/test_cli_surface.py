@@ -60,3 +60,10 @@ def test_vc5_smoke_is_on_the_retained_verifier_route() -> None:
     item = recoil.COMMANDS[("verify", "vc5")]
     assert "--smoke" in " ".join(item.examples)
     assert ("audit", "source-policy") in recoil.COMMANDS
+
+
+def test_source_path_relocation_is_one_public_global_cas_route() -> None:
+    item = recoil.COMMANDS[("progress", "source-path", "relocate")]
+    assert item.prepend_args == ("source-path", "relocate")
+    assert item.required_revision_domains == ("global",)
+    assert item.mutation_scope == "source-path"

@@ -110,7 +110,7 @@
     "tools/_recoil/compat/include",
     "src/Battlesport",
     "src/GameZRecoil/include",
-    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zTime",
     "src/GameZRecoil/zClass",
     "src/GameZRecoil/zEffect",
     "src/GameZRecoil/zError",

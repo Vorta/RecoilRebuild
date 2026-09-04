@@ -710,6 +710,31 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         ),
     ),
     spec(
+        "progress source-path relocate",
+        "progress_cli",
+        prepend=("source-path", "relocate"),
+        summary=(
+            "Revision-guarded relocation of one reviewed current production "
+            "source-path prefix after verification-target synchronization."
+        ),
+        description=(
+            "The v1 payload exact-guards every matching physical block, semantic "
+            "span, owner, source-trace artifact, and pre-synchronized verification "
+            "target. The route authenticates the new repository files, requires the "
+            "old checkout prefix to be absent, rewrites only current implementation "
+            "paths, preserves historical provenance and topology, and conservatively "
+            "invalidates dependent order, call-contract, and byte state."
+        ),
+        category="progress",
+        examples=(
+            "python tools/recoil.py progress source-path relocate --payload-json '<recoil-source-path-relocation-v1>' --expected-revision <revision> --dry-run --json",
+            "python tools/recoil.py progress source-path relocate --payload-file build/reviewed-source-path-relocation.json --expected-revision <revision> --apply --json",
+        ),
+        mutates=True,
+        required_revision_domains=("global",),
+        mutation_scope="source-path",
+    ),
+    spec(
         "progress data-extent register",
         "data_extent_progress",
         summary=(

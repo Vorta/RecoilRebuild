@@ -60,6 +60,7 @@ from _recoil.lib.progress import (
     ProgressDocument,
     ProgressError,
     ProgressStore,
+    SYMBOL_BINARY_DIMENSIONS,
     accept_live_authored_non_gating_blocks,
     address_value,
     is_current_accepted_state,
@@ -76,6 +77,7 @@ from _recoil.lib.repository_paths import (
     RepositoryFile,
     load_repository_path_inventory,
     resolve_repository_file,
+    validate_repository_relative_path,
 )
 from _recoil.lib.live_progress import ConcurrentRevisionUpdate
 from _recoil.lib.pe import parse_pe_headers, rva_to_offset
@@ -665,6 +667,39 @@ def _parser() -> argparse.ArgumentParser:
         ),
     )
     _add_mutation_controls(verification_retire)
+
+    source_path = subparsers.add_parser(
+        "source-path",
+        help="Apply reviewed current implementation-path maintenance.",
+    )
+    source_path_children = source_path.add_subparsers(
+        dest="source_path_command",
+        required=True,
+    )
+    source_path_relocate = source_path_children.add_parser(
+        "relocate",
+        help=(
+            "Relocate one exact current implementation-path prefix across "
+            "reviewed tracker relationships after verification-target sync."
+        ),
+    )
+    _add_progress_path(source_path_relocate)
+    source_path_payload = source_path_relocate.add_mutually_exclusive_group(
+        required=True
+    )
+    source_path_payload.add_argument(
+        "--payload-json",
+        help=(
+            "One recoil-source-path-relocation-v1 object with exact expected "
+            "entity and pre-synchronized verification-target ids."
+        ),
+    )
+    source_path_payload.add_argument(
+        "--payload-file",
+        type=Path,
+        help="Path below workspace build/ to the same reviewed UTF-8 payload.",
+    )
+    _add_mutation_controls(source_path_relocate)
 
     advance_order = subparsers.add_parser(
         "advance-live-order",
@@ -6877,6 +6912,551 @@ def _require_unique_string_list(
     return result
 
 
+_SOURCE_PATH_RELOCATION_SCHEMA = "recoil-source-path-relocation-v1"
+_SOURCE_PATH_RELOCATION_FIELDS = {
+    "schema",
+    "reviewed",
+    "reason",
+    "binary",
+    "old_prefix",
+    "new_prefix",
+    "expected_matches",
+}
+_SOURCE_PATH_RELOCATION_MATCH_FIELDS = {
+    "physical_block_ids",
+    "semantic_span_ids",
+    "owner_ids",
+    "artifact_ids",
+    "pre_synced_verification_target_ids",
+}
+
+
+def _parse_source_path_relocation_payload(
+    payload_json: str,
+    *,
+    source_label: str = "--payload-json",
+) -> dict[str, Any]:
+    try:
+        raw = json.loads(payload_json)
+    except json.JSONDecodeError as exc:
+        raise ProgressError(f"{source_label} is not valid JSON: {exc.msg}") from exc
+    if not isinstance(raw, Mapping):
+        raise ProgressError(
+            f"{source_label} must be one source-path relocation object"
+        )
+    payload = _require_exact_payload_fields(
+        raw,
+        _SOURCE_PATH_RELOCATION_FIELDS,
+        label="source-path relocation payload",
+    )
+    if payload["schema"] != _SOURCE_PATH_RELOCATION_SCHEMA:
+        raise ProgressError(
+            f"source-path relocation schema must be "
+            f"{_SOURCE_PATH_RELOCATION_SCHEMA!r}"
+        )
+    if payload["reviewed"] is not True:
+        raise ProgressError("source-path relocation requires reviewed=true")
+    payload["reason"] = _require_payload_string(payload["reason"], label="reason")
+    payload["binary"] = _require_payload_string(payload["binary"], label="binary")
+    for field in ("old_prefix", "new_prefix"):
+        value = _require_payload_string(payload[field], label=field)
+        try:
+            value = validate_repository_relative_path(
+                value,
+                context=f"source-path relocation {field}",
+            )
+        except RepositoryPathError as exc:
+            raise ProgressError(str(exc)) from exc
+        if value != "src" and not value.startswith("src/"):
+            raise ProgressError(
+                f"source-path relocation {field} must be within production src/"
+            )
+        payload[field] = value
+    old_prefix = str(payload["old_prefix"])
+    new_prefix = str(payload["new_prefix"])
+    if old_prefix.casefold() == new_prefix.casefold():
+        raise ProgressError(
+            "source-path relocation prefixes must differ beyond path case"
+        )
+    if (
+        old_prefix.startswith(new_prefix + "/")
+        or new_prefix.startswith(old_prefix + "/")
+    ):
+        raise ProgressError(
+            "source-path relocation refuses nested old/new prefixes"
+        )
+
+    expected_raw = payload["expected_matches"]
+    if not isinstance(expected_raw, Mapping):
+        raise ProgressError("expected_matches must be an object")
+    expected = _require_exact_payload_fields(
+        expected_raw,
+        _SOURCE_PATH_RELOCATION_MATCH_FIELDS,
+        label="expected_matches",
+    )
+    for field in sorted(_SOURCE_PATH_RELOCATION_MATCH_FIELDS):
+        expected[field] = _require_unique_string_list(
+            expected[field],
+            label=f"expected_matches.{field}",
+            allow_empty=True,
+        )
+    if not any(
+        expected[field]
+        for field in (
+            "physical_block_ids",
+            "semantic_span_ids",
+            "owner_ids",
+            "artifact_ids",
+        )
+    ):
+        raise ProgressError(
+            "source-path relocation must expect at least one tracker entity match"
+        )
+    payload["expected_matches"] = expected
+    return payload
+
+
+def _load_source_path_relocation_payload(
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    if args.payload_file is None:
+        return _parse_source_path_relocation_payload(str(args.payload_json))
+
+    payload_path = args.payload_file
+    build_root = (REPO_ROOT / "build").resolve()
+    resolved_path = (
+        (REPO_ROOT / payload_path).resolve()
+        if not payload_path.is_absolute()
+        else payload_path.resolve()
+    )
+    try:
+        resolved_path.relative_to(build_root)
+    except ValueError as exc:
+        raise ProgressError(
+            "source-path relocation --payload-file must resolve under workspace build/"
+        ) from exc
+    try:
+        file_size = resolved_path.stat().st_size
+    except OSError as exc:
+        raise ProgressError(
+            f"source-path relocation payload file is missing or unreadable: "
+            f"{payload_path}"
+        ) from exc
+    if not resolved_path.is_file():
+        raise ProgressError(
+            f"source-path relocation payload file is not a regular file: "
+            f"{payload_path}"
+        )
+    if file_size > MAX_PROGRESS_PAYLOAD_FILE_BYTES:
+        raise ProgressError(
+            "source-path relocation payload file exceeds the "
+            f"{MAX_PROGRESS_PAYLOAD_FILE_BYTES}-byte limit: {payload_path}"
+        )
+    try:
+        payload_json = resolved_path.read_bytes().decode("utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        message = "is not valid UTF-8" if isinstance(exc, UnicodeDecodeError) else "is unreadable"
+        raise ProgressError(
+            f"source-path relocation payload file {message}: {payload_path}"
+        ) from exc
+    return _parse_source_path_relocation_payload(
+        payload_json,
+        source_label="--payload-file",
+    )
+
+
+def _path_has_prefix(value: Any, prefix: str) -> bool:
+    return isinstance(value, str) and (
+        value == prefix or value.startswith(prefix + "/")
+    )
+
+
+def _nested_path_occurrences(
+    value: Any,
+    prefix: str,
+    *,
+    pointer: str = "",
+) -> list[str]:
+    if _path_has_prefix(value, prefix):
+        return [pointer or "/"]
+    found: list[str] = []
+    if isinstance(value, Mapping):
+        for key, child in value.items():
+            found.extend(
+                _nested_path_occurrences(
+                    child,
+                    prefix,
+                    pointer=pointer + "/" + _json_pointer_token(str(key)),
+                )
+            )
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            found.extend(
+                _nested_path_occurrences(
+                    child,
+                    prefix,
+                    pointer=pointer + f"/{index}",
+                )
+            )
+    return found
+
+
+def _source_trace_translation_units(
+    symbol: Mapping[str, Any],
+) -> list[tuple[dict[str, Any], str]]:
+    traces: list[tuple[str, Any]] = [
+        ("source_traceability", symbol.get("source_traceability"))
+    ]
+    aliases = symbol.get("logical_aliases")
+    if isinstance(aliases, Mapping):
+        traces.extend(
+            (
+                f"logical_aliases/{_json_pointer_token(str(alias_id))}/source_traceability",
+                alias.get("source_traceability"),
+            )
+            for alias_id, alias in aliases.items()
+            if isinstance(alias, Mapping)
+        )
+    units: list[tuple[dict[str, Any], str]] = []
+    for trace_label, trace in traces:
+        if not isinstance(trace, Mapping):
+            continue
+        edges = trace.get("source_edges")
+        if not isinstance(edges, list):
+            continue
+        for edge_index, edge in enumerate(edges):
+            if not isinstance(edge, Mapping):
+                continue
+            context = edge.get("emission_context")
+            if not isinstance(context, dict):
+                continue
+            value = context.get("translation_unit")
+            if isinstance(value, str):
+                units.append(
+                    (
+                        context,
+                        f"{trace_label}/source_edges/{edge_index}/"
+                        "emission_context/translation_unit",
+                    )
+                )
+    return units
+
+
+def _source_path_relocation_matches(
+    data: Mapping[str, Any],
+    *,
+    binary: str,
+    old_prefix: str,
+    new_prefix: str,
+) -> dict[str, list[str]]:
+    collections = {
+        "physical_block_ids": data.get("physical_blocks"),
+        "semantic_span_ids": data.get("semantic_spans"),
+        "owner_ids": data.get("owners"),
+        "artifact_ids": data.get("symbols"),
+        "pre_synced_verification_target_ids": data.get("verification_targets"),
+    }
+    if any(not isinstance(value, Mapping) for value in collections.values()):
+        raise ProgressError(
+            "source-path relocation requires physical block, semantic span, owner, "
+            "symbol, and verification-target collections"
+        )
+
+    blocks = collections["physical_block_ids"]
+    spans = collections["semantic_span_ids"]
+    owners = collections["owner_ids"]
+    symbols = collections["artifact_ids"]
+    targets = collections["pre_synced_verification_target_ids"]
+    assert isinstance(blocks, Mapping)
+    assert isinstance(spans, Mapping)
+    assert isinstance(owners, Mapping)
+    assert isinstance(symbols, Mapping)
+    assert isinstance(targets, Mapping)
+
+    matched_blocks = sorted(
+        str(entity_id)
+        for entity_id, row in blocks.items()
+        if isinstance(row, Mapping)
+        and row.get("binary") == binary
+        and any(
+            _path_has_prefix(row.get(field), old_prefix)
+            for field in ("source_path", "agent_source_path")
+        )
+    )
+    matched_spans = sorted(
+        str(entity_id)
+        for entity_id, row in spans.items()
+        if isinstance(row, Mapping)
+        and row.get("binary") == binary
+        and _path_has_prefix(row.get("source_path"), old_prefix)
+    )
+
+    matched_owners: list[str] = []
+    for entity_id, row in owners.items():
+        if not isinstance(row, Mapping) or row.get("binary") != binary:
+            continue
+        source_paths = row.get("source_paths")
+        address_metadata = row.get("address_metadata")
+        owner_match = isinstance(source_paths, list) and any(
+            _path_has_prefix(path, old_prefix) for path in source_paths
+        )
+        if isinstance(address_metadata, Mapping):
+            owner_match = owner_match or any(
+                isinstance(metadata, Mapping)
+                and _path_has_prefix(metadata.get("source_path"), old_prefix)
+                for metadata in address_metadata.values()
+            )
+        if owner_match:
+            matched_owners.append(str(entity_id))
+
+    matched_artifacts = sorted(
+        str(entity_id)
+        for entity_id, row in symbols.items()
+        if isinstance(row, Mapping)
+        and row.get("binary") == binary
+        and any(
+            _path_has_prefix(context.get("translation_unit"), old_prefix)
+            for context, _label in _source_trace_translation_units(row)
+        )
+    )
+
+    old_target_occurrences: dict[str, list[str]] = {}
+    pre_synced_targets: list[str] = []
+    for entity_id, row in targets.items():
+        if not isinstance(row, Mapping) or row.get("binary") != binary:
+            continue
+        old_occurrences = _nested_path_occurrences(row, old_prefix)
+        if old_occurrences:
+            old_target_occurrences[str(entity_id)] = old_occurrences
+        if _nested_path_occurrences(row, new_prefix):
+            pre_synced_targets.append(str(entity_id))
+    if old_target_occurrences:
+        first_id = sorted(old_target_occurrences)[0]
+        raise ProgressError(
+            "source-path relocation requires verification-target sync first; "
+            f"{first_id} still contains {old_prefix!r} at "
+            + ", ".join(old_target_occurrences[first_id][:8])
+        )
+
+    return {
+        "physical_block_ids": matched_blocks,
+        "semantic_span_ids": matched_spans,
+        "owner_ids": sorted(matched_owners),
+        "artifact_ids": matched_artifacts,
+        "pre_synced_verification_target_ids": sorted(pre_synced_targets),
+    }
+
+
+def _relocate_source_paths(
+    data: dict[str, Any],
+    payload: Mapping[str, Any],
+    *,
+    inventory: RepositoryPathInventory,
+) -> dict[str, Any]:
+    binary = str(payload["binary"])
+    old_prefix = str(payload["old_prefix"])
+    new_prefix = str(payload["new_prefix"])
+    expected = {
+        field: sorted(str(value) for value in payload["expected_matches"][field])
+        for field in _SOURCE_PATH_RELOCATION_MATCH_FIELDS
+    }
+
+    new_files = sorted(
+        path
+        for path in inventory.exact_paths
+        if _path_has_prefix(path, new_prefix)
+    )
+    old_files = sorted(
+        path
+        for path in inventory.exact_paths
+        if _path_has_prefix(path, old_prefix)
+    )
+    if not new_files:
+        raise ProgressError(
+            f"source-path relocation new prefix has no authenticated repository files: "
+            f"{new_prefix}"
+        )
+    if old_files:
+        raise ProgressError(
+            "source-path relocation old prefix still has repository files: "
+            + ", ".join(old_files[:8])
+        )
+
+    actual = _source_path_relocation_matches(
+        data,
+        binary=binary,
+        old_prefix=old_prefix,
+        new_prefix=new_prefix,
+    )
+    if actual != expected:
+        differences = [
+            f"{field}: expected {expected[field]!r}, found {actual[field]!r}"
+            for field in sorted(_SOURCE_PATH_RELOCATION_MATCH_FIELDS)
+            if actual[field] != expected[field]
+        ]
+        raise ProgressError(
+            "source-path relocation exact match scope changed: "
+            + "; ".join(differences)
+        )
+
+    before_pipeline = ProgressDocument(data).pipeline(binary)
+    changed_fields: list[str] = []
+
+    def replacement(value: Any, *, label: str) -> str:
+        if not _path_has_prefix(value, old_prefix):
+            if not isinstance(value, str):
+                raise ProgressError(f"source-path relocation {label} must be a string")
+            return value
+        result = new_prefix + value[len(old_prefix) :]
+        if result not in inventory.exact_paths:
+            raise ProgressError(
+                f"source-path relocation {label} maps to unauthenticated repository "
+                f"file {result!r}"
+            )
+        changed_fields.append(label)
+        return result
+
+    blocks = data["physical_blocks"]
+    for block_id in actual["physical_block_ids"]:
+        block = blocks[block_id]
+        for field in ("source_path", "agent_source_path"):
+            if _path_has_prefix(block.get(field), old_prefix):
+                block[field] = replacement(
+                    block[field],
+                    label=f"physical_blocks/{block_id}/{field}",
+                )
+
+    spans = data["semantic_spans"]
+    for span_id in actual["semantic_span_ids"]:
+        span = spans[span_id]
+        span["source_path"] = replacement(
+            span.get("source_path"),
+            label=f"semantic_spans/{span_id}/source_path",
+        )
+
+    owners = data["owners"]
+    for owner_id in actual["owner_ids"]:
+        owner = owners[owner_id]
+        source_paths = owner.get("source_paths")
+        if not isinstance(source_paths, list):
+            raise ProgressError(
+                f"source-path relocation owner {owner_id} has invalid source_paths"
+            )
+        owner["source_paths"] = [
+            replacement(
+                path,
+                label=f"owners/{owner_id}/source_paths/{index}",
+            )
+            if _path_has_prefix(path, old_prefix)
+            else path
+            for index, path in enumerate(source_paths)
+        ]
+        if len(owner["source_paths"]) != len(set(owner["source_paths"])):
+            raise ProgressError(
+                f"source-path relocation creates duplicate paths for owner {owner_id}"
+            )
+        address_metadata = owner.get("address_metadata")
+        if isinstance(address_metadata, Mapping):
+            for address, metadata in address_metadata.items():
+                if not isinstance(metadata, dict):
+                    continue
+                if _path_has_prefix(metadata.get("source_path"), old_prefix):
+                    metadata["source_path"] = replacement(
+                        metadata["source_path"],
+                        label=(
+                            f"owners/{owner_id}/address_metadata/"
+                            f"{_json_pointer_token(str(address))}/source_path"
+                        ),
+                    )
+
+    symbols = data["symbols"]
+    invalidated_symbol_dimensions: dict[str, list[str]] = {}
+    for artifact_id in actual["artifact_ids"]:
+        symbol = symbols[artifact_id]
+        for context, label in _source_trace_translation_units(symbol):
+            if _path_has_prefix(context.get("translation_unit"), old_prefix):
+                context["translation_unit"] = replacement(
+                    context["translation_unit"],
+                    label=f"symbols/{artifact_id}/{label}",
+                )
+        binary_state = symbol.get("binary_state")
+        changed_dimensions: list[str] = []
+        if isinstance(binary_state, dict):
+            for dimension in SYMBOL_BINARY_DIMENSIONS:
+                if dimension not in binary_state:
+                    continue
+                binary_state[dimension] = state_record(
+                    "pending", "observed", "changed", []
+                )
+                changed_dimensions.append(dimension)
+        symbol.pop("accepted_byte_facts", None)
+        symbol.pop("accepted_call_contract_facts", None)
+        symbol.pop("accepted_order_facts", None)
+        invalidated_symbol_dimensions[artifact_id] = changed_dimensions
+
+    invalidated_order = invalidate_order_dependencies(
+        data,
+        block_ids=actual["physical_block_ids"],
+    )
+    survivors = _nested_path_occurrences(data, old_prefix)
+    if survivors:
+        raise ProgressError(
+            "source-path relocation refuses an old-prefix occurrence outside its "
+            "allowed current implementation-path fields: "
+            + ", ".join(survivors[:8])
+        )
+    if not changed_fields:
+        raise ProgressError("source-path relocation produced no path changes")
+
+    after_pipeline = ProgressDocument(data).pipeline(binary)
+    phase_order = {
+        phase: index
+        for index, phase in enumerate(
+            (
+                "authored-function-order",
+                "authored-call-contract",
+                "authored-byte-match",
+                "full-function-order",
+                "linked-byte-match",
+                "final-validation",
+            )
+        )
+    }
+    before_phase = str(before_pipeline.get("phase", ""))
+    after_phase = str(after_pipeline.get("phase", ""))
+    if phase_order.get(after_phase, -1) > phase_order.get(before_phase, -1):
+        raise ProgressError(
+            "source-path relocation unexpectedly advanced pipeline acceptance"
+        )
+
+    return {
+        "kind": "source-path-relocation",
+        "schema": _SOURCE_PATH_RELOCATION_SCHEMA,
+        "reviewed": True,
+        "reason": str(payload["reason"]),
+        "binary": binary,
+        "old_prefix": old_prefix,
+        "new_prefix": new_prefix,
+        "authenticated_new_files": new_files,
+        "changed_ids": actual,
+        "changed_fields": sorted(changed_fields),
+        "invalidated": {
+            "order": invalidated_order,
+            "symbol_dimensions": invalidated_symbol_dimensions,
+        },
+        "scheduler_before": before_pipeline,
+        "scheduler_after": after_pipeline,
+        "preserved": {
+            "original_and_provisional_paths": True,
+            "mapping_and_owner_topology": True,
+            "owner_gates_and_tiers": True,
+            "storage_and_output_sections": True,
+            "anchors_and_evidence_rows": True,
+            "acceptance_not_expanded": True,
+        },
+    }
+
+
 def _require_unique_relationship_rows(
     value: Any,
     *,
@@ -11189,6 +11769,28 @@ def main(argv: list[str] | None = None) -> int:
                 expected_revision=args.expected_revision,
                 apply=args.apply,
             )
+            _print_json(_commit_payload(commit, details))
+            return 0
+        if args.command == "source-path" and args.source_path_command == "relocate":
+            payload = _load_source_path_relocation_payload(args)
+            details: dict[str, Any] = {}
+            inventory = _load_progress_repository_inventory(document)
+
+            def transform(data: dict[str, Any]) -> None:
+                details.update(
+                    _relocate_source_paths(
+                        data,
+                        payload,
+                        inventory=inventory,
+                    )
+                )
+
+            commit = ProgressStore(args.progress).mutate(
+                transform,
+                expected_revision=args.expected_revision,
+                apply=args.apply,
+            )
+            details["mutation_planned"] = True
             _print_json(_commit_payload(commit, details))
             return 0
         raise ProgressError(f"unsupported progress command {args.command}")

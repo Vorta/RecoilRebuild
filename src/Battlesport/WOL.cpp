@@ -239,7 +239,7 @@ const DWORD kFailureDisplaySleepMs = 1000;
 #include "Battlesport/recoil_app.h"
 #include "Battlesport/wol_api.h"
 #include "Battlesport/wol_dialog.h"
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "Battlesport/wol_download.h"
 #include "GameZRecoil/zCom/zCom.h"
 #include "GameZRecoil/zGame/zgame.h"
@@ -568,7 +568,7 @@ void WestwoodOnlineUpgradeConfigDialog::Destructor() {
 #include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/recoil_app.h"
 #include "Battlesport/wol_api.h"
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zLoc/zloc.h"
 

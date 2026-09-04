@@ -81,4 +81,19 @@ the first divergent current slice or another focused one-slice diagnosis.
 
 For manual semantic mutations—owner topology, provider/classification decisions, catalog exceptions, target bindings, positive gates, or tiers—run the command with `--dry-run`, review the complete diff, then repeat unchanged with `--apply` and the expected revision. Conservative downgrades use the governed downgrade route.
 
+For a reviewed current implementation-path move, edit the repository paths,
+synchronize every affected verification target first, then use the exact-match
+relocation route rather than composing owner/block/source-trace mutations:
+
+```powershell
+python tools/recoil.py progress source-path relocate --payload-file build/reviewed-source-path-relocation.json --expected-revision <revision> --dry-run --json
+python tools/recoil.py progress source-path relocate --payload-file build/reviewed-source-path-relocation.json --expected-revision <revision> --apply --json
+```
+
+The v1 payload must enumerate the complete matching physical-block,
+semantic-span, owner, artifact, and pre-synchronized verification-target id
+sets. This route changes only current implementation paths, retains historical
+provenance, and conservatively invalidates dependent order, call-contract, and
+byte facts.
+
 Run `python tools/recoil.py progress audit --scope pipeline --strict --json` after tracker-tool changes. A passing validation changes only the dimension named by that command.

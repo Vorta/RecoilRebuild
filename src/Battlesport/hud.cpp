@@ -8,7 +8,7 @@
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
 #include "Battlesport/zstr.h"
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zclass.h"
 #include "GameZRecoil/include/zdi.h"
@@ -15575,7 +15575,7 @@ void HudUiMainMenuDialog_ControlsButton::OnActivate() {
 HudUiMainMenuDialog::~HudUiMainMenuDialog() {}
 #include "Battlesport/recoil_state_dialog_host.h"
 
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zInput/zinput.h"

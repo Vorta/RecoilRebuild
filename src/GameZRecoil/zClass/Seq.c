@@ -1,6 +1,6 @@
 #include "zclass.h"
 
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"

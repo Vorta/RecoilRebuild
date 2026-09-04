@@ -37,7 +37,7 @@
     "src/GameZRecoil/zVideo",
     "support/sdk/Aureal/A3D20/inc",
     "src/GameZRecoil/zLoc",
-    "src/GameZRecoil/Time",
+    "src/GameZRecoil/zTime",
     "src/GameZRecoil/zFMV",
     "src/GameZRecoil/zModel",
     "src/GameZRecoil/zWeapon",

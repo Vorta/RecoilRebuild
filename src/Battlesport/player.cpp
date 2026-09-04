@@ -5,7 +5,7 @@
 #include "Battlesport/ai_net.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/wol_api.h"
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/zclass.h"
 #include "GameZRecoil/include/zdi.h"
 #include "GameZRecoil/zEffect/zeff.h"

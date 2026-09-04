@@ -105372,7 +105372,7 @@ def _hud_ui_mgr_update_frame_objective_timer_candidate_bridges(
                     "g-time-unscaleddeltatimesec"
                 ),
                 "emission_context": {
-                    "translation_unit": "src/GameZRecoil/Time/Time.cpp"
+                    "translation_unit": "src/GameZRecoil/zTime/Time.cpp"
                 },
                 "evidence_ids": [],
                 "relation": "defines",
@@ -129049,7 +129049,7 @@ def _time_reset_gettickcount_candidate_direct_bridge(
                     "recoil:anchor:gamezrecoil-time-time-time-reset"
                 ),
                 "emission_context": {
-                    "translation_unit": "src/GameZRecoil/Time/Time.cpp"
+                    "translation_unit": "src/GameZRecoil/zTime/Time.cpp"
                 },
                 "evidence_ids": [],
                 "relation": "defines",
@@ -129062,8 +129062,8 @@ def _time_reset_gettickcount_candidate_direct_bridge(
         or block.get("end_exclusive") != "0x4a5780"
         or block.get("contribution_kind") != "authored"
         or block.get("agent_source_path")
-        != "src/GameZRecoil/Time/Time.cpp"
-        or block.get("source_path") != "src/GameZRecoil/Time/Time.cpp"
+        != "src/GameZRecoil/zTime/Time.cpp"
+        or block.get("source_path") != "src/GameZRecoil/zTime/Time.cpp"
         or block.get("contribution_ids", []).count(
             WOL_TIME_RESET_TARGET_SYMBOL_ID
         )
@@ -129074,8 +129074,8 @@ def _time_reset_gettickcount_candidate_direct_bridge(
         or owner.get("provider_state") == "accepted"
         or owner.get("source_paths")
         != [
-            "src/GameZRecoil/Time/Time.cpp",
-            "src/GameZRecoil/Time/Time.h",
+            "src/GameZRecoil/zTime/Time.cpp",
+            "src/GameZRecoil/zTime/Time.h",
         ]
         or len(primary_rows) != 1
         or primary_rows[0].get("address")
@@ -129305,7 +129305,7 @@ def _time_tick_gettickcount_candidate_direct_bridge(
                     "recoil:anchor:gamezrecoil-time-time-time-tick-time-cpp"
                 ),
                 "emission_context": {
-                    "translation_unit": "src/GameZRecoil/Time/Time.cpp"
+                    "translation_unit": "src/GameZRecoil/zTime/Time.cpp"
                 },
                 "evidence_ids": [],
                 "relation": "defines",
@@ -129319,8 +129319,8 @@ def _time_tick_gettickcount_candidate_direct_bridge(
         != TIME_TICK_GETTICKCOUNT_CALLER_END_EXCLUSIVE
         or block.get("contribution_kind") != "authored"
         or block.get("agent_source_path")
-        != "src/GameZRecoil/Time/Time.cpp"
-        or block.get("source_path") != "src/GameZRecoil/Time/Time.cpp"
+        != "src/GameZRecoil/zTime/Time.cpp"
+        or block.get("source_path") != "src/GameZRecoil/zTime/Time.cpp"
         or block.get("contribution_ids", []).count(caller_symbol_id) != 1
         or not isinstance(owner, Mapping)
         or owner.get("binary") != "recoil"
@@ -129328,8 +129328,8 @@ def _time_tick_gettickcount_candidate_direct_bridge(
         or owner.get("provider_state") == "accepted"
         or owner.get("source_paths")
         != [
-            "src/GameZRecoil/Time/Time.cpp",
-            "src/GameZRecoil/Time/Time.h",
+            "src/GameZRecoil/zTime/Time.cpp",
+            "src/GameZRecoil/zTime/Time.h",
         ]
         or len(primary_rows) != 1
         or primary_rows[0].get("address")
@@ -159631,7 +159631,7 @@ def _wol_category_a_direct_candidate_bridge(
                 {
                     "anchor_id": "recoil:anchor:gamezrecoil-time-time-time-reset",
                     "emission_context": {
-                        "translation_unit": "src/GameZRecoil/Time/Time.cpp"
+                        "translation_unit": "src/GameZRecoil/zTime/Time.cpp"
                     },
                     "evidence_ids": [],
                     "relation": "defines",
@@ -159644,9 +159644,9 @@ def _wol_category_a_direct_candidate_bridge(
             or target_block.get("end_exclusive") != "0x4a5780"
             or target_block.get("contribution_kind") != "authored"
             or target_block.get("agent_source_path")
-            != "src/GameZRecoil/Time/Time.cpp"
+            != "src/GameZRecoil/zTime/Time.cpp"
             or target_block.get("source_path")
-            != "src/GameZRecoil/Time/Time.cpp"
+            != "src/GameZRecoil/zTime/Time.cpp"
             or target_block.get("contribution_ids", []).count(
                 WOL_TIME_RESET_TARGET_SYMBOL_ID
             )
@@ -159657,8 +159657,8 @@ def _wol_category_a_direct_candidate_bridge(
             or target_owner.get("provider_state") == "accepted"
             or target_owner.get("source_paths")
             != [
-                "src/GameZRecoil/Time/Time.cpp",
-                "src/GameZRecoil/Time/Time.h",
+                "src/GameZRecoil/zTime/Time.cpp",
+                "src/GameZRecoil/zTime/Time.h",
             ]
             or len(primary_rows) != 1
             or primary_rows[0].get("address")

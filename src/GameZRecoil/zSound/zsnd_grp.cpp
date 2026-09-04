@@ -1,6 +1,6 @@
 #include "zsnd.h"
 
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zReader/zreader.h"
 
