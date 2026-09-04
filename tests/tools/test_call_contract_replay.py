@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 import subprocess
 import sys
+import threading
+import time
 
 import pytest
 
@@ -13,10 +16,14 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 from _recoil.commands import call_contract_replay, progress_cli, vc5_build  # noqa: E402
 from _recoil.commands.progress_cli import (  # noqa: E402
+    CALL_CONTRACT_CLOSEOUT_DEFAULT_MAX_WORKERS,
+    CALL_CONTRACT_CLOSEOUT_MAX_WORKERS,
     CALL_CONTRACT_FINAL_BUILD_MANIFEST,
     CALL_CONTRACT_LINKABILITY_SCHEMA,
     _call_contract_replay_payload,
     _call_contract_replay_root,
+    _require_call_contract_closeout_vector_unchanged,
+    _run_parallel_call_contract_closeout_scan,
     _validate_call_contract_linkability_summary,
     _validate_call_contract_result,
 )
@@ -267,3 +274,430 @@ def test_closeout_runner_requests_one_isolated_linkability_build(
     assert "--clean" in observed[0]
     assert result["whole_program_linked"] is True
     assert result["playtest_deployment_suppressed"] is True
+
+
+def closeout_scan_jobs(tmp_path: Path, count: int) -> list[dict[str, object]]:
+    return [
+        {
+            "index": index,
+            "slice_row": {
+                "id": f"recoil:call-contract-slice:unit-{index}",
+                "body_count": 1,
+            },
+            "closure": object(),
+            "slice_root": tmp_path / f"slice-{index + 1:02d}",
+        }
+        for index in range(count)
+    ]
+
+
+def closeout_scan_outcome(
+    *,
+    index: int,
+    slice_row: dict[str, object],
+    slice_root: Path,
+    status: str = "passed",
+) -> dict[str, object]:
+    slice_id = str(slice_row["id"])
+    outcome: dict[str, object] = {
+        "index": index,
+        "slice_id": slice_id,
+        "status": status,
+        "body_count": 1,
+        "build_root": str(slice_root),
+        "elapsed_ms": float(index + 1),
+        "first_divergence": None,
+        "detail": "",
+    }
+    if status == "passed":
+        outcome["scan_row"] = {
+            "slice_id": slice_id,
+            "body_count": 1,
+            "build_root": str(slice_root),
+            "exact_fact_transcript": [],
+        }
+    else:
+        outcome["first_divergence"] = {
+            "kind": "unit-divergence",
+            "slice_id": slice_id,
+        }
+    return outcome
+
+
+def test_closeout_parser_defaults_to_eight_and_bounds_configuration() -> None:
+    prefix = [
+        "call-contract",
+        "close-live",
+        "--build-root",
+        "build/live-validation/unit-closeout",
+        "--expected-semantic-revision",
+        "1",
+        "--expected-evidence-generation-revision",
+        "1",
+        "--dry-run",
+    ]
+    args = progress_cli._parser().parse_args(prefix)
+    assert args.max_workers == CALL_CONTRACT_CLOSEOUT_DEFAULT_MAX_WORKERS == 8
+    configured = progress_cli._parser().parse_args(prefix + ["--max-workers", "1"])
+    assert configured.max_workers == 1
+    for invalid in ("0", str(CALL_CONTRACT_CLOSEOUT_MAX_WORKERS + 1)):
+        with pytest.raises(SystemExit):
+            progress_cli._parser().parse_args(prefix + ["--max-workers", invalid])
+
+
+def test_parallel_closeout_scan_is_bounded_and_returns_retail_order(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    lock = threading.Lock()
+    pair_barrier = threading.Barrier(2)
+    active = 0
+    peak = 0
+    completion_order: list[int] = []
+
+    def fake_slice(**kwargs: object) -> dict[str, object]:
+        nonlocal active, peak
+        index = int(kwargs["index"])
+        with lock:
+            active += 1
+            peak = max(peak, active)
+        pair_barrier.wait(timeout=2.0)
+        time.sleep(0.01 if index % 2 else 0.03)
+        with lock:
+            active -= 1
+            completion_order.append(index)
+        return closeout_scan_outcome(
+            index=index,
+            slice_row=kwargs["slice_row"],  # type: ignore[arg-type]
+            slice_root=kwargs["slice_root"],  # type: ignore[arg-type]
+        )
+
+    monkeypatch.setattr(
+        progress_cli,
+        "_run_call_contract_closeout_slice",
+        fake_slice,
+    )
+    rows, execution = _run_parallel_call_contract_closeout_scan(
+        progress_path=tmp_path / "progress.sqlite3",
+        jobs=closeout_scan_jobs(tmp_path, 4),  # type: ignore[arg-type]
+        max_workers=2,
+    )
+    assert peak == 2
+    assert completion_order != list(range(4))
+    assert [row["slice_id"] for row in rows] == [
+        f"recoil:call-contract-slice:unit-{index}" for index in range(4)
+    ]
+    assert execution["effective_max_workers"] == 2
+    assert execution["completed_slice_count"] == 4
+
+
+def test_parallel_closeout_scan_supports_explicit_serial_fallback(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    lock = threading.Lock()
+    active = 0
+    peak = 0
+
+    def fake_slice(**kwargs: object) -> dict[str, object]:
+        nonlocal active, peak
+        with lock:
+            active += 1
+            peak = max(peak, active)
+        time.sleep(0.005)
+        with lock:
+            active -= 1
+        return closeout_scan_outcome(
+            index=int(kwargs["index"]),
+            slice_row=kwargs["slice_row"],  # type: ignore[arg-type]
+            slice_root=kwargs["slice_root"],  # type: ignore[arg-type]
+        )
+
+    monkeypatch.setattr(
+        progress_cli,
+        "_run_call_contract_closeout_slice",
+        fake_slice,
+    )
+    _rows, execution = _run_parallel_call_contract_closeout_scan(
+        progress_path=tmp_path / "progress.sqlite3",
+        jobs=closeout_scan_jobs(tmp_path, 3),  # type: ignore[arg-type]
+        max_workers=1,
+    )
+    assert peak == 1
+    assert execution["effective_max_workers"] == 1
+
+
+def test_parallel_closeout_reports_earliest_retail_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_slice(**kwargs: object) -> dict[str, object]:
+        index = int(kwargs["index"])
+        if index == 1:
+            time.sleep(0.03)
+        status = "diverged" if index in {1, 3} else "passed"
+        return closeout_scan_outcome(
+            index=index,
+            slice_row=kwargs["slice_row"],  # type: ignore[arg-type]
+            slice_root=kwargs["slice_root"],  # type: ignore[arg-type]
+            status=status,
+        )
+
+    monkeypatch.setattr(
+        progress_cli,
+        "_run_call_contract_closeout_slice",
+        fake_slice,
+    )
+    with pytest.raises(
+        ProgressError,
+        match="recoil:call-contract-slice:unit-1",
+    ):
+        _run_parallel_call_contract_closeout_scan(
+            progress_path=tmp_path / "progress.sqlite3",
+            jobs=closeout_scan_jobs(tmp_path, 5),  # type: ignore[arg-type]
+            max_workers=4,
+        )
+
+
+class UnitRevisionVector:
+    def __init__(self, revision: int = 7) -> None:
+        self.revision = revision
+
+    def to_dict(self) -> dict[str, int]:
+        return {
+            "transaction_revision": self.revision,
+            "semantic_revision": self.revision,
+            "evidence_generation_revision": self.revision,
+        }
+
+
+class UnitCloseoutStore:
+    def __init__(self) -> None:
+        self.vector = UnitRevisionVector()
+
+    def materialize_with_revision_vector(
+        self,
+    ) -> tuple[dict[str, object], UnitRevisionVector]:
+        return {}, self.vector
+
+    def read_revision_vector(self) -> UnitRevisionVector:
+        return self.vector
+
+
+class UnitCloseoutDocument:
+    slices = [
+        {
+            "id": "recoil:call-contract-slice:unit",
+            "body_count": 1,
+            "symbol_ids": ["recoil:function:unit"],
+        }
+    ]
+
+    def authored_call_contract_slices(self) -> list[dict[str, object]]:
+        return self.slices
+
+    def call_contract_body_currentness(self, _symbol_id: str) -> dict[str, bool]:
+        return {"current": True}
+
+    def pipeline(
+        self,
+        _binary: str,
+        *,
+        resolve_order_target: bool,
+    ) -> dict[str, object]:
+        assert resolve_order_target is False
+        return {
+            "phase": "authored-call-contract",
+            "authored_call_contract_slice_id": "",
+            "authored_call_contract_closeout": {"current": False},
+        }
+
+
+class UnitCloseoutCommit:
+    def to_dict(self) -> dict[str, object]:
+        return {"applied": True, "revision": 8}
+
+
+def prepare_closeout_orchestration(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> tuple[argparse.Namespace, UnitCloseoutStore]:
+    progress_path = tmp_path / "progress.sqlite3"
+    progress_path.write_bytes(b"fixture")
+    build_root = tmp_path / "closeout"
+    store = UnitCloseoutStore()
+    document = UnitCloseoutDocument()
+    closure = type(
+        "UnitClosure",
+        (),
+        {
+            "dependency_paths": (),
+            "source_edit_paths": (),
+            "definition_source_paths": (),
+        },
+    )()
+    monkeypatch.setattr(
+        progress_cli,
+        "ProgressSQLiteStore",
+        lambda _path: store,
+    )
+    monkeypatch.setattr(
+        progress_cli.ProgressDocument,
+        "_from_owned_data",
+        lambda _data, *, path: document,
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "_absolute_fresh_build_root",
+        lambda _path: build_root,
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "load_repository_path_inventory",
+        lambda _root: object(),
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "_call_contract_verifier_component_state",
+        lambda _inventory: {},
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "_resolve_phase_all_authored_bodies",
+        lambda _document: {"id": "recoil:call-contract-phase:unit"},
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "call_contract_source_closure",
+        lambda *_args, **_kwargs: closure,
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "file_dependency_states",
+        lambda *_args, **_kwargs: [],
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "_require_call_contract_proof_inputs_unchanged",
+        lambda *_args, **_kwargs: None,
+    )
+    return (
+        argparse.Namespace(
+            progress=progress_path,
+            build_root=build_root,
+            expected_revision=None,
+            expected_semantic_revision=7,
+            expected_evidence_generation_revision=7,
+            max_workers=8,
+            dry_run=False,
+            apply=True,
+            json=True,
+        ),
+        store,
+    )
+
+
+def test_closeout_scan_failure_prevents_link_and_commit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    args, _store = prepare_closeout_orchestration(tmp_path, monkeypatch)
+    calls = {"link": 0, "commit": 0}
+
+    def fail_scan(**_kwargs: object) -> tuple[list[object], dict[str, object]]:
+        raise ProgressError("unit scan failure")
+
+    def unexpected_link(**_kwargs: object) -> dict[str, object]:
+        calls["link"] += 1
+        return {}
+
+    def unexpected_commit(**_kwargs: object) -> UnitCloseoutCommit:
+        calls["commit"] += 1
+        return UnitCloseoutCommit()
+
+    monkeypatch.setattr(
+        progress_cli,
+        "_run_parallel_call_contract_closeout_scan",
+        fail_scan,
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "_run_call_contract_linkability_gate",
+        unexpected_link,
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "_call_contract_scoped_patch_commit",
+        unexpected_commit,
+    )
+    with pytest.raises(ProgressError, match="unit scan failure"):
+        progress_cli.close_live_call_contract(args)
+    assert calls == {"link": 0, "commit": 0}
+
+
+def test_complete_parallel_closeout_links_and_commits_exactly_once(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    args, _store = prepare_closeout_orchestration(tmp_path, monkeypatch)
+    calls = {"scan": 0, "link": 0, "commit": 0}
+
+    def pass_scan(**kwargs: object) -> tuple[list[dict[str, object]], dict[str, object]]:
+        calls["scan"] += 1
+        jobs = kwargs["jobs"]
+        assert isinstance(jobs, list) and len(jobs) == 1
+        return (
+            [
+                {
+                    "slice_id": "recoil:call-contract-slice:unit",
+                    "body_count": 1,
+                    "build_root": str(tmp_path / "closeout" / "slice-01"),
+                    "exact_fact_transcript": [],
+                }
+            ],
+            {
+                "mode": "parallel-isolated-slices",
+                "requested_max_workers": 8,
+                "effective_max_workers": 1,
+                "completed_slice_count": 1,
+                "scan_elapsed_ms": 1.0,
+                "slice_timings": [],
+            },
+        )
+
+    def pass_link(**_kwargs: object) -> dict[str, object]:
+        calls["link"] += 1
+        return {"whole_program_linked": True}
+
+    def pass_commit(**_kwargs: object) -> UnitCloseoutCommit:
+        calls["commit"] += 1
+        return UnitCloseoutCommit()
+
+    monkeypatch.setattr(
+        progress_cli,
+        "_run_parallel_call_contract_closeout_scan",
+        pass_scan,
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "_run_call_contract_linkability_gate",
+        pass_link,
+    )
+    monkeypatch.setattr(
+        progress_cli,
+        "_call_contract_scoped_patch_commit",
+        pass_commit,
+    )
+    result = progress_cli.close_live_call_contract(args)
+    assert calls == {"scan": 1, "link": 1, "commit": 1}
+    assert result["scan_execution"]["requested_max_workers"] == 8
+    assert result["whole_program_linkability"]["whole_program_linked"] is True
+
+
+def test_closeout_vector_drift_fails_closed() -> None:
+    store = UnitCloseoutStore()
+    expected = store.vector.to_dict()
+    _require_call_contract_closeout_vector_unchanged(store, expected)  # type: ignore[arg-type]
+    store.vector = UnitRevisionVector(8)
+    with pytest.raises(ProgressError, match="tracker changed"):
+        _require_call_contract_closeout_vector_unchanged(store, expected)  # type: ignore[arg-type]

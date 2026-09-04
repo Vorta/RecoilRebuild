@@ -70,11 +70,16 @@ mandatory `close-live` command. Its fresh `-replay-NNN` sibling root never
 consumes the scheduler-selected direct root; an interrupted root is inert and a
 later invocation selects a new sibling.
 
-`close-live` runs one fresh no-reuse complete-census scan and then exactly one
-fresh canonical whole-program linkability diagnostic before mutation. The
-diagnostic compiles sources, aliases, and resources and produces an executable
-and map, but suppresses linked-order evaluation, playground deployment, and all
-byte, linked-order, or final-image acceptance. Never link per slice.
+`close-live` runs each fresh no-reuse slice verifier in an isolated build root
+with bounded subprocess concurrency (eight by default; `--max-workers` accepts
+one through 21).
+
+It validates and stores the transcripts in retail order. Only the read-only
+scans overlap. It next runs exactly one fresh canonical
+whole-program linkability diagnostic before one serial mutation. The diagnostic
+compiles sources, aliases, and resources and produces an executable and map,
+but suppresses linked-order evaluation, playground deployment, and all byte,
+linked-order, or final-image acceptance. Never link per slice.
 
 Use `verify call-contract` and `advance-live-call-contract` directly only for
 the first divergent current slice or another focused one-slice diagnosis.

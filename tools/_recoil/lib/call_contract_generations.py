@@ -15,7 +15,7 @@ from typing import Iterable, Mapping
 from _recoil.lib.tooling import REPO_ROOT
 
 
-CALL_CONTRACT_VERIFIER_GENERATION = 46
+CALL_CONTRACT_VERIFIER_GENERATION = 47
 EXPECTED_FACT_SCHEMA_VERSION = 38
 
 

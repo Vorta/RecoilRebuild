@@ -138,20 +138,23 @@ running it.
 After all bodies are current:
 
 ```powershell
-python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
+python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --max-workers 8 --apply --json
 ```
 
 The closeout runs the complete current census from fresh output, forbids reuse,
 requires zero divergence, queries the target-qualified canonical BN database
 directly without repeating database preflight per slice, records each slice's
 exact JSON-native expected-fact transcript, and records the current verifier
-and expected-fact generations. After the census passes and before tracker
-mutation, it runs exactly one fresh canonical whole-program compile, COFF-alias
+and expected-fact generations. The isolated slice verifiers use bounded
+subprocess concurrency: eight slots by default, configurable from one through
+21. Completion order is diagnostic; validation and storage always follow
+retail slice order. After every slice passes and before tracker mutation,
+closeout runs exactly one fresh canonical whole-program compile, COFF-alias
 assembly, resource build, and link below the closeout root. This linkability
 diagnostic must produce the executable and map, suppresses linked-order
 evaluation and playground deployment, and accepts no byte, linked-order, or
-final-image fact. It is never repeated per slice. Closeout is the only route to
-stage completion.
+final-image fact. It is never repeated per slice. The final closeout CAS is one
+serial mutation and remains the only route to stage completion.
 
 ## Stage 3: Authored Bytes
 

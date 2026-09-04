@@ -132,14 +132,19 @@ stored result or saved candidate substitutes. After every body is current,
 record the required fresh, complete, no-reuse, zero-divergence scan:
 
 ```powershell
-python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
+python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --max-workers 8 --apply --json
 ```
 
-Before committing, closeout performs exactly one additional fresh canonical
-whole-program linkability diagnostic below its build root. It must compile all
-configured sources, COFF aliases, and resources and produce a linked executable
-and map. It never evaluates linked order, deploys the playground executable, or
-accepts byte, linked-order, or final-image facts. Do not link per slice.
+Closeout runs the fresh isolated slice verifiers with bounded subprocess
+concurrency (eight by default, configurable from one through 21), but validates
+and records their results in deterministic retail order. The overlap is limited
+to read-only verification: stage progression, linking, and tracker mutation
+remain serial. Before committing, closeout performs exactly one additional
+fresh canonical whole-program linkability diagnostic below its build root. It
+must compile all configured sources, COFF aliases, and resources and produce a
+linked executable and map. It never evaluates linked order, deploys the
+playground executable, or accepts byte, linked-order, or final-image facts. Do
+not link per slice.
 
 The verifier and expected-fact generations live only in
 `tools/_recoil/lib/call_contract_generations.py`. A governed component edit

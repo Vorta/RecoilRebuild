@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextvars import ContextVar
 from copy import deepcopy
 from functools import wraps
@@ -10,6 +11,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import time
 from typing import Any, Iterable, Mapping
 
 from _recoil.commands.vc5_verify import (
@@ -766,6 +768,16 @@ def _parser() -> argparse.ArgumentParser:
     )
     _add_progress_path(call_contract_close)
     call_contract_close.add_argument("--build-root", type=Path, required=True)
+    call_contract_close.add_argument(
+        "--max-workers",
+        type=_call_contract_closeout_worker_count,
+        default=CALL_CONTRACT_CLOSEOUT_DEFAULT_MAX_WORKERS,
+        help=(
+            "maximum concurrent isolated slice verifiers "
+            f"(1..{CALL_CONTRACT_CLOSEOUT_MAX_WORKERS}; default: "
+            f"{CALL_CONTRACT_CLOSEOUT_DEFAULT_MAX_WORKERS})"
+        ),
+    )
     _add_mutation_controls(
         call_contract_close,
         expected_revision_required=False,
@@ -3138,6 +3150,8 @@ def _validate_call_contract_result(
 
 _CALL_CONTRACT_REPLAY_SCHEMA = "recoil-authored-call-contract-stage-replay-v2"
 _CALL_CONTRACT_REPLAY_KIND = "authored-call-contract-stage-replay"
+CALL_CONTRACT_CLOSEOUT_DEFAULT_MAX_WORKERS = 8
+CALL_CONTRACT_CLOSEOUT_MAX_WORKERS = 21
 _CALL_CONTRACT_SLICE_ACCEPTANCE_RE = re.compile(
     r"^python tools/recoil\.py progress advance-live-call-contract "
     r"--slice (?P<slice>\S+) --build-root (?P<root>\S+) "
@@ -3145,6 +3159,23 @@ _CALL_CONTRACT_SLICE_ACCEPTANCE_RE = re.compile(
     r"--expected-evidence-generation-revision (?P<evidence>\d+) "
     r"--apply --json$"
 )
+
+
+def _call_contract_closeout_worker_count(value: str) -> int:
+    try:
+        parsed = int(value, 10)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(
+            "call-contract closeout max workers must be an integer"
+        ) from exc
+    if not 1 <= parsed <= CALL_CONTRACT_CLOSEOUT_MAX_WORKERS:
+        raise argparse.ArgumentTypeError(
+            "call-contract closeout max workers must be from 1 through "
+            f"{CALL_CONTRACT_CLOSEOUT_MAX_WORKERS}"
+        )
+    return parsed
+
+
 _CALL_CONTRACT_CLOSEOUT_ACCEPTANCE_RE = re.compile(
     r"^python tools/recoil\.py progress call-contract close-live "
     r"--build-root (?P<root>\S+) "
@@ -3235,7 +3266,7 @@ def _call_contract_replay_root(direct_root: Path, *, create: bool) -> Path:
     raise ProgressError("call-contract replay exhausted fresh sibling build roots")
 
 
-def _call_contract_replay_component_state(
+def _call_contract_verifier_component_state(
     repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> dict[str, Any]:
     findings = required_call_contract_verifier_component_findings(REPO_ROOT)
@@ -3261,7 +3292,7 @@ def _call_contract_replay_component_state(
     }
 
 
-def _call_contract_replay_require_unchanged(
+def _require_call_contract_proof_inputs_unchanged(
     expected: Mapping[str, Any],
     *,
     dependency_paths: Iterable[str],
@@ -3269,11 +3300,11 @@ def _call_contract_replay_require_unchanged(
     repository_path_inventory: RepositoryPathInventory | None = None,
 ) -> None:
     if (
-        _call_contract_replay_component_state(repository_path_inventory)
+        _call_contract_verifier_component_state(repository_path_inventory)
         != expected
     ):
         raise ProgressError(
-            "call-contract verifier components or generation coordinates changed during replay"
+            "call-contract verifier components or generation coordinates changed during verification"
         )
     current_dependencies = file_dependency_states(
         list(dependency_paths),
@@ -3281,7 +3312,7 @@ def _call_contract_replay_require_unchanged(
     )
     if current_dependencies != expected_dependency_states:
         raise ProgressError(
-            "call-contract source dependency state changed after the full-census proof"
+            "call-contract source dependency state changed during verification"
         )
 
 
@@ -3799,7 +3830,7 @@ def replay_live_call_contract(
         )
 
     repository_path_inventory = load_repository_path_inventory(REPO_ROOT)
-    component_state = _call_contract_replay_component_state(
+    component_state = _call_contract_verifier_component_state(
         repository_path_inventory
     )
     emit(
@@ -3820,7 +3851,7 @@ def replay_live_call_contract(
         phase_result,
         repository_path_inventory=repository_path_inventory,
     )
-    _call_contract_replay_require_unchanged(
+    _require_call_contract_proof_inputs_unchanged(
         component_state,
         dependency_paths=phase_closure.dependency_paths,
         expected_dependency_states=phase_result["dependency_states_after"],
@@ -3886,7 +3917,7 @@ def replay_live_call_contract(
         projected = projections[index]
         slice_row = projected["slice_row"]
         result = projected["result"]
-        _call_contract_replay_require_unchanged(
+        _require_call_contract_proof_inputs_unchanged(
             component_state,
             dependency_paths=phase_closure.dependency_paths,
             expected_dependency_states=phase_result["dependency_states_after"],
@@ -4224,13 +4255,254 @@ def _run_call_contract_linkability_gate(
     )
 
 
-def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
-    """Run the fresh census and one no-deploy full-link closeout gate."""
+def _require_call_contract_closeout_vector_unchanged(
+    store: ProgressSQLiteStore,
+    expected_vector: Mapping[str, int],
+) -> None:
+    observed = store.read_revision_vector().to_dict()
+    if observed != dict(expected_vector):
+        raise ConcurrentProgressUpdate(
+            "call-contract tracker changed during the parallel closeout scan: "
+            f"expected {dict(expected_vector)}, found {observed}"
+        )
 
+
+def _run_call_contract_closeout_slice(
+    *,
+    progress_path: Path,
+    index: int,
+    slice_row: Mapping[str, Any],
+    closure: CallContractSourceClosure,
+    slice_root: Path,
+) -> dict[str, Any]:
+    """Run and compact one isolated read-only closeout slice proof."""
+
+    started_at = time.perf_counter()
+    slice_id = str(slice_row["id"])
+    command = [
+        sys.executable,
+        str(REPO_ROOT / "tools" / "recoil.py"),
+        "verify",
+        "call-contract",
+        "--slice",
+        slice_id,
+        "--progress",
+        str(progress_path),
+        "--build-root",
+        display_path(slice_root),
+        "--collect-all-divergences",
+        "--json",
+    ]
+    try:
+        returncode, raw, stderr = _run_json_process(command)
+        result = _validate_call_contract_result(
+            raw,
+            expected_slice=slice_row,
+            expected_source_write_paths=list(closure.source_edit_paths),
+            expected_definition_source_paths=list(
+                closure.definition_source_paths
+            ),
+            expected_compiled_definition_sources=(
+                _call_contract_separate_definition_compile_sources(closure)
+            ),
+            expected_dependency_paths=list(closure.dependency_paths),
+        )
+    except (OSError, ProgressError, RuntimeError, ValueError) as exc:
+        return {
+            "index": index,
+            "slice_id": slice_id,
+            "status": "error",
+            "body_count": int(slice_row["body_count"]),
+            "build_root": display_path(slice_root),
+            "elapsed_ms": round(
+                (time.perf_counter() - started_at) * 1000.0,
+                3,
+            ),
+            "first_divergence": None,
+            "detail": str(exc),
+        }
+
+    elapsed_ms = round((time.perf_counter() - started_at) * 1000.0, 3)
+    if returncode != 0 or not result["passed"]:
+        return {
+            "index": index,
+            "slice_id": slice_id,
+            "status": "diverged",
+            "body_count": int(slice_row["body_count"]),
+            "build_root": display_path(slice_root),
+            "elapsed_ms": elapsed_ms,
+            "first_divergence": deepcopy(result["first_divergence"]),
+            "detail": stderr.strip()[-1600:],
+        }
+    if result["passing_symbol_ids"] != list(slice_row["symbol_ids"]):
+        return {
+            "index": index,
+            "slice_id": slice_id,
+            "status": "error",
+            "body_count": int(slice_row["body_count"]),
+            "build_root": display_path(slice_root),
+            "elapsed_ms": elapsed_ms,
+            "first_divergence": None,
+            "detail": "passing result did not cover every selected body",
+        }
+    return {
+        "index": index,
+        "slice_id": slice_id,
+        "status": "passed",
+        "body_count": int(slice_row["body_count"]),
+        "build_root": display_path(slice_root),
+        "elapsed_ms": elapsed_ms,
+        "first_divergence": None,
+        "detail": "",
+        "scan_row": {
+            "slice_id": slice_id,
+            "body_count": int(slice_row["body_count"]),
+            "build_root": display_path(slice_root),
+            "exact_fact_transcript": deepcopy(
+                result["exact_fact_transcript"]
+            ),
+        },
+    }
+
+
+def _run_parallel_call_contract_closeout_scan(
+    *,
+    progress_path: Path,
+    jobs: list[dict[str, Any]],
+    max_workers: int,
+    status_sink: Any | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Run isolated slice verifiers concurrently and retain retail ordering."""
+
+    if not jobs:
+        raise ProgressError("call-contract closeout has no slice scan jobs")
+    if (
+        not isinstance(max_workers, int)
+        or isinstance(max_workers, bool)
+        or not 1 <= max_workers <= CALL_CONTRACT_CLOSEOUT_MAX_WORKERS
+    ):
+        raise ProgressError(
+            "call-contract closeout max workers must be from 1 through "
+            f"{CALL_CONTRACT_CLOSEOUT_MAX_WORKERS}"
+        )
+    effective_workers = min(max_workers, len(jobs))
+    emit = status_sink or (lambda _message: None)
+    scan_started_at = time.perf_counter()
+    emit(
+        "call-contract closeout SCAN START "
+        f"slices={len(jobs)} max_workers={effective_workers}"
+    )
+    outcomes_by_index: dict[int, dict[str, Any]] = {}
+    with ThreadPoolExecutor(
+        max_workers=effective_workers,
+        thread_name_prefix="recoil-close-live",
+    ) as executor:
+        future_indexes = {
+            executor.submit(
+                _run_call_contract_closeout_slice,
+                progress_path=progress_path,
+                index=int(job["index"]),
+                slice_row=job["slice_row"],
+                closure=job["closure"],
+                slice_root=job["slice_root"],
+            ): int(job["index"])
+            for job in jobs
+        }
+        for completed_count, future in enumerate(
+            as_completed(future_indexes),
+            start=1,
+        ):
+            index = future_indexes[future]
+            outcome = future.result()
+            if outcome.get("index") != index or index in outcomes_by_index:
+                raise ProgressError(
+                    "call-contract closeout returned an invalid slice index"
+                )
+            outcomes_by_index[index] = outcome
+            emit(
+                "call-contract closeout "
+                f"{str(outcome.get('status', 'error')).upper()} "
+                f"slice={outcome.get('slice_id')} "
+                f"completed={completed_count}/{len(jobs)} "
+                f"elapsed_ms={outcome.get('elapsed_ms')}"
+            )
+
+    expected_indexes = list(range(len(jobs)))
+    if sorted(outcomes_by_index) != expected_indexes:
+        raise ProgressError(
+            "call-contract closeout did not return every scheduled slice"
+        )
+    ordered_outcomes = [outcomes_by_index[index] for index in expected_indexes]
+    failures = [
+        outcome
+        for outcome in ordered_outcomes
+        if outcome.get("status") != "passed"
+    ]
+    if failures:
+        first = failures[0]
+        detail = first.get("first_divergence") or first.get("detail")
+        if isinstance(detail, Mapping):
+            detail = json.dumps(detail, sort_keys=True, ensure_ascii=False)
+        raise ProgressError(
+            "call-contract closeout diverged in "
+            f"{first.get('slice_id')}: {detail or 'unknown verifier failure'}"
+        )
+
+    scan_elapsed_ms = round(
+        (time.perf_counter() - scan_started_at) * 1000.0,
+        3,
+    )
+    emit(
+        "call-contract closeout SCAN PASS "
+        f"slices={len(jobs)} elapsed_ms={scan_elapsed_ms}"
+    )
+    scan_rows = [deepcopy(outcome["scan_row"]) for outcome in ordered_outcomes]
+    execution = {
+        "mode": "parallel-isolated-slices",
+        "requested_max_workers": max_workers,
+        "effective_max_workers": effective_workers,
+        "completed_slice_count": len(ordered_outcomes),
+        "scan_elapsed_ms": scan_elapsed_ms,
+        "slice_timings": [
+            {
+                "slice_id": str(outcome["slice_id"]),
+                "elapsed_ms": float(outcome["elapsed_ms"]),
+            }
+            for outcome in ordered_outcomes
+        ],
+    }
+    return scan_rows, execution
+
+
+def close_live_call_contract(
+    args: argparse.Namespace,
+    *,
+    status_sink: Any | None = None,
+) -> dict[str, Any]:
+    """Run bounded parallel fresh slices and one serial full-link closeout."""
+
+    emit = status_sink or (lambda _message: None)
     build_root = _absolute_fresh_build_root(args.build_root)
-    store = ProgressStore(args.progress)
-    document = store.load()
-    expected_domains = _precheck_call_contract_revisions(args, document)
+    progress_path = Path(args.progress).resolve(strict=True)
+    store = ProgressSQLiteStore(progress_path)
+    raw_document, initial_sql_vector = store.materialize_with_revision_vector()
+    initial_vector = initial_sql_vector.to_dict()
+    document = ProgressDocument._from_owned_data(
+        raw_document,
+        path=progress_path,
+    )
+    expected_domains = _call_contract_expected_domain_revisions(args)
+    observed_domains = {
+        "semantic": initial_vector["semantic_revision"],
+        "evidence_generation": initial_vector[
+            "evidence_generation_revision"
+        ],
+    }
+    if observed_domains != expected_domains:
+        raise ConcurrentProgressUpdate(
+            "call-contract revision domains changed: expected "
+            f"{expected_domains}, found {observed_domains}"
+        )
     _require_current_call_contract_action(document, requested_slice=None)
     slices = document.authored_call_contract_slices()
     ordered_symbol_ids = [
@@ -4249,59 +4521,60 @@ def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
             + ", ".join(incomplete[:8])
         )
 
-    scan_rows: list[dict[str, Any]] = []
-    for index, slice_row in enumerate(slices, start=1):
-        slice_id = str(slice_row["id"])
-        slice_root = build_root / f"slice-{index:02d}"
-        closure = call_contract_source_closure(document, slice_row)
-        command = [
-            sys.executable,
-            str(REPO_ROOT / "tools" / "recoil.py"),
-            "verify",
-            "call-contract",
-            "--slice",
-            slice_id,
-            "--progress",
-            str(Path(args.progress).resolve(strict=True)),
-            "--build-root",
-            display_path(slice_root),
-            "--collect-all-divergences",
-            "--json",
-        ]
-        returncode, raw, stderr = _run_json_process(command)
-        result = _validate_call_contract_result(
-            raw,
-            expected_slice=slice_row,
-            expected_source_write_paths=list(closure.source_edit_paths),
-            expected_definition_source_paths=list(closure.definition_source_paths),
-            expected_compiled_definition_sources=(
-                _call_contract_separate_definition_compile_sources(closure)
-            ),
-            expected_dependency_paths=list(closure.dependency_paths),
-        )
-        if returncode != 0 or not result["passed"]:
-            raise ProgressError(
-                f"call-contract closeout diverged in {slice_id}: "
-                f"{result['first_divergence'] or stderr}"
-            )
-        if result["passing_symbol_ids"] != list(slice_row["symbol_ids"]):
-            raise ProgressError(
-                f"call-contract closeout did not pass every body in {slice_id}"
-            )
-        scan_rows.append(
+    repository_path_inventory = load_repository_path_inventory(REPO_ROOT)
+    component_state = _call_contract_verifier_component_state(
+        repository_path_inventory
+    )
+    phase_scope = _resolve_phase_all_authored_bodies(document)
+    phase_closure = call_contract_source_closure(
+        document,
+        phase_scope,
+        repository_path_inventory=repository_path_inventory,
+    )
+    phase_dependency_states = file_dependency_states(
+        list(phase_closure.dependency_paths),
+        repository_path_inventory=repository_path_inventory,
+    )
+    jobs: list[dict[str, Any]] = []
+    for index, slice_row in enumerate(slices):
+        jobs.append(
             {
-                "slice_id": slice_id,
-                "body_count": int(slice_row["body_count"]),
-                "build_root": display_path(slice_root),
-                "exact_fact_transcript": deepcopy(
-                    result["exact_fact_transcript"]
+                "index": index,
+                "slice_row": deepcopy(dict(slice_row)),
+                "closure": call_contract_source_closure(
+                    document,
+                    slice_row,
+                    repository_path_inventory=repository_path_inventory,
                 ),
+                "slice_root": build_root / f"slice-{index + 1:02d}",
             }
         )
-
+    build_root.mkdir(parents=True, exist_ok=False)
+    scan_rows, scan_execution = _run_parallel_call_contract_closeout_scan(
+        progress_path=progress_path,
+        jobs=jobs,
+        max_workers=int(args.max_workers),
+        status_sink=emit,
+    )
+    _require_call_contract_closeout_vector_unchanged(store, initial_vector)
+    _require_call_contract_proof_inputs_unchanged(
+        component_state,
+        dependency_paths=phase_closure.dependency_paths,
+        expected_dependency_states=phase_dependency_states,
+        repository_path_inventory=repository_path_inventory,
+    )
+    emit("call-contract closeout LINK START")
     linkability = _run_call_contract_linkability_gate(
         build_root=build_root,
-        progress_path=Path(args.progress),
+        progress_path=progress_path,
+    )
+    emit("call-contract closeout LINK PASS")
+    _require_call_contract_closeout_vector_unchanged(store, initial_vector)
+    _require_call_contract_proof_inputs_unchanged(
+        component_state,
+        dependency_paths=phase_closure.dependency_paths,
+        expected_dependency_states=phase_dependency_states,
+        repository_path_inventory=repository_path_inventory,
     )
     closeout = {
         "schema": CALL_CONTRACT_CLOSEOUT_SCHEMA,
@@ -4324,6 +4597,7 @@ def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
         "fresh_build": True,
         "reuse": False,
         "whole_program_linkability": deepcopy(linkability),
+        "scan_execution": deepcopy(scan_execution),
         "mutation_planned": True,
     }
 
@@ -11518,7 +11792,16 @@ def main(argv: list[str] | None = None) -> int:
             _print_json(payload)
             return code
         if args.command == "call-contract" and args.call_contract_command == "close-live":
-            _print_json(close_live_call_contract(args))
+            _print_json(
+                close_live_call_contract(
+                    args,
+                    status_sink=lambda message: print(
+                        message,
+                        file=sys.stderr,
+                        flush=True,
+                    ),
+                )
+            )
             return 0
         document = _load(args.progress)
         if args.command == "next":
