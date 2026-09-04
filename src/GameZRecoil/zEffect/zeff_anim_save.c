@@ -1,6 +1,6 @@
 #include "GameZRecoil/zEffect/zeff.h"
 
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"

@@ -293,7 +293,7 @@ char g_AINet_NetNameFormat[] = "net_%02d";
 
 #include "Battlesport/game_net.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zLoc/zloc.h"

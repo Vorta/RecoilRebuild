@@ -2,7 +2,7 @@
 
 #include "GameZRecoil/zVideo/zvid.h"
 
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/zclip_rect.h"
 #include "GameZRecoil/include/zdi.h"
 #include "GameZRecoil/include/zimage.h"

@@ -1,5 +1,5 @@
 #include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/zclip_alt.h"
 #include "GameZRecoil/include/zclip_rect.h"
 #include "GameZRecoil/zError/zerr.h"
