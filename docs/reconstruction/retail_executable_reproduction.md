@@ -145,7 +145,13 @@ The closeout runs the complete current census from fresh output, forbids reuse,
 requires zero divergence, queries the target-qualified canonical BN database
 directly without repeating database preflight per slice, records each slice's
 exact JSON-native expected-fact transcript, and records the current verifier
-and expected-fact generations. It is the only route to stage completion.
+and expected-fact generations. After the census passes and before tracker
+mutation, it runs exactly one fresh canonical whole-program compile, COFF-alias
+assembly, resource build, and link below the closeout root. This linkability
+diagnostic must produce the executable and map, suppresses linked-order
+evaluation and playground deployment, and accepts no byte, linked-order, or
+final-image fact. It is never repeated per slice. Closeout is the only route to
+stage completion.
 
 ## Stage 3: Authored Bytes
 

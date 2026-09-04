@@ -68,7 +68,10 @@ The six stages are strictly serial:
 2. **`authored-call-contract`** — verify the accepted authored-order census
    in deterministic retail-contiguous slices capped at 160 bodies. Require exact
    call count/order, call versus tail form, direct versus indirect dispatch,
-   target/provider/IAT identity, slot/callback storage, and known cleanup.
+   target/provider/IAT identity, slot/callback storage, and known cleanup. Its
+   final closeout also requires one fresh canonical whole-program compile,
+   resource build, and link with linked-order, byte, final-image, and play-test
+   deployment acceptance explicitly suppressed.
 3. **`authored-byte-match`** — require object body equality outside
    relocation fields plus exact relocation type/target/addend semantics, linked
    presence, target identity, and relocation-normalized linked body bytes.
@@ -131,6 +134,12 @@ record the required fresh, complete, no-reuse, zero-divergence scan:
 ```powershell
 python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json
 ```
+
+Before committing, closeout performs exactly one additional fresh canonical
+whole-program linkability diagnostic below its build root. It must compile all
+configured sources, COFF aliases, and resources and produce a linked executable
+and map. It never evaluates linked order, deploys the playground executable, or
+accepts byte, linked-order, or final-image facts. Do not link per slice.
 
 The verifier and expected-fact generations live only in
 `tools/_recoil/lib/call_contract_generations.py`. A governed component edit

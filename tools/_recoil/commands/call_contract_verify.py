@@ -1774,15 +1774,15 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             (0x53, bytes.fromhex("83 c0 03")),
             (0x56, bytes.fromhex("24 fc")),
         ),
-        "candidate_call_offsets": (0x108, 0x11C),
+        "candidate_call_offsets": (0x109, 0x11D),
         "candidate_setup_rows": (
-            (0xFC, bytes.fromhex("8d 04 bd 04 00 00 00")),
-            (0x103, bytes.fromhex("83 c0 03")),
-            (0x106, bytes.fromhex("24 fc")),
-            (0x10D, bytes.fromhex("8d 04 bd 04 00 00 00")),
-            (0x114, bytes.fromhex("89 65 e8")),
-            (0x117, bytes.fromhex("83 c0 03")),
-            (0x11A, bytes.fromhex("24 fc")),
+            (0xFD, bytes.fromhex("8d 04 bd 04 00 00 00")),
+            (0x104, bytes.fromhex("83 c0 03")),
+            (0x107, bytes.fromhex("24 fc")),
+            (0x10E, bytes.fromhex("8d 04 bd 04 00 00 00")),
+            (0x115, bytes.fromhex("89 65 e4")),
+            (0x118, bytes.fromhex("83 c0 03")),
+            (0x11B, bytes.fromhex("24 fc")),
         ),
         "target_id": (
             "recoil:vc5-target:"
@@ -9312,9 +9312,18 @@ ZINPUT_JOYSTICK_AGGREGATE_SYMBOL_ID = "recoil:data:0x561cb0"
 ZINPUT_JOYSTICK_AGGREGATE_STORAGE_ID = "recoil:storage:va:0x561cb0"
 ZINPUT_JOYSTICK_AGGREGATE_ADDRESS = "0x561cb0"
 ZINPUT_JOYSTICK_AGGREGATE_NAME = "g_zInput_GlobalStateStorage"
+ZINPUT_JOYSTICK_AGGREGATE_END_EXCLUSIVE = 0x565EBC
 ZINPUT_JOYSTICK_AGGREGATE_OBJECT_SYMBOL = (
     "_g_zInput_GlobalStateStorage"
 )
+ZINPUT_KEYBOARD_AGGREGATE_FIELD_NAMES = {
+    "0x561cc4": "g_zInput_KbdSystemReady",
+    "0x561cc8": "g_zInput_KbdDevice",
+    "0x561ccc": "g_zInput_KbdEventBuffer",
+    "0x561cd0": "g_zInput_KbdModifierState",
+    "0x565bc4": "g_zInput_KbdRawEventCallback",
+    "0x565bc8": "g_zInput_KbdRawEventCallbackCtx",
+}
 ZINPUT_JOYSTICK_DEVICE_SYMBOL_ID = "recoil:data:0x565bd0"
 ZINPUT_JOYSTICK_DEVICE_STORAGE_ID = "recoil:storage:va:0x565bd0"
 ZINPUT_JOYSTICK_DEVICE_ADDRESS = "0x565bd0"
@@ -26548,6 +26557,7 @@ def _comparison_scoped_retail_static_callback_targets(
 def _comparison_scoped_retail_zero_callback_storage_indexes(
     retail_instructions: Sequence[Instruction],
     *,
+    document: ProgressDocument,
     caller_start: str,
     caller_end_exclusive: str,
     indexes: IdentityIndexes,
@@ -26640,11 +26650,24 @@ def _comparison_scoped_retail_zero_callback_storage_indexes(
                 and container.end_exclusive == value + 4
                 and container.identity == storage_identity
             ]
+            aggregate_field_is_bounded = (
+                not containers
+                and _zinput_runtime_aggregate_field_is_bounded(
+                    document=document,
+                    indexes=indexes,
+                    caller_start=caller_start,
+                    storage_address=cell_address,
+                    storage_identity=storage_identity,
+                )
+            )
             if (
                 not storage_identity
                 or storage_identity.startswith("iat:")
                 or precomposed[definition_address] != storage_identity
-                or len(containers) != 1
+                or (
+                    len(containers) != 1
+                    and not aggregate_field_is_bounded
+                )
             ):
                 raise ValueError(
                     "precomposed non-callback definition storage drifted at "
@@ -26734,6 +26757,7 @@ def _comparison_scoped_retail_zero_callback_storage_indexes(
 def _comparison_scoped_retail_stored_callback_targets(
     retail_instructions: Sequence[Instruction],
     *,
+    document: ProgressDocument,
     caller_start: str,
     caller_end_exclusive: str,
     indexes: IdentityIndexes,
@@ -26831,11 +26855,24 @@ def _comparison_scoped_retail_stored_callback_targets(
         ]
         definition_address = normalize_address(load_address)
         if definition_address in precomposed:
+            aggregate_field_is_bounded = (
+                not containers
+                and _zinput_runtime_aggregate_field_is_bounded(
+                    document=document,
+                    indexes=indexes,
+                    caller_start=caller_start,
+                    storage_address=cell_address,
+                    storage_identity=storage_identity,
+                )
+            )
             if (
-                len(containers) != 1
-                or not storage_identity
+                not storage_identity
                 or storage_identity.startswith("iat:")
                 or precomposed[definition_address] != storage_identity
+                or (
+                    len(containers) != 1
+                    and not aggregate_field_is_bounded
+                )
             ):
                 raise ValueError(
                     "stored-callback precomposed non-callback storage drifted "
@@ -32469,6 +32506,17 @@ def _r4572_player_compiler_provider_candidate_bridges(
                     1: ("provider", MSVC_FTOL_PROVIDER_IDENTITY),
                     12: ("provider", MSVC_FTOL_PROVIDER_IDENTITY),
                     23: ("direct", "symbol:recoil:function:0x44e300"),
+                },
+            ),
+            (
+                41,
+                41,
+                ((1, 0x24), (12, 0x315), (13, 0x33F), (24, 0x731)),
+                {
+                    1: ("provider", MSVC_FTOL_PROVIDER_IDENTITY),
+                    12: ("provider", MSVC_FTOL_PROVIDER_IDENTITY),
+                    13: ("provider", MSVC_FTOL_PROVIDER_IDENTITY),
+                    24: ("provider", MSVC_FTOL_PROVIDER_IDENTITY),
                 },
             ),
             (
@@ -76570,6 +76618,7 @@ def _compose_caller_scoped_retail_proof_package(
     trace("retail-proof-zero-callback-start")
     indexes = _comparison_scoped_retail_zero_callback_storage_indexes(
         instructions,
+        document=document,
         caller_start=caller_start,
         caller_end_exclusive=comparison_end_exclusive,
         indexes=indexes,
@@ -76584,6 +76633,7 @@ def _compose_caller_scoped_retail_proof_package(
     trace("retail-proof-stored-callback-start")
     indexes = _comparison_scoped_retail_stored_callback_targets(
         instructions,
+        document=document,
         caller_start=caller_start,
         caller_end_exclusive=comparison_end_exclusive,
         indexes=indexes,
@@ -83816,9 +83866,197 @@ def _zinput_runtime_dispatch_storage_identities(
     return identities
 
 
+def _zinput_runtime_aggregate_field_is_bounded(
+    *,
+    document: ProgressDocument,
+    indexes: IdentityIndexes,
+    caller_start: str,
+    storage_address: str,
+    storage_identity: str,
+) -> bool:
+    """Authenticate one finite keyboard field inside the accepted aggregate."""
+
+    normalized_start = normalize_address(caller_start)
+    normalized_address = normalize_address(storage_address)
+    leaf_name = ZINPUT_KEYBOARD_AGGREGATE_FIELD_NAMES.get(normalized_address)
+    if (
+        normalized_start not in {"0x46f450", "0x46f690"}
+        or leaf_name is None
+    ):
+        return False
+
+    aggregate_symbol_id = ZINPUT_JOYSTICK_AGGREGATE_SYMBOL_ID
+    aggregate_storage_id = ZINPUT_JOYSTICK_AGGREGATE_STORAGE_ID
+    aggregate_identity = f"storage:{aggregate_symbol_id}"
+    leaf_symbol_id = f"recoil:data:{normalized_address}"
+    leaf_storage_id = f"recoil:storage:va:{normalized_address}"
+    leaf_identity = f"storage:{leaf_symbol_id}"
+    if storage_identity != leaf_identity or aggregate_identity == leaf_identity:
+        return False
+
+    symbols = document.collection("symbols")
+    contributions = document.collection("storage_contributions")
+    owners = document.collection("owners")
+    aggregate_symbol = symbols.get(aggregate_symbol_id)
+    leaf_symbol = symbols.get(leaf_symbol_id)
+    aggregate_contribution = contributions.get(aggregate_storage_id)
+    leaf_contribution = contributions.get(leaf_storage_id)
+    owner = owners.get(ZINPUT_JOYSTICK_STORAGE_OWNER_ID)
+
+    def exact_authored_data(
+        row: Any,
+        *,
+        address: str,
+        name: str,
+        contribution_id: str,
+    ) -> bool:
+        return (
+            isinstance(row, Mapping)
+            and row.get("address") == address
+            and row.get("binary") == "recoil"
+            and row.get("kind") == "data"
+            and row.get("disposition") == "authored"
+            and row.get("navigation_name") == name
+            and row.get("output_section_id") == "recoil:section:.data"
+            and row.get("storage_contribution_ids") == [contribution_id]
+            and not row.get("logical_aliases")
+        )
+
+    def exact_storage_contribution(
+        row: Any,
+        *,
+        symbol_id: str,
+        address: str,
+    ) -> bool:
+        reference = row.get("reference") if isinstance(row, Mapping) else None
+        return (
+            isinstance(row, Mapping)
+            and row.get("binary") == "recoil"
+            and row.get("kind") == "data-symbol"
+            and row.get("output_section_id") == "recoil:section:.data"
+            and row.get("overlap") == "none"
+            and row.get("owner_ids") == [ZINPUT_JOYSTICK_STORAGE_OWNER_ID]
+            and row.get("parent_contribution_id") is None
+            and row.get("symbol_ids") == [symbol_id]
+            and isinstance(reference, Mapping)
+            and reference.get("address") == address
+        )
+
+    gates = owner.get("gates") if isinstance(owner, Mapping) else None
+    selected_symbol_ids = {aggregate_symbol_id, leaf_symbol_id}
+    primary_data_rows = [
+        (
+            owner_id,
+            str(relationship.get("address", "")),
+            str(relationship.get("name", "")),
+            str(relationship.get("symbol_id", "")),
+        )
+        for owner_id, owner_row in owners.items()
+        if isinstance(owner_row, Mapping)
+        for relationship in owner_row.get("relationships", ())
+        if isinstance(relationship, Mapping)
+        and relationship.get("kind") == "primary-data"
+        and relationship.get("symbol_id") in selected_symbol_ids
+    ]
+    expected_primary_data_rows = [
+        (
+            ZINPUT_JOYSTICK_STORAGE_OWNER_ID,
+            ZINPUT_JOYSTICK_AGGREGATE_ADDRESS,
+            ZINPUT_JOYSTICK_AGGREGATE_NAME,
+            aggregate_symbol_id,
+        ),
+        (
+            ZINPUT_JOYSTICK_STORAGE_OWNER_ID,
+            normalized_address,
+            leaf_name,
+            leaf_symbol_id,
+        ),
+    ]
+    aggregate_start = address_value(ZINPUT_JOYSTICK_AGGREGATE_ADDRESS)
+    field_start = address_value(normalized_address)
+    overlapping_containers = [
+        container
+        for container in indexes.storage_containers
+        if container.start < field_start + 4
+        and field_start < container.end_exclusive
+    ]
+    return (
+        exact_authored_data(
+            aggregate_symbol,
+            address=ZINPUT_JOYSTICK_AGGREGATE_ADDRESS,
+            name=ZINPUT_JOYSTICK_AGGREGATE_NAME,
+            contribution_id=aggregate_storage_id,
+        )
+        and exact_authored_data(
+            leaf_symbol,
+            address=normalized_address,
+            name=leaf_name,
+            contribution_id=leaf_storage_id,
+        )
+        and exact_storage_contribution(
+            aggregate_contribution,
+            symbol_id=aggregate_symbol_id,
+            address=ZINPUT_JOYSTICK_AGGREGATE_ADDRESS,
+        )
+        and exact_storage_contribution(
+            leaf_contribution,
+            symbol_id=leaf_symbol_id,
+            address=normalized_address,
+        )
+        and isinstance(owner, Mapping)
+        and owner.get("binary") == "recoil"
+        and owner.get("kind") == "subsystem"
+        and owner.get("lifecycle_state") == "active"
+        and owner.get("provider_state") == "pending"
+        and isinstance(gates, Mapping)
+        and all(
+            gates.get(gate) == "accepted"
+            for gate in ("boundary", "source", "data", "owner_linkage")
+        )
+        and Counter(primary_data_rows) == Counter(expected_primary_data_rows)
+        and aggregate_start < field_start
+        and field_start + 4 <= ZINPUT_JOYSTICK_AGGREGATE_END_EXCLUSIVE
+        and indexes.storage_by_address.get(ZINPUT_JOYSTICK_AGGREGATE_ADDRESS)
+        == aggregate_identity
+        and indexes.storage_by_address.get(normalized_address) == leaf_identity
+        and indexes.storage_by_name.get(ZINPUT_JOYSTICK_AGGREGATE_NAME)
+        == aggregate_identity
+        and indexes.storage_by_name.get(leaf_name) == leaf_identity
+        and [
+            address
+            for address, identity in indexes.storage_by_address.items()
+            if identity == aggregate_identity
+        ]
+        == [ZINPUT_JOYSTICK_AGGREGATE_ADDRESS]
+        and [
+            address
+            for address, identity in indexes.storage_by_address.items()
+            if identity == leaf_identity
+        ]
+        == [normalized_address]
+        and aggregate_identity not in indexes.provider_ids
+        and leaf_identity not in indexes.provider_ids
+        and not indexes.reviewed_logical_aliases_by_address.get(
+            ZINPUT_JOYSTICK_AGGREGATE_ADDRESS
+        )
+        and not indexes.reviewed_logical_aliases_by_address.get(
+            normalized_address
+        )
+        and overlapping_containers
+        == [
+            StorageContainer(
+                start=aggregate_start,
+                end_exclusive=ZINPUT_JOYSTICK_AGGREGATE_END_EXCLUSIVE,
+                identity=aggregate_identity,
+            )
+        ]
+    )
+
+
 def _zinput_runtime_dispatch_non_callback_register_loads(
     retail_instructions: Sequence[Instruction],
     *,
+    document: ProgressDocument,
     caller_start: str,
     caller_end_exclusive: str,
     indexes: IdentityIndexes,
@@ -83917,11 +84155,25 @@ def _zinput_runtime_dispatch_non_callback_register_loads(
             and container.end_exclusive == value + 4
             and container.identity == storage_identity
         ]
-        if not storage_identity or len(containers) != 1:
+        aggregate_field_is_bounded = (
+            not containers
+            and _zinput_runtime_aggregate_field_is_bounded(
+                document=document,
+                indexes=indexes,
+                caller_start=normalized_start,
+                storage_address=storage_address,
+                storage_identity=storage_identity,
+            )
+        )
+        if (
+            not storage_identity
+            or (len(containers) != 1 and not aggregate_field_is_bounded)
+        ):
             if definition_address in expected_rows:
                 raise ValueError(
                     "zInput zero-data definition requires one exact storage "
-                    f"container at {storage_address}"
+                    "container or accepted aggregate field at "
+                    f"{storage_address}"
                 )
             continue
         cell = _hexdump_bytes(bridge.hexdump(storage_address, 4))
@@ -85909,6 +86161,7 @@ def _r4564_candidate_callback_storage_bridges(
 def _compose_reviewed_retail_provenance_adapters(
     retail_instructions: Sequence[Instruction],
     *,
+    document: ProgressDocument,
     caller_start: str,
     caller_end_exclusive: str,
     indexes: IdentityIndexes,
@@ -85993,6 +86246,7 @@ def _compose_reviewed_retail_provenance_adapters(
     zinput_non_callback_loads = (
         _zinput_runtime_dispatch_non_callback_register_loads(
             retail_instructions,
+            document=document,
             caller_start=normalized_start,
             caller_end_exclusive=caller_end_exclusive,
             indexes=composed_indexes,
@@ -162457,9 +162711,24 @@ def _ftol_provider_bridges(
             caller_identity == "symbol:recoil:function:0x426770"
             and normalize_address(caller_start) == "0x426770"
             and normalize_address(caller_end_exclusive) == "0x427140"
-            and population == 3
-            and candidate_call_offsets == (0x24, 0x311, 0x691)
-            and relocation_offsets == (0x25, 0x312, 0x692)
+            and (
+                (
+                    population == 3
+                    and candidate_call_offsets == (0x24, 0x311, 0x691)
+                    and relocation_offsets == (0x25, 0x312, 0x692)
+                )
+                or (
+                    population == 4
+                    and candidate_call_offsets
+                    in {
+                        (0x24, 0x315, 0x33F, 0x731),
+                        (0x24, 0x315, 0x33F, 0x735),
+                        (0x24, 0x315, 0x33F, 0x737),
+                    }
+                    and relocation_offsets
+                    == tuple(offset + 1 for offset in candidate_call_offsets)
+                )
+            )
             and bool(expected_rows)
         )
         or (
@@ -169370,6 +169639,7 @@ def live_call_contract_result(
             reviewed_retail_adapters = (
                 _compose_reviewed_retail_provenance_adapters(
                     retail_instructions,
+                    document=document,
                     caller_start=address,
                     caller_end_exclusive=retail_comparison_end_exclusive,
                     indexes=indexes,

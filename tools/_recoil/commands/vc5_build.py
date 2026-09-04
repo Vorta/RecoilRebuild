@@ -8,6 +8,7 @@ if __package__ in {None, ""}:
 
 import argparse
 from dataclasses import dataclass, replace
+from functools import lru_cache
 import json
 import os
 from pathlib import Path
@@ -53,6 +54,11 @@ from _recoil.lib.progress import (
     DEFAULT_PROGRESS_PATH,
     ProgressDocument,
     resolve_full_order_target_block,
+)
+from _recoil.lib.repository_paths import (
+    load_repository_path_inventory,
+    normalize_generated_repository_path,
+    resolve_repository_file,
 )
 from _recoil.lib.authored_icf import require_valid_authored_icf_groups
 from _recoil.lib.progress import (
@@ -605,11 +611,30 @@ def final_build_compile_profile_flags(name: str, config: FinalBuildConfig) -> tu
     raise ValueError(f"{DEFAULT_PROFILES}: unknown verification profile {name}")
 
 
-def canonical_source_key(source: Path) -> str:
+@lru_cache(maxsize=1)
+def _final_build_repository_inventory():
+    return load_repository_path_inventory(REPO_ROOT)
+
+
+def _authored_repository_path(path: Path, *, context: str) -> str:
+    absolute = path if path.is_absolute() else REPO_ROOT / path
     try:
-        return source.resolve().relative_to(REPO_ROOT.resolve()).as_posix().lower()
+        lexical = absolute.absolute().relative_to(REPO_ROOT.absolute()).as_posix()
     except ValueError as exc:
-        raise ValueError(f"source profile path is outside the repository: {source}") from exc
+        raise ValueError(f"{context} is outside the repository: {path}") from exc
+    return resolve_repository_file(
+        lexical,
+        repository_root=REPO_ROOT,
+        inventory=_final_build_repository_inventory(),
+        context=context,
+    ).repository_path
+
+
+def canonical_source_key(source: Path) -> str:
+    return _authored_repository_path(
+        source,
+        context="final-build source profile path",
+    ).casefold()
 
 
 def effective_compile_flags(config: FinalBuildConfig, source: Path) -> tuple[str, ...]:
@@ -4816,10 +4841,24 @@ def ledger_required_order_targets(config: FinalBuildConfig, *, order_scope: str 
 
 
 def report_path_key(path: Path) -> str:
+    absolute = path if path.is_absolute() else REPO_ROOT / path
     try:
-        return str(path.resolve().relative_to(REPO_ROOT.resolve())).replace("\\", "/")
+        lexical = absolute.absolute().relative_to(REPO_ROOT.absolute()).as_posix()
     except ValueError:
         return str(path.resolve())
+    first = lexical.split("/", 1)[0]
+    if first == "build":
+        return normalize_generated_repository_path(
+            lexical,
+            allowed_roots=("build",),
+            context="final-build generated report path",
+        ).logical_path
+    if first in {".codex", "docs", "src", "tests", "tools"}:
+        return _authored_repository_path(
+            absolute,
+            context="final-build authored report path",
+        )
+    return str(path.resolve())
 
 
 def order_report_rows(
@@ -4864,6 +4903,7 @@ def run_build(
     compile_only_skip_linked_order: bool = False,
     required_order_targets_override: tuple[str, ...] | None = None,
     linked_order_only: bool = False,
+    linkability_only: bool = False,
     progress_path: Path = DEFAULT_PROGRESS,
 ) -> int:
     order_target_files: tuple[Path, ...] = ()
@@ -4874,6 +4914,34 @@ def run_build(
     )
     if compile_only_skip_linked_order and not compile_only:
         raise ValueError("--compile-only-skip-linked-order requires --compile-only")
+    if linkability_only:
+        if compile_only or linked_order_only:
+            raise ValueError(
+                "--linkability-only requires a complete link and cannot be combined "
+                "with --compile-only or --linked-order-only"
+            )
+        if order_targets or order_target_files:
+            raise ValueError(
+                "--linkability-only does not accept linked-order targets"
+            )
+        if not clean or not config.build_dir_explicit:
+            raise ValueError(
+                "--linkability-only requires --clean and one explicit isolated --build-dir"
+            )
+        if (
+            config.manifest_path.resolve() != DEFAULT_MANIFEST.resolve()
+            or config.output_exe != "Recoil.exe"
+            or config.diagnostic_only
+            or config.diagnostic_kind
+            or config.compile_profile
+            or config.link_profile
+            or config.library_profile
+        ):
+            raise ValueError(
+                "--linkability-only requires the unmodified canonical Recoil final-build profile"
+            )
+        if keep_going:
+            raise ValueError("--linkability-only is fail-fast and rejects --keep-going")
     if linked_order_only:
         if len(order_targets) != 1:
             raise ValueError("linked-order-only validation requires exactly one --order-target")
@@ -4887,7 +4955,7 @@ def run_build(
     paths = build_paths(config)
     order_report_dir = linked_order_report_dir(config, paths)
     expected_binary = "recoil" if config.output_exe.lower() == "recoil.exe" else "messages"
-    if compile_only_skip_linked_order:
+    if compile_only_skip_linked_order or linkability_only:
         routing = OrderTargetRouting(
             diagnostic_isolation_applied=False,
             explicit_target_ids=order_targets,
@@ -4931,6 +4999,11 @@ def run_build(
         )
         effective_order_targets = ()
         order_target_files = ()
+    if linkability_only:
+        print(
+            "LINKABILITY ONLY: compiling and linking the canonical whole program once; "
+            "linked-order, byte, final-image, and play-test deployment acceptance are suppressed."
+        )
     order_target_manifests = load_linked_order_targets(effective_order_targets, order_target_files)
     if config.build_dir_explicit:
         prepare_build_root(paths, clean=clean, dry_run=dry_run)
@@ -5103,6 +5176,58 @@ def run_build(
             print("diagnostic library profile mixed canonical MFC libraries", file=sys.stderr)
             write_summary(paths, results, dry_run=False, config=config)
             return 1
+
+    if linkability_only:
+        write_summary(
+            paths,
+            results,
+            dry_run=False,
+            config=config,
+            acceptance={
+                "report_version": 1,
+                "kind": "final-build-diagnostic",
+                "diagnostic_kind": "whole-program-linkability",
+                "success": True,
+                "validation_mode": "live",
+                "fresh_build": True,
+                "reuse": False,
+                "binary": expected_binary,
+                "compiler_profile": "VC5SP3",
+                "compile_profiles": compile_profile_rows(config),
+                "config_path": str(config.manifest_path.resolve()),
+                "compiler_env_path": str(config.vc5_env.resolve()),
+                "canonical_mfc_include_trace": canonical_include_trace,
+                "build_root": str(paths.build_dir.resolve()),
+                "map_path": str(paths.map_path.resolve()),
+                "resource_path": str(paths.resource_path.resolve()),
+                "candidate_path": str(paths.exe_path.resolve()),
+                "required_order_targets": [],
+                "effective_order_targets": [],
+                "linked_order_evaluation_suppressed": True,
+                "playtest_deployment_suppressed": True,
+                "playtest_deploy": {
+                    "attempted": False,
+                    "updated": False,
+                    "destination": (
+                        str(config.playtest_output_exe.resolve())
+                        if config.playtest_output_exe is not None
+                        else None
+                    ),
+                    "error": None,
+                    "suppression_reason": "whole-program-linkability",
+                },
+                "candidate_expected_truth": False,
+                "accepts_linked_order": False,
+                "accepts_bytes": False,
+                "accepts_final_image": False,
+                "diagnostic_only": True,
+                "final_image_validation": "not-run",
+                "selected_diagnostic_targets_passed": False,
+            },
+        )
+        print(f"Whole-program linkability candidate: {paths.exe_path}")
+        print(f"Map file: {paths.map_path}")
+        return 0
 
     order_report_dir.mkdir(parents=True, exist_ok=True)
     order_rc = run_linked_order_targets(
@@ -5313,6 +5438,14 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--linkability-only",
+        action="store_true",
+        help=(
+            "Run one fresh canonical whole-program compile/resource/link diagnostic in an "
+            "explicit isolated build directory, without linked-order evaluation or play-test deployment."
+        ),
+    )
+    parser.add_argument(
         "--order-target",
         action="append",
         default=[],
@@ -5365,8 +5498,9 @@ def main(argv: list[str] | None = None) -> int:
             order_scope=order_scope,
             compile_only_skip_linked_order=args.compile_only_skip_linked_order,
             linked_order_only=args.linked_order_only,
+            linkability_only=args.linkability_only,
             required_order_targets_override=(
-                () if args.linked_order_only else None
+                () if args.linked_order_only or args.linkability_only else None
             ),
             progress_path=args.progress,
         )

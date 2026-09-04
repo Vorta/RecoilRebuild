@@ -89,6 +89,8 @@ CALL_CONTRACT_CONTRACT_VERSION = 3
 CALL_CONTRACT_EXPECTED_TRUTH = (
     "retail-binary-ninja-plus-reviewed-tracker-identities"
 )
+CALL_CONTRACT_CLOSEOUT_SCHEMA = "recoil-call-contract-fresh-closeout-v4"
+CALL_CONTRACT_LINKABILITY_SCHEMA = "recoil-whole-program-linkability-v1"
 EXACT_LINK_DIMENSIONS = ("linked_address", "linked_targets", "linked_byte")
 SYMBOL_BINARY_DIMENSIONS = tuple(
     dict.fromkeys(
@@ -1078,8 +1080,34 @@ class ProgressDocument:
         ordered = [str(symbol_id) for slice_row in slices for symbol_id in slice_row["symbol_ids"]]
         incomplete = [symbol_id for symbol_id in ordered if not self.call_contract_body_currentness(symbol_id).get("current")]
         migration = self.data.get("migration")
-        closeout = migration.get("authored_call_contract_fresh_closeout_v3") if isinstance(migration, Mapping) else None
+        closeout = (
+            migration.get("authored_call_contract_fresh_closeout_v4")
+            if isinstance(migration, Mapping)
+            else None
+        )
         scan_rows = closeout.get("scan_rows") if isinstance(closeout, Mapping) else None
+        linkability = (
+            closeout.get("whole_program_linkability")
+            if isinstance(closeout, Mapping)
+            else None
+        )
+        linkability_valid = (
+            isinstance(linkability, Mapping)
+            and linkability.get("schema") == CALL_CONTRACT_LINKABILITY_SCHEMA
+            and linkability.get("validation_mode") == "live"
+            and linkability.get("fresh_build") is True
+            and linkability.get("reuse") is False
+            and linkability.get("whole_program_linked") is True
+            and linkability.get("playtest_deployment_suppressed") is True
+            and linkability.get("candidate_expected_truth") is False
+            and linkability.get("accepts_linked_order") is False
+            and linkability.get("accepts_bytes") is False
+            and linkability.get("accepts_final_image") is False
+            and isinstance(linkability.get("build_root"), str)
+            and bool(linkability.get("build_root"))
+            and isinstance(linkability.get("summary_path"), str)
+            and bool(linkability.get("summary_path"))
+        )
         scan_rows_valid = isinstance(scan_rows, list) and len(scan_rows) == len(slices)
         if scan_rows_valid:
             for slice_row, scan_row in zip(slices, scan_rows):
@@ -1122,10 +1150,11 @@ class ProgressDocument:
         valid = (
             not incomplete
             and isinstance(closeout, Mapping)
-            and closeout.get("schema") == "recoil-call-contract-fresh-closeout-v3"
+            and closeout.get("schema") == CALL_CONTRACT_CLOSEOUT_SCHEMA
             and closeout.get("ordered_symbol_ids") == ordered
             and closeout.get("complete_no_reuse_zero_divergence") is True
             and scan_rows_valid
+            and linkability_valid
             and evidence_generations_current(closeout)
         )
         return {

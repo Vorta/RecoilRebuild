@@ -49,9 +49,11 @@ from _recoil.commands.storage_contribution_progress import (
 from _recoil.lib.progress import (
     AUTHORED_BYTE_DIMENSIONS,
     AUTHORED_ORDER_DIMENSIONS,
+    CALL_CONTRACT_CLOSEOUT_SCHEMA,
     CALL_CONTRACT_DIMENSION,
     CALL_CONTRACT_CONTRACT_VERSION,
     CALL_CONTRACT_EXPECTED_TRUTH,
+    CALL_CONTRACT_LINKABILITY_SCHEMA,
     EXACT_LINK_DIMENSIONS,
     FULL_ORDER_DIMENSIONS,
     ConcurrentProgressUpdate,
@@ -110,6 +112,9 @@ BYTE_VERIFY_COMMANDS = {
 }
 DIVERGENCE_KINDS = {"missing", "extra", "duplicate", "reordered"}
 PIPELINE_CLASSES = {"authored", "authored-lifecycle", "non-authored", "unresolved"}
+CALL_CONTRACT_FINAL_BUILD_MANIFEST = (
+    REPO_ROOT / "tools" / "_recoil" / "config" / "vc5_final_build.json"
+)
 
 
 class OrderTargetRoleGateError(ProgressError):
@@ -4000,8 +4005,192 @@ def advance_live_call_contract(args: argparse.Namespace) -> tuple[int, dict[str,
     return returncode, details
 
 
+def _validate_call_contract_linkability_summary(
+    summary: Mapping[str, Any],
+    *,
+    build_root: Path,
+) -> dict[str, Any]:
+    """Validate the narrow no-deploy whole-program linkability diagnostic."""
+
+    expected_paths = {
+        "build_root": build_root,
+        "candidate_path": build_root / "Recoil.exe",
+        "map_path": build_root / "Recoil.map",
+        "resource_path": build_root / "Recoil.res",
+        "config_path": CALL_CONTRACT_FINAL_BUILD_MANIFEST,
+    }
+    if (
+        summary.get("kind") != "final-build-diagnostic"
+        or summary.get("diagnostic_kind") != "whole-program-linkability"
+        or summary.get("binary") != "recoil"
+        or summary.get("success") is not True
+        or summary.get("validation_mode") != "live"
+        or summary.get("fresh_build") is not True
+        or summary.get("reuse") is not False
+        or summary.get("dry_run") is not False
+        or summary.get("candidate_expected_truth") is not False
+        or summary.get("linked_order_evaluation_suppressed") is not True
+        or summary.get("playtest_deployment_suppressed") is not True
+        or summary.get("required_order_targets") != []
+        or summary.get("effective_order_targets") != []
+        or summary.get("diagnostic_only") is not True
+        or summary.get("final_image_validation") != "not-run"
+        or summary.get("compiler_profile") != "VC5SP3"
+        or not isinstance(summary.get("canonical_mfc_include_trace"), Mapping)
+        or summary.get("canonical_mfc_include_trace", {}).get("ok") is not True
+        or any(
+            summary.get(field) is not True
+            for field in (
+                "compile_succeeded",
+                "coff_alias_sources_succeeded",
+                "resource_succeeded",
+                "link_succeeded",
+                "candidate_available",
+            )
+        )
+        or any(
+            summary.get(field) is not False
+            for field in (
+                "authored_byte_eligible",
+                "linked_order_passed",
+                "accepts_linked_order",
+                "accepts_bytes",
+                "accepts_final_image",
+            )
+        )
+    ):
+        raise ProgressError(
+            "call-contract whole-program linkability summary has an invalid "
+            "diagnostic or acceptance boundary"
+        )
+
+    for field, expected_path in expected_paths.items():
+        value = summary.get(field)
+        if (
+            not isinstance(value, str)
+            or not value
+            or Path(value).resolve() != expected_path.resolve()
+        ):
+            raise ProgressError(
+                "call-contract whole-program linkability summary has an invalid "
+                f"{field}"
+            )
+    for field in ("candidate_path", "map_path", "resource_path"):
+        if not expected_paths[field].is_file():
+            raise ProgressError(
+                "call-contract whole-program linkability output is missing: "
+                f"{display_path(expected_paths[field])}"
+            )
+
+    deployment = summary.get("playtest_deploy")
+    expected_playtest = REPO_ROOT / "playground" / "Recoil-rebuild.exe"
+    if (
+        not isinstance(deployment, Mapping)
+        or deployment.get("attempted") is not False
+        or deployment.get("updated") is not False
+        or deployment.get("error") is not None
+        or deployment.get("suppression_reason")
+        != "whole-program-linkability"
+        or not isinstance(deployment.get("destination"), str)
+        or Path(str(deployment.get("destination"))).resolve()
+        != expected_playtest.resolve()
+    ):
+        raise ProgressError(
+            "call-contract whole-program linkability did not prove play-test "
+            "deployment suppression"
+        )
+
+    return {
+        "schema": CALL_CONTRACT_LINKABILITY_SCHEMA,
+        "validation_mode": "live",
+        "fresh_build": True,
+        "reuse": False,
+        "whole_program_linked": True,
+        "playtest_deployment_suppressed": True,
+        "candidate_expected_truth": False,
+        "accepts_linked_order": False,
+        "accepts_bytes": False,
+        "accepts_final_image": False,
+        "build_root": display_path(build_root),
+        "summary_path": display_path(build_root / "summary.json"),
+    }
+
+
+def _run_call_contract_linkability_gate(
+    *,
+    build_root: Path,
+    progress_path: Path,
+) -> dict[str, Any]:
+    """Run one fresh canonical full link without order or play-test effects."""
+
+    linkability_root = build_root / "whole-program-linkability"
+    if linkability_root.exists():
+        raise ProgressError(
+            "call-contract whole-program linkability root must be fresh: "
+            f"{display_path(linkability_root)}"
+        )
+    command = [
+        sys.executable,
+        str(REPO_ROOT / "tools" / "recoil.py"),
+        "verify",
+        "final-build",
+        "--manifest",
+        display_path(CALL_CONTRACT_FINAL_BUILD_MANIFEST),
+        "--progress",
+        str(progress_path.resolve(strict=True)),
+        "--build-dir",
+        display_path(linkability_root),
+        "--clean",
+        "--order-scope",
+        "authored",
+        "--linkability-only",
+    ]
+    completed = subprocess.run(
+        command,
+        cwd=REPO_ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    summary_path = linkability_root / "summary.json"
+    if not summary_path.is_file():
+        detail = completed.stderr.strip() or completed.stdout.strip()[-1600:]
+        raise ProgressError(
+            "call-contract whole-program linkability produced no summary; "
+            f"exit_code={completed.returncode}"
+            + (f": {detail}" if detail else "")
+        )
+    try:
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ProgressError(
+            f"cannot read call-contract whole-program linkability summary: {exc}"
+        ) from exc
+    if not isinstance(summary, Mapping):
+        raise ProgressError(
+            "call-contract whole-program linkability summary must be an object"
+        )
+    if completed.returncode != 0:
+        delegated = _delegated_vc5_build_failure(summary)
+        detail = (
+            delegated
+            or completed.stderr.strip()
+            or completed.stdout.strip()[-1600:]
+        )
+        raise ProgressError(
+            "call-contract whole-program linkability failed; "
+            f"exit_code={completed.returncode}"
+            + (f": {detail}" if detail else "")
+        )
+    return _validate_call_contract_linkability_summary(
+        summary,
+        build_root=linkability_root,
+    )
+
+
 def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
-    """Run one serial, fresh, complete-census scan and record only its closeout."""
+    """Run the fresh census and one no-deploy full-link closeout gate."""
 
     build_root = _absolute_fresh_build_root(args.build_root)
     store = ProgressStore(args.progress)
@@ -4050,8 +4239,8 @@ def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
             expected_slice=slice_row,
             expected_source_write_paths=list(closure.source_edit_paths),
             expected_definition_source_paths=list(closure.definition_source_paths),
-            expected_compiled_definition_sources=list(
-                closure.definition_source_paths
+            expected_compiled_definition_sources=(
+                _call_contract_separate_definition_compile_sources(closure)
             ),
             expected_dependency_paths=list(closure.dependency_paths),
         )
@@ -4075,8 +4264,12 @@ def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
             }
         )
 
+    linkability = _run_call_contract_linkability_gate(
+        build_root=build_root,
+        progress_path=Path(args.progress),
+    )
     closeout = {
-        "schema": "recoil-call-contract-fresh-closeout-v3",
+        "schema": CALL_CONTRACT_CLOSEOUT_SCHEMA,
         "ordered_symbol_ids": ordered_symbol_ids,
         "slice_ids": [str(row["id"]) for row in slices],
         "complete_no_reuse_zero_divergence": True,
@@ -4084,6 +4277,7 @@ def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
         "reuse": False,
         "candidate_expected_truth": False,
         "scan_rows": scan_rows,
+        "whole_program_linkability": deepcopy(linkability),
         **current_generations(),
     }
     details = {
@@ -4094,6 +4288,7 @@ def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
         "build_root": display_path(build_root),
         "fresh_build": True,
         "reuse": False,
+        "whole_program_linkability": deepcopy(linkability),
         "mutation_planned": True,
     }
 
@@ -4118,7 +4313,7 @@ def close_live_call_contract(args: argparse.Namespace) -> dict[str, Any]:
         migration = data.setdefault("migration", {})
         if not isinstance(migration, dict):
             raise ProgressError("tracker migration metadata must be an object")
-        migration["authored_call_contract_fresh_closeout_v3"] = deepcopy(closeout)
+        migration["authored_call_contract_fresh_closeout_v4"] = deepcopy(closeout)
 
     commit = _call_contract_scoped_patch_commit(
         args=args,

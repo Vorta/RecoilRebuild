@@ -188,6 +188,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
         category="verification",
         examples=(
             "python tools/recoil.py verify final-build --dry-run",
+            "python tools/recoil.py verify final-build --build-dir build/live-validation/linkability/<fresh-root> --clean --order-scope authored --linkability-only",
             "python tools/recoil.py verify final-build --manifest tools/_recoil/config/vc5_messages_build.json --dry-run",
         ),
         mutates=True,
@@ -569,7 +570,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         ),
         mutates=True,
     ),
-    spec("progress call-contract close-live", "progress_cli", prepend=("call-contract", "close-live"), summary="Run one fresh no-reuse complete-census call-contract scan and record the direct closeout.", category="progress", examples=("python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",), mutates=True, needs_binja=True, required_revision_domains=("semantic", "evidence_generation"), build_root_contract="fresh-direct-root", mutation_scope="call-contract"),
+    spec("progress call-contract close-live", "progress_cli", prepend=("call-contract", "close-live"), summary="Run one fresh no-reuse complete-census scan plus one no-deploy whole-program linkability gate and record the direct closeout.", category="progress", examples=("python tools/recoil.py progress call-contract close-live --build-root <fresh-root> --expected-semantic-revision <semantic-revision> --expected-evidence-generation-revision <evidence-revision> --apply --json",), mutates=True, needs_binja=True, required_revision_domains=("semantic", "evidence_generation"), build_root_contract="fresh-direct-root", mutation_scope="call-contract"),
     spec(
         "progress call-contract replay-live",
         "call_contract_replay",

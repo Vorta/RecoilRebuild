@@ -15,8 +15,8 @@ from typing import Iterable, Mapping
 from _recoil.lib.tooling import REPO_ROOT
 
 
-CALL_CONTRACT_VERIFIER_GENERATION = 40
-EXPECTED_FACT_SCHEMA_VERSION = 34
+CALL_CONTRACT_VERIFIER_GENERATION = 45
+EXPECTED_FACT_SCHEMA_VERSION = 37
 
 
 CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
@@ -27,6 +27,7 @@ CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
         "tools/_recoil/commands/provider_function_mutation.py",
         "tools/_recoil/commands/provider_target_mutation.py",
         "tools/_recoil/commands/progress_v2.py",
+        "tools/_recoil/commands/vc5_build.py",
         "tools/_recoil/commands/vc5_verify.py",
         "tools/_recoil/lib/binja.py",
         "tools/_recoil/lib/call_contract_evidence.py",
