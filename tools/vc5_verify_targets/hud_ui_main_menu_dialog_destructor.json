@@ -1,7 +1,7 @@
 {
   "name": "hud_ui_main_menu_dialog_destructor",
   "description": "HudUiMainMenuDialog destructor.",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "compiler_profile": "vc5_o2_ob1_md_gx_fastcall_facs",
   "source_filename": "HudUiMainMenuDialog.cpp",
   "source_from": "src/Battlesport/hud.cpp",
   "include_dirs": [
@@ -21,7 +21,7 @@
   "functions": [
     {
       "address": "0x415040",
-      "symbol": "??1HudUiMainMenuDialog@@QAE@XZ",
+      "symbol": "??1HudUiMainMenuDialog@@UAE@XZ",
       "name": "HudUiMainMenuDialog::~HudUiMainMenuDialog"
     }
   ]

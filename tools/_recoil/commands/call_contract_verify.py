@@ -69897,6 +69897,23 @@ def _zui_r4905_direct_static_dispatch_projection(
     return result
 
 
+def _canonical_exact_this_member_vptr_storage(value: str) -> str:
+    """Canonicalize one exact vptr load from a positive embedded-this offset."""
+
+    match = re.fullmatch(
+        r"(?:load\((?P<direct>this\+0x0*[1-9a-f][0-9a-f]*)\)"
+        r"|load\(address\((?P<address>this\+0x0*[1-9a-f][0-9a-f]*)\)\))",
+        value,
+    )
+    if match is None:
+        return ""
+    return f"load({match.group('direct') or match.group('address')})"
+
+
+def _exact_this_member_vptr_storage(value: str) -> bool:
+    return bool(_canonical_exact_this_member_vptr_storage(value))
+
+
 def _exact_targetless_vptr_call_proofs(
     instructions: Sequence[Instruction],
     *,
@@ -69908,6 +69925,7 @@ def _exact_targetless_vptr_call_proofs(
     local_control_flow_targets: Mapping[int, tuple[int, ...]] | None = None,
     direct_call_cleanup_by_instruction_index: Mapping[int, int] | None = None,
     candidate_caller_definition: CandidateCallerDefinition | None = None,
+    allow_exact_this_member: bool = False,
 ) -> dict[int, str]:
     """Derive exact targetless vptr call storage from bounded raw lineages."""
 
@@ -70824,10 +70842,18 @@ def _exact_targetless_vptr_call_proofs(
                         )
                     )
                     if (
-                        "runtime-object-join(" in affine_cfg_fresh
-                        and "call-result(" in affine_cfg_fresh
-                        and _eligible_retail_fresh_targetless_vptr(
-                            affine_cfg_fresh
+                        (
+                            "runtime-object-join(" in affine_cfg_fresh
+                            and "call-result(" in affine_cfg_fresh
+                            and _eligible_retail_fresh_targetless_vptr(
+                                affine_cfg_fresh
+                            )
+                        )
+                        or (
+                            allow_exact_this_member
+                            and _exact_this_member_vptr_storage(
+                                affine_cfg_fresh
+                            )
                         )
                     ):
                         proof_by_index[call_index] = affine_cfg_fresh
@@ -71154,10 +71180,18 @@ def _exact_targetless_vptr_call_proofs(
                     allow_exact_affine_receiver_roots=True,
                 )
                 if (
-                    "runtime-object-join(" in affine_cfg_fresh
-                    and "call-result(" in affine_cfg_fresh
-                    and _eligible_retail_fresh_targetless_vptr(
-                        affine_cfg_fresh
+                    (
+                        "runtime-object-join(" in affine_cfg_fresh
+                        and "call-result(" in affine_cfg_fresh
+                        and _eligible_retail_fresh_targetless_vptr(
+                            affine_cfg_fresh
+                        )
+                    )
+                    or (
+                        allow_exact_this_member
+                        and _exact_this_member_vptr_storage(
+                            affine_cfg_fresh
+                        )
                     )
                 ):
                     cfg_fresh = affine_cfg_fresh
@@ -71177,6 +71211,10 @@ def _exact_targetless_vptr_call_proofs(
                 _eligible_retail_fresh_targetless_vptr(cfg_fresh)
                 or cfg_fresh == "load(this)"
                 or cfg_fresh == "load(indexed-load(this,eax*4+0xd8))"
+                or (
+                    allow_exact_this_member
+                    and _exact_this_member_vptr_storage(cfg_fresh)
+                )
                 or exact_stack_receiver
             ):
                 proof_by_index[call_index] = (
@@ -71212,6 +71250,41 @@ def _exact_targetless_vptr_call_proofs(
             -1,
         )
         if definition_index < 0:
+            continue
+        address_counts = Counter(
+            address for address in addresses if address is not None
+        )
+        instruction_index_by_address = {
+            int(address): index
+            for index, address in enumerate(addresses)
+            if address is not None and address_counts[address] == 1
+        }
+        caller_start_value = address_value(caller_start)
+        caller_end_value = (
+            address_value(caller_end_exclusive)
+            if caller_end_exclusive is not None
+            else max(
+                (
+                    address + max(1, len(instructions[index].bytes))
+                    for index, address in enumerate(addresses)
+                    if address is not None
+                ),
+                default=caller_start_value,
+            )
+        )
+        if not _exact_register_definition_set_covers_transfer(
+            instructions,
+            instruction_addresses=addresses,
+            instruction_index_by_address=instruction_index_by_address,
+            definition_indices=frozenset({definition_index}),
+            transfer_index=vptr_index,
+            register=receiver_register,
+            source=source,
+            caller_start=caller_start_value,
+            caller_end=caller_end_value,
+            local_control_flow_indices=local_control_flow_indices,
+            local_control_flow_targets=dict(local_control_flow_targets or {}),
+        ):
             continue
         definition = instructions[definition_index]
         move = _exact_register_move(definition)
@@ -71343,9 +71416,19 @@ def _exact_targetless_vptr_call_proofs(
                 allow_exact_affine_receiver_roots=True,
             )
             if (
-                "runtime-object-join(" in affine_cfg_fresh
-                and "call-result(" in affine_cfg_fresh
-                and _eligible_retail_fresh_targetless_vptr(affine_cfg_fresh)
+                (
+                    "runtime-object-join(" in affine_cfg_fresh
+                    and "call-result(" in affine_cfg_fresh
+                    and _eligible_retail_fresh_targetless_vptr(
+                        affine_cfg_fresh
+                    )
+                )
+                or (
+                    allow_exact_this_member
+                    and _exact_this_member_vptr_storage(
+                        affine_cfg_fresh
+                    )
+                )
             ):
                 proof_by_index[call_index] = affine_cfg_fresh
     # The finite AppFrame package validates the complete caller/call census and
@@ -87281,6 +87364,7 @@ def extract_invocation_contract(
                 direct_call_cleanup_by_instruction_index
             ),
             candidate_caller_definition=candidate_caller_definition,
+            allow_exact_this_member=(source == "cod"),
         )
     )
     if inbound_entry_roots:
@@ -88241,6 +88325,11 @@ def _normalize_call_contract_row(
         and isinstance(storage, str)
     ):
         canonical_storage = _canonical_address_root_affine_storage(storage)
+        exact_member_storage = _canonical_exact_this_member_vptr_storage(
+            canonical_storage
+        )
+        if exact_member_storage:
+            canonical_storage = exact_member_storage
         if _is_bounded_stack_vptr(canonical_storage):
             if (
                 "index-scale(" in canonical_storage
@@ -144098,6 +144187,23 @@ def _mission_current_artifact_direct_identity_contract(
             (0x77, IMAGE_REL_I386_REL32, "??1HudUiBackground@@UAE@XZ"),
             (0x83, IMAGE_REL_I386_DIR32, "__except_list"),
         )
+        implicit_back_body = bytes.fromhex(
+            "6aff680000000064a100000000506489250000000051568bf189742404c706000000008d8e58af0000c744241003000000"
+            "e8000000008d8ee4ab0000c644241002e8000000008d8e98aa0000c644241001e8000000008d8e4ca90000c644241000"
+            "e8000000008bcec7442410ffffffffe8000000008b4c24085e64890d0000000083c410c39090909090909090909090"
+        )
+        implicit_back_relocations = (
+            (0x03, IMAGE_REL_I386_DIR32, "$L88195"),
+            (0x09, IMAGE_REL_I386_DIR32, "__except_list"),
+            (0x11, IMAGE_REL_I386_DIR32, "__except_list"),
+            (0x1F, IMAGE_REL_I386_DIR32, "??_7HudUiNewGamePanel@@6B@"),
+            (0x32, IMAGE_REL_I386_REL32, "??1HudUiZrdWidgetEx17C@@UAE@XZ"),
+            (0x42, IMAGE_REL_I386_REL32, "??1HudUiNumericTextInput@@UAE@XZ"),
+            (0x52, IMAGE_REL_I386_REL32, "??1HudUiZrdWidget@@UAE@XZ"),
+            (0x62, IMAGE_REL_I386_REL32, "??1HudUiZrdWidget@@UAE@XZ"),
+            (0x71, IMAGE_REL_I386_REL32, "??1HudUiBackground@@UAE@XZ"),
+            (0x7D, IMAGE_REL_I386_DIR32, "__except_list"),
+        )
         invocation_indices = _candidate_static_invocation_indices(
             candidate,
             caller_start="0x0",
@@ -144123,6 +144229,13 @@ def _mission_current_artifact_direct_identity_contract(
                 0x90,
                 0x32,
                 (0x31, 0x41, 0x51, 0x67, 0x76),
+            ),
+            (
+                implicit_back_body,
+                implicit_back_relocations,
+                0x90,
+                0x32,
+                (0x31, 0x41, 0x51, 0x61, 0x70),
             ),
         )
         matched_profile = next(

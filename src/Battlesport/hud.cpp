@@ -15100,40 +15100,12 @@ inline int PlayerMenuSaveLoadBlocked(
 
 /**
  * Recovered original inline constructor: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the background
- * member with a HudUiBackground base subobject.
- * Purpose: Initialize the dialog background member.
- */
-inline HudUiMainMenuDialogBackground::HudUiMainMenuDialogBackground() : HudUiBackground() {
-}
-
-/**
- * Recovered original inline destructor: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the background
- * member without additional body work.
- * Purpose: Tear down the dialog background member.
- */
-inline HudUiMainMenuDialogBackground::~HudUiMainMenuDialogBackground() {
-}
-
-/**
- * Recovered original inline constructor: no standalone retail function.
  * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the credits
  * button member as a HudUiZrdWidget-derived subobject.
  * Purpose: Initialize the credits button member.
  */
 inline HudUiMainMenuDialog_CreditsButton::HudUiMainMenuDialog_CreditsButton() :
     HudUiZrdWidget() {
-}
-
-/**
- * Recovered original inline destructor: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the credits
- * button member through HudUiZrdWidget::DestructorCore.
- * Purpose: Tear down the credits button member.
- */
-inline HudUiMainMenuDialog_CreditsButton::~HudUiMainMenuDialog_CreditsButton() {
-    HudUiZrdWidget::DestructorCore();
 }
 
 /**
@@ -15146,32 +15118,12 @@ inline HudUiMainMenuDialog_SaveButton::HudUiMainMenuDialog_SaveButton() : HudUiZ
 }
 
 /**
- * Recovered original inline destructor: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the save
- * button member through HudUiZrdWidget::DestructorCore.
- * Purpose: Tear down the save button member.
- */
-inline HudUiMainMenuDialog_SaveButton::~HudUiMainMenuDialog_SaveButton() {
-    HudUiZrdWidget::DestructorCore();
-}
-
-/**
  * Recovered original inline constructor: no standalone retail function.
  * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the load
  * button member as a HudUiZrdWidget-derived subobject.
  * Purpose: Initialize the load button member.
  */
 inline HudUiMainMenuDialog_LoadButton::HudUiMainMenuDialog_LoadButton() : HudUiZrdWidget() {
-}
-
-/**
- * Recovered original inline destructor: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the load
- * button member through HudUiZrdWidget::DestructorCore.
- * Purpose: Tear down the load button member.
- */
-inline HudUiMainMenuDialog_LoadButton::~HudUiMainMenuDialog_LoadButton() {
-    HudUiZrdWidget::DestructorCore();
 }
 
 /**
@@ -15185,16 +15137,6 @@ inline HudUiMainMenuDialog_NewGameButton::HudUiMainMenuDialog_NewGameButton() :
 }
 
 /**
- * Recovered original inline destructor: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the new-game
- * button member through HudUiZrdWidget::DestructorCore.
- * Purpose: Tear down the new-game button member.
- */
-inline HudUiMainMenuDialog_NewGameButton::~HudUiMainMenuDialog_NewGameButton() {
-    HudUiZrdWidget::DestructorCore();
-}
-
-/**
  * Recovered original inline constructor: no standalone retail function.
  * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the options
  * button member as a HudUiZrdWidget-derived subobject.
@@ -15202,16 +15144,6 @@ inline HudUiMainMenuDialog_NewGameButton::~HudUiMainMenuDialog_NewGameButton() {
  */
 inline HudUiMainMenuDialog_OptionsButton::HudUiMainMenuDialog_OptionsButton() :
     HudUiZrdWidget() {
-}
-
-/**
- * Recovered original inline destructor: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the options
- * button member through HudUiZrdWidget::DestructorCore.
- * Purpose: Tear down the options button member.
- */
-inline HudUiMainMenuDialog_OptionsButton::~HudUiMainMenuDialog_OptionsButton() {
-    HudUiZrdWidget::DestructorCore();
 }
 
 /**
@@ -15224,16 +15156,6 @@ inline HudUiMainMenuDialog_QuitButton::HudUiMainMenuDialog_QuitButton() : HudUiZ
 }
 
 /**
- * Recovered original inline destructor: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the quit
- * button member through HudUiZrdWidget::DestructorCore.
- * Purpose: Tear down the quit button member.
- */
-inline HudUiMainMenuDialog_QuitButton::~HudUiMainMenuDialog_QuitButton() {
-    HudUiZrdWidget::DestructorCore();
-}
-
-/**
  * Recovered original inline constructor: no standalone retail function.
  * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the controls
  * button member as a HudUiZrdWidget-derived subobject.
@@ -15241,16 +15163,6 @@ inline HudUiMainMenuDialog_QuitButton::~HudUiMainMenuDialog_QuitButton() {
  */
 inline HudUiMainMenuDialog_ControlsButton::HudUiMainMenuDialog_ControlsButton() :
     HudUiZrdWidget() {
-}
-
-/**
- * Recovered original inline destructor: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the controls
- * button member through HudUiZrdWidget::DestructorCore.
- * Purpose: Tear down the controls button member.
- */
-inline HudUiMainMenuDialog_ControlsButton::~HudUiMainMenuDialog_ControlsButton() {
-    HudUiZrdWidget::DestructorCore();
 }
 
 /**
@@ -15364,81 +15276,79 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
                 "MAINMENU3",
                 0
             );
-            if (loadedSection == 0) {
-                return;
+            if (loadedSection != 0) {
+                BindWidgetByName(
+                    loadedSection,
+                    &newGameButton,
+                    "NEWGAME"
+                );
+                BindWidgetByName(
+                    loadedSection,
+                    loadButton,
+                    "LOADGAME"
+                );
+                BindWidgetByName(
+                    loadedSection,
+                    quitButtonPtr,
+                    "QUIT"
+                );
+                FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
             }
-            BindWidgetByName(
-                loadedSection,
-                &newGameButton,
-                "NEWGAME"
-            );
-            BindWidgetByName(
-                loadedSection,
-                loadButton,
-                "LOADGAME"
-            );
-            BindWidgetByName(
-                loadedSection,
-                quitButtonPtr,
-                "QUIT"
-            );
-            FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
         } else {
             loadedSection = LoadFromZrd(
                 "dialog.zrd",
                 "MAINMENU1",
                 0
             );
-            if (loadedSection == 0) {
-                return;
+            if (loadedSection != 0) {
+                BindWidgetByName(
+                    loadedSection,
+                    &newGameButton,
+                    "NEWGAME"
+                );
+                BindWidgetByName(
+                    loadedSection,
+                    saveButton,
+                    "SAVEGAME"
+                );
+                BindWidgetByName(
+                    loadedSection,
+                    loadButton,
+                    "LOADGAME"
+                );
+                BindWidgetByName(
+                    loadedSection,
+                    &optionsButton,
+                    "OPTIONS"
+                );
+                BindWidgetByName(
+                    loadedSection,
+                    &controlsButton,
+                    "CONTROLS"
+                );
+                BindWidgetByName(
+                    loadedSection,
+                    &creditsButton,
+                    "CREDITS"
+                );
+                BindWidgetByName(
+                    loadedSection,
+                    &backButton,
+                    "BACK"
+                );
+                BindWidgetByName(
+                    loadedSection,
+                    quitButtonPtr,
+                    "QUIT"
+                );
+                FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
             }
-            BindWidgetByName(
-                loadedSection,
-                &newGameButton,
-                "NEWGAME"
-            );
-            BindWidgetByName(
-                loadedSection,
-                saveButton,
-                "SAVEGAME"
-            );
-            BindWidgetByName(
-                loadedSection,
-                loadButton,
-                "LOADGAME"
-            );
-            BindWidgetByName(
-                loadedSection,
-                &optionsButton,
-                "OPTIONS"
-            );
-            BindWidgetByName(
-                loadedSection,
-                &controlsButton,
-                "CONTROLS"
-            );
-            BindWidgetByName(
-                loadedSection,
-                &creditsButton,
-                "CREDITS"
-            );
-            BindWidgetByName(
-                loadedSection,
-                &backButton,
-                "BACK"
-            );
-            BindWidgetByName(
-                loadedSection,
-                quitButtonPtr,
-                "QUIT"
-            );
-            FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
         }
 
         saveButton->modeOrEnabled = CanSaveGame();
         saveButton->RefreshState();
         loadButton->modeOrEnabled = CanLoadGame();
-        ((HudUiZrdWidget *)loadedSection)->RefreshState();
+        loadButton->RefreshState();
         return;
     }
 
@@ -15447,43 +15357,42 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
         "MAINMENU0",
         0
     );
-    if (frontEndSection == 0) {
-        return;
+    if (frontEndSection != 0) {
+        BindWidgetByName(
+            frontEndSection,
+            &newGameButton,
+            "NEWGAME"
+        );
+        BindWidgetByName(
+            frontEndSection,
+            loadButton,
+            "LOADGAME"
+        );
+        BindWidgetByName(
+            frontEndSection,
+            &optionsButton,
+            "OPTIONS"
+        );
+        BindWidgetByName(
+            frontEndSection,
+            &controlsButton,
+            "CONTROLS"
+        );
+        BindWidgetByName(
+            frontEndSection,
+            &creditsButton,
+            "CREDITS"
+        );
+        BindWidgetByName(
+            frontEndSection,
+            quitButtonPtr,
+            "QUIT"
+        );
+        FreeLoadedTreeRoots((int)(unsigned int)frontEndSection);
     }
-    BindWidgetByName(
-        frontEndSection,
-        &newGameButton,
-        "NEWGAME"
-    );
-    BindWidgetByName(
-        frontEndSection,
-        loadButton,
-        "LOADGAME"
-    );
-    BindWidgetByName(
-        frontEndSection,
-        &optionsButton,
-        "OPTIONS"
-    );
-    BindWidgetByName(
-        frontEndSection,
-        &controlsButton,
-        "CONTROLS"
-    );
-    BindWidgetByName(
-        frontEndSection,
-        &creditsButton,
-        "CREDITS"
-    );
-    BindWidgetByName(
-        frontEndSection,
-        quitButtonPtr,
-        "QUIT"
-    );
-    FreeLoadedTreeRoots((int)(unsigned int)frontEndSection);
 
     loadButton->modeOrEnabled = CanLoadGame();
-    ((HudUiZrdWidget *)frontEndSection)->RefreshState();
+    loadButton->RefreshState();
 }
 
 /**
@@ -15566,13 +15475,6 @@ void HudUiMainMenuDialog_ControlsButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduimainmenudialog-destructor-huduimainmenudialog
- * @recoil-artifact defines .text recoil:function:0x415040: HudUiMainMenuDialog::~HudUiMainMenuDialog.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
- * Purpose: Provide the owner-level destructor body for member teardown.
- */
-HudUiMainMenuDialog::~HudUiMainMenuDialog() {}
 #include "Battlesport/recoil_state_dialog_host.h"
 
 #include "GameZRecoil/zTime/time.h"
