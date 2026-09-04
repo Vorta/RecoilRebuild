@@ -96,15 +96,8 @@ extern RecoilStateMainMenuTransitionStorage g_RecoilState_MainMenuTransition;
 #define g_RecoilState_MainMenuTransition \
     (*(RecoilStateMainMenuTransition *)&g_RecoilState_MainMenuTransition)
 
-struct HudUiMainMenuDialogBackground : HudUiBackground {
-    HudUiMainMenuDialogBackground();
-    ~HudUiMainMenuDialogBackground();
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiMainMenuDialogBackground) == sizeof(HudUiBackground));
-
 struct HudUiMainMenuDialog_CreditsButton : HudUiZrdWidget {
     HudUiMainMenuDialog_CreditsButton();
-    ~HudUiMainMenuDialog_CreditsButton();
     void OnActivate();
 };
 
@@ -119,61 +112,47 @@ struct HudUiMenuBackButton : HudUiZrdWidget {
     HudUiMenuBackButton() : HudUiZrdWidget() {
     }
 
-    /**
-     * Restores the original-source inline menu back-button destructor. No
-     * standalone retail function exists; observed through owner destructor
-     * paths that tear down the shared HudUiZrdWidget base.
-     * Purpose: keep shared back-button cleanup on the typed button member.
-     */
-    ~HudUiMenuBackButton() {
-    }
-
     void OnActivate();
 };
 
 struct HudUiMainMenuDialog_SaveButton : HudUiZrdWidget {
     HudUiMainMenuDialog_SaveButton();
-    ~HudUiMainMenuDialog_SaveButton();
     void OnActivate();
 };
 
 struct HudUiMainMenuDialog_LoadButton : HudUiZrdWidget {
     HudUiMainMenuDialog_LoadButton();
-    ~HudUiMainMenuDialog_LoadButton();
     void OnActivate();
 };
 
 struct HudUiMainMenuDialog_NewGameButton : HudUiZrdWidget {
     HudUiMainMenuDialog_NewGameButton();
-    ~HudUiMainMenuDialog_NewGameButton();
     void OnActivate();
 };
 
 struct HudUiMainMenuDialog_OptionsButton : HudUiZrdWidget {
     HudUiMainMenuDialog_OptionsButton();
-    ~HudUiMainMenuDialog_OptionsButton();
     void OnActivate();
 };
 
 struct HudUiMainMenuDialog_QuitButton : HudUiZrdWidget {
     HudUiMainMenuDialog_QuitButton();
-    ~HudUiMainMenuDialog_QuitButton();
     void OnActivate();
 };
 
 struct HudUiMainMenuDialog_ControlsButton : HudUiZrdWidget {
     HudUiMainMenuDialog_ControlsButton();
-    ~HudUiMainMenuDialog_ControlsButton();
     void OnActivate();
 };
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoil-state-main-menu-transition.hud-ui-main-menu-dialog.type
  * @recoil-artifact emits .text recoil:function:0x415020: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * @recoil-artifact emits .text recoil:function:0x415040: VC5 compiler-generated implicit cleanup for the complete main-menu dialog type; not an authored body.
  * Purpose: Defines the main-menu dialog whose ordinary virtual lifetime causes
- * VC5 to emit the deleting-destructor contribution.
+ * VC5 to emit its deleting destructor and complete-object cleanup.
  */
-class HudUiMainMenuDialog : public HudUiMainMenuDialogBackground {
+class HudUiMainMenuDialog : public HudUiBackground {
   public:
     HudUiMainMenuDialog_CreditsButton creditsButton;
     HudUiMenuBackButton backButton;
@@ -185,7 +164,6 @@ class HudUiMainMenuDialog : public HudUiMainMenuDialogBackground {
     HudUiMainMenuDialog_ControlsButton controlsButton;
 
     HudUiMainMenuDialog(RecoilMainMenuEntryRoute route);
-    ~HudUiMainMenuDialog();
 
     static int CanLoadGame();
     static int CanSaveGame();
