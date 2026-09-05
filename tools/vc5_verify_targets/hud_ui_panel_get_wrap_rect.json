@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x4ba400",
-      "symbol": "?GetWrapRect@HudUiPanel@@QAEPAUHudUiRect@@XZ",
+      "symbol": "?GetBoundsRectOrNull@HudUiPanel@@UAEPAUHudUiRect@@XZ",
       "name": "HudUiPanel::GetWrapRect"
     }
   ]

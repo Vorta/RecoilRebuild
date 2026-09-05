@@ -44,7 +44,7 @@
     },
     {
       "address": "0x419870",
-      "symbol": "?Destructor@HudUiMpExitDialog@@QAEXXZ",
+      "symbol": "??1HudUiMpExitDialog@@UAE@XZ",
       "name": "HudUiMpExitDialog::Destructor"
     }
   ],

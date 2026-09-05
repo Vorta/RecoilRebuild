@@ -1,6 +1,6 @@
 {
   "name": "briefing_runtime_update",
-  "description": "HudUiBriefingRuntime::Update action queue and sub-widget invalidation.",
+  "description": "HudUiBriefingRuntime::UpdateAll virtual action queue update and sub-widget invalidation.",
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "source_filename": "Briefing.cpp",
   "source_from": "src/Battlesport/Briefing.cpp",
@@ -21,8 +21,8 @@
   "functions": [
     {
       "address": "0x404070",
-      "symbol": "?Update@HudUiBriefingRuntime@@QAEXM@Z",
-      "name": "HudUiBriefingRuntime::Update"
+      "symbol": "?UpdateAll@HudUiBriefingRuntime@@UAEXM@Z",
+      "name": "HudUiBriefingRuntime::UpdateAll"
     }
   ]
 }

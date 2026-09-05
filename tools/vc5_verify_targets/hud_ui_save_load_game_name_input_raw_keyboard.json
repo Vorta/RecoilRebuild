@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x4348f0",
-      "symbol": "?OnRawKeyboardEvent@HudUiSaveLoadGameNameInput@@QAEHH@Z",
+      "symbol": "?OnRawKeyboardChar@HudUiSaveLoadGameNameInput@@UAEHH@Z",
       "name": "HudUiSaveLoadGameNameInput::OnRawKeyboardEvent"
     }
   ]

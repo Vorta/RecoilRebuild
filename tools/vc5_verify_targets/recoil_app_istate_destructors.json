@@ -1,6 +1,6 @@
 {
   "name": "recoil_app_istate_destructors",
-  "description": "Production-profile structural pair diagnostic for the RecoilApp_IState authored base destructor and compiler-generated scalar deleting wrapper. The two actual production translation units are compiled directly: hud.cpp provides an early authored census sentinel, while RecoilApp.cpp must provide the plain IState destructor and its scalar wrapper. The complete raw populations remain diagnostic and are reviewed for zero IState plain/scalar/vector definitions in hud.obj. This target proves no source-owner gate, physical-block acceptance, tier, bytes, linked RVA/seam, full order, PE/resources, or final equivalence.",
+  "description": "Production-profile structural diagnostic for the authored app-state complete-destructor fold and deleting-wrapper contribution. The physical 0x42df90 row retains one authored gate and uses the reviewed MainMenuPrep logical object witness, without claiming an original linker winner. Full linked order and bytes are separate.",
   "target_binary": "recoil",
   "source_filename": "RecoilApp.cpp",
   "source_from": "src/Battlesport/RecoilApp.cpp",
@@ -32,10 +32,10 @@
       "functions": [
         {
           "address": "0x42df90",
-          "symbol": "??1RecoilApp_IState@@UAE@XZ",
-          "name": "RecoilApp_IState::~RecoilApp_IState",
-          "pipeline_class": "authored-lifecycle",
-          "authored_order_role": "authored-lifecycle-body",
+          "symbol": "??1RecoilApp_MainMenuPrepState@@UAE@XZ",
+          "name": "App-state complete destructor fold (MainMenuPrep object witness; retail winner unknown)",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body",
           "required_presence": true,
           "full_order_gate": true
         },

@@ -1869,9 +1869,10 @@ void WestwoodOnlineUpgradeDialog::OnDestroy() {
 }
 
 /**
- * Purpose: submit visible session requests with pending status text.
+ * Purpose: submit visible session requests with pending status text from the
+ * CDialog OnOK override (retail dialog table slot +0xcc at 0x4d1c84).
  */
-void WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText() {
+void WestwoodOnlineUpgradeDialog::OnOK() {
     if (g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] == '\0') {
         return;
     }

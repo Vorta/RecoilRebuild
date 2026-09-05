@@ -74,9 +74,14 @@ int g_zTurret_CallbackIterIndex = 0;
  * Data owner: zTurret writable runtime globals.
  * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-runtimelist
  * @recoil-artifact defines .data recoil:data:0x4f3fe8: g_zTurret_RuntimeList.
- * Purpose: Stores the nine turret runtime pointers allocated from loaded definitions.
+ * Purpose: Stores turret runtime pointers allocated from loaded definitions.
+ * Experimental capacity: the nine-entry reconstruction overflowed with 22
+ * loaded turrets. Retail uses this base and a later scalar at 0x4f41ec, but
+ * the intervening extent is unresolved (128 pointers plus an unknown word
+ * versus 129 pointers). This 128-entry play-test buffer is not an accepted
+ * original array extent.
  */
-zTurret_Runtime *g_zTurret_RuntimeList[9] = {0};
+zTurret_Runtime *g_zTurret_RuntimeList[128] = {0};
 }
 
 namespace {

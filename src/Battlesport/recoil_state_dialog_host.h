@@ -7,7 +7,7 @@
 
 struct HudUiContainer;
 
-struct RECOIL_NOVTABLE RecoilStateDialogHost {
+struct RECOIL_NOVTABLE RecoilStateDialogHost : RecoilApp_IState {
     /**
      * Original helper evidence: no standalone retail function is assigned to
      * this inline dialog-host destructor declaration in the credits order slice.

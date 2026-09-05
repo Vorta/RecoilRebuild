@@ -19,12 +19,18 @@
       "functions": [
         {
           "address": "0x438000",
-          "symbol": "?ClearGlobalState@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+          "symbol": "_$E1",
           "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState",
-          "pipeline_class": "authored",
-          "authored_order_role": "authored-body",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-thunk",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "emission_anchor": {
+            "path": "src/GameZRecoil/zClass/Object3d.c",
+            "kind": "data-definition",
+            "name": "g_ModelRefLerpQueueState"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x438020",
@@ -74,12 +80,18 @@
       "functions": [
         {
           "address": "0x438000",
-          "symbol": "?ClearGlobalState@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
+          "symbol": "_$E1",
           "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState",
-          "pipeline_class": "authored",
-          "authored_order_role": "authored-body",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-thunk",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "emission_anchor": {
+            "path": "src/GameZRecoil/zClass/Object3d.c",
+            "kind": "data-definition",
+            "name": "g_ModelRefLerpQueueState"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x438020",

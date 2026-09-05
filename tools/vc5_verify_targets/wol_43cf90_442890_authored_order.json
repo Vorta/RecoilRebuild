@@ -177,7 +177,7 @@
         },
         {
           "address": "0x43e1c0",
-          "symbol": "?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "symbol": "?OnOK@WestwoodOnlineUpgradeDialog@@UAEXXZ",
           "name": "WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -1206,7 +1206,7 @@
         },
         {
           "address": "0x43e1c0",
-          "symbol": "?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+          "symbol": "?OnOK@WestwoodOnlineUpgradeDialog@@UAEXXZ",
           "name": "WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",

@@ -97,6 +97,7 @@ from _recoil.lib.call_contract_generations import (
 from _recoil.commands.source_trace_progress import normalize_source_traceability
 from _recoil.lib.authored_icf import (
     AUTHORED_ICF_GROUP_MODEL,
+    AUTHORED_ICF_LIFECYCLE_SOURCE_MODEL,
     AUTHORED_ICF_MEMBER_GATE_MODE,
     audit_authored_icf_groups,
     validate_authored_icf_proof,
@@ -523,7 +524,7 @@ def _parser() -> argparse.ArgumentParser:
     symbol_alias_payload.add_argument(
         "--payload-json",
         help=(
-            "One recoil-logical-alias-group-v1, v2, v3, or v4 object containing an exact "
+            "One recoil-logical-alias-group-v1, v2, v3, v4, or v5 object containing an exact "
             "physical function row/current-state snapshot and either one selected "
             "winner plus proven authored fold aliases, or a winner-unknown group "
             "containing only proven authored fold aliases. V2 atomically creates one "
@@ -539,7 +540,7 @@ def _parser() -> argparse.ArgumentParser:
         "--payload-file",
         type=Path,
         help=(
-            "Path under workspace build/ to the same UTF-8 v1, v2, v3, or v4 JSON "
+            "Path under workspace build/ to the same UTF-8 v1, v2, v3, v4, or v5 JSON "
             "object; use this for reviewed logical-alias payloads that exceed the "
             "Windows command-line limit."
         ),
@@ -3862,6 +3863,10 @@ def replay_live_call_contract(
         f"{'PASS' if phase_result.get('passed') else 'DIVERGED'} "
         f"targets={len(phase_result.get('attempted_target_ids', []))}"
     )
+    if phase_result.get("first_divergence") is not None:
+        emit("call-contract replay FIRST DIVERGENCE " + json.dumps(
+            phase_result["first_divergence"], ensure_ascii=False, sort_keys=True,
+        ))
 
     proof_session = {
         **base_proof_session,
@@ -3881,6 +3886,9 @@ def replay_live_call_contract(
             phase_result.get("candidate_cod_index", {})
         ),
         "timings_ms": deepcopy(phase_result.get("timings_ms", {})),
+        # Diagnostic-only: expose later failures from this same fresh proof so
+        # a shared verifier defect can be diagnosed without another blind replay.
+        "caller_divergences": deepcopy(phase_result.get("caller_divergences", [])),
     }
 
     slice_results: list[dict[str, Any]] = []
@@ -5559,6 +5567,7 @@ _LOGICAL_ALIAS_GROUP_SCHEMA_V1 = "recoil-logical-alias-group-v1"
 _LOGICAL_ALIAS_GROUP_SCHEMA_V2 = "recoil-logical-alias-group-v2"
 _LOGICAL_ALIAS_GROUP_SCHEMA_V3 = "recoil-logical-alias-group-v3"
 _LOGICAL_ALIAS_GROUP_SCHEMA_V4 = "recoil-logical-alias-group-v4"
+_LOGICAL_ALIAS_GROUP_SCHEMA_V5 = "recoil-logical-alias-group-v5"
 _LOGICAL_ALIAS_GROUP_FIELDS = {
     "schema",
     "reviewed",
@@ -5977,7 +5986,7 @@ def _parse_logical_alias_group_payload(
         expected_fields = _LOGICAL_ALIAS_GROUP_V2_FIELDS
     elif schema == _LOGICAL_ALIAS_GROUP_SCHEMA_V3:
         expected_fields = _LOGICAL_ALIAS_GROUP_V3_FIELDS
-    elif schema == _LOGICAL_ALIAS_GROUP_SCHEMA_V4:
+    elif schema in {_LOGICAL_ALIAS_GROUP_SCHEMA_V4, _LOGICAL_ALIAS_GROUP_SCHEMA_V5}:
         expected_fields = _LOGICAL_ALIAS_GROUP_V4_FIELDS
     else:
         raise ProgressError(
@@ -5985,7 +5994,7 @@ def _parse_logical_alias_group_payload(
             f"{_LOGICAL_ALIAS_GROUP_SCHEMA_V1!r}, "
             f"{_LOGICAL_ALIAS_GROUP_SCHEMA_V2!r}, or "
             f"{_LOGICAL_ALIAS_GROUP_SCHEMA_V3!r}, or "
-            f"{_LOGICAL_ALIAS_GROUP_SCHEMA_V4!r}"
+            f"{_LOGICAL_ALIAS_GROUP_SCHEMA_V4!r}, or {_LOGICAL_ALIAS_GROUP_SCHEMA_V5!r}"
         )
     payload = _require_exact_payload_fields(
         raw_payload,
@@ -5994,7 +6003,8 @@ def _parse_logical_alias_group_payload(
     )
     is_v2 = schema == _LOGICAL_ALIAS_GROUP_SCHEMA_V2
     is_v3 = schema == _LOGICAL_ALIAS_GROUP_SCHEMA_V3
-    is_v4 = schema == _LOGICAL_ALIAS_GROUP_SCHEMA_V4
+    is_v5 = schema == _LOGICAL_ALIAS_GROUP_SCHEMA_V5
+    is_v4 = schema in {_LOGICAL_ALIAS_GROUP_SCHEMA_V4, _LOGICAL_ALIAS_GROUP_SCHEMA_V5}
     if payload["reviewed"] is not True:
         raise ProgressError(
             "logical alias group payload requires reviewed=true"
@@ -6044,7 +6054,7 @@ def _parse_logical_alias_group_payload(
     if is_v4:
         group = _require_v2_generated_evidence_field(
             payload["icf_address_group"],
-            required_fields=_ICF_ADDRESS_GROUP_V4_REQUIRED_FIELDS,
+            required_fields=_ICF_ADDRESS_GROUP_V4_REQUIRED_FIELDS | ({"source_model"} if is_v5 else set()),
             label="logical alias group payload.icf_address_group",
         )
     elif is_v2:
@@ -6092,6 +6102,8 @@ def _parse_logical_alias_group_payload(
                 "physical mutation target"
             )
     payload["icf_address_group"] = group
+    if is_v5 and group.get("source_model") != AUTHORED_ICF_LIFECYCLE_SOURCE_MODEL:
+        raise ProgressError("logical alias group v5 requires the governed header-lifecycle source model")
 
     raw_aliases = payload["logical_aliases"]
     if not isinstance(raw_aliases, Mapping) or len(raw_aliases) < 2:
@@ -6116,7 +6128,7 @@ def _parse_logical_alias_group_payload(
         if is_v4:
             alias = _require_v2_generated_evidence_field(
                 raw_alias,
-                required_fields=_LOGICAL_ALIAS_V4_REQUIRED_FIELDS,
+                required_fields=_LOGICAL_ALIAS_V4_REQUIRED_FIELDS | ({"source_generation"} if is_v5 else set()),
                 label=f"logical alias {raw_identity_key!r}",
             )
         elif is_v2:
@@ -6212,10 +6224,14 @@ def _parse_logical_alias_group_payload(
                 raise ProgressError(
                     f"logical alias {raw_identity_key!r} has invalid source_traceability: {exc}"
                 ) from exc
+            required_relation = (
+                "emits" if is_v5 and isinstance(alias.get("source_generation"), Mapping)
+                and alias["source_generation"].get("kind") == "implicit-destructor" else "defines"
+            )
             defining_edges = [
                 edge
                 for edge in source_trace["source_edges"]
-                if edge["relation"] == "defines"
+                if edge["relation"] == required_relation
             ]
             if source_trace["state"] != "resolved" or len(defining_edges) != 1:
                 raise ProgressError(
@@ -6270,7 +6286,7 @@ def _parse_logical_alias_group_payload(
         )
     if is_v4:
         owner_ids = [str(alias["owner_id"]) for alias in aliases.values()]
-        if len(owner_ids) != len(set(owner_ids)):
+        if not is_v5 and len(owner_ids) != len(set(owner_ids)):
             raise ProgressError(
                 "logical alias group v4 requires one exclusive authored owner per logical member"
             )
@@ -6512,7 +6528,7 @@ def _set_symbol_logical_alias_group(
             f"expected {json.dumps(current, sort_keys=True)}, "
             f"found {json.dumps(current_actual, sort_keys=True)}"
         )
-    is_v4 = payload["schema"] == _LOGICAL_ALIAS_GROUP_SCHEMA_V4
+    is_v4 = payload["schema"] in {_LOGICAL_ALIAS_GROUP_SCHEMA_V4, _LOGICAL_ALIAS_GROUP_SCHEMA_V5}
     if is_v4:
         physical_classification = (
             current_actual["pipeline_class"],
@@ -6619,7 +6635,7 @@ def _set_symbol_logical_alias_group(
             )
         if physical_primary_owners[0] not in owner_ids:
             raise ProgressError(
-                "logical alias group v4 physical primary owner must own exactly one "
+                "logical alias group physical primary owner must own a "
                 "logical member"
             )
         validate_authored_icf_source_mirrors(payload["logical_aliases"])

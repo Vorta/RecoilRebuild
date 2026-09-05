@@ -1,6 +1,6 @@
 {
   "name": "zturret_runtime_globals",
-  "description": "zTurret writable runtime callback, definition, iteration, runtime-list, and napalm destroy-animation globals.",
+  "description": "zTurret writable runtime callback, definition, iteration, and napalm destroy-animation globals. Runtime-list base 0x4f3fe8 is deliberately not an exact-extent data selection: the former 36-byte extent is disproven by a 22-turret crash dump; 128 pointers plus an unidentified word versus 129 pointers remains unresolved. The experimental source capacity accepts no retail data extent.",
   "source_filename": "zTurret.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -56,13 +56,6 @@
       "name": "g_zTurret_CallbackIterIndex",
       "bn_name": "g_zTurret_CallbackIterIndex",
       "byte_length": 4
-    },
-    {
-      "address": "0x4f3fe8",
-      "symbol": "_g_zTurret_RuntimeList",
-      "name": "g_zTurret_RuntimeList",
-      "bn_name": "g_zTurret_RuntimeList",
-      "byte_length": 36
     },
     {
       "address": "0x4f41ec",

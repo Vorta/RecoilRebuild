@@ -482,7 +482,7 @@
           "name": "HudUiMpExitDialog::Destructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@HudUiMpExitDialog@@QAEXXZ"
+          "symbol": "??1HudUiMpExitDialog@@UAE@XZ"
         },
         {
           "address": "0x4198d0",
@@ -536,7 +536,7 @@
           "name": "HudUiNumericTextInput::Constructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Constructor@HudUiNumericTextInput@@QAEPAU1@I@Z"
+          "symbol": "??0HudUiNetGameSetupTextInput@@QAE@I@Z"
         },
         {
           "address": "0x41a200",
@@ -965,7 +965,7 @@
           "name": "HudUiNetExitPanel_ResumeWidget::OnShowPreview",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnShowPreview@HudUiNetExitPanel_ResumeWidget@@QAEXXZ"
+          "symbol": "?ShowPreview@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41bfa0",
@@ -974,7 +974,7 @@
           "name": "HudUiNetExitPanel_ResumeWidget::OnHidePreview",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnHidePreview@HudUiNetExitPanel_ResumeWidget@@QAEXXZ"
+          "symbol": "?HidePreview@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41c000",
@@ -1104,21 +1104,33 @@
         },
         {
           "address": "0x41c5e0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
           "name": "HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?StaticInitAndRegisterAtExit@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+          "symbol": "_$E211",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNewGamePanelOverlayOwner"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c5f0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
           "name": "HudUiNewGamePanelOverlayOwner::StaticInit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?StaticInit@HudUiNewGamePanelOverlayOwner@@SAPAU1@XZ"
+          "symbol": "_$E208",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNewGamePanelOverlayOwner"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c630",
@@ -1131,21 +1143,33 @@
         },
         {
           "address": "0x41c6a0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
           "name": "HudUiNewGamePanelOverlayOwner::RegisterAtExit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterAtExit@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+          "symbol": "_$E210",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNewGamePanelOverlayOwner"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c6b0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
           "name": "HudUiNewGamePanelOverlayOwner::AtExitDestructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?AtExitDestructor@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+          "symbol": "_$E209",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNewGamePanelOverlayOwner"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c6c0",
@@ -1722,7 +1746,7 @@
           "name": "HudUiMpExitDialog::Destructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@HudUiMpExitDialog@@QAEXXZ"
+          "symbol": "??1HudUiMpExitDialog@@UAE@XZ"
         },
         {
           "address": "0x4198d0",
@@ -1776,7 +1800,7 @@
           "name": "HudUiNumericTextInput::Constructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Constructor@HudUiNumericTextInput@@QAEPAU1@I@Z"
+          "symbol": "??0HudUiNetGameSetupTextInput@@QAE@I@Z"
         },
         {
           "address": "0x41a200",
@@ -2205,7 +2229,7 @@
           "name": "HudUiNetExitPanel_ResumeWidget::OnShowPreview",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnShowPreview@HudUiNetExitPanel_ResumeWidget@@QAEXXZ"
+          "symbol": "?ShowPreview@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41bfa0",
@@ -2214,7 +2238,7 @@
           "name": "HudUiNetExitPanel_ResumeWidget::OnHidePreview",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnHidePreview@HudUiNetExitPanel_ResumeWidget@@QAEXXZ"
+          "symbol": "?HidePreview@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41c000",
@@ -2344,21 +2368,33 @@
         },
         {
           "address": "0x41c5e0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
           "name": "HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?StaticInitAndRegisterAtExit@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+          "symbol": "_$E211",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNewGamePanelOverlayOwner"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c5f0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
           "name": "HudUiNewGamePanelOverlayOwner::StaticInit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?StaticInit@HudUiNewGamePanelOverlayOwner@@SAPAU1@XZ"
+          "symbol": "_$E208",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNewGamePanelOverlayOwner"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c630",
@@ -2371,21 +2407,33 @@
         },
         {
           "address": "0x41c6a0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
           "name": "HudUiNewGamePanelOverlayOwner::RegisterAtExit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterAtExit@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+          "symbol": "_$E210",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNewGamePanelOverlayOwner"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c6b0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
           "name": "HudUiNewGamePanelOverlayOwner::AtExitDestructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?AtExitDestructor@HudUiNewGamePanelOverlayOwner@@SAXXZ"
+          "symbol": "_$E209",
+          "emission_anchor": {
+            "path": "src/Battlesport/mission.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiNewGamePanelOverlayOwner"
+          },
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c6c0",

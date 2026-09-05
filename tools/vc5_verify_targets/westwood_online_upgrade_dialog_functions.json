@@ -93,7 +93,7 @@
     },
     {
       "address": "0x43e1c0",
-      "symbol": "?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ",
+      "symbol": "?OnOK@WestwoodOnlineUpgradeDialog@@UAEXXZ",
       "name": "WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText"
     },
     {

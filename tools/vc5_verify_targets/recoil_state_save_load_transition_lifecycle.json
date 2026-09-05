@@ -1,20 +1,29 @@
 {
   "name": "recoil_state_save_load_transition_lifecycle",
   "description": "RecoilStateSaveLoadTransition static-init and destructor lifecycle helpers.",
-  "source_filename": "RecoilApp_Late.cpp",
-  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_filename": "RecoilApp.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "source_from": "src/Battlesport/RecoilApp.cpp",
-  "include_dirs": [
-    "src",
-    "tools/_recoil/compat/include",
-    "src/Battlesport",
-    "src/GameZRecoil/zSound",
-    "src/GameZRecoil/include",
-    "support/sdk/DirectX6/include",
-    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
-  ],
   "source_files": [
     "src/Battlesport/RecoilApp.cpp"
+  ],
+  "check_translation_unit_function_order": true,
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/RecoilApp.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x435ca0",
+          "symbol": "??_GRecoilStateSaveLoadTransition@@UAEPAXI@Z",
+          "name": "RecoilStateSaveLoadTransition compiler-generated deleting destructor",
+          "pipeline_class": "authored-lifecycle",
+          "authored_order_role": "compiler-generated-deleting-variant",
+          "required_presence": true,
+          "full_order_gate": true
+        }
+      ]
+    }
   ],
   "functions": [
     {
@@ -24,7 +33,7 @@
     },
     {
       "address": "0x435a40",
-      "symbol": "?StaticInit@RecoilStateSaveLoadTransition@@SAPAU1@XZ",
+      "symbol": "?StaticInit@RecoilStateSaveLoadTransition@@SAXXZ",
       "name": "RecoilStateSaveLoadTransition::StaticInit"
     },
     {
@@ -39,13 +48,22 @@
     },
     {
       "address": "0x435c80",
-      "symbol": "?Constructor@RecoilStateSaveLoadTransition@@QAEPAU1@XZ",
-      "name": "RecoilStateSaveLoadTransition::Constructor"
+      "symbol": "??0RecoilStateSaveLoadTransition@@QAE@XZ",
+      "name": "RecoilStateSaveLoadTransition::RecoilStateSaveLoadTransition"
+    },
+    {
+      "address": "0x435ca0",
+      "symbol": "??_GRecoilStateSaveLoadTransition@@UAEPAXI@Z",
+      "name": "RecoilStateSaveLoadTransition compiler-generated deleting destructor",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-deleting-variant",
+      "required_presence": true,
+      "full_order_gate": true
     },
     {
       "address": "0x435cc0",
-      "symbol": "?Destructor@RecoilStateSaveLoadTransition@@QAEXXZ",
-      "name": "RecoilStateSaveLoadTransition::Destructor"
+      "symbol": "??1RecoilStateSaveLoadTransition@@UAE@XZ",
+      "name": "RecoilStateSaveLoadTransition::~RecoilStateSaveLoadTransition"
     }
   ]
 }

@@ -1076,12 +1076,10 @@ def linked_function_groups(parsed_map: ParsedLinkMap) -> dict[int, tuple[LinkedM
 
 
 def _function_selector_matches(function: VerifyFunction, symbol: str) -> bool:
-    if function.symbol:
-        return function.symbol == symbol
-    return bool(
-        function.symbol_regex is not None
-        and re.fullmatch(function.symbol_regex, symbol)
-    )
+    # Use the same selector precedence as the COFF/order verifier.
+    if function.symbol_regex is not None:
+        return re.fullmatch(function.symbol_regex, symbol) is not None
+    return bool(function.symbol and function.symbol == symbol)
 
 
 def _matching_linked_function_groups(
@@ -4676,7 +4674,7 @@ def write_summary(
     }
     if acceptance is not None:
         data.update(acceptance)
-    if config is not None and data.get("kind") in {"final-build", "final-build-diagnostic"}:
+    if config is not None and data.get("kind") in {"final-build", "final-build-diagnostic", "playground-build"}:
         compile_results = [
             result for result in results
             if result.name.startswith(("include-trace:", "compile:"))
@@ -4861,6 +4859,110 @@ def report_path_key(path: Path) -> str:
     return str(path.resolve())
 
 
+def required_authored_linked_functions(
+    document: ProgressDocument,
+    *,
+    static_object_scopes: dict[str, set[str]] | None = None,
+) -> tuple[VerifyFunction, ...]:
+    """Select presence obligations from the accepted order census, not the MAP.
+
+    This is deliberately independent of the serial linked-order cursor. A
+    missing/stale registration or an uncovered census member blocks deployment.
+    """
+    from _recoil.lib.verification_targets import vc5_target_registration
+
+    slices = document.authored_call_contract_slices("recoil")
+    addresses = {address for row in slices for address in row["addresses"]}
+    target_ids = {target for row in slices for target in row["target_ids"]}
+    if not addresses or not target_ids:
+        raise ValueError("linked presence requires a nonempty accepted authored census")
+    inventory = load_repository_path_inventory(REPO_ROOT)
+    selected: dict[tuple[str, str | None, str | None], VerifyFunction] = {}
+    for target_id in sorted(target_ids):
+        registered = document.collection("verification_targets")[target_id]
+        registration = registered["registration"]
+        path = resolve_repository_file(
+            registration["manifest_path"],
+            repository_root=REPO_ROOT,
+            inventory=inventory,
+            context=f"linked presence target {target_id}",
+            allowed_suffixes={".json"},
+        ).physical_path
+        current_id, current = vc5_target_registration(path)
+        if current_id != target_id or current["registration"] != registration:
+            raise ValueError(f"linked presence target registration is stale: {target_id}")
+        target = load_vc5_verify_manifest(path)
+        if static_object_scopes is not None:
+            for unit in target.translation_unit_function_order:
+                for function in unit.functions:
+                    if function.address in addresses:
+                        static_object_scopes.setdefault(function.address, set()).add(
+                            Path(unit.source_from).with_suffix(".obj").name
+                        )
+        functions = [*target.functions]
+        functions.extend(f for entry in target.translation_unit_function_order for f in entry.functions)
+        functions.extend(f for interval in target.linked_function_intervals for f in interval.functions)
+        for function in functions:
+            # Census membership already defines the obligation. A manifest's
+            # compiler-lifecycle classification must not discard a selected
+            # identity; required presence and exact selector resolution still
+            # apply to every member.
+            if function.address not in addresses:
+                continue
+            if not function.required_presence:
+                raise ValueError(f"authored census member lacks required presence: {function.address}")
+            key = (function.address, function.symbol, function.symbol_regex)
+            selected[key] = function
+    uncovered = addresses - {function.address for function in selected.values()}
+    if uncovered:
+        raise ValueError(f"linked presence has uncovered authored identities: {sorted(uncovered)}")
+    return tuple(sorted(selected.values(), key=lambda f: (f.address, f.symbol or f.symbol_regex or "")))
+
+
+def authored_linked_presence_report(
+    functions: tuple[VerifyFunction, ...], parsed_map: ParsedLinkMap,
+    *,
+    static_object_scopes: Mapping[str, set[str]] | None = None,
+) -> dict[str, Any]:
+    """Check identity presence only; never require retail RVA, order, or bytes.
+
+    COFF/ICF aliases named in the map may share an address. Two different
+    addresses for one selector are ambiguous, not a successful presence proof.
+    """
+    if not functions:
+        raise ValueError("linked presence requires nonempty function obligations")
+    groups = linked_function_groups(parsed_map)
+    missing: list[dict[str, str]] = []
+    for function in functions:
+        try:
+            scoped_groups = groups
+            expected_objects = (static_object_scopes or {}).get(function.address)
+            if expected_objects:
+                # Public identities remain global (including ICF aliases).
+                # File-local generated names require their registered TU.
+                scoped_groups = {
+                    address: tuple(item for item in group
+                                   if item.source != "Static symbols"
+                                   or item.object in expected_objects)
+                    for address, group in groups.items()
+                }
+            resolve_linked_function_group(function, scoped_groups)
+        except ValueError as exc:
+            missing.append({
+                "symbol_id": f"recoil:function:{function.address}",
+                "selector": function.symbol_regex or function.symbol or "",
+                "detail": str(exc),
+            })
+    return {
+        "kind": "required-authored-linked-presence",
+        "passed": not missing,
+        "required_selector_count": len(functions),
+        "required_body_count": len({f.address for f in functions}),
+        "divergences": missing,
+        "accepts_order_or_bytes": False,
+    }
+
+
 def order_report_rows(
     target_names: tuple[str, ...],
     target_files: tuple[Path, ...],
@@ -4891,6 +4993,75 @@ def order_report_rows(
     return rows
 
 
+def validate_playground_build_request(
+    config: FinalBuildConfig, *, clean: bool, compile_only: bool,
+    linked_order_only: bool, linkability_only: bool, keep_going: bool,
+    order_targets: tuple[str, ...], progress_path: Path,
+) -> None:
+    """Test deployment never substitutes for a reconstruction acceptance run."""
+    if clean or compile_only or linked_order_only or linkability_only or keep_going or order_targets:
+        raise ValueError("--playground-only rejects clean, partial, diagnostic, keep-going, and order-target modes")
+    if not playtest_deployment_eligible(
+        config, dry_run=False, compile_only=False, linked_order_only=False,
+        diagnostic_isolation_applied=False,
+    ) or config.output_exe != "Recoil.exe" or progress_path.resolve() != DEFAULT_PROGRESS.resolve():
+        raise ValueError("--playground-only requires the canonical Recoil profile and progress authority")
+    root = config.build_dir.resolve()
+    live_root = (REPO_ROOT / "build" / "live-validation").resolve()
+    if not config.build_dir_explicit or root == live_root or not root.is_relative_to(live_root) or root.exists():
+        raise ValueError("--playground-only requires a fresh absent --build-dir below build/live-validation")
+
+
+def required_authored_presence_at_map(map_path: Path, progress_path: Path) -> dict[str, object]:
+    """Shared fail-closed presence gate for normal and playground builds."""
+    try:
+        static_object_scopes: dict[str, set[str]] = {}
+        return authored_linked_presence_report(
+            required_authored_linked_functions(
+                ProgressDocument.load(progress_path), static_object_scopes=static_object_scopes,
+            ),
+            parse_link_map(map_path), static_object_scopes=static_object_scopes,
+        )
+    except (OSError, ValueError) as exc:
+        return {"passed": False, "error": str(exc)}
+
+
+def finish_playground_build(
+    config: FinalBuildConfig, paths: BuildPaths, results: list[CommandResult], *,
+    progress_path: Path, required_order_targets: tuple[str, ...],
+    canonical_include_trace: dict[str, object] | None,
+) -> int:
+    presence = required_authored_presence_at_map(paths.map_path, progress_path)
+    deployment = {
+        "attempted": False, "updated": False,
+        "destination": str(config.playtest_output_exe.resolve()), "error": None,
+    }
+    if presence["passed"]:
+        deployment = deploy_playtest_candidate(paths.exe_path, config.playtest_output_exe)
+    success = bool(presence["passed"] and deployment["updated"])
+    write_summary(paths, results, dry_run=False, config=config, acceptance={
+        "report_version": 1, "kind": "playground-build", "success": success,
+        "failure_stage": None if success else ("deployment" if presence["passed"] else "linked-presence"),
+        "binary": "recoil", "validation_mode": "fresh-canonical-playground-only",
+        "fresh_build": True, "reuse": False,
+        "canonical_mfc_include_trace": canonical_include_trace,
+        "compile_profiles": compile_profile_rows(config),
+        "required_order_targets": list(required_order_targets), "effective_order_targets": [],
+        "order_reports": [], "linked_order_evaluation_suppressed": True,
+        "required_order_targets_evaluation_state": "not-evaluated-in-playground-only-mode",
+        "required_order_targets_passed": False,
+        "linked_presence": presence, "playtest_deploy": deployment,
+        "candidate_expected_truth": False, "accepts_order": False,
+        "accepts_bytes": False, "accepts_final_image": False,
+        "final_image_validation": "not-run", "diagnostic_only": True,
+    })
+    if not presence["passed"]:
+        print("Required authored linked presence failed; playground executable was not replaced.")
+        print(json.dumps(presence, indent=2))
+    print(f"Playground build candidate: {paths.exe_path}")
+    return 0 if success else 1
+
+
 def run_build(
     config: FinalBuildConfig,
     *,
@@ -4904,9 +5075,16 @@ def run_build(
     required_order_targets_override: tuple[str, ...] | None = None,
     linked_order_only: bool = False,
     linkability_only: bool = False,
+    playground_only: bool = False,
     progress_path: Path = DEFAULT_PROGRESS,
 ) -> int:
     order_target_files: tuple[Path, ...] = ()
+    if playground_only:
+        validate_playground_build_request(
+            config, clean=clean, compile_only=compile_only,
+            linked_order_only=linked_order_only, linkability_only=linkability_only,
+            keep_going=keep_going, order_targets=order_targets, progress_path=progress_path,
+        )
     required_order_targets = (
         ledger_required_order_targets(config, order_scope=order_scope)
         if required_order_targets_override is None
@@ -4955,7 +5133,7 @@ def run_build(
     paths = build_paths(config)
     order_report_dir = linked_order_report_dir(config, paths)
     expected_binary = "recoil" if config.output_exe.lower() == "recoil.exe" else "messages"
-    if compile_only_skip_linked_order or linkability_only:
+    if compile_only_skip_linked_order or linkability_only or playground_only:
         routing = OrderTargetRouting(
             diagnostic_isolation_applied=False,
             explicit_target_ids=order_targets,
@@ -5004,7 +5182,14 @@ def run_build(
             "LINKABILITY ONLY: compiling and linking the canonical whole program once; "
             "linked-order, byte, final-image, and play-test deployment acceptance are suppressed."
         )
+    if playground_only:
+        print(
+            "PLAYGROUND ONLY: fresh canonical compile/resource/link plus required authored linked presence; "
+            "linked order, bytes, aliases, and final-image facts are not accepted."
+        )
     order_target_manifests = load_linked_order_targets(effective_order_targets, order_target_files)
+    if playground_only:
+        paths.build_dir.mkdir(parents=True, exist_ok=False)
     if config.build_dir_explicit:
         prepare_build_root(paths, clean=clean, dry_run=dry_run)
     elif clean and paths.build_dir.exists() and not dry_run:
@@ -5229,6 +5414,13 @@ def run_build(
         print(f"Map file: {paths.map_path}")
         return 0
 
+    if playground_only:
+        return finish_playground_build(
+            config, paths, results, progress_path=progress_path,
+            required_order_targets=required_order_targets,
+            canonical_include_trace=canonical_include_trace,
+        )
+
     order_report_dir.mkdir(parents=True, exist_ok=True)
     order_rc = run_linked_order_targets(
         target_names=effective_order_targets,
@@ -5332,6 +5524,23 @@ def run_build(
             order_scope=order_scope,
         )
     )
+    linked_presence = None
+    if config.manifest_path.resolve() == DEFAULT_MANIFEST.resolve() and not routing.diagnostic_isolation_applied:
+        linked_presence = required_authored_presence_at_map(paths.map_path, progress_path)
+        if not linked_presence["passed"]:
+            write_summary(
+                paths, results, dry_run=False, config=config,
+                acceptance={
+                    "report_version": 1, "kind": "final-build", "success": False,
+                    "failure_stage": "linked-presence", "binary": expected_binary,
+                    "linked_presence": linked_presence, "playtest_deployed": False,
+                    "order_reports": order_reports, "diagnostic_only": True,
+                    **isolation_fields,
+                },
+            )
+            print("Required authored linked presence failed; playground executable was not replaced.")
+            print(json.dumps(linked_presence, indent=2))
+            return 1
     playtest_deploy = None
     if playtest_deployment_eligible(
         config,
@@ -5373,6 +5582,7 @@ def run_build(
             "order_reports": order_reports,
             "required_order_targets_passed": order_rc == 0,
             "final_image_validation": "deferred-to-verify-final-image",
+            "linked_presence": linked_presence,
             "diagnostic_only": config.diagnostic_only,
             **playtest_summary,
             **isolation_fields,
@@ -5446,6 +5656,15 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--playground-only",
+        action="store_true",
+        help=(
+            "Freshly compile/link the canonical Recoil program and deploy only after complete authored "
+            "linked-presence verification. Requires an absent build/live-validation root; accepts no "
+            "linked-order, byte, alias, or final-image facts."
+        ),
+    )
+    parser.add_argument(
         "--order-target",
         action="append",
         default=[],
@@ -5499,6 +5718,7 @@ def main(argv: list[str] | None = None) -> int:
             compile_only_skip_linked_order=args.compile_only_skip_linked_order,
             linked_order_only=args.linked_order_only,
             linkability_only=args.linkability_only,
+            playground_only=args.playground_only,
             required_order_targets_override=(
                 () if args.linked_order_only or args.linkability_only else None
             ),

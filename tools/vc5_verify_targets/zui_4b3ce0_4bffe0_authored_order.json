@@ -405,7 +405,7 @@
     },
     {
       "address": "0x4b4ca0",
-      "symbol": "?UpdateCaptureUiAndClip@HudUiNumericTextInput@@QAEXM@Z",
+      "symbol": "?Update@HudUiNumericTextInput@@UAEXM@Z",
       "name": "HudUiNumericTextInput::UpdateCaptureUiAndClip",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -738,7 +738,7 @@
     },
     {
       "address": "0x4b8650",
-      "symbol": "?UpdateNormalizedFromCursor@HudUiFillBitmap@@QAEXXZ",
+      "symbol": "?OnActivate@HudUiFillBitmapSlider@@UAEXXZ",
       "name": "HudUiFillBitmap::UpdateNormalizedFromCursor",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -747,7 +747,7 @@
     },
     {
       "address": "0x4b86b0",
-      "symbol": "?SetNormalizedValueAndRebuild@HudUiFillBitmap@@UAEXM@Z",
+      "symbol": "?SetNormalizedValueAndRebuild@HudUiFillBitmapSlider@@UAEXM@Z",
       "name": "HudUiFillBitmap::SetNormalizedValueAndRebuild",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -765,7 +765,7 @@
     },
     {
       "address": "0x4b87c0",
-      "symbol": "?DestructorCore@HudUiZrdWidgetEx17C_Item@@QAEXXZ",
+      "symbol": "??1HudUiZrdWidgetEx17C_Item@@UAE@XZ",
       "name": "HudUiZrdWidgetEx17C_Item::DestructorCore",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "authored-lifecycle-body",
@@ -819,7 +819,7 @@
     },
     {
       "address": "0x4b8af0",
-      "symbol": "?GetMouseRectOrBounds@HudUiZrdWidgetEx17C_Item@@QAEPAUHudUiRect@@XZ",
+      "symbol": "?GetBoundsRectOrNull@HudUiZrdWidgetEx17C_Item@@UAEPAUHudUiRect@@XZ",
       "name": "HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -900,7 +900,7 @@
     },
     {
       "address": "0x4b9320",
-      "symbol": "?OnSelectedIndexChanged@HudCmdBindButtonBase@@QAEXH@Z",
+      "symbol": "?OnSelectionChangedRefresh@HudCmdBindButtonBase@@UAEXH@Z",
       "name": "HudCmdBindButtonBase::OnSelectedIndexChanged",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -1035,7 +1035,7 @@
     },
     {
       "address": "0x4ba3c0",
-      "symbol": "?SetNormalizedValue@HudUiFillBitmap@@QAEXM@Z",
+      "symbol": "?SetNormalizedValueAndRebuild@HudUiFillBitmap@@UAEXM@Z",
       "name": "HudUiFillBitmap::SetNormalizedValue",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -1053,7 +1053,7 @@
     },
     {
       "address": "0x4ba400",
-      "symbol": "?GetWrapRect@HudUiPanel@@QAEPAUHudUiRect@@XZ",
+      "symbol": "?GetBoundsRectOrNull@HudUiPanel@@UAEPAUHudUiRect@@XZ",
       "name": "HudUiPanel::GetWrapRect",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -1350,10 +1350,11 @@
     },
     {
       "address": "0x4bc320",
-      "symbol": "?ConstructorCopyRange@HudUiCompositePanelEntry@@SIPAU1@PBU1@0PAU1@@Z",
-      "name": "HudUiCompositePanelEntry::ConstructorCopyRange",
-      "pipeline_class": "authored-lifecycle",
-      "authored_order_role": "authored-lifecycle-body",
+      "symbol": "?copy@std@@YIPAUHudUiCompositePanelEntry@@PAU2@00@Z",
+      "name": "std::copy<HudUiCompositePanelEntry *>",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
       "required_presence": true,
       "full_order_gate": true
     },
@@ -1629,7 +1630,7 @@
     },
     {
       "address": "0x4bce30",
-      "symbol": "?OnDraw@HudUiTextLabel@@QAEXXZ",
+      "symbol": "?Draw@HudUiTextLabel@@UAEXXZ",
       "name": "HudUiTextLabel::OnDraw",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -2106,7 +2107,7 @@
     },
     {
       "address": "0x4bf060",
-      "symbol": "?Constructor@HudUiMessageBoxDialog@@QAEPAU1@PBD0@Z",
+      "symbol": "??0HudUiMessageBoxDialog@@QAE@PBD0@Z",
       "name": "HudUiMessageBoxDialog::Constructor",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "authored-lifecycle-body",
@@ -2115,7 +2116,7 @@
     },
     {
       "address": "0x4bf560",
-      "symbol": "?Destructor@HudUiMessageBoxDialog@@QAEXXZ",
+      "symbol": "??1HudUiMessageBoxDialog@@UAE@XZ",
       "name": "HudUiMessageBoxDialog::Destructor",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "authored-lifecycle-body",

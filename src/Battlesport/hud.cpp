@@ -2552,15 +2552,6 @@ int zStub::ReturnOne2Args(
  */
 
 /**
- * Original helper evidence: the complete destructor has no standalone retail
- * body in the RecoilStateBase default-table check; this inline definition
- * feeds the compiler-emitted scalar-deleting destructor at 0x407170.
- * Purpose: preserve the matched empty destructor shape outside the public
- * header without adding a standalone complete-destructor text symbol.
- */
-inline RecoilStateBase::~RecoilStateBase() {}
-
-/**
  * Original helper evidence: no standalone retail function exists; vtable slot 1 in
  * g_RecoilStateBase_Vtbl @ 0x4ccd50 folds to the one-argument no-op body at
  * 0x407150; verified through recoil_state_base_default_table.
@@ -6221,8 +6212,6 @@ RecoilStateCredits::~RecoilStateCredits() {
         m_dialog = 0;
     }
 
-    /* Late ABI reset keeps RecoilStateBase materialization after the zStub block. */
-    ((RecoilStateBase *)this)->RecoilStateBase::~RecoilStateBase();
 }
 
 /**
@@ -7226,7 +7215,7 @@ void HudCmdKeyAButton::OnClearBinding() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: forward a bind-button selection change to the owning command dialog.
  */
-void HudCmdBindButtonBase::OnSelectionChangedRefresh(
+void HudCmdBindButton::OnSelectionChangedRefresh(
     int selectedIndex
 ) {
     ((HudCmdDialog *)(owner))->OnCommandSelectionChanged(selectedIndex);
@@ -8358,7 +8347,7 @@ void HudUiOptionsPanel_SoundVolume::SyncFromOptions() {
  * Purpose: update and store sound volume from the fill-widget cursor position.
  */
 void HudUiOptionsPanel_SoundVolume::OnActivate() {
-    UpdateNormalizedFromCursor();
+    HudUiFillBitmapSlider::OnActivate();
     zOpt::SetSoundVolumeOption(normalizedValue);
     SetNormalizedValueAndRebuild(zOpt::GetSoundVolumeOption());
 }
@@ -8432,7 +8421,7 @@ void HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
  * Purpose: update and store CD volume from the fill-widget cursor position.
  */
 void HudUiOptionsPanel_MusicVolume::OnActivate() {
-    UpdateNormalizedFromCursor();
+    HudUiFillBitmapSlider::OnActivate();
     const unsigned short volume = (unsigned short)(normalizedValue * ZSND_CD_NORMALIZED_TO_VOLUME);
     zSndCd::SetVolume(
         volume,

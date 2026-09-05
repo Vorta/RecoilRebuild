@@ -72,7 +72,7 @@ struct HudUiMpExitDialog : HudUiBackground {
     void UnloadLayout();
     virtual void Update(float deltaSeconds);
     void LoadLayout();
-    void Destructor();
+    virtual ~HudUiMpExitDialog();
 };
 
 extern HudUiMpExitDialog *g_HudUiMpExitDialog;

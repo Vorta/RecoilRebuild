@@ -188,6 +188,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
         category="verification",
         examples=(
             "python tools/recoil.py verify final-build --dry-run",
+            "python tools/recoil.py verify final-build --playground-only --build-dir build/live-validation/playground/<fresh-root>",
             "python tools/recoil.py verify final-build --build-dir build/live-validation/linkability/<fresh-root> --clean --order-scope authored --linkability-only",
             "python tools/recoil.py verify final-build --manifest tools/_recoil/config/vc5_messages_build.json --dry-run",
         ),
@@ -476,6 +477,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         ),
         mutates=True,
     ),
+    spec("audit coff-lifecycle", "coff_lifecycle", summary="Inspect complete COFF lifecycle definitions and inbound relocations without accepting reconstruction facts.", category="audit"),
     spec("progress semantic show", "progress_cli", prepend=("semantic", "show"), summary="Show one semantic span.", category="progress"),
     spec(
         "progress symbol set-pipeline-class-batch",
@@ -527,7 +529,11 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
             "source/link-mechanism evidence, including distinct eligible COMDAT definitions, explicit body "
             "and inbound selector relocation partitions, and a base-implementation control with a concrete "
             "object/report-backed fold-relevant difference; candidate output never "
-            "supplies retail identity or address truth. The command changes only the reviewed alias state, "
+            "supplies retail identity or address truth. V5 additionally represents shared-header inline "
+            "or implicit destructors with explicit emitting TUs and a manifest-selected logical object "
+            "witness. The fresh order comparison checks every same-TU member's complete COMDAT bytes "
+            "and relocation semantics; the original folded winner remains a separate fact. "
+            "The command changes only the reviewed alias state, "
             "its generated evidence row/id sequence, and required "
             "dependent order/byte invalidations. It fails closed on stale state, unsupported geometry, "
             "unknown evidence, revision drift, or an invalid physical-block relationship; successful "

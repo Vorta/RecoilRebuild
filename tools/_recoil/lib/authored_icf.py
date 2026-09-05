@@ -17,6 +17,7 @@ AUTHORED_ICF_MEMBER_GATE_MODE = "physical-body-only"
 AUTHORED_ICF_CANDIDATE_ROLE = "corroborating-source-link-mechanism-only"
 AUTHORED_ICF_ICF_PROFILE = "vc5sp3_ref_icf"
 AUTHORED_ICF_NOICF_PROFILE = "vc5sp3_ref_noicf"
+AUTHORED_ICF_LIFECYCLE_SOURCE_MODEL = "header-lifecycle-v1"
 _IMAGE_COMDAT_SELECTION_VALUES = frozenset(range(1, 8))
 
 
@@ -153,17 +154,38 @@ def validate_authored_icf_source_mirrors(
                 f"authored ICF logical member {alias_id!r} source mirror is invalid: {details}"
             )
         anchor_id = str(edge.get("anchor_id", ""))
+        generation = alias.get("source_generation")
+        implicit_destructor = False
+        if generation is not None:
+            generation = _exact_mapping(
+                generation, {"kind", "class_name", "translation_units"},
+                label=f"authored ICF lifecycle source {alias_id!r}",
+            )
+            if generation["kind"] not in {"inline-destructor", "implicit-destructor"}:
+                raise ProgressError("authored ICF lifecycle source kind is unsupported")
+            class_name = _string(generation["class_name"], label="lifecycle class name")
+            if not class_name.isidentifier() or alias.get("object_symbol") != f"??1{class_name}@@UAE@XZ":
+                raise ProgressError("authored ICF lifecycle class does not bind its complete destructor")
+            units = _string_array(generation["translation_units"], label="lifecycle emission TUs")
+            for unit in units:
+                if (
+                    not unit.startswith("src/") or "\\" in unit or ".." in Path(unit).parts
+                    or Path(unit).suffix.lower() not in {".cpp", ".cc", ".cxx"}
+                    or not (root / unit).is_file()
+                ):
+                    raise ProgressError("authored ICF lifecycle emission TU is not current production source")
+            implicit_destructor = generation["kind"] == "implicit-destructor"
         definitions = [
             artifact
             for artifact in document.artifacts
             if artifact.artifact_id == alias_id
-            and artifact.relation == "defines"
+            and artifact.relation == ("emits" if implicit_destructor else "defines")
             and artifact.section == ".text"
             and artifact.anchor_id == anchor_id
             and artifact.direct
             and artifact.entity_kind == "function"
             and artifact.construct is not None
-            and artifact.construct.kind == "function"
+            and artifact.construct.kind == ("type" if implicit_destructor else "function")
         ]
         if len(definitions) != 1:
             raise ProgressError(
@@ -171,6 +193,31 @@ def validate_authored_icf_source_mirrors(
                 f"'@recoil-artifact defines .text {alias_id}: ...' mirror at {anchor_id!r} "
                 f"in {translation_unit}; found {len(definitions)}"
             )
+        if generation is not None:
+            construct = definitions[0].construct
+            assert construct is not None
+            if implicit_destructor:
+                if construct.name != class_name:
+                    raise ProgressError("authored ICF implicit destructor is attached to another class")
+                # Use the parsed class extent, then reject any destructor declaration
+                # or definition in that class. This is a generation edge, not a
+                # license to attach an unrelated function to a type declaration.
+                from _recoil.lib.source_constructs import parse_source_constructs
+                parsed = parse_source_constructs(text)
+                if any(
+                    member.kind == "function"
+                    and construct.start < member.start < construct.end
+                    and "~" in member.name
+                    for member in parsed
+                ):
+                    raise ProgressError("authored ICF implicit destructor class has an explicit destructor")
+                import re
+                if re.search(r"~\s*" + re.escape(class_name) + r"\s*\(", text[construct.start:construct.end]):
+                    raise ProgressError("authored ICF implicit destructor class declares a destructor")
+            elif construct.name.split("::")[-1] != "~" + class_name:
+                raise ProgressError("authored ICF inline destructor source names another function")
+            if edge.get("relation") != ("emits" if implicit_destructor else "defines"):
+                raise ProgressError("authored ICF lifecycle source relation disagrees with its generation kind")
         validated[str(alias_id)] = translation_unit
     return validated
 
@@ -181,6 +228,7 @@ def validate_authored_icf_physical_source_artifacts(
     physical_symbol_id: str,
     documents: tuple[Any, ...],
     select_single_logical_member: bool = False,
+    object_witness: str | None = None,
 ) -> tuple[str, ...] | None:
     """Validate one physical ICF gate through its exact logical source mirrors.
 
@@ -207,6 +255,7 @@ def validate_authored_icf_physical_source_artifacts(
     aliases = symbol.get("logical_aliases")
     if not isinstance(aliases, Mapping):
         raise ProgressError("authored ICF logical member population is incomplete")
+    lifecycle = group.get("source_model") == AUTHORED_ICF_LIFECYCLE_SOURCE_MODEL
     physical_address = normalize_address(str(symbol.get("address", "")))
     same_address = [
         artifact
@@ -217,7 +266,23 @@ def validate_authored_icf_physical_source_artifacts(
     ]
     actual_ids = [str(artifact.artifact_id) for artifact in same_address]
     logical_ids = set(str(alias_id) for alias_id in aliases)
-    if select_single_logical_member:
+    if lifecycle:
+        # Header attachment and actual emission are distinct facts. Require the
+        # header mirrors in the checked closure as well as a registered emission
+        # TU; retain the exact-population/duplicate/physical-artifact checks below.
+        document_paths = {str(document.path).replace("\\", "/") for document in documents}
+        expected_ids = {
+            str(alias_id) for alias_id, alias in aliases.items()
+            if document_paths.intersection(alias["source_generation"]["translation_units"])
+        }
+        if not expected_ids:
+            raise ProgressError("authored ICF lifecycle source closure has no proven emission TU")
+        if len([
+            alias_id for alias_id in expected_ids
+            if aliases[alias_id].get("object_symbol") == object_witness
+        ]) != 1:
+            raise ProgressError("authored ICF lifecycle target requires an explicit member witness")
+    elif select_single_logical_member:
         expected_ids = set(actual_ids) & logical_ids
         if len(expected_ids) != 1:
             raise ProgressError(
@@ -290,12 +355,13 @@ def validate_authored_icf_physical_source_artifacts(
         artifact = next(
             row for row in same_address if row.artifact_id == alias_id
         )
+        implicit = lifecycle and alias["source_generation"]["kind"] == "implicit-destructor"
         if (
-            artifact.relation != "defines"
+            artifact.relation != ("emits" if implicit else "defines")
             or artifact.section != ".text"
             or not artifact.direct
             or artifact.construct is None
-            or artifact.construct.kind != "function"
+            or artifact.construct.kind != ("type" if implicit else "function")
             or artifact.anchor_id != edge.get("anchor_id")
             or artifact.path != translation_unit
         ):
@@ -311,6 +377,8 @@ def select_authored_icf_translation_unit_object_symbol(
     *,
     physical_symbol_id: str,
     translation_unit: str,
+    object_witness: str | None = None,
+    coff_object: Any = None,
 ) -> tuple[str, str] | None:
     """Select the one proof-bound logical object symbol defined by one TU.
 
@@ -357,7 +425,9 @@ def select_authored_icf_translation_unit_object_symbol(
             if isinstance(context, Mapping)
             else ""
         )
-        if defining_tu != requested_tu:
+        generation = alias.get("source_generation") if isinstance(alias, Mapping) else None
+        defining_tus = generation.get("translation_units", []) if isinstance(generation, Mapping) else [defining_tu]
+        if requested_tu not in defining_tus:
             continue
         object_symbol = _decorated_symbol(
             alias.get("object_symbol"),
@@ -365,6 +435,12 @@ def select_authored_icf_translation_unit_object_symbol(
         )
         matches.append((str(alias_id), object_symbol))
 
+    if group.get("source_model") == AUTHORED_ICF_LIFECYCLE_SOURCE_MODEL:
+        witnesses = [match for match in matches if match[1] == object_witness]
+        if len(witnesses) != 1:
+            raise ProgressError("authored ICF same-TU group requires one explicit proven object witness")
+        validate_lifecycle_object_members(coff_object, tuple(symbol for _, symbol in matches))
+        return witnesses[0]
     if len(matches) != 1:
         raise ProgressError(
             "authored ICF translation-unit object-symbol projection requires exactly "
@@ -372,6 +448,73 @@ def select_authored_icf_translation_unit_object_symbol(
             f"{[alias_id for alias_id, _symbol in matches]!r}"
         )
     return matches[0]
+
+
+def validate_lifecycle_object_members(coff_object: Any, symbols: tuple[str, ...]) -> None:
+    """Recheck the entire selected same-TU fold family from fresh COFF.
+
+    This is candidate-mechanism corroboration, not retail expected truth. A
+    convenient order witness cannot hide a missing member or a changed cleanup
+    body. This deliberately narrow lifecycle route rejects recursive/associative
+    folding except VC5's self-referencing FPO record: other cases need their
+    own typed proof, not a guessed equivalence.
+    """
+    if coff_object is None or not symbols or len(set(symbols)) != len(symbols):
+        raise ProgressError("authored ICF lifecycle projection requires fresh complete COFF members")
+    signatures = []
+    for name in symbols:
+        definitions = [
+            row for row in coff_object.symbols
+            if row.name == name and row.section_number > 0
+            and row.storage_class == 2 and row.type == 0x20
+        ]
+        if len(definitions) != 1:
+            raise ProgressError(f"authored ICF lifecycle member {name!r} lacks one fresh definition")
+        definition = definitions[0]
+        body = coff_object.function_bytes(name)
+        section = coff_object.section(definition.section_number)
+        selections = [
+            row.section_definition_selection for row in coff_object.symbols
+            if row.section_number == definition.section_number
+            and row.section_definition_selection is not None
+        ]
+        if (
+            section.name != ".text" or not section.characteristics & 0x1000
+            or selections != [2] or body.start != 0
+            or body.end != len(section.raw_data) or not body.data
+        ):
+            raise ProgressError(f"authored ICF lifecycle member {name!r} is not one independent ANY COMDAT")
+        relocations = tuple(sorted(
+            (row.offset, row.type, row.symbol_name)
+            for row in body.relocations
+        ))
+        associations = [
+            row for row in coff_object.symbols
+            if row.section_definition_selection == 5
+            and row.section_definition_association == definition.section_number
+        ]
+        fpo = None
+        if associations:
+            if len(associations) != 1:
+                raise ProgressError("authored ICF lifecycle has unsupported associative sections")
+            associated = coff_object.section(associations[0].section_number)
+            associated_relocations = coff_object.relocations_by_section.get(associated.index, ())
+            if (
+                associated.name != ".debug$F" or associated.characteristics != 0x42101048
+                or len(associated.raw_data) != 16 or associated.raw_data[:4] != b"\0" * 4
+                or len(associated_relocations) != 1
+                or associated_relocations[0].offset != 0
+                or associated_relocations[0].type != 7
+                or associated_relocations[0].symbol_name != name
+                or associated_relocations[0].symbol_index != definition.index
+            ):
+                raise ProgressError("authored ICF lifecycle has unsupported FPO association")
+            fpo = associated.raw_data
+        # The raw relocation fields preserve exact addends; names preserve exact
+        # target identity. Never equate unrelated targets just because they fold.
+        signatures.append((body.data, relocations, fpo))
+    if any(signature != signatures[0] for signature in signatures[1:]):
+        raise ProgressError("authored ICF lifecycle members no longer have identical complete bytes and relocations")
 
 
 def _link_observation(
@@ -970,6 +1113,8 @@ def audit_authored_icf_groups(data: Mapping[str, Any]) -> list[tuple[str, str]]:
         label = str(symbol_id)
         aliases = symbol.get("logical_aliases")
         try:
+            if group.get("source_model") not in {None, AUTHORED_ICF_LIFECYCLE_SOURCE_MODEL}:
+                raise ProgressError("authored ICF source model is unsupported")
             if group.get("physical_gate_symbol_id") != symbol_id:
                 raise ProgressError("physical gate symbol id is stale")
             if (
@@ -988,6 +1133,9 @@ def audit_authored_icf_groups(data: Mapping[str, Any]) -> list[tuple[str, str]]:
             for alias_id, alias in aliases.items():
                 if not isinstance(alias, Mapping):
                     raise ProgressError(f"logical member {alias_id!r} is not an object")
+                lifecycle = group.get("source_model") == AUTHORED_ICF_LIFECYCLE_SOURCE_MODEL
+                if lifecycle != isinstance(alias.get("source_generation"), Mapping):
+                    raise ProgressError("authored ICF source generation requires the lifecycle model on every member")
                 if alias.get("gate_mode") != AUTHORED_ICF_MEMBER_GATE_MODE:
                     raise ProgressError(f"logical member {alias_id!r} is a duplicate gate")
                 owner_id = str(alias.get("owner_id", ""))
@@ -1001,7 +1149,11 @@ def audit_authored_icf_groups(data: Mapping[str, Any]) -> list[tuple[str, str]]:
                 if source_trace.get("state") != "resolved" or not isinstance(raw_edges, list) or len(raw_edges) != 1:
                     raise ProgressError(f"logical member {alias_id!r} source edge is not exclusive")
                 edge = raw_edges[0]
-                if not isinstance(edge, Mapping) or edge.get("relation") != "defines":
+                expected_relation = (
+                    "emits" if lifecycle and alias.get("source_generation", {}).get("kind") == "implicit-destructor"
+                    else "defines"
+                )
+                if not isinstance(edge, Mapping) or edge.get("relation") != expected_relation:
                     raise ProgressError(f"logical member {alias_id!r} lacks a defining edge")
                 context = edge.get("emission_context")
                 edge_key = (
@@ -1019,7 +1171,7 @@ def audit_authored_icf_groups(data: Mapping[str, Any]) -> list[tuple[str, str]]:
                     if site in direct_sites:
                         raise ProgressError(f"retail call selector {site} is ambiguous")
                     direct_sites.add(site)
-            if len(owner_ids) != len(set(owner_ids)):
+            if group.get("source_model") != AUTHORED_ICF_LIFECYCLE_SOURCE_MODEL and len(owner_ids) != len(set(owner_ids)):
                 raise ProgressError("logical member owner edges are not exclusive")
             for owner_id in owner_ids:
                 owner = owners.get(owner_id)

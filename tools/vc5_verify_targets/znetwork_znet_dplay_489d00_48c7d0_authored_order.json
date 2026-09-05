@@ -434,7 +434,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "?FreeServiceProviderInfoBuffers@zNetworkDPlay@@YIXPAUzNetworkDPlayServiceProviderInfo@@@Z"
+      "symbol": "??1zNetworkDPlayServiceProviderInfo@@QAE@XZ"
     },
     {
       "address": "0x48bf10",
@@ -459,38 +459,62 @@
     {
       "address": "0x48bfa0",
       "name": "zNetwork_InitMessageHandlers",
-      "pipeline_class": "authored",
-      "authored_order_role": "authored-body",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-thunk",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "_zNetwork_InitMessageHandlers"
+      "symbol": "_$E6",
+      "provenance": "compiler-emitted-noncovering",
+      "emission_anchor": {
+        "path": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+        "kind": "data-definition",
+        "name": "g_zNetwork_DispatchHandlerList"
+      }
     },
     {
       "address": "0x48bfb0",
       "name": "zNetwork_CreateEmptyDispatchHandlerList",
-      "pipeline_class": "authored",
-      "authored_order_role": "authored-body",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-thunk",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "_zNetwork_CreateEmptyDispatchHandlerList"
+      "symbol": "_$E3",
+      "provenance": "compiler-emitted-noncovering",
+      "emission_anchor": {
+        "path": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+        "kind": "data-definition",
+        "name": "g_zNetwork_DispatchHandlerList"
+      }
     },
     {
       "address": "0x48bfe0",
       "name": "zNetwork_RegisterDispatchHandlerListShutdown",
-      "pipeline_class": "authored",
-      "authored_order_role": "authored-body",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-thunk",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "_zNetwork_RegisterDispatchHandlerListShutdown"
+      "symbol": "_$E5",
+      "provenance": "compiler-emitted-noncovering",
+      "emission_anchor": {
+        "path": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+        "kind": "data-definition",
+        "name": "g_zNetwork_DispatchHandlerList"
+      }
     },
     {
       "address": "0x48bff0",
       "name": "zNetwork_DestroyDispatchHandlerList",
-      "pipeline_class": "authored",
-      "authored_order_role": "authored-body",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-thunk",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "_zNetwork_DestroyDispatchHandlerList"
+      "symbol": "_$E4",
+      "provenance": "compiler-emitted-noncovering",
+      "emission_anchor": {
+        "path": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+        "kind": "data-definition",
+        "name": "g_zNetwork_DispatchHandlerList"
+      }
     },
     {
       "address": "0x48c060",

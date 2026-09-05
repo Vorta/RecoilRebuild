@@ -15,8 +15,8 @@ from typing import Iterable, Mapping
 from _recoil.lib.tooling import REPO_ROOT
 
 
-CALL_CONTRACT_VERIFIER_GENERATION = 48
-EXPECTED_FACT_SCHEMA_VERSION = 39
+CALL_CONTRACT_VERIFIER_GENERATION = 56
+EXPECTED_FACT_SCHEMA_VERSION = 46
 
 
 CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
@@ -31,6 +31,9 @@ CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
         "tools/_recoil/commands/vc5_verify.py",
         "tools/_recoil/lib/binja.py",
         "tools/_recoil/lib/call_contract_evidence.py",
+        "tools/_recoil/lib/authored_icf.py",
+        "tools/_recoil/lib/call_argument_bits.py",
+        "tools/_recoil/lib/constructor_dispatch.py",
         "tools/_recoil/lib/call_contract_generations.py",
         "tools/_recoil/lib/progress.py",
         "tools/_recoil/lib/progress_sqlite.py",
@@ -43,8 +46,11 @@ CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
 EXPECTED_FACT_COMPONENT_PATHS = frozenset(
     {
         "tools/_recoil/commands/call_contract_verify.py",
+        "tools/_recoil/lib/authored_icf.py",
         "tools/_recoil/lib/binja.py",
         "tools/_recoil/lib/call_contract_evidence.py",
+        "tools/_recoil/lib/call_argument_bits.py",
+        "tools/_recoil/lib/constructor_dispatch.py",
         "tools/_recoil/lib/call_contract_generations.py",
         "tools/_recoil/lib/repository_paths.py",
         "tools/_recoil/lib/windows_identity.py",

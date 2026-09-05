@@ -1204,6 +1204,7 @@ def validate_current_authored_icf_physical_source_policy(
             physical_symbol_id=physical_artifact_id,
             documents=documents,
             select_single_logical_member=select_single_logical_member,
+            object_witness=function.symbol,
         )
     except ProgressError as exc:
         raise ValueError(
@@ -1219,6 +1220,7 @@ def current_authored_icf_translation_unit_object_symbol(
     function: VerifyFunction,
     target_binary: str,
     translation_unit: str,
+    coff_object: CoffObject | None = None,
 ) -> str | None:
     """Return the current proof-bound COFF selector for one physical TU gate."""
 
@@ -1236,6 +1238,8 @@ def current_authored_icf_translation_unit_object_symbol(
             tracker_data,
             physical_symbol_id=physical_artifact_id,
             translation_unit=translation_unit,
+            object_witness=function.symbol,
+            coff_object=coff_object,
         )
     except ProgressError as exc:
         raise ValueError(
@@ -3144,6 +3148,7 @@ def check_translation_unit_function_order(
                         function=function,
                         target_binary=target.target_binary,
                         translation_unit=entry.source_from,
+                        coff_object=coff_object,
                     )
                     if order_scope == "authored"
                     else None

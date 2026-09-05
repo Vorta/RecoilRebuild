@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x48bee0",
-      "symbol": "?FreeServiceProviderInfoBuffers@zNetworkDPlay@@YIXPAUzNetworkDPlayServiceProviderInfo@@@Z",
+      "symbol": "??1zNetworkDPlayServiceProviderInfo@@QAE@XZ",
       "name": "zNetworkDPlay::FreeServiceProviderInfoBuffers"
     }
   ]

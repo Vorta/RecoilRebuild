@@ -175,7 +175,7 @@
         },
         {
           "address": "0x40ba90",
-          "symbol": "?OnSelectionChangedRefresh@HudCmdBindButtonBase@@UAEXH@Z",
+          "symbol": "?OnSelectionChangedRefresh@HudCmdBindButton@@UAEXH@Z",
           "name": "HudCmdBindButtonBase::OnSelectionChangedRefresh"
         },
         {

@@ -66,7 +66,7 @@ namespace zSnd {
 } // namespace zSnd
 
 namespace zSndCd {
-int ResetTrackState();
+int __cdecl ResetTrackState();
 int __fastcall ApplyPlaybackMode(int playbackMode);
 int __fastcall PlayTrack(int trackIndex);
 int __cdecl Shutdown();
@@ -233,7 +233,7 @@ RECOIL_NO_GS int __fastcall Init(
  * @recoil-artifact defines .text recoil:function:0x4a2490: zSndCd::ResetTrackState.
  * Purpose: Reset cached CD play-from/current/play-to positions to track one.
  */
-int ResetTrackState() {
+int __cdecl ResetTrackState() {
     zSndCdTrackState state = {1, 0, 0};
     g_zSndCdPlayFrom = state;
     g_zSndCdCurrent = state;
@@ -378,7 +378,7 @@ void __fastcall OnMciNotify(
  * @recoil-artifact defines .text recoil:function:0x4a26f0: zSndCd::Stop.
  * Purpose: stop the current MCI CD playback and reset the cached track state.
  */
-RECOIL_NO_GS int Stop() {
+RECOIL_NO_GS int __cdecl Stop() {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -444,7 +444,7 @@ RECOIL_NO_GS int __fastcall PlayTrack(
  * @recoil-artifact defines .text recoil:function:0x4a27d0: zSndCd::IsStereoAuxEnabled.
  * Purpose: report whether CD audio has an initialized stereo AUX mixer.
  */
-int IsStereoAuxEnabled() {
+int __cdecl IsStereoAuxEnabled() {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }

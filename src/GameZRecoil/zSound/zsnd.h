@@ -600,7 +600,7 @@ HRESULT __fastcall CachedDirectSound_GetCaps(DSCAPS *caps);
 
 namespace zSndCd {
 int __fastcall Init(zReader::Node *cdTracksNode);
-int Stop();
+int __cdecl Stop();
 int __cdecl Shutdown();
 int __cdecl GetTrackCount();
 int __fastcall PlayTrackWithMode(

@@ -661,7 +661,7 @@ struct HudUiTextLabel : HudUiElement {
     );
     void RebuildTextBounds();
     int MeasureTextWidth();
-    void OnDraw();
+    virtual void Draw();
     int HitTest(
         int px,
         int py
@@ -938,8 +938,19 @@ struct HudUiFillBitmap : HudUiZrdWidget {
         zReader::Node *zrdSection,
         HudUiBackground *ownerDialog
     );
-    void UpdateNormalizedFromCursor();
-    void SetNormalizedValue(float value);
+    virtual void SetNormalizedValueAndRebuild(float value);
+};
+
+/**
+ * Purpose: share the interactive fill and cursor behavior used by briefing,
+ * sound-volume and music-volume widgets. Their retail tables share slots
+ * +0x30/+0x84; the base table retains ZrdWidget activation and a value setter.
+ * Source hierarchy is provisional: folded independent overrides remain an
+ * alternative until constructor/cleanup evidence distinguishes the models.
+ * Naming basis: existing Recoil HudUi widget family, not an exact retail name.
+ */
+struct HudUiFillBitmapSlider : HudUiFillBitmap {
+    virtual void OnActivate();
     virtual void SetNormalizedValueAndRebuild(float value);
 };
 
@@ -956,7 +967,7 @@ struct HudUiZrdWidgetEx17C_Item : HudUiZrdWidget {
 
     HudUiZrdWidgetEx17C_Item();
     HudUiZrdWidgetEx17C_Item * Constructor();
-    void DestructorCore();
+    ~HudUiZrdWidgetEx17C_Item();
     void ShowPreviewIfNotSelected();
     void HidePreviewIfNotSelected();
     void ShowPreview();
@@ -968,7 +979,7 @@ struct HudUiZrdWidgetEx17C_Item : HudUiZrdWidget {
         HudUiBackground *ownerDialog
     );
     void SetSelected(int selectedValue);
-    HudUiRect * GetMouseRectOrBounds();
+    virtual HudUiRect * GetBoundsRectOrNull();
 };
 
 struct HudUiZrdWidgetEx17C : HudUiZrdWidget {
@@ -1093,7 +1104,7 @@ struct HudUiPanel : HudUiTextLabel {
         return textWidthPx;
     }
     int QueryTextHeight();
-    HudUiRect * GetWrapRect();
+    virtual HudUiRect * GetBoundsRectOrNull();
     int HitTest(
         int px,
         int py
@@ -1372,7 +1383,6 @@ struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
         const char *displayText,
         int commandId
     );
-    void OnSelectedIndexChanged(int selectedIndex);
     void SetSelectedEntry(int selectedIndex);
     /**
      * Final HudCmd bind-button vtable slot at 0x84 in BN.
@@ -1395,7 +1405,18 @@ struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
     );
 };
 
-struct HudCmdCommandList : HudCmdBindButtonBase {
+/**
+ * Purpose: forward selection changes for command-dialog binding widgets.
+ * Retail base slot +0x84 selects entries locally; all five dialog leaf tables
+ * forward to the dialog. A shared data-free intermediate is provisional;
+ * independent folded overrides remain an unresolved historical alternative.
+ * Naming basis: existing Recoil HudCmd binding family.
+ */
+struct HudCmdBindButton : HudCmdBindButtonBase {
+    virtual void OnSelectionChangedRefresh(int selectedIndex);
+};
+
+struct HudCmdCommandList : HudCmdBindButton {
 
     /**
      * Purpose: preserve the natural complete destructor generated for this
@@ -1407,14 +1428,14 @@ struct HudCmdCommandList : HudCmdBindButtonBase {
      * by compiler-generated table emission.
      * Purpose: construct the command-list bind-button subobject.
     */
-    HudCmdCommandList() : HudCmdBindButtonBase() {}
+    HudCmdCommandList() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
      * rules destroy the common bind-button base.
      */
 };
 
-struct HudCmdKeyAButton : HudCmdBindButtonBase {
+struct HudCmdKeyAButton : HudCmdBindButton {
 
     /**
      * Purpose: preserve the natural complete destructor generated for this
@@ -1426,7 +1447,7 @@ struct HudCmdKeyAButton : HudCmdBindButtonBase {
      * by compiler-generated table emission.
      * Purpose: construct the primary-key bind-button subobject.
     */
-    HudCmdKeyAButton() : HudCmdBindButtonBase() {}
+    HudCmdKeyAButton() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
      * rules destroy the common bind-button base.
@@ -1435,7 +1456,7 @@ struct HudCmdKeyAButton : HudCmdBindButtonBase {
     void OnClearBinding();
 };
 
-struct HudCmdKeyBButton : HudCmdBindButtonBase {
+struct HudCmdKeyBButton : HudCmdBindButton {
 
     /**
      * Purpose: preserve the natural complete destructor generated for this
@@ -1447,7 +1468,7 @@ struct HudCmdKeyBButton : HudCmdBindButtonBase {
      * by compiler-generated table emission.
      * Purpose: construct the secondary-key bind-button subobject.
     */
-    HudCmdKeyBButton() : HudCmdBindButtonBase() {}
+    HudCmdKeyBButton() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
      * rules destroy the common bind-button base.
@@ -1456,7 +1477,7 @@ struct HudCmdKeyBButton : HudCmdBindButtonBase {
     void OnClearBinding();
 };
 
-struct HudCmdJoyButton : HudCmdBindButtonBase {
+struct HudCmdJoyButton : HudCmdBindButton {
 
     /**
      * Purpose: preserve the natural complete destructor generated for this
@@ -1468,7 +1489,7 @@ struct HudCmdJoyButton : HudCmdBindButtonBase {
      * followed by compiler-generated table emission.
      * Purpose: construct the joystick bind-button subobject.
     */
-    HudCmdJoyButton() : HudCmdBindButtonBase() {}
+    HudCmdJoyButton() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
      * rules destroy the common bind-button base.
@@ -1477,7 +1498,7 @@ struct HudCmdJoyButton : HudCmdBindButtonBase {
     void OnClearBinding();
 };
 
-struct HudCmdMouseButton : HudCmdBindButtonBase {
+struct HudCmdMouseButton : HudCmdBindButton {
 
     /**
      * Purpose: preserve the natural complete destructor generated for this
@@ -1489,7 +1510,7 @@ struct HudCmdMouseButton : HudCmdBindButtonBase {
      * by compiler-generated table emission.
      * Purpose: construct the mouse bind-button subobject.
     */
-    HudCmdMouseButton() : HudCmdBindButtonBase() {}
+    HudCmdMouseButton() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
      * rules destroy the common bind-button base.
@@ -1834,13 +1855,11 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
 
     HudUiNumericTextInput();
     ~HudUiNumericTextInput();
-    HudUiNumericTextInput * Constructor(unsigned int maxDigits);
-    HudUiNumericTextInput * BaseConstructor();
     void Destructor();
     void AllocTextBuffer(unsigned int bufferSize);
     char * GetBuffer();
     void Update(const char *text);
-    RECOIL_NO_GS void UpdateCaptureUiAndClip(float deltaSeconds);
+    RECOIL_NO_GS virtual void Update(float deltaSeconds);
     int SetInputActive(int active);
     void SetRawKeyboardCapture(int enable);
     virtual int OnRawKeyboardChar(int key);
@@ -1854,6 +1873,7 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
 };
 
 struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
+    HudUiNetGameSetupTextInput(unsigned int bufferSize);
     void OnActivate();
     void OnActivateFocusAndCursor();
 };
@@ -1881,7 +1901,7 @@ RECOIL_STATIC_ASSERT(
     ) == 0x08
 );
 
-struct HudUiClampedIntTextInput : HudUiNumericTextInput {
+struct HudUiClampedIntTextInput : HudUiNetGameSetupTextInput {
     int minValue;
     int maxValue;
 
@@ -2147,12 +2167,11 @@ struct HudUiFlashPanel {
 struct HudUiCompositePanelEntry : HudUiTransitionTextPanel {
     HudUiCompositePanelEntry() {}
     HudUiCompositePanelEntry(const HudUiCompositePanelEntry &source);
+    /**
+     * Purpose: assign one existing composite entry, including its panel and
+     * seven flash-state fields, without changing its dynamic type.
+     */
     HudUiCompositePanelEntry &operator=(const HudUiCompositePanelEntry &source);
-    static HudUiCompositePanelEntry *__fastcall ConstructorCopyRange(
-        const HudUiCompositePanelEntry *sourceBegin,
-        const HudUiCompositePanelEntry *sourceEnd,
-        HudUiCompositePanelEntry *destBegin
-    );
 };
 
 /**
@@ -2582,7 +2601,7 @@ HudUiOptionsPanel_SoundQuality() {
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_SoundVolume : HudUiFillBitmap {
+struct HudUiOptionsPanel_SoundVolume : HudUiFillBitmapSlider {
     /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
@@ -2610,7 +2629,7 @@ HudUiOptionsPanel_MusicEnable() {
     void OnActivate();
 };
 
-struct HudUiOptionsPanel_MusicVolume : HudUiFillBitmap {
+struct HudUiOptionsPanel_MusicVolume : HudUiFillBitmapSlider {
     /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
@@ -2711,11 +2730,11 @@ struct HudUiMessageBoxDialog : HudUiBackground {
     HudUiMessageBoxOkButton okButton;
     HudUiMessageBoxCancelButton cancelButton;
 
-    HudUiMessageBoxDialog * Constructor(
+    HudUiMessageBoxDialog(
         const char *zrdPath,
         const char *sectionName
     );
-    void Destructor();
+    ~HudUiMessageBoxDialog();
     int RunModal(
         const char *messageText,
         const char *titleText,

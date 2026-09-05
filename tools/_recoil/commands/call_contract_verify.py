@@ -15468,6 +15468,7 @@ def _index_registered_lifecycle_deleting_destructor_names(
     ] = {}
     complete_names_by_address: dict[str, set[str]] = {}
     ambiguous_names: set[str] = set()
+    explicit_identities: dict[str, set[str]] = {}
     manifest_root = (REPO_ROOT / "tools" / "vc5_verify_targets").resolve()
     for target_id, target in document.collection(
         "verification_targets"
@@ -15506,6 +15507,18 @@ def _index_registered_lifecycle_deleting_destructor_names(
             and isinstance(current_registration, Mapping)
             and current_registration.get("manifest_path") == manifest_value
         )
+        stored_rows = tuple(_mapping_target_function_rows(target))
+        for explicit_row in _mapping_target_function_rows(current_target):
+            explicit_name = explicit_row.get("symbol")
+            if (not stable_target or explicit_row not in stored_rows
+                    or not isinstance(explicit_name, str)
+                    or re.fullmatch(r"\?\?_G.+@@(?:UAE|QAE)PAXI@Z", explicit_name) is None
+                    or explicit_row.get("authored_order_role") != "compiler-generated-deleting-variant"):
+                continue
+            explicit_address = normalize_address(explicit_row["address"])
+            explicit_identity = by_address.get(explicit_address)
+            if explicit_identity:
+                explicit_identities.setdefault(explicit_name, set()).add(explicit_identity)
         current_rows = [
             row
             for row in _mapping_target_function_rows(current_target)
@@ -15567,6 +15580,13 @@ def _index_registered_lifecycle_deleting_destructor_names(
             for supplier in suppliers
         }
         prior = by_candidate_name.get(name)
+        explicit = explicit_identities.get(name, set())
+        if explicit:
+            # A literal synchronized row is not an inferred complete->deleting
+            # spelling fallback. It retains its own physical target identity;
+            # conflicting explicit registrations still fail closed.
+            by_candidate_name[name] = _explicit_lifecycle_target_identity(prior, explicit)
+            continue
         if (
             name in ambiguous_names
             or len(identities) != 1
@@ -15575,6 +15595,12 @@ def _index_registered_lifecycle_deleting_destructor_names(
             by_candidate_name[name] = ""
             continue
         by_candidate_name[name] = next(iter(identities))[0]
+
+
+def _explicit_lifecycle_target_identity(prior: str | None, identities: set[str]) -> str:
+    if len(identities) != 1 or not prior or prior not in identities:
+        return ""
+    return prior
 
 
 def _nonvirtual_scalar_deleting_destructor_class(
@@ -37624,7 +37650,7 @@ def _player_top_message_static_indirect_storage_bridge(
         caller.symbol
         != "?InitMissionRuntimeFromWorldAndCamera@Player@@YIXPAUzClass_NodePartial@@0@Z"
         or (len(caller.data), len(invocations))
-        not in {(0x750, 81), (0xCF0, 121)}
+        not in {(0x750, 81), (0xCF0, 121), (0xD10, 121)}
         or offsets[invocations[5]] != 0x64
         or offsets[invocations[9]] != 0xB4
         or any(
@@ -37659,7 +37685,10 @@ def _player_top_message_static_indirect_storage_bridge(
     ):
         raise ValueError(
             f"{prefix} rejects exact caller population, ESI lineage, body, "
-            "or COFF relocation drift"
+            f"or COFF relocation drift: size={len(caller.data):#x}, "
+            f"invocations={len(invocations)}, "
+            f"sites={[offsets[invocations[n]] for n in (5, 9) if n < len(invocations)]}, "
+            f"changed_instructions={[hex(offset) for offset, (mnemonic, operand, body) in exact_instructions.items() if offset not in rows_by_offset or _instruction_mnemonic(rows_by_offset[offset]) != mnemonic or _instruction_operand(rows_by_offset[offset]).strip() != operand or bytes(int(item, 16) for item in rows_by_offset[offset].bytes) != body]}"
         )
     return {
         "0x64": ReviewedExactIndirectStorageBridge(
@@ -88697,6 +88726,323 @@ def _diagnostic_call_contract_rows_equal(
     return comparable_expected == comparable_candidate
 
 
+# Retail-proven provider argument obligations. These select what to inspect;
+# expected values and provenance are derived from the live retail body below.
+# Blt has six stdcall arguments including its interface pointer; flags is #4.
+_PROVIDER_ARGUMENT_OBLIGATIONS = {"0x4a69e0": {5: (4,)}}
+
+# The static initializer's call is not sufficient without the concrete object's
+# dispatch dependency. This is a selection rule, not saved expected table data.
+_CONSTRUCTOR_DISPATCH_OBLIGATIONS = {
+    # Complete table extent, but only these crash-critical target identities
+    # are selected here. Other inherited/folded cells are not silently accepted
+    # as logical aliases by this new dependency proof.
+    "0x435a40": ("0x435c80", "??0RecoilStateSaveLoadTransition@@QAE@XZ", 10, (0, 1, 3, 6)),
+}
+
+def _briefing_dispatch_contract_facts(
+    expected_rows: list[dict[str, Any]], candidate_rows: list[dict[str, Any]],
+    *, caller_start: str, candidate: CandidateAssembly,
+    bridge: BinaryNinjaBridge, indexes: IdentityIndexes,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    from _recoil.lib.constructor_dispatch import (
+        constructor_vptr_store, exact_table_slots, resolve_table_weak_target,
+        global_vptr_call_window,
+    )
+
+    if caller_start not in {"0x403930", "0x404280"}:
+        return expected_rows, candidate_rows
+    if not expected_rows or not candidate_rows:
+        raise ValueError("briefing dispatch dependency lacks invocation rows")
+    retail = parse_assembly(bridge.assembly("0x403930"), source="bn")
+    chunks = tuple(bytes.fromhex(" ".join(row.bytes)) for row in retail)
+    _, table_address = constructor_vptr_store(chunks)
+    body = b"".join(chunks)
+    if body != _hexdump_bytes(bridge.hexdump("0x403930", len(body))):
+        raise ValueError("briefing constructor assembly disagrees with live bytes")
+    definition = candidate.constructor_definitions.get(HUD_BRIEFING_RUNTIME_CONSTRUCTOR_SYMBOL)
+    if definition is None:
+        raise ValueError("briefing dispatch lacks fresh constructor dependency")
+    chunks = tuple(bytes.fromhex(" ".join(row.bytes)) for row in definition.instructions)
+    write_offset, addend = constructor_vptr_store(chunks)
+    body = b"".join(chunks)
+    tail = definition.data[len(body):]
+    if (not definition.data.startswith(body) or len(tail) >= 16
+            or (tail and (len(definition.data) % 16 or any(byte != 0x90 for byte in tail)))
+            or definition.section_external_functions != (HUD_BRIEFING_RUNTIME_CONSTRUCTOR_SYMBOL,)
+            or definition.section_size != len(definition.data)):
+        raise ValueError("briefing constructor lacks exact complete listing/COFF extent")
+    refs = [row for row in definition.relocations
+            if row.offset < write_offset + 4 and row.offset + 4 > write_offset]
+    if (len(refs) != 1 or refs[0].offset != write_offset
+            or refs[0].type != IMAGE_REL_I386_DIR32 or addend):
+        raise ValueError("briefing this-vptr lacks unique zero-addend DIR32 relocation")
+    table = candidate.vftable_definitions.get(refs[0].symbol_name)
+    if (table is None or not refs[0].symbol_name.startswith("??_7")
+            or table.section_size != len(table.data)
+            or table.section_external_symbols != (table.symbol,)):
+        raise ValueError("briefing this-vptr lacks exclusive emitted C++ table")
+    exact_table_slots(table.data, table.relocations, 3)
+    reference = _hexdump_bytes(bridge.hexdump(normalize_address(table_address), 12))
+    if len(reference) != 12:
+        raise ValueError("briefing retail table read is incomplete")
+    address = normalize_address(int.from_bytes(reference[:4], "little"))
+    target = resolve_table_weak_target(
+        next(row for row in table.relocations if row.offset == 0), definition.coff_symbols,
+    )
+    required, observed = indexes.by_address.get(address), indexes.by_candidate_name.get(target)
+    if not required or not observed:
+        raise ValueError(f"unresolved briefing update slot identity: {address}, {target}")
+    common = {"constructor": indexes.by_address.get("0x403930"),
+              "receiver_offset": 0, "slot_count": 3, "slot_displacement": 0}
+    expected_ordinal = candidate_ordinal = 0
+    required_storage = observed_storage = None
+    if caller_start == "0x404280":
+        worker = parse_assembly(bridge.assembly(caller_start), source="bn")
+        worker_chunks = tuple(bytes.fromhex(" ".join(row.bytes)) for row in worker)
+        call_index, _, receiver = global_vptr_call_window(worker_chunks)
+        worker_body = b"".join(worker_chunks)
+        if worker_body != _hexdump_bytes(bridge.hexdump(caller_start, len(worker_body))):
+            raise ValueError("briefing worker assembly disagrees with live bytes")
+        expected_ordinal = sum(_instruction_mnemonic(row) == "call" for row in worker[:call_index])
+        required_storage = indexes.storage_by_address.get(normalize_address(receiver))
+        worker_chunks = tuple(bytes.fromhex(" ".join(row.bytes)) for row in candidate.instructions)
+        call_index, operand, addend = global_vptr_call_window(worker_chunks)
+        worker_definition = candidate.caller_definition
+        if worker_definition is None or not worker_definition.data.startswith(b"".join(worker_chunks)):
+            raise ValueError("briefing worker lacks matching fresh COFF body")
+        refs = [row for row in worker_definition.relocations
+                if row.offset < operand + 4 and row.offset + 4 > operand]
+        if len(refs) != 1 or refs[0].offset != operand or refs[0].type != IMAGE_REL_I386_DIR32 or addend:
+            raise ValueError("briefing worker receiver lacks unique DIR32 storage relocation")
+        observed_storage = indexes.storage_by_name.get(refs[0].symbol_name)
+        if not required_storage or not observed_storage:
+            raise ValueError("briefing worker receiver storage identity is unresolved")
+        candidate_ordinal = sum(_instruction_mnemonic(row) == "call" for row in candidate.instructions[:call_index])
+        for rows, ordinal in ((expected_rows, expected_ordinal), (candidate_rows, candidate_ordinal)):
+            if ordinal >= len(rows) or rows[ordinal].get("slot_displacement") != 0:
+                raise ValueError("briefing concrete dispatch does not align with its slot-zero invocation")
+    expected_rows[expected_ordinal]["concrete_update_dispatch"] = {
+        **common, "target": required, "receiver_storage": required_storage,
+    }
+    candidate_rows[candidate_ordinal]["concrete_update_dispatch"] = {
+        **common, "target": observed, "receiver_storage": observed_storage,
+    }
+    return expected_rows, candidate_rows
+
+
+def _member_dispatch_return_contract_facts(
+    expected_rows: list[dict[str, Any]], candidate_rows: list[dict[str, Any]],
+    *, caller_start: str, candidate: CandidateAssembly,
+    bridge: BinaryNinjaBridge, indexes: IdentityIndexes,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Check the embedded exit state's concrete quit-return dependency.
+
+    This is a behavioral obligation on an existing constructor call row, not
+    acceptance of a new physical/logical ICF identity or a synthesized call.
+    The expected value is decoded from the live retail table's actual target.
+    """
+    from _recoil.lib.constructor_dispatch import (
+        constant_return, exact_table_slots, resolve_table_weak_target,
+        straight_constructor_member_store,
+    )
+
+    if caller_start != "0x42dfa0":
+        return _briefing_dispatch_contract_facts(
+            expected_rows, candidate_rows, caller_start=caller_start,
+            candidate=candidate, bridge=bridge, indexes=indexes,
+        )
+    member, slot, count = 0x1D0, 4, 10
+    if not expected_rows or not candidate_rows:
+        raise ValueError("member dispatch dependency lacks its constructor invocation row")
+    retail = parse_assembly(bridge.assembly(caller_start), source="bn")
+    retail_chunks = tuple(bytes.fromhex(" ".join(row.bytes)) for row in retail)
+    _, table_address = straight_constructor_member_store(retail_chunks, member)
+    retail_body = b"".join(retail_chunks)
+    if retail_body != _hexdump_bytes(bridge.hexdump(caller_start, len(retail_body))):
+        raise ValueError("member constructor assembly disagrees with live retail bytes")
+    definition = candidate.caller_definition
+    if definition is None:
+        raise ValueError("member constructor lacks its fresh COFF definition")
+    chunks = tuple(bytes.fromhex(" ".join(row.bytes)) for row in candidate.instructions)
+    write_offset, addend = straight_constructor_member_store(chunks, member)
+    body = b"".join(chunks)
+    tail = definition.data[len(body):]
+    if (not definition.data.startswith(body) or len(tail) >= 16
+            or (tail and (len(definition.data) % 16 or any(byte != 0x90 for byte in tail)))):
+        raise ValueError("member constructor listing/COFF extent mismatch")
+    refs = [row for row in definition.relocations if row.offset == write_offset]
+    if len(refs) != 1 or refs[0].type != IMAGE_REL_I386_DIR32 or addend:
+        raise ValueError("member vptr lacks its exact table relocation")
+    table = candidate.vftable_definitions.get(refs[0].symbol_name)
+    if table is None:
+        raise ValueError("member vptr lacks its emitted C++ table")
+    exact_table_slots(table.data, table.relocations, count)
+    target_name = resolve_table_weak_target(
+        next(row for row in table.relocations if row.offset == slot * 4), definition.coff_symbols,
+    )
+    if target_name != "?OnUpdateShouldQuit@RecoilApp_LeaveNetworkState@@UAEHXZ":
+        raise ValueError("exit state table does not dispatch its concrete quit override")
+    definitions = [row for row in definition.coff_symbols
+                   if row.name == target_name and row.section_number > 0]
+    if (len(definitions) != 1 or definitions[0].value != 0
+            or definitions[0].storage_class != IMAGE_SYM_CLASS_EXTERNAL
+            or definitions[0].symbol_type != 0x20 or definitions[0].section_name != ".text"):
+        raise ValueError("quit callback lacks its unique complete function definition")
+    callback = definitions[0]
+    if any(row.section_number == callback.section_number and row.name != target_name
+           and row.storage_class == IMAGE_SYM_CLASS_EXTERNAL for row in definition.coff_symbols):
+        raise ValueError("quit callback shares an ambiguous COFF extent")
+    observed = constant_return(callback.section_data, callback.section_relocations)
+    raw_cell = _hexdump_bytes(bridge.hexdump(normalize_address(table_address + slot * 4), 4))
+    if len(raw_cell) != 4:
+        raise ValueError("quit callback retail table cell is incomplete")
+    target_address = normalize_address(int.from_bytes(raw_cell, "little"))
+    callback_rows = parse_assembly(bridge.assembly(target_address), source="bn")
+    callback_body = b"".join(bytes.fromhex(" ".join(row.bytes)) for row in callback_rows)
+    if callback_body != _hexdump_bytes(bridge.hexdump(target_address, len(callback_body))):
+        raise ValueError("quit callback retail assembly disagrees with live bytes")
+    required = constant_return(callback_body)
+    common = {"receiver_offset": member, "slot_displacement": slot * 4, "cleanup_bytes": 0}
+    expected_rows[0]["member_dispatch_return"] = {**common, "return_value": required}
+    candidate_rows[0]["member_dispatch_return"] = {**common, "return_value": observed}
+    return expected_rows, candidate_rows
+
+
+def _constructor_dispatch_contract_facts(
+    expected: Sequence[Mapping[str, Any]],
+    candidate_contract: Sequence[Mapping[str, Any]],
+    *,
+    caller_start: str,
+    candidate: CandidateAssembly,
+    bridge: BinaryNinjaBridge,
+    indexes: IdentityIndexes,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    from _recoil.lib.constructor_dispatch import (
+        exact_table_slots, leaf_constructor_vptr_write,
+        validate_leaf_listing_body, resolve_table_weak_target,
+    )
+
+    expected_rows = [dict(row) for row in expected]
+    candidate_rows = [dict(row) for row in candidate_contract]
+    obligation = _CONSTRUCTOR_DISPATCH_OBLIGATIONS.get(caller_start)
+    if obligation is None:
+        return _member_dispatch_return_contract_facts(
+            expected_rows, candidate_rows, caller_start=caller_start,
+            candidate=candidate, bridge=bridge, indexes=indexes,
+        )
+    if len(expected_rows) != 1 or len(candidate_rows) != 1:
+        raise ValueError("constructor dispatch dependency requires its one initializer invocation")
+    constructor_address, constructor_symbol, slot_count, selected_slots = obligation
+    retail = parse_assembly(bridge.assembly(constructor_address), source="bn")
+    retail_chunks = tuple(bytes.fromhex(" ".join(row.bytes)) for row in retail)
+    _, table_address = leaf_constructor_vptr_write(retail_chunks)
+    if b"".join(retail_chunks) != _hexdump_bytes(bridge.hexdump(constructor_address, sum(map(len, retail_chunks)))):
+        raise ValueError("constructor dispatch retail assembly disagrees with live bytes")
+    definition = candidate.constructor_definitions.get(constructor_symbol)
+    if definition is None:
+        raise ValueError(f"missing concrete constructor dependency: {constructor_symbol}")
+    chunks = tuple(bytes.fromhex(" ".join(row.bytes)) for row in definition.instructions)
+    write_offset, addend = leaf_constructor_vptr_write(chunks)
+    validate_leaf_listing_body(chunks, definition.data, definition.relocations)
+    if (definition.section_size != len(definition.data)
+            or definition.section_external_functions != (constructor_symbol,)):
+        raise ValueError("constructor dispatch requires an exclusive complete COFF definition")
+    references = [relocation for relocation in definition.relocations if relocation.offset == write_offset]
+    if len(references) != 1 or references[0].type != IMAGE_REL_I386_DIR32 or addend != 0:
+        raise ValueError("constructor vptr lacks its exact DIR32 table relocation")
+    if len(definition.relocations) != 1:
+        raise ValueError("leaf constructor has unexplained additional relocations")
+    table_symbol = references[0].symbol_name
+    table = candidate.vftable_definitions.get(table_symbol)
+    if table is None or not table_symbol.startswith("??_7"):
+        raise ValueError("constructor vptr does not reference an emitted C++ dispatch table")
+    target_names = exact_table_slots(table.data, table.relocations, slot_count)
+    raw_table = _hexdump_bytes(bridge.hexdump(normalize_address(table_address), slot_count * 4))
+    if len(raw_table) != slot_count * 4:
+        raise ValueError("constructor dispatch retail table read is incomplete")
+    expected_slots = {}
+    candidate_slots = {}
+    unresolved_slots = []
+    storage = f"constructor-table:{normalize_address(table_address)}"
+    for slot, name in enumerate(target_names):
+        if slot not in selected_slots:
+            continue
+        address = normalize_address(int.from_bytes(raw_table[slot * 4:slot * 4 + 4], "little"))
+        expected_identity = indexes.reviewed_authored_icf_by_vtable_selector.get(
+            (storage, slot * 4),
+            indexes.reviewed_icf_group_by_address.get(address, indexes.by_address.get(address)),
+        )
+        relocation = next(row for row in table.relocations if row.offset == slot * 4)
+        resolved_name = resolve_table_weak_target(relocation, definition.coff_symbols)
+        candidate_identity = indexes.by_candidate_name.get(resolved_name)
+        candidate_identity = indexes.reviewed_icf_group_by_logical_identity.get(candidate_identity, candidate_identity)
+        if not expected_identity or not candidate_identity:
+            unresolved_slots.append({"slot": slot, "retail": address,
+                                     "expected_identity": expected_identity,
+                                     "candidate_name": name, "resolved_name": resolved_name,
+                                     "candidate_identity": candidate_identity})
+        expected_slots[str(slot)] = expected_identity
+        candidate_slots[str(slot)] = candidate_identity
+    if unresolved_slots:
+        raise ValueError(f"unresolved constructor dispatch slots: {unresolved_slots!r}")
+    expected_rows[0]["constructor_dispatch"] = {
+        "constructor": indexes.by_address.get(constructor_address), "receiver_offset": 0,
+        "slot_count": slot_count, "selected_slot_targets": expected_slots,
+    }
+    candidate_rows[0]["constructor_dispatch"] = {
+        "constructor": indexes.by_candidate_name.get(constructor_symbol), "receiver_offset": 0,
+        "slot_count": slot_count, "selected_slot_targets": candidate_slots,
+    }
+    return expected_rows, candidate_rows
+
+
+def _provider_argument_contract_facts(
+    contract: Sequence[Mapping[str, Any]],
+    instructions: Sequence[Instruction],
+    *,
+    caller_start: str,
+    caller_end_exclusive: str,
+    candidate: CandidateAssembly | None = None,
+) -> list[dict[str, Any]]:
+    from _recoil.lib.call_argument_bits import ArgumentBits
+
+    obligations = _PROVIDER_ARGUMENT_OBLIGATIONS.get(caller_start)
+    result = [dict(row) for row in contract]
+    if not obligations:
+        return result
+    source = "cod" if candidate is not None else "bn"
+    addresses = (
+        _candidate_complete_instruction_offsets(candidate)
+        if candidate is not None
+        else _instruction_runtime_addresses(instructions, source="bn", caller_start=address_value(caller_start))
+    )
+    if any(value is None for value in addresses) or len(set(addresses)) != len(addresses):
+        raise ValueError("provider argument proof requires exact instruction addresses")
+    successors, unresolved = _exact_invocation_cfg(
+        instructions,
+        instruction_addresses=addresses,
+        instruction_index_by_address={value: index for index, value in enumerate(addresses)},
+        source=source,
+        caller_start=0 if candidate is not None else address_value(caller_start),
+        caller_end=(max(addresses) + len(instructions[-1].bytes)) if candidate is not None else address_value(caller_end_exclusive),
+        local_control_flow_indices=candidate.local_control_flow_indices if candidate is not None else frozenset(),
+        local_control_flow_targets=candidate.local_control_flow_targets if candidate is not None else {},
+    )
+    calls = [index for index, instruction in enumerate(instructions) if _instruction_mnemonic(instruction) == "call"]
+    if len(calls) != len(contract):
+        raise ValueError("provider argument proof cannot align raw calls with invocation census")
+    proof = ArgumentBits([instruction.text for instruction in instructions], successors, unresolved)
+    for ordinal, arguments in obligations.items():
+        if ordinal >= len(calls):
+            raise ValueError("provider argument obligation has no call occurrence")
+        result[ordinal]["argument_bits"] = {
+            str(argument): json_evidence_value(proof.stack_argument(calls[ordinal], argument))
+            for argument in arguments
+        }
+    return result
+
+
 def compare_call_contracts(
     expected: Sequence[Mapping[str, Any]],
     candidate: Sequence[Mapping[str, Any]],
@@ -90823,6 +91169,8 @@ def _candidate_reviewed_constructor_definitions(
         {
             HUD_NET_GAME_SETUP_LAUNCH_BUTTON_CONSTRUCTOR_SYMBOL,
             HUD_NET_GAME_SETUP_CANCEL_BUTTON_CONSTRUCTOR_SYMBOL,
+            HUD_BRIEFING_RUNTIME_CONSTRUCTOR_SYMBOL,
+            *(spec[1] for spec in _CONSTRUCTOR_DISPATCH_OBLIGATIONS.values()),
         }
     )
     return _candidate_selected_constructor_definitions(
@@ -160343,6 +160691,31 @@ def _require_wol_chkstk_caller_target_provenance(
         )
 
 
+def _translated_dynamic_probe_setup(
+    reviewed_calls: Sequence[int], observed_calls: Sequence[int | None],
+    setup_rows: Sequence[tuple[int, bytes]],
+) -> tuple[tuple[int, bytes], ...]:
+    """Anchor the unchanged reviewed sequence to fresh candidate call sites.
+
+    Absolute object offsets are observations, not retail semantic truth. Only
+    one uniform translation is admitted; the caller still authenticates every
+    setup byte, invocation, relocation, symbol, and complete definition.
+    """
+    if (not reviewed_calls or len(reviewed_calls) != len(observed_calls)
+            or any(type(value) is not int or value < 0 for value in (*reviewed_calls, *observed_calls))
+            or tuple(sorted(set(reviewed_calls))) != tuple(reviewed_calls)
+            or tuple(sorted(set(observed_calls))) != tuple(observed_calls)):
+        raise ValueError("dynamic stack-probe sites are missing, duplicated, or unordered")
+    deltas = {observed - reviewed for reviewed, observed in zip(reviewed_calls, observed_calls)}
+    if len(deltas) != 1:
+        raise ValueError("dynamic stack-probe relative call spacing changed")
+    delta = deltas.pop()
+    translated = tuple((offset + delta, body) for offset, body in setup_rows)
+    if not translated or any(offset < 0 or not body for offset, body in translated):
+        raise ValueError("dynamic stack-probe setup lies outside its complete definition")
+    return translated
+
+
 def _chkstk_compiler_helper_candidate_bridge(
     expected: Sequence[Mapping[str, Any]],
     retail_instructions: Sequence[Instruction],
@@ -160752,6 +161125,14 @@ def _chkstk_compiler_helper_candidate_bridge(
         (int(offset), bytes(body))
         for offset, body in caller_spec.get("candidate_setup_rows", ())
     )
+    if dynamic_candidate_setup_rows:
+        instruction_offsets = {id(row): offset for row, offset in zip(candidate.instructions, offsets)}
+        observed_call_offsets = tuple(instruction_offsets.get(id(row)) for row in mentions)
+        dynamic_candidate_setup_rows = _translated_dynamic_probe_setup(
+            candidate_call_offsets, observed_call_offsets, dynamic_candidate_setup_rows,
+        )
+        candidate_call_offsets = tuple(int(offset) for offset in observed_call_offsets)
+        candidate_calls = tuple(rows_by_offset.get(offset) for offset in candidate_call_offsets)
     candidate_setup_offset = int(
         caller_spec.get("candidate_setup_offset", 0)
     )
@@ -176429,6 +176810,19 @@ def live_call_contract_result(
                     candidate,
                     hud_net_game_setup_inline_input_projection,
                 )
+            )
+            expected, candidate = _constructor_dispatch_contract_facts(
+                expected, candidate, caller_start=address,
+                candidate=candidate_assembly, bridge=bridge, indexes=indexes,
+            )
+            expected = _provider_argument_contract_facts(
+                expected, retail_instructions,
+                caller_start=address, caller_end_exclusive=end_exclusive,
+            )
+            candidate = _provider_argument_contract_facts(
+                candidate, candidate_assembly.instructions,
+                caller_start=address, caller_end_exclusive=end_exclusive,
+                candidate=candidate_assembly,
             )
             trace_caller(
                 "candidate-projections-complete",

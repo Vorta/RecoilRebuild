@@ -70,6 +70,24 @@ covered physical slice. Raw definitions omitted from the target are diagnostics
 because the linker may discard or fold them; full linked order later requires
 the exact linked population.
 
+The reviewed `recoil-logical-alias-group-v5` route represents shared-header
+inline or implicit complete destructors. It separates the attached source
+construct from its proven emitting translation units and retains one physical
+authored gate. A target names one proved logical object witness; this is not an
+assertion about the original linker winner. Every declared member emitted by
+that TU must still exist in the fresh object as an independent ANY COMDAT with
+identical complete bytes and relocation semantics. Only exact self-referencing
+VC5 FPO associations are supported. Missing members, changed cleanup code,
+unproved targets, duplicate source mirrors, and unknown physical artifacts fail
+closed. Retail selector evidence and the paired same-object ICF/NOICF mechanism
+proof remain mandatory; neither a selected witness nor a saved map accepts
+linked placement or bytes.
+
+For a read-only lifecycle diagnosis, `audit coff-lifecycle --object <obj>
+--symbol <decorated-name> [--symbol ...] [--map <map>]` inventories complete
+definitions, associations, inbound relocations, and map observations. Its output
+is diagnostic only and does not establish freshness or accept tracker facts.
+
 Fresh acceptance:
 
 ```powershell
@@ -92,6 +110,10 @@ The direct verifier compares:
 - direct versus indirect dispatch;
 - authored/self/provider/IAT target identity;
 - virtual/interface slot or callback storage;
+- selected retail-proven provider argument bits and their reaching-definition provenance;
+- selected initializer dependencies on concrete constructor vptr writes and emitted dispatch targets;
+- selected embedded-state dispatch dependencies on the concrete quit override and its live retail return semantics;
+- selected background-thread dispatch dependencies on the complete object's constructor stamp, emitted update slot, and global receiver load;
 - known caller cleanup;
 - current direct Binary Ninja facts from the target-qualified loaded database.
 
@@ -101,6 +123,30 @@ python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fre
 
 Unresolved target, storage, provider, import, ICF/logical-alias identity, or
 indirect provenance fails closed.
+
+Argument/dependency selection rules do not contain saved expected flag values
+or table contents. Those facts are derived from the live retail body and
+compared with the freshly compiled candidate. Unsupported bit operations,
+conflicting CFG predecessors, missing constructor bodies, unbound table slots,
+or unresolved target identities block the selected proof. Constructor listing
+coverage permits only bounded post-return VC5 alignment, never additional code.
+The save/load initializer obligation checks the complete relocated table extent
+and selects deleting, activation, entry, and deactivation targets. Other
+inherited/folded cells do not gain logical-alias or full-table byte acceptance.
+Weak dispatch targets require the exact fresh COFF weak-external/default chain;
+decorated-name substitution is not proof. The embedded quit-return obligation
+does not accept a new physical/logical ICF identity. This is not a claim
+that call contracts establish every ordinary data-flow or rendering behavior;
+the later byte and final-image stages remain necessary.
+
+The briefing update obligation follows entry `this` through a bounded normal
+constructor CFG, requires the same explicit vptr stamp on every return, and
+compares the generated three-cell table's update target with live retail.
+The background-thread obligation also binds its actual slot-zero invocation to the
+relocated global receiver load. Missing overrides, bypassed receiver loads,
+ambiguous table relocations, and unsupported constructor instructions block
+verification. This is a selected dispatch dependency, not acceptance of all
+table cells or of arbitrary side effects inside constructor callees.
 
 Fresh acceptance:
 
@@ -155,6 +201,42 @@ diagnostic must produce the executable and map, suppresses linked-order
 evaluation and playground deployment, and accepts no byte, linked-order, or
 final-image fact. It is never repeated per slice. The final closeout CAS is one
 serial mutation and remains the only route to stage completion.
+
+## Playground Build Safeguard (Not An Acceptance Stage)
+
+For a requested playground test executable, use the explicit non-accepting mode:
+
+```powershell
+python tools/recoil.py verify final-build --playground-only --build-dir build/live-validation/playground/<fresh-root>
+```
+
+This mode requires an absent root, the canonical manifest/profile and tracker,
+and a complete fresh compile, resource build, and link. It runs the same complete
+authored linked-presence safeguard described below and deploys only if that
+passes. A failed deployment is also a command failure. Partial builds, diagnostic
+profiles, custom order targets, `--clean`, and `--linkability-only` cannot be
+combined with it. It evaluates no linked order and accepts no order, byte, alias,
+or final-image fact; those comparisons remain separate serial-stage work.
+In particular, candidate ICF sharing is neither a retail alias proof nor a reason
+to fabricate source solely to keep identical functions apart.
+
+A normal canonical `verify final-build` checks required authored linked
+presence across the complete accepted authored-order census before replacing
+the playground executable. The current linked-order cursor does not limit that
+presence check. Missing/stale target registrations, uncovered census members,
+missing functions, and ambiguous matches block deployment and are reported as
+`failure_stage: linked-presence`.
+
+The accepted census owns membership: a compiler-lifecycle manifest role does
+not remove a selected identity's presence obligation. Every census member must
+still have required presence and an unambiguous linked selector.
+
+This guard checks selected symbolic identity presence only. It permits named
+aliases to share an address and does not require retail RVAs, ordering, or body
+bytes. It neither accepts a reconstruction stage nor proves runtime behavior.
+The explicit `--linkability-only` diagnostic used by call-contract closeout
+returns before this guard and before all playground deployment, preserving its
+compile/resource/link-only contract.
 
 ## Stage 3: Authored Bytes
 

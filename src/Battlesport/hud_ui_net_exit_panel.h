@@ -25,8 +25,8 @@ struct HudUiNetExitPanel_ResumeWidget : HudUiZrdWidget {
     int previewInputCaptureActive;
 
     void OnActivate();
-    void OnShowPreview();
-    void OnHidePreview();
+    virtual void ShowPreview();
+    virtual void HidePreview();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetExitPanel_ResumeWidget) == 0x150);
 RECOIL_STATIC_ASSERT(

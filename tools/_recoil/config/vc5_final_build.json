@@ -69,6 +69,7 @@
     "src/Battlesport/WinSock.cpp": "vc5_o2_ob0_md_gx_fastcall_facs",
     "src/Battlesport/WOL.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/westwoodonline/WolapiProgressDialog.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zClass/Object3d.c": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zDEClient/zdec_crater.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zFMV/fmv_main.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zFMV/fmv_script.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
@@ -76,6 +77,7 @@
     "src/GameZRecoil/zInput/zin_init.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zInput/zin_joystick.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zInput/zin_kbd.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zNetwork/znet_dplay.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zUI/zui.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zUI/zui_widgets.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zUtil/zutl_zbd.cpp": "vc5_o2_ob1_md_gx_fastcall_facs"

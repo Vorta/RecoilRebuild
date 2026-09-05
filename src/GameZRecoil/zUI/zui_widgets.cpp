@@ -2488,7 +2488,7 @@ void HudUiNumericTextInput::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-RECOIL_NO_GS void HudUiNumericTextInput::UpdateCaptureUiAndClip(
+RECOIL_NO_GS void HudUiNumericTextInput::Update(
     float deltaSeconds
 ) {
     if ((flags & 0x10) != 0) {
@@ -3981,7 +3981,7 @@ int HudUiFillBitmap::LoadFromZrd(
  * @recoil-artifact defines .text recoil:function:0x4b8650: HudUiFillBitmap::UpdateNormalizedFromCursor.
  * Purpose: update the normalized fill value from the owner cursor and activate the widget.
  */
-void HudUiFillBitmap::UpdateNormalizedFromCursor() {
+void HudUiFillBitmapSlider::OnActivate() {
     const int cursorX = owner->mouseState.cursorClientX;
     const int relativeX = cursorX - GetCenterX();
     const int imageWidth = image != 0 ? image->width : 0;
@@ -3996,7 +3996,7 @@ void HudUiFillBitmap::UpdateNormalizedFromCursor() {
  * @recoil-artifact defines .text recoil:function:0x4b86b0: HudUiFillBitmap::SetNormalizedValueAndRebuild.
  * Purpose: apply the recovered HUD state change handled by HudUiFillBitmap::SetNormalizedValueAndRebuild.
  */
-void HudUiFillBitmap::SetNormalizedValueAndRebuild(
+void HudUiFillBitmapSlider::SetNormalizedValueAndRebuild(
     float value
 ) {
     if (fillImage == 0) {
@@ -4053,8 +4053,7 @@ HudUiZrdWidgetEx17C_Item * HudUiZrdWidgetEx17C_Item::Constructor() {
 /**
  * Purpose: run the recovered HudUiZrdWidgetEx17C_Item::DestructorCore teardown path.
  */
-void HudUiZrdWidgetEx17C_Item::DestructorCore() {
-    HudUiZrdWidget::DestructorCore();
+HudUiZrdWidgetEx17C_Item::~HudUiZrdWidgetEx17C_Item() {
 }
 
 /**
@@ -4240,7 +4239,7 @@ void HudUiZrdWidgetEx17C_Item::SetSelected(
  * @recoil-artifact defines .text recoil:function:0x4b8af0: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds.
  * Purpose: return the recovered HUD value exposed by HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds.
  */
-HudUiRect * HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds() {
+HudUiRect * HudUiZrdWidgetEx17C_Item::GetBoundsRectOrNull() {
     if (mouseRectValid != 0) {
         return &mouseRect;
     }
@@ -4589,7 +4588,7 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
  * @recoil-artifact defines .text recoil:function:0x4b9320: HudCmdBindButtonBase::OnSelectedIndexChanged.
  * Purpose: handle the recovered HUD event path for HudCmdBindButtonBase::OnSelectedIndexChanged.
  */
-void HudCmdBindButtonBase::OnSelectedIndexChanged(
+void HudCmdBindButtonBase::OnSelectionChangedRefresh(
     int selectedIndex
 ) {
     SetSelectedEntry(selectedIndex);
@@ -5397,7 +5396,7 @@ void HudUiContainer::InvalidateChildren() {
  * @recoil-artifact defines .text recoil:function:0x4ba3c0: HudUiFillBitmap::SetNormalizedValue.
  * Purpose: apply the recovered HUD state change handled by HudUiFillBitmap::SetNormalizedValue.
  */
-void HudUiFillBitmap::SetNormalizedValue(
+void HudUiFillBitmap::SetNormalizedValueAndRebuild(
     float value
 ) {
     unsigned int valueBits = 0;
@@ -5429,7 +5428,7 @@ void HudUiOwnedTextInput::OnAccept() {
  * @recoil-artifact defines .text recoil:function:0x4ba400: HudUiPanel::GetWrapRect.
  * Purpose: Returns the panel word-wrap rectangle storage.
  */
-HudUiRect * HudUiPanel::GetWrapRect() {
+HudUiRect * HudUiPanel::GetBoundsRectOrNull() {
     return &wrapRect;
 }
 

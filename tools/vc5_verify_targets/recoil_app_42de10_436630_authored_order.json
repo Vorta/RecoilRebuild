@@ -45,10 +45,10 @@
           "address": "0x42df90",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "RecoilApp_IState::~RecoilApp_IState",
+          "name": "App-state complete destructor fold (MainMenuPrep object witness; retail winner unknown)",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "??1RecoilApp_IState@@UAE@XZ"
+          "symbol": "??1RecoilApp_MainMenuPrepState@@UAE@XZ"
         },
         {
           "address": "0x42dfa0",
@@ -1650,7 +1650,7 @@
           "name": "HudUiSaveLoadGameNameInput::OnRawKeyboardEvent",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnRawKeyboardEvent@HudUiSaveLoadGameNameInput@@QAEHH@Z"
+          "symbol": "?OnRawKeyboardChar@HudUiSaveLoadGameNameInput@@UAEHH@Z"
         },
         {
           "address": "0x434920",
@@ -1686,7 +1686,7 @@
           "name": "HudUiSaveLoadDialog::Destructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@HudUiSaveLoadDialog@@QAEXXZ"
+          "symbol": "??1HudUiSaveLoadDialog@@UAE@XZ"
         },
         {
           "address": "0x434a80",
@@ -1695,7 +1695,7 @@
           "name": "HudUiSaveGameDialog::Destructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@HudUiSaveGameDialog@@QAEXXZ"
+          "symbol": "??1HudUiSaveGameDialog@@UAE@XZ"
         },
         {
           "address": "0x434b90",
@@ -1722,7 +1722,7 @@
           "name": "HudUiLoadGameDialog::Destructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@HudUiLoadGameDialog@@QAEXXZ"
+          "symbol": "??1HudUiLoadGameDialog@@UAE@XZ"
         },
         {
           "address": "0x434ee0",
@@ -1848,7 +1848,7 @@
           "name": "RecoilStateSaveLoadTransition::StaticInit",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?StaticInit@RecoilStateSaveLoadTransition@@SAPAU1@XZ"
+          "symbol": "?StaticInit@RecoilStateSaveLoadTransition@@SAXXZ"
         },
         {
           "address": "0x435a50",
@@ -1881,19 +1881,19 @@
           "address": "0x435c80",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "RecoilStateSaveLoadTransition::Constructor",
+          "name": "RecoilStateSaveLoadTransition::RecoilStateSaveLoadTransition",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Constructor@RecoilStateSaveLoadTransition@@QAEPAU1@XZ"
+          "symbol": "??0RecoilStateSaveLoadTransition@@QAE@XZ"
         },
         {
           "address": "0x435cc0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "RecoilStateSaveLoadTransition::Destructor",
+          "name": "RecoilStateSaveLoadTransition::~RecoilStateSaveLoadTransition",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@RecoilStateSaveLoadTransition@@QAEXXZ"
+          "symbol": "??1RecoilStateSaveLoadTransition@@UAE@XZ"
         },
         {
           "address": "0x435d20",
@@ -2061,10 +2061,10 @@
           "address": "0x42df90",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "RecoilApp_IState::~RecoilApp_IState",
+          "name": "App-state complete destructor fold (MainMenuPrep object witness; retail winner unknown)",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "??1RecoilApp_IState@@UAE@XZ"
+          "symbol": "??1RecoilApp_MainMenuPrepState@@UAE@XZ"
         },
         {
           "address": "0x42dfa0",
@@ -3666,7 +3666,7 @@
           "name": "HudUiSaveLoadGameNameInput::OnRawKeyboardEvent",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnRawKeyboardEvent@HudUiSaveLoadGameNameInput@@QAEHH@Z"
+          "symbol": "?OnRawKeyboardChar@HudUiSaveLoadGameNameInput@@UAEHH@Z"
         },
         {
           "address": "0x434920",
@@ -3702,7 +3702,7 @@
           "name": "HudUiSaveLoadDialog::Destructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@HudUiSaveLoadDialog@@QAEXXZ"
+          "symbol": "??1HudUiSaveLoadDialog@@UAE@XZ"
         },
         {
           "address": "0x434a80",
@@ -3711,7 +3711,7 @@
           "name": "HudUiSaveGameDialog::Destructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@HudUiSaveGameDialog@@QAEXXZ"
+          "symbol": "??1HudUiSaveGameDialog@@UAE@XZ"
         },
         {
           "address": "0x434b90",
@@ -3738,7 +3738,7 @@
           "name": "HudUiLoadGameDialog::Destructor",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@HudUiLoadGameDialog@@QAEXXZ"
+          "symbol": "??1HudUiLoadGameDialog@@UAE@XZ"
         },
         {
           "address": "0x434ee0",
@@ -3864,7 +3864,7 @@
           "name": "RecoilStateSaveLoadTransition::StaticInit",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?StaticInit@RecoilStateSaveLoadTransition@@SAPAU1@XZ"
+          "symbol": "?StaticInit@RecoilStateSaveLoadTransition@@SAXXZ"
         },
         {
           "address": "0x435a50",
@@ -3897,19 +3897,19 @@
           "address": "0x435c80",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "RecoilStateSaveLoadTransition::Constructor",
+          "name": "RecoilStateSaveLoadTransition::RecoilStateSaveLoadTransition",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Constructor@RecoilStateSaveLoadTransition@@QAEPAU1@XZ"
+          "symbol": "??0RecoilStateSaveLoadTransition@@QAE@XZ"
         },
         {
           "address": "0x435cc0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "RecoilStateSaveLoadTransition::Destructor",
+          "name": "RecoilStateSaveLoadTransition::~RecoilStateSaveLoadTransition",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Destructor@RecoilStateSaveLoadTransition@@QAEXXZ"
+          "symbol": "??1RecoilStateSaveLoadTransition@@UAE@XZ"
         },
         {
           "address": "0x435d20",

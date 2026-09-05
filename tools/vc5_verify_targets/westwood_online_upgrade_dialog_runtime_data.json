@@ -39,14 +39,14 @@
     },
     {
       "address": "0x4f543c",
-      "symbol_regex": "_\\?\\$S205@\\?4\\?\\?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ@4EA\\$S\\d+",
+      "symbol_regex": "_\\?\\$S205@\\?4\\?\\?OnOK@WestwoodOnlineUpgradeDialog@@UAEXXZ@4EA\\$S\\d+",
       "name": "g_WestwoodOnlineUpgradePendingStatusTextInitFlag",
       "bn_name": "g_WestwoodOnlineUpgradePendingStatusTextInitFlag",
       "byte_length": 1
     },
     {
       "address": "0x53855c",
-      "symbol_regex": "_\\?pendingStatusText@\\?4\\?\\?SubmitVisibleSessionRequestsAndStatusText@WestwoodOnlineUpgradeDialog@@QAEXXZ@4VCString@@A\\$S\\d+",
+      "symbol_regex": "_\\?pendingStatusText@\\?4\\?\\?OnOK@WestwoodOnlineUpgradeDialog@@UAEXXZ@4VCString@@A\\$S\\d+",
       "name": "g_WestwoodOnlineUpgradePendingStatusText",
       "bn_name": "g_WestwoodOnlineUpgradePendingStatusText",
       "byte_length": 4

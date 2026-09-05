@@ -2276,10 +2276,7 @@ void HudUiMpExitDialog_ExitButton::OnActivate() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: destroy the exit and new-game child widgets before tearing down the background base.
  */
-void HudUiMpExitDialog::Destructor() {
-    m_mpExitButton.HudUiZrdWidget::~HudUiZrdWidget();
-    m_mpNewGameButton.HudUiZrdWidget::~HudUiZrdWidget();
-    this->HudUiBackground::~HudUiBackground();
+HudUiMpExitDialog::~HudUiMpExitDialog() {
 }
 
 /**
@@ -2514,7 +2511,7 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
 ) : HudUiBackground(),
     playButton(),
     cancelButton(),
-    gameNameInput(),
+    gameNameInput(21),
     worldSelector(),
     nextWorldButton(),
     prevWorldButton(),
@@ -2772,17 +2769,19 @@ void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
 }
 
 /**
- * Purpose: Run typed numeric-input construction, allocate the requested digit
- * buffer, clear the display text, and leave keyboard input inactive.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduinumerictextinput-baseconstructor
+ * @recoil-artifact defines .text recoil:function:0x41a190: Parameterized network text-input construction.
+ * Retail constructs the numeric-input base at 0x4b49e0 before installing the
+ * intermediate table at 0x4cfa70. The explicit argument sizes its text buffer.
+ * Purpose: Construct the network text-input layer with its requested buffer,
+ * clear the display text, and leave keyboard input inactive.
  */
-HudUiNumericTextInput * HudUiNumericTextInput::Constructor(
-    unsigned int maxDigits
-) {
-    BaseConstructor();
-    textInput.AllocTextBuffer(maxDigits);
+HudUiNetGameSetupTextInput::HudUiNetGameSetupTextInput(
+    unsigned int bufferSize
+) : HudUiNumericTextInput() {
+    textInput.AllocTextBuffer(bufferSize);
     Update("");
     SetInputActive(0);
-    return this;
 }
 
 /**
@@ -2791,10 +2790,7 @@ HudUiNumericTextInput * HudUiNumericTextInput::Constructor(
  */
 HudUiClampedIntTextInput::HudUiClampedIntTextInput(
     unsigned int maxDigits
-) {
-    textInput.AllocTextBuffer(maxDigits + 1);
-    Update("");
-    SetInputActive(0);
+) : HudUiNetGameSetupTextInput(maxDigits + 1) {
     minValue = -2147483647 - 1;
     maxValue = 2147483647;
 }
@@ -4817,7 +4813,7 @@ void HudUiNetExitPanel_ResumeWidget::OnActivate() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: push preview input capture, restore saved focus for mouse mode, and show the resume preview.
  */
-void HudUiNetExitPanel_ResumeWidget::OnShowPreview() {
+void HudUiNetExitPanel_ResumeWidget::ShowPreview() {
     if (previewInputCaptureActive == 0) {
         zInput::BindMapContext_Push(0);
         zInput::BindMapCurrent_SetMouseBinding(
@@ -4849,7 +4845,7 @@ void HudUiNetExitPanel_ResumeWidget::OnShowPreview() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: pop preview input capture, save current focus for mouse mode, and hide the resume preview.
  */
-void HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
+void HudUiNetExitPanel_ResumeWidget::HidePreview() {
     if (previewInputCaptureActive != 0) {
         zInput::BindMapContext_Pop();
 
@@ -5203,25 +5199,12 @@ int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
 }
 
 /**
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: construct the global new-game overlay owner and register its exit cleanup.
- */
-void __cdecl HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit() {
-    StaticInit();
-    RegisterAtExit();
-}
-
-/**
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: return the ordinary static-storage new-game overlay owner.
- */
-HudUiNewGamePanelOverlayOwner *__cdecl HudUiNewGamePanelOverlayOwner::StaticInit() {
-    return &g_HudUiNewGamePanelOverlayOwner;
-}
-
-/**
  * @recoil-anchor recoil:anchor:battlesport-mission-g-huduinewgamepaneloverlayowner
  * @recoil-artifact defines .data recoil:data:0x4f32c8: g_HudUiNewGamePanelOverlayOwner.
+ * @recoil-artifact emits .text recoil:function:0x41c5e0: CRT initialization coordinator.
+ * @recoil-artifact emits .text recoil:function:0x41c5f0: Global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x41c6a0: CRT exit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x41c6b0: Global-object exit destructor thunk.
  * Purpose: Own the ordinary static-storage new-game overlay state object.
  */
 HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
@@ -5242,22 +5225,6 @@ HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
 
         m_dialog = 0;
     }
-}
-
-/**
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: register the global new-game overlay owner destructor for process exit.
- */
-void __cdecl HudUiNewGamePanelOverlayOwner::RegisterAtExit() {
-    atexit(AtExitDestructor);
-}
-
-/**
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: run process-exit cleanup for the global new-game overlay owner.
- */
-void __cdecl HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
-    g_HudUiNewGamePanelOverlayOwner.~HudUiNewGamePanelOverlayOwner();
 }
 
 /**

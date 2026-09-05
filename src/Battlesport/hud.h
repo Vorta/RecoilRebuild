@@ -269,7 +269,7 @@ struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
     }
 
     void OnActivate();
-    int OnRawKeyboardEvent(int key);
+    virtual int OnRawKeyboardChar(int key);
     virtual void OnAccept();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadGameNameInput) == 0x374);
@@ -285,7 +285,7 @@ struct HudUiSaveLoadDialog : HudUiBackground {
     int selectedEntryIndex;
 
     virtual void OnPrimaryActionThunk() = 0;
-    void Destructor();
+    virtual ~HudUiSaveLoadDialog();
     void InitializeFileEntries();
     void DeleteSaveFile(int confirmDelete);
     void RefreshSaveFileList();
@@ -396,7 +396,7 @@ struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
     HudUiSaveGamePrimaryActionButton primaryActionButton;
 
     HudUiSaveGameDialog();
-    void Destructor();
+    virtual ~HudUiSaveGameDialog();
     virtual void OnPrimaryActionThunk();
     void ProcessDialogResult();
 };
@@ -411,7 +411,7 @@ struct HudUiLoadGameDialog : HudUiSaveLoadDialog {
     HudUiLoadGamePrimaryActionButton primaryActionButton;
 
     HudUiLoadGameDialog();
-    void Destructor();
+    virtual ~HudUiLoadGameDialog();
     virtual void OnPrimaryActionThunk();
     void ProcessDialogResult();
 };
@@ -568,10 +568,14 @@ RECOIL_STATIC_ASSERT(
     ) == 0x8c
 );
 
-struct RecoilStateSaveLoadTransition : RecoilApp_IState {
+/**
+ * @recoil-anchor recoil:anchor:battlesport.saveload-transition-state
+ * @recoil-artifact emits .text recoil:function:0x435ca0: VC5 deleting-destructor variant for virtual state destruction.
+ * Purpose: Own the active save/load dialog and its polymorphic state lifecycle.
+ */
+struct RecoilStateSaveLoadTransition : RecoilStateDialogHost {
     // Current x86 owner-data evidence keeps these nullable object references
     // as 32-bit slots inside the 0x1c-byte singleton.
-    RecoilPtr32 m_dialog; // HudUiSaveLoadDialog*
     RecoilSaveLoadDialogKind m_dialogKind;
     zVideoHalfResAdjustMode m_savedHalfResAdjustMode;
     RecoilSaveLoadPresentationCaptureMode m_capturePresentationMode;
@@ -579,11 +583,11 @@ struct RecoilStateSaveLoadTransition : RecoilApp_IState {
     RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
 
     static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateSaveLoadTransition *__cdecl StaticInit();
+    static void __cdecl StaticInit();
     static void __cdecl RegisterAtExit();
     static void __cdecl AtExitDestructor();
-    RecoilStateSaveLoadTransition * Constructor();
-    void Destructor();
+    RecoilStateSaveLoadTransition();
+    ~RecoilStateSaveLoadTransition();
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
@@ -701,10 +705,6 @@ RECOIL_STATIC_ASSERT(
 struct HudUiNewGamePanelOverlayOwner : RecoilStateDialogHost {
     virtual ~HudUiNewGamePanelOverlayOwner();
     int OnTryBecomeCurrent();
-    static void __cdecl StaticInitAndRegisterAtExit();
-    static HudUiNewGamePanelOverlayOwner *__cdecl StaticInit();
-    static void __cdecl RegisterAtExit();
-    static void __cdecl AtExitDestructor();
     static void __cdecl QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);

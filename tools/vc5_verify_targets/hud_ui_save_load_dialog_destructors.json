@@ -19,17 +19,17 @@
   "functions": [
     {
       "address": "0x4349a0",
-      "symbol": "?Destructor@HudUiSaveLoadDialog@@QAEXXZ",
+      "symbol": "??1HudUiSaveLoadDialog@@UAE@XZ",
       "name": "HudUiSaveLoadDialog::Destructor"
     },
     {
       "address": "0x434a80",
-      "symbol": "?Destructor@HudUiSaveGameDialog@@QAEXXZ",
+      "symbol": "??1HudUiSaveGameDialog@@UAE@XZ",
       "name": "HudUiSaveGameDialog::Destructor"
     },
     {
       "address": "0x434df0",
-      "symbol": "?Destructor@HudUiLoadGameDialog@@QAEXXZ",
+      "symbol": "??1HudUiLoadGameDialog@@UAE@XZ",
       "name": "HudUiLoadGameDialog::Destructor"
     }
   ]

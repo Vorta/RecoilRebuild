@@ -1856,7 +1856,7 @@
         },
         {
           "address": "0x40ba90",
-          "symbol": "?OnSelectionChangedRefresh@HudCmdBindButtonBase@@UAEXH@Z",
+          "symbol": "?OnSelectionChangedRefresh@HudCmdBindButton@@UAEXH@Z",
           "name": "HudCmdBindButtonBase::OnSelectionChangedRefresh",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",

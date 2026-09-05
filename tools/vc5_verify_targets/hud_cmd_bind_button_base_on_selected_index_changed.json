@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x4b9320",
-      "symbol": "?OnSelectedIndexChanged@HudCmdBindButtonBase@@QAEXH@Z",
+      "symbol": "?OnSelectionChangedRefresh@HudCmdBindButtonBase@@UAEXH@Z",
       "name": "HudCmdBindButtonBase::OnSelectedIndexChanged"
     }
   ]

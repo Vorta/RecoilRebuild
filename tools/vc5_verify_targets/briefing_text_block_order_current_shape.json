@@ -108,8 +108,8 @@
     },
     {
       "address": "0x404070",
-      "symbol": "?Update@HudUiBriefingRuntime@@QAEXM@Z",
-      "name": "HudUiBriefingRuntime::Update"
+      "symbol": "?UpdateAll@HudUiBriefingRuntime@@UAEXM@Z",
+      "name": "HudUiBriefingRuntime::UpdateAll"
     },
     {
       "address": "0x404140",

@@ -20,8 +20,16 @@
   "functions": [
     {
       "address": "0x48bff0",
-      "symbol": "_zNetwork_DestroyDispatchHandlerList",
-      "name": "zNetwork_DestroyDispatchHandlerList"
+      "symbol": "_$E4",
+      "name": "zNetwork_DestroyDispatchHandlerList",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-thunk",
+      "provenance": "compiler-emitted-noncovering",
+      "emission_anchor": {
+        "path": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+        "kind": "data-definition",
+        "name": "g_zNetwork_DispatchHandlerList"
+      }
     }
   ]
 }
