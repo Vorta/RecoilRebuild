@@ -1,0 +1,78 @@
+{
+  "status": "Applied, refreshed, read back, and saved: one 16-byte vector object at 0x539df0 with byte allocator representation and pointers at offsets 4/8/12; independent interior definitions no longer remain. Production already uses std::vector.",
+  "before": [
+    {
+      "address": "0x539df0",
+      "name": "g_zDEClient_FeatureListFlags",
+      "raw_name": "g_zDEClient_FeatureListFlags",
+      "type": "int32_t",
+      "size": 4,
+      "width": 4,
+      "value": "0",
+      "bytes_hex": "00000000",
+      "ascii_preview": "....",
+      "bytes_read": 4,
+      "repr": "int:0"
+    },
+    {
+      "address": "0x539df4",
+      "name": "g_zDEClient_FeatureListBegin",
+      "raw_name": "g_zDEClient_FeatureListBegin",
+      "type": "struct zDEClient_FeatureEntry*",
+      "size": 4,
+      "width": 4,
+      "value": "0",
+      "bytes_hex": "00000000",
+      "ascii_preview": "....",
+      "bytes_read": 4,
+      "repr": "int:0"
+    },
+    {
+      "address": "0x539df8",
+      "name": "g_zDEClient_FeatureListEnd",
+      "raw_name": "g_zDEClient_FeatureListEnd",
+      "type": "struct zDEClient_FeatureEntry*",
+      "size": 4,
+      "width": 4,
+      "value": "0",
+      "bytes_hex": "00000000",
+      "ascii_preview": "....",
+      "bytes_read": 4,
+      "repr": "int:0"
+    },
+    {
+      "address": "0x539dfc",
+      "name": "g_zDEClient_FeatureListCapacityEnd",
+      "raw_name": "g_zDEClient_FeatureListCapacityEnd",
+      "type": "struct zDEClient_FeatureEntry*",
+      "size": 4,
+      "width": 4,
+      "value": "0",
+      "bytes_hex": "00000000",
+      "ascii_preview": "....",
+      "bytes_read": 4,
+      "repr": "int:0"
+    }
+  ],
+  "before_comments": [
+    {
+      "address": "0x539df4",
+      "comment": "Feature-entry vector begin pointer. Entries are 0x34-byte zDEClient feature records."
+    }
+  ],
+  "after": {
+    "address": "0x539df0",
+    "name": "g_zDEClient_FeatureList",
+    "type": "zDEClient_FeatureVectorStorage",
+    "size": 16,
+    "comment": "VC5 std::vector<zDEClient_FeatureEntry> storage, 16 bytes: allocator representation byte at +0; +1..3 alignment; begin/end/capacityEnd pointers at +4/+8/+12. 0x45767b writes one allocator byte, then clears the three pointers. 0x457840 grows/copies 0x34-byte entries; 0x4576b0 frees begin and clears the pointers. These are BN representation fields, not authored flags or independent source globals. Production source already declares std::vector."
+  },
+  "type_declaration": "struct zDEClient_FeatureVectorStorage {\n uint8_t allocatorStorage;\n uint8_t alignment[3];\n struct zDEClient_FeatureEntry* begin;\n struct zDEClient_FeatureEntry* end;\n struct zDEClient_FeatureEntry* capacityEnd;\n};",
+  "evidence": [
+    "retail 0x457660 initializer",
+    "retail 0x457840 growth",
+    "retail 0x4576b0 teardown",
+    "VC5 VECTOR/XMEMORY layout",
+    "production already std::vector"
+  ]
+}

@@ -1,0 +1,856 @@
+{
+  "status": "Completed and saved: 14 function comments narrowed, two inline comments narrowed, nine unconfirmed inline comments removed. All 25 readbacks matched. Runtime bounds are not blanket allocation-extent acceptance.",
+  "scope": "Supplementary array-access checks; no allocation/source-owner acceptance",
+  "before": {
+    "ok": true,
+    "kind": "bulk_request",
+    "total": 39,
+    "items": [
+      {
+        "index": 0,
+        "id": "f0x416480",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "HudSensorMapNode::DrawProjectedPath",
+              "raw_name": "HudSensorMapNode::DrawProjectedPath",
+              "address": "0x416480",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "HudSensorMapNode::DrawProjectedPath"
+              }
+            },
+            "comment": "Physical source-file block: src/Battlesport/map.cpp [0x415ab0, 0x417350); layer: map_projected_path_draw_layer. Evidence: source-path literal 0x4daf04 xref at 0x416922. Block/layer membership is routing evidence only, not owner/tier acceptance.\nTransforms/copies this node's map points into g_HudSensor_ProjectScratch, closes the loop with the first point, clips each segment against the view z range, projects it, and draws a clipped immediate line strip.\nBN caveat: loop cursors still render previous-point accesses as negative zVec3 offsets and the loop-closing write as scaled raw array stores."
+          },
+          "function": "0x416480"
+        }
+      },
+      {
+        "index": 1,
+        "id": "f0x46eb20",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zImage::Init",
+              "raw_name": "zImage::Init",
+              "address": "0x46eb20",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zImage::Init"
+              }
+            },
+            "comment": "Original file: D:\\Proj\\GameZRecoil\\zVideo\\zVideo.cpp. Initializes zImage font slots, clears the packed transparent font color, optionally loads fonts from a path, and binds the TextureMemory option pointer to the HW/SW option or local default. Returns 0 for the EngineInit passed path."
+          },
+          "function": "0x46eb20"
+        }
+      },
+      {
+        "index": 2,
+        "id": "f0x459e70",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zEffect::HandleNodeAnimEvent",
+              "raw_name": "zEffect::HandleNodeAnimEvent",
+              "address": "0x459e70",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zEffect::HandleNodeAnimEvent"
+              }
+            },
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_run.c\nBN limitations: the inline sequence-name compare loop at 0x45a5ca uses sbb flag materialization that BN 5.2 partially fails to lift; the matrix/outCandidate stack slot is reused across lifetimes; node->diRef displays the integer union arm in some zDi* uses. Direct callees and propagated contracts are accepted; these limitations are local to inline compare/stack lifetime/union display."
+          },
+          "function": "0x459e70"
+        }
+      },
+      {
+        "index": 3,
+        "id": "f0x49a830",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zRndr_LensFlare::QueueProjectedSample",
+              "raw_name": "zRndr_LensFlare::QueueProjectedSample",
+              "address": "0x49a830",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zRndr_LensFlare::QueueProjectedSample"
+              }
+            },
+            "comment": "zRndr_LensFlare.cpp"
+          },
+          "function": "0x49a830"
+        }
+      },
+      {
+        "index": 4,
+        "id": "f0x49a8c0",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer",
+              "raw_name": "zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer",
+              "address": "0x49a8c0",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer"
+              }
+            },
+            "comment": "Likely original file: D:\\Proj\\GameZRecoil\\zRndr\\zRndr_Draw.cpp"
+          },
+          "function": "0x49a8c0"
+        }
+      },
+      {
+        "index": 5,
+        "id": "f0x49a920",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zRndr_LensFlare::DrawQueuedSamples16AndBuildVisibleList",
+              "raw_name": "zRndr_LensFlare::DrawQueuedSamples16AndBuildVisibleList",
+              "address": "0x49a920",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zRndr_LensFlare::DrawQueuedSamples16AndBuildVisibleList"
+              }
+            },
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zRndr\\zRndr_Draw.cpp -- zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList.\nWalks lens-flare sample queue from startIndex, removes occluded samples by swapping in the tail entry, and appends visible/enabled positive-depth samples to g_zRndr_LensFlareVisibleSampleDefs.\nBN limitation: the x87 compare against 0.0f renders as a flag expression assigned through lensFlareSource.w, but assembly only tests sample->invDepth > 0 before appending the sample pointer."
+          },
+          "function": "0x49a920"
+        }
+      },
+      {
+        "index": 6,
+        "id": "f0x49a9c0",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zRndr_LensFlare::BuildVisibleSampleListFromQueue",
+              "raw_name": "zRndr_LensFlare::BuildVisibleSampleListFromQueue",
+              "address": "0x49a9c0",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zRndr_LensFlare::BuildVisibleSampleListFromQueue"
+              }
+            },
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zRndr\\zRndr_Draw.cpp\nBuilds g_zRndr_LensFlareVisibleSampleDefs from queued lens-flare samples starting at startIndex, keeping only enabled samples in the first 0x40 entries whose depth divisor is nonzero.\nBN limitation: the loop is anchored on &sample->lensFlareSource, so the decompiler renders sample->depthDivisor as ecx[-2] and the stored sample pointer as &ecx[-4]; the x87 zero compare also remains a status-word temporary."
+          },
+          "function": "0x49a9c0"
+        }
+      },
+      {
+        "index": 7,
+        "id": "f0x4acd00",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zVideo_dd3d::QueueSolidQuad",
+              "raw_name": "zVideo_dd3d::QueueSolidQuad",
+              "address": "0x4acd00",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zVideo_dd3d::QueueSolidQuad"
+              }
+            },
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c\nBN limitation: quad-batch writes are indexed by g_zVideo_QuadBatchCount << 7, so HLIL keeps raw global-base expressions; they map to one zVideo_QuadBatchItem with TL/BL x=left, TR/BR x=right, top y, bottom y, and one packed ARGB color on all corners."
+          },
+          "function": "0x4acd00"
+        }
+      },
+      {
+        "index": 8,
+        "id": "f0x4a7490",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zVideo::SelectHwApiDeviceOrFallback",
+              "raw_name": "zVideo::SelectHwApiDeviceOrFallback",
+              "address": "0x4a7490",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zVideo::SelectHwApiDeviceOrFallback"
+              }
+            },
+            "comment": "Original file: GameZRecoil/zVideo/zVideo.cpp. Selects the persisted renderer backend for startup: a nonnegative hwApiIndex commits that accepted hardware API device and returns ZVID_RENDERER_BACKEND_HARDWARE; -1 binds the software fullscreen dispatch, leaves g_zVideo_pSelectedHwApiDeviceRecord on table entry 0 as a placeholder, clears g_zVideo_pSelectedD3DDeviceInfo, and returns ZVID_RENDERER_BACKEND_SOFTWARE. BN renders the 4-byte null store to g_zVideo_pSelectedD3DDeviceInfo as memset."
+          },
+          "function": "0x4a7490"
+        }
+      },
+      {
+        "index": 9,
+        "id": "f0x4af060",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "OptCatalog::ProcessRuntimeInstances",
+              "raw_name": "OptCatalog::ProcessRuntimeInstances",
+              "address": "0x4af060",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "OptCatalog::ProcessRuntimeInstances"
+              }
+            },
+            "comment": "Original file: GameZRecoil/zWeapon/zWeapon.cpp. Processes queued impact callbacks, advances OptCatalog projectile runtime states, updates trail runtime segments, performs raycast hit handling, recycles expired instances, and restores the variant tag/current audio timing state. BN limitation: VC5 x87 trajectory/trail math and large stack raycast buffers leave unimplemented FPU and stack-index artifacts in HLIL; assembly, callees, callback ABI, and applied OptCatalog runtime/trail/raycast types are verified."
+          },
+          "function": "0x4af060"
+        }
+      },
+      {
+        "index": 10,
+        "id": "f0x4b0a50",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "OptCatalog::HandleImpactFromRuntimeProbe",
+              "raw_name": "OptCatalog::HandleImpactFromRuntimeProbe",
+              "address": "0x4b0a50",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "OptCatalog::HandleImpactFromRuntimeProbe"
+              }
+            },
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zWeapon\\zWeapon.cpp -- OptCatalog_HandleImpactFromRuntimeProbe.\nProcesses each raycast hit whose node damage handler is not excluded, computes scaled damage with optional distance falloff, either invokes damage feedback immediately or queues a 64-entry delayed impact record, and returns nonzero when at least one hit was processed.\nBN limitation: the enum flag tests still render as high-byte slices because assembly tests AH for OPT_ENTRY_MINE/OPT_ENTRY_UPDATES_STATUS_METER, and the queued impact-position zVec3 copy remains scalarized through a temporary int32_t* even though both source and destination fields are typed as zVec3."
+          },
+          "function": "0x4b0a50"
+        }
+      },
+      {
+        "index": 11,
+        "id": "f0x4a7b40",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zVideo_dd::StartupEnumerateAndDefaultSelect",
+              "raw_name": "zVideo_dd::StartupEnumerateAndDefaultSelect",
+              "address": "0x4a7b40",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zVideo_dd::StartupEnumerateAndDefaultSelect"
+              }
+            },
+            "comment": "Physical source-file block candidate: src/GameZRecoil/zVideo/zvid_dd.c [0x4a7b40, 0x4a9ac0). Evidence: source-path literal 0x4e30e8 xref(s) not listed in handoff. Use docs/reconstruction/source_file_layout_audit.md; not an owner/tier gate by itself."
+          },
+          "function": "0x4a7b40"
+        }
+      },
+      {
+        "index": 12,
+        "id": "f0x4a8870",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zVideo::CommitHwApiDeviceSelection",
+              "raw_name": "zVideo::CommitHwApiDeviceSelection",
+              "address": "0x4a8870",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zVideo::CommitHwApiDeviceSelection"
+              }
+            },
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zVideo\\zVideo.cpp\nCommits a prevalidated hardware API device index as the active D3D backend: binds hardware/fullscreen dispatch, stores g_zVideo_pSelectedHwApiDeviceRecord, and stores g_zVideo_pSelectedD3DDeviceInfo at zVidHwApiDeviceRecord.m_d3dDrivers. No bounds check; zVideo_SelectHwApiDeviceOrFallback validates or falls back before calling."
+          },
+          "function": "0x4a8870"
+        }
+      },
+      {
+        "index": 13,
+        "id": "f0x4a93d0",
+        "tool": "get_function_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_function_comment",
+          "items": {
+            "success": true,
+            "function": {
+              "name": "zVideo_dd::EnumDirectDrawDeviceCallback",
+              "raw_name": "zVideo_dd::EnumDirectDrawDeviceCallback",
+              "address": "0x4a93d0",
+              "symbol": {
+                "type": "SymbolType.FunctionSymbol",
+                "full_name": "zVideo_dd::EnumDirectDrawDeviceCallback"
+              }
+            },
+            "comment": "Original file: GameZRecoil/zVideo/zvid_dd.c. DirectDrawEnumerateA callback: logs each DirectDraw device, fills the next g_zVideo_HwApiDeviceTable record with GUID/name/description, creates a temporary IDirectDraw2 path to collect caps and video/texture memory, tags AGP-capable devices, enumerates usable Direct3D devices for that record, increments g_zVideo_NumAcceptedDirectDrawDevices only when a usable D3D driver exists, tears down temporary interfaces, and returns 1 to continue enumeration or 0 on capacity/caps failure. BN still renders the computed row pointer as the scaled g_zVideo_HwApiDeviceTable expression and reuses lpDriverDescription as a DDSCAPS stack slot for GetAvailableVidMem; these are entry and a local DDSCAPS caps slot in the assembly."
+          },
+          "function": "0x4a93d0"
+        }
+      },
+      {
+        "index": 14,
+        "id": "a0x416480",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x416480",
+            "comment": "Physical source-file block: src/Battlesport/map.cpp [0x415ab0, 0x417350); layer: map_projected_path_draw_layer. Evidence: source-path literal 0x4daf04 xref at 0x416922. Block/layer membership is routing evidence only, not owner/tier acceptance.\nTransforms/copies this node's map points into g_HudSensor_ProjectScratch, closes the loop with the first point, clips each segment against the view z range, projects it, and draws a clipped immediate line strip.\nBN caveat: loop cursors still render previous-point accesses as negative zVec3 offsets and the loop-closing write as scaled raw array stores."
+          },
+          "address": "0x416480"
+        }
+      },
+      {
+        "index": 15,
+        "id": "a0x46eb20",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x46eb20",
+            "comment": "Original file: D:\\Proj\\GameZRecoil\\zVideo\\zVideo.cpp. Initializes zImage font slots, clears the packed transparent font color, optionally loads fonts from a path, and binds the TextureMemory option pointer to the HW/SW option or local default. Returns 0 for the EngineInit passed path."
+          },
+          "address": "0x46eb20"
+        }
+      },
+      {
+        "index": 16,
+        "id": "a0x459e70",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x459e70",
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_run.c\nBN limitations: the inline sequence-name compare loop at 0x45a5ca uses sbb flag materialization that BN 5.2 partially fails to lift; the matrix/outCandidate stack slot is reused across lifetimes; node->diRef displays the integer union arm in some zDi* uses. Direct callees and propagated contracts are accepted; these limitations are local to inline compare/stack lifetime/union display."
+          },
+          "address": "0x459e70"
+        }
+      },
+      {
+        "index": 17,
+        "id": "a0x45a13f",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x45a13f",
+            "comment": "BN stack-lifetime limitation: these stores complete local zMat4x3 var_68; the same stack bytes are later reused for PlayerProbeSampleCandidateEntry outCandidate."
+          },
+          "address": "0x45a13f"
+        }
+      },
+      {
+        "index": 18,
+        "id": "a0x45a3a0",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x45a3a0",
+            "comment": "BN stack-slot alias: the motion/update phase uses the same stack slot for the event arg, setup temporaries, and the computed frame-step seconds, so HLIL may keep rendering `animEvent` where the value is actually the per-frame step."
+          },
+          "address": "0x45a3a0"
+        }
+      },
+      {
+        "index": 19,
+        "id": "a0x45a3ea",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x45a3ea",
+            "comment": "outCandidate is PlayerProbeSampleCandidateEntry; outCandidate+0x10 below is hitPos.y. BN cannot split it from the prior zMat4x3 stack slot."
+          },
+          "address": "0x45a3ea"
+        }
+      },
+      {
+        "index": 20,
+        "id": "a0x45a880",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x45a880",
+            "comment": "node->diRef.index is the zDi* union arm here; +4 maps to zDi::flags and +0x20 maps to zDi::blendScale. BN keeps some temporaries on the integer union arm."
+          },
+          "address": "0x45a880"
+        }
+      },
+      {
+        "index": 21,
+        "id": "a0x49a830",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x49a830",
+            "comment": "zRndr_LensFlare.cpp"
+          },
+          "address": "0x49a830"
+        }
+      },
+      {
+        "index": 22,
+        "id": "a0x49a8c0",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x49a8c0",
+            "comment": "Likely original file: D:\\Proj\\GameZRecoil\\zRndr\\zRndr_Draw.cpp"
+          },
+          "address": "0x49a8c0"
+        }
+      },
+      {
+        "index": 23,
+        "id": "a0x49a920",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x49a920",
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zRndr\\zRndr_Draw.cpp -- zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList.\nWalks lens-flare sample queue from startIndex, removes occluded samples by swapping in the tail entry, and appends visible/enabled positive-depth samples to g_zRndr_LensFlareVisibleSampleDefs.\nBN limitation: the x87 compare against 0.0f renders as a flag expression assigned through lensFlareSource.w, but assembly only tests sample->invDepth > 0 before appending the sample pointer."
+          },
+          "address": "0x49a920"
+        }
+      },
+      {
+        "index": 24,
+        "id": "a0x49a9c0",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x49a9c0",
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zRndr\\zRndr_Draw.cpp\nBuilds g_zRndr_LensFlareVisibleSampleDefs from queued lens-flare samples starting at startIndex, keeping only enabled samples in the first 0x40 entries whose depth divisor is nonzero.\nBN limitation: the loop is anchored on &sample->lensFlareSource, so the decompiler renders sample->depthDivisor as ecx[-2] and the stored sample pointer as &ecx[-4]; the x87 zero compare also remains a status-word temporary."
+          },
+          "address": "0x49a9c0"
+        }
+      },
+      {
+        "index": 25,
+        "id": "a0x49a9d8",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x49a9d8",
+            "comment": "BN anchors this walk on &entry->lensFlareSource here; ecx[-2] is entry->invDepth and &ecx[-4] is the queue entry."
+          },
+          "address": "0x49a9d8"
+        }
+      },
+      {
+        "index": 26,
+        "id": "a0x4acd00",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4acd00",
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c\nBN limitation: quad-batch writes are indexed by g_zVideo_QuadBatchCount << 7, so HLIL keeps raw global-base expressions; they map to one zVideo_QuadBatchItem with TL/BL x=left, TR/BR x=right, top y, bottom y, and one packed ARGB color on all corners."
+          },
+          "address": "0x4acd00"
+        }
+      },
+      {
+        "index": 27,
+        "id": "a0x4a7490",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4a7490",
+            "comment": "Original file: GameZRecoil/zVideo/zVideo.cpp. Selects the persisted renderer backend for startup: a nonnegative hwApiIndex commits that accepted hardware API device and returns ZVID_RENDERER_BACKEND_HARDWARE; -1 binds the software fullscreen dispatch, leaves g_zVideo_pSelectedHwApiDeviceRecord on table entry 0 as a placeholder, clears g_zVideo_pSelectedD3DDeviceInfo, and returns ZVID_RENDERER_BACKEND_SOFTWARE. BN renders the 4-byte null store to g_zVideo_pSelectedD3DDeviceInfo as memset."
+          },
+          "address": "0x4a7490"
+        }
+      },
+      {
+        "index": 28,
+        "id": "a0x4af060",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4af060",
+            "comment": "Original file: GameZRecoil/zWeapon/zWeapon.cpp. Processes queued impact callbacks, advances OptCatalog projectile runtime states, updates trail runtime segments, performs raycast hit handling, recycles expired instances, and restores the variant tag/current audio timing state. BN limitation: VC5 x87 trajectory/trail math and large stack raycast buffers leave unimplemented FPU and stack-index artifacts in HLIL; assembly, callees, callback ABI, and applied OptCatalog runtime/trail/raycast types are verified."
+          },
+          "address": "0x4af060"
+        }
+      },
+      {
+        "index": 29,
+        "id": "a0x4af12f",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4af12f",
+            "comment": "Mixed runtime-state loop: entries with flags_54 bit 1 clear use runtime impact-state records; entries with that bit set walk the trail-runtime list at +0x58."
+          },
+          "address": "0x4af12f"
+        }
+      },
+      {
+        "index": 30,
+        "id": "a0x4af140",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4af140",
+            "comment": "Assembly proof: runtime +0x88 is an optional per-instance update callback invoked as callback(self) before the main movement/impact step."
+          },
+          "address": "0x4af140"
+        }
+      },
+      {
+        "index": 31,
+        "id": "a0x4b00c9",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4b00c9",
+            "comment": "Trail-runtime scalar packet mapping: +0x2c = trailDistance, +0x30 = volumeFadeTimer, +0x34 = alphaPulsePhase."
+          },
+          "address": "0x4b00c9"
+        }
+      },
+      {
+        "index": 32,
+        "id": "a0x4b0a50",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4b0a50",
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zWeapon\\zWeapon.cpp -- OptCatalog_HandleImpactFromRuntimeProbe.\nProcesses each raycast hit whose node damage handler is not excluded, computes scaled damage with optional distance falloff, either invokes damage feedback immediately or queues a 64-entry delayed impact record, and returns nonzero when at least one hit was processed.\nBN limitation: the enum flag tests still render as high-byte slices because assembly tests AH for OPT_ENTRY_MINE/OPT_ENTRY_UPDATES_STATUS_METER, and the queued impact-position zVec3 copy remains scalarized through a temporary int32_t* even though both source and destination fields are typed as zVec3."
+          },
+          "address": "0x4b0a50"
+        }
+      },
+      {
+        "index": 33,
+        "id": "a0x4a7b40",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4a7b40",
+            "comment": "Physical source-file block candidate: src/GameZRecoil/zVideo/zvid_dd.c [0x4a7b40, 0x4a9ac0). Evidence: source-path literal 0x4e30e8 xref(s) not listed in handoff. Use docs/reconstruction/source_file_layout_audit.md; not an owner/tier gate by itself."
+          },
+          "address": "0x4a7b40"
+        }
+      },
+      {
+        "index": 34,
+        "id": "a0x4a8870",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4a8870",
+            "comment": "Source: D:\\Proj\\GameZRecoil\\zVideo\\zVideo.cpp\nCommits a prevalidated hardware API device index as the active D3D backend: binds hardware/fullscreen dispatch, stores g_zVideo_pSelectedHwApiDeviceRecord, and stores g_zVideo_pSelectedD3DDeviceInfo at zVidHwApiDeviceRecord.m_d3dDrivers. No bounds check; zVideo_SelectHwApiDeviceOrFallback validates or falls back before calling."
+          },
+          "address": "0x4a8870"
+        }
+      },
+      {
+        "index": 35,
+        "id": "a0x4a93d0",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4a93d0",
+            "comment": "Original file: GameZRecoil/zVideo/zvid_dd.c. DirectDrawEnumerateA callback: logs each DirectDraw device, fills the next g_zVideo_HwApiDeviceTable record with GUID/name/description, creates a temporary IDirectDraw2 path to collect caps and video/texture memory, tags AGP-capable devices, enumerates usable Direct3D devices for that record, increments g_zVideo_NumAcceptedDirectDrawDevices only when a usable D3D driver exists, tears down temporary interfaces, and returns 1 to continue enumeration or 0 on capacity/caps failure. BN still renders the computed row pointer as the scaled g_zVideo_HwApiDeviceTable expression and reuses lpDriverDescription as a DDSCAPS stack slot for GetAvailableVidMem; these are entry and a local DDSCAPS caps slot in the assembly."
+          },
+          "address": "0x4a93d0"
+        }
+      },
+      {
+        "index": 36,
+        "id": "a0x4a940b",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4a940b",
+            "comment": "entry = &g_zVideo_HwApiDeviceTable[g_zVideo_NumAcceptedDirectDrawDevices]; BN does not simplify the 0x6ec record stride expression consistently."
+          },
+          "address": "0x4a940b"
+        }
+      },
+      {
+        "index": 37,
+        "id": "a0x4a9563",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4a9563",
+            "comment": "The callback reuses the lpDriverDescription argument stack slot as a local DDSCAPS caps; 0x4000 is DDSCAPS_VIDEOMEMORY."
+          },
+          "address": "0x4a9563"
+        }
+      },
+      {
+        "index": 38,
+        "id": "a0x4a9599",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4a9599",
+            "comment": "Same reused DDSCAPS caps stack slot; 0x1000 is DDSCAPS_TEXTURE."
+          },
+          "address": "0x4a9599"
+        }
+      }
+    ],
+    "requested": 39,
+    "completed": 39,
+    "stop_on_error": false,
+    "any_failed": false,
+    "parallel": false
+  },
+  "function_edits": [
+    [
+      "0x416480",
+      "Retail 0x4164b9/0x4164c6 uses scratch base 0x4edc78 with 12-byte elements. 0x416574-0x416590 copies element zero after the runtime point count. These accesses do not prove the existing 1024-element allocation extent."
+    ],
+    [
+      "0x46eb20",
+      "Retail 0x46eb23 loads ECX=20 and 0x46eb45 clears 20 dwords from 0x56179c. This proves the initialization span, not independent source-owner acceptance."
+    ],
+    [
+      "0x459e70",
+      "Retail 0x459f72 loads divisor 200; the accesses beginning at 0x459f77 use 4-byte floating-point elements at 0x575a80 with index reduction by IDIV. No source-file or call-contract acceptance is asserted here."
+    ],
+    [
+      "0x49a830",
+      "Retail entry rejects sample count >=650. 0x49a85d-0x49a891 writes a 20-byte record at 0x62ea04 + count*20, then increments count at 0x62ea00."
+    ],
+    [
+      "0x49a8c0",
+      "Retail walks 20-byte entries from 0x62ea04 using count at 0x62ea00, then clears that count at 0x49a8f6."
+    ],
+    [
+      "0x49a920",
+      "Retail walks 20-byte entries from 0x62ea04. 0x49a956 compares the entry address with 0x62ef04 (base +64*20); 0x49a974 appends the queue-entry address to the pointer list at 0x631cd0. The x87 test at 0x49a969 tests AH bit 0x40, not an ordered greater-than predicate."
+    ],
+    [
+      "0x49a9c0",
+      "Retail clears count 0x631ccc, walks queue records with 20-byte stride, and compares the +16 cursor against 0x62ef14 (base +64*20 +16). 0x49aa07 stores the record base into 0x631cd0. This is evidence for the selected input range, not proof of a larger allocation."
+    ],
+    [
+      "0x4acd00",
+      "Retail 0x4acd0d rejects unsigned batch count >=16. 0x4acd1d/0x4acd6c multiplies the index by 128; the record base is 0x63363c."
+    ],
+    [
+      "0x4a7490",
+      "Retail compares the selection with -1, not with an upper capacity bound. The -1 path stores table base 0x633e44 at 0x633e40 and clears 0x6359f4; the other path calls 0x4a8870."
+    ],
+    [
+      "0x4af060",
+      "Retail consumes the queue counted at 0x77896c in reverse order, using 68-byte records at 0x778970. This annotation makes no claim about the other runtime layouts or source-file ownership."
+    ],
+    [
+      "0x4b0a50",
+      "Retail 0x4b0ac3 compares the queued-impact count with 64. The append path uses 68-byte records at 0x778970 and increments 0x77896c."
+    ],
+    [
+      "0x4a7b40",
+      "Retail 0x4a7b45 initializes the selected device-record pointer at 0x633e40 to table base 0x633e44. Original source-file placement is not established by this store."
+    ],
+    [
+      "0x4a8870",
+      "Retail computes an indexed record address from table base 0x633e44 and stores it at 0x633e40. There is no bounds check here; 0x4a7490 checks only the -1 sentinel, not the upper capacity."
+    ],
+    [
+      "0x4a93d0",
+      "Retail 0x4a940b forms the next record pointer from 0x633e44; 0x4a942f compares the accepted-device count with 4. Record stride is 0x6ec. This annotation does not accept the original source owner or file."
+    ]
+  ],
+  "inline_edits": [
+    {
+      "address": "0x45a13f",
+      "comment": null
+    },
+    {
+      "address": "0x45a3a0",
+      "comment": null
+    },
+    {
+      "address": "0x45a3ea",
+      "comment": null
+    },
+    {
+      "address": "0x45a880",
+      "comment": null
+    },
+    {
+      "address": "0x49a9d8",
+      "comment": null
+    },
+    {
+      "address": "0x4af12f",
+      "comment": null
+    },
+    {
+      "address": "0x4af140",
+      "comment": "Retail loads [EDI+0x88], skips a null target, and calls it at 0x4af158 with ECX=EDI. The store/call sequence alone does not establish a C++ callback declaration."
+    },
+    {
+      "address": "0x4b00c9",
+      "comment": null
+    },
+    {
+      "address": "0x4a940b",
+      "comment": "Retail record address is 0x633e44 + accepted-device index *0x6ec."
+    },
+    {
+      "address": "0x4a9563",
+      "comment": null
+    },
+    {
+      "address": "0x4a9599",
+      "comment": null
+    }
+  ]
+}

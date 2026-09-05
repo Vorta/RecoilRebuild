@@ -71,7 +71,7 @@
             goto label_4010cd
 }
 
-// Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
+// Reads float scalars at 0x4da0c0 and 0x4da0c4 in the calculation at 0x4013b8-0x4013df, whose result is stored at object offsets +0x74 and +0x88. Original header/TU boundaries are not established by these reads.
 0x401180 void __fastcall AINet::TickAiMode2PathFollow(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerAiMode2PathFollowState* playerState = saveState->playerState
@@ -120,12 +120,12 @@
     struct zVec3* steerBasisPtr = &steerBasis
     float steerCrossXZ = steerBasisPtr->z * var_18_2->x - steerBasisPtr->x * var_18_2->z
     long double x87_r7_13 = var_14_2->x * var_18_1->x + var_14_2->z * var_18_1->z
-    // BN x87 artifact: this block compares the XZ dot of steerBasis and normalized targetDelta against 0.0; the cross product chooses steering sign.
+    // Compares the XZ dot product formed at 0x4012d1-0x4012db with 0.0; the subsequent cross-product test chooses the sign.
     long double temp1 = 0f
     x87_r7_13 - temp1
 
     if ((((x87_r7_13 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_13, temp1) ? 1 : 0) << 0xa | (x87_r7_13 == temp1 ? 1 : 0) << 0xe):1.b & 1) == 0)
-    // BN x87 artifact: aligned path-follow motion is clamped to max(0.25, 1.0 - fabs(steerCrossXZ)).
+    // Computes 1.0 - fabs(XZ cross product), with a lower clamp of 0.25 at 0x401375-0x401384.
         long double x87_r7_18 = 1f - fabs(steerCrossXZ)
         long double temp2_1 = 0.25f
         x87_r7_18 - temp2_1
@@ -330,7 +330,7 @@
     return 1
 }
 
-// Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
+// Uses floats 0x4da0c8 and 0x4da0cc for the result stored at object +0x74/+0x88, and 0x4da0d0 for the vertical difference stored at +0x70/+0x84. See 0x4018b6-0x4018e6.
 0x401710 void __fastcall AINet::TickAiMode2SteeringSubstate(struct zUtil_SaveGameState* saveState)
 {
     long double x87_r7 = g_Player_TotalTimeSecScaled
@@ -1029,7 +1029,7 @@
     // BN x87/local-alias artifact: this is the quadratic discriminant square-root estimate used to solve the alt-gun intercept time; local three-float vectors may still render through scalar aliases.
 }
 
-// Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
+// At 0x402737-0x402773, transforms normalized XZ components as (c*x-s*z, c*z+s*x), using c at 0x4da0e4 and s at 0x4da0e8. The stored constants approximate cosine/sine of 15 degrees.
 0x4026d0 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(struct zUtil_SaveGameState* saveState, struct zUtil_SaveGameState* targetState)
 {
     struct PlayerAiMode2HandlerState* playerState = saveState->playerState
@@ -1070,7 +1070,7 @@
     struct zVec3* steerDirForCross = &steerOffsetDir
     float turnCross = playerState->steerBasisNormZ * steerDirForCross->x - playerState->steerBasisNormX * steerDirForCross->z
     long double x87_r7_22 = playerState->steerBasisNormX * var_14_3->x + playerState->steerBasisNormZ * var_14_3->z
-    // BN x87 compare artifact: assembly branches on forward dot/cross tests to clamp motionInput and choose autoTurnSign.
+    // Compares the XZ dot product with 0.0. A negative result selects zero motion and a cross-product-dependent sign; otherwise the motion is clamped to at least 0.25.
     long double temp1 = 0f
     x87_r7_22 - temp1
     float* eax_3
@@ -1486,7 +1486,7 @@
     return result
 }
 
-// Physical source-block row: src/Battlesport/ai_net.cpp body, range [0x402fd0, 0x4038a0), one of 6 recorded source-shape layers. Literal evidence: D:\Proj\Battlesport\ai_net.cpp @ 0x4da1e8, xref 0x4030bb. This is source-block/navigation evidence only, not an owner/tier gate.
+// At 0x4030bb, passes the literal D:\Proj\Battlesport\ai_net.cpp (0x4da1e8) to the error reporter when the version value differs from 0x69. Parses the field/token strings in [0x4da0ec,0x4da248); this does not establish the old comment's whole-file boundaries.
 0x403040 struct AINet* __fastcall AINet::LoadFromZrd(int32_t netId)
 {
     char _Buffer
@@ -1684,7 +1684,7 @@
         struct zReader_NodeType4_AINetNodePayload* eax_40 = zReader::GetNamedNode(eax_1, &var_10c)
 
         if (eax_40 != 0)
-    // Allocates one AINetNode (0x30 bytes) for a node_NN entry.
+    // Allocates 0x30 bytes for a found node_%02d entry, then zeros 12 dwords and links the allocation through +0x2c.
             struct AINetNode* eax_39 = malloc(0x30)
             __builtin_memset(eax_39, 0, 0x30)
 
@@ -1968,7 +1968,7 @@
     zVid::DrawNoiseRect(&rectOrNull, self->noiseAlpha)
 }
 
-// Source: D:\Proj\Battlesport\Briefing.cpp
+// Resets signed progress global 0x4da24c to -1 at 0x403988. Builds the CAMPAIGN%1d directory string, loads briefing.zrd, and binds the named widget strings at 0x4da250-0x4da30e to subobjects.
 0x403930 struct HudUiBriefingRuntime* __thiscall HudUiBriefingRuntime::Constructor(struct HudUiBriefingRuntime* self, int32_t missionId)
 {
     int32_t var_4_1 = 0xffffffff
@@ -1977,26 +1977,24 @@
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
     struct HudUiBriefingRuntime* self_1 = self
-    // esi = self (HudUiBriefingRuntime*). BN types as void* from base constructor return — all esi+0xNNNN below are HudUiBriefingRuntime member accesses.
+    // ESI preserves the incoming ECX object pointer across this constructor call.
     HudUiBackground::Constructor(self)
-    // SEH state var tracks sub-object construction for exception unwind: 0=actionQueue, 1=transportProgress, 2=missionName, 3=objectiveSummary, 4=objectiveDesc, 5-6=objectivePicture, 7=transmissionHalted, 8=messagesPanel, 9=locatorPanels, 10=fully constructed
     int32_t var_4 = 0
-    // q+0 (Runtime+0xA94C) is the one-byte empty official VC5 std::list allocator storage (struct padding extends the list base to q+4). The stored low byte of missionId is non-semantic compiler artifact state, not a BriefingActionQueue missionId.
+    // VC5 LIST/XMEMORY layout: one-byte empty allocator storage precedes the aligned head pointer at +0xa950 and size at +0xa954.
     self->actionQueue.listAllocatorStorage.b = missionId.b
     struct HudUiBriefingActionNode* eax_2 = operator new(0xc)
     // Alloc sentinel node (12 bytes) for action queue circular doubly-linked list; prev=next=self (empty ring)
     eax_2->prev = eax_2
     eax_2->next = eax_2
-    // q+4 (Runtime+0xA950) = official VC5 std::list sentinel/head; q+8 = list size. q+0xC is the queue's current iterator and is default-uninitialized here; q+0x10 is active and is initialized separately.
+    // Stores the self-linked 12-byte node pointer in the VC5 list head at object +0xa950. The constructor does not store to +0xa958.
     self->actionQueue.headSentinel = eax_2
     // q+8 (Runtime+0xA954) = official VC5 std::list size, initialized to 0.
     self->actionQueue.nodeCount = 0
-    // q+0x10 (Runtime+0xA95C) = queue active flag, initialized to 0. q+0xC is the current list iterator and receives no constructor store here (default-uninitialized).
+    // Zeros object +0xa95c; no constructor store to +0xa958. Their higher-level roles require evidence from consumers.
     self->actionQueue.sequenceActive = 0
     g_Briefing_ProgressEventCode = 0xffffffff
     var_4.b = 1
     HudUiFillBitmap::Constructor(&self->transportProgress)
-    // transportProgress.vtbl = g_HudUiBriefingTransportProgress_Vtbl
     self->transportProgress.base.base.base.ftable = &g_HudUiBriefingTransportProgress_Vtbl
     var_4.b = 2
     HudUiPanel::ConstructorDefault(&self->missionName, nullptr, 0, 0)
@@ -2008,7 +2006,6 @@
     struct HudUiBriefingObjectivePicture* var_30 = &self->objectivePicture
     HudUiWidget::Constructor(&self->objectivePicture, 0)
     var_4.b = 6
-    // objectivePicture.vtbl = g_HudUiBriefingObjectivePicture_Vtbl; objectivePicture.noiseAlpha_0BC = 0.0f
     self->objectivePicture.base.ftable = &g_HudUiBriefingObjectivePicture_Vtbl
     self->objectivePicture.noiseAlpha = 0f
     HudUiElement::Invalidate(&self->objectivePicture)
@@ -2019,7 +2016,6 @@
     var_4.b = 9
     MSVC_EH_ArrayConstructor(&self->locatorPanels, 0x40, 6, HudUiBriefingLocatorPanel::Constructor, HudUiElement::CompilerGeneratedImplicitCleanup)
     var_4.b = 0xa
-    // self->vtbl = g_HudUiBriefingRuntime_Vtbl — final derived class vtable; fully constructed
     self->base.base.vptr = &g_HudUiBriefingRuntime_Vtbl
     char var_2c[0x20]
     sprintf(&var_2c, "CAMPAIGN%1d", missionId)
@@ -2046,7 +2042,6 @@
     self->missionName.vtbl->SetVisible(&self->missionName, 0)
     self->messagesPanel.base.vtbl->SetVisible(&self->messagesPanel.base, 1)
     self->base.base.vptr->container.SetEnabled(self, 1)
-    // Post-construction setup: load audio archive, lock rendering surfaces, do initial Update tick, then unlock
     Time::Tick()
     zSnd::Tick(1)
     zVideo::RunPostprocessOnPrimaryBuffer()
@@ -2058,29 +2053,29 @@
 
     // [comments not attached to rendered lines]
     // [comment @ 0x403957]
-    // missionId is still the constructor argument here. Only its low byte is copied next into q+0, the one-byte state of the official VC5 std::list empty allocator; this is a natural compiler artifact, not a semantic queue missionId field.
+    // Copies the low byte of the incoming stack argument into allocator storage at object +0xa94c. The adjacent self-linked node, head and size initialization match the VC5 LIST layout; this byte is not a queue mission identifier.
     // [comment @ 0x403992]
-    // ebx = &self->transportProgress (HudUiBriefingTransportProgress at +0xA960)
+    // EBX points to object +0xa960, later passed with the TRANSPORT_PROGRESS string at 0x403aa1-0x403aaa.
     // [comment @ 0x4039aa]
-    // ebp = &self->missionName (HudUiPanel2A4 at +0xAAE8)
+    // EBP points to object +0xaae8, later passed with the MISSION_NAME string at 0x403aaf-0x403ab8.
     // [comment @ 0x4039c1]
-    // &self->objectiveSummary (HudUiPanel2A4 at +0xAD8C)
+    // Object +0xad8c is later bound using the OBJECTIVE_SUMMARY literal.
     // [comment @ 0x4039d4]
-    // &self->objectiveDesc (HudUiPanel2A4 at +0xB030)
+    // Object +0xb030 is later bound using the OBJECTIVE_DESC literal.
     // [comment @ 0x4039e5]
-    // edi = &self->objectivePicture (HudUiBriefingObjectivePicture at +0xB2D4)
+    // Object +0xb2d4 is later bound using the OBJECTIVE_PICT literal.
     // [comment @ 0x403a1e]
-    // &self->transmissionHalted (HudUiPanel2A4 at +0xB394)
+    // Object +0xb394 is later bound using the TRANSMISSION_HALTED literal.
     // [comment @ 0x403a30]
-    // &self->messagesPanel (HudUiCompositePanel at +0xB638); capacity 25 entries
+    // Object +0xb638 is constructed with stack argument 0x19 and later bound using the MESSAGES literal.
     // [comment @ 0x403a42]
     // MSVC array-constructor operands: element constructor 0x403c10, cleanup callback 0x4b47a0, count 6, stride 0x40, base self+0xb8f0.
     // [comment @ 0x403ba1]
-    // ebp = &missionName; missionName.vtbl->SetVisible(0) — hide mission name initially
+    // Indirect call through slot +0x60 on the subobject bound to MISSION_NAME, with argument 0.
     // [comment @ 0x403bab]
-    // [esi+0xB638] = messagesPanel; messagesPanel.vtbl->SetVisible(1) — show messages panel
+    // Indirect call through slot +0x60 on the subobject bound to MESSAGES, with argument 1.
     // [comment @ 0x403bbc]
-    // self->vtbl->SetDrawEnabled(1) — enable rendering for entire briefing panel
+    // Indirect call through the object's slot +0x4, with argument 1.
 }
 
 // Source: D:\Proj\Battlesport\Briefing.cpp. Constructs a briefing locator circle widget; initializes the circle with zVid_PackColorRGB(0xff, 0, 0), radius 0x1e, opacity 0x64, then installs the HudUiBriefingLocatorPanel vtable.
@@ -2980,8 +2975,7 @@
     return result
 }
 
-// Source: D:\Proj\Battlesport\Briefing.cpp
-// Tick handler: starts playing the named sample, sets the global sound handle.
+// When a named sample is found, starts playback and stores the handle at 0x4e5cb0. The callback branch installs 0x404b30. The direct store of 999 to 0x4da24c at 0x404b14 is only on the sample-not-found path with nonzero action +0x58.
 0x404aa0 int32_t __thiscall HudUiBriefingAction_PlaySample::Tick(struct HudUiBriefingAction_PlaySample* self, float deltaTimeSec)
 {
     struct zSndPlayHandle* Briefing_CurrentSndHandle_1 = g_Briefing_CurrentSndHandle
@@ -3007,8 +3001,7 @@
     return 1
 }
 
-// Source: D:\Proj\Battlesport\Briefing.cpp
-// Callback from sound system: stores the event code in g_Briefing_ProgressEventCode.
+// Stores incoming ECX at signed progress global 0x4da24c. Function 0x404aa0 installs this address as a sample callback at 0x404ac8-0x404acf.
 0x404b30 void __fastcall Briefing::SampleEventCallback(int32_t progressEventCode)
 {
     g_Briefing_ProgressEventCode = progressEventCode
@@ -3056,7 +3049,7 @@
     return result
 }
 
-// Physical source-file block: src/Battlesport/Briefing.cpp [0x4038a0,0x404ca0). Tick handler for DelayUntilProgress; BN FPU artifact fild/fcomp/fnstsw renders the comparison against g_Briefing_ProgressEventCode.
+// Loads signed dword 0x4da24c with FILD and compares it to float action +0x4. Returns 0 for an ordered lesser result (or unordered comparison), otherwise 1; ret 4.
 0x404bb0 int32_t __thiscall HudUiBriefingAction_DelayUntilProgress::Tick(struct HudUiBriefingAction_DelayUntilProgress* self, float deltaTimeSec)
 {
     long double x87_r7 = g_Briefing_ProgressEventCode
@@ -4721,11 +4714,11 @@
     // ecx = self+0xa94c → HudUiZrdWidget sub-object (GO button)
 }
 
-// Physical source-file block: src/Battlesport/hud.cpp [0x406a00, 0x407130), layer hud_cheat_dialog_and_string_helper_layer. zStr string helper plus cheat/dialog state are physically emitted in hud.cpp; do not move zStr, HudUiCheat, or RecoilStateCheatCode semantics to other source files from labels/comments alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.
+// CRT initializer referenced by pointer slot 0x4da008; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x406e90 void RecoilStateCheatCode::StaticInitAndRegisterAtExit()
 {
     RecoilStateCheatCode::ConstructGlobal()
-    // BN limitation: this void static-initializer tail jump renders as return/tailcall.
+    // Tail jump to 0x406eb0 after the call to 0x406ea0.
     return RecoilStateCheatCode::StaticInit() __tailcall
 }
 
@@ -6797,7 +6790,7 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
+// CRT initializer referenced by pointer slot 0x4da00c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x408d20 void RecoilStateControls::StaticInitAndRegisterAtExit()
 {
     RecoilStateControls::StaticInit()
@@ -7388,7 +7381,7 @@
     self->cap = nullptr
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.
+// CRT initializer referenced by pointer slot 0x4da010; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x409950 void RecoilStateCredits::StaticInitAndRegisterAtExit()
 {
     RecoilStateCredits::StaticConstructGlobal()
@@ -9099,7 +9092,7 @@
     HudUiZrdWidget::OnActivate(self)
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_command_binding_layer [0x40a5b0,0x40c370). Semantic command binding dialog/container code emitted in hud.cpp. Do not assert HudCmd*.cpp or zUtil.cpp source splits from stale comments alone; vector/template helpers in this layer must be treated as source-shape/COMDAT candidates.
+// CRT initializer referenced by pointer slot 0x4da014; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x40bc20 void HudCmdDialogState::StaticInitAndRegisterAtExit()
 {
     HudCmdDialogState::StaticInit()
@@ -10196,7 +10189,7 @@
     fsbase->NtTib.ExceptionList = previousExceptionList
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_options_dialog_layer [0x40c6e0,0x40d1e0). Semantic options dialog/panel overlay code emitted in hud.cpp. Do not assert HudOptionsDialog.cpp or HudUi*.cpp splits from stale comments alone.
+// CRT initializer referenced by pointer slot 0x4da018; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x40d070 void HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit()
 {
     HudUiOptionsPanelOverlayOwner::StaticInit()
@@ -10298,14 +10291,14 @@
     RecoilApp::QueuePushState(&g_RecoilApp, &g_HudUiOptionsPanelOverlayOwner, 0)
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.
+// CRT initializer referenced by pointer slot 0x4da01c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x40d1e0 void HudUiTriplet::StaticInitWndClassNameAndRegisterAtExit()
 {
     HudUiTriplet::ConstructWndClassName()
     return HudUiTriplet::RegisterWndClassNameDtorAtExit() __tailcall
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.
+// Loads ECX with 0x4ed714 and tail-jumps to the MFC CString default-constructor import thunk at 0x4c5ba0.
 0x40d1f0 struct CString* HudUiTriplet::ConstructWndClassName()
 {
     return CString::ConstructorDefault(&g_HudUiTripletWndClassName) __tailcall
@@ -10317,7 +10310,7 @@
     atexit(HudUiTriplet::DestroyWndClassName)
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.
+// Loads ECX with 0x4ed714 and tail-jumps to the MFC CString destructor import thunk at 0x4c5b88.
 0x40d210 void HudUiTriplet::DestroyWndClassName()
 {
     return CString::~CString(&g_HudUiTripletWndClassName) __tailcall
@@ -10336,7 +10329,7 @@
     return neg.d(sbb.d(eax_7, eax_7, c))
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.
+// CRT initializer referenced by pointer slot 0x4da020; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x40d260 void HudLayoutSW::CrtInitGlobalSingleton()
 {
     HudLayoutSW::GlobalInit()
@@ -10378,11 +10371,11 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.
+// CRT initializer referenced by pointer slot 0x4da024; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x40d2f0 void HudLayoutHW::CrtInitGlobalSingleton()
 {
     HudLayoutHW::GlobalInit()
-    // BN limitation: static initializer tail-jumps to HudLayoutHW::GlobalConstructor after HudLayoutHW::GlobalInit; source-level wrapper returns void.
+    // Tail jump to 0x40d310 after the call to 0x40d300.
     return HudLayoutHW::RegisterAtExit() __tailcall
 }
 
@@ -10445,7 +10438,7 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Source: D:\Proj\Battlesport\hud.cpp -- compiler-generated static initialization wrapper for g_HudUiMgr.
+// CRT initializer referenced by pointer slot 0x4da028; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x40d400 void HudUiMgr::StaticInitAndRegisterAtExit()
 {
     HudUiMgr::StaticInit()
@@ -15177,7 +15170,7 @@
     return result
 }
 
-// Original file: Battlesport/hud.cpp
+// CRT initializer referenced by pointer slot 0x4da02c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x4136f0 int32_t HudUiSensorWindow::StaticInitAndRegisterAtExit()
 {
     HudUiSensorWindow::StaticInit()
@@ -16198,7 +16191,7 @@
             __builtin_memcpy(insertSlot, &candidateCopy, 0x50)
 }
 
-// Semantic exception physically emitted in src/Battlesport/hud.cpp: the hud.cpp physical block is anchored by source-path literal xrefs at 0x4101a3 and 0x4141bb, so this zInterp static-init tail must not be moved to zinterp_parse.cpp from its semantic name/comment alone. CRT static-init entry for g_zInterp_GlobalContext: calls StaticInit, then tail-calls RegisterAtExit.
+// CRT initializer referenced by pointer slot 0x4da030; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x414a60 void zInterp_GlobalContext::StaticInitAndRegisterAtExit()
 {
     zInterp_GlobalContext::StaticInit()
@@ -16525,7 +16518,7 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Compiler/CRT helper exception physically emitted in D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp), supported by the hud.cpp source-path literal xrefs at 0x4101a3 and 0x4141bb for [0x404ca0,0x415ab0). CRT init-chain entry constructs g_RecoilState_MainMenuTransition and registers its atexit destructor.
+// CRT initializer referenced by pointer slot 0x4da034; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x415100 void RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit()
 {
     RecoilStateMainMenuTransition::StaticInit()
@@ -16874,7 +16867,7 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Compiler/CRT helper exception physically emitted in D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp), supported by the hud.cpp source-path literal xrefs at 0x4101a3 and 0x4141bb for [0x404ca0,0x415ab0). CRT init-chain entry constructs g_RecoilState_ConfirmQuit and registers its atexit destructor.
+// CRT initializer referenced by pointer slot 0x4da038; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x415810 void RecoilStateConfirmQuit::StaticInitAndRegisterAtExit()
 {
     RecoilStateConfirmQuit::StaticInit()
@@ -17638,9 +17631,7 @@
     return 0xffffffff
 }
 
-// Physical source-file block: src/Battlesport/map.cpp [0x415ab0, 0x417350); layer: map_projected_path_draw_layer. Evidence: source-path literal 0x4daf04 xref at 0x416922. Block/layer membership is routing evidence only, not owner/tier acceptance.
-// Transforms/copies this node's map points into g_HudSensor_ProjectScratch, closes the loop with the first point, clips each segment against the view z range, projects it, and draws a clipped immediate line strip.
-// BN caveat: loop cursors still render previous-point accesses as negative zVec3 offsets and the loop-closing write as scaled raw array stores.
+// Retail 0x4164b9/0x4164c6 uses scratch base 0x4edc78 with 12-byte elements. 0x416574-0x416590 copies element zero after the runtime point count. These accesses do not prove the existing 1024-element allocation extent.
 0x416480 int32_t __thiscall HudSensorMapNode::DrawProjectedPath(struct HudSensorMapNode* self, struct HudSensorTracker* tracker)
 {
     if (self->pointCount == 0)
@@ -18406,7 +18397,7 @@
     return 1
 }
 
-// Physical source-file: src/Battlesport/mission.cpp [0x417350,0x41cc10); layer mission_init_and_tracker_global_prelude_layer [0x417350,0x417390). Block evidence: mission.cpp literal 0x4db230 xrefs at 0x417fc2, 0x4181b6, 0x418209, 0x4182ff, 0x418395, 0x419091, 0x419304. Initializes the global HudSensorTracker prelude; block comment is navigation evidence, not an owner/tier gate.
+// CRT initializer referenced by pointer slot 0x4da03c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x417350 void Mission::InitObjectives()
 {
     HudSensorTracker::ConstructGlobal()
@@ -20873,7 +20864,7 @@
     HudUiZrdWidget::OnActivate(self)
 }
 
-// Physical source block: src/Battlesport/mission.cpp; layer mission_net_game_setup_panel_layer [0x419aa0,0x41ada0). Net-game setup overlay owner static initialization.
+// CRT initializer referenced by pointer slot 0x4da040; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41ab60 void __fastcall HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit()
 {
     HudUiNetGameSetupOverlayOwner::StaticInit()
@@ -22082,7 +22073,7 @@
     return 1
 }
 
-// Physical source block: src/Battlesport/mission.cpp; layer mission_new_game_panel_layer [0x41c270,0x41c6e0). New-game panel overlay owner static initialization.
+// CRT initializer referenced by pointer slot 0x4da044; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41c5e0 void HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit()
 {
     HudUiNewGamePanelOverlayOwner::StaticInit()
@@ -22250,7 +22241,7 @@
     return &g_NetSessionConfigDialog_MessageMap
 }
 
-// Physical source block: src/Battlesport/mission.cpp; layer mission_net_session_config_maps_layer [0x41c980,0x41cbf0). Multiplayer map registration/name/init/change layer.
+// CRT initializer referenced by pointer slot 0x4da048; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41c980 void __fastcall Mission::RegisterMultiplayerMaps()
 {
     NetSessionConfigDialog::InitMapNameStrings()
@@ -22281,7 +22272,7 @@
     MSVC_EH_ArrayDestructor(&g_NetSessionConfigDialog_MapNameStrings, 4, 7, CString::~CString)
 }
 
-// Physical source block: src/Battlesport/mission.cpp; layer mission_net_session_config_maps_layer [0x41c980,0x41cbf0). Net session config dialog map initialization.
+// The map-name CString loop starts at 0x4f32d8, advances by four, and compares against exclusive end 0x4f32f4: seven elements, not eight.
 0x41ca30 int32_t __thiscall NetSessionConfigDialog::OnInitDialog(struct NetSessionConfigDialog* self)
 {
     CDialog::OnInitDialog(self)
@@ -22355,7 +22346,7 @@
     return self
 }
 
-// Physical source-file block: src/Battlesport/pickup.cpp [0x41cc10, 0x41ea90), layer pickup_subsystem_globals_teardown_layer. Evidence: source-path literal 0x4dc190 is pushed at 0x41cd93, 0x41d523, and 0x41db80; docs/reconstruction/source_file_layout_audit.md records this as the pickup.cpp block with 10 source-shape layers. This is block-order/source-placement evidence, not an owner/tier gate by itself.
+// CRT initializer referenced by pointer slot 0x4da04c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41cc10 void PickupSpawnList::Primary_Init()
 {
     g_PickupSpawnList_Primary.unused = 0
@@ -22364,7 +22355,7 @@
     g_PickupSpawnList_Primary.count = 0
 }
 
-// Physical source-file block: src/Battlesport/pickup.cpp, layer pickup_subsystem_globals_teardown_layer. CRT initializer for the network-copy PickupSpawnList global; clears the spare pointer, head, tail, and count fields.
+// CRT initializer referenced by pointer slot 0x4da050; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41cc40 void PickupSpawnList::NetCopy_Init()
 {
     g_PickupSpawnList_NetworkCopy.unused = 0
@@ -22373,7 +22364,7 @@
     g_PickupSpawnList_NetworkCopy.count = 0
 }
 
-// Physical source-file block: src/Battlesport/pickup.cpp, layer pickup_subsystem_globals_teardown_layer. CRT initializer for the PickupRespawnQueue global; clears the spare pointer, head, tail, and count fields.
+// CRT initializer referenced by pointer slot 0x4da054; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41cc70 void PickupRespawnQueue::Init()
 {
     g_PickupRespawnQueue.unused = 0
@@ -24097,8 +24088,7 @@
     Pickup::SpawnAt(pickupTypeIndex, amount, &position, &rotation, 0)
 }
 
-// Physical source-file block: src/Battlesport/player.cpp [0x41ea90, 0x42de10); layer: player_static_lists_hud_singleton_layer.
-// Evidence: player.cpp source-path literal 0x4dc26c is referenced at 0x41f20b, 0x41f870, 0x42087a, 0x420dc7, 0x42155b, 0x421722, and 0x42176f. This is physical block-order evidence only, not an owner/tier gate.
+// CRT initializer referenced by pointer slot 0x4da058; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41ea90 void __fastcall Player::InitMasterCommonDataList()
 {
     g_PlayerMasterCommonDataListAux = 0
@@ -24107,8 +24097,7 @@
     g_PlayerMasterCommonDataCount = 0
 }
 
-// Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\Proj\Battlesport\player.cpp @ 0x4dc26c.
-// CRT initializer that clears the PlayerMasterModalData intrusive-list head, tail, count, and auxiliary list state.
+// CRT initializer referenced by pointer slot 0x4da05c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41eac0 void __fastcall Player::InitMasterModalDataList()
 {
     g_PlayerMasterModalDataListAux = 0
@@ -24117,8 +24106,7 @@
     g_PlayerMasterModalDataCount = 0
 }
 
-// Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\Proj\Battlesport\player.cpp @ 0x4dc26c.
-// CRT initializer that constructs the singleton underwater pass-3 HUD overlay and registers its atexit reset callback.
+// CRT initializer referenced by pointer slot 0x4da060; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41eaf0 void __fastcall Player::InitAndRegisterUnderwaterFxPass3UiSingleton()
 {
     Player::InitUnderwaterFxPass3UiSingleton()
@@ -24156,8 +24144,7 @@
     return self
 }
 
-// Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\Proj\Battlesport\player.cpp @ 0x4dc26c.
-// CRT initializer that constructs the state-7 pass-3 HUD overlay singleton and registers its atexit reset callback.
+// CRT initializer referenced by pointer slot 0x4da064; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41eb50 void __fastcall Player::InitAndRegisterProjectileCameraFxPass3UiSingleton()
 {
     Player::InitProjectileCameraFxPass3UiSingleton()
@@ -24207,15 +24194,13 @@
     return self
 }
 
-// Physical source: src/Battlesport/player.cpp; layer: player_static_lists_hud_singleton_layer.
-// HUD sensor track-list reset is physically emitted in the player.cpp block as a HUD semantic exception. Resets the global HudUiMgrSensor track-list state to empty during static initialization; current evidence does not prove a separate emitted HudUiMgrSensor.cpp row here.
+// CRT initializer referenced by pointer slot 0x4da068; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41ebd0 void HudUiMgrSensor::TrackList_Reset()
 {
     __builtin_memset(&g_HudUiMgrSensor_TrackList, 0, 0x10)
 }
 
-// Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\Proj\Battlesport\player.cpp @ 0x4dc26c.
-// CRT initializer that clears the player save-state intrusive-list head, tail, count, and auxiliary list state.
+// CRT initializer referenced by pointer slot 0x4da06c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41ec00 void __fastcall Player::InitSaveStateList()
 {
     g_PlayerSaveStateListAux = 0
@@ -24224,8 +24209,7 @@
     g_PlayerSaveStateCount = 0
 }
 
-// Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\Proj\Battlesport\player.cpp @ 0x4dc26c.
-// CRT initializer that constructs the first top-message HUD panel singleton and registers its atexit destructor.
+// CRT initializer referenced by pointer slot 0x4da070; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41ec30 void __fastcall Player::InitAndRegisterTopMsgPanel1()
 {
     Player_TopMsgPanel1::Constructor()
@@ -24253,8 +24237,7 @@
     return HudUiPanel::Destructor(&g_Player_TopMsgPanel1) __tailcall
 }
 
-// Physical source: src/Battlesport/player.cpp; layer: player_static_lists_hud_singleton_layer.
-// CRT initializer that constructs the second top-message HUD panel singleton and registers its atexit destructor.
+// CRT initializer referenced by pointer slot 0x4da074; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41ec80 void __fastcall Player::InitAndRegisterTopMsgPanel2()
 {
     Player_TopMsgPanel2::Constructor()
@@ -24403,8 +24386,7 @@
     // Allocates PlayerNodeFlagRestoreEntry[] backing storage.
 }
 
-// Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\Proj\Battlesport\player.cpp @ 0x4dc26c.
-// Constructs and registers cleanup for the static PlayerNodeFlagRestoreEntries vector.
+// CRT initializer referenced by pointer slot 0x4da078; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x41ef30 void __fastcall PlayerNodeFlagRestore::InitGlobals()
 {
     PlayerNodeFlagRestore::InitInstance()
@@ -28931,14 +28913,14 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CString __saved_esi
-    struct CString* esp = &__saved_esi
+    int32_t __saved_esi
+    int32_t* esp = &__saved_esi
 
     if ((node->flags & 0x200000) != 0)
-        struct CString callbackContext = node->callbackContext
+        char* callbackContext = node->callbackContext
 
-        if ((*(callbackContext + 0x28) & 2) != 0)
-            struct CString callbackContext_1 = callbackContext
+        if ((callbackContext[0x28] & 2) != 0)
+            char* callbackContext_1 = callbackContext
             struct CString _String_1
             CString::CString(&_String_1, callbackContext_1)
             int32_t var_4_1 = 0
@@ -28968,8 +28950,8 @@
             int32_t var_8_1 = 0xffffffff
             CString::~CString(&__saved_esi)
 
-    fsbase->NtTib.ExceptionList = esp->__offset(0xc).d
-    esp->m_pchData
+    fsbase->NtTib.ExceptionList = esp[3]
+    *esp
     return 0
 
     // [comments not attached to rendered lines]
@@ -32191,7 +32173,7 @@
     zUtil_SaveGameState::StopModalLoopSfxHandle(saveState, 3)
 }
 
-// Physical source: src/Battlesport/player.cpp; source-block layer: player_zinput_binding_exception_layer. Semantic zInput bind-group static-init/register helper emitted in the player.cpp block; no current source-block evidence places this address in a physical zInput translation unit.
+// CRT initializer referenced by pointer slot 0x4da07c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x429f10 int32_t zInput::BindGroupList_StaticInitAndRegisterAtExit()
 {
     zInput::BindGroupListStaticInit()
@@ -34973,7 +34955,7 @@
     return &g_RecoilApp_MessageMap
 }
 
-// Physical source-file block: src/Battlesport/RecoilApp.cpp [0x42de10,0x436630), layer recoilapp_mfc_app_static_startup_layer [0x42de10,0x42e170). RecoilApp static initialization emitted in this block; MFC/CRT at-exit machinery is provider/runtime dependency evidence only.
+// CRT initializer referenced by pointer slot 0x4da080; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x42de20 void RecoilApp::StaticInitAndRegisterAtExit()
 {
     RecoilApp::StaticInit()
@@ -37983,7 +37965,7 @@
     fsbase->NtTib.ExceptionList = ExceptionList_1
 }
 
-// Physical source block: D:\Proj\Battlesport\RecoilApp.cpp (src/Battlesport/RecoilApp.cpp), layer recoilapp_gamenet_packet_relay_layer. GameNet spawn-list initialization is physically placed in RecoilApp.cpp.
+// CRT initializer referenced by pointer slot 0x4da084; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x431bf0 void GameNetSpawnPointList::InitGlobals()
 {
     g_GameNetSpawnPointList = 0
@@ -37992,7 +37974,7 @@
     g_GameNetSpawnPointCount = 0
 }
 
-// Physical source block: D:\Proj\Battlesport\RecoilApp.cpp (src/Battlesport/RecoilApp.cpp), layer recoilapp_gamenet_packet_relay_layer. GameNet player-row list reset is physically placed in RecoilApp.cpp.
+// CRT initializer referenced by pointer slot 0x4da088; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x431c20 void GameNetPlayerRowList::Reset()
 {
     __builtin_memset(&g_GameNetPlayerRowList, 0, 0x10)
@@ -40955,7 +40937,7 @@
         HudUiSaveLoadDialog::SetSelectedEntryIndex(parent, self->base.layoutX)
 }
 
-// Physical source block: D:\Proj\Battlesport\RecoilApp.cpp (src/Battlesport/RecoilApp.cpp), layer recoilapp_saveload_transition_sort_tail_layer. Save/load transition static init remains in RecoilApp.cpp physical order.
+// CRT initializer referenced by pointer slot 0x4da08c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x435a30 void RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit()
 {
     RecoilStateSaveLoadTransition::StaticInit()
@@ -42547,7 +42529,7 @@
     return 0
 }
 
-// Physical source: D:\Proj\Battlesport\turret.cpp; layer: turret_system_globals_load_tick_layer. Loads turret definitions from ZRD path, allocates 0x180-byte private zTurret_Runtime objects, records globals, and installs the tick callback node. Source-path literal evidence: pushes 0x4dd19c at 0x437b25 before zError::ReportOldNoOp. BN caveat: TURRET string-list induction variables render as (&count_04)[i * 2].
+// Loads turret definitions and stores runtime pointers at 0x4f3fe8 + count*4. The source-path literal at 0x4dd19c is passed at 0x437b25. No fixed array-capacity check was found; do not infer 128 or 129 slots from adjacent zero-fill.
 0x437ac0 int32_t __fastcall zTurret_System::LoadDefinitionsFromPath(struct zClass_Node* worldNode, char* path)
 {
     int32_t var_4_2 = 0xffffffff
@@ -42584,11 +42566,9 @@
 
         if (arr->count s> 1)
             do
-    // BN anchors the TURRET string-list loop at count_04; expression maps to parentNode_1->arr_04->slots_08[i - 1].str_04.
                 struct zReader_Node* readerNode = zReader::GetNamedNode(parentNode_1, (&arr->count)[i * 2])
 
                 if (readerNode != 0)
-    // Same TURRET string-list slot name as the preceding zReader_GetNamedNode call.
                     char* searchName = zUtil_ZRDR::InitWildcardPath((&parentNode_1->arr->count)[i * 2])
 
                     do
@@ -42695,7 +42675,7 @@
     return 0
 }
 
-// Physical source: D:\Proj\Battlesport\turret.cpp; layer: turret_runtime_system_teardown_layer. Manager/runtime teardown: shuts down and deletes each zTurret_Runtime in g_zTurret_RuntimeList, clears runtime count, frees the loaded zReader definition tree, clears and deletes the shared callback node, and returns 0.
+// Traverses the runtime turret-pointer sequence using the count at 0x4f3fd8 and four-byte increments from 0x4f3fe8, destroys the entries and clears the count. This traversal does not determine the allocation capacity.
 0x437dc0 int32_t zTurret_System::FreeAllRuntimes()
 {
     int32_t i = 0
@@ -42833,7 +42813,7 @@
     return zClass_Object3D_ModelRefLerpQueue::ClearGlobalState_CrtInitThunk() __tailcall
 }
 
-// Physical block: src/Battlesport/Util.cpp [0x437e60,0x438980), mapped-no-literal mixed. Semantic shelf: zClass Object3D model-ref lerp queue; source path unresolved. CRT init-array thunk target from 0x4da090; jumps to ClearGlobalState body at 0x438000.
+// CRT initializer referenced by pointer slot 0x4da090; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x437ff0 void zClass_Object3D_ModelRefLerpQueue::ClearGlobalState_CrtInitThunk()
 {
     return zClass_Object3D_ModelRefLerpQueue::ClearGlobalState() __tailcall
@@ -46687,7 +46667,7 @@
     return result
 }
 
-// Physical source-block exception inside src/Battlesport/WinSock.cpp [0x43ce80,0x43cf90): zStr.cpp CRT init-table stub layer [0x43cf20,0x43cf31). Empty jump/return stub with data xref only from g_CrtInitFn_zStr_CrtInitStub @ 0x4da094; not authored WinSock/Net body.
+// CRT initializer referenced by pointer slot 0x4da094; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x43cf20 void zStr::CrtInitStub() __pure
 {
     return
@@ -46735,7 +46715,7 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Physical source block: D:\Proj\Battlesport\WOL.cpp. Semantic WOL subcluster: main browse dialog/status list. Formats into g_WestwoodOnlineUpgradeStatusAppendBuffer, trims one leading or trailing newline, appends to the status list, caps the visible count at 100, and scrolls after nine entries. BN limitation: varargs setup, the strlen-style repne-scasb loop, and the trailing-newline buffer index render as helper locals/raw arithmetic instead of concise string code.
+// Formats into 0x538990. The trailing-newline access combines strlen with base-1, so the operand 0x53898f is not a separate variable. This unbounded formatting path does not establish the buffer allocation size.
 0x43d060 LRESULT WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(struct WestwoodOnlineUpgradeDialog* self, char const* format, ...)
 {
     void _ArgList
@@ -50158,7 +50138,7 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CWnd* var_13c = nullptr
+    struct CString var_13c = 0
     struct WestwoodOnlineUpgradeConfigDialog configDialog
     WestwoodOnlineUpgradeConfigDialog::Constructor(&configDialog, var_13c)
     int32_t var_4 = 0
@@ -50194,17 +50174,17 @@
     // GetSelectedProfileValues returns void and fills outPlayerName/outConnectString/selectedProfileConnectStringMode by pointer. HLIL's ecx_3 return capture is a stack-temp artifact.
     char* outPlayerName
     char* outConnectString
-    struct CWnd* ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
+    struct CString ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
     char* outPlayerName_1 = outPlayerName
     // BN models the stack CString temporary slot as var_13c/ecx_*; assembly is reserving and constructing CString temporaries for the two selected-profile setter calls.
     var_13c = ecx_3
-    struct CWnd** var_130 = &var_13c
+    struct CString* var_130 = &var_13c
     // Constructs a temporary CString from outPlayerName for SetSelectedProfilePlayerName; this is not a CWnd* var_13c semantic local.
     CString::CString(&var_13c, outPlayerName_1)
-    struct CWnd* ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
+    struct CString ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
     char* outConnectString_1 = outConnectString
     var_13c = ecx_6
-    struct CWnd** var_130_1 = &var_13c
+    struct CString* var_130_1 = &var_13c
     // Constructs a temporary CString from outConnectString for SetSelectedProfileConnectString; this reuses the caller's transient stack argument slot.
     CString::CString(&var_13c, outConnectString_1)
     WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, var_13c)
@@ -59416,7 +59396,7 @@
     return 0
 }
 
-// Original file: GameZRecoil/zClass/Camera.c. BN limitation: frustum-footprint points, world-area cells, and ring-tile storage are typed, but dense x87 min/max tests and diamond-ring indexing still render as fconvert/status temporaries and raw g_zCamera_FrustumGridTileRings count/tile writes despite the ring/tile structs being applied.
+// Clears 50 ring-count fields at 0x2d4-byte intervals, starting at 0x56cf90 and ending before 0x575cf8. A ring index is compared with 0x32 at 0x44c827.
 0x44c3c0 int32_t __fastcall zClass_Camera::BuildFrustumGridTiles(struct zClass_World* world, struct zClass_WorldData* worldClassData, struct zClass_CameraData* cameraData)
 {
     int32_t* i = &g_zCamera_FrustumGridTileRings[0].count
@@ -59466,7 +59446,6 @@
         do
             struct zVec3* var_8_1 = ecx_5
             struct zMat4x3* edx_5 = *g_zMath_CurrentMatrixSlotPtr
-    // eax walks cameraData->frustumOrigin[i] while edx walks g_zCamera_FrustumFootprintPoints[i] in the manual matrix-transform loop.
             float* eax_5 = ecx_5 + cameraData_2 - 0x56cb44
             ecx_5 = &ecx_5[1]
             long double x87_r7_10 = *eax_5 * edx_5->xy + eax_5[1] * edx_5->yy + eax_5[2] * edx_5->zy + edx_5->posY
@@ -59684,7 +59663,6 @@
                                     var_84_9 = "Error: Need more diamond tiler rings."
                                     var_88_4 = 0x11aa
                                 else
-    // ecx_24 is the diamond distance ring index; BN still renders the ring count access as count[ringIndex * 0xb5] despite g_zCamera_FrustumGridTileRings being typed.
                                     int32_t ecx_26 = (&g_zCamera_FrustumGridTileRings[0].count)[ecx_25 * 0xb5]
 
                                     if (ecx_26 s>= 0x1e)
@@ -59718,7 +59696,6 @@
     return 0
 }
 
-// Original file: GameZRecoil/zClass/Camera.c. BN limitation: frustum-footprint points, world-area cells, and ring-tile storage are typed, but dense x87 min/max tests, alloca-like stack argument reuse, and diamond-ring indexing still render as fconvert/status temporaries, esp artifacts at 0x44ce54, and raw g_zCamera_FrustumGridTileRings count/tile writes despite the ring/tile structs being applied.
 0x44c8e0 int32_t __fastcall zClass_Camera::BuildFrustumGridTilesFromParams(struct zClass_World* world, struct zClass_WorldData* worldClassData, struct zClass_CameraData* cameraData)
 {
     int32_t ebx
@@ -59785,7 +59762,6 @@
         do
             struct zVec3* footprintPoint = footprintPoint_1
             struct zMat4x3* edx_5 = *g_zMath_CurrentMatrixSlotPtr
-    // eax walks cameraData->frustumOrigin[i] while footprintPoint walks g_zCamera_FrustumFootprintPoints[i] in the manual matrix-transform loop.
             float* eax_4 = footprintPoint_1 + cameraData - 0x56cb44
             footprintPoint_1 = &footprintPoint_1[1]
             long double x87_r7_10 = *eax_4 * edx_5->xy + eax_4[1] * edx_5->yy + eax_4[2] * edx_5->zy + edx_5->posY
@@ -60075,10 +60051,6 @@
     esp[1]
     esp[2]
     return 0
-
-    // [comments not attached to rendered lines]
-    // [comment @ 0x44cda2]
-    // ecx_25 is the diamond distance ring index; BN still renders the ring count access as count[ringIndex * 0xb5] despite g_zCamera_FrustumGridTileRings being typed.
 }
 
 // Original file: GameZRecoil/zClass/Camera.c. BN limitation: frustum tile rings, world-area cells, light data, and camera/fog state are typed, and the helper call no longer propagates a fake st0 result, but BN still renders diamond-ring/tile indexing as raw g_zCamera_FrustumGridTileRings pointer arithmetic and x87 distance/fog tests as fconvert/status temporaries.
@@ -69246,41 +69218,41 @@
     while (i s< clipPatchOutput->partitionCount)
 }
 
-// Source: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp
+// CRT initializer referenced by pointer slot 0x4da098; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x457650 void __fastcall zDEClient::InitFeatureSystem(uint32_t initFlagsPacked)
 {
     zDEClient::InitFeatureEntryListAndMapTree(initFlagsPacked)
     return zDEClient::RegisterFeatureSystemCleanupAtExit() __tailcall
 }
 
-// Source: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp
+// Initializes the tree at 0x539e00, then initializes the VC5 vector at 0x539df0: one allocator representation byte and three null pointers at +4/+8/+12. The leading byte is not an authored flags dword.
 0x457660 void __fastcall zDEClient::InitFeatureEntryListAndMapTree(uint32_t initFlagsPacked)
 {
     uint32_t initFlagsPacked_1 = initFlagsPacked
     zDEClient_MapTreeState::InitState(&g_zDEClient_FeatureMapTree, &initFlagsPacked_1:3, &initFlagsPacked_1:2)
-    g_zDEClient_FeatureListFlags.b = initFlagsPacked_1:3.b
-    g_zDEClient_FeatureListBegin = nullptr
-    g_zDEClient_FeatureListEnd = nullptr
-    g_zDEClient_FeatureListCapacityEnd = nullptr
+    g_zDEClient_FeatureList.allocatorStorage = initFlagsPacked_1:3.b
+    g_zDEClient_FeatureList.begin = nullptr
+    g_zDEClient_FeatureList.end = nullptr
+    g_zDEClient_FeatureList.capacityEnd = nullptr
 }
 
-// Source: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp
+// Registers 0x4576b0 with atexit. The registered cleanup covers the feature vector and tree.
 0x4576a0 void zDEClient::RegisterFeatureSystemCleanupAtExit()
 {
     atexit(zDEClient::ShutdownFeatureSystem)
 }
 
-// Source: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp
+// Deletes the vector's begin allocation, clears begin/end/capacityEnd at 0x539df4/0x539df8/0x539dfc, and calls tree destruction for 0x539e00.
 0x4576b0 void zDEClient::ShutdownFeatureSystem()
 {
     int32_t ecx
     int32_t var_4 = ecx
-    struct zDEClient_FeatureEntry* zDEClient_FeatureListBegin_1 = g_zDEClient_FeatureListBegin
-    struct zDEClient_FeatureEntry* zDEClient_FeatureListBegin_2 = zDEClient_FeatureListBegin_1
-    operator delete(zDEClient_FeatureListBegin_1)
-    g_zDEClient_FeatureListBegin = nullptr
-    g_zDEClient_FeatureListEnd = nullptr
-    g_zDEClient_FeatureListCapacityEnd = nullptr
+    struct zDEClient_FeatureEntry* begin = g_zDEClient_FeatureList.begin
+    struct zDEClient_FeatureEntry* begin_1 = begin
+    operator delete(begin)
+    g_zDEClient_FeatureList.begin = nullptr
+    g_zDEClient_FeatureList.end = nullptr
+    g_zDEClient_FeatureList.capacityEnd = nullptr
     zDEClient_MapTreeState::Destroy(&g_zDEClient_FeatureMapTree)
 }
 
@@ -69369,29 +69341,29 @@
     if (featureType == 1)
         ecx_2 = 0xa
     label_45786d:
-        struct zDEClient_FeatureEntry* zDEClient_FeatureListCapacityEnd_1 = g_zDEClient_FeatureListCapacityEnd
+        struct zDEClient_FeatureEntry* capacityEnd = g_zDEClient_FeatureList.capacityEnd
         __builtin_memcpy(&featureEntry.eventData, featureEventData, ecx_2 << 2)
-        struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_2 = g_zDEClient_FeatureListEnd
+        struct zDEClient_FeatureEntry* end_1 = g_zDEClient_FeatureList.end
         featureEntry.reloadFlag = 0
 
-        if ((zDEClient_FeatureListCapacityEnd_1 - zDEClient_FeatureListEnd_2) s/ 0x34 u< 1)
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListBegin_3 = g_zDEClient_FeatureListBegin
+        if ((capacityEnd - end_1) s/ 0x34 u< 1)
+            struct zDEClient_FeatureEntry* begin_2 = g_zDEClient_FeatureList.begin
             int32_t edx_4
 
-            edx_4 = zDEClient_FeatureListBegin_3 != 0 ? (zDEClient_FeatureListEnd_2 - zDEClient_FeatureListBegin_3) s/ 0x34 : 0
+            edx_4 = begin_2 != 0 ? (end_1 - begin_2) s/ 0x34 : 0
 
             int32_t edi_1
 
             if (edx_4 u<= 1)
                 edi_1 = 1
-            else if (zDEClient_FeatureListBegin_3 != 0)
-                edi_1 = (zDEClient_FeatureListEnd_2 - zDEClient_FeatureListBegin_3) s/ 0x34
+            else if (begin_2 != 0)
+                edi_1 = (end_1 - begin_2) s/ 0x34
             else
                 edi_1 = 0
 
             int32_t edx_14
 
-            edx_14 = zDEClient_FeatureListBegin_3 != 0 ? (zDEClient_FeatureListEnd_2 - zDEClient_FeatureListBegin_3) s/ 0x34 : 0
+            edx_14 = begin_2 != 0 ? (end_1 - begin_2) s/ 0x34 : 0
 
             int32_t newCapacity_1 = edx_14 + edi_1
             int32_t newCapacity = newCapacity_1
@@ -69401,35 +69373,35 @@
                 newCapacity_2 = 0
 
             struct zDEClient_FeatureEntry* edi_2 = operator new(newCapacity_2 * 0x34)
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListBegin_1 = g_zDEClient_FeatureListBegin
+            struct zDEClient_FeatureEntry* begin = g_zDEClient_FeatureList.begin
             struct zDEClient_FeatureEntry* ebp = edi_2
 
-            while (zDEClient_FeatureListBegin_1 != zDEClient_FeatureListEnd_2)
+            while (begin != end_1)
                 if (ebp != 0)
-                    __builtin_memcpy(ebp, zDEClient_FeatureListBegin_1, 0x34)
+                    __builtin_memcpy(ebp, begin, 0x34)
                     newCapacity_1 = newCapacity
 
-                zDEClient_FeatureListBegin_1 = &zDEClient_FeatureListBegin_1[1]
+                begin = &begin[1]
                 ebp = &ebp[1]
 
             zDEClient::FillFeatureEntries(ebp, 1, &featureEntry)
-            zDEClient::CopyFeatureEntriesForward(zDEClient_FeatureListEnd_2, g_zDEClient_FeatureListEnd, &ebp[1])
-            operator delete(g_zDEClient_FeatureListBegin)
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListBegin_2 = g_zDEClient_FeatureListBegin
-            g_zDEClient_FeatureListCapacityEnd = &edi_2[newCapacity_1]
+            zDEClient::CopyFeatureEntriesForward(end_1, g_zDEClient_FeatureList.end, &ebp[1])
+            operator delete(g_zDEClient_FeatureList.begin)
+            struct zDEClient_FeatureEntry* begin_1 = g_zDEClient_FeatureList.begin
+            g_zDEClient_FeatureList.capacityEnd = &edi_2[newCapacity_1]
             int32_t edx_20
 
-            if (zDEClient_FeatureListBegin_2 != 0)
+            if (begin_1 != 0)
                 int32_t eax_17
                 int32_t edx_21
-                edx_21:eax_17 = muls.dp.d(0x4ec4ec4f, g_zDEClient_FeatureListEnd - zDEClient_FeatureListBegin_2)
+                edx_21:eax_17 = muls.dp.d(0x4ec4ec4f, g_zDEClient_FeatureList.end - begin_1)
                 int32_t edx_22 = edx_21 s>> 4
                 edx_20 = edx_22 + (edx_22 u>> 0x1f)
             else
                 edx_20 = 0
 
-            g_zDEClient_FeatureListBegin = edi_2
-            g_zDEClient_FeatureListEnd = &edi_2[edx_20 + 1]
+            g_zDEClient_FeatureList.begin = edi_2
+            g_zDEClient_FeatureList.end = &edi_2[edx_20 + 1]
             return
 
         int32_t eax_23
@@ -69438,41 +69410,41 @@
         int32_t edx_27 = edx_26 s>> 4
 
         if (edx_27 + (edx_27 u>> 0x1f) u>= 1)
-            zDEClient::CopyFeatureEntriesForward(zDEClient_FeatureListEnd_2 - 0x34, zDEClient_FeatureListEnd_2, zDEClient_FeatureListEnd_2)
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_1 = g_zDEClient_FeatureListEnd
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_6 = zDEClient_FeatureListEnd_1
-            void* __offset(zDEClient_FeatureEntry, -0x34) eax_28 = zDEClient_FeatureListEnd_1 - 0x34
+            zDEClient::CopyFeatureEntriesForward(end_1 - 0x34, end_1, end_1)
+            struct zDEClient_FeatureEntry* end = g_zDEClient_FeatureList.end
+            struct zDEClient_FeatureEntry* end_5 = end
+            void* __offset(zDEClient_FeatureEntry, -0x34) eax_28 = end - 0x34
 
-            if (zDEClient_FeatureListEnd_2 != eax_28)
+            if (end_1 != eax_28)
                 do
                     eax_28 -= 0x34
-                    zDEClient_FeatureListEnd_6 -= 0x34
-                    __builtin_memcpy(zDEClient_FeatureListEnd_6, eax_28, 0x34)
-                while (eax_28 != zDEClient_FeatureListEnd_2)
+                    end_5 -= 0x34
+                    __builtin_memcpy(end_5, eax_28, 0x34)
+                while (eax_28 != end_1)
 
-            struct zDEClient_FeatureEntry* i = zDEClient_FeatureListEnd_2
+            struct zDEClient_FeatureEntry* i = end_1
 
-            if (zDEClient_FeatureListEnd_2 != &zDEClient_FeatureListEnd_2[1])
+            if (end_1 != &end_1[1])
                 do
                     struct zDEClient_FeatureEntry* i_1 = i
                     i = &i[1]
                     __builtin_memcpy(i_1, &featureEntry, 0x34)
-                while (i != &zDEClient_FeatureListEnd_2[1])
+                while (i != &end_1[1])
         else
-            zDEClient::CopyFeatureEntriesForward(zDEClient_FeatureListEnd_2, zDEClient_FeatureListEnd_2, &zDEClient_FeatureListEnd_2[1])
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_4 = g_zDEClient_FeatureListEnd
-            zDEClient::FillFeatureEntries(zDEClient_FeatureListEnd_4, 1 - (zDEClient_FeatureListEnd_4 - zDEClient_FeatureListEnd_2) s/ 0x34, &featureEntry)
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_3 = g_zDEClient_FeatureListEnd
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_5 = zDEClient_FeatureListEnd_2
+            zDEClient::CopyFeatureEntriesForward(end_1, end_1, &end_1[1])
+            struct zDEClient_FeatureEntry* end_3 = g_zDEClient_FeatureList.end
+            zDEClient::FillFeatureEntries(end_3, 1 - (end_3 - end_1) s/ 0x34, &featureEntry)
+            struct zDEClient_FeatureEntry* end_2 = g_zDEClient_FeatureList.end
+            struct zDEClient_FeatureEntry* end_4 = end_1
 
-            if (zDEClient_FeatureListEnd_2 != zDEClient_FeatureListEnd_3)
+            if (end_1 != end_2)
                 do
-                    struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_7 = zDEClient_FeatureListEnd_5
-                    zDEClient_FeatureListEnd_5 = &zDEClient_FeatureListEnd_5[1]
-                    __builtin_memcpy(zDEClient_FeatureListEnd_7, &featureEntry, 0x34)
-                while (zDEClient_FeatureListEnd_5 != zDEClient_FeatureListEnd_3)
+                    struct zDEClient_FeatureEntry* end_6 = end_4
+                    end_4 = &end_4[1]
+                    __builtin_memcpy(end_6, &featureEntry, 0x34)
+                while (end_4 != end_2)
 
-        g_zDEClient_FeatureListEnd = &g_zDEClient_FeatureListEnd[1]
+        g_zDEClient_FeatureList.end = &g_zDEClient_FeatureList.end[1]
     else if (featureType == 3)
         ecx_2 = 0xb
         goto label_45786d
@@ -69490,24 +69462,24 @@
 {
     struct zDEClient_MapTreeNode* var
     struct zDEClient_MapTreeNode* var_4 = var
-    struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_1 = g_zDEClient_FeatureListEnd
-    struct zDEClient_FeatureEntry* zDEClient_FeatureListBegin_1 = g_zDEClient_FeatureListBegin
-    struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_3 = zDEClient_FeatureListEnd_1
+    struct zDEClient_FeatureEntry* end = g_zDEClient_FeatureList.end
+    struct zDEClient_FeatureEntry* begin = g_zDEClient_FeatureList.begin
+    struct zDEClient_FeatureEntry* end_2 = end
 
-    if (zDEClient_FeatureListEnd_1 != zDEClient_FeatureListEnd_3)
+    if (end != end_2)
         do
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListEnd_4 = zDEClient_FeatureListEnd_1
-            struct zDEClient_FeatureEntry* zDEClient_FeatureListBegin_2 = zDEClient_FeatureListBegin_1
-            zDEClient_FeatureListEnd_1 = &zDEClient_FeatureListEnd_1[1]
-            zDEClient_FeatureListBegin_1 = &zDEClient_FeatureListBegin_1[1]
-            __builtin_memcpy(zDEClient_FeatureListBegin_2, zDEClient_FeatureListEnd_4, 0x34)
-        while (zDEClient_FeatureListEnd_1 != zDEClient_FeatureListEnd_3)
+            struct zDEClient_FeatureEntry* end_3 = end
+            struct zDEClient_FeatureEntry* begin_1 = begin
+            end = &end[1]
+            begin = &begin[1]
+            __builtin_memcpy(begin_1, end_3, 0x34)
+        while (end != end_2)
 
-        zDEClient_FeatureListEnd_1 = g_zDEClient_FeatureListEnd
+        end = g_zDEClient_FeatureList.end
 
-    void zDEClient_FeatureListEnd_2 = zDEClient_FeatureListEnd_1
+    void end_1 = end
     struct zDEClient_MapTreeNode* header = g_zDEClient_FeatureMapTree.header
-    g_zDEClient_FeatureListEnd = zDEClient_FeatureListBegin_1
+    g_zDEClient_FeatureList.end = begin
     var_4
     zDEClient_MapTreeState::EraseRange(&g_zDEClient_FeatureMapTree, &var_4, header->left, header)
 }
@@ -69520,11 +69492,11 @@
     struct zDEClient_FeatureEntry featureEntry
     featureEntry.reloadFlag = 1
     int32_t i = zUtil_ZAR::WriteSectionBlob(ctx, "Dummy", &featureEntry, 0x34)
-    struct zDEClient_FeatureEntry* zDEClient_FeatureListBegin_1 = g_zDEClient_FeatureListBegin
+    struct zDEClient_FeatureEntry* begin = g_zDEClient_FeatureList.begin
 
-    if (zDEClient_FeatureListBegin_1 != g_zDEClient_FeatureListEnd)
+    if (begin != g_zDEClient_FeatureList.end)
         while (i != 0)
-            __builtin_memcpy(&featureEntry, zDEClient_FeatureListBegin_1, 0x34)
+            __builtin_memcpy(&featureEntry, begin, 0x34)
             int32_t featureType = featureEntry.featureType
             featureEntry.reloadFlag = 0
             char sectionName[0x40]
@@ -69539,9 +69511,9 @@
                 qSandSectionIndex += 1
                 sprintf(&sectionName, "QSand%d", qSandSectionIndex_1)
                 i = zUtil_ZAR::WriteSectionBlob(ctx, &sectionName, &featureEntry, 0x34)
-            zDEClient_FeatureListBegin_1 = &zDEClient_FeatureListBegin_1[1]
+            begin = &begin[1]
 
-            if (zDEClient_FeatureListBegin_1 == g_zDEClient_FeatureListEnd)
+            if (begin == g_zDEClient_FeatureList.end)
                 break
 
     return i
@@ -69566,16 +69538,16 @@
 // Source: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp
 0x457c50 void __fastcall zDEClient::DispatchFeatureEventTemplates(int32_t (__fastcall* craterHandler)(struct zDEClient_CraterEventTemplate*), int32_t (__fastcall* qsandHandler)(struct zDEClient_QSandEventTemplate*))
 {
-    struct zDEClient_FeatureEntry* zDEClient_FeatureListBegin_1 = g_zDEClient_FeatureListBegin
+    struct zDEClient_FeatureEntry* begin = g_zDEClient_FeatureList.begin
     int32_t (__fastcall* craterHandler_1)(struct zDEClient_CraterEventTemplate*) = craterHandler
     int32_t (__fastcall* craterHandler_2)(struct zDEClient_CraterEventTemplate*) = craterHandler_1
 
-    if (zDEClient_FeatureListBegin_1 == g_zDEClient_FeatureListEnd)
+    if (begin == g_zDEClient_FeatureList.end)
         return
 
     while (true)
         struct zDEClient_FeatureEntry var_34
-        __builtin_memcpy(&var_34, zDEClient_FeatureListBegin_1, 0x34)
+        __builtin_memcpy(&var_34, begin, 0x34)
         int32_t featureType = var_34.featureType
 
         if (featureType == 1)
@@ -69584,9 +69556,9 @@
         else if (featureType == 3 && qsandHandler != 0)
             qsandHandler(&var_34.eventData)
 
-        zDEClient_FeatureListBegin_1 = &zDEClient_FeatureListBegin_1[1]
+        begin = &begin[1]
 
-        if (zDEClient_FeatureListBegin_1 == g_zDEClient_FeatureListEnd)
+        if (begin == g_zDEClient_FeatureList.end)
             break
 
         craterHandler_1 = craterHandler_2
@@ -71280,8 +71252,7 @@
     return 2
 }
 
-// Source: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c
-// BN limitations: the inline sequence-name compare loop at 0x45a5ca uses sbb flag materialization that BN 5.2 partially fails to lift; the matrix/outCandidate stack slot is reused across lifetimes; node->diRef displays the integer union arm in some zDi* uses. Direct callees and propagated contracts are accepted; these limitations are local to inline compare/stack lifetime/union display.
+// Retail 0x459f72 loads divisor 200; the accesses beginning at 0x459f77 use 4-byte floating-point elements at 0x575a80 with index reduction by IDIV. No source-file or call-contract acceptance is asserted here.
 0x459e70 int32_t __fastcall zEffect::HandleNodeAnimEvent(struct zEffectAnimEntry* self, struct zEffectAnimSurfaceRuntime* sequenceRuntime, struct zEffectNodeAnimEvent* animEvent)
 {
     int32_t result = 1
@@ -71400,7 +71371,6 @@
                     struct zMat4x3 var_68
                     var_68.xx = slotBuffer.xx
                     var_68.xy = slotBuffer.yx
-    // BN stack-lifetime limitation: these stores complete local zMat4x3 var_68; the same stack bytes are later reused for PlayerProbeSampleCandidateEntry outCandidate.
                     outCandidate.d = slotBuffer.zx
                     outCandidate:4.d = slotBuffer.xy
                     outCandidate:8.d = slotBuffer.yy
@@ -71497,7 +71467,6 @@
             else
                 float frameStepSecAdjusted = g_zEffect_FrameDeltaRemainingSec - (sequenceRuntime->eventElapsedSec - animEvent->runtimeElapsed)
 
-    // BN stack-slot alias: the motion/update phase uses the same stack slot for the event arg, setup temporaries, and the computed frame-step seconds, so HLIL may keep rendering `animEvent` where the value is actually the per-frame step.
             if ((i_3.b & 0xc) != 0)
                 int32_t edi_3 = 0
                 velocityX = animEvent * animEvent->rotOrCameraPosEnd_Z
@@ -71507,7 +71476,6 @@
                 if ((i_3.b & 1) != 0)
                     gwNode::GetWorldPosition(node_1, &velocityX_1)
                     zClass_Class::gwNodeSetCellPickable(self->boundNode, 0)
-    // outCandidate is PlayerProbeSampleCandidateEntry; outCandidate+0x10 below is hitPos.y. BN cannot split it from the prior zMat4x3 stack slot.
                     int32_t eax_40
                     int80_t st0_1
                     eax_40, st0_1 = zEffect::FindNearestPickCandidateBelowPoint(&velocityX_1, &outCandidate)
@@ -71739,7 +71707,6 @@
                 zClass_Object3D::gwObject3DSetScale(node, velocityX_1, nodeAlphaEnd_1, dz_2)
 
             if (((animEvent->flags).w:1.b & 2) != 0)
-    // node->diRef.index is the zDi* union arm here; +4 maps to zDi::flags and +0x20 maps to zDi::blendScale. BN keeps some temporaries on the integer union arm.
                 void* index = node->diRef.index
 
                 if (index != 0)
@@ -87598,12 +87565,7 @@
     return nullptr
 }
 
-// Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp
-// Given two edges (edgeStates[edgeIndex0] and edgeStates[edgeIndex1]) both incident to `vertexIndex`, attempts to emit a triangle (vertexIndex0, vertexIndex1, vertexIndex) where vertexIndex0/vertexIndex1 are the OTHER endpoints of the two edges. Aborts if either input edge is fully consumed (remainingUseCount_08 == 0), if the resulting index sum equals 3 (degenerate-original-tri sentinel: outer triangle 0+1+2 == 3), or if the closing edge (vertexIndex0 -> vertexIndex1) is not active per zGeometry_TriangulateHole::FindActiveEdgeState.
-//
-// On success: appends the new triangle to g_zGeometry_TriangulateHole_TriangleIndices, increments g_zGeometry_TriangulateHole_TriangleCount, and decrements remainingUseCount_08 on all three edges.
-//
-// BN limit: HLIL renames the local that holds vertexIndex0 to the misleading name `edgeStates` because it reuses the slot of the input arg; the assembly uses [esp+0x1c] for vertexIndex0 throughout.
+// On its successful edge-pair path, writes three dword vertex indices at 0x53a750 + triangleCount*12 and increments the count at 0x53d750. The indexed record sequence is proven; its original capacity is unresolved.
 0x46bfc0 void __fastcall zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair(int32_t edgeIndex0, int32_t edgeIndex1, int32_t vertexIndex, int32_t edgeCount, struct zGeometry_TriangulateHole_EdgeState* edgeStates)
 {
     int32_t zGeometry_TriangulateHole_TriangleCount_1 = g_zGeometry_TriangulateHole_TriangleCount
@@ -87635,28 +87597,16 @@
     if (eax_2 == 0)
         return
 
-    (&g_zGeometry_TriangulateHole_TriangleIndices)[zGeometry_TriangulateHole_TriangleCount_1].i0 = edgeStates
-    (&g_zGeometry_TriangulateHole_TriangleIndices)[zGeometry_TriangulateHole_TriangleCount_1].i1 = vertexIndex1
-    (&g_zGeometry_TriangulateHole_TriangleIndices)[zGeometry_TriangulateHole_TriangleCount_1].i2 = vertexIndex
+    g_zGeometry_TriangulateHole_TriangleIndices[zGeometry_TriangulateHole_TriangleCount_1].i0 = edgeStates
+    g_zGeometry_TriangulateHole_TriangleIndices[zGeometry_TriangulateHole_TriangleCount_1].i1 = vertexIndex1
+    g_zGeometry_TriangulateHole_TriangleIndices[zGeometry_TriangulateHole_TriangleCount_1].i2 = vertexIndex
     g_zGeometry_TriangulateHole_TriangleCount += 1
     esi->remainingUseCount -= 1
     edi->remainingUseCount -= 1
     eax_2->remainingUseCount -= 1
 }
 
-// Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp
-// Triangulates a polygon-with-one-hole using a bridge-edge method. Pipeline:
-//
-// 1. Allocate working buffers: edgeStates (worst-case (outer+inner)^2 EdgeStates) and CombinedPoints (outer + inner zVec3 array). Stash in g_zGeometry_TriangulateHole_*.
-// 2. Concatenate outerPoints[0..outerPointCount) followed by innerPoints[0..innerPointCount) into g_zGeometry_TriangulateHole_CombinedPoints.
-// 3. Cache the outer ring's plane equation; project the inner ring onto it (z' = -(a*x + b*y + d)/c) so the rings are coplanar. Copy the projected innerPoints back to the caller's buffer.
-// 4. Seed edgeStates with the outer ring's edges (i, i-1, useCount=1) and the inner ring's edges (i, i-1, useCount=1).
-// 5. Build bridges: for each pair (outerVertex, innerVertex), call zGeometry_TriangulateHole::TryAppendBridgeEdge with useCount=2. Each bridge is rejected if it duplicates an existing edge or crosses one (XY).
-// 6. Triangulate: for each combined-point vertex v, collect all active edges incident to v; for every distinct pair (i, j) of those edges, call zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair to emit (otherEnd(i), otherEnd(j), v) provided the closing edge exists and useCounts permit. This spends two-use edges (bridges) on two adjacent triangles.
-// 7. Allocate the result zGeometry_TriangleSoup (header int + per-triangle 3*zVec3 = 0x24 bytes), populate from g_zGeometry_TriangulateHole_TriangleIndices using CombinedPoints lookups.
-// 8. Free working buffers and return the soup.
-//
-// BN limit: edgeStates and the returned zGeometry_TriangleSoup allocation results are typed, but HLIL cannot keep the edge-seed cursors and the flexible triangleVerts_04 output cursor source-like at the same time. The edge seed loops render as offset-base `__offset(...)` writes, and the triangle soup copy loop renders as offset-base writes from the packed triangle-index list. These correspond to sequential EdgeState stores and 3*zVec3 copies per emitted triangle.
+// The triangle-output loop reads three indices per record from the sequence at 0x53a750, advances by 12 bytes and looks up the corresponding XYZ triples. The runtime count is not a fixed-capacity proof.
 0x46c070 struct zGeometry_TriangleSoup* __fastcall zGeometry::TriangulatePolygonWithHole(int32_t outerPointCount, struct zVec3* outerPoints, int32_t innerPointCount, struct zVec3* innerPoints)
 {
     int32_t edgeCount = innerPointCount + outerPointCount
@@ -87784,7 +87734,7 @@
     struct zVec3 (* eax_22)[0x1] = &result->triangleVerts
 
     if (g_zGeometry_TriangulateHole_TriangleCount s> 0)
-        int32_t* ecx_29 = &g_zGeometry_TriangulateHole_TriangleIndices.i2
+        int32_t* ecx_29 = &g_zGeometry_TriangulateHole_TriangleIndices[0].i2
 
         do
             int32_t edx_18 = ecx_29[-2]
@@ -88863,7 +88813,7 @@
     return texDirEntryCount
 }
 
-// Original file: GameZRecoil/zImage/zimg_texture.cpp
+// Checks texture-directory count against 0x1000, computes count*36, and reads that many bytes into 0x53d79c.
 0x46d420 int32_t __fastcall zImage::ReadTextureDirectory(int32_t entryCount, FILE* stream)
 {
     int32_t texDirEntryCount = entryCount
@@ -88880,7 +88830,6 @@
     g_zImage_TexDirEntryCount = texDirEntryCount
 
     if (texDirEntryCount s> 0)
-    // Field cursor over zImage_TexDirEntry::nextVariant in 36-byte entry stride; typed as zImage_TexDirEntryNextVariantFieldCursor so each iteration converts the fread-stored nextVariant index back to a pointer via zImage::TexIndexToDirEntry.
         struct zImage_TexDirEntryNextVariantFieldCursor* entryCursor = &g_zImage_TexDirEntries[0].nextVariant
         int32_t i
 
@@ -90229,7 +90178,7 @@
     // Allocates resampled zVid_Image alpha map.
 }
 
-// Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp. Initializes zImage font slots, clears the packed transparent font color, optionally loads fonts from a path, and binds the TextureMemory option pointer to the HW/SW option or local default. Returns 0 for the EngineInit passed path.
+// Retail 0x46eb23 loads ECX=20 and 0x46eb45 clears 20 dwords from 0x56179c. This proves the initialization span, not independent source-owner acceptance.
 0x46eb20 int32_t __fastcall zImage::Init(char const* fontPath)
 {
     g_zImage_NextFontSlotIndex = 2
@@ -92842,7 +92791,7 @@
     zInput_BindMapContext::RebuildLookupIndices(bindMap)
 }
 
-// Physical source-file block candidate: src/GameZRecoil/zInput/zin_init.cpp [0x4719e0, 0x471e40). Evidence: source-path literal 0x4e0c9c xref(s) not listed in handoff medium-high. Use docs/reconstruction/source_file_layout_audit.md; not an owner/tier gate by itself.
+// CRT initializer referenced by pointer slot 0x4da09c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x4719e0 int32_t zInput::GlobalStateStaticInitAndRegisterAtExit()
 {
     zInput::GlobalStateStaticInit()
@@ -94069,7 +94018,7 @@
     return zMath_ProjScaleX_1, zMath_ProjScaleY_1
 }
 
-// Original file: GameZRecoil/zMath/zmath_matstack.cpp
+// Pre-increments the identity-flag and matrix-pointer cursors by four bytes, copies the previous flag, stores the caller's matrix pointer in the new slot, and copies 12 dwords from the previous matrix. These cursor operations do not establish total stack capacity.
 0x472ef0 void __fastcall zMath::MatStackPushAndCloneParent(struct zMat4x3* newSlotBuffer)
 {
     int32_t* eax = &g_zMath_CurrentMatrixIdentityFlagPtr[1]
@@ -94081,7 +94030,7 @@
     __builtin_memcpy(*zMath_CurrentMatrixSlotPtr_1, zMath_CurrentMatrixSlotPtr_1[-1], 0x30)
 }
 
-// Original file: GameZRecoil/zMath/zmath_matstack.cpp
+// Pre-increments both matrix-stack cursors by four bytes, writes ECX into the new matrix-pointer slot, and clears the new identity flag. No fixed-depth check appears here.
 0x472f30 void __fastcall zMath::MatStackPushPtr(struct zMat4x3* slotBuffer)
 {
     g_zMath_CurrentMatrixIdentityFlagPtr = &g_zMath_CurrentMatrixIdentityFlagPtr[1]
@@ -94091,7 +94040,7 @@
     *g_zMath_CurrentMatrixIdentityFlagPtr = 0
 }
 
-// Original file: GameZRecoil/zMath/zmath_matstack.cpp. BN limitation: matrix-stack cursors are global slot pointers, and HLIL renders the pop as byte-count pointer decrements.
+// Decrements both global matrix-stack cursors by four bytes. This proves the slot stride, not the allocation extent.
 0x472f60 void zMath::MatStackPopPtr()
 {
     g_zMath_CurrentMatrixIdentityFlagPtr -= 4
@@ -94254,9 +94203,7 @@
     *g_zMath_CurrentMatrixIdentityFlagPtr = 0
 }
 
-// Likely original file: D:\Proj\GameZRecoil\zMath\zmath_matrix.cpp
-// Loads identity into *g_zMath_CurrentMatrixSlotPtr and marks the current matrix identity flag.
-// BN limitation: the compiler writes through an incremented matrix-field cursor, so HLIL renders later stores as shifted field expressions like (&matrix->xy - 4)->field even though the zMat4x3 layout and globals are correctly typed.
+// Writes the 12 single-precision entries of a 4x3 identity transform through the current matrix pointer, then writes 1 through the current identity-flag cursor.
 0x4732f0 void zMath::MatLoadIdentity()
 {
     struct zMat4x3* eax = *g_zMath_CurrentMatrixSlotPtr
@@ -97135,8 +97082,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, di->vertCount)
 
             int32_t vertIndex = 0
-            int32_t packedColor
-            packedColor.w = di->entries->materialRef->packedColor
+            uint32_t edi_2
+            edi_2.w = di->entries->materialRef->packedColor
 
             if (di->vertCount s> 0)
                 int32_t var_c = 0
@@ -97182,10 +97129,10 @@
 
                                     if ((((x87_r7_12 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp19_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp19_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
-                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, packedColor, nullptr)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(1)
+                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -97240,11 +97187,11 @@
                     while (i_1 != 1)
                     di = di_1
                 else
-                    int32_t ecx_19 = vertCount_1 * 0xc
+                    int32_t ecx_20 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_2
-                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_19 & 0xfffffffc)
-                    __builtin_memcpy(edi_2, esi_2, ecx_19 & 3)
+                    int32_t edi_3
+                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_20 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_2, ecx_20 & 3)
         else
             long double x87_r7_13 = di->blendScale
             gTransformedVerts_1 = x87_r7_13
@@ -97344,13 +97291,13 @@
                 int32_t eax_32 = *vertexIndices
                 vertexIndices = &vertexIndices[1]
                 int32_t eax_34 = gTransformedVerts_1 + eax_32 * 0xc
-                struct zClipVert* edi_6 = edx_24
+                struct zClipVert* edi_7 = edx_24
                 edx_24 = &edx_24[1]
                 i_2 = i_13
                 i_13 -= 1
-                edi_6->x = *eax_34
-                edi_6->y = *(eax_34 + 4)
-                edi_6->z = *(eax_34 + 8)
+                edi_7->x = *eax_34
+                edi_7->y = *(eax_34 + 4)
+                edi_7->z = *(eax_34 + 8)
             while (i_2 != 1)
             long double x87_r7_28 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r6_14 = g_Clip_PolyVertsScratch[2].y - g_Clip_PolyVertsScratch[1].y
@@ -97388,11 +97335,11 @@
                 struct zClipVert triClipVerts[0x3]
 
                 if ((outActiveLightState_1:1.b & 1) == 0)
-                    int32_t ecx_57
-                    ecx_57.w = materialRef->packedColor
+                    int32_t ecx_58
+                    ecx_58.w = materialRef->packedColor
                     int32_t esi_13 = 0
                     float outFade = 0f
-                    int32_t var_c_2 = ecx_57
+                    int32_t var_c_2 = ecx_58
 
                     if (outDepthFade != 0)
                         int32_t eax_78
@@ -97428,13 +97375,13 @@
                         struct zClipVert* eax_83 = &g_Clip_PolyVerts
                         long double x87_r7_80 = 0f
                         int32_t i_20 = i_23
-                        float* ecx_63 = &g_Clip_PolyVertsScratch[0x3f + i_23]
+                        float* ecx_64 = &g_Clip_PolyVertsScratch[0x3f + i_23]
                         int32_t i_3
 
                         do
-                            long double x87_r6_26 = eax_83->y * *ecx_63
-                            long double x87_r5_36 = ecx_63[1] * eax_83->x
-                            ecx_63 = eax_83
+                            long double x87_r6_26 = eax_83->y * *ecx_64
+                            long double x87_r5_36 = ecx_64[1] * eax_83->x
+                            ecx_64 = eax_83
                             eax_83 = &eax_83[1]
                             i_3 = i_20
                             i_20 -= 1
@@ -97540,15 +97487,15 @@
                         if (vertexCount_2 s> 0)
     // Attribute clear loop zeros g_Clip_PolyAttr0[i] and the adjacent g_Clip_PolyAttr1[i] array in one stride.
                             float* eax_38 = &g_Clip_PolyAttr0
-                            uint32_t ecx_32 = vertexCount_2
+                            uint32_t ecx_33 = vertexCount_2
                             uint32_t i_6
 
                             do
                                 eax_38[0x40] = 0
                                 *eax_38 = 0f
                                 eax_38 = &eax_38[1]
-                                i_6 = ecx_32
-                                ecx_32 -= 1
+                                i_6 = ecx_33
+                                ecx_33 -= 1
                             while (i_6 != 1)
 
                         int32_t outDepthFade_1 = outDepthFade
@@ -97583,12 +97530,12 @@
                             zRndr::CommitFogColorParamsIfChanged()
                             vertexCount_2 = var_8
 
-                    uint32_t ecx_39 = vertexCount_2 << 3
+                    uint32_t ecx_40 = vertexCount_2 << 3
                     materialRef.b = clipMask.b
                     int32_t esi_9
-                    int32_t edi_8
-                    edi_8, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_39 & 0xfffffffc)
-                    __builtin_memcpy(edi_8, esi_9, ecx_39 & 3)
+                    int32_t edi_9
+                    edi_9, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_40 & 0xfffffffc)
+                    __builtin_memcpy(edi_9, esi_9, ecx_40 & 3)
 
                     if (lightFlags == 0)
                         int32_t eax_65
@@ -97605,13 +97552,13 @@
                             struct zClipVert* eax_67 = &g_Clip_PolyVerts
                             long double x87_r7_60 = 0f
                             int32_t esi_11 = vertexCount
-                            float* ecx_50 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
+                            float* ecx_51 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
                             int32_t i_7
 
                             do
-                                long double x87_r6_23 = eax_67->y * *ecx_50
-                                long double x87_r5_34 = ecx_50[1] * eax_67->x
-                                ecx_50 = eax_67
+                                long double x87_r6_23 = eax_67->y * *ecx_51
+                                long double x87_r5_34 = ecx_51[1] * eax_67->x
+                                ecx_51 = eax_67
                                 eax_67 = &eax_67[1]
                                 i_7 = esi_11
                                 esi_11 -= 1
@@ -97661,14 +97608,14 @@
                                         if (vertexCount_1 s> 0)
     // Alt-clip remap loop walks zClipVert triplets as float x/y pairs; pointer arithmetic is the compiler's tight-loop form.
                                             float* eax_74 = &g_Clip_PolyVerts[0].y
-                                            int32_t ecx_53 = vertexCount_1
+                                            int32_t ecx_54 = vertexCount_1
                                             int32_t i_9
 
                                             do
                                                 long double x87_r7_72 = g_zClipAlt_RemapScaleX * eax_74[-1]
                                                 eax_74 = &eax_74[3]
-                                                i_9 = ecx_53
-                                                ecx_53 -= 1
+                                                i_9 = ecx_54
+                                                ecx_54 -= 1
                                                 eax_74[-4] = x87_r7_72 + g_zClipAlt_RemapBiasX
                                                 eax_74[-3] = g_zClipAlt_RemapScaleY * eax_74[-3] + g_zClipAlt_RemapBiasY
                                             while (i_9 != 1)
@@ -97693,13 +97640,13 @@
                             struct zClipVert* eax_50 = &g_Clip_PolyVerts
                             long double x87_r7_43 = 0f
                             int32_t i_19 = i_22
-                            float* ecx_45 = &g_Clip_PolyVertsScratch[0x3f + i_22]
+                            float* ecx_46 = &g_Clip_PolyVertsScratch[0x3f + i_22]
                             int32_t i_10
 
                             do
-                                long double x87_r6_20 = eax_50->y * *ecx_45
-                                long double x87_r5_32 = ecx_45[1] * eax_50->x
-                                ecx_45 = eax_50
+                                long double x87_r6_20 = eax_50->y * *ecx_46
+                                long double x87_r5_32 = ecx_46[1] * eax_50->x
+                                ecx_46 = eax_50
                                 eax_50 = &eax_50[1]
                                 i_10 = i_19
                                 i_19 -= 1
@@ -97876,8 +97823,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, index->vertCount)
 
             int32_t var_38_2 = 0
-            int32_t packedColor
-            packedColor.w = index->entries->materialRef->packedColor
+            uint32_t edi_2
+            edi_2.w = index->entries->materialRef->packedColor
 
             if (index->vertCount s> 0)
                 int32_t var_3c = 0
@@ -97925,11 +97872,11 @@
                                     if ((((x87_r7_12 < temp22_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp22_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp22_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
                                             gModel_RenderVertexAlphaEnabled_1 = nullptr
-                                            zRndr_LensFlare::QueueProjectedSample(&var_34, packedColor, gModel_RenderVertexAlphaEnabled_1)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
                                         else
                                             gModel_RenderVertexAlphaEnabled_1 = 1
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(gModel_RenderVertexAlphaEnabled_1)
+                                            g_zVideo_pfnDrawPointColor16(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
 
                     cond:5_1 = var_38_2 + 1 s< index->vertCount
                     var_38_2 += 1
@@ -97949,7 +97896,7 @@
         zMath::MatLoadView()
         gRndr_PerspectiveTextureEnabled = 0
 
-    void* var_28
+    float* var_28
     int32_t i_32
     int32_t pointEntryByteOffset
 
@@ -97987,11 +97934,11 @@
                     while (i_1 != 1)
                     index = index_1
                 else
-                    int32_t ecx_17 = vertCount_1 * 0xc
+                    int32_t ecx_18 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_2
-                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_17 & 0xfffffffc)
-                    __builtin_memcpy(edi_2, esi_2, ecx_17 & 3)
+                    int32_t edi_3
+                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_18 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_2, ecx_18 & 3)
         else
             long double x87_r7_13 = index->blendScale
             long double temp4_1 = 0.0
@@ -98044,11 +97991,11 @@
                     while (i_2 != 1)
                     index = index_1
                 else
-                    int32_t ecx_22 = normalCount * 0xc
+                    int32_t ecx_23 = normalCount * 0xc
                     int32_t esi_3
-                    int32_t edi_3
-                    edi_3, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_22 & 0xfffffffc)
-                    __builtin_memcpy(edi_3, esi_3, ecx_22 & 3)
+                    int32_t edi_4
+                    edi_4, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_23 & 0xfffffffc)
+                    __builtin_memcpy(edi_4, esi_3, ecx_23 & 3)
 
                 zMath::MatTransformPointBatchInPlace(&var_34, 1)
                 struct zVec3* gTransformedNormals_2 = gTransformedNormals
@@ -98129,14 +98076,14 @@
     gClipRect_Primary.flags = arg2
     struct zDiEntry* entries = index->entries
     struct zDiEntry* __saved_edi = entries
-    struct zDiEntry* ecx_32 = &entries[index->entryCount]
+    struct zDiEntry* ecx_33 = &entries[index->entryCount]
 
-    if (entries u< ecx_32)
+    if (entries u< ecx_33)
         while (true)
             int32_t* vertexIndices = entries->vertexIndices
             struct zVec3* gTransformedVerts_1 = gTransformedVerts
             uint32_t i_27 = (entries->packedFlags).b
-            struct zClipVert* ecx_33 = &g_Clip_PolyVertsScratch
+            struct zClipVert* ecx_34 = &g_Clip_PolyVertsScratch
             uint32_t i_4
 
             do
@@ -98144,13 +98091,13 @@
                 vertexIndices = &vertexIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedVerts entries into g_Clip_PolyVertsScratch as zClipVert xyz triples.
                 int32_t* eax_41 = &gTransformedVerts_1[eax_39]
-                struct zClipVert* edi_7 = ecx_33
-                ecx_33 = &ecx_33[1]
+                struct zClipVert* edi_8 = ecx_34
+                ecx_34 = &ecx_34[1]
                 i_4 = i_27
                 i_27 -= 1
-                edi_7->x = *eax_41
-                edi_7->y = eax_41[1]
-                edi_7->z = eax_41[2]
+                edi_8->x = *eax_41
+                edi_8->y = eax_41[1]
+                edi_8->z = eax_41[2]
             while (i_4 != 1)
             long double x87_r7_38 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r5_35 = g_Clip_PolyVertsScratch[2].z - g_Clip_PolyVertsScratch[1].z
@@ -98190,7 +98137,7 @@
                         g_zModel_CurrentPolyNormals = nullptr
                     else
                         struct zVec3* gTransformedNormals_1 = gTransformedNormals
-                        struct zVec3* ecx_35 = &g_zModel_CurrentPolyNormalsStorage
+                        struct zVec3* ecx_36 = &g_zModel_CurrentPolyNormalsStorage
                         g_zModel_CurrentPolyNormals = &g_zModel_CurrentPolyNormalsStorage
                         int32_t* normalIndices = __saved_edi->normalIndices
                         uint32_t i_28 = (__saved_edi->packedFlags).b
@@ -98202,13 +98149,13 @@
                             normalIndices = &normalIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedNormals entries into g_zModel_CurrentPolyNormalsStorage.
                             int32_t* eax_46 = &gTransformedNormals_5[eax_44]
-                            struct zVec3* edi_10 = ecx_35
-                            ecx_35 = &ecx_35[1]
+                            struct zVec3* edi_11 = ecx_36
+                            ecx_36 = &ecx_36[1]
                             i_5 = i_28
                             i_28 -= 1
-                            edi_10->x = *eax_46
-                            edi_10->y = eax_46[1]
-                            edi_10->z = eax_46[2]
+                            edi_11->x = *eax_46
+                            edi_11->y = eax_46[1]
+                            edi_11->z = eax_46[2]
                         while (i_5 != 1)
 
                     struct zDiEntry* __saved_edi_1 = __saved_edi
@@ -98257,7 +98204,7 @@
 
                             vertexCount = var_8
 
-                        int32_t var_20_5
+                        int32_t alpha
                         int32_t vertexCount_4
 
                         if (gModel_RenderVertexAlphaEnabled_1 == 0)
@@ -98278,16 +98225,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478b0f:
                                     int32_t drawFlags_4 = __saved_edi_1->drawFlags
-                                    int32_t ecx_73 = var_8
-                                    vertexCount_4 = ecx_73
+                                    int32_t ecx_68 = var_8
+                                    vertexCount_4 = ecx_68
 
                                     if (drawFlags_4 != 0)
                                         float var_c_7 = drawFlags_4 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_73 s> 0)
+                                        if (ecx_68 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before flat no-UV submission.
                                             float* eax_105 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_24 = ecx_73
+                                            int32_t i_24 = ecx_68
                                             int32_t i_7
 
                                             do
@@ -98301,12 +98248,12 @@
                                     int32_t drawFlags_5 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_5
-                                    pointEntryByteOffset = ecx_73
-                                    ecx_73.b = materialRef->flags.b
-                                    var_20_5 = _ftol_import_thunk((ecx_73 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                    int32_t edx_64
-                                    edx_64.w = materialRef->packedColor
-                                    g_zVideo_pfnSubmitPolyFlatColor16(var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    pointEntryByteOffset = ecx_68
+                                    ecx_68.b = materialRef->flags.b
+                                    alpha = _ftol_import_thunk((ecx_68 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    int32_t packedColor16_1
+                                    packedColor16_1.w = materialRef->packedColor
+                                    g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_1, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 label_478b83:
                                     int32_t gAltClipPassEnabled_1 = gAltClipPassEnabled
                                     var_8 = vertexCount_4
@@ -98330,14 +98277,14 @@
                                             while (i_8 != 1)
 
                                         gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
-                                        struct zDiEntry* ecx_76
-                                        ecx_76.b = *var_20_5
+                                        struct zDiEntry* ecx_70
+                                        ecx_70.b = *alpha
                                         var_18 = __saved_edi->drawFlags
                                         pointEntryByteOffset = pointEntryByteOffset_1
-                                        int32_t vertices = _ftol_import_thunk((ecx_76 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                        int32_t edx_67
-                                        edx_67.w = *(var_20_5 + 2)
-                                        g_zVideo_pfnSubmitPolyFlatColor16(vertices, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        int32_t alpha_1 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                        int32_t packedColor16_2
+                                        packedColor16_2.w = *(alpha + 2)
+                                        g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_2, alpha_1, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                         else
                             if ((ebx_8.b & 0x30) == 0)
                                 goto label_4789f4
@@ -98356,16 +98303,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478a21:
                                     int32_t drawFlags_2 = __saved_edi_1->drawFlags
-                                    int32_t ecx_70 = var_8
-                                    vertexCount_4 = ecx_70
+                                    int32_t ecx_66 = var_8
+                                    vertexCount_4 = ecx_66
 
                                     if (drawFlags_2 != 0)
                                         float var_c_5 = drawFlags_2 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_70 s> 0)
+                                        if (ecx_66 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before no-UV color submission.
                                             float* eax_98 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_23 = ecx_70
+                                            int32_t i_23 = ecx_66
                                             int32_t i_9
 
                                             do
@@ -98379,22 +98326,22 @@
                                     int32_t drawFlags_3 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_3
-                                    pointEntryByteOffset = ecx_70
-                                    ecx_70.b = materialRef->flags.b
-                                    var_20_5 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    pointEntryByteOffset = ecx_66
+                                    ecx_66.b = materialRef->flags.b
+                                    alpha = _ftol_import_thunk((ecx_66 & 0xff * gModel_RenderAlphaScaleCurrent).q)
                                     int32_t* gModel_RenderVertexAlphaEnabled_5 = gModel_RenderVertexAlphaEnabled_1
-                                    int32_t* edx_57
-                                    edx_57.b = gModel_RenderVertexAlphaEnabled_5.b & 1
-                                    char temp23_1 = edx_57.b
-                                    edx_57.b = neg.b(edx_57.b)
+                                    int32_t* edx_62
+                                    edx_62.b = gModel_RenderVertexAlphaEnabled_5.b & 1
+                                    char temp23_1 = edx_62.b
+                                    edx_62.b = neg.b(edx_62.b)
                                     gModel_RenderVertexAlphaEnabled_5.b &= 4
                                     char temp24_1 = gModel_RenderVertexAlphaEnabled_5.b
                                     gModel_RenderVertexAlphaEnabled_5.b = neg.b(gModel_RenderVertexAlphaEnabled_5.b)
-                                    i_32 = sbb.d(edx_57, edx_57, temp23_1 != 0) & &g_Clip_PolyAttr2
-                                    int32_t edx_60
-                                    edx_60.w = materialRef->packedColor
+                                    i_32 = sbb.d(edx_62, edx_62, temp23_1 != 0) & &g_Clip_PolyAttr2
+                                    int32_t packedColor16
+                                    packedColor16.w = materialRef->packedColor
                                     var_28 = sbb.d(gModel_RenderVertexAlphaEnabled_5, gModel_RenderVertexAlphaEnabled_5, temp24_1 != 0) & &g_Clip_PolyAttr0
-                                    g_zVideo_pfnSubmitPolyColorAttr(&materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyColorAttr(&g_Clip_PolyVerts, packedColor16, &materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     goto label_478b83
                     else
                         if ((eax_43:1.b & 4) != 0)
@@ -98416,9 +98363,9 @@
                             pointEntryByteOffset = &gModel_RenderVertexAlphaEnabled_1
 
                             if (zModel_Light::SetActiveLights(&var_34, vertexCount, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1) != 0)
-                                int32_t ecx_40 = var_18 | pointEntryByteOffset
+                                int32_t ecx_41 = var_18 | pointEntryByteOffset
                                 gModel_RenderVertexAlphaEnabled_1 |= 2
-                                var_18 = ecx_40
+                                var_18 = ecx_41
 
                             vertexCount = var_8
 
@@ -98436,11 +98383,11 @@
                                 edx_27 -= 1
                             while (i_10 != 1)
 
-                        uint32_t ecx_41 = vertexCount << 3
+                        uint32_t ecx_42 = vertexCount << 3
                         int32_t esi_13
-                        int32_t edi_12
-                        edi_12, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_41 & 0xfffffffc)
-                        __builtin_memcpy(edi_12, esi_13, ecx_41 & 3)
+                        int32_t edi_13
+                        edi_13, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_42 & 0xfffffffc)
+                        __builtin_memcpy(edi_13, esi_13, ecx_42 & 3)
                         struct zClipUV perspectiveUvs[0x400]
                         struct zModel_Material* materialForAltTexture
                         int32_t __saved_ebp
@@ -98459,16 +98406,16 @@
                                 int32_t eax_81 = 0
 
                                 if (i_31 s> 0)
-                                    float* ecx_56 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_54 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_5 = g_Clip_PolyUvs
                                         eax_81 += 1
-                                        long double x87_r7_67 = *ecx_56 * Clip_PolyUvs_5[eax_81 - 1].u
-                                        ecx_56 = &ecx_56[3]
+                                        long double x87_r7_67 = *ecx_54 * Clip_PolyUvs_5[eax_81 - 1].u
+                                        ecx_54 = &ecx_54[3]
                                         Clip_PolyUvs_5[eax_81 - 1].u = x87_r7_67
                                         struct zClipUV* Clip_PolyUvs_6 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_56[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
+                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_54[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
                                         i_31 = var_8
                                     while (eax_81 s< i_31)
 
@@ -98481,19 +98428,19 @@
 
                                     if (i_31 s> 0)
                                         struct zClipUV* Clip_PolyUvs_2 = g_Clip_PolyUvs
-                                        int32_t edx_46 = &perspectiveUvs - Clip_PolyUvs_2
-                                        float* ecx_57 = &g_Clip_PolyVerts[0].z
+                                        int32_t edx_49 = &perspectiveUvs - Clip_PolyUvs_2
+                                        float* ecx_55 = &g_Clip_PolyVerts[0].z
                                         int32_t esi_27 = &perspectiveUvs[0].v - Clip_PolyUvs_2
                                         int32_t i_26 = i_31
                                         int32_t i_11
 
                                         do
-                                            long double x87_r7_71 = 1f / *ecx_57
-                                            ecx_57 = &ecx_57[3]
+                                            long double x87_r7_71 = 1f / *ecx_55
+                                            ecx_55 = &ecx_55[3]
                                             Clip_PolyUvs_2 = &Clip_PolyUvs_2[1]
                                             i_11 = i_26
                                             i_26 -= 1
-                                            *(Clip_PolyUvs_2 + edx_46 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
+                                            *(Clip_PolyUvs_2 + edx_49 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
                                             *(Clip_PolyUvs_2 + esi_27 - 8) = Clip_PolyUvs_2->__offset(0xfffffffffffffffc).d * x87_r7_71
                                         while (i_11 != 1)
 
@@ -98529,27 +98476,27 @@
                                     pointEntryByteOffset = drawFlags_8
                                     materialForAltTexture = texture_2
                                     i_32 = i_31
-                                    g_zVideo_pfnSubmitPolyRenderClass(i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0 && zClipRect::ClipPoly(&gClipRect_Alt, &var_8) != 0)
                                         i_34 = var_8
-                                        int32_t ecx_62 = 0
+                                        int32_t ecx_59 = 0
 
                                         if (i_34 s> 0)
                                             float* eax_87 = &g_Clip_PolyVerts[0].y
 
                                             do
                                                 long double x87_r7_78 = 1f / eax_87[1]
-                                                float* edx_50 = &(&__saved_ebp)[ecx_62 * 2 - 0x81f]
-                                                ecx_62 += 1
+                                                float* edx_54 = &(&__saved_ebp)[ecx_59 * 2 - 0x81f]
+                                                ecx_59 += 1
                                                 eax_87 = &eax_87[3]
                                                 eax_87[-4] = g_zClipAlt_RemapScaleX * eax_87[-4] + g_zClipAlt_RemapBiasX
                                                 eax_87[-3] = g_zClipAlt_RemapScaleY * eax_87[-3] + g_zClipAlt_RemapBiasY
                                                 eax_87[-2] = eax_87[-2] - -1f / gClipRect_Primary.zMin
                                                 struct zClipUV* Clip_PolyUvs_8 = g_Clip_PolyUvs
-                                                edx_50[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_62 - 1].u
-                                                *edx_50 = *(&Clip_PolyUvs_8[ecx_62] - 4) * x87_r7_78
-                                            while (ecx_62 s< i_34)
+                                                edx_54[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_59 - 1].u
+                                                *edx_54 = *(&Clip_PolyUvs_8[ecx_59] - 4) * x87_r7_78
+                                            while (ecx_59 s< i_34)
 
                                         goto label_478937
                         else
@@ -98566,16 +98513,16 @@
 
                                 if (i_30 s> 0)
     // Perspective setup loop: premultiplies g_Clip_PolyUvs u/v by projected g_Clip_PolyVerts z before clipping.
-                                    float* ecx_46 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_47 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_3 = g_Clip_PolyUvs
                                         eax_58 += 1
-                                        long double x87_r7_54 = *ecx_46 * Clip_PolyUvs_3[eax_58 - 1].u
-                                        ecx_46 = &ecx_46[3]
+                                        long double x87_r7_54 = *ecx_47 * Clip_PolyUvs_3[eax_58 - 1].u
+                                        ecx_47 = &ecx_47[3]
                                         Clip_PolyUvs_3[eax_58 - 1].u = x87_r7_54
                                         struct zClipUV* Clip_PolyUvs_4 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_46[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
+                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_47[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
                                         i_30 = var_8
                                     while (eax_58 s< i_30)
 
@@ -98585,20 +98532,20 @@
                                     if (i_30 s> 0)
                                         struct zClipUV* Clip_PolyUvs_1 = g_Clip_PolyUvs
                                         int32_t esi_21 = &perspectiveUvs - Clip_PolyUvs_1
-                                        int32_t edi_13 = &perspectiveUvs[0].v - Clip_PolyUvs_1
-                                        float* ecx_48 = &g_Clip_PolyVerts[0].z
+                                        int32_t edi_14 = &perspectiveUvs[0].v - Clip_PolyUvs_1
+                                        float* ecx_49 = &g_Clip_PolyVerts[0].z
                                         int32_t i_25 = i_30
                                         int32_t i_13
 
                                         do
     // Perspective UV loop: writes perspectiveUvs[i].u/v = g_Clip_PolyUvs[i].u/v / g_Clip_PolyVerts[i].z.
-                                            long double x87_r7_58 = 1f / *ecx_48
-                                            ecx_48 = &ecx_48[3]
+                                            long double x87_r7_58 = 1f / *ecx_49
+                                            ecx_49 = &ecx_49[3]
                                             Clip_PolyUvs_1 = &Clip_PolyUvs_1[1]
                                             i_13 = i_25
                                             i_25 -= 1
                                             *(esi_21 + Clip_PolyUvs_1 - 8) = x87_r7_58 * Clip_PolyUvs_1->__offset(0xfffffffffffffff8).d
-                                            *(edi_13 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
+                                            *(edi_14 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
                                         while (i_13 != 1)
 
                                     int32_t drawFlags = __saved_edi->drawFlags
@@ -98636,15 +98583,15 @@
                                         materialForAltTexture = texture_1
                                         int32_t* gModel_RenderVertexAlphaEnabled_3 = gModel_RenderVertexAlphaEnabled_1
                                         i_32 = i_30
-                                        int32_t* edx_32
-                                        edx_32.b = gModel_RenderVertexAlphaEnabled_3.b & 1
-                                        char temp34_1 = edx_32.b
-                                        edx_32.b = neg.b(edx_32.b)
+                                        int32_t* edx_33
+                                        edx_33.b = gModel_RenderVertexAlphaEnabled_3.b & 1
+                                        char temp34_1 = edx_33.b
+                                        edx_33.b = neg.b(edx_33.b)
                                         gModel_RenderVertexAlphaEnabled_3.b &= 4
                                         char temp35_1 = gModel_RenderVertexAlphaEnabled_3.b
                                         gModel_RenderVertexAlphaEnabled_3.b = neg.b(gModel_RenderVertexAlphaEnabled_3.b)
-                                        var_28 = sbb.d(edx_32, edx_32, temp34_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        var_28 = sbb.d(edx_33, edx_33, temp34_1 != 0) & &g_Clip_PolyAttr2
+                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     else
                                         struct zVideo_TextureRecord* texture
 
@@ -98668,7 +98615,7 @@
                                         char temp37_1 = gModel_RenderVertexAlphaEnabled_2.b
                                         gModel_RenderVertexAlphaEnabled_2.b = neg.b(gModel_RenderVertexAlphaEnabled_2.b)
                                         var_28 = sbb.d(edx_29, edx_29, temp36_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0)
                                         int32_t esi_26 = var_8
@@ -98697,7 +98644,7 @@
                                                     i_20 -= 1
                                                 while (i_15 != 1)
 
-                                            int32_t ecx_53 = 0
+                                            int32_t ecx_52 = 0
 
                                             if (i_34 s> 0)
     // Alternate textured pass remaps g_Clip_PolyVerts xyz and writes perspective UVs using 1 / remapped z.
@@ -98705,16 +98652,16 @@
 
                                                 do
                                                     long double x87_r7_65 = 1f / eax_76[1]
-                                                    float* edx_39 = &(&__saved_ebp)[ecx_53 * 2 - 0x81f]
-                                                    ecx_53 += 1
+                                                    float* edx_41 = &(&__saved_ebp)[ecx_52 * 2 - 0x81f]
+                                                    ecx_52 += 1
                                                     eax_76 = &eax_76[3]
                                                     eax_76[-4] = g_zClipAlt_RemapScaleX * eax_76[-4] + g_zClipAlt_RemapBiasX
                                                     eax_76[-3] = g_zClipAlt_RemapScaleY * eax_76[-3] + g_zClipAlt_RemapBiasY
                                                     eax_76[-2] = eax_76[-2] - -1f / gClipRect_Primary.zMin
                                                     struct zClipUV* Clip_PolyUvs_7 = g_Clip_PolyUvs
-                                                    edx_39[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_53 - 1].u
-                                                    *edx_39 = *(&Clip_PolyUvs_7[ecx_53] - 4) * x87_r7_65
-                                                while (ecx_53 s< i_34)
+                                                    edx_41[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_52 - 1].u
+                                                    *edx_41 = *(&Clip_PolyUvs_7[ecx_52] - 4) * x87_r7_65
+                                                while (ecx_52 s< i_34)
 
                                             int32_t* gModel_RenderVertexAlphaEnabled_4 = gModel_RenderVertexAlphaEnabled_1
 
@@ -98733,7 +98680,7 @@
                                                 var_18 = gModel_RenderAlphaScaleCurrent_1
                                                 pointEntryByteOffset = __saved_edi->drawFlags
                                                 i_32 = i_34
-                                                g_zVideo_pfnSubmitPolyRenderClass(i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                             else
                                                 struct zImage_TexDirEntry* currentTextureDirectoryEntry_3 = materialForAltTexture->currentTextureDirectoryEntry
                                                 struct zVideo_TextureRecord* texture_4
@@ -98749,9 +98696,10 @@
                                                 char temp40_1 = gModel_RenderVertexAlphaEnabled_4.b
                                                 gModel_RenderVertexAlphaEnabled_4.b = neg.b(gModel_RenderVertexAlphaEnabled_4.b)
                                                 pointEntryByteOffset = __saved_edi->drawFlags
+                                                struct zVideo_RenderClass* renderClass = texture_4
                                                 i_32 = i_34
                                                 var_28 = nullptr
-                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, texture_4, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, renderClass, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 else
                                     int32_t i_33 = i_30
                                     int32_t* vertexCount_2 = &var_8
@@ -98814,7 +98762,7 @@
 
             __saved_edi = &__saved_edi[1]
 
-            if (&__saved_edi[1] u>= ecx_32)
+            if (&__saved_edi[1] u>= ecx_33)
                 break
 
             entries = __saved_edi
@@ -109771,7 +109719,7 @@
     return 0
 }
 
-// Original file: GameZRecoil/zClass/cls_di.c
+// Writes four consecutive XYZ triples at 0x57c2c4 through 0x57c2f0 for individual hexahedron faces. This access prefix does not establish the scratch allocation's full extent.
 0x485380 int32_t __fastcall zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces(struct zBBoxCorners* bboxCorners, struct zClass_DiPickCandidate* pickContext, struct zVec3* queryPoint, struct zVec3* segmentEnd)
 {
     pickContext->scenePayload = nullptr
@@ -111185,7 +111133,7 @@
     return eax_11
 }
 
-// Original file: GameZRecoil/zClass/cls_di.c -- BN limitation: HLIL keeps the morph/matrix x87 math, face-entry byte-stride walk, and material flags bit 0x100 test as raw offset expressions; the accepted model is the assembly-backed region face filter that emits either plain or damage-mask-UV segment polygon candidates.
+// The face-vertex copy loop at 0x487499 copies a runtime vertex count into the sequence at 0x57c2c4 with 12-byte stride. It is not a fixed four-vertex copy.
 0x487350 void __fastcall zClass_cls_di::FilterRegionsAgainstPolygon(struct zClass_Node* node, struct zModel_PickRegionData* regionData, struct zClass_DiSegmentEndpoints* segmentEndpointsByBatch, int32_t* activeMask, int32_t segmentCount, struct PlayerProbeSampleCandidateBuffer* outCandidateBuffersBySegment)
 {
     struct zModel_PickRegionData* regionData_1 = regionData
@@ -111289,10 +111237,6 @@
         var_10_2 += 1
         faceEntryOffset = nextFaceEntryOffset
     while (cond:3_1)
-
-    // [comments not attached to rendered lines]
-    // [comment @ 0x4874d0]
-    // Raw material flag test: byte scenePayload+1 bit0 is flags bit 0x100; it selects the damage-mask UV polygon path.
 }
 
 // Original file: GameZRecoil/zClass/cls_di.c -- BN limitation: two vertex2 load packets still render as field slices (`vertex2X.d/:4.d/:8.d`), but assembly/comments map them to polygonVertices->vertex2{x,y,z}.
@@ -112565,7 +112509,7 @@
     return eax_52
 }
 
-// Source: D:\Proj\GameZRecoil\zModel\gmod_light.c -- Builds software-path per-vertex light weights for the clipped polygon, tracks single-light fog contribution or fog-target override, commits the selected fog target path, blends the packed 565 fog color through outPackedFogColor, and returns whether lighting/fog work was applied. BN still keeps synthetic stack aliases for the 64x64 valid/weight scratch and occasionally loses the zClass_LightData* type in inner angular-weight paths.
+// Distance scratch accesses use lightIndex*0x100 + vertexIndex*4 from 0x566a28. Squared distances may be replaced with the approximate square root before vector normalization; the array's historical 'DistanceSq' name is not true for every stored value.
 0x488d60 int32_t __fastcall zModel_Light::BuildLightWeights(struct zVec3* surfaceNormal, int32_t vertexCount, int32_t* outPackedFogColor, float fogBlendScale)
 {
     __alloca_probe()
@@ -115372,7 +115316,7 @@
     while ((sbb.d(eax_5, eax_5, temp1_1 != 0)).b != 0xff)
 }
 
-// Source: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp
+// CRT initializer referenced by pointer slot 0x4da0a0; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x48bfa0 void __fastcall zNetwork::InitMessageHandlers()
 {
     zNetwork::CreateEmptyDispatchHandlerList()
@@ -119480,9 +119424,7 @@
     // Allocates gRndr_SpanPoolBase as gRndr_SpanColumnCountPadded * 0x100 zRndr_SpanNode records.
 }
 
-// Source: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp -- zRndr::SpanOcclusionBuildColumnHeadTable.
-//
-// Clears the per-column span head table, resets span allocation/iteration cursors to the span pool, then rasterizes each saved span-occluder polygon into the column lists.
+// Walks the occluder records from 0x57db10 with 0x64-byte stride, reading the vertex count at +0x60, and calls the polygon rasterizer for each live record.
 0x490590 void zRndr::SpanOcclusionBuildColumnHeadTable()
 {
     struct zRndr_SpanNode** gRndr_SpanColumnHeadTable_1 = gRndr_SpanColumnHeadTable
@@ -119559,7 +119501,7 @@
     zRndr::SpanOcclusionAddPolygon(&vertices, 4)
 }
 
-// Original file: Battlesport/zRndr/zRndr_Draw.cpp. BN limitation: span-occluder polygon slots are 0x64 bytes (8 zVec3 vertices plus vertCount), but HLIL keeps the slot/vertex copy and trailing vertCount as raw stride arithmetic instead of rendering array fields cleanly.
+// Rejects appends when the live count is >=7. Copies the caller's input vertices first, then stores min(inputVertexCount,8) at record +0x60. Thus the clamp is not a bound on the preceding copy. Record stride is 0x64.
 0x490710 void __fastcall zRndr::SpanOcclusionAddPolygon(struct zVec3* vertices, int32_t vertCount)
 {
     int32_t gRndr_SpanOccluderPolyCount_1 = gRndr_SpanOccluderPolyCount
@@ -126800,7 +126742,7 @@
     // Dispatch the current overwrite record according to its queued primitive type, choosing the flat, textured-alpha, textured-fan, TLV, or immediate raster path.
 }
 
-// zRndr_LensFlare.cpp
+// Retail entry rejects sample count >=650. 0x49a85d-0x49a891 writes a 20-byte record at 0x62ea04 + count*20, then increments count at 0x62ea00.
 0x49a830 void __fastcall zRndr_LensFlare::QueueProjectedSample(struct zVec3* projectedPoint, int32_t packedColor, struct zRndr_LensFlareSource* lensFlareSource)
 {
     if (g_zRndr_LensFlareSampleQueueCount s>= 0x28a)
@@ -126824,7 +126766,7 @@
     return g_zRndr_LensFlareSampleQueueCount
 }
 
-// Likely original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp
+// Retail walks 20-byte entries from 0x62ea04 using count at 0x62ea00, then clears that count at 0x49a8f6.
 0x49a8c0 void __fastcall zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(int32_t yOffsetPixels, float screenScale)
 {
     int32_t i = 0
@@ -126848,9 +126790,7 @@
     g_zRndr_LensFlareSampleQueueCount = 0
 }
 
-// Source: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp -- zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList.
-// Walks lens-flare sample queue from startIndex, removes occluded samples by swapping in the tail entry, and appends visible/enabled positive-depth samples to g_zRndr_LensFlareVisibleSampleDefs.
-// BN limitation: the x87 compare against 0.0f renders as a flag expression assigned through lensFlareSource.w, but assembly only tests sample->invDepth > 0 before appending the sample pointer.
+// Retail walks 20-byte entries from 0x62ea04. 0x49a956 compares the entry address with 0x62ef04 (base +64*20); 0x49a974 appends the queue-entry address to the pointer list at 0x631cd0. The x87 test at 0x49a969 tests AH bit 0x40, not an ordered greater-than predicate.
 0x49a920 void __fastcall zRndr_LensFlare::DrawQueuedSamples16AndBuildVisibleList(int32_t startIndex)
 {
     if (startIndex s>= g_zRndr_LensFlareSampleQueueCount)
@@ -126888,9 +126828,7 @@
                 break
 }
 
-// Source: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp
-// Builds g_zRndr_LensFlareVisibleSampleDefs from queued lens-flare samples starting at startIndex, keeping only enabled samples in the first 0x40 entries whose depth divisor is nonzero.
-// BN limitation: the loop is anchored on &sample->lensFlareSource, so the decompiler renders sample->depthDivisor as ecx[-2] and the stored sample pointer as &ecx[-4]; the x87 zero compare also remains a status-word temporary.
+// Retail clears count 0x631ccc, walks queue records with 20-byte stride, and compares the +16 cursor against 0x62ef14 (base +64*20 +16). 0x49aa07 stores the record base into 0x631cd0. This is evidence for the selected input range, not proof of a larger allocation.
 0x49a9c0 int32_t __fastcall zRndr_LensFlare::BuildVisibleSampleListFromQueue(int32_t startIndex)
 {
     int32_t result = 0
@@ -126899,7 +126837,6 @@
     int32_t i = startIndex
 
     if (not(cond:0))
-    // BN anchors this walk on &entry->lensFlareSource here; ecx[-2] is entry->invDepth and &ecx[-4] is the queue entry.
         struct zRndr_LensFlareSource** ecx = &g_zRndr_LensFlareSampleQueue[startIndex].lensFlareSource
 
         do
@@ -132190,39 +132127,35 @@
     return result
 }
 
-// Source: D:\Proj\GameZRecoil\zSound\zSound.cpp -- zSnd_SetUseArchiveBanksFlag. Sets the internal flag for using archive-based sound banks.
+// Stores ECX at 0x4e2234. This is separate from the vector allocator storage at 0x56b290.
 0x4a07f0 void __fastcall zSnd::SetUseArchiveBanksFlag(int32_t value)
 {
     g_zSndUseArchiveBanks = value
 }
 
-// Likely original file: D:\Proj\GameZRecoil\zSound\zSound.cpp. Sets the archive-bank flag, clears the sample-set registry vector, then registers the registry shutdown callback with atexit.
-0x4a0800 void __fastcall zSnd::SetUseArchiveBanksAndRegisterAtExit(int32_t enabled)
+// CRT initializer referenced by pointer slot 0x4da0a4; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
+0x4a0800 void __fastcall zSndSampleSetRegistry::CrtInitGlobal(int32_t enabled)
 {
-    zSnd::SetUseArchiveBanks(enabled)
+    zSndSampleSetRegistry::ConstructGlobal(enabled)
     return zSndSampleSetRegistry::RegisterAtExit() __tailcall
 }
 
-// Likely original file: D:\Proj\GameZRecoil\zSound\zSound.cpp. Sets whether sound banks should be loaded from archive files and clears the sample-set registry vector.
-0x4a0810 void __fastcall zSnd::SetUseArchiveBanks(int32_t enabled)
+// Constructs the global VC5 std::vector at 0x56b290: copies the empty allocator representation, then zeros begin/end/capacity pointers. Correlated with VC5 VECTOR constructor and XMEMORY allocator declaration, plus the growth path at 0x4a09e0. This does not set the archive-bank flag at 0x4e2234.
+0x4a0810 void __fastcall zSndSampleSetRegistry::ConstructGlobal(int32_t savedEcxBits)
 {
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = enabled:3.b
+    g_zSnd_SampleSetRegistry.allocatorStorage = savedEcxBits:3.b
     g_zSnd_SampleSetRegistry.begin = nullptr
     g_zSnd_SampleSetRegistry.end = nullptr
     g_zSnd_SampleSetRegistry.capacityEnd = nullptr
-
-    // [comments not attached to rendered lines]
-    // [comment @ 0x4a0811]
-    // BN byte-subfield artifact: the source-level enabled flag is modeled as a 4-byte register argument, but the emitted store only writes one byte into useArchiveBanksFlag.
 }
 
-// Likely original file: D:\Proj\GameZRecoil\zSound\zSound.cpp. Registers zSndSampleSetRegistry_Shutdown with atexit.
+// Reached by tail jump from CRT initializer 0x4a0800 (slot 0x4da0a4). Registers function 0x4a0840 with atexit.
 0x4a0830 void zSndSampleSetRegistry::RegisterAtExit()
 {
     atexit(zSndSampleSetRegistry::Shutdown)
 }
 
-// Likely original file: D:\Proj\GameZRecoil\zSound\zSound.cpp. Frees the sample-set registry vector storage and clears begin/end/capacity pointers.
+// Registered by 0x4a0830 with atexit. Passes the vector begin pointer at 0x56b294 to operator delete, then zeros begin/end/capacity at 0x56b294/0x56b298/0x56b29c; matches VC5 VECTOR destruction for pointer elements.
 0x4a0840 void zSndSampleSetRegistry::Shutdown()
 {
     operator delete(g_zSnd_SampleSetRegistry.begin)
@@ -132374,9 +132307,7 @@
     return zSndPendingList::FindByName(sampleName)
 }
 
-// Likely original file: D:\Proj\GameZRecoil\zSnd\zSnd.cpp. Initializes a sample-set record, allocates its zSndSample array, duplicates the set name, and appends the record into the growable sample-set registry vector.
-//
-// BN limitation: the vector insertion reuses the stack slot that originally held sampleCount to store the inserted zSndSampleSet*; HLIL still renders some later fill/copy uses as sampleCount even though the assembly comments and typed registry vector identify the value as the inserted sample-set pointer.
+// Initializes a sample-set record and appends its pointer to the vector at 0x56b290. The growth branch matches VC5 VECTOR::insert: allocate size+max(size,1), copy/fill, free old storage, and update begin/end/capacity pointers. The insertion value is the incoming object pointer saved at 0x4a0a2c, not the original count argument.
 0x4a09e0 struct zSndSampleSet* __thiscall zSndSampleSetRegistry::AddEntry(struct zSndSampleSet* self, char const* setName, int32_t sampleCount)
 {
     struct zSndSampleSet* self_1 = self
@@ -132455,15 +132386,15 @@
 
     // [comments not attached to rendered lines]
     // [comment @ 0x4a0a2c]
-    // BN limitation: this store writes self into the reused stack argument slot [esp+0x1c]. DSE Allow can remove the greyed split variable, but HLIL still renders later uses of this slot as sampleCount.
+    // Saves the incoming object pointer into a reused stack slot. Later insertion fill/copy operations read that pointer from this slot, not the original count argument.
     // [comment @ 0x4a0ac3]
-    // BN limitation: this address is the reused stack slot holding insertedSampleSet from 0x4a0a2c, not the original sampleCount argument.
+    // Passes the address of the reused stack slot containing the inserted object pointer stored at 0x4a0a2c.
     // [comment @ 0x4a0b6d]
-    // BN limitation: this address is the reused stack slot holding insertedSampleSet from 0x4a0a2c, not the original sampleCount argument.
+    // Passes the address of the reused stack slot containing the inserted object pointer stored at 0x4a0a2c.
     // [comment @ 0x4a0b8f]
-    // BN limitation: this load reads insertedSampleSet from the reused stack slot set at 0x4a0a2c, not sampleCount.
+    // Loads the inserted object pointer from the reused slot written at 0x4a0a2c.
     // [comment @ 0x4a0bd4]
-    // BN limitation: this load reads insertedSampleSet from the reused stack slot set at 0x4a0a2c, not sampleCount.
+    // Loads the inserted object pointer from the reused slot written at 0x4a0a2c.
 }
 
 // Source: D:\Proj\GameZRecoil\zSnd\zSnd.cpp
@@ -133715,7 +133646,7 @@
     return 1
 }
 
-// Physical source-file block candidate: src/GameZRecoil/zSound/zsnd_cd.cpp [0x4a2010, 0x4a2950). Evidence: source-path literal 0x4e23f0 xref(s) not listed in handoff. Use docs/reconstruction/source_file_layout_audit.md; not an owner/tier gate by itself.
+// CRT initializer referenced by pointer slot 0x4da0a8; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x4a2010 void zSndCdTrackList::StaticInit()
 {
     zSndCdTrackList::StaticConstructor()
@@ -135009,7 +134940,7 @@
     free(self)
 }
 
-// Source: D:\Proj\GameZRecoil\zSnd\zSnd.cpp
+// CRT initializer referenced by pointer slot 0x4da0ac; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x4a3930 void zSndFadeLists::Init()
 {
     zSndFadeLists::InitGlobals()
@@ -137079,7 +137010,7 @@
     g_Time_AccumulatedTimeSec = x87_r6_5
 }
 
-// Original file: D:\Proj\Battlesport\RecoilApp.cpp. Assembly verifies clearing g_RecoilApp_hWndMain, null exePath early return, building .err/.out paths with MSVC inline strcpy/strcat loops, fallback through GetTempPathA to gamez.err/gamez.out, freopen on stderr/stdout, and writing/flushing the startup header when the stream opens.
+// Uses the literal "w" at 0x4da248 as the mode argument for freopen (IAT 0x4cc51c) at 0x4a5805, 0x4a5862, 0x4a58ea and 0x4a5947. The old original-source-file claim is not established by these calls.
 0x4a5780 void __fastcall RecoilApp::InitStdLogFiles(char const* exePath)
 {
     g_RecoilApp_hWndMain = nullptr
@@ -137685,7 +137616,7 @@
     return fopen(filename, mode)
 }
 
-// D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp
+// Clears five wildcard digit counters and five pointer slots, records at most five '*' positions, and writes their initial decimal digits into the caller's path.
 0x4a5f90 char* __fastcall zUtil_ZRDR::InitWildcardPath(char* pattern)
 {
     char* pattern_1 = pattern
@@ -137762,7 +137693,7 @@
     // Reset wildcard state, record up to five '*' positions in-place, seed their digit values to zero, and return the first expanded path string.
 }
 
-// D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp
+// Advances wildcard digits as a base-ten counter with carry and rewrites the positions through the paired pointer slots. Returns zero on overflow.
 0x4a6070 char* __fastcall zUtil_ZRDR::NextWildcardPath()
 {
     char* filename
@@ -139003,7 +138934,7 @@
     return zVideo_dd::GetAcceptedDirectDrawDeviceCountCached() __tailcall
 }
 
-// Original file: GameZRecoil/zVideo/zVideo.cpp. Selects the persisted renderer backend for startup: a nonnegative hwApiIndex commits that accepted hardware API device and returns ZVID_RENDERER_BACKEND_HARDWARE; -1 binds the software fullscreen dispatch, leaves g_zVideo_pSelectedHwApiDeviceRecord on table entry 0 as a placeholder, clears g_zVideo_pSelectedD3DDeviceInfo, and returns ZVID_RENDERER_BACKEND_SOFTWARE. BN renders the 4-byte null store to g_zVideo_pSelectedD3DDeviceInfo as memset.
+// Retail compares the selection with -1, not with an upper capacity bound. The -1 path stores table base 0x633e44 at 0x633e40 and clears 0x6359f4; the other path calls 0x4a8870.
 0x4a7490 enum zVidRendererBackendOption __fastcall zVideo::SelectHwApiDeviceOrFallback(int32_t hwApiIndex)
 {
     if (hwApiIndex != 0xffffffff)
@@ -139302,7 +139233,7 @@
     return g_zVideo_ClearScreenBufferEnabled
 }
 
-// Physical source-file block candidate: src/GameZRecoil/zVideo/zvid_dd.c [0x4a7b40, 0x4a9ac0). Evidence: source-path literal 0x4e30e8 xref(s) not listed in handoff. Use docs/reconstruction/source_file_layout_audit.md; not an owner/tier gate by itself.
+// Retail 0x4a7b45 initializes the selected device-record pointer at 0x633e40 to table base 0x633e44. Original source-file placement is not established by this store.
 0x4a7b40 void zVideo_dd::StartupEnumerateAndDefaultSelect()
 {
     zVideo_dd::RunDirectDrawDeviceEnumeration()
@@ -140109,8 +140040,7 @@
     return 0
 }
 
-// Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp
-// Commits a prevalidated hardware API device index as the active D3D backend: binds hardware/fullscreen dispatch, stores g_zVideo_pSelectedHwApiDeviceRecord, and stores g_zVideo_pSelectedD3DDeviceInfo at zVidHwApiDeviceRecord.m_d3dDrivers. No bounds check; zVideo_SelectHwApiDeviceOrFallback validates or falls back before calling.
+// Retail computes an indexed record address from table base 0x633e44 and stores it at 0x633e40. There is no bounds check here; 0x4a7490 checks only the -1 sentinel, not the upper capacity.
 0x4a8870 void __fastcall zVideo::CommitHwApiDeviceSelection(int32_t hwApiIndex)
 {
     zVideo::BindRendererDispatch(ZVID_RENDERER_BACKEND_HARDWARE, ZOPT_FULLSCREEN_OPTION_ENABLED)
@@ -140613,7 +140543,7 @@
     return 0
 }
 
-// Original file: GameZRecoil/zVideo/zvid_dd.c. DirectDrawEnumerateA callback: logs each DirectDraw device, fills the next g_zVideo_HwApiDeviceTable record with GUID/name/description, creates a temporary IDirectDraw2 path to collect caps and video/texture memory, tags AGP-capable devices, enumerates usable Direct3D devices for that record, increments g_zVideo_NumAcceptedDirectDrawDevices only when a usable D3D driver exists, tears down temporary interfaces, and returns 1 to continue enumeration or 0 on capacity/caps failure. BN still renders the computed row pointer as the scaled g_zVideo_HwApiDeviceTable expression and reuses lpDriverDescription as a DDSCAPS stack slot for GetAvailableVidMem; these are entry and a local DDSCAPS caps slot in the assembly.
+// Retail 0x4a940b forms the next record pointer from 0x633e44; 0x4a942f compares the accepted-device count with 4. Record stride is 0x6ec. This annotation does not accept the original source owner or file.
 0x4a93d0 int32_t __stdcall zVideo_dd::EnumDirectDrawDeviceCallback(GUID const* lpDirectDrawGuid, char* lpDriverDescription, char* lpDriverName, void* context)
 {
     int32_t zVideo_NumAcceptedDirectDrawDevices_1 = g_zVideo_NumAcceptedDirectDrawDevices
@@ -140685,7 +140615,6 @@
         __builtin_memcpy(edi_5, esi_1, ecx_10 & 3)
 
     struct IDirectDraw2* zVideo_pDirectDraw2_2 = g_zVideo_pDirectDraw2
-    // The callback reuses the lpDriverDescription argument stack slot as a local DDSCAPS caps; 0x4000 is DDSCAPS_VIDEOMEMORY.
     lpDriverDescription = 0x4000
     HRESULT eax_7 = zVideo_pDirectDraw2_2->vftable->GetAvailableVidMem(zVideo_pDirectDraw2_2, &lpDriverDescription, &(&g_zVideo_HwApiDeviceTable[0].m_videoMemTotalBytes)[zVideo_NumAcceptedDirectDrawDevices_1 + ((zVideo_NumAcceptedDirectDrawDevices_1 + ecx_1 * 0x14) << 1)], &(&g_zVideo_HwApiDeviceTable[0].m_videoMemFreeBytes)[zVideo_NumAcceptedDirectDrawDevices_1 + ((zVideo_NumAcceptedDirectDrawDevices_1 + ecx_1 * 0x14) << 1)])
 
@@ -140694,7 +140623,6 @@
         (((zVideo_NumAcceptedDirectDrawDevices_1 + ((zVideo_NumAcceptedDirectDrawDevices_1 + ecx_1 * 0x14) << 1)) << 2) + &g_zVideo_HwApiDeviceTable)->m_videoMemTotalBytes = 0
 
     struct IDirectDraw2* directDraw2ForTextureMem = g_zVideo_pDirectDraw2
-    // Same reused DDSCAPS caps stack slot; 0x1000 is DDSCAPS_TEXTURE.
     lpDriverDescription = 0x1000
     HRESULT eax_8 = directDraw2ForTextureMem->vftable->GetAvailableVidMem(directDraw2ForTextureMem, &lpDriverDescription, &(&g_zVideo_HwApiDeviceTable[0].m_textureMemTotalBytes)[zVideo_NumAcceptedDirectDrawDevices_1 + ((zVideo_NumAcceptedDirectDrawDevices_1 + ecx_1 * 0x14) << 1)], &(&g_zVideo_HwApiDeviceTable[0].m_textureMemFreeBytes)[zVideo_NumAcceptedDirectDrawDevices_1 + ((zVideo_NumAcceptedDirectDrawDevices_1 + ecx_1 * 0x14) << 1)])
 
@@ -140710,7 +140638,7 @@
 
     // [comments not attached to rendered lines]
     // [comment @ 0x4a940b]
-    // entry = &g_zVideo_HwApiDeviceTable[g_zVideo_NumAcceptedDirectDrawDevices]; BN does not simplify the 0x6ec record stride expression consistently.
+    // Retail record address is 0x633e44 + accepted-device index *0x6ec.
 }
 
 // Original file: GameZRecoil/zVideo/zvid_dd.c. Queries IDirect3D2 from the active DirectDraw2 object, resets the selected DirectDraw record's accepted D3D-driver count, runs IDirect3D2::EnumDevices with zVideo_dd::EnumDirect3DDeviceCallback, releases the temporary IDirect3D2 interface, and returns 1 only when at least one usable D3D driver was accepted. BN preserves an unused 0x68-byte stack zeroing block from the original prologue.
@@ -143331,8 +143259,7 @@
     while (i s< &(*g_zVideo_HwApiDeviceTable[0].m_driverDescription)[0xc])
 }
 
-// Source: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c
-// BN limitation: quad-batch writes are indexed by g_zVideo_QuadBatchCount << 7, so HLIL keeps raw global-base expressions; they map to one zVideo_QuadBatchItem with TL/BL x=left, TR/BR x=right, top y, bottom y, and one packed ARGB color on all corners.
+// Retail 0x4acd0d rejects unsigned batch count >=16. 0x4acd1d/0x4acd6c multiplies the index by 128; the record base is 0x63363c.
 0x4acd00 void __fastcall zVideo_dd3d::QueueSolidQuad(uint32_t packedColor16, struct zVid_Rect32* clipRect, double alpha)
 {
     int32_t zVideo_QuadBatchCount_1 = g_zVideo_QuadBatchCount
@@ -145092,7 +145019,7 @@
     self->activeNodeSlotCursor = 0
 }
 
-// Original file: GameZRecoil/zWeapon/zWeapon.cpp. Processes queued impact callbacks, advances OptCatalog projectile runtime states, updates trail runtime segments, performs raycast hit handling, recycles expired instances, and restores the variant tag/current audio timing state. BN limitation: VC5 x87 trajectory/trail math and large stack raycast buffers leave unimplemented FPU and stack-index artifacts in HLIL; assembly, callees, callback ABI, and applied OptCatalog runtime/trail/raycast types are verified.
+// Retail consumes the queue counted at 0x77896c in reverse order, using 68-byte records at 0x778970. This annotation makes no claim about the other runtime layouts or source-file ownership.
 0x4af060 void __fastcall OptCatalog::ProcessRuntimeInstances(struct zClass_Node* actionNode)
 {
     __alloca_probe()
@@ -145152,7 +145079,6 @@
                         g_Variant_CurrentTag.count.d = variantTagPtr_10->count.d
 
                     if ((OptCatalog_EntryTable_1->flags & OPT_ENTRY_MULTI_TARGET) == 0)
-    // Trail-runtime scalar packet mapping: +0x2c = trailDistance, +0x30 = volumeFadeTimer, +0x34 = alphaPulsePhase.
                         unimplemented  {fld st0, dword [ebx+0x2c]}
                         long double temp3_1 = OptCatalog_EntryTable_1->range
                         unimplemented  {fcomp st0, dword [esi+0x1c]} f- temp3_1
@@ -145643,12 +145569,11 @@
 
                     j->activeSegmentCount = runtimeState_2
             else
-    // Mixed runtime-state loop: entries with flags_54 bit 1 clear use runtime impact-state records; entries with that bit set walk the trail-runtime list at +0x58.
                 struct OptCatalogRuntimeImpactState* j_1 = OptCatalog_EntryTable_1->runtimeListHead.activeList
                 union OptCatalogRuntimeListHead* rayStart = &OptCatalog_EntryTable_1->runtimeListHead
 
                 while (j_1 != 0)
-    // Assembly proof: runtime +0x88 is an optional per-instance update callback invoked as callback(self) before the main movement/impact step.
+    // Retail loads [EDI+0x88], skips a null target, and calls it at 0x4af158 with ECX=EDI. The store/call sequence alone does not establish a C++ callback declaration.
                     void (* updateCallback)(struct OptCatalogRuntimeImpactState* runtimeState) = j_1->updateCallback
                     float z_1 = 0f
                     runtimeState = 1
@@ -146894,9 +146819,7 @@
     return result
 }
 
-// Source: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp -- OptCatalog_HandleImpactFromRuntimeProbe.
-// Processes each raycast hit whose node damage handler is not excluded, computes scaled damage with optional distance falloff, either invokes damage feedback immediately or queues a 64-entry delayed impact record, and returns nonzero when at least one hit was processed.
-// BN limitation: the enum flag tests still render as high-byte slices because assembly tests AH for OPT_ENTRY_MINE/OPT_ENTRY_UPDATES_STATUS_METER, and the queued impact-position zVec3 copy remains scalarized through a temporary int32_t* even though both source and destination fields are typed as zVec3.
+// Retail 0x4b0ac3 compares the queued-impact count with 64. The append path uses 68-byte records at 0x778970 and increments 0x77896c.
 0x4b0a50 int32_t __fastcall OptCatalog::HandleImpactFromRuntimeProbe(struct OptCatalogImpactEmitterOwnerView* self, struct OptCatalogRuntimeImpactState* runtimeState, struct OptCatalogRaycastHitList* probeResult, struct OptCatalogDamageHandler* excludedDamageHandler)
 {
     struct OptCatalogImpactEmitterOwnerView* self_1 = self
@@ -151638,7 +151561,7 @@
     struct HudUiBackground* owner_30 = background
     struct HudUiWidget_FTable* ftable = self->base.ftable
     self->owner = owner_30
-    ftable->SetVisible(self, 1)
+    ftable->SetVisible(1)
     HudUiContainer::AddChild(owner_30, self)
     self->originX = owner_30->uiOriginX
     self->originY = owner_30->uiOriginY
@@ -151665,19 +151588,19 @@
             originX += u32_15->x.i32
             originY_8 += u32_15->y.i32
 
-    self->base.ftable->SetPos(self, originX, originY_8)
+    self->base.ftable->SetPos(originX, originY_8)
     struct zVid_Image* clipHandle_118 = background->clipHandle_118
 
     if (clipHandle_118 != 0)
-        struct HudUiRect* eax_8 = self->base.ftable->GetBoundsRectOrNull(self)
+        int32_t* eax_8 = self->base.ftable->GetBoundsRectOrNull()
 
         if (eax_8 != 0)
-            int32_t top = eax_8->top
-            int32_t left = eax_8->left
-            int32_t right = eax_8->right
-            int32_t top_1 = top
-            int32_t bottom = eax_8->bottom
-            self->base.ftable->SetClip(self, clipHandle_118, &left)
+            int32_t edx_5 = eax_8[1]
+            int32_t bltSourceOrNull = *eax_8
+            int32_t var_14_1 = eax_8[2]
+            int32_t var_18_1 = edx_5
+            int32_t var_10_1 = eax_8[3]
+            self->base.ftable->SetClip(clipHandle_118, &bltSourceOrNull)
 
     struct zReader_Node* parentNode = zReader::GetNamedNode(zrdSection, "ROLLOVER")
 
@@ -151726,26 +151649,24 @@
                     owner_29->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* rolloverSinglePanel = owner_29
-                int32_t edx_14
-                edx_14.b = owner_29->base.elementFlags.b
+                int32_t edx_15
+                edx_15.b = owner_29->base.elementFlags.b
                 int32_t var_4_4 = 0xffffffff
-                owner_29->base.elementFlags = (edx_14 & 0x10) | 2
+                owner_29->base.elementFlags = (edx_15 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_1 = background->base.vptr
                 char* fmt_1 = zLoc::ResolveMessageKeyOrFallback(rolloverLabelNode->payload->textKey.str)
                 vptr_1->SetTextFmt(background, fmt_1)
                 struct zReader_NodeArray_HudTextLabelSpec* rolloverSingleLabelSpec = rolloverLabelNode->payload
-                struct HudUiTransitionTextPanel* ecx_44 = background
-                ecx_44->base.vtbl->SetPos(ecx_44, rolloverSingleLabelSpec->x.i32 + originX_2, rolloverSingleLabelSpec->y.i32 + originY_1)
+                background->base.vtbl->SetPos(rolloverSingleLabelSpec->x.i32 + originX_2, rolloverSingleLabelSpec->y.i32 + originY_1)
                 struct HudUiBackground* owner_1 = self->owner
-                int32_t edx_18 = rolloverLabelNode->payload->fontStyleRef.i32 * 9
-                int32_t esi_10 = *(&owner_1->fontStyles + (edx_18 << 2))
+                int32_t edx_20 = rolloverLabelNode->payload->fontStyleRef.i32 * 9
+                int32_t esi_10 = *(&owner_1->fontStyles + (edx_20 << 2))
                 int32_t esi_11 = neg.d(esi_10)
-                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_18 << 2))
+                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_20 << 2))
 
                 if (esi_13 != 0)
                     background->base.alignMode = esi_13->alignMode
-                    struct HudUiTransitionTextPanel* ecx_48 = background
-                    ecx_48->base.vtbl->SetFont(ecx_48, esi_13->fontName, esi_13->fontSize, esi_13->fontWeight, 0, 0, 0, 2)
+                    background->base.vtbl->SetFont(esi_13->fontName, esi_13->fontSize, esi_13->fontWeight, 0, 0, 0, 2)
                     struct HudUiTransitionTextPanel* ecx_49 = background
                     uint32_t textColor_1 = esi_13->textColor
                     ecx_49->base.textColor0 = textColor_1
@@ -151759,8 +151680,7 @@
                     ecx_50->base.bkMode = esi_13->bkMode
                     ecx_50->base.bkColor = esi_13->bkColor
 
-                struct HudUiTransitionTextPanel* ecx_51 = background
-                ecx_51->base.vtbl->SetVisible(ecx_51, 1)
+                background->base.vtbl->SetVisible(1)
                 HudUiContainer::AddChild(self->owner, background)
                 MSVC_STL::VectorHudUiFlashPanelPtr_InsertN_COMDAT(&self->rolloverLabelPanels, self->rolloverLabelPanels.end, 1, &background)
             else
@@ -151801,18 +151721,16 @@
                         char* fmt = zLoc::ResolveMessageKeyOrFallback(*((&rolloverLabelNode->payload->count)[var_30_1 * 2] + 0xc))
                         vptr->SetTextFmt(background, fmt)
                         struct zReader_NodeArray_HudTextLabelSpec* rolloverLabelSpec = *(rolloverLabelNode->payload + (var_30_1 << 3) + 4)
-                        struct HudUiTransitionTextPanel* ecx_28 = background
-                        ecx_28->base.vtbl->SetPos(ecx_28, rolloverLabelSpec->x.i32 + originX_1, rolloverLabelSpec->y.i32 + originY_7)
+                        background->base.vtbl->SetPos(rolloverLabelSpec->x.i32 + originX_1, rolloverLabelSpec->y.i32 + originY_7)
                         struct HudUiBackground* owner = self->owner
-                        int32_t edx_11 = *((&rolloverLabelNode->payload->count)[var_30_1 * 2] + 0x24) * 9
-                        int32_t esi_4 = *(&owner->fontStyles + (edx_11 << 2))
+                        int32_t edx_12 = *((&rolloverLabelNode->payload->count)[var_30_1 * 2] + 0x24) * 9
+                        int32_t esi_4 = *(&owner->fontStyles + (edx_12 << 2))
                         int32_t esi_5 = neg.d(esi_4)
-                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_11 << 2))
+                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_12 << 2))
 
                         if (esi_7 != 0)
                             background->base.alignMode = esi_7->alignMode
-                            struct HudUiTransitionTextPanel* ecx_32 = background
-                            ecx_32->base.vtbl->SetFont(ecx_32, esi_7->fontName, esi_7->fontSize, esi_7->fontWeight, 0, 0, 0, 2)
+                            background->base.vtbl->SetFont(esi_7->fontName, esi_7->fontSize, esi_7->fontWeight, 0, 0, 0, 2)
                             struct HudUiTransitionTextPanel* ecx_33 = background
                             uint32_t textColor = esi_7->textColor
                             ecx_33->base.textColor0 = textColor
@@ -151826,8 +151744,7 @@
                             ecx_35->base.bkMode = esi_7->bkMode
                             ecx_35->base.bkColor = esi_7->bkColor
 
-                        struct HudUiTransitionTextPanel* ecx_36 = background
-                        ecx_36->base.vtbl->SetVisible(ecx_36, 1)
+                        background->base.vtbl->SetVisible(1)
                         HudUiContainer::AddChild(self->owner, background)
                         MSVC_STL::VectorHudUiFlashPanelPtr_InsertN_COMDAT(&self->rolloverLabelPanels, self->rolloverLabelPanels.end, 1, &background)
                         cond:17_1 = var_30_1 + 1 s<= eax_14
@@ -151913,26 +151830,24 @@
                     owner_33->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* disabledSinglePanel = owner_33
-                int32_t edx_36
-                edx_36.b = owner_33->base.elementFlags.b
+                int32_t edx_37
+                edx_37.b = owner_33->base.elementFlags.b
                 int32_t var_4_8 = 0xffffffff
-                owner_33->base.elementFlags = (edx_36 & 0x10) | 2
+                owner_33->base.elementFlags = (edx_37 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_3 = background->base.vptr
                 char* fmt_3 = zLoc::ResolveMessageKeyOrFallback(disabledLabelNode->payload->textKey.str)
                 vptr_3->SetTextFmt(background, fmt_3)
                 struct zReader_NodeArray_HudTextLabelSpec* disabledSingleLabelSpec = disabledLabelNode->payload
-                struct HudUiTransitionTextPanel* ecx_89 = background
-                ecx_89->base.vtbl->SetPos(ecx_89, disabledSingleLabelSpec->x.i32 + originX_4, disabledSingleLabelSpec->y.i32 + originY_3)
+                background->base.vtbl->SetPos(disabledSingleLabelSpec->x.i32 + originX_4, disabledSingleLabelSpec->y.i32 + originY_3)
                 struct HudUiBackground* owner_3 = self->owner
-                int32_t edx_40 = disabledLabelNode->payload->fontStyleRef.i32 * 9
-                int32_t esi_24 = *(&owner_3->fontStyles + (edx_40 << 2))
+                int32_t edx_42 = disabledLabelNode->payload->fontStyleRef.i32 * 9
+                int32_t esi_24 = *(&owner_3->fontStyles + (edx_42 << 2))
                 int32_t esi_25 = neg.d(esi_24)
-                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_40 << 2))
+                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_42 << 2))
 
                 if (esi_27 != 0)
                     background->base.alignMode = esi_27->alignMode
-                    struct HudUiTransitionTextPanel* ecx_93 = background
-                    ecx_93->base.vtbl->SetFont(ecx_93, esi_27->fontName, esi_27->fontSize, esi_27->fontWeight, 0, 0, 0, 2)
+                    background->base.vtbl->SetFont(esi_27->fontName, esi_27->fontSize, esi_27->fontWeight, 0, 0, 0, 2)
                     struct HudUiTransitionTextPanel* ecx_94 = background
                     uint32_t textColor_3 = esi_27->textColor
                     ecx_94->base.textColor0 = textColor_3
@@ -151946,8 +151861,7 @@
                     ecx_95->base.bkMode = esi_27->bkMode
                     ecx_95->base.bkColor = esi_27->bkColor
 
-                struct HudUiTransitionTextPanel* ecx_96 = background
-                ecx_96->base.vtbl->SetVisible(ecx_96, 1)
+                background->base.vtbl->SetVisible(1)
                 HudUiContainer::AddChild(self->owner, background)
                 MSVC_STL::VectorHudUiFlashPanelPtr_InsertN_COMDAT(&self->disabledLabelPanels, self->disabledLabelPanels.end, 1, &background)
             else
@@ -151977,26 +151891,24 @@
                             owner_31->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* disabledListPanel = owner_31
-                        int32_t edx_26
-                        edx_26.b = owner_31->base.elementFlags.b
+                        int32_t edx_27
+                        edx_27.b = owner_31->base.elementFlags.b
                         int32_t var_4_6 = 0xffffffff
-                        owner_31->base.elementFlags = (edx_26 & 0x10) | 2
+                        owner_31->base.elementFlags = (edx_27 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_2 = background->base.vptr
                         char* fmt_2 = zLoc::ResolveMessageKeyOrFallback(*((&disabledLabelNode->payload->count)[var_30_2 * 2] + 0xc))
                         vptr_2->SetTextFmt(background, fmt_2)
-                        struct HudUiTransitionTextPanel* ecx_73 = background
                         struct zReader_NodeArray_HudTextLabelSpec* disabledLabelSpec = (&disabledLabelNode->payload->count)[var_30_2 * 2]
-                        ecx_73->base.vtbl->SetPos(ecx_73, disabledLabelSpec->x.i32 + originX_3, disabledLabelSpec->y.i32 + originY_2)
+                        background->base.vtbl->SetPos(disabledLabelSpec->x.i32 + originX_3, disabledLabelSpec->y.i32 + originY_2)
                         struct HudUiBackground* owner_2 = self->owner
-                        int32_t edx_33 = *((&disabledLabelNode->payload->count)[var_30_2 * 2] + 0x24) * 9
-                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_33 << 2))
+                        int32_t edx_34 = *((&disabledLabelNode->payload->count)[var_30_2 * 2] + 0x24) * 9
+                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_34 << 2))
                         int32_t esi_19 = neg.d(esi_18)
-                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_33 << 2))
+                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_34 << 2))
 
                         if (esi_21 != 0)
                             background->base.alignMode = esi_21->alignMode
-                            struct HudUiTransitionTextPanel* ecx_77 = background
-                            ecx_77->base.vtbl->SetFont(ecx_77, esi_21->fontName, esi_21->fontSize, esi_21->fontWeight, 0, 0, 0, 2)
+                            background->base.vtbl->SetFont(esi_21->fontName, esi_21->fontSize, esi_21->fontWeight, 0, 0, 0, 2)
                             struct HudUiTransitionTextPanel* ecx_78 = background
                             uint32_t textColor_2 = esi_21->textColor
                             ecx_78->base.textColor0 = textColor_2
@@ -152010,8 +151922,7 @@
                             ecx_79->base.bkMode = esi_21->bkMode
                             ecx_79->base.bkColor = esi_21->bkColor
 
-                        struct HudUiTransitionTextPanel* ecx_80 = background
-                        ecx_80->base.vtbl->SetVisible(ecx_80, 1)
+                        background->base.vtbl->SetVisible(1)
                         HudUiContainer::AddChild(self->owner, background)
                         MSVC_STL::VectorHudUiFlashPanelPtr_InsertN_COMDAT(&self->disabledLabelPanels, self->disabledLabelPanels.end, 1, &background)
                         cond:19_1 = var_30_2 + 1 s<= eax_55
@@ -152097,26 +152008,24 @@
                     owner_39->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* activateSinglePanel = owner_39
-                int32_t edx_58
-                edx_58.b = owner_39->base.elementFlags.b
+                int32_t edx_59
+                edx_59.b = owner_39->base.elementFlags.b
                 int32_t var_4_12 = 0xffffffff
-                owner_39->base.elementFlags = (edx_58 & 0x10) | 2
+                owner_39->base.elementFlags = (edx_59 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_5 = background->base.vptr
                 char* fmt_5 = zLoc::ResolveMessageKeyOrFallback(activateLabelNode->payload->textKey.str)
                 vptr_5->SetTextFmt(background, fmt_5)
                 struct zReader_NodeArray_HudTextLabelSpec* activateSingleLabelSpec = activateLabelNode->payload
-                struct HudUiTransitionTextPanel* ecx_134 = background
-                ecx_134->base.vtbl->SetPos(ecx_134, activateSingleLabelSpec->x.i32 + originX_6, activateSingleLabelSpec->y.i32 + originY_5)
+                background->base.vtbl->SetPos(activateSingleLabelSpec->x.i32 + originX_6, activateSingleLabelSpec->y.i32 + originY_5)
                 struct HudUiBackground* owner_5 = self->owner
-                int32_t edx_62 = activateLabelNode->payload->fontStyleRef.i32 * 9
-                int32_t esi_38 = *(&owner_5->fontStyles + (edx_62 << 2))
+                int32_t edx_64 = activateLabelNode->payload->fontStyleRef.i32 * 9
+                int32_t esi_38 = *(&owner_5->fontStyles + (edx_64 << 2))
                 int32_t esi_39 = neg.d(esi_38)
-                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_62 << 2))
+                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_64 << 2))
 
                 if (esi_41 != 0)
                     background->base.alignMode = esi_41->alignMode
-                    struct HudUiTransitionTextPanel* ecx_138 = background
-                    ecx_138->base.vtbl->SetFont(ecx_138, esi_41->fontName, esi_41->fontSize, esi_41->fontWeight, 0, 0, 0, 2)
+                    background->base.vtbl->SetFont(esi_41->fontName, esi_41->fontSize, esi_41->fontWeight, 0, 0, 0, 2)
                     struct HudUiTransitionTextPanel* ecx_139 = background
                     uint32_t textColor_5 = esi_41->textColor
                     ecx_139->base.textColor0 = textColor_5
@@ -152130,8 +152039,7 @@
                     ecx_140->base.bkMode = esi_41->bkMode
                     ecx_140->base.bkColor = esi_41->bkColor
 
-                struct HudUiTransitionTextPanel* ecx_141 = background
-                ecx_141->base.vtbl->SetVisible(ecx_141, 1)
+                background->base.vtbl->SetVisible(1)
                 HudUiContainer::AddChild(self->owner, background)
                 MSVC_STL::VectorHudUiFlashPanelPtr_InsertN_COMDAT(&self->activateLabelPanels, self->activateLabelPanels.end, 1, &background)
             else
@@ -152161,26 +152069,24 @@
                             owner_35->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* activateListPanel = owner_35
-                        int32_t edx_48
-                        edx_48.b = owner_35->base.elementFlags.b
+                        int32_t edx_49
+                        edx_49.b = owner_35->base.elementFlags.b
                         int32_t var_4_10 = 0xffffffff
-                        owner_35->base.elementFlags = (edx_48 & 0x10) | 2
+                        owner_35->base.elementFlags = (edx_49 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_4 = background->base.vptr
                         char* fmt_4 = zLoc::ResolveMessageKeyOrFallback(*((&activateLabelNode->payload->count)[var_30_3 * 2] + 0xc))
                         vptr_4->SetTextFmt(background, fmt_4)
-                        struct HudUiTransitionTextPanel* ecx_118 = background
                         struct zReader_NodeArray_HudTextLabelSpec* activateLabelSpec = (&activateLabelNode->payload->count)[var_30_3 * 2]
-                        ecx_118->base.vtbl->SetPos(ecx_118, activateLabelSpec->x.i32 + originX_5, activateLabelSpec->y.i32 + originY_4)
+                        background->base.vtbl->SetPos(activateLabelSpec->x.i32 + originX_5, activateLabelSpec->y.i32 + originY_4)
                         struct HudUiBackground* owner_4 = self->owner
-                        int32_t edx_55 = *((&activateLabelNode->payload->count)[var_30_3 * 2] + 0x24) * 9
-                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_55 << 2))
+                        int32_t edx_56 = *((&activateLabelNode->payload->count)[var_30_3 * 2] + 0x24) * 9
+                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_56 << 2))
                         int32_t esi_33 = neg.d(esi_32)
-                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_55 << 2))
+                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_56 << 2))
 
                         if (esi_35 != 0)
                             background->base.alignMode = esi_35->alignMode
-                            struct HudUiTransitionTextPanel* ecx_122 = background
-                            ecx_122->base.vtbl->SetFont(ecx_122, esi_35->fontName, esi_35->fontSize, esi_35->fontWeight, 0, 0, 0, 2)
+                            background->base.vtbl->SetFont(esi_35->fontName, esi_35->fontSize, esi_35->fontWeight, 0, 0, 0, 2)
                             struct HudUiTransitionTextPanel* ecx_123 = background
                             uint32_t textColor_4 = esi_35->textColor
                             ecx_123->base.textColor0 = textColor_4
@@ -152194,8 +152100,7 @@
                             ecx_124->base.bkMode = esi_35->bkMode
                             ecx_124->base.bkColor = esi_35->bkColor
 
-                        struct HudUiTransitionTextPanel* ecx_125 = background
-                        ecx_125->base.vtbl->SetVisible(ecx_125, 1)
+                        background->base.vtbl->SetVisible(1)
                         HudUiContainer::AddChild(self->owner, background)
                         MSVC_STL::VectorHudUiFlashPanelPtr_InsertN_COMDAT(&self->activateLabelPanels, self->activateLabelPanels.end, 1, &background)
                         cond:21_1 = var_30_3 + 1 s<= eax_95
@@ -152261,26 +152166,24 @@
                 owner_41->base.flash.flashDirectionSign = 1
 
             struct HudUiTransitionTextPanel* baseSinglePanel = owner_41
-            int32_t edx_76
-            edx_76.b = owner_41->base.elementFlags.b
+            int32_t edx_77
+            edx_77.b = owner_41->base.elementFlags.b
             int32_t var_4_16 = 0xffffffff
-            owner_41->base.elementFlags = (edx_76 & 0x10) | 2
+            owner_41->base.elementFlags = (edx_77 & 0x10) | 2
             struct HudUiTransitionTextPanel_FTable* vptr_7 = background->base.vptr
             char* fmt_7 = zLoc::ResolveMessageKeyOrFallback(baseLabelNode->payload->textKey.str)
             vptr_7->SetTextFmt(background, fmt_7)
             struct zReader_NodeArray_HudTextLabelSpec* baseSingleLabelSpec = baseLabelNode->payload
-            struct HudUiTransitionTextPanel* ecx_176 = background
-            ecx_176->base.vtbl->SetPos(ecx_176, baseSingleLabelSpec->x.i32 + originX_8, baseSingleLabelSpec->y.i32 + originY_6)
+            background->base.vtbl->SetPos(baseSingleLabelSpec->x.i32 + originX_8, baseSingleLabelSpec->y.i32 + originY_6)
             struct HudUiBackground* owner_7 = self->owner
-            int32_t edx_80 = baseLabelNode->payload->fontStyleRef.i32 * 9
-            int32_t esi_51 = *(&owner_7->fontStyles + (edx_80 << 2))
+            int32_t edx_82 = baseLabelNode->payload->fontStyleRef.i32 * 9
+            int32_t esi_51 = *(&owner_7->fontStyles + (edx_82 << 2))
             int32_t esi_52 = neg.d(esi_51)
-            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_80 << 2))
+            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_82 << 2))
 
             if (esi_54 != 0)
                 background->base.alignMode = esi_54->alignMode
-                struct HudUiTransitionTextPanel* ecx_180 = background
-                ecx_180->base.vtbl->SetFont(ecx_180, esi_54->fontName, esi_54->fontSize, esi_54->fontWeight, 0, 0, 0, 2)
+                background->base.vtbl->SetFont(esi_54->fontName, esi_54->fontSize, esi_54->fontWeight, 0, 0, 0, 2)
                 struct HudUiTransitionTextPanel* ecx_181 = background
                 uint32_t textColor_7 = esi_54->textColor
                 ecx_181->base.textColor0 = textColor_7
@@ -152294,11 +152197,10 @@
                 ecx_182->base.bkMode = esi_54->bkMode
                 ecx_182->base.bkColor = esi_54->bkColor
 
-            struct HudUiTransitionTextPanel* ecx_183 = background
-            ecx_183->base.vtbl->SetVisible(ecx_183, 1)
+            background->base.vtbl->SetVisible(1)
             HudUiContainer::AddChild(self->owner, background)
             struct HudUiFlashPanel** end_3 = self->labelPanels.end
-            struct HudUiFlashPanel** i = end_3
+            int32_t* i = end_3
 
             if ((self->labelPanels.cap - end_3) s>> 2 u>= 1)
                 if ((end_3 - i) s>> 2 u>= 1)
@@ -152316,16 +152218,16 @@
                         struct HudUiFlashPanel** shiftCursor
 
                         do
-                            struct HudUiFlashPanel* edx_97 = shiftCursor[-1]
+                            struct HudUiFlashPanel* edx_98 = shiftCursor[-1]
                             shiftCursor -= 4
                             end_1 -= 4
-                            *end_1 = edx_97
+                            *end_1 = edx_98
                         while (shiftCursor != i)
 
                     for (; i != &i[1]; i = &i[1])
                         *i = background
                 else
-                    struct HudUiFlashPanel** i_2 = i
+                    int32_t* i_2 = i
 
                     if (i != end_3)
                         do
@@ -152397,7 +152299,7 @@
                     var_2c_4 -= 1
                 while (cond:25_1)
                 struct HudUiFlashPanel** end_2 = self->labelPanels.end
-                struct HudUiFlashPanel** i_4 = i
+                int32_t* i_4 = i
 
                 if (i != end_2)
                     int32_t* ebp = &ebx_10[1]
@@ -152457,18 +152359,16 @@
                     char* fmt_6 = zLoc::ResolveMessageKeyOrFallback(*(*(baseLabelNode->payload + (var_30_4 << 3) + 4) + 0xc))
                     vptr_6->SetTextFmt(background, fmt_6)
                     struct zReader_NodeArray_HudTextLabelSpec* baseLabelSpec = (&baseLabelNode->payload->count)[var_30_4 * 2]
-                    struct HudUiTransitionTextPanel* ecx_160 = background
-                    ecx_160->base.vtbl->SetPos(ecx_160, baseLabelSpec->x.i32 + originX_7, baseLabelSpec->y.i32 + originY)
+                    background->base.vtbl->SetPos(baseLabelSpec->x.i32 + originX_7, baseLabelSpec->y.i32 + originY)
                     struct HudUiBackground* owner_6 = self->owner
-                    int32_t edx_73 = *((&baseLabelNode->payload->count)[var_30_4 * 2] + 0x24) * 9
-                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_73 << 2))
+                    int32_t edx_74 = *((&baseLabelNode->payload->count)[var_30_4 * 2] + 0x24) * 9
+                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_74 << 2))
                     int32_t esi_46 = neg.d(esi_45)
-                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_73 << 2))
+                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_74 << 2))
 
                     if (esi_48 != 0)
                         background->base.alignMode = esi_48->alignMode
-                        struct HudUiTransitionTextPanel* ecx_164 = background
-                        ecx_164->base.vtbl->SetFont(ecx_164, esi_48->fontName, esi_48->fontSize, esi_48->fontWeight, 0, 0, 0, 2)
+                        background->base.vtbl->SetFont(esi_48->fontName, esi_48->fontSize, esi_48->fontWeight, 0, 0, 0, 2)
                         struct HudUiTransitionTextPanel* ecx_165 = background
                         uint32_t textColor_6 = esi_48->textColor
                         ecx_165->base.textColor0 = textColor_6
@@ -152482,8 +152382,7 @@
                         ecx_166->base.bkMode = esi_48->bkMode
                         ecx_166->base.bkColor = esi_48->bkColor
 
-                    struct HudUiTransitionTextPanel* ecx_167 = background
-                    ecx_167->base.vtbl->SetVisible(ecx_167, 1)
+                    background->base.vtbl->SetVisible(1)
                     HudUiContainer::AddChild(self->owner, background)
                     MSVC_STL::VectorHudUiFlashPanelPtr_InsertN_COMDAT(&self->labelPanels, self->labelPanels.end, 1, &background)
                     cond:15_1 = var_30_4 + 1 s<= eax_131
@@ -155014,8 +154913,7 @@
     return HudUiBackground::BindButtonsNodeToWidgetByName(self, self->cfgRoot, widget, name)
 }
 
-// Source file: D:\Proj\Battlesport\HudUiBackground.cpp
-// BN limitation: this PRIMITIVES binder intentionally accepts mixed element targets. BITMAP uses HudUiWidget behavior, WORDWRAP/FONT use HudUiPanel fields, and COLOR/ENDP_* use HudUiPrimitiveBindTarget fields, so HLIL keeps __offset stores on the generic element pointer and nests endpoint virtual GetX/GetY calls poorly. The loadedSectionNode argument is legacy/unused; retail resolves from self->cfgRoot_A940.
+// At 0x4ba0ff, loads the complete NUL-terminated PRIMITIVES key at 0x4e4864 for the 0x4ba104 named-node lookup. The former ES label at 0x4e486c was an interior suffix, not a separately referenced string.
 0x4ba0e0 int32_t __thiscall HudUiBackground::BindPrimitiveNodeToElement(struct HudUiBackground* self, struct zReader_Node* loadedSectionNode, struct HudUiElement* element, char const* name)
 {
     struct zReader_Node* cfgRoot = self->cfgRoot
@@ -155062,7 +154960,6 @@
 
                 if (edi_3 != 0)
                     struct HudUiPanel_FTable* ftable = element->ftable
-    // Mixed target: FONT applies HudUiPanel-style fields to targets whose ZRD node actually carries FONT; keep element generic because this binder also receives widgets and primitive endpoint targets.
                     element->__offset(0x144).d = edi_3->alignMode
                     ftable->SetFont(element, edi_3->fontName, edi_3->fontSize, edi_3->fontWeight, 0, 0, 0, 2)
                     uint32_t textColor = edi_3->textColor
@@ -155083,12 +154980,10 @@
             if (eax_10 != 0)
                 struct zReader_NodeArray_HudColorRgbSpec* spec = eax_10->spec
                 green8.b = spec->blue.i32.b
-    // red8 is the low byte from COLOR.red_08.i32_04; BN may render the byte temp with a stale pointer type.
                 struct zReader_Node* red8
                 red8.b = spec->red.i32.b
                 uint32_t blue8 = green8
                 green8.b = spec->green.i32.b
-    // Store is primitive target color565 from COLOR.red/green/blue. BN keeps element generic here; for primitive targets this is HudUiPrimitiveBindTarget.color565 at +0x3c.
                 element->__offset(0x3c).d = zVid::PackColorRGB(red8, green8, blue8)
 
             struct zReader_Node_Arr_2_I32* eax_13 = zReader::GetNamedNode(parentNode_1, "ENDP_REL")
@@ -158020,7 +157915,7 @@
                 zTimedTask::RemoveFromActiveList(task)
 }
 
-// Likely original file: D:\Proj\Battlesport\hud.cpp. Converts an integer RECT into the module-local float line-clip bounds used by HudLineClip segment clipping.
+// Converts the four signed dwords at ECX +0/+4/+8/+12 to float bounds at 0x4e4878/0x4e487c/0x4e4888/0x4e488c. There is no store to the former false min-X label at 0x4e4874.
 0x4bd6f0 void __fastcall HudLineClip::SetCurrentBoundsFromRectI(struct tagRECT const* rect)
 {
     g_HudLineClip_CurrentMinX = rect->left
@@ -158029,9 +157924,7 @@
     g_HudLineClip_CurrentMaxY = rect->bottom
 }
 
-// Likely original file: D:\Proj\GameZ\z_math.cpp
-// Clips pointA->pointB against g_zMath_ClipZLowerBound/g_zMath_ClipZUpperBound; returns 0 for trivial reject, 1 for visible/intersecting segment.
-// BN limitation: x87 status-word comparisons still render as flag-word expressions.
+// The Z comparisons and clipping assignments use 0x4e4880 and 0x4e4890, not the Y lower bound at 0x4e487c.
 0x4bd720 int32_t __fastcall zMath::ClipLineSegmentToZRange(struct zVec3* pointA, struct zVec3* pointB)
 {
     long double x87_r7 = pointA->z
@@ -158121,14 +158014,12 @@
     return result
 }
 
-// Likely original file: D:\Proj\Battlesport\hud.cpp. Clips a 2D segment against current X bounds, mutating outside endpoints and setting endpoint-clipped flags; returns 0 for reject, 1 for visible.
-// BN limitation: x87 status-word min/max comparisons render as verbose flag-word expressions in HLIL.
+// The X clipping comparisons and endpoint assignments use float bounds 0x4e4878 and 0x4e4888.
 0x4bd880 int32_t __fastcall HudLineClip::ClipSegmentToCurrentXBounds(struct HudLinePoint2* point0, struct HudLinePoint2* point1, int32_t* point0Clipped, int32_t* point1Clipped)
 {
     long double x87_r7 = point0->x
     long double temp1 = g_HudLineClip_CurrentMaxX
     x87_r7 - temp1
-    // BN renders the x87 status-word tests verbosely; these blocks are current-min/current-max X-bound comparisons for segment clipping.
     float eax
     eax.w = (x87_r7 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7, temp1) ? 1 : 0) << 0xa | (x87_r7 == temp1 ? 1 : 0) << 0xe
 
@@ -158207,14 +158098,12 @@
     pointToClip->y = x87_r6_6
 }
 
-// Likely original file: D:\Proj\Battlesport\hud.cpp. Clips a 2D segment against current Y bounds, mutating outside endpoints and setting endpoint-clipped flags; returns 0 for reject, 1 for visible.
-// BN limitation: x87 status-word min/max comparisons render as verbose flag-word expressions in HLIL.
+// The Y clipping comparisons and endpoint assignments use float bounds 0x4e487c and 0x4e488c.
 0x4bd9f0 int32_t __fastcall HudLineClip::ClipSegmentToCurrentYBounds(struct HudLinePoint2* point0, struct HudLinePoint2* point1, int32_t* point0Clipped, int32_t* point1Clipped)
 {
     long double x87_r7 = point0->y
     long double temp1 = g_HudLineClip_CurrentMaxY
     x87_r7 - temp1
-    // BN renders the x87 status-word tests verbosely; these blocks are current-min/current-max Y-bound comparisons for segment clipping.
     float eax
     eax.w = (x87_r7 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7, temp1) ? 1 : 0) << 0xa | (x87_r7 == temp1 ? 1 : 0) << 0xe
 
@@ -158744,9 +158633,7 @@
     return HudWeatherFx::Destructor(self) __tailcall
 }
 
-// Source file: D:\Proj\Battlesport\hud.cpp
-// Updates visible snow particles: accumulates time, computes camera-target drift plus gravity/wind in camera space, advances source positions into the destination buffer, projects each particle into a HudWeatherFxParticleQuad, resets particles that leave the cone, updates the base element, then swaps source/dest buffers.
-// BN limitations: x87 compare/normalize code stays noisy, zVec3 stack temporaries are repeatedly materialized through pointer aliases, the particle loop keeps byte offsets for zVec3 positions (0x0c stride) and HudWeatherFxParticleQuad records (0x20 stride), and HLIL still loses the simple source/dest buffer swap temp.
+// Snow update uses a single-precision time accumulator at 0x56bf68: FLD at 0x4be30a, frame-delta addition, FSTP at 0x4be315.
 0x4be2f0 void __thiscall HudWeatherFxSnow::Update(struct HudWeatherFxSnow* self, float deltaSec)
 {
     if (((not.d(self->base.base.flags)).b & 0x10) == 0)
@@ -158955,16 +158842,6 @@
     HudUiElement::Update(self, deltaSec)
     self->base.sourceBufferIndex = self->base.destBufferIndex
     self->base.destBufferIndex = self->base.sourceBufferIndex
-
-    // [comments not attached to rendered lines]
-    // [comment @ 0x4be683]
-    // BN x87 artifact: snow projection matches rain. origin.x/y use probeDepthFactor = (g_HudWeatherFx_ConeDepthMax - particleProbePoint.z), i.e. int32(((probeDepthFactor * particleProbePoint.{x,y}) - g_HudWeatherFx_ProjectCenterBias) * viewport{Width,Height}F). width/height then use sourceDepthFactor = (g_HudWeatherFx_ConeDepthMax - sourceParticlePositionForQuad.z), i.e. int32(((sourceDepthFactor * sourceParticlePositionForQuad.{x,y}) - g_HudWeatherFx_ProjectCenterBias) * viewport{Width,Height}F) - origin.{x,y}; alpha scales are sourceDepthFactor * {alphaStartScale, alphaEndScale}.
-    // [comment @ 0x4be753]
-    // Snow slant offset uses the retained sourceDepthFactor after alpha setup: particleQuad->slantOffset = int32((activeParticleCount + 1) * sourceDepthFactor * g_HudWeatherFxSnow_SlantScale).
-    // [comment @ 0x4be775]
-    // BN x87 artifact: reset unless source z is the dominant axis (|x| <= |z| and |y| <= |z|) and 0.5f <= z <= 1.0f.
-    // [comment @ 0x4be7ee]
-    // BN HLIL loses the swap temp here; assembly swaps sourceBufferIndex and destBufferIndex via eax/ecx.
 }
 
 // Likely original file: D:\Proj\Battlesport\hud.cpp
@@ -158998,9 +158875,7 @@
     return HudWeatherFx::Destructor(self) __tailcall
 }
 
-// Source file: D:\Proj\Battlesport\hud.cpp
-// Updates visible rain particles: accumulates time, computes camera-target drift plus gravity/wind in camera space, advances source positions into the destination buffer, projects each particle into a HudWeatherFxParticleQuad, resets each slot every iteration, updates the base element, then swaps source/dest buffers.
-// BN limitations: x87 compare/normalize code stays noisy, zVec3 stack temporaries are repeatedly materialized through pointer aliases, the projection loop keeps byte offsets for zVec3 positions (0x0c stride) and HudWeatherFxParticleQuad records (0x20 stride), and HLIL still loses the simple source/dest buffer swap temp.
+// Rain update uses a single-precision time accumulator at 0x56bf6c: FLD at 0x4be89a, frame-delta addition, FSTP at 0x4be8a5.
 0x4be880 void __thiscall HudWeatherFxRain::Update(struct HudWeatherFxRain* self, float deltaSec)
 {
     if (((not.d(self->base.base.flags)).b & 0x10) == 0)
@@ -159177,12 +159052,6 @@
     HudUiElement::Update(self, deltaSec)
     self->base.sourceBufferIndex = self->base.destBufferIndex
     self->base.destBufferIndex = self->base.sourceBufferIndex
-
-    // [comments not attached to rendered lines]
-    // [comment @ 0x4bec13]
-    // BN x87 artifact: rain projection keeps two depth factors live. origin.x/y use probeDepthFactor = (g_HudWeatherFx_ConeDepthMax - particleProbePoint.z), i.e. int32(((probeDepthFactor * particleProbePoint.{x,y}) - g_HudWeatherFx_ProjectCenterBias) * viewport{Width,Height}F). width/height then use sourceDepthFactor = (g_HudWeatherFx_ConeDepthMax - sourceParticlePositionForQuad.z), i.e. int32(((sourceDepthFactor * sourceParticlePositionForQuad.{x,y}) - g_HudWeatherFx_ProjectCenterBias) * viewport{Width,Height}F) - origin.{x,y}; alpha scales are sourceDepthFactor * {alphaStartScale, alphaEndScale}.
-    // [comment @ 0x4bed0d]
-    // BN HLIL loses the swap temp here; assembly swaps sourceBufferIndex and destBufferIndex via eax/edx.
 }
 
 // Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp -- updates all pass-3 child elements for the local config and clears the queued slot count.
@@ -159246,7 +159115,7 @@
     self->surfacePitchBytes = pitchBytes
 }
 
-// Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp. CRT init-array entry constructs g_zVideoFxPass3ConfigLocal, then registers its static destructor callback with atexit.
+// CRT initializer referenced by pointer slot 0x4da0b0; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.
 0x4bee40 void zVideoFxPass3Config::CrtInitGlobalSingleton()
 {
     zVideoFxPass3Config::ConstructGlobalSingleton()
@@ -167017,8 +166886,8 @@
     return AfxWinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow)
 }
 
-// Non-authored: linked MFC module-state helper. Stores MBCP enabled/codepage state and resets the CRT multibyte codepage when disabled.
-0x4c81d8 int32_t __stdcall MFC_ModuleState::SetMbcpData(int32_t enabled, int32_t codePage)
+// Matches AfxInitialize(BOOL bDLL, DWORD dwVersion) in VC5 MFC APPMODUL.CPP. Stores bDLL at module-state +0x14 and dwVersion at +0x1040; calls _setmbcp(-3) only when bDLL is zero. The 0x421 supplied by 0x4c8201 is _MFC_VER (AFXVER_.H), not a code page.
+0x4c81d8 int32_t __stdcall AfxInitialize(int32_t enabled, int32_t codePage)
 {
     struct AFX_MODULE_STATE* eax_1 = AfxGetModuleState()
     eax_1->__offset(0x14).b = enabled.b
@@ -167030,17 +166899,17 @@
     return 1
 }
 
-// Non-authored: linked MFC static initializer body for module-state MBCP codepage 0x421.
-0x4c8201 struct MFC_StaticMbcpInitializer* __thiscall MFC_ModuleState::InitStaticObject421(struct MFC_StaticMbcpInitializer* self)
+// Matches _AFX_TERM_APP_STATE constructor in VC5 MFC APPMODUL.CPP. Calls AfxInitialize(FALSE, 0x421), where 0x421 is _MFC_VER. Returns the incoming this pointer; CRT wrapper 0x4c8214 supplies 0x56cc28.
+0x4c8201 struct MFC_StaticMbcpInitializer* __thiscall _AFX_TERM_APP_STATE::Constructor(struct MFC_StaticMbcpInitializer* self)
 {
-    MFC_ModuleState::SetMbcpData(0, 0x421)
+    AfxInitialize(0, 0x421)
     return self
 }
 
-// Non-authored: CRT init-array thunk for the MFC static MBCP initializer object.
-0x4c8214 struct MFC_StaticMbcpInitializer* MFC_ModuleState::InitStaticObject421Thunk()
+// CRT initializer at slot 0x4da004. Passes 0x56cc28 as this to 0x4c8201. The callee matches _AFX_TERM_APP_STATE construction in VC5 MFC APPMODUL.CPP, which calls AfxInitialize(FALSE, _MFC_VER).
+0x4c8214 struct MFC_StaticMbcpInitializer* _AFX_TERM_APP_STATE::CrtInitGlobal()
 {
-    return MFC_ModuleState::InitStaticObject421(&g_MFC_StaticMbcpInitializer421) __tailcall
+    return _AFX_TERM_APP_STATE::Constructor(&g_MFC_StaticMbcpInitializer421) __tailcall
 }
 
 0x4c8224 int32_t __stdcall ?AfxWinMain@@YGHPAUHINSTANCE__@@0PADH@Z(struct HINSTANCE__* arg1, struct HINSTANCE__* arg2, char* arg3, int32_t arg4)

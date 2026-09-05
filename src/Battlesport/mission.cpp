@@ -77,7 +77,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudSensorTrackerMissionData) == 0x5c);
 }
 
 extern "C" char g_HudSensorTracker_ZarSectionName_MissionData[0x0c];
-extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0e];
+extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4];
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4];
 extern "C" char g_HudSensorTracker_ZarHandlerName_MissionLate[0x0c];

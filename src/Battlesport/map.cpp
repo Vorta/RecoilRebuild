@@ -32,7 +32,7 @@
 #include <string.h>
 
 extern "C" char g_HudSensorTracker_ZarSectionName_MissionData[0x0c];
-extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0e];
+extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4];
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4];
 extern "C" char g_HudSensorTracker_ZarHandlerName_MissionLate[0x0c];
@@ -195,10 +195,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarSectionName_MissionData) == 0x
  * Purpose: names the objective definition archive loaded during mission startup
  * and saved-game mission restore.
  */
-char g_HudSensorTracker_ObjectivesZrdPath[0x0e] = {
-    'o', 'b', 'j', 'e', 'c', 't', 'i', 'v', 'e', 's', '.', 'z', 'r', 'd'
-};
-RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivesZrdPath) == 0x0e);
+char g_HudSensorTracker_ObjectivesZrdPath[0x0f] = "objectives.zrd";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivesZrdPath) == 0x0f);
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-zarhandlername-missionlate
  * @recoil-artifact defines .data recoil:data:0x4dafb8: g_HudSensorTracker_ZarHandlerName_MissionLate.

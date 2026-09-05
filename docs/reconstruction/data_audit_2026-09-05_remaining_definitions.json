@@ -1,0 +1,2365 @@
+{
+  "status": "Completed and saved: 117 definitions withdrawn; at 0x4dc264 the user symbol was withdrawn but BN retains an unnamed automatic pointer interpretation. Seven associated comments removed. No retail bytes or production storage deleted.",
+  "edits": [
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4da0d4",
+      "before": {
+        "address": "0x4da0d4",
+        "name": "g_Player_AiMode2_TuningScalar55A",
+        "raw_name": "g_Player_AiMode2_TuningScalar55A",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1113325568",
+        "bytes_hex": "00005c42",
+        "ascii_preview": "..\\B",
+        "bytes_read": 4,
+        "repr": "int:1113325568"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4da0d8",
+      "before": {
+        "address": "0x4da0d8",
+        "name": "g_Player_AiMode2_TuningScalar55B",
+        "raw_name": "g_Player_AiMode2_TuningScalar55B",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1113325568",
+        "bytes_hex": "00005c42",
+        "ascii_preview": "..\\B",
+        "bytes_read": 4,
+        "repr": "int:1113325568"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4da0dc",
+      "before": {
+        "address": "0x4da0dc",
+        "name": "g_Player_AiMode2_TuningScalar5",
+        "raw_name": "g_Player_AiMode2_TuningScalar5",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1084227584",
+        "bytes_hex": "0000a040",
+        "ascii_preview": "...@",
+        "bytes_read": 4,
+        "repr": "int:1084227584"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4da0e0",
+      "before": {
+        "address": "0x4da0e0",
+        "name": "g_Player_AiMode2_TuningScalar10",
+        "raw_name": "g_Player_AiMode2_TuningScalar10",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1092616192",
+        "bytes_hex": "00002041",
+        "ascii_preview": ".. A",
+        "bytes_read": 4,
+        "repr": "int:1092616192"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4dc264",
+      "before": {
+        "address": "0x4dc264",
+        "name": "g_PlayerSaveStateListAuxPtr",
+        "raw_name": "g_PlayerSaveStateListAuxPtr",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "5192312",
+        "bytes_hex": "783a4f00",
+        "ascii_preview": "x:O.",
+        "bytes_read": 4,
+        "repr": "int:5192312"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e44",
+      "before": {
+        "address": "0x4e0e44",
+        "name": "data_4e0e44",
+        "raw_name": "data_4e0e44",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e48",
+      "before": {
+        "address": "0x4e0e48",
+        "name": "data_4e0e48",
+        "raw_name": "data_4e0e48",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1065353216",
+        "bytes_hex": "0000803f",
+        "ascii_preview": "...?",
+        "bytes_read": 4,
+        "repr": "int:1065353216"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e4c",
+      "before": {
+        "address": "0x4e0e4c",
+        "name": "data_4e0e4c",
+        "raw_name": "data_4e0e4c",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e50",
+      "before": {
+        "address": "0x4e0e50",
+        "name": "data_4e0e50",
+        "raw_name": "data_4e0e50",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e54",
+      "before": {
+        "address": "0x4e0e54",
+        "name": "data_4e0e54",
+        "raw_name": "data_4e0e54",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e58",
+      "before": {
+        "address": "0x4e0e58",
+        "name": "data_4e0e58",
+        "raw_name": "data_4e0e58",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1065353216",
+        "bytes_hex": "0000803f",
+        "ascii_preview": "...?",
+        "bytes_read": 4,
+        "repr": "int:1065353216"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e5c",
+      "before": {
+        "address": "0x4e0e5c",
+        "name": "data_4e0e5c",
+        "raw_name": "data_4e0e5c",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e60",
+      "before": {
+        "address": "0x4e0e60",
+        "name": "data_4e0e60",
+        "raw_name": "data_4e0e60",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e64",
+      "before": {
+        "address": "0x4e0e64",
+        "name": "data_4e0e64",
+        "raw_name": "data_4e0e64",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e68",
+      "before": {
+        "address": "0x4e0e68",
+        "name": "data_4e0e68",
+        "raw_name": "data_4e0e68",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e6c",
+      "before": {
+        "address": "0x4e0e6c",
+        "name": "data_4e0e6c",
+        "raw_name": "data_4e0e6c",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1065353216",
+        "bytes_hex": "0000803f",
+        "ascii_preview": "...?",
+        "bytes_read": 4,
+        "repr": "int:1065353216"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e70",
+      "before": {
+        "address": "0x4e0e70",
+        "name": "data_4e0e70",
+        "raw_name": "data_4e0e70",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e74",
+      "before": {
+        "address": "0x4e0e74",
+        "name": "data_4e0e74",
+        "raw_name": "data_4e0e74",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e78",
+      "before": {
+        "address": "0x4e0e78",
+        "name": "data_4e0e78",
+        "raw_name": "data_4e0e78",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e7c",
+      "before": {
+        "address": "0x4e0e7c",
+        "name": "data_4e0e7c",
+        "raw_name": "data_4e0e7c",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0e80",
+      "before": {
+        "address": "0x4e0e80",
+        "name": "data_4e0e80",
+        "raw_name": "data_4e0e80",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1065353216",
+        "bytes_hex": "0000803f",
+        "ascii_preview": "...?",
+        "bytes_read": 4,
+        "repr": "int:1065353216"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0fc4",
+      "before": {
+        "address": "0x4e0fc4",
+        "name": "data_4e0fc4",
+        "raw_name": "data_4e0fc4",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e0fcc",
+      "before": {
+        "address": "0x4e0fcc",
+        "name": "data_4e0fcc",
+        "raw_name": "data_4e0fcc",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e2fa4",
+      "before": {
+        "address": "0x4e2fa4",
+        "name": "data_4e2fa4",
+        "raw_name": "data_4e2fa4",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e30e4",
+      "before": {
+        "address": "0x4e30e4",
+        "name": "data_4e30e4",
+        "raw_name": "data_4e30e4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "1",
+        "bytes_hex": "01000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:1"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e32b4",
+      "before": {
+        "address": "0x4e32b4",
+        "name": "data_4e32b4",
+        "raw_name": "data_4e32b4",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e469c",
+      "before": {
+        "address": "0x4e469c",
+        "name": "data_4e469c",
+        "raw_name": "data_4e469c",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e4874",
+      "before": {
+        "address": "0x4e4874",
+        "name": "g_HudLineClipMinX",
+        "raw_name": "g_HudLineClipMinX",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Current HUD line-clip bounds in float space: minX/minY/maxX/maxY. Set by HudLineClip_SetCurrentBoundsFromRectI().",
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e4884",
+      "before": {
+        "address": "0x4e4884",
+        "name": "data_4e4884",
+        "raw_name": "data_4e4884",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e48c0",
+      "before": {
+        "address": "0x4e48c0",
+        "name": "data_4e48c0",
+        "raw_name": "data_4e48c0",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e48c4",
+      "before": {
+        "address": "0x4e48c4",
+        "name": "data_4e48c4",
+        "raw_name": "data_4e48c4",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "-1089221322",
+        "bytes_hex": "36cd13bf",
+        "ascii_preview": "6...",
+        "bytes_read": 4,
+        "repr": "int:-1089221322"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e48c8",
+      "before": {
+        "address": "0x4e48c8",
+        "name": "data_4e48c8",
+        "raw_name": "data_4e48c8",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e48cc",
+      "before": {
+        "address": "0x4e48cc",
+        "name": "data_4e48cc",
+        "raw_name": "data_4e48cc",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "-1090519040",
+        "bytes_hex": "000000bf",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:-1090519040"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e48d0",
+      "before": {
+        "address": "0x4e48d0",
+        "name": "data_4e48d0",
+        "raw_name": "data_4e48d0",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1049873718",
+        "bytes_hex": "36cd933e",
+        "ascii_preview": "6..>",
+        "bytes_read": 4,
+        "repr": "int:1049873718"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e48d4",
+      "before": {
+        "address": "0x4e48d4",
+        "name": "data_4e48d4",
+        "raw_name": "data_4e48d4",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e48d8",
+      "before": {
+        "address": "0x4e48d8",
+        "name": "data_4e48d8",
+        "raw_name": "data_4e48d8",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1056964608",
+        "bytes_hex": "0000003f",
+        "ascii_preview": "...?",
+        "bytes_read": 4,
+        "repr": "int:1056964608"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e48dc",
+      "before": {
+        "address": "0x4e48dc",
+        "name": "data_4e48dc",
+        "raw_name": "data_4e48dc",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "1049873718",
+        "bytes_hex": "36cd933e",
+        "ascii_preview": "6..>",
+        "bytes_read": 4,
+        "repr": "int:1049873718"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e48e0",
+      "before": {
+        "address": "0x4e48e0",
+        "name": "data_4e48e0",
+        "raw_name": "data_4e48e0",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e5954",
+      "before": {
+        "address": "0x4e5954",
+        "name": "g_zInterp_UnresolvedFloatDefaults",
+        "raw_name": "g_zInterp_UnresolvedFloatDefaults",
+        "type": "float[0x3f]",
+        "size": 252,
+        "width": 252,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "zinterp_parse.cpp unresolved numeric cluster between g_zInterp_Cmd_AddChild @ 0x4e5948 and g_zInterp_FormatKeywordArgCount @ 0x4e5a50: 63 float dwords / 21 zVec3-sized triples (0xfc bytes). BN bytes decode as raw float data, but current BN has no xrefs and no source owner identity; keep conservative unresolved name.",
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e5b08",
+      "before": {
+        "address": "0x4e5b08",
+        "name": "rdata_alignment_before_type_info_RttiTypeDescriptor",
+        "raw_name": "rdata_alignment_before_type_info_RttiTypeDescriptor",
+        "type": "char[0x8]",
+        "size": 8,
+        "width": 8,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Eight zero bytes at 0x4e5b08..0x4e5b0f align after g_zInterp_ScrollAlwaysNodeName before provider RTTI type_info_RttiTypeDescriptor @ 0x4e5b10. No xrefs; not pointer/source/provider identity.",
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e5b4c",
+      "before": {
+        "address": "0x4e5b4c",
+        "name": "rdata_tail_filler_after_zVideo_PaletteOpenFailedFormat",
+        "raw_name": "rdata_tail_filler_after_zVideo_PaletteOpenFailedFormat",
+        "type": "uint32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Zero raw tail filler after g_zVideo_PaletteOpenFailedFormat terminator. No xrefs; not authored/provider data identity.",
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4e5e10",
+      "before": {
+        "address": "0x4e5e10",
+        "name": "g_HudFmvWindow",
+        "raw_name": "g_HudFmvWindow",
+        "type": "struct CWnd",
+        "size": 64,
+        "width": 64,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "Persistent HUD FMV overlay window singleton used by the HudFmvWindow_* bootstrap stubs and destroyed from HudUiMgr_DestroyFmvOverlay. The live object span is 0x40 bytes; the wrapper type preserves the tail still missing from the base CWnd reconstruction.",
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3290",
+      "before": {
+        "address": "0x4f3290",
+        "name": "data_4f3290",
+        "raw_name": "data_4f3290",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3a8c",
+      "before": {
+        "address": "0x4f3a8c",
+        "name": "data_4f3a8c",
+        "raw_name": "data_4f3a8c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3a9c",
+      "before": {
+        "address": "0x4f3a9c",
+        "name": "data_4f3a9c",
+        "raw_name": "data_4f3a9c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3aa0",
+      "before": {
+        "address": "0x4f3aa0",
+        "name": "data_4f3aa0",
+        "raw_name": "data_4f3aa0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3aa4",
+      "before": {
+        "address": "0x4f3aa4",
+        "name": "data_4f3aa4",
+        "raw_name": "data_4f3aa4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3acc",
+      "before": {
+        "address": "0x4f3acc",
+        "name": "data_4f3acc",
+        "raw_name": "data_4f3acc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3ad0",
+      "before": {
+        "address": "0x4f3ad0",
+        "name": "data_4f3ad0",
+        "raw_name": "data_4f3ad0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3ad4",
+      "before": {
+        "address": "0x4f3ad4",
+        "name": "data_4f3ad4",
+        "raw_name": "data_4f3ad4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3adc",
+      "before": {
+        "address": "0x4f3adc",
+        "name": "data_4f3adc",
+        "raw_name": "data_4f3adc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3bb8",
+      "before": {
+        "address": "0x4f3bb8",
+        "name": "data_4f3bb8",
+        "raw_name": "data_4f3bb8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3bc4",
+      "before": {
+        "address": "0x4f3bc4",
+        "name": "data_4f3bc4",
+        "raw_name": "data_4f3bc4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3bcc",
+      "before": {
+        "address": "0x4f3bcc",
+        "name": "data_4f3bcc",
+        "raw_name": "data_4f3bcc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3c74",
+      "before": {
+        "address": "0x4f3c74",
+        "name": "data_4f3c74",
+        "raw_name": "data_4f3c74",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3c78",
+      "before": {
+        "address": "0x4f3c78",
+        "name": "data_4f3c78",
+        "raw_name": "data_4f3c78",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3c7c",
+      "before": {
+        "address": "0x4f3c7c",
+        "name": "data_4f3c7c",
+        "raw_name": "data_4f3c7c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3c80",
+      "before": {
+        "address": "0x4f3c80",
+        "name": "data_4f3c80",
+        "raw_name": "data_4f3c80",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3c84",
+      "before": {
+        "address": "0x4f3c84",
+        "name": "data_4f3c84",
+        "raw_name": "data_4f3c84",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3c88",
+      "before": {
+        "address": "0x4f3c88",
+        "name": "data_4f3c88",
+        "raw_name": "data_4f3c88",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3c90",
+      "before": {
+        "address": "0x4f3c90",
+        "name": "data_4f3c90",
+        "raw_name": "data_4f3c90",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3c94",
+      "before": {
+        "address": "0x4f3c94",
+        "name": "data_4f3c94",
+        "raw_name": "data_4f3c94",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3ed4",
+      "before": {
+        "address": "0x4f3ed4",
+        "name": "g_RecoilApp_WindowClassRegistered",
+        "raw_name": "g_RecoilApp_WindowClassRegistered",
+        "type": "enum RecoilAppWindowClassRegistrationState",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Concrete RecoilApp window-class registration latch. Set to RECOILAPP_WNDCLASS_REGISTERED only after AfxRegisterClass(g_RecoilApp_WndClassNamePtr) succeeds, and read only by RecoilApp_ExitInstance before UnregisterClassA.",
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3ed8",
+      "before": {
+        "address": "0x4f3ed8",
+        "name": "data_4f3ed8",
+        "raw_name": "data_4f3ed8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3edc",
+      "before": {
+        "address": "0x4f3edc",
+        "name": "data_4f3edc",
+        "raw_name": "data_4f3edc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3ee0",
+      "before": {
+        "address": "0x4f3ee0",
+        "name": "data_4f3ee0",
+        "raw_name": "data_4f3ee0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3ee4",
+      "before": {
+        "address": "0x4f3ee4",
+        "name": "data_4f3ee4",
+        "raw_name": "data_4f3ee4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3ef0",
+      "before": {
+        "address": "0x4f3ef0",
+        "name": "data_4f3ef0",
+        "raw_name": "data_4f3ef0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3ef4",
+      "before": {
+        "address": "0x4f3ef4",
+        "name": "data_4f3ef4",
+        "raw_name": "data_4f3ef4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3f00",
+      "before": {
+        "address": "0x4f3f00",
+        "name": "zApp_mediaCheckDone",
+        "raw_name": "zApp_mediaCheckDone",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3f0c",
+      "before": {
+        "address": "0x4f3f0c",
+        "name": "data_4f3f0c",
+        "raw_name": "data_4f3f0c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3f74",
+      "before": {
+        "address": "0x4f3f74",
+        "name": "data_4f3f74",
+        "raw_name": "data_4f3f74",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3f94",
+      "before": {
+        "address": "0x4f3f94",
+        "name": "data_4f3f94",
+        "raw_name": "data_4f3f94",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3fac",
+      "before": {
+        "address": "0x4f3fac",
+        "name": "data_4f3fac",
+        "raw_name": "data_4f3fac",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f3fcc",
+      "before": {
+        "address": "0x4f3fcc",
+        "name": "data_4f3fcc",
+        "raw_name": "data_4f3fcc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x539d20",
+      "before": {
+        "address": "0x539d20",
+        "name": "data_539d20",
+        "raw_name": "data_539d20",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x539d2c",
+      "before": {
+        "address": "0x539d2c",
+        "name": "data_539d2c",
+        "raw_name": "data_539d2c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x539dec",
+      "before": {
+        "address": "0x539dec",
+        "name": "data_539dec",
+        "raw_name": "data_539dec",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x53a2ec",
+      "before": {
+        "address": "0x53a2ec",
+        "name": "data_53a2ec",
+        "raw_name": "data_53a2ec",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x53a2fc",
+      "before": {
+        "address": "0x53a2fc",
+        "name": "data_53a2fc",
+        "raw_name": "data_53a2fc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x53a300",
+      "before": {
+        "address": "0x53a300",
+        "name": "data_53a300",
+        "raw_name": "data_53a300",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x575a68",
+      "before": {
+        "address": "0x575a68",
+        "name": "g_zModel_MatlPoolCapacity",
+        "raw_name": "g_zModel_MatlPoolCapacity",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x575a6c",
+      "before": {
+        "address": "0x575a6c",
+        "name": "g_zModel_MatlPoolBase",
+        "raw_name": "g_zModel_MatlPoolBase",
+        "type": "struct zModel_MaterialSlot*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x575a70",
+      "before": {
+        "address": "0x575a70",
+        "name": "g_zModel_MatlPoolInUseCount",
+        "raw_name": "g_zModel_MatlPoolInUseCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x575a74",
+      "before": {
+        "address": "0x575a74",
+        "name": "g_zModel_MatlFreeHeadIndex",
+        "raw_name": "g_zModel_MatlFreeHeadIndex",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x575a78",
+      "before": {
+        "address": "0x575a78",
+        "name": "g_zModel_MatlActiveHeadIndex",
+        "raw_name": "g_zModel_MatlActiveHeadIndex",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x5761e8",
+      "before": {
+        "address": "0x5761e8",
+        "name": "data_5761e8",
+        "raw_name": "data_5761e8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x5761ec",
+      "before": {
+        "address": "0x5761ec",
+        "name": "data_5761ec",
+        "raw_name": "data_5761ec",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x5761f0",
+      "before": {
+        "address": "0x5761f0",
+        "name": "data_5761f0",
+        "raw_name": "data_5761f0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x5761f4",
+      "before": {
+        "address": "0x5761f4",
+        "name": "data_5761f4",
+        "raw_name": "data_5761f4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x5761f8",
+      "before": {
+        "address": "0x5761f8",
+        "name": "data_5761f8",
+        "raw_name": "data_5761f8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x5761fc",
+      "before": {
+        "address": "0x5761fc",
+        "name": "data_5761fc",
+        "raw_name": "data_5761fc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57627c",
+      "before": {
+        "address": "0x57627c",
+        "name": "data_57627c",
+        "raw_name": "data_57627c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x576280",
+      "before": {
+        "address": "0x576280",
+        "name": "data_576280",
+        "raw_name": "data_576280",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x576284",
+      "before": {
+        "address": "0x576284",
+        "name": "data_576284",
+        "raw_name": "data_576284",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x576288",
+      "before": {
+        "address": "0x576288",
+        "name": "data_576288",
+        "raw_name": "data_576288",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57d9c4",
+      "before": {
+        "address": "0x57d9c4",
+        "name": "data_57d9c4",
+        "raw_name": "data_57d9c4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57d9cc",
+      "before": {
+        "address": "0x57d9cc",
+        "name": "data_57d9cc",
+        "raw_name": "data_57d9cc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57d9d0",
+      "before": {
+        "address": "0x57d9d0",
+        "name": "data_57d9d0",
+        "raw_name": "data_57d9d0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57d9d4",
+      "before": {
+        "address": "0x57d9d4",
+        "name": "data_57d9d4",
+        "raw_name": "data_57d9d4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57d9d8",
+      "before": {
+        "address": "0x57d9d8",
+        "name": "data_57d9d8",
+        "raw_name": "data_57d9d8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57d9dc",
+      "before": {
+        "address": "0x57d9dc",
+        "name": "data_57d9dc",
+        "raw_name": "data_57d9dc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57dab8",
+      "before": {
+        "address": "0x57dab8",
+        "name": "data_57dab8",
+        "raw_name": "data_57dab8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57dabc",
+      "before": {
+        "address": "0x57dabc",
+        "name": "data_57dabc",
+        "raw_name": "data_57dabc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57dad0",
+      "before": {
+        "address": "0x57dad0",
+        "name": "data_57dad0",
+        "raw_name": "data_57dad0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57dad4",
+      "before": {
+        "address": "0x57dad4",
+        "name": "data_57dad4",
+        "raw_name": "data_57dad4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57dad8",
+      "before": {
+        "address": "0x57dad8",
+        "name": "data_57dad8",
+        "raw_name": "data_57dad8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x57dadc",
+      "before": {
+        "address": "0x57dadc",
+        "name": "data_57dadc",
+        "raw_name": "data_57dadc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x62e9f4",
+      "before": {
+        "address": "0x62e9f4",
+        "name": "gRndr_OverlayBlendReserved_18",
+        "raw_name": "gRndr_OverlayBlendReserved_18",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x632114",
+      "before": {
+        "address": "0x632114",
+        "name": "data_632114",
+        "raw_name": "data_632114",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x632118",
+      "before": {
+        "address": "0x632118",
+        "name": "data_632118",
+        "raw_name": "data_632118",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x63211c",
+      "before": {
+        "address": "0x63211c",
+        "name": "data_63211c",
+        "raw_name": "data_63211c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x632364",
+      "before": {
+        "address": "0x632364",
+        "name": "data_632364",
+        "raw_name": "data_632364",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x632b68",
+      "before": {
+        "address": "0x632b68",
+        "name": "g_zVideo_ClientRectScreenCoords",
+        "raw_name": "g_zVideo_ClientRectScreenCoords",
+        "type": "struct tagRECT",
+        "size": 16,
+        "width": 16,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x632b7c",
+      "before": {
+        "address": "0x632b7c",
+        "name": "g_zVideo_NumAcceptedD3DDevices",
+        "raw_name": "g_zVideo_NumAcceptedD3DDevices",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x632b80",
+      "before": {
+        "address": "0x632b80",
+        "name": "g_zVideo_SortedPolyCount",
+        "raw_name": "g_zVideo_SortedPolyCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x632b84",
+      "before": {
+        "address": "0x632b84",
+        "name": "g_zVideo_SortedPolyIndices",
+        "raw_name": "g_zVideo_SortedPolyIndices",
+        "type": "int32_t[0x100]",
+        "size": 1024,
+        "width": 1024,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "Sorted-poly index scratch for the software video queue. Count lives in g_zVideo_SortedPolyCount and overwrite draws track separately via g_zVideo_OverwritePolyCount.",
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x632f84",
+      "before": {
+        "address": "0x632f84",
+        "name": "g_zVideo_OverwritePolyCount",
+        "raw_name": "g_zVideo_OverwritePolyCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No direct/base BN xrefs, no instruction operand into this definition in the complete 4951-function scan, and no supported incoming initialized-pointer reference. Source identity and declared extent/type are unproven. Apparent incoming pointers to 0x632b84 are bytes inside source-path literals. Removing BN analysis metadata only, never bytes; not a claim of padding, absence of storage, or authority to delete source contributions."
+    }
+  ]
+}

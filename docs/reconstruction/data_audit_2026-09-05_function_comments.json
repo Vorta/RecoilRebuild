@@ -1,0 +1,155 @@
+{
+  "status": "Completed and saved: 29 comments narrowed and one removed. Readback matched; the removed 0x44c8e0 comment also required clearing the entry-address comment fallback.",
+  "edits": [
+    {
+      "address": "0x472ef0",
+      "before": "Original file: GameZRecoil/zMath/zmath_matstack.cpp",
+      "after": "Pre-increments the identity-flag and matrix-pointer cursors by four bytes, copies the previous flag, stores the caller's matrix pointer in the new slot, and copies 12 dwords from the previous matrix. These cursor operations do not establish total stack capacity."
+    },
+    {
+      "address": "0x472f30",
+      "before": "Original file: GameZRecoil/zMath/zmath_matstack.cpp",
+      "after": "Pre-increments both matrix-stack cursors by four bytes, writes ECX into the new matrix-pointer slot, and clears the new identity flag. No fixed-depth check appears here."
+    },
+    {
+      "address": "0x472f60",
+      "before": "Original file: GameZRecoil/zMath/zmath_matstack.cpp. BN limitation: matrix-stack cursors are global slot pointers, and HLIL renders the pop as byte-count pointer decrements.",
+      "after": "Decrements both global matrix-stack cursors by four bytes. This proves the slot stride, not the allocation extent."
+    },
+    {
+      "address": "0x4732f0",
+      "before": "Likely original file: D:\\Proj\\GameZRecoil\\zMath\\zmath_matrix.cpp\nLoads identity into *g_zMath_CurrentMatrixSlotPtr and marks the current matrix identity flag.\nBN limitation: the compiler writes through an incremented matrix-field cursor, so HLIL renders later stores as shifted field expressions like (&matrix->xy - 4)->field even though the zMat4x3 layout and globals are correctly typed.",
+      "after": "Writes the 12 single-precision entries of a 4x3 identity transform through the current matrix pointer, then writes 1 through the current identity-flag cursor."
+    },
+    {
+      "address": "0x46bfc0",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_convexify.cpp\nGiven two edges (edgeStates[edgeIndex0] and edgeStates[edgeIndex1]) both incident to `vertexIndex`, attempts to emit a triangle (vertexIndex0, vertexIndex1, vertexIndex) where vertexIndex0/vertexIndex1 are the OTHER endpoints of the two edges. Aborts if either input edge is fully consumed (remainingUseCount_08 == 0), if the resulting index sum equals 3 (degenerate-original-tri sentinel: outer triangle 0+1+2 == 3), or if the closing edge (vertexIndex0 -> vertexIndex1) is not active per zGeometry_TriangulateHole::FindActiveEdgeState.\n\nOn success: appends the new triangle to g_zGeometry_TriangulateHole_TriangleIndices, increments g_zGeometry_TriangulateHole_TriangleCount, and decrements remainingUseCount_08 on all three edges.\n\nBN limit: HLIL renames the local that holds vertexIndex0 to the misleading name `edgeStates` because it reuses the slot of the input arg; the assembly uses [esp+0x1c] for vertexIndex0 throughout.",
+      "after": "On its successful edge-pair path, writes three dword vertex indices at 0x53a750 + triangleCount*12 and increments the count at 0x53d750. The indexed record sequence is proven; its original capacity is unresolved."
+    },
+    {
+      "address": "0x46c070",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_convexify.cpp\nTriangulates a polygon-with-one-hole using a bridge-edge method. Pipeline:\n\n1. Allocate working buffers: edgeStates (worst-case (outer+inner)^2 EdgeStates) and CombinedPoints (outer + inner zVec3 array). Stash in g_zGeometry_TriangulateHole_*.\n2. Concatenate outerPoints[0..outerPointCount) followed by innerPoints[0..innerPointCount) into g_zGeometry_TriangulateHole_CombinedPoints.\n3. Cache the outer ring's plane equation; project the inner ring onto it (z' = -(a*x + b*y + d)/c) so the rings are coplanar. Copy the projected innerPoints back to the caller's buffer.\n4. Seed edgeStates with the outer ring's edges (i, i-1, useCount=1) and the inner ring's edges (i, i-1, useCount=1).\n5. Build bridges: for each pair (outerVertex, innerVertex), call zGeometry_TriangulateHole::TryAppendBridgeEdge with useCount=2. Each bridge is rejected if it duplicates an existing edge or crosses one (XY).\n6. Triangulate: for each combined-point vertex v, collect all active edges incident to v; for every distinct pair (i, j) of those edges, call zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair to emit (otherEnd(i), otherEnd(j), v) provided the closing edge exists and useCounts permit. This spends two-use edges (bridges) on two adjacent triangles.\n7. Allocate the result zGeometry_TriangleSoup (header int + per-triangle 3*zVec3 = 0x24 bytes), populate from g_zGeometry_TriangulateHole_TriangleIndices using CombinedPoints lookups.\n8. Free working buffers and return the soup.\n\nBN limit: edgeStates and the returned zGeometry_TriangleSoup allocation results are typed, but HLIL cannot keep the edge-seed cursors and the flexible triangleVerts_04 output cursor source-like at the same time. The edge seed loops render as offset-base `__offset(...)` writes, and the triangle soup copy loop renders as offset-base writes from the packed triangle-index list. These correspond to sequential EdgeState stores and 3*zVec3 copies per emitted triangle.",
+      "after": "The triangle-output loop reads three indices per record from the sequence at 0x53a750, advances by 12 bytes and looks up the corresponding XYZ triples. The runtime count is not a fixed-capacity proof."
+    },
+    {
+      "address": "0x437ac0",
+      "before": "Physical source: D:\\Proj\\Battlesport\\turret.cpp; layer: turret_system_globals_load_tick_layer. Loads turret definitions from ZRD path, allocates 0x180-byte private zTurret_Runtime objects, records globals, and installs the tick callback node. Source-path literal evidence: pushes 0x4dd19c at 0x437b25 before zError::ReportOldNoOp. BN caveat: TURRET string-list induction variables render as (&count_04)[i * 2].",
+      "after": "Loads turret definitions and stores runtime pointers at 0x4f3fe8 + count*4. The source-path literal at 0x4dd19c is passed at 0x437b25. No fixed array-capacity check was found; do not infer 128 or 129 slots from adjacent zero-fill."
+    },
+    {
+      "address": "0x437dc0",
+      "before": "Physical source: D:\\Proj\\Battlesport\\turret.cpp; layer: turret_runtime_system_teardown_layer. Manager/runtime teardown: shuts down and deletes each zTurret_Runtime in g_zTurret_RuntimeList, clears runtime count, frees the loaded zReader definition tree, clears and deletes the shared callback node, and returns 0.",
+      "after": "Traverses the runtime turret-pointer sequence using the count at 0x4f3fd8 and four-byte increments from 0x4f3fe8, destroys the entries and clears the count. This traversal does not determine the allocation capacity."
+    },
+    {
+      "address": "0x41ca30",
+      "before": "Physical source block: src/Battlesport/mission.cpp; layer mission_net_session_config_maps_layer [0x41c980,0x41cbf0). Net session config dialog map initialization.",
+      "after": "The map-name CString loop starts at 0x4f32d8, advances by four, and compares against exclusive end 0x4f32f4: seven elements, not eight."
+    },
+    {
+      "address": "0x43d060",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\WOL.cpp. Semantic WOL subcluster: main browse dialog/status list. Formats into g_WestwoodOnlineUpgradeStatusAppendBuffer, trims one leading or trailing newline, appends to the status list, caps the visible count at 100, and scrolls after nine entries. BN limitation: varargs setup, the strlen-style repne-scasb loop, and the trailing-newline buffer index render as helper locals/raw arithmetic instead of concise string code.",
+      "after": "Formats into 0x538990. The trailing-newline access combines strlen with base-1, so the operand 0x53898f is not a separate variable. This unbounded formatting path does not establish the buffer allocation size."
+    },
+    {
+      "address": "0x4be2f0",
+      "before": "Source file: D:\\Proj\\Battlesport\\hud.cpp\nUpdates visible snow particles: accumulates time, computes camera-target drift plus gravity/wind in camera space, advances source positions into the destination buffer, projects each particle into a HudWeatherFxParticleQuad, resets particles that leave the cone, updates the base element, then swaps source/dest buffers.\nBN limitations: x87 compare/normalize code stays noisy, zVec3 stack temporaries are repeatedly materialized through pointer aliases, the particle loop keeps byte offsets for zVec3 positions (0x0c stride) and HudWeatherFxParticleQuad records (0x20 stride), and HLIL still loses the simple source/dest buffer swap temp.",
+      "after": "Snow update uses a single-precision time accumulator at 0x56bf68: FLD at 0x4be30a, frame-delta addition, FSTP at 0x4be315."
+    },
+    {
+      "address": "0x4be880",
+      "before": "Source file: D:\\Proj\\Battlesport\\hud.cpp\nUpdates visible rain particles: accumulates time, computes camera-target drift plus gravity/wind in camera space, advances source positions into the destination buffer, projects each particle into a HudWeatherFxParticleQuad, resets each slot every iteration, updates the base element, then swaps source/dest buffers.\nBN limitations: x87 compare/normalize code stays noisy, zVec3 stack temporaries are repeatedly materialized through pointer aliases, the projection loop keeps byte offsets for zVec3 positions (0x0c stride) and HudWeatherFxParticleQuad records (0x20 stride), and HLIL still loses the simple source/dest buffer swap temp.",
+      "after": "Rain update uses a single-precision time accumulator at 0x56bf6c: FLD at 0x4be89a, frame-delta addition, FSTP at 0x4be8a5."
+    },
+    {
+      "address": "0x4bd6f0",
+      "before": "Likely original file: D:\\Proj\\Battlesport\\hud.cpp. Converts an integer RECT into the module-local float line-clip bounds used by HudLineClip segment clipping.",
+      "after": "Converts the four signed dwords at ECX +0/+4/+8/+12 to float bounds at 0x4e4878/0x4e487c/0x4e4888/0x4e488c. There is no store to the former false min-X label at 0x4e4874."
+    },
+    {
+      "address": "0x4bd720",
+      "before": "Likely original file: D:\\Proj\\GameZ\\z_math.cpp\nClips pointA->pointB against g_zMath_ClipZLowerBound/g_zMath_ClipZUpperBound; returns 0 for trivial reject, 1 for visible/intersecting segment.\nBN limitation: x87 status-word comparisons still render as flag-word expressions.",
+      "after": "The Z comparisons and clipping assignments use 0x4e4880 and 0x4e4890, not the Y lower bound at 0x4e487c."
+    },
+    {
+      "address": "0x4bd880",
+      "before": "Likely original file: D:\\Proj\\Battlesport\\hud.cpp. Clips a 2D segment against current X bounds, mutating outside endpoints and setting endpoint-clipped flags; returns 0 for reject, 1 for visible.\nBN limitation: x87 status-word min/max comparisons render as verbose flag-word expressions in HLIL.",
+      "after": "The X clipping comparisons and endpoint assignments use float bounds 0x4e4878 and 0x4e4888."
+    },
+    {
+      "address": "0x4bd9f0",
+      "before": "Likely original file: D:\\Proj\\Battlesport\\hud.cpp. Clips a 2D segment against current Y bounds, mutating outside endpoints and setting endpoint-clipped flags; returns 0 for reject, 1 for visible.\nBN limitation: x87 status-word min/max comparisons render as verbose flag-word expressions in HLIL.",
+      "after": "The Y clipping comparisons and endpoint assignments use float bounds 0x4e487c and 0x4e488c."
+    },
+    {
+      "address": "0x487350",
+      "before": "Original file: GameZRecoil/zClass/cls_di.c -- BN limitation: HLIL keeps the morph/matrix x87 math, face-entry byte-stride walk, and material flags bit 0x100 test as raw offset expressions; the accepted model is the assembly-backed region face filter that emits either plain or damage-mask-UV segment polygon candidates.",
+      "after": "The face-vertex copy loop at 0x487499 copies a runtime vertex count into the sequence at 0x57c2c4 with 12-byte stride. It is not a fixed four-vertex copy."
+    },
+    {
+      "address": "0x485380",
+      "before": "Original file: GameZRecoil/zClass/cls_di.c",
+      "after": "Writes four consecutive XYZ triples at 0x57c2c4 through 0x57c2f0 for individual hexahedron faces. This access prefix does not establish the scratch allocation's full extent."
+    },
+    {
+      "address": "0x488d60",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zModel\\gmod_light.c -- Builds software-path per-vertex light weights for the clipped polygon, tracks single-light fog contribution or fog-target override, commits the selected fog target path, blends the packed 565 fog color through outPackedFogColor, and returns whether lighting/fog work was applied. BN still keeps synthetic stack aliases for the 64x64 valid/weight scratch and occasionally loses the zClass_LightData* type in inner angular-weight paths.",
+      "after": "Distance scratch accesses use lightIndex*0x100 + vertexIndex*4 from 0x566a28. Squared distances may be replaced with the approximate square root before vector normalization; the array's historical 'DistanceSq' name is not true for every stored value."
+    },
+    {
+      "address": "0x490590",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zRndr\\zRndr_Draw.cpp -- zRndr::SpanOcclusionBuildColumnHeadTable.\n\nClears the per-column span head table, resets span allocation/iteration cursors to the span pool, then rasterizes each saved span-occluder polygon into the column lists.",
+      "after": "Walks the occluder records from 0x57db10 with 0x64-byte stride, reading the vertex count at +0x60, and calls the polygon rasterizer for each live record."
+    },
+    {
+      "address": "0x490710",
+      "before": "Original file: Battlesport/zRndr/zRndr_Draw.cpp. BN limitation: span-occluder polygon slots are 0x64 bytes (8 zVec3 vertices plus vertCount), but HLIL keeps the slot/vertex copy and trailing vertCount as raw stride arithmetic instead of rendering array fields cleanly.",
+      "after": "Rejects appends when the live count is >=7. Copies the caller's input vertices first, then stores min(inputVertexCount,8) at record +0x60. Thus the clamp is not a bound on the preceding copy. Record stride is 0x64."
+    },
+    {
+      "address": "0x4a5f90",
+      "before": "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zrdr.cpp",
+      "after": "Clears five wildcard digit counters and five pointer slots, records at most five '*' positions, and writes their initial decimal digits into the caller's path."
+    },
+    {
+      "address": "0x4a6070",
+      "before": "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zrdr.cpp",
+      "after": "Advances wildcard digits as a base-ten counter with carry and rewrites the positions through the paired pointer slots. Returns zero on overflow."
+    },
+    {
+      "address": "0x457660",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+      "after": "Initializes the tree at 0x539e00, then initializes the VC5 vector at 0x539df0: one allocator representation byte and three null pointers at +4/+8/+12. The leading byte is not an authored flags dword."
+    },
+    {
+      "address": "0x4576a0",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+      "after": "Registers 0x4576b0 with atexit. The registered cleanup covers the feature vector and tree."
+    },
+    {
+      "address": "0x4576b0",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+      "after": "Deletes the vector's begin allocation, clears begin/end/capacityEnd at 0x539df4/0x539df8/0x539dfc, and calls tree destruction for 0x539e00."
+    },
+    {
+      "address": "0x4ba0e0",
+      "before": "Source file: D:\\Proj\\Battlesport\\HudUiBackground.cpp\nBN limitation: this PRIMITIVES binder intentionally accepts mixed element targets. BITMAP uses HudUiWidget behavior, WORDWRAP/FONT use HudUiPanel fields, and COLOR/ENDP_* use HudUiPrimitiveBindTarget fields, so HLIL keeps __offset stores on the generic element pointer and nests endpoint virtual GetX/GetY calls poorly. The loadedSectionNode argument is legacy/unused; retail resolves from self->cfgRoot_A940.",
+      "after": "At 0x4ba0ff, loads the complete NUL-terminated PRIMITIVES key at 0x4e4864 for the 0x4ba104 named-node lookup. The former ES label at 0x4e486c was an interior suffix, not a separately referenced string."
+    },
+    {
+      "address": "0x44c3c0",
+      "before": "Original file: GameZRecoil/zClass/Camera.c. BN limitation: frustum-footprint points, world-area cells, and ring-tile storage are typed, but dense x87 min/max tests and diamond-ring indexing still render as fconvert/status temporaries and raw g_zCamera_FrustumGridTileRings count/tile writes despite the ring/tile structs being applied.",
+      "after": "Clears 50 ring-count fields at 0x2d4-byte intervals, starting at 0x56cf90 and ending before 0x575cf8. A ring index is compared with 0x32 at 0x44c827."
+    },
+    {
+      "address": "0x44c8e0",
+      "before": "Original file: GameZRecoil/zClass/Camera.c. BN limitation: frustum-footprint points, world-area cells, and ring-tile storage are typed, but dense x87 min/max tests, alloca-like stack argument reuse, and diamond-ring indexing still render as fconvert/status temporaries, esp artifacts at 0x44ce54, and raw g_zCamera_FrustumGridTileRings count/tile writes despite the ring/tile structs being applied.",
+      "after": null
+    },
+    {
+      "address": "0x46d420",
+      "before": "Original file: GameZRecoil/zImage/zimg_texture.cpp",
+      "after": "Checks texture-directory count against 0x1000, computes count*36, and reads that many bytes into 0x53d79c."
+    }
+  ]
+}

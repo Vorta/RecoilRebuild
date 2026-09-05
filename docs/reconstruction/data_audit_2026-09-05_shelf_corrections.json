@@ -1,0 +1,4128 @@
+{
+  "status": "Applied, read back, and saved: 198 unsupported definitions and 30 comments withdrawn; the three directly supported live objects retained. No retail bytes or production storage deleted.",
+  "section_only": true,
+  "edits": [
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4200",
+      "before": {
+        "address": "0x4f4200",
+        "name": "g_WestwoodOnlineUpgradeDialogResult",
+        "raw_name": "g_WestwoodOnlineUpgradeDialogResult",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4204",
+      "before": {
+        "address": "0x4f4204",
+        "name": "data_4f4204",
+        "raw_name": "data_4f4204",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4208",
+      "before": {
+        "address": "0x4f4208",
+        "name": "g_WestwoodOnlineUpgradeQueryMode",
+        "raw_name": "g_WestwoodOnlineUpgradeQueryMode",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f420c",
+      "before": {
+        "address": "0x4f420c",
+        "name": "g_WestwoodOnlineUpgradeApiConnected",
+        "raw_name": "g_WestwoodOnlineUpgradeApiConnected",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4274",
+      "before": {
+        "address": "0x4f4274",
+        "name": "g_WestwoodOnlineUpgradeApiInitReserved",
+        "raw_name": "g_WestwoodOnlineUpgradeApiInitReserved",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4278",
+      "before": {
+        "address": "0x4f4278",
+        "name": "g_WestwoodOnlineUpgradeStatusTextReadyEvent",
+        "raw_name": "g_WestwoodOnlineUpgradeStatusTextReadyEvent",
+        "type": "HANDLE",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f427c",
+      "before": {
+        "address": "0x4f427c",
+        "name": "g_WestwoodOnlineUpgradeOnOkStatusTextInitFlags",
+        "raw_name": "g_WestwoodOnlineUpgradeOnOkStatusTextInitFlags",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4280",
+      "before": {
+        "address": "0x4f4280",
+        "name": "g_WestwoodOnlineUpgradeBootstrapServerReadyEvent",
+        "raw_name": "g_WestwoodOnlineUpgradeBootstrapServerReadyEvent",
+        "type": "HANDLE",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4284",
+      "before": {
+        "address": "0x4f4284",
+        "name": "data_4f4284",
+        "raw_name": "data_4f4284",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4394",
+      "before": {
+        "address": "0x4f4394",
+        "name": "data_4f4394",
+        "raw_name": "data_4f4394",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4398",
+      "before": {
+        "address": "0x4f4398",
+        "name": "g_WestwoodOnlineUpgradeVisibleBrowseRecords",
+        "raw_name": "g_WestwoodOnlineUpgradeVisibleBrowseRecords",
+        "type": "struct WestwoodOnlineUpgradeBrowseRecord",
+        "size": 268,
+        "width": 268,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "Base of the visible browse-record cache. OnBrowseRecordListReceived copies 0x10c-byte browse entries here; total capacity is still unproven.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44a4",
+      "before": {
+        "address": "0x4f44a4",
+        "name": "data_4f44a4",
+        "raw_name": "data_4f44a4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44a8",
+      "before": {
+        "address": "0x4f44a8",
+        "name": "data_4f44a8",
+        "raw_name": "data_4f44a8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44ac",
+      "before": {
+        "address": "0x4f44ac",
+        "name": "data_4f44ac",
+        "raw_name": "data_4f44ac",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44b0",
+      "before": {
+        "address": "0x4f44b0",
+        "name": "data_4f44b0",
+        "raw_name": "data_4f44b0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44b4",
+      "before": {
+        "address": "0x4f44b4",
+        "name": "data_4f44b4",
+        "raw_name": "data_4f44b4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44b8",
+      "before": {
+        "address": "0x4f44b8",
+        "name": "data_4f44b8",
+        "raw_name": "data_4f44b8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44bc",
+      "before": {
+        "address": "0x4f44bc",
+        "name": "data_4f44bc",
+        "raw_name": "data_4f44bc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44c0",
+      "before": {
+        "address": "0x4f44c0",
+        "name": "data_4f44c0",
+        "raw_name": "data_4f44c0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44c4",
+      "before": {
+        "address": "0x4f44c4",
+        "name": "data_4f44c4",
+        "raw_name": "data_4f44c4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44c8",
+      "before": {
+        "address": "0x4f44c8",
+        "name": "data_4f44c8",
+        "raw_name": "data_4f44c8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44cc",
+      "before": {
+        "address": "0x4f44cc",
+        "name": "data_4f44cc",
+        "raw_name": "data_4f44cc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44d0",
+      "before": {
+        "address": "0x4f44d0",
+        "name": "data_4f44d0",
+        "raw_name": "data_4f44d0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44d4",
+      "before": {
+        "address": "0x4f44d4",
+        "name": "data_4f44d4",
+        "raw_name": "data_4f44d4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44d8",
+      "before": {
+        "address": "0x4f44d8",
+        "name": "g_WestwoodOnlineUpgradeConnectStarted",
+        "raw_name": "g_WestwoodOnlineUpgradeConnectStarted",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44dc",
+      "before": {
+        "address": "0x4f44dc",
+        "name": "g_WestwoodOnlineUpgradeOnOkStatusText",
+        "raw_name": "g_WestwoodOnlineUpgradeOnOkStatusText",
+        "type": "struct CString",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44e0",
+      "before": {
+        "address": "0x4f44e0",
+        "name": "g_WestwoodOnlineUpgradeApiEventSink",
+        "raw_name": "g_WestwoodOnlineUpgradeApiEventSink",
+        "type": "struct WestwoodOnlineUpgradeApiEventSink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44e4",
+      "before": {
+        "address": "0x4f44e4",
+        "name": "g_WestwoodOnlineUpgradeCompletionFlag",
+        "raw_name": "g_WestwoodOnlineUpgradeCompletionFlag",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44e8",
+      "before": {
+        "address": "0x4f44e8",
+        "name": "g_WestwoodOnlineUpgradeDialog",
+        "raw_name": "g_WestwoodOnlineUpgradeDialog",
+        "type": "struct WestwoodOnlineUpgradeDialog*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44ec",
+      "before": {
+        "address": "0x4f44ec",
+        "name": "data_4f44ec",
+        "raw_name": "data_4f44ec",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44f0",
+      "before": {
+        "address": "0x4f44f0",
+        "name": "g_WestwoodOnlineUpgradeApiAdviseCookie",
+        "raw_name": "g_WestwoodOnlineUpgradeApiAdviseCookie",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44f4",
+      "before": {
+        "address": "0x4f44f4",
+        "name": "g_WestwoodOnlineUpgradeApi",
+        "raw_name": "g_WestwoodOnlineUpgradeApi",
+        "type": "struct WestwoodOnlineUpgradeApi*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Partial COM-style WOL API object pointer shared across the dialog/event-sink workflow.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44f8",
+      "before": {
+        "address": "0x4f44f8",
+        "name": "g_WestwoodOnlineUpgradePendingSessionCount",
+        "raw_name": "g_WestwoodOnlineUpgradePendingSessionCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f44fc",
+      "before": {
+        "address": "0x4f44fc",
+        "name": "g_WestwoodOnlineUpgradeVisibleBrowseRecordCount",
+        "raw_name": "g_WestwoodOnlineUpgradeVisibleBrowseRecordCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4500",
+      "before": {
+        "address": "0x4f4500",
+        "name": "g_WestwoodOnlineUpgradeVisibleSessionCount",
+        "raw_name": "g_WestwoodOnlineUpgradeVisibleSessionCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4504",
+      "before": {
+        "address": "0x4f4504",
+        "name": "g_WestwoodOnlineUpgradeCreateSessionMode",
+        "raw_name": "g_WestwoodOnlineUpgradeCreateSessionMode",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4508",
+      "before": {
+        "address": "0x4f4508",
+        "name": "data_4f4508",
+        "raw_name": "data_4f4508",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f450c",
+      "before": {
+        "address": "0x4f450c",
+        "name": "data_4f450c",
+        "raw_name": "data_4f450c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4510",
+      "before": {
+        "address": "0x4f4510",
+        "name": "data_4f4510",
+        "raw_name": "data_4f4510",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4514",
+      "before": {
+        "address": "0x4f4514",
+        "name": "data_4f4514",
+        "raw_name": "data_4f4514",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4518",
+      "before": {
+        "address": "0x4f4518",
+        "name": "data_4f4518",
+        "raw_name": "data_4f4518",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f451c",
+      "before": {
+        "address": "0x4f451c",
+        "name": "data_4f451c",
+        "raw_name": "data_4f451c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4520",
+      "before": {
+        "address": "0x4f4520",
+        "name": "data_4f4520",
+        "raw_name": "data_4f4520",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4524",
+      "before": {
+        "address": "0x4f4524",
+        "name": "data_4f4524",
+        "raw_name": "data_4f4524",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4528",
+      "before": {
+        "address": "0x4f4528",
+        "name": "data_4f4528",
+        "raw_name": "data_4f4528",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f452c",
+      "before": {
+        "address": "0x4f452c",
+        "name": "data_4f452c",
+        "raw_name": "data_4f452c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4530",
+      "before": {
+        "address": "0x4f4530",
+        "name": "g_WestwoodOnlineStatusLineBuf",
+        "raw_name": "g_WestwoodOnlineStatusLineBuf",
+        "type": "char[0x20]",
+        "size": 32,
+        "width": 32,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "32-byte temporary status-line buffer for WestwoodOnlineUpgradeDialog_AppendStatusLine; export had this mis-sliced as a single char plus trailing raw bytes.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4550",
+      "before": {
+        "address": "0x4f4550",
+        "name": "g_WestwoodOnlineUpgradeNextAutoRefreshTimeSec",
+        "raw_name": "g_WestwoodOnlineUpgradeNextAutoRefreshTimeSec",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4554",
+      "before": {
+        "address": "0x4f4554",
+        "name": "data_4f4554",
+        "raw_name": "data_4f4554",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4558",
+      "before": {
+        "address": "0x4f4558",
+        "name": "data_4f4558",
+        "raw_name": "data_4f4558",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f455c",
+      "before": {
+        "address": "0x4f455c",
+        "name": "data_4f455c",
+        "raw_name": "data_4f455c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4560",
+      "before": {
+        "address": "0x4f4560",
+        "name": "data_4f4560",
+        "raw_name": "data_4f4560",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4564",
+      "before": {
+        "address": "0x4f4564",
+        "name": "data_4f4564",
+        "raw_name": "data_4f4564",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4568",
+      "before": {
+        "address": "0x4f4568",
+        "name": "data_4f4568",
+        "raw_name": "data_4f4568",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f456c",
+      "before": {
+        "address": "0x4f456c",
+        "name": "data_4f456c",
+        "raw_name": "data_4f456c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4570",
+      "before": {
+        "address": "0x4f4570",
+        "name": "data_4f4570",
+        "raw_name": "data_4f4570",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4574",
+      "before": {
+        "address": "0x4f4574",
+        "name": "data_4f4574",
+        "raw_name": "data_4f4574",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4578",
+      "before": {
+        "address": "0x4f4578",
+        "name": "g_WestwoodOnlineUpgradeSavedCurrentDirectory",
+        "raw_name": "g_WestwoodOnlineUpgradeSavedCurrentDirectory",
+        "type": "char[0x100]",
+        "size": 256,
+        "width": 256,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4678",
+      "before": {
+        "address": "0x4f4678",
+        "name": "data_4f4678",
+        "raw_name": "data_4f4678",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f467c",
+      "before": {
+        "address": "0x4f467c",
+        "name": "g_WestwoodOnlineUpgradeDownloadEventSink",
+        "raw_name": "g_WestwoodOnlineUpgradeDownloadEventSink",
+        "type": "struct WestwoodOnlineUpgradeDownloadEventSink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4680",
+      "before": {
+        "address": "0x4f4680",
+        "name": "g_WestwoodOnlineUpgradeDownload",
+        "raw_name": "g_WestwoodOnlineUpgradeDownload",
+        "type": "struct WestwoodOnlineUpgradeDownload*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4684",
+      "before": {
+        "address": "0x4f4684",
+        "name": "g_WestwoodOnlineUpgradeProgressResult",
+        "raw_name": "g_WestwoodOnlineUpgradeProgressResult",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4688",
+      "before": {
+        "address": "0x4f4688",
+        "name": "g_WestwoodOnlineUpgradeProgressHwnd",
+        "raw_name": "g_WestwoodOnlineUpgradeProgressHwnd",
+        "type": "HWND",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f468c",
+      "before": {
+        "address": "0x4f468c",
+        "name": "g_WestwoodOnlineUpgradeDownloadAdviseCookie",
+        "raw_name": "g_WestwoodOnlineUpgradeDownloadAdviseCookie",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "COM connection-point advise cookie for g_pWestwoodOnlineUpgradeDownload <-> g_pWestwoodOnlineUpgradeDownloadEventSink, written by WestwoodOnlineUpgradeDownload_CreateInstanceAndAdvise() and consumed by WestwoodOnlineUpgradeDownload_UnadviseAndRelease().",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4690",
+      "before": {
+        "address": "0x4f4690",
+        "name": "g_WestwoodOnlineUpgradeProgressTextBuffer",
+        "raw_name": "g_WestwoodOnlineUpgradeProgressTextBuffer",
+        "type": "char[0x40]",
+        "size": 64,
+        "width": 64,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46d0",
+      "before": {
+        "address": "0x4f46d0",
+        "name": "data_4f46d0",
+        "raw_name": "data_4f46d0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46d4",
+      "before": {
+        "address": "0x4f46d4",
+        "name": "data_4f46d4",
+        "raw_name": "data_4f46d4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46d8",
+      "before": {
+        "address": "0x4f46d8",
+        "name": "data_4f46d8",
+        "raw_name": "data_4f46d8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46dc",
+      "before": {
+        "address": "0x4f46dc",
+        "name": "data_4f46dc",
+        "raw_name": "data_4f46dc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46e0",
+      "before": {
+        "address": "0x4f46e0",
+        "name": "data_4f46e0",
+        "raw_name": "data_4f46e0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46e4",
+      "before": {
+        "address": "0x4f46e4",
+        "name": "data_4f46e4",
+        "raw_name": "data_4f46e4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46e8",
+      "before": {
+        "address": "0x4f46e8",
+        "name": "data_4f46e8",
+        "raw_name": "data_4f46e8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46ec",
+      "before": {
+        "address": "0x4f46ec",
+        "name": "data_4f46ec",
+        "raw_name": "data_4f46ec",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46f0",
+      "before": {
+        "address": "0x4f46f0",
+        "name": "data_4f46f0",
+        "raw_name": "data_4f46f0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46f4",
+      "before": {
+        "address": "0x4f46f4",
+        "name": "data_4f46f4",
+        "raw_name": "data_4f46f4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46f8",
+      "before": {
+        "address": "0x4f46f8",
+        "name": "g_DiSphereIntersectionNamePrefix",
+        "raw_name": "g_DiSphereIntersectionNamePrefix",
+        "type": "char*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f46fc",
+      "before": {
+        "address": "0x4f46fc",
+        "name": "g_DiSphereIntersectionOrigin",
+        "raw_name": "g_DiSphereIntersectionOrigin",
+        "type": "struct zVec3*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4700",
+      "before": {
+        "address": "0x4f4700",
+        "name": "g_DiSphereIntersectionRadiusSq",
+        "raw_name": "g_DiSphereIntersectionRadiusSq",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4704",
+      "before": {
+        "address": "0x4f4704",
+        "name": "g_DiSphereIntersectionUseDistanceGate",
+        "raw_name": "g_DiSphereIntersectionUseDistanceGate",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4708",
+      "before": {
+        "address": "0x4f4708",
+        "name": "g_DiSphereIntersectionLineOfSightScene",
+        "raw_name": "g_DiSphereIntersectionLineOfSightScene",
+        "type": "struct zClass_Node*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f470c",
+      "before": {
+        "address": "0x4f470c",
+        "name": "g_DiSphereIntersectionHitBuffer",
+        "raw_name": "g_DiSphereIntersectionHitBuffer",
+        "type": "struct zClass_DiIntersectionHitBuffer*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4710",
+      "before": {
+        "address": "0x4f4710",
+        "name": "g_DiQueryStopAfterFirstHit",
+        "raw_name": "g_DiQueryStopAfterFirstHit",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Shared DI query gate: nonzero means stop recursive segment/filter traversal after the first appended result.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4714",
+      "before": {
+        "address": "0x4f4714",
+        "name": "g_zClass_cls_di_ActiveScene",
+        "raw_name": "g_zClass_cls_di_ActiveScene",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4718",
+      "before": {
+        "address": "0x4f4718",
+        "name": "g_DiPickQueryX",
+        "raw_name": "g_DiPickQueryX",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f471c",
+      "before": {
+        "address": "0x4f471c",
+        "name": "g_DiPickQueryY",
+        "raw_name": "g_DiPickQueryY",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4720",
+      "before": {
+        "address": "0x4f4720",
+        "name": "g_DiPickQueryZ",
+        "raw_name": "g_DiPickQueryZ",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4724",
+      "before": {
+        "address": "0x4f4724",
+        "name": "g_DiSegmentQueryTargetX",
+        "raw_name": "g_DiSegmentQueryTargetX",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4728",
+      "before": {
+        "address": "0x4f4728",
+        "name": "g_DiSegmentQueryTargetY",
+        "raw_name": "g_DiSegmentQueryTargetY",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f472c",
+      "before": {
+        "address": "0x4f472c",
+        "name": "g_DiSegmentQueryTargetZ",
+        "raw_name": "g_DiSegmentQueryTargetZ",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4730",
+      "before": {
+        "address": "0x4f4730",
+        "name": "g_DiFilterRegionBoundsScratch",
+        "raw_name": "g_DiFilterRegionBoundsScratch",
+        "type": "struct BBox3f",
+        "size": 24,
+        "width": 24,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "DI region-filter scratch AABB array. The backing block is exactly 12 x zAabb_MinMax6.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4850",
+      "before": {
+        "address": "0x4f4850",
+        "name": "g_DiQueryOutputBase",
+        "raw_name": "g_DiQueryOutputBase",
+        "type": "struct zClass_DiQueryOutputBuffer*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4854",
+      "before": {
+        "address": "0x4f4854",
+        "name": "g_DiPickCandidateCursor",
+        "raw_name": "g_DiPickCandidateCursor",
+        "type": "struct zClass_DiPickCandidate*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4858",
+      "before": {
+        "address": "0x4f4858",
+        "name": "g_DiPointQueryHeightTolerance",
+        "raw_name": "g_DiPointQueryHeightTolerance",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Point-query-only height/depth tolerance. Reachable callers pass 500.0f.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f485c",
+      "before": {
+        "address": "0x4f485c",
+        "name": "g_DiQueryPointsBase",
+        "raw_name": "g_DiQueryPointsBase",
+        "type": "struct zVec3*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4860",
+      "before": {
+        "address": "0x4f4860",
+        "name": "g_DiQueryItemCount",
+        "raw_name": "g_DiQueryItemCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Shared DI query item count: point count on point-query path, segment count on segment-query path after endpoint halving.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4864",
+      "before": {
+        "address": "0x4f4864",
+        "name": "data_4f4864",
+        "raw_name": "data_4f4864",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4868",
+      "before": {
+        "address": "0x4f4868",
+        "name": "gModel_RenderClassFadeAlpha",
+        "raw_name": "gModel_RenderClassFadeAlpha",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Display-driven render-class fade factor in the range [0, 1] on the reachable path.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f486c",
+      "before": {
+        "address": "0x4f486c",
+        "name": "data_4f486c",
+        "raw_name": "data_4f486c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4870",
+      "before": {
+        "address": "0x4f4870",
+        "name": "gModel_RenderAlphaScaleStack",
+        "raw_name": "gModel_RenderAlphaScaleStack",
+        "type": "float[0x10]",
+        "size": 64,
+        "width": 64,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "Stack of pushed render alpha scale multipliers. Underflow restores 1.0f.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48b0",
+      "before": {
+        "address": "0x4f48b0",
+        "name": "data_4f48b0",
+        "raw_name": "data_4f48b0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48b4",
+      "before": {
+        "address": "0x4f48b4",
+        "name": "data_4f48b4",
+        "raw_name": "data_4f48b4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48b8",
+      "before": {
+        "address": "0x4f48b8",
+        "name": "data_4f48b8",
+        "raw_name": "data_4f48b8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48bc",
+      "before": {
+        "address": "0x4f48bc",
+        "name": "data_4f48bc",
+        "raw_name": "data_4f48bc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48c0",
+      "before": {
+        "address": "0x4f48c0",
+        "name": "data_4f48c0",
+        "raw_name": "data_4f48c0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48c4",
+      "before": {
+        "address": "0x4f48c4",
+        "name": "data_4f48c4",
+        "raw_name": "data_4f48c4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48c8",
+      "before": {
+        "address": "0x4f48c8",
+        "name": "data_4f48c8",
+        "raw_name": "data_4f48c8",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48cc",
+      "before": {
+        "address": "0x4f48cc",
+        "name": "data_4f48cc",
+        "raw_name": "data_4f48cc",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48d0",
+      "before": {
+        "address": "0x4f48d0",
+        "name": "data_4f48d0",
+        "raw_name": "data_4f48d0",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48d4",
+      "before": {
+        "address": "0x4f48d4",
+        "name": "data_4f48d4",
+        "raw_name": "data_4f48d4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48d8",
+      "before": {
+        "address": "0x4f48d8",
+        "name": "g_zVideo_LastVariantTag",
+        "raw_name": "g_zVideo_LastVariantTag",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Renderer-local cache of the current variant tag. Referenced from both software and D3D render-frame paths.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48dc",
+      "before": {
+        "address": "0x4f48dc",
+        "name": "g_zVideo_pViewContext",
+        "raw_name": "g_zVideo_pViewContext",
+        "type": "struct zVideo_ViewContext*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f48e0",
+      "before": {
+        "address": "0x4f48e0",
+        "name": "gModel_DisplayDistanceStack",
+        "raw_name": "gModel_DisplayDistanceStack",
+        "type": "struct zModel_DisplayDistanceState[0x4]",
+        "size": 64,
+        "width": 64,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "Display traversal stack of current bounding-sphere centers plus view-scaled distance.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4920",
+      "before": {
+        "address": "0x4f4920",
+        "name": "gModel_RenderClassFadeActive",
+        "raw_name": "gModel_RenderClassFadeActive",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Display-driven render-class fade gate; when enabled, render traversals copy gModel_RenderClassFadeAlpha into the active render class.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4924",
+      "before": {
+        "address": "0x4f4924",
+        "name": "data_4f4924",
+        "raw_name": "data_4f4924",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4928",
+      "before": {
+        "address": "0x4f4928",
+        "name": "gModel_FogTargetColorOverrideStack",
+        "raw_name": "gModel_FogTargetColorOverrideStack",
+        "type": "struct zModel_FogTargetColorOverride[0x4]",
+        "size": 64,
+        "width": 64,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "Stack of pushed fog-target RGB01 overrides used by object/display render traversal.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4968",
+      "before": {
+        "address": "0x4f4968",
+        "name": "data_4f4968",
+        "raw_name": "data_4f4968",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f496c",
+      "before": {
+        "address": "0x4f496c",
+        "name": "data_4f496c",
+        "raw_name": "data_4f496c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4970",
+      "before": {
+        "address": "0x4f4970",
+        "name": "data_4f4970",
+        "raw_name": "data_4f4970",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4974",
+      "before": {
+        "address": "0x4f4974",
+        "name": "data_4f4974",
+        "raw_name": "data_4f4974",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4978",
+      "before": {
+        "address": "0x4f4978",
+        "name": "data_4f4978",
+        "raw_name": "data_4f4978",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f497c",
+      "before": {
+        "address": "0x4f497c",
+        "name": "data_4f497c",
+        "raw_name": "data_4f497c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4980",
+      "before": {
+        "address": "0x4f4980",
+        "name": "data_4f4980",
+        "raw_name": "data_4f4980",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4984",
+      "before": {
+        "address": "0x4f4984",
+        "name": "data_4f4984",
+        "raw_name": "data_4f4984",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4988",
+      "before": {
+        "address": "0x4f4988",
+        "name": "g_Camera_PrevListenerPosX",
+        "raw_name": "g_Camera_PrevListenerPosX",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f498c",
+      "before": {
+        "address": "0x4f498c",
+        "name": "g_Camera_PrevListenerPosY",
+        "raw_name": "g_Camera_PrevListenerPosY",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4990",
+      "before": {
+        "address": "0x4f4990",
+        "name": "g_Camera_PrevListenerPosZ",
+        "raw_name": "g_Camera_PrevListenerPosZ",
+        "type": "float",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4994",
+      "before": {
+        "address": "0x4f4994",
+        "name": "gModel_RenderVertexAlphaPushActive",
+        "raw_name": "gModel_RenderVertexAlphaPushActive",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Guard recording whether the current traversal frame pushed gModel_RenderVertexAlphaEnabled.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4998",
+      "before": {
+        "address": "0x4f4998",
+        "name": "g_FindIter_ListCursor",
+        "raw_name": "g_FindIter_ListCursor",
+        "type": "struct ObjectRegistryBucketEntry*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Object-registry iterator cursor. Current helper type is a conservative 3-field entry: name, unknown payload, next.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f499c",
+      "before": {
+        "address": "0x4f499c",
+        "name": "data_4f499c",
+        "raw_name": "data_4f499c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49a0",
+      "before": {
+        "address": "0x4f49a0",
+        "name": "g_FindPrefix_String",
+        "raw_name": "g_FindPrefix_String",
+        "type": "char*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49a4",
+      "before": {
+        "address": "0x4f49a4",
+        "name": "data_4f49a4",
+        "raw_name": "data_4f49a4",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49a8",
+      "before": {
+        "address": "0x4f49a8",
+        "name": "g_FindPrefix_Length",
+        "raw_name": "g_FindPrefix_Length",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Cached prefix length for ObjectRegistry_PrefixPredicate / IterateFilteredPrefix.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49ac",
+      "before": {
+        "address": "0x4f49ac",
+        "name": "g_zClassAllNodesTypeListHead",
+        "raw_name": "g_zClassAllNodesTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49b0",
+      "before": {
+        "address": "0x4f49b0",
+        "name": "g_zClassAllNodesTypeListTail",
+        "raw_name": "g_zClassAllNodesTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49b4",
+      "before": {
+        "address": "0x4f49b4",
+        "name": "g_zClass_TypeListDirty_06",
+        "raw_name": "g_zClass_TypeListDirty_06",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49b8",
+      "before": {
+        "address": "0x4f49b8",
+        "name": "g_zClassCallbackPriority0Head",
+        "raw_name": "g_zClassCallbackPriority0Head",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49bc",
+      "before": {
+        "address": "0x4f49bc",
+        "name": "g_zClassCallbackPriority0Tail",
+        "raw_name": "g_zClassCallbackPriority0Tail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49c0",
+      "before": {
+        "address": "0x4f49c0",
+        "name": "g_zClass_TypeListDirty_00",
+        "raw_name": "g_zClass_TypeListDirty_00",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49c4",
+      "before": {
+        "address": "0x4f49c4",
+        "name": "g_zClassCallbackPriority1Head",
+        "raw_name": "g_zClassCallbackPriority1Head",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49c8",
+      "before": {
+        "address": "0x4f49c8",
+        "name": "g_zClassCallbackPriority1Tail",
+        "raw_name": "g_zClassCallbackPriority1Tail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49cc",
+      "before": {
+        "address": "0x4f49cc",
+        "name": "g_zClass_TypeListDirty_01",
+        "raw_name": "g_zClass_TypeListDirty_01",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49d0",
+      "before": {
+        "address": "0x4f49d0",
+        "name": "g_zClassCallbackPriority2Head",
+        "raw_name": "g_zClassCallbackPriority2Head",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49d4",
+      "before": {
+        "address": "0x4f49d4",
+        "name": "g_zClassCallbackPriority2Tail",
+        "raw_name": "g_zClassCallbackPriority2Tail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49d8",
+      "before": {
+        "address": "0x4f49d8",
+        "name": "g_zClass_TypeListDirty_02",
+        "raw_name": "g_zClass_TypeListDirty_02",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49dc",
+      "before": {
+        "address": "0x4f49dc",
+        "name": "g_zClassCallbackPriority3Head",
+        "raw_name": "g_zClassCallbackPriority3Head",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49e0",
+      "before": {
+        "address": "0x4f49e0",
+        "name": "g_zClassCallbackPriority3Tail",
+        "raw_name": "g_zClassCallbackPriority3Tail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49e4",
+      "before": {
+        "address": "0x4f49e4",
+        "name": "g_zClass_TypeListDirty_03",
+        "raw_name": "g_zClass_TypeListDirty_03",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49e8",
+      "before": {
+        "address": "0x4f49e8",
+        "name": "g_zClassCallbackPriority4Head",
+        "raw_name": "g_zClassCallbackPriority4Head",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49ec",
+      "before": {
+        "address": "0x4f49ec",
+        "name": "g_zClassCallbackPriority4Tail",
+        "raw_name": "g_zClassCallbackPriority4Tail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49f0",
+      "before": {
+        "address": "0x4f49f0",
+        "name": "g_zClass_TypeListDirty_04",
+        "raw_name": "g_zClass_TypeListDirty_04",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49f4",
+      "before": {
+        "address": "0x4f49f4",
+        "name": "g_zClassCallbackPriority5Head",
+        "raw_name": "g_zClassCallbackPriority5Head",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49f8",
+      "before": {
+        "address": "0x4f49f8",
+        "name": "g_zClassCallbackPriority5Tail",
+        "raw_name": "g_zClassCallbackPriority5Tail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f49fc",
+      "before": {
+        "address": "0x4f49fc",
+        "name": "g_zClass_TypeListDirty_05",
+        "raw_name": "g_zClass_TypeListDirty_05",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a00",
+      "before": {
+        "address": "0x4f4a00",
+        "name": "g_zClassQueuedTreeTypeListHead",
+        "raw_name": "g_zClassQueuedTreeTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Head of type-list slot 7, the queued-tree/subtree-update bucket. Nodes are marked here by gwNode_UpdateSubtree() and zClass_List_MarkNodeForUnlink().",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a04",
+      "before": {
+        "address": "0x4f4a04",
+        "name": "g_zClassQueuedTreeTypeListTail",
+        "raw_name": "g_zClassQueuedTreeTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a08",
+      "before": {
+        "address": "0x4f4a08",
+        "name": "g_zClass_TypeListDirty_07",
+        "raw_name": "g_zClass_TypeListDirty_07",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a0c",
+      "before": {
+        "address": "0x4f4a0c",
+        "name": "g_zClassCameraTypeListHead",
+        "raw_name": "g_zClassCameraTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a10",
+      "before": {
+        "address": "0x4f4a10",
+        "name": "g_zClassCameraTypeListTail",
+        "raw_name": "g_zClassCameraTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a14",
+      "before": {
+        "address": "0x4f4a14",
+        "name": "g_zClass_TypeListDirty_08",
+        "raw_name": "g_zClass_TypeListDirty_08",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a18",
+      "before": {
+        "address": "0x4f4a18",
+        "name": "g_zClassLightTypeListHead",
+        "raw_name": "g_zClassLightTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a1c",
+      "before": {
+        "address": "0x4f4a1c",
+        "name": "g_zClassLightTypeListTail",
+        "raw_name": "g_zClassLightTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a20",
+      "before": {
+        "address": "0x4f4a20",
+        "name": "g_zClass_TypeListDirty_09",
+        "raw_name": "g_zClass_TypeListDirty_09",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a24",
+      "before": {
+        "address": "0x4f4a24",
+        "name": "g_zClassSoundTypeListHead",
+        "raw_name": "g_zClassSoundTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a28",
+      "before": {
+        "address": "0x4f4a28",
+        "name": "g_zClassSoundTypeListTail",
+        "raw_name": "g_zClassSoundTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a2c",
+      "before": {
+        "address": "0x4f4a2c",
+        "name": "g_zClass_TypeListDirty_0A",
+        "raw_name": "g_zClass_TypeListDirty_0A",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a30",
+      "before": {
+        "address": "0x4f4a30",
+        "name": "g_zClassWorldTypeListHead",
+        "raw_name": "g_zClassWorldTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a34",
+      "before": {
+        "address": "0x4f4a34",
+        "name": "g_zClassWorldTypeListTail",
+        "raw_name": "g_zClassWorldTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a38",
+      "before": {
+        "address": "0x4f4a38",
+        "name": "g_zClass_TypeListDirty_0D",
+        "raw_name": "g_zClass_TypeListDirty_0D",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a3c",
+      "before": {
+        "address": "0x4f4a3c",
+        "name": "g_zClassWindowTypeListHead",
+        "raw_name": "g_zClassWindowTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a40",
+      "before": {
+        "address": "0x4f4a40",
+        "name": "g_zClassWindowTypeListTail",
+        "raw_name": "g_zClassWindowTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a44",
+      "before": {
+        "address": "0x4f4a44",
+        "name": "g_zClass_TypeListDirty_0E",
+        "raw_name": "g_zClass_TypeListDirty_0E",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a48",
+      "before": {
+        "address": "0x4f4a48",
+        "name": "g_zClassDisplayTypeListHead",
+        "raw_name": "g_zClassDisplayTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a4c",
+      "before": {
+        "address": "0x4f4a4c",
+        "name": "g_zClassDisplayTypeListTail",
+        "raw_name": "g_zClassDisplayTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a50",
+      "before": {
+        "address": "0x4f4a50",
+        "name": "g_zClass_TypeListDirty_0F",
+        "raw_name": "g_zClass_TypeListDirty_0F",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a54",
+      "before": {
+        "address": "0x4f4a54",
+        "name": "g_zClassSequenceTypeListHead",
+        "raw_name": "g_zClassSequenceTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Head of type-list slot 0x0B for sequence nodes. Walked by zClass_TypeList_UpdateSequences().",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a58",
+      "before": {
+        "address": "0x4f4a58",
+        "name": "g_zClassSequenceTypeListTail",
+        "raw_name": "g_zClassSequenceTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a5c",
+      "before": {
+        "address": "0x4f4a5c",
+        "name": "g_zClass_TypeListDirty_0B",
+        "raw_name": "g_zClass_TypeListDirty_0B",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a60",
+      "before": {
+        "address": "0x4f4a60",
+        "name": "g_zClassAnimateTypeListHead",
+        "raw_name": "g_zClassAnimateTypeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Head of type-list slot 0x0C for animate nodes. Walked by zClass_TypeList_UpdateAnimations().",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a64",
+      "before": {
+        "address": "0x4f4a64",
+        "name": "g_zClassAnimateTypeListTail",
+        "raw_name": "g_zClassAnimateTypeListTail",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a68",
+      "before": {
+        "address": "0x4f4a68",
+        "name": "g_zClass_TypeListDirty_0C",
+        "raw_name": "g_zClass_TypeListDirty_0C",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a6c",
+      "before": {
+        "address": "0x4f4a6c",
+        "name": "g_zClass_TypeListFreeHead",
+        "raw_name": "g_zClass_TypeListFreeHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Head of the zClass_TypeListLink freelist. Reused by zClass_TypeList_AllocLink() and zClass_TypeList_FreeLink().",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a70",
+      "before": {
+        "address": "0x4f4a70",
+        "name": "g_zClass_NodeListHead",
+        "raw_name": "g_zClass_NodeListHead",
+        "type": "struct zClass_TypeListLink*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Head of the deferred-free queue used by zClass_NodeList_Insert() and drained by zClass_NodeList_ProcessPendingFrees().",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a74",
+      "before": {
+        "address": "0x4f4a74",
+        "name": "g_zClass_TypeListAllocCount",
+        "raw_name": "g_zClass_TypeListAllocCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Current number of live zClass_TypeListLink allocations (active lists plus deferred queues).",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a78",
+      "before": {
+        "address": "0x4f4a78",
+        "name": "g_zClass_TypeListAllocPeak",
+        "raw_name": "g_zClass_TypeListAllocPeak",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Peak value reached by g_zClass_TypeListAllocCount.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a7c",
+      "before": {
+        "address": "0x4f4a7c",
+        "name": "data_4f4a7c",
+        "raw_name": "data_4f4a7c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a80",
+      "before": {
+        "address": "0x4f4a80",
+        "name": "data_4f4a80",
+        "raw_name": "data_4f4a80",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a84",
+      "before": {
+        "address": "0x4f4a84",
+        "name": "data_4f4a84",
+        "raw_name": "data_4f4a84",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a88",
+      "before": {
+        "address": "0x4f4a88",
+        "name": "data_4f4a88",
+        "raw_name": "data_4f4a88",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a8c",
+      "before": {
+        "address": "0x4f4a8c",
+        "name": "data_4f4a8c",
+        "raw_name": "data_4f4a8c",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a90",
+      "before": {
+        "address": "0x4f4a90",
+        "name": "g_zClass_NodeCount",
+        "raw_name": "g_zClass_NodeCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Configured size of the pooled zClass_Node table. zClass_InitCore() defaults this to 0x203A when unset.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a94",
+      "before": {
+        "address": "0x4f4a94",
+        "name": "g_zClass_NodeTableBase",
+        "raw_name": "g_zClass_NodeTableBase",
+        "type": "struct zClass_Node*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Base pointer for the pooled zClass_Node table. Element stride is 0xC4 bytes and free-list indexing is driven by g_zClass_NodeFreeHeadIndex.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a98",
+      "before": {
+        "address": "0x4f4a98",
+        "name": "g_zClass_NodeActiveCount",
+        "raw_name": "g_zClass_NodeActiveCount",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4a9c",
+      "before": {
+        "address": "0x4f4a9c",
+        "name": "g_zClass_CopyNodeCloneMaterialRefs",
+        "raw_name": "g_zClass_CopyNodeCloneMaterialRefs",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4aa0",
+      "before": {
+        "address": "0x4f4aa0",
+        "name": "g_zClass_CopyNodeCloneAllMaterialsIfRelevant",
+        "raw_name": "g_zClass_CopyNodeCloneAllMaterialsIfRelevant",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": null,
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4aa4",
+      "before": {
+        "address": "0x4f4aa4",
+        "name": "g_zClass_CoreInitialized",
+        "raw_name": "g_zClass_CoreInitialized",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Set to 1 by zClass_InitCore() after successful initialization and cleared by zClass_ShutdownCore().",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4aa8",
+      "before": {
+        "address": "0x4f4aa8",
+        "name": "g_zClass_LastZbdPath",
+        "raw_name": "g_zClass_LastZbdPath",
+        "type": "char[0x30]",
+        "size": 48,
+        "width": 48,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "before_comment": "Mutable ZBD filename buffer used by zClass_ResetLastZbdPath(), GameZ_WriteZBDFile(), and GameZ_ReadZBDFile(). Export flattened this as int32_t[12], but reachable code treats it as char[0x30].",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4ad8",
+      "before": {
+        "address": "0x4f4ad8",
+        "name": "g_GameZ_ZbdWriteTmpNodeRefBuf",
+        "raw_name": "g_GameZ_ZbdWriteTmpNodeRefBuf",
+        "type": "union zClass_NodeRef*",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Temporary union zClass_NodeRef[count] scratch buffer used while serializing node-reference lists to ZBD.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "undefine_unsupported_analysis",
+      "address": "0x4f4adc",
+      "before": {
+        "address": "0x4f4adc",
+        "name": "g_GameZ_ZbdWriteTmpNodeRefCapacity",
+        "raw_name": "g_GameZ_ZbdWriteTmpNodeRefCapacity",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "before_comment": "Current capacity, in node refs, of g_GameZ_ZbdWriteTmpNodeRefBuf.",
+      "after": null,
+      "evidence": "No BN code/data xrefs to this definition, no literal operand into its declared extent in the complete 4951-function assembly collection. Claimed live roles are not supported at this address. Undefining only analysis claims: loaded bytes remain intact and unclassified; this does not prove dead storage, padding, original extent, or source owner."
+    },
+    {
+      "kind": "set_data_comment",
+      "address": "0x4f4210",
+      "before_comment": "0x64-byte WOL API init-state blob: size/module handles/refs plus three inline CRITICAL_SECTIONs.",
+      "after": "Pointer read at 0x438b10, passed to operator delete at 0x438b1a when non-null, and cleared at 0x438b22. This is not the previously claimed inline WOL API/critical-section blob."
+    },
+    {
+      "kind": "set_function_comment",
+      "address": "0x40d1f0",
+      "after": "Loads ECX with 0x4ed714 and tail-jumps to the MFC CString default-constructor import thunk at 0x4c5ba0.",
+      "before_comment": {
+        "ok": true,
+        "kind": "get_function_comment",
+        "items": {
+          "success": true,
+          "function": {
+            "name": "HudUiTriplet::ConstructWndClassName",
+            "raw_name": "HudUiTriplet::ConstructWndClassName",
+            "address": "0x40d1f0",
+            "symbol": {
+              "type": "SymbolType.FunctionSymbol",
+              "full_name": "HudUiTriplet::ConstructWndClassName"
+            }
+          },
+          "comment": "Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence."
+        },
+        "function": "0x40d1f0"
+      }
+    },
+    {
+      "kind": "set_function_comment",
+      "address": "0x40d210",
+      "after": "Loads ECX with 0x4ed714 and tail-jumps to the MFC CString destructor import thunk at 0x4c5b88.",
+      "before_comment": {
+        "ok": true,
+        "kind": "get_function_comment",
+        "items": {
+          "success": true,
+          "function": {
+            "name": "HudUiTriplet::DestroyWndClassName",
+            "raw_name": "HudUiTriplet::DestroyWndClassName",
+            "address": "0x40d210",
+            "symbol": {
+              "type": "SymbolType.FunctionSymbol",
+              "full_name": "HudUiTriplet::DestroyWndClassName"
+            }
+          },
+          "comment": "Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence."
+        },
+        "function": "0x40d210"
+      }
+    },
+    {
+      "kind": "define_data",
+      "address": "0x4dafa8",
+      "before": {
+        "address": "0x4dafa8",
+        "name": "g_HudSensorTracker_ObjectivesZrdPath",
+        "raw_name": "g_HudSensorTracker_ObjectivesZrdPath",
+        "type": "char[0xe]",
+        "size": 14,
+        "width": 14,
+        "value": null,
+        "bytes_hex": "6f626a65",
+        "ascii_preview": "obje",
+        "bytes_read": 4,
+        "repr": "ascii:\"obje\""
+      },
+      "after": {
+        "name": "g_HudSensorTracker_ObjectivesZrdPath",
+        "type": "char[15]"
+      },
+      "evidence": "Retail bytes contain a NUL immediately following the old char extent. Xreferenced string consumers require that terminator; former definition excluded it. Other adjacent zeroes are not included as string payload."
+    },
+    {
+      "kind": "define_data",
+      "address": "0x4e471c",
+      "before": {
+        "address": "0x4e471c",
+        "name": "g_HudUiZrdKey_DisableSel",
+        "raw_name": "g_HudUiZrdKey_DisableSel",
+        "type": "char[0xb]",
+        "size": 11,
+        "width": 11,
+        "value": null,
+        "bytes_hex": "44495341",
+        "ascii_preview": "DISA",
+        "bytes_read": 4,
+        "repr": "ascii:\"DISA\""
+      },
+      "after": {
+        "name": "g_HudUiZrdKey_DisableSel",
+        "type": "char[12]"
+      },
+      "evidence": "Retail bytes contain a NUL immediately following the old char extent. Xreferenced string consumers require that terminator; former definition excluded it. Other adjacent zeroes are not included as string payload."
+    },
+    {
+      "kind": "define_data",
+      "address": "0x4e4728",
+      "before": {
+        "address": "0x4e4728",
+        "name": "g_HudUiZrdKey_DisableUnsel",
+        "raw_name": "g_HudUiZrdKey_DisableUnsel",
+        "type": "char[0xd]",
+        "size": 13,
+        "width": 13,
+        "value": null,
+        "bytes_hex": "44495341",
+        "ascii_preview": "DISA",
+        "bytes_read": 4,
+        "repr": "ascii:\"DISA\""
+      },
+      "after": {
+        "name": "g_HudUiZrdKey_DisableUnsel",
+        "type": "char[14]"
+      },
+      "evidence": "Retail bytes contain a NUL immediately following the old char extent. Xreferenced string consumers require that terminator; former definition excluded it. Other adjacent zeroes are not included as string payload."
+    },
+    {
+      "kind": "define_data",
+      "address": "0x4e4738",
+      "before": {
+        "address": "0x4e4738",
+        "name": "g_HudUiCycleSelectorWidget_ZrdKey_Text",
+        "raw_name": "g_HudUiCycleSelectorWidget_ZrdKey_Text",
+        "type": "char[0x4]",
+        "size": 4,
+        "width": 4,
+        "value": "1415071060",
+        "bytes_hex": "54455854",
+        "ascii_preview": "TEXT",
+        "bytes_read": 4,
+        "repr": "int:1415071060"
+      },
+      "after": {
+        "name": "g_HudUiCycleSelectorWidget_ZrdKey_Text",
+        "type": "char[5]"
+      },
+      "evidence": "Retail bytes contain a NUL immediately following the old char extent. Xreferenced string consumers require that terminator; former definition excluded it. Other adjacent zeroes are not included as string payload."
+    },
+    {
+      "kind": "define_data",
+      "address": "0x4e4740",
+      "before": {
+        "address": "0x4e4740",
+        "name": "g_HudUiZrdKey_Checked",
+        "raw_name": "g_HudUiZrdKey_Checked",
+        "type": "char[0x7]",
+        "size": 7,
+        "width": 7,
+        "value": "19216487969802307",
+        "bytes_hex": "43484543",
+        "ascii_preview": "CHEC",
+        "bytes_read": 4,
+        "repr": "int:19216487969802307"
+      },
+      "after": {
+        "name": "g_HudUiZrdKey_Checked",
+        "type": "char[8]"
+      },
+      "evidence": "Retail bytes contain a NUL immediately following the old char extent. Xreferenced string consumers require that terminator; former definition excluded it. Other adjacent zeroes are not included as string payload."
+    }
+  ]
+}

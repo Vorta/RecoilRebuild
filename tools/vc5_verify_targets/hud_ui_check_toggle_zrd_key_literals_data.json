@@ -23,21 +23,21 @@
       "symbol": "?g_HudUiZrdKey_DisableSel@@3PADA",
       "name": "g_HudUiZrdKey_DisableSel",
       "bn_name": "g_HudUiZrdKey_DisableSel",
-      "byte_length": 11
+      "byte_length": 12
     },
     {
       "address": "0x4e4728",
       "symbol": "?g_HudUiZrdKey_DisableUnsel@@3PADA",
       "name": "g_HudUiZrdKey_DisableUnsel",
       "bn_name": "g_HudUiZrdKey_DisableUnsel",
-      "byte_length": 13
+      "byte_length": 14
     },
     {
       "address": "0x4e4740",
       "symbol": "?g_HudUiZrdKey_Checked@@3PADA",
       "name": "g_HudUiZrdKey_Checked",
       "bn_name": "g_HudUiZrdKey_Checked",
-      "byte_length": 7
+      "byte_length": 8
     }
   ]
 }

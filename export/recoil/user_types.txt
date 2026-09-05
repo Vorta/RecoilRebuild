@@ -700,6 +700,7 @@ struct zDEClient_FeatureContextView;
 struct zDEClient_FeatureEntry;
 struct zDEClient_FeatureGridCell;
 struct zDEClient_FeatureNodeView;
+struct zDEClient_FeatureVectorStorage;
 struct zDEClient_MapTreeLocateResult;
 struct zDEClient_MapTreeNode;
 struct zDEClient_MapTreeState;
@@ -12332,6 +12333,16 @@ struct zDEClient_FeatureNodeView
 	struct zDEClient_FeatureContextView* callbackContext;
 };
 
+// "zDEClient_FeatureVectorStorage"
+struct zDEClient_FeatureVectorStorage
+{
+	uint8_t allocatorStorage;
+	uint8_t alignment[0x3];
+	struct zDEClient_FeatureEntry* begin;
+	struct zDEClient_FeatureEntry* end;
+	struct zDEClient_FeatureEntry* capacityEnd;
+};
+
 // "zDEClient_MapTreeLocateResult"
 struct zDEClient_MapTreeLocateResult
 {
@@ -17026,7 +17037,7 @@ struct zSndSampleSet
 // "zSndSampleSetRegistry"
 struct zSndSampleSetRegistry
 {
-	int32_t useArchiveBanksFlag;
+	uint8_t allocatorStorage;
 	struct zSndSampleSet** begin;
 	struct zSndSampleSet** end;
 	struct zSndSampleSet** capacityEnd;

@@ -1,0 +1,66 @@
+{
+  "status": "Historical edits, superseded by data_audit_2026-09-05_array_capacity_restoration.json at the user's request. Current BN working capacities are turret 128, triangles 1024, matrix pointers 32, matrix flags 32. The one/two-element views below are rollback history only and must not be reapplied as current intended types.",
+  "note": "BN access-prefix display widths are explicitly not source allocation extents. No bytes changed, no source capacities changed.",
+  "edits": [
+    {
+      "address": "0x566868",
+      "before": null,
+      "after": {
+        "name": "g_matrixSlots",
+        "type": "struct zMat4x3*[2]"
+      },
+      "after_comment": "Partial analysis view of matrix-pointer stack storage. Initialized cursor at 0x4e0e88 points here. 0x472ef0/0x472f30 pre-increment the cursor by 4 and store a matrix pointer; 0x472ef0 also reads the previous slot, and 0x472f60 decrements by 4. Displayed two-element prefix is not the allocation extent. Original capacity is unresolved; a 128-byte gap does not prove 32 entries."
+    },
+    {
+      "address": "0x566950",
+      "before": null,
+      "after": {
+        "name": "g_matrixIdentityFlagSlots",
+        "type": "int32_t[2]"
+      },
+      "after_comment": "Partial analysis view of 32-bit matrix identity-flag stack storage. Initialized cursor at 0x4e0e84 points here. 0x472ef0 pre-increments by 4 and copies the previous flag; 0x472f30 writes zero to the new slot; 0x472f60 decrements by 4. Displayed two-element prefix is not the allocation extent. Original capacity is unresolved; a 128-byte gap does not prove 32 entries."
+    },
+    {
+      "address": "0x53a750",
+      "before": {
+        "address": "0x53a750",
+        "name": "g_zGeometry_TriangulateHole_TriangleIndices",
+        "raw_name": "g_zGeometry_TriangulateHole_TriangleIndices",
+        "type": "struct zGeometry_TriangleIndex3",
+        "size": 12,
+        "width": 12,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "after": {
+        "name": "g_zGeometry_TriangulateHole_TriangleIndices",
+        "type": "struct zGeometry_TriangleIndex3[1]"
+      },
+      "after_comment": "Triangle-index sequence, not one scalar record. Producer 0x46bfc0 computes base + count*12 and writes three dwords at 0x46c036/0x46c039/0x46c03c; consumer 0x46c070 advances 12 bytes. Displayed one-record prefix preserves element layout only. Capacity is unresolved: the next count at 0x53d750 does not by itself prove 1024 records."
+    },
+    {
+      "address": "0x4f3fe8",
+      "before": {
+        "address": "0x4f3fe8",
+        "name": "g_zTurret_RuntimeList",
+        "raw_name": "g_zTurret_RuntimeList",
+        "type": "struct zTurret_Runtime*[0x80]",
+        "size": 512,
+        "width": 512,
+        "value": null,
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "ascii:\"....\""
+      },
+      "after": {
+        "name": "g_zTurret_RuntimeList",
+        "type": "struct zTurret_Runtime*[1]"
+      },
+      "after_comment": "Runtime turret-pointer sequence. 0x437c3a stores at base + count*4; 0x437dc0 walks runtime count with four-byte stride. Displayed one-element prefix is not the capacity. Neither 128 nor 129 is proven by these accesses; 0x4f41e8 remains unresolved storage before the independent napalm-template pointer at 0x4f41ec."
+    }
+  ]
+}

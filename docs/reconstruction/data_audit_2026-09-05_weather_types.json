@@ -1,0 +1,73 @@
+{
+  "status": "Both float type corrections applied, read back, and saved; production declarations already use float.",
+  "edits": [
+    {
+      "kind": "define_data",
+      "address": "0x56bf68",
+      "before": {
+        "address": "0x56bf68",
+        "name": "g_HudWeatherFxSnow_TimeAccumulator",
+        "raw_name": "g_HudWeatherFxSnow_TimeAccumulator",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "after": {
+        "type": "float"
+      },
+      "evidence": [
+        {
+          "function_address": "0x4be2f0",
+          "address": "0x4be30a",
+          "target": "0x56bf68",
+          "instruction": "fld     st0, dword [0x56bf68]"
+        },
+        {
+          "function_address": "0x4be2f0",
+          "address": "0x4be315",
+          "target": "0x56bf68",
+          "instruction": "fstp    dword [0x56bf68], st0"
+        }
+      ]
+    },
+    {
+      "kind": "define_data",
+      "address": "0x56bf6c",
+      "before": {
+        "address": "0x56bf6c",
+        "name": "g_HudWeatherFxRain_TimeAccumulator",
+        "raw_name": "g_HudWeatherFxRain_TimeAccumulator",
+        "type": "int32_t",
+        "size": 4,
+        "width": 4,
+        "value": "0",
+        "bytes_hex": "00000000",
+        "ascii_preview": "....",
+        "bytes_read": 4,
+        "repr": "int:0"
+      },
+      "after": {
+        "type": "float"
+      },
+      "evidence": [
+        {
+          "function_address": "0x4be880",
+          "address": "0x4be89a",
+          "target": "0x56bf6c",
+          "instruction": "fld     st0, dword [0x56bf6c]"
+        },
+        {
+          "function_address": "0x4be880",
+          "address": "0x4be8a5",
+          "target": "0x56bf6c",
+          "instruction": "fstp    dword [0x56bf6c], st0"
+        }
+      ]
+    }
+  ]
+}

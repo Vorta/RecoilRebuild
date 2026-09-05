@@ -1,0 +1,495 @@
+{
+  "description": "Reversible follow-up BN edits. Diagnostic only; not stage, owner, provider, or data-gate acceptance.",
+  "status": "All 56 listed edits applied; all 51 comments read back successfully. Seven affected functions refreshed with no reported tags. The named vector layout reads back as size 16 with pointer offsets 4/8/12; representative initializer call-name and vector base xrefs checked. Database saved. Full section audit remains incomplete.",
+  "date": "2026-09-05",
+  "additional_variable_edit": {
+    "function_address": "0x4a0810",
+    "before_name": "enabled",
+    "after_name": "savedEcxBits",
+    "selector": {"source_type": "RegisterVariableSourceType", "storage": 67, "index": 0},
+    "additional_unused_stack_label": {"before_name": "enabled", "after_name": "unreferencedStackWord", "source_type": "StackVariableSourceType", "storage": 4, "index": 0},
+    "reason": "HLIL readback retained the obsolete enabled label for the saved ECX bits. Assembly PUSH ECX / byte [ESP+3] proves their origin, not an enabled flag. This rename does not assert a source parameter or accept a prototype."
+  },
+  "scope": "AI numeric and string use sites, briefing progress and inspected dependent comments, and sound-vector initializer dependency [0x56b290,0x56b2a0). Entire .data audit remains incomplete.",
+  "edits": [
+    {
+      "kind": "function_comment",
+      "address": "0x401180",
+      "before": "Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.",
+      "after": "Reads float scalars at 0x4da0c0 and 0x4da0c4 in the calculation at 0x4013b8-0x4013df, whose result is stored at object offsets +0x74 and +0x88. Original header/TU boundaries are not established by these reads.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x401710",
+      "before": "Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.",
+      "after": "Uses floats 0x4da0c8 and 0x4da0cc for the result stored at object +0x74/+0x88, and 0x4da0d0 for the vertical difference stored at +0x70/+0x84. See 0x4018b6-0x4018e6.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4026d0",
+      "before": "Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.",
+      "after": "At 0x402737-0x402773, transforms normalized XZ components as (c*x-s*z, c*z+s*x), using c at 0x4da0e4 and s at 0x4da0e8. The stored constants approximate cosine/sine of 15 degrees.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x403040",
+      "before": "Physical source-block row: src/Battlesport/ai_net.cpp body, range [0x402fd0, 0x4038a0), one of 6 recorded source-shape layers. Literal evidence: D:\\Proj\\Battlesport\\ai_net.cpp @ 0x4da1e8, xref 0x4030bb. This is source-block/navigation evidence only, not an owner/tier gate.",
+      "after": "At 0x4030bb, passes the literal D:\\Proj\\Battlesport\\ai_net.cpp (0x4da1e8) to the error reporter when the version value differs from 0x69. Parses the field/token strings in [0x4da0ec,0x4da248); this does not establish the old comment's whole-file boundaries.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x401304",
+      "before": "BN x87 artifact: this block compares the XZ dot of steerBasis and normalized targetDelta against 0.0; the cross product chooses steering sign.",
+      "after": "Compares the XZ dot product formed at 0x4012d1-0x4012db with 0.0; the subsequent cross-product test chooses the sign.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x40136f",
+      "before": "BN x87 artifact: aligned path-follow motion is clamped to max(0.25, 1.0 - fabs(steerCrossXZ)).",
+      "after": "Computes 1.0 - fabs(XZ cross product), with a lower clamp of 0.25 at 0x401375-0x401384.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x40283c",
+      "before": "BN x87 compare artifact: assembly branches on forward dot/cross tests to clamp motionInput and choose autoTurnSign.",
+      "after": "Compares the XZ dot product with 0.0. A negative result selects zero motion and a cross-product-dependent sign; otherwise the motion is clamped to at least 0.25.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x40345e",
+      "before": "Allocates one AINetNode (0x30 bytes) for a node_NN entry.",
+      "after": "Allocates 0x30 bytes for a found node_%02d entry, then zeros 12 dwords and links the allocation through +0x2c.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a5780",
+      "before": "Original file: D:\\Proj\\Battlesport\\RecoilApp.cpp. Assembly verifies clearing g_RecoilApp_hWndMain, null exePath early return, building .err/.out paths with MSVC inline strcpy/strcat loops, fallback through GetTempPathA to gamez.err/gamez.out, freopen on stderr/stdout, and writing/flushing the startup header when the stream opens.",
+      "after": "Uses the literal \"w\" at 0x4da248 as the mode argument for freopen (IAT 0x4cc51c) at 0x4a5805, 0x4a5862, 0x4a58ea and 0x4a5947. The old original-source-file claim is not established by these calls.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x403930",
+      "before": "Source: D:\\Proj\\Battlesport\\Briefing.cpp",
+      "after": "Resets signed progress global 0x4da24c to -1 at 0x403988. Builds the CAMPAIGN%1d directory string, loads briefing.zrd, and binds the named widget strings at 0x4da250-0x4da30e to subobjects.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403952",
+      "before": "esi = self (HudUiBriefingRuntime*). BN types as void* from base constructor return — all esi+0xNNNN below are HudUiBriefingRuntime member accesses.",
+      "after": "ESI preserves the incoming ECX object pointer across this constructor call.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403957",
+      "before": "missionId is still the constructor argument here. Only its low byte is copied next into q+0, the one-byte state of the official VC5 std::list empty allocator; this is a natural compiler artifact, not a semantic queue missionId field.",
+      "after": "Copies the low byte of the incoming stack argument into allocator storage at object +0xa94c. The adjacent self-linked node, head and size initialization match the VC5 LIST layout; this byte is not a queue mission identifier.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x40395f",
+      "before": "SEH state var tracks sub-object construction for exception unwind: 0=actionQueue, 1=transportProgress, 2=missionName, 3=objectiveSummary, 4=objectiveDesc, 5-6=objectivePicture, 7=transmissionHalted, 8=messagesPanel, 9=locatorPanels, 10=fully constructed",
+      "after": null,
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403963",
+      "before": "q+0 (Runtime+0xA94C) is the one-byte empty official VC5 std::list allocator storage (struct padding extends the list base to q+4). The stored low byte of missionId is non-semantic compiler artifact state, not a BriefingActionQueue missionId.",
+      "after": "VC5 LIST/XMEMORY layout: one-byte empty allocator storage precedes the aligned head pointer at +0xa950 and size at +0xa954.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403973",
+      "before": "q+4 (Runtime+0xA950) = official VC5 std::list sentinel/head; q+8 = list size. q+0xC is the queue's current iterator and is default-uninitialized here; q+0x10 is active and is initialized separately.",
+      "after": "Stores the self-linked 12-byte node pointer in the VC5 list head at object +0xa950. The constructor does not store to +0xa958.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x40397f",
+      "before": "q+0x10 (Runtime+0xA95C) = queue active flag, initialized to 0. q+0xC is the current list iterator and receives no constructor store here (default-uninitialized).",
+      "after": "Zeros object +0xa95c; no constructor store to +0xa958. Their higher-level roles require evidence from consumers.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403992",
+      "before": "ebx = &self->transportProgress (HudUiBriefingTransportProgress at +0xA960)",
+      "after": "EBX points to object +0xa960, later passed with the TRANSPORT_PROGRESS string at 0x403aa1-0x403aaa.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4039a4",
+      "before": "transportProgress.vtbl = g_HudUiBriefingTransportProgress_Vtbl",
+      "after": null,
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4039aa",
+      "before": "ebp = &self->missionName (HudUiPanel2A4 at +0xAAE8)",
+      "after": "EBP points to object +0xaae8, later passed with the MISSION_NAME string at 0x403aaf-0x403ab8.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4039c1",
+      "before": "&self->objectiveSummary (HudUiPanel2A4 at +0xAD8C)",
+      "after": "Object +0xad8c is later bound using the OBJECTIVE_SUMMARY literal.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4039d4",
+      "before": "&self->objectiveDesc (HudUiPanel2A4 at +0xB030)",
+      "after": "Object +0xb030 is later bound using the OBJECTIVE_DESC literal.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4039e5",
+      "before": "edi = &self->objectivePicture (HudUiBriefingObjectivePicture at +0xB2D4)",
+      "after": "Object +0xb2d4 is later bound using the OBJECTIVE_PICT literal.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403a04",
+      "before": "objectivePicture.vtbl = g_HudUiBriefingObjectivePicture_Vtbl; objectivePicture.noiseAlpha_0BC = 0.0f",
+      "after": null,
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403a1e",
+      "before": "&self->transmissionHalted (HudUiPanel2A4 at +0xB394)",
+      "after": "Object +0xb394 is later bound using the TRANSMISSION_HALTED literal.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403a30",
+      "before": "&self->messagesPanel (HudUiCompositePanel at +0xB638); capacity 25 entries",
+      "after": "Object +0xb638 is constructed with stack argument 0x19 and later bound using the MESSAGES literal.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403a75",
+      "before": "self->vtbl = g_HudUiBriefingRuntime_Vtbl — final derived class vtable; fully constructed",
+      "after": null,
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403ba1",
+      "before": "ebp = &missionName; missionName.vtbl->SetVisible(0) — hide mission name initially",
+      "after": "Indirect call through slot +0x60 on the subobject bound to MISSION_NAME, with argument 0.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403bab",
+      "before": "[esi+0xB638] = messagesPanel; messagesPanel.vtbl->SetVisible(1) — show messages panel",
+      "after": "Indirect call through slot +0x60 on the subobject bound to MESSAGES, with argument 1.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403bbc",
+      "before": "self->vtbl->SetDrawEnabled(1) — enable rendering for entire briefing panel",
+      "after": "Indirect call through the object's slot +0x4, with argument 1.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x403bc5",
+      "before": "Post-construction setup: load audio archive, lock rendering surfaces, do initial Update tick, then unlock",
+      "after": null,
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x404aa0",
+      "before": "Source: D:\\Proj\\Battlesport\\Briefing.cpp\nTick handler: starts playing the named sample, sets the global sound handle.",
+      "after": "When a named sample is found, starts playback and stores the handle at 0x4e5cb0. The callback branch installs 0x404b30. The direct store of 999 to 0x4da24c at 0x404b14 is only on the sample-not-found path with nonzero action +0x58.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x404b30",
+      "before": "Source: D:\\Proj\\Battlesport\\Briefing.cpp\nCallback from sound system: stores the event code in g_Briefing_ProgressEventCode.",
+      "after": "Stores incoming ECX at signed progress global 0x4da24c. Function 0x404aa0 installs this address as a sample callback at 0x404ac8-0x404acf.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x404bb0",
+      "before": "Physical source-file block: src/Battlesport/Briefing.cpp [0x4038a0,0x404ca0). Tick handler for DelayUntilProgress; BN FPU artifact fild/fcomp/fnstsw renders the comparison against g_Briefing_ProgressEventCode.",
+      "after": "Loads signed dword 0x4da24c with FILD and compares it to float action +0x4. Returns 0 for an ordered lesser result (or unordered comparison), otherwise 1; ret 4.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a09e0",
+      "before": "Likely original file: D:\\Proj\\GameZRecoil\\zSnd\\zSnd.cpp. Initializes a sample-set record, allocates its zSndSample array, duplicates the set name, and appends the record into the growable sample-set registry vector.\n\nBN limitation: the vector insertion reuses the stack slot that originally held sampleCount to store the inserted zSndSampleSet*; HLIL still renders some later fill/copy uses as sampleCount even though the assembly comments and typed registry vector identify the value as the inserted sample-set pointer.",
+      "after": "Initializes a sample-set record and appends its pointer to the vector at 0x56b290. The growth branch matches VC5 VECTOR::insert: allocate size+max(size,1), copy/fill, free old storage, and update begin/end/capacity pointers. The insertion value is the incoming object pointer saved at 0x4a0a2c, not the original count argument.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4a0a2c",
+      "before": "BN limitation: this store writes self into the reused stack argument slot [esp+0x1c]. DSE Allow can remove the greyed split variable, but HLIL still renders later uses of this slot as sampleCount.",
+      "after": "Saves the incoming object pointer into a reused stack slot. Later insertion fill/copy operations read that pointer from this slot, not the original count argument.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4a0ac3",
+      "before": "BN limitation: this address is the reused stack slot holding insertedSampleSet from 0x4a0a2c, not the original sampleCount argument.",
+      "after": "Passes the address of the reused stack slot containing the inserted object pointer stored at 0x4a0a2c.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4a0b6d",
+      "before": "BN limitation: this address is the reused stack slot holding insertedSampleSet from 0x4a0a2c, not the original sampleCount argument.",
+      "after": "Passes the address of the reused stack slot containing the inserted object pointer stored at 0x4a0a2c.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4a0b8f",
+      "before": "BN limitation: this load reads insertedSampleSet from the reused stack slot set at 0x4a0a2c, not sampleCount.",
+      "after": "Loads the inserted object pointer from the reused slot written at 0x4a0a2c.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4a0bd4",
+      "before": "BN limitation: this load reads insertedSampleSet from the reused stack slot set at 0x4a0a2c, not sampleCount.",
+      "after": "Loads the inserted object pointer from the reused slot written at 0x4a0a2c.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a07f0",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zSound\\zSound.cpp -- zSnd_SetUseArchiveBanksFlag. Sets the internal flag for using archive-based sound banks.",
+      "after": "Stores ECX at 0x4e2234. This is separate from the vector allocator storage at 0x56b290.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a0840",
+      "before": "Likely original file: D:\\Proj\\GameZRecoil\\zSound\\zSound.cpp. Frees the sample-set registry vector storage and clears begin/end/capacity pointers.",
+      "after": "Registered by 0x4a0830 with atexit. Passes the vector begin pointer at 0x56b294 to operator delete, then zeros begin/end/capacity at 0x56b294/0x56b298/0x56b29c; matches VC5 VECTOR destruction for pointer elements.",
+      "reason": "Checked against referencing assembly and, where cited, local VC5 provider header; removed unsupported source, type, and decompiler claims."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0c0",
+      "before": "AI mode 2 path-follow pitch input scale; used by Player_TickAiMode2PathFollow().",
+      "after": "Float multiplier used at 0x4013ca before subtracting object +0x3bc; the subsequent 0x4da0c4 multiplier feeds object +0x74/+0x88.",
+      "reason": "Direct instruction/use-site verification; avoids stale function names and incorrect branch description."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0c4",
+      "before": "AI mode 2 path-follow pitch turn gain; used by Player_TickAiMode2PathFollow().",
+      "after": "Float multiplier at 0x4013d6; result is stored at object +0x74 and +0x88.",
+      "reason": "Direct instruction/use-site verification; avoids stale function names and incorrect branch description."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0c8",
+      "before": "AI mode 2 steering pitch input scale; used by Player_TickAiMode2SteeringSubstate().",
+      "after": "Float input multiplier at 0x4018b6, applied to the vertical-difference / horizontal-distance ratio before subtracting object +0x3bc.",
+      "reason": "Direct instruction/use-site verification; avoids stale function names and incorrect branch description."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0cc",
+      "before": "AI mode 2 steering pitch turn gain; used by Player_TickAiMode2SteeringSubstate().",
+      "after": "Float multiplier at 0x4018c5; result is stored at object +0x74 and +0x88.",
+      "reason": "Direct instruction/use-site verification; avoids stale function names and incorrect branch description."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0d0",
+      "before": "AI mode 2 steering vertical error scale; used by Player_TickAiMode2SteeringSubstate().",
+      "after": "Float multiplier for the vertical difference at 0x4018dd; result is stored at object +0x70 and +0x84, separately from the preceding pitch calculation.",
+      "reason": "Direct instruction/use-site verification; avoids stale function names and incorrect branch description."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0e4",
+      "before": "AI mode 2 offset-target rotation cos(15 deg); paired with 0x4da0e8 sin(15 deg) in Player_UpdateAiMode2MoveAndTurnTowardOffsetTarget().",
+      "after": "Float c approximately cos(15 degrees). Paired with s at 0x4da0e8 in (c*x-s*z, c*z+s*x), at 0x402737-0x402773.",
+      "reason": "Direct instruction/use-site verification; avoids stale function names and incorrect branch description."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0e8",
+      "before": "AI mode 2 offset-target rotation sin(15 deg); paired with 0x4da0e4 cos(15 deg) in Player_UpdateAiMode2MoveAndTurnTowardOffsetTarget().",
+      "after": "Float s approximately sin(15 degrees). Paired with c at 0x4da0e4 in (c*x-s*z, c*z+s*x), at 0x402737-0x402773.",
+      "reason": "Direct instruction/use-site verification; avoids stale function names and incorrect branch description."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da24c",
+      "before": "Shared briefing sound-progress event code. Reset to -1 on panel ctor, set to 0x3e7 on variant playback setup, written by Briefing_SampleEventCallback, and polled by BriefingAction_DelayUntilProgress_Tick.",
+      "after": "Signed briefing progress value: initialized to -1; callback 0x404b30 stores ECX; 0x404bb0 compares it to a float threshold with FILD/FCOMP. Store of 999 at 0x404b14 occurs only when sample lookup fails and action +0x58 is nonzero, not on successful playback setup.",
+      "reason": "Direct instruction/use-site verification; avoids stale function names and incorrect branch description."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a0810",
+      "before": "Initializer reached from CRT slot 0x4da0a4 via 0x4a0800. Saves ECX, copies byte [esp+3] to 0x56b290, then zeros dwords 0x56b294, 0x56b298 and 0x56b29c. The semantic role of the byte is not established by these stores.",
+      "after": "Constructs the global VC5 std::vector at 0x56b290: copies the empty allocator representation, then zeros begin/end/capacity pointers. Correlated with VC5 VECTOR constructor and XMEMORY allocator declaration, plus the growth path at 0x4a09e0. This does not set the archive-bank flag at 0x4e2234.",
+      "reason": "Followed the initializer dependency into zero-filled data and confirmed the provider layout."
+    },
+    {
+      "kind": "function_name",
+      "address": "0x4a0810",
+      "before": "zSnd::SetUseArchiveBanks",
+      "after": "zSndSampleSetRegistry::ConstructGlobal",
+      "reason": "Descriptive navigation label for proven global vector initialization, not an original source symbol claim."
+    },
+    {
+      "kind": "function_name",
+      "address": "0x4a0800",
+      "before": "zSnd::SetUseArchiveBanksAndRegisterAtExit",
+      "after": "zSndSampleSetRegistry::CrtInitGlobal",
+      "reason": "Descriptive navigation label for proven global vector initialization, not an original source symbol claim."
+    },
+    {
+      "kind": "data_name",
+      "address": "0x4da0a4",
+      "before": "g_CrtInitFn_zSnd_SetUseArchiveBanksAndRegisterAtExit",
+      "after": "g_CrtInitFn_zSndSampleSetRegistry",
+      "reason": "Removes incorrect archive-flag role from CRT pointer navigation label."
+    },
+    {
+      "kind": "type_definition",
+      "type_name": "zSndSampleSetRegistry",
+      "before": "struct zSndSampleSetRegistry { int32_t useArchiveBanksFlag; struct zSndSampleSet **begin; struct zSndSampleSet **end; struct zSndSampleSet **capacityEnd; };",
+      "after": "struct zSndSampleSetRegistry { uint8_t allocatorStorage; struct zSndSampleSet **begin; struct zSndSampleSet **end; struct zSndSampleSet **capacityEnd; };",
+      "reason": "BN layout view of VC5 vector: one-byte empty allocator representation, alignment before three pointers. No semantic archive flag. Source continues to use the real std::vector."
+    },
+    {
+      "kind": "data_type",
+      "address": "0x56b290",
+      "name": "g_zSnd_SampleSetRegistry",
+      "before": "struct { uint8_t useArchiveBanksFlag; uint8_t unknown_01[3]; struct zSndSampleSet **begin; struct zSndSampleSet **end; struct zSndSampleSet **capacityEnd; }",
+      "after": "struct zSndSampleSetRegistry",
+      "before_members": [
+        {
+          "address": "0x56b290",
+          "name": "g_zSnd_SampleSetRegistry",
+          "size": 16,
+          "type": "struct",
+          "offset": "0x0",
+          "member_name": "useArchiveBanksFlag",
+          "member_type": "uint8_t",
+          "member_size": 1,
+          "member_offset": "0x0",
+          "member_delta": "0x0"
+        },
+        {
+          "address": "0x56b290",
+          "name": "g_zSnd_SampleSetRegistry",
+          "size": 16,
+          "type": "struct",
+          "offset": "0x1",
+          "member_name": "unknown_01",
+          "member_type": "uint8_t[0x3]",
+          "member_size": 3,
+          "member_offset": "0x1",
+          "member_delta": "0x0"
+        },
+        {
+          "address": "0x56b290",
+          "name": "g_zSnd_SampleSetRegistry",
+          "size": 16,
+          "type": "struct",
+          "offset": "0x2",
+          "member_name": "unknown_01",
+          "member_type": "uint8_t[0x3]",
+          "member_size": 3,
+          "member_offset": "0x1",
+          "member_delta": "0x1"
+        },
+        {
+          "address": "0x56b290",
+          "name": "g_zSnd_SampleSetRegistry",
+          "size": 16,
+          "type": "struct",
+          "offset": "0x3",
+          "member_name": "unknown_01",
+          "member_type": "uint8_t[0x3]",
+          "member_size": 3,
+          "member_offset": "0x1",
+          "member_delta": "0x2"
+        },
+        {
+          "address": "0x56b290",
+          "name": "g_zSnd_SampleSetRegistry",
+          "size": 16,
+          "type": "struct",
+          "offset": "0x4",
+          "member_name": "begin",
+          "member_type": "struct zSndSampleSet**",
+          "member_size": 4,
+          "member_offset": "0x4",
+          "member_delta": "0x0"
+        },
+        {
+          "address": "0x56b290",
+          "name": "g_zSnd_SampleSetRegistry",
+          "size": 16,
+          "type": "struct",
+          "offset": "0x8",
+          "member_name": "end",
+          "member_type": "struct zSndSampleSet**",
+          "member_size": 4,
+          "member_offset": "0x8",
+          "member_delta": "0x0"
+        },
+        {
+          "address": "0x56b290",
+          "name": "g_zSnd_SampleSetRegistry",
+          "size": 16,
+          "type": "struct",
+          "offset": "0xc",
+          "member_name": "capacityEnd",
+          "member_type": "struct zSndSampleSet**",
+          "member_size": 4,
+          "member_offset": "0xc",
+          "member_delta": "0x0"
+        }
+      ],
+      "reason": "Replace divergent anonymous shape with the corrected named layout; preserve size 16 and pointer offsets 4/8/12."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x56b290",
+      "before": null,
+      "after": "VC5 std::vector<zSndSampleSet *> layout: byte 0 represents the empty allocator, bytes 1-3 align begin/end/capacity at +4/+8/+12. Evidence: initialization 0x4a0810, growth 0x4a09e0, destruction 0x4a0840, and VC5 VECTOR/XMEMORY. allocatorStorage is a BN representation label, not a source field or game flag.",
+      "reason": "Proven initializer, insertion, destruction and provider layout."
+    }
+  ]
+}

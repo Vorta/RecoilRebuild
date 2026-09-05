@@ -1,0 +1,72 @@
+{
+  "status": "Applied and read back: PRIMITIVES literal replaces the interior ES label; CString at 0x4ed714 corrected. Affected analysis checked and database saved. Later logs supersede comments where noted; no extent or owner acceptance.",
+  "edits": [
+    {
+      "kind": "replace_data",
+      "address": "0x4e486c",
+      "before": {
+        "address": "0x4e486c",
+        "name": "g_HudUi_StringES",
+        "raw_name": "g_HudUi_StringES",
+        "type": "char[0x4]",
+        "size": 4,
+        "width": 4,
+        "value": "21317",
+        "bytes_hex": "45530000",
+        "ascii_preview": "ES..",
+        "bytes_read": 4,
+        "repr": "int:21317"
+      },
+      "after": {
+        "address": "0x4e4864",
+        "name": "g_HudUiBackground_ZrdKey_Primitives",
+        "type": "char[11]"
+      },
+      "evidence": "Retail literal PRIMITIVES\\0 at 0x4e4864; 0x4ba0ff passes its base to zReader::GetNamedNode. 0x4e486c is interior ES, not independently xreferenced.",
+      "before_comment": {
+        "ok": true,
+        "kind": "get_comment",
+        "items": {
+          "success": true,
+          "address": "0x4e486c",
+          "comment": null,
+          "message": "No comment found at this address"
+        },
+        "address": "0x4e486c"
+      }
+    },
+    {
+      "kind": "define_data",
+      "address": "0x4ed714",
+      "before": {
+        "address": "0x4ed714",
+        "name": "g_HudUiTripletWndClassName",
+        "raw_name": "g_HudUiTripletWndClassName",
+        "type": "void",
+        "size": 0,
+        "width": 0,
+        "value": "0",
+        "bytes_hex": "",
+        "ascii_preview": "",
+        "bytes_read": 0,
+        "repr": "int:0"
+      },
+      "after": {
+        "name": "g_HudUiTripletWndClassName",
+        "type": "CString"
+      },
+      "evidence": "0x40d1f0 supplies ECX=0x4ed714 to CString default constructor thunk 0x4c5ba0; 0x40d210 supplies it to CString destructor 0x4c5b88; 0x40f978 supplies it to CString::operator=(char const*). Existing CString provider layout is one 4-byte pointer.",
+      "before_comment": {
+        "ok": true,
+        "kind": "get_comment",
+        "items": {
+          "success": true,
+          "address": "0x4ed714",
+          "comment": null,
+          "message": "No comment found at this address"
+        },
+        "address": "0x4ed714"
+      }
+    }
+  ]
+}

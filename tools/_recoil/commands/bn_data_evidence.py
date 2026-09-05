@@ -23,7 +23,13 @@ from _recoil.commands.binja_preflight import (
     normalize_address_text,
     parse_bridge_int,
 )
-from _recoil.lib.binja import DEFAULT_BRIDGE_URL, BinaryNinjaBridge, BridgeError, Symbol
+from _recoil.lib.binja import (
+    DEFAULT_BRIDGE_URL,
+    BinaryNinjaBridge,
+    BridgeBudgetExceeded,
+    BridgeError,
+    Symbol,
+)
 from _recoil.lib.reference_images import reference_image, reference_image_keys
 from _recoil.lib.tooling import configure_stdio
 
@@ -410,14 +416,27 @@ def scan_assembly_text(
 
     hits: list[AssemblyHit] = []
     checked = 0
+    attempted = 0
+    failed = 0
+    failures: list[dict[str, str]] = []
+    stop_reason = ""
     functions = sorted(
         (symbol for symbol in symbols_by_address.values() if symbol.kind == "function"),
         key=lambda symbol: int(normalize_address_text(symbol.address), 16),
     )
     for symbol in functions[:max_functions]:
+        attempted += 1
         try:
             assembly = bridge.assembly(symbol.address)
-        except BridgeError:
+            if not assembly.strip():
+                raise BridgeError("empty assembly response")
+        except BridgeError as exc:
+            failed += 1
+            if len(failures) < 8:
+                failures.append({"function_address": symbol.address, "reason": str(exc)})
+            if isinstance(exc, BridgeBudgetExceeded):
+                stop_reason = "bridge_call_budget_exhausted"
+                break
             continue
         checked += 1
         lowered = assembly.lower()
@@ -434,14 +453,24 @@ def scan_assembly_text(
                 )
             )
         if len(hits) >= hit_limit:
+            stop_reason = "hit_limit"
             break
 
-    status = "partial" if len(functions) > max_functions or len(hits) >= hit_limit else "supported"
+    if not stop_reason and len(functions) > max_functions:
+        stop_reason = "function_limit"
+    incomplete = failed > 0 or checked < len(functions)
+    status = "unsupported" if checked == 0 else "partial" if incomplete else "supported"
     return {
         "status": status,
         "method": "assembly_text_scan",
         "functions_checked": checked,
+        "functions_attempted": attempted,
+        "functions_failed": failed,
+        "functions_unattempted": len(functions) - attempted,
         "functions_available": len(functions),
+        "failures": failures,
+        "failures_truncated": failed > len(failures),
+        "stop_reason": stop_reason,
         "max_functions": max_functions,
         "hits": [hit.as_dict() for hit in hits],
         "limitations": [

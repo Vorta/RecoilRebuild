@@ -1,0 +1,218 @@
+{
+  "status": "Applied and saved in Recoil.bndb. All four types, sizes and comments read back correctly. No existing interior definitions were overwritten. Seven affected functions refreshed; representative turret, triangle and matrix HLIL checked with no reported warning tags. Source and tracker unchanged.",
+  "reason": "Explicit user request: use plausible working array capacities instead of misleading minimal partial views. BN annotation only; source and tracker acceptance unchanged.",
+  "before": {
+    "ok": true,
+    "kind": "bulk_request",
+    "total": 8,
+    "items": [
+      {
+        "index": 0,
+        "id": "decl0x4f3fe8",
+        "tool": "get_data_decl",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "data_decl",
+          "items": {
+            "address": "0x4f3fe8",
+            "name": "0x4f3fe8",
+            "size": 4,
+            "type": "struct zTurret_Runtime*[0x1]",
+            "container": {
+              "address": "0x4f3fe8",
+              "name": "g_zTurret_RuntimeList",
+              "size": 4,
+              "type": "struct zTurret_Runtime*[0x1]",
+              "offset": "0x0"
+            },
+            "decl": "struct zTurret_Runtime*[0x1] 0x4f3fe8;",
+            "hexdump": "4f3fe8  0x4f3fe8:\n4f3fe8                          00 00 00 00                      ....    \n"
+          },
+          "ident": "0x4f3fe8",
+          "rendered": "struct zTurret_Runtime*[0x1] 0x4f3fe8;\n\nContaining object: struct zTurret_Runtime*[0x1] g_zTurret_RuntimeList @ 0x4f3fe8\n\n4f3fe8  0x4f3fe8:\n4f3fe8                          00 00 00 00                      ....    \n"
+        }
+      },
+      {
+        "index": 1,
+        "id": "comment0x4f3fe8",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x4f3fe8",
+            "comment": "Runtime turret-pointer sequence. 0x437c3a stores at base + count*4; 0x437dc0 walks runtime count with four-byte stride. Displayed one-element prefix is not the capacity. Neither 128 nor 129 is proven by these accesses; 0x4f41e8 remains unresolved storage before the independent napalm-template pointer at 0x4f41ec."
+          },
+          "address": "0x4f3fe8"
+        }
+      },
+      {
+        "index": 2,
+        "id": "decl0x53a750",
+        "tool": "get_data_decl",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "data_decl",
+          "items": {
+            "address": "0x53a750",
+            "name": "0x53a750",
+            "size": 12,
+            "type": "struct zGeometry_TriangleIndex3[0x1]",
+            "container": {
+              "address": "0x53a750",
+              "name": "g_zGeometry_TriangulateHole_TriangleIndices",
+              "size": 12,
+              "type": "struct zGeometry_TriangleIndex3[0x1]",
+              "offset": "0x0"
+            },
+            "decl": "struct zGeometry_TriangleIndex3[0x1] 0x53a750;",
+            "hexdump": "53a750  0x53a750:\n53a750  00 00 00 00 00 00 00 00 00 00 00 00              ............    \n"
+          },
+          "ident": "0x53a750",
+          "rendered": "struct zGeometry_TriangleIndex3[0x1] 0x53a750;\n\nContaining object: struct zGeometry_TriangleIndex3[0x1] g_zGeometry_TriangulateHole_TriangleIndices @ 0x53a750\n\n53a750  0x53a750:\n53a750  00 00 00 00 00 00 00 00 00 00 00 00              ............    \n"
+        }
+      },
+      {
+        "index": 3,
+        "id": "comment0x53a750",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x53a750",
+            "comment": "Triangle-index sequence, not one scalar record. Producer 0x46bfc0 computes base + count*12 and writes three dwords at 0x46c036/0x46c039/0x46c03c; consumer 0x46c070 advances 12 bytes. Displayed one-record prefix preserves element layout only. Capacity is unresolved: the next count at 0x53d750 does not by itself prove 1024 records."
+          },
+          "address": "0x53a750"
+        }
+      },
+      {
+        "index": 4,
+        "id": "decl0x566868",
+        "tool": "get_data_decl",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "data_decl",
+          "items": {
+            "address": "0x566868",
+            "name": "0x566868",
+            "size": 8,
+            "type": "struct zMat4x3*[0x2]",
+            "container": {
+              "address": "0x566868",
+              "name": "g_matrixSlots",
+              "size": 8,
+              "type": "struct zMat4x3*[0x2]",
+              "offset": "0x0"
+            },
+            "decl": "struct zMat4x3*[0x2] 0x566868;",
+            "hexdump": "566868  0x566868:\n566868                          00 00 00 00 00 00 00 00          ........\n"
+          },
+          "ident": "0x566868",
+          "rendered": "struct zMat4x3*[0x2] 0x566868;\n\nContaining object: struct zMat4x3*[0x2] g_matrixSlots @ 0x566868\n\n566868  0x566868:\n566868                          00 00 00 00 00 00 00 00          ........\n"
+        }
+      },
+      {
+        "index": 5,
+        "id": "comment0x566868",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x566868",
+            "comment": "Partial analysis view of matrix-pointer stack storage. Initialized cursor at 0x4e0e88 points here. 0x472ef0/0x472f30 pre-increment the cursor by 4 and store a matrix pointer; 0x472ef0 also reads the previous slot, and 0x472f60 decrements by 4. Displayed two-element prefix is not the allocation extent. Original capacity is unresolved; a 128-byte gap does not prove 32 entries."
+          },
+          "address": "0x566868"
+        }
+      },
+      {
+        "index": 6,
+        "id": "decl0x566950",
+        "tool": "get_data_decl",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "data_decl",
+          "items": {
+            "address": "0x566950",
+            "name": "0x566950",
+            "size": 8,
+            "type": "int32_t[0x2]",
+            "container": {
+              "address": "0x566950",
+              "name": "g_matrixIdentityFlagSlots",
+              "size": 8,
+              "type": "int32_t[0x2]",
+              "offset": "0x0"
+            },
+            "decl": "int32_t[0x2] 0x566950;",
+            "hexdump": "566950  0x566950:\n566950  00 00 00 00 00 00 00 00                          ........        \n"
+          },
+          "ident": "0x566950",
+          "rendered": "int32_t[0x2] 0x566950;\n\nContaining object: int32_t[0x2] g_matrixIdentityFlagSlots @ 0x566950\n\n566950  0x566950:\n566950  00 00 00 00 00 00 00 00                          ........        \n"
+        }
+      },
+      {
+        "index": 7,
+        "id": "comment0x566950",
+        "tool": "get_comment",
+        "ok": true,
+        "result": {
+          "ok": true,
+          "kind": "get_comment",
+          "items": {
+            "success": true,
+            "address": "0x566950",
+            "comment": "Partial analysis view of 32-bit matrix identity-flag stack storage. Initialized cursor at 0x4e0e84 points here. 0x472ef0 pre-increments by 4 and copies the previous flag; 0x472f30 writes zero to the new slot; 0x472f60 decrements by 4. Displayed two-element prefix is not the allocation extent. Original capacity is unresolved; a 128-byte gap does not prove 32 entries."
+          },
+          "address": "0x566950"
+        }
+      }
+    ],
+    "requested": 8,
+    "completed": 8,
+    "stop_on_error": true,
+    "any_failed": false,
+    "parallel": false
+  },
+  "edits": [
+    {
+      "address": "0x4f3fe8",
+      "name": "g_zTurret_RuntimeList",
+      "type_str": "struct zTurret_Runtime*[128]",
+      "size": 512,
+      "comment": "Working reconstruction: 128 turret pointers (512 bytes), matching the current production declaration; this is the intended BN array view, not a one-element buffer. Retail 0x437c3a stores base + count*4 and 0x437dc0 walks the runtime count. Array view covers [0x4f3fe8,0x4f41e8); the four bytes before the next referenced global at 0x4f41ec remain unexplained. Capacity 128 is plausible but not independently verified as the original declaration; no typed-extent acceptance is implied."
+    },
+    {
+      "address": "0x53a750",
+      "name": "g_zGeometry_TriangulateHole_TriangleIndices",
+      "type_str": "struct zGeometry_TriangleIndex3[1024]",
+      "size": 12288,
+      "comment": "Working reconstruction: 1024 triangle-index records of 12 bytes, matching the production capacity and filling [0x53a750,0x53d750) up to the triangle-count global. Retail producer 0x46bfc0 indexes count*12 and writes three dwords at 0x46c036/0x46c039/0x46c03c; consumer 0x46c070 advances 12 bytes. This replaces the misleading one-record partial display. Total capacity is a plausible layout-derived model, not an independently verified original declaration or accepted typed extent."
+    },
+    {
+      "address": "0x566868",
+      "name": "g_matrixSlots",
+      "type_str": "struct zMat4x3*[32]",
+      "size": 128,
+      "comment": "Working reconstruction: 32 matrix-pointer stack entries (128 bytes), matching the production capacity and [0x566868,0x5668e8) before the next defined matrix. Initialized cursor at 0x4e0e88 points here; 0x472ef0/0x472f30 pre-increment by 4 and store a matrix pointer, 0x472ef0 reads the previous slot, and 0x472f60 decrements by 4. This replaces the misleading two-element partial display. Capacity 32 is a plausible layout-derived model, not an independently verified original declaration or accepted typed extent."
+    },
+    {
+      "address": "0x566950",
+      "name": "g_matrixIdentityFlagSlots",
+      "type_str": "int32_t[32]",
+      "size": 128,
+      "comment": "Working reconstruction: 32 matrix identity-flag stack entries (128 bytes), matching the production capacity and [0x566950,0x5669d0) before the next defined scalar. Initialized cursor at 0x4e0e84 points here; 0x472ef0 pre-increments by 4 and copies the previous flag, 0x472f30 stores zero in the new slot, and 0x472f60 decrements by 4. This replaces the misleading two-element partial display. Capacity 32 is a plausible layout-derived model, not an independently verified original declaration or accepted typed extent."
+    }
+  ]
+}

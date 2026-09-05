@@ -1,0 +1,161 @@
+{
+  "status": "Completed and saved: seven verified inline comments retained, 19 unconfirmed comments removed, with successful readback.",
+  "edits": [
+    {
+      "address": "0x437bbe",
+      "before": "BN anchors the TURRET string-list loop at count_04; expression maps to parentNode_1->arr_04->slots_08[i - 1].str_04.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x437bd8",
+      "before": "Same TURRET string-list slot name as the preceding zReader_GetNamedNode call.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x41ca8d",
+      "before": "Loop terminates at &g_NetSessionConfigDialog_MapNameStrings[7] (0x4f32f4), the one-past end of the 7-entry CString array.",
+      "after": "Loop terminates at &g_NetSessionConfigDialog_MapNameStrings[7] (0x4f32f4), the one-past end of the 7-entry CString array.",
+      "reason": "Verified against the inspected loop/stride/index arithmetic."
+    },
+    {
+      "address": "0x43d0ab",
+      "before": "Indexes g_WestwoodOnlineUpgradeStatusAppendBuffer[formattedLength - 1] to trim a trailing newline.",
+      "after": "Indexes g_WestwoodOnlineUpgradeStatusAppendBuffer[formattedLength - 1] to trim a trailing newline.",
+      "reason": "Verified against the inspected loop/stride/index arithmetic."
+    },
+    {
+      "address": "0x4be683",
+      "before": "BN x87 artifact: snow projection matches rain. origin.x/y use probeDepthFactor = (g_HudWeatherFx_ConeDepthMax - particleProbePoint.z), i.e. int32(((probeDepthFactor * particleProbePoint.{x,y}) - g_HudWeatherFx_ProjectCenterBias) * viewport{Width,Height}F). width/height then use sourceDepthFactor = (g_HudWeatherFx_ConeDepthMax - sourceParticlePositionForQuad.z), i.e. int32(((sourceDepthFactor * sourceParticlePositionForQuad.{x,y}) - g_HudWeatherFx_ProjectCenterBias) * viewport{Width,Height}F) - origin.{x,y}; alpha scales are sourceDepthFactor * {alphaStartScale, alphaEndScale}.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x4be753",
+      "before": "Snow slant offset uses the retained sourceDepthFactor after alpha setup: particleQuad->slantOffset = int32((activeParticleCount + 1) * sourceDepthFactor * g_HudWeatherFxSnow_SlantScale).",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x4be775",
+      "before": "BN x87 artifact: reset unless source z is the dominant axis (|x| <= |z| and |y| <= |z|) and 0.5f <= z <= 1.0f.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x4be7ee",
+      "before": "BN HLIL loses the swap temp here; assembly swaps sourceBufferIndex and destBufferIndex via eax/ecx.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x4bec13",
+      "before": "BN x87 artifact: rain projection keeps two depth factors live. origin.x/y use probeDepthFactor = (g_HudWeatherFx_ConeDepthMax - particleProbePoint.z), i.e. int32(((probeDepthFactor * particleProbePoint.{x,y}) - g_HudWeatherFx_ProjectCenterBias) * viewport{Width,Height}F). width/height then use sourceDepthFactor = (g_HudWeatherFx_ConeDepthMax - sourceParticlePositionForQuad.z), i.e. int32(((sourceDepthFactor * sourceParticlePositionForQuad.{x,y}) - g_HudWeatherFx_ProjectCenterBias) * viewport{Width,Height}F) - origin.{x,y}; alpha scales are sourceDepthFactor * {alphaStartScale, alphaEndScale}.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x4bed0d",
+      "before": "BN HLIL loses the swap temp here; assembly swaps sourceBufferIndex and destBufferIndex via eax/edx.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x4bd88e",
+      "before": "BN renders the x87 status-word tests verbosely; these blocks are current-min/current-max X-bound comparisons for segment clipping.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x4bd9ff",
+      "before": "BN renders the x87 status-word tests verbosely; these blocks are current-min/current-max Y-bound comparisons for segment clipping.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x48747a",
+      "before": "BN keeps the face-entry walk as a byte offset through zModel_PickFaceEntry[faceCount]; faceEntryOffset advances by sizeof(zModel_PickFaceEntry) (0x1c).",
+      "after": "BN keeps the face-entry walk as a byte offset through zModel_PickFaceEntry[faceCount]; faceEntryOffset advances by sizeof(zModel_PickFaceEntry) (0x1c).",
+      "reason": "Verified against the inspected loop/stride/index arithmetic."
+    },
+    {
+      "address": "0x4874d0",
+      "before": "Raw material flag test: byte scenePayload+1 bit0 is flags bit 0x100; it selects the damage-mask UV polygon path.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x490733",
+      "before": "[gRndr_SpanOccluderPolyCount * 0x64] selects one span-occluder polygon slot; each slot is 8 zVec3 vertices (0x60 bytes) plus a 4-byte vertCount.",
+      "after": "[gRndr_SpanOccluderPolyCount * 0x64] selects one span-occluder polygon slot; each slot is 8 zVec3 vertices (0x60 bytes) plus a 4-byte vertCount.",
+      "reason": "Verified against the inspected loop/stride/index arithmetic."
+    },
+    {
+      "address": "0x490769",
+      "before": "[slot * 0x19] indexes the trailing vertCount dword for each 0x64-byte span-occluder polygon slot.",
+      "after": "[slot * 0x19] indexes the trailing vertCount dword for each 0x64-byte span-occluder polygon slot.",
+      "reason": "Verified against the inspected loop/stride/index arithmetic."
+    },
+    {
+      "address": "0x4a5fa1",
+      "before": "Reset wildcard state, record up to five '*' positions in-place, seed their digit values to zero, and return the first expanded path string.",
+      "after": "Reset wildcard state, record up to five '*' positions in-place, seed their digit values to zero, and return the first expanded path string.",
+      "reason": "Verified against the inspected loop/stride/index arithmetic."
+    },
+    {
+      "address": "0x4a60a0",
+      "before": "Odometer-style increment over the wildcard digits 0..9 with carry; return NULL after overflow, otherwise rewrite the '*' positions in-place and return the updated wildcard path.",
+      "after": "Odometer-style increment over the wildcard digits 0..9 with carry; return NULL after overflow, otherwise rewrite the '*' positions in-place and return the updated wildcard path.",
+      "reason": "Verified against the inspected loop/stride/index arithmetic."
+    },
+    {
+      "address": "0x4ba1ee",
+      "before": "Mixed target: FONT applies HudUiPanel-style fields to targets whose ZRD node actually carries FONT; keep element generic because this binder also receives widgets and primitive endpoint targets.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x4ba265",
+      "before": "red8 is the low byte from COLOR.red_08.i32_04; BN may render the byte temp with a stale pointer type.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x4ba276",
+      "before": "Store is primitive target color565 from COLOR.red/green/blue. BN keeps element generic here; for primitive targets this is HudUiPrimitiveBindTarget.color565 at +0x3c.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x44c4c7",
+      "before": "eax walks cameraData->frustumOrigin[i] while edx walks g_zCamera_FrustumFootprintPoints[i] in the manual matrix-transform loop.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x44c838",
+      "before": "ecx_24 is the diamond distance ring index; BN still renders the ring count access as count[ringIndex * 0xb5] despite g_zCamera_FrustumGridTileRings being typed.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x44c9f9",
+      "before": "eax walks cameraData->frustumOrigin[i] while footprintPoint walks g_zCamera_FrustumFootprintPoints[i] in the manual matrix-transform loop.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x44cda2",
+      "before": "ecx_25 is the diamond distance ring index; BN still renders the ring count access as count[ringIndex * 0xb5] despite g_zCamera_FrustumGridTileRings being typed.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    },
+    {
+      "address": "0x46d4a0",
+      "before": "Field cursor over zImage_TexDirEntry::nextVariant in 36-byte entry stride; typed as zImage_TexDirEntryNextVariantFieldCursor so each iteration converts the fread-stored nextVariant index back to a pointer via zImage::TexIndexToDirEntry.",
+      "after": null,
+      "reason": "Full prose includes unconfirmed field semantics, type/HLIL claims or source interpretation; withdrawn per user instruction."
+    }
+  ]
+}

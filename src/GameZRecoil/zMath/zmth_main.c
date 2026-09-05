@@ -196,6 +196,12 @@ extern "C" int __cdecl _matherr(
 }
 
 namespace {
+/*
+ * Purpose: retain the current matrix-stack implementation while its original
+ * allocation extent is unresolved. Retail initializes cursors to 0x566950
+ * and 0x566868 and advances them by four bytes; those accesses prove flags
+ * and matrix-pointer slots, not the historical 32-entry source capacities.
+ */
 int g_matrixIdentityFlagSlots[32] = {0};
 float *g_matrixSlots[32] = {0};
 

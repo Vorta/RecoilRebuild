@@ -1,0 +1,717 @@
+{
+  "description": "Reversible Binary Ninja .data audit edits; diagnostic notes only, not reconstruction acceptance or a progress authority.",
+  "database": "D:/Recoil Project/Decomp/Recoil.bndb",
+  "date": "2026-09-05",
+  "scope": "Initial CRT pointer range [0x4da000,0x4da0c0), inspected initializer comments, and unsupported export claim at 0x4da0d4. Full .data audit remains incomplete.",
+  "status": "All 74 listed edits applied and read back successfully. Five affected functions/callers refreshed with no reported tags; constructor call-name propagation and CRT slot target xref checked. Database saved successfully. This is not full .data audit completion or stage acceptance.",
+  "edits": [
+    {
+      "kind": "function_comment",
+      "address": "0x4c8214",
+      "before": "Non-authored: CRT init-array thunk for the MFC static MBCP initializer object.",
+      "after": "CRT initializer at slot 0x4da004. Passes 0x56cc28 as this to 0x4c8201. The callee matches _AFX_TERM_APP_STATE construction in VC5 MFC APPMODUL.CPP, which calls AfxInitialize(FALSE, _MFC_VER).",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da004",
+        "assembly": "# Block 1 at 0x4c8214\n004c8214  e9 00 00 00 00   jmp     0x4c8219  ; Non-authored: CRT init-array thunk for the MFC static MBCP initializer object.\n\n# Block 2 at 0x4c8219\n004c8219  b9 28 cc 56 00   mov     ecx, 0x56cc28\n004c821e  e9 de ff ff ff   jmp     0x4c8201\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x406e90",
+      "before": "Physical source-file block: src/Battlesport/hud.cpp [0x406a00, 0x407130), layer hud_cheat_dialog_and_string_helper_layer. zStr string helper plus cheat/dialog state are physically emitted in hud.cpp; do not move zStr, HudUiCheat, or RecoilStateCheatCode semantics to other source files from labels/comments alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.",
+      "after": "CRT initializer referenced by pointer slot 0x4da008; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da008",
+        "assembly": "# Block 1 at 0x406e90\n00406e90  e8 0b 00 00 00   call    RecoilStateCheatCode::ConstructGlobal  ; Physical source-file block: src/Battlesport/hud.cpp [0x406a00, 0x407130), layer hud_cheat_dialog_and_string_helper_layer. zStr string helper plus cheat/dialog state are physically emitted in hud.cpp; do not move zStr, HudUiCheat, or RecoilStateCheatCode semantics to other source files from labels/comments alone. Evidence: hud.cpp literal 0x4dadd8 xrefs at 0x4101a3 and 0x4141bb; this layer is inferred from function order and assembly.\n00406e95  e9 16 00 00 00   jmp     0x406eb0  ; BN limitation: this void static-initializer tail jump renders as return/tailcall.\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x408d20",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.",
+      "after": "CRT initializer referenced by pointer slot 0x4da00c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da00c",
+        "assembly": "# Block 1 at 0x408d20\n00408d20  e8 0b 00 00 00   call    RecoilStateControls::StaticInit  ; Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.\n00408d25  e9 16 00 00 00   jmp     0x408d40\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x409950",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.",
+      "after": "CRT initializer referenced by pointer slot 0x4da010; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da010",
+        "assembly": "# Block 1 at 0x409950\n00409950  e8 0b 00 00 00   call    RecoilStateCredits::StaticConstructGlobal  ; Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_credits_panel_layer [0x409040,0x40a590). Semantic credits panel/state and panel-span helper code emitted in hud.cpp. Do not assert HudUiCreditsPanel.cpp, RecoilStateCredits.cpp, or HudUiPanel.cpp source splits from stale comments alone.\n00409955  e9 16 00 00 00   jmp     0x409970\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x40bc20",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_command_binding_layer [0x40a5b0,0x40c370). Semantic command binding dialog/container code emitted in hud.cpp. Do not assert HudCmd*.cpp or zUtil.cpp source splits from stale comments alone; vector/template helpers in this layer must be treated as source-shape/COMDAT candidates.",
+      "after": "CRT initializer referenced by pointer slot 0x4da014; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da014",
+        "assembly": "# Block 1 at 0x40bc20\n0040bc20  e8 0b 00 00 00   call    HudCmdDialogState::StaticInit  ; Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_command_binding_layer [0x40a5b0,0x40c370). Semantic command binding dialog/container code emitted in hud.cpp. Do not assert HudCmd*.cpp or zUtil.cpp source splits from stale comments alone; vector/template helpers in this layer must be treated as source-shape/COMDAT candidates.\n0040bc25  e9 16 00 00 00   jmp     0x40bc40\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x40d070",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_options_dialog_layer [0x40c6e0,0x40d1e0). Semantic options dialog/panel overlay code emitted in hud.cpp. Do not assert HudOptionsDialog.cpp or HudUi*.cpp splits from stale comments alone.",
+      "after": "CRT initializer referenced by pointer slot 0x4da018; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da018",
+        "assembly": "# Block 1 at 0x40d070\n0040d070  e8 0b 00 00 00   call    HudUiOptionsPanelOverlayOwner::StaticInit  ; Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_options_dialog_layer [0x40c6e0,0x40d1e0). Semantic options dialog/panel overlay code emitted in hud.cpp. Do not assert HudOptionsDialog.cpp or HudUi*.cpp splits from stale comments alone.\n0040d075  e9 16 00 00 00   jmp     0x40d090\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x40d1e0",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.",
+      "after": "CRT initializer referenced by pointer slot 0x4da01c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da01c",
+        "assembly": "# Block 1 at 0x40d1e0\n0040d1e0  e8 0b 00 00 00   call    HudUiTriplet::ConstructWndClassName  ; Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.\n0040d1e5  e9 16 00 00 00   jmp     0x40d200\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x40d260",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.",
+      "after": "CRT initializer referenced by pointer slot 0x4da020; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da020",
+        "assembly": "# Block 1 at 0x40d260\n0040d260  e8 0b 00 00 00   call    HudLayoutSW::GlobalInit  ; Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.\n0040d265  e9 16 00 00 00   jmp     0x40d280\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x40d2f0",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.",
+      "after": "CRT initializer referenced by pointer slot 0x4da024; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da024",
+        "assembly": "# Block 1 at 0x40d2f0\n0040d2f0  e8 0b 00 00 00   call    HudLayoutHW::GlobalInit  ; Physical source block: D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp); layer hud_static_init_layer [0x40d1e0,0x40d3b0). Static singleton/window-class initialization, list-menu sort helper, and HUD layout global init/cleanup emitted in hud.cpp; CRT static-init wrappers are compiler glue inside this physical block, not separate source-file evidence.\n0040d2f5  e9 16 00 00 00   jmp     0x40d310  ; BN limitation: static initializer tail-jumps to HudLayoutHW::GlobalConstructor after HudLayoutHW::GlobalInit; source-level wrapper returns void.\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x40d400",
+      "before": "Source: D:\\Proj\\Battlesport\\hud.cpp -- compiler-generated static initialization wrapper for g_HudUiMgr.",
+      "after": "CRT initializer referenced by pointer slot 0x4da028; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da028",
+        "assembly": "# Block 1 at 0x40d400\n0040d400  e8 0b 00 00 00   call    HudUiMgr::StaticInit  ; Source: D:\\Proj\\Battlesport\\hud.cpp -- compiler-generated static initialization wrapper for g_HudUiMgr.\n0040d405  e9 16 00 00 00   jmp     0x40d420\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4136f0",
+      "before": "Original file: Battlesport/hud.cpp",
+      "after": "CRT initializer referenced by pointer slot 0x4da02c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da02c",
+        "assembly": "# Block 1 at 0x4136f0\n004136f0  e8 0b 00 00 00   call    HudUiSensorWindow::StaticInit  ; Original file: Battlesport/hud.cpp\n004136f5  e9 16 00 00 00   jmp     0x413710\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x414a60",
+      "before": "Semantic exception physically emitted in src/Battlesport/hud.cpp: the hud.cpp physical block is anchored by source-path literal xrefs at 0x4101a3 and 0x4141bb, so this zInterp static-init tail must not be moved to zinterp_parse.cpp from its semantic name/comment alone. CRT static-init entry for g_zInterp_GlobalContext: calls StaticInit, then tail-calls RegisterAtExit.",
+      "after": "CRT initializer referenced by pointer slot 0x4da030; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da030",
+        "assembly": "# Block 1 at 0x414a60\n00414a60  e8 0b 00 00 00   call    zInterp_GlobalContext::StaticInit  ; Semantic exception physically emitted in src/Battlesport/hud.cpp: the hud.cpp physical block is anchored by source-path literal xrefs at 0x4101a3 and 0x4141bb, so this zInterp static-init tail must not be moved to zinterp_parse.cpp from its semantic name/comment alone. CRT static-init entry for g_zInterp_GlobalContext: calls StaticInit, then tail-calls RegisterAtExit.\n00414a65  e9 16 00 00 00   jmp     0x414a80\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x415100",
+      "before": "Compiler/CRT helper exception physically emitted in D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp), supported by the hud.cpp source-path literal xrefs at 0x4101a3 and 0x4141bb for [0x404ca0,0x415ab0). CRT init-chain entry constructs g_RecoilState_MainMenuTransition and registers its atexit destructor.",
+      "after": "CRT initializer referenced by pointer slot 0x4da034; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da034",
+        "assembly": "# Block 1 at 0x415100\n00415100  e8 0b 00 00 00   call    RecoilStateMainMenuTransition::StaticInit  ; Compiler/CRT helper exception physically emitted in D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp), supported by the hud.cpp source-path literal xrefs at 0x4101a3 and 0x4141bb for [0x404ca0,0x415ab0). CRT init-chain entry constructs g_RecoilState_MainMenuTransition and registers its atexit destructor.\n00415105  e9 16 00 00 00   jmp     0x415120\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x415810",
+      "before": "Compiler/CRT helper exception physically emitted in D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp), supported by the hud.cpp source-path literal xrefs at 0x4101a3 and 0x4141bb for [0x404ca0,0x415ab0). CRT init-chain entry constructs g_RecoilState_ConfirmQuit and registers its atexit destructor.",
+      "after": "CRT initializer referenced by pointer slot 0x4da038; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da038",
+        "assembly": "# Block 1 at 0x415810\n00415810  e8 0b 00 00 00   call    RecoilStateConfirmQuit::StaticInit  ; Compiler/CRT helper exception physically emitted in D:\\Proj\\Battlesport\\hud.cpp (src/Battlesport/hud.cpp), supported by the hud.cpp source-path literal xrefs at 0x4101a3 and 0x4141bb for [0x404ca0,0x415ab0). CRT init-chain entry constructs g_RecoilState_ConfirmQuit and registers its atexit destructor.\n00415815  e9 16 00 00 00   jmp     0x415830\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x417350",
+      "before": "Physical source-file: src/Battlesport/mission.cpp [0x417350,0x41cc10); layer mission_init_and_tracker_global_prelude_layer [0x417350,0x417390). Block evidence: mission.cpp literal 0x4db230 xrefs at 0x417fc2, 0x4181b6, 0x418209, 0x4182ff, 0x418395, 0x419091, 0x419304. Initializes the global HudSensorTracker prelude; block comment is navigation evidence, not an owner/tier gate.",
+      "after": "CRT initializer referenced by pointer slot 0x4da03c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da03c",
+        "assembly": "# Block 1 at 0x417350\n00417350  e8 0b 00 00 00   call    HudSensorTracker::ConstructGlobal  ; Physical source-file: src/Battlesport/mission.cpp [0x417350,0x41cc10); layer mission_init_and_tracker_global_prelude_layer [0x417350,0x417390). Block evidence: mission.cpp literal 0x4db230 xrefs at 0x417fc2, 0x4181b6, 0x418209, 0x4182ff, 0x418395, 0x419091, 0x419304. Initializes the global HudSensorTracker prelude; block comment is navigation evidence, not an owner/tier gate.\n00417355  e9 16 00 00 00   jmp     0x417370\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41ab60",
+      "before": "Physical source block: src/Battlesport/mission.cpp; layer mission_net_game_setup_panel_layer [0x419aa0,0x41ada0). Net-game setup overlay owner static initialization.",
+      "after": "CRT initializer referenced by pointer slot 0x4da040; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da040",
+        "assembly": "# Block 1 at 0x41ab60\n0041ab60  e8 0b 00 00 00   call    HudUiNetGameSetupOverlayOwner::StaticInit  ; Physical source block: src/Battlesport/mission.cpp; layer mission_net_game_setup_panel_layer [0x419aa0,0x41ada0). Net-game setup overlay owner static initialization.\n0041ab65  e9 16 00 00 00   jmp     0x41ab80\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41c5e0",
+      "before": "Physical source block: src/Battlesport/mission.cpp; layer mission_new_game_panel_layer [0x41c270,0x41c6e0). New-game panel overlay owner static initialization.",
+      "after": "CRT initializer referenced by pointer slot 0x4da044; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da044",
+        "assembly": "# Block 1 at 0x41c5e0\n0041c5e0  e8 0b 00 00 00   call    HudUiNewGamePanelOverlayOwner::StaticInit  ; Physical source block: src/Battlesport/mission.cpp; layer mission_new_game_panel_layer [0x41c270,0x41c6e0). New-game panel overlay owner static initialization.\n0041c5e5  e9 b6 00 00 00   jmp     0x41c6a0\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41c980",
+      "before": "Physical source block: src/Battlesport/mission.cpp; layer mission_net_session_config_maps_layer [0x41c980,0x41cbf0). Multiplayer map registration/name/init/change layer.",
+      "after": "CRT initializer referenced by pointer slot 0x4da048; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da048",
+        "assembly": "# Block 1 at 0x41c980\n0041c980  e8 0b 00 00 00   call    NetSessionConfigDialog::InitMapNameStrings  ; Physical source block: src/Battlesport/mission.cpp; layer mission_net_session_config_maps_layer [0x41c980,0x41cbf0). Multiplayer map registration/name/init/change layer.\n0041c985  e9 76 00 00 00   jmp     0x41ca00\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41cc10",
+      "before": "Physical source-file block: src/Battlesport/pickup.cpp [0x41cc10, 0x41ea90), layer pickup_subsystem_globals_teardown_layer. Evidence: source-path literal 0x4dc190 is pushed at 0x41cd93, 0x41d523, and 0x41db80; docs/reconstruction/source_file_layout_audit.md records this as the pickup.cpp block with 10 source-shape layers. This is block-order/source-placement evidence, not an owner/tier gate by itself.",
+      "after": "CRT initializer referenced by pointer slot 0x4da04c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da04c",
+        "assembly": "# Block 1 at 0x41cc10\n0041cc10  e9 0b 00 00 00   jmp     0x41cc20  ; Physical source-file block: src/Battlesport/pickup.cpp [0x41cc10, 0x41ea90), layer pickup_subsystem_globals_teardown_layer. Evidence: source-path literal 0x4dc190 is pushed at 0x41cd93, 0x41d523, and 0x41db80; docs/reconstruction/source_file_layout_audit.md records this as the pickup.cpp block with 10 source-shape layers. This is block-order/source-placement evidence, not an owner/tier gate by itself.\n\n# Block 2 at 0x41cc20\n0041cc20  33 c0            xor     eax, eax\n0041cc22  a3 18 33 4f 00   mov     dword [0x4f3318], eax\n0041cc27  a3 20 33 4f 00   mov     dword [0x4f3320], eax\n0041cc2c  a3 1c 33 4f 00   mov     dword [0x4f331c], eax\n0041cc31  a3 24 33 4f 00   mov     dword [0x4f3324], eax\n0041cc36  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41cc40",
+      "before": "Physical source-file block: src/Battlesport/pickup.cpp, layer pickup_subsystem_globals_teardown_layer. CRT initializer for the network-copy PickupSpawnList global; clears the spare pointer, head, tail, and count fields.",
+      "after": "CRT initializer referenced by pointer slot 0x4da050; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da050",
+        "assembly": "# Block 1 at 0x41cc40\n0041cc40  e9 0b 00 00 00   jmp     0x41cc50  ; Physical source-file block: src/Battlesport/pickup.cpp, layer pickup_subsystem_globals_teardown_layer. CRT initializer for the network-copy PickupSpawnList global; clears the spare pointer, head, tail, and count fields.\n\n# Block 2 at 0x41cc50\n0041cc50  33 c0            xor     eax, eax\n0041cc52  a3 f8 32 4f 00   mov     dword [0x4f32f8], eax\n0041cc57  a3 00 33 4f 00   mov     dword [0x4f3300], eax\n0041cc5c  a3 fc 32 4f 00   mov     dword [0x4f32fc], eax\n0041cc61  a3 04 33 4f 00   mov     dword [0x4f3304], eax\n0041cc66  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41cc70",
+      "before": "Physical source-file block: src/Battlesport/pickup.cpp, layer pickup_subsystem_globals_teardown_layer. CRT initializer for the PickupRespawnQueue global; clears the spare pointer, head, tail, and count fields.",
+      "after": "CRT initializer referenced by pointer slot 0x4da054; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da054",
+        "assembly": "# Block 1 at 0x41cc70\n0041cc70  e9 0b 00 00 00   jmp     0x41cc80  ; Physical source-file block: src/Battlesport/pickup.cpp, layer pickup_subsystem_globals_teardown_layer. CRT initializer for the PickupRespawnQueue global; clears the spare pointer, head, tail, and count fields.\n\n# Block 2 at 0x41cc80\n0041cc80  33 c0            xor     eax, eax\n0041cc82  a3 08 33 4f 00   mov     dword [0x4f3308], eax\n0041cc87  a3 10 33 4f 00   mov     dword [0x4f3310], eax\n0041cc8c  a3 0c 33 4f 00   mov     dword [0x4f330c], eax\n0041cc91  a3 14 33 4f 00   mov     dword [0x4f3314], eax\n0041cc96  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41ea90",
+      "before": "Physical source-file block: src/Battlesport/player.cpp [0x41ea90, 0x42de10); layer: player_static_lists_hud_singleton_layer.\nEvidence: player.cpp source-path literal 0x4dc26c is referenced at 0x41f20b, 0x41f870, 0x42087a, 0x420dc7, 0x42155b, 0x421722, and 0x42176f. This is physical block-order evidence only, not an owner/tier gate.",
+      "after": "CRT initializer referenced by pointer slot 0x4da058; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da058",
+        "assembly": "# Block 1 at 0x41ea90\n0041ea90  e9 0b 00 00 00   jmp     0x41eaa0  ; Physical source-file block: src/Battlesport/player.cpp [0x41ea90, 0x42de10); layer: player_static_lists_hud_singleton_layer.\nEvidence: player.cpp source-path literal 0x4dc26c is referenced at 0x41f20b, 0x41f870, 0x42087a, 0x420dc7, 0x42155b, 0x421722, and 0x42176f. This is physical block-order evidence only, not an owner/tier gate.\n\n# Block 2 at 0x41eaa0\n0041eaa0  33 c0            xor     eax, eax\n0041eaa2  a3 68 3a 4f 00   mov     dword [0x4f3a68], eax\n0041eaa7  a3 70 3a 4f 00   mov     dword [0x4f3a70], eax\n0041eaac  a3 6c 3a 4f 00   mov     dword [0x4f3a6c], eax\n0041eab1  a3 74 3a 4f 00   mov     dword [0x4f3a74], eax\n0041eab6  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41eac0",
+      "before": "Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that clears the PlayerMasterModalData intrusive-list head, tail, count, and auxiliary list state.",
+      "after": "CRT initializer referenced by pointer slot 0x4da05c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da05c",
+        "assembly": "# Block 1 at 0x41eac0\n0041eac0  e9 0b 00 00 00   jmp     0x41ead0  ; Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that clears the PlayerMasterModalData intrusive-list head, tail, count, and auxiliary list state.\n\n# Block 2 at 0x41ead0\n0041ead0  33 c0            xor     eax, eax\n0041ead2  a3 88 36 4f 00   mov     dword [0x4f3688], eax\n0041ead7  a3 90 36 4f 00   mov     dword [0x4f3690], eax\n0041eadc  a3 8c 36 4f 00   mov     dword [0x4f368c], eax\n0041eae1  a3 94 36 4f 00   mov     dword [0x4f3694], eax\n0041eae6  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41eaf0",
+      "before": "Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that constructs the singleton underwater pass-3 HUD overlay and registers its atexit reset callback.",
+      "after": "CRT initializer referenced by pointer slot 0x4da060; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da060",
+        "assembly": "# Block 1 at 0x41eaf0\n0041eaf0  e8 0b 00 00 00   call    Player::InitUnderwaterFxPass3UiSingleton  ; Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that constructs the singleton underwater pass-3 HUD overlay and registers its atexit reset callback.\n0041eaf5  e9 16 00 00 00   jmp     0x41eb10\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41eb50",
+      "before": "Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that constructs the state-7 pass-3 HUD overlay singleton and registers its atexit reset callback.",
+      "after": "CRT initializer referenced by pointer slot 0x4da064; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da064",
+        "assembly": "# Block 1 at 0x41eb50\n0041eb50  e8 0b 00 00 00   call    Player::InitProjectileCameraFxPass3UiSingleton  ; Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that constructs the state-7 pass-3 HUD overlay singleton and registers its atexit reset callback.\n0041eb55  e9 16 00 00 00   jmp     0x41eb70\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41ebd0",
+      "before": "Physical source: src/Battlesport/player.cpp; layer: player_static_lists_hud_singleton_layer.\nHUD sensor track-list reset is physically emitted in the player.cpp block as a HUD semantic exception. Resets the global HudUiMgrSensor track-list state to empty during static initialization; current evidence does not prove a separate emitted HudUiMgrSensor.cpp row here.",
+      "after": "CRT initializer referenced by pointer slot 0x4da068; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da068",
+        "assembly": "# Block 1 at 0x41ebd0\n0041ebd0  e9 0b 00 00 00   jmp     0x41ebe0  ; Physical source: src/Battlesport/player.cpp; layer: player_static_lists_hud_singleton_layer.\nHUD sensor track-list reset is physically emitted in the player.cpp block as a HUD semantic exception. Resets the global HudUiMgrSensor track-list state to empty during static initialization; current evidence does not prove a separate emitted HudUiMgrSensor.cpp row here.\n\n# Block 2 at 0x41ebe0\n0041ebe0  33 c0            xor     eax, eax\n0041ebe2  a3 40 33 4f 00   mov     dword [0x4f3340], eax\n0041ebe7  a3 48 33 4f 00   mov     dword [0x4f3348], eax\n0041ebec  a3 44 33 4f 00   mov     dword [0x4f3344], eax\n0041ebf1  a3 4c 33 4f 00   mov     dword [0x4f334c], eax\n0041ebf6  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41ec00",
+      "before": "Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that clears the player save-state intrusive-list head, tail, count, and auxiliary list state.",
+      "after": "CRT initializer referenced by pointer slot 0x4da06c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da06c",
+        "assembly": "# Block 1 at 0x41ec00\n0041ec00  e9 0b 00 00 00   jmp     0x41ec10  ; Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that clears the player save-state intrusive-list head, tail, count, and auxiliary list state.\n\n# Block 2 at 0x41ec10\n0041ec10  33 c0            xor     eax, eax\n0041ec12  a3 78 3a 4f 00   mov     dword [0x4f3a78], eax\n0041ec17  a3 80 3a 4f 00   mov     dword [0x4f3a80], eax\n0041ec1c  a3 7c 3a 4f 00   mov     dword [0x4f3a7c], eax\n0041ec21  a3 84 3a 4f 00   mov     dword [0x4f3a84], eax\n0041ec26  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41ec30",
+      "before": "Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that constructs the first top-message HUD panel singleton and registers its atexit destructor.",
+      "after": "CRT initializer referenced by pointer slot 0x4da070; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da070",
+        "assembly": "# Block 1 at 0x41ec30\n0041ec30  e8 0b 00 00 00   call    Player_TopMsgPanel1::Constructor  ; Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nCRT initializer that constructs the first top-message HUD panel singleton and registers its atexit destructor.\n0041ec35  e9 26 00 00 00   jmp     0x41ec60\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41ec80",
+      "before": "Physical source: src/Battlesport/player.cpp; layer: player_static_lists_hud_singleton_layer.\nCRT initializer that constructs the second top-message HUD panel singleton and registers its atexit destructor.",
+      "after": "CRT initializer referenced by pointer slot 0x4da074; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da074",
+        "assembly": "# Block 1 at 0x41ec80\n0041ec80  e8 0b 00 00 00   call    Player_TopMsgPanel2::Constructor  ; Physical source: src/Battlesport/player.cpp; layer: player_static_lists_hud_singleton_layer.\nCRT initializer that constructs the second top-message HUD panel singleton and registers its atexit destructor.\n0041ec85  e9 26 00 00 00   jmp     0x41ecb0\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x41ef30",
+      "before": "Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nConstructs and registers cleanup for the static PlayerNodeFlagRestoreEntries vector.",
+      "after": "CRT initializer referenced by pointer slot 0x4da078; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da078",
+        "assembly": "# Block 1 at 0x41ef30\n0041ef30  e8 0b 00 00 00   call    PlayerNodeFlagRestore::InitInstance  ; Physical source block: src/Battlesport/player.cpp [0x41ea90,0x42de10); literal D:\\Proj\\Battlesport\\player.cpp @ 0x4dc26c.\nConstructs and registers cleanup for the static PlayerNodeFlagRestoreEntries vector.\n0041ef35  e9 26 00 00 00   jmp     0x41ef60\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x429f10",
+      "before": "Physical source: src/Battlesport/player.cpp; source-block layer: player_zinput_binding_exception_layer. Semantic zInput bind-group static-init/register helper emitted in the player.cpp block; no current source-block evidence places this address in a physical zInput translation unit.",
+      "after": "CRT initializer referenced by pointer slot 0x4da07c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da07c",
+        "assembly": "# Block 1 at 0x429f10\n00429f10  e8 0b 00 00 00   call    zInput::BindGroupListStaticInit  ; Physical source: src/Battlesport/player.cpp; source-block layer: player_zinput_binding_exception_layer. Semantic zInput bind-group static-init/register helper emitted in the player.cpp block; no current source-block evidence places this address in a physical zInput translation unit.\n00429f15  e9 26 00 00 00   jmp     0x429f40\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x42de20",
+      "before": "Physical source-file block: src/Battlesport/RecoilApp.cpp [0x42de10,0x436630), layer recoilapp_mfc_app_static_startup_layer [0x42de10,0x42e170). RecoilApp static initialization emitted in this block; MFC/CRT at-exit machinery is provider/runtime dependency evidence only.",
+      "after": "CRT initializer referenced by pointer slot 0x4da080; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da080",
+        "assembly": "# Block 1 at 0x42de20\n0042de20  e8 0b 00 00 00   call    RecoilApp::StaticInit  ; Physical source-file block: src/Battlesport/RecoilApp.cpp [0x42de10,0x436630), layer recoilapp_mfc_app_static_startup_layer [0x42de10,0x42e170). RecoilApp static initialization emitted in this block; MFC/CRT at-exit machinery is provider/runtime dependency evidence only.\n0042de25  e9 16 00 00 00   jmp     0x42de40\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x431bf0",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\RecoilApp.cpp (src/Battlesport/RecoilApp.cpp), layer recoilapp_gamenet_packet_relay_layer. GameNet spawn-list initialization is physically placed in RecoilApp.cpp.",
+      "after": "CRT initializer referenced by pointer slot 0x4da084; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da084",
+        "assembly": "# Block 1 at 0x431bf0\n00431bf0  e9 0b 00 00 00   jmp     0x431c00  ; Physical source block: D:\\Proj\\Battlesport\\RecoilApp.cpp (src/Battlesport/RecoilApp.cpp), layer recoilapp_gamenet_packet_relay_layer. GameNet spawn-list initialization is physically placed in RecoilApp.cpp.\n\n# Block 2 at 0x431c00\n00431c00  33 c0            xor     eax, eax\n00431c02  a3 78 3f 4f 00   mov     dword [0x4f3f78], eax\n00431c07  a3 80 3f 4f 00   mov     dword [0x4f3f80], eax\n00431c0c  a3 7c 3f 4f 00   mov     dword [0x4f3f7c], eax\n00431c11  a3 84 3f 4f 00   mov     dword [0x4f3f84], eax\n00431c16  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x431c20",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\RecoilApp.cpp (src/Battlesport/RecoilApp.cpp), layer recoilapp_gamenet_packet_relay_layer. GameNet player-row list reset is physically placed in RecoilApp.cpp.",
+      "after": "CRT initializer referenced by pointer slot 0x4da088; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da088",
+        "assembly": "# Block 1 at 0x431c20\n00431c20  e9 0b 00 00 00   jmp     0x431c30  ; Physical source block: D:\\Proj\\Battlesport\\RecoilApp.cpp (src/Battlesport/RecoilApp.cpp), layer recoilapp_gamenet_packet_relay_layer. GameNet player-row list reset is physically placed in RecoilApp.cpp.\n\n# Block 2 at 0x431c30\n00431c30  33 c0            xor     eax, eax\n00431c32  a3 10 3f 4f 00   mov     dword [0x4f3f10], eax\n00431c37  a3 18 3f 4f 00   mov     dword [0x4f3f18], eax\n00431c3c  a3 14 3f 4f 00   mov     dword [0x4f3f14], eax\n00431c41  a3 1c 3f 4f 00   mov     dword [0x4f3f1c], eax\n00431c46  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x435a30",
+      "before": "Physical source block: D:\\Proj\\Battlesport\\RecoilApp.cpp (src/Battlesport/RecoilApp.cpp), layer recoilapp_saveload_transition_sort_tail_layer. Save/load transition static init remains in RecoilApp.cpp physical order.",
+      "after": "CRT initializer referenced by pointer slot 0x4da08c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da08c",
+        "assembly": "# Block 1 at 0x435a30\n00435a30  e8 0b 00 00 00   call    RecoilStateSaveLoadTransition::StaticInit  ; Physical source block: D:\\Proj\\Battlesport\\RecoilApp.cpp (src/Battlesport/RecoilApp.cpp), layer recoilapp_saveload_transition_sort_tail_layer. Save/load transition static init remains in RecoilApp.cpp physical order.\n00435a35  e9 16 00 00 00   jmp     0x435a50\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x437ff0",
+      "before": "Physical block: src/Battlesport/Util.cpp [0x437e60,0x438980), mapped-no-literal mixed. Semantic shelf: zClass Object3D model-ref lerp queue; source path unresolved. CRT init-array thunk target from 0x4da090; jumps to ClearGlobalState body at 0x438000.",
+      "after": "CRT initializer referenced by pointer slot 0x4da090; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da090",
+        "assembly": "# Block 1 at 0x437ff0\n00437ff0  e9 0b 00 00 00   jmp     0x438000  ; Physical block: src/Battlesport/Util.cpp [0x437e60,0x438980), mapped-no-literal mixed. Semantic shelf: zClass Object3D model-ref lerp queue; source path unresolved. CRT init-array thunk target from 0x4da090; jumps to ClearGlobalState body at 0x438000.\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x43cf20",
+      "before": "Physical source-block exception inside src/Battlesport/WinSock.cpp [0x43ce80,0x43cf90): zStr.cpp CRT init-table stub layer [0x43cf20,0x43cf31). Empty jump/return stub with data xref only from g_CrtInitFn_zStr_CrtInitStub @ 0x4da094; not authored WinSock/Net body.",
+      "after": "CRT initializer referenced by pointer slot 0x4da094; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da094",
+        "assembly": "# Block 1 at 0x43cf20\n0043cf20  e9 0b 00 00 00   jmp     0x43cf30  ; Physical source-block exception inside src/Battlesport/WinSock.cpp [0x43ce80,0x43cf90): zStr.cpp CRT init-table stub layer [0x43cf20,0x43cf31). Empty jump/return stub with data xref only from g_CrtInitFn_zStr_CrtInitStub @ 0x4da094; not authored WinSock/Net body.\n\n# Block 2 at 0x43cf30\n0043cf30  c3               retn\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x457650",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+      "after": "CRT initializer referenced by pointer slot 0x4da098; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da098",
+        "assembly": "# Block 1 at 0x457650\n00457650  e8 0b 00 00 00   call    zDEClient::InitFeatureEntryListAndMapTree  ; Source: D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp\n00457655  e9 46 00 00 00   jmp     0x4576a0\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4719e0",
+      "before": "Physical source-file block candidate: src/GameZRecoil/zInput/zin_init.cpp [0x4719e0, 0x471e40). Evidence: source-path literal 0x4e0c9c xref(s) not listed in handoff medium-high. Use docs/reconstruction/source_file_layout_audit.md; not an owner/tier gate by itself.",
+      "after": "CRT initializer referenced by pointer slot 0x4da09c; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da09c",
+        "assembly": "# Block 1 at 0x4719e0\n004719e0  e8 0b 00 00 00   call    zInput::GlobalStateStaticInit  ; Physical source-file block candidate: src/GameZRecoil/zInput/zin_init.cpp [0x4719e0, 0x471e40). Evidence: source-path literal 0x4e0c9c xref(s) not listed in handoff medium-high. Use docs/reconstruction/source_file_layout_audit.md; not an owner/tier gate by itself.\n004719e5  e9 16 00 00 00   jmp     0x471a00\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x48bfa0",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zNetwork\\zNetwork.cpp",
+      "after": "CRT initializer referenced by pointer slot 0x4da0a0; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da0a0",
+        "assembly": "# Block 1 at 0x48bfa0\n0048bfa0  e8 0b 00 00 00   call    zNetwork::CreateEmptyDispatchHandlerList  ; Source: D:\\Proj\\GameZRecoil\\zNetwork\\zNetwork.cpp\n0048bfa5  e9 36 00 00 00   jmp     0x48bfe0\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a0800",
+      "before": "Likely original file: D:\\Proj\\GameZRecoil\\zSound\\zSound.cpp. Sets the archive-bank flag, clears the sample-set registry vector, then registers the registry shutdown callback with atexit.",
+      "after": "CRT initializer referenced by pointer slot 0x4da0a4; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da0a4",
+        "assembly": "# Block 1 at 0x4a0800\n004a0800  e8 0b 00 00 00   call    zSnd::SetUseArchiveBanks  ; Likely original file: D:\\Proj\\GameZRecoil\\zSound\\zSound.cpp. Sets the archive-bank flag, clears the sample-set registry vector, then registers the registry shutdown callback with atexit.\n004a0805  e9 26 00 00 00   jmp     0x4a0830\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a2010",
+      "before": "Physical source-file block candidate: src/GameZRecoil/zSound/zsnd_cd.cpp [0x4a2010, 0x4a2950). Evidence: source-path literal 0x4e23f0 xref(s) not listed in handoff. Use docs/reconstruction/source_file_layout_audit.md; not an owner/tier gate by itself.",
+      "after": "CRT initializer referenced by pointer slot 0x4da0a8; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da0a8",
+        "assembly": "# Block 1 at 0x4a2010\n004a2010  e8 0b 00 00 00   call    zSndCdTrackList::StaticConstructor  ; Physical source-file block candidate: src/GameZRecoil/zSound/zsnd_cd.cpp [0x4a2010, 0x4a2950). Evidence: source-path literal 0x4e23f0 xref(s) not listed in handoff. Use docs/reconstruction/source_file_layout_audit.md; not an owner/tier gate by itself.\n004a2015  e9 36 00 00 00   jmp     0x4a2050\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a3930",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zSnd\\zSnd.cpp",
+      "after": "CRT initializer referenced by pointer slot 0x4da0ac; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da0ac",
+        "assembly": "# Block 1 at 0x4a3930\n004a3930  e8 0b 00 00 00   call    zSndFadeLists::InitGlobals  ; Source: D:\\Proj\\GameZRecoil\\zSnd\\zSnd.cpp\n004a3935  e9 66 00 00 00   jmp     0x4a39a0\n"
+      }
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4bee40",
+      "before": "Source: D:\\Proj\\GameZRecoil\\zVideo\\zVideo.cpp. CRT init-array entry constructs g_zVideoFxPass3ConfigLocal, then registers its static destructor callback with atexit.",
+      "after": "CRT initializer referenced by pointer slot 0x4da0b0; the startup call at 0x4c621b passes [0x4da000, 0x4da0b4) to _initterm. This observation does not establish an original source file or owner.",
+      "reason": "Removed unverified physical-source/ownership claims; retained directly verified CRT-table use.",
+      "evidence": {
+        "slot": "0x4da0b0",
+        "assembly": "# Block 1 at 0x4bee40\n004bee40  e8 0b 00 00 00   call    zVideoFxPass3Config::ConstructGlobalSingleton  ; Source: D:\\Proj\\GameZRecoil\\zVideo\\zVideo.cpp. CRT init-array entry constructs g_zVideoFxPass3ConfigLocal, then registers its static destructor callback with atexit.\n004bee45  e9 16 00 00 00   jmp     0x4bee60\n"
+      }
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da018",
+      "before": "CRT init-array entry for HudUiOptionsPanelOverlayOwner_StaticInitAndRegisterAtExit().",
+      "after": "CRT initializer pointer to 0x40d070. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da034",
+      "before": "CRT init-array entry for RecoilStateMainMenuTransition_StaticInitAndRegisterAtExit().",
+      "after": "CRT initializer pointer to 0x415100. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da038",
+      "before": "CRT init-array entry for RecoilStateConfirmQuit_StaticInitAndRegisterAtExit().",
+      "after": "CRT initializer pointer to 0x415810. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da040",
+      "before": "CRT init-array entry for HudUiNetGameSetupOverlayOwner_StaticInitAndRegisterAtExit().",
+      "after": "CRT initializer pointer to 0x41ab60. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da044",
+      "before": "CRT init-array entry for HudUiNewGamePanelOverlayOwner_StaticInitAndRegisterAtExit().",
+      "after": "CRT initializer pointer to 0x41c5e0. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da07c",
+      "before": "Raw init-array slot containing zInput_InitBindGroupInfoListAndRegisterOnExit(). BN does not currently surface xrefs for this pointer.",
+      "after": "CRT initializer pointer to 0x429f10. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da080",
+      "before": "CRT init-array entry for RecoilApp_StaticInitAndRegisterAtExit(): constructs the live g_RecoilApp singleton, then registers RecoilApp_AtExitDtor().",
+      "after": "CRT initializer pointer to 0x42de20. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da084",
+      "before": "CRT init-array entry for GameNetSpawnPointList_InitGlobals().",
+      "after": "CRT initializer pointer to 0x431bf0. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da08c",
+      "before": "CRT init-array entry for RecoilStateSaveLoadTransition_StaticInitAndRegisterAtExit().",
+      "after": "CRT initializer pointer to 0x435a30. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da090",
+      "before": "CRT init-array slot contains 0x437ff0, the zClass_Object3D_ModelRefLerpQueue::ClearGlobalState_CrtInitThunk entry, which jumps to authored body 0x438000.",
+      "after": "CRT initializer pointer to 0x437ff0. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da094",
+      "before": "CRT init-array entry for Player_WeaponStub_Noop().",
+      "after": "CRT initializer pointer to 0x43cf20. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da098",
+      "before": "CRT init-array entry for zDisplay_InitGlobals().",
+      "after": "CRT initializer pointer to 0x457650. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da09c",
+      "before": "CRT init-array entry for zInput_InitGlobals().",
+      "after": "CRT initializer pointer to 0x4719e0. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0a0",
+      "before": "CRT init-array entry for zNetwork_InitMessageHandlers().",
+      "after": "CRT initializer pointer to 0x48bfa0. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0a4",
+      "before": "CRT init-array entry for zSound_ParamTable_InitGlobals().",
+      "after": "CRT initializer pointer to 0x4a0800. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0a8",
+      "before": "CRT init-array entry for zSndCdTrackList_StaticInitAndRegisterAtExit().",
+      "after": "CRT initializer pointer to 0x4a2010. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0ac",
+      "before": "CRT init-array entry for zSndPlayHandleFadeLists_InitGlobals().",
+      "after": "CRT initializer pointer to 0x4a3930. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0b0",
+      "before": "CRT init-array entry for zVideo_FxPass3_InitGlobals().",
+      "after": "CRT initializer pointer to 0x4bee40. Invoked indirectly through _initterm([0x4da000, 0x4da0b4)) at startup call 0x4c621b.",
+      "reason": "Replaced unverified or stale target/source-role prose with retail pointer and startup bounds."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4c81d8",
+      "before": "Non-authored: linked MFC module-state helper. Stores MBCP enabled/codepage state and resets the CRT multibyte codepage when disabled.",
+      "after": "Matches AfxInitialize(BOOL bDLL, DWORD dwVersion) in VC5 MFC APPMODUL.CPP. Stores bDLL at module-state +0x14 and dwVersion at +0x1040; calls _setmbcp(-3) only when bDLL is zero. The 0x421 supplied by 0x4c8201 is _MFC_VER (AFXVER_.H), not a code page.",
+      "reason": "Replaced unsupported source/ABI interpretation with verified assembly or removed it."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4c8201",
+      "before": "Non-authored: linked MFC static initializer body for module-state MBCP codepage 0x421.",
+      "after": "Matches _AFX_TERM_APP_STATE constructor in VC5 MFC APPMODUL.CPP. Calls AfxInitialize(FALSE, 0x421), where 0x421 is _MFC_VER. Returns the incoming this pointer; CRT wrapper 0x4c8214 supplies 0x56cc28.",
+      "reason": "Replaced unsupported source/ABI interpretation with verified assembly or removed it."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a0810",
+      "before": "Likely original file: D:\\Proj\\GameZRecoil\\zSound\\zSound.cpp. Sets whether sound banks should be loaded from archive files and clears the sample-set registry vector.",
+      "after": "Initializer reached from CRT slot 0x4da0a4 via 0x4a0800. Saves ECX, copies byte [esp+3] to 0x56b290, then zeros dwords 0x56b294, 0x56b298 and 0x56b29c. The semantic role of the byte is not established by these stores.",
+      "reason": "Replaced unsupported source/ABI interpretation with verified assembly or removed it."
+    },
+    {
+      "kind": "function_comment",
+      "address": "0x4a0830",
+      "before": "Likely original file: D:\\Proj\\GameZRecoil\\zSound\\zSound.cpp. Registers zSndSampleSetRegistry_Shutdown with atexit.",
+      "after": "Reached by tail jump from CRT initializer 0x4a0800 (slot 0x4da0a4). Registers function 0x4a0840 with atexit.",
+      "reason": "Replaced unsupported source/ABI interpretation with verified assembly or removed it."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x406e95",
+      "before": "BN limitation: this void static-initializer tail jump renders as return/tailcall.",
+      "after": "Tail jump to 0x406eb0 after the call to 0x406ea0.",
+      "reason": "Replaced unsupported source/ABI interpretation with verified assembly or removed it."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x40d2f5",
+      "before": "BN limitation: static initializer tail-jumps to HudLayoutHW::GlobalConstructor after HudLayoutHW::GlobalInit; source-level wrapper returns void.",
+      "after": "Tail jump to 0x40d310 after the call to 0x40d300.",
+      "reason": "Replaced unsupported source/ABI interpretation with verified assembly or removed it."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4a0811",
+      "before": "BN byte-subfield artifact: the source-level enabled flag is modeled as a 4-byte register argument, but the emitted store only writes one byte into useArchiveBanksFlag.",
+      "after": null,
+      "reason": "Replaced unsupported source/ABI interpretation with verified assembly or removed it."
+    },
+    {
+      "kind": "address_comment",
+      "address": "0x4da0d4",
+      "before": "Export-backed AI mode 2 tuning scalar block. BN currently does not surface direct xrefs for 0x4da0d4-0x4da0e0, so these names stay conservative.",
+      "after": null,
+      "reason": "Retail PE has no export directory. No current direct xrefs prove the asserted AI tuning role; absence of xrefs is not proof of padding or unused storage."
+    },
+    {
+      "kind": "function_name",
+      "address": "0x4c81d8",
+      "before": "MFC_ModuleState::SetMbcpData",
+      "after": "AfxInitialize",
+      "reason": "VC5 MFC APPMODUL.CPP and AFXVER_.H correlate with retail instructions; wrapper suffix is a navigation label, not an original symbol claim."
+    },
+    {
+      "kind": "function_name",
+      "address": "0x4c8201",
+      "before": "MFC_ModuleState::InitStaticObject421",
+      "after": "_AFX_TERM_APP_STATE::Constructor",
+      "reason": "VC5 MFC APPMODUL.CPP and AFXVER_.H correlate with retail instructions; wrapper suffix is a navigation label, not an original symbol claim."
+    },
+    {
+      "kind": "function_name",
+      "address": "0x4c8214",
+      "before": "MFC_ModuleState::InitStaticObject421Thunk",
+      "after": "_AFX_TERM_APP_STATE::CrtInitGlobal",
+      "reason": "VC5 MFC APPMODUL.CPP and AFXVER_.H correlate with retail instructions; wrapper suffix is a navigation label, not an original symbol claim."
+    },
+    {
+      "kind": "data_type",
+      "address": "0x4da080",
+      "name": "g_CrtInitFn_RecoilApp",
+      "before": "void*",
+      "after": "_PVFV",
+      "reason": "Four-byte callable entry in the CRT _initterm pointer range, target 0x42de20.",
+      "before_item": {
+        "address": "0x4da080",
+        "name": "g_CrtInitFn_RecoilApp",
+        "raw_name": "g_CrtInitFn_RecoilApp",
+        "type": "void*",
+        "size": 4,
+        "width": 4,
+        "value": "4382240",
+        "bytes_hex": "20de4200",
+        "ascii_preview": " .B.",
+        "bytes_read": 4,
+        "repr": "int:4382240"
+      }
+    }
+  ]
+}

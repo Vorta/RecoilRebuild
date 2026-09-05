@@ -515,25 +515,22 @@ char g_HudZrd_Key_Position[0x9] = "POSITION";
  * Source model: writable HUD ZRD key string globals consumed by
  * HudUiCheckToggleWidget::LoadFromZrd. BN shows DISABLE_SEL and
  * DISABLE_UNSEL in address order before the shared TEXT key, then CHECKED
- * immediately after TEXT with one aligned padding byte before CYCLE.
+ * immediately after TEXT. Each key includes its retail NUL terminator;
+ * any further alignment bytes are not part of the string payload.
  * Purpose: name the check-toggle checked/disabled ZRD variant records.
  */
-char g_HudUiZrdKey_DisableSel[0xb] = {
-    'D', 'I', 'S', 'A', 'B', 'L', 'E', '_', 'S', 'E', 'L'
-};
-char g_HudUiZrdKey_DisableUnsel[0xd] = {
-    'D', 'I', 'S', 'A', 'B', 'L', 'E', '_', 'U', 'N', 'S', 'E', 'L'
-};
+char g_HudUiZrdKey_DisableSel[0xc] = "DISABLE_SEL";
+char g_HudUiZrdKey_DisableUnsel[0xe] = "DISABLE_UNSEL";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduicycleselectorwidget-zrdkey-text
  * @recoil-artifact defines .data recoil:data:0x4e4738: g_HudUiCycleSelectorWidget_ZrdKey_Text.
  * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
- * BN exposes four TEXT bytes followed by aligned zero padding before CHECKED;
- * keep the pool slot contiguous so C-string lookups see the terminator.
+ * Retail stores TEXT followed by its NUL at 0x4e473c. The three further
+ * zero bytes before CHECKED are outside the C-string payload.
  * Purpose: name shared TEXT ZRD records consumed by toggle and cycle widgets.
  */
-char g_HudUiCycleSelectorWidget_ZrdKey_Text[8] = {'T', 'E', 'X', 'T'};
-char g_HudUiZrdKey_Checked[0x7] = {'C', 'H', 'E', 'C', 'K', 'E', 'D'};
+char g_HudUiCycleSelectorWidget_ZrdKey_Text[5] = "TEXT";
+char g_HudUiZrdKey_Checked[0x8] = "CHECKED";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduicycleselectorwidget-zrdkey-cycle
  * @recoil-artifact defines .data recoil:data:0x4e4748: g_HudUiCycleSelectorWidget_ZrdKey_Cycle.
