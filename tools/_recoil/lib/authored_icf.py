@@ -21,6 +21,25 @@ AUTHORED_ICF_LIFECYCLE_SOURCE_MODEL = "header-lifecycle-v1"
 _IMAGE_COMDAT_SELECTION_VALUES = frozenset(range(1, 8))
 
 
+def reviewed_authority_targets(provenances, accepted_target) -> frozenset[str]:
+    """Select review authority, not all overlapping diagnostic registrations."""
+    selected = {row.get("governed_target_id") for row in provenances
+                if isinstance(row, Mapping) and row.get("evidence_contract")
+                == "existing-winner-unknown-physical-group-refresh-v1"}
+    if selected:
+        if len(selected) != 1 or not all(isinstance(item, str) and item for item in selected):
+            raise ValueError("conflicting or missing reviewed authority target")
+        return frozenset(selected)
+    return frozenset({accepted_target}) if isinstance(accepted_target, str) and accepted_target else frozenset()
+
+
+def exact_selected_target_membership(registered_ids, expected_target) -> bool:
+    """Other diagnostic targets neither replace nor duplicate the selected one."""
+    return (isinstance(expected_target, str) and bool(expected_target)
+            and len(registered_ids) == len(set(registered_ids))
+            and registered_ids.count(expected_target) == 1)
+
+
 def _exact_mapping(value: Any, fields: set[str], *, label: str) -> dict[str, Any]:
     if not isinstance(value, Mapping):
         raise ProgressError(f"{label} must be an object")

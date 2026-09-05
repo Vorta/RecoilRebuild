@@ -17,7 +17,7 @@ pointers 128 (0x4f3fe8), triangle records 1,024 (0x53a750), matrix pointers 32
 one/two-element views from historical logs. Their comments now describe the
 working capacity and its remaining evidentiary qualification. No source or
 tracker acceptance changed. See the
-[capacity restoration log](data_audit_2026-09-05_array_capacity_restoration.json).
+[capacity restoration log](../data_audit_2026-09-05_array_capacity_restoration.json).
 
 The authenticated, already-open database was
 `D:/Recoil Project/Decomp/Recoil.bndb`; no binary was loaded or switched.
@@ -199,16 +199,16 @@ external bridge was not patched; inventory/gap inspection avoids those slow
 lookups. The BN connection is currently usable.
 
 Reversible edit logs, in application order (later entries supersede earlier
-comments): [initial](data_audit_2026-09-05.json),
-[follow-up](data_audit_2026-09-05_followup.json),
-[literal/CString](data_audit_2026-09-05_continuation.json),
-[shelf](data_audit_2026-09-05_shelf_corrections.json),
-[weather](data_audit_2026-09-05_weather_types.json),
-[other definitions](data_audit_2026-09-05_remaining_definitions.json),
-[partial views](data_audit_2026-09-05_partial_views.json),
-[feature vector](data_audit_2026-09-05_feature_vector.json),
-[section comments](data_audit_2026-09-05_comment_review.json),
-[function comments](data_audit_2026-09-05_function_comments.json),
-[inline comments](data_audit_2026-09-05_inline_comments.json), and
-[array follow-up](data_audit_2026-09-05_array_followup.json).
+comments): [initial](../data_audit_2026-09-05.json),
+[follow-up](../data_audit_2026-09-05_followup.json),
+[literal/CString](../data_audit_2026-09-05_continuation.json),
+[shelf](../data_audit_2026-09-05_shelf_corrections.json),
+[weather](../data_audit_2026-09-05_weather_types.json),
+[other definitions](../data_audit_2026-09-05_remaining_definitions.json),
+[partial views](../data_audit_2026-09-05_partial_views.json),
+[feature vector](../data_audit_2026-09-05_feature_vector.json),
+[section comments](../data_audit_2026-09-05_comment_review.json),
+[function comments](../data_audit_2026-09-05_function_comments.json),
+[inline comments](../data_audit_2026-09-05_inline_comments.json), and
+[array follow-up](../data_audit_2026-09-05_array_followup.json).
 These logs are rollback history only and cannot substitute for live acceptance.

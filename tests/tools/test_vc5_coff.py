@@ -316,11 +316,14 @@ def test_playground_request_rejects_reuse_profiles_and_partial_modes(tmp_path: P
 def test_playground_completion_requires_presence_and_deployment_without_acceptance(monkeypatch: pytest.MonkeyPatch) -> None:
     from types import SimpleNamespace as Row
     from _recoil.commands import vc5_build as build
+    from _recoil.commands import startup_contract
 
     config = Row(playtest_output_exe=Path("playground/candidate.exe"))
     paths = Row(map_path=Path("fresh/candidate.map"), exe_path=Path("fresh/candidate.exe"))
     reports, deployments = [], []
     presence, deployed = {"passed": False}, {"attempted": True, "updated": True}
+    startup = {"passed": False}
+    monkeypatch.setattr(startup_contract, "check_startup_contract", lambda *args: startup)
     monkeypatch.setattr(build, "required_authored_presence_at_map", lambda *args: presence)
     monkeypatch.setattr(build, "compile_profile_rows", lambda config: [])
     monkeypatch.setattr(build, "write_summary", lambda *args, **kwargs: reports.append(kwargs["acceptance"]))
@@ -329,6 +332,9 @@ def test_playground_completion_requires_presence_and_deployment_without_acceptan
     assert build.finish_playground_build(config, paths, [], **kwargs) == 1
     assert not deployments and reports[-1]["failure_stage"] == "linked-presence"
     presence["passed"] = True
+    assert build.finish_playground_build(config, paths, [], **kwargs) == 1
+    assert not deployments and reports[-1]["failure_stage"] == "startup-contract"
+    startup["passed"] = True
     deployed["updated"] = False
     assert build.finish_playground_build(config, paths, [], **kwargs) == 1
     assert reports[-1]["failure_stage"] == "deployment"

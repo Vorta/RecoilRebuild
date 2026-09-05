@@ -595,8 +595,12 @@ namespace zClass_Light {
 
         if (data->isDirectionalMode != 0) {
             data->worldPosScratch = data->worldPosition;
-            data->viewPos = data->worldPosScratch;
-            if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
+            if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
+                data->viewPos = data->worldPosScratch;
+                zMath::MatStackPopPtr();
+                data->dirty = 0;
+                return 0;
+            } else {
                 const zMat4x3 *matrix =
                     (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
                 data->viewPos.x = data->worldPosScratch.x * matrix->xx
@@ -611,7 +615,6 @@ namespace zClass_Light {
             }
         }
 
-        zMath::MatStackPopPtr();
         zMath::MatStackPopPtr();
         data->dirty = 0;
         return 0;

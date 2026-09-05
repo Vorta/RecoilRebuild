@@ -1660,7 +1660,7 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "retail_setup_offset": 0x03,
         "retail_call_offset": 0x08,
         "retail_frame_size": 0x2080,
-        "candidate_frame_size": 0x105C,
+        "candidate_frame_size": 0x207C,
         "target_id": (
             "recoil:vc5-target:"
             "zmodel_gmod_init_475c40_4805b0_authored_order"
@@ -18484,12 +18484,23 @@ def _winner_unknown_icf_group_indexes(
             if original_name_status == "recovered":
                 recovered_original_names.add(original_name)
 
+        # A reviewed physical-group refresh names its authority target. Other
+        # registered diagnostics/linked projections may describe the same aliases;
+        # their presence is not a second authority and must not make it ambiguous.
+        from _recoil.lib.authored_icf import reviewed_authority_targets
+        physical_block = document.collection("physical_blocks").get(symbol.get("physical_block_id"), {})
+        accepted_order = physical_block.get("accepted_order_facts", {})
+        authority_target_ids = reviewed_authority_targets(
+            [evidence_rows[eid].get("provenance") for eid in group_evidence],
+            accepted_order.get("target_id"),
+        )
         matching_targets: list[tuple[str, Mapping[str, Any], dict[str, Mapping[str, Any]]]] = []
         for target_id, target in targets.items():
             if (
                 not isinstance(target, Mapping)
                 or target.get("binary") != "recoil"
                 or target.get("kind") != "vc5"
+                or (authority_target_ids and target_id not in authority_target_ids)
             ):
                 continue
             rows = {
@@ -18865,12 +18876,13 @@ def _registered_non_gating_logical_target_indexes(
             )
             and targets[str(candidate_target_id)].get("kind") == "vc5"
         ]
+        from _recoil.lib.authored_icf import exact_selected_target_membership
         if (
             not isinstance(block_id, str)
             or not isinstance(block, Mapping)
             or not isinstance(expected_target_id, str)
             or not expected_target_id
-            or vc5_target_ids != [expected_target_id]
+            or not exact_selected_target_membership(vc5_target_ids, expected_target_id)
         ):
             raise ValueError(
                 f"registered non-gating logical target {physical_id} lacks "
@@ -19057,7 +19069,7 @@ def _registered_non_gating_logical_target_indexes(
             or facts["matched_identities"].count(str(physical_id)) != 0
             or accepted_occurrences.get(alias_id, 0) != 1
             or accepted_occurrences.get(str(physical_id), 0) != 0
-            or vc5_target_ids != [target_id]
+            or not exact_selected_target_membership(vc5_target_ids, target_id)
             or not isinstance(authored_order, Mapping)
             or not authored_order
             or any(
@@ -19088,10 +19100,16 @@ def _registered_non_gating_logical_target_indexes(
             and candidate_row["symbol"].casefold()
             == object_symbol.casefold()
         ]
+        authority_name_rows = [item for item in registered_name_rows if item[0] == target_id]
         if (
-            len(registered_name_rows) != 1
-            or registered_name_rows[0][0] != target_id
-            or dict(registered_name_rows[0][1]) != dict(row)
+            len(authority_name_rows) != 1
+            or dict(authority_name_rows[0][1]) != dict(row)
+            or any(
+                candidate_row.get("symbol") != object_symbol
+                or candidate_row.get("logical_identity_key") != alias_id
+                or normalize_address(candidate_row.get("address")) != address
+                for _, candidate_row in registered_name_rows
+            )
         ):
             raise ValueError(
                 f"registered non-gating logical target {physical_id} has an "
@@ -176815,6 +176833,47 @@ def live_call_contract_result(
                 expected, candidate, caller_start=address,
                 candidate=candidate_assembly, bridge=bridge, indexes=indexes,
             )
+            if address in ("0x474c20", "0x453880", "0x476cf0", "0x477b30"):
+                from _recoil.lib.path_contract import (
+                    path_depths, image_matrix_effects, object_matrix_effects, MATRIX_PATH_BODIES,
+                    MATRIX_PRIMITIVES, local_primitive_effects, local_object_effects,
+                )
+                from _recoil.commands.startup_contract import image_bytes
+                start_address = int(address, 16)
+                _, _, _, reviewed = MATRIX_PATH_BODIES[start_address]
+                retail_rows = [(bytes.fromhex(" ".join(row.bytes)), row.raw_text.split()[0])
+                               for row in retail_instructions]
+                retail_body = b"".join(row[0] for row in retail_rows)
+                if retail_body != image_bytes((REPO_ROOT / "support/Recoil.exe").read_bytes(), start_address, len(retail_body)):
+                    raise ValueError("matrix path BN listing disagrees with immutable retail")
+                effects = (image_matrix_effects(retail_rows, start_address, dict(reviewed.values()))
+                           if reviewed is not None else local_primitive_effects(
+                               retail_rows, start_address, dict(MATRIX_PRIMITIVES.values())))
+                required = path_depths(retail_rows, retail_body, effects)
+                definition = candidate_assembly.caller_definition
+                if definition is None:
+                    raise ValueError("matrix path lacks fresh object definition")
+                rows = [(bytes.fromhex(" ".join(row.bytes)), row.raw_text.split()[0])
+                        for row in candidate_assembly.instructions]
+                effects = (object_matrix_effects(definition, reviewed) if reviewed is not None
+                           else local_object_effects(rows, definition))
+                observed = path_depths(rows, definition.data, effects)
+                if observed != required:
+                    raise ValueError("matrix resource-depth paths differ from retail")
+            if address == "0x436630":
+                # Zero-call initializers still establish call receiver state.
+                # Compare all decoded scalar stores; an empty call list cannot
+                # prove that a later trail callback starts inactive.
+                from _recoil.lib.initializer_contract import constant_member_bytes
+                from _recoil.commands.startup_contract import image_bytes
+                retail_body = b"".join(bytes.fromhex(" ".join(row.bytes)) for row in retail_instructions)
+                if retail_body != image_bytes((REPO_ROOT / "support/Recoil.exe").read_bytes(), 0x436630, len(retail_body)):
+                    raise ValueError("initializer BN listing disagrees with immutable retail")
+                definition = candidate_assembly.caller_definition
+                if definition is None:
+                    raise ValueError("initializer lacks fresh object definition")
+                if constant_member_bytes(retail_body, object_size=0x180) != constant_member_bytes(definition.data, object_size=0x180):
+                    raise ValueError("initializer constant member stores differ from retail")
             expected = _provider_argument_contract_facts(
                 expected, retail_instructions,
                 caller_start=address, caller_end_exclusive=end_exclusive,

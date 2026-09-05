@@ -204,6 +204,82 @@ serial mutation and remains the only route to stage completion.
 
 ## Playground Build Safeguard (Not An Acceptance Stage)
 
+### External gameplay diagnosis
+
+For a user-requested Windows x86 reproduction, the bounded external debugger
+is available through the workspace toolset:
+
+```powershell
+python tools/recoil.py diagnose gameplay-start --exe playground/Recoil-rebuild.exe --map <matching-linker-map> --output-dir build/diagnostics/<fresh-root>
+```
+
+The user or available Computer Use connection performs the menu actions. The
+command launches only the named executable with its own directory as working
+directory, records exceptions and periodic thread snapshots, and stops only
+that exact process at the five-minute deadline. It injects no code or
+breakpoints and accepts no reconstruction facts. Output contains raw x86
+contexts, stack memory with explicitly heuristic symbol candidates, loaded
+modules, and the last loading log line. Three one-second samples are taken
+after a loading-log line has stayed unchanged for twenty seconds; log silence
+alone is not classified as a hang. Existing game logs are copied before launch
+and the new logs retained at completion.
+
+Optional exact map symbols can be sampled with repeated `--watch-symbol`
+arguments. `--timeout` is bounded to 1-300 seconds and `--snapshot-interval` to
+1-30 seconds. An ambiguous/missing watched symbol, unavailable debugger API,
+or unsupported host/target architecture fails explicitly. The tool requires
+64-bit Windows Python and an x86 target. A diagnostic map is not acceptance
+evidence or proof of correspondence to current production source.
+
+The Windows structures/event lifecycle follow Microsoft's
+[debug-event API](https://learn.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-waitfordebugevent)
+and [WOW64 context layout](https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-wow64_context).
+
+### Governed deployment
+
+Before deployment, both canonical build modes also run the startup
+regression guard against the same fresh object and linked image. Its present
+scope includes the complete constant member-byte writes of the turret initializer
+and selected unprojection, light-update, and model-rendering matrix-stack depth
+on every reachable control-flow path, derived directly from immutable retail.
+It detects missing/wrong initialization,
+including the omitted active-trail flag, rejects unsupported initializer code,
+and distinguishes branch-exclusive cleanup from sequential double pops despite
+identical static call counts. The unprojection/light checks require reviewed
+callee effects. Model-renderer checks cover local primitive invocations only,
+not transitive callee effects. Unsupported control transfers, unresolved branches,
+underflow, and object/linked byte or relocation target/addend disagreement block.
+The call-contract verifier also enforces the selected path proof. It is not full
+startup control-flow, whole-program call-contract, or runtime acceptance.
+Failure reports `failure_stage: startup-contract` and leaves the playground exe
+unchanged. No extra compile/link is performed for this guard during deployment.
+
+The standalone non-deploying route is:
+
+```powershell
+python tools/recoil.py verify startup-contract --build-root build/live-validation/<fresh-root> --json
+```
+
+This performs one fresh canonical linkability build and then the same check.
+The separate `--linkability-only` route itself still suppresses this guard and
+all deployment, as required by call-contract closeout.
+
+For broader read-only investigation of matrix-stack users in an existing
+canonical build, use:
+
+```powershell
+python tools/recoil.py diagnose matrix-stack --build-dir <canonical-build> --output-dir build/diagnostics/<fresh-root>
+```
+
+The survey queries the open Recoil BN cross-reference census, authenticates its
+instruction bytes against retail, and compares local primitive push/pop paths
+with object/MAP-qualified candidate bodies. It reports matching local depths,
+inspection candidates, and unresolved cases separately. Nonprimitive calls are
+not analyzed transitively and branch predicates are unconstrained; a survey
+flag is not itself a proven source defect, and a local match is not gameplay or
+reconstruction acceptance. Bounded redisassembly uses `llvm-objdump` from PATH
+when whole-section VC5 DUMPBIN loses synchronization after inline data.
+
 For a requested playground test executable, use the explicit non-accepting mode:
 
 ```powershell
@@ -231,7 +307,7 @@ The accepted census owns membership: a compiler-lifecycle manifest role does
 not remove a selected identity's presence obligation. Every census member must
 still have required presence and an unambiguous linked selector.
 
-This guard checks selected symbolic identity presence only. It permits named
+The linked-presence guard checks selected symbolic identity presence only. It permits named
 aliases to share an address and does not require retail RVAs, ordering, or body
 bytes. It neither accepts a reconstruction stage nor proves runtime behavior.
 The explicit `--linkability-only` diagnostic used by call-contract closeout

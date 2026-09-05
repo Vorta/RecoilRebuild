@@ -1,5 +1,50 @@
 from __future__ import annotations
 
+
+def test_scalar_initializer_proves_stores_not_allocator_defaults():
+    import pytest
+    from _recoil.lib.initializer_contract import constant_member_bytes
+
+    # mov edx,ecx; xor eax,eax; mov [edx+4],eax; mov eax,edx; ret
+    body = bytes.fromhex("8b d1 33 c0 89 42 04 8b c2 c3")
+    expected = {i: 0 for i in range(4, 8)}
+    assert constant_member_bytes(body, object_size=16) == expected
+    assert constant_member_bytes(body[:4] + body[7:], object_size=16) != expected
+    assert constant_member_bytes(bytes.fromhex("8b d1 b8 01 00 00 00 89 42 04 8b c2 c3"), object_size=16) != expected
+    # A subsequent partial overwrite must not be hidden by an earlier zero.
+    overwrite = body[:-3] + bytes.fromhex("c6 42 05 01") + body[-3:]
+    assert constant_member_bytes(overwrite, object_size=16)[5] == 1
+    for invalid in (b"\xeb\x02" + body, body[:-1], body + b"\xc3",
+                    bytes.fromhex("33 c0 89 42 04 8b c2 c3"),
+                    bytes.fromhex("8b d1 33 c0 89 42 0f 8b c2 c3")):
+        with pytest.raises(ValueError):
+            constant_member_bytes(invalid, object_size=16)
+
+
+def test_scalar_initializer_equates_byte_stores_and_bounded_rep():
+    from _recoil.lib.initializer_contract import constant_member_bytes
+    direct = bytes.fromhex("8b d1 33 c0 89 42 04 8b c2 c3")
+    bytewise = bytes.fromhex("8b d1 33 c0 88 42 04 88 42 05 88 42 06 88 42 07 8b c2 c3")
+    repeat = bytes.fromhex("57 8b d1 8d 7a 04 33 c0 b9 01 00 00 00 f3 ab 8b c2 5f c3")
+    assert constant_member_bytes(direct, object_size=16) == constant_member_bytes(bytewise, object_size=16)
+    assert constant_member_bytes(direct, object_size=16) == constant_member_bytes(repeat, object_size=16)
+
+
+def test_reviewed_target_authority_is_not_duplicated_by_diagnostics():
+    import pytest
+    from _recoil.lib.authored_icf import reviewed_authority_targets, exact_selected_target_membership
+    contract = "existing-winner-unknown-physical-group-refresh-v1"
+    explicit = {"evidence_contract": contract, "governed_target_id": "reviewed"}
+    assert reviewed_authority_targets([explicit], "older") == {"reviewed"}
+    assert reviewed_authority_targets([{}], "accepted") == {"accepted"}
+    assert exact_selected_target_membership(["reviewed", "diagnostic"], "reviewed")
+    assert not exact_selected_target_membership(["diagnostic"], "reviewed")
+    assert not exact_selected_target_membership(["reviewed", "reviewed"], "reviewed")
+    for rows in ([explicit, {**explicit, "governed_target_id": "other"}],
+                 [{"evidence_contract": contract}]):
+        with pytest.raises(ValueError):
+            reviewed_authority_targets(rows, "accepted")
+
 from pathlib import Path
 import sys
 
@@ -411,6 +456,55 @@ def test_targetless_vptr_does_not_replace_reviewed_retail_member_provenance() ->
     )
 
     assert 8 not in proofs
+
+
+def test_path_resource_cleanup_distinguishes_exclusive_and_sequential_calls() -> None:
+    from _recoil.lib.path_contract import path_depths
+    call = (bytes.fromhex("e8 00 00 00 00"), "call")
+    ret = (b"\xc3", "ret")
+    # Same static call population: one acquire and two release sites.
+    exclusive = [call, (b"\x74\x06", "je"), call, ret, call, ret]
+    assert path_depths(exclusive, b"".join(x[0] for x in exclusive), {0: 1, 7: -1, 13: -1}) == {
+        "return_depths": [0], "peak_depth": 1,
+    }
+    sequential = [call, call, call, ret]
+    with pytest.raises(ValueError, match="underflow"):
+        path_depths(sequential, b"".join(x[0] for x in sequential), {0: 1, 5: -1, 10: -1})
+    leak = [call, ret]
+    assert path_depths(leak, b"".join(x[0] for x in leak), {0: 1})["return_depths"] == [1]
+    for rows, effects in (
+        ([call, ret], {}),
+        ([(b"\xeb\x01", "jmp"), ret], {}),
+        ([(b"\xff\xe0", "jmp")], {}),
+        ([call, (b"\xeb\xf9", "jmp")], {0: 1}),
+        ([ret, call], {1: 0}),
+    ):
+        with pytest.raises(ValueError):
+            path_depths(rows, b"".join(x[0] for x in rows), effects)
+    with pytest.raises(ValueError, match="listing"):
+        path_depths([ret], b"\x90", {})
+    # A zero-effect loop converges; its conditional exit is still checked.
+    loop = [(b"\x75\xfe", "jne"), ret]
+    assert path_depths(loop, b"\x75\xfe\xc3", {})["return_depths"] == [0]
+    assert path_depths([ret], b"\xc3\x90", {})["return_depths"] == [0]
+    with pytest.raises(ValueError, match="listing"):
+        path_depths([ret], b"\xc3\xcc", {})
+    with pytest.raises(ValueError, match="boundaries"):
+        path_depths([(b"\xeb\x00", "jmp")], b"\xeb\x00\x90", {})
+    indirect = [(b"\xff\x10", "call"), ret]
+    with pytest.raises(ValueError, match="effect"):
+        path_depths(indirect, b"\xff\x10\xc3", {})
+    assert path_depths(indirect, b"\xff\x10\xc3", {0: 0})["return_depths"] == [0]
+
+
+def test_image_path_listing_preserves_wrapped_instruction_bytes() -> None:
+    from _recoil.commands.startup_contract import parse_image_listing
+    listing = "  00001000: C7 44 24 18 00 00  mov dword ptr [esp+18h],0\n            00 00\n  00001008: C3                 ret\n"
+    rows = parse_image_listing(listing, 0x1000, 9)
+    assert rows == [(bytes.fromhex("c7 44 24 18 00 00 00 00"), "mov"), (b"\xc3", "ret")]
+    assert parse_image_listing("  401000: c3   ret\n", 0x401000, 1) == [(b"\xc3", "ret")]
+    with pytest.raises(ValueError, match="noncontiguous"):
+        parse_image_listing(listing.replace("00001008", "00001007"), 0x1000, 9)
 
 
 def test_virtual_slot_normalization_folds_exact_this_member_lea_spelling() -> None:

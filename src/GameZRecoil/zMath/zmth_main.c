@@ -1935,7 +1935,7 @@ void __fastcall zMath_UnprojectPointBatchZBuf(
     zVec3 *outPoints,
     int count
 ) {
-    zVec3 *viewPoints = outPoints;
+    zVec3 viewPoints[1];
     zMath_UnprojectPointBatch(
         projectedPoints,
         viewPoints,
@@ -1947,9 +1947,9 @@ void __fastcall zMath_UnprojectPointBatchZBuf(
     zMath::MatLoadCameraScratchA();
 
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-        for (int i = 0; i < count; ++i) {
-            outPoints[i] = viewPoints[i];
-        }
+        memcpy(outPoints, viewPoints, count * sizeof(zVec3));
+        zMath::MatStackPopPtr();
+        return;
     } else {
         const zMat4x3 *const matrix =
             (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
@@ -1967,7 +1967,6 @@ void __fastcall zMath_UnprojectPointBatchZBuf(
         }
     }
 
-    zMath::MatStackPopPtr();
     zMath::MatStackPopPtr();
 }
 

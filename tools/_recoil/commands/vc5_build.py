@@ -5032,16 +5032,18 @@ def finish_playground_build(
     canonical_include_trace: dict[str, object] | None,
 ) -> int:
     presence = required_authored_presence_at_map(paths.map_path, progress_path)
+    from _recoil.commands.startup_contract import check_startup_contract
+    startup = check_startup_contract(config, paths) if presence["passed"] else {"passed": False, "not_run": True}
     deployment = {
         "attempted": False, "updated": False,
         "destination": str(config.playtest_output_exe.resolve()), "error": None,
     }
-    if presence["passed"]:
+    if presence["passed"] and startup["passed"]:
         deployment = deploy_playtest_candidate(paths.exe_path, config.playtest_output_exe)
-    success = bool(presence["passed"] and deployment["updated"])
+    success = bool(presence["passed"] and startup["passed"] and deployment["updated"])
     write_summary(paths, results, dry_run=False, config=config, acceptance={
         "report_version": 1, "kind": "playground-build", "success": success,
-        "failure_stage": None if success else ("deployment" if presence["passed"] else "linked-presence"),
+        "failure_stage": None if success else ("linked-presence" if not presence["passed"] else "startup-contract" if not startup["passed"] else "deployment"),
         "binary": "recoil", "validation_mode": "fresh-canonical-playground-only",
         "fresh_build": True, "reuse": False,
         "canonical_mfc_include_trace": canonical_include_trace,
@@ -5050,7 +5052,7 @@ def finish_playground_build(
         "order_reports": [], "linked_order_evaluation_suppressed": True,
         "required_order_targets_evaluation_state": "not-evaluated-in-playground-only-mode",
         "required_order_targets_passed": False,
-        "linked_presence": presence, "playtest_deploy": deployment,
+        "linked_presence": presence, "startup_contract": startup, "playtest_deploy": deployment,
         "candidate_expected_truth": False, "accepts_order": False,
         "accepts_bytes": False, "accepts_final_image": False,
         "final_image_validation": "not-run", "diagnostic_only": True,
@@ -5058,6 +5060,9 @@ def finish_playground_build(
     if not presence["passed"]:
         print("Required authored linked presence failed; playground executable was not replaced.")
         print(json.dumps(presence, indent=2))
+    elif not startup["passed"]:
+        print("Startup contract failed; playground executable was not replaced.")
+        print(json.dumps(startup, indent=2))
     print(f"Playground build candidate: {paths.exe_path}")
     return 0 if success else 1
 
@@ -5542,6 +5547,7 @@ def run_build(
             print(json.dumps(linked_presence, indent=2))
             return 1
     playtest_deploy = None
+    startup_contract = None
     if playtest_deployment_eligible(
         config,
         dry_run=dry_run,
@@ -5549,6 +5555,18 @@ def run_build(
         linked_order_only=linked_order_only,
         diagnostic_isolation_applied=routing.diagnostic_isolation_applied,
     ):
+        from _recoil.commands.startup_contract import check_startup_contract
+        startup_contract = check_startup_contract(config, paths)
+        if not startup_contract["passed"]:
+            write_summary(paths, results, dry_run=False, config=config, acceptance={
+                "report_version": 1, "kind": "final-build", "success": False,
+                "failure_stage": "startup-contract", "startup_contract": startup_contract,
+                "linked_presence": linked_presence, "playtest_deployed": False,
+                "order_reports": order_reports, "diagnostic_only": True, **isolation_fields,
+            })
+            print("Startup contract failed; playground executable was not replaced.")
+            print(json.dumps(startup_contract, indent=2))
+            return 1
         playtest_deploy = deploy_playtest_candidate(
             paths.exe_path,
             config.playtest_output_exe,
@@ -5583,6 +5601,7 @@ def run_build(
             "required_order_targets_passed": order_rc == 0,
             "final_image_validation": "deferred-to-verify-final-image",
             "linked_presence": linked_presence,
+            "startup_contract": startup_contract,
             "diagnostic_only": config.diagnostic_only,
             **playtest_summary,
             **isolation_fields,

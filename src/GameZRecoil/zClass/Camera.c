@@ -1299,14 +1299,20 @@ namespace zClass_Camera {
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
+                if (g_zClass_RenderBoundsContextActive == 0) {
+                    boundsContextPushed = 1;
+                    g_zClass_RenderBoundsContextActive = 1;
+                }
             }
             result = zVideo_FrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
             );
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
+            if ((node->flags & 0x80) != 0) {
+                if (result == 0x20) {
+                    result = 0;
+                }
                 clipMask &= ~0x20;
             }
         }
@@ -1324,10 +1330,14 @@ namespace zClass_Camera {
                 boundsContextPushed = 1;
                 g_zClass_RenderBoundsContextActive = 1;
             }
-            gModel_RenderFn(
-                node,
-                clipMask
-            );
+            zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
+            if (di != 0) {
+                if (g_zClass_RenderRangeFadeActive != 0) {
+                    di->flags |= 0x08;
+                    di->blendScale = g_zClass_RenderRangeFadeScale;
+                }
+                gModel_RenderFn(node, clipMask);
+            }
             if (node->listCountB > 0) {
                 ++gModel_ClipMaskStackTop;
                 *gModel_ClipMaskStackTop = clipMask;
@@ -1393,41 +1403,46 @@ namespace zClass_Sound {
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
+                if (g_zClass_RenderBoundsContextActive == 0) {
+                    boundsContextPushed = 1;
+                    g_zClass_RenderBoundsContextActive = 1;
+                }
             }
             result = zVideo_FrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
             );
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
+            if ((node->flags & 0x80) != 0) {
+                if (result == 0x20) {
+                    result = 0;
+                }
                 clipMask &= ~0x20;
             }
-        }
-        if (g_zClass_RenderBoundsContextActive == 0) {
-            boundsContextPushed = 1;
-            g_zClass_RenderBoundsContextActive = 1;
         }
 
         if (result == 0) {
             const zVec3 angles = {0.0f, 0.0f, 0.0f};
             const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
+            node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
             zMath::MatApplyLocalTRS(
                 &angles,
                 &data->localPosition,
                 &unitScale
             );
-            node->flags |= 0x80000000;
-            zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
-            if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
-                di->flags |= 0x08;
-                di->blendScale = g_zClass_RenderRangeFadeScale;
+            if (g_zClass_RenderBoundsContextActive == 0) {
+                boundsContextPushed = 1;
+                g_zClass_RenderBoundsContextActive = 1;
             }
-            gModel_RenderFn(
-                node,
-                clipMask
-            );
+            zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
+            if (di != 0) {
+                if (g_zClass_RenderRangeFadeActive != 0) {
+                    di->flags |= 0x08;
+                    di->blendScale = g_zClass_RenderRangeFadeScale;
+                }
+                gModel_RenderFn(node, clipMask);
+            }
             if (node->listCountB > 0) {
                 ++gModel_ClipMaskStackTop;
                 *gModel_ClipMaskStackTop = clipMask;
@@ -1491,40 +1506,45 @@ namespace zClass_Light {
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
+                if (g_zClass_RenderBoundsContextActive == 0) {
+                    boundsContextPushed = 1;
+                    g_zClass_RenderBoundsContextActive = 1;
+                }
             }
             result = zVideo_FrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
             );
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
+            if ((node->flags & 0x80) != 0) {
+                if (result == 0x20) {
+                    result = 0;
+                }
                 clipMask &= ~0x20;
             }
-        }
-        if (g_zClass_RenderBoundsContextActive == 0) {
-            boundsContextPushed = 1;
-            g_zClass_RenderBoundsContextActive = 1;
         }
 
         if (result == 0) {
             const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
+            node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
             zMath::MatApplyLocalTRS(
                 &data->localRotation,
                 &data->localPosition,
                 &unitScale
             );
-            node->flags |= 0x80000000;
-            zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
-            if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
-                di->flags |= 0x08;
-                di->blendScale = g_zClass_RenderRangeFadeScale;
+            if (g_zClass_RenderBoundsContextActive == 0) {
+                boundsContextPushed = 1;
+                g_zClass_RenderBoundsContextActive = 1;
             }
-            gModel_RenderFn(
-                node,
-                clipMask
-            );
+            zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
+            if (di != 0) {
+                if (g_zClass_RenderRangeFadeActive != 0) {
+                    di->flags |= 0x08;
+                    di->blendScale = g_zClass_RenderRangeFadeScale;
+                }
+                gModel_RenderFn(node, clipMask);
+            }
             if (node->listCountB > 0) {
                 ++gModel_ClipMaskStackTop;
                 *gModel_ClipMaskStackTop = clipMask;
@@ -1808,7 +1828,7 @@ namespace zClass_Object3D {
         float *viewSphereRadius = &nodeSlot->primaryBounds.maxX;
         int clipMask = *gModel_ClipMaskStackTop;
         int testNeeded = 0;
-        if (g_zClass_ObjectHseTestEnabled == 0) {
+        if (g_zClass_ObjectHseTestEnabled != 0) {
             testNeeded =
                 ((clipMask != 0 || g_zClass_RenderFrustumGridTileIndex > 0) &&
                     siblingCountHint > 1);
@@ -1821,6 +1841,12 @@ namespace zClass_Object3D {
             if ((node->boundsFlags & kNodeBoundsDirtyFlag) != 0 ||
                 g_zClass_RenderBoundsContextActive != 0 ||
                 (node->flags & kSingleParentFlag) == 0) {
+                if ((node->flags & 0x100) == 0) {
+                    if (altClipReset != 0) {
+                        gAltClipPassEnabled = 1;
+                    }
+                    return 0;
+                }
                 zBBoxCorners corners = {0};
                 zClass_Class::gwNodeGetViewBBoxCorners(
                     node,
@@ -1834,6 +1860,10 @@ namespace zClass_Object3D {
                 if ((node->flags & kSingleParentFlag) != 0) {
                     node->boundsFlags &= ~kNodeBoundsDirtyFlag;
                 }
+                if (g_zClass_RenderBoundsContextActive == 0) {
+                    boundsContextPushed = 1;
+                    g_zClass_RenderBoundsContextActive = 1;
+                }
             }
 
             result = zVideo_FrustumTestSphereClipMask(
@@ -1841,8 +1871,10 @@ namespace zClass_Object3D {
                 &clipMask,
                 *viewSphereRadius
             );
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
+            if ((node->flags & 0x80) != 0) {
+                if (result == 0x20) {
+                    result = 0;
+                }
                 clipMask &= ~0x20;
             }
         }
@@ -1872,7 +1904,10 @@ namespace zClass_Object3D {
                     data->flags &= ~kObject3DTransformDirtyFlag;
                 }
             }
-            if (g_zClass_RenderBoundsContextActive == 0) {
+            if (matrixPushed != 0 &&
+                ((node->flags & kSingleParentFlag) == 0 ||
+                    (dataFlags & kObject3DTransformDirtyFlag) != 0) &&
+                g_zClass_RenderBoundsContextActive == 0) {
                 boundsContextPushed = 1;
                 g_zClass_RenderBoundsContextActive = 1;
             }
@@ -1924,14 +1959,16 @@ namespace zClass_Object3D {
             if (visibleByProjectedSphere != 0) {
                 node->flags |= 0x80000000;
                 zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
-                if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
-                    di->flags |= 0x08;
-                    di->blendScale = g_zClass_RenderRangeFadeScale;
+                if (di != 0) {
+                    if (g_zClass_RenderRangeFadeActive != 0) {
+                        di->flags |= 0x08;
+                        di->blendScale = g_zClass_RenderRangeFadeScale;
+                    }
+                    gModel_RenderFn(
+                        node,
+                        clipMask
+                    );
                 }
-                gModel_RenderFn(
-                    node,
-                    clipMask
-                );
                 if (node->listCountB > 0) {
                     ++gModel_ClipMaskStackTop;
                     *gModel_ClipMaskStackTop = clipMask;
@@ -2053,14 +2090,20 @@ namespace zClass_Animate {
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
+                if (g_zClass_RenderBoundsContextActive == 0) {
+                    boundsContextPushed = 1;
+                    g_zClass_RenderBoundsContextActive = 1;
+                }
             }
             result = zVideo_FrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
             );
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
+            if ((node->flags & 0x80) != 0) {
+                if (result == 0x20) {
+                    result = 0;
+                }
                 clipMask &= ~0x20;
             }
         }
@@ -2081,14 +2124,13 @@ namespace zClass_Animate {
                 }
             }
             zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
-            if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
-                di->flags |= 0x08;
-                di->blendScale = g_zClass_RenderRangeFadeScale;
+            if (di != 0) {
+                if (g_zClass_RenderRangeFadeActive != 0) {
+                    di->flags |= 0x08;
+                    di->blendScale = g_zClass_RenderRangeFadeScale;
+                }
+                gModel_RenderFn(node, clipMask);
             }
-            gModel_RenderFn(
-                node,
-                clipMask
-            );
             if (node->listCountB > 0) {
                 ++gModel_ClipMaskStackTop;
                 *gModel_ClipMaskStackTop = clipMask;
@@ -2161,10 +2203,10 @@ namespace zClass_Lod {
             if ((node->flags & 0x00080000) != 0) {
                 node->boundsFlags &= ~0x04;
             }
-        }
-        if (g_zClass_RenderBoundsContextActive == 0) {
-            boundsContextPushed = 1;
-            g_zClass_RenderBoundsContextActive = 1;
+            if (g_zClass_RenderBoundsContextActive == 0) {
+                boundsContextPushed = 1;
+                g_zClass_RenderBoundsContextActive = 1;
+            }
         }
         if (data->computeOwnDistance != 0) {
             state.center = *viewSphereCenter;
@@ -2274,8 +2316,10 @@ namespace zClass_Lod {
                 &clipMask,
                 *viewSphereRadius
             );
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
+            if ((node->flags & 0x80) != 0) {
+                if (result == 0x20) {
+                    result = 0;
+                }
                 clipMask &= ~0x20;
             }
         }
@@ -2301,8 +2345,8 @@ namespace zClass_Lod {
                 g_zClass_LodDistanceStateStack[g_zClass_LodDistanceStateStackTop];
             g_zClass_LodDistanceStateStackTop = nextLodStack;
 
+            zMat4x3 slotBuffer;
             if (pushScaleMatrix != 0) {
-                zMat4x3 slotBuffer = {0};
                 zMath::MatStackPushAndCloneParent((float *)&slotBuffer);
                 zMath_Mat_Scale(
                     scaleX,

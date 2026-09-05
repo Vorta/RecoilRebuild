@@ -77,6 +77,23 @@ def spec(
 
 _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec(
+        "diagnose matrix-stack", "matrix_stack_diagnose",
+        summary="Survey retail BN matrix-stack callers against an existing canonical build; diagnostic only, with explicit local-balance assumptions.",
+        category="diagnostic", mutates=True, needs_binja=True,
+        examples=("python tools/recoil.py diagnose matrix-stack --build-dir <canonical-build> --output-dir build/diagnostics/<fresh-root>",),
+    ),
+    spec(
+        "verify startup-contract", "startup_contract",
+        summary="Fresh canonical build and retail-derived startup initialization regression checks, without deployment or stage acceptance.",
+        category="verify", mutates=True,
+    ),
+    spec(
+        "diagnose gameplay-start", "gameplay_diagnose",
+        summary="Launch a bounded Windows x86 gameplay debugging session and capture thread/exception evidence without accepting reconstruction.",
+        category="diagnostic", mutates=True,
+        examples=("python tools/recoil.py diagnose gameplay-start --exe playground/Recoil-rebuild.exe --map <matching-map> --output-dir build/diagnostics/<fresh-root>",),
+    ),
+    spec(
         "progress next",
         "progress_cli",
         prepend=("next",),

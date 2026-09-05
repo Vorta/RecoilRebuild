@@ -15,14 +15,17 @@ from typing import Iterable, Mapping
 from _recoil.lib.tooling import REPO_ROOT
 
 
-CALL_CONTRACT_VERIFIER_GENERATION = 56
-EXPECTED_FACT_SCHEMA_VERSION = 46
+CALL_CONTRACT_VERIFIER_GENERATION = 61
+EXPECTED_FACT_SCHEMA_VERSION = 50
 
 
 CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
     {
         "tools/_recoil/commands/asm_verify.py",
         "tools/_recoil/commands/call_contract_verify.py",
+        "tools/_recoil/commands/startup_contract.py",
+        "tools/_recoil/lib/initializer_contract.py",
+        "tools/_recoil/lib/path_contract.py",
         "tools/_recoil/commands/progress_cli.py",
         "tools/_recoil/commands/provider_function_mutation.py",
         "tools/_recoil/commands/provider_target_mutation.py",
@@ -45,6 +48,9 @@ CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
 )
 EXPECTED_FACT_COMPONENT_PATHS = frozenset(
     {
+        "tools/_recoil/lib/path_contract.py",
+        "tools/_recoil/lib/initializer_contract.py",
+        "tools/_recoil/commands/startup_contract.py",
         "tools/_recoil/commands/call_contract_verify.py",
         "tools/_recoil/lib/authored_icf.py",
         "tools/_recoil/lib/binja.py",
