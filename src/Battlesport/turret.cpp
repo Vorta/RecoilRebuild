@@ -170,6 +170,7 @@ zTurret_Runtime * zTurret_Runtime::InitDefaults() {
     fireDwellTime = 0.0f;
     fireDwellUntil = 0;
     trailRuntimeState = 0;
+    runtimeInstanceActive = 0;
     enableLosCheck = 0;
     alwaysLookAtTarget = 0;
     healthCurrent = 100.0f;
@@ -884,7 +885,7 @@ void zTurret_Runtime::Tick(
             UpdateAimAndPartMatrices(targetPos);
         }
 
-        if (runtimeInstanceActive != 0) {
+        if (trailRuntimeState != 0 && runtimeInstanceActive != 0) {
             runtimeInstanceActive = 0;
             OptCatalog::DeactivateTrailRuntimeState(trailRuntimeState);
         }

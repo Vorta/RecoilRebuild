@@ -586,10 +586,10 @@ namespace zClass_World {
             *insideBoundsOut = 0;
         }
 
-        if (worldZ <= data->originZ) {
+        if (worldZ > data->originZ) {
             clampedZ = data->originZ - 0.1f;
             *insideBoundsOut = 0;
-        } else if (worldZ > data->worldMaxZ) {
+        } else if (worldZ <= data->worldMaxZ) {
             clampedZ = data->worldMaxZ + 0.1f;
             *insideBoundsOut = 0;
         }
@@ -624,8 +624,8 @@ namespace zClass_World {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         float clampedX;
-        if (worldX < data->originX + 0.1f) {
-            clampedX = data->originX - 0.1f;
+        if (worldX < data->originX + 0.1) {
+            clampedX = data->originX + 0.1f;
         } else {
             clampedX = data->worldMaxX - 0.1f;
             if (worldX < clampedX) {
@@ -633,14 +633,12 @@ namespace zClass_World {
             }
         }
 
-        const float minZ = data->originZ < data->worldMaxZ ? data->originZ : data->worldMaxZ;
-        const float maxZ = data->originZ < data->worldMaxZ ? data->worldMaxZ : data->originZ;
         float clampedZ;
-        if (worldZ < minZ - 0.1f) {
-            clampedZ = minZ - 0.1f;
+        if (worldZ > data->originZ - 0.1f) {
+            clampedZ = data->originZ - 0.1f;
         } else {
-            clampedZ = maxZ + 0.1f;
-            if (worldZ < clampedZ) {
+            clampedZ = data->worldMaxZ + 0.1f;
+            if (worldZ > clampedZ) {
                 clampedZ = worldZ;
             }
         }
