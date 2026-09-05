@@ -7,6 +7,11 @@
 #include <string.h>
 
 namespace {
+/*
+ * Purpose: retain the current candidate allocation. Retail proves 12-byte
+ * triangle-index records at 0x53a750, but the gap to 0x53d750 does not prove
+ * this original array bound. The full extent remains unresolved.
+ */
 const int kTriangulateHoleMaxTriangles = 0x400;
 
 /**

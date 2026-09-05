@@ -87,7 +87,7 @@ extern const char *g_RecoilApp_WndClassNamePtr;
 extern int g_RecoilApp_WindowClassRegistered;
 extern "C" HINSTANCE g_RecoilApp_hInstance;
 extern "C" int g_RecoilApp_AttractFmvReloadMode;
-extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0e];
+extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
 extern "C" const char g_HudUiMgr_HudArchiveName[0x07];
 extern "C" const char g_HudLoading_StopAllSoundsMsg[0x10];
 
@@ -6250,7 +6250,7 @@ HINSTANCE __stdcall AfxFindResourceHandle(
     LPCSTR resourceType
 );
 
-extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0e];
+extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
 extern "C" const char g_HudLoading_StopAllSoundsMsg[0x10];
 
 namespace {

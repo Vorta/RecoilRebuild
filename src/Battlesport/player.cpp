@@ -779,9 +779,10 @@ zVec3 *g_Player_LocalFxOffsetWorldPtr = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatelistauxptr
  * @recoil-artifact defines .data recoil:data:0x4dc264: g_PlayerSaveStateListAuxPtr.
- * BN types this as initialized .data pointing at 0x4f3a78
- * g_PlayerSaveStateListAux, with no code xrefs.
- * Purpose: Preserves the retail initialized pointer to the save-state list aux field.
+ * Retail word is 0x4f3a78; no incoming use establishes this independent
+ * source object's identity. BN retains an automatic pointer interpretation,
+ * but its former save-state-aux symbol and accepted owner claims were withdrawn.
+ * Purpose: retain the candidate initialized pointer while ownership is unresolved.
  */
 int *g_PlayerSaveStateListAuxPtr = &g_PlayerSaveStateListAux;
 /**

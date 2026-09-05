@@ -11,6 +11,13 @@
 #include <string.h>
 
 zClass_DiRaycastFilterRuntime g_zClass_cls_di_RaycastFilterRuntime = {0};
+/*
+ * Purpose: retain the current candidate pending source-extent recovery.
+ * Retail's hexahedron wrapper writes four entries, but generic polygon
+ * paths copy a runtime vertex count. Four is an observed access prefix,
+ * not a proven safe allocation bound; do not accept this declaration as
+ * source-faithful or enlarge it solely from the following zero-filled gap.
+ */
 zVec3 g_zClass_DiFaceVertexScratch4[4] = {0};
 
 namespace {

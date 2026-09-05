@@ -17,74 +17,69 @@ namespace zModel_DiPool {
 
 extern "C" {
 /**
- * Storage group: g_zClass_TypeListZeroShadowBuckets.
- * Owner extent: first 0xc0 bytes of the unreferenced 0x4f49ac..0x4f4a7b
- * TypeList zero-shadow block; BN shows no xrefs into this shadow storage.
- * Purpose: dead zero-initialized TypeList bucket storage preserved in the
- * retail data image apart from the live List.c type-list owner.
+ * Unresolved candidate: retail references do not establish a TypeList
+ * zero-shadow object at 0x4f49ac, its extent, or the scalar identities below.
+ * The full .data audit withdrew these BN definitions and positive tracker
+ * gates. Existing source contributions remain pending evidence-backed
+ * storage/placement recovery; zero-fill does not prove dead TypeList objects.
+ * Purpose: retain candidate storage without asserting original bucket ownership.
  */
 zClass_TypeListBucket g_zClass_TypeListZeroShadowBuckets[16] = {0};
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-typelistzeroshadowfreelinkhead
  * @recoil-artifact defines .data recoil:data:0x4f4a6c: g_zClass_TypeListZeroShadowFreeLinkHead.
- * Purpose: dead zero-shadow counterpart of the type-list recycled-link head.
+ * Purpose: retain candidate storage; original recycled-link identity is unresolved.
  */
 zClass_TypeListLink *g_zClass_TypeListZeroShadowFreeLinkHead = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-nodelistzeroshadowhead
  * @recoil-artifact defines .data recoil:data:0x4f4a70: g_zClass_NodeListZeroShadowHead.
- * Purpose: dead zero-shadow counterpart of the pending node-list head.
+ * Purpose: retain candidate storage; original node-list identity is unresolved.
  */
 zClass_TypeListLink *g_zClass_NodeListZeroShadowHead = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-typelistzeroshadowalloccount
  * @recoil-artifact defines .data recoil:data:0x4f4a74: g_zClass_TypeListZeroShadowAllocCount.
- * Purpose: dead zero-shadow counterpart of the type-list live allocation
- * counter.
+ * Purpose: retain candidate storage; original allocation-count identity is unresolved.
  */
 int g_zClass_TypeListZeroShadowAllocCount = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-typelistzeroshadowallocpeak
  * @recoil-artifact defines .data recoil:data:0x4f4a78: g_zClass_TypeListZeroShadowAllocPeak.
- * Purpose: dead zero-shadow counterpart of the type-list peak allocation
- * counter.
+ * Purpose: retain candidate storage; original allocation-peak identity is unresolved.
  */
 int g_zClass_TypeListZeroShadowAllocPeak = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowcursor
  * @recoil-artifact defines .data recoil:data:0x4f4a7c: g_zClass_FilterIterZeroShadowCursor.
- * Owner extent: 0x4f4a7c..0x4f4a8f is five zero-initialized authored
- * dwords with no BN xrefs, mirroring the live filtered-iterator state at
- * 0x539b98..0x539bab without participating in runtime iteration.
- * Purpose: dead zero-shadow counterpart of the filtered iterator cursor.
+ * Unresolved candidate: no references prove five independent iterator
+ * objects in 0x4f4a7c..0x4f4a8f. Similarity to live storage is not ownership
+ * or extent evidence; the former positive tracker gates are blocked.
+ * Purpose: retain candidate storage without asserting an iterator-cursor role.
  */
 zClass_TypeListLink *g_zClass_FilterIterZeroShadowCursor = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowunknowndword0
  * @recoil-artifact defines .data recoil:data:0x4f4a80: g_zClass_FilterIterZeroShadowUnknownDword0.
- * Purpose: dead zero-shadow counterpart of the filtered iterator reserved
- * dword between cursor and filter text.
+ * Purpose: retain candidate storage; original scalar identity is unresolved.
  */
 unsigned int g_zClass_FilterIterZeroShadowUnknownDword0 = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowtext
  * @recoil-artifact defines .data recoil:data:0x4f4a84: g_zClass_FilterIterZeroShadowText.
- * Purpose: dead zero-shadow counterpart of the filtered iterator text
- * pointer.
+ * Purpose: retain candidate storage; original text-pointer identity is unresolved.
  */
 const char *g_zClass_FilterIterZeroShadowText = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowunknowndword1
  * @recoil-artifact defines .data recoil:data:0x4f4a88: g_zClass_FilterIterZeroShadowUnknownDword1.
- * Purpose: dead zero-shadow counterpart of the filtered iterator reserved
- * dword between filter text and prefix length.
+ * Purpose: retain candidate storage; original scalar identity is unresolved.
  */
 unsigned int g_zClass_FilterIterZeroShadowUnknownDword1 = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.g-zclass-filteriterzeroshadowprefixlen
  * @recoil-artifact defines .data recoil:data:0x4f4a8c: g_zClass_FilterIterZeroShadowPrefixLen.
- * Purpose: dead zero-shadow counterpart of the filtered iterator cached
- * prefix length.
+ * Purpose: retain candidate storage; original prefix-length identity is unresolved.
  */
 int g_zClass_FilterIterZeroShadowPrefixLen = 0;
 /**

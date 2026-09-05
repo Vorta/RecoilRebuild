@@ -14,49 +14,48 @@ extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodecount
  * @recoil-artifact defines .data recoil:data:0x4f4a90: g_zClass_NodeCount.
- * Owner extent: 0x4f4a90..0x4f4ad7 is an unreferenced all-zero authored
- * zClass node/core shadow block, separate from the live node pool globals.
- * Purpose: preserve the retail zero-shadow node count slot without routing
- * runtime node allocation through it.
+ * Unresolved candidate: no retail references prove a node/core shadow block
+ * or the individual objects below. Their BN identities and positive tracker
+ * gates were withdrawn by the full .data audit. Keep the current source
+ * contributions pending an evidence-backed storage/placement correction;
+ * zero bytes alone authorize neither these types nor deletion of storage.
+ * Purpose: retain this candidate storage without asserting a node-count role.
  */
 int g_zClass_NodeCount = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodetablebase
  * @recoil-artifact defines .data recoil:data:0x4f4a94: g_zClass_NodeTableBase.
- * Purpose: dead zero-shadow counterpart of the node table base pointer.
+ * Purpose: retain candidate storage; original pointer identity is unresolved.
  */
 zClass_NodePartial *g_zClass_NodeTableBase = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodeactivecount
  * @recoil-artifact defines .data recoil:data:0x4f4a98: g_zClass_NodeActiveCount.
- * Purpose: dead zero-shadow counterpart of the active node count.
+ * Purpose: retain candidate storage; original count identity is unresolved.
  */
 int g_zClass_NodeActiveCount = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-copynodeclonematerialrefs
  * @recoil-artifact defines .data recoil:data:0x4f4a9c: g_zClass_CopyNodeCloneMaterialRefs.
- * Purpose: dead zero-shadow counterpart of the copy-node material-reference
- * clone policy flag.
+ * Purpose: retain candidate storage; original policy-flag identity is unresolved.
  */
 int g_zClass_CopyNodeCloneMaterialRefs = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-copynodecloneallmaterialsifrelevant
  * @recoil-artifact defines .data recoil:data:0x4f4aa0: g_zClass_CopyNodeCloneAllMaterialsIfRelevant.
- * Purpose: dead zero-shadow counterpart of the copy-node all-materials clone
- * policy flag.
+ * Purpose: retain candidate storage; original policy-flag identity is unresolved.
  */
 int g_zClass_CopyNodeCloneAllMaterialsIfRelevant = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-coreinitialized
  * @recoil-artifact defines .data recoil:data:0x4f4aa4: g_zClass_CoreInitialized.
- * Purpose: dead zero-shadow counterpart of the zClass core initialization
- * flag.
+ * Purpose: retain candidate storage; original initialization-flag identity is unresolved.
  */
 int g_zClass_CoreInitialized = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-lastzbdpath
  * @recoil-artifact defines .data recoil:data:0x4f4aa8: g_zClass_LastZbdPath.
- * Purpose: dead zero-shadow counterpart of the last zClass ZBD path buffer.
+ * Purpose: retain candidate storage; original buffer identity and extent are unresolved.
  */
 char g_zClass_LastZbdPath[0x30] = {0};
 /**

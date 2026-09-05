@@ -239,11 +239,13 @@ char g_zInterp_PreparedIndexFileNameStr[] = "interp.zbd";
 extern "C" char g_zEffectAnim_FileModeRead[] = "r";
 
 /**
- * Data owner: address-specific orphan initialized-data exception.
- * BN evidence: .data float[0x3f], 0xfc bytes, no base/interior xrefs.
- * State: data-equivalent-only preservation, not source-faithful owner proof.
+ * Candidate initialized-data preservation, not an accepted source owner.
+ * Retail bytes can be represented by these floats, but the complete audit
+ * found no base/interior or incoming pointer-table use. The former BN
+ * float-array definition was withdrawn; original type and extent are unknown.
  *
- * Purpose: preserve the unresolved initialized float defaults byte pattern.
+ * Purpose: retain the unresolved initialized byte pattern without accepting
+ * a float-defaults role or the current declaration's source identity.
  */
 extern "C" float g_zInterp_UnresolvedFloatDefaults[63] = {
     0.0f, 2.2f, 0.2f,
