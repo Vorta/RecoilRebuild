@@ -2,6 +2,7 @@
 
 #include "recoil/recoil_types.h"
 #include <stddef.h>
+#include <list>
 
 #include <dplay.h>
 
@@ -171,6 +172,7 @@ struct zNetworkDPlayServiceProviderInfo {
     char *displayName;
     void *connectionData;
     int providerFlags;
+    ~zNetworkDPlayServiceProviderInfo();
 };
 
 RECOIL_STATIC_ASSERT(
@@ -239,36 +241,10 @@ struct zNetworkDispatchHandlerRecord {
     int mode;
 };
 
-struct zNetworkDispatchHandlerListNode {
-    zNetworkDispatchHandlerListNode *next;
-    zNetworkDispatchHandlerListNode *prev;
-    zNetworkDispatchHandlerRecord *record;
-};
-
-struct zNetworkDispatchHandlerListAllocator {
-    unsigned char value;
-};
-
-struct zNetworkDispatchHandlerList {
-    zNetworkDispatchHandlerListAllocator allocatorProxy;
-    unsigned char allocatorPadding[3];
-    zNetworkDispatchHandlerListNode *sentinel;
-    int count;
-};
-
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetworkDispatchHandlerList,
-        sentinel
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetworkDispatchHandlerList,
-        count
-    ) == 0x08
-);
+typedef std::list<zNetworkDispatchHandlerRecord *> zNetworkDispatchHandlerList;
+#if defined(_MSC_VER) && _MSC_VER < 1200
 RECOIL_STATIC_ASSERT(sizeof(zNetworkDispatchHandlerList) == 0x0c);
+#endif
 
 extern "C" {
 extern zNetwork_DPlay4 *g_zNetwork_pDirectPlay4;
@@ -306,10 +282,6 @@ extern char g_zNetwork_ModemSessionName[0xd];
 int __cdecl zNetwork_DPlay_DestroyCachedLocalPlayer();
 int __cdecl zNetwork_GetLocalPlayerKey();
 int __cdecl zNetwork_GetLocalPlayerColorIndex();
-void __cdecl zNetwork_InitMessageHandlers();
-void __cdecl zNetwork_CreateEmptyDispatchHandlerList();
-void __cdecl zNetwork_RegisterDispatchHandlerListShutdown();
-void __cdecl zNetwork_DestroyDispatchHandlerList();
 int __fastcall zNetwork_DPlay_SendUnreliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
@@ -403,9 +375,6 @@ int __stdcall EnumPlayerCallback_AddPlayerRecord(
     const zNetworkDPlayName *playerNameInfo,
     DWORD flags,
     void *context
-);
-void __fastcall FreeServiceProviderInfoBuffers(
-    zNetworkDPlayServiceProviderInfo *providerInfo
 );
 int __fastcall InitializeConnectionFromProviderInfo(
     zNetworkDPlayServiceProviderInfo *providerInfo

@@ -3,16 +3,13 @@
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zInput/zinput.h"
 #include "GameZRecoil/zNetwork/znet.h"
+#include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
 HINSTANCE __stdcall AfxFindResourceHandle(
     LPCSTR resourceName,
     LPCSTR resourceType
 );
-
-namespace zSndCd {
-int Stop();
-}
 
 extern "C" {
 /**

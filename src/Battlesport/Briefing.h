@@ -8,7 +8,7 @@
 
 /**
  * Briefing action base. BN action records at 0x404620 through 0x404bb0 share
- * the offset-zero virtual Tick dispatch used by HudUiBriefingRuntime::Update.
+ * the offset-zero virtual Tick dispatch used by HudUiBriefingRuntime::UpdateAll.
  */
 struct BriefingAction {
     virtual int Tick(float deltaSec) = 0;
@@ -95,7 +95,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) == 0xbc
  * @recoil-anchor recoil:anchor:battlesport.briefing.transport-progress-type
  * @recoil-artifact emits .text recoil:function:0x403eb0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
  */
-struct HudUiBriefingTransportProgress : HudUiFillBitmap {
+struct HudUiBriefingTransportProgress : HudUiFillBitmapSlider {
 };
 
 /**
@@ -118,7 +118,7 @@ struct HudUiBriefingRuntime : HudUiBackground {
     HudUiBriefingRuntime(int missionId);
     ~HudUiBriefingRuntime();
     int BuildObjectiveActionsFromIndex(int objectiveIndex);
-    void Update(float deltaSec);
+    virtual void UpdateAll(float deltaSec);
 };
 RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingRuntime, actionQueue) == 0xa94c);
 #if defined(_MSC_VER) && _MSC_VER == 1100

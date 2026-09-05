@@ -6,6 +6,7 @@
 #include "recoil/Mfc42Abi.h"
 #include "GameZRecoil/zFMV/fmv.h"
 #include "recoil/recoil_callconv.h"
+#include "Battlesport/recoil_state_base.h"
 
 #if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
 #include <deque>
@@ -44,14 +45,8 @@ enum RecoilAppMissionShutdownMode {
  * objects with a common vptr at offset zero and lifecycle calls through that
  * table; the source model is a VC-era virtual interface, not copied table data.
  */
-struct RecoilApp_IState {
-    /**
-     * @recoil-anchor recoil:anchor:battlesport.recoilapp.istate-destructor
-     * @recoil-artifact defines .text recoil:function:0x42df90: RecoilApp_IState::~RecoilApp_IState.
-     * Purpose: Tear down the common app-state interface base.
-     */
-    virtual ~RecoilApp_IState() {
-    }
+struct RecoilApp_IState : RecoilStateBase {
+    virtual ~RecoilApp_IState();
     virtual void OnWndActivate(int activateCode);
     virtual void OnEnter();
     virtual int OnTryBecomeCurrent();
@@ -72,6 +67,12 @@ struct RecoilApp_IState {
     }
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_IState) == 0x04);
+
+/**
+ * Purpose: Finish the interface lifetime through the shared state base.
+ * This inline implementation is not a unique retail physical-body identity.
+ */
+inline RecoilApp_IState::~RecoilApp_IState() {}
 
 struct RecoilApp_StateQueueItem {
     unsigned int m_type;
@@ -205,7 +206,7 @@ RECOIL_STATIC_ASSERT(
 );
 #endif
 
-struct RecoilApp_FmvState : RecoilApp_IState {
+struct RECOIL_NOVTABLE RecoilApp_FmvState : RecoilApp_IState {
     int OnIdleOrDispatch(
         unsigned int wParam,
         unsigned int lParam
@@ -273,14 +274,17 @@ struct RecoilApp_IntroFmvState : RecoilApp_FmvState {
      */
     RecoilApp_IntroFmvState() {
     }
-    ~RecoilApp_IntroFmvState() {
-    }
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_IntroFmvState) == 0x28);
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.main-menu-prep-state.type
+ * @recoil-artifact emits .text recoil:logical-function:0x42df90:main-menu-prep-state-destructor: Implicit complete destructor used by app member cleanup.
+ * Purpose: Prepare the main menu between the intro and interactive states.
+ */
 struct RecoilApp_MainMenuPrepState : RecoilApp_IState {
     int m_stateData04;
 
@@ -290,10 +294,21 @@ struct RecoilApp_MainMenuPrepState : RecoilApp_IState {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MainMenuPrepState) == 0x08);
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.leave-network-state.type
+ * @recoil-artifact emits .text recoil:logical-function:0x42df90:leave-network-state-destructor: Implicit complete destructor used by app member cleanup.
+ * Purpose: Leave network gameplay and terminate the application state loop.
+ */
 struct RecoilApp_LeaveNetworkState : RecoilApp_IState {
     int m_stateData04;
 
     int OnTryBecomeCurrent();
+    /**
+     * Purpose: Request normal message-loop termination after shutdown. Retail
+     * table 0x4d0ac8 slot 4 uses the folded return-one body, not the default
+     * state callback that keeps the application running.
+     */
+    int OnUpdateShouldQuit();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_LeaveNetworkState) == 0x08);
 
@@ -304,11 +319,6 @@ struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
     int m_reserved2c;
 
     RecoilApp_MissionFmvState();
-    /**
-     * Purpose: tear down the mission FMV state's embedded script storage.
-     */
-    ~RecoilApp_MissionFmvState() {
-    }
     int OnTryBecomeCurrent();
     void SetMissionId(int missionId);
     void OnDeactivate();

@@ -10,7 +10,7 @@
  * @recoil-artifact emits .text recoil:function:0x407170: VC5 compiler-generated scalar deleting-destructor contribution for this provisional complete type when its inline destructor definition is present; not an authored body.
  */
 struct RecoilStateBase {
-    virtual ~RecoilStateBase();
+    virtual ~RecoilStateBase() {}
     virtual void OnWndActivate(int activateCode);
     virtual void OnEnter();
     virtual int OnTryBecomeCurrent();

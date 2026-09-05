@@ -34,7 +34,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_WorldSelector) == 0x208);
 
 struct HudUiNetGameSetupPanel_TimeLimitInput : HudUiClampedIntTextInput {
     HudUiNetGameSetupPanel_TimeLimitInput()
-        : HudUiClampedIntTextInput(4) {
+        : HudUiClampedIntTextInput(3) {
     }
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_TimeLimitInput) == 0x37c);

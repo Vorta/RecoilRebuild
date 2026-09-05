@@ -133,7 +133,7 @@ void __fastcall BltSourceToPrimaryClipped(
         zVideo_dd::UnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
 
-    const DWORD bltFlags = DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE |
+    const DWORD bltFlags = DDBLT_WAIT | DDBLT_ASYNC |
                            ((srcImage->formatFlagsPacked & 0x02u) != 0 ? DDBLT_KEYSRC : 0);
     const HRESULT hresult =
         primarySurface

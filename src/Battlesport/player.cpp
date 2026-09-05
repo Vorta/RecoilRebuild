@@ -4553,12 +4553,13 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             0,
             0
         );
-    const int vehicleCount = (PlayerZrdArrayCount(vehicleRoot) - 1) / 2;
+    zReader::Node *const vehicleList = PlayerZrdArrayNode(vehicleRoot, 1);
+    const int vehicleCount = (PlayerZrdArrayCount(vehicleList) - 1) / 2;
     for (int vehicleIndex = 0; vehicleIndex < vehicleCount; ++vehicleIndex) {
         char vehicleName[0x14];
         strcpy(
             vehicleName,
-            PlayerZrdArrayString(vehicleRoot, vehicleIndex * 2 + 1)
+            PlayerZrdArrayString(vehicleList, vehicleIndex * 2 + 1)
         );
 
         PlayerMasterCommonData *const commonData =
@@ -4708,7 +4709,8 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         GetAivZrdPath(),
         g_Player_AivParentDir
     );
-    int aivCount = (PlayerZrdArrayCount(aivRoot) - 1) / 2;
+    zReader::Node *const aivList = PlayerZrdArrayNode(aivRoot, 1);
+    int aivCount = (PlayerZrdArrayCount(aivList) - 1) / 2;
     if (zOpt::GetNetworkEnabled() != 0) {
         aivCount = 1;
     }
@@ -4718,7 +4720,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         char vehicleName[0x14];
         strcpy(
             aivName,
-            PlayerZrdArrayString(aivRoot, aivIndex * 2 + 1)
+            PlayerZrdArrayString(aivList, aivIndex * 2 + 1)
         );
         ExtractVehicleNameFromAivName(
             aivName,

@@ -426,7 +426,8 @@ extern int g_zTurret_RuntimeCount;
 extern int g_zTurret_CallbackIterationActive;
 extern int g_zTurret_CallbackStartIndex;
 extern int g_zTurret_CallbackIterIndex;
-extern zTurret_Runtime *g_zTurret_RuntimeList[9];
+// Experimental capacity; original extent remains unresolved. See turret.cpp.
+extern zTurret_Runtime *g_zTurret_RuntimeList[128];
 }
 
 namespace zTurret_System {

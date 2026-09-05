@@ -1618,6 +1618,14 @@ int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
 }
 
 /**
+ * Purpose: finish the application loop after the exit state's shutdown work.
+ * Retail dispatch uses the shared return-one callback in this slot.
+ */
+int RecoilApp_LeaveNetworkState::OnUpdateShouldQuit() {
+    return 1;
+}
+
+/**
  * Purpose: create the seven gameplay force-feedback effects and start the
  * steady steer and pitch force effects when creation succeeds.
  */
@@ -7915,7 +7923,7 @@ void HudUiSaveLoadGameNameInput::OnActivate() {
 /**
  * Purpose: Filters raw key input to the save-game filename character set.
  */
-int HudUiSaveLoadGameNameInput::OnRawKeyboardEvent(
+int HudUiSaveLoadGameNameInput::OnRawKeyboardChar(
     int key
 ) {
     if (strchr(
@@ -7959,45 +7967,18 @@ void HudUiSaveGameDialog::OnPrimaryActionThunk() {
 /**
  * Purpose: Tears down common save/load dialog child widgets, entry storage, and background state.
  */
-void HudUiSaveLoadDialog::Destructor() {
+inline HudUiSaveLoadDialog::~HudUiSaveLoadDialog() {
     ::operator delete(fileEntries.begin);
     fileEntries.begin = 0;
     fileEntries.end = 0;
     fileEntries.capacityEnd = 0;
 
-    for (int index = 9; index > 0; --index) {
-        entryWidgets[index - 1].HudUiPanel::~HudUiPanel();
-    }
-
-    gameNameInput.HudUiNumericTextInput::~HudUiNumericTextInput();
-    prevEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
-    nextEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
-    backButton.HudUiZrdWidget::~HudUiZrdWidget();
-    deleteButton.HudUiZrdWidget::~HudUiZrdWidget();
-    this->HudUiBackground::~HudUiBackground();
 }
 
 /**
  * Purpose: Tears down save-game dialog child widgets, entry storage, and background state.
  */
-void HudUiSaveGameDialog::Destructor() {
-    primaryActionButton.HudUiZrdWidget::~HudUiZrdWidget();
-
-    ::operator delete(fileEntries.begin);
-    fileEntries.begin = 0;
-    fileEntries.end = 0;
-    fileEntries.capacityEnd = 0;
-
-    for (int index = 9; index > 0; --index) {
-        entryWidgets[index - 1].HudUiPanel::~HudUiPanel();
-    }
-
-    gameNameInput.HudUiNumericTextInput::~HudUiNumericTextInput();
-    prevEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
-    nextEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
-    backButton.HudUiZrdWidget::~HudUiZrdWidget();
-    deleteButton.HudUiZrdWidget::~HudUiZrdWidget();
-    this->HudUiBackground::~HudUiBackground();
+HudUiSaveGameDialog::~HudUiSaveGameDialog() {
 }
 
 /**
@@ -8072,24 +8053,7 @@ void HudUiLoadGameDialog::OnPrimaryActionThunk() {
 /**
  * Purpose: Tears down load-game dialog child widgets, entry storage, and background state.
  */
-void HudUiLoadGameDialog::Destructor() {
-    primaryActionButton.HudUiZrdWidget::~HudUiZrdWidget();
-
-    ::operator delete(fileEntries.begin);
-    fileEntries.begin = 0;
-    fileEntries.end = 0;
-    fileEntries.capacityEnd = 0;
-
-    for (int index = 9; index > 0; --index) {
-        entryWidgets[index - 1].HudUiPanel::~HudUiPanel();
-    }
-
-    gameNameInput.HudUiNumericTextInput::~HudUiNumericTextInput();
-    prevEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
-    nextEntryButton.HudUiZrdWidget::~HudUiZrdWidget();
-    backButton.HudUiZrdWidget::~HudUiZrdWidget();
-    deleteButton.HudUiZrdWidget::~HudUiZrdWidget();
-    this->HudUiBackground::~HudUiBackground();
+HudUiLoadGameDialog::~HudUiLoadGameDialog() {
 }
 
 /**
@@ -8591,8 +8555,8 @@ void __cdecl RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit() {
  * @recoil-artifact defines .text recoil:function:0x435a40: RecoilStateSaveLoadTransition::StaticInit.
  * Purpose: Constructs the global save/load transition object.
  */
-RecoilStateSaveLoadTransition *__cdecl RecoilStateSaveLoadTransition::StaticInit() {
-    return g_RecoilStateSaveLoadTransition.Constructor();
+void __cdecl RecoilStateSaveLoadTransition::StaticInit() {
+    new (&g_RecoilStateSaveLoadTransition) RecoilStateSaveLoadTransition;
 }
 
 /**
@@ -8608,7 +8572,7 @@ void __cdecl RecoilStateSaveLoadTransition::RegisterAtExit() {
  * Purpose: Tears down the global save/load transition during process exit.
  */
 void __cdecl RecoilStateSaveLoadTransition::AtExitDestructor() {
-    g_RecoilStateSaveLoadTransition.Destructor();
+    g_RecoilStateSaveLoadTransition.RecoilStateSaveLoadTransition::~RecoilStateSaveLoadTransition();
 }
 
 /**
@@ -8689,18 +8653,23 @@ void HudUiLoadGameDialog::ProcessDialogResult() {
 }
 
 /**
- * Purpose: Initializes the save/load transition to the default save-dialog state.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.saveload-transition-constructor
+ * @recoil-artifact defines .text recoil:function:0x435c80: Save/load state construction.
+ * @recoil-artifact emits .rdata recoil:data:0x4d1728: Compiler-generated state dispatch table.
+ * Purpose: Construct the complete polymorphic save/load state, including its
+ * dispatch table, before the application can queue its entry callback.
  */
-RecoilStateSaveLoadTransition * RecoilStateSaveLoadTransition::Constructor() {
+RecoilStateSaveLoadTransition::RecoilStateSaveLoadTransition() {
     m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE;
     m_dialog = 0;
-    return this;
 }
 
 /**
- * Purpose: Deletes the active save or load dialog owned by the transition.
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.saveload-transition-destructor
+ * @recoil-artifact defines .text recoil:function:0x435cc0: Save/load state destruction.
+ * Purpose: Delete the active save or load dialog before inherited state cleanup.
  */
-void RecoilStateSaveLoadTransition::Destructor() {
+RecoilStateSaveLoadTransition::~RecoilStateSaveLoadTransition() {
     HudUiSaveLoadDialog *dialog = (HudUiSaveLoadDialog *)m_dialog;
     if (dialog != 0) {
         delete dialog;
@@ -8758,7 +8727,7 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
         }
     }
 
-    m_dialog = (RecoilPtr32)(unsigned int)dialog;
+    m_dialog = dialog;
     dialog->SetEnabled(1);
     return 1;
 }

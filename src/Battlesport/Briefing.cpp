@@ -470,7 +470,7 @@ HudUiBriefingRuntime::HudUiBriefingRuntime(
     Time::Tick();
     zSnd_Tick(1);
     zVideo::RunPostprocessOnPrimaryBuffer();
-    Update(g_FrameDeltaTimeSec);
+    UpdateAll(g_FrameDeltaTimeSec);
     zVideo::Dispatch_UnlockPrimarySurfaceState();
     zVideo::AdjustSurfacesIfEnabled(
         0,
@@ -595,11 +595,11 @@ HudUiBriefingRuntime::~HudUiBriefingRuntime() {
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefingruntime-update
- * @recoil-artifact defines .text recoil:function:0x404070: HudUiBriefingRuntime::Update.
+ * @recoil-artifact defines .text recoil:function:0x404070: HudUiBriefingRuntime::UpdateAll.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: tick queued briefing actions, invalidate briefing panels, and update the background UI.
  */
-void HudUiBriefingRuntime::Update(
+void HudUiBriefingRuntime::UpdateAll(
     float deltaSec
 ) {
     Briefing_ActionQueue *const actionQueue = &this->actionQueue;

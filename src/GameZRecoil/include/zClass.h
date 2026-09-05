@@ -2454,6 +2454,7 @@ struct zClass_Object3D_ModelRefLerpQueueState {
     zClass_Object3D_ModelRefLerpTask *head;
     zClass_Object3D_ModelRefLerpTask *tail;
     unsigned int count;
+    zClass_Object3D_ModelRefLerpQueueState();
 };
 RECOIL_STATIC_ASSERT(sizeof(zClass_Object3D_ModelRefLerpQueueState) == 0x10);
 
@@ -2464,7 +2465,6 @@ extern zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState;
 typedef void(__fastcall *zClass_Object3D_ModelRefLerpCallback)(void *callbackCtx);
 
 namespace zClass_Object3D_ModelRefLerpQueue {
-void __cdecl ClearGlobalState();
 void __fastcall Add(
     zClass_NodePartial *node,
     void *callbackCtx,

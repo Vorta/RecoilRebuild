@@ -84,37 +84,13 @@ inline void ConfigureTextStackLine(
 
 } // namespace
 
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicompositepanelentry-constructorcopyrange
- * @recoil-artifact defines .text recoil:function:0x4bc320: HudUiCompositePanelEntry::ConstructorCopyRange.
- * Purpose: copy-construct a range of composite-panel entries into destination
- * storage.
- */
-HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRange(
-    const HudUiCompositePanelEntry *sourceBegin,
-    const HudUiCompositePanelEntry *sourceEnd,
-    HudUiCompositePanelEntry *destBegin
-) {
-    HudUiCompositePanelEntry *dest = destBegin;
-    for (const HudUiCompositePanelEntry *source = sourceBegin; source != sourceEnd;
-        ++source, ++dest) {
-        dest->HudUiPanel::operator=(*source);
-        dest->flashCountdown = source->flashCountdown;
-        dest->flashResetValue = source->flashResetValue;
-        dest->flashAltColor0 = source->flashAltColor0;
-        dest->flashAltColor1 = source->flashAltColor1;
-        dest->flashEnabled = source->flashEnabled;
-        dest->flashMode = source->flashMode;
-        dest->flashDirectionSign = source->flashDirectionSign;
-    }
-
-    return dest;
-}
 
 /**
- * Purpose: copy one composite-panel entry into existing entry storage.
+ * Purpose: assign the existing panel and its seven flash-state fields without
+ * changing its dynamic type. Retail 0x4bc3a0 uses the panel assignment body;
+ * the separate range loop at 0x4bc320 is the provider's std::copy expansion.
  */
-HudUiCompositePanelEntry & HudUiCompositePanelEntry::operator=(
+HudUiCompositePanelEntry &HudUiCompositePanelEntry::operator=(
     const HudUiCompositePanelEntry &source
 ) {
     HudUiPanel::operator=(source);
@@ -857,7 +833,7 @@ void HudUiTextLabel::UpdateTextExtents() {
  * @recoil-artifact defines .text recoil:function:0x4bce30: HudUiTextLabel::OnDraw.
  * Purpose: draw non-empty label text with the recovered alignment handling.
  */
-void HudUiTextLabel::OnDraw() {
+void HudUiTextLabel::Draw() {
     DrawBase();
 
     if (textBuffer[0] == '\0') {
@@ -2745,24 +2721,15 @@ static inline zVidImagePartial *HudUiMessageBoxCreateSolidImage(
  * Touched data: owns runtime image pointers only; dialog/button table globals
  * are class identity evidence, not separately promoted data.
  */
-HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
+HudUiMessageBoxDialog::HudUiMessageBoxDialog(
     const char *zrdPath,
     const char *sectionName
-) {
-    new ((HudUiBackground *)this) HudUiBackground;
-    backdropWidget.Constructor(0);
-    messagePanel.ConstructorDefault(
-        0,
-        0,
-        0
-    );
-    titlePanel.ConstructorDefault(
-        0,
-        0,
-        0
-    );
-    okButton.Constructor();
-    cancelButton.Constructor();
+) : HudUiBackground(),
+    backdropWidget(0),
+    messagePanel(0, 0, 0),
+    titlePanel(0, 0, 0),
+    okButton(),
+    cancelButton() {
     const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
     blitRect = *primaryRect;
 
@@ -2797,12 +2764,12 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
                 &messagePanel,
                 k_msgBoxWidgetName_Message
             );
+            FreeLoadedTreeRoots((int)loadedSection);
         }
 
-        FreeLoadedTreeRoots(0);
         titlePanel.SetVisible(1);
         messagePanel.SetVisible(1);
-        return this;
+        return;
     }
 
     const int centerX = HudUiDialogSignedDivPow2(
@@ -2898,7 +2865,6 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
     titlePanel.SetVisible(1);
     okButton.SetVisible(0);
     SetChildFlags(0);
-    return this;
 }
 
 /**
@@ -2910,7 +2876,7 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
  * the recovered member cleanup order.
  * Touched data: no authored globals; releases runtime-owned image storage.
  */
-void HudUiMessageBoxDialog::Destructor() {
+HudUiMessageBoxDialog::~HudUiMessageBoxDialog() {
     if (backgroundImage != 0) {
         if (backgroundImage->pixels != 0) {
             free(backgroundImage->pixels);
@@ -2921,12 +2887,6 @@ void HudUiMessageBoxDialog::Destructor() {
         backgroundImage = 0;
     }
 
-    cancelButton.DestructorCore();
-    okButton.DestructorCore();
-    titlePanel.HudUiPanel::~HudUiPanel();
-    messagePanel.HudUiPanel::~HudUiPanel();
-    backdropWidget.DestructorCore();
-    this->HudUiBackground::~HudUiBackground();
 }
 
 /**
@@ -4086,16 +4046,6 @@ HudUiSliderBorder * HudUiSliderBorder::Constructor() {
 /**
  * Purpose: Construct the ZRD widget base and owned numeric text-entry controls.
  */
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduinumerictextinput-baseconstructor
- * @recoil-artifact defines .text recoil:function:0x41a190: HudUiNumericTextInput::Constructor.
- * Purpose: initialize the recovered HudUiNumericTextInput::Constructor state.
- */
-HudUiNumericTextInput * HudUiNumericTextInput::BaseConstructor() {
-    new (this) HudUiNumericTextInput;
-    return this;
-}
 
 /**
  * Purpose: preserve the recovered HUD behavior for HudUiNumericTextInput::AllocTextBuffer.

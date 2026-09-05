@@ -859,23 +859,27 @@ namespace zClass_Object3D {
     }
 }
 
+/**
+ * Purpose: initialize an empty model-reference lerp queue. Retail startup
+ * 0x437ff0 reaches the constructor inlined into global initialization.
+ */
+inline zClass_Object3D_ModelRefLerpQueueState::zClass_Object3D_ModelRefLerpQueueState() {
+    listAux = 0;
+    tail = 0;
+    head = 0;
+    count = 0;
+}
+
 extern "C" {
-zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState = {0};
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.clearglobalstate
+ * @recoil-artifact emits .text recoil:function:0x438000: Global queue initialization.
+ * Purpose: own the queue whose native construction is registered in CRT startup.
+ */
+zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState;
 }
 
 namespace zClass_Object3D_ModelRefLerpQueue {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.clearglobalstate
-     * @recoil-artifact defines .text recoil:function:0x438000: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState
-     * Purpose: clear the global model-reference lerp queue head, tail, aux, and
-     * count fields.
-     */
-    void __cdecl ClearGlobalState() {
-        g_ModelRefLerpQueueState.listAux = 0;
-        g_ModelRefLerpQueueState.tail = 0;
-        g_ModelRefLerpQueueState.head = 0;
-        g_ModelRefLerpQueueState.count = 0;
-    }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.add

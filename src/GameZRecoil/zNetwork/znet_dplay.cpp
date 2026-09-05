@@ -235,14 +235,6 @@ unsigned int g_zNetwork_ReceiveBufferCapacity = 0;
  * Purpose: track player-color slots currently in use by the session.
  */
 int g_zNetwork_PlayerColorInUseFlags[16] = {0};
-/**
- * Storage group: g_zNetwork_DispatchHandlerList.
- * Data owner: engine.znetwork.dispatch_handler_list_runtime.
- * BN 0x48bfb0 stores the VC5 allocator byte at offset 0, then initializes
- * the sentinel pointer at offset 4 and count at offset 8.
- * Purpose: own the global packet-dispatch handler list object.
- */
-zNetworkDispatchHandlerList g_zNetwork_DispatchHandlerList = {0};
 } // extern "C"
 
 /*
@@ -2300,9 +2292,6 @@ int __fastcall SelectTcpIpProviderAndEnumSessions(
 
     SelectServiceProviderAndInitConnection(&providerInfo);
     if (skipSessionEnumeration != 0) {
-        free(providerInfo.displayName);
-        providerInfo.displayName = 0;
-        free(providerInfo.connectionData);
         return 1;
     }
 
@@ -2312,15 +2301,9 @@ int __fastcall SelectTcpIpProviderAndEnumSessions(
     } while (enumResult == kDPlayConnecting);
 
     if (enumResult == 0) {
-        free(providerInfo.displayName);
-        providerInfo.displayName = 0;
-        free(providerInfo.connectionData);
         return 1;
     }
 
-    free(providerInfo.displayName);
-    providerInfo.displayName = 0;
-    free(providerInfo.connectionData);
     return 0;
 }
 
@@ -2389,21 +2372,20 @@ int __cdecl EnumSessionsForCurrentApp() {
     );
 }
 
+} // namespace zNetworkDPlay
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-freeserviceproviderinfobuffers
  * @recoil-artifact defines .text recoil:function:0x48bee0: zNetworkDPlay::FreeServiceProviderInfoBuffers.
- * Purpose: release duplicated provider display-name and connection buffers.
+ * Purpose: release owned provider buffers on normal return and exception
+ * unwinding; retail 0x4cb0e0 invokes this local object's destructor.
  */
-void __fastcall FreeServiceProviderInfoBuffers(
-    zNetworkDPlayServiceProviderInfo *providerInfo
-) {
-    free(providerInfo->displayName);
-    providerInfo->displayName = 0;
-    free(providerInfo->connectionData);
-    providerInfo->connectionData = 0;
+inline zNetworkDPlayServiceProviderInfo::~zNetworkDPlayServiceProviderInfo() {
+    free(displayName);
+    displayName = 0;
+    free(connectionData);
+    connectionData = 0;
 }
-
-} // namespace zNetworkDPlay
 
 namespace {
 /**
@@ -2434,91 +2416,26 @@ namespace zNetwork {
  * Purpose: remove all packet-dispatch handler list nodes.
  */
 void __cdecl DeleteAllDispatchHandlers() {
-    zNetworkDispatchHandlerList *const list = &g_zNetwork_DispatchHandlerList;
-    zNetworkDispatchHandlerListNode *const sentinel = list->sentinel;
-    zNetworkDispatchHandlerListNode *node = sentinel->next;
-    int hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
-    if (hasNode != 0) {
-        do {
-            zNetworkDispatchHandlerListNode *const deleteNode = node;
-            node = node->next;
-            deleteNode->prev->next = deleteNode->next;
-            deleteNode->next->prev = deleteNode->prev;
-            ::operator delete(deleteNode);
-            --list->count;
-            hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
-        } while (hasNode != 0);
-    }
+    g_zNetwork_DispatchHandlerList.erase(
+        g_zNetwork_DispatchHandlerList.begin(),
+        g_zNetwork_DispatchHandlerList.end()
+    );
 }
 
 } // namespace zNetwork
 
+extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-initmessagehandlers
- * @recoil-artifact defines .text recoil:function:0x48bfa0: zNetwork_InitMessageHandlers.
- * Purpose: initialize packet-dispatch handlers and register shutdown cleanup.
+ * @recoil-artifact emits .text recoil:function:0x48bfa0: CRT initialization coordinator.
+ * @recoil-artifact emits .text recoil:function:0x48bfb0: Inlined VC5 list construction.
+ * @recoil-artifact emits .text recoil:function:0x48bfe0: CRT exit registration.
+ * @recoil-artifact emits .text recoil:function:0x48bff0: Inlined VC5 list destruction.
+ * Purpose: own the native packet-dispatch list. Retail startup at 0x48bfa0
+ * initializes its sentinel before use; nodes do not own their record pointers.
+ * The allocator, sentinel and count layout is supplied by the VC5 library.
  */
-extern "C" void __cdecl zNetwork_InitMessageHandlers() {
-    zNetwork_CreateEmptyDispatchHandlerList();
-    zNetwork_RegisterDispatchHandlerListShutdown();
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-createemptydispatchhandlerlist
- * @recoil-artifact defines .text recoil:function:0x48bfb0: zNetwork_CreateEmptyDispatchHandlerList.
- * Purpose: allocate and initialize an empty packet-dispatch handler list.
- */
-extern "C" void __cdecl zNetwork_CreateEmptyDispatchHandlerList() {
-    zNetworkDispatchHandlerListAllocator allocator;
-#if !defined(_MSC_VER) || _MSC_VER >= 1200
-    allocator.value = 0;
-#endif
-    g_zNetwork_DispatchHandlerList.allocatorProxy = allocator;
-    zNetworkDispatchHandlerListNode *const sentinel =
-        (zNetworkDispatchHandlerListNode *)(::operator new(
-            sizeof(zNetworkDispatchHandlerListNode)
-        ));
-    sentinel->next = sentinel;
-    sentinel->prev = sentinel;
-    g_zNetwork_DispatchHandlerList.sentinel = sentinel;
-    g_zNetwork_DispatchHandlerList.count = 0;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-registerdispatchhandlerlistshutdown
- * @recoil-artifact defines .text recoil:function:0x48bfe0: zNetwork_RegisterDispatchHandlerListShutdown.
- * Purpose: register packet-dispatch handler list destruction with atexit.
- */
-extern "C" void __cdecl zNetwork_RegisterDispatchHandlerListShutdown() {
-    atexit(zNetwork_DestroyDispatchHandlerList);
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-destroydispatchhandlerlist
- * @recoil-artifact defines .text recoil:function:0x48bff0: zNetwork_DestroyDispatchHandlerList.
- * Purpose: delete the packet-dispatch handler sentinel and all list nodes.
- */
-extern "C" void __cdecl zNetwork_DestroyDispatchHandlerList() {
-    zNetworkDispatchHandlerList *const list = &g_zNetwork_DispatchHandlerList;
-    zNetworkDispatchHandlerListNode *sentinel = list->sentinel;
-    zNetworkDispatchHandlerListNode *node = sentinel->next;
-    int hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
-    if (hasNode != 0) {
-        do {
-            zNetworkDispatchHandlerListNode *const deleteNode = node;
-            node = node->next;
-            deleteNode->prev->next = deleteNode->next;
-            deleteNode->next->prev = deleteNode->prev;
-            ::operator delete(deleteNode);
-            --list->count;
-            hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
-        } while (hasNode != 0);
-        sentinel = list->sentinel;
-    }
-
-    ::operator delete(sentinel);
-    list->sentinel = 0;
-    list->count = 0;
+zNetworkDispatchHandlerList g_zNetwork_DispatchHandlerList;
 }
 
 /**
@@ -2587,23 +2504,7 @@ zNetworkDispatchHandlerRecord *__fastcall RegisterPacketHandler(
         record->mode = mode;
     }
 
-    zNetworkDispatchHandlerList *const list = &g_zNetwork_DispatchHandlerList;
-    zNetworkDispatchHandlerListNode *const sentinel = list->sentinel;
-    zNetworkDispatchHandlerListNode *const node =
-        (zNetworkDispatchHandlerListNode *)(::operator new(
-            sizeof(zNetworkDispatchHandlerListNode)
-        ));
-    zNetworkDispatchHandlerListNode *const prev = sentinel->prev;
-    node->next = sentinel != 0 ? sentinel : node;
-    node->prev = prev != 0 ? prev : node;
-    sentinel->prev = node;
-    node->prev->next = node;
-    // VC5 list insertion constructs the payload through the node value slot.
-    zNetworkDispatchHandlerRecord **const recordSlot = &node->record;
-    if (recordSlot != 0) {
-        *recordSlot = record;
-    }
-    ++list->count;
+    g_zNetwork_DispatchHandlerList.push_back(record);
 
     return record;
 }
@@ -2618,52 +2519,35 @@ int __fastcall UnregisterPacketHandler(
     int packetType,
     zNetworkPacketHandler handlerProc
 ) {
-    zNetworkDispatchHandlerList *const list = &g_zNetwork_DispatchHandlerList;
-    zNetworkDispatchHandlerListNode *const sentinel = list->sentinel;
-    zNetworkDispatchHandlerListNode *node = sentinel->next;
-    bool reachedEnd = node == sentinel;
-    if (reachedEnd == 0) {
+    zNetworkDispatchHandlerList::iterator node = g_zNetwork_DispatchHandlerList.begin();
+    const zNetworkDispatchHandlerList::iterator end = g_zNetwork_DispatchHandlerList.end();
+    if (node != end) {
         do {
-            zNetworkDispatchHandlerRecord *const record = node->record;
+            zNetworkDispatchHandlerRecord *const record = *node;
             if (record->packetType == packetType && record->handler == handlerProc) {
                 break;
             }
 
-            node = node->next;
-            reachedEnd = node == sentinel;
-        } while (reachedEnd == 0);
+            ++node;
+        } while (node != end);
     }
 
-    if (node != sentinel) {
-        zNetworkDispatchHandlerListNode *write = node;
-        node = node->next;
-        reachedEnd = node == sentinel;
-        if (reachedEnd == 0) {
+    if (node != end) {
+        zNetworkDispatchHandlerList::iterator write = node;
+        ++node;
+        if (node != end) {
             do {
-                zNetworkDispatchHandlerRecord *const record = node->record;
+                zNetworkDispatchHandlerRecord *const record = *node;
                 if (record->packetType != packetType || record->handler != handlerProc) {
-                    write->record = record;
-                    write = write->next;
+                    *write = record;
+                    ++write;
                 }
 
-                node = node->next;
-                reachedEnd = node == sentinel;
-            } while (reachedEnd == 0);
+                ++node;
+            } while (node != end);
         }
 
-        node = write;
-        reachedEnd = node == sentinel;
-        if (reachedEnd == 0) {
-            do {
-                zNetworkDispatchHandlerListNode *const next = node->next;
-                node->prev->next = next;
-                next->prev = node->prev;
-                ::operator delete(node);
-                --list->count;
-                node = next;
-                reachedEnd = node == sentinel;
-            } while (reachedEnd == 0);
-        }
+        g_zNetwork_DispatchHandlerList.erase(write, end);
     }
 
     return 1;
@@ -2681,13 +2565,11 @@ void __fastcall DispatchPacketToHandlers(
     int senderPlayerId,
     zNetworkPacketHeader *packet
 ) {
-    zNetworkDispatchHandlerListNode *const sentinel =
-        g_zNetwork_DispatchHandlerList.sentinel;
-    zNetworkDispatchHandlerListNode *node = sentinel->next;
-    bool hasNode = node != sentinel;
-    if (hasNode != 0) {
+    zNetworkDispatchHandlerList::iterator node = g_zNetwork_DispatchHandlerList.begin();
+    const zNetworkDispatchHandlerList::iterator end = g_zNetwork_DispatchHandlerList.end();
+    if (node != end) {
         do {
-            zNetworkDispatchHandlerRecord *const record = node->record;
+            zNetworkDispatchHandlerRecord *const record = *node;
             if (record->packetType == packet->packetType) {
                 record->handler(
                     senderPlayerId,
@@ -2695,9 +2577,8 @@ void __fastcall DispatchPacketToHandlers(
                 );
             }
 
-            node = node->next;
-            hasNode = node != sentinel;
-        } while (hasNode != 0);
+            ++node;
+        } while (node != end);
     }
 }
 

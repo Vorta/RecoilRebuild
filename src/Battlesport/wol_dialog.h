@@ -109,7 +109,7 @@ struct WestwoodOnlineUpgradeDialog : CDialog {
     void RequestListMode11();
     void OnRefreshCurrentQuery();
     void OnQuerySessionsByName();
-    void SubmitVisibleSessionRequestsAndStatusText();
+    virtual void OnOK();
     void QueueVisibleSessionRequests();
     void QueueVisibleSessionRequestsAndLookupBrowseRecords();
     void OnBrowseRecordListDblClk();
