@@ -35,7 +35,7 @@
   "data_symbols": [
     {
       "address": "0x4f3ca8",
-      "symbol": "?g_RecoilApp@@3TRecoilAppStorage@@A",
+      "symbol": "?g_RecoilApp@@3VRecoilApp@@A",
       "name": "g_RecoilApp",
       "bn_name": "g_RecoilApp",
       "byte_length": 552

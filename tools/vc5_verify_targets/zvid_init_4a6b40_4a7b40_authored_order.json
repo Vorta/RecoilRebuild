@@ -1,6 +1,6 @@
 {
   "name": "zvid_init_4a6b40_4a7b40_authored_order",
-  "description": "Authored-order target for the complete literal-backed zvid_init.c block [0x4a6b40,0x4a7b40). It checks 38 ordinary authored bodies and the explicit authored lifecycle callback in retail order. The shared return-zero ICF body and the identity-unresolved linker thunk remain tracker/full-order inventory outside the authored source-order projection. The compiler-emitted switch table [0x4a7ad8,0x4a7af0) remains attached to 0x4a7990. This target proves no owner, tier, bytes, data placement, provider ABI, exact linked RVA/seam, or final-image fact.",
+  "description": "Authored-order target for the complete literal-backed zvid_init.c block [0x4a6b40,0x4a7b40). It checks 39 ordinary authored bodies and the explicit authored lifecycle callback in retail order. The shared return-zero ICF body remains tracker/full-order inventory outside the authored source-order projection; the independently evidenced public renderer-count accessor is included as authored. The compiler-emitted switch table [0x4a7ad8,0x4a7af0) remains attached to 0x4a7990. This target proves no owner, tier, bytes, data placement, provider ABI, exact linked RVA/seam, or final-image fact.",
   "target_binary": "recoil",
   "retail_start": "0x4a6b40",
   "retail_end_exclusive": "0x4a7b40",
@@ -38,6 +38,7 @@
     {"address":"0x4a7410","symbol":"?GetSelectedHwApiDescriptionOrDefault@zVid@@YAPADXZ","name":"zVid::GetSelectedHwApiDescriptionOrDefault","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a7430","symbol":"?GetHwApiDescription@zVid@@YIPADH@Z","name":"zVid::GetHwApiDescription","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a7450","symbol":"?GetHwApiDriverName@zVid@@YIPADH@Z","name":"zVid::GetHwApiDriverName","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a7470","symbol":"?GetAcceptedHardwareRendererCount@zVid@@YAHXZ","name":"zVid::GetAcceptedHardwareRendererCount","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a7480","symbol":"?GetAcceptedDirectDrawDeviceCount@zVid@@YAHXZ","name":"zVid::GetAcceptedDirectDrawDeviceCount","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a7490","symbol":"?SelectHwApiDeviceOrFallback@zVideo@@YIHH@Z","name":"zVideo::SelectHwApiDeviceOrFallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a74d0","symbol":"?SceneEnter@zVideoD3D@@YAHXZ","name":"zVideoD3D::SceneEnter","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
@@ -59,7 +60,7 @@
       "source_from": "src/GameZRecoil/zVideo/zvid_init.c",
       "order_scope": "authored",
       "function_address_refs": [
-        "0x4a6b40","0x4a6b60","0x4a6b70","0x4a6b80","0x4a6b90","0x4a6bb0","0x4a6bd0","0x4a6bf0","0x4a6ca0","0x4a6cf0","0x4a6d40","0x4a6db0","0x4a6e80","0x4a6fe0","0x4a71c0","0x4a7200","0x4a7220","0x4a7250","0x4a7300","0x4a7330","0x4a73a0","0x4a7410","0x4a7430","0x4a7450","0x4a7480","0x4a7490","0x4a74d0","0x4a74f0","0x4a7520","0x4a7530","0x4a75f0","0x4a7700","0x4a7740","0x4a7770","0x4a77a0","0x4a7990","0x4a7af0","0x4a7b20","0x4a7b30"
+        "0x4a6b40","0x4a6b60","0x4a6b70","0x4a6b80","0x4a6b90","0x4a6bb0","0x4a6bd0","0x4a6bf0","0x4a6ca0","0x4a6cf0","0x4a6d40","0x4a6db0","0x4a6e80","0x4a6fe0","0x4a71c0","0x4a7200","0x4a7220","0x4a7250","0x4a7300","0x4a7330","0x4a73a0","0x4a7410","0x4a7430","0x4a7450","0x4a7470","0x4a7480","0x4a7490","0x4a74d0","0x4a74f0","0x4a7520","0x4a7530","0x4a75f0","0x4a7700","0x4a7740","0x4a7770","0x4a77a0","0x4a7990","0x4a7af0","0x4a7b20","0x4a7b30"
       ]
     }
   ],
@@ -71,7 +72,7 @@
       "retail_end_exclusive": "0x4a7b40",
       "predecessor": {"address":"0x4a69e0","symbol":"?BltSourceToPrimaryClipped@zVideo_buff@@YIXPAUzVidImagePartial@@HHHPAUzVidRect32@@@Z","name":"zVideo_buff::BltSourceToPrimaryClipped","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": [
-        "0x4a6b40","0x4a6b60","0x4a6b70","0x4a6b80","0x4a6b90","0x4a6bb0","0x4a6bd0","0x4a6bf0","0x4a6ca0","0x4a6cf0","0x4a6d40","0x4a6db0","0x4a6e80","0x4a6fe0","0x4a71c0","0x4a7200","0x4a7220","0x4a7250","0x4a7300","0x4a7330","0x4a73a0","0x4a7410","0x4a7430","0x4a7450","0x4a7480","0x4a7490","0x4a74d0","0x4a74f0","0x4a7520","0x4a7530","0x4a75f0","0x4a7700","0x4a7740","0x4a7770","0x4a77a0","0x4a7990","0x4a7af0","0x4a7b20","0x4a7b30"
+        "0x4a6b40","0x4a6b60","0x4a6b70","0x4a6b80","0x4a6b90","0x4a6bb0","0x4a6bd0","0x4a6bf0","0x4a6ca0","0x4a6cf0","0x4a6d40","0x4a6db0","0x4a6e80","0x4a6fe0","0x4a71c0","0x4a7200","0x4a7220","0x4a7250","0x4a7300","0x4a7330","0x4a73a0","0x4a7410","0x4a7430","0x4a7450","0x4a7470","0x4a7480","0x4a7490","0x4a74d0","0x4a74f0","0x4a7520","0x4a7530","0x4a75f0","0x4a7700","0x4a7740","0x4a7770","0x4a77a0","0x4a7990","0x4a7af0","0x4a7b20","0x4a7b30"
       ],
       "successor": {"address":"0x4a7b40","symbol":"?StartupEnumerateAndDefaultSelect@zVideo_dd@@YAXXZ","name":"zVideo_dd::StartupEnumerateAndDefaultSelect","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }

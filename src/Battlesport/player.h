@@ -29,10 +29,6 @@ struct Node;
 
 extern "C" {
 extern int g_Player_HudCounterValue;
-extern int g_PlayerSaveStateListAux;
-extern zUtil_SaveGameState *g_PlayerSaveStateListHead;
-extern zUtil_SaveGameState *g_PlayerSaveStateListTail;
-extern int g_PlayerSaveStateCount;
 extern zVec3 *g_Player_LocalFxOffsetWorldPtr;
 extern zUtil_SaveGameState *g_LocalPlayerSaveState;
 extern zUtil_SaveGameState *g_Player2SaveState;
@@ -104,7 +100,6 @@ extern zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry;
 struct Player_UnderwaterFxPass3Ui : zVideoFxPass3Element {
 
     Player_UnderwaterFxPass3Ui();
-    Player_UnderwaterFxPass3Ui * Constructor();
     void ApplyPass3();
 };
 RECOIL_STATIC_ASSERT(sizeof(Player_UnderwaterFxPass3Ui) == 0x38);
@@ -112,43 +107,16 @@ RECOIL_STATIC_ASSERT(sizeof(Player_UnderwaterFxPass3Ui) == 0x38);
 struct Player_ProjectileCameraFxPass3Ui : zVideoFxPass3Element {
 
     Player_ProjectileCameraFxPass3Ui();
-    Player_ProjectileCameraFxPass3Ui * Constructor();
     void ApplyPass3();
 };
 RECOIL_STATIC_ASSERT(sizeof(Player_ProjectileCameraFxPass3Ui) == 0x38);
 
-union Player_UnderwaterFxPass3UiStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(Player_UnderwaterFxPass3Ui)];
-};
-RECOIL_STATIC_ASSERT(sizeof(Player_UnderwaterFxPass3UiStorage) == 0x38);
-
-union Player_ProjectileCameraFxPass3UiStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(Player_ProjectileCameraFxPass3Ui)];
-};
-RECOIL_STATIC_ASSERT(sizeof(Player_ProjectileCameraFxPass3UiStorage) == 0x38);
-
-union PlayerTopMsgPanelStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(HudUiPanel)];
-};
-RECOIL_STATIC_ASSERT(sizeof(PlayerTopMsgPanelStorage) == sizeof(HudUiPanel));
-
 extern "C" {
-extern Player_UnderwaterFxPass3UiStorage g_Player_UnderwaterFxPass3Ui;
-extern Player_ProjectileCameraFxPass3UiStorage g_Player_State7FxPass3Ui;
-extern PlayerTopMsgPanelStorage g_Player_TopMsgPanel1;
-extern PlayerTopMsgPanelStorage g_Player_TopMsgPanel2;
+extern Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
+extern Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
+extern HudUiPanel g_Player_TopMsgPanel1;
+extern HudUiPanel g_Player_TopMsgPanel2;
 }
-#define g_Player_UnderwaterFxPass3Ui \
-    (*(Player_UnderwaterFxPass3Ui *)&g_Player_UnderwaterFxPass3Ui)
-#define g_Player_State7FxPass3Ui \
-    (*(Player_ProjectileCameraFxPass3Ui *)&g_Player_State7FxPass3Ui)
-#define g_Player_TopMsgPanel1 \
-    (*(HudUiPanel *)&g_Player_TopMsgPanel1)
-#define g_Player_TopMsgPanel2 \
-    (*(HudUiPanel *)&g_Player_TopMsgPanel2)
 
 struct PlayerMasterWeaponSpec {
     PlayerMasterWeaponSpec *next;
@@ -376,16 +344,39 @@ typedef std::vector<PlayerNodeFlagRestoreEntry>
 
 extern PlayerNodeFlagRestoreEntryVector g_PlayerNodeFlagRestoreEntries;
 
+/**
+ * Purpose: Hold player list state and establish an empty list.
+ * This state-only template and spelling are provisional: retail proves the
+ * repeated layout and initialization, not an original template identity.
+ */
+template<class Node>
+struct CPlayerListState {
+    int listAux;
+    Node *head;
+    Node *tail;
+    int count;
+
+    CPlayerListState() {
+        listAux = 0;
+        tail = 0;
+        head = 0;
+        count = 0;
+    }
+};
+typedef CPlayerListState<PlayerMasterCommonData> CPlayerMasterCommonDataList;
+typedef CPlayerListState<PlayerMasterModalData> CPlayerMasterModalDataList;
+typedef CPlayerListState<zUtil_SaveGameState> CPlayerSaveStateList;
+RECOIL_STATIC_ASSERT(sizeof(CPlayerMasterCommonDataList) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(CPlayerMasterModalDataList) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(CPlayerSaveStateList) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(CPlayerMasterCommonDataList, head) == 4);
+RECOIL_STATIC_ASSERT(offsetof(CPlayerMasterCommonDataList, tail) == 8);
+RECOIL_STATIC_ASSERT(offsetof(CPlayerMasterCommonDataList, count) == 12);
 
 extern "C" {
-extern PlayerMasterCommonData *g_PlayerMasterCommonDataHead;
-extern PlayerMasterCommonData *g_PlayerMasterCommonDataTail;
-extern int g_PlayerMasterCommonDataListAux;
-extern int g_PlayerMasterCommonDataCount;
-extern PlayerMasterModalData *g_PlayerMasterModalDataHead;
-extern PlayerMasterModalData *g_PlayerMasterModalDataTail;
-extern int g_PlayerMasterModalDataListAux;
-extern int g_PlayerMasterModalDataCount;
+extern CPlayerMasterCommonDataList g_PlayerMasterCommonDataList;
+extern CPlayerMasterModalDataList g_PlayerMasterModalDataList;
+extern CPlayerSaveStateList g_PlayerSaveStateList;
 extern int g_Player_LocalControlEnabled;
 extern int g_Player_RuntimeInputFlags;
 extern float g_Player_CameraZone;
@@ -429,15 +420,6 @@ namespace zVehicle {
 const char *__fastcall SelectZrdByDifficulty(const char *extraSearchPath);
 } // namespace zVehicle
 
-namespace Player_TopMsgPanel1 {
-void __cdecl Constructor();
-void __cdecl Destructor();
-} // namespace Player_TopMsgPanel1
-
-namespace Player_TopMsgPanel2 {
-void __cdecl Constructor();
-void __cdecl Destructor();
-} // namespace Player_TopMsgPanel2
 
 namespace Player {
 enum PlayerLifecycleState {
@@ -453,21 +435,6 @@ enum PlayerOptCatalogFlags {
     kOptCatalogFlagAltDispatchLatch = 0x02
 };
 
-void __cdecl InitMasterCommonDataList();
-void __cdecl InitMasterModalDataList();
-void __cdecl InitAndRegisterUnderwaterFxPass3UiSingleton();
-void __cdecl InitUnderwaterFxPass3UiSingleton();
-void __cdecl RegisterUnderwaterFxPass3UiOnExit();
-void __cdecl ResetUnderwaterFxPass3UiSingleton();
-void __cdecl InitAndRegisterProjectileCameraFxPass3UiSingleton();
-void __cdecl InitProjectileCameraFxPass3UiSingleton();
-void __cdecl RegisterProjectileCameraFxPass3UiCleanup();
-void __cdecl ResetProjectileCameraFxPass3UiSingleton();
-void __cdecl InitSaveStateList();
-void __cdecl InitAndRegisterTopMsgPanel1();
-void __cdecl RegisterTopMsgPanel1OnExit();
-void __cdecl InitAndRegisterTopMsgPanel2();
-void __cdecl RegisterTopMsgPanel2Cleanup();
 const char *__cdecl GetAivZrdPath();
 void __fastcall ExtractVehicleNameFromAivName(
     const char *aivName,

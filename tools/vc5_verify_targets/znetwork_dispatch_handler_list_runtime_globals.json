@@ -20,7 +20,7 @@
       "address": "0x56add8",
       "symbol": "_g_zNetwork_DispatchHandlerList",
       "name": "g_zNetwork_DispatchHandlerList",
-      "bn_name": "g_zNetwork_DispatchHandlerListFlags",
+      "bn_name": "g_zNetwork_DispatchHandlerList",
       "byte_length": 12
     }
   ]

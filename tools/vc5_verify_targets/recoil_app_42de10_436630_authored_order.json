@@ -15,6 +15,62 @@
           "symbol": "?GetMessageMap@RecoilApp@@UBEPBUAFX_MSGMAP@@XZ"
         },
         {
+          "address": "0x42de20",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/RecoilApp.cpp",
+            "kind": "data-definition",
+            "name": "g_RecoilApp"
+          },
+          "full_order_gate": true,
+          "name": "RecoilApp::StaticInitAndRegisterAtExit",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "_$E210"
+        },
+        {
+          "address": "0x42de30",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/RecoilApp.cpp",
+            "kind": "data-definition",
+            "name": "g_RecoilApp"
+          },
+          "full_order_gate": true,
+          "name": "RecoilApp::StaticInit",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "_$E207"
+        },
+        {
+          "address": "0x42de40",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/RecoilApp.cpp",
+            "kind": "data-definition",
+            "name": "g_RecoilApp"
+          },
+          "full_order_gate": true,
+          "name": "RecoilApp::RegisterAtExit",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "_$E209"
+        },
+        {
+          "address": "0x42de50",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/RecoilApp.cpp",
+            "kind": "data-definition",
+            "name": "g_RecoilApp"
+          },
+          "full_order_gate": true,
+          "name": "RecoilApp::AtExitDestructor",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "_$E208"
+        },
+        {
           "address": "0x42de60",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
@@ -534,7 +590,7 @@
           "name": "CZRecoilFrame::BuildWindowTitle",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BuildWindowTitle@CZRecoilFrame@@UAEPAVCString@@PAV2@@Z"
+          "symbol": "?BuildWindowTitle@CZRecoilFrame@@UAE?AVCString@@XZ"
         },
         {
           "address": "0x430740",
@@ -2031,6 +2087,62 @@
           "symbol": "?GetMessageMap@RecoilApp@@UBEPBUAFX_MSGMAP@@XZ"
         },
         {
+          "address": "0x42de20",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/RecoilApp.cpp",
+            "kind": "data-definition",
+            "name": "g_RecoilApp"
+          },
+          "full_order_gate": true,
+          "name": "RecoilApp::StaticInitAndRegisterAtExit",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "_$E210"
+        },
+        {
+          "address": "0x42de30",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/RecoilApp.cpp",
+            "kind": "data-definition",
+            "name": "g_RecoilApp"
+          },
+          "full_order_gate": true,
+          "name": "RecoilApp::StaticInit",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "_$E207"
+        },
+        {
+          "address": "0x42de40",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/RecoilApp.cpp",
+            "kind": "data-definition",
+            "name": "g_RecoilApp"
+          },
+          "full_order_gate": true,
+          "name": "RecoilApp::RegisterAtExit",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "_$E209"
+        },
+        {
+          "address": "0x42de50",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/RecoilApp.cpp",
+            "kind": "data-definition",
+            "name": "g_RecoilApp"
+          },
+          "full_order_gate": true,
+          "name": "RecoilApp::AtExitDestructor",
+          "pipeline_class": "authored-lifecycle",
+          "required_presence": true,
+          "symbol": "_$E208"
+        },
+        {
           "address": "0x42de60",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
@@ -2550,7 +2662,7 @@
           "name": "CZRecoilFrame::BuildWindowTitle",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BuildWindowTitle@CZRecoilFrame@@UAEPAVCString@@PAV2@@Z"
+          "symbol": "?BuildWindowTitle@CZRecoilFrame@@UAE?AVCString@@XZ"
         },
         {
           "address": "0x430740",

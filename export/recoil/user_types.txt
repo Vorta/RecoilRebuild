@@ -891,6 +891,7 @@ struct zNetworkDPlayServiceProviderInfo;
 struct zNetworkDPlaySessionDesc;
 struct zNetworkDPlaySessionDescCache;
 struct zNetworkDPlaySystemMessage;
+struct zNetworkDispatchHandlerList;
 struct zNetworkDispatchHandlerListNode;
 struct zNetworkDispatchHandlerRecord;
 struct zNetworkPacketHeader;
@@ -15114,6 +15115,14 @@ struct zNetworkDPlaySystemMessage
 	char* nameLong;
 	char* nameDisplay;
 	char payload_028[0x2c];
+};
+
+// "zNetworkDispatchHandlerList"
+struct zNetworkDispatchHandlerList
+{
+	char allocator;
+	struct zNetworkDispatchHandlerListNode* _Head;
+	uint32_t _Size;
 };
 
 // "zNetworkDispatchHandlerListNode"

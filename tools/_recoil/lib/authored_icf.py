@@ -35,9 +35,21 @@ def reviewed_authority_targets(provenances, accepted_target) -> frozenset[str]:
 
 def exact_selected_target_membership(registered_ids, expected_target) -> bool:
     """Other diagnostic targets neither replace nor duplicate the selected one."""
-    return (isinstance(expected_target, str) and bool(expected_target)
-            and len(registered_ids) == len(set(registered_ids))
-            and registered_ids.count(expected_target) == 1)
+    return exact_required_target_membership(registered_ids, (expected_target,))
+
+
+def exact_required_target_membership(registered_ids, expected_targets) -> bool:
+    """Require each named authority once without freezing diagnostic membership."""
+    return (
+        isinstance(registered_ids, (list, tuple))
+        and isinstance(expected_targets, (list, tuple))
+        and bool(expected_targets)
+        and all(isinstance(item, str) and bool(item) for item in registered_ids)
+        and all(isinstance(item, str) and bool(item) for item in expected_targets)
+        and len(registered_ids) == len(set(registered_ids))
+        and len(expected_targets) == len(set(expected_targets))
+        and all(registered_ids.count(target) == 1 for target in expected_targets)
+    )
 
 
 def _exact_mapping(value: Any, fields: set[str], *, label: str) -> dict[str, Any]:

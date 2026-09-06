@@ -24,8 +24,8 @@
     },
     {
       "address": "0x4a5440",
-      "symbol": "?Destructor@zSndWaveData@@QAEXXZ",
-      "name": "zSndWaveData::Destructor",
+      "symbol": "??1zSndWaveData@@QAE@XZ",
+      "name": "zSndWaveData::~zSndWaveData",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "authored-lifecycle-body",
       "required_presence": true,

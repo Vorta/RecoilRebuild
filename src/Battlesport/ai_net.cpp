@@ -854,7 +854,7 @@ AINetNode *__fastcall AINet::FindNearestNode(
  * Source owner: pending battlesport_ai.ainet_peer_ring_build audit.
  */
 void AINet::BuildAiPeerRingsByAiNetId() {
-    zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         const int aiNetId = playerState->aiNetId;

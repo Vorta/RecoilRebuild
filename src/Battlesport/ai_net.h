@@ -2716,14 +2716,14 @@ void __fastcall AINet::AiSteerTowardPathNodeReverse(
 }
 
 /**
- * BN shows traversal from g_PlayerSaveStateListHead, filtering
+ * BN shows traversal from g_PlayerSaveStateList.head, filtering
  * lifecycleState == 2 and aiTopLevelState == 1, restoring matching nodes, and
  * setting g_Player_AiMode2State1Finalized to 1 after the pass.
  * Purpose: Finalizes AI Mode2 State1 by restoring saved top-level state for
  * active AI players and setting the global finalization latch.
  */
 void AINet::AiFinalizeMode2State1ForAllPlayers() {
-    zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         if (playerState->lifecycleState == 2 && playerState->aiTopLevelState == 1) {

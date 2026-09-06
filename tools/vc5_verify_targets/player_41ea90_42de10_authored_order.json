@@ -7,201 +7,301 @@
       "functions": [
         {
           "address": "0x41ea90",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_PlayerMasterCommonDataList"
+          },
           "full_order_gate": true,
           "name": "Player::InitMasterCommonDataList",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitMasterCommonDataList@Player@@YAXXZ"
+          "symbol": "_$E200"
         },
         {
           "address": "0x41eac0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_PlayerMasterModalDataList"
+          },
           "full_order_gate": true,
           "name": "Player::InitMasterModalDataList",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitMasterModalDataList@Player@@YAXXZ"
+          "symbol": "_$E203"
         },
         {
           "address": "0x41eaf0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_UnderwaterFxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::InitAndRegisterUnderwaterFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitAndRegisterUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E208"
         },
         {
           "address": "0x41eb00",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_UnderwaterFxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::InitUnderwaterFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E205"
         },
         {
           "address": "0x41eb10",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_UnderwaterFxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::RegisterUnderwaterFxPass3UiOnExit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterUnderwaterFxPass3UiOnExit@Player@@YAXXZ"
+          "symbol": "_$E207"
         },
         {
           "address": "0x41eb20",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_UnderwaterFxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::ResetUnderwaterFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?ResetUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E206"
         },
         {
           "address": "0x41eb30",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_UnderwaterFxPass3Ui::Constructor",
+          "name": "Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Constructor@Player_UnderwaterFxPass3Ui@@QAEPAU1@XZ"
+          "symbol": "??0Player_UnderwaterFxPass3Ui@@QAE@XZ"
         },
         {
           "address": "0x41eb50",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_State7FxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::InitAndRegisterProjectileCameraFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitAndRegisterProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E213"
         },
         {
           "address": "0x41eb60",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_State7FxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::InitProjectileCameraFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E210"
         },
         {
           "address": "0x41eb70",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_State7FxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::RegisterProjectileCameraFxPass3UiCleanup",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterProjectileCameraFxPass3UiCleanup@Player@@YAXXZ"
+          "symbol": "_$E212"
         },
         {
           "address": "0x41eb80",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_State7FxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::ResetProjectileCameraFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?ResetProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E211"
         },
         {
           "address": "0x41eb90",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_ProjectileCameraFxPass3Ui::Constructor",
+          "name": "Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Constructor@Player_ProjectileCameraFxPass3Ui@@QAEPAU1@XZ"
+          "symbol": "??0Player_ProjectileCameraFxPass3Ui@@QAE@XZ"
         },
         {
           "address": "0x41ebd0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiMgrSensor_TrackList"
+          },
           "full_order_gate": true,
           "name": "HudUiMgrSensor::TrackList_Reset",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?TrackList_Reset@HudUiMgrSensor@@YAXXZ"
+          "symbol": "_$E216"
         },
         {
           "address": "0x41ec00",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_PlayerSaveStateList"
+          },
           "full_order_gate": true,
           "name": "Player::InitSaveStateList",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitSaveStateList@Player@@YAXXZ"
+          "symbol": "_$E219"
         },
         {
           "address": "0x41ec30",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel1"
+          },
           "full_order_gate": true,
           "name": "Player::InitAndRegisterTopMsgPanel1",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitAndRegisterTopMsgPanel1@Player@@YAXXZ"
+          "symbol": "_$E224"
         },
         {
           "address": "0x41ec40",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel1"
+          },
           "full_order_gate": true,
           "name": "Player_TopMsgPanel1::Constructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?Constructor@Player_TopMsgPanel1@@YAXXZ"
+          "symbol": "_$E221"
         },
         {
           "address": "0x41ec60",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel1"
+          },
           "full_order_gate": true,
           "name": "Player::RegisterTopMsgPanel1OnExit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterTopMsgPanel1OnExit@Player@@YAXXZ"
+          "symbol": "_$E223"
         },
         {
           "address": "0x41ec70",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel1"
+          },
           "full_order_gate": true,
           "name": "Player_TopMsgPanel1::Destructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?Destructor@Player_TopMsgPanel1@@YAXXZ"
+          "symbol": "_$E222"
         },
         {
           "address": "0x41ec80",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel2"
+          },
           "full_order_gate": true,
           "name": "Player::InitAndRegisterTopMsgPanel2",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitAndRegisterTopMsgPanel2@Player@@YAXXZ"
+          "symbol": "_$E229"
         },
         {
           "address": "0x41ec90",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel2"
+          },
           "full_order_gate": true,
           "name": "Player_TopMsgPanel2::Constructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?Constructor@Player_TopMsgPanel2@@YAXXZ"
+          "symbol": "_$E226"
         },
         {
           "address": "0x41ecb0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel2"
+          },
           "full_order_gate": true,
           "name": "Player::RegisterTopMsgPanel2Cleanup",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterTopMsgPanel2Cleanup@Player@@YAXXZ"
+          "symbol": "_$E228"
         },
         {
           "address": "0x41ecc0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel2"
+          },
           "full_order_gate": true,
           "name": "Player_TopMsgPanel2::Destructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?Destructor@Player_TopMsgPanel2@@YAXXZ"
+          "symbol": "_$E227"
         },
         {
           "address": "0x41ecd0",
@@ -220,7 +320,7 @@
           "pipeline_class": "non-authored",
           "provenance": "compiler-emitted-noncovering",
           "required_presence": true,
-          "symbol": "_$E202"
+          "symbol": "_$E234"
         },
         {
           "address": "0x41ef40",
@@ -230,7 +330,7 @@
           "pipeline_class": "non-authored",
           "provenance": "compiler-emitted-noncovering",
           "required_presence": true,
-          "symbol": "_$E199"
+          "symbol": "_$E231"
         },
         {
           "address": "0x41ef60",
@@ -240,7 +340,7 @@
           "pipeline_class": "non-authored",
           "provenance": "compiler-emitted-noncovering",
           "required_presence": true,
-          "symbol": "_$E201"
+          "symbol": "_$E233"
         },
         {
           "address": "0x41ef70",
@@ -250,7 +350,7 @@
           "pipeline_class": "non-authored",
           "provenance": "compiler-emitted-noncovering",
           "required_presence": true,
-          "symbol": "_$E200"
+          "symbol": "_$E232"
         },
         {
           "address": "0x41efa0",
@@ -1633,7 +1733,7 @@
           "pipeline_class": "non-authored",
           "provenance": "compiler-emitted-noncovering",
           "required_presence": true,
-          "symbol": "_$E202"
+          "symbol": "_$E234"
         },
         {
           "address": "0x41ef40",
@@ -1643,7 +1743,7 @@
           "pipeline_class": "non-authored",
           "provenance": "compiler-emitted-noncovering",
           "required_presence": true,
-          "symbol": "_$E199"
+          "symbol": "_$E231"
         },
         {
           "address": "0x41ef60",
@@ -1653,7 +1753,7 @@
           "pipeline_class": "non-authored",
           "provenance": "compiler-emitted-noncovering",
           "required_presence": true,
-          "symbol": "_$E201"
+          "symbol": "_$E233"
         },
         {
           "address": "0x41ef70",
@@ -1663,205 +1763,305 @@
           "pipeline_class": "non-authored",
           "provenance": "compiler-emitted-noncovering",
           "required_presence": true,
-          "symbol": "_$E200"
+          "symbol": "_$E232"
         },
         {
           "address": "0x41ea90",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_PlayerMasterCommonDataList"
+          },
           "full_order_gate": true,
           "name": "Player::InitMasterCommonDataList",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitMasterCommonDataList@Player@@YAXXZ"
+          "symbol": "_$E200"
         },
         {
           "address": "0x41eac0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_PlayerMasterModalDataList"
+          },
           "full_order_gate": true,
           "name": "Player::InitMasterModalDataList",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitMasterModalDataList@Player@@YAXXZ"
+          "symbol": "_$E203"
         },
         {
           "address": "0x41eaf0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_UnderwaterFxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::InitAndRegisterUnderwaterFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitAndRegisterUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E208"
         },
         {
           "address": "0x41eb00",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_UnderwaterFxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::InitUnderwaterFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E205"
         },
         {
           "address": "0x41eb10",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_UnderwaterFxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::RegisterUnderwaterFxPass3UiOnExit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterUnderwaterFxPass3UiOnExit@Player@@YAXXZ"
+          "symbol": "_$E207"
         },
         {
           "address": "0x41eb20",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_UnderwaterFxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::ResetUnderwaterFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?ResetUnderwaterFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E206"
         },
         {
           "address": "0x41eb30",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_UnderwaterFxPass3Ui::Constructor",
+          "name": "Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Constructor@Player_UnderwaterFxPass3Ui@@QAEPAU1@XZ"
+          "symbol": "??0Player_UnderwaterFxPass3Ui@@QAE@XZ"
         },
         {
           "address": "0x41eb50",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_State7FxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::InitAndRegisterProjectileCameraFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitAndRegisterProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E213"
         },
         {
           "address": "0x41eb60",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_State7FxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::InitProjectileCameraFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E210"
         },
         {
           "address": "0x41eb70",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_State7FxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::RegisterProjectileCameraFxPass3UiCleanup",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterProjectileCameraFxPass3UiCleanup@Player@@YAXXZ"
+          "symbol": "_$E212"
         },
         {
           "address": "0x41eb80",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_State7FxPass3Ui"
+          },
           "full_order_gate": true,
           "name": "Player::ResetProjectileCameraFxPass3UiSingleton",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?ResetProjectileCameraFxPass3UiSingleton@Player@@YAXXZ"
+          "symbol": "_$E211"
         },
         {
           "address": "0x41eb90",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_ProjectileCameraFxPass3Ui::Constructor",
+          "name": "Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Constructor@Player_ProjectileCameraFxPass3Ui@@QAEPAU1@XZ"
+          "symbol": "??0Player_ProjectileCameraFxPass3Ui@@QAE@XZ"
         },
         {
           "address": "0x41ebd0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_HudUiMgrSensor_TrackList"
+          },
           "full_order_gate": true,
           "name": "HudUiMgrSensor::TrackList_Reset",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?TrackList_Reset@HudUiMgrSensor@@YAXXZ"
+          "symbol": "_$E216"
         },
         {
           "address": "0x41ec00",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_PlayerSaveStateList"
+          },
           "full_order_gate": true,
           "name": "Player::InitSaveStateList",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitSaveStateList@Player@@YAXXZ"
+          "symbol": "_$E219"
         },
         {
           "address": "0x41ec30",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel1"
+          },
           "full_order_gate": true,
           "name": "Player::InitAndRegisterTopMsgPanel1",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitAndRegisterTopMsgPanel1@Player@@YAXXZ"
+          "symbol": "_$E224"
         },
         {
           "address": "0x41ec40",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel1"
+          },
           "full_order_gate": true,
           "name": "Player_TopMsgPanel1::Constructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?Constructor@Player_TopMsgPanel1@@YAXXZ"
+          "symbol": "_$E221"
         },
         {
           "address": "0x41ec60",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel1"
+          },
           "full_order_gate": true,
           "name": "Player::RegisterTopMsgPanel1OnExit",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterTopMsgPanel1OnExit@Player@@YAXXZ"
+          "symbol": "_$E223"
         },
         {
           "address": "0x41ec70",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel1"
+          },
           "full_order_gate": true,
           "name": "Player_TopMsgPanel1::Destructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?Destructor@Player_TopMsgPanel1@@YAXXZ"
+          "symbol": "_$E222"
         },
         {
           "address": "0x41ec80",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel2"
+          },
           "full_order_gate": true,
           "name": "Player::InitAndRegisterTopMsgPanel2",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?InitAndRegisterTopMsgPanel2@Player@@YAXXZ"
+          "symbol": "_$E229"
         },
         {
           "address": "0x41ec90",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel2"
+          },
           "full_order_gate": true,
           "name": "Player_TopMsgPanel2::Constructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?Constructor@Player_TopMsgPanel2@@YAXXZ"
+          "symbol": "_$E226"
         },
         {
           "address": "0x41ecb0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel2"
+          },
           "full_order_gate": true,
           "name": "Player::RegisterTopMsgPanel2Cleanup",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?RegisterTopMsgPanel2Cleanup@Player@@YAXXZ"
+          "symbol": "_$E228"
         },
         {
           "address": "0x41ecc0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "compiler-generated-thunk",
+          "emission_anchor": {
+            "path": "src/Battlesport/player.cpp",
+            "kind": "data-definition",
+            "name": "g_Player_TopMsgPanel2"
+          },
           "full_order_gate": true,
           "name": "Player_TopMsgPanel2::Destructor",
-          "pipeline_class": "authored",
+          "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "?Destructor@Player_TopMsgPanel2@@YAXXZ"
+          "symbol": "_$E227"
         },
         {
           "address": "0x41ecd0",

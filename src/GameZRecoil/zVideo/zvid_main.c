@@ -2414,27 +2414,6 @@ int __fastcall ApplyBrightnessToPaletteEntries(
 namespace zVideo {
 
 /**
- * Source-shape evidence: the VC5 coverage symbol is the zVideo namespace
- * helper `?zVideoFxPass3Config_UpdateLocal@zVideo@@YIXPAUzVideoFxPass3Config@@M@Z`,
- * with the config object passed explicitly rather than as a C++ member method.
- * Purpose: update the local pass-3 config container and reset its slot queue.
- */
-
-/**
- * Source-shape evidence: sibling local-config helpers in this cluster use
- * zVideo namespace `__fastcall` functions with an explicit config pointer;
- * the public zVideo wrapper at 0x4beee0 supplies the singleton.
- * Purpose: arm the root pass-3 element with the primary overlay parameters.
- */
-
-/**
- * Source-shape evidence: this is the same local-config helper family as
- * 0x4bed30 and keeps the config as an explicit namespace-function parameter;
- * the public zVideo wrapper at 0x4bef10 supplies the singleton.
- * Purpose: queue one local pass-3 slot payload for the next config update.
- */
-
-/**
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: return the zVideo success status for dispatch slots that need no
  * backend-specific action.

@@ -63,6 +63,33 @@ def test_vc5_parser_exposes_smoke_without_profile_matrix() -> None:
     assert "profile_matrix" not in vars(args)
 
 
+@pytest.mark.parametrize("item_kind", ["function", "data"])
+def test_byte_evidence_reports_effective_source_profile(item_kind, capsys) -> None:
+    from types import SimpleNamespace as Row
+
+    target = Row(source_from="unit.cpp", compiler_profile="default",
+                 compiler_flags=("/Ob0",), manifest_path=Path("target.json"))
+    compiled = Row(source_path=Path("unit.cpp"), effective_compiler_profile="inline",
+                   effective_compiler_flags=("/Ob1", "/MD"), compiler_env="vc5",
+                   compiler_version="11", obj_path=Path("unit.obj"), cod_path=Path("unit.cod"))
+    comparison = Row(mask_path=None, relocation_identity_path=None, diff_path=None,
+                     triage_path=None, text_diff_path=None, classified_text_path=None)
+    result = Row(mismatches=0, target=target, item_kind=item_kind,
+                 function=Row(address="0x401000", name="entry", symbol="_entry"),
+                 comparison=comparison, vc5_size_or_diff_count=1)
+    vc5_verify.print_evidence_block(compiled, result)
+    output = capsys.readouterr().out
+    assert "Compiler profile: inline" in output
+    assert "Compiler flags: /Ob1 /MD" in output
+    assert "/Ob0" not in output
+    compiled.effective_compiler_profile = ""
+    compiled.effective_compiler_flags = ()
+    vc5_verify.print_evidence_block(compiled, result)
+    fallback = capsys.readouterr().out
+    assert "Compiler profile: default" in fallback
+    assert "Compiler flags: /Ob0" in fallback
+
+
 def test_lifecycle_icf_requires_every_fresh_comdat_and_exact_relocation_semantics() -> None:
     from types import SimpleNamespace as Row
     from _recoil.lib.authored_icf import validate_lifecycle_object_members
@@ -358,3 +385,81 @@ def test_playground_parser_is_explicit_and_presence_authority_errors_fail_closed
     assert build.required_authored_presence_at_map(Path("candidate.map"), Path("canonical.db")) == {
         "passed": False, "error": "stale census",
     }
+
+
+def test_byte_artifact_build_is_non_deploying_and_requires_complete_success(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import json
+    from types import SimpleNamespace as Row
+    from _recoil.commands import live_byte_verify as byte
+
+    good = dict(
+        kind="final-build-diagnostic", diagnostic_kind="whole-program-linkability",
+        success=True, fresh_build=True, reuse=False, compile_succeeded=True,
+        coff_alias_sources_succeeded=True, resource_succeeded=True,
+        link_succeeded=True, candidate_available=True,
+        linked_order_evaluation_suppressed=True, playtest_deployment_suppressed=True,
+        accepts_linked_order=False, accepts_bytes=False, accepts_final_image=False,
+        candidate_expected_truth=False, authored_byte_eligible=False,
+        playtest_deploy={"attempted": False, "updated": False},
+    )
+    commands = []
+
+    def invoke(mode: str, report: dict, *, returncode: int = 0, omit: str = "") -> None:
+        root = tmp_path / str(len(commands))
+        config = Row(sources=(Path("unit.cpp"),))
+        paths = Row(summary_path=root / "summary.json", exe_path=root / "unit.exe",
+                    map_path=root / "unit.map")
+        obj = root / "unit.obj"
+        monkeypatch.setattr(byte, "load_config", lambda path: config)
+        monkeypatch.setattr(byte, "with_explicit_build_dir", lambda config, path: config)
+        monkeypatch.setattr(byte, "build_paths", lambda config: paths)
+        monkeypatch.setattr(byte, "object_path", lambda *args: obj)
+
+        def produce(command: list[str], **kwargs: object) -> Row:
+            commands.append(command)
+            root.mkdir()
+            for path in (obj, paths.exe_path, paths.map_path):
+                if path.name != omit:
+                    path.write_bytes(b"fresh candidate")
+            paths.summary_path.write_text(json.dumps(report), encoding="utf-8")
+            return Row(returncode=returncode, stdout="", stderr="")
+
+        monkeypatch.setattr(byte.subprocess, "run", produce)
+        byte._run_fresh_build(Row(mode=mode, final_config=Path("canonical.json")), root)
+
+    for mode in ("authored", "linked"):
+        invoke(mode, good)
+        assert "--linkability-only" in commands[-1]
+        assert "--clean" in commands[-1]
+        assert "--playground-only" not in commands[-1]
+        assert "--compile-only" not in commands[-1]
+    invoke("object", dict(kind="compile-only-diagnostic", success=True))
+    assert "--compile-only" in commands[-1]
+    assert "--compile-only-skip-linked-order" in commands[-1]
+    assert "--linkability-only" not in commands[-1]
+
+    # These summaries describe artifact production only, never byte acceptance.
+    for field in (
+        "success", "fresh_build", "compile_succeeded", "coff_alias_sources_succeeded",
+        "resource_succeeded", "link_succeeded", "candidate_available",
+        "linked_order_evaluation_suppressed", "playtest_deployment_suppressed",
+        "reuse", "accepts_linked_order", "accepts_bytes", "accepts_final_image",
+        "candidate_expected_truth",
+    ):
+        with pytest.raises(byte.LiveByteError):
+            invoke("authored", {**good, field: not good[field]})
+    for changes in (
+        {"kind": "final-build"}, {"diagnostic_kind": "other"},
+        {"playtest_deploy": {"attempted": True, "updated": False}},
+        {"playtest_deploy": {"attempted": False, "updated": True}},
+        {"playtest_deploy": None},
+    ):
+        with pytest.raises(byte.LiveByteError):
+            invoke("linked", {**good, **changes})
+    with pytest.raises(byte.LiveByteError, match="non-deploying"):
+        invoke("authored", {**good, "failure_stage": "linked-order"}, returncode=1)
+    for missing in ("unit.obj", "unit.exe", "unit.map"):
+        with pytest.raises(byte.LiveByteError, match="missing"):
+            invoke("authored", good, omit=missing)

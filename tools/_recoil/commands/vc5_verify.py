@@ -7508,6 +7508,8 @@ def print_evidence_block(compiled: CompiledTarget, result: VerificationResult) -
     target = result.target
     item = result.function
     source = target.source_from or str(compiled.source_path)
+    profile = compiled.effective_compiler_profile or target.compiler_profile
+    flags = compiled.effective_compiler_flags or target.compiler_flags
     print()
     if result.item_kind == "data":
         print("Data symbol evidence block:")
@@ -7516,11 +7518,11 @@ def print_evidence_block(compiled: CompiledTarget, result: VerificationResult) -
         print(f"- Manifest: {target.manifest_path}")
         print(f"- Source: {source}")
         print(f"- Generated symbol: {item.symbol}")
-        if target.compiler_profile:
-            print(f"- Compiler profile: {target.compiler_profile}")
+        if profile:
+            print(f"- Compiler profile: {profile}")
         print(f"- Compiler env: {compiled.compiler_env}")
         print(f"- Compiler version: {compiled.compiler_version}")
-        print(f"- Compiler flags: {' '.join(target.compiler_flags)}")
+        print(f"- Compiler flags: {' '.join(flags)}")
         print("- Target architecture: x86")
         print(f"- VC object: {compiled.obj_path}")
         print(f"- Relocation mask: {result.comparison.mask_path}")
@@ -7536,11 +7538,11 @@ def print_evidence_block(compiled: CompiledTarget, result: VerificationResult) -
     print(f"- Manifest: {target.manifest_path}")
     print(f"- Source: {source}")
     print(f"- Generated symbol: {item.symbol}")
-    if target.compiler_profile:
-        print(f"- Compiler profile: {target.compiler_profile}")
+    if profile:
+        print(f"- Compiler profile: {profile}")
     print(f"- Compiler env: {compiled.compiler_env}")
     print(f"- Compiler version: {compiled.compiler_version}")
-    print(f"- Compiler flags: {' '.join(target.compiler_flags)}")
+    print(f"- Compiler flags: {' '.join(flags)}")
     print("- Target architecture: x86")
     print(f"- VC object: {compiled.obj_path}")
     print(f"- VC listing: {compiled.cod_path}")

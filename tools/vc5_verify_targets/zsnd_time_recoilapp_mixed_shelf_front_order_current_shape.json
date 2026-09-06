@@ -38,7 +38,7 @@
         },
         {
           "address": "0x4a5440",
-          "symbol": "?Destructor@zSndWaveData@@QAEXXZ",
+          "symbol": "??1zSndWaveData@@QAE@XZ",
           "name": "zSndWaveData::Destructor"
         },
         {

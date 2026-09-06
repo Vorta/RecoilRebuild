@@ -57,8 +57,8 @@
     },
     {
       "address": "0x56c780",
-      "symbol": "?g_zInterp_Object3DCommandIntScratch@@3HA",
-      "name": "g_zInterp_Object3DCommandIntScratch",
+      "symbol": "?g_zInterp_Object3DCommandDi@@3PAUzDiPartial@@A",
+      "name": "g_zInterp_Object3DCommandDi",
       "byte_length": 4
     },
     {

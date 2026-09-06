@@ -869,7 +869,7 @@ namespace zVid {
  * Purpose: report whether the cached renderer list contains an accepted entry.
  */
 int __cdecl HasAcceptedHardwareRenderer() {
-    return GetAcceptedHardwareRendererCount_Cached() > 0 ? 1 : 0;
+    return GetAcceptedHardwareRendererCount() > 0 ? 1 : 0;
 }
 
 } // namespace zVid

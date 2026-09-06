@@ -52,7 +52,7 @@
       "retail_end_exclusive": "0x4c0d20",
       "predecessor": {"address":"0x4bffb0","symbol":"?SetSegmentEndpoints@HudUiPrimitiveBindTarget@@QAEXHHHH@Z","name":"HudUiPrimitiveBindTarget::SetSegmentEndpoints","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": ["0x4bffe0","0x4c0010","0x4c0030","0x4c0050","0x4c0070","0x4c0080","0x4c00a0","0x4c00c0","0x4c00e0","0x4c0100","0x4c0180","0x4c01b0","0x4c0260","0x4c0280","0x4c0370","0x4c0400","0x4c0620","0x4c0630","0x4c06a0","0x4c06c0","0x4c0700","0x4c0780","0x4c07c0"],
-      "successor": {"address":"0x4c0d20","symbol":"?Constructor@zInterp_Context@@QAEPAU1@PBD0@Z","name":"zInterp_Context::Constructor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x4c0d20","symbol":"??0zInterp_Context@@QAE@PBD0@Z","name":"zInterp_Context::zInterp_Context","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

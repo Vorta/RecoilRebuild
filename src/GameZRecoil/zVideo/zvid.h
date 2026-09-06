@@ -770,6 +770,7 @@ void __fastcall SetHwApiOption(int hwApiOption);
 int GetAccelerationOption();
 int GetHwApiOption();
 int __cdecl GetAcceptedDirectDrawDeviceCount();
+int __cdecl GetAcceptedHardwareRendererCount();
 int __cdecl GetAcceptedHardwareRendererCount_Cached();
 int __cdecl HasAcceptedHardwareRenderer();
 int __cdecl GetTexturePackLoadState();
@@ -968,28 +969,9 @@ void __fastcall buff_BlurRegionByMode(
     zVidRect32 *rectOrNull,
     int mode
 );
-void __fastcall zVideoFxPass3Config_UpdateLocal(
-    zVideoFxPass3Config *config,
-    float deltaTime
-);
-void __fastcall zVideoFxPass3Config_SetPrimaryElementParamsLocal(
-    zVideoFxPass3Config *config,
-    unsigned int packedColor,
-    double primaryAlpha
-);
 void __fastcall FxPass3_SetPrimaryElementParamsLocal(
-    unsigned int packedColor,
+    unsigned short packedColor,
     double primaryAlpha
-);
-void __fastcall zVideoFxPass3Config_QueueElementLocal(
-    zVideoFxPass3Config *config,
-    int rectLeftPixels,
-    int rectTopPixels,
-    int currentRadiusPixels,
-    int maxRadiusPixels,
-    int extentPixels,
-    float sinFreq,
-    float sinPhase
 );
 void __fastcall FxPass3_QueueElementLocal(
     int rectLeftPixels,

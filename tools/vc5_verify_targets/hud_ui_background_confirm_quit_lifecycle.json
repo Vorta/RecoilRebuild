@@ -19,13 +19,13 @@
   "functions": [
     {
       "address": "0x415680",
-      "symbol": "?Constructor@HudUiBackgroundConfirmQuit@@QAEPAU1@XZ",
-      "name": "HudUiBackgroundConfirmQuit::Constructor"
+      "symbol": "??0HudUiBackgroundConfirmQuit@@QAE@XZ",
+      "name": "HudUiBackgroundConfirmQuit::HudUiBackgroundConfirmQuit"
     },
     {
       "address": "0x4157b0",
-      "symbol": "?Destructor@HudUiBackgroundConfirmQuit@@QAEXXZ",
-      "name": "HudUiBackgroundConfirmQuit::Destructor"
+      "symbol": "??1HudUiBackgroundConfirmQuit@@UAE@XZ",
+      "name": "HudUiBackgroundConfirmQuit::~HudUiBackgroundConfirmQuit"
     }
   ]
 }

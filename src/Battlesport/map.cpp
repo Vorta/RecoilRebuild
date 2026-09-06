@@ -2006,7 +2006,7 @@ void HudSensorTracker::Update() {
     }
 
     zUtil_SaveGameState *saveState =
-        g_PlayerSaveStateListHead != 0 ? g_PlayerSaveStateListHead->next : 0;
+        g_PlayerSaveStateList.head != 0 ? g_PlayerSaveStateList.head->next : 0;
     while (saveState != 0) {
         DrawSaveStateMarker(saveState);
         saveState = saveState != 0 ? saveState->next : 0;

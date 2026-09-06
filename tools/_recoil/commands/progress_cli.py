@@ -1272,6 +1272,11 @@ def _order_row_role_gate(
     registered_class = row.get("pipeline_class")
     tracker_class = tracker_row.get("pipeline_class") if tracker_row is not None else None
     problems: list[str] = []
+    if registered_class and tracker_class and registered_class != tracker_class:
+        problems.append(
+            f"pipeline_class disagrees: registration={registered_class!r}, "
+            f"tracker={tracker_class!r}; review classification separately"
+        )
     if registered_class == "unresolved":
         problems.append("registration pipeline_class='unresolved'")
     if tracker_class == "unresolved":
@@ -1293,6 +1298,11 @@ def _order_row_role_gate(
         tracker_role = (
             tracker_row.get("authored_order_role") if tracker_row is not None else None
         )
+        if registered_role and tracker_role and registered_role != tracker_role:
+            problems.append(
+                f"authored_order_role disagrees: registration={registered_role!r}, "
+                f"tracker={tracker_role!r}; review classification separately"
+            )
         if registered_role == "unresolved":
             problems.append("registration authored_order_role='unresolved'")
         if tracker_role == "unresolved":
@@ -3658,17 +3668,8 @@ def _commit_validated_call_contract_slice(
                 scope_ids=[symbol_id],
                 provenance=provenance,
             )
-            accept_live_call_contract_symbols(
-                data,
-                symbol_ids=[symbol_id],
-                evidence_id=evidence_id,
-                facts={
-                    "validation_mode": "live",
-                    "slice_id": slice_id,
-                    **current_generations(),
-                },
-            )
             evidence_ids[symbol_id] = evidence_id
+        accept_live_call_contract_symbols(data, evidence_by_symbol=evidence_ids)
         details["evidence_ids"] = evidence_ids
     proposed, entity_patches, top_level_patches = _call_contract_scoped_patch_plan(
         document,

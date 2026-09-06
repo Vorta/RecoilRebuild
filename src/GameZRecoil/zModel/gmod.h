@@ -306,8 +306,8 @@ void __stdcall SetTextureWorldBase(
 int __fastcall SetDiTextureWorldPerMeter(
     zDiPartial *di,
     int worldSpaceEnabled,
-    float textureWorldPerMeter,
-    int textureWorldAxis
+    float scrollRateU,
+    float scrollRateV
 );
 void __fastcall RenderNodeHardware(
     zClass_NodePartial *node,

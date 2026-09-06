@@ -24426,8 +24426,7 @@
     g_PlayerNodeFlagRestoreEntries.capacityEnd = nullptr
 }
 
-// Physical source: src/Battlesport/player.cpp; layer: player_recorded_node_flag_restore_layer.
-// Restores saved zClass node flags from the static PlayerNodeFlagRestoreEntries vector and clears the restore list after replay.
+// Restores recorded node flags. Assembly snapshots all four fields of each 16-byte entry before calling the three conditional node-flag setters. Iteration reloads the vector end after those calls. There is no vector clear or end-pointer store in this function.
 0x41efa0 void __fastcall Player::RestoreRecordedNodeFlags()
 {
     for (struct PlayerNodeFlagRestoreEntry* entry = g_PlayerNodeFlagRestoreEntries.begin; entry != g_PlayerNodeFlagRestoreEntries.end; entry = &entry[1])
@@ -115290,10 +115289,10 @@
 // Original file: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp. Assembly verifies traversal from g_zNetwork_DispatchHandlerListSentinel->next until the sentinel, unlinking each node through prev/next, deleting only the list node, decrementing g_zNetwork_DispatchHandlerListCount per node, and leaving the sentinel/global pointer allocated.
 0x48bf40 void zNetwork::DeleteAllDispatchHandlers()
 {
-    struct zNetworkDispatchHandlerListNode* zNetwork_DispatchHandlerListSentinel_1 = g_zNetwork_DispatchHandlerListSentinel
-    struct zNetworkDispatchHandlerListNode* next = zNetwork_DispatchHandlerListSentinel_1->next
+    struct zNetworkDispatchHandlerListNode* _Head = g_zNetwork_DispatchHandlerList._Head
+    struct zNetworkDispatchHandlerListNode* next = _Head->next
     int32_t eax
-    eax.b = next == zNetwork_DispatchHandlerListSentinel_1
+    eax.b = next == _Head
     char temp0 = eax.b
     eax.b = neg.b(eax.b)
 
@@ -115309,8 +115308,8 @@
         *next_1->prev = next_1->next
         next_1->next->prev = next_1->prev
         operator delete(next_1)
-        g_zNetwork_DispatchHandlerListCount -= 1
-        eax_5.b = next == zNetwork_DispatchHandlerListSentinel_1
+        g_zNetwork_DispatchHandlerList._Size -= 1
+        eax_5.b = next == _Head
         temp1_1 = eax_5.b
         eax_5.b = neg.b(eax_5.b)
     while ((sbb.d(eax_5, eax_5, temp1_1 != 0)).b != 0xff)
@@ -115323,20 +115322,20 @@
     return zNetwork::RegisterDispatchHandlerListShutdown() __tailcall
 }
 
-// Source: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp -- creates the global packet-dispatch handler list sentinel and resets the list count. BN limitation: MSVC global-constructor flag byte renders as entry_ecx:3.b; callers do not pass an authored argument.
+// Constructs the native VC5 list at 0x56add8: allocator byte, three bytes of ABI padding, sentinel pointer at +4, count at +8. The separate allocation is a 12-byte circular sentinel node. Exact original filename is not established by this body.
 0x48bfb0 void zNetwork::CreateEmptyDispatchHandlerList()
 {
     int32_t entry_ecx
-    g_zNetwork_DispatchHandlerListFlags = entry_ecx:3.b
+    g_zNetwork_DispatchHandlerList.allocator = entry_ecx:3.b
     struct zNetworkDispatchHandlerListNode* sentinelNode = operator new(0xc)
     sentinelNode->next = sentinelNode
     sentinelNode->prev = sentinelNode
-    g_zNetwork_DispatchHandlerListSentinel = sentinelNode
-    g_zNetwork_DispatchHandlerListCount = 0
+    g_zNetwork_DispatchHandlerList._Head = sentinelNode
+    g_zNetwork_DispatchHandlerList._Size = 0
 
     // [comments not attached to rendered lines]
     // [comment @ 0x48bfb1]
-    // MSVC global-constructor flag byte copied from incoming ECX; no authored parameter is passed by callers.
+    // Copies the allocator byte from the saved ECX stack slot. Native VC5 std::list global construction emits this sequence; this is not evidence of an authored ECX argument or an application flag.
     // [comment @ 0x48bfb5]
     // Allocate the global dispatch-handler list sentinel node.
 }
@@ -115350,7 +115349,7 @@
 // Source: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp -- deletes the global dispatch-handler list nodes, then deletes the sentinel and clears the list globals. BN limitation: MSVC empty-list tests and first-field list relinks render as lowered boolean/deref artifacts.
 0x48bff0 void zNetwork::DestroyDispatchHandlerList()
 {
-    struct zNetworkDispatchHandlerListNode* sentinelNode = g_zNetwork_DispatchHandlerListSentinel
+    struct zNetworkDispatchHandlerListNode* sentinelNode = g_zNetwork_DispatchHandlerList._Head
     struct zNetworkDispatchHandlerListNode* nextNode = sentinelNode->next
     int32_t eax
     eax.b = nextNode == sentinelNode
@@ -115367,16 +115366,16 @@
             nextNode_1->prev->next = nextNode_1->next
             nextNode_1->next->prev = nextNode_1->prev
             operator delete(nextNode_1)
-            g_zNetwork_DispatchHandlerListCount -= 1
+            g_zNetwork_DispatchHandlerList._Size -= 1
             eax_5.b = nextNode == sentinelNode
             temp1_1 = eax_5.b
             eax_5.b = neg.b(eax_5.b)
         while ((sbb.d(eax_5, eax_5, temp1_1 != 0)).b != 0xff)
-        sentinelNode = g_zNetwork_DispatchHandlerListSentinel
+        sentinelNode = g_zNetwork_DispatchHandlerList._Head
 
     operator delete(sentinelNode)
-    g_zNetwork_DispatchHandlerListSentinel = nullptr
-    g_zNetwork_DispatchHandlerListCount = 0
+    g_zNetwork_DispatchHandlerList._Head = nullptr
+    g_zNetwork_DispatchHandlerList._Size = 0
 
     // [comments not attached to rendered lines]
     // [comment @ 0x48c047]
@@ -115426,29 +115425,29 @@
         dispatchHandler->mode = mode
         result = dispatchHandler
 
-    struct zNetworkDispatchHandlerListNode* zNetwork_DispatchHandlerListSentinel_1 = g_zNetwork_DispatchHandlerListSentinel
-    struct zNetworkDispatchHandlerListNode* prev = zNetwork_DispatchHandlerListSentinel_1->prev
+    struct zNetworkDispatchHandlerListNode* _Head = g_zNetwork_DispatchHandlerList._Head
+    struct zNetworkDispatchHandlerListNode* prev = _Head->prev
     // Allocate the intrusive list node that owns the dispatch-handler record.
     struct zNetworkDispatchHandlerListNode* eax = operator new(0xc)
-    struct zNetworkDispatchHandlerListNode* zNetwork_DispatchHandlerListSentinel_2 = zNetwork_DispatchHandlerListSentinel_1
+    struct zNetworkDispatchHandlerListNode* _Head_1 = _Head
 
-    if (zNetwork_DispatchHandlerListSentinel_1 == 0)
-        zNetwork_DispatchHandlerListSentinel_2 = eax
+    if (_Head == 0)
+        _Head_1 = eax
 
-    eax->next = zNetwork_DispatchHandlerListSentinel_2
+    eax->next = _Head_1
     struct zNetworkDispatchHandlerListNode* prev_1 = prev
 
     if (prev == 0)
         prev_1 = eax
 
     eax->prev = prev_1
-    zNetwork_DispatchHandlerListSentinel_1->prev = eax
+    _Head->prev = eax
     eax->prev->next = eax
 
     if (eax != 0xfffffff8)
         eax->record = result
 
-    g_zNetwork_DispatchHandlerListCount += 1
+    g_zNetwork_DispatchHandlerList._Size += 1
     return result
 
     // [comments not attached to rendered lines]
@@ -115459,10 +115458,10 @@
 // Likely original file: D:\Proj\Battlesport\netcode.cpp. Removes matching packet-handler records from the dispatch-handler list by first compacting nonmatching records forward, then deleting trailing list nodes and decrementing the dispatch-handler count. BN limitation: MSVC list-empty tests render as neg/sbb boolean temporaries in HLIL.
 0x48c120 int32_t __fastcall zNetwork::UnregisterPacketHandler(uint16_t packetType, int32_t (* handlerProc)(int32_t senderPlayerId, struct zNetworkPacketHeader* packet))
 {
-    struct zNetworkDispatchHandlerListNode* zNetwork_DispatchHandlerListSentinel_1 = g_zNetwork_DispatchHandlerListSentinel
-    struct zNetworkDispatchHandlerListNode* matchingHandlerNode = zNetwork_DispatchHandlerListSentinel_1->next
+    struct zNetworkDispatchHandlerListNode* _Head = g_zNetwork_DispatchHandlerList._Head
+    struct zNetworkDispatchHandlerListNode* matchingHandlerNode = _Head->next
     int32_t ebx
-    ebx.b = matchingHandlerNode == zNetwork_DispatchHandlerListSentinel_1
+    ebx.b = matchingHandlerNode == _Head
     char temp0 = ebx.b
     ebx.b = neg.b(ebx.b)
 
@@ -115477,16 +115476,16 @@
                 break
 
             matchingHandlerNode = matchingHandlerNode->next
-            ebx_3.b = matchingHandlerNode == zNetwork_DispatchHandlerListSentinel_1
+            ebx_3.b = matchingHandlerNode == _Head
             temp3_1 = ebx_3.b
             ebx_3.b = neg.b(ebx_3.b)
         while ((sbb.d(ebx_3, ebx_3, temp3_1 != 0)).b != 0xff)
 
-    if (matchingHandlerNode != zNetwork_DispatchHandlerListSentinel_1)
+    if (matchingHandlerNode != _Head)
         struct zNetworkDispatchHandlerListNode* next_2 = matchingHandlerNode
         struct zNetworkDispatchHandlerListNode* next = matchingHandlerNode->next
         int32_t ebx_7
-        ebx_7.b = next == zNetwork_DispatchHandlerListSentinel_1
+        ebx_7.b = next == _Head
         char temp2_1 = ebx_7.b
         ebx_7.b = neg.b(ebx_7.b)
 
@@ -115503,7 +115502,7 @@
                     next_4->record = record_1
 
                 next = next->next
-                ebx_10.b = next == zNetwork_DispatchHandlerListSentinel_1
+                ebx_10.b = next == _Head
                 temp5_1 = ebx_10.b
                 ebx_10.b = neg.b(ebx_10.b)
             while ((sbb.d(ebx_10, ebx_10, temp5_1 != 0)).b != 0xff)
@@ -115511,7 +115510,7 @@
         matchingHandlerNode = next_2
 
     int32_t ecx
-    ecx.b = matchingHandlerNode == zNetwork_DispatchHandlerListSentinel_1
+    ecx.b = matchingHandlerNode == _Head
     char temp1 = ecx.b
     ecx.b = neg.b(ecx.b)
     struct zNetworkDispatchHandlerListNode* next_1 = matchingHandlerNode
@@ -115526,8 +115525,8 @@
             *next_3->prev = next_3->next
             next_3->next->prev = next_3->prev
             operator delete(next_3)
-            g_zNetwork_DispatchHandlerListCount -= 1
-            edx_2.b = next_1 == zNetwork_DispatchHandlerListSentinel_1
+            g_zNetwork_DispatchHandlerList._Size -= 1
+            edx_2.b = next_1 == _Head
             temp4_1 = edx_2.b
             edx_2.b = neg.b(edx_2.b)
         while ((sbb.d(edx_2, edx_2, temp4_1 != 0)).b != 0xff)
@@ -115540,11 +115539,11 @@
 // BN limitation: MSVC list end-test sequence (sete/neg/sbb/inc) lifts as sbb byte artifacts; assembly is a sentinel-list loop.
 0x48c200 void __fastcall zNetwork_DPlay::DispatchPacketToHandlers(int32_t senderPlayerId, struct zNetworkPacketHeader* packet)
 {
-    struct zNetworkDispatchHandlerListNode* zNetwork_DispatchHandlerListSentinel_1 = g_zNetwork_DispatchHandlerListSentinel
-    struct zNetworkDispatchHandlerListNode* esi = zNetwork_DispatchHandlerListSentinel_1->next
-    // BN limitation: MSVC list end-test sequence (sete/neg/sbb) is equivalent to node != sentinel.
+    struct zNetworkDispatchHandlerListNode* _Head = g_zNetwork_DispatchHandlerList._Head
+    struct zNetworkDispatchHandlerListNode* esi = _Head->next
+    // SETE/NEG/SBB followed by INC and TEST implements the list iterator inequality (node != sentinel). Before INC, the SBB result alone is 0 or -1.
     int32_t eax
-    eax.b = esi == zNetwork_DispatchHandlerListSentinel_1
+    eax.b = esi == _Head
     char temp0 = eax.b
     eax.b = neg.b(eax.b)
     int32_t senderPlayerId_1 = senderPlayerId
@@ -115563,7 +115562,7 @@
             record->handler(senderPlayerId_1, packet)
 
         esi = esi->next
-        edx_1.b = esi == zNetwork_DispatchHandlerListSentinel_1
+        edx_1.b = esi == _Head
         temp1_1 = edx_1.b
         edx_1.b = neg.b(edx_1.b)
     while ((sbb.d(edx_1, edx_1, temp1_1 != 0)).b != 0xff)
@@ -163988,7 +163987,7 @@
                 int32_t colorMode = zInterp_Context::ParseIntToken(self)
                 zClass_Class::gwNodeGetUserData(self->currentNode, &g_zInterp_NodeUserDataScratch)
                 struct zDi* zInterp_NodeUserDataScratch_3 = g_zInterp_NodeUserDataScratch
-                g_zInterp_Object3DCommandIntScratch = zInterp_NodeUserDataScratch_3
+                g_zInterp_Object3DCommandDi = zInterp_NodeUserDataScratch_3
                 zDi::SetObject3DColorModeForMaterials(zInterp_NodeUserDataScratch_3, colorMode)
                 return 1
 
@@ -164054,9 +164053,9 @@
 
             if (strncmp(_Str1_85, "Object3DSetPriority", 0x13) == 0)
                 zClass_Class::gwNodeGetUserData(self->currentNode, &g_zInterp_NodeUserDataScratch)
-                g_zInterp_Object3DCommandIntScratch = g_zInterp_NodeUserDataScratch
+                g_zInterp_Object3DCommandDi = g_zInterp_NodeUserDataScratch
                 int32_t entryValue = zInterp_Context::ParseIntToken(self)
-                zDi::SetEntryValueForAllEntries(g_zInterp_Object3DCommandIntScratch, entryValue)
+                zDi::SetEntryValueForAllEntries(g_zInterp_Object3DCommandDi, entryValue)
                 return 1
 
             char* _Str1_86
@@ -164074,7 +164073,7 @@
                 blendY_1 = entry_x87_r7
 
                 if (eax_280 == 0)
-                    zInterp_Context::DefaultDispatchHook(self->currentNode)
+                    zInterp_Context::DefaultDispatchHook(self, self->currentNode)
                     return 1
 
                 if (zInterp_Context::RegisterScrollAlwaysNode(self, self->currentNode, var_28, blendY_1, 1) != 0)
@@ -164103,7 +164102,7 @@
 
                 if (currentNode_2 != 0)
                     if (eax_288 == 0)
-                        zInterp_Context::DefaultDispatchHook(currentNode_2)
+                        zInterp_Context::DefaultDispatchHook(self, currentNode_2)
                         return 1
 
                     zInterp_Context::RegisterScrollAlwaysNode(self, currentNode_2, var_28, blendY_1, 0)
@@ -164127,9 +164126,9 @@
 
             if (strncmp(_Str1_88, "Object3DSetShowBackFace", 0x17) == 0)
                 zClass_Class::gwNodeGetUserData(self->currentNode, &g_zInterp_NodeUserDataScratch)
-                g_zInterp_Object3DCommandIntScratch = g_zInterp_NodeUserDataScratch
+                g_zInterp_Object3DCommandDi = g_zInterp_NodeUserDataScratch
                 int32_t enabled = zInterp_Context::ParseBoolToken(self)
-                zDi::SetShowBackFaceForAllEntries(g_zInterp_Object3DCommandIntScratch, enabled)
+                zDi::SetShowBackFaceForAllEntries(g_zInterp_Object3DCommandDi, enabled)
                 return 1
 
             char* _Str1_89
@@ -165160,12 +165159,8 @@
     return 0
 }
 
-// Source: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp
-//
-// zInterp_Context::DefaultDispatchHook(node)
-//
-// Minimal no-op default action callback. If node is non-NULL it calls zClass_Class::gwNodeGetUserData(node, NULL), then returns false so chained hook handling treats it as no custom action.
-0x4c58c0 bool zInterp_Context::DefaultDispatchHook(struct zClass_Node* node)
+// The two retail callers are the Object3DSetScrollAlways and Object3DSetScroll disable arms (0x4c4009, 0x4c40d8): each supplies the context in ECX and a node on the stack. No current data xrefs establish a callback role. If the node is non-null, this body calls gwNodeGetUserData(node, NULL), then returns false with four-byte stack cleanup. The context parameter is unused in the body. The prior callback/chained-hook interpretation was unsupported.
+0x4c58c0 bool __thiscall zInterp_Context::DefaultDispatchHook(struct zInterp_Context* self, struct zClass_Node* node)
 {
     if (node != 0)
         zClass_Class::gwNodeGetUserData(node, nullptr)

@@ -25,7 +25,7 @@
   "functions": [
     {
       "address": "0x4760d0",
-      "symbol": "?SetDiTextureWorldPerMeter@zModel@@YIHPAUzDiPartial@@HMH@Z",
+      "symbol": "?SetDiTextureWorldPerMeter@zModel@@YIHPAUzDiPartial@@HMM@Z",
       "name": "zModel::SetDiTextureWorldPerMeter"
     }
   ],

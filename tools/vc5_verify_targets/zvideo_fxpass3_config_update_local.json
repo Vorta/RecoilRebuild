@@ -1,8 +1,8 @@
 {
   "name": "zvideo_fxpass3_config_update_local",
-  "description": "zVideoFxPass3Config_UpdateLocal local pass-3 FX config update helper.",
+  "description": "zVideoFxPass3Config::UpdateLocal pass-3 config member method.",
   "source_filename": "zVideo.cpp",
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
     "src",
@@ -14,13 +14,13 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zUI/zui.cpp"
   ],
   "functions": [
     {
       "address": "0x4bed30",
-      "symbol": "?zVideoFxPass3Config_UpdateLocal@zVideo@@YIXPAUzVideoFxPass3Config@@M@Z",
-      "name": "zVideo::zVideoFxPass3Config_UpdateLocal"
+      "symbol": "?UpdateLocal@zVideoFxPass3Config@@QAEXM@Z",
+      "name": "zVideoFxPass3Config::UpdateLocal"
     }
   ]
 }

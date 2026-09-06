@@ -1354,7 +1354,7 @@ namespace OptCatalog {
                     runtimeInstance->pos.x,
                     runtimeInstance->pos.y,
                     runtimeInstance->pos.z,
-                    asinf(spawnDir->y),
+                    (float)asin((double)spawnDir->y),
                     (float)(atan2(
                         -spawnDir->z,
                         -spawnDir->x
@@ -1373,7 +1373,7 @@ namespace OptCatalog {
                 (self->flyoutAnimationEntry != 0 && self->attachCloneTemplateNode == 0))) {
             zClass_Object3D::gwObject3DSetRotation(
                 runtimeInstance->projectileNode,
-                asinf(spawnDir->y),
+                (float)asin((double)spawnDir->y),
                 (float)(atan2(
                     -spawnDir->z,
                     -spawnDir->x
@@ -1764,7 +1764,7 @@ namespace OptCatalog {
                 trailRuntimeState->spawnPos->x,
                 trailRuntimeState->spawnPos->y,
                 trailRuntimeState->spawnPos->z,
-                asinf(trailRuntimeState->spawnDir->y),
+                (float)asin((double)trailRuntimeState->spawnDir->y),
                 (float)(atan2(
                     -trailRuntimeState->spawnDir->z,
                     -trailRuntimeState->spawnDir->x

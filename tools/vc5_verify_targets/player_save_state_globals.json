@@ -32,31 +32,9 @@
   "data_symbols": [
     {
       "address": "0x4f3a78",
-      "symbol": "_g_PlayerSaveStateListAux",
-      "name": "g_PlayerSaveStateListAux",
-      "bn_name": "g_PlayerSaveStateListAux",
-      "byte_length": 4
-    },
-    {
-      "address": "0x4f3a7c",
-      "symbol": "_g_PlayerSaveStateListHead",
-      "name": "g_PlayerSaveStateListHead",
-      "bn_name": "g_PlayerSaveStateListHead",
-      "byte_length": 4
-    },
-    {
-      "address": "0x4f3a80",
-      "symbol": "_g_PlayerSaveStateListTail",
-      "name": "g_PlayerSaveStateListTail",
-      "bn_name": "g_PlayerSaveStateListTail",
-      "byte_length": 4
-    },
-    {
-      "address": "0x4f3a84",
-      "symbol": "_g_PlayerSaveStateCount",
-      "name": "g_PlayerSaveStateCount",
-      "bn_name": "g_PlayerSaveStateCount",
-      "byte_length": 4
+      "symbol": "_g_PlayerSaveStateList",
+      "name": "g_PlayerSaveStateList",
+      "byte_length": 16
     }
   ]
 }

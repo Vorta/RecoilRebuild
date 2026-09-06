@@ -62,18 +62,22 @@
     },
     {
       "address": "0x4bc3a0",
-      "symbol": "?AssignCopy@HudUiCompositePanelEntry@@QAEPAU1@PBU1@@Z",
-      "name": "HudUiCompositePanelEntry::AssignCopy"
+      "symbol": "??4HudUiTransitionTextPanel@@QAEAAU0@ABU0@@Z",
+      "name": "HudUiTransitionTextPanel::operator="
     },
     {
       "address": "0x4bc410",
-      "symbol": "?ConstructorCopy@HudUiCompositePanelEntry@@QAEPAU1@PBU1@@Z",
-      "name": "HudUiCompositePanelEntry::ConstructorCopy"
+      "symbol": "??0HudUiTransitionTextPanel@@QAE@ABU0@@Z",
+      "name": "HudUiTransitionTextPanel::HudUiTransitionTextPanel"
     },
     {
       "address": "0x4bc320",
-      "symbol": "?ConstructorCopyRange@HudUiCompositePanelEntry@@SIPAU1@PBU1@0PAU1@@Z",
-      "name": "HudUiCompositePanelEntry::ConstructorCopyRange"
+      "symbol": "?copy@std@@YIPAUHudUiTransitionTextPanel@@PAU2@00@Z",
+      "name": "std::copy<HudUiTransitionTextPanel *>",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored",
+      "provenance": "provider-boundary",
+      "required_presence": true
     }
   ]
 }

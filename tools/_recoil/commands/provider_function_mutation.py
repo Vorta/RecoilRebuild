@@ -106,6 +106,86 @@ VECTOR_POINTER_DESTROY_PROBE_SOURCE = (
 
 
 HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
+    "vc5-vector-int-size-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?size@?$vector@HV?$allocator@H@std@@@std@@QBEIXZ",
+        "retail_body_size": 0x20,
+        "source": (
+            "#include <vector>\r\n"
+            "typedef std::vector<int> RecoilProviderVectorInt;\r\n"
+            "typedef RecoilProviderVectorInt::size_type\r\n"
+            "    (RecoilProviderVectorInt::*RecoilProviderVectorSizeFn)() const;\r\n"
+            "RecoilProviderVectorSizeFn recoil_provider_vector_size =\r\n"
+            "    &RecoilProviderVectorInt::size;\r\n"
+        ),
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-vector-bind-group-pointer-size-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?size@?$vector@PAUzInput_BindGroupInfo@@V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@QBEIXZ",
+        "retail_body_size": 0x20,
+        "source": (
+            "#include <vector>\r\n"
+            "struct zInput_BindGroupInfo;\r\n"
+            "typedef std::vector<zInput_BindGroupInfo *> RecoilProviderVectorPointer;\r\n"
+            "typedef RecoilProviderVectorPointer::size_type\r\n"
+            "    (RecoilProviderVectorPointer::*RecoilProviderVectorSizeFn)() const;\r\n"
+            "RecoilProviderVectorSizeFn recoil_provider_vector_size =\r\n"
+            "    &RecoilProviderVectorPointer::size;\r\n"
+        ),
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-vector-int-ucopy-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Ucopy@?$vector@HV?$allocator@H@std@@@std@@IAEPAHPBH0PAH@Z",
+        "retail_body_size": 0x30,
+        "source": (
+            "#include <vector>\r\n"
+            "struct RecoilProviderVectorIntCopyProbe : std::vector<int>\r\n"
+            "{\r\n"
+            "    typedef std::vector<int> Base;\r\n"
+            "    typedef iterator (Base::*CopyFn)(const_iterator, const_iterator, iterator);\r\n"
+            "    static CopyFn copy;\r\n"
+            "};\r\n"
+            "RecoilProviderVectorIntCopyProbe::CopyFn RecoilProviderVectorIntCopyProbe::copy =\r\n"
+            "    &RecoilProviderVectorIntCopyProbe::_Ucopy;\r\n"
+        ),
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-vector-bind-group-pointer-ucopy-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Ucopy@?$vector@PAUzInput_BindGroupInfo@@V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@IAEPAPAUzInput_BindGroupInfo@@PBQAU3@0PAPAU3@@Z",
+        "retail_body_size": 0x30,
+        "source": (
+            "#include <vector>\r\n"
+            "struct zInput_BindGroupInfo;\r\n"
+            "struct RecoilProviderVectorPointerCopyProbe : std::vector<zInput_BindGroupInfo *>\r\n"
+            "{\r\n"
+            "    typedef std::vector<zInput_BindGroupInfo *> Base;\r\n"
+            "    typedef iterator (Base::*CopyFn)(const_iterator, const_iterator, iterator);\r\n"
+            "    static CopyFn copy;\r\n"
+            "};\r\n"
+            "RecoilProviderVectorPointerCopyProbe::CopyFn RecoilProviderVectorPointerCopyProbe::copy =\r\n"
+            "    &RecoilProviderVectorPointerCopyProbe::_Ucopy;\r\n"
+        ),
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
     "vc5-xmemory-construct-int-v1": {
         "canonical_header": "VC/INCLUDE/xmemory",
         "semantic_provider": "vc5-stl",
@@ -211,6 +291,28 @@ HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
             "/Gr",
             "/Zl",
             "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-vector-bind-group-pointer-ufill-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Ufill@?$vector@PAUzInput_BindGroupInfo@@V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@IAEXPAPAUzInput_BindGroupInfo@@IABQAU3@@Z",
+        "retail_body_size": 0x30,
+        "source": (
+            "#include <vector>\r\n"
+            "struct zInput_BindGroupInfo;\r\n"
+            "struct RecoilProviderVectorPointerFillProbe : std::vector<zInput_BindGroupInfo *>\r\n"
+            "{\r\n"
+            "    typedef std::vector<zInput_BindGroupInfo *> Base;\r\n"
+            "    typedef void (Base::*FillFn)(iterator, size_type, zInput_BindGroupInfo *const &);\r\n"
+            "    static FillFn fill;\r\n"
+            "};\r\n"
+            "RecoilProviderVectorPointerFillProbe::FillFn RecoilProviderVectorPointerFillProbe::fill =\r\n"
+            "    &RecoilProviderVectorPointerFillProbe::_Ufill;\r\n"
+        ),
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
         ),
         "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
     },
@@ -613,20 +715,20 @@ def _validate_existing_function(
         row.get("authored_order_role"),
         row.get("ownership_state"),
     )
-    detached_icf_representative = classification == (
-        "compiler-generated-icf-representative",
-        "primary-owned",
-    )
+    detached_primary_label = classification in {
+        ("compiler-generated-icf-representative", "primary-owned"),
+        ("non-authored", "primary-owned"),
+    }
     if classification != ("non-authored", "unresolved") and not (
-        detached_icf_representative
+        detached_primary_label
     ):
         raise ProviderFunctionMutationError(
             "existing row is not an unresolved non-authored function or an exact "
-            "detached compiler-generated ICF representative: "
+            "detached non-authored or compiler-generated ICF inventory row: "
             f"authored_order_role={classification[0]!r}, "
             f"ownership_state={classification[1]!r}"
         )
-    if detached_icf_representative:
+    if detached_primary_label:
         primary_owner_ids: list[str] = []
         for owner_id, owner in document.collection("owners").items():
             if not isinstance(owner, Mapping):
@@ -637,14 +739,16 @@ def _validate_existing_function(
             if any(
                 isinstance(relationship, Mapping)
                 and relationship.get("kind") == "primary-function"
-                and relationship.get("symbol_id") == function_id
-                and relationship.get("address") == address
+                and (
+                    relationship.get("symbol_id") == function_id
+                    or relationship.get("address") == address
+                )
                 for relationship in relationships
             ):
                 primary_owner_ids.append(str(owner_id))
         if primary_owner_ids:
             raise ProviderFunctionMutationError(
-                "compiler-generated ICF representative is still claimed by primary "
+                "non-authored inventory row is still claimed by primary "
                 "source owners: " + ", ".join(sorted(primary_owner_ids))
             )
     if row.get("disposition") not in {"unresolved", "non-authored"}:
@@ -676,6 +780,52 @@ def _validate_existing_function(
     return row, start, end
 
 
+def _validate_header_provider_extension(
+    document: ProgressDocument, *, function_id: str, address: str,
+    request: Mapping[str, Any],
+) -> tuple[dict[str, Any], int, int, dict[str, Any]]:
+    """Permit only monotonic aliases of the same already-owned header provider."""
+    row = deepcopy(document.collection("symbols").get(function_id))
+    owner = deepcopy(document.collection("owners").get(request["owner_id"]))
+    required = {
+        "binary": "recoil", "kind": "provider-function", "address": address,
+        "extent_state": "known", "pipeline_class": "non-authored",
+        "authored_order_role": "non-authored", "disposition": "provider",
+        "ownership_state": "primary-owned", "output_section_id": "recoil:section:.text",
+        "object_symbol": request["object_symbol"],
+    }
+    if not isinstance(row, dict) or any(row.get(k) != v for k, v in required.items()):
+        raise ProviderFunctionMutationError("header extension requires the same exact provider row")
+    catalog = row.get("provider_object_identity")
+    if not isinstance(catalog, Mapping) or (
+        request["proof_mode"] != "canonical-header-comdat"
+        or catalog.get("schema") != "recoil-provider-function-object-v2"
+        or any(catalog.get(key) != request[key] for key in (
+            "proof_mode", "object_symbol", "canonical_header", "probe_recipe", "semantic_provider"))
+    ):
+        raise ProviderFunctionMutationError("header extension cannot replace provider identity")
+    icf = catalog.get("retail_icf")
+    prior = icf.get("logical_symbols") if isinstance(icf, Mapping) else None
+    if (not isinstance(prior, list) or not prior
+        or any(not isinstance(item, str) for item in prior) or len(set(prior)) != len(prior)
+        or not set(prior).issubset(request["retail_icf_logical_symbols"])
+        or request["object_symbol"] not in prior):
+        raise ProviderFunctionMutationError("header extension cannot remove or infer prior logical names")
+    primary = [edge for edge in owner.get("relationships", [])
+        if isinstance(edge, Mapping) and edge.get("kind") == "primary-function"] if isinstance(owner, dict) else []
+    if (not isinstance(owner, dict) or owner.get("kind") != "provider-boundary"
+        or owner.get("name") != request["owner_name"] or owner.get("source_paths") != []
+        or len(primary) != 1 or primary[0].get("symbol_id") != function_id
+        or primary[0].get("address") != address):
+        raise ProviderFunctionMutationError("header extension cannot change the existing provider owner")
+    extent = _known_range(row)
+    if (extent is None or extent[0] != address_value(address)
+        or type(row.get("size")) is not int or row["size"] != extent[1] - extent[0]
+        or catalog.get("body_size") != row["size"]):
+        raise ProviderFunctionMutationError("header extension requires unchanged exact extent")
+    return row, extent[0], extent[1], owner
+
+
 def _validate_tracker_ownership(
     document: ProgressDocument,
     *,
@@ -683,8 +833,9 @@ def _validate_tracker_ownership(
     function_id: str,
     start: int,
     end: int,
+    extending_existing_owner: bool = False,
 ) -> None:
-    if owner_id in document.collection("owners"):
+    if owner_id in document.collection("owners") and not extending_existing_owner:
         raise ProviderFunctionMutationError(f"provider owner already exists: {owner_id}")
     conflicts: list[str] = []
     for symbol_id, symbol in document.collection("symbols").items():
@@ -724,6 +875,8 @@ def _validate_tracker_ownership(
                     if start <= contribution_address < end:
                         conflicts.append(f"storage:{contribution_id}")
     for existing_owner_id, owner in document.collection("owners").items():
+        if extending_existing_owner and existing_owner_id == owner_id:
+            continue
         if not isinstance(owner, Mapping):
             continue
         address_metadata = owner.get("address_metadata")
@@ -1025,6 +1178,31 @@ def _provider_object_proof(
     )
 
 
+def _canonical_header_logical_probe_recipes(
+    request: Mapping[str, Any],
+) -> tuple[tuple[str, str], ...]:
+    """Select independent registered probes; names alone never prove aliases."""
+    primary = str(request["object_symbol"])
+    primary_recipe = str(request["probe_recipe"])
+    names = request["retail_icf_logical_symbols"]
+    if not names or primary not in names or len(set(names)) != len(names):
+        raise ProviderFunctionMutationError("malformed canonical-header logical symbols")
+    selected: list[tuple[str, str]] = []
+    for name in names:
+        recipes = [key for key, recipe in HEADER_PROBE_RECIPES.items()
+            if recipe["object_symbol"] == name
+            and recipe["canonical_header"] == request["canonical_header"]
+            and recipe["semantic_provider"] == request["semantic_provider"]
+            and (name != primary or key == primary_recipe)]
+        if len(recipes) != 1:
+            raise ProviderFunctionMutationError(
+                "each canonical-header logical symbol requires one independent "
+                f"registered probe: {name!r}, recipes={recipes!r}"
+            )
+        selected.append((name, recipes[0]))
+    return tuple(selected)
+
+
 def _provider_header_comdat_proof(
     *,
     vc5_root: Path,
@@ -1032,44 +1210,45 @@ def _provider_header_comdat_proof(
     body_size: int,
     retail_body: bytes,
 ) -> ProviderObjectProof:
-    recipe_id = str(request["probe_recipe"])
-    recipe = HEADER_PROBE_RECIPES[recipe_id]
-    fixed_retail_body_size = recipe.get("retail_body_size")
-    if fixed_retail_body_size is not None and (
-        body_size != int(fixed_retail_body_size)
-        or len(retail_body) != int(fixed_retail_body_size)
-    ):
-        raise ProviderFunctionMutationError(
-            "registered probe recipe requires exact retail function extent"
-        )
+    selected = _canonical_header_logical_probe_recipes(request)
     header_path = _resolve_library(vc5_root, str(request["canonical_header"]))
     if not header_path.is_file():
         raise ProviderFunctionMutationError(
             "canonical_header is not one exact file below DEFAULT_VC5_ROOT"
         )
-    object_data, flags = _compile_header_probe_object(
-        vc5_root=vc5_root,
-        recipe_id=recipe_id,
-    )
-    return _coff_provider_object_proof(
-        object_data=object_data,
-        proof_mode="canonical-header-comdat",
-        library_path="",
-        archive_member="",
-        archive_member_raw="",
-        object_symbol=str(request["object_symbol"]),
-        body_size=body_size,
-        retail_body=retail_body,
-        expected_comdat_selection=int(recipe["comdat_selection"]),
-        canonical_header=str(request["canonical_header"]),
-        probe_recipe=recipe_id,
-        compile_flags=flags,
-        semantic_provider=str(request["semantic_provider"]),
-        physical_emitter_state=str(request["physical_emitter_state"]),
-        retail_icf_winner_status=str(request["retail_icf_winner_status"]),
-        retail_icf_logical_symbols=tuple(request["retail_icf_logical_symbols"]),
-        allow_trailing_nop_padding=True,
-    )
+    proofs: dict[str, ProviderObjectProof] = {}
+    for name, recipe_id in selected:
+        recipe = HEADER_PROBE_RECIPES[recipe_id]
+        fixed_size = recipe.get("retail_body_size")
+        if fixed_size is not None and (
+            body_size != int(fixed_size) or len(retail_body) != int(fixed_size)
+        ):
+            raise ProviderFunctionMutationError(
+                "registered probe recipe requires exact retail function extent"
+            )
+        object_data, flags = _compile_header_probe_object(
+            vc5_root=vc5_root, recipe_id=recipe_id,
+        )
+        proof = _coff_provider_object_proof(
+            object_data=object_data, proof_mode="canonical-header-comdat",
+            library_path="", archive_member="", archive_member_raw="",
+            object_symbol=name, body_size=body_size, retail_body=retail_body,
+            expected_comdat_selection=int(recipe["comdat_selection"]),
+            canonical_header=str(request["canonical_header"]),
+            probe_recipe=recipe_id, compile_flags=flags,
+            semantic_provider=str(request["semantic_provider"]),
+            physical_emitter_state=str(request["physical_emitter_state"]),
+            retail_icf_winner_status=str(request["retail_icf_winner_status"]),
+            retail_icf_logical_symbols=tuple(request["retail_icf_logical_symbols"]),
+            allow_trailing_nop_padding=True,
+        )
+        if len(selected) > 1 and (proof.relocations or proof.masked_byte_count):
+            raise ProviderFunctionMutationError(
+                "canonical-header logical aliases with relocations require "
+                "independent typed relocation-target proof"
+            )
+        proofs[name] = proof
+    return proofs[str(request["object_symbol"])]
 
 
 def _compile_header_probe_object(
@@ -1117,6 +1296,16 @@ def _compile_header_probe_object(
         return object_path.read_bytes(), flags
 
 
+def _provider_boundary_source_traceability() -> dict[str, Any]:
+    """Emit a complete, explicitly edge-free provider source trace."""
+    from _recoil.commands.source_trace_progress import normalize_source_traceability
+    return normalize_source_traceability({
+        "state": "not-applicable",
+        "source_edges": [],
+        "reason_code": "provider-boundary",
+    })
+
+
 def register_provider_function(
     *,
     progress: Path,
@@ -1139,9 +1328,16 @@ def register_provider_function(
         raise ProviderFunctionMutationError(
             f"revision changed: expected {expected_revision}, found {document.revision}"
         )
-    function, start, end = _validate_existing_function(
-        document, function_id=function_id, address=normalized_address
-    )
+    existing_owner = None
+    current = document.collection("symbols").get(function_id, {})
+    if current.get("kind") == "provider-function":
+        function, start, end, existing_owner = _validate_header_provider_extension(
+            document, function_id=function_id, address=normalized_address, request=request,
+        )
+    else:
+        function, start, end = _validate_existing_function(
+            document, function_id=function_id, address=normalized_address
+        )
     owner_id = str(request["owner_id"])
     _validate_tracker_ownership(
         document,
@@ -1149,6 +1345,7 @@ def register_provider_function(
         function_id=function_id,
         start=start,
         end=end,
+        extending_existing_owner=existing_owner is not None,
     )
     retail_body, output_section_id = _retail_body(
         document, reference=reference, start=start, end=end
@@ -1249,6 +1446,11 @@ def register_provider_function(
         ),
         "source_paths": [],
     }
+    if existing_owner is not None:
+        # Preserve every pre-existing owner fact; this operation only extends
+        # the exact named provider census and appends its independent proof.
+        owner = existing_owner
+        owner["evidence_ids"] = [*owner.get("evidence_ids", []), evidence_id]
     evidence_ids = function.get("evidence_ids", [])
     if not isinstance(evidence_ids, list):
         raise ProviderFunctionMutationError(
@@ -1296,10 +1498,7 @@ def register_provider_function(
         }
     )
     if proof.proof_mode == "canonical-header-comdat":
-        function["source_traceability"] = {
-            "state": "not-applicable",
-            "reason_code": "provider-boundary",
-        }
+        function["source_traceability"] = _provider_boundary_source_traceability()
     proposed["owners"][owner_id] = owner
     proposed["symbols"][function_id] = function
     try:

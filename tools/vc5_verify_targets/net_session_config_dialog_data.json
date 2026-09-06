@@ -39,8 +39,8 @@
     },
     {
       "address": "0x4f32d8",
-      "symbol": "?g_NetSessionConfigDialog_MapNameStringStorage@@3PAIA",
-      "name": "g_NetSessionConfigDialog_MapNameStringStorage",
+      "symbol": "?g_NetSessionConfigDialog_MapNameStrings@@3PAVCString@@A",
+      "name": "g_NetSessionConfigDialog_MapNameStrings",
       "bn_name": "g_NetSessionConfigDialog_MapNameStrings",
       "byte_length": 28
     }

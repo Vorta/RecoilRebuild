@@ -124,8 +124,8 @@
       "functions": [
         {
           "address": "0x4c0d20",
-          "symbol_regex": "\\?Constructor@zInterp_Context@@.*",
-          "name": "zInterp_Context::Constructor"
+          "symbol_regex": "\\?\\?0zInterp_Context@@.*",
+          "name": "zInterp_Context::zInterp_Context"
         }
       ]
     }

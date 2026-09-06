@@ -45,8 +45,8 @@ struct zDiPartial {
     int blendVertCount;
     int pointCount;
     float blendScale;
-    float textureWorldPerMeter;
-    int textureWorldAxis;
+    float scrollRateU;
+    float scrollRateV;
     int field2c;
     struct zDiEntryPartial *entries;
     zVec3 *verts;
@@ -697,13 +697,13 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zDiPartial,
-        textureWorldPerMeter
+        scrollRateU
     ) == 0x24
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         zDiPartial,
-        textureWorldAxis
+        scrollRateV
     ) == 0x28
 );
 RECOIL_STATIC_ASSERT(

@@ -104,7 +104,14 @@ not claim coverage of coordinate-clamp semantics.
 
 Order and call-contract comparisons constrain only their named dimensions.
 They do not establish complete branching, arithmetic, storage, or runtime
-equivalence. These corrections require another gameplay test; no successful
-gameplay observation is recorded by this note. The broader matrix survey also
+equivalence. The subsequent `gameplay-world-clamp-01` capture did not record
+the loading access violation. The user observed entry into a blank/nonfunctional
+3D scene, with Escape opening the menu and allowing a quit action. The debugger
+nevertheless recorded `STATUS_INVALID_HANDLE` (`0xc0000008`) during shutdown,
+after `Stop All Sounds`, and exit code `0xc0000008`; this is not a proven clean
+exit or successful gameplay. Rendering and that shutdown exception remain
+unresolved while normal authored-byte reconstruction resumes.
+
+The broader matrix survey also
 contains unresolved disassembly and predicate-correlation cases, which must
 not be counted as confirmed defects or silently accepted as matches.

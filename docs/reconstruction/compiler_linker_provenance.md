@@ -37,8 +37,35 @@ Accepted per-target verification profiles are intentionally narrow:
   translation-unit evidence. Explicit cdecl declarations remain cdecl; `/Gr`
   governs otherwise unannotated free and static functions.
 - `vc5_o2_ob2_facs` and `vc5_o2_ob2_gx_facs`: VC5SP3 profiles for local evidence requiring aggressive inlining.
+- `vc5_o2_ob2_md_gx_fastcall_facs`: controlled diagnostic crossover from
+  `vc5_o2_ob1_md_gx_fastcall_facs`, changing only `/Ob1` to `/Ob2` while
+  preserving `/MD`, `/GX`, `/Gr`, `/G5` and `/Zp4`. Added on 2026-09-05 to
+  distinguish scalar-deleting-destructor retention from calling-convention
+  differences in the zSound caller block. This profile does not by itself
+  justify any production TU mapping or override another block's sentinels.
 - `vc5_o2_oy_ob0_facs`: documented VC5SP3 profile with frame-pointer omission for targets whose evidence requires `/Oy`.
+- `vc5_o2_ob2_os_md_gx_fastcall_facs`: bounded `/Os` constructor-shape
+  diagnostic retaining VC5SP3, `/Ob2`, `/MD`, `/GX`, `/Gr`, `/G5`, and `/Zp4`.
+  The 2026-09-06 `mission-ob2-os-diagnostic-03` comparison does not reproduce
+  the retail panel/clamped-constructor calls and introduces `__EH_prolog`
+  calls. No production TU uses this profile; it is rejected for that mismatch.
+- `vc5_o2_ob1_os_md_gx_fastcall_facs`: bounded `/Os` diagnostic retaining
+  `/Ob1 /MD /GX /Gr /G5 /Zp4`, testing discretionary inlining of one explicitly
+  inline constructor. `mission-single-inline-ob1-os-diagnostic-01` introduces
+  `__EH_prolog`, retains the wrong single call in the clamped constructor,
+  and outlines the time-input leaf. Rejected for this mismatch; it changes
+  no production translation-unit mapping.
 - `vc5_zsys_cpu_raw_asm`: documented exception for approved zSys CPU raw-assembly probes.
+- `vc5_o2_ogminus_ob0_md_gx_fastcall_facs`: nonaccepting zInterp diagnostic
+  changing only global optimization to `/Og-` from the current fastcall
+  `/O2 /Ob0 /MD /GX /Gr /G5 /Zp4` profile. Retail `0x4c5550` has four
+  separate `fclose` sites; current VC5 output merges them into two. This
+  differential tests the compiler-context hypothesis without changing any
+  production TU mapping or accepting call, byte, or original-flag facts.
+  `zinterp-global-optimization-diagnostic-01` retains four cleanup calls but
+  loses retail's register-held `fread` dispatch and places the last cleanup
+  after `free`, unlike retail. It is rejected as the resolution; no production
+  TU selects it.
 - `vc5_o2_ob0_md_zrndr_mmx_raw_asm_facs`: documented user-approved exception for the zRndr overlay RGB555/RGB565 MMX row leaves, enabled only with `RECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM`. This permits narrow inline `__asm` MMX loops inside ordinary C++ functions only; it does not permit `__declspec(naked)`, `_emit`, `.asm`, raw byte emission, unrelated zRndr span/MMX families, provider shims, or future raw assembly.
 - `vc5_o2_ob0_md_zrndr_span_mmx_raw_asm_facs`: documented user-approved exception for zRndr span callbacks where current BN proves authored MMX blocks: `0x49ea80`, `0x49ec20`, `0x49e400`, `0x49e560`, `0x49cbb0`, `0x49cea0`, `0x49da80`, and `0x49ddb0`. Enabled only with `RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM`. This permits inline `__asm` only for the necessary MMX blocks while C++ keeps the function shell, setup, scalar edge/tail logic, scratch-buffer preparation, and portable fallback. It does not permit whole-function raw assembly, `__declspec(naked)`, `_emit`, `.asm`, raw byte emission, provider shims, or non-MMX blocks.
 - `vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs`: documented user-approved exception for the five zRndr ESP-pivot span leaves at `0x49b7e0`, `0x49bbf0`, `0x49e6c0`, `0x49edc0`, and `0x49f180`, enabled only with `RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM`. This permits narrow inline `__asm` loops inside ordinary C++ functions only; it does not permit `__declspec(naked)`, `_emit`, `.asm`, raw byte emission, the user-approved span-MMX block family, provider shims, or future raw assembly.
@@ -49,6 +76,39 @@ and `tools/_recoil/config/compiler_linker_profiles.json` with the reason and exp
 version. Do not silently add one-off flags to a VC manifest.
 
 ## Profile Sentinel Guards
+
+The 2026-09-06 Player diagnostic selects the existing
+`vc5_o2_ob1_md_gx_fastcall_facs` profile for `player.cpp`. With otherwise
+unchanged production source, `player-inline-profile-diagnostic-01` reproduces
+all 603 instruction bytes of `RecordNodeFlagsForRestore` (`0x41ecd0`) outside
+relocation fields, including its eleven calls and native vector insertion.
+The previous `/Ob0` candidate retains only four calls, outlining the entire
+insertion and adding iterator/accessor calls elsewhere. The inline-enabled
+diagnostic preserves the registered authored-order projection. This is a
+candidate-context correction, not proof of original flags or acceptance of
+the entire Player block; scoped call, byte, and provider checks remain required.
+
+The 2026-09-06 zInterp recovery selects the existing
+`vc5_o2_ob1_md_gx_fastcall_facs` profile for `zinterp_parse.cpp`. Retail
+`0x4c0d20` constructs a native VC5 `std::list` member at offset `0xb0`,
+including allocator storage, a twelve-byte sentinel allocation and EH cleanup.
+With the real C++ constructor and an eight-byte prepared-header record cleared
+by `memset`, the governed `/Ob1` candidate reproduces its 0x128-byte instruction
+sequence outside relocation operands. The native destructor also reproduces
+all nine retail call offsets. This is direct source/provider-context evidence
+for inlining, not a claim that all interpreter bodies are byte-matched: the
+prepared-index loader still has a distinct cleanup-call mismatch. Full scoped
+call verification and live byte acceptance remain separate obligations.
+
+The 2026-09-05 zSound candidate investigation changes only `zsnd_play.cpp`
+from the default `/Ob0 /Gr` to `vc5_o2_ob1_md_gx_fastcall_facs`. Direct VC5
+diagnostics with the native out-of-line `zSndWaveData` destructor show that
+`/Ob1` emits retail's separate destructor/operator-delete calls at both
+temporary wave-data deletion sites, where `/Ob0` retains a scalar deleting
+helper invocation. `/Ob2` is unnecessary for this distinction. Other sound
+TUs retain their existing mappings. This is a candidate context correction,
+pending fresh whole-target call/provider comparison and byte sentinels; it
+does not prove original compiler flags or authorize call-census rewriting.
 
 Already byte-matched functions are compiler-profile sentinels. If a candidate
 profile does not preserve those confirmed bytes for the same source block, that

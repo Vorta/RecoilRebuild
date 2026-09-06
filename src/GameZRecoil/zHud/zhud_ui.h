@@ -116,6 +116,16 @@ struct HudUiMgrSensorTrackList {
     HudUiMgrSensorTrackNode *head;
     HudUiMgrSensorTrackNode *tail;
     int count;
+
+    /**
+     * Purpose: Start a sensor track list with no linked records.
+     */
+    HudUiMgrSensorTrackList() {
+        trackListAux = 0;
+        tail = 0;
+        head = 0;
+        count = 0;
+    }
 };
 
 extern "C" {
@@ -431,7 +441,6 @@ int __fastcall ApplyViewportRect(HudUiRect *activeRect);
 }
 
 namespace HudUiMgrSensor {
-void __cdecl TrackList_Reset();
 HudUiMgrSensorTrackNode *__fastcall TrackList_Add(
     int trackKind,
     void *payload
@@ -838,6 +847,7 @@ struct HudUiZrdWidget : HudUiWidget {
     HudUiRect * GetBoundsRectOrNull();
     void ShowPreview();
     void OnActivate();
+    void SetEnabled(int enabled);
     virtual void RefreshState();
     virtual int LoadFromZrd(
         zReader::Node *zrdSection,
@@ -1842,12 +1852,9 @@ struct HudUiChatComposeTextInput : HudUiTextInput {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-numeric-text-input.type
- * @recoil-artifact emits .text recoil:function:0x41a3f0: Compiler-generated HudUiNumericTextInput destructor tail thunk.
- *
- * Retail evidence: the complete body is a five-byte tail jump to the authored
- * destructor at 0x4b4ac0. It has lifecycle/EH cleanup callers and no table or
- * data references, so it is compiler inventory rather than a second authored
- * destructor definition.
+ * Purpose: Own the numeric text editor, its border and keyboard dispatch.
+ * Its authored destructor body is 0x4b4ac0, not the derived-input tail at
+ * 0x41a3f0.
  */
 struct HudUiNumericTextInput : HudUiZrdWidget {
     HudUiOwnedTextInput textInput;
@@ -1872,6 +1879,14 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
     );
 };
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-net-game-setup-text-input.type
+ * @recoil-artifact emits .text recoil:function:0x41a3f0: Derived-input destructor tail representative.
+ * Retail 0x41a3f0 tails to the numeric-input destructor at 0x4b4ac0.
+ * VC5 emits identical tails for this layer and its data-less input subclasses;
+ * their final folded population and placement remain linked-stage obligations.
+ * Purpose: Specialize numeric input activation for network game setup.
+ */
 struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
     HudUiNetGameSetupTextInput(unsigned int bufferSize);
     void OnActivate();
@@ -1905,7 +1920,16 @@ struct HudUiClampedIntTextInput : HudUiNetGameSetupTextInput {
     int minValue;
     int maxValue;
 
+    /**
+     * Purpose: initialize the fixed three-digit input and its signed clamp.
+     */
+    HudUiClampedIntTextInput() : HudUiNetGameSetupTextInput(4) {
+        minValue = -2147483647 - 1;
+        maxValue = 2147483647;
+    }
     HudUiClampedIntTextInput(unsigned int maxDigits);
+    void SetRange(int minimum, int maximum);
+    void SetValue(int value);
     int OnRawKeyboardChar(int key);
     int CommitAndGetValue();
 };
@@ -1913,7 +1937,13 @@ struct HudUiClampedIntTextInput : HudUiNetGameSetupTextInput {
 struct HudUiClampedIntStepButton : HudUiZrdWidget {
     HudUiClampedIntTextInput *targetInput;
     int stepDelta;
+    void SetTarget(HudUiClampedIntTextInput *input, int step);
 
+    /**
+     * Purpose: leave the step control unbound with a one-unit default step.
+     */
+    HudUiClampedIntStepButton() : targetInput(0), stepDelta(1) {
+    }
     void OnActivate();
 };
 
@@ -1980,7 +2010,8 @@ struct HudUiTransitionTextPanel : HudUiPanel {
     int flashDirectionSign;
 
     HudUiTransitionTextPanel();
-    ~HudUiTransitionTextPanel() {}
+    HudUiTransitionTextPanel(const HudUiTransitionTextPanel &source);
+    HudUiTransitionTextPanel &operator=(const HudUiTransitionTextPanel &source);
     void Update(float deltaSeconds);
     void ResetFlashState(float flashRate);
     void SetFlashRate(float flashRate);
@@ -2164,15 +2195,7 @@ struct HudUiFlashPanel {
     );
 };
 
-struct HudUiCompositePanelEntry : HudUiTransitionTextPanel {
-    HudUiCompositePanelEntry() {}
-    HudUiCompositePanelEntry(const HudUiCompositePanelEntry &source);
-    /**
-     * Purpose: assign one existing composite entry, including its panel and
-     * seven flash-state fields, without changing its dynamic type.
-     */
-    HudUiCompositePanelEntry &operator=(const HudUiCompositePanelEntry &source);
-};
+typedef HudUiTransitionTextPanel HudUiCompositePanelEntry;
 
 /**
  * the natural VC5
@@ -3280,7 +3303,7 @@ struct HudUiTextStack4 : HudUiContainer {
  * Purpose: Record the compiler-generated destruction of the top-message rows and container base.
  */
 struct HudUiTopMessageStack : HudUiTextStack4 {
-    HudUiTopMessageStack * Constructor();
+    HudUiTopMessageStack();
 };
 
 /**
@@ -3289,7 +3312,7 @@ struct HudUiTopMessageStack : HudUiTextStack4 {
  * Purpose: Record the compiler-generated destruction of the chat-message rows and container base.
  */
 struct HudUiChatMessageStack : HudUiTextStack4 {
-    HudUiChatMessageStack * Constructor();
+    HudUiChatMessageStack();
 };
 
 #if defined(_M_IX86) || defined(__i386__)

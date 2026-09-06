@@ -2897,13 +2897,13 @@ namespace zModel {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setditextureworldpermeter
  * @recoil-artifact defines .text recoil:function:0x4760d0: zModel::SetDiTextureWorldPerMeter
- * Purpose: set display-instance texture-world mapping flags and scale.
+ * Purpose: enable display-instance texture scrolling and store its U/V rates.
  */
 int __fastcall SetDiTextureWorldPerMeter(
     zDiPartial *di,
     int worldSpaceEnabled,
-    float textureWorldPerMeter,
-    int textureWorldAxis
+    float scrollRateU,
+    float scrollRateV
 ) {
     if (di == 0) {
         zError::ReportOld(
@@ -2916,8 +2916,8 @@ int __fastcall SetDiTextureWorldPerMeter(
     }
 
     di->flags = (di->flags & ~0x20) | ((worldSpaceEnabled & 1) << 5);
-    di->textureWorldPerMeter = textureWorldPerMeter;
-    di->textureWorldAxis = textureWorldAxis;
+    di->scrollRateU = scrollRateU;
+    di->scrollRateV = scrollRateV;
     return 0;
 }
 } // namespace zModel

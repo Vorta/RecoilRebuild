@@ -13,8 +13,8 @@
     "src/GameZRecoil/zInterp/zInterp.h"
   ],
   "functions": [
-    {"address":"0x4c0d20","symbol":"?Constructor@zInterp_Context@@QAEPAU1@PBD0@Z","name":"zInterp_Context::Constructor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c0e50","symbol":"?Destructor@zInterp_Context@@QAEXXZ","name":"zInterp_Context::Destructor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0d20","symbol":"??0zInterp_Context@@QAE@PBD0@Z","name":"zInterp_Context::zInterp_Context","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0e50","symbol":"??1zInterp_Context@@QAE@XZ","name":"zInterp_Context::~zInterp_Context","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c0f70","symbol":"?Destroy@zInterp_Context@@QAEXXZ","name":"zInterp_Context::Destroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c1020","symbol":"?RunString@zInterp_Context@@QAEHPAU_iobuf@@H@Z","name":"zInterp_Context::RunString","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c1090","symbol":"?RunStream@zInterp_Context@@QAEHPAD@Z","name":"zInterp_Context::RunStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
@@ -50,9 +50,9 @@
     {"address":"0x4c5520","symbol":"?ReportErrorf@zInterp_Context@@SAXPAU1@PBDZZ","name":"zInterp_Context::ReportErrorf","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c5550","symbol":"?LoadPreparedScriptIndex@zInterp_Context@@QAEHPBD@Z","name":"zInterp_Context::LoadPreparedScriptIndex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c5740","symbol":"?OpenPreparedScriptStream@zInterp_Context@@QAEPAU_iobuf@@PBD@Z","name":"zInterp_Context::OpenPreparedScriptStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c5820","symbol":"?ValidateArgsAndNodeType@zInterp_Context@@QAEHHHPAUzClass_NodePartial@@@Z","name":"zInterp_Context::ValidateArgsAndNodeType","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c58c0","symbol":"?DefaultDispatchHook@zInterp_Context@@SGHPAUzClass_NodePartial@@@Z","name":"zInterp_Context::DefaultDispatchHook","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c58e0","symbol":"?RegisterScrollAlwaysNode@zInterp_Context@@QAEHPAUzClass_NodePartial@@MHH@Z","name":"zInterp_Context::RegisterScrollAlwaysNode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c5820","symbol":"?ValidateArgsAndNodeType@zInterp_Context@@QAE_NHHPAUzClass_NodePartial@@@Z","name":"zInterp_Context::ValidateArgsAndNodeType","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c58c0","symbol":"?DefaultDispatchHook@zInterp_Context@@QAE_NPAUzClass_NodePartial@@@Z","name":"zInterp_Context::DefaultDispatchHook","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c58e0","symbol":"?RegisterScrollAlwaysNode@zInterp_Context@@QAE_NPAUzClass_NodePartial@@MM_N@Z","name":"zInterp_Context::RegisterScrollAlwaysNode","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c59e0","symbol":"?DefaultRenderAction@zInterp_Object3D@@YIHPAUzClass_NodePartial@@@Z","name":"zInterp_Object3D::DefaultRenderAction","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c5a00","symbol":"?ScrollAlwaysTickAction@zInterp_Object3D@@YIXPAUzClass_NodePartial@@@Z","name":"zInterp_Object3D::ScrollAlwaysTickAction","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],

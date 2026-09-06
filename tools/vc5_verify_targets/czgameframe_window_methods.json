@@ -28,7 +28,7 @@
     },
     {
       "address": "0x4438c0",
-      "symbol": "?BuildWindowTitle@CZGameFrame@@UAEPAVCString@@PAV2@@Z",
+      "symbol": "?BuildWindowTitle@CZGameFrame@@UAE?AVCString@@XZ",
       "name": "CZGameFrame::BuildWindowTitle"
     },
     {

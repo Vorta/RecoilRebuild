@@ -124,6 +124,21 @@ python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fre
 Unresolved target, storage, provider, import, ICF/logical-alias identity, or
 indirect provenance fails closed.
 
+When several registered regex rows identify the same physical address, the
+unique live accepted authored-order target selects the governing row, not a
+linked-order diagnostic registration. Different-address matches and duplicate
+governing rows remain ambiguous. Selection does not bypass synchronization,
+current order, exact physical identity, or caller COFF provenance checks.
+HUD caller membership checks likewise require every named target exactly once,
+without freezing the complete list of additional diagnostic registrations.
+
+Before legacy call projections, the verifier rejects an unequal already-known
+authored physical target at an aligned direct call site. This rejection-only
+check requires matching zero-addend REL32 COFF and E8 listing evidence and
+respects accepted physical/ICF identities. Historical constructor equivalence
+cannot rewrite a known target mismatch into a passing contract. Inconclusive
+prechecks still require complete ordinary extraction; they accept nothing.
+
 Argument/dependency selection rules do not contain saved expected flag values
 or table contents. Those facts are derived from the live retail body and
 compared with the freshly compiled candidate. Unsupported bit operations,
@@ -331,6 +346,12 @@ Authored equality requires:
 - linked presence and symbolic identity;
 - relocation-normalized linked body bytes.
 
+Authored and linked byte scans obtain their fresh canonical artifacts through
+the non-deploying `--linkability-only` build diagnostic. They require a successful
+complete compile, alias, resource, and link result with deployment and linked-order
+evaluation suppressed, then perform their own comparisons. The artifact producer
+accepts no byte facts and never replaces the playground executable.
+
 Expected relocation facts never come from candidate output:
 
 ```powershell
@@ -468,6 +489,16 @@ runs propagation checks, and saves before returning to source work.
 The two live SQLite databases are the only runtime authorities. Never hand-edit
 them. Semantic mutations use CAS and fresh evidence. Issue mutations use their
 independent monotonic revision.
+
+When fresh retail layout evidence proves that existing standalone authored
+data globals are fields of one native aggregate, use the reviewed
+`progress data-artifact coalesce` command. Its exact snapshot payload must
+enumerate all fields, padding, storage, the single owner, and data-only target
+registrations. Update the selected manifests to the reviewed aggregate before
+the dry-run. The transaction preserves historical records and logical field
+views, rejects unhandled references/overlaps, and invalidates call/byte evidence
+without changing function order or accepting an owner/data/linkage gate.
+It is not an extent-only shortcut or a provider-pooling alias operation.
 
 The README contains only a static pointer to `progress next --json`. It is not
 a second current-state authority and no tracker transaction updates it.

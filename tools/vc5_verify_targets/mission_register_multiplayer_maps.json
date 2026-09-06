@@ -1,8 +1,8 @@
 {
   "name": "mission_register_multiplayer_maps",
-  "description": "Mission::RegisterMultiplayerMaps in the GameNet MFC source cluster. Direct production host: mission.cpp.",
+  "description": "Natural VC5 static CString map-name array lifetime helpers. Direct production host: mission.cpp. Diagnostic only; compiler helpers remain non-authored full-order inventory.",
   "source_filename": "mission.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_gx_facs",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -17,8 +17,31 @@
   "functions": [
     {
       "address": "0x41c980",
-      "symbol": "?RegisterMultiplayerMaps@Mission@@YAXXZ",
-      "name": "Mission::RegisterMultiplayerMaps"
+      "symbol": "_$E216",
+      "name": "Map-name static initializer coordinator",
+      "pipeline_class": "non-authored",
+      "provenance": "compiler-emitted-noncovering"
+    },
+    {
+      "address": "0x41c990",
+      "symbol": "_$E213",
+      "name": "Map-name array initialization",
+      "pipeline_class": "non-authored",
+      "provenance": "compiler-emitted-noncovering"
+    },
+    {
+      "address": "0x41ca00",
+      "symbol": "_$E215",
+      "name": "Map-name cleanup registration",
+      "pipeline_class": "non-authored",
+      "provenance": "compiler-emitted-noncovering"
+    },
+    {
+      "address": "0x41ca10",
+      "symbol": "_$E214",
+      "name": "Map-name array cleanup",
+      "pipeline_class": "non-authored",
+      "provenance": "compiler-emitted-noncovering"
     }
   ],
   "source_from": "src/Battlesport/mission.cpp"

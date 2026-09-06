@@ -349,44 +349,6 @@ const int kDPlayPending = (int)(0x8000000a);
 const int kDPlayBufferTooSmall = (int)(0x8877001e);
 const int kDPlayConnecting = (int)(0x8877015e);
 
-/**
- * Recovered local helper: AppendServiceProviderInfo.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
- * Original helper evidence: no standalone retail address; fully inlined in
- * zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo at 0x48b3a0, where BN
- * shows the service-provider vector insertion, capacity growth, copied pointer range,
- * and MSVC EH setup around the callback body.
- * Purpose: append a DirectPlay service-provider record to the recovered vector.
- */
-inline void __cdecl AppendServiceProviderInfo(
-    zNetworkDPlayServiceProviderInfo *info
-) {
-    zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
-    if (list->end == list->cap) {
-        const int count = list->begin != 0 ? (int)(list->end - list->begin) : 0;
-        const int newCapacity = count <= 1 ? count + 1 : count * 2;
-        zNetworkDPlayServiceProviderInfo **const newBegin =
-            (zNetworkDPlayServiceProviderInfo **)(::operator new(
-                sizeof(zNetworkDPlayServiceProviderInfo *) * newCapacity
-            ));
-
-        int index;
-        for (index = 0; index < count; ++index) {
-            newBegin[index] = list->begin[index];
-        }
-
-        newBegin[count] = info;
-        ::operator delete(list->begin);
-        list->begin = newBegin;
-        list->end = newBegin + count + 1;
-        list->cap = newBegin + newCapacity;
-        return;
-    }
-
-    *list->end = info;
-    ++list->end;
-}
-
 } // namespace
 
 namespace zNetwork {
@@ -431,16 +393,7 @@ int __fastcall InitSessionRuntime(
     }
     g_zNetwork_PlayerRecordList = playerRecordList;
 
-    zNetworkServiceProviderListVec *serviceProviderList =
-        (zNetworkServiceProviderListVec *)(::operator new(sizeof(zNetworkServiceProviderListVec)));
-    if (serviceProviderList != 0) {
-        serviceProviderList->begin = 0;
-        serviceProviderList->end = 0;
-        serviceProviderList->cap = 0;
-    } else {
-        serviceProviderList = 0;
-    }
-    g_zNetwork_ServiceProviderList = serviceProviderList;
+    g_zNetwork_ServiceProviderList = new zNetworkServiceProviderListVec;
 
     RegisterPacketHandler(
         1,
@@ -470,14 +423,8 @@ int __cdecl ShutdownSessionRuntime() {
     g_zNetwork_CurrentSessionDescCache = 0;
 
     ClearServiceProviderList();
-    if (g_zNetwork_ServiceProviderList != 0) {
-        ::operator delete(g_zNetwork_ServiceProviderList->begin);
-        g_zNetwork_ServiceProviderList->begin = 0;
-        g_zNetwork_ServiceProviderList->end = 0;
-        g_zNetwork_ServiceProviderList->cap = 0;
-        ::operator delete(g_zNetwork_ServiceProviderList);
-        g_zNetwork_ServiceProviderList = 0;
-    }
+    delete g_zNetwork_ServiceProviderList;
+    g_zNetwork_ServiceProviderList = 0;
 
     ClearPlayerRecordList();
     zNetworkPlayerRecordList *const playerRecordList = g_zNetwork_PlayerRecordList;
@@ -572,7 +519,7 @@ void __fastcall SetFatalDisconnectCallback(
  */
 void __cdecl ClearServiceProviderList() {
     zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
-    for (zNetworkDPlayServiceProviderInfo **it = list->begin; it != list->end; ++it) {
+    for (zNetworkServiceProviderListVec::iterator it = list->begin(); it != list->end(); ++it) {
         zNetworkDPlayServiceProviderInfo *const info = *it;
         if (info != 0) {
             free(info->displayName);
@@ -585,16 +532,7 @@ void __cdecl ClearServiceProviderList() {
         *it = 0;
     }
 
-    zNetworkDPlayServiceProviderInfo **first = list->begin;
-    zNetworkDPlayServiceProviderInfo **last = list->end;
-    zNetworkDPlayServiceProviderInfo **finish = list->end;
-    while (last != finish) {
-        *first = *last;
-        ++first;
-        ++last;
-    }
-
-    list->end = first;
+    list->clear();
 }
 
 /**
@@ -666,12 +604,7 @@ int __cdecl RefreshServiceProviderList() {
         );
     }
 
-    zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
-    if (list->begin == 0) {
-        return 0;
-    }
-
-    return (int)(list->end - list->begin);
+    return (int)g_zNetwork_ServiceProviderList->size();
 }
 
 } // namespace zNetwork_DPlay
@@ -1643,15 +1576,16 @@ namespace zNetworkDPlay {
 int __fastcall PumpIncomingMessages(
     zNetworkDPlaySystemMessage *systemMessage
 ) {
-    zNetworkPacketHeader packet;
+    int result = 0;
     const int msgType = systemMessage->msgType;
 
     switch (msgType) {
     case 0x21:
     case 7:
-        return 0;
+        break;
 
     case 3: {
+        zNetworkPacketHeader packet;
         zNetwork_PlayerRecord *playerRecord =
             (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
         if (playerRecord != 0) {
@@ -1702,10 +1636,11 @@ int __fastcall PumpIncomingMessages(
             zNetwork::HostSendPlayerColorAssignmentsPacket(systemMessage->fields.playerId);
         }
 
-        return 0;
+        break;
     }
 
-    case 5:
+    case 5: {
+        zNetworkPacketHeader packet;
         packet.packetType = 3;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
@@ -1715,20 +1650,23 @@ int __fastcall PumpIncomingMessages(
         );
         zNetwork::RemovePlayerRecordByKey(systemMessage->fields.playerId);
         --g_zNetworkCurrentPlayerCountCached;
-        return 0;
+        break;
+    }
 
     case 0x31:
         if (g_zNetwork_FatalDisconnectCallback != 0) {
             g_zNetwork_FatalDisconnectCallback(-1);
         }
         g_zNetwork_FatalDisconnectTriggered = 1;
-        return -1;
+        result = -1;
+        break;
 
     case 0x101:
         g_zNetwork_IsHostFlag = 1;
-        return 0;
+        break;
 
-    case 0x102:
+    case 0x102: {
+        zNetworkPacketHeader packet;
         packet.packetType = 4;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
@@ -1736,9 +1674,11 @@ int __fastcall PumpIncomingMessages(
             systemMessage->fields.playerId,
             &packet
         );
-        return 0;
+        break;
+    }
 
-    case 0x103:
+    case 0x103: {
+        zNetworkPacketHeader packet;
         packet.packetType = 5;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
@@ -1746,7 +1686,8 @@ int __fastcall PumpIncomingMessages(
             systemMessage->fields.playerId,
             &packet
         );
-        return 0;
+        break;
+    }
 
     case 0x104:
         memcpy(
@@ -1754,13 +1695,13 @@ int __fastcall PumpIncomingMessages(
             systemMessage->payload_004,
             sizeof(zNetworkDPlaySessionDesc)
         );
-        return 0;
+        break;
 
     case 0x10d:
         if (systemMessage->fields.nameShortOrAsyncHandle == g_zNetwork_LastSendExHandle) {
             g_zNetwork_LastSendExCompleted = 1;
         }
-        return 0;
+        break;
 
     default:
         zError::ReportOld(
@@ -1769,8 +1710,9 @@ int __fastcall PumpIncomingMessages(
             0x346,
             g_zNetwork_UnhandledDirectPlaySystemMessageMsg
         );
-        return 0;
+        break;
     }
+    return result;
 }
 
 /**
@@ -1788,29 +1730,15 @@ int __stdcall EnumConnectionsCallback_AddServiceProviderInfo(
     void *
 ) {
     zNetworkDPlayServiceProviderInfo *providerInfo =
-        (zNetworkDPlayServiceProviderInfo *)(::operator new(
-            sizeof(zNetworkDPlayServiceProviderInfo)
-        ));
-    if (providerInfo != 0) {
-        memcpy(
-            &providerInfo->serviceProviderGuid,
+        new zNetworkDPlayServiceProviderInfo(
             serviceProviderGuid,
-            sizeof(providerInfo->serviceProviderGuid)
-        );
-        providerInfo->displayName = _strdup(providerName->lpszShortNameA);
-        providerInfo->connectionData = calloc(
-            connectionDataSize,
-            1
-        );
-        memcpy(
-            providerInfo->connectionData,
             connectionData,
-            connectionDataSize
+            connectionDataSize,
+            providerName,
+            providerFlags
         );
-        providerInfo->providerFlags = (int)(providerFlags);
-    }
 
-    AppendServiceProviderInfo(providerInfo);
+    g_zNetwork_ServiceProviderList->push_back(providerInfo);
     return TRUE;
 }
 
@@ -2427,6 +2355,7 @@ void __cdecl DeleteAllDispatchHandlers() {
 extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-initmessagehandlers
+ * @recoil-artifact defines .data recoil:data:0x56add8: Native 12-byte dispatch-handler list object.
  * @recoil-artifact emits .text recoil:function:0x48bfa0: CRT initialization coordinator.
  * @recoil-artifact emits .text recoil:function:0x48bfb0: Inlined VC5 list construction.
  * @recoil-artifact emits .text recoil:function:0x48bfe0: CRT exit registration.

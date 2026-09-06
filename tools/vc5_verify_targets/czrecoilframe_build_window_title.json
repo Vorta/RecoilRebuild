@@ -18,7 +18,7 @@
   "functions": [
     {
       "address": "0x4306f0",
-      "symbol": "?BuildWindowTitle@CZRecoilFrame@@QAEPAVCString@@PAV2@@Z",
+      "symbol": "?BuildWindowTitle@CZRecoilFrame@@UAE?AVCString@@XZ",
       "name": "CZRecoilFrame::BuildWindowTitle"
     }
   ],

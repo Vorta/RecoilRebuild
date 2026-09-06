@@ -173,67 +173,6 @@ bool BackendHandleIsPlaying(
     return false;
 }
 
-/**
- * Original static helper recovered from address-backed zSound playback callers.
- * Evidence: retail callers use integer-preserving float bit reinterpretation
- * for provider gain replay, with no standalone retail helper function.
- * Purpose: reinterpret stored IEEE-754 bits as a float gain value.
- */
-float FloatFromBits(
-    int bits
-) {
-    float value = 0.0f;
-    memcpy(
-        &value,
-        &bits,
-        sizeof(value)
-    );
-    return value;
-}
-
-/**
- * Original static helper recovered from address-backed zSound playback callers.
- * Evidence: retail callers store provider gain values as integer bits for
- * later replay, with no standalone retail helper function.
- * Purpose: reinterpret a float gain value as its raw IEEE-754 bits.
- */
-int FloatToBits(
-    float value
-) {
-    int bits = 0;
-    memcpy(
-        &bits,
-        &value,
-        sizeof(bits)
-    );
-    return bits;
-}
-
-
-
-/**
- * Original static helper recovered from address-backed callers in zsnd_play.cpp.
- * Evidence: retail callers inline the marker-time refresh and last-voice global
- * stores in zSndSample::PlayOnA3D and zSndSample::PlayOnDirectSound.
- * Purpose: refresh playback marker deadlines and remember the active voice.
- */
-void RefreshPlaybackMarkers(
-    zSndSample *sample,
-    zSndPlayHandle *handle
-) {
-    if (sample->markerCount != 0 && sample->playbackEventHandler != 0) {
-        {
-            for (int index = 0; index < sample->markerCount; ++index) {
-                sample->markerValues[index] = sample->markerTimes[index] +
-                                              g_Time_UnscaledAccumulatedTimeSec -
-                                              sample->markerBaseTime;
-            }
-        }
-
-        g_zSndLastVoice = sample;
-        g_zSndLastVoiceHandle = handle;
-    }
-}
 } // namespace
 
 /**
@@ -690,11 +629,11 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
 
     result->handleKind = ZSND_PLAYHANDLE_BACKEND;
     result->ownerSample = this;
-    result->gainScaled = FloatToBits(gainScale);
+    memcpy(&result->gainScaled, &gainScale, sizeof(gainScale));
 
     zA3dProviderSource *const source = (zA3dProviderSource *)(result->backendBuffer);
     if (worldPos != 0) {
-        source->SetTransformMode(
+        source->SetRenderMode(
             0
         );
         if (result->Update3DDispatch(worldPos, velocity, 0) == 0 &&
@@ -702,14 +641,16 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
             return 0;
         }
     } else {
-        source->SetTransformMode(
+        source->SetRenderMode(
             1
         );
         if (zSnd::IsMuted() != 0) {
             source->SetGain(0.0f);
         } else {
+            float storedGain;
+            memcpy(&storedGain, &result->gainScaled, sizeof(storedGain));
             source->SetGain(
-                zSndSample_PlaySimple(FloatFromBits(result->gainScaled))
+                zSndSample_PlaySimple(storedGain)
             );
         }
     }
@@ -717,10 +658,14 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
     source->SetWavePosition(
         backendArg
     );
-    RefreshPlaybackMarkers(
-        this,
-        result
-    );
+    if (markerCount != 0 && playbackEventHandler != 0) {
+        for (int index = 0; index < markerCount; ++index) {
+            markerValues[index] = markerTimes[index] +
+                g_Time_UnscaledAccumulatedTimeSec - markerBaseTime;
+        }
+        g_zSndLastVoice = this;
+        g_zSndLastVoiceHandle = result;
+    }
 
     const int playError = source->Play(
         replayFields.flags & 0x01
@@ -768,7 +713,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
     result->handleKind = ZSND_PLAYHANDLE_BACKEND;
     result->ownerSample = this;
 
-    DWORD status = 0;
+    DWORD status;
     buffer->GetStatus(&status);
     if ((status & 0x02) != 0) {
         buffer = (LPDIRECTSOUNDBUFFER)(result->backendBuffer);
@@ -782,16 +727,25 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
             return 0;
         }
     } else {
-        buffer = (LPDIRECTSOUNDBUFFER)(result->backendBuffer);
-        buffer->SetVolume(zSnd::IsMuted() != 0 ? -10000 : result->gainScaled);
+        if (zSnd::IsMuted() != 0) {
+            buffer = (LPDIRECTSOUNDBUFFER)(result->backendBuffer);
+            buffer->SetVolume(-10000);
+        } else {
+            buffer = (LPDIRECTSOUNDBUFFER)(result->backendBuffer);
+            buffer->SetVolume(result->gainScaled);
+        }
     }
 
     buffer = (LPDIRECTSOUNDBUFFER)(result->backendBuffer);
     buffer->SetCurrentPosition(backendArg);
-    RefreshPlaybackMarkers(
-        this,
-        result
-    );
+    if (markerCount != 0 && playbackEventHandler != 0) {
+        for (int index = 0; index < markerCount; ++index) {
+            markerValues[index] = markerTimes[index] +
+                g_Time_UnscaledAccumulatedTimeSec - markerBaseTime;
+        }
+        g_zSndLastVoice = this;
+        g_zSndLastVoiceHandle = result;
+    }
 
     const int playError = buffer->Play(
         0,
@@ -1443,28 +1397,40 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(
     zSndPlayHandleSnapshotItem *const listHead = snapshot->listHead;
     zSndPlayHandleSnapshotItem *item = listHead->next->next;
 
-    if (g_zSnd_ActiveBackend == 0) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1:
         while (item != listHead) {
-            zSndPlayHandle *const playHandle = item->payload.playHandle;
-            LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
-            const int volume = zSnd::IsMuted() != 0 ? -10000 : playHandle->gainScaled;
-            buffer->SetVolume(volume);
-            item = item->next;
-        }
-    } else if (g_zSnd_ActiveBackend == 1) {
-        while (item != listHead) {
-            zSndPlayHandle *const playHandle = item->payload.playHandle;
-            zA3dProviderSource *const source = (zA3dProviderSource *)(playHandle->backendBuffer);
             if (zSnd::IsMuted() != 0) {
+                zSndPlayHandle *const playHandle = item->payload.playHandle;
+                zA3dProviderSource *const source = (zA3dProviderSource *)(playHandle->backendBuffer);
                 source->SetGain(0.0f);
             } else {
+                zSndPlayHandle *const playHandle = item->payload.playHandle;
+                zA3dProviderSource *const source = (zA3dProviderSource *)(playHandle->backendBuffer);
+                float storedGain;
+                memcpy(&storedGain, &playHandle->gainScaled, sizeof(storedGain));
                 source->SetGain(
-                    zSndSample_PlaySimple(FloatFromBits(playHandle->gainScaled))
+                    zSndSample_PlaySimple(storedGain)
                 );
             }
 
             item = item->next;
         }
+        break;
+    case 0:
+        while (item != listHead) {
+            if (zSnd::IsMuted() != 0) {
+                zSndPlayHandle *const playHandle = item->payload.playHandle;
+                LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
+                buffer->SetVolume(-10000);
+            } else {
+                zSndPlayHandle *const playHandle = item->payload.playHandle;
+                LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
+                buffer->SetVolume(playHandle->gainScaled);
+            }
+            item = item->next;
+        }
+        break;
     }
 
     return previousMuted;

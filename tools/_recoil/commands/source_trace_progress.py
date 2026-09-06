@@ -525,7 +525,12 @@ def normalize_replace_batch_payload(value: Any) -> dict[str, Any]:
         seen.add(artifact_id)
         expected_current = update["expected_current"]
         if expected_current is not None:
-            expected_current = normalize_source_traceability(expected_current)
+            # This is an exact-current guard, not replacement evidence. Keep
+            # malformed historical records inspectable/repairable without
+            # silently interpreting a missing field as an accepted empty set.
+            expected_current = deepcopy(dict(_require_mapping(
+                expected_current, label=f"{label}.expected_current",
+            )))
         replacement = normalize_source_traceability(
             update["source_traceability"]
         )
@@ -590,7 +595,7 @@ def plan_source_traceability_batch(
                 "replace-batch never creates tracker artifacts"
             )
         current = (
-            normalize_source_traceability(row["source_traceability"])
+            deepcopy(row["source_traceability"])
             if "source_traceability" in row
             else None
         )

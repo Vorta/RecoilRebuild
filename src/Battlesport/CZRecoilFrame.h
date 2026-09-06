@@ -36,7 +36,7 @@ struct CZRecoilFrame : CZGameFrame {
     CZRecoilFrame();
     ~CZRecoilFrame();
     void SetMenuBarVisibility(int visible);
-    CString * BuildWindowTitle(CString *outTitle);
+    CString BuildWindowTitle();
     void OnMenuStartSinglePlayer();
     void OnMenuOpenCampaign();
     RECOIL_NO_GS void OnOpenFileDialog();

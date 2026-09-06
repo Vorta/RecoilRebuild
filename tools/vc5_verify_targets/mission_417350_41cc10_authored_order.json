@@ -1,6 +1,6 @@
 {
   "name": "mission_417350_41cc10_authored_order",
-  "description": "Exact authored-order target for the retail literal-backed mission.cpp physical block [0x417350,0x41cc10). The implementations now compile directly through mission.cpp in recovered physical order, without preservation fragments. The 128 gating identities and map/pickup seams are retail-reviewed. The five-byte 0x41a3f0 HudUiNumericTextInput destructor tail thunk jumps to the authored destructor body at 0x4b4ac0; it is compiler-generated lifecycle inventory and does not gate authored relative order. The 0x41ab60..0x41ab90 HudUiNetGameSetupOverlayOwner initializer coordinator, constructor thunk, atexit registration helper, and destructor thunk are likewise natural compiler-generated lifecycle inventory. Compiler-generated lifecycle variants remain required inventory for full order. This target checks natural VC5 translation-unit order and linked authored projection only; it accepts no bytes, owner, provider, data, linkage, or tier fact.",
+  "description": "Exact authored-order target for the retail literal-backed mission.cpp physical block [0x417350,0x41cc10). The implementations now compile directly through mission.cpp in recovered physical order, without preservation fragments. The authored identities and map/pickup seams are retail-reviewed. The four map-name CString array lifetime helpers at 0x41c980..0x41ca10 are natural VC5 compiler-generated inventory, not authored bodies. The five-byte 0x41a3f0 HudUiNumericTextInput destructor tail thunk jumps to the authored destructor body at 0x4b4ac0; it is compiler-generated lifecycle inventory and does not gate authored relative order. The 0x41ab60..0x41ab90 HudUiNetGameSetupOverlayOwner initializer coordinator, constructor thunk, atexit registration helper, and destructor thunk are likewise natural compiler-generated lifecycle inventory. Compiler-generated lifecycle variants remain required inventory for full order. This target checks natural VC5 translation-unit order and linked authored projection only; it accepts no bytes, owner, provider, data, linkage, or tier fact.",
   "target_binary": "recoil",
   "retail_start": "0x417350",
   "retail_end_exclusive": "0x41cc10",
@@ -587,10 +587,10 @@
           "address": "0x41a3f0",
           "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
-          "name": "compiler-generated HudUiNumericTextInput destructor tail thunk",
+          "name": "compiler-generated network input destructor tail thunk",
           "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "??1HudUiNumericTextInput@@UAE@XZ"
+          "symbol": "??1HudUiNetGameSetupTextInput@@UAE@XZ"
         },
         {
           "address": "0x41a400",
@@ -1218,39 +1218,43 @@
         },
         {
           "address": "0x41c980",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "Mission::RegisterMultiplayerMaps",
-          "pipeline_class": "authored",
+          "name": "NetSessionConfigDialog map-name array static initializer coordinator",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?RegisterMultiplayerMaps@Mission@@YAXXZ"
+          "symbol": "_$E216",
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c990",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "NetSessionConfigDialog::InitMapNameStrings",
-          "pipeline_class": "authored",
+          "name": "NetSessionConfigDialog map-name array initialization",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?InitMapNameStrings@NetSessionConfigDialog@@SAXXZ"
+          "symbol": "_$E213",
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41ca00",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "NetSessionConfigDialog::RegisterMapNameCleanup",
-          "pipeline_class": "authored",
+          "name": "NetSessionConfigDialog map-name array cleanup registration",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?RegisterMapNameCleanup@NetSessionConfigDialog@@SAXXZ"
+          "symbol": "_$E215",
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41ca10",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "NetSessionConfigDialog::CleanupMapNameStringsOnExit",
-          "pipeline_class": "authored",
+          "name": "NetSessionConfigDialog map-name array destructor callback",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?CleanupMapNameStringsOnExit@NetSessionConfigDialog@@SAXXZ"
+          "symbol": "_$E214",
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41ca30",
@@ -1851,10 +1855,10 @@
           "address": "0x41a3f0",
           "authored_order_role": "compiler-generated-thunk",
           "full_order_gate": true,
-          "name": "compiler-generated HudUiNumericTextInput destructor tail thunk",
+          "name": "compiler-generated network input destructor tail thunk",
           "pipeline_class": "authored-lifecycle",
           "required_presence": true,
-          "symbol": "??1HudUiNumericTextInput@@UAE@XZ"
+          "symbol": "??1HudUiNetGameSetupTextInput@@UAE@XZ"
         },
         {
           "address": "0x41a400",
@@ -2482,39 +2486,43 @@
         },
         {
           "address": "0x41c980",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "Mission::RegisterMultiplayerMaps",
-          "pipeline_class": "authored",
+          "name": "NetSessionConfigDialog map-name array static initializer coordinator",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?RegisterMultiplayerMaps@Mission@@YAXXZ"
+          "symbol": "_$E216",
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41c990",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "NetSessionConfigDialog::InitMapNameStrings",
-          "pipeline_class": "authored",
+          "name": "NetSessionConfigDialog map-name array initialization",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?InitMapNameStrings@NetSessionConfigDialog@@SAXXZ"
+          "symbol": "_$E213",
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41ca00",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "NetSessionConfigDialog::RegisterMapNameCleanup",
-          "pipeline_class": "authored",
+          "name": "NetSessionConfigDialog map-name array cleanup registration",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?RegisterMapNameCleanup@NetSessionConfigDialog@@SAXXZ"
+          "symbol": "_$E215",
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41ca10",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "NetSessionConfigDialog::CleanupMapNameStringsOnExit",
-          "pipeline_class": "authored",
+          "name": "NetSessionConfigDialog map-name array destructor callback",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?CleanupMapNameStringsOnExit@NetSessionConfigDialog@@SAXXZ"
+          "symbol": "_$E214",
+          "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x41ca30",

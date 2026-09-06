@@ -101,7 +101,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "?RefreshAndGetServiceProviderList@zNetworkDPlay@@YAPAUzNetworkServiceProviderListVec@@XZ"
+      "symbol": "?RefreshAndGetServiceProviderList@zNetworkDPlay@@YAPAV?$vector@PAUzNetworkDPlayServiceProviderInfo@@V?$allocator@PAUzNetworkDPlayServiceProviderInfo@@@std@@@std@@XZ"
     },
     {
       "address": "0x48a140",

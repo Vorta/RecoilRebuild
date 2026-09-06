@@ -42,7 +42,7 @@
     },
     {
       "address": "0x4cf8d0",
-      "symbol": "??_7HudUiNetGameSetupTextInput@@6B@",
+      "symbol": "??_7HudUiNetGameSetupPanel_GameNameInput@@6B@",
       "name": "g_HudUiNumericTextInput_MpGameName_Vtbl",
       "bn_name": "g_HudUiNumericTextInput_MpGameName_Vtbl",
       "byte_length": 144

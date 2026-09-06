@@ -197,6 +197,31 @@
         "/Zp4"
       ]
     },
+      {
+        "name": "vc5_o2_ogminus_ob1_md_gx_fastcall_facs",
+        "description": "Nonaccepting single-option global-optimization diagnostic relative to vc5_o2_ob1_md_gx_fastcall_facs. Retains every baseline flag and adds only /Og- after /O2; no production TU selects it.",
+        "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+        "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+        "compiler_flags": [
+          "/nologo", "/TP", "/W3", "/MD", "/G5", "/O2", "/Og-",
+          "/Ob1", "/GX", "/Gr", "/Zp4",
+          "/DWIN32", "/D_WINDOWS", "/DNDEBUG", "/D_AFXDLL", "/D_MBCS",
+          "/DSTRICT", "/D_CRT_SECURE_NO_WARNINGS",
+          "/DWINDOWS_IGNORE_PACKING_MISMATCH", "/DWIN32_LEAN_AND_MEAN", "/DNOMINMAX",
+          "/DRECOIL_ENABLE_ZSYS_CPU_RAW_ASM", "/DRECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM",
+          "/DRECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM", "/FAcs"
+        ]
+      },
+      {
+        "name": "vc5_o2_ogminus_ob0_md_gx_fastcall_facs",
+      "description": "Nonaccepting zInterp cleanup-tail diagnostic: disable global optimization while retaining the production /O2 /Ob0 /MD /GX /Gr /G5 /Zp4 tuple. No production TU selects this profile.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo", "/TP", "/W3", "/G5", "/O2", "/Og-", "/Ob0",
+        "/MD", "/GX", "/Gr", "/Zp4", "/FAcs", "/I", "."
+      ]
+    },
     {
       "name": "vc5_o2_ob0_md_gx_fastcall_facs",
       "description": "VC5SP3 final-build-style C++ profile with no inlining, DLL CRT imports, C++ EH, and lowercase /Gr fastcall as the translation-unit default.",
@@ -473,6 +498,48 @@
         "/GX",
         "/Gr",
         "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob2_md_gx_fastcall_facs",
+      "description": "VC5SP3 controlled inlining diagnostic: preserve the dynamic CRT, C++ EH and /Gr ABI of the Ob1 profile while allowing Ob2 inlining. No production TU mapping is implied.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo", "/TP", "/W3", "/MD", "/G5", "/O2", "/Ob2",
+        "/GX", "/Gr", "/Zp4", "/FAcs", "/I", "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo", "/TP", "/W3", "/MD", "/G5", "/O2", "/Ob2",
+        "/GX", "/Gr", "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob1_os_md_gx_fastcall_facs",
+      "description": "VC5SP3 controlled size-preference diagnostic with one explicitly inline constructor. No production TU mapping is implied.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo", "/TP", "/W3", "/MD", "/G5", "/O2", "/Ob1", "/Os",
+        "/GX", "/Gr", "/Zp4", "/FAcs", "/I", "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo", "/TP", "/W3", "/MD", "/G5", "/O2", "/Ob1", "/Os",
+        "/GX", "/Gr", "/Zp4"
+      ]
+    },
+    {
+      "name": "vc5_o2_ob2_os_md_gx_fastcall_facs",
+      "description": "VC5SP3 controlled size-preference diagnostic against the Ob2 /Gr profile. No production TU mapping is implied.",
+      "compiler_env": "D:/Recoil Project/Compiler/VC5SP3/vc5sp3-env.cmd",
+      "compiler_version_prefix": "Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022",
+      "compiler_flags": [
+        "/nologo", "/TP", "/W3", "/MD", "/G5", "/O2", "/Ob2", "/Os",
+        "/GX", "/Gr", "/Zp4", "/FAcs", "/I", "."
+      ],
+      "final_build_compile_flags": [
+        "/nologo", "/TP", "/W3", "/MD", "/G5", "/O2", "/Ob2", "/Os",
+        "/GX", "/Gr", "/Zp4"
       ]
     },
     {

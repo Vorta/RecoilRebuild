@@ -32,59 +32,15 @@
   "data_symbols": [
     {
       "address": "0x4f3688",
-      "symbol": "_g_PlayerMasterModalDataListAux",
-      "name": "g_PlayerMasterModalDataListAux",
-      "bn_name": "g_PlayerMasterModalDataListAux",
-      "byte_length": 4
-    },
-    {
-      "address": "0x4f368c",
-      "symbol": "_g_PlayerMasterModalDataHead",
-      "name": "g_PlayerMasterModalDataHead",
-      "bn_name": "g_PlayerMasterModalDataHead",
-      "byte_length": 4
-    },
-    {
-      "address": "0x4f3690",
-      "symbol": "_g_PlayerMasterModalDataTail",
-      "name": "g_PlayerMasterModalDataTail",
-      "bn_name": "g_PlayerMasterModalDataTail",
-      "byte_length": 4
-    },
-    {
-      "address": "0x4f3694",
-      "symbol": "_g_PlayerMasterModalDataCount",
-      "name": "g_PlayerMasterModalDataCount",
-      "bn_name": "g_PlayerMasterModalDataCount",
-      "byte_length": 4
+      "symbol": "_g_PlayerMasterModalDataList",
+      "name": "g_PlayerMasterModalDataList",
+      "byte_length": 16
     },
     {
       "address": "0x4f3a68",
-      "symbol": "_g_PlayerMasterCommonDataListAux",
-      "name": "g_PlayerMasterCommonDataListAux",
-      "bn_name": "g_PlayerMasterCommonDataListAux",
-      "byte_length": 4
-    },
-    {
-      "address": "0x4f3a6c",
-      "symbol": "_g_PlayerMasterCommonDataHead",
-      "name": "g_PlayerMasterCommonDataHead",
-      "bn_name": "g_PlayerMasterCommonDataHead",
-      "byte_length": 4
-    },
-    {
-      "address": "0x4f3a70",
-      "symbol": "_g_PlayerMasterCommonDataTail",
-      "name": "g_PlayerMasterCommonDataTail",
-      "bn_name": "g_PlayerMasterCommonDataTail",
-      "byte_length": 4
-    },
-    {
-      "address": "0x4f3a74",
-      "symbol": "_g_PlayerMasterCommonDataCount",
-      "name": "g_PlayerMasterCommonDataCount",
-      "bn_name": "g_PlayerMasterCommonDataCount",
-      "byte_length": 4
+      "symbol": "_g_PlayerMasterCommonDataList",
+      "name": "g_PlayerMasterCommonDataList",
+      "byte_length": 16
     }
   ]
 }

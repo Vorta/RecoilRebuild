@@ -67,7 +67,7 @@ STALE_ROLE_ACTION_RE = re.compile(
     re.IGNORECASE,
 )
 PARENT_PROCESS_RE = re.compile(
-    r"\bparent\b.{0,100}\b(?:accept\w*|review\w*|scrutin\w*|reconcil\w*|"
+    r"\bparent\b[^.!?;\n]{0,100}\b(?:accept\w*|review\w*|scrutin\w*|reconcil\w*|"
     r"broker\w*|routing constraint)\b",
     re.IGNORECASE,
 )

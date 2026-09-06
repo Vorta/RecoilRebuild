@@ -51,6 +51,23 @@ def test_workspace_has_only_the_nine_direct_serial_skills() -> None:
         assert "role:" not in text
 
 
+def test_parent_process_rule_does_not_join_unrelated_sentences() -> None:
+    from _recoil.commands.agent_surface_audit import _retired_language_findings
+
+    for text in (
+        "Reject extra parent calls and malformed indices. The verifier reconciles the table.",
+        "The parent function contains catch handlers; direct review checks their ownership.",
+    ):
+        assert not _retired_language_findings(text, location="generic audit")
+    for text in (
+        "The parent reviews the proposed acceptance.",
+        "The parent agent must reconcile the result.",
+        "The parent\naccepts the result.",
+    ):
+        assert any("[parent-process]" in item for item in
+                   _retired_language_findings(text, location="generic audit"))
+
+
 def test_vc5_manifests_are_json_and_have_no_retired_scaffold() -> None:
     manifests = sorted((ROOT / "tools" / "vc5_verify_targets").glob("*.json"))
     assert manifests

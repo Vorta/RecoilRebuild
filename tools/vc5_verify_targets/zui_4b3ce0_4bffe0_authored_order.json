@@ -1332,7 +1332,7 @@
     },
     {
       "address": "0x4bbfa0",
-      "symbol": "??1?$vector@UHudUiCompositePanelEntry@@V?$allocator@UHudUiCompositePanelEntry@@@std@@@std@@QAE@XZ",
+      "symbol": "??1?$vector@UHudUiTransitionTextPanel@@V?$allocator@UHudUiTransitionTextPanel@@@std@@@std@@QAE@XZ",
       "name": "HudUiCompositePanelVector::Clear",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -1341,7 +1341,7 @@
     },
     {
       "address": "0x4bbff0",
-      "symbol": "?insert@?$vector@UHudUiCompositePanelEntry@@V?$allocator@UHudUiCompositePanelEntry@@@std@@@std@@QAEXPAUHudUiCompositePanelEntry@@IABU3@@Z",
+      "symbol": "?insert@?$vector@UHudUiTransitionTextPanel@@V?$allocator@UHudUiTransitionTextPanel@@@std@@@std@@QAEXPAUHudUiTransitionTextPanel@@IABU3@@Z",
       "name": "HudUiCompositePanelVector::InsertCopies",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -1350,8 +1350,8 @@
     },
     {
       "address": "0x4bc320",
-      "symbol": "?copy@std@@YIPAUHudUiCompositePanelEntry@@PAU2@00@Z",
-      "name": "std::copy<HudUiCompositePanelEntry *>",
+      "symbol": "?copy@std@@YIPAUHudUiTransitionTextPanel@@PAU2@00@Z",
+      "name": "std::copy<HudUiTransitionTextPanel *>",
       "pipeline_class": "non-authored",
       "authored_order_role": "non-authored",
       "provenance": "provider-boundary",
@@ -1360,8 +1360,8 @@
     },
     {
       "address": "0x4bc3a0",
-      "symbol": "??4HudUiCompositePanelEntry@@QAEAAU0@ABU0@@Z",
-      "name": "HudUiCompositePanelEntry::operator=",
+      "symbol": "??4HudUiTransitionTextPanel@@QAEAAU0@ABU0@@Z",
+      "name": "HudUiTransitionTextPanel::operator=",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -1369,8 +1369,8 @@
     },
     {
       "address": "0x4bc410",
-      "symbol": "??0HudUiCompositePanelEntry@@QAE@ABU0@@Z",
-      "name": "HudUiCompositePanelEntry::HudUiCompositePanelEntry(const HudUiCompositePanelEntry &)",
+      "symbol": "??0HudUiTransitionTextPanel@@QAE@ABU0@@Z",
+      "name": "HudUiTransitionTextPanel::HudUiTransitionTextPanel(const HudUiTransitionTextPanel &)",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "authored-lifecycle-body",
       "required_presence": true,
@@ -1675,8 +1675,8 @@
     },
     {
       "address": "0x4bd020",
-      "symbol": "?Constructor@HudUiTopMessageStack@@QAEPAU1@XZ",
-      "name": "HudUiTopMessageStack::Constructor",
+      "symbol": "??0HudUiTopMessageStack@@QAE@XZ",
+      "name": "HudUiTopMessageStack::HudUiTopMessageStack",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "authored-lifecycle-body",
       "required_presence": true,
@@ -1720,8 +1720,8 @@
     },
     {
       "address": "0x4bd2d0",
-      "symbol": "?Constructor@HudUiChatMessageStack@@QAEPAU1@XZ",
-      "name": "HudUiChatMessageStack::Constructor",
+      "symbol": "??0HudUiChatMessageStack@@QAE@XZ",
+      "name": "HudUiChatMessageStack::HudUiChatMessageStack",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "authored-lifecycle-body",
       "required_presence": true,
@@ -1999,7 +1999,7 @@
     },
     {
       "address": "0x4bed30",
-      "symbol": "?zVideoFxPass3Config_UpdateLocal@zVideo@@YIXPAUzVideoFxPass3Config@@M@Z",
+      "symbol": "?UpdateLocal@zVideoFxPass3Config@@QAEXM@Z",
       "name": "zVideoFxPass3Config::UpdateLocal",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -2008,7 +2008,7 @@
     },
     {
       "address": "0x4bed50",
-      "symbol": "?zVideoFxPass3Config_SetPrimaryElementParamsLocal@zVideo@@YIXPAUzVideoFxPass3Config@@IN@Z",
+      "symbol": "?SetPrimaryElementParamsLocal@zVideoFxPass3Config@@QAEXGN@Z",
       "name": "zVideoFxPass3Config::SetPrimaryElementParamsLocal",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -2017,7 +2017,7 @@
     },
     {
       "address": "0x4bed90",
-      "symbol": "?zVideoFxPass3Config_QueueElementLocal@zVideo@@YIXPAUzVideoFxPass3Config@@HHHHHMM@Z",
+      "symbol": "?QueueElementLocal@zVideoFxPass3Config@@QAEXHHHHHMM@Z",
       "name": "zVideoFxPass3Config::QueueElementLocal",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -2053,7 +2053,7 @@
     },
     {
       "address": "0x4beee0",
-      "symbol": "?FxPass3_SetPrimaryElementParamsLocal@zVideo@@YIXIN@Z",
+      "symbol": "?FxPass3_SetPrimaryElementParamsLocal@zVideo@@YIXGN@Z",
       "name": "zVideo_FxPass3::SetPrimaryElementParamsLocal",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

@@ -176,13 +176,14 @@ def accept_live_byte_groups(
 def accept_live_call_contract_symbols(
     data: dict[str, Any],
     *,
-    symbol_ids: Iterable[str],
-    evidence_id: str,
-    facts: Mapping[str, Any],
+    evidence_by_symbol: Mapping[str, str],
 ) -> list[str]:
     """Accept only the authored invocation-contract dimension.
 
     Order, byte, provider, owner, and tier state are deliberately untouched.
+    Bind each passing body to its own evidence before retiring superseded
+    records once for the complete slice. Retirement must see the final set of
+    references, including shared evidence still used by an unselected body.
     """
     symbols = data.get("symbols", {})
     if not isinstance(symbols, dict):
@@ -190,7 +191,7 @@ def accept_live_call_contract_symbols(
     accepted: list[str] = []
     seen: set[str] = set()
     superseded_evidence_ids: set[str] = set()
-    for raw_symbol_id in symbol_ids:
+    for raw_symbol_id, evidence_id in evidence_by_symbol.items():
         symbol_id = str(raw_symbol_id)
         if symbol_id in seen:
             raise ProgressError(f"duplicate live call-contract scope {symbol_id}")
@@ -243,6 +244,8 @@ def accept_live_call_contract_symbols(
         and evidence[item].get("kind")
         == "live-authored-call-contract-validation"
     }
+    if not removable_candidates:
+        return accepted
     unexpected_references: set[str] = set()
 
     def inspect_references(value: Any, path: tuple[str, ...] = ()) -> None:

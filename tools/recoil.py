@@ -350,7 +350,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "provider_function_mutation",
         prepend=("register",),
         summary="Register one existing exact non-authored retail function as a canonical VC5 static-library provider function.",
-        description="In archive-member mode, parse one exact member from one canonical VC5SP3 library under DEFAULT_VC5_ROOT. In canonical-header-comdat mode, compile only a registered fixed canonical-header recipe and require its exact semantic provider, decorated external symbol, code-COMDAT selection, explicit physical-emitter and retail-ICF winner state, and logical-symbol census. Both modes compare the exact known immutable-retail extent and relocation-masked body against the independent VC5 object proof, create only a provider-boundary owner/primary relation, and grant no authored tier, gate, or call-contract acceptance. Header mode additionally records provider-boundary source traceability as not applicable. Unknown recipes, including project-looking helpers, fail closed. Dry-run first; imports/IAT targets remain owned by provider-target register.",
+        description="In archive-member mode, parse one exact member from one canonical VC5SP3 library under DEFAULT_VC5_ROOT. In canonical-header-comdat mode, independently compile a registered fixed canonical-header recipe for every logical specialization and require exact semantic provider, decorated external symbols, code-COMDAT selection, physical-emitter and retail-ICF winner state. Compare the exact known immutable-retail extent against independent VC5 object proof. Multiple logical aliases require relocation-free exact bodies until typed alias-relocation proof is available. Header mode can monotonically extend an existing canonical-header provider census without changing its primary identity, extent, owner, or prior logical names; all requested names are re-proven live. Registration grants no authored tier or call-contract acceptance. Unknown or ambiguous recipes fail closed. Dry-run first; imports/IAT targets remain owned by provider-target register.",
         category="progress",
         examples=(
             "python tools/recoil.py progress provider-function register --address 0xNNNNNN --payload-json '<reviewed-archive-provider-function>' --expected-revision <revision> --dry-run --json",
@@ -809,6 +809,22 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
             "python tools/recoil.py progress data-artifact register --expected-revision <revision> --payload-file <reviewed.json> --apply --json",
         ),
         mutates=True,
+    ),
+    spec(
+        "progress data-artifact coalesce",
+        "data_aggregate_progress",
+        summary=(
+            "Review and atomically coalesce split authored data fields into one "
+            "physical aggregate, preserving logical field/history evidence and "
+            "invalidating dependent checks without accepting any gate."
+        ),
+        category="progress",
+        examples=(
+            "python tools/recoil.py progress data-artifact coalesce --expected-revision <revision> --payload-file <reviewed.json> --dry-run --json",
+            "python tools/recoil.py progress data-artifact coalesce --expected-revision <revision> --payload-file <reviewed.json> --apply --json",
+        ),
+        mutates=True,
+        required_revision_domains=("transaction",),
     ),
     spec(
         "progress data-artifact logical-alias register-batch",

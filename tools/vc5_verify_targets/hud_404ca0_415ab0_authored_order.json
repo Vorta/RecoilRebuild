@@ -3873,8 +3873,8 @@
         },
         {
           "address": "0x415680",
-          "symbol_regex": "\\?Constructor@HudUiBackgroundConfirmQuit@@.*",
-          "name": "HudUiBackgroundConfirmQuit::Constructor",
+          "symbol": "??0HudUiBackgroundConfirmQuit@@QAE@XZ",
+          "name": "HudUiBackgroundConfirmQuit::HudUiBackgroundConfirmQuit",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "authored-lifecycle-body",
           "required_presence": true,

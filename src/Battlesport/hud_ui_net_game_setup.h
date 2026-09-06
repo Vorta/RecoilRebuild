@@ -7,13 +7,11 @@
 struct HudUiNetGameSetupPanel;
 
 struct HudUiNetGameSetupPanel_LaunchButton : HudUiZrdWidget {
-    HudUiNetGameSetupPanel_LaunchButton();
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_LaunchButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_CancelButton : HudUiZrdWidget {
-    HudUiNetGameSetupPanel_CancelButton();
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_CancelButton) == 0x14c);
@@ -32,9 +30,20 @@ struct HudUiNetGameSetupPanel_WorldSelector : HudUiCycleSelectorWidget {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_WorldSelector) == 0x208);
 
+/**
+ * Retail 0x419b07 constructs the network input with capacity 21, then
+ * 0x419b0c installs the game-name control's separate table at 0x4cf8d0.
+ * Purpose: Specialize the panel's fixed-capacity game-name input.
+ */
+struct HudUiNetGameSetupPanel_GameNameInput : HudUiNetGameSetupTextInput {
+    HudUiNetGameSetupPanel_GameNameInput() : HudUiNetGameSetupTextInput(21) {
+    }
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_GameNameInput) == 0x374);
+
 struct HudUiNetGameSetupPanel_TimeLimitInput : HudUiClampedIntTextInput {
     HudUiNetGameSetupPanel_TimeLimitInput()
-        : HudUiClampedIntTextInput(3) {
+        : HudUiClampedIntTextInput() {
     }
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_TimeLimitInput) == 0x37c);
@@ -89,7 +98,7 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
     HudUiNumericTextInput *currentFocusWidget;
     HudUiNetGameSetupPanel_LaunchButton playButton;
     HudUiNetGameSetupPanel_CancelButton cancelButton;
-    HudUiNetGameSetupTextInput gameNameInput;
+    HudUiNetGameSetupPanel_GameNameInput gameNameInput;
     HudUiNetGameSetupPanel_WorldSelector worldSelector;
     HudUiNetGameSetupPanel_NextWorldButton nextWorldButton;
     HudUiNetGameSetupPanel_PrevWorldButton prevWorldButton;

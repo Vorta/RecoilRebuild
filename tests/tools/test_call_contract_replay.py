@@ -81,6 +81,91 @@ def direct_fixture() -> tuple[dict[str, object], dict[str, object]]:
     return slice_row, result
 
 
+def test_slice_evidence_batch_preserves_shared_and_external_references():
+    from copy import deepcopy
+    from _recoil.commands.progress_v2 import accept_live_call_contract_symbols
+    from _recoil.lib.progress import CALL_CONTRACT_DIMENSION
+
+    kind = "live-authored-call-contract-validation"
+    for protected in ("none", "unselected-body", "owner", "other-dimension", "other-kind"):
+        original = {
+            "symbols": {
+                name: {"evidence_ids": ["old"], "binary_state": {
+                    CALL_CONTRACT_DIMENSION: {"evidence_ids": ["old"]},
+                    "bytes": {"result": "unresolved"},
+                }} for name in ("first", "second")
+            },
+            "evidence": {name: {"kind": kind, "scope_ids": []}
+                         for name in ("old", "new-first", "new-second")},
+            "source_owners": {"owner": {"tier": "C"}},
+        }
+        if protected == "unselected-body":
+            original["symbols"]["untouched"] = deepcopy(original["symbols"]["first"])
+        elif protected == "owner":
+            original["source_owners"]["owner"]["evidence_ids"] = ["old"]
+        elif protected == "other-dimension":
+            original["symbols"]["first"]["binary_state"]["bytes"]["evidence_ids"] = ["old"]
+        elif protected == "other-kind":
+            original["evidence"]["old"]["kind"] = "live-authored-order-validation"
+        batch, serial = deepcopy(original), deepcopy(original)
+        bindings = {"first": "new-first", "second": "new-second"}
+        assert accept_live_call_contract_symbols(batch, evidence_by_symbol=bindings) == list(bindings)
+        for name, evidence_id in bindings.items():
+            accept_live_call_contract_symbols(serial, evidence_by_symbol={name: evidence_id})
+        assert batch == serial
+        assert ("old" in batch["evidence"]) == (protected != "none")
+        assert batch["source_owners"] == original["source_owners"]
+        for name, evidence_id in bindings.items():
+            state = batch["symbols"][name]["binary_state"]
+            assert state[CALL_CONTRACT_DIMENSION]["evidence_ids"] == [evidence_id]
+            assert state["bytes"] == original["symbols"][name]["binary_state"]["bytes"]
+
+
+def test_slice_commit_batches_retirement_but_keeps_per_body_transcripts(monkeypatch, tmp_path):
+    from copy import deepcopy
+    from types import SimpleNamespace as Row
+    from _recoil.commands import progress_v2
+
+    names = ["recoil:function:first", "recoil:function:second"]
+    data = {"revision": 1, "symbols": {name: {} for name in names}, "evidence": {}}
+    document = Row(data=data, revision=1,
+        call_contract_body_currentness=lambda _: {"current": False})
+    result = {"passed": True, "passing_symbol_ids": names, "first_divergence": None,
+        "body_results": [{"symbol_id": name, "address": hex(0x1000 + index * 16),
+            "target_id": "unit", "expected_contract": [], "candidate_contract": []}
+            for index, name in enumerate(names)],
+        "exact_fact_transcript": [{"symbol_id": name, "unit": index}
+                                  for index, name in enumerate(names)]}
+    calls, proposals = [], []
+    def accept(value, *, evidence_by_symbol):
+        calls.append(dict(evidence_by_symbol))
+        return progress_v2.accept_live_call_contract_symbols(value, evidence_by_symbol=evidence_by_symbol)
+    def plan(current, transform):
+        proposed = deepcopy(current.data)
+        transform(proposed)
+        proposals.append(proposed)
+        return proposed, {}, {}
+    monkeypatch.setattr(progress_cli, "accept_live_call_contract_symbols", accept)
+    monkeypatch.setattr(progress_cli, "_require_current_call_contract_action", lambda *a, **k: None)
+    monkeypatch.setattr(progress_cli, "_call_contract_scoped_patch_plan", plan)
+    monkeypatch.setattr(progress_cli, "ProgressSQLiteStore", lambda _: Row(
+        persist_scoped_changes=lambda **k: Row(applied=False)))
+    monkeypatch.setattr(progress_cli, "_commit_payload", lambda commit, details: details)
+    status, details, _ = progress_cli._commit_validated_call_contract_slice(
+        args=Row(progress=tmp_path / "unused.sqlite3", apply=False), document=document,
+        slice_row={"id": "unit-slice"}, result=result, build_root=tmp_path,
+        expected_domains={"semantic": 1, "evidence_generation": 1})
+    assert status == 0 and len(calls) == 1
+    assert list(calls[0]) == names and len(set(calls[0].values())) == 2
+    assert details["evidence_ids"] == calls[0]
+    for index, name in enumerate(names):
+        evidence = proposals[0]["evidence"][calls[0][name]]
+        assert evidence["scope_ids"] == [name]
+        assert evidence["provenance"]["exact_fact_transcript"] == [
+            {"symbol_id": name, "unit": index}]
+    assert data["evidence"] == {}  # The original document remains untouched.
+
+
 def validate(slice_row: dict[str, object], result: dict[str, object]) -> dict[str, object]:
     return _validate_call_contract_result(
         result,
@@ -90,6 +175,33 @@ def validate(slice_row: dict[str, object], result: dict[str, object]) -> dict[st
         expected_compiled_definition_sources=[],
         expected_dependency_paths=[],
     )
+
+
+def test_early_rejection_projects_as_blocked_without_fabricating_a_transcript() -> None:
+    from types import SimpleNamespace
+    from _recoil.commands.call_contract_verify import _call_contract_body_results
+
+    slice_row, result = direct_fixture()
+    divergence = {
+        "symbol_id": slice_row["symbol_ids"][0], "address": "0x1000",
+        "kind": "verifier-blocked", "side": "candidate", "ordinal": 0,
+        "reason": "known-authored-direct-target-before-projection",
+        "expected": {"target_identity": "symbol:required"},
+        "candidate": {"target_identity": "symbol:different"},
+    }
+    result.update(passed=False, first_divergence=divergence, exact_fact_transcript=[])
+    result["body_results"] = _call_contract_body_results(
+        document=None, slice_row=slice_row,
+        candidate_session=SimpleNamespace(target_id=lambda address: "target"),
+        expected_by_symbol={}, candidate_by_symbol={},
+        caller_divergences=[divergence], evaluated_symbol_ids=(),
+    )
+    assert result["body_results"][0]["status"] == "blocked"
+    assert result["body_results"][0]["expected_fact_row"] is None
+    assert validate(slice_row, result)["passing_symbol_ids"] == []
+    result["body_results"][0]["status"] = "divergent"
+    with pytest.raises(ProgressError, match="lacks an exact fact transcript"):
+        validate(slice_row, result)
 
 
 def test_direct_result_requires_exact_current_typed_evidence() -> None:

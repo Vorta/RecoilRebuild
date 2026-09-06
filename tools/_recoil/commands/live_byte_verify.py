@@ -1744,10 +1744,10 @@ def _run_fresh_build(args: argparse.Namespace, root: Path) -> tuple[int, Any, An
     ]
     if args.mode == "object":
         command.extend(("--compile-only", "--compile-only-skip-linked-order"))
-    # The byte verifier owns the machine-readable stdout contract.  Final-build
-    # may return a nonzero diagnostic result for an independent order mismatch
-    # even though it produced the fresh object/image/MAP needed by this mode, so
-    # capture its output and continue whenever those required products exist.
+    else:
+        command.append("--linkability-only")
+    # The byte verifier owns both its comparison and machine-readable stdout.
+    # Its artifact producer must not evaluate another stage or deploy a candidate.
     completed = subprocess.run(
         command,
         cwd=REPO_ROOT,
@@ -1793,9 +1793,9 @@ def _run_fresh_build(args: argparse.Namespace, root: Path) -> tuple[int, Any, An
             for field in (
                 "compile_succeeded",
                 "coff_alias_sources_succeeded",
+                "resource_succeeded",
                 "link_succeeded",
                 "candidate_available",
-                "authored_byte_eligible",
             )
         )
         if not artifacts_complete:
@@ -1803,9 +1803,29 @@ def _run_fresh_build(args: argparse.Namespace, root: Path) -> tuple[int, Any, An
                 "fresh final-build summary does not prove a complete compile/link artifact set; "
                 f"build exited {completed.returncode}"
             )
-        if completed.returncode != 0 and summary.get("failure_stage") != "linked-order":
+        deployment = summary.get("playtest_deploy")
+        diagnostic_only = (
+            summary.get("kind") == "final-build-diagnostic"
+            and summary.get("diagnostic_kind") == "whole-program-linkability"
+            and summary.get("success") is True
+            and summary.get("fresh_build") is True
+            and summary.get("reuse") is False
+            and summary.get("linked_order_evaluation_suppressed") is True
+            and summary.get("playtest_deployment_suppressed") is True
+            and all(
+                summary.get(field) is False
+                for field in (
+                    "accepts_linked_order", "accepts_bytes", "accepts_final_image",
+                    "candidate_expected_truth",
+                )
+            )
+            and isinstance(deployment, Mapping)
+            and deployment.get("attempted") is False
+            and deployment.get("updated") is False
+        )
+        if completed.returncode != 0 or not diagnostic_only:
             raise LiveByteError(
-                "nonzero fresh final-build is usable only for an independent linked-order "
+                "fresh byte artifacts require a successful non-deploying linkability "
                 f"diagnostic; build exited {completed.returncode}"
             )
     return completed.returncode, config, paths

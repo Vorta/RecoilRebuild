@@ -9,6 +9,7 @@
     "src/GameZRecoil/zSound",
     "src/GameZRecoil/include",
     "support/sdk/DirectX6/include",
+    "support/sdk/Aureal/A3D20/inc",
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [

@@ -50,67 +50,6 @@ extern "C" {
  * Purpose: Stores the local mission objective HUD counter value.
  */
 int g_Player_HudCounterValue = 0;
-PlayerNodeFlagRestoreEntryVector g_PlayerNodeFlagRestoreEntries;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playermastercommondatalistaux
- * @recoil-artifact defines .data recoil:data:0x4f3a68: g_PlayerMasterCommonDataListAux.
- * Data owner 0x4f3a68..0x4f3a77: zero-initialized PlayerMasterCommonData intrusive-list
- * globals cleared by Player::InitMasterCommonDataList.
- * Purpose: stores the plan-tracked g_PlayerMasterCommonDataListAux gameplay data symbol.
- */
-int g_PlayerMasterCommonDataListAux = 0;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playermastercommondatahead
- * @recoil-artifact defines .data recoil:data:0x4f3a6c: g_PlayerMasterCommonDataHead.
- * Purpose: stores the plan-tracked g_PlayerMasterCommonDataHead gameplay data symbol.
- */
-PlayerMasterCommonData *g_PlayerMasterCommonDataHead = 0;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playermastercommondatatail
- * @recoil-artifact defines .data recoil:data:0x4f3a70: g_PlayerMasterCommonDataTail.
- * Purpose: stores the plan-tracked g_PlayerMasterCommonDataTail gameplay data symbol.
- */
-PlayerMasterCommonData *g_PlayerMasterCommonDataTail = 0;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playermastercommondatacount
- * @recoil-artifact defines .data recoil:data:0x4f3a74: g_PlayerMasterCommonDataCount.
- * Purpose: stores the plan-tracked g_PlayerMasterCommonDataCount gameplay data symbol.
- */
-int g_PlayerMasterCommonDataCount = 0;
-/**
- * Storage group:
- * g_PlayerMasterModalDataListAux, g_PlayerMasterModalDataHead,
- * g_PlayerMasterModalDataTail, and g_PlayerMasterModalDataCount.
- * BN types this as a zero-filled .data PlayerMasterModalData intrusive-list
- * bootstrap group cleared by Player::InitMasterModalDataList, appended during
- * Player::InitMissionRuntimeFromWorldAndCamera, and drained by Player::ClearLoadedData.
- * Purpose: Stores the master modal-data intrusive list used while creating
- * players from name/bootstrap data.
- */
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playermastermodaldatalistaux
- * @recoil-artifact defines .data recoil:data:0x4f3688: g_PlayerMasterModalDataListAux.
- * Purpose: stores the plan-tracked g_PlayerMasterModalDataListAux gameplay data symbol.
- */
-int g_PlayerMasterModalDataListAux = 0;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playermastermodaldatahead
- * @recoil-artifact defines .data recoil:data:0x4f368c: g_PlayerMasterModalDataHead.
- * Purpose: stores the plan-tracked g_PlayerMasterModalDataHead gameplay data symbol.
- */
-PlayerMasterModalData *g_PlayerMasterModalDataHead = 0;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playermastermodaldatatail
- * @recoil-artifact defines .data recoil:data:0x4f3690: g_PlayerMasterModalDataTail.
- * Purpose: stores the plan-tracked g_PlayerMasterModalDataTail gameplay data symbol.
- */
-PlayerMasterModalData *g_PlayerMasterModalDataTail = 0;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playermastermodaldatacount
- * @recoil-artifact defines .data recoil:data:0x4f3694: g_PlayerMasterModalDataCount.
- * Purpose: stores the plan-tracked g_PlayerMasterModalDataCount gameplay data symbol.
- */
-int g_PlayerMasterModalDataCount = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-localcontrolenabled
  * @recoil-artifact defines .data recoil:data:0x4f36b0: g_Player_LocalControlEnabled.
@@ -427,36 +366,6 @@ RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Crbox) == 0x06);
 char g_PickupOptKey_Vwbus[0x06] = "vwbus";
 RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Vwbus) == 0x06);
 /**
- * Storage group: player save-state intrusive list.
- * BN exposes the zero-filled .data aux/head/tail/count fields used by player
- * creation, teardown, and ZAR VehicleList traversal/serialization.
- * Purpose: Tracks every active player save-state record in mission order.
- */
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatelistaux
- * @recoil-artifact defines .data recoil:data:0x4f3a78: g_PlayerSaveStateListAux.
- * Purpose: stores the plan-tracked g_PlayerSaveStateListAux gameplay data symbol.
- */
-int g_PlayerSaveStateListAux = 0;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatelisthead
- * @recoil-artifact defines .data recoil:data:0x4f3a7c: g_PlayerSaveStateListHead.
- * Purpose: stores the plan-tracked g_PlayerSaveStateListHead gameplay data symbol.
- */
-zUtil_SaveGameState *g_PlayerSaveStateListHead = 0;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatelisttail
- * @recoil-artifact defines .data recoil:data:0x4f3a80: g_PlayerSaveStateListTail.
- * Purpose: stores the plan-tracked g_PlayerSaveStateListTail gameplay data symbol.
- */
-zUtil_SaveGameState *g_PlayerSaveStateListTail = 0;
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-playersavestatecount
- * @recoil-artifact defines .data recoil:data:0x4f3a84: g_PlayerSaveStateCount.
- * Purpose: stores the plan-tracked g_PlayerSaveStateCount gameplay data symbol.
- */
-int g_PlayerSaveStateCount = 0;
-/**
  * @recoil-anchor recoil:anchor:battlesport-player-g-localplayersavestate
  * @recoil-artifact defines .data recoil:data:0x4f36a4: g_LocalPlayerSaveState.
  * BN types this as a zero-filled .data zUtil_SaveGameState pointer written
@@ -634,20 +543,6 @@ float g_Player_MaxSlope = 0.0f;
  */
 float g_Player_CollisionContactResolveScale = 0.2f;
 /**
- * Data owner 0x4f3778: zero-initialized underwater pass-3 HUD overlay singleton, constructed
- * by 0x41eb00 and reset by the atexit callback at 0x41eb20.
- * Purpose: stores the plan-tracked g_Player_UnderwaterFxPass3Ui gameplay data symbol.
- */
-#undef g_Player_UnderwaterFxPass3Ui
-Player_UnderwaterFxPass3UiStorage g_Player_UnderwaterFxPass3Ui = {0};
-/**
- * Data owner 0x4f3650..0x4f3687: zero-initialized projectile-camera pass-3 HUD overlay
- * singleton, constructed by 0x41eb60 and reset by the atexit callback at 0x41eb80.
- * Purpose: stores the plan-tracked g_Player_State7FxPass3Ui gameplay data symbol.
- */
-#undef g_Player_State7FxPass3Ui
-Player_ProjectileCameraFxPass3UiStorage g_Player_State7FxPass3Ui = {0};
-/**
  * Storage group: Player ZRD runtime tuning option pointers.
  * BN types these as zero-filled .data OptCatalogEntryDef pointers resolved
  * from player.zrd `make_hot` and `make_cold` option names during
@@ -784,7 +679,7 @@ zVec3 *g_Player_LocalFxOffsetWorldPtr = 0;
  * but its former save-state-aux symbol and accepted owner claims were withdrawn.
  * Purpose: retain the candidate initialized pointer while ownership is unresolved.
  */
-int *g_PlayerSaveStateListAuxPtr = &g_PlayerSaveStateListAux;
+int *g_PlayerSaveStateListAuxPtr = &g_PlayerSaveStateList.listAux;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-missioninitfirstrunflag
  * @recoil-artifact defines .data recoil:data:0x4dc268: g_Player_MissionInitFirstRunFlag.
@@ -1564,27 +1459,7 @@ char g_Player_ConfigNode_Mode[5] = "mode";
  * Purpose: Stores the resolved parent directory for AIV-relative player data.
  */
 char g_Player_AivParentDir[0x104];
-/**
- * Data owner 0x4f33a8..0x4f364f and 0x4f37b0..0x4f3a57: zero-initialized top-message HUD panel
- * singletons constructed at startup and destroyed by their CRT exit callbacks.
- * Purpose: stores the plan-tracked g_Player_TopMsgPanel2 gameplay data symbol.
- */
-#undef g_Player_TopMsgPanel2
-PlayerTopMsgPanelStorage g_Player_TopMsgPanel2 = {0};
-/**
- * Purpose: stores the plan-tracked g_Player_TopMsgPanel1 gameplay data symbol.
- */
-#undef g_Player_TopMsgPanel1
-PlayerTopMsgPanelStorage g_Player_TopMsgPanel1 = {0};
 }
-#define g_Player_UnderwaterFxPass3Ui \
-    (*(Player_UnderwaterFxPass3Ui *)&g_Player_UnderwaterFxPass3Ui)
-#define g_Player_State7FxPass3Ui \
-    (*(Player_ProjectileCameraFxPass3Ui *)&g_Player_State7FxPass3Ui)
-#define g_Player_TopMsgPanel1 \
-    (*(HudUiPanel *)&g_Player_TopMsgPanel1)
-#define g_Player_TopMsgPanel2 \
-    (*(HudUiPanel *)&g_Player_TopMsgPanel2)
 
 namespace {
 /**
@@ -2386,46 +2261,6 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
     }
 }
 
-/**
- * Original inline helper; no standalone retail function exists. Observed in
- * address-backed constructor 0x41eb30 as HudUiElement::Constructor(0, 0)
- * followed by clearing the pass-3 clip pointer.
- * Purpose: construct the underwater pass-3 HUD overlay as a zVideoFxPass3Element
- * and clear the per-pass clip rectangle consumed by ApplyPass3.
- */
-Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui() : zVideoFxPass3Element(
-        0,
-        0
-    ) {
-}
-
-
-/**
- * Original inline helper; no standalone retail function exists. Observed in
- * address-backed constructor 0x41eb90 as HudUiElement::Constructor(0, 0)
- * followed by clearing the pass-3 clip pointer.
- * Purpose: construct the projectile-camera pass-3 HUD overlay as a
- * zVideoFxPass3Element and clear the per-pass clip rectangle consumed by
- * ApplyPass3.
- */
-Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui() : zVideoFxPass3Element(
-        0,
-        0
-    ) {
-}
-
-
-namespace HudUiMgrSensor {
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *HudUiCrtInitializerFn)();
-/* VC5 emits this player-TU startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-HudUiCrtInitializerFn s_HudUiCrtInit_HudUiMgrSensorTrackListReset =
-    TrackList_Reset;
-#pragma data_seg()
-#endif
-} // namespace HudUiMgrSensor
 
 
 
@@ -2470,26 +2305,6 @@ namespace Player {
 
 
 
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *PlayerCrtInitializerFn)();
-/* VC5 emits these player.cpp startup callbacks as direct .CRT$XCU rows. */
-#pragma data_seg(".CRT$XCU")
-PlayerCrtInitializerFn s_PlayerCrtInit_InitMasterCommonDataList =
-    InitMasterCommonDataList;
-PlayerCrtInitializerFn s_PlayerCrtInit_InitMasterModalDataList =
-    InitMasterModalDataList;
-PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterUnderwaterFxPass3UiSingleton =
-    InitAndRegisterUnderwaterFxPass3UiSingleton;
-PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterProjectileCameraFxPass3UiSingleton =
-    InitAndRegisterProjectileCameraFxPass3UiSingleton;
-PlayerCrtInitializerFn s_PlayerCrtInit_InitSaveStateList =
-    InitSaveStateList;
-PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterTopMsgPanel1 =
-    InitAndRegisterTopMsgPanel1;
-PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterTopMsgPanel2 =
-    InitAndRegisterTopMsgPanel2;
-#pragma data_seg()
-#endif
 
 
 
@@ -3143,267 +2958,109 @@ namespace Player {
 } // namespace Player
 
 /* Governed authored-order insertion point: keep selected retail bodies below. */
-namespace Player {
 /**
- * @recoil-anchor recoil:anchor:battlesport-player-player-initmastercommondatalist
- * @recoil-artifact defines .text recoil:function:0x41ea90: Player::InitMasterCommonDataList.
- * Purpose: clear the master common-data intrusive-list bootstrap globals.
+ * @recoil-anchor recoil:anchor:battlesport-player-common-data-list-global
+ * @recoil-artifact defines .data recoil:data:0x4f3a68: Common player-data list.
+ * @recoil-artifact emits .text recoil:function:0x41ea90: Native global lifecycle contribution 1.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3a68:aux: List auxiliary state field.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3a6c:head: List head field.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3a70:tail: List tail field.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3a74:count: List count field.
+ * Purpose: Own the common-data list and initialize its empty state at startup.
+ * Aggregate field identities are under live review.
  */
-void __cdecl InitMasterCommonDataList() {
-    g_PlayerMasterCommonDataListAux = 0;
-    g_PlayerMasterCommonDataTail = 0;
-    g_PlayerMasterCommonDataHead = 0;
-    g_PlayerMasterCommonDataCount = 0;
-}
-} // namespace Player
-namespace Player {
+CPlayerMasterCommonDataList g_PlayerMasterCommonDataList;
 /**
- * @recoil-anchor recoil:anchor:battlesport-player-player-initmastermodaldatalist
- * @recoil-artifact defines .text recoil:function:0x41eac0: Player::InitMasterModalDataList.
- * Purpose: clear the master modal-data intrusive-list bootstrap globals.
+ * @recoil-anchor recoil:anchor:battlesport-player-modal-data-list-global
+ * @recoil-artifact defines .data recoil:data:0x4f3688: Modal player-data list.
+ * @recoil-artifact emits .text recoil:function:0x41eac0: Native global lifecycle contribution 1.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3688:aux: List auxiliary state field.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f368c:head: List head field.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3690:tail: List tail field.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3694:count: List count field.
+ * Purpose: Own the modal-data list and establish its empty startup state.
+ * Aggregate field identities are under live review.
  */
-void __cdecl InitMasterModalDataList() {
-    g_PlayerMasterModalDataListAux = 0;
-    g_PlayerMasterModalDataTail = 0;
-    g_PlayerMasterModalDataHead = 0;
-    g_PlayerMasterModalDataCount = 0;
-}
-} // namespace Player
-namespace Player {
+CPlayerMasterModalDataList g_PlayerMasterModalDataList;
 /**
- * @recoil-anchor recoil:anchor:battlesport-player-player-initandregisterunderwaterfxpass3uisingleton
- * @recoil-artifact defines .text recoil:function:0x41eaf0: Player::InitAndRegisterUnderwaterFxPass3UiSingleton.
- * Purpose: run the underwater pass-3 HUD singleton constructor and register
- * its atexit reset callback.
+ * @recoil-anchor recoil:anchor:battlesport-player-underwater-pass3-global
+ * @recoil-artifact defines .data recoil:data:0x4f3778: Underwater pass-3 overlay.
+ * @recoil-artifact emits .text recoil:function:0x41eaf0: Native global lifecycle contribution 1.
+ * @recoil-artifact emits .text recoil:function:0x41eb00: Native global lifecycle contribution 2.
+ * @recoil-artifact emits .text recoil:function:0x41eb10: Native global lifecycle contribution 3.
+ * @recoil-artifact emits .text recoil:function:0x41eb20: Native global lifecycle contribution 4.
+ * Purpose: Own the underwater HUD effect for the process lifetime, with native
+ * C++ initialization and destruction. CRT emission is under live investigation.
  */
-void __cdecl InitAndRegisterUnderwaterFxPass3UiSingleton() {
-    InitUnderwaterFxPass3UiSingleton();
-    RegisterUnderwaterFxPass3UiOnExit();
-}
-} // namespace Player
-namespace Player {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-initunderwaterfxpass3uisingleton
- * @recoil-artifact defines .text recoil:function:0x41eb00: Player::InitUnderwaterFxPass3UiSingleton.
- * Purpose: construct the zero-initialized global underwater pass-3 HUD overlay
- * singleton at startup.
- */
-void __cdecl InitUnderwaterFxPass3UiSingleton() {
-    g_Player_UnderwaterFxPass3Ui.Constructor();
-}
-} // namespace Player
-namespace Player {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-registerunderwaterfxpass3uionexit
- * @recoil-artifact defines .text recoil:function:0x41eb10: Player::RegisterUnderwaterFxPass3UiOnExit.
- * Purpose: register the underwater pass-3 HUD singleton reset callback with
- * the CRT exit list.
- */
-void __cdecl RegisterUnderwaterFxPass3UiOnExit() {
-    atexit(ResetUnderwaterFxPass3UiSingleton);
-}
-} // namespace Player
-namespace Player {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-resetunderwaterfxpass3uisingleton
- * @recoil-artifact defines .text recoil:function:0x41eb20: Player::ResetUnderwaterFxPass3UiSingleton.
- * Purpose: reset the underwater pass-3 HUD overlay singleton to the common
- * HudUiElement destruction state during CRT exit.
- */
-void __cdecl ResetUnderwaterFxPass3UiSingleton() {
-    g_Player_UnderwaterFxPass3Ui.HudUiElement::~HudUiElement();
-}
-} // namespace Player
+Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-underwaterfxpass3ui-constructor
- * @recoil-artifact defines .text recoil:function:0x41eb30: Player_UnderwaterFxPass3Ui::Constructor.
+ * @recoil-artifact defines .text recoil:function:0x41eb30: Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui.
  * Purpose: construct the underwater pass-3 HUD overlay singleton storage and
  * return the initialized object.
  */
-Player_UnderwaterFxPass3Ui * Player_UnderwaterFxPass3Ui::Constructor() {
-    new (this) Player_UnderwaterFxPass3Ui();
-    return this;
+Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui()
+    : zVideoFxPass3Element(0, 0) {
 }
-namespace Player {
 /**
- * @recoil-anchor recoil:anchor:battlesport-player-player-initandregisterprojectilecamerafxpass3uisingleton
- * @recoil-artifact defines .text recoil:function:0x41eb50: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton.
- * Purpose: construct the projectile-camera pass-3 HUD singleton and register
- * its CRT exit reset callback.
+ * @recoil-anchor recoil:anchor:battlesport-player-projectile-pass3-global
+ * @recoil-artifact defines .data recoil:data:0x4f3650: Projectile-camera pass-3 overlay.
+ * @recoil-artifact emits .text recoil:function:0x41eb50: Native global lifecycle contribution 1.
+ * @recoil-artifact emits .text recoil:function:0x41eb60: Native global lifecycle contribution 2.
+ * @recoil-artifact emits .text recoil:function:0x41eb70: Native global lifecycle contribution 3.
+ * @recoil-artifact emits .text recoil:function:0x41eb80: Native global lifecycle contribution 4.
+ * Purpose: Own the projectile-camera overlay for the process lifetime.
  */
-void __cdecl InitAndRegisterProjectileCameraFxPass3UiSingleton() {
-    InitProjectileCameraFxPass3UiSingleton();
-    RegisterProjectileCameraFxPass3UiCleanup();
-}
-} // namespace Player
-namespace Player {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-initprojectilecamerafxpass3uisingleton
- * @recoil-artifact defines .text recoil:function:0x41eb60: Player::InitProjectileCameraFxPass3UiSingleton.
- * Purpose: construct the global projectile-camera pass-3 HUD overlay singleton.
- */
-void __cdecl InitProjectileCameraFxPass3UiSingleton() {
-    g_Player_State7FxPass3Ui.Constructor();
-}
-} // namespace Player
-namespace Player {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-registerprojectilecamerafxpass3uicleanup
- * @recoil-artifact defines .text recoil:function:0x41eb70: Player::RegisterProjectileCameraFxPass3UiCleanup.
- * Purpose: register the projectile-camera pass-3 HUD singleton reset callback
- * with the CRT exit list.
- */
-void __cdecl RegisterProjectileCameraFxPass3UiCleanup() {
-    atexit(ResetProjectileCameraFxPass3UiSingleton);
-}
-} // namespace Player
-namespace Player {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-resetprojectilecamerafxpass3uisingleton
- * @recoil-artifact defines .text recoil:function:0x41eb80: Player::ResetProjectileCameraFxPass3UiSingleton.
- * Purpose: reset the projectile-camera pass-3 HUD overlay singleton to the
- * common HudUiElement destruction state during CRT exit.
- */
-void __cdecl ResetProjectileCameraFxPass3UiSingleton() {
-    g_Player_State7FxPass3Ui.HudUiElement::~HudUiElement();
-}
-} // namespace Player
+Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-projectilecamerafxpass3ui-constructor
- * @recoil-artifact defines .text recoil:function:0x41eb90: Player_ProjectileCameraFxPass3Ui::Constructor.
+ * @recoil-artifact defines .text recoil:function:0x41eb90: Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui.
  * Purpose: construct the projectile-camera pass-3 HUD overlay singleton storage
  * and return the initialized object.
  */
-Player_ProjectileCameraFxPass3Ui * Player_ProjectileCameraFxPass3Ui::Constructor() {
-    new (this) Player_ProjectileCameraFxPass3Ui();
-    return this;
+Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui()
+    : zVideoFxPass3Element(0, 0) {
 }
-namespace HudUiMgrSensor {
 /**
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: clear the recovered sensor track-list global before target
- * tracking records are appended for the current HUD update pass.
+ * @recoil-anchor recoil:anchor:battlesport-player-sensor-track-list-global
+ * @recoil-artifact defines .data recoil:data:0x4f3340: Sensor track list.
+ * @recoil-artifact emits .text recoil:function:0x41ebd0: Native global lifecycle contribution 1.
+ * Purpose: Own the initially empty sensor tracking list. Native startup
+ * emission and Player translation-unit placement are under live verification.
  */
-void __cdecl TrackList_Reset() {
-    memset(
-        &g_HudUiMgrSensor_TrackList,
-        0,
-        sizeof(g_HudUiMgrSensor_TrackList)
-    );
-}
-} // namespace HudUiMgrSensor
-namespace Player {
+HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList;
 /**
- * @recoil-anchor recoil:anchor:battlesport-player-player-initsavestatelist
- * @recoil-artifact defines .text recoil:function:0x41ec00: Player::InitSaveStateList
- * BN source path: D:\Proj\Battlesport\player.cpp.
- * Purpose: clear the player save-state list bootstrap globals.
- * Source owner/evidence: Player save-state/bootstrap record-global subsystem;
- * resets the authored head, tail, count, and auxiliary list globals.
+ * @recoil-anchor recoil:anchor:battlesport-player-save-state-list-global
+ * @recoil-artifact defines .data recoil:data:0x4f3a78: Player save-state list.
+ * @recoil-artifact emits .text recoil:function:0x41ec00: Native global lifecycle contribution 1.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3a78:aux: List auxiliary state field.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3a7c:head: List head field.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3a80:tail: List tail field.
+ * @recoil-artifact emits .data recoil:logical-data:0x4f3a84:count: List count field.
+ * Purpose: Own the list of live save-state records with an empty startup state.
+ * Explicit teardown retains responsibility for deleting the linked records.
  */
-void __cdecl InitSaveStateList() {
-    g_PlayerSaveStateListAux = 0;
-    g_PlayerSaveStateListTail = 0;
-    g_PlayerSaveStateListHead = 0;
-    g_PlayerSaveStateCount = 0;
-}
-} // namespace Player
-namespace Player {
+CPlayerSaveStateList g_PlayerSaveStateList;
 /**
- * @recoil-anchor recoil:anchor:battlesport-player-player-initandregistertopmsgpanel1
- * @recoil-artifact defines .text recoil:function:0x41ec30: Player::InitAndRegisterTopMsgPanel1.
- * Purpose: construct the first top-message panel singleton and register its
- * CRT exit destructor.
+ * @recoil-anchor recoil:anchor:battlesport-player-top-message-panel1-global
+ * @recoil-artifact defines .data recoil:data:0x4f37b0: First top-message panel.
+ * @recoil-artifact emits .text recoil:function:0x41ec30: Native global lifecycle contribution 1.
+ * @recoil-artifact emits .text recoil:function:0x41ec40: Native global lifecycle contribution 2.
+ * @recoil-artifact emits .text recoil:function:0x41ec60: Native global lifecycle contribution 3.
+ * @recoil-artifact emits .text recoil:function:0x41ec70: Native global lifecycle contribution 4.
+ * Purpose: Own the first top-message HUD panel for the process lifetime.
  */
-void __cdecl InitAndRegisterTopMsgPanel1() {
-    Player_TopMsgPanel1::Constructor();
-    RegisterTopMsgPanel1OnExit();
-}
-} // namespace Player
-namespace Player_TopMsgPanel1 {
+HudUiPanel g_Player_TopMsgPanel1;
 /**
- * @recoil-anchor recoil:anchor:battlesport-player-player-topmsgpanel1-constructor
- * @recoil-artifact defines .text recoil:function:0x41ec40: Player_TopMsgPanel1::Constructor.
- * Purpose: construct the first top-message HUD panel singleton with default
- * panel state.
+ * @recoil-anchor recoil:anchor:battlesport-player-top-message-panel2-global
+ * @recoil-artifact defines .data recoil:data:0x4f33a8: Second top-message panel.
+ * @recoil-artifact emits .text recoil:function:0x41ec80: Native global lifecycle contribution 1.
+ * @recoil-artifact emits .text recoil:function:0x41ec90: Native global lifecycle contribution 2.
+ * @recoil-artifact emits .text recoil:function:0x41ecb0: Native global lifecycle contribution 3.
+ * @recoil-artifact emits .text recoil:function:0x41ecc0: Native global lifecycle contribution 4.
+ * Purpose: Own the second top-message HUD panel for the process lifetime.
  */
-void __cdecl Constructor() {
-    g_Player_TopMsgPanel1.ConstructorDefault(
-        0,
-        0,
-        0
-    );
-}
-} // namespace Player_TopMsgPanel1
-namespace Player {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-registertopmsgpanel1onexit
- * @recoil-artifact defines .text recoil:function:0x41ec60: Player::RegisterTopMsgPanel1OnExit.
- * Purpose: register the first top-message panel destructor with the CRT exit
- * list.
- */
-void __cdecl RegisterTopMsgPanel1OnExit() {
-    atexit(Player_TopMsgPanel1::Destructor);
-}
-} // namespace Player
-namespace Player_TopMsgPanel1 {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-topmsgpanel1-destructor
- * @recoil-artifact defines .text recoil:function:0x41ec70: Player_TopMsgPanel1::Destructor.
- * Purpose: destroy the first top-message HUD panel singleton during CRT exit.
- */
-void __cdecl Destructor() {
-    g_Player_TopMsgPanel1.HudUiPanel::~HudUiPanel();
-}
-} // namespace Player_TopMsgPanel1
-namespace Player {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-initandregistertopmsgpanel2
- * @recoil-artifact defines .text recoil:function:0x41ec80: Player::InitAndRegisterTopMsgPanel2.
- * Purpose: construct the second top-message panel singleton and register its
- * CRT exit destructor.
- */
-void __cdecl InitAndRegisterTopMsgPanel2() {
-    Player_TopMsgPanel2::Constructor();
-    RegisterTopMsgPanel2Cleanup();
-}
-} // namespace Player
-namespace Player_TopMsgPanel2 {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-topmsgpanel2-constructor
- * @recoil-artifact defines .text recoil:function:0x41ec90: Player_TopMsgPanel2::Constructor.
- * Purpose: construct the second top-message HUD panel singleton with default
- * panel state.
- */
-void __cdecl Constructor() {
-    g_Player_TopMsgPanel2.ConstructorDefault(
-        0,
-        0,
-        0
-    );
-}
-} // namespace Player_TopMsgPanel2
-namespace Player {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-registertopmsgpanel2cleanup
- * @recoil-artifact defines .text recoil:function:0x41ecb0: Player::RegisterTopMsgPanel2Cleanup.
- * Purpose: register the second top-message panel destructor with the CRT exit
- * list.
- */
-void __cdecl RegisterTopMsgPanel2Cleanup() {
-    atexit(Player_TopMsgPanel2::Destructor);
-}
-} // namespace Player
-namespace Player_TopMsgPanel2 {
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-player-topmsgpanel2-destructor
- * @recoil-artifact defines .text recoil:function:0x41ecc0: Player_TopMsgPanel2::Destructor.
- * Purpose: destroy the second top-message HUD panel singleton during CRT exit.
- */
-void __cdecl Destructor() {
-    g_Player_TopMsgPanel2.HudUiPanel::~HudUiPanel();
-}
-} // namespace Player_TopMsgPanel2
+HudUiPanel g_Player_TopMsgPanel2;
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-recordnodeflagsforrestore
@@ -3433,6 +3090,10 @@ void __fastcall RecordNodeFlagsForRestore(
     g_PlayerNodeFlagRestoreEntries.push_back(value);
 }
 } // namespace Player
+/**
+ * Purpose: Retain node flag snapshots until their original values are restored.
+ */
+PlayerNodeFlagRestoreEntryVector g_PlayerNodeFlagRestoreEntries;
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-restorerecordednodeflags
@@ -3445,20 +3106,21 @@ void __cdecl RestoreRecordedNodeFlags() {
     PlayerNodeFlagRestoreEntryVector::iterator entry =
         g_PlayerNodeFlagRestoreEntries.begin();
     while (entry != g_PlayerNodeFlagRestoreEntries.end()) {
-        zClass_NodePartial *const node = entry->node;
-        if (entry->wasCellPickable != 0) {
+        const PlayerNodeFlagRestoreEntry value = *entry;
+        zClass_NodePartial *const node = value.node;
+        if (value.wasCellPickable != 0) {
             zClass_Class::gwNodeSetCellPickable(
                 node,
                 1
             );
         }
-        if (entry->wasRaycastable != 0) {
+        if (value.wasRaycastable != 0) {
             zClass_Class::gwNodeSetRaycastable(
                 node,
                 1
             );
         }
-        if (entry->wasPickable != 0) {
+        if (value.wasPickable != 0) {
             zClass_Class::gwNodeSetPickable(
                 node,
                 1
@@ -3817,7 +3479,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-writevehiclelistsection
  * @recoil-artifact defines .text recoil:function:0x41f6a0: Player::ZAR_WriteVehicleListSection
- * BN evidence: __fastcall ZAR pre-load callback; walks g_PlayerSaveStateListHead,
+ * BN evidence: __fastcall ZAR pre-load callback; walks g_PlayerSaveStateList.head,
  * fills the 0x80-byte PlayerVehicleListSaveEntry from typed player-state fields,
  * and writes each blob under the player's root-node name.
  * Purpose: serialize all active player vehicle records into the VehicleList ZAR section.
@@ -3827,7 +3489,7 @@ int __fastcall ZAR_WriteVehicleListSection(
     void *
 ) {
     int writeOk = 1;
-    zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *saveState = g_PlayerSaveStateList.head;
     while (saveState != 0 && writeOk != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         PlayerVehicleListSaveEntry vehicleRecord;
@@ -3897,7 +3559,7 @@ void __fastcall ZAR_ReadVehicleListSection(
         return;
     }
 
-    zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         if (strcmp(
@@ -4029,17 +3691,17 @@ namespace Player {
  * Purpose: Clear mission-owned player runtime lists, AI net state, and pass-3 UI links.
  */
 void __cdecl ShutdownMissionRuntime() {
-    while (g_PlayerSaveStateListHead != 0) {
-        DestroySaveGameState(g_PlayerSaveStateListHead);
+    while (g_PlayerSaveStateList.head != 0) {
+        DestroySaveGameState(g_PlayerSaveStateList.head);
     }
 
     DeleteRemainingTrackNodes();
 
-    zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
-    g_PlayerSaveStateListAux = 0;
-    g_PlayerSaveStateListTail = 0;
-    g_PlayerSaveStateListHead = 0;
-    g_PlayerSaveStateCount = 0;
+    zUtil_SaveGameState *saveState = g_PlayerSaveStateList.head;
+    g_PlayerSaveStateList.listAux = 0;
+    g_PlayerSaveStateList.tail = 0;
+    g_PlayerSaveStateList.head = 0;
+    g_PlayerSaveStateList.count = 0;
     while (saveState != 0) {
         zUtil_SaveGameState *const next = saveState->next;
         saveState->FreeOwnedResources();
@@ -4047,35 +3709,35 @@ void __cdecl ShutdownMissionRuntime() {
         saveState = next;
     }
 
-    PlayerMasterCommonData *commonData = g_PlayerMasterCommonDataHead;
+    PlayerMasterCommonData *commonData = g_PlayerMasterCommonDataList.head;
     while (commonData != 0) {
         DeleteWeaponSpecs(commonData);
         commonData = commonData->next;
     }
 
-    commonData = g_PlayerMasterCommonDataHead;
+    commonData = g_PlayerMasterCommonDataList.head;
     while (commonData != 0) {
         PlayerMasterCommonData *const next = commonData->next;
         ::operator delete(commonData);
         commonData = next;
     }
 
-    g_PlayerMasterCommonDataListAux = 0;
-    g_PlayerMasterCommonDataTail = 0;
-    g_PlayerMasterCommonDataHead = 0;
-    g_PlayerMasterCommonDataCount = 0;
+    g_PlayerMasterCommonDataList.listAux = 0;
+    g_PlayerMasterCommonDataList.tail = 0;
+    g_PlayerMasterCommonDataList.head = 0;
+    g_PlayerMasterCommonDataList.count = 0;
 
-    PlayerMasterModalData *modalData = g_PlayerMasterModalDataHead;
+    PlayerMasterModalData *modalData = g_PlayerMasterModalDataList.head;
     while (modalData != 0) {
         PlayerMasterModalData *const next = modalData->next;
         ::operator delete(modalData);
         modalData = next;
     }
 
-    g_PlayerMasterModalDataListAux = 0;
-    g_PlayerMasterModalDataTail = 0;
-    g_PlayerMasterModalDataHead = 0;
-    g_PlayerMasterModalDataCount = 0;
+    g_PlayerMasterModalDataList.listAux = 0;
+    g_PlayerMasterModalDataList.tail = 0;
+    g_PlayerMasterModalDataList.head = 0;
+    g_PlayerMasterModalDataList.count = 0;
 
     AINet::FreeAll();
     g_Player_NextOrdinal = 0;
@@ -4106,7 +3768,7 @@ void __fastcall DestroySaveGameState(
     }
 
     zUtil_SaveGameState *previous = 0;
-    zUtil_SaveGameState *current = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *current = g_PlayerSaveStateList.head;
     while (current != saveState) {
         previous = current;
         current = current->next;
@@ -4116,14 +3778,14 @@ void __fastcall DestroySaveGameState(
     if (previous != 0) {
         previous->next = next;
     } else {
-        g_PlayerSaveStateListHead = next;
+        g_PlayerSaveStateList.head = next;
     }
-    if (g_PlayerSaveStateListTail == saveState) {
-        g_PlayerSaveStateListTail = previous;
+    if (g_PlayerSaveStateList.tail == saveState) {
+        g_PlayerSaveStateList.tail = previous;
     }
-    --g_PlayerSaveStateCount;
-    if (g_PlayerSaveStateCount == 0) {
-        g_PlayerSaveStateListAux = 0;
+    --g_PlayerSaveStateList.count;
+    if (g_PlayerSaveStateList.count == 0) {
+        g_PlayerSaveStateList.listAux = 0;
     }
 
     saveState->FreeOwnedResources();
@@ -4200,19 +3862,19 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     g_Player_TopMsgPanel1.SetTextFmt(zLoc::GetMessageString(0x909));
     ((HudUiElement *)(&g_Player_TopMsgPanel1))->x = 55;
     ((HudUiElement *)(&g_Player_TopMsgPanel1))->y = 66;
-    g_Player_TopMsgPanel1.Invalidate();
+    ((HudUiElement *)(&g_Player_TopMsgPanel1))->Invalidate();
     ((HudUiElement *)(&g_Player_TopMsgPanel1))->SetVisible(0);
 
     g_Player_TopMsgPanel2.SetTextFmt(zLoc::GetMessageString(0x910));
     ((HudUiElement *)(&g_Player_TopMsgPanel2))->x = 55;
     ((HudUiElement *)(&g_Player_TopMsgPanel2))->y = 66;
-    g_Player_TopMsgPanel2.Invalidate();
+    ((HudUiElement *)(&g_Player_TopMsgPanel2))->Invalidate();
     ((HudUiElement *)(&g_Player_TopMsgPanel2))->SetVisible(0);
 
     ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->AddChild(&g_Player_UnderwaterFxPass3Ui);
-    g_Player_UnderwaterFxPass3Ui.SetVisible(0);
+    ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(0);
     ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->AddChild(&g_Player_State7FxPass3Ui);
-    g_Player_State7FxPass3Ui.SetVisible(0);
+    ((HudUiElement *)(&g_Player_State7FxPass3Ui))->SetVisible(0);
 
     g_Player_RuntimeDiScene = worldNode;
     g_MainCamera = cameraNode;
@@ -4571,13 +4233,13 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             sizeof(PlayerMasterCommonData)
         );
         commonData->next = 0;
-        if (g_PlayerMasterCommonDataCount == 0) {
-            g_PlayerMasterCommonDataHead = commonData;
+        if (g_PlayerMasterCommonDataList.count == 0) {
+            g_PlayerMasterCommonDataList.head = commonData;
         } else {
-            g_PlayerMasterCommonDataTail->next = commonData;
+            g_PlayerMasterCommonDataList.tail->next = commonData;
         }
-        g_PlayerMasterCommonDataTail = commonData;
-        ++g_PlayerMasterCommonDataCount;
+        g_PlayerMasterCommonDataList.tail = commonData;
+        ++g_PlayerMasterCommonDataList.count;
         zReader::Node *const vehicleNode = zReader_GetNamedNode(
             vehicleRoot,
             vehicleName
@@ -4597,13 +4259,13 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
                 sizeof(PlayerMasterModalData)
             );
             modalData->next = 0;
-            if (g_PlayerMasterModalDataCount == 0) {
-                g_PlayerMasterModalDataHead = modalData;
+            if (g_PlayerMasterModalDataList.count == 0) {
+                g_PlayerMasterModalDataList.head = modalData;
             } else {
-                g_PlayerMasterModalDataTail->next = modalData;
+                g_PlayerMasterModalDataList.tail->next = modalData;
             }
-            g_PlayerMasterModalDataTail = modalData;
-            ++g_PlayerMasterModalDataCount;
+            g_PlayerMasterModalDataList.tail = modalData;
+            ++g_PlayerMasterModalDataList.count;
             zReader::Node *const modalNode = PlayerZrdArrayNode(
                 vehicleNode,
                 modalIndex * 2 + 4
@@ -4624,13 +4286,13 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
     stealthSaveState = zUtil_SaveGameStateList_Init(stealthSaveState);
     stealthSaveState->next = 0;
-    if (g_PlayerSaveStateCount == 0) {
-        g_PlayerSaveStateListHead = stealthSaveState;
+    if (g_PlayerSaveStateList.count == 0) {
+        g_PlayerSaveStateList.head = stealthSaveState;
     } else {
-        g_PlayerSaveStateListTail->next = stealthSaveState;
+        g_PlayerSaveStateList.tail->next = stealthSaveState;
     }
-    g_PlayerSaveStateListTail = stealthSaveState;
-    ++g_PlayerSaveStateCount;
+    g_PlayerSaveStateList.tail = stealthSaveState;
+    ++g_PlayerSaveStateList.count;
     zUtil_PlayerStateStorage *const stealthPlayerState = stealthSaveState->playerState;
     memset(
         stealthPlayerState,
@@ -4774,7 +4436,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     zReader::FreeLoadedTree(vehicleRoot);
     zReader::FreeLoadedTree(aivRoot);
 
-    zUtil_SaveGameState *const headSaveState = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *const headSaveState = g_PlayerSaveStateList.head;
     headSaveState->playerState->lifecycleState = kPlayerLifecycleInactive;
     zUtil_SaveGameState *const localSaveState = headSaveState != 0 ? headSaveState->next : 0;
     g_LocalPlayerSaveState = localSaveState;
@@ -4965,7 +4627,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     GetSaveStateListHead();
 
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerMasterCommonData *commonData = g_PlayerMasterCommonDataHead;
+    PlayerMasterCommonData *commonData = g_PlayerMasterCommonDataList.head;
     while (commonData != 0) {
         if (strcmp(
             commonData->vehicleName,
@@ -5284,7 +4946,7 @@ void __fastcall BindModalStateFromMasterModalData(
     GetSaveStateListHead();
 
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerMasterModalData *masterModalData = g_PlayerMasterModalDataHead;
+    PlayerMasterModalData *masterModalData = g_PlayerMasterModalDataList.head;
     while (masterModalData != 0) {
         if (strcmp(masterModalData->modalName, playerState->masterCommonData->vehicleName) == 0 &&
             strcmp(
@@ -5680,14 +5342,14 @@ int __fastcall CreateFromNamesAtPose(
         (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
     saveState = zUtil_SaveGameStateList_Init(saveState);
     saveState->next = 0;
-    if (g_PlayerSaveStateCount == 0) {
-        g_PlayerSaveStateListHead = saveState;
+    if (g_PlayerSaveStateList.count == 0) {
+        g_PlayerSaveStateList.head = saveState;
     } else {
-        g_PlayerSaveStateListTail->next = saveState;
+        g_PlayerSaveStateList.tail->next = saveState;
     }
-    g_PlayerSaveStateListTail = saveState;
+    g_PlayerSaveStateList.tail = saveState;
     saveState->next = 0;
-    ++g_PlayerSaveStateCount;
+    ++g_PlayerSaveStateList.count;
 
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     if (spawnPos != 0) {
@@ -5885,7 +5547,7 @@ namespace Player {
  * tail.
  * Source owner: Player namespace bootstrap/save-state node creation cluster.
  * BN evidence: calls CreateFromNamesAtPose(spawnPos, 0, yawDeg, templateName,
- * objectName), then returns g_PlayerSaveStateListTail on success and null on
+ * objectName), then returns g_PlayerSaveStateList.tail on success and null on
  * failure. BN leaves the MSVC neg/sbb/and success-mask expression.
  */
 zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
@@ -5904,7 +5566,7 @@ zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
         return 0;
     }
 
-    return g_PlayerSaveStateListTail;
+    return g_PlayerSaveStateList.tail;
 }
 } // namespace Player
 namespace Player {
@@ -8767,7 +8429,7 @@ void __cdecl TickAllPlayers() {
 
     int totalMode2Count = 0;
     int activeMode2Count = 0;
-    zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         const int lifecycleState = playerState->lifecycleState;
@@ -10241,7 +9903,7 @@ void __fastcall UpdateSubModeWaterProbeState(
     playerState->vehicleRollRad += g_Player_DeltaTime * rollBobDelta;
 
     if (playerState->underwaterFxEnabled != 0 && playerState->cameraTarget.y < outBestHeight) {
-        g_Player_UnderwaterFxPass3Ui.SetVisible(1);
+        ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(1);
         g_Player_HorizonNodeFollowCameraEnabled = 0;
 
         zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
@@ -11364,7 +11026,7 @@ namespace Player {
  * C++ Player class.
  */
 zUtil_SaveGameState *__cdecl GetSaveStateListHead() {
-    return g_PlayerSaveStateListHead;
+    return g_PlayerSaveStateList.head;
 }
 } // namespace Player
 namespace Player {
@@ -11579,7 +11241,7 @@ int __fastcall TransitionToMasterTypeTrack(
             0.0f
         );
         g_Player_HorizonNodeFollowCameraEnabled = 1;
-        g_Player_UnderwaterFxPass3Ui.SetVisible(0);
+        ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(0);
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
         ReactivateCopterSndNodesIfHealthy();
 
@@ -11702,7 +11364,7 @@ int __fastcall TransitionToMasterTypeAmphib(
         }
 
         g_Player_HorizonNodeFollowCameraEnabled = 1;
-        g_Player_UnderwaterFxPass3Ui.SetVisible(0);
+        ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(0);
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
         ReactivateCopterSndNodesIfHealthy();
 
@@ -11829,7 +11491,7 @@ int __fastcall TransitionToMasterTypeHover(
         }
 
         g_Player_HorizonNodeFollowCameraEnabled = 1;
-        g_Player_UnderwaterFxPass3Ui.SetVisible(0);
+        ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(0);
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
         ReactivateCopterSndNodesIfHealthy();
 
@@ -13794,9 +13456,9 @@ int __fastcall ApplyEnvironmentProbeResult(
                 damage
             );
             if (playerState->cameraTarget.y < envProbe->highestSelectedHitY) {
-                g_Player_UnderwaterFxPass3Ui.SetVisible(1);
+                ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(1);
             } else {
-                g_Player_UnderwaterFxPass3Ui.SetVisible(0);
+                ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(0);
             }
         } else {
             HitCallback_RecordContextAndTimedStatus(
@@ -13810,7 +13472,7 @@ int __fastcall ApplyEnvironmentProbeResult(
         if (playerState->underwaterStatusActive != 0) {
             playerState->underwaterStatusActive = 0;
             if (originalSaveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-                g_Player_UnderwaterFxPass3Ui.SetVisible(0);
+                ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(0);
                 HudLowMeterLoopSound::SetLoopActive(0);
             }
         }
