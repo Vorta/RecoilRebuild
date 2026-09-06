@@ -2393,81 +2393,59 @@ int RecoilApp_MpExitDialogState::OnUpdateShouldQuit() {
 
 extern "C" const char kClampedIntTextInputAcceptedRawKeyChars[];
 
-namespace {
 /**
- * Original helper evidence: no standalone retail function; repeated inlined
- * min/max clamp sequence in 0x419aa0 and shared world-button callers
- * 0x41a820/0x41a9c0 immediately before "%d" formatting.
- * Purpose: Clamp integer setup values to the active input bounds.
+ * The paired range stores recur in panel setup and world selection. SetRange
+ * is descriptive, not a recovered Recoil spelling; no standalone body is
+ * claimed for this input-owned operation.
+ * Purpose: set the active signed range used by this input's value operations.
  */
-inline int ClampInt(
-    int value,
-    int minValue,
-    int maxValue
+inline void HudUiClampedIntTextInput::SetRange(int minimum, int maximum) {
+    minValue = minimum;
+    maxValue = maximum;
+}
+
+/**
+ * Purpose: bind a step control to the input and signed increment it applies.
+ * This models the repeated target/step pairs; no original method spelling or
+ * standalone retail body is claimed.
+ */
+inline void HudUiClampedIntStepButton::SetTarget(
+    HudUiClampedIntTextInput *input,
+    int step
 ) {
+    targetInput = input;
+    stepDelta = step;
+}
+
+/**
+ * Retail repeats this input-owned clamp/format/update sequence in 0x419aa0,
+ * 0x41a2d0, 0x41a350, 0x41a820 and 0x41a9c0 without a standalone call.
+ * SetValue is a same-engine naming default, not an original Recoil spelling.
+ * Purpose: Display an integer constrained to this input's active bounds.
+ */
+inline void HudUiClampedIntTextInput::SetValue(int value) {
     if (value < minValue) {
         value = minValue;
     }
     if (value > maxValue) {
         value = maxValue;
     }
-    return value;
+    char valueText[20];
+    sprintf(valueText, "%d", value);
+    Update(valueText);
 }
 
 /**
- * Original helper evidence: no standalone retail function; repeated store to
- * modeOrEnabled followed by the ftable slot 0x78 RefreshState dispatch in
- * 0x419aa0 and world-button side-effect callers 0x41a820/0x41a9c0.
+ * The mode store and virtual refresh recur in panel and world selection.
+ * SetEnabled follows the existing UI family spelling, not a recovered symbol.
  * Purpose: Store the enabled flag and refresh the ZRD widget state.
  */
-inline void SetZrdWidgetEnabled(
-    HudUiZrdWidget *widget,
-    int enabled
-) {
-    widget->modeOrEnabled = enabled;
-    widget->RefreshState();
+inline void HudUiZrdWidget::SetEnabled(int enabled) {
+    modeOrEnabled = enabled;
+    RefreshState();
 }
 
-/**
- * Original helper evidence: no standalone retail function; repeated
- * constructor-lowered pattern in 0x419aa0 for time, kills, and max players:
- * min/max stores, clamped value, sprintf("%d"), then
- * HudUiNumericTextInput::Update.
- * Purpose: Initialize clamped integer text input bounds and visible text.
- */
-inline void InitClampedInput(
-    HudUiClampedIntTextInput *input,
-    int minValue,
-    int maxValue,
-    int value
-) {
-    input->minValue = minValue;
-    input->maxValue = maxValue;
-
-    char valueText[20];
-    sprintf(
-        valueText,
-        "%d",
-        ClampInt(value, minValue, maxValue)
-    );
-    input->Update(valueText);
-}
-
-/**
- * Original helper evidence: no standalone retail function; repeated
- * constructor-local targetInput and stepDelta stores in 0x419aa0 for the
- * increment/decrement time, kills, and max players buttons.
- * Purpose: Bind a step button to its target clamped integer input.
- */
-inline void ConfigureStepButton(
-    HudUiClampedIntStepButton *button,
-    HudUiClampedIntTextInput *targetInput,
-    int stepDelta
-) {
-    button->targetInput = targetInput;
-    button->stepDelta = stepDelta;
-}
-
+namespace {
 /**
  * Original helper evidence: no standalone retail function; repeated indirect
  * ftable slot 0x60 visibility dispatch in 0x419aa0 and world-button callers
@@ -2484,26 +2462,6 @@ inline void SetWidgetVisible(
 } // namespace
 
 /**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this concrete member
- * widget table.
- * Purpose: construct the launch button through its ZRD widget base.
- */
-HudUiNetGameSetupPanel_LaunchButton::HudUiNetGameSetupPanel_LaunchButton()
-    : HudUiZrdWidget() {
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed in caller
- * 0x419aa0 as compiler-emitted construction installing this concrete member
- * widget table.
- * Purpose: construct the cancel button through its ZRD widget base.
- */
-HudUiNetGameSetupPanel_CancelButton::HudUiNetGameSetupPanel_CancelButton()
-    : HudUiZrdWidget() {
-}
-
-/**
  * Purpose: Initialize the network game setup panel controls and default session options.
  */
 HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
@@ -2511,7 +2469,7 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
 ) : HudUiBackground(),
     playButton(),
     cancelButton(),
-    gameNameInput(21),
+    gameNameInput(),
     worldSelector(),
     nextWorldButton(),
     prevWorldButton(),
@@ -2528,27 +2486,13 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
     nameTagsToggle(),
     killsSwitch(0),
     lapsSwitch(0) {
+    reconfigureExistingSession = reconfigureExistingSessionValue;
     zReader::Node *const loadedSection =
         HudUiBackground::LoadFromZrd(
             "dialog.zrd",
             "MP_NEW_GAME",
             0
         );
-
-    incTimeLimitButton.targetInput = 0;
-    incTimeLimitButton.stepDelta = 1;
-    decTimeLimitButton.targetInput = 0;
-    decTimeLimitButton.stepDelta = 1;
-    incKillsButton.targetInput = 0;
-    incKillsButton.stepDelta = 1;
-    decKillsButton.targetInput = 0;
-    decKillsButton.stepDelta = 1;
-    incMaxPlayersButton.targetInput = 0;
-    incMaxPlayersButton.stepDelta = 1;
-    decMaxPlayersButton.targetInput = 0;
-    decMaxPlayersButton.stepDelta = 1;
-
-    reconfigureExistingSession = reconfigureExistingSessionValue;
 
     if (loadedSection != 0) {
         HudUiBackground::BindPrimitiveNodeToElement(
@@ -2658,6 +2602,7 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
         0
     );
     worldSelector.SetIndexClamped(0);
+    currentFocusWidget = 0;
     char *const playerName = zOpt_GetPlayerName();
     char playerNameText[24];
     sprintf(
@@ -2666,90 +2611,33 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
         playerName
     );
     gameNameInput.Update(playerNameText);
-    gameNameInput.AllocTextBuffer(21);
+    gameNameInput.AllocTextBuffer(22);
 
-    const int enabledForNewSession = reconfigureExistingSession == 0 ? 1 : 0;
-    SetZrdWidgetEnabled(
-        &gameNameInput,
-        enabledForNewSession
-    );
+    gameNameInput.SetEnabled(reconfigureExistingSession == 0);
 
-    InitClampedInput(
-        &timeLimitInput,
-        5,
-        360,
-        15
-    );
+    timeLimitInput.SetRange(5, 360);
+    timeLimitInput.SetValue(15);
+    incTimeLimitButton.SetTarget(&timeLimitInput, 1);
+    decTimeLimitButton.SetTarget(&timeLimitInput, -1);
 
-    InitClampedInput(
-        &killsInput,
-        1,
-        99,
-        10
-    );
+    killsInput.SetRange(1, 99);
+    killsInput.SetValue(10);
+    incKillsButton.SetTarget(&killsInput, 1);
+    decKillsButton.SetTarget(&killsInput, -1);
 
     if (zOpt::GetNetworkModemEnabled() != 0) {
-        maxPlayersInput.modeOrEnabled = 0;
-        maxPlayersInput.RefreshState();
-        SetZrdWidgetEnabled(
-            &incMaxPlayersButton,
-            0
-        );
-        SetZrdWidgetEnabled(
-            &decMaxPlayersButton,
-            0
-        );
+        maxPlayersInput.SetEnabled(0);
+        incMaxPlayersButton.SetEnabled(0);
+        decMaxPlayersButton.SetEnabled(0);
     } else {
-        InitClampedInput(
-            &maxPlayersInput,
-            2,
-            8,
-            8
-        );
-        SetZrdWidgetEnabled(
-            &maxPlayersInput,
-            enabledForNewSession
-        );
-        ConfigureStepButton(
-            &incMaxPlayersButton,
-            &maxPlayersInput,
-            1
-        );
-        SetZrdWidgetEnabled(
-            &incMaxPlayersButton,
-            enabledForNewSession
-        );
-        ConfigureStepButton(
-            &decMaxPlayersButton,
-            &maxPlayersInput,
-            -1
-        );
-        decMaxPlayersButton.modeOrEnabled = enabledForNewSession;
-        decMaxPlayersButton.RefreshState();
+        maxPlayersInput.SetRange(2, 8);
+        maxPlayersInput.SetValue(8);
+        maxPlayersInput.SetEnabled(reconfigureExistingSession == 0);
+        incMaxPlayersButton.SetTarget(&maxPlayersInput, 1);
+        incMaxPlayersButton.SetEnabled(reconfigureExistingSession == 0);
+        decMaxPlayersButton.SetTarget(&maxPlayersInput, -1);
+        decMaxPlayersButton.SetEnabled(reconfigureExistingSession == 0);
     }
-
-    currentFocusWidget = 0;
-
-    ConfigureStepButton(
-        &incTimeLimitButton,
-        &timeLimitInput,
-        1
-    );
-    ConfigureStepButton(
-        &decTimeLimitButton,
-        &timeLimitInput,
-        -1
-    );
-    ConfigureStepButton(
-        &incKillsButton,
-        &killsInput,
-        1
-    );
-    ConfigureStepButton(
-        &decKillsButton,
-        &killsInput,
-        -1
-    );
 
     allowMapsToggle.SetChecked(1);
     nameTagsToggle.SetChecked(0);
@@ -2776,7 +2664,7 @@ void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
  * Purpose: Construct the network text-input layer with its requested buffer,
  * clear the display text, and leave keyboard input inactive.
  */
-HudUiNetGameSetupTextInput::HudUiNetGameSetupTextInput(
+inline HudUiNetGameSetupTextInput::HudUiNetGameSetupTextInput(
     unsigned int bufferSize
 ) : HudUiNumericTextInput() {
     textInput.AllocTextBuffer(bufferSize);
@@ -2839,22 +2727,7 @@ int HudUiClampedIntTextInput::CommitAndGetValue() {
         value = maxValue;
     }
 
-    int displayValue = value;
-    if (displayValue < minValue) {
-        displayValue = minValue;
-    }
-
-    if (displayValue > maxValue) {
-        displayValue = maxValue;
-    }
-
-    char valueText[20];
-    sprintf(
-        valueText,
-        "%d",
-        displayValue
-    );
-    Update(valueText);
+    SetValue(value);
     return value;
 }
 
@@ -2867,23 +2740,7 @@ int HudUiClampedIntTextInput::CommitAndGetValue() {
  */
 void HudUiClampedIntStepButton::OnActivate() {
     if (targetInput != 0) {
-        int value = targetInput->CommitAndGetValue() + stepDelta;
-
-        if (value < targetInput->minValue) {
-            value = targetInput->minValue;
-        }
-
-        if (value > targetInput->maxValue) {
-            value = targetInput->maxValue;
-        }
-
-        char valueText[20];
-        sprintf(
-            valueText,
-            "%d",
-            value
-        );
-        targetInput->Update(valueText);
+        targetInput->SetValue(stepDelta + targetInput->CommitAndGetValue());
         targetInput->Invalidate();
     }
 
@@ -3022,32 +2879,13 @@ void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
 
         killsInput = &ownerPanel->killsInput;
         if (killsInput->CommitAndGetValue() == 1) {
-            char valueText[20];
-            int clampedValue = 2;
-            if (killsInput->minValue > clampedValue) {
-                clampedValue = killsInput->minValue;
-            }
-            if (clampedValue > killsInput->maxValue) {
-                clampedValue = killsInput->maxValue;
-            }
-            sprintf(
-                valueText,
-                "%d",
-                clampedValue
-            );
-            killsInput->Update(valueText);
+            killsInput->SetValue(2);
         }
         killsInput->minValue = 2;
         killsInput->maxValue = 99;
 
-        SetZrdWidgetEnabled(
-            &ownerPanel->incTimeLimitButton,
-            0
-        );
-        SetZrdWidgetEnabled(
-            &ownerPanel->decTimeLimitButton,
-            0
-        );
+        ownerPanel->incTimeLimitButton.SetEnabled(0);
+        ownerPanel->decTimeLimitButton.SetEnabled(0);
     } else {
         SetWidgetVisible(
             &ownerPanel->killsSwitch,
@@ -3061,18 +2899,9 @@ void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
         killsInput->minValue = 1;
         killsInput->maxValue = 99;
 
-        SetZrdWidgetEnabled(
-            &ownerPanel->timeLimitInput,
-            1
-        );
-        SetZrdWidgetEnabled(
-            &ownerPanel->incTimeLimitButton,
-            1
-        );
-        SetZrdWidgetEnabled(
-            &ownerPanel->decTimeLimitButton,
-            1
-        );
+        ownerPanel->timeLimitInput.SetEnabled(1);
+        ownerPanel->incTimeLimitButton.SetEnabled(1);
+        ownerPanel->decTimeLimitButton.SetEnabled(1);
     }
 
     killsInput->Invalidate();
@@ -3101,32 +2930,13 @@ void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
 
         killsInput = &ownerPanel->killsInput;
         if (killsInput->CommitAndGetValue() == 1) {
-            char valueText[20];
-            int clampedValue = 2;
-            if (killsInput->minValue > clampedValue) {
-                clampedValue = killsInput->minValue;
-            }
-            if (clampedValue > killsInput->maxValue) {
-                clampedValue = killsInput->maxValue;
-            }
-            sprintf(
-                valueText,
-                "%d",
-                clampedValue
-            );
-            killsInput->Update(valueText);
+            killsInput->SetValue(2);
         }
         killsInput->minValue = 2;
         killsInput->maxValue = 99;
 
-        SetZrdWidgetEnabled(
-            &ownerPanel->incTimeLimitButton,
-            0
-        );
-        SetZrdWidgetEnabled(
-            &ownerPanel->decTimeLimitButton,
-            0
-        );
+        ownerPanel->incTimeLimitButton.SetEnabled(0);
+        ownerPanel->decTimeLimitButton.SetEnabled(0);
     } else {
         SetWidgetVisible(
             &ownerPanel->killsSwitch,
@@ -3140,18 +2950,9 @@ void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
         killsInput->minValue = 1;
         killsInput->maxValue = 99;
 
-        SetZrdWidgetEnabled(
-            &ownerPanel->timeLimitInput,
-            1
-        );
-        SetZrdWidgetEnabled(
-            &ownerPanel->incTimeLimitButton,
-            1
-        );
-        SetZrdWidgetEnabled(
-            &ownerPanel->decTimeLimitButton,
-            1
-        );
+        ownerPanel->timeLimitInput.SetEnabled(1);
+        ownerPanel->incTimeLimitButton.SetEnabled(1);
+        ownerPanel->decTimeLimitButton.SetEnabled(1);
     }
 
     killsInput->Invalidate();
@@ -3681,16 +3482,6 @@ int g_NetUiTcpIpProviderWarningShown = 0;
 
 extern "C" HWND g_RecoilApp_hWndMain;
 
-/**
- * @recoil-anchor recoil:anchor:battlesport-mission-g-netsessionconfigdialog-mapnamestrings
- * @recoil-artifact defines .data recoil:data:0x4f32d8: g_NetSessionConfigDialog_MapNameStrings.
- * Purpose: Stores the seven static CString objects used by the multiplayer
- * session configuration map list.
- */
-unsigned int g_NetSessionConfigDialog_MapNameStringStorage[7] = {0};
-CString *g_NetSessionConfigDialog_MapNameStrings =
-    (CString *)&g_NetSessionConfigDialog_MapNameStringStorage[0];
-
 namespace {
 const UINT kNetSessionBrowserDialogResourceId = 136;
 const int kNetSessionBrowserPlayerNameEditId = 1048;
@@ -3932,15 +3723,12 @@ BOOL NetSessionBrowserDialog::OnInitDialog() {
 
     zNetworkServiceProviderListVec *const providerList =
         zNetworkDPlay::RefreshAndGetServiceProviderList();
-    int providerCount = 0;
-    if (providerList->begin != 0) {
-        providerCount = (int)(providerList->end - providerList->begin);
-    }
+    const int providerCount = (int)providerList->size();
 
     HWND providerComboHwnd = m_providerCombo.m_hWnd;
     int providerIndex;
     for (providerIndex = 0; providerIndex < providerCount; ++providerIndex) {
-        zNetworkDPlayServiceProviderInfo *const providerInfo = providerList->begin[providerIndex];
+        zNetworkDPlayServiceProviderInfo *const providerInfo = (*providerList)[providerIndex];
         char *const displayName = providerInfo->displayName;
         if (strstr(displayName, g_zNetwork_ProviderName_Ipx) != 0 ||
             strstr(displayName, g_zNetwork_ProviderName_TcpIp) != 0 ||
@@ -4238,13 +4026,7 @@ void NetSessionBrowserDialog::OnCreateSession() {
         return;
     }
 
-    if (m_selectedProviderIsModem == 0) {
-        ::KillTimer(
-            m_hWnd,
-            2
-        );
-        m_shouldEnterHostSetup = TRUE;
-    } else {
+    if (m_selectedProviderIsModem != 0) {
         zNetworkSessionDescStatusFields statusFields;
         statusFields.eventCode = kNetSessionBrowserModemEventCode;
         statusFields.statusFlags = 0;
@@ -4262,6 +4044,12 @@ void NetSessionBrowserDialog::OnCreateSession() {
             zNetwork_DPlay::CreateLocalPlayerRecordAndRegister(zOpt_GetPlayerName());
             m_shouldEnterHostSetup = TRUE;
         }
+    } else {
+        ::KillTimer(
+            m_hWnd,
+            2
+        );
+        m_shouldEnterHostSetup = TRUE;
     }
 
     if (m_shouldEnterHostSetup != 0) {
@@ -5344,44 +5132,21 @@ const AFX_MSGMAP * NetSessionConfigDialog::GetMessageMap() const {
     return &NetSessionConfigDialog::messageMap;
 }
 
-namespace Mission {
 /**
- * Purpose: Construct and register cleanup for multiplayer map name strings.
+ * @recoil-anchor recoil:anchor:battlesport-mission-g-netsessionconfigdialog-mapnamestrings
+ * @recoil-artifact defines .data recoil:data:0x4f32d8: Seven CString objects.
+ * Compiler-emitted 0x41c980: Static initializer coordinator.
+ * Compiler-emitted 0x41c990: Array element initialization.
+ * Compiler-emitted 0x41ca00: Array cleanup registration.
+ * Compiler-emitted 0x41ca10: Array cleanup callback.
+ * Purpose: Own the multiplayer map labels with native static array lifetime.
+ * Retail constructs seven adjacent four-byte CString objects and destroys them
+ * through the compiler's array-destructor helper (count 7, stride 4).
  */
-void __cdecl RegisterMultiplayerMaps() {
-    NetSessionConfigDialog::InitMapNameStrings();
-    NetSessionConfigDialog::RegisterMapNameCleanup();
-}
-} // namespace Mission
-
-/**
- * Purpose: Construct the seven multiplayer map-name CString entries.
- */
-void NetSessionConfigDialog::InitMapNameStrings() {
-    new (&g_NetSessionConfigDialog_MapNameStrings[0]) CString("RiverWorks");
-    new (&g_NetSessionConfigDialog_MapNameStrings[1]) CString("Crater Chaos");
-    new (&g_NetSessionConfigDialog_MapNameStrings[2]) CString("Beach Rally");
-    new (&g_NetSessionConfigDialog_MapNameStrings[3]) CString("Clone City");
-    new (&g_NetSessionConfigDialog_MapNameStrings[4]) CString("Frozen Tundra");
-    new (&g_NetSessionConfigDialog_MapNameStrings[5]) CString("Poison Valley");
-    new (&g_NetSessionConfigDialog_MapNameStrings[6]) CString("New Clone City");
-}
-
-/**
- * Purpose: Register process-exit cleanup for multiplayer map-name strings.
- */
-void NetSessionConfigDialog::RegisterMapNameCleanup() {
-    atexit(&NetSessionConfigDialog::CleanupMapNameStringsOnExit);
-}
-
-/**
- * Purpose: Destroy the static multiplayer map-name CString entries.
- */
-void __cdecl NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
-    for (int index = kNetSessionConfigMapNameCount - 1; index >= 0; --index) {
-        g_NetSessionConfigDialog_MapNameStrings[index].~CString();
-    }
-}
+CString g_NetSessionConfigDialog_MapNameStrings[7] = {
+    "RiverWorks", "Crater Chaos", "Beach Rally", "Clone City",
+    "Frozen Tundra", "Poison Valley", "New Clone City"
+};
 
 /**
  * Purpose: Initialize multiplayer session config fields, maps, and spin ranges.

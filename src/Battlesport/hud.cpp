@@ -1046,7 +1046,7 @@ void __fastcall ApplyCameraState(
             projectileNode,
             1
         );
-        g_Player_State7FxPass3Ui.SetVisible(1);
+        ((HudUiElement *)(&g_Player_State7FxPass3Ui))->SetVisible(1);
         break;
     }
 
@@ -1070,7 +1070,7 @@ void __fastcall ApplyCameraState(
                 0
             );
             UpdateThirdPersonCamera(saveState);
-            g_Player_State7FxPass3Ui.SetVisible(0);
+            ((HudUiElement *)(&g_Player_State7FxPass3Ui))->SetVisible(0);
             zTag4::Clear(&g_VariantTag_Current);
             g_Variant_CurrentTag = g_VariantTag_Current;
         } else if (currentState == kPlayerCameraStateClearScreen) {
@@ -10385,11 +10385,8 @@ int __fastcall HudUiMgr::InitHudLayouts(
     }
     g_HudUiMgrObjectiveLabelTextPanel = objectiveLabelTextPanel;
 
-    HudUiTopMessageStack *const topMessageStack = AllocateHudObject<HudUiTopMessageStack>();
-    g_HudUiTopMessageStack = topMessageStack != 0 ? topMessageStack->Constructor() : 0;
-
-    HudUiChatMessageStack *const chatMessageStack = AllocateHudObject<HudUiChatMessageStack>();
-    g_HudUiChatMessageStack = chatMessageStack != 0 ? chatMessageStack->Constructor() : 0;
+    g_HudUiTopMessageStack = new HudUiTopMessageStack;
+    g_HudUiChatMessageStack = new HudUiChatMessageStack;
 
     g_HudUiMgrHudLoaded = 0;
     g_HudUiMgrLayoutDelayFrames = 0;
@@ -15010,7 +15007,7 @@ int zInterp_GlobalContext::RegisterAtExit() {
  * Purpose: tear down the process-wide interpreter during CRT shutdown.
  */
 void zInterp_GlobalContext::AtExitDestructor() {
-    g_zInterp_GlobalContext.Destructor();
+    g_zInterp_GlobalContext.~zInterp_GlobalContext();
 }
 
 /**
@@ -15020,11 +15017,11 @@ void zInterp_GlobalContext::AtExitDestructor() {
  * Purpose: construct the process-wide interpreter with the retail search path
  * and prepared script index filename.
  */
-zInterp_GlobalContext::zInterp_GlobalContext() {
-    zInterp_Context::Constructor(
-        kHudTailGlobalContextSearchPath,
-        g_zInterp_PreparedIndexFileName
-    );
+zInterp_GlobalContext::zInterp_GlobalContext()
+    : zInterp_Context(
+        g_zInterp_PreparedIndexFileName,
+        kHudTailGlobalContextSearchPath
+    ) {
 }
 
 /**
@@ -15993,15 +15990,11 @@ void __fastcall RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduibackgroundconfirmquit-constructor
- * @recoil-artifact defines .text recoil:function:0x415680: HudUiBackgroundConfirmQuit::Constructor.
+ * @recoil-artifact defines .text recoil:function:0x415680: HudUiBackgroundConfirmQuit::HudUiBackgroundConfirmQuit.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
  * Purpose: Construct the confirm-quit dialog, bind its OK/cancel buttons, and load its ZRD layout.
  */
-HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
-    new ((HudUiBackground *)this) HudUiBackground;
-    new (&okButton) HudUiConfirmQuitOkButton;
-    new (&cancelButton) HudUiConfirmQuitCancelButton;
-
+HudUiBackgroundConfirmQuit::HudUiBackgroundConfirmQuit() {
     zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
         "dialog.zrd",
         g_HudUiBackgroundConfirmQuit_SectionName,
@@ -16021,7 +16014,6 @@ HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
         HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
     }
 
-    return this;
 }
 
 /**
@@ -16040,18 +16032,6 @@ void HudUiConfirmQuitOkButton::OnActivate() {
         0
     );
     HudUiZrdWidget::OnActivate();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduibackgroundconfirmquit-destructor
- * @recoil-artifact defines .text recoil:function:0x4157b0: HudUiBackgroundConfirmQuit::Destructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
- * Purpose: Destroy the confirm-quit child widgets before the inherited background cleanup.
- */
-void HudUiBackgroundConfirmQuit::Destructor() {
-    cancelButton.~HudUiConfirmQuitCancelButton();
-    okButton.~HudUiConfirmQuitOkButton();
-    this->HudUiBackground::~HudUiBackground();
 }
 
 /**
@@ -16132,11 +16112,7 @@ RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
  * Purpose: handle the recovered HUD event path for RecoilStateConfirmQuit::OnTryBecomeCurrent.
  */
 int RecoilStateConfirmQuit::OnTryBecomeCurrent() {
-    HudUiBackgroundConfirmQuit *dialog =
-        (HudUiBackgroundConfirmQuit *) ::operator new(sizeof(HudUiBackgroundConfirmQuit));
-    if (dialog != 0) {
-        dialog = dialog->Constructor();
-    }
+    HudUiBackgroundConfirmQuit *dialog = new HudUiBackgroundConfirmQuit;
     m_dialog = dialog;
 
     dialog->SetEnabled(1);

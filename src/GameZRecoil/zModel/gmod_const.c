@@ -2612,8 +2612,8 @@ namespace zDi {
         clone->flags = (clone->flags & ~0x10) | (self->flags & 0x10);
         clone->blendScale = self->blendScale;
         clone->flags = (clone->flags & ~0x20) | (self->flags & 0x20);
-        clone->textureWorldPerMeter = self->textureWorldPerMeter;
-        clone->textureWorldAxis = self->textureWorldAxis;
+        clone->scrollRateU = self->scrollRateU;
+        clone->scrollRateV = self->scrollRateV;
         clone->field2c = self->field2c;
 
         clone->pointCount = self->pointCount;

@@ -191,9 +191,6 @@ zFMV_Playback *g_HudUiSensorWindowPlayback = 0;
 // Moved HUD runtime bodies live in src/Battlesport/hud_runtime_layer_body.h
 // and are included by src/Battlesport/hud.cpp for physical HUD order.
 
-extern "C" {
-HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList = {0};
-}
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduichatmessagestack
  * @recoil-artifact defines .data recoil:data:0x56bd20: g_HudUiChatMessageStack.
@@ -1298,10 +1295,8 @@ inline void LoadHudZrdSound(
         hudElement_ = (HudUiElement *)(hudPanel_); \
         hudElement_->flags = (hudElement_->flags & 0x10u) | 0x02u; \
         const char *const hudLabelKey_ = (labelSpecBase_)[1].value.str; \
-        const char *const hudLabelText_ = hudLabelKey_ != 0 \
-            ? zLoc::ResolveMessageKeyOrFallback(hudLabelKey_) \
-            : ""; \
-        hudPanel_->SetTextFmt(hudLabelText_ != 0 ? hudLabelText_ : ""); \
+        hudPanel_->SetTextFmt( \
+            zLoc::ResolveMessageKeyOrFallback(hudLabelKey_)); \
         hudElement_->SetPos( \
             (originX_) + (labelSpecBase_)[2].value.i32, \
             (originY_) + (labelSpecBase_)[3].value.i32 \
@@ -1656,7 +1651,7 @@ inline void HudUiSetPanelClipWithSource(
     void *source,
     const HudUiRect *clipRect
 ) {
-    panel->SetClip(
+    panel->SetBltSourceAndClipRect(
         source,
         clipRect
     );
@@ -3278,21 +3273,43 @@ int HudUiCheckToggleWidget::LoadFromZrd(
         g_HudUiZrdKey_Checked
     );
     if (checkedNode != 0) {
-        LoadHudZrdBitmap(
-            checkedNode,
-            g_HudUiCycleSelectorWidget_ZrdKey_Bitmap,
-            &checkedImage
-        );
+        zReader::Node *const bitmapNode = zReader_GetNamedNode(
+            checkedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        if (bitmapNode != 0) {
+            checkedImage = zImage::TexDir_FindOrCreateByPath(
+                bitmapNode->value.nodes[1].value.str);
+        }
         zReader::Node *const textNode = zReader_GetNamedNode(
             checkedNode,
             g_HudUiCycleSelectorWidget_ZrdKey_Text
         );
         if (textNode != 0) {
-            checkedLabelPanel = CreateHudZrdTextPanel(
-                this,
-                textNode,
-                0
-            );
+            const int textOriginX = originX;
+            const int textOriginY = originY;
+            checkedLabelPanel = new HudUiTransitionTextPanel;
+            checkedLabelPanel->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(
+                textNode->value.nodes[1].value.str));
+            checkedLabelPanel->SetPos(
+                textOriginX + textNode->value.nodes[2].value.i32,
+                textOriginY + textNode->value.nodes[3].value.i32);
+            const int styleIndex = textNode->value.nodes[4].value.i32;
+            const HudFontStyle *style = &owner->fontStyles[styleIndex];
+            if (style->validMarker == 0) {
+                style = 0;
+            }
+            if (style != 0) {
+                checkedLabelPanel->SetFont(
+                    style->fontName, style->fontSize, style->fontWeight,
+                    0, 0, 0, 2);
+                checkedLabelPanel->textColor0 = style->textColor;
+                checkedLabelPanel->textColor1 = style->textColor;
+                checkedLabelPanel->textDirty = 1;
+                checkedLabelPanel->shadowEnabled = style->shadowEnabled;
+                checkedLabelPanel->shadowOffsetX = 1;
+                checkedLabelPanel->shadowOffsetY = 1;
+            }
+            checkedLabelPanel->SetVisible(0);
+            ((HudUiContainer *)owner)->AddChild(checkedLabelPanel);
         }
     }
 
@@ -3301,21 +3318,43 @@ int HudUiCheckToggleWidget::LoadFromZrd(
         g_HudUiZrdKey_DisableUnsel
     );
     if (disabledUnselectedNode != 0) {
-        LoadHudZrdBitmap(
-            disabledUnselectedNode,
-            g_HudUiCycleSelectorWidget_ZrdKey_Bitmap,
-            &disabledCheckedFallbackImage
-        );
+        zReader::Node *const bitmapNode = zReader_GetNamedNode(
+            disabledUnselectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        if (bitmapNode != 0) {
+            disabledCheckedFallbackImage = zImage::TexDir_FindOrCreateByPath(
+                bitmapNode->value.nodes[1].value.str);
+        }
         zReader::Node *const textNode = zReader_GetNamedNode(
             disabledUnselectedNode,
             g_HudUiCycleSelectorWidget_ZrdKey_Text
         );
         if (textNode != 0) {
-            checkedLabelPanel = CreateHudZrdTextPanel(
-                this,
-                textNode,
-                0
-            );
+            const int textOriginX = originX;
+            const int textOriginY = originY;
+            checkedLabelPanel = new HudUiTransitionTextPanel;
+            checkedLabelPanel->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(
+                textNode->value.nodes[1].value.str));
+            checkedLabelPanel->SetPos(
+                textOriginX + textNode->value.nodes[2].value.i32,
+                textOriginY + textNode->value.nodes[3].value.i32);
+            const int styleIndex = textNode->value.nodes[4].value.i32;
+            const HudFontStyle *style = &owner->fontStyles[styleIndex];
+            if (style->validMarker == 0) {
+                style = 0;
+            }
+            if (style != 0) {
+                checkedLabelPanel->SetFont(
+                    style->fontName, style->fontSize, style->fontWeight,
+                    0, 0, 0, 2);
+                checkedLabelPanel->textColor0 = style->textColor;
+                checkedLabelPanel->textColor1 = style->textColor;
+                checkedLabelPanel->textDirty = 1;
+                checkedLabelPanel->shadowEnabled = style->shadowEnabled;
+                checkedLabelPanel->shadowOffsetX = 1;
+                checkedLabelPanel->shadowOffsetY = 1;
+            }
+            checkedLabelPanel->SetVisible(0);
+            ((HudUiContainer *)owner)->AddChild(checkedLabelPanel);
         }
 
         HUD_ZRD_LOAD_LABEL_SECTION_NATURAL(
@@ -3330,21 +3369,43 @@ int HudUiCheckToggleWidget::LoadFromZrd(
         g_HudUiZrdKey_DisableSel
     );
     if (disabledSelectedNode != 0) {
-        LoadHudZrdBitmap(
-            disabledSelectedNode,
-            g_HudUiCycleSelectorWidget_ZrdKey_Bitmap,
-            &disabledCheckedImage
-        );
+        zReader::Node *const bitmapNode = zReader_GetNamedNode(
+            disabledSelectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        if (bitmapNode != 0) {
+            disabledCheckedImage = zImage::TexDir_FindOrCreateByPath(
+                bitmapNode->value.nodes[1].value.str);
+        }
         zReader::Node *const textNode = zReader_GetNamedNode(
             disabledSelectedNode,
             g_HudUiCycleSelectorWidget_ZrdKey_Text
         );
         if (textNode != 0) {
-            checkedLabelPanel = CreateHudZrdTextPanel(
-                this,
-                textNode,
-                0
-            );
+            const int textOriginX = originX;
+            const int textOriginY = originY;
+            checkedLabelPanel = new HudUiTransitionTextPanel;
+            checkedLabelPanel->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(
+                textNode->value.nodes[1].value.str));
+            checkedLabelPanel->SetPos(
+                textOriginX + textNode->value.nodes[2].value.i32,
+                textOriginY + textNode->value.nodes[3].value.i32);
+            const int styleIndex = textNode->value.nodes[4].value.i32;
+            const HudFontStyle *style = &owner->fontStyles[styleIndex];
+            if (style->validMarker == 0) {
+                style = 0;
+            }
+            if (style != 0) {
+                checkedLabelPanel->SetFont(
+                    style->fontName, style->fontSize, style->fontWeight,
+                    0, 0, 0, 2);
+                checkedLabelPanel->textColor0 = style->textColor;
+                checkedLabelPanel->textColor1 = style->textColor;
+                checkedLabelPanel->textDirty = 1;
+                checkedLabelPanel->shadowEnabled = style->shadowEnabled;
+                checkedLabelPanel->shadowOffsetX = 1;
+                checkedLabelPanel->shadowOffsetY = 1;
+            }
+            checkedLabelPanel->SetVisible(0);
+            ((HudUiContainer *)owner)->AddChild(checkedLabelPanel);
         }
     }
 
@@ -3670,7 +3731,8 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-addbitmapentry
  * @recoil-artifact defines .text recoil:function:0x4b8200: HudUiCycleSelectorWidget::AddBitmapEntry.
- * Purpose: preserve the recovered HUD behavior for HudUiCycleSelectorWidget::AddBitmapEntry.
+ * Purpose: construct a bitmap entry, load its image, then position and attach
+ * the entry reloaded from the selector array after each callback.
  */
 void HudUiCycleSelectorWidget::AddBitmapEntry(
     int index,
@@ -3694,16 +3756,15 @@ void HudUiCycleSelectorWidget::AddBitmapEntry(
         return;
     }
 
-    HudUiWidget *const bitmapWidget = (HudUiWidget *)(::operator new(sizeof(HudUiWidget)));
-    bitmapWidget->Constructor(0);
+    HudUiWidget *const bitmapWidget = new HudUiWidget(0);
     entriesB[index] = bitmapWidget;
     bitmapWidget->SetImageByPathOwned(imagePath);
-    bitmapWidget->SetPos(
+    entriesB[index]->SetPos(
         posX,
         posY
     );
-    bitmapWidget->SetVisible(0);
-    ((HudUiContainer *)(owner))->AddChild((HudUiElement *)(bitmapWidget));
+    entriesB[index]->SetVisible(0);
+    ((HudUiContainer *)(owner))->AddChild(entriesB[index]);
 }
 
 /**
@@ -4098,7 +4159,7 @@ void HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf() {
     {
         for (int index = 0; index < ownerSelector->optionCount; ++index) {
             HudUiZrdWidgetEx17C_Item *const option = ownerSelector->options[index];
-            option->HidePreviewIfNotSelected();
+            option->HidePreview();
         }
     }
 }
@@ -4399,6 +4460,9 @@ int HudCmdBindButtonBase::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
 ) {
+    HudUiRect clipRect;
+    clipRect.left = clipRect.top = 0;
+    clipRect.right = clipRect.bottom = 0;
     HudUiCheckToggleWidget::LoadFromZrd(
         zrdSection,
         ownerDialog
@@ -4412,10 +4476,22 @@ int HudCmdBindButtonBase::LoadFromZrd(
     );
     if (selectedFontNode != 0) {
         selectedFontStyleRef = selectedFontNode->value.i32;
-        ApplyHudFontStyleTextOnly(
-            (HudUiPanel *)(&bindPanel),
-            HudUiZrdOwnerFontStyle(owner, selectedFontStyleRef)
-        );
+        const HudFontStyle *const selectedStyle =
+            HudUiZrdOwnerFontStyle(owner, selectedFontStyleRef);
+        if (selectedStyle != 0) {
+            HudUiPanel *const panel = &bindPanel;
+            panel->SetFont(
+                selectedStyle->fontName, selectedStyle->fontSize,
+                selectedStyle->fontWeight, 0, 0, 0, 2
+            );
+            const unsigned int color = selectedStyle->textColor;
+            panel->textColor0 = color;
+            panel->textColor1 = color;
+            panel->textDirty = 1;
+            panel->shadowEnabled = selectedStyle->shadowEnabled;
+            panel->shadowOffsetX = 1;
+            panel->shadowOffsetY = 1;
+        }
     }
 
     zReader::Node *const listFontNode = zReader_GetNamedNode(
@@ -4438,83 +4514,59 @@ int HudCmdBindButtonBase::LoadFromZrd(
         zrdSection,
         "LIST_OFFSET"
     );
-    zReader::Node *const listOffsetBase = ZrdArrayBase(listOffsetNode);
-    zReader::Node *const visibleOffsetBase = ZrdArrayBase(ZrdArrayItem(
-        listOffsetBase,
-        1
-    ));
-    zReader::Node *const overflowOffsetBase = ZrdArrayBase(ZrdArrayItem(
-        listOffsetBase,
-        2
-    ));
-    if (visibleOffsetBase != 0 && overflowOffsetBase != 0) {
-        visibleListOffsetX = (float)(ZrdArrayInt(
-            visibleOffsetBase,
-            1,
-            0
-        ));
-        visibleListOffsetY = (float)(ZrdArrayInt(
-            visibleOffsetBase,
-            2,
-            0
-        ));
-        overflowListOffsetX = (float)(ZrdArrayInt(
-            overflowOffsetBase,
-            1,
-            0
-        ));
-        overflowListOffsetY = (float)(ZrdArrayInt(
-            overflowOffsetBase,
-            2,
-            0
-        ));
+    if (listOffsetNode != 0) {
+        visibleListOffsetX = (float)listOffsetNode->value.nodes[1].value.nodes[1].value.i32;
+        visibleListOffsetY = (float)listOffsetNode->value.nodes[1].value.nodes[2].value.i32;
+        overflowListOffsetX = (float)listOffsetNode->value.nodes[2].value.nodes[1].value.i32;
+        overflowListOffsetY = (float)listOffsetNode->value.nodes[2].value.nodes[2].value.i32;
     }
 
     zReader::Node *const listSizeNode = zReader_GetNamedNode(
         zrdSection,
         "LISTSIZE"
     );
-    zReader::Node *const listSizeBase = ZrdArrayBase(listSizeNode);
-    if (listSizeBase != 0) {
-        const int visibleCount =
-            ZrdArrayCount(listSizeBase) > 2 ? ZrdArrayInt(
-                listSizeBase,
-                2,
-                0
-            ) : 0;
-        RebuildBindingSlotWidgets(
-            ZrdArrayInt(
-                listSizeBase,
-                1,
-                0
-            ),
-            visibleCount
-        );
+    if (listSizeNode != 0) {
+        zReader::Node *const listSizeBase = listSizeNode->value.nodes;
+        const int totalCount = listSizeBase[1].value.i32;
+        int visibleCount = 0;
+        if (listSizeBase[0].value.i32 > 2) {
+            visibleCount = listSizeBase[2].value.i32;
+        }
+        RebuildBindingSlotWidgets(totalCount, visibleCount);
 
-        HudUiRect clipRect = {0};
-        const HudFontStyle *const listStyle =
-            HudUiZrdOwnerFontStyle(
-                owner,
-                listFontStyleRef
-            );
         {
             for (int index = 0; index < bindingSlotTotalCount; ++index) {
-                HudUiListSelectorItem *const item = &bindingSlotPanels[index];
-                ((HudUiContainer *)(ownerDialog))->AddChild((HudUiElement *)(item));
-                item->SetVisible(1);
-                item->owner = this;
+                ((HudUiContainer *)(ownerDialog))->AddChild(&bindingSlotPanels[index]);
+                bindingSlotPanels[index].SetVisible(1);
+                bindingSlotPanels[index].owner = this;
                 if (clipSource != 0) {
-                    HudUiSetPanelClipWithSource(
-                        item,
-                        clipSource,
-                        &clipRect
-                    );
+                    bindingSlotPanels[index].SetBltSourceAndClipRect(clipSource, &clipRect);
                 }
 
-                ApplyHudFontStyleTextOnly(
-                    (HudUiPanel *)(item),
-                    listStyle
-                );
+                const HudFontStyle *const listStyle =
+                    HudUiZrdOwnerFontStyle(owner, listFontStyleRef);
+                if (listStyle != 0) {
+                    // Retail repeats the complete font pass inside the child loop.
+                    for (int fontIndex = 0; fontIndex < bindingSlotTotalCount; ++fontIndex) {
+                        bindingSlotPanels[fontIndex].SetFont(
+                            listStyle->fontName, listStyle->fontSize,
+                            listStyle->fontWeight, 0, 0, 0, 2
+                        );
+                        {
+                            HudUiPanel *const panel = &bindingSlotPanels[fontIndex];
+                            const unsigned int color = listStyle->textColor;
+                            panel->textColor0 = color;
+                            panel->textColor1 = color;
+                            panel->textDirty = 1;
+                        }
+                        {
+                            HudUiPanel *const panel = &bindingSlotPanels[fontIndex];
+                            panel->shadowEnabled = listStyle->shadowEnabled;
+                            panel->shadowOffsetX = 1;
+                            panel->shadowOffsetY = 1;
+                        }
+                    }
+                }
             }
         }
 
@@ -4543,19 +4595,21 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
     int totalCount,
     int visibleCount
 ) {
-    delete [] bindingSlotPanels;
+    if (bindingSlotPanels != 0) {
+        delete [] bindingSlotPanels;
+        bindingSlotPanels = 0;
+    }
     bindingSlotPanels = new HudUiListSelectorItem[totalCount];
     bindingSlotTotalCount = totalCount;
     visibleBindingSlotCount = visibleCount;
 
     {
         for (int index = 0; index < visibleBindingSlotCount; ++index) {
-            const int x = (int)((float)(originX) + visibleListOffsetX);
-            const int y = (int)((float)(originY +
-                                        (index - visibleBindingSlotCount) * bindingSlotSpacing) +
-                                visibleListOffsetY);
+            const int y = (int)((float)originY +
+                (index - visibleBindingSlotCount) * bindingSlotSpacing +
+                visibleListOffsetY);
             bindingSlotPanels[index].SetPos(
-                x,
+                (int)((float)originX + visibleListOffsetX),
                 y
             );
         }
@@ -4568,12 +4622,11 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
 
     {
         for (int index = visibleBindingSlotCount; index < bindingSlotTotalCount; ++index) {
-            const int x = (int)((float)(originX) + overflowListOffsetX);
-            const int y = (int)((float)(originY + (index - visibleBindingSlotCount + 1) *
-                                                                bindingSlotSpacing) +
-                                overflowListOffsetY);
+            const int y = (int)((float)originY +
+                (index - visibleBindingSlotCount + 1) * bindingSlotSpacing +
+                overflowListOffsetY);
             bindingSlotPanels[index].SetPos(
-                x,
+                (int)((float)originX + overflowListOffsetX),
                 y
             );
         }
@@ -4602,44 +4655,51 @@ void HudCmdBindButtonBase::SetSelectedEntry(
     int slotIndex;
     for (slotIndex = 0; slotIndex < visibleBindingSlotCount; ++slotIndex) {
         const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount;
-        if (entryIndex >= 0 && entryIndex < (int)bindingVec.size()) {
-            HudCmdBindingEntry **const entries = bindingVec.begin();
+        if (entryIndex >= 0 && entryIndex < bindingVec.size()) {
+            HudCmdBindingEntry *const entry = bindingVec[entryIndex];
             bindingSlotPanels[slotIndex].entryIndex = entryIndex;
             bindingSlotPanels[slotIndex].SetTextFmt(
                 "%s",
-                entries[entryIndex]->displayText
+                entry->displayText
             );
-            bindingSlotPanels[slotIndex].SetVisible(1);
+            HudUiElement *const panel = &bindingSlotPanels[slotIndex];
+            panel->SetVisible(1);
         } else {
-            bindingSlotPanels[slotIndex].SetVisible(0);
-            bindingSlotPanels[slotIndex].DrawBase();
+            {
+                HudUiElement *const panel = &bindingSlotPanels[slotIndex];
+                panel->SetVisible(0);
+            }
+            (bindingSlotPanels + slotIndex)->DrawBase();
         }
 
         bindingSlotPanels[slotIndex].Invalidate();
     }
 
-    if (selectedIndex >= 0 && selectedIndex < (int)bindingVec.size()) {
-        HudCmdBindingEntry **const entries = bindingVec.begin();
+    if (selectedIndex >= 0 && selectedIndex < bindingVec.size()) {
         bindPanel.entryIndex = selectedIndex;
         bindPanel.SetTextFmt(
             "%s",
-            entries[selectedIndex]->displayText
+            bindingVec[selectedIndex]->displayText
         );
     }
 
     for (slotIndex = visibleBindingSlotCount; slotIndex < bindingSlotTotalCount; ++slotIndex) {
         const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount + 1;
-        if (entryIndex >= 0 && entryIndex < (int)bindingVec.size()) {
-            HudCmdBindingEntry **const entries = bindingVec.begin();
+        if (entryIndex >= 0 && entryIndex < bindingVec.size()) {
+            HudCmdBindingEntry *const entry = bindingVec[entryIndex];
             bindingSlotPanels[slotIndex].entryIndex = entryIndex;
             bindingSlotPanels[slotIndex].SetTextFmt(
                 "%s",
-                entries[entryIndex]->displayText
+                entry->displayText
             );
-            bindingSlotPanels[slotIndex].SetVisible(1);
+            HudUiElement *const panel = &bindingSlotPanels[slotIndex];
+            panel->SetVisible(1);
         } else {
-            bindingSlotPanels[slotIndex].SetVisible(0);
-            bindingSlotPanels[slotIndex].DrawBase();
+            {
+                HudUiElement *const panel = &bindingSlotPanels[slotIndex];
+                panel->SetVisible(0);
+            }
+            (bindingSlotPanels + slotIndex)->DrawBase();
         }
 
         bindingSlotPanels[slotIndex].Invalidate();
@@ -5658,11 +5718,7 @@ void HudUiPanel::SetFont(
  */
 void HudUiPanel::RebuildTextRect() {
     if (strlen(textBuffer) == 0) {
-        memset(
-            &textRect,
-            0,
-            sizeof(HudUiRect)
-        );
+        textRect.left = textRect.top = textRect.right = textRect.bottom = 0;
         textHeightPx = 0;
         textWidthPx = 0;
         textDirty = 0;
@@ -5703,13 +5759,11 @@ void HudUiPanel::RebuildTextRect() {
             textRectRef.right += abs(shadowOffsetX);
         }
 
-        const int textWidth = textRectRef.right - textRectRef.left;
-        const int textHeight = textRectRef.bottom - textRectRef.top;
-        textWidthPx = textWidth;
-        textHeightPx = textHeight;
+        textWidthPx = textRectRef.right - textRectRef.left;
+        textHeightPx = textRectRef.bottom - textRectRef.top;
 
         if (textPick != 0) {
-            if (textWidth > textPick->width || textHeight > textPick->height) {
+            if (textWidthPx > textPick->width || textHeightPx > textPick->height) {
                 zVid_Image::Destroy(textPick);
                 textPick = zVid_Image::Create();
                 zVid_Image::SetFormatCode(
@@ -5718,11 +5772,11 @@ void HudUiPanel::RebuildTextRect() {
                 );
                 zVid_Image::SetSize(
                     textPick,
-                    (short)(textWidth),
-                    (short)(textHeight)
+                    (short)(textWidthPx),
+                    (short)(textHeightPx)
                 );
                 void *const pixels =
-                    malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidth * textHeight);
+                    malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
                 zVid_Image_SetPixels(
                     textPick,
                     pixels,
@@ -5738,11 +5792,11 @@ void HudUiPanel::RebuildTextRect() {
             );
             zVid_Image::SetSize(
                 textPick,
-                (short)(textWidth),
-                (short)(textHeight)
+                (short)(textWidthPx),
+                (short)(textHeightPx)
             );
             void *const pixels =
-                malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidth * textHeight);
+                malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
             zVid_Image_SetPixels(
                 textPick,
                 pixels,
@@ -5759,7 +5813,7 @@ void HudUiPanel::RebuildTextRect() {
                 clearBytes
             );
 
-            HDC drawDc = 0;
+            HDC drawDc;
             if (g_zVideo_pfnImageUploadPixelsToSurface(
                 textPick,
                 &drawDc
@@ -5837,7 +5891,7 @@ void HudUiPanel::RebuildTextRect() {
                 );
             }
 
-            TEXTMETRICA metrics = {0};
+            TEXTMETRICA metrics;
             if (GetTextMetricsA(
                 measureDc,
                 &metrics
@@ -6361,13 +6415,10 @@ HudUiCompositePanel::HudUiCompositePanel(
 void HudUiCompositePanel::Update(
     float deltaSeconds
 ) {
-    if ((flags & 0x10u) != 0) {
-        return;
-    }
-
-    for (unsigned int index = 0; index < entryVector.size(); ++index) {
-        HudUiTransitionTextPanel *const entry = &entryVector[index];
-        entry->Update(deltaSeconds);
+    if ((~flags & 0x10u) != 0) {
+        for (unsigned int index = 0; index < entryVector.size(); ++index) {
+            entryVector[index].Update(deltaSeconds);
+        }
     }
 }
 
@@ -6390,15 +6441,14 @@ void HudUiCompositePanel::SetPos(
     Invalidate();
 
     const int entryHeight = QueryTextHeight();
+    unsigned int index = 0;
     int yOffset = 0;
-    for (HudUiCompositePanelVector::iterator entry = entryVector.begin();
-        entry != entryVector.end();
-        ++entry) {
-        entry->SetPos(
+    for (; index < entryVector.size();
+         ++index, yOffset += entryHeight) {
+        entryVector[index].SetPos(
             GetCenterX(),
             GetCenterY() + yOffset
         );
-        yOffset += entryHeight;
     }
 }
 
@@ -6433,12 +6483,11 @@ void __cdecl HudUiCompositePanel::SetTextFmtV(
     const char *format,
     va_list args
 ) {
-    HudUiTransitionTextPanel *const entry =
-        &entryVector[activeEntryCount];
-    entry->SetTextFmtV(
+    entryVector[activeEntryCount].SetTextFmtV(
         format,
         args
     );
+    HudUiTransitionTextPanel *const entry = &entryVector[activeEntryCount];
     entry->SetVisible(1);
     ScrollHistory();
 }
@@ -6457,11 +6506,7 @@ void HudUiCompositePanel::ScrollHistory() {
             for (unsigned int index = 0;
                 index < (unsigned int)(entryVector.size()) - 1;
                 ++index) {
-                HudUiTransitionTextPanel *const current =
-                    &entryVector[index];
-                HudUiTransitionTextPanel *const next =
-                    &entryVector[index + 1];
-                current->SetText(next->GetLastTextPtr());
+                entryVector[index].SetText(entryVector[index + 1].GetLastTextPtr());
             }
         }
         --activeEntryCount;
@@ -6529,18 +6574,7 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
         {
             HudUiCompositePanelEntry templateEntry;
 
-            if (entryCount > oldCount) {
-                entryVector.insert(
-                    entryVector.end(),
-                    (unsigned int)(entryCount - oldCount),
-                    templateEntry
-                );
-            } else {
-                entryVector.erase(
-                    entryVector.begin() + entryCount,
-                    entryVector.end()
-                );
-            }
+            entryVector.resize((unsigned int)(entryCount), templateEntry);
         }
 
         ResizeEntryCount(
@@ -6580,20 +6614,20 @@ void HudUiCompositePanel::ResizeEntryCount(
 ) {
     if (oldCount > entryCount) {
         oldCount = entryCount;
-    }
-    if (oldCount < 0) {
+    } else if (oldCount < 0) {
         oldCount = 0;
     }
 
-    const int vectorCount = (int)(entryVector.size());
-    if (entryCount > vectorCount) {
-        entryCount = vectorCount;
+    if ((unsigned int)(entryCount) > entryVector.size()) {
+        entryCount = (int)(entryVector.size());
+    } else if (oldCount > entryCount) {
+        entryCount = oldCount;
     }
 
     {
         for (int index = oldCount; index < entryCount; ++index) {
+            entryVector[index].SetTextFmt("");
             HudUiTransitionTextPanel *const entry = &entryVector[index];
-            entry->SetTextFmt("");
             entry->SetVisible(0);
         }
     }

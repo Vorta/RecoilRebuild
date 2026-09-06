@@ -144,9 +144,6 @@ struct NetSessionConfigDialog : CDialog {
     virtual void DoDataExchange(CDataExchange *dataExchange);
     void OnDestroy();
     void OnMapChanged();
-    static void __cdecl InitMapNameStrings();
-    static void __cdecl RegisterMapNameCleanup();
-    static void __cdecl CleanupMapNameStringsOnExit();
 };
 RECOIL_STATIC_ASSERT(sizeof(NetSessionConfigDialog) == 0x17c);
 RECOIL_STATIC_ASSERT(
@@ -216,7 +213,7 @@ RECOIL_STATIC_ASSERT(
     ) == 0x178
 );
 
-extern CString *g_NetSessionConfigDialog_MapNameStrings;
+extern CString g_NetSessionConfigDialog_MapNameStrings[7];
 
 extern "C" int g_NetUiTcpIpProviderWarningShown;
 

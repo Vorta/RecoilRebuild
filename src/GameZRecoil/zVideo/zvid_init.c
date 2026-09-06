@@ -660,8 +660,19 @@ char *__fastcall GetHwApiDriverName(
 
 namespace zVid {
 /**
- * Original file evidence: BN comment identifies this as the public zVid thunk
- * in GameZRecoil/zVideo_dd.cpp, tail-jumping to the zvid_dd.c cached accessor.
+ * @recoil-anchor recoil:anchor:zvid.accepted-hardware-renderer-count
+ * @recoil-artifact defines .text recoil:function:0x4a7470: Public renderer-count accessor.
+ * Purpose: expose the backend's accepted renderer count through the video API.
+ * Retail callers use this entry, which tail-calls the distinct cached getter.
+ * The descriptive spelling follows the existing API family; it is not recovered
+ * original spelling. Neighboring API order supports this implementation placement.
+ */
+int __cdecl GetAcceptedHardwareRendererCount() {
+    return GetAcceptedHardwareRendererCount_Cached();
+}
+
+/**
+ * Retail 0x4a7480 tail-calls the distinct cached DirectDraw count at 0x4a9900.
  * Purpose: return the accepted DirectDraw hardware API device count.
  */
 int __cdecl GetAcceptedDirectDrawDeviceCount() {

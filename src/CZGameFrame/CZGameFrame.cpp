@@ -130,12 +130,8 @@ int CZGameFrame::IsWindowValid(
  *
  * Purpose: construct the fixed Zipper Interactive title used by the game frame.
  */
-CString * CZGameFrame::BuildWindowTitle(
-    CString *outTitle
-) {
-    volatile int constructedTitleState = 0;
-    outTitle->CString::CString("Zipper Interactive");
-    return outTitle;
+CString CZGameFrame::BuildWindowTitle() {
+    return CString("Zipper Interactive");
 }
 
 /**

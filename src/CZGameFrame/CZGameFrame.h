@@ -31,7 +31,7 @@ struct CZGameFrame : CFrameWnd {
     CZGameFrame(const char *appId = g_CZGameFrame_DefaultAppId);
     ~CZGameFrame();
     virtual int IsWindowValid(CWnd *pWnd) const;
-    virtual CString * BuildWindowTitle(CString *outTitle);
+    virtual CString BuildWindowTitle();
     int OnCreate(CREATESTRUCTA *createStruct);
     void OnClose();
     void OnPaint();

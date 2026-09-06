@@ -7,21 +7,27 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <list>
 
 struct zArchiveList;
 struct zClass_NodePartial;
 struct zDiPartial;
 
+/**
+ * Retail polygon handlers count vertices at +0x28 and UVs at +0xa4;
+ * ModelPolygonEnd stores its resolved material pointer at +0x1c4.
+ * Purpose: Hold the material and indexed geometry while building a polygon.
+ */
 struct zInterp_RuntimeBlob {
     zModel_MaterialPartial material;
-    zModel_MaterialPartial *polygonMaterial;
-    zVec3 polygonPoints[10];
     int pointCount;
+    zVec3 polygonPoints[10];
+    int uvCount;
     zClipUV uvPairs[10];
     zVec3 *normalsA;
     zVec3 normalsB[10];
     zClipUV secondaryUvPairs[10];
-    int uvCount;
+    zModel_MaterialPartial *polygonMaterial;
     unsigned int drawFlags;
     int flagBit8;
     union {
@@ -43,6 +49,17 @@ struct zInterp_PreparedScriptEntry {
     long fileOffset;
 };
 
+/**
+ * Retail clears the stored header as one eight-byte record at context +0x84
+ * and reads the same record from the prepared-index stream.
+ * Purpose: Describe the prepared script index's magic and format version.
+ */
+struct zInterp_PreparedScriptHeader {
+    int magic;
+    int version;
+};
+RECOIL_STATIC_ASSERT(sizeof(zInterp_PreparedScriptHeader) == 8);
+
 struct zInterp_MacroEntry {
     char *name;
     char *value;
@@ -60,11 +77,8 @@ struct zInterp_VarEntry {
     zInterp_VarValuePtr valuePtr;
 };
 
-struct zInterp_LinkNode {
-    zInterp_LinkNode *next;
-    zInterp_LinkNode *prev;
-    void *payload;
-};
+typedef std::list<zClass_NodePartial *> zInterp_ScrollAlwaysList;
+RECOIL_STATIC_ASSERT(sizeof(zInterp_ScrollAlwaysList) == 0x0c);
 
 struct zInterp_Context;
 
@@ -72,7 +86,7 @@ extern int g_zInterp_EnablePreparedScripts;
 extern int g_zInterp_VerboseLevel;
 extern char g_zInterp_LineBuffer[1024];
 extern char g_zInterp_AssignToken_Equal;
-extern int g_zInterp_Object3DCommandIntScratch;
+extern zDiPartial *g_zInterp_Object3DCommandDi;
 extern zDiPartial *g_zInterp_CurrentCycleTextureDi;
 extern unsigned int g_zInterp_NodeUserDataScratch;
 extern char *g_zInterp_PreparedIndexFileName;
@@ -104,8 +118,7 @@ struct zInterp_Context {
     char *preparedIndexFileName;
     zArchiveList *archiveSearchList;
     FILE *preparedIndexStream;
-    int preparedIndexMagic;
-    int preparedIndexVersion;
+    zInterp_PreparedScriptHeader preparedIndexHeader;
     int *preparedEntryCount;
     zInterp_PreparedScriptEntry *preparedEntryTable;
     int hasPreparedInput;
@@ -115,10 +128,13 @@ struct zInterp_Context {
     zInterp_RuntimeBlob *runtimeBlob;
     void **ptrArrayHead;
     int ptrArrayCount;
-    char searchPathLeadChar;
-    unsigned char unknown_b1[3];
-    zInterp_LinkNode *scrollAlwaysListHead;
-    int scrollAlwaysListCount;
+    /**
+     * Retail construction, erase, insertion and traversal use VC5's allocator,
+     * sentinel and count layout at 0xb0..0xbb. The leading byte is allocator
+     * storage, not a character read from the search path.
+     * Purpose: Own the nodes whose textures scroll on every driver tick.
+     */
+    zInterp_ScrollAlwaysList scrollAlwaysList;
     zClass_NodePartial *scrollAlwaysDriverNode;
     int includeDepth;
     int conditionalDepth;
@@ -147,12 +163,12 @@ struct zInterp_Context {
     );
     void ClearMacroTable();
     void ClearVarTable();
-    zInterp_Context * Constructor(
-        const char *searchPathText,
-        const char *preparedIndexPath
+    zInterp_Context(
+        const char *preparedIndexPath,
+        const char *searchPathText
     );
     void Destroy();
-    void Destructor();
+    ~zInterp_Context();
     int EvalConditionExpr();
     char * ExpandMacroRefs(char *lineBuf);
     char * NextToken();
@@ -167,7 +183,7 @@ struct zInterp_Context {
     );
     int CommandEquals(const char *other);
     char * GetCurrentCommand();
-    int ValidateArgsAndNodeType(
+    bool ValidateArgsAndNodeType(
         int expectedArgCount,
         int expectedClassType,
         zClass_NodePartial *node
@@ -199,12 +215,12 @@ struct zInterp_Context {
         zClass_NodePartial *node,
         int indent
     );
-    static int __stdcall DefaultDispatchHook(zClass_NodePartial *node);
-    int RegisterScrollAlwaysNode(
+    bool DefaultDispatchHook(zClass_NodePartial *node);
+    bool RegisterScrollAlwaysNode(
         zClass_NodePartial *node,
-        float textureWorldPerMeter,
-        int textureWorldAxis,
-        int installDriverCallback
+        float scrollRateU,
+        float scrollRateV,
+        bool installDriverCallback
     );
 };
 
@@ -214,11 +230,10 @@ struct zInterp_GlobalContext : zInterp_Context {
     /**
      * Original helper evidence: no standalone authored retail function; the
      * VC5 ordinary-global probe emits this inline destructor only as the
-     * generated CRT teardown call to zInterp_Context::Destructor.
+     * generated CRT teardown call to zInterp_Context::~zInterp_Context.
      * Purpose: release the process-wide interpreter during ordinary C++ shutdown.
      */
     ~zInterp_GlobalContext() {
-        zInterp_Context::Destructor();
     }
 
     virtual int DispatchHook(char *commandToken);
@@ -309,25 +324,6 @@ RECOIL_STATIC_ASSERT(
         valuePtr
     ) == 0x08
 );
-RECOIL_STATIC_ASSERT(sizeof(zInterp_LinkNode) == 0x0c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInterp_LinkNode,
-        next
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInterp_LinkNode,
-        prev
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInterp_LinkNode,
-        payload
-    ) == 0x08
-);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInterp_RuntimeBlob,
@@ -337,7 +333,7 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInterp_RuntimeBlob,
-        polygonMaterial
+        pointCount
     ) == 0x28
 );
 RECOIL_STATIC_ASSERT(
@@ -349,7 +345,7 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInterp_RuntimeBlob,
-        pointCount
+        uvCount
     ) == 0xa4
 );
 RECOIL_STATIC_ASSERT(
@@ -379,7 +375,7 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInterp_RuntimeBlob,
-        uvCount
+        polygonMaterial
     ) == 0x1c4
 );
 RECOIL_STATIC_ASSERT(
@@ -506,14 +502,8 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInterp_Context,
-        preparedIndexMagic
+        preparedIndexHeader
     ) == 0x84
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInterp_Context,
-        preparedIndexVersion
-    ) == 0x88
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -572,20 +562,8 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInterp_Context,
-        searchPathLeadChar
+        scrollAlwaysList
     ) == 0xb0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInterp_Context,
-        scrollAlwaysListHead
-    ) == 0xb4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInterp_Context,
-        scrollAlwaysListCount
-    ) == 0xb8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(

@@ -90,6 +90,17 @@ struct zVideoFxPass3Config : HudUiContainer {
 
     zVideoFxPass3Config();
     ~zVideoFxPass3Config();
+    void UpdateLocal(float deltaTime);
+    void SetPrimaryElementParamsLocal(unsigned short packedColor, double primaryAlpha);
+    void QueueElementLocal(
+        int rectLeftPixels,
+        int rectTopPixels,
+        int currentRadiusPixels,
+        int maxRadiusPixels,
+        int extentPixels,
+        float sinFreq,
+        float sinPhase
+    );
     void SetInputRectByIndex(
         int index,
         HudUiRect *rectOrNull

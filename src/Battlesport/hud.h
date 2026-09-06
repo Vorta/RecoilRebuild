@@ -227,15 +227,16 @@ struct HudUiConfirmQuitCancelButton : HudUiZrdWidget {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-background-confirm-quit.type
  * @recoil-artifact emits .text recoil:function:0x415790: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * @recoil-artifact emits .text recoil:function:0x4157b0: VC5-generated implicit HudUiBackgroundConfirmQuit destructor.
  * Purpose: Defines the confirmation background whose ordinary virtual lifetime
- * causes VC5 to emit the deleting-destructor contribution.
+ * destroys the cancel and OK members followed by the background base and emits
+ * the deleting variant. Retail has no derived destructor-body table write.
  */
 struct HudUiBackgroundConfirmQuit : HudUiBackground {
     HudUiConfirmQuitOkButton okButton;
     HudUiConfirmQuitCancelButton cancelButton;
 
-    HudUiBackgroundConfirmQuit * Constructor();
-    void Destructor();
+    HudUiBackgroundConfirmQuit();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundConfirmQuit) == 0xabe4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiConfirmQuitCancelButton) == 0x14c);

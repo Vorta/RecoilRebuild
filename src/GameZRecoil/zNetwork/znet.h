@@ -2,7 +2,10 @@
 
 #include "recoil/recoil_types.h"
 #include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 #include <list>
+#include <vector>
 
 #include <dplay.h>
 
@@ -172,6 +175,27 @@ struct zNetworkDPlayServiceProviderInfo {
     char *displayName;
     void *connectionData;
     int providerFlags;
+
+    zNetworkDPlayServiceProviderInfo() {}
+
+    /**
+     * Purpose: Own copies of the enumerated DirectPlay provider information.
+     * Retail 0x48b3a0 inlines this construction inside a guarded new expression.
+     */
+    zNetworkDPlayServiceProviderInfo(
+        const GUID *serviceProviderGuid,
+        void *connectionData,
+        DWORD connectionDataSize,
+        const zNetworkDPlayName *providerName,
+        DWORD providerFlags
+    ) {
+        this->serviceProviderGuid = *serviceProviderGuid;
+        displayName = _strdup(providerName->lpszShortNameA);
+        this->connectionData = calloc(connectionDataSize, 1);
+        memcpy(this->connectionData, connectionData, connectionDataSize);
+        this->providerFlags = (int)providerFlags;
+    }
+
     ~zNetworkDPlayServiceProviderInfo();
 };
 
@@ -195,31 +219,11 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(zNetworkDPlayServiceProviderInfo) == 0x1c);
 
-struct zNetworkServiceProviderListVec {
-    int flags;
-    zNetworkDPlayServiceProviderInfo **begin;
-    zNetworkDPlayServiceProviderInfo **end;
-    zNetworkDPlayServiceProviderInfo **cap;
-};
-
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetworkServiceProviderListVec,
-        begin
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetworkServiceProviderListVec,
-        end
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetworkServiceProviderListVec,
-        cap
-    ) == 0x0c
-);
+/**
+ * Purpose: Own the enumerated DirectPlay provider pointer range. Retail uses
+ * VC5 vector allocator construction, insertion helpers, and native cleanup.
+ */
+typedef std::vector<zNetworkDPlayServiceProviderInfo *> zNetworkServiceProviderListVec;
 RECOIL_STATIC_ASSERT(sizeof(zNetworkServiceProviderListVec) == 0x10);
 
 struct zNetworkPlayerRecordListNode {
@@ -319,13 +323,6 @@ int __fastcall zNetwork_ApplyStatusFieldsToSessionDesc(
     zNetworkSessionDescStatusFields *statusFields
 );
 }
-
-#define g_zNetwork_DispatchHandlerListFlags \
-    (g_zNetwork_DispatchHandlerList.allocatorProxy.value)
-#define g_zNetwork_DispatchHandlerListSentinel \
-    (g_zNetwork_DispatchHandlerList.sentinel)
-#define g_zNetwork_DispatchHandlerListCount \
-    (g_zNetwork_DispatchHandlerList.count)
 
 namespace zNetwork_DPlay {
 int __cdecl RefreshServiceProviderList();

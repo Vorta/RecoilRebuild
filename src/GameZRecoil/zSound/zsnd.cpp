@@ -42,11 +42,11 @@ zSndWaveData::zSndWaveData(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-zsndwavedata-destructor
- * @recoil-artifact defines .text recoil:function:0x4a5440: zSndWaveData::Destructor.
+ * @recoil-artifact defines .text recoil:function:0x4a5440: zSndWaveData::~zSndWaveData.
  *
  * Purpose: reset parsed WAV state and release the duplicated path string.
  */
-void zSndWaveData::Destructor() {
+zSndWaveData::~zSndWaveData() {
     Reset();
     if (nameOrPath != 0) {
         free(nameOrPath);

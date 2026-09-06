@@ -267,6 +267,18 @@ const AFX_MSGMAP * RecoilApp::GetMessageMap() const {
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.application-singleton
+ * @recoil-artifact defines .data recoil:data:0x4f3ca8: Process-wide application object.
+ * @recoil-artifact emits .text recoil:function:0x42de20: VC5 startup coordinator.
+ * @recoil-artifact emits .text recoil:function:0x42de30: VC5 application initialization.
+ * @recoil-artifact emits .text recoil:function:0x42de40: VC5 atexit registration.
+ * @recoil-artifact emits .text recoil:function:0x42de50: VC5 application cleanup.
+ * Purpose: Own the concrete application and its normal process lifetime.
+ * Retail CRT slot 0x4da080 references the compiler-generated coordinator.
+ */
+RecoilApp g_RecoilApp;
+
+/**
  * Purpose: destroy embedded app states before the MFC/OLE module base.
  */
 RecoilApp::~RecoilApp() {
@@ -2159,20 +2171,6 @@ inline void UpdateCmdUiFromState(
     }
 }
 
-/**
- * Evidence: CZRecoilFrame constructor menu-pruning calls inline this helper;
- * no standalone retail function is emitted.
- * Purpose: fetch a submenu handle for command removal while matching MFC use.
- */
-inline HMENU SubMenuHandleOrNull(
-    HMENU menu,
-    int position
-) {
-    return CMenu::FromHandle(GetSubMenu(
-        menu,
-        position
-    ))->m_hMenu;
-}
 } // namespace
 
 /**
@@ -2194,27 +2192,20 @@ IMPLEMENT_DYNCREATE(CZRecoilFrame, CZGameFrame)
  * launch options, renderer menu state, and Westwood Online availability.
  */
 CZRecoilFrame::CZRecoilFrame() : CZGameFrame(g_CZRecoilFrame_LogBaseName) {
-    unsigned long
-        titleStorage[(sizeof(CString) + sizeof(unsigned long) - 1) / sizeof(unsigned long)];
-    CString *title = (CString *)(titleStorage);
-    BuildWindowTitle(title);
-    const int windowHeight = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYMENU) +
-                             (GetSystemMetrics(SM_CYFRAME) << 1) + 0x1e0;
-    const int windowWidth = (GetSystemMetrics(SM_CXFRAME) << 1) + 0x280;
-    ((CWnd *)(this))->CreateEx(
+    CreateEx(
         0x20000,
         kRecoilWndClassName,
-        (const char *)(*title),
+        BuildWindowTitle(),
         kMainWindowStyle,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
-        windowWidth,
-        windowHeight,
+        (GetSystemMetrics(SM_CXFRAME) << 1) + 0x280,
+        GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYMENU) +
+            (GetSystemMetrics(SM_CYFRAME) << 1) + 0x1e0,
         0,
         0,
         0
     );
-    title->~CString();
 
     m_cmdlineFlag = 1;
     m_campaignsOnlyMode = 0;
@@ -2254,41 +2245,25 @@ CZRecoilFrame::CZRecoilFrame() : CZGameFrame(g_CZRecoilFrame_LogBaseName) {
         ),
         g_CZRecoilFrame_MainMenuResourceName
     ));
-    ::SetMenu(
-        m_hWnd,
-        m_mainMenu.m_hMenu
-    );
+    SetMenu(&m_mainMenu);
 
     if (m_campaignsOnlyMode != 0) {
-        RemoveMenu(
-            SubMenuHandleOrNull(
-                m_mainMenu.m_hMenu,
-                1
-            ),
+        m_mainMenu.GetSubMenu(1)->RemoveMenu(
             0x9c6b,
             MF_BYCOMMAND
         );
-        RemoveMenu(
-            SubMenuHandleOrNull(
-                m_mainMenu.m_hMenu,
-                1
-            ),
+        m_mainMenu.GetSubMenu(1)->RemoveMenu(
             0x9c7b,
             MF_BYCOMMAND
         );
     } else {
-        RemoveMenu(
-            m_mainMenu.m_hMenu,
+        m_mainMenu.RemoveMenu(
             1,
             MF_BYPOSITION
         );
     }
 
-    RemoveMenu(
-        SubMenuHandleOrNull(
-            m_mainMenu.m_hMenu,
-            2
-        ),
+    m_mainMenu.GetSubMenu(2)->RemoveMenu(
         kFullscreenMenuCommandId,
         MF_BYCOMMAND
     );
@@ -2296,21 +2271,9 @@ CZRecoilFrame::CZRecoilFrame() : CZGameFrame(g_CZRecoilFrame_LogBaseName) {
     g_RecoilApp_hInstance = (HINSTANCE)((unsigned int)(g_RecoilApp.m_hInstance));
     g_RecoilApp_hWndMain = m_hWnd;
 
-    unsigned long formattedTitleStorage
-        [(sizeof(CString) + sizeof(unsigned long) - 1) / sizeof(unsigned long)];
-    CString *formattedTitle = (CString *)(formattedTitleStorage);
-    new (formattedTitle) CString();
-    unsigned long
-        titleCopyStorage[(sizeof(CString) + sizeof(unsigned long) - 1) / sizeof(unsigned long)];
-    CString *titleCopy = (CString *)(titleCopyStorage);
-    BuildWindowTitle(titleCopy);
-    formattedTitle->Format(
-        "%s",
-        (const char *)(*titleCopy)
-    );
-    titleCopy->~CString();
-    ((CWnd *)(this))->SetWindowTextA((const char *)(*formattedTitle));
-    formattedTitle->~CString();
+    CString formattedTitle;
+    formattedTitle.Format("%s", (const char *)BuildWindowTitle());
+    SetWindowTextA(formattedTitle);
 
     m_openZbdFilePath[0] = 0;
     m_useArchiveBanks = 1;
@@ -2331,7 +2294,7 @@ CZRecoilFrame::CZRecoilFrame() : CZGameFrame(g_CZRecoilFrame_LogBaseName) {
 
     g_HudSensorTracker.missionFlags = m_useArchiveBanks;
     zSnd::SetUseArchiveBanksFlag(m_useArchiveBanks);
-    m_acceptedD3DDeviceCount = zVid::GetAcceptedHardwareRendererCount_Cached();
+    m_acceptedD3DDeviceCount = zVid::GetAcceptedHardwareRendererCount();
 
     HKEY wolApiRegKey = 0;
     if (RegOpenKeyExA(
@@ -2469,17 +2432,12 @@ END_MESSAGE_MAP()
  *
  * Purpose: build the Recoil window title, including the 3Dfx renderer suffix.
  */
-CString * CZRecoilFrame::BuildWindowTitle(
-    CString *outTitle
-) {
-    volatile int constructedTitleState = 0;
+CString CZRecoilFrame::BuildWindowTitle() {
     if (g_zVideo_ActiveRendererPath == kRendererBackend3dfx) {
-        outTitle->CString::CString(g_RecoilApp_WindowTitle3Dfx);
-        return outTitle;
+        return CString(g_RecoilApp_WindowTitle3Dfx);
     }
 
-    outTitle->CString::CString(g_RecoilApp_WindowTitle);
-    return outTitle;
+    return CString(g_RecoilApp_WindowTitle);
 }
 
 /**
@@ -3729,7 +3687,7 @@ namespace Net {
  * the local player.
  */
 void __cdecl InitFromZrd() {
-    zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         if (playerState->lifecycleState == 2) {
@@ -4547,14 +4505,21 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
         return 0;
     }
 
-    zVec3 projectedPoint = {0};
+    zVec3 projectedPoint;
     const int clipped = zMath::ProjectPointAndClampToScreenClip(
         &labelWorldPos,
         &projectedPoint
     );
-    const float replicateScale = zOpt::GetReplicateMode() != 0 ? 2.0f : 1.0f;
-    const int screenX = (int)(projectedPoint.x * replicateScale);
-    const int screenY = (int)(projectedPoint.y * replicateScale) - 10;
+    int screenX;
+    int screenY;
+    if (zOpt::GetReplicateMode() != 0) {
+        screenX = (int)(projectedPoint.x * 2.0f);
+        screenY = (int)(projectedPoint.y * 2.0f);
+    } else {
+        screenX = (int)projectedPoint.x;
+        screenY = (int)projectedPoint.y;
+    }
+    screenY -= 10;
 
     if (screenY <= hudWidget->QueryTextHeight() + 26) {
         hudWidget->SetVisible(0);
@@ -6105,8 +6070,6 @@ namespace GameNet {
 typedef void (__cdecl *GameNetCrtInitializerFn)();
 /* VC5 emits these GameNet.cpp startup callbacks as direct .CRT$XCU rows. */
 #pragma data_seg(".CRT$XCU")
-GameNetCrtInitializerFn s_GameNetCrtInit_RegisterMultiplayerMaps =
-    Mission::RegisterMultiplayerMaps;
 GameNetCrtInitializerFn s_GameNetCrtInit_SpawnPointListInitGlobals =
     GameNetSpawnPointList::InitGlobals;
 GameNetCrtInitializerFn s_GameNetCrtInit_PlayerRowListReset =
@@ -6299,17 +6262,6 @@ inline int SaveLoadEntryCount(
 
 /**
  *
- * Purpose: stores the process-wide Recoil application object and embedded states.
- * The explicit aligned storage preserves the original global symbol while the
- * CRT row below constructs and destroys the typed app object without VC5
- * emitting automatic global-constructor thunks for this definition.
- */
-#undef g_RecoilApp
-RecoilAppStorage g_RecoilApp = {0};
-#define g_RecoilApp \
-    (*(RecoilApp *)&g_RecoilApp)
-/**
- *
  * Purpose: stores the zero-initialized singleton save/load app-state
  * transition object; retail evidence models this as the complete 0x1c-byte
  * owner data object for RecoilStateSaveLoadTransition. Explicit storage keeps
@@ -6321,31 +6273,9 @@ RecoilStateSaveLoadTransitionStorage g_RecoilStateSaveLoadTransition = {0};
 #define g_RecoilStateSaveLoadTransition \
     (*(RecoilStateSaveLoadTransition *)&g_RecoilStateSaveLoadTransition)
 
-/**
- * Original static-lifetime helper with no standalone authored retail symbol.
- * Purpose: destroy the explicitly stored process-wide Recoil application object
- * from the CRT at-exit list.
- */
-static inline void __cdecl RecoilApp_AtExitDestructor() {
-    g_RecoilApp.~RecoilApp();
-}
-
-/**
- * Evidence: this process-lifetime construction helper has no standalone authored retail symbol.
- * Purpose: construct the explicitly stored process-wide Recoil application
- * object and register its at-exit destructor without typed global storage.
- */
-static inline void __cdecl RecoilApp_StaticInitAndRegisterAtExit() {
-    new (&g_RecoilApp) RecoilApp;
-    atexit(RecoilApp_AtExitDestructor);
-}
-
 #if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *RecoilAppCrtInitializerFn)();
 typedef void (__cdecl *RecoilStateSaveLoadTransitionCrtInitializerFn)();
 #pragma data_seg(".CRT$XCU")
-static RecoilAppCrtInitializerFn s_RecoilAppCrtInit =
-    RecoilApp_StaticInitAndRegisterAtExit;
 static RecoilStateSaveLoadTransitionCrtInitializerFn s_RecoilStateSaveLoadTransitionCrtInit =
     RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit;
 #pragma data_seg()
@@ -7395,77 +7325,72 @@ int RecoilApp_MfcOleModule::Run() {
 
             RecoilApp_IState *const currentState = app->GetCurrentState();
 
-            if (!m_stateQueue.Empty()) {
-                RecoilApp_StateQueueItem *const item = m_stateQueue.Front();
-                RecoilApp_IState *const queuedState = item->m_stateObj;
+            if (m_skipWait != 0) {
+                if (!m_stateQueue.Empty()) {
+                    RecoilApp_StateQueueItem *const item = m_stateQueue.Front();
 
-                switch (item->m_kind) {
-                  case RecoilApp_StateQueueKind_SwitchCurrent:
-                    if (queuedState != 0) {
-                        if (currentState != 0) {
-                            currentState->OnDeactivate();
-                        }
+                    switch (item->m_kind) {
+                      case RecoilApp_StateQueueKind_SwitchCurrent:
+                        if (item->m_stateObj != 0) {
+                            if (currentState != 0) {
+                                currentState->OnDeactivate();
+                            }
 
-                        if (m_currentStateIndex < 0) {
-                            m_currentStateIndex = 0;
-                        }
-                        if (m_currentStateIndex >= 16) {
-                            m_currentStateIndex = 15;
-                        }
-
-                        if (queuedState->OnTryBecomeCurrent() != 0) {
-                            m_stateStack[m_currentStateIndex] = queuedState;
-                        } else if (currentState != 0) {
-                            currentState->OnTryBecomeCurrent();
-                        }
-                    }
-                    break;
-
-                  case RecoilApp_StateQueueKind_PushState:
-                    if (queuedState != 0) {
-                        if (m_stateStack[m_currentStateIndex] != 0) {
-                            m_stateStack[m_currentStateIndex]->OnSuspend(item->m_param);
-                        }
-
-                        if (queuedState->OnTryBecomeCurrent() != 0) {
-                            ++m_currentStateIndex;
+                            if (m_currentStateIndex < 0) {
+                                m_currentStateIndex = 0;
+                            }
                             if (m_currentStateIndex >= 16) {
                                 m_currentStateIndex = 15;
                             }
 
-                            m_stateStack[m_currentStateIndex] = queuedState;
+                            if (item->m_stateObj->OnTryBecomeCurrent() != 0) {
+                                m_stateStack[m_currentStateIndex] = item->m_stateObj;
+                            } else if (currentState != 0) {
+                                currentState->OnTryBecomeCurrent();
+                            }
                         }
-                    }
-                    break;
+                        break;
 
-                  case RecoilApp_StateQueueKind_ExitCurrent:
-                    if (currentState != 0) {
-                        currentState->OnDeactivate();
-                    }
+                      case RecoilApp_StateQueueKind_PushState:
+                        if (item->m_stateObj != 0) {
+                            m_stateStack[m_currentStateIndex]->OnSuspend(item->m_param);
 
-                    m_stateStack[m_currentStateIndex] = 0;
-                    --m_currentStateIndex;
-                    if (m_currentStateIndex < 0) {
-                        m_currentStateIndex = 0;
-                    }
+                            if (item->m_stateObj->OnTryBecomeCurrent() != 0) {
+                                ++m_currentStateIndex;
+                                if (m_currentStateIndex >= 16) {
+                                    m_currentStateIndex = 15;
+                                }
 
-                    if (m_stateStack[m_currentStateIndex] != 0) {
+                                m_stateStack[m_currentStateIndex] = item->m_stateObj;
+                            }
+                        }
+                        break;
+
+                      case RecoilApp_StateQueueKind_ExitCurrent:
+                        if (currentState != 0) {
+                            currentState->OnDeactivate();
+                        }
+
+                        m_stateStack[m_currentStateIndex] = 0;
+                        --m_currentStateIndex;
+                        if (m_currentStateIndex < 0) {
+                            m_currentStateIndex = 0;
+                        }
+
                         m_stateStack[m_currentStateIndex]->OnResume(item->m_param);
+                        break;
                     }
-                    break;
+
+                    m_stateQueue.PopFront();
+                    delete item;
+                    continue;
                 }
 
-                m_stateQueue.PopFront();
-                delete item;
-                continue;
-            }
-
-            if (currentState != 0 && currentState->OnUpdateShouldQuit() != 0) {
-                app->OnAppDeactivate();
-                PostQuitMessage(0);
-            }
-
-            if (m_skipWait == 0) {
+                if (currentState != 0 && currentState->OnUpdateShouldQuit() != 0) {
+                    app->OnAppDeactivate();
+                    PostQuitMessage(0);
+                }
+            } else {
                 if (PeekMessageA(
                     &m_msgCur,
                     0,

@@ -44,54 +44,13 @@
 #include <sys/stat.h>
 
 
-namespace {
-/**
- * Recovered original inline/static helper with no standalone retail function.
- * Observed in text-stack constructors 0x4bd020 and 0x4bd2d0 after each
- * HudUiPanel row is constructed.
- * Purpose: attach and initialize one message-stack row with the recovered
- * panel font, shadow, alignment, position, and hidden state.
- */
-inline void ConfigureTextStackLine(
-    HudUiTextStack4 *stack,
-    HudUiPanel *panel,
-    int y,
-    int fontSize,
-    int fontWeight,
-    int fontWidth
-) {
-    HudUiElement *const element = (HudUiElement *)(panel);
-    stack->AddChild(element);
-    panel->SetFont(
-        g_HudFontName_Arial,
-        fontSize,
-        fontWeight,
-        fontWidth,
-        0,
-        0,
-        2
-    );
-    panel->shadowEnabled = 1;
-    panel->shadowOffsetX = -1;
-    panel->shadowOffsetY = -1;
-    panel->alignMode = 1;
-    element->SetPos(
-        0x140,
-        y
-    );
-    element->SetVisible(0);
-}
-
-} // namespace
-
-
 /**
  * Purpose: assign the existing panel and its seven flash-state fields without
  * changing its dynamic type. Retail 0x4bc3a0 uses the panel assignment body;
  * the separate range loop at 0x4bc320 is the provider's std::copy expansion.
  */
-HudUiCompositePanelEntry &HudUiCompositePanelEntry::operator=(
-    const HudUiCompositePanelEntry &source
+HudUiTransitionTextPanel &HudUiTransitionTextPanel::operator=(
+    const HudUiTransitionTextPanel &source
 ) {
     HudUiPanel::operator=(source);
     flashCountdown = source.flashCountdown;
@@ -106,12 +65,19 @@ HudUiCompositePanelEntry &HudUiCompositePanelEntry::operator=(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicompositepanelentry-copy-constructor
- * @recoil-artifact defines .text recoil:function:0x4bc410: HudUiCompositePanelEntry::HudUiCompositePanelEntry(const HudUiCompositePanelEntry &).
+ * @recoil-artifact defines .text recoil:function:0x4bc410: HudUiTransitionTextPanel::HudUiTransitionTextPanel(const HudUiTransitionTextPanel &).
  * Purpose: copy-construct one composite-panel entry from another entry.
  */
-HudUiCompositePanelEntry::HudUiCompositePanelEntry(
-    const HudUiCompositePanelEntry &source
-) : HudUiTransitionTextPanel(source) {
+HudUiTransitionTextPanel::HudUiTransitionTextPanel(
+    const HudUiTransitionTextPanel &source
+) : HudUiPanel(source),
+    flashCountdown(source.flashCountdown),
+    flashResetValue(source.flashResetValue),
+    flashAltColor0(source.flashAltColor0),
+    flashAltColor1(source.flashAltColor1),
+    flashEnabled(source.flashEnabled),
+    flashMode(source.flashMode),
+    flashDirectionSign(source.flashDirectionSign) {
 }
 
 /**
@@ -966,28 +932,24 @@ void HudUiBar::Draw() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitopmessagestack-constructor
- * @recoil-artifact defines .text recoil:function:0x4bd020: HudUiTopMessageStack::Constructor.
+ * @recoil-artifact defines .text recoil:function:0x4bd020: HudUiTopMessageStack::HudUiTopMessageStack.
  * Purpose: construct the top-message four-line stack and configure ascending rows.
+ * Retail constructs the container and panel array in this body, before the
+ * derived table write and row loop; there is no second constructor wrapper.
  */
-HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
-    new (this) HudUiTopMessageStack;
-
-    int y = 0x1e;
-    {
-        for (int index = 0; index < 4; ++index) {
-            ConfigureTextStackLine(
-                this,
-                &lines[index],
-                y,
-                0x0d,
-                0x258,
-                7
-            );
-            y += 0x12;
-        }
+HudUiTopMessageStack::HudUiTopMessageStack() {
+    HudUiPanel *panel = lines;
+    for (int y = 0x1e; y < 0x66; y += 0x12, ++panel) {
+        HudUiElement *const element = (HudUiElement *)(panel);
+        AddChild(element);
+        panel->SetFont(g_HudFontName_Arial, 0x0d, 0x258, 7, 0, 0, 2);
+        panel->shadowOffsetX = -1;
+        panel->shadowEnabled = 1;
+        panel->shadowOffsetY = -1;
+        panel->alignMode = 1;
+        element->SetPos(0x140, y);
+        element->SetVisible(0);
     }
-
-    return this;
 }
 
 /**
@@ -1090,32 +1052,27 @@ void HudUiTextStack4::Clear() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduichatmessagestack-constructor
- * @recoil-artifact defines .text recoil:function:0x4bd2d0: HudUiChatMessageStack::Constructor.
+ * @recoil-artifact defines .text recoil:function:0x4bd2d0: HudUiChatMessageStack::HudUiChatMessageStack.
  * Purpose: construct the chat-message four-line stack and configure descending rows.
+ * As in the top-message constructor, VC5 owns base/member construction and
+ * exception cleanup; the row configuration belongs to this constructor body.
  */
-HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
-    new (this) HudUiChatMessageStack;
-
-    int y = 0x159;
-    {
-        for (int index = 0; index < 4; ++index) {
-            HudUiPanel *const panel = &lines[index];
-            panel->textColor0 = 0x00996a00;
-            panel->textColor1 = 0x0095c7ff;
-            panel->textDirty = 1;
-            ConfigureTextStackLine(
-                this,
-                panel,
-                y,
-                0x0a,
-                0x1f4,
-                6
-            );
-            y -= 0x12;
-        }
+HudUiChatMessageStack::HudUiChatMessageStack() {
+    HudUiPanel *panel = lines;
+    for (int y = 0x159; y > 0x111; y -= 0x12, ++panel) {
+        HudUiElement *const element = (HudUiElement *)(panel);
+        AddChild(element);
+        panel->textColor0 = 0x00996a00;
+        panel->textColor1 = 0x0095c7ff;
+        panel->textDirty = 1;
+        panel->SetFont(g_HudFontName_Arial, 0x0a, 0x1f4, 6, 0, 0, 2);
+        panel->shadowEnabled = 1;
+        panel->shadowOffsetX = -1;
+        panel->shadowOffsetY = -1;
+        panel->alignMode = 1;
+        element->SetPos(0x140, y);
+        element->SetVisible(0);
     }
-
-    return this;
 }
 
 /**
@@ -2439,42 +2396,38 @@ void HudWeatherFxRain::Update(
 }
 
 
-namespace zVideo {
-
 /**
- * Purpose: provide the provisional local pass-3 update helper while retail
- * source placement remains unresolved.
+ * Purpose: update the pass-3 children and reset the queued-slot count.
+ * Retail 0x4bed30 receives this in ECX and deltaTime on the stack.
  */
-void __fastcall zVideoFxPass3Config_UpdateLocal(
-    zVideoFxPass3Config *config,
+void zVideoFxPass3Config::UpdateLocal(
     float deltaTime
 ) {
-    config->HudUiContainer::UpdateAll(deltaTime);
-    config->slotWriteIndex = 0;
+    HudUiContainer::UpdateAll(deltaTime);
+    slotWriteIndex = 0;
 }
 
 /**
- * Purpose: provide the provisional local pass-3 primary-element helper while
- * retail source placement remains unresolved.
+ * Purpose: arm the root overlay with its packed color and alpha.
+ * Retail 0x4bed50 receives this in ECX and both arguments on the stack.
  */
-void __fastcall zVideoFxPass3Config_SetPrimaryElementParamsLocal(
-    zVideoFxPass3Config *config,
-    unsigned int packedColor,
+void zVideoFxPass3Config::SetPrimaryElementParamsLocal(
+    unsigned short packedColor,
     double primaryAlpha
 ) {
-    config->rootElement.packedColor16 = (unsigned short)(packedColor);
-    config->rootElement.alpha = primaryAlpha;
-    config->rootElement.SetVisible(1);
-    config->rootElement.timer = 0.0f;
-    config->rootElement.flags |= 0x01u;
+    rootElement.packedColor16 = packedColor;
+    rootElement.alpha = primaryAlpha;
+    HudUiElement *const element = &rootElement;
+    element->SetVisible(1);
+    element->timer = 0.0f;
+    element->flags |= 0x01u;
 }
 
 /**
- * Purpose: provide the provisional local pass-3 queue helper while retail
- * source placement remains unresolved.
+ * Purpose: queue one radial-warp slot for the next pass-3 update.
+ * Retail 0x4bed90 receives this in ECX and all seven arguments on the stack.
  */
-void __fastcall zVideoFxPass3Config_QueueElementLocal(
-    zVideoFxPass3Config *config,
+void zVideoFxPass3Config::QueueElementLocal(
     int rectLeftPixels,
     int rectTopPixels,
     int currentRadiusPixels,
@@ -2483,10 +2436,10 @@ void __fastcall zVideoFxPass3Config_QueueElementLocal(
     float sinFreq,
     float sinPhase
 ) {
-    const int slotIndex = config->slotWriteIndex;
-    zVideoFxPass3Slot *const slot = &config->slots[slotIndex];
+    const int slotIndex = slotWriteIndex;
+    zVideoFxPass3Slot *const slot = &slots[slotIndex];
     if (slotIndex < 4) {
-        config->slotWriteIndex = slotIndex + 1;
+        slotWriteIndex = slotIndex + 1;
     }
 
     slot->SetRectAndPayload(
@@ -2502,8 +2455,6 @@ void __fastcall zVideoFxPass3Config_QueueElementLocal(
     slot->timer = 0.0f;
     slot->flags |= 0x01u;
 }
-
-} // namespace zVideo
 
 /**
  * Purpose: store a provisional pass-3 input rectangle while retail source
@@ -2548,11 +2499,10 @@ namespace zVideo {
  * source placement remains unresolved.
  */
 void __fastcall FxPass3_SetPrimaryElementParamsLocal(
-    unsigned int packedColor,
+    unsigned short packedColor,
     double primaryAlpha
 ) {
-    zVideoFxPass3Config_SetPrimaryElementParamsLocal(
-        &g_zVideo_FxPass3ConfigLocal,
+    g_zVideo_FxPass3ConfigLocal.SetPrimaryElementParamsLocal(
         packedColor,
         primaryAlpha
     );
@@ -2571,8 +2521,7 @@ void __fastcall FxPass3_QueueElementLocal(
     float sinFreq,
     float sinPhase
 ) {
-    zVideoFxPass3Config_QueueElementLocal(
-        &g_zVideo_FxPass3ConfigLocal,
+    g_zVideo_FxPass3ConfigLocal.QueueElementLocal(
         rectLeftPixels,
         rectTopPixels,
         currentRadiusPixels,
@@ -2622,8 +2571,7 @@ void __fastcall FxPass3_QueuePrimitive(
 void __fastcall FxPass3_UpdateLocal(
     float deltaTime
 ) {
-    zVideoFxPass3Config_UpdateLocal(
-        &g_zVideo_FxPass3ConfigLocal,
+    g_zVideo_FxPass3ConfigLocal.UpdateLocal(
         deltaTime
     );
 }
