@@ -51,6 +51,10 @@ from _recoil.lib.source_owners import (
     owner_data_address_records,
     primary_owners_for_entry,
 )
+from _recoil.lib.implicit_copy_members import (
+    ImplicitCopyBinding, validate_member_metadata, validate_source_binding,
+    validate_expanded_source, validate_native_emission,
+)
 from _recoil.lib.source_emission_markers import (
     ANCHOR_KINDS,
     EmissionAnchor,
@@ -376,6 +380,7 @@ class VerifyFunction:
     logical_identity_key: str = ""
     icf_fold_status: str = ""
     emission_anchor: EmissionAnchor | None = None
+    implicit_member_kind: str = ""
 
 
 @dataclass(frozen=True)
@@ -1342,6 +1347,32 @@ def validate_generated_source_emission_policy(
     return None
 
 
+def validate_implicit_source_emission_policy(
+    *, function: VerifyFunction, source_from: str, manifest_path: Path,
+    target_binary: str, trace_documents: tuple[SourceTraceDocument, ...],
+) -> ImplicitCopyBinding | None:
+    if not function.implicit_member_kind:
+        return None
+    validate_member_metadata(function)
+    artifact_id = canonical_function_artifact_id(function, target_binary=target_binary)
+    artifact = find_canonical_source_artifact(
+        documents=trace_documents, artifact_id=artifact_id, relation="emits",
+        expected_section=".text", manifest_path=manifest_path,
+        context="implicit copy member", allowed_construct_kinds=frozenset({"type"}),
+        emission_anchor=function.emission_anchor,
+    )
+    validate_source_emission_anchor(source_from=source_from,
+        anchor=function.emission_anchor, address=function.address)
+    tracker_trace = None
+    if manifest_path.resolve().is_relative_to(DEFAULT_MANIFEST_DIR.resolve()):
+        row = canonical_tracker_artifact_index().resolve(artifact_id)
+        if row is None or not isinstance(row.row.get("source_traceability"), Mapping):
+            raise ValueError("implicit copy member lacks its registered tracker emission edge")
+        tracker_trace = row.row["source_traceability"]
+    return validate_source_binding(function=function, artifact=artifact,
+        translation_unit=source_from, tracker_source_trace=tracker_trace)
+
+
 def validate_source_policy(
     *,
     data: dict[str, Any],
@@ -1417,6 +1448,14 @@ def validate_source_policy(
             # An authored logical alias at the same physical address reaches
             # this point with its own exact tracker metadata and is still
             # validated below.
+            if validate_implicit_source_emission_policy(
+                function=trace_function,
+                source_from=source_from,
+                manifest_path=manifest_path,
+                target_binary=target_binary,
+                trace_documents=trace_documents,
+            ) is not None:
+                continue
             if (
                 function.provenance == FUNCTION_PROVENANCE_PROVIDER_BOUNDARY
                 or trace_pipeline_class == "non-authored"
@@ -1828,18 +1867,20 @@ def parse_verify_function(
             "must keep required_presence=true and full_order_gate=true for later full order"
         )
     emission_anchor = optional_emission_anchor(item, address, manifest_path=manifest_path)
-    if emission_anchor is not None:
+    implicit_member_kind = item.get("implicit_member_kind", "")
+    if not isinstance(implicit_member_kind, str):
+        raise ValueError(f"{manifest_path}: implicit_member_kind must be a string for {address}")
+    if emission_anchor is not None and not implicit_member_kind:
         if authored_order_role_value not in COMPILER_GENERATED_AUTHORED_ORDER_ROLES:
             raise ValueError(
-                f"{manifest_path}: emission_anchor is supported only for compiler-generated "
-                f"authored-order roles at {address}"
+                f"{manifest_path}: emission_anchor requires a compiler-generated role "
+                f"or an explicit implicit_member_kind binding at {address}"
             )
         allowed_anchor_kinds = COMPILER_GENERATED_ROLE_ANCHOR_KINDS[authored_order_role_value]
         if emission_anchor.kind not in allowed_anchor_kinds:
             raise ValueError(
                 f"{manifest_path}: authored_order_role {authored_order_role_value!r} requires "
-                f"emission_anchor.kind in {sorted(allowed_anchor_kinds)} for {address}, "
-                f"not {emission_anchor.kind!r}"
+                f"emission_anchor.kind in {sorted(allowed_anchor_kinds)} for {address}"
             )
     if logical_identity_key and (
         pipeline_class not in AUTHORED_PIPELINE_CLASSES
@@ -1850,7 +1891,7 @@ def parse_verify_function(
             f"{manifest_path}: logical ICF identity {logical_identity_key} must be an authored "
             "presence gate with full_order_gate=false"
         )
-    return VerifyFunction(
+    function = VerifyFunction(
         address=address,
         symbol=symbol,
         name=name,
@@ -1867,7 +1908,10 @@ def parse_verify_function(
         logical_identity_key=logical_identity_key,
         icf_fold_status=icf_fold_status,
         emission_anchor=emission_anchor,
+        implicit_member_kind=implicit_member_kind,
     )
+    validate_member_metadata(function)
+    return function
 
 
 def parse_order_scope(data: dict[str, Any], *, context: str, manifest_path: Path) -> str:
@@ -2030,6 +2074,7 @@ def parse_translation_unit_function_order(
                     "name": reusable_by_address[item].name,
                     "pipeline_class": reusable_by_address[item].pipeline_class,
                     "authored_order_role": reusable_by_address[item].authored_order_role,
+                    "implicit_member_kind": reusable_by_address[item].implicit_member_kind,
                     "required_presence": reusable_by_address[item].required_presence,
                     "full_order_gate": reusable_by_address[item].full_order_gate,
                     **(
@@ -2296,6 +2341,7 @@ def parse_linked_function_intervals(
                     "name": reusable_by_address[item].name,
                     "pipeline_class": reusable_by_address[item].pipeline_class,
                     "authored_order_role": reusable_by_address[item].authored_order_role,
+                    "implicit_member_kind": reusable_by_address[item].implicit_member_kind,
                     "required_presence": reusable_by_address[item].required_presence,
                     "full_order_gate": reusable_by_address[item].full_order_gate,
                     **(
@@ -2600,6 +2646,14 @@ def validate_translation_unit_source_policy(
                 for artifact in document.artifacts
                 if artifact.artifact_id == exact_artifact_id
             )
+            if validate_implicit_source_emission_policy(
+                function=trace_function,
+                source_from=entry.source_from,
+                manifest_path=manifest_path,
+                target_binary=target_binary,
+                trace_documents=trace_documents,
+            ) is not None:
+                continue
             if (
                 function.provenance == FUNCTION_PROVENANCE_PROVIDER_BOUNDARY
                 or trace_pipeline_class == "non-authored"
@@ -6283,6 +6337,50 @@ def translation_unit_source_path(
     return build_dir / "_tu_order" / f"{index:02d}_{safe_name}"
 
 
+def _expanded_implicit_copy_source(
+    *, target: VerifyTarget, functions: tuple[VerifyFunction, ...], source_from: str,
+    compile_command: str, build_dir: Path, source_path: Path,
+) -> tuple[tuple[ImplicitCopyBinding, dict[str, Any]], ...]:
+    members = tuple(function for function in functions if function.implicit_member_kind)
+    if not members:
+        return ()
+    documents = source_trace_documents((source_from,), manifest_path=target.manifest_path)
+    bindings = tuple(validate_implicit_source_emission_policy(
+        function=effective_source_trace_function(manifest_path=target.manifest_path,
+            function=function, target_binary=target.target_binary),
+        source_from=source_from, manifest_path=target.manifest_path,
+        target_binary=target.target_binary, trace_documents=documents) for function in members)
+    # The governed isolated compile already expands its PCH header as source:
+    # raw /Yc, /Yu and /Fp overrides are rejected by the topology policy. VC5
+    # does not implement modern /Y-. Add only its supported preprocessing mode
+    # and preserve every ordered macro/include/compiler option.
+    expanded_path = build_dir / (source_path.stem + ".i")
+    if expanded_path.exists():
+        raise ValueError(f"implicit member preprocessing requires absent output: {expanded_path}")
+    command = compile_command + " /P"
+    completed = run_vc5_script(command, cwd=build_dir,
+                               diagnostic_stem=f"implicit-preprocess-{source_path.stem}")
+    if completed.returncode or not expanded_path.is_file():
+        raise ValueError("governed VC5 implicit-member preprocessing failed")
+    text = expanded_path.read_text(encoding="mbcs", errors="strict")
+    return tuple((binding, {**validate_expanded_source(text, binding,
+                               compilation_directory=build_dir, compiled_source=source_path),
+                           "preprocess_command": command, "expanded_source": str(expanded_path)})
+                 for binding in bindings)
+
+
+def _native_implicit_copy_emissions(
+    expanded: tuple[tuple[ImplicitCopyBinding, dict[str, Any]], ...], *,
+    obj_path: Path, cod_path: Path, source_from: str,
+) -> list[dict[str, Any]]:
+    if not expanded:
+        return []
+    coff = CoffObject.from_path(obj_path)
+    cod_text = cod_path.read_text(encoding="mbcs", errors="strict")
+    return [{**source_proof, **validate_native_emission(binding=binding, coff=coff,
+             cod_text=cod_text, source_from=source_from)} for binding, source_proof in expanded]
+
+
 def compile_translation_unit_order(
     *,
     target: VerifyTarget,
@@ -6290,6 +6388,9 @@ def compile_translation_unit_order(
     compiler_env: Path,
     capture_verification_receipt: bool = False,
 ) -> tuple[tuple[CompiledTranslationUnit, ...], int]:
+    capture_verification_receipt = capture_verification_receipt or any(
+        function.implicit_member_kind for entry in target.translation_unit_function_order
+        for function in entry.functions)
     write_generated_files(target, build_dir)
     compiled_units: list[CompiledTranslationUnit] = []
     for index, entry in enumerate(target.translation_unit_function_order):
@@ -6344,6 +6445,9 @@ def compile_translation_unit_order(
             if capture_verification_receipt
             else contextlib.nullcontext()
         ):
+            expanded_members = _expanded_implicit_copy_source(
+                target=target, functions=entry.functions, source_from=entry.source_from,
+                compile_command=compile_cmd, build_dir=build_dir, source_path=source_path)
             completed = run_vc5_script(
                 compile_cmd,
                 cwd=build_dir,
@@ -6391,6 +6495,10 @@ def compile_translation_unit_order(
         if not obj_path.exists():
             print(f"Expected COFF object was not emitted: {obj_path}", file=sys.stderr)
             return tuple(compiled_units), 3
+        implicit_emissions = _native_implicit_copy_emissions(expanded_members,
+            obj_path=obj_path, cod_path=cod_path, source_from=entry.source_from)
+        if implicit_emissions:
+            compiler_receipt = {**compiler_receipt, "implicit_member_emissions": implicit_emissions}
         compiled_units.append(
             CompiledTranslationUnit(
                 manifest_index=index,
@@ -6428,6 +6536,8 @@ def compile_target(
     vc5_env: Path,
     capture_verification_receipt: bool = False,
 ) -> tuple[CompiledTarget | None, int]:
+    capture_verification_receipt = capture_verification_receipt or any(
+        function.implicit_member_kind for function in target.functions)
     compile_in_place = bool(target.compile_context_from and target.source_from)
     if compile_in_place:
         # Keep the final-build physical host and quote-include context intact.
@@ -6478,6 +6588,9 @@ def compile_target(
         if capture_verification_receipt
         else contextlib.nullcontext()
     ):
+        expanded_members = _expanded_implicit_copy_source(
+            target=target, functions=target.functions, source_from=target.source_from,
+            compile_command=compile_cmd, build_dir=build_dir, source_path=source_path)
         completed = run_vc5_script(
             compile_cmd,
             cwd=build_dir,
@@ -6518,6 +6631,10 @@ def compile_target(
                 file=sys.stderr,
             )
             return None, 4
+    implicit_emissions = _native_implicit_copy_emissions(expanded_members,
+        obj_path=obj_path, cod_path=cod_path, source_from=target.source_from)
+    if implicit_emissions:
+        compiler_receipt = {**compiler_receipt, "implicit_member_emissions": implicit_emissions}
     return (
         CompiledTarget(
             target=target,

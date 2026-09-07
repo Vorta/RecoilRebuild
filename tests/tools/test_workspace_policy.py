@@ -88,9 +88,25 @@ def test_call_contract_surface_has_no_hash_or_normalizer_mechanism() -> None:
         ROOT / "tools" / "_recoil" / "commands" / "progress_cli.py",
         ROOT / "tools" / "_recoil" / "lib" / "call_contract_generations.py",
     ]
+    paths.extend((ROOT / "tools/_recoil/call_contract").glob("*.py"))
     text = "\n".join(path.read_text(encoding="utf-8") for path in paths)
     for token in ("hashlib", "sha256", "NORMALIZER_REGISTRY_GENERATION", "profile-matrix"):
         assert token not in text
+
+
+def test_source_trace_spelling_checks_directory_names_before_publishing(tmp_path, monkeypatch) -> None:
+    from types import SimpleNamespace
+    import pytest
+    from _recoil.lib import repository_paths
+    from _recoil.lib.source_traceability import parse_source_trace_path
+    source = tmp_path / "Probe.cpp"
+    source.write_text("struct Probe {};", encoding="utf-8")
+    assert parse_source_trace_path(source, repo_root=tmp_path).path == "Probe.cpp"
+    # A filesystem spelling collision cannot become a source anchor identity.
+    monkeypatch.setattr(repository_paths.os, "scandir", lambda path:
+                        [SimpleNamespace(name="Probe.cpp"), SimpleNamespace(name="probe.cpp")])
+    with pytest.raises(ValueError, match="unique current directory spelling"):
+        parse_source_trace_path(source, repo_root=tmp_path)
 
 
 def test_scheduler_requests_terminal_sized_call_contract_diagnostics() -> None:

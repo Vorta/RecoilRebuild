@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import difflib
 import json
 import os
@@ -14,6 +14,11 @@ import sys
 sys.dont_write_bytecode = True
 
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio
+from _recoil.lib.pipeline_obligations import (
+    AcceptanceEffect, AUTHORED_ORDER_EFFECTS, FULL_ORDER_EFFECTS,
+    AUTHORED_BYTE_EFFECTS, LINKED_BYTE_EFFECTS, CALL_EFFECTS,
+    CLOSEOUT_EFFECTS, FINAL_EFFECTS, PROVIDER_IMPORT_EFFECTS,
+)
 TOOLS_DIR = REPO_ROOT / "tools"
 
 
@@ -32,6 +37,7 @@ class CommandSpec:
     build_root_contract: str = "none"
     ledger_routing: str = "default"
     mutation_scope: str = "none"
+    acceptance_effects: tuple[AcceptanceEffect, ...] = ()
 
     @property
     def name(self) -> str:
@@ -57,6 +63,7 @@ def spec(
     build_root_contract: str = "none",
     ledger_routing: str = "default",
     mutation_scope: str = "none",
+    acceptance_effects: tuple[AcceptanceEffect, ...] = (),
 ) -> CommandSpec:
     return CommandSpec(
         path=tuple(path.split()),
@@ -72,6 +79,7 @@ def spec(
         build_root_contract=build_root_contract,
         ledger_routing=ledger_routing,
         mutation_scope=mutation_scope,
+        acceptance_effects=acceptance_effects,
     )
 
 
@@ -130,7 +138,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
           ),
         needs_binja=True,
     ),
-    spec("verify final-image", "live_final_verify", summary="Freshly build and validate complete typed PE semantics against retail; raw file differences and COFF time are diagnostic only.", category="verification", examples=("python tools/recoil.py verify final-image", "python tools/recoil.py verify final-image --candidate build/vc5-final/Recoil.exe --map build/vc5-final/Recoil.map --json"), mutates=True),
+    spec("verify final-image", "live_final_verify", summary="Freshly build and validate complete typed PE semantics against retail; raw file differences and COFF time are diagnostic only.", category="verification", examples=("python tools/recoil.py verify final-image", "python tools/recoil.py verify final-image --candidate build/vc5-final/Recoil.exe --map build/vc5-final/Recoil.map --json"), mutates=True, build_root_contract="fresh-default-or-explicit", acceptance_effects=FINAL_EFFECTS),
     spec("issue report", "workspace_issues", prepend=("report",), summary="Record an agent tooling/process problem for a future work session.", category="issue", examples=("python tools/recoil.py issue report --kind tool-error --severity high --summary \"...\" --area tools/recoil.py --impact \"...\" --actual \"...\" --repro \"...\" --next-action \"...\"",), mutates=True),
     spec("issue request", "workspace_issues", prepend=("request",), summary="Record an agent tooling/process improvement request.", category="issue", examples=("python tools/recoil.py issue request --severity medium --summary \"...\" --area tools/recoil.py --impact \"...\" --requested-change \"...\" --benefit \"...\" --next-action \"...\"",), mutates=True),
     spec("issue list", "workspace_issues", prepend=("list",), summary="List open agent tooling/process issue reports.", category="issue", examples=("python tools/recoil.py issue list --status open",)),
@@ -277,8 +285,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
     spec("audit docblocks", "function_docblock_audit", summary="Audit reconstruction docblocks and source-comment hygiene.", category="audit", examples=("python tools/recoil.py audit docblocks --path src/path/file.cpp --summary --max 50", "python tools/recoil.py audit docblocks --path src --summary --max 50")),
     spec("audit workspace", "workspace_hygiene", summary="Detect generated artifacts outside approved output roots.", category="audit", examples=("python tools/recoil.py audit workspace --strict",)),
     spec("audit agent-surface", "agent_surface_audit", summary="Audit the serial agent-facing tool, documentation, and skill surface.", category="audit", examples=("python tools/recoil.py audit agent-surface --strict",)),
-    spec("audit pipeline-contracts", "pipeline_contract_audit", summary="Audit the one serial task projection and its direct validation/acceptance command contracts.", category="audit", examples=("python tools/recoil.py audit pipeline-contracts --strict", "python tools/recoil.py audit pipeline-contracts --json")),
-    spec("audit pipeline-reachability", "pipeline_reachability_audit", summary="Prove every fail-closed live pipeline consumer has a reachable candidate-independent expected-fact producer.", category="audit", examples=("python tools/recoil.py audit pipeline-reachability --strict", "python tools/recoil.py audit pipeline-reachability --json")),
+    spec("audit pipeline-reachability", "pipeline_reachability_audit", summary="Inspect the current task's executable route and inventory implemented acceptance operations for every required stage, storage dimension, and owner gate.", category="audit", examples=("python tools/recoil.py audit pipeline-reachability --strict", "python tools/recoil.py audit pipeline-reachability --json")),
     spec(
         "audit live-validation-surface",
         "live_validation_surface_audit",
@@ -344,6 +351,9 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         category="progress",
         examples=("python tools/recoil.py progress provider-target register --address 0xNNNNNN --payload-json '<reviewed-provider-target>' --expected-revision <revision> --dry-run --json",),
         mutates=True,
+        required_revision_domains=("global",),
+        mutation_scope="provider-import",
+        acceptance_effects=PROVIDER_IMPORT_EFFECTS,
     ),
     spec(
         "progress provider-function register",
@@ -616,6 +626,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         required_revision_domains=("semantic", "evidence_generation"),
         build_root_contract="fresh-direct-root",
         mutation_scope="call-contract",
+        acceptance_effects=CLOSEOUT_EFFECTS,
     ),
     spec(
         "progress call-contract replay-live",
@@ -644,6 +655,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         build_root_contract="fresh-replay-sibling",
         ledger_routing="canonical-machine-local-default",
         mutation_scope="call-contract",
+        acceptance_effects=CALL_EFFECTS,
     ),
     spec("progress output-section show", "progress_cli", prepend=("output-section", "show"), summary="Show one normalized PE output section.", category="progress"),
     spec("progress storage show", "progress_cli", prepend=("storage", "show"), summary="Show one normalized physical storage contribution.", category="progress"),
@@ -707,9 +719,10 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         build_root_contract="fresh-direct-root",
         ledger_routing="canonical-machine-local-default",
         mutation_scope="order",
+        acceptance_effects=AUTHORED_ORDER_EFFECTS + FULL_ORDER_EFFECTS,
     ),
-    spec("progress advance-live-authored-byte", "progress_cli", prepend=("advance-live-authored-byte",), summary="Freshly compile and directly accept the current authored byte group.", category="progress", examples=("python tools/recoil.py progress advance-live-authored-byte --build-root <fresh-root> --expected-revision <revision> --apply --json",), mutates=True, required_revision_domains=("global",), build_root_contract="fresh-direct-root", mutation_scope="byte"),
-    spec("progress advance-live-linked-byte", "progress_cli", prepend=("advance-live-linked-byte",), summary="Freshly build and directly accept the current linked byte group.", category="progress", examples=("python tools/recoil.py progress advance-live-linked-byte --build-root <fresh-root> --expected-revision <revision> --apply --json",), mutates=True, required_revision_domains=("global",), build_root_contract="fresh-direct-root", mutation_scope="byte"),
+    spec("progress advance-live-authored-byte", "progress_cli", prepend=("advance-live-authored-byte",), summary="Freshly compile and directly accept the current authored byte group.", category="progress", examples=("python tools/recoil.py progress advance-live-authored-byte --build-root <fresh-root> --expected-revision <revision> --apply --json",), mutates=True, required_revision_domains=("global",), build_root_contract="fresh-direct-root", mutation_scope="byte", acceptance_effects=AUTHORED_BYTE_EFFECTS),
+    spec("progress advance-live-linked-byte", "progress_cli", prepend=("advance-live-linked-byte",), summary="Freshly build and directly accept the current linked byte group.", category="progress", examples=("python tools/recoil.py progress advance-live-linked-byte --build-root <fresh-root> --expected-revision <revision> --apply --json",), mutates=True, required_revision_domains=("global",), build_root_contract="fresh-direct-root", mutation_scope="byte", acceptance_effects=LINKED_BYTE_EFFECTS),
     spec(
         "progress advance-live-call-contract",
         "progress_cli",
@@ -731,6 +744,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         build_root_contract="fresh-direct-root",
         ledger_routing="canonical-machine-local-default",
         mutation_scope="call-contract",
+        acceptance_effects=CALL_EFFECTS,
     ),
     spec(
         "progress source-trace replace-batch",
@@ -870,6 +884,7 @@ def command_to_json(item: CommandSpec) -> dict[str, object]:
         "build_root_contract": item.build_root_contract,
         "ledger_routing": item.ledger_routing,
         "mutation_scope": item.mutation_scope,
+        "acceptance_effects": [asdict(effect) for effect in item.acceptance_effects],
     }
 
 

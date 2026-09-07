@@ -73,10 +73,8 @@ def normalize_anchor_path(value: str) -> str:
 
 
 def _display_path(path: Path, repo_root: Path) -> str:
-    try:
-        return path.resolve().relative_to(repo_root.resolve()).as_posix()
-    except ValueError:
-        return path.resolve().as_posix()
+    from _recoil.lib.repository_paths import source_trace_path_spelling
+    return source_trace_path_spelling(path, repository_root=repo_root)
 
 
 def _resolve_include(include_text: str, including_source: Path, repo_root: Path) -> Path | None:

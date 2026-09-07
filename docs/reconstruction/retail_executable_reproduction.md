@@ -83,6 +83,25 @@ closed. Retail selector evidence and the paired same-object ICF/NOICF mechanism
 proof remain mandatory; neither a selected witness nor a saved map accepts
 linked placement or bytes.
 
+An authored native implicit copy constructor or copy assignment has a separate,
+narrow source-emission route. Its verification row sets `implicit_member_kind`
+to `copy-constructor` or `copy-assignment`, names the exact VC5 decorated symbol,
+and uses a `type-definition` `emission_anchor` for the owning class. The attached
+class anchor must directly `emits .text` that function artifact. Its existing
+resolved tracker source edge must name the exact emitting translation unit.
+Authored classification, required presence, and both order gates remain enabled.
+
+This source binding permits compilation; it does not establish an emission.
+The verifier preprocesses the current translation unit with its actual VC5
+includes and macro definitions, checks the class's compiler-reported source
+origin, and rejects an explicit selected copy member, including one introduced
+by a macro. It then requires the exact symbol in the same fresh TU's COD and
+native ANY COMDAT, with valid extent, relocations, and associated COMDATs.
+Missing definitions and ambiguous copy-like declarations fail closed. A
+successful emission check establishes source provenance only; ordinary order,
+call, relocation, and byte comparisons still apply. Enabling this route for a
+production function requires the usual reviewed tracker source relationship.
+
 For a read-only lifecycle diagnosis, `audit coff-lifecycle --object <obj>
 --symbol <decorated-name> [--symbol ...] [--map <map>]` inventories complete
 definitions, associations, inbound relocations, and map observations. Its output
@@ -123,6 +142,24 @@ python tools/recoil.py verify call-contract --slice <slice-id> --build-root <fre
 
 Unresolved target, storage, provider, import, ICF/logical-alias identity, or
 indirect provenance fails closed.
+
+The private verifier is organized by evidence owner under
+[`tools/_recoil/call_contract`](../../tools/_recoil/call_contract/README.md).
+Its serial coordinator separates retail acquisition, candidate acquisition,
+and comparison. Immutable retail facts create obligations; candidate facts
+answer them with `proven`, `not-applicable`, `unresolved`, or `conflict` results.
+Per-body `proof_results` explain these outcomes while the public result envelope,
+slice projection, replay, and closeout contracts remain the same.
+
+Instruction effects come from exact x86 bytes, including partial and implicit
+register writes. Shared CFG reaching-definition checks bind IAT loads to the
+register that reaches the transfer. Proof-map composition rejects contradictory
+claims at the same location. Each side must establish its own receiver lineage;
+comparison cannot copy the other side's receiver. Provider identity must be
+independently bound by typed identity, ABI, and fresh native evidence rather
+than inferred from an aligned call ordinal. Physical invocation contributions
+retain their count, order, call/tail form, and direct/indirect dispatch through
+helper and lifecycle projections.
 
 When several registered regex rows identify the same physical address, the
 unique live accepted authored-order target selects the governing row, not a
@@ -504,6 +541,25 @@ The README contains only a static pointer to `progress next --json`. It is not
 a second current-state authority and no tracker transaction updates it.
 
 ## Validation
+
+Pipeline reachability has two separate results. `current_task_reachable` checks
+that the current scheduler task has the right public route, executable backend
+and parser, revision arguments, and stage contract. A blocked task is reported
+as blocked; a callable route does not imply that current source will pass it.
+`completion_routes_complete` inventories the operations needed by all six
+stages, the mandatory call closeout, authored storage, and existing authored
+owner gates and tiers. It matches exact acceptance subjects and dimensions to
+inspected command handlers, guards, and writers. Registration, replacement,
+invalidation, downgrade, and provider-import registration cannot stand in for
+positive acceptance of existing authored entities.
+
+The combined audit's `passed` result requires both checks. Missing operations
+remain explicit strict failures even when the current task has a valid route.
+This is an audit of implemented command capabilities and required transitions;
+actual reachability through source divergences and semantic prerequisites is
+established only by fresh live verification. `doctor` runs this combined audit
+once, after the other infrastructure checks. There is no separate
+`audit pipeline-contracts` command.
 
 After tool, docs, skill, or tracker work, use the canonical matrix in
 `recoil-validation` rather than maintaining another copy here.

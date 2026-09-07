@@ -1,5 +1,283 @@
 from __future__ import annotations
 
+
+def test_private_proof_owners_import_independently():
+    import os
+    from pathlib import Path
+    import subprocess
+    import sys
+    root = Path(__file__).resolve().parents[2]
+    environment = dict(os.environ, PYTHONPATH=str(root / "tools"))
+    for path in sorted((root / "tools/_recoil/call_contract").glob("*.py")):
+        result = subprocess.run([sys.executable, "-c", f"import _recoil.call_contract.{path.stem}"],
+                                cwd=root, env=environment, capture_output=True, text=True)
+        assert result.returncode == 0, result.stderr
+
+
+def test_native_funclet_partition_accounts_for_every_call_and_rejects_location_drift():
+    from dataclasses import replace
+    from _recoil.call_contract.contributions import InvocationContribution, partition_native_funclets
+    from _recoil.call_contract.records import AppFrameRunCatchFuncletProof
+    physical = tuple(InvocationContribution("candidate", hex(offset), "call", "direct")
+                     for offset in (0x400010, 0x400020, 0x400030, 0x400040))
+    proof = AppFrameRunCatchFuncletProof(ranges=((0x20, 0x30), (0x30, 0x40)),
+        lifecycle_addresses=("0x401000", "0x402000"), excluded_invocation_indices=(1, 2),
+        excluded_invocation_ordinals=(1, 2), excluded_invocation_offsets=(0x20, 0x30), generic_invocation_count=4)
+    primary, owned = partition_native_funclets(physical, proof, caller_start="0x400000")
+    assert primary == (physical[0], physical[3])
+    assert tuple(row.contribution for row in owned) == physical[1:3]
+    assert tuple(row.owner for row in owned) == proof.lifecycle_addresses
+    with pytest.raises(ValueError, match="locations"):
+        partition_native_funclets(physical, replace(proof, excluded_invocation_offsets=(0x21, 0x30)), caller_start="0x400000")
+    with pytest.raises(ValueError, match="ambiguous ownership"):
+        partition_native_funclets(physical, replace(proof, ranges=((0x20, 0x40), (0x30, 0x40))), caller_start="0x400000")
+
+
+def test_cod_cpu_rdtsc_keeps_real_instruction_boundaries_and_rejects_bad_directives():
+    from _recoil.call_contract.listing import parse_assembly
+    from _recoil.call_contract.instructions import instruction_fact
+    text = "00000 0f DB 15\n; source comment\n00001 31 DB 49\n00002 89 45 e0 mov dword ptr [ebp-32], eax"
+    rows = parse_assembly(text, source="cod")
+    assert len(rows) == 2 and instruction_fact(rows[0]).mnemonic == "rdtsc"
+    assert rows[1].bytes == ("89", "45", "e0")
+    for changed in (text.replace("00001", "00003"), text.replace("00002", "00004")):
+        directive = parse_assembly(changed, source="cod")[0]
+        assert directive.text == "db 15" and directive.raw_text == "DB 15"
+        assert directive.bytes == ("0f",)
+    with pytest.raises(ValueError, match="byte directive"):
+        parse_assembly(text.replace("DB 49", "DB 48"), source="cod")
+
+
+def test_retail_negative_load_probe_does_not_publish_a_fact_for_direct_only_code():
+    from _recoil.call_contract.dispatch import _retail_register_definition_transfer_addresses
+    from _recoil.call_contract.listing import parse_assembly
+    rows = parse_assembly("00400000 8b 35 00 10 40 00 mov esi, dword [0x401000]\n00400006 ff 24 85 00 20 40 00 jmp dword [eax*4+0x402000]", source="bn")
+    assert _retail_register_definition_transfer_addresses(rows, load_index=0, destination="esi",
+        caller_start=0x400000, caller_end=0x40000d, local_control_flow_indices=frozenset({1})) == ()
+
+
+def test_iat_transfer_population_keeps_copies_and_unanimous_imports_but_not_conflicts():
+    from dataclasses import replace
+    from _recoil.call_contract.iat import _unique_retail_iat_transfer_proofs
+    from _recoil.call_contract.records import CandidateExactIatRegisterLoadProof
+    left = CandidateExactIatRegisterLoadProof("0x400000", "esi", "task", "iat:task", ("0x400030",), transfer_registers=("ebx",))
+    right = replace(left, definition_offset="0x400010", destination="edi")
+    result = _unique_retail_iat_transfer_proofs({left.definition_offset: left, right.definition_offset: right})
+    assert len(result) == 2 and all(row.transfer_register("0x400030") == "ebx" for row in result.values())
+    assert _unique_retail_iat_transfer_proofs({left.definition_offset: left,
+        right.definition_offset: replace(right, identity="iat:other")}) == {}
+
+
+def test_iat_copy_reaches_extraction_without_changing_its_definition_identity():
+    from dataclasses import replace
+    from _recoil.call_contract.extraction import extract_invocation_contract
+    from _recoil.call_contract.listing import parse_assembly
+    from _recoil.call_contract.records import CandidateExactIatRegisterLoadProof, IdentityIndexes
+    rows = parse_assembly("00000 8b 35 00 00 00 00 mov esi, dword ptr __imp__task\n"
+        "00006 8b fe mov edi, esi\n00008 33 f6 xor esi, esi\n0000a ff d7 call edi\n0000c c3 ret", source="cod")
+    proof = CandidateExactIatRegisterLoadProof("0x0", "esi", "__imp__task", "iat:task", ("0xa",), transfer_registers=("edi",))
+    indexes = IdentityIndexes(by_address={}, by_candidate_name={}, provider_ids=frozenset(),
+        storage_by_address={}, storage_by_name={"__imp__task": "iat:task"})
+    kwargs = dict(source="cod", caller_identity="symbol:caller", caller_start="0x400000",
+                  caller_end_exclusive="0x40000d", indexes=indexes)
+    result = extract_invocation_contract(rows, candidate_exact_iat_register_load_proofs={"0x0": proof}, **kwargs)
+    assert len(result) == 1 and result[0]["target_identity"] == "iat:task"
+    assert proof.destination == "esi" and proof.transfer_marker("0xa", joined=False).startswith("exact-iat-load(edi,")
+    with pytest.raises(ValueError, match="ambiguous"):
+        extract_invocation_contract(rows, candidate_exact_iat_register_load_proofs={"0x0": replace(proof, transfer_registers=("esi",))}, **kwargs)
+    default = replace(proof, transfer_registers=())
+    assert default == replace(proof, transfer_registers=("esi",))
+    with pytest.raises(ValueError, match="populations disagree"):
+        replace(proof, transfer_offsets=("0xa", "0xc"))
+
+
+def test_complete_classifier_cfg_accepts_a_backward_case_without_bypassing_the_guard():
+    from types import SimpleNamespace
+    from _recoil.call_contract.cfg import retail_local_switch_targets
+    from _recoil.call_contract.listing import parse_assembly
+    text = "00400000 eb 03 jmp 0x400005\n00400002 ff d6 call esi\n00400004 c3 ret\n" \
+        "00400005 83 f8 01 cmp eax, 1\n00400008 77 f8 ja 0x400002\n0040000a 33 c9 xor ecx, ecx\n" \
+        "0040000c 8a 88 2a 00 40 00 mov cl, byte [eax+0x40002a]\n" \
+        "00400012 ff 24 8d 22 00 40 00 jmp dword [ecx*4+0x400022]\n00400019 ff d6 call esi\n0040001b c3 ret"
+    data = {0x400022: bytes.fromhex("02004000 19004000"), 0x40002a: b"\0\1"}
+    bridge = SimpleNamespace(hexdump=lambda address, count: f"{int(address,16):08x} " + data[int(address,16)][:count].hex(" "))
+    rows = parse_assembly(text, source="bn")
+    kwargs = dict(caller_start="0x400000", caller_end_exclusive="0x40002c", bridge=bridge)
+    assert retail_local_switch_targets(rows, **kwargs) == {}
+    assert retail_local_switch_targets(rows, include_backward_targets=True, **kwargs) == {7: (1, 8)}
+    bypass = parse_assembly(text.replace("eb 03 jmp 0x400005", "eb 0a jmp 0x40000c"), source="bn")
+    assert retail_local_switch_targets(bypass, include_backward_targets=True, **kwargs) == {}
+    data[0x400022] = bytes.fromhex("0a004000 19004000")
+    assert retail_local_switch_targets(rows, include_backward_targets=True, **kwargs) == {}
+
+
+def test_machine_arguments_accept_exact_near_ret_alias_but_reject_wrong_opcode():
+    from types import SimpleNamespace
+    from _recoil.lib.call_argument_bits import ArgumentBits, ArgumentProofError
+    row = SimpleNamespace(bytes=bytes.fromhex("c20400"), text="retn 0x4")
+    assert ArgumentBits.from_machine([row], {}).parts[0] == ("ret", ("0x4",))
+    row.text = "retf 0x4"
+    with pytest.raises(ArgumentProofError, match="opcode"):
+        ArgumentBits.from_machine([row], {})
+
+
+def test_checked_call_result_ignores_returned_failure_arms_but_rejects_rejoins():
+    from _recoil.call_contract.listing import parse_assembly
+    from _recoil.call_contract.retail import _checked_result_reaches_transfer
+    rows = parse_assembly("00400000 e8 00 00 00 00 call 0x400005\n00400005 85 c0 test eax, eax\n"
+        "00400007 75 06 jne 0x40000f\n00400009 e8 00 00 00 00 call 0x40000e\n"
+        "0040000e c3 ret\n0040000f ff d0 call eax\n00400011 c3 ret", source="bn")
+    assert _checked_result_reaches_transfer(rows, source="bn", caller_start=0x400000,
+        result_index=0, transfer_index=5, register="eax")
+    from dataclasses import replace
+    rows[4] = replace(rows[4], bytes=("90",), text="nop", raw_text="nop")
+    with pytest.raises(ValueError, match="partial or ambiguous"):
+        _checked_result_reaches_transfer(rows, source="bn", caller_start=0x400000,
+            result_index=0, transfer_index=5, register="eax")
+
+
+def test_shared_instruction_effects_distinguish_explicit_partial_and_implicit_writes():
+    from _recoil.call_contract.instructions import decode_bytes
+    cases = (
+        ("31db", {("ebx", 0, 32)}),
+        ("85db", set()),
+        ("b401", {("eax", 8, 8)}),
+        ("f7e9", {("eax", 0, 32), ("edx", 0, 32)}),
+        ("0fafc1", {("eax", 0, 32)}),
+        ("99", {("edx", 0, 32)}),
+        ("0fa2", {(name, 0, 32) for name in ("eax", "ebx", "ecx", "edx")}),
+        ("dfe0", {("eax", 0, 16)}),
+        ("f3a5", {(name, 0, 32) for name in ("ecx", "esi", "edi")}),
+        ("e800000000", {(name, 0, 32) for name in ("eax", "ecx", "edx", "esp")}),
+    )
+    for code, expected in cases:
+        assert set(decode_bytes(bytes.fromhex(code)).register_writes) == expected
+
+
+def test_cod_hexadecimal_db_byte_is_not_a_data_directive():
+    from _recoil.call_contract.cfg import _exact_invocation_cfg
+    from _recoil.commands.asm_verify import Instruction
+    rows = (
+        Instruction(text="xor ebx, ebx", raw_text="xor ebx, ebx", bytes=("33", "db"), source_line=" 00000 33 db xor ebx, ebx"),
+        Instruction(text="test ebx, ebx", raw_text="test ebx, ebx", bytes=("85", "db"), source_line=" 00002 85 db test ebx, ebx"),
+        Instruction(text="ret", raw_text="ret", bytes=("c3",), source_line=" 00004 c3 ret"),
+    )
+    edges, unresolved = _exact_invocation_cfg(rows, instruction_addresses=(0, 2, 4),
+        instruction_index_by_address={0: 0, 2: 1, 4: 2}, source="cod", caller_start=0,
+        caller_end=5, local_control_flow_indices=frozenset(), local_control_flow_targets={})
+    assert edges == {0: (1,), 1: (2,), 2: ()} and not unresolved
+
+
+def test_current_stack_root_survives_exact_push_pop_but_not_stack_replacement():
+    from types import SimpleNamespace
+    from _recoil.call_contract.receiver_storage import _update_register_state
+    from _recoil.commands.asm_verify import Instruction
+    for code, text, expected_stack, expected_edx in (
+        ("6a00", "push 0", "stack", "receiver"),
+        ("52", "push edx", "stack", "receiver"),
+        ("5a", "pop edx", "stack", ""),
+        ("5c", "pop esp", "", "receiver"),
+        ("6652", "push dx", "", "receiver"),
+    ):
+        registers = {"esp": "stack", "edx": "receiver"}
+        row = Instruction(text=text, raw_text=text, bytes=tuple(f"{b:02x}" for b in bytes.fromhex(code)), source_line=text)
+        _update_register_state(row, registers, assembly_source="bn", indexes=SimpleNamespace(),
+                               reviewed_register_storage_bridges={})
+        assert registers["esp"] == expected_stack
+        assert registers["edx"] == expected_edx
+
+
+def test_shared_definition_flow_handles_kills_aliases_joins_loops_and_independent_calls():
+    from types import SimpleNamespace
+    from _recoil.call_contract.flow import ControlFlow, FlowProofError, reaching_definition_uses
+    import pytest
+
+    def run(codes, edges=None, unresolved=frozenset()):
+        rows = [SimpleNamespace(bytes=bytes.fromhex(code)) for code in codes]
+        edges = edges if edges is not None else {i: [i + 1] for i in range(len(rows) - 1)}
+        cfg = ControlFlow.from_edges(len(rows), edges, unresolved)
+        return reaching_definition_uses(rows, cfg, definition_index=0, register="esi")
+
+    # The unrelated EBX xor and indirect EDI call cannot manufacture, kill, or
+    # invalidate the independent ESI definition used by the final call.
+    assert run(["8b3500104000", "31db", "ffd7", "ffd6"]) == (3,)
+    assert run(["8b3500104000", "89f3", "31f6", "ffd3"]) == (3,)
+    assert run(["8b3500104000", "31f6", "ffd6"]) == ()
+    assert run(["8b3500104000", "85db", "75fc", "ffd6"], {0: [1], 1: [2], 2: [1, 3]}) == (3,)
+    with pytest.raises(FlowProofError, match="partial or ambiguous"):
+        run(["8b3500104000", "7502", "31f6", "ffd6"], {0: [1], 1: [2, 3], 2: [3]})
+    with pytest.raises(FlowProofError, match="partial or ambiguous"):
+        run(["8b3500104000", "6689de", "ffd6"])
+    with pytest.raises(FlowProofError, match="unresolved"):
+        run(["8b3500104000", "90", "ffd6"], unresolved=frozenset({1}))
+    # Attached data is not an executable predecessor. A changed edge that
+    # enters it must still block the proof, even when the call is unchanged.
+    assert run(["8b3500104000", "ffd6", "c3", "00"],
+               {0: [1], 1: [2]}, frozenset({3})) == (1,)
+    with pytest.raises(FlowProofError, match="unresolved"):
+        run(["8b3500104000", "ffd6", "c3", "00"],
+            {0: [3], 3: [1], 1: [2]}, frozenset({3}))
+
+
+def test_proof_composition_preserves_contradictions_and_retail_obligation_origin():
+    import pytest
+    from _recoil.call_contract.proofs import Fact, Obligation, ProofMap, ProofConflict, ProofStatus, prove
+
+    expected = Fact("retail", "receiver", ["this", 16], "retail:call:3")
+    obligation = Obligation("receiver-vptr-slot", expected)
+    candidate = Fact("candidate", "receiver", ["this", 20], "candidate:call:3")
+    assert prove(obligation, candidate).status == ProofStatus.CONFLICT
+    assert prove(obligation, None).status == ProofStatus.UNRESOLVED
+    assert prove(Obligation("cleanup", expected, required=False), None).status == ProofStatus.NOT_APPLICABLE
+    with pytest.raises(ValueError, match="only independently recovered retail"):
+        Obligation("receiver-vptr-slot", candidate)
+    proofs = ProofMap("receiver-vptr-slot", {3: "this+16"})
+    proofs.update({3: "this+16"})
+    with pytest.raises(ProofConflict, match="instruction| at 3"):
+        proofs.update({3: "this+20", 4: "extra"})
+    assert proofs == {3: "this+16"}
+
+
+def test_definition_flow_cannot_reuse_saved_pointers_after_stack_alias_changes():
+    from types import SimpleNamespace
+    from _recoil.call_contract.flow import ControlFlow, reaching_definition_uses
+    for codes in (
+        ["8b3500104000", "56", "31f6", "87dc", "5f", "ffd7"],  # XCHG ESP, EBX
+        ["8b3500104000", "56", "31f6", "668be0", "5f", "ffd7"],  # partial SP replacement
+        ["8b3500104000", "56", "6a00", "8f03", "31f6", "5f", "ffd7"],  # POP through unknown alias
+        ["8b3500104000", "897424fd", "6a00", "31f6", "8b7c2401", "ffd7"],  # overlapping PUSH
+    ):
+        rows = [SimpleNamespace(bytes=bytes.fromhex(code)) for code in codes]
+        cfg = ControlFlow.from_edges(len(rows), {i: [i + 1] for i in range(len(rows) - 1)})
+        assert reaching_definition_uses(rows, cfg, definition_index=0, register="esi") == ()
+
+
+def test_definition_flow_rejects_unresolved_predecessors_and_conflicting_seeds():
+    from types import SimpleNamespace
+    from _recoil.call_contract.flow import ControlFlow, FlowProofError, reaching_definition_uses
+    rows = [SimpleNamespace(bytes=bytes.fromhex(code)) for code in ("90", "8b3500104000", "ffd6")]
+    cfg = ControlFlow.from_edges(3, {0: [1], 1: [2]}, frozenset({0}))
+    with pytest.raises(FlowProofError, match="unresolved"):
+        reaching_definition_uses(rows, cfg, definition_index=1, register="esi")
+    cfg = ControlFlow.from_edges(3, {0: [1], 1: [2]})
+    with pytest.raises(FlowProofError, match="conflicting"):
+        reaching_definition_uses(rows, cfg, definition_index=1, register="esi", equivalent_definitions={1: "edi"})
+
+
+def test_machine_argument_proof_rejects_wrong_operands_and_implicit_stack_changes():
+    from types import SimpleNamespace
+    from _recoil.lib.call_argument_bits import ArgumentBits, ArgumentProofError
+    for specs in (
+        [("6650", "push ax"), ("e800000000", "call 0")],
+        [("8b4308", "mov eax, dword ptr [ebx+4]"), ("50", "push eax"), ("e800000000", "call 0")],
+        [("b805000000", "mov eax"), ("50", "push eax"), ("e800000000", "call 0")],
+        [("b805000000", "mov eax, 5"), ("50", "push eax"), ("9c", "pushfd"), ("e800000000", "call 0")],
+    ):
+        rows = [SimpleNamespace(bytes=bytes.fromhex(code), text=text) for code, text in specs]
+        with pytest.raises(ArgumentProofError):
+            proof = ArgumentBits.from_machine(rows, {i: [i + 1] for i in range(len(rows) - 1)})
+            proof.stack_argument(len(rows) - 1, 0)
+
 import pytest
 
 
@@ -10,22 +288,27 @@ def test_value_vector_noop_provider_requires_complete_coff_and_supplier_proof(
     from copy import deepcopy
     from dataclasses import replace
     from types import SimpleNamespace as Row
-    from _recoil.commands import call_contract_verify as cc
+    from _recoil.call_contract import candidate as _contract_candidate
+    from _recoil.call_contract import catalog as _contract_catalog
+    from _recoil.call_contract import providers as _contract_providers
+    from _recoil.call_contract import receiver_equivalence as _contract_receiver_equivalence
+    from _recoil.call_contract import records as _contract_records
+    from _recoil.call_contract import targets as _contract_targets
     from _recoil.commands.asm_verify import Instruction
 
     name = f"?_Destroy@?$vector@{element}V?$allocator@{element}@std@@@std@@IAEXPA{element}0@Z"
     env = tmp_path / "compiler" / "env.cmd"
-    monkeypatch.setattr(cc, "compiler_env_path", lambda *_: env)
+    monkeypatch.setattr(_contract_providers, "compiler_env_path", lambda *_: env)
     symbol = Row(index=3, name=name, section_number=2, storage_class=2,
         symbol_type=0x20, section_name=".text", section_size=16, value=0,
         natural_end=16, section_characteristics=0x1020)
     relocation = Row(offset=1, type=0x14, symbol_name=name, symbol_index=3)
-    caller = cc.CandidateCallerDefinition(symbol="?Caller@@YAXXZ",
+    caller = _contract_records.CandidateCallerDefinition(symbol="?Caller@@YAXXZ",
         data=b"\xe8\0\0\0\0\xc3", relocations=(relocation,),
         relocation_mask=(False, True, True, True, True, False),
         undefined_external_functions=(), defined_external_functions=(name,),
         coff_symbols=(symbol,), section_index=1, section_start=0, section_end=6)
-    helper = cc.CandidateTuLocalFunctionDefinition(symbol=name,
+    helper = _contract_records.CandidateTuLocalFunctionDefinition(symbol=name,
         data=b"\xc2\x08\0" + b"\x90" * 13, relocations=(),
         relocation_mask=(False,) * 16, section_size=16,
         section_external_functions=(name,), section_is_comdat=True,
@@ -34,19 +317,19 @@ def test_value_vector_noop_provider_requires_complete_coff_and_supplier_proof(
     instruction = Instruction(text=f"call {name}", raw_text=f"call {name}",
         bytes=("e8", "00", "00", "00", "00"),
         source_line=f"00000: e8 00 00 00 00 call {name}")
-    candidate = cc.CandidateAssembly(instructions=(instruction,),
+    candidate = _contract_records.CandidateAssembly(instructions=(instruction,),
         local_control_flow_indices=frozenset(), caller_definition=caller,
         tu_local_function_definitions={name: helper})
     supplier = Row(address="0x1000", identity="provider:unit.destroy",
         stack_cleanup_bytes=8, catalog_symbol="?Destroy@Vector@@IAEXPAPAX0@Z")
-    indexes = cc.IdentityIndexes(by_address={supplier.address: supplier.identity},
+    indexes = _contract_records.IdentityIndexes(by_address={supplier.address: supplier.identity},
         by_candidate_name={}, provider_ids=frozenset({supplier.identity}),
         storage_by_address={}, storage_by_name={},
         pointer_vector_destroy_providers=(supplier,))
     def prove(value=candidate, identities=indexes):
-        return cc._candidate_local_coff_callable_bridges(value, indexes=identities,
+        return _contract_providers._candidate_local_coff_callable_bridges(value, indexes=identities,
             bridge_names={}, compiler_generated_bridges={})
-    assert cc._pointer_vector_destroy_provider_identity(name, indexes=indexes,
+    assert _contract_targets._pointer_vector_destroy_provider_identity(name, indexes=indexes,
         bridge_names={}, compiler_generated_bridges={}) == ""
     assert prove() == {name: supplier.identity}
     for changes in (
@@ -77,11 +360,9 @@ def test_classifier_switch_and_global_callback_require_complete_live_coff_cfg():
     from dataclasses import replace
     from types import SimpleNamespace as Row
     from _recoil.commands.asm_verify import Instruction
-    from _recoil.commands.call_contract_verify import (
-        CandidateAssembly, _candidate_exact_coff_switch_targets,
-        _candidate_exact_static_callback_register,
-        _compose_candidate_coff_switch_maps,
-    )
+    from _recoil.call_contract.cfg import _candidate_exact_coff_switch_targets, _compose_candidate_coff_switch_maps
+    from _recoil.call_contract.receiver_candidate import _candidate_exact_static_callback_register
+    from _recoil.call_contract.records import CandidateAssembly
     specs = [
         (0, "jmp SHORT $Lguard", "eb 01"),
         (2, "ret", "c3"),
@@ -167,11 +448,9 @@ def test_coff_switch_edges_feed_iat_lineage_only_after_complete_guard_proof(
     from dataclasses import replace
     from types import SimpleNamespace as Row
     from _recoil.commands.asm_verify import Instruction
-    from _recoil.commands.call_contract_verify import (
-        CandidateAssembly, _candidate_exact_coff_switch_targets,
-        _candidate_iat_load_reached_transfer_offsets,
-        _compose_candidate_coff_switch_maps,
-    )
+    from _recoil.call_contract.cfg import _candidate_exact_coff_switch_targets, _compose_candidate_coff_switch_maps
+    from _recoil.call_contract.iat import _candidate_iat_load_reached_transfer_offsets
+    from _recoil.call_contract.records import CandidateAssembly
 
     specs, offset = [], 0
 
@@ -267,7 +546,7 @@ def test_coff_switch_edges_feed_iat_lineage_only_after_complete_guard_proof(
 
 def test_provider_collision_names_require_literal_non_authored_registration():
     from types import SimpleNamespace
-    from _recoil.commands.call_contract_verify import _registered_non_authored_provider_names
+    from _recoil.call_contract.dispatch import _registered_non_authored_provider_names
     row = {"address": "0x1000", "symbol": "_registered",
         "pipeline_class": "non-authored", "authored_order_role": "non-authored"}
     document = SimpleNamespace(collection=lambda _: {"target": {"registration": {
@@ -281,7 +560,7 @@ def test_provider_collision_names_require_literal_non_authored_registration():
 
 def test_provider_collision_names_require_explicit_canonical_catalog():
     from copy import deepcopy
-    from _recoil.commands.call_contract_verify import _canonical_header_provider_catalog_names
+    from _recoil.call_contract.providers import _canonical_header_provider_catalog_names
     record = {"object_symbol": "_catalog", "provider_object_identity": {
         "schema": "recoil-provider-function-object-v2",
         "proof_mode": "canonical-header-comdat", "object_symbol": "_catalog",
@@ -300,7 +579,7 @@ def test_provider_collision_names_require_explicit_canonical_catalog():
 
 
 def test_provider_collision_subset_does_not_require_unused_catalog_aliases():
-    from _recoil.commands.call_contract_verify import _require_catalogued_provider_collisions
+    from _recoil.call_contract.providers import _require_catalogued_provider_collisions
 
     catalog = {"_one": "provider:unit", "_two": "provider:unit"}
     for actual in ({}, {"_one": "provider:unit"}, catalog):
@@ -314,29 +593,34 @@ def test_candidate_provider_catalog_requires_live_typed_header_proof(monkeypatch
     from copy import deepcopy
     from dataclasses import replace
     from types import SimpleNamespace as Row
-    from _recoil.commands import call_contract_verify as cc
+    from _recoil.call_contract import candidate as _contract_candidate
+    from _recoil.call_contract import catalog as _contract_catalog
+    from _recoil.call_contract import providers as _contract_providers
+    from _recoil.call_contract import receiver_equivalence as _contract_receiver_equivalence
+    from _recoil.call_contract import records as _contract_records
+    from _recoil.call_contract import targets as _contract_targets
     from _recoil.commands import provider_function_mutation as providers
 
     name = "?Copy@PointerVector@@IAEXPAPAX0@Z"
     primary = "?Copy@IntegerVector@@IAEXPAH0@Z"
     env = tmp_path / "compiler" / "env.cmd"
-    monkeypatch.setattr(cc, "compiler_env_path", lambda *_: env)
+    monkeypatch.setattr(_contract_providers, "compiler_env_path", lambda *_: env)
     proof_calls = []
     def live_proof(**kwargs):
         proof_calls.append(kwargs)
         return Row(relocations=(), masked_byte_count=0, comdat_selection=2, body_size=4)
     monkeypatch.setattr(providers, "_provider_header_comdat_proof", live_proof)
-    helper = cc.CandidateTuLocalFunctionDefinition(symbol=name,
+    helper = _contract_records.CandidateTuLocalFunctionDefinition(symbol=name,
         data=bytes.fromhex("c2 08 00 90"), relocations=(), relocation_mask=(False,) * 4,
         section_size=4, section_external_functions=(name,), section_is_comdat=True,
         comdat_selection=2, source_provenance=str(env.parent / "VC/INCLUDE/vector"))
     symbol = Row(index=3, name=name, section_number=2, storage_class=2,
         value=0, weak_external_tag_index=None)
-    caller = cc.CandidateCallerDefinition(symbol="_caller", data=b"\xc3",
+    caller = _contract_records.CandidateCallerDefinition(symbol="_caller", data=b"\xc3",
         relocations=(), relocation_mask=(False,), undefined_external_functions=(),
         defined_external_functions=(name,), coff_symbols=(symbol,),
         section_index=1, section_start=0, section_end=1)
-    candidate = cc.CandidateAssembly(instructions=(), local_control_flow_indices=frozenset(),
+    candidate = _contract_records.CandidateAssembly(instructions=(), local_control_flow_indices=frozenset(),
         caller_definition=caller, tu_local_function_definitions={name: helper})
     record = {"object_symbol": primary, "address": "0x1000", "size": 4,
         "kind": "provider-function", "pipeline_class": "non-authored",
@@ -348,12 +632,12 @@ def test_candidate_provider_catalog_requires_live_typed_header_proof(monkeypatch
             "probe_recipe": "test-primary", "body_size": 4, "comdat_selection": 2,
             "retail_icf": {"logical_symbols": [primary, name]}}}
     records = {"unit": record}
-    identities = cc.IdentityIndexes(by_address={"0x1000": "provider:unit"},
+    identities = _contract_records.IdentityIndexes(by_address={"0x1000": "provider:unit"},
         by_candidate_name={}, provider_ids=frozenset({"provider:unit"}),
         storage_by_address={}, storage_by_name={})
     bridge = Row(hexdump=lambda *_: "00001000  c2 08 00 90")
     def match(value=candidate, rows=records, indexes=identities):
-        return cc._candidate_only_provider_comdat_catalog_matches(name, value,
+        return _contract_providers._candidate_only_provider_comdat_catalog_matches(name, value,
             document=Row(collection=lambda _: rows), indexes=indexes, bridge=bridge)
     assert match() == ("provider:unit",)
     assert proof_calls[-1]["request"]["retail_icf_logical_symbols"] == [primary, name]
@@ -479,7 +763,7 @@ def test_header_catalog_extension_preserves_identity_extent_and_owner():
 
 
 def test_spilled_loop_index_is_not_an_unknown_stack_receiver():
-    from _recoil.commands.call_contract_verify import _is_bounded_stack_vptr
+    from _recoil.call_contract.receiver_candidate import _is_bounded_stack_vptr
     expression = (
         "load(load(load(affine(load(call-result(symbol:unit)+0x84),"
         "bounded-stack-counter+0x18*4))+0x8))"
@@ -498,7 +782,7 @@ def test_spilled_loop_index_is_not_an_unknown_stack_receiver():
 
 
 def test_deferred_comdat_requires_unique_exact_observed_header_rows(tmp_path):
-    from _recoil.commands.call_contract_verify import _candidate_comdat_source_provenance
+    from _recoil.call_contract.candidate import _candidate_comdat_source_provenance
     source = tmp_path / "unit.cpp"
     source.write_text("unrelated\n", encoding="utf-8")
     listing = tmp_path / "unit.cod"
@@ -525,7 +809,7 @@ def test_deferred_comdat_requires_unique_exact_observed_header_rows(tmp_path):
 
 def test_comdat_header_pool_requires_exact_current_tu_observation(tmp_path):
     from copy import deepcopy
-    from _recoil.commands.call_contract_verify import _candidate_unit_header_source_files
+    from _recoil.call_contract.candidate import _candidate_unit_header_source_files
     header = tmp_path / "provider.h"
     header.write_text("declaration\nreturn;\n", encoding="utf-8")
     observation = {
@@ -572,9 +856,8 @@ def test_comdat_header_pool_requires_exact_current_tu_observation(tmp_path):
 
 def test_member_storage_rendering_preserves_load_depth_roots_offsets_and_call_shape():
     from copy import deepcopy
-    from _recoil.commands.call_contract_verify import (
-        _canonical_proven_member_storage, compare_call_contracts,
-    )
+    from _recoil.call_contract.comparison import compare_call_contracts
+    from _recoil.call_contract.receiver_equivalence import _canonical_proven_member_storage
     base = dict(ordinal=0, form="call", dispatch="indirect",
         identity_kind="virtual-slot", target_identity="", slot_displacement=12,
         cleanup_bytes=4)
@@ -684,7 +967,7 @@ def test_reviewed_target_authority_is_not_duplicated_by_diagnostics():
 def test_regex_authority_uses_unique_same_address_accepted_order_target():
     from copy import deepcopy
     import pytest
-    from _recoil.commands.call_contract_verify import _select_registered_symbol_regex_authority
+    from _recoil.call_contract.dispatch import _select_registered_symbol_regex_authority
 
     address = "0x401000"
     governing = {
@@ -724,9 +1007,8 @@ def test_regex_authority_uses_unique_same_address_accepted_order_target():
 def test_known_authored_targets_cannot_be_substituted_by_legacy_projection():
     from dataclasses import replace
     from types import SimpleNamespace as Row
-    from _recoil.commands.call_contract_verify import (
-        IdentityIndexes, _known_authored_direct_target_divergence,
-    )
+    from _recoil.call_contract.callable_identity import _known_authored_direct_target_divergence
+    from _recoil.call_contract.records import IdentityIndexes
     from _recoil.commands.asm_verify import Instruction
 
     name = "?Build@Different@@QAEXXZ"
@@ -781,9 +1063,7 @@ def test_compiler_provider_identity_uses_live_sites_and_exact_retail_ordinals():
     from types import SimpleNamespace as Row
     import pytest
     from _recoil.commands.asm_verify import Instruction
-    from _recoil.commands.call_contract_verify import (
-        _prove_same_ordinal_compiler_provider_calls,
-    )
+    from _recoil.call_contract.providers import _prove_same_ordinal_compiler_provider_calls
 
     name, identity = "__runtime_helper", "provider:runtime-helper"
     expected = [dict(ordinal=i, form="call", dispatch="direct",
@@ -857,10 +1137,9 @@ def test_candidate_cfg_receiver_join_uses_coff_identity_not_zero_operand_address
     from dataclasses import replace
     from types import SimpleNamespace as Row
     from _recoil.commands.asm_verify import Instruction
-    from _recoil.commands.call_contract_verify import (
-        IdentityIndexes, _candidate_coff_direct_call_identities,
-        _exact_retail_cfg_register_provenance,
-    )
+    from _recoil.call_contract.receiver_candidate import _candidate_coff_direct_call_identities
+    from _recoil.call_contract.receiver_retail import _exact_retail_cfg_register_provenance
+    from _recoil.call_contract.records import IdentityIndexes
 
     name, identity = "?Acquire@@YAPAXXZ", "symbol:factory"
     encoded = [
@@ -921,9 +1200,8 @@ def test_candidate_cfg_receiver_join_uses_coff_identity_not_zero_operand_address
 @pytest.mark.parametrize("clobber", [False, True])
 def test_cfg_receiver_join_converges_through_a_loop_without_losing_paths(clobber):
     from _recoil.commands.asm_verify import Instruction
-    from _recoil.commands.call_contract_verify import (
-        IdentityIndexes, _exact_retail_cfg_register_provenance,
-    )
+    from _recoil.call_contract.receiver_retail import _exact_retail_cfg_register_provenance
+    from _recoil.call_contract.records import IdentityIndexes
 
     encoded = [
         ("8b f1", "mov esi, ecx"), ("e8 00 00 00 00", "call factory"),
@@ -956,7 +1234,7 @@ def test_cfg_receiver_join_converges_through_a_loop_without_losing_paths(clobber
 
 def test_candidate_call_result_vptr_requires_current_operand_and_receiver_proofs():
     from types import SimpleNamespace as Row
-    from _recoil.commands.call_contract_verify import _exact_candidate_cfg_vptr_proofs
+    from _recoil.call_contract.receiver_candidate import _exact_candidate_cfg_vptr_proofs
 
     name, identity = "?Acquire@@YAPAXXZ", "symbol:factory"
     specs = [("e8 00 00 00 00", "call " + name), ("8b f8", "mov edi, eax"),
@@ -1011,14 +1289,14 @@ def test_candidate_call_result_vptr_requires_current_operand_and_receiver_proofs
         offset += len(encoded)
     definition.data = b"".join(data_parts)
     definition.relocation_mask = bytes([0] + [1]*4 + [0]*(offset-5))
-    from _recoil.commands.call_contract_verify import _candidate_coff_direct_call_identities
+    from _recoil.call_contract.receiver_candidate import _candidate_coff_direct_call_identities
     assert _candidate_coff_direct_call_identities(instructions, addresses=addresses,
         caller_start=0x1000, definition=definition, indexes=indexes) == {0: identity}
     assert prove() == {}
 
 
 def test_cfg_receiver_proof_includes_later_arrivals_at_the_same_call():
-    from _recoil.commands.call_contract_verify import _exact_retail_cfg_register_provenance
+    from _recoil.call_contract.receiver_retail import _exact_retail_cfg_register_provenance
 
     specs = [("8b f1", "mov esi, ecx"), ("8b 7e 20", "mov edi, [esi+0x20]"),
              ("8b 17", "mov edx, [edi]"), ("8b cf", "mov ecx, edi"),
@@ -1041,7 +1319,7 @@ def test_cfg_receiver_proof_includes_later_arrivals_at_the_same_call():
 
 
 def test_cfg_array_cursor_requires_zero_entry_and_exact_recurrence():
-    from _recoil.commands.call_contract_verify import _exact_retail_cfg_register_provenance
+    from _recoil.call_contract.receiver_retail import _exact_retail_cfg_register_provenance
 
     def prove(field=0x20, stride=0x2c0, initialized=True, clobber=False, contract=False,
               candidate=False, corrupt_coff=False, relocated_cursor=False):
@@ -1065,7 +1343,7 @@ def test_cfg_array_cursor_requires_zero_entry_and_exact_recurrence():
             cursor += len(raw.split())
         if candidate:
             from types import SimpleNamespace as Row
-            from _recoil.commands.call_contract_verify import _exact_candidate_cfg_vptr_proofs
+            from _recoil.call_contract.receiver_candidate import _exact_candidate_cfg_vptr_proofs
             data = bytes.fromhex(" ".join(raw for raw, _ in specs))
             if corrupt_coff:
                 data = b"\x90" + data[1:]
@@ -1078,7 +1356,7 @@ def test_cfg_array_cursor_requires_zero_entry_and_exact_recurrence():
                     coff_symbols=[]), local_control_flow_indices=frozenset(),
                 local_control_flow_targets={})
         if contract:
-            from _recoil.commands.call_contract_verify import extract_invocation_contract
+            from _recoil.call_contract.extraction import extract_invocation_contract
             return extract_invocation_contract(instructions, source="bn", caller_identity="symbol:unit",
                 caller_start="0x1000", caller_end_exclusive=hex(cursor),
                 indexes=IdentityIndexes(by_address={}, by_candidate_name={}, provider_ids=frozenset(),
@@ -1109,7 +1387,7 @@ def test_cfg_array_cursor_requires_zero_entry_and_exact_recurrence():
 
 
 def test_cfg_indexed_receiver_preserves_index_source_and_rejects_unknowns():
-    from _recoil.commands.call_contract_verify import _exact_retail_cfg_register_provenance
+    from _recoil.call_contract.receiver_retail import _exact_retail_cfg_register_provenance
 
     indexes = IdentityIndexes(by_address={}, by_candidate_name={}, provider_ids=frozenset(),
         storage_by_address={}, storage_by_name={})
@@ -1160,7 +1438,12 @@ def test_constructor_authority_requires_each_live_definition_without_retired_wra
     from pathlib import Path
     from types import SimpleNamespace as Row
     import pytest
-    from _recoil.commands import call_contract_verify as contract
+    from _recoil.call_contract import candidate as _contract_candidate
+    from _recoil.call_contract import catalog as _contract_catalog
+    from _recoil.call_contract import providers as _contract_providers
+    from _recoil.call_contract import receiver_equivalence as _contract_receiver_equivalence
+    from _recoil.call_contract import records as _contract_records
+    from _recoil.call_contract import targets as _contract_targets
 
     for field, value in (
         ("HUD_NET_GAME_SETUP_NUMERIC_CONSTRUCTOR_SOURCE_PATH", "base.cpp"),
@@ -1168,7 +1451,7 @@ def test_constructor_authority_requires_each_live_definition_without_retired_wra
         ("HUD_NET_GAME_SETUP_CYCLE_SELECTOR_CONSTRUCTOR_SYMBOL", "cycle"),
         ("HUD_CONFIRM_QUIT_BASE_CONSTRUCTOR_SYMBOL", "widget"),
     ):
-        monkeypatch.setattr(contract, field, value)
+        monkeypatch.setattr(_contract_catalog, field, value)
     definitions = {name: Row(symbol=name) for name in ("number", "cycle", "widget")}
     requested = []
 
@@ -1176,13 +1459,13 @@ def test_constructor_authority_requires_each_live_definition_without_retired_wra
         requested.append(names)
         return definitions.copy()
 
-    monkeypatch.setattr(contract, "_candidate_selected_constructor_definitions", extract)
+    monkeypatch.setattr(_contract_candidate, "_candidate_selected_constructor_definitions", extract)
     target = Row()
     unit = (Row(source_from="base.cpp"), Path("base.cod"), Row())
     unrelated = (Row(source_from="other.cpp"), Path("other.cod"), Row())
 
     def acquire(units):
-        return contract._compile_hud_numeric_constructor_authority(
+        return _contract_candidate._compile_hud_numeric_constructor_authority(
             build_root=Path("unused"), vc5_env=Path("unused"), precompiled=(target, units),
         )
 
@@ -1229,11 +1512,9 @@ from _recoil.lib.zeroarg_abi import (  # noqa: E402
     manifest_symbol_normalization,
 )
 from _recoil.commands.asm_verify import Instruction  # noqa: E402
-from _recoil.commands.call_contract_verify import (  # noqa: E402
-    IdentityIndexes,
-    _exact_targetless_vptr_call_proofs,
-    _normalize_call_contract_row,
-)
+from _recoil.call_contract.comparison import _normalize_call_contract_row
+from _recoil.call_contract.receiver_proofs import _exact_targetless_vptr_call_proofs
+from _recoil.call_contract.records import IdentityIndexes
 
 
 def test_json_evidence_boundary_returns_an_alias_free_native_copy() -> None:
@@ -1450,7 +1731,7 @@ def test_global_virtual_receiver_window_rejects_bypass_and_wrong_provenance() ->
 
 def test_invocation_comparison_retains_dependency_and_argument_obligations() -> None:
     from copy import deepcopy
-    from _recoil.commands.call_contract_verify import compare_call_contracts
+    from _recoil.call_contract.comparison import compare_call_contracts
 
     base = {"ordinal": 0, "form": "call", "dispatch": "direct", "identity_kind": "direct",
             "target_identity": "symbol:unit", "storage_identity": "",
@@ -1468,7 +1749,7 @@ def test_invocation_comparison_retains_dependency_and_argument_obligations() -> 
 
 
 def test_explicit_lifecycle_target_cannot_be_replaced_by_ambiguous_fallback() -> None:
-    from _recoil.commands.call_contract_verify import _explicit_lifecycle_target_identity
+    from _recoil.call_contract.recoil_lifecycle import _explicit_lifecycle_target_identity
 
     assert _explicit_lifecycle_target_identity("symbol:unit", {"symbol:unit"}) == "symbol:unit"
     for prior, candidates in (
@@ -1481,7 +1762,7 @@ def test_explicit_lifecycle_target_cannot_be_replaced_by_ambiguous_fallback() ->
 
 
 def test_invocation_comparison_does_not_expand_deletion_or_fold_volume_calls() -> None:
-    from _recoil.commands.call_contract_verify import compare_call_contracts
+    from _recoil.call_contract.comparison import compare_call_contracts
 
     base = {"ordinal": 0, "form": "call", "dispatch": "direct", "identity_kind": "direct",
             "target_identity": "symbol:destructor", "storage_identity": "",
@@ -1524,9 +1805,8 @@ def test_invocation_comparison_does_not_expand_deletion_or_fold_volume_calls() -
 def test_relocated_body_equivalence_requires_all_bytes_and_exact_target_semantics():
     from dataclasses import replace
     from types import SimpleNamespace as Row
-    from _recoil.commands.call_contract_verify import (
-        CandidateCallerDefinition, _identical_relocated_call_body,
-    )
+    from _recoil.call_contract.receiver_equivalence import _identical_relocated_call_body
+    from _recoil.call_contract.records import CandidateCallerDefinition
 
     start, target = 0x1000, 0x5000
     prefix = bytes.fromhex("8b 41 20 8b 10 8b c8 ff 52 60 e8")
@@ -1586,7 +1866,13 @@ def test_relocated_body_equivalence_requires_all_bytes_and_exact_target_semantic
 def test_exact_body_virtual_lineage_checks_candidate_listing_and_slot(monkeypatch):
     from dataclasses import replace
     from types import SimpleNamespace as Row
-    from _recoil.commands import call_contract_verify as contract
+    from _recoil.call_contract import candidate as _contract_candidate
+    from _recoil.call_contract import callable_identity as _contract_callable_identity
+    from _recoil.call_contract import catalog as _contract_catalog
+    from _recoil.call_contract import providers as _contract_providers
+    from _recoil.call_contract import receiver_equivalence as _contract_receiver_equivalence
+    from _recoil.call_contract import records as _contract_records
+    from _recoil.call_contract import targets as _contract_targets
 
     body = bytes.fromhex("8b 01 ff 50 60 c3")
     class Handle:
@@ -1596,26 +1882,26 @@ def test_exact_body_virtual_lineage_checks_candidate_listing_and_slot(monkeypatc
             return False
         def read(self):
             return body
-    monkeypatch.setattr(contract, "StableReadHandle", lambda _: Handle())
-    monkeypatch.setattr(contract, "parse_pe_headers", lambda *_a, **_k:
+    monkeypatch.setattr(_contract_receiver_equivalence, "StableReadHandle", lambda _: Handle())
+    monkeypatch.setattr(_contract_receiver_equivalence, "parse_pe_headers", lambda *_a, **_k:
         Row(image_base=0x1000, size_of_image=0x1000, sections=()))
-    monkeypatch.setattr(contract, "rva_to_offset", lambda *_: 0)
-    monkeypatch.setattr(contract, "_candidate_complete_instruction_offsets", lambda _: (0, 2, 5))
+    monkeypatch.setattr(_contract_receiver_equivalence, "rva_to_offset", lambda *_: 0)
+    monkeypatch.setattr(_contract_callable_identity, "_candidate_complete_instruction_offsets", lambda _: (0, 2, 5))
     instructions = tuple(Instruction(text=text, raw_text=text,
         bytes=tuple(encoded.split()), source_line=text) for text, encoded in (
             ("mov eax, dword ptr [ecx]", "8b 01"),
             ("call dword ptr [eax+0x60]", "ff 50 60"), ("ret", "c3")))
-    definition = contract.CandidateCallerDefinition(symbol="_caller", data=body,
+    definition = _contract_records.CandidateCallerDefinition(symbol="_caller", data=body,
         relocations=(), relocation_mask=(False,) * len(body), undefined_external_functions=())
     candidate = Row(caller_definition=definition, instructions=instructions)
     expected = {"ordinal": 0, "form": "call", "dispatch": "indirect",
         "identity_kind": "virtual-slot", "storage_identity": "load(this)",
         "target_identity": "", "slot_displacement": 0x60, "cleanup_bytes": None}
-    indexes = contract.IdentityIndexes(by_address={}, by_candidate_name={},
+    indexes = _contract_records.IdentityIndexes(by_address={}, by_candidate_name={},
         provider_ids=frozenset(), storage_by_address={}, storage_by_name={})
 
     def prove(value=candidate, row=expected):
-        return contract._exact_body_vptr_candidate_bridges(value, caller_start="0x1000",
+        return _contract_receiver_equivalence._exact_body_vptr_candidate_bridges(value, caller_start="0x1000",
             caller_end_exclusive="0x1006", indexes=indexes, expected=(row,),
             retail_call_sites=("0x1002",))
     proof = prove()["0x2"]
@@ -1631,7 +1917,7 @@ def test_exact_body_virtual_lineage_checks_candidate_listing_and_slot(monkeypatc
 def test_pooled_data_alias_index_requires_unique_physical_storage_and_evidence():
     from copy import deepcopy
     from types import SimpleNamespace as Row
-    from _recoil.commands.call_contract_verify import _index_reviewed_pooled_data_names
+    from _recoil.call_contract.storage_identity import _index_reviewed_pooled_data_names
 
     name, key = "??_C@_00A@?$AA@", "data:pooled-literal"
     alias = {"kind": "data", "object_symbol": name, "evidence_ids": ["proof"],
@@ -1668,7 +1954,7 @@ def test_pooled_data_alias_index_requires_unique_physical_storage_and_evidence()
         value["pooling"]["physical_artifact_id"] = "other"
     assert index({key: physical, "other": competing}, addresses={
         "0x2000": f"storage:{key}", "0x3000": "storage:other"}) == ""
-    from _recoil.commands.call_contract_verify import _pooled_data_manifest_supplier
+    from _recoil.call_contract.storage_identity import _pooled_data_manifest_supplier
     document = Row(collection=lambda _: {key: physical})
     def supplier(address="0x2000", size=1, identity=f"storage:{key}"):
         return _pooled_data_manifest_supplier(document, target_id="target:unit",
@@ -1683,7 +1969,8 @@ def test_pooled_data_alias_index_requires_unique_physical_storage_and_evidence()
 
 def test_wrapped_disp32_mov_retains_only_exact_listing_coordinates():
     from types import SimpleNamespace as Row
-    from _recoil.commands.call_contract_verify import parse_assembly, _candidate_complete_instruction_offsets
+    from _recoil.call_contract.callable_identity import _candidate_complete_instruction_offsets
+    from _recoil.call_contract.listing import parse_assembly
 
     first = "00000 8b 81 ec 01 00"
     second = " 00 mov eax, DWORD PTR [ecx+492]"
@@ -1701,7 +1988,7 @@ def test_wrapped_disp32_mov_retains_only_exact_listing_coordinates():
 
 def test_private_relocation_labels_preserve_partition_and_ordinary_identity():
     from types import SimpleNamespace as Row
-    from _recoil.commands.call_contract_verify import _canonical_zui_relocation_names
+    from _recoil.call_contract.recoil_ui import _canonical_zui_relocation_names
 
     def normalize(names):
         return _canonical_zui_relocation_names([Row(symbol_name=name) for name in names])
@@ -1715,7 +2002,7 @@ def test_private_relocation_labels_preserve_partition_and_ordinary_identity():
 
 def test_raw_call_count_guard_precedes_helper_projections_and_checks_retail_census() -> None:
     from types import SimpleNamespace as Row
-    from _recoil.commands.call_contract_verify import _raw_call_count_divergence
+    from _recoil.call_contract.identity import _raw_call_count_divergence
     from _recoil.commands.asm_verify import Instruction
 
     def ins(text):
@@ -1754,17 +2041,20 @@ def test_raw_call_count_guard_precedes_helper_projections_and_checks_retail_cens
 
 @pytest.mark.parametrize("mnemonic", ["bts", "btr", "btc"])
 def test_bit_modify_instructions_kill_register_provenance(mnemonic) -> None:
-    from _recoil.commands.call_contract_verify import _instruction_may_clobber_register
+    from _recoil.call_contract.cfg import _instruction_may_clobber_register
     from _recoil.commands.asm_verify import Instruction
 
     text = f"{mnemonic} ebx, 1"
-    instruction = Instruction(text=text, raw_text=text, bytes=(), source_line=text)
+    encoding = {"bts": "0f ba eb 01", "btr": "0f ba f3 01", "btc": "0f ba fb 01"}[mnemonic]
+    instruction = Instruction(text=text, raw_text=text, bytes=tuple(encoding.split()), source_line=text)
     assert _instruction_may_clobber_register(instruction, "ebx")
     assert not _instruction_may_clobber_register(instruction, "esi")
+    assert _instruction_may_clobber_register(
+        Instruction(text=text, raw_text=text, bytes=(), source_line=text), "esi")
 
 
 def test_dynamic_probe_coordinates_allow_only_uniform_translation() -> None:
-    from _recoil.commands.call_contract_verify import _translated_dynamic_probe_setup
+    from _recoil.call_contract.identity import _translated_dynamic_probe_setup
 
     setup = ((8, b"\x24\xfc"), (18, b"\x24\xfc"))
     for delta in (-1, 0, 3):
@@ -1898,7 +2188,7 @@ def test_targetless_vptr_does_not_replace_reviewed_retail_member_provenance() ->
 
 
 def test_runtime_vptr_does_not_inherit_an_unrelated_construction_table():
-    from _recoil.commands.call_contract_verify import extract_invocation_contract
+    from _recoil.call_contract.extraction import extract_invocation_contract
 
     indexes = IdentityIndexes(by_address={"0x3000": "symbol:unrelated-method"},
         by_candidate_name={}, provider_ids=frozenset(),
@@ -1999,3 +2289,98 @@ def test_virtual_slot_normalization_folds_exact_this_member_lea_spelling() -> No
     normalized = _normalize_call_contract_row(row, candidate_side=True)
 
     assert normalized["storage_identity"] == "load(this+0x3c)"
+
+
+@pytest.mark.parametrize("kind,symbol", [
+    ("copy-constructor", "??0ProofValue@@QAE@ABU0@@Z"),
+    ("copy-assignment", "??4ProofValue@@QAEAAU0@ABU0@@Z"),
+])
+def test_implicit_copy_binding_keeps_authored_gates_and_requires_expanded_origin(tmp_path, kind, symbol):
+    from dataclasses import replace
+    from types import SimpleNamespace as Row
+    from _recoil.commands.vc5_verify import VerifyFunction
+    from _recoil.lib.source_emission_markers import EmissionAnchor
+    from _recoil.lib.implicit_copy_members import validate_member_metadata, validate_source_binding, validate_expanded_source
+
+    path = "tests/tools/proof_value.cpp"
+    anchor = EmissionAnchor(path, "type-definition", "ProofValue")
+    function = VerifyFunction("0x401000", symbol, "ProofValue copy", pipeline_class="authored",
+        authored_order_role="authored-body", emission_anchor=anchor, implicit_member_kind=kind)
+    artifact = Row(relation="emits", section=".text", direct=True, construct=Row(kind="type", name="ProofValue"),
+                   path=path, anchor_id="recoil:anchor:proof-value", artifact_id="recoil:function:0x401000")
+    trace = {"state": "resolved", "source_edges": [{"relation": "emits", "anchor_id": artifact.anchor_id,
+              "emission_context": {"translation_unit": path}}]}
+    binding = validate_source_binding(function=function, artifact=artifact, translation_unit=path, tracker_source_trace=trace)
+    expanded = '#line 1 "probe.cpp"\nstruct ProofValue { int value; ProofValue(int); };\n'
+    kwargs = dict(compilation_directory=tmp_path, compiled_source=tmp_path / "probe.cpp")
+    assert validate_expanded_source(expanded, binding, **kwargs)["explicit_selected_member"] is False
+    explicit = ("ProofValue(const ProofValue &);" if kind == "copy-constructor"
+                else "ProofValue &operator=(const ProofValue &);")
+    with pytest.raises(ValueError, match="explicitly declares"):
+        validate_expanded_source(expanded.replace("int value;", explicit), binding, **kwargs)
+    with pytest.raises(ValueError, match="source anchor"):
+        validate_expanded_source(expanded.replace('"probe.cpp"', '"unrelated.h"'), binding, **kwargs)
+    with pytest.raises(ValueError, match="compiler source-origin"):
+        validate_expanded_source(expanded.split("\n", 1)[1], binding, **kwargs)
+    for change in ({"required_presence": False}, {"source_order_gate": False}, {"full_order_gate": False},
+                   {"pipeline_class": "non-authored"}, {"symbol_regex": ".*"}, {"symbol": symbol.replace("ProofValue", "Unrelated")},
+                   {"provenance": "provider-boundary"}, {"implicit_member_kind": "arbitrary-member"}):
+        with pytest.raises(ValueError):
+            validate_member_metadata(replace(function, **change))
+    trace["source_edges"][0]["emission_context"] = {"translation_unit": "wrong.cpp"}
+    with pytest.raises(ValueError, match="class/TU emission edge"):
+        validate_source_binding(function=function, artifact=artifact, translation_unit=path, tracker_source_trace=trace)
+
+
+def test_implicit_copy_native_emission_rejects_wrong_tu_comdat_and_relocations():
+    from types import SimpleNamespace as Row
+    from _recoil.lib.implicit_copy_members import ImplicitCopyBinding, validate_native_emission
+    from _recoil.lib.source_emission_markers import EmissionAnchor
+    binding = ImplicitCopyBinding("copy-constructor", "??0ProofValue@@QAE@ABU0@@Z", "recoil:function:0x401000",
+                                 EmissionAnchor("proof.cpp", "type-definition", "ProofValue"), "proof.cpp")
+    symbol = Row(name=binding.symbol, section_number=1, storage_class=2, value=0, type=0x20,
+                 section_definition_selection=None, section_definition_association=None)
+    section_symbol = Row(name=".text", section_number=1, section_definition_selection=2,
+                         section_definition_association=None)
+    section = Row(index=1, name=".text", raw_data=b"\xe8\0\0\0\0\xc3", characteristics=0x1020)
+    relocation = Row(offset=1, type=20, symbol_index=2, symbol_name="_base_copy")
+    coff = Row(symbols=[symbol, section_symbol], sections=[section], symbols_by_index={2: Row(name="_base_copy")},
+               relocations_by_section={1: [relocation]})
+    listing = binding.symbol + " PROC NEAR\n" + binding.symbol + " ENDP\n"
+    args = dict(binding=binding, coff=coff, cod_text=listing, source_from="proof.cpp")
+    assert validate_native_emission(**args)["native_emission"] is True
+    with pytest.raises(ValueError, match="wrong translation unit"):
+        validate_native_emission(**{**args, "source_from": "other.cpp"})
+    section_symbol.section_definition_selection = 3
+    with pytest.raises(ValueError, match="ANY COMDAT"):
+        validate_native_emission(**args)
+    section_symbol.section_definition_selection = 2
+    relocation.offset = 4
+    with pytest.raises(ValueError, match="relocation"):
+        validate_native_emission(**args)
+
+
+def test_physical_contributions_preserve_count_tail_and_indirect_dispatch():
+    from _recoil.call_contract.contributions import InvocationContribution, contribution_results, require_projection_accounting
+    from _recoil.call_contract.proofs import ProofStatus
+    expected = (InvocationContribution("retail", "0x401000", "call", "indirect"),)
+    candidate = (InvocationContribution("candidate", "0x0", "tail", "direct"),)
+    results = contribution_results(expected, candidate)
+    assert [row.status for row in results] == [ProofStatus.PROVEN, ProofStatus.CONFLICT, ProofStatus.CONFLICT]
+    with pytest.raises(ValueError, match="population"):
+        require_projection_accounting(candidate, [], side="candidate")
+    with pytest.raises(ValueError, match="form/dispatch"):
+        require_projection_accounting(candidate, [{"form": "call", "dispatch": "indirect"}], side="candidate")
+
+
+def test_pair_comparison_cannot_borrow_the_other_sides_receiver_or_dispatch():
+    from _recoil.call_contract.comparison import compare_call_contracts
+    expected = [{"ordinal": 0, "form": "call", "dispatch": "indirect", "identity_kind": "virtual-slot",
+                 "target_identity": "", "storage_identity": "load(entry-register(ecx))", "slot_displacement": 4,
+                 "cleanup_bytes": None}]
+    candidate = [{**expected[0], "storage_identity": "load(entry-register(edx))"}]
+    result = compare_call_contracts(expected, candidate)
+    assert result["passed"] is False
+    assert any(row["dimension"] == "storage_identity" and row["status"] == "conflict" for row in result["proof_results"])
+    candidate = [{**expected[0], "dispatch": "direct"}]
+    assert compare_call_contracts(expected, candidate)["passed"] is False

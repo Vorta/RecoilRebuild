@@ -27,8 +27,9 @@ ROOTS = (
 STRUCTURED_SQLITE_TEST_PATHS = (
     REPO_ROOT / "tests" / "tools" / "test_tracker_transactions.py",
 )
-CALL_CONTRACT_AUTHORITY_PATH = (
-    REPO_ROOT / "tools" / "_recoil" / "commands" / "call_contract_verify.py"
+CALL_CONTRACT_AUTHORITY_PATHS = tuple(
+    REPO_ROOT / path for path in sorted(CALL_CONTRACT_VERIFIER_COMPONENT_PATHS)
+    if "/call_contract/" in path or path.endswith("/call_contract_verify.py")
 )
 REPOSITORY_PATH_AUTHORITY = "tools/_recoil/lib/repository_paths.py"
 MACHINE_LOCAL_AUTHORITY_DEFAULTS = (
@@ -48,14 +49,18 @@ MACHINE_LOCAL_AUTHORITY_DEFAULTS = (
         ".agent/WORKSPACE_ISSUES.sqlite3",
     ),
 )
-REPOSITORY_LOGICAL_CONSUMERS = frozenset(
-    {
-        "tools/_recoil/commands/vc5_verify.py",
-        "tools/_recoil/commands/call_contract_verify.py",
-        "tools/_recoil/lib/progress.py",
-        "tools/_recoil/commands/progress_cli.py",
-    }
-)
+REPOSITORY_LOGICAL_CONSUMERS = frozenset({
+    "tools/_recoil/commands/vc5_verify.py",
+    "tools/_recoil/lib/progress.py",
+    "tools/_recoil/commands/progress_cli.py",
+    "tools/_recoil/call_contract/candidate_session.py",
+    "tools/_recoil/call_contract/identity.py",
+    "tools/_recoil/call_contract/recoil_world.py",
+    "tools/_recoil/call_contract/session.py",
+    "tools/_recoil/call_contract/source.py",
+    "tools/_recoil/lib/source_emission_markers.py",
+    "tools/_recoil/lib/source_traceability.py",
+})
 SHARED_REPOSITORY_PATH_DEFINITIONS = frozenset(
     {
         "RepositoryPathInventory",
@@ -66,32 +71,19 @@ SHARED_REPOSITORY_PATH_DEFINITIONS = frozenset(
         "resolve_repository_file",
         "diagnose_historical_repository_path",
         "normalize_generated_repository_path",
+        "source_trace_path_spelling",
     }
 )
 # Each entry must be a reviewed physical-only projection (for example a build
 # artifact or machine-local diagnostic), never a current tracked logical path.
 # Keep this list function-scoped so a new projection in the same module cannot
 # inherit an unrelated allowance.
-REVIEWED_PHYSICAL_TO_LOGICAL_SITES: frozenset[tuple[str, str]] = frozenset(
-    {
-        (
-            "tools/_recoil/commands/call_contract_verify.py",
-            "file_dependency_states",
-        ),
-        (
-            "tools/_recoil/commands/call_contract_verify.py",
-            "_candidate_artifact_path",
-        ),
-        (
-            "tools/_recoil/commands/call_contract_verify.py",
-            "_compile_call_contract_definition_sources",
-        ),
-        (
-            "tools/_recoil/commands/progress_cli.py",
-            "_progress_command_path",
-        ),
-    }
-)
+REVIEWED_PHYSICAL_TO_LOGICAL_SITES: frozenset[tuple[str, str]] = frozenset({
+    ('tools/_recoil/call_contract/source.py', 'file_dependency_states'),
+    ('tools/_recoil/call_contract/source.py', '_candidate_artifact_path'),
+    ('tools/_recoil/call_contract/source.py', '_compile_call_contract_definition_sources'),
+    ('tools/_recoil/commands/progress_cli.py', '_progress_command_path'),
+})
 SELF = Path(__file__).resolve()
 # Active reconstruction tooling may not compute or require cryptographic
 # content summaries.  Git's internal object identifiers remain opaque state
@@ -450,15 +442,15 @@ def _targeted_direct_evidence_findings(
                     token=token,
                     text=lines[line - 1].strip()[:240],
                 ))
-    source = cache.source(CALL_CONTRACT_AUTHORITY_PATH) or ""
-    for line_number, line in enumerate(source.splitlines(), start=1):
-        if "vc5_verify_bn_cache" in line:
-            findings.append(Finding(
-                path=display_path(CALL_CONTRACT_AUTHORITY_PATH, REPO_ROOT),
-                line=line_number,
-                token="persisted-bn-cache-authority",
-                text=line.strip()[:240],
-            ))
+    for authority_path in CALL_CONTRACT_AUTHORITY_PATHS:
+        source = cache.source(authority_path) or ""
+        for line_number, line in enumerate(source.splitlines(), start=1):
+            if "vc5_verify_bn_cache" in line:
+                findings.append(Finding(
+                    path=display_path(authority_path, REPO_ROOT),
+                    line=line_number, token="persisted-bn-cache-authority",
+                    text=line.strip()[:240],
+                ))
     return findings
 
 

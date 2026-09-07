@@ -38,6 +38,7 @@ def _number(text: str) -> int:
 class ArgumentBits:
     def __init__(self, instructions: Sequence[str], successors: Mapping[int, Sequence[int]], unresolved: frozenset[int] = frozenset()):
         self.instructions = tuple(instructions)
+        self.machine_facts = None
         self.parts = tuple(self._parts(text) for text in instructions)
         self.successors = successors
         self.unresolved = unresolved
@@ -57,11 +58,50 @@ class ArgumentBits:
             self.reachable.add(index)
             pending.extend(successors.get(index, ()))
 
+    @classmethod
+    def from_machine(cls, instructions, successors, unresolved=frozenset()):
+        """Live proofs use byte-derived effects; text construction is algebra only."""
+        from _recoil.call_contract.instructions import instruction_fact
+        result = cls([instruction.text for instruction in instructions], successors, unresolved)
+        result.machine_facts = {index: instruction_fact(instructions[index]) for index in result.reachable}
+        for index, fact in result.machine_facts.items():
+            mnemonic, operands = result.parts[index]
+            if mnemonic != fact.mnemonic:
+                raise ArgumentProofError(f"argument instruction rendering disagrees with machine opcode at {index}: {mnemonic!r} versus {fact.mnemonic!r}")
+            if len(operands) != len(fact.operands):
+                raise ArgumentProofError("argument instruction rendering has the wrong operand count")
+            if mnemonic in {"push", "pop"} and fact.operands[0].size != 4:
+                raise ArgumentProofError("argument proof requires a 32-bit stack operation")
+            # Register and immediate operands must agree as well. Relocated
+            # addresses are outside this selected scalar-argument proof.
+            for spelling, operand in zip(operands, fact.operands):
+                if operand.kind == "register" and spelling != operand.register:
+                    raise ArgumentProofError("argument register rendering disagrees with machine operand")
+                if operand.kind == "memory":
+                    memory = re.fullmatch(r"(?:(byte|word|dword)(?: ptr)? )?\[(e(?:ax|bx|cx|dx|si|di|bp|sp))(?:(\+|-)(0x[0-9a-f]+|[0-9]+))?\]", spelling)
+                    if memory:
+                        displacement = _number(memory[4]) * (-1 if memory[3] == "-" else 1) if memory[4] else 0
+                        if (operand.base != memory[2] or operand.displacement != displacement
+                                or operand.index or operand.segment
+                                or memory[1] and operand.size != {"byte": 1, "word": 2, "dword": 4}[memory[1]]):
+                            raise ArgumentProofError("argument memory rendering disagrees with machine operand")
+                if operand.kind == "immediate" and not (fact.is_call or fact.is_jump):
+                    try:
+                        rendered_value = _number(spelling)
+                    except ArgumentProofError:
+                        # A symbolic relocated address may be irrelevant to the
+                        # selected scalar. operand_bit rejects it if selected.
+                        continue
+                    if rendered_value & 0xffffffff != operand.immediate & 0xffffffff:
+                        raise ArgumentProofError("argument immediate rendering disagrees with machine operand")
+        return result
+
     @staticmethod
     def _parts(text: str) -> tuple[str, tuple[str, ...]]:
         text = text.split(";", 1)[0].strip().lower()
         words = text.split(None, 1)
-        return words[0], tuple(part.strip() for part in words[1].split(",")) if len(words) > 1 else ()
+        mnemonic = {"retn": "ret", "sal": "shl", "jz": "je", "jnz": "jne"}.get(words[0], words[0])
+        return mnemonic, tuple(part.strip() for part in words[1].split(",")) if len(words) > 1 else ()
 
     def _incoming(self, index: int) -> tuple[int, ...]:
         if index not in self.reachable:
@@ -107,6 +147,13 @@ class ArgumentBits:
         if index in self.unresolved:
             raise ArgumentProofError("unresolved CFG edge in argument provenance")
         mnemonic, operands = self.parts[index]
+        if self.machine_facts is not None:
+            fact = self.machine_facts[index]
+            if not fact.writes(register, bit, 1):
+                return self.register_bit(index, register, bit)
+            destination = _REGISTERS.get(operands[0]) if operands else None
+            if destination is None or destination[0] != register or not destination[1] <= bit < destination[1] + destination[2]:
+                raise ArgumentProofError(f"unproved implicit argument register write: {mnemonic}")
         if mnemonic == "call":
             if register in {"eax", "ecx", "edx", "esp"}:
                 raise ArgumentProofError("volatile argument value crosses a call")
@@ -181,6 +228,9 @@ class ArgumentBits:
                         raise ArgumentProofError("unproven stack change before argument")
                     elif operands and "[" in operands[0] and mnemonic not in {"cmp", "test"}:
                         raise ArgumentProofError("stack argument overwritten through memory")
+                    elif self.machine_facts is not None and (
+                            self.machine_facts[index].writes("esp") or self.machine_facts[index].writes_memory):
+                        raise ArgumentProofError("unproven implicit stack or memory change before argument")
                     else:
                         values.append(seek(index, slot))
                 return self._unanimous(values)

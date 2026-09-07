@@ -855,10 +855,8 @@ def parse_source_trace_path(
     resolved = path.resolve()
     display = resolved.as_posix()
     if repo_root is not None:
-        try:
-            display = resolved.relative_to(repo_root.resolve()).as_posix()
-        except ValueError:
-            pass
+        from _recoil.lib.repository_paths import source_trace_path_spelling
+        display = source_trace_path_spelling(path, repository_root=repo_root)
     raw = resolved.read_bytes()
     if raw.startswith(b"\xef\xbb\xbf"):
         encoding = "utf-8-sig"

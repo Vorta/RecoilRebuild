@@ -345,6 +345,36 @@ def _same_physical_path(left: Path, right: Path) -> bool:
     return os.path.normcase(str(left)) == os.path.normcase(str(right))
 
 
+def source_trace_path_spelling(path: Path, *, repository_root: Path) -> str:
+    """Render a source read using names observed by the path authority.
+
+    Source parsers also inspect isolated compiler fixtures and external headers.
+    This establishes their spelling only; acceptance still requires the caller's
+    authorized repository inventory and exact source/anchor relationship.
+    A resolved Windows path retains supplied case, so it cannot supply that
+    spelling without checking the actual directory entries.
+    """
+    root, physical = repository_root.resolve(), path.resolve()
+    try:
+        parts = physical.relative_to(root).parts
+    except ValueError:
+        return physical.as_posix()
+    current, canonical = root, []
+    for part in parts:
+        folded = unicodedata.normalize("NFC", part).casefold()
+        matches = [entry.name for entry in os.scandir(current)
+                   if unicodedata.normalize("NFC", entry.name).casefold() == folded]
+        if len(matches) != 1:
+            raise _error("ambiguous-source-path", "source trace requires unique current directory spelling",
+                         context="source trace", path_text=str(path), candidates=tuple(matches))
+        canonical.append(matches[0])
+        current /= matches[0]
+    if not current.is_file() or _path_has_reparse_component(root, current) is not None:
+        raise _error("not-ordinary-source-file", "source trace requires an ordinary source file",
+                     context="source trace", path_text=str(path))
+    return validate_repository_relative_path("/".join(canonical), context="source trace")
+
+
 def _path_has_reparse_component(root: Path, candidate: Path) -> Path | None:
     try:
         parts = candidate.relative_to(root).parts

@@ -179,7 +179,7 @@ def validate(slice_row: dict[str, object], result: dict[str, object]) -> dict[st
 
 def test_early_rejection_projects_as_blocked_without_fabricating_a_transcript() -> None:
     from types import SimpleNamespace
-    from _recoil.commands.call_contract_verify import _call_contract_body_results
+    from _recoil.call_contract.reporting import _call_contract_body_results
 
     slice_row, result = direct_fixture()
     divergence = {

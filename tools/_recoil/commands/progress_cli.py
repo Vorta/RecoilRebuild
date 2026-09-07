@@ -35,15 +35,10 @@ from _recoil.commands.progress_v2 import (
     accept_live_order_block,
     add_live_evidence,
 )
-from _recoil.commands.call_contract_verify import (
-    CallContractSourceClosure,
-    _decorated_coff_name,
-    _finite_literal_symbol_regex_alternatives,
-    _resolve_phase_all_authored_bodies,
-    call_contract_source_closure,
-    file_dependency_states,
-    live_call_contract_result,
-)
+from _recoil.call_contract.candidate_session import (_resolve_phase_all_authored_bodies)
+from _recoil.call_contract.identity import (_decorated_coff_name, _finite_literal_symbol_regex_alternatives)
+from _recoil.call_contract.session import (live_call_contract_result)
+from _recoil.call_contract.source import (CallContractSourceClosure, call_contract_source_closure, file_dependency_states)
 from _recoil.commands import storage_contribution_progress as _authored_storage_progress
 from _recoil.commands.storage_contribution_progress import (
     load_payload as load_authored_storage_payload,

@@ -20,12 +20,11 @@ def _command(*args: str) -> list[str]:
 def _steps() -> list[tuple[str, list[str]]]:
     steps: list[tuple[str, list[str]]] = [
         ("agent surface", _command("audit", "agent-surface", "--strict")),
-        ("serial pipeline contract", _command("audit", "pipeline-contracts", "--strict")),
-        ("serial pipeline reachability", _command("audit", "pipeline-reachability", "--strict")),
         ("issue ledger", _command("issue", "audit", "--strict", "--json")),
         ("progress tracker", _command("progress", "audit", "--scope", "pipeline", "--strict", "--json")),
         ("live validation surface", _command("audit", "live-validation-surface", "--strict")),
         ("source policy", _command("audit", "source-policy")),
+        ("serial pipeline reachability", _command("audit", "pipeline-reachability", "--strict")),
     ]
     return steps
 

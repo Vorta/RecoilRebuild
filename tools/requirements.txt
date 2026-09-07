@@ -1,0 +1,2 @@
+# Decoder used by the Recoil x86 call-contract proof kernel.
+capstone==5.0.9
