@@ -1258,7 +1258,7 @@ inline void LoadHudZrdSound(
         if (hudBitmapNode_ != 0) { \
             zReader::Node *const hudBitmapBase_ = hudBitmapNode_->value.nodes; \
             const char *const hudBitmapPath_ = hudBitmapBase_[1].value.str; \
-            if (hudBitmapPath_ != 0) { \
+            { \
                 (outImage_) = zImage::TexDir_FindOrCreateByPath(hudBitmapPath_); \
             } \
         } \
@@ -1271,35 +1271,38 @@ inline void LoadHudZrdSound(
         if (hudSoundNode_ != 0) { \
             zReader::Node *const hudSoundBase_ = hudSoundNode_->value.nodes; \
             const char *const hudSoundName_ = hudSoundBase_[1].value.str; \
-            if (hudSoundName_ != 0) { \
-                (outScale_) = hudSoundBase_[0].value.i32 >= 3 \
+            { \
+                const float hudSoundScale_ = hudSoundBase_[0].value.i32 >= 3 \
                     ? hudSoundBase_[2].value.f32 \
                     : 1.0f; \
                 (outSound_) = zSnd::FindSampleByName(hudSoundName_); \
+                (outScale_) = hudSoundScale_; \
             } \
         } \
     } while (0)
 
 #define HUD_ZRD_INSERT_LABEL_COUNTED(panels_, panel_) \
-    (panels_).insert((panels_).end(), 1, (panel_))
+    (panels_).push_back(panel_)
 
 #define HUD_ZRD_INSERT_LABEL_NATURAL(panels_, panel_) \
-    (panels_).insert((panels_).end(), (panel_))
+    (panels_).insert((panels_).end(), 1, (panel_))
 
 #define HUD_ZRD_APPEND_LABEL_WITH_INSERT( \
     widget_, panels_, labelSpecBase_, originX_, originY_, insert_) \
     do { \
+        const int hudLabelOriginX_ = (originX_); \
+        const int hudLabelOriginY_ = (originY_); \
         HudUiPanel *hudPanel_; \
         hudPanel_ = (HudUiPanel *)(new HudUiTransitionTextPanel); \
         HudUiElement *hudElement_; \
         hudElement_ = (HudUiElement *)(hudPanel_); \
-        hudElement_->flags = (hudElement_->flags & 0x10u) | 0x02u; \
+        hudElement_->flags = (hudElement_->flags & 0x10u) | 2; \
         const char *const hudLabelKey_ = (labelSpecBase_)[1].value.str; \
         hudPanel_->SetTextFmt( \
             zLoc::ResolveMessageKeyOrFallback(hudLabelKey_)); \
         hudElement_->SetPos( \
-            (originX_) + (labelSpecBase_)[2].value.i32, \
-            (originY_) + (labelSpecBase_)[3].value.i32 \
+            hudLabelOriginX_ + (labelSpecBase_)[2].value.i32, \
+            hudLabelOriginY_ + (labelSpecBase_)[3].value.i32 \
         ); \
         const int hudStyleIndex_ = (labelSpecBase_)[4].value.i32; \
         const HudFontStyle *hudStyle_ = \
@@ -1318,17 +1321,12 @@ inline void LoadHudZrdSound(
                 0, \
                 2 \
             ); \
-            hudPanel_->textColor0 = hudStyle_->textColor; \
-            hudPanel_->textColor1 = hudStyle_->textColor; \
-            hudPanel_->textDirty = 1; \
-            hudPanel_->shadowEnabled = hudStyle_->shadowEnabled; \
-            hudPanel_->shadowOffsetX = 1; \
-            hudPanel_->shadowOffsetY = 1; \
-            hudPanel_->bkMode = hudStyle_->bkMode; \
-            hudPanel_->bkColor = hudStyle_->bkColor; \
+            hudPanel_->SetTextColorsAndMarkDirty(hudStyle_->textColor, hudStyle_->textColor); \
+            hudPanel_->SetShadow(hudStyle_->shadowEnabled, 1, 1); \
+            hudPanel_->SetTextBackground(hudStyle_->bkMode, hudStyle_->bkColor); \
         } \
-        hudElement_->SetVisible(1); \
-        ((HudUiContainer *)((widget_)->owner))->AddChild(hudElement_); \
+        hudPanel_->SetVisible(1); \
+        ((HudUiContainer *)((widget_)->owner))->AddChild(hudPanel_); \
         insert_((panels_), hudPanel_); \
     } while (0)
 
@@ -1343,42 +1341,18 @@ inline void LoadHudZrdSound(
         widget_, panels_, labelSpecBase_, originX_, originY_, \
         HUD_ZRD_INSERT_LABEL_NATURAL)
 
-#define HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND( \
-    widget_, parentNode_, panels_, append_) \
+inline void LoadHudZrdExpandedLabelArray(HudUiZrdWidget *widget, zReader::Node *labelBase, HudUiPanelPtrVector &panels);
+#define HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND(widget_, parentNode_, panels_, append_) \
     do { \
-        zReader::Node *const hudLabelNode_ = \
-            zReader_GetNamedNode((parentNode_), g_HudZrd_Key_Label); \
+        zReader::Node *const hudLabelNode_ = zReader_GetNamedNode((parentNode_), g_HudZrd_Key_Label); \
         if (hudLabelNode_ != 0) { \
-            zReader::Node *const hudLabelBase_ = hudLabelNode_->value.nodes; \
-            const int hudOriginX_ = (widget_)->originX; \
-            const int hudOriginY_ = (widget_)->originY; \
-            if (hudLabelBase_[1].type == zReader::ZRDR_NODE_ARRAY) { \
-                const int hudLabelCount_ = hudLabelBase_[0].value.i32; \
-                for (int hudLabelIndex_ = 1; \
-                    hudLabelIndex_ <= hudLabelCount_ - 1; \
-                    ++hudLabelIndex_) { \
-                    zReader::Node *const hudLabelSpecBase_ = \
-                        hudLabelBase_[hudLabelIndex_].value.nodes; \
-                    append_( \
-                        (widget_), \
-                        (panels_), \
-                        hudLabelSpecBase_, \
-                        hudOriginX_, \
-                        hudOriginY_ \
-                    ); \
-                } \
+            if (hudLabelNode_->value.nodes[1].type == zReader::ZRDR_NODE_ARRAY) { \
+                LoadHudZrdExpandedLabelArray((widget_), hudLabelNode_, (panels_)); \
             } else { \
-                append_( \
-                    (widget_), \
-                    (panels_), \
-                    hudLabelBase_, \
-                    hudOriginX_, \
-                    hudOriginY_ \
-                ); \
+                append_((widget_), (panels_), hudLabelNode_->value.nodes, (widget_)->originX, (widget_)->originY); \
             } \
         } \
     } while (0)
-
 #define HUD_ZRD_LOAD_LABEL_SECTION(widget_, parentNode_, panels_) \
     HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND( \
         widget_, parentNode_, panels_, HUD_ZRD_APPEND_LABEL)
@@ -1387,6 +1361,19 @@ inline void LoadHudZrdSound(
     HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND( \
         widget_, parentNode_, panels_, HUD_ZRD_APPEND_LABEL_NATURAL)
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-apply-panel-vector-flash
+ * Purpose: apply parsed flash color and rate to each panel in a widget state.
+ *
+ * Original inline helper hypothesis shared by the four flash sections in
+ * retail 0x4b59f0. Parsing and the nonzero-rate check remain with the section;
+ * the loop reloads the vector end after each panel update.
+ */
+inline void ApplyHudPanelVectorFlash(HudUiPanelPtrVector &panels, unsigned int color, float rate) {
+    for (HudUiPanelPtrVector::iterator it = panels.begin(); it != panels.end(); ++it) {
+        ((HudUiTransitionTextPanel *)(*it))->SetFlashColorAndRate(color, rate);
+    }
+}
 #define HUD_ZRD_APPLY_FLASH_SECTION(parentNode_, panels_) \
     do { \
         zReader::Node *const hudFlashNode_ = \
@@ -1413,49 +1400,35 @@ inline void LoadHudZrdSound(
                     hudRed_ | (hudGreen_ << 8) | (hudBlue_ << 16); \
             } \
             if (hudFlashRate_ != 0.0f) { \
-                for (HudUiPanelPtrVector::iterator hudPanelIt_ = \
-                         (panels_).begin(); \
-                     hudPanelIt_ != (panels_).end(); \
-                     ++hudPanelIt_) { \
-                    ((HudUiTransitionTextPanel *)(*hudPanelIt_))-> \
-                        SetFlashColorAndRate(hudFlashColor_, hudFlashRate_); \
-                } \
+                ApplyHudPanelVectorFlash((panels_), hudFlashColor_, hudFlashRate_); \
             } \
         } \
     } while (0)
 
-inline void LoadHudZrdExpandedLabelSection(
-    HudUiZrdWidget *widget,
-    zReader::Node *parentNode,
-    HudUiPanelPtrVector &panels
-) {
-    HUD_ZRD_LOAD_LABEL_SECTION(widget, parentNode, panels);
-}
-
-inline int LoadHudZrdExpandedLabelArray(
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-load-zrd-label-array
+ * Purpose: create and register every label in an array-valued widget section.
+ *
+ * Original inline helper hypothesis shared by all four state arrays at retail
+ * 0x4b59f0. The array loader uses counted insertion; scalar sections use
+ * push_back. The original lexical boundary is unknown. Fresh VC5 comparison
+ * must establish each physical insert target and its helper expansion.
+ */
+inline void LoadHudZrdExpandedLabelArray(
     HudUiZrdWidget *widget,
     zReader::Node *labelBase,
     HudUiPanelPtrVector &panels
 ) {
-    if (labelBase[1].type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    const int originX = widget->originX;
-    const int originY = widget->originY;
-    const int labelCount = labelBase[0].value.i32;
+    const int labelCount = labelBase->value.nodes[0].value.i32;
     for (int labelIndex = 1; labelIndex <= labelCount - 1; ++labelIndex) {
-        zReader::Node *const labelSpecBase =
-            labelBase[labelIndex].value.nodes;
-        HUD_ZRD_APPEND_LABEL(
+        HUD_ZRD_APPEND_LABEL_NATURAL(
             widget,
             panels,
-            labelSpecBase,
-            originX,
-            originY
+            (labelBase->value.nodes[labelIndex].value.nodes),
+            widget->originX,
+            widget->originY
         );
     }
-    return 1;
 }
 
 } // namespace
@@ -2074,10 +2047,6 @@ void HudUiElement::SetTimer(
         flags = (flags & ~0x01u) | 0x10u;
     }
 }
-
-/**
- * Purpose: apply the recovered HUD state change handled by HudUiPanel::SetClip.
- */
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduielement-gettextrect
@@ -2908,9 +2877,8 @@ int HudUiZrdWidget::LoadFromZrd(
         g_HudZrd_Key_Position
     );
     if (positionNode != 0) {
-        zReader::Node *const positionBase = positionNode->value.nodes;
-        originX += positionBase[1].value.i32;
-        originY += positionBase[2].value.i32;
+        originX += positionNode->value.nodes[1].value.i32;
+        originY += positionNode->value.nodes[2].value.i32;
     }
 
     int widgetX = originX;
@@ -2920,13 +2888,12 @@ int HudUiZrdWidget::LoadFromZrd(
         g_HudUiCycleSelectorWidget_ZrdKey_Bitmap
     );
     if (bitmapNode != 0) {
-        zReader::Node *const bitmapBase = bitmapNode->value.nodes;
-        const char *const bitmapPath = bitmapBase[1].value.str;
-        if (bitmapPath != 0) {
+        const char *const bitmapPath = bitmapNode->value.nodes[1].value.str;
+        {
             defaultImage = SetImageByPathOwned(bitmapPath);
-            if (bitmapBase[0].value.i32 >= 4) {
-                widgetX += bitmapBase[2].value.i32;
-                widgetY += bitmapBase[3].value.i32;
+            if (bitmapNode->value.nodes[0].value.i32 >= 4) {
+                widgetX += bitmapNode->value.nodes[2].value.i32;
+                widgetY += bitmapNode->value.nodes[3].value.i32;
             }
         }
     }
@@ -2940,9 +2907,11 @@ int HudUiZrdWidget::LoadFromZrd(
     if (clipSource != 0) {
         HudUiRect *const bounds = GetBoundsRectOrNull();
         if (bounds != 0) {
+            // The clipping call receives a snapshot of the returned bounds.
+            HudUiRect clipRect = *bounds;
             SetBltSourceAndClipRect(
                 clipSource,
-                bounds
+                &clipRect
             );
         }
     }
@@ -2962,7 +2931,7 @@ int HudUiZrdWidget::LoadFromZrd(
             rolloverSound,
             rolloverSoundScale
         );
-        LoadHudZrdExpandedLabelSection(
+        HUD_ZRD_LOAD_LABEL_SECTION(
             this,
             rolloverNode,
             rolloverLabelPanels
@@ -2988,7 +2957,7 @@ int HudUiZrdWidget::LoadFromZrd(
             disabledSound,
             disabledSoundScale
         );
-        LoadHudZrdExpandedLabelSection(
+        HUD_ZRD_LOAD_LABEL_SECTION(
             this,
             disableNode,
             disabledLabelPanels
@@ -3014,7 +2983,7 @@ int HudUiZrdWidget::LoadFromZrd(
             activateSound,
             activateSoundScale
         );
-        LoadHudZrdExpandedLabelSection(
+        HUD_ZRD_LOAD_LABEL_SECTION(
             this,
             activateNode,
             activateLabelPanels
@@ -3025,22 +2994,7 @@ int HudUiZrdWidget::LoadFromZrd(
         );
     }
 
-    zReader::Node *const baseLabelNode = zReader_GetNamedNode(
-        zrdSection,
-        g_HudZrd_Key_Label
-    );
-    if (baseLabelNode != 0) {
-        zReader::Node *const baseLabel = baseLabelNode->value.nodes;
-        if (!LoadHudZrdExpandedLabelArray(this, baseLabel, labelPanels)) {
-            HUD_ZRD_APPEND_LABEL(
-                this,
-                labelPanels,
-                baseLabel,
-                originX,
-                originY
-            );
-        }
-    }
+    HUD_ZRD_LOAD_LABEL_SECTION(this, zrdSection, labelPanels);
     HUD_ZRD_APPLY_FLASH_SECTION(
         zrdSection,
         labelPanels
@@ -3357,7 +3311,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(
             ((HudUiContainer *)owner)->AddChild(checkedLabelPanel);
         }
 
-        HUD_ZRD_LOAD_LABEL_SECTION_NATURAL(
+        HUD_ZRD_LOAD_LABEL_SECTION(
             this,
             zrdSection,
             disabledLabelPanels
@@ -6368,6 +6322,24 @@ void HudUiPanel::GetTextRect(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-initialize-layout
+ * Purpose: establish text measurement, entry layout, and visibility after
+ * construction of the entry vector and cleanup of its template entry.
+ *
+ * Inferred inline source boundary: retail 0x4bb916..0x4bb940 performs these
+ * operations after the temporary's destructor. An ordinary member preserves
+ * the final virtual visibility dispatch. VC5 also reproduces the constructor's
+ * vector helper calls with this phase present. The original helper name and
+ * lexical boundary are unknown; no standalone retail body is attributed here.
+ */
+inline void HudUiCompositePanel::InitializeLayout(int entryCount) {
+    HudUiPanel::SetTextFmt("W");
+    HudUiCompositePanel::SetPos(0, 0);
+    ResizeEntryVectorAndRelayout(entryCount);
+    SetVisible(1);
+}
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-huduicompositepanel
  * @recoil-artifact defines .text recoil:function:0x4bb790: HudUiCompositePanel::HudUiCompositePanel.
  * Purpose: initialize a composite panel and allocate its entry history vector.
@@ -6398,13 +6370,7 @@ HudUiCompositePanel::HudUiCompositePanel(
         );
     }
 
-    HudUiPanel::SetTextFmt("W");
-    HudUiCompositePanel::SetPos(
-        0,
-        0
-    );
-    ResizeEntryVectorAndRelayout(entryCount);
-    ((HudUiElement *)(this))->SetVisible(1);
+    InitializeLayout(entryCount);
 }
 
 /**

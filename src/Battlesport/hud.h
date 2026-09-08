@@ -3,6 +3,7 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 #include <windows.h>
+#include <vector>
 
 #include "Battlesport/recoil_app.h"
 #include "Battlesport/recoil_state_dialog_host.h"
@@ -77,94 +78,11 @@ int __fastcall operator<(
     const HudUiSaveLoadEntry &rhs
 );
 
-struct HudUiSaveLoadEntryAllocator {
-    char value;
-
-    /**
-     * Restores the original-source inline one-byte VC5 allocator subobject used
-     * by std::vector<HudUiSaveLoadEntry> member construction. No standalone
-     * retail function exists; observed in callers 0x434680 and 0x434b90.
-     * Purpose: keep the recovered save-entry vector layout aligned with the
-     * retail allocator/_First/_Last/_End object shape.
-     */
-    HudUiSaveLoadEntryAllocator() {
-#if !defined(_MSC_VER) || _MSC_VER >= 1200
-        value = 0;
-#endif
-    }
-};
-
-struct HudUiSaveLoadEntries {
-    HudUiSaveLoadEntryAllocator allocatorProxy;
-    char padding[3];
-    HudUiSaveLoadEntry *begin;
-    HudUiSaveLoadEntry *end;
-    HudUiSaveLoadEntry *capacityEnd;
-
-    /**
-     * Restores the original-source inline VC5 std::vector<HudUiSaveLoadEntry>
-     * default constructor. No standalone retail function exists; observed in
-     * callers 0x434680 and 0x434b90 immediately after the list-item array
-     * construction.
-     * Purpose: preserve the original save-entry vector member construction
-     * shape before derived save/load button construction.
-     */
-    explicit HudUiSaveLoadEntries(
-        const HudUiSaveLoadEntryAllocator &allocator = HudUiSaveLoadEntryAllocator()
-    ) : allocatorProxy(allocator), begin(0), end(0), capacityEnd(0) {
-    }
-
-    HudUiSaveLoadEntry * InsertCopiesAt(
-        HudUiSaveLoadEntry *position,
-        unsigned int count,
-        const HudUiSaveLoadEntry *entry
-    );
-    /**
-     * Restores the original-source inline VC5 std::vector<HudUiSaveLoadEntry>
-     * erase(first,last) body. No standalone retail function exists; observed in
-     * caller 0x4355e0 as the save-entry vector clear path.
-     * Purpose: preserve the original save-entry vector erase shape while
-     * keeping the recovered file-entry storage typed.
-     */
-    HudUiSaveLoadEntry * EraseRangeNoDestroyInline(
-        HudUiSaveLoadEntry *first,
-        HudUiSaveLoadEntry *last
-    ) {
-        HudUiSaveLoadEntry *write = first;
-        HudUiSaveLoadEntry *read = last;
-        HudUiSaveLoadEntry *const oldEnd = end;
-        if (read != oldEnd) {
-            do {
-                *write++ = *read++;
-            } while (read != oldEnd);
-        }
-        ((StdPtrVector *)(this))->ClearNoOpDestroy(
-            (int *)(write),
-            (int *)(oldEnd)
-        );
-        end = write;
-        return first;
-    }
-};
+/**
+ * Purpose: own the save/load directory records in the native VC5 vector.
+ */
+typedef std::vector<HudUiSaveLoadEntry> HudUiSaveLoadEntries;
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadEntries) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadEntries,
-        begin
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadEntries,
-        end
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadEntries,
-        capacityEnd
-    ) == 0x0c
-);
 
 struct HudUiSaveLoadDialog;
 struct HudUiSaveLoadListItem;
@@ -367,24 +285,6 @@ RECOIL_STATIC_ASSERT(
         HudUiSaveLoadDialog,
         fileEntries
     ) == 0xc9fc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        fileEntries.begin
-    ) == 0xca00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        fileEntries.end
-    ) == 0xca04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        fileEntries.capacityEnd
-    ) == 0xca08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(

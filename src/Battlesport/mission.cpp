@@ -3155,25 +3155,6 @@ class NetSessionConfigCDialogMessageMapAccessor : public CDialog {
     static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
-/**
- * Provider-boundary accessor for imported MFC42 protected window/dialog members; this does
- * not reimplement provider behavior.
- */
-class GameNetMfcWndAccess : public CWnd {
-  public:
-    long CallDefault();
-    void CallOnDestroy();
-};
-
-/**
- * Provider-boundary accessor for imported MFC42 protected dialog members; this does not
- * reimplement provider behavior.
- */
-class GameNetMfcDialogAccess : public CDialog {
-  public:
-    void CallOnOK();
-};
-
 void __stdcall DDX_Control(
     CDataExchange *dataExchange,
     int controlId,
@@ -3591,33 +3572,6 @@ const AFX_MSGMAP *__stdcall NetSessionConfigCDialogMessageMapAccessor::GetMessag
 }
 
 /**
- * Original helper evidence: no standalone retail function; MFC dialog methods
- * in this source file share the same protected CWnd::Default dispatch.
- * Purpose: Call the provider CWnd default handler.
- */
-long GameNetMfcWndAccess::CallDefault() {
-    return CWnd::Default();
-}
-
-/**
- * Original helper evidence: no standalone retail function; MFC dialog methods
- * in this source file share the same protected CWnd::OnDestroy dispatch.
- * Purpose: Call the provider CWnd destroy handler.
- */
-void GameNetMfcWndAccess::CallOnDestroy() {
-    CWnd::OnDestroy();
-}
-
-/**
- * Original helper evidence: no standalone retail function; MFC dialog methods
- * in this source file share the same protected CDialog::OnOK dispatch.
- * Purpose: Call the provider CDialog OK handler.
- */
-void GameNetMfcDialogAccess::CallOnOK() {
-    CDialog::OnOK();
-}
-
-/**
  * Original helper evidence: no standalone retail function; MFC message-map
  * tables reference this base-map accessor for NetSessionConfigDialog.
  * Purpose: Return the config dialog base message map.
@@ -4014,7 +3968,7 @@ void NetSessionBrowserDialog::OnOK() {
     }
 
     if (canCloseDialog != 0) {
-        ((GameNetMfcDialogAccess *)this)->CallOnOK();
+        CDialog::OnOK();
     }
 }
 
@@ -4053,7 +4007,7 @@ void NetSessionBrowserDialog::OnCreateSession() {
     }
 
     if (m_shouldEnterHostSetup != 0) {
-        ((GameNetMfcDialogAccess *)this)->CallOnOK();
+        CDialog::OnOK();
     }
 }
 
@@ -4064,14 +4018,14 @@ void NetSessionBrowserDialog::OnTimer(
     UINT_PTR
 ) {
     RefreshSessionList();
-    ((GameNetMfcWndAccess *)this)->CallDefault();
+    CWnd::Default();
 }
 
 /**
  * Purpose: Forward browser dialog destruction and stop session polling.
  */
 void NetSessionBrowserDialog::OnDestroy() {
-    ((GameNetMfcWndAccess *)this)->CallOnDestroy();
+    CWnd::OnDestroy();
     ::KillTimer(
         m_hWnd,
         2
@@ -5229,7 +5183,7 @@ BOOL NetSessionConfigDialog::OnInitDialog() {
  * Purpose: Persist the selected map index as the config dialog closes.
  */
 void NetSessionConfigDialog::OnDestroy() {
-    ((GameNetMfcWndAccess *)this)->CallOnDestroy();
+    CWnd::OnDestroy();
     const LRESULT selectedMapComboIndex = ::SendMessageA(
         m_mapCombo.m_hWnd,
         CB_GETCURSEL,

@@ -35,6 +35,7 @@
 #include "GameZRecoil/zInput/zinput.h"
 #include "zimage.h"
 
+#include <algorithm>
 #include <math.h>
 #include <commdlg.h>
 #include <objbase.h>
@@ -6253,9 +6254,7 @@ inline LPCSTR IntResource(
 inline int SaveLoadEntryCount(
     const HudUiSaveLoadDialog *dialog
 ) {
-    return dialog->fileEntries.begin != 0
-               ? (int)(dialog->fileEntries.end - dialog->fileEntries.begin)
-               : 0;
+    return (int)dialog->fileEntries.size();
 }
 
 } // namespace
@@ -6772,77 +6771,6 @@ int g_RecoilApp_AttractFmvReloadMode = 1;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * Provider-boundary 0x435fd0: VC5 std::vector<HudUiSaveLoadEntry>
- * insert helper emitted for HudUiSaveLoadDialog::fileEntries.
- * Purpose: provide the recovered vector insert instantiation needed by the
- * save/load file-list refresh path and final executable link.
- */
-HudUiSaveLoadEntry * HudUiSaveLoadEntries::InsertCopiesAt(
-    HudUiSaveLoadEntry *position,
-    unsigned int count,
-    const HudUiSaveLoadEntry *entry
-) {
-    const int oldSize = begin != 0 ? (int)(end - begin) : 0;
-    const int oldCapacity = begin != 0 ? (int)(capacityEnd - begin) : 0;
-    const int insertIndex = begin != 0 ? (int)(position - begin) : 0;
-    const int newSize = oldSize + (int)count;
-
-    if (newSize > oldCapacity) {
-        int newCapacity = oldSize + ((int)count < oldSize ? oldSize : (int)count);
-        if (newCapacity < newSize) {
-            newCapacity = newSize;
-        }
-
-        HudUiSaveLoadEntry *const newBegin =
-            (HudUiSaveLoadEntry *)::operator new(sizeof(HudUiSaveLoadEntry) * newCapacity);
-        int i;
-        for (i = 0; i < insertIndex; ++i) {
-            newBegin[i] = begin[i];
-        }
-        for (i = 0; i < (int)count; ++i) {
-            newBegin[insertIndex + i] = *entry;
-        }
-        for (i = insertIndex; i < oldSize; ++i) {
-            newBegin[(int)count + i] = begin[i];
-        }
-
-        ::operator delete(begin);
-        begin = newBegin;
-        end = newBegin + newSize;
-        capacityEnd = newBegin + newCapacity;
-        return begin + insertIndex;
-    }
-
-    int i;
-    for (i = oldSize - 1; i >= insertIndex; --i) {
-        begin[i + (int)count] = begin[i];
-    }
-    for (i = 0; i < (int)count; ++i) {
-        begin[insertIndex + i] = *entry;
-    }
-    end += count;
-    return begin + insertIndex;
-}
 
 
 
@@ -7745,21 +7673,6 @@ void RecoilApp_IState::OnResume(
 // RecoilApp_IntroFmvState instances use the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
 // RecoilApp_MissionFmvState instances use the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
 
-void __fastcall SortEntryRange(
-    HudUiSaveLoadEntry *begin,
-    HudUiSaveLoadEntry *end,
-    int unused
-);
-void __fastcall InsertEntryIntoSortedPrefix(
-    HudUiSaveLoadEntry *entryPosition,
-    HudUiSaveLoadEntry entry
-);
-HudUiSaveLoadEntry *__fastcall PartitionEntriesByPivot(
-    HudUiSaveLoadEntry *begin,
-    HudUiSaveLoadEntry *end,
-    HudUiSaveLoadEntry pivot
-);
-
 /**
  * operator<(HudUiSaveLoadEntry const &, HudUiSaveLoadEntry const &).
  * Purpose: Orders save-game file entries by most recent write time.
@@ -7893,11 +7806,6 @@ void HudUiSaveGameDialog::OnPrimaryActionThunk() {
  * Purpose: Tears down common save/load dialog child widgets, entry storage, and background state.
  */
 inline HudUiSaveLoadDialog::~HudUiSaveLoadDialog() {
-    ::operator delete(fileEntries.begin);
-    fileEntries.begin = 0;
-    fileEntries.end = 0;
-    fileEntries.capacityEnd = 0;
-
 }
 
 /**
@@ -7998,9 +7906,9 @@ void HudUiSaveLoadDialog::InitializeFileEntries() {
     RefreshSaveFileList();
 
     int index = 0;
-    HudUiSaveLoadEntry *entry = fileEntries.begin;
+    HudUiSaveLoadEntry *entry = fileEntries.begin();
     HudUiSaveLoadListItem *listItem = entryWidgets;
-    while (entry != fileEntries.end && index < 9) {
+    while (entry != fileEntries.end() && index < 9) {
         listItem->layoutX = index;
         listItem->SetTextFmt(
             "%s",
@@ -8220,17 +8128,17 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
         HudUiSaveLoadListItem *listItem = &entryWidgets[row];
         if (entryIndex >= 0) {
             unsigned int entryCount;
-            if (fileEntries.begin == 0) {
+            if (fileEntries.begin() == 0) {
                 entryCount = 0;
             } else {
-                entryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
+                entryCount = (unsigned int)(fileEntries.end() - fileEntries.begin());
             }
 
             if ((unsigned int)entryIndex < entryCount) {
                 listItem->layoutX = entryIndex;
                 listItem->SetTextFmt(
                     "%s",
-                    fileEntries.begin[entryIndex].cFileName
+                    fileEntries.begin()[entryIndex].cFileName
                 );
                 listItem->SetVisible(
                     1
@@ -8247,14 +8155,14 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
 
     if (selectedEntryIndexValue >= 0) {
         unsigned int selectedEntryCount;
-        if (fileEntries.begin == 0) {
+        if (fileEntries.begin() == 0) {
             selectedEntryCount = 0;
         } else {
-            selectedEntryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
+            selectedEntryCount = (unsigned int)(fileEntries.end() - fileEntries.begin());
         }
 
         if ((unsigned int)selectedEntryIndexValue < selectedEntryCount) {
-            gameNameInput.Update(fileEntries.begin[selectedEntryIndexValue].cFileName);
+            gameNameInput.Update(fileEntries.begin()[selectedEntryIndexValue].cFileName);
         }
     }
 
@@ -8263,17 +8171,17 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
         HudUiSaveLoadListItem *listItem = &entryWidgets[lowerRow];
         if (entryIndex >= 0) {
             unsigned int entryCount;
-            if (fileEntries.begin == 0) {
+            if (fileEntries.begin() == 0) {
                 entryCount = 0;
             } else {
-                entryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
+                entryCount = (unsigned int)(fileEntries.end() - fileEntries.begin());
             }
 
             if ((unsigned int)entryIndex < entryCount) {
                 listItem->layoutX = entryIndex;
                 listItem->SetTextFmt(
                     "%s",
-                    fileEntries.begin[entryIndex].cFileName
+                    fileEntries.begin()[entryIndex].cFileName
                 );
                 listItem->SetVisible(
                     1
@@ -8295,10 +8203,7 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
  */
 void HudUiSaveLoadDialog::RefreshSaveFileList() {
     HudUiSaveLoadEntries *entries = &fileEntries;
-    entries->EraseRangeNoDestroyInline(
-        entries->begin,
-        entries->end
-    );
+    entries->clear();
 
     HudUiSaveLoadEntry findData;
     HANDLE findHandle = FindFirstFileA(
@@ -8307,11 +8212,7 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
     );
     if (findHandle != INVALID_HANDLE_VALUE) {
         if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
-            entries->InsertCopiesAt(
-                entries->end,
-                1,
-                &findData
-            );
+            entries->push_back(findData);
         }
 
         while (FindNextFileA(
@@ -8319,142 +8220,12 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
             &findData
         ) != 0) {
             if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
-                entries->InsertCopiesAt(
-                    entries->end,
-                    1,
-                    &findData
-                );
+                entries->push_back(findData);
             }
         }
     }
 
-    HudUiSaveLoadEntry *begin = entries->begin;
-    HudUiSaveLoadEntry *end = entries->end;
-    const int entryCount = end - begin;
-
-    if (entryCount <= 16) {
-        if (begin == end) {
-            return;
-        }
-
-        HudUiSaveLoadEntry *entryPosition = begin + 1;
-        if (entryPosition == end) {
-            return;
-        }
-
-        do {
-            HudUiSaveLoadEntry entry = *entryPosition;
-            if (entry < *begin) {
-                HudUiSaveLoadEntry *writePosition = entryPosition;
-                while (writePosition != begin) {
-                    *writePosition = *(writePosition - 1);
-                    --writePosition;
-                }
-                *begin = entry;
-            } else {
-                InsertEntryIntoSortedPrefix(
-                    entryPosition,
-                    entry
-                );
-            }
-            ++entryPosition;
-        } while (entryPosition != end);
-        return;
-    }
-
-    HudUiSaveLoadEntry *rangeBegin = begin;
-    HudUiSaveLoadEntry *rangeEnd = end;
-    int rangeCount = entryCount;
-
-    do {
-        HudUiSaveLoadEntry lastEntry = *(rangeEnd - 1);
-        HudUiSaveLoadEntry middleEntry = rangeBegin[rangeCount / 2];
-        HudUiSaveLoadEntry firstEntry = *rangeBegin;
-
-        HudUiSaveLoadEntry *pivotSource;
-        if (firstEntry < middleEntry) {
-            if (middleEntry < lastEntry) {
-                pivotSource = &middleEntry;
-            } else if (firstEntry < lastEntry) {
-                pivotSource = &lastEntry;
-            } else {
-                pivotSource = &firstEntry;
-            }
-        } else {
-            if (firstEntry < lastEntry) {
-                pivotSource = &firstEntry;
-            } else if (middleEntry < lastEntry) {
-                pivotSource = &lastEntry;
-            } else {
-                pivotSource = &middleEntry;
-            }
-        }
-
-        HudUiSaveLoadEntry pivotStageCopy = *pivotSource;
-        HudUiSaveLoadEntry pivot = pivotStageCopy;
-        HudUiSaveLoadEntry *split = PartitionEntriesByPivot(
-            rangeBegin,
-            rangeEnd,
-            pivot
-        );
-        const int leftCount = split - rangeBegin;
-        const int rightCount = rangeEnd - split;
-        if (rightCount > leftCount) {
-            SortEntryRange(
-                rangeBegin,
-                split,
-                0
-            );
-            rangeBegin = split;
-        } else {
-            SortEntryRange(
-                split,
-                rangeEnd,
-                0
-            );
-            rangeEnd = split;
-        }
-
-        rangeCount = rangeEnd - rangeBegin;
-    } while (rangeCount > 16);
-
-    HudUiSaveLoadEntry *firstBlockEnd = begin + 16;
-    if (begin != firstBlockEnd) {
-        HudUiSaveLoadEntry *entryPosition = begin + 1;
-        if (entryPosition != firstBlockEnd) {
-            do {
-                HudUiSaveLoadEntry entry = *entryPosition;
-                if (entry < *begin) {
-                    HudUiSaveLoadEntry *writePosition = entryPosition;
-                    while (writePosition != begin) {
-                        *writePosition = *(writePosition - 1);
-                        --writePosition;
-                    }
-                    *begin = entry;
-                } else {
-                    InsertEntryIntoSortedPrefix(
-                        entryPosition,
-                        entry
-                    );
-                }
-                ++entryPosition;
-            } while (entryPosition != firstBlockEnd);
-        }
-    }
-
-    for (HudUiSaveLoadEntry *entryPosition = firstBlockEnd; entryPosition != end; ++entryPosition) {
-        HudUiSaveLoadEntry entry = *entryPosition;
-        HudUiSaveLoadEntry *previous = entryPosition - 1;
-        HudUiSaveLoadEntry *writePosition = entryPosition;
-        if (entry < *previous) {
-            do {
-                *writePosition = *previous;
-                writePosition = previous;
-                --previous;
-            } while (entry < *previous);
-            *writePosition = entry;
-        }
-    }
+    std::sort(entries->begin(), entries->end());
 }
 
 /**
@@ -8811,149 +8582,8 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
     );
 }
 
-/**
- * Purpose: Sorts a save/load entry range from newest to oldest using quicksort with insertion cleanup.
- */
-void __fastcall SortEntryRange(
-    HudUiSaveLoadEntry *begin,
-    HudUiSaveLoadEntry *end,
-    int unused
-) {
-    (void)unused;
 
-    HudUiSaveLoadEntry *rangeBegin = begin;
-    HudUiSaveLoadEntry *rangeEnd = end;
-    int entryCount = rangeEnd - rangeBegin;
-    if (entryCount <= 16) {
-        return;
-    }
 
-    for (;;) {
-        HudUiSaveLoadEntry lastEntry = *(rangeEnd - 1);
-        HudUiSaveLoadEntry middleEntry = rangeBegin[entryCount / 2];
-        HudUiSaveLoadEntry firstEntry = *rangeBegin;
-
-        HudUiSaveLoadEntry *pivotSource;
-        if (firstEntry < middleEntry) {
-            if (middleEntry < lastEntry) {
-                pivotSource = &middleEntry;
-            } else if (firstEntry < lastEntry) {
-                pivotSource = &lastEntry;
-            } else {
-                pivotSource = &firstEntry;
-            }
-        } else {
-            if (firstEntry < lastEntry) {
-                pivotSource = &firstEntry;
-            } else if (middleEntry < lastEntry) {
-                pivotSource = &lastEntry;
-            } else {
-                pivotSource = &middleEntry;
-            }
-        }
-
-        HudUiSaveLoadEntry pivotStageCopy = *pivotSource;
-        HudUiSaveLoadEntry pivotEntry = pivotStageCopy;
-        HudUiSaveLoadEntry *left = rangeBegin;
-        HudUiSaveLoadEntry *right = rangeEnd;
-
-        for (;;) {
-            while (*left < pivotEntry) {
-                ++left;
-            }
-
-            --right;
-            while (pivotEntry < *right) {
-                --right;
-            }
-
-            if (right <= left) {
-                break;
-            }
-
-            HudUiSaveLoadEntry swapTemp = *left;
-            *left = *right;
-            ++left;
-            *right = swapTemp;
-        }
-
-        const int rightCount = rangeEnd - left;
-        const int leftCount = left - rangeBegin;
-        if (rightCount > leftCount) {
-            SortEntryRange(
-                rangeBegin,
-                left,
-                0
-            );
-            rangeBegin = left;
-        } else {
-            SortEntryRange(
-                left,
-                rangeEnd,
-                0
-            );
-            rangeEnd = left;
-        }
-
-        entryCount = rangeEnd - rangeBegin;
-        if (entryCount <= 16) {
-            break;
-        }
-    }
-}
-
-/**
- * Purpose: Inserts one save/load entry into the already sorted prefix before it.
- */
-void __fastcall InsertEntryIntoSortedPrefix(
-    HudUiSaveLoadEntry *entryPosition,
-    HudUiSaveLoadEntry entry
-) {
-    HudUiSaveLoadEntry *writePosition = entryPosition;
-    HudUiSaveLoadEntry *previous = entryPosition - 1;
-
-    while (entry < *previous) {
-        *writePosition = *previous;
-        writePosition = previous;
-        --previous;
-    }
-
-    *writePosition = entry;
-}
-
-/**
- * Purpose: Partitions a save/load entry range around the selected pivot entry.
- */
-HudUiSaveLoadEntry *__fastcall PartitionEntriesByPivot(
-    HudUiSaveLoadEntry *begin,
-    HudUiSaveLoadEntry *end,
-    HudUiSaveLoadEntry pivot
-) {
-    HudUiSaveLoadEntry *right = end;
-    HudUiSaveLoadEntry *left = begin;
-
-    for (;;) {
-        while (*left < pivot) {
-            ++left;
-        }
-
-        --right;
-        while (pivot < *right) {
-            --right;
-        }
-
-        if (right <= left) {
-            break;
-        }
-
-        HudUiSaveLoadEntry temp = *left;
-        *left = *right;
-        ++left;
-        *right = temp;
-    }
-
-    return left;
-}
 
 /**
  * Source model note: the ordinary empty RecoilApp_MainMenuPrepState::OnDeactivate

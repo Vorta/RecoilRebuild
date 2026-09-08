@@ -3790,68 +3790,78 @@ int zInterp_Context::LoadPreparedScriptIndex(
         return 0;
     }
 
-    if (fread(
+    int headerRead = fread(
         &preparedHeader,
         sizeof(preparedHeader),
         1,
         preparedIndexStream
-    ) != 1) {
+    ) == 1;
+    if (!headerRead) {
         fclose(preparedIndexStream);
         preparedIndexStream = 0;
+    }
+    if (!headerRead) {
         return 0;
     }
 
+    zInterp_PreparedScriptEntry *entries = 0;
+    int tableRead = 0;
     if (preparedHeader.magic == kPreparedScriptMagic) {
-        if (preparedHeader.version != kPreparedScriptVersion || fread(
+        int countRead = preparedHeader.version == kPreparedScriptVersion && fread(
             &preparedEntryCountValue,
             4,
             1,
             preparedIndexStream
-        ) != 1) {
+        ) == 1;
+        if (!countRead) {
             fclose(preparedIndexStream);
             preparedIndexStream = 0;
+        }
+        if (!countRead) {
             return 0;
         }
 
-        zInterp_PreparedScriptEntry *entries =
-            (zInterp_PreparedScriptEntry *)(realloc(
-                0,
-                (preparedEntryCountValue + 1) *
-                    sizeof(zInterp_PreparedScriptEntry)
-            ));
-        if (entries != 0 && fread(
+        entries = (zInterp_PreparedScriptEntry *)realloc(
+            0,
+            (preparedEntryCountValue + 1) *
+                sizeof(zInterp_PreparedScriptEntry)
+        );
+        tableRead = entries != 0 && fread(
             entries,
             sizeof(zInterp_PreparedScriptEntry),
             preparedEntryCountValue,
             preparedIndexStream
-        ) == preparedEntryCountValue) {
-            int entriesFresh = 1;
-            for (int entryIndex = 0;
-                entryIndex < (int)(preparedEntryCountValue) && entriesFresh != 0;
-                ++entryIndex) {
-                struct _stat sourceStat;
-                if (_stat(entries[entryIndex].path, &sourceStat) == 0 &&
-                    entries[entryIndex].fileTime != sourceStat.st_mtime) {
-                    entriesFresh = 0;
-                }
-            }
+        ) == preparedEntryCountValue;
+    }
+    if (!tableRead) {
+        fclose(preparedIndexStream);
+        preparedIndexStream = 0;
+    }
+    if (!tableRead) {
+        return 0;
+    }
 
-            if (entriesFresh != 0) {
-                preparedIndexHeader = preparedHeader;
-                *preparedEntryCount = (int)(preparedEntryCountValue);
-                preparedEntryTable = entries;
-                return 1;
-            }
-
-            fclose(preparedIndexStream);
-            preparedIndexStream = 0;
-            free(entries);
-            return 0;
+    int entriesFresh = 1;
+    for (int entryIndex = 0;
+        entryIndex < (int)(preparedEntryCountValue) && entriesFresh != 0;
+        ++entryIndex) {
+        struct _stat sourceStat;
+        if (_stat(entries[entryIndex].path, &sourceStat) == 0 &&
+            entries[entryIndex].fileTime != sourceStat.st_mtime) {
+            entriesFresh = 0;
         }
+    }
+
+    if (entriesFresh != 0) {
+        preparedIndexHeader = preparedHeader;
+        *preparedEntryCount = (int)(preparedEntryCountValue);
+        preparedEntryTable = entries;
+        return 1;
     }
 
     fclose(preparedIndexStream);
     preparedIndexStream = 0;
+    free(entries);
     return 0;
 }
 

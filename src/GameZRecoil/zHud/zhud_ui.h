@@ -630,7 +630,8 @@ struct HudUiPrimitiveBindTarget : HudUiElement {
 
 /**
  * Retail table evidence at 0x4d3c70 proves the 29-slot HudUiElement prefix
- * followed only by HudUiTextLabel::SetTextFmt.
+ * followed only by HudUiTextLabel::SetTextFmt. Its inherited slot at +0x18
+ * selects the text-label clipping override at 0x4bcd40.
  */
 struct HudUiTextLabel : HudUiElement {
     char textBuffer[0x100];
@@ -664,6 +665,10 @@ struct HudUiTextLabel : HudUiElement {
         int flags
     );
     HudUiTextLabel & operator=(const HudUiTextLabel &source);
+    virtual void SetBltSourceAndClipRect(
+        void *bltSourceOrNull,
+        const HudUiRect *rectOrNull
+    );
     virtual void __cdecl SetTextFmt(
         const char *format,
         ...
@@ -1064,10 +1069,6 @@ struct HudUiPanel : HudUiTextLabel {
     }
     HudUiPanel * ConstructorDefaultThunk();
     HudUiPanel & operator=(const HudUiPanel &source);
-    void SetClip(
-        void *bltSourceOrNull,
-        const HudUiRect *rectOrNull
-    );
     void Invalidate();
     virtual void __cdecl SetTextFmt(
         const char *format,
@@ -1093,16 +1094,58 @@ struct HudUiPanel : HudUiTextLabel {
     virtual void RebuildTextRect();
     void EnableWordWrapWithRect(const HudUiRect *rect);
     void Draw();
-    unsigned int SetTextColor(unsigned int color);
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil-zhud-huduipanel-settextbackground
+     * Purpose: apply a text background mode and color as one panel operation.
+     *
+     * Original inline member hypothesis: retail 0x4b59f0 and 0x4b8100 capture both
+     * style values before writing the panel fields. The lexical boundary and
+     * original name are unknown. No standalone body or return value is
+     * attributed to this operation.
+     */
+    void SetTextBackground(int mode, COLORREF color) {
+        bkMode = mode;
+        bkColor = color;
+    }
+    /**
+     * @recoil-anchor recoil:anchor:hud-panel-set-text-alignment
+     * Purpose: select left, center, or right alignment for the panel text.
+     * Original inline member helper hypothesis: retail 0x40dcd0 expands this
+     * setter for every scoreboard alignment assignment.
+     */
+    void SetTextAlignment(int mode) { alignMode = mode; }
+    inline unsigned int SetTextColor(unsigned int color);
+    /**
+     * @recoil-anchor recoil:anchor:battlesport.hud.huduipanel-settextcolorsandmarkdirty
+     * @recoil-artifact defines .text recoil:function:0x40e010: SetTextColorsAndMarkDirty.
+     * Purpose: Stores the panel text color pair and marks cached text metrics dirty.
+     */
     void SetTextColorsAndMarkDirty(
         unsigned int color0,
         unsigned int color1
-    );
+    ) {
+        textColor0 = color0;
+        textColor1 = color1;
+        textDirty = 1;
+    }
+
+    /**
+     * @recoil-anchor recoil:anchor:battlesport.hud.huduipanel-setshadow
+     * @recoil-artifact defines .text recoil:function:0x40e040: SetShadow.
+     * Purpose: Stores panel text-shadow state and returns the previous shadow flag.
+     */
     unsigned int SetShadow(
-        unsigned int shadowEnabled,
-        int shadowOffsetX,
-        int shadowOffsetY
-    );
+        unsigned int enableShadow,
+        int offsetX,
+        int offsetY
+    ) {
+        const unsigned int previous = shadowEnabled;
+        shadowEnabled = enableShadow;
+        shadowOffsetX = offsetX;
+        shadowOffsetY = offsetY;
+        return previous;
+    }
+
     int MeasureTextPrefixRect(
         int maxChars,
         RECT *outRect
@@ -2284,6 +2327,8 @@ struct HudUiCompositePanel : HudUiPanel {
         int pitchAndFamily
     );
     void Update(float deltaSeconds);
+private:
+    void InitializeLayout(int entryCount);
 };
 
 struct HudFontStyle {
@@ -3046,7 +3091,7 @@ struct HudUiCreditsPanel : HudUiBackground {
  * parameterized constructor's default arguments.
  */
 struct HudUiPanelSimple : HudUiPanel {
-    HudUiPanelSimple(
+    inline HudUiPanelSimple(
         const char *text = 0,
         int x = 0,
         int y = 0
@@ -3054,6 +3099,7 @@ struct HudUiPanelSimple : HudUiPanel {
 };
 
 struct HudUiShieldMessageWidget {
+    HudUiShieldMessageWidget();
     int state;
     int viewportResetFrame;
     unsigned char unknown_08[0x04];
@@ -3111,7 +3157,7 @@ struct HudUiStatsListElement : HudUiElement {
      * construction, installs the stats-list table, and clears triplet.
      * Purpose: establish the stats-list dynamic type before its triplet is allocated.
      */
-    HudUiStatsListElement() : HudUiElement(0, 0), triplet(0) {}
+    HudUiStatsListElement();
     virtual ~HudUiStatsListElement();
     void Update(float deltaSeconds);
 
@@ -3124,6 +3170,7 @@ struct HudUiTimerPanel : HudUiPanel {
     int secondsStep;
 
     HudUiTimerPanel();
+    inline void RegisterArchiveHandler();
     static void __fastcall SetRunning(int running);
     static void __stdcall SetElapsedSeconds(float seconds);
     static void __stdcall SetSeconds(
@@ -3153,7 +3200,16 @@ struct HudUiCounterTextPanel : HudUiPanel {
     HudUiCounterTextPanel();
 };
 
+/**
+ * @recoil-anchor recoil:anchor:hud-scoreboard-entry
+ * Purpose: hold a network player's scoreboard name, score, laps, and color.
+ * Retail 0x40e590 initializes only the empty-name marker and numeric defaults
+ * before copying the incoming name and identity into this native vector record.
+ */
 struct HudUiScoreboardEntry {
+    HudUiScoreboardEntry() : score(0), lapCount(0), playerColorPackedRgb(0) {
+        displayName[0] = 0;
+    }
     int playerKey;
     char displayName[0x40];
     int score;
@@ -3161,80 +3217,10 @@ struct HudUiScoreboardEntry {
     unsigned int playerColorPackedRgb;
 };
 
-struct HudUiTripletEntries {
-    unsigned char rowInitFlag;
-    unsigned char padding[3];
-    HudUiScoreboardEntry *begin;
-    HudUiScoreboardEntry *end;
-    HudUiScoreboardEntry *cap;
-
-    int GetCount();
-    static HudUiScoreboardEntry *__stdcall CopyRange(
-        HudUiScoreboardEntry *sourceBegin,
-        HudUiScoreboardEntry *sourceEnd,
-        HudUiScoreboardEntry *dest
-    );
-    static void __stdcall FillN(
-        HudUiScoreboardEntry *dest,
-        unsigned int count,
-        const HudUiScoreboardEntry *sourceValue
-    );
-    void insert(
-        HudUiScoreboardEntry *insertPos,
-        unsigned int count,
-        const HudUiScoreboardEntry &sourceValue
-    ) {
-        if ((unsigned int)(cap - end) < count) {
-            const unsigned int currentCount =
-                begin != 0 ? (unsigned int)(end - begin) : 0;
-            const unsigned int newCapacity =
-                currentCount + (count < currentCount ? currentCount : count);
-            HudUiScoreboardEntry *const newBegin =
-                (HudUiScoreboardEntry *)(::operator new(
-                    newCapacity * sizeof(HudUiScoreboardEntry)
-                ));
-            FillN(newBegin, count, &sourceValue);
-            CopyRange(insertPos, end, newBegin + count);
-            ((StdPtrVector *)(this))->ClearNoOpDestroy(
-                (int *)(begin),
-                (int *)(end)
-            );
-            ::operator delete(begin);
-            cap = newBegin + newCapacity;
-            end = newBegin + GetCount() + count;
-            begin = newBegin;
-            return;
-        }
-
-        if ((unsigned int)(end - insertPos) < count) {
-            CopyRange(insertPos, end, insertPos + count);
-            FillN(
-                end,
-                count - (unsigned int)(end - insertPos),
-                &sourceValue
-            );
-            std::fill(insertPos, end, sourceValue);
-            end += count;
-        } else if (count > 0) {
-            CopyRange(end - count, end, end);
-            std::copy_backward(insertPos, end - count, end);
-            std::fill(insertPos, insertPos + count, sourceValue);
-            end += count;
-        }
-    }
-    HudUiScoreboardEntry *erase(
-        HudUiScoreboardEntry *erasePos
-    ) {
-        std::copy(erasePos + 1, end, erasePos);
-        --end;
-        return erasePos;
-    }
-};
-
 struct HudUiTriplet : HudUiContainer {
     HudUiPanel *headerPanels[3];
     HudUiPanel *rowCells[24];
-    HudUiTripletEntries entries;
+    std::vector<HudUiScoreboardEntry> entries;
     int baseX;
     int baseY;
     int rowPitchY;
@@ -3262,6 +3248,7 @@ struct HudUiTriplet : HudUiContainer {
     static void RegisterWndClassNameDtorAtExit();
     static void __cdecl DestroyWndClassName();
     HudUiTriplet();
+    inline void ConfigurePanelFont(HudUiPanel *&panel);
     ~HudUiTriplet();
     void InterpolateLayout(float t);
     void RebuildDisplay();
@@ -5596,7 +5583,7 @@ RECOIL_STATIC_ASSERT(
     ) == 0x2ac
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiCounterTextPanel) == 0x2a4);
-RECOIL_STATIC_ASSERT(sizeof(HudUiTripletEntries) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(std::vector<HudUiScoreboardEntry>) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(HudUiScoreboardEntry) == 0x50);
 RECOIL_STATIC_ASSERT(
     offsetof(
