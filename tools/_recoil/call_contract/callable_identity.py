@@ -10,6 +10,7 @@ from _recoil.call_contract import dispatch as _cc_dispatch
 from _recoil.call_contract import errors as _cc_errors
 from _recoil.call_contract import identity as _cc_identity
 from _recoil.call_contract import listing as _cc_listing
+from _recoil.call_contract import receiver_candidate as _cc_receiver_candidate
 from _recoil.call_contract import receiver_instructions as _cc_receiver_instructions
 from _recoil.call_contract import recoil_lifecycle as _cc_recoil_lifecycle
 from _recoil.call_contract import recoil_mfc as _cc_recoil_mfc
@@ -99,6 +100,46 @@ def _candidate_complete_instruction_offsets(
         if forward == backward:
             offsets[index] = forward
     return tuple(offsets)
+
+
+def _candidate_dynamic_probe_setup_matches(
+    candidate: CandidateAssembly,
+    offsets: Sequence[int | None],
+    setup_rows: Sequence[tuple[int, bytes]],
+) -> bool:
+    """Authenticate probe setup in its current COFF definition.
+
+    Frame-slot allocation and section placement are compiler observations.
+    A saved ESP may move to another aligned EBP local; every EAX-producing
+    opcode, call-relative coordinate, and nonrelocated setup byte stays exact.
+    The caller separately proves the helper call population and relocations.
+    """
+    definition = candidate.caller_definition
+    if (definition is None or not definition.data or not setup_rows
+            or definition.section_index <= 0 or definition.section_start != 0
+            or definition.section_end != len(definition.data)
+            or len(definition.relocation_mask) != len(definition.data)
+            or not _cc_receiver_candidate._candidate_listing_matches_coff(
+                candidate.instructions, addresses=offsets, caller_start=0,
+                definition=definition)):
+        return False
+    by_offset = dict(zip(offsets, candidate.instructions))
+    for offset, reviewed in setup_rows:
+        instruction = by_offset.get(offset)
+        if instruction is None:
+            return False
+        observed = bytes(int(value, 16) for value in instruction.bytes)
+        local_esp_save = (
+            len(reviewed) == len(observed) == 3
+            and reviewed[:2] == observed[:2] == b'\x89\x65'
+            and all(0x80 <= body[2] <= 0xfc and body[2] % 4 == 0
+                for body in (reviewed, observed)))
+        if (observed != reviewed and not local_esp_save
+                or any(definition.relocation_mask[offset:offset + len(observed)])
+                or any(row.offset < offset + len(observed)
+                    and offset < row.offset + 4 for row in definition.relocations)):
+            return False
+    return True
 
 
 def _locate_shifted_candidate_instruction_unit(
@@ -2097,16 +2138,8 @@ def _chkstk_compiler_helper_candidate_bridge(
     candidate_setup = rows_by_offset.get(candidate_setup_offset)
     candidate_frame_body = b""
     if dynamic_candidate_setup_rows:
-        candidate_setup_exact = all(
-            (
-                instruction := rows_by_offset.get(offset)
-            )
-            is not None
-            and bytes(int(value, 16) for value in instruction.bytes) == body
-            and definition is not None
-            and definition.data[offset : offset + len(body)] == body
-            for offset, body in dynamic_candidate_setup_rows
-        )
+        candidate_setup_exact = _candidate_dynamic_probe_setup_matches(
+            candidate, offsets, dynamic_candidate_setup_rows)
     else:
         candidate_frame_sizes = tuple(
             int(value)
@@ -2156,17 +2189,6 @@ def _chkstk_compiler_helper_candidate_bridge(
             definition.defined_external_functions
             + definition.undefined_external_data
             + definition.defined_external_data
-        )
-        or (
-            dynamic_candidate_setup_rows
-            and (
-                definition.section_index
-                != int(caller_spec["candidate_section_index"])
-                or definition.section_start != 0
-                or definition.section_end != int(caller_spec["candidate_size"])
-                or len(definition.data) != int(caller_spec["candidate_size"])
-                or len(definition.relocation_mask) != len(definition.data)
-            )
         )
     ):
         raise ValueError(

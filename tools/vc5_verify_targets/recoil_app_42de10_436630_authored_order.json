@@ -1998,30 +1998,30 @@
         },
         {
           "address": "0x4362f0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "SortEntryRange",
-          "pipeline_class": "authored",
+          "name": "VC5 std::_Sort<HudUiSaveLoadEntry>",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?SortEntryRange@@YIXPAUHudUiSaveLoadEntry@@0H@Z"
+          "symbol": "?_Sort@std@@YIXPAUHudUiSaveLoadEntry@@00@Z"
         },
         {
           "address": "0x436530",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "InsertEntryIntoSortedPrefix",
-          "pipeline_class": "authored",
+          "name": "VC5 std::_Unguarded_insert<HudUiSaveLoadEntry>",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?InsertEntryIntoSortedPrefix@@YIXPAUHudUiSaveLoadEntry@@U1@@Z"
+          "symbol": "?_Unguarded_insert@std@@YIXPAUHudUiSaveLoadEntry@@U2@@Z"
         },
         {
           "address": "0x436580",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "PartitionEntriesByPivot",
-          "pipeline_class": "authored",
+          "name": "VC5 std::_Unguarded_partition<HudUiSaveLoadEntry>",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?PartitionEntriesByPivot@@YIPAUHudUiSaveLoadEntry@@PAU1@0U1@@Z"
+          "symbol": "?_Unguarded_partition@std@@YIPAUHudUiSaveLoadEntry@@PAU2@0U2@@Z"
         }
       ],
       "name": "authored_42de10_436630",
@@ -4070,30 +4070,30 @@
         },
         {
           "address": "0x4362f0",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "SortEntryRange",
-          "pipeline_class": "authored",
+          "name": "VC5 std::_Sort<HudUiSaveLoadEntry>",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?SortEntryRange@@YIXPAUHudUiSaveLoadEntry@@0H@Z"
+          "symbol": "?_Sort@std@@YIXPAUHudUiSaveLoadEntry@@00@Z"
         },
         {
           "address": "0x436530",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "InsertEntryIntoSortedPrefix",
-          "pipeline_class": "authored",
+          "name": "VC5 std::_Unguarded_insert<HudUiSaveLoadEntry>",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?InsertEntryIntoSortedPrefix@@YIXPAUHudUiSaveLoadEntry@@U1@@Z"
+          "symbol": "?_Unguarded_insert@std@@YIXPAUHudUiSaveLoadEntry@@U2@@Z"
         },
         {
           "address": "0x436580",
-          "authored_order_role": "authored-body",
+          "authored_order_role": "non-authored",
           "full_order_gate": true,
-          "name": "PartitionEntriesByPivot",
-          "pipeline_class": "authored",
+          "name": "VC5 std::_Unguarded_partition<HudUiSaveLoadEntry>",
+          "pipeline_class": "non-authored",
           "required_presence": true,
-          "symbol": "?PartitionEntriesByPivot@@YIPAUHudUiSaveLoadEntry@@PAU1@0U1@@Z"
+          "symbol": "?_Unguarded_partition@std@@YIPAUHudUiSaveLoadEntry@@PAU2@0U2@@Z"
         }
       ],
       "order_scope": "authored",

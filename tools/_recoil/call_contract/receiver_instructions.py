@@ -1027,6 +1027,33 @@ def _exact_register_add_immediate(
 
 
 
+def _exact_register_step_immediate(instruction: Instruction) -> tuple[str, int] | None:
+    """Decode a bounded signed ADD/SUB step without changing ADD-only users."""
+    add = _exact_register_add_immediate(instruction)
+    if add is not None:
+        return add
+    match = re.fullmatch(r"sub\s+(e(?:ax|cx|dx|bx|sp|bp|si|di))\s*,\s*(0x[0-9a-f]+|\d+)",
+                         instruction.raw_text.strip(), re.IGNORECASE)
+    if match is None:
+        return None
+    try:
+        raw = bytes.fromhex(" ".join(instruction.bytes))
+    except ValueError:
+        return None
+    registers = ("eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi")
+    if len(raw) in {3, 6} and raw[0] == (0x83 if len(raw) == 3 else 0x81) and raw[1] & 0xF8 == 0xE8:
+        register = registers[raw[1] & 7]
+        immediate = int.from_bytes(raw[2:], "little", signed=True)
+    elif len(raw) == 5 and raw[0] == 0x2D:
+        register, immediate = "eax", int.from_bytes(raw[1:], "little", signed=True)
+    else:
+        return None
+    if (register != match.group(1).lower() or immediate != _cc_cfg._parse_unsigned_assembly_integer(match.group(2))
+            or not 0 < immediate <= 0x10000 or immediate % 4):
+        return None
+    return register, -immediate
+
+
 def _exact_register_move_immediate(
     instruction: Instruction,
 ) -> tuple[str, int] | None:
@@ -1120,6 +1147,23 @@ def _exact_register_compare_immediate(
     ):
         return None
     return encoded_register, encoded_immediate
+
+
+def _exact_whole_register_zero_test(instruction: Instruction) -> str | None:
+    """Decode only CMP r32,0 or TEST r32,r32 with exact rendered operands."""
+    comparison = _exact_register_compare_immediate(instruction)
+    if comparison is not None:
+        return comparison[0] if comparison[1] == 0 else None
+    try:
+        body = bytes(int(item, 16) for item in instruction.bytes)
+    except (TypeError, ValueError):
+        return None
+    if (len(body) != 2 or body[0] != 0x85 or body[1] >> 6 != 3
+            or (body[1] & 7) != ((body[1] >> 3) & 7)):
+        return None
+    register = ("eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi")[body[1] & 7]
+    return register if re.fullmatch(
+        rf"test\s+{register}\s*,\s*{register}", instruction.raw_text.strip(), re.IGNORECASE) else None
 
 
 def _exact_register_imul_immediate(

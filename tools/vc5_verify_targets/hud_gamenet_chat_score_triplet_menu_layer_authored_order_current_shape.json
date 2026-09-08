@@ -132,30 +132,30 @@
         },
         {
           "address": "0x414670",
-          "symbol_regex": "\\?GetCount@HudUiTripletEntries@@.*",
-          "name": "HudUiTripletEntries::GetCount",
-          "pipeline_class": "authored",
-          "authored_order_role": "authored-body",
+          "name": "VC5 std::vector<HudUiScoreboardEntry>::size",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "?size@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@QBEIXZ"
         },
         {
           "address": "0x4146a0",
-          "symbol_regex": "\\?CopyRange@HudUiTripletEntries@@.*",
-          "name": "HudUiTripletEntries::CopyRange",
-          "pipeline_class": "authored",
-          "authored_order_role": "authored-body",
+          "name": "VC5 std::vector<HudUiScoreboardEntry>::_Ucopy",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "?_Ucopy@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@IAEPAUHudUiScoreboardEntry@@PBU3@0PAU3@@Z"
         },
         {
           "address": "0x4146e0",
-          "symbol_regex": "\\?FillN@HudUiTripletEntries@@.*",
-          "name": "HudUiTripletEntries::FillN",
-          "pipeline_class": "authored",
-          "authored_order_role": "authored-body",
+          "name": "VC5 std::vector<HudUiScoreboardEntry>::_Ufill",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "?_Ufill@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@IAEXPAUHudUiScoreboardEntry@@IABU3@@Z"
         },
         {
           "address": "0x414710",

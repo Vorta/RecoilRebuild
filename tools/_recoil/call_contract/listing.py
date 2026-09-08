@@ -58,15 +58,19 @@ def _exact_cod_wrapped_mov_source_line(
         modrm = int(body[1], 16)
     except (IndexError, ValueError):
         return ""
+    seh_head = (
+        body == ("64", "a1", "00", "00", "00", "00")
+        and re.fullmatch(r"mov\s+eax\s*,\s*dword\s+(?:ptr\s+)?fs:__except_list",
+                         instruction.raw_text, re.IGNORECASE) is not None
+    )
     if (
         tuple(item.casefold() for item in instruction.bytes) != body
         or len(body) != 6
-        or body[0] != "8b"
-        or not (
+        or not (seh_head or body[0] == "8b" and (
             (modrm >> 6 == 0 and modrm & 0x07 == 0x05
                 and body[2:] == ("00", "00", "00", "00"))
             or (modrm >> 6 == 2 and modrm & 0x07 != 4)
-        )
+        ))
         or not instruction.raw_text
         or instruction.raw_text.split(None, 1)[0].casefold() != "mov"
     ):

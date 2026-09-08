@@ -114,3 +114,30 @@ def test_scheduler_requests_terminal_sized_call_contract_diagnostics() -> None:
         encoding="utf-8"
     )
     assert 'f"--slice {slice_id} --build-root <fresh-root> --json --summary"' in source
+
+
+def test_source_inventory_keeps_directive_continuations_out_of_function_signatures() -> None:
+    from _recoil.lib.source_constructs import adjacent_comment, function_constructs
+
+    source = (
+        '#define EXPAND(owner, values) \\\n'
+        '    APPEND_VALUES(owner, values)\n'
+        '/** Original inline helper hypothesis; observed caller 0x1000. */\n'
+        'inline void Apply(int value) { Consume(value); }\n'
+        '#if ENABLED\n'
+        'void Enabled() { Apply(1); }\n'
+        '#endif\n'
+        '// #define COMMENT_ONLY\n'
+        'void AfterComment() {}\n'
+        '#define DEFINE_FAKE() \\\n'
+        '    void NotAFunctionHere() {}\n'
+    )
+    prefix = 'static const char *note = "continued\\\ntext";\n'
+    for text in (source, source.replace('\n', '\r\n'), prefix + source,
+                 (prefix + source).replace('\n', '\r\n')):
+        functions = function_constructs(text)
+        assert [item.name for item in functions] == ['Apply', 'Enabled', 'AfterComment']
+        first = functions[0]
+        assert first.start == text.index('inline void Apply')
+        assert first.line == (6 if text.startswith('static') else 4)
+        assert adjacent_comment(text, first.start).startswith('/** Original inline helper')

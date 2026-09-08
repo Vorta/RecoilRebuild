@@ -97,21 +97,27 @@
         },
         {
           "address": "0x414670",
-          "symbol_regex": "\\?GetCount@HudUiTripletEntries@@.*",
-          "name": "HudUiTripletEntries::GetCount",
-          "provenance": "compiler-emitted-noncovering"
+          "name": "VC5 std::vector<HudUiScoreboardEntry>::size",
+          "provenance": "compiler-emitted-noncovering",
+          "symbol": "?size@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@QBEIXZ",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored"
         },
         {
           "address": "0x4146a0",
-          "symbol_regex": "\\?CopyRange@HudUiTripletEntries@@.*",
-          "name": "HudUiTripletEntries::CopyRange",
-          "provenance": "compiler-emitted-noncovering"
+          "name": "VC5 std::vector<HudUiScoreboardEntry>::_Ucopy",
+          "provenance": "compiler-emitted-noncovering",
+          "symbol": "?_Ucopy@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@IAEPAUHudUiScoreboardEntry@@PBU3@0PAU3@@Z",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored"
         },
         {
           "address": "0x4146e0",
-          "symbol_regex": "\\?FillN@HudUiTripletEntries@@.*",
-          "name": "HudUiTripletEntries::FillN",
-          "provenance": "compiler-emitted-noncovering"
+          "name": "VC5 std::vector<HudUiScoreboardEntry>::_Ufill",
+          "provenance": "compiler-emitted-noncovering",
+          "symbol": "?_Ufill@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@IAEXPAUHudUiScoreboardEntry@@IABU3@@Z",
+          "pipeline_class": "non-authored",
+          "authored_order_role": "non-authored"
         },
         {
           "address": "0x414710",

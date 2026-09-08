@@ -81,6 +81,16 @@ def direct_fixture() -> tuple[dict[str, object], dict[str, object]]:
     return slice_row, result
 
 
+def test_blocked_closeout_result_retains_original_failure_and_is_still_rejected():
+    slice_row, result = direct_fixture()
+    result.update(passed=False, all_caller_divergences_collected=False,
+                  first_divergence={"kind": "verifier-blocked", "message": "connection exhausted"})
+    with pytest.raises(ProgressError, match="wrong governed direct result.*connection exhausted"):
+        _validate_call_contract_result(result, expected_slice=slice_row,
+            expected_source_write_paths=[], expected_definition_source_paths=[],
+            expected_compiled_definition_sources=[], expected_dependency_paths=[])
+
+
 def test_slice_evidence_batch_preserves_shared_and_external_references():
     from copy import deepcopy
     from _recoil.commands.progress_v2 import accept_live_call_contract_symbols

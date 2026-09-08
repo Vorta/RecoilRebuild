@@ -520,7 +520,7 @@ class RetailCallerScopedProofPackage:
         tuple[str, Instruction, tuple[Instruction, ...]], ...
     ] = ()
     stored_callback_load_indices: frozenset[int] = frozenset()
-    direct_call_cleanup_by_instruction_index: tuple[tuple[int, int], ...] = ()
+    call_cleanup_by_instruction_index: tuple[tuple[int, int], ...] = ()
     targetless_vptr_call_proofs: tuple[tuple[int, str], ...] = ()
     local_control_flow_targets: tuple[tuple[int, tuple[int, ...]], ...] = ()
 

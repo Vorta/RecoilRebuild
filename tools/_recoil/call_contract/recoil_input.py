@@ -575,7 +575,7 @@ def _zinput_runtime_dispatch_normalize_retail_contract(
     caller_start: str,
     indexes: IdentityIndexes,
 ) -> tuple[list[dict[str, Any]], list[str]]:
-    """Apply the exact PollState source-order and memory-callback bridge."""
+    """Resolve the memory callback while preserving physical retail order."""
 
     normalized_start = normalize_address(caller_start)
     spec = _cc_catalog.ZINPUT_RUNTIME_DISPATCH_RETAIL_SPECS.get(normalized_start)
@@ -611,11 +611,11 @@ def _zinput_runtime_dispatch_normalize_retail_contract(
             slot_displacement=None,
             cleanup_bytes=None,
         )
-    logical_sites = tuple(spec.get("logical_calls", spec["calls"]))
-    logical_rows = [rows_by_site[site] for site in logical_sites]
-    for ordinal, row in enumerate(logical_rows):
+    physical_sites = tuple(spec["calls"])
+    physical_rows = [rows_by_site[site] for site in physical_sites]
+    for ordinal, row in enumerate(physical_rows):
         row["ordinal"] = ordinal
-    return logical_rows, list(logical_sites)
+    return physical_rows, list(physical_sites)
 
 
 def _zinput_joystick_acquire_device_candidate_bridges(
@@ -3635,12 +3635,12 @@ def _zinput_keyboard_aggregate_leaf_candidate_bridges(
                 ("slot_displacement", None), ("cleanup_bytes", None),
             )
             additional = (
-                (1, direct_fields(direct_targets["report"])),
-                (3, direct_fields(direct_targets["translate"])),
-                (4, callback_fields(identities["raw"])),
-                (5, callback_fields(identities["key-callback"])),
+                (2, direct_fields(direct_targets["translate"])),
+                (3, callback_fields(identities["raw"])),
+                (4, callback_fields(identities["key-callback"])),
+                (5, direct_fields(direct_targets["report"])),
             )
-            aggregate_relocations = (0x04, 0x53)
+            aggregate_relocations = (0x04, 0x3E)
         else:
             additional = ((2, direct_fields(direct_targets["report"])),)
             aggregate_relocations = (0x22, 0x4B)
@@ -3845,7 +3845,7 @@ def _zinput_runtime_dispatch_candidate_register_bridges(
         raise ValueError(
             "zInput PollState callback bridge rejects colliding COD offsets"
         )
-    callback_regions = ((0x189, 0x1A5), (0x20C, 0x225))
+    callback_regions = ((0x174, 0x190), (0x1F7, 0x210))
     actual_region_offsets = tuple(
         offset
         for offset in offsets

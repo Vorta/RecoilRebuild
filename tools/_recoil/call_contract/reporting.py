@@ -375,12 +375,14 @@ def _open_call_contract_memory_trace_file(
 
     root = _call_contract_normalized_absolute_path(Path(build_root))
     try:
-        resolved_root = root.resolve(strict=True)
+        # Live validation requires a fresh, absent root. Resolve the existing
+        # ancestors without creating that root before the governed builder.
+        resolved_root = root.resolve(strict=False)
     except OSError as exc:
         raise ProgressError(
-            "--memory-trace-file requires an existing build root"
+            "--memory-trace-file cannot resolve the build root"
         ) from exc
-    if not resolved_root.is_dir():
+    if resolved_root.exists() and not resolved_root.is_dir():
         raise ProgressError(
             "--memory-trace-file build root must be a directory"
         )

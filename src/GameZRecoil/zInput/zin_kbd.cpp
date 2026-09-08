@@ -383,7 +383,9 @@ void __fastcall Keyboard_PollState(
         0
     );
     if (hresult != kDiOk) {
-        if (hresult != kDiInputLost) {
+        if (hresult == kDiInputLost) {
+            g_zInput_KbdDevice->Acquire();
+        } else {
             DI_ReportError(
                 hresult,
                 g_zInput_SourceFile_ZinKbdCpp,
@@ -391,28 +393,23 @@ void __fastcall Keyboard_PollState(
             );
             return;
         }
-
-        g_zInput_KbdDevice->Acquire();
     }
-
     for (unsigned int i = 0; i < inOutCount; ++i) {
         ApplyKeyboardPollEvent(g_zInput_KbdEventBuffer[i]);
     }
 
-    if (dispatchCallbacks == 0) {
-        return;
-    }
+    if (dispatchCallbacks != 0) {
+        for (unsigned int i_2239 = 0; i_2239 < inOutCount; ++i_2239) {
+            const int dispatchIndex = KeyboardEventDispatchIndex(g_zInput_KbdEventBuffer[i_2239]);
+            if (dispatchIndex < 0 || dispatchIndex >= 0x7de) {
+                continue;
+            }
 
-    for (unsigned int i_2239 = 0; i_2239 < inOutCount; ++i_2239) {
-        const int dispatchIndex = KeyboardEventDispatchIndex(g_zInput_KbdEventBuffer[i_2239]);
-        if (dispatchIndex < 0 || dispatchIndex >= 0x7de) {
-            continue;
-        }
-
-        void *const callback = g_zInputKbdKeyDispatchTable[dispatchIndex].callback;
-        if (callback != 0 && (g_zInputKbdKeyDispatchTable[dispatchIndex].state & 1) != 0) {
-            ((KeyboardComboCallbackFn)(callback))(dispatchIndex);
-            g_zInputKbdKeyDispatchTable[dispatchIndex].state = 0;
+            void *const callback = g_zInputKbdKeyDispatchTable[dispatchIndex].callback;
+            if (callback != 0 && (g_zInputKbdKeyDispatchTable[dispatchIndex].state & 1) != 0) {
+                ((KeyboardComboCallbackFn)(callback))(dispatchIndex);
+                g_zInputKbdKeyDispatchTable[dispatchIndex].state = 0;
+            }
         }
     }
 }

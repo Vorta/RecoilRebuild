@@ -37,7 +37,7 @@ from _recoil.lib.tooling import (
     quote_cmd_arg,
     run_cmd_script,
 )
-from _recoil.lib.windows_identity import StableReadHandle, physical_identity
+from _recoil.lib.windows_identity import StableReadHandle
 
 
 DEFAULT_TRACKER = DEFAULT_PROGRESS_PATH
@@ -105,7 +105,221 @@ VECTOR_POINTER_DESTROY_PROBE_SOURCE = (
 )
 
 
+SAVE_LOAD_SORT_PROBE_SOURCE = (
+    "#include <algorithm>\n"
+    "struct HudUiSaveLoadEntry { unsigned char data[0x140]; };\n"
+    "int __fastcall operator<(const HudUiSaveLoadEntry &, const HudUiSaveLoadEntry &);\n"
+    "typedef HudUiSaveLoadEntry T;\n"
+    "typedef void (__fastcall *SortFn)(T *, T *, T *);\n"
+    "typedef void (__fastcall *InsertFn)(T *, T);\n"
+    "typedef T *(__fastcall *PartitionFn)(T *, T *, T);\n"
+    "SortFn recoil_provider_sort = &std::_Sort;\n"
+    "InsertFn recoil_provider_insert = &std::_Unguarded_insert;\n"
+    "PartitionFn recoil_provider_partition = &std::_Unguarded_partition;\n"
+)
+
+
+VECTOR_SCOREBOARD_ENTRY_PROBE_SOURCE = (
+    "#include <vector>\n"
+    "struct HudUiScoreboardEntry {\n"
+    "    int playerKey; char displayName[0x40]; int score; int lapCount;\n"
+    "    unsigned int playerColorPackedRgb;\n"
+    "};\n"
+    "struct RecoilProviderScoreboardProbe : std::vector<HudUiScoreboardEntry> {\n"
+    "    typedef std::vector<HudUiScoreboardEntry> Base;\n"
+    "    typedef size_type (Base::*SizeFn)() const;\n"
+    "    typedef iterator (Base::*CopyFn)(const_iterator, const_iterator, iterator);\n"
+    "    typedef void (Base::*FillFn)(iterator, size_type, const HudUiScoreboardEntry &);\n"
+    "    typedef void (Base::*DestroyFn)(iterator, iterator);\n"
+    "    static SizeFn size; static CopyFn copy; static FillFn fill;\n"
+    "    static DestroyFn destroy;\n"
+    "};\n"
+    "RecoilProviderScoreboardProbe::SizeFn RecoilProviderScoreboardProbe::size =\n"
+    "    &RecoilProviderScoreboardProbe::Base::size;\n"
+    "RecoilProviderScoreboardProbe::CopyFn RecoilProviderScoreboardProbe::copy =\n"
+    "    &RecoilProviderScoreboardProbe::_Ucopy;\n"
+    "RecoilProviderScoreboardProbe::FillFn RecoilProviderScoreboardProbe::fill =\n"
+    "    &RecoilProviderScoreboardProbe::_Ufill;\n"
+    "RecoilProviderScoreboardProbe::DestroyFn RecoilProviderScoreboardProbe::destroy =\n"
+    "    &RecoilProviderScoreboardProbe::_Destroy;\n"
+)
+
+
 HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
+    "vc5-vector-scoreboard-entry-size-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?size@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@QBEIXZ",
+        "retail_body_size": 0x30,
+        "source": VECTOR_SCOREBOARD_ENTRY_PROBE_SOURCE,
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-vector-scoreboard-entry-ucopy-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Ucopy@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@IAEPAUHudUiScoreboardEntry@@PBU3@0PAU3@@Z",
+        "retail_body_size": 0x40,
+        "source": VECTOR_SCOREBOARD_ENTRY_PROBE_SOURCE,
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-vector-scoreboard-entry-ufill-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Ufill@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@IAEXPAUHudUiScoreboardEntry@@IABU3@@Z",
+        "retail_body_size": 0x30,
+        "source": VECTOR_SCOREBOARD_ENTRY_PROBE_SOURCE,
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-vector-scoreboard-entry-destroy-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Destroy@?$vector@UHudUiScoreboardEntry@@V?$allocator@UHudUiScoreboardEntry@@@std@@@std@@IAEXPAUHudUiScoreboardEntry@@0@Z",
+        "retail_body_size": 0x10,
+        "source": VECTOR_SCOREBOARD_ENTRY_PROBE_SOURCE,
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    'vc5-vector-composite-entry-destructor-ob1-v1': {'canonical_header': 'VC/INCLUDE/vector',
+                                                      'semantic_provider': 'vc5-stl',
+                                                      'object_symbol': '??1?$vector@UHudUiTransitionTextPanel@@V?$allocator@UHudUiTransitionTextPanel@@@std@@@std@@QAE@XZ',
+                                                      'retail_body_size': 80,
+                                                      'source': '#include <vector>\n'
+                                                                'struct HudUiTransitionTextPanel { '
+                                                                'HudUiTransitionTextPanel(); virtual '
+                                                                '~HudUiTransitionTextPanel(); unsigned '
+                                                                'char data[0x2bc]; '
+                                                                'HudUiTransitionTextPanel(const '
+                                                                'HudUiTransitionTextPanel &); '
+                                                                'HudUiTransitionTextPanel '
+                                                                '&operator=(const '
+                                                                'HudUiTransitionTextPanel &); bool '
+                                                                'operator<(const '
+                                                                'HudUiTransitionTextPanel &) const; '
+                                                                'bool operator==(const '
+                                                                'HudUiTransitionTextPanel &) const; '
+                                                                '};\n'
+                                                                'typedef '
+                                                                'std::vector<HudUiTransitionTextPanel> '
+                                                                'T;\n'
+                                                                'template class '
+                                                                'std::vector<HudUiTransitionTextPanel>;\n',
+                                                      'compile_flags': ('/nologo',
+                                                                        '/c',
+                                                                        '/TP',
+                                                                        '/Gy',
+                                                                        '/O2',
+                                                                        '/Ob1',
+                                                                        '/Gr',
+                                                                        '/GX',
+                                                                        '/G5',
+                                                                        '/MD',
+                                                                        '/Zl',
+                                                                        '/X'),
+                                                      'comdat_selection': 2},
+     'vc5-vector-composite-entry-insert-count-ob1-v1': {'canonical_header': 'VC/INCLUDE/vector',
+                                                        'semantic_provider': 'vc5-stl',
+                                                        'object_symbol': '?insert@?$vector@UHudUiTransitionTextPanel@@V?$allocator@UHudUiTransitionTextPanel@@@std@@@std@@QAEXPAUHudUiTransitionTextPanel@@IABU3@@Z',
+                                                        'retail_body_size': 816,
+                                                        'source': '#include <vector>\n'
+                                                                  'struct HudUiTransitionTextPanel { '
+                                                                  'HudUiTransitionTextPanel(); virtual '
+                                                                  '~HudUiTransitionTextPanel(); '
+                                                                  'unsigned char data[0x2bc]; '
+                                                                  'HudUiTransitionTextPanel(const '
+                                                                  'HudUiTransitionTextPanel &); '
+                                                                  'HudUiTransitionTextPanel '
+                                                                  '&operator=(const '
+                                                                  'HudUiTransitionTextPanel &); bool '
+                                                                  'operator<(const '
+                                                                  'HudUiTransitionTextPanel &) const; '
+                                                                  'bool operator==(const '
+                                                                  'HudUiTransitionTextPanel &) const; '
+                                                                  '};\n'
+                                                                  'typedef '
+                                                                  'std::vector<HudUiTransitionTextPanel> '
+                                                                  'T;\n'
+                                                                  'typedef void '
+                                                                  '(T::*Fn)(T::iterator,T::size_type,const '
+                                                                  'HudUiTransitionTextPanel &);\n'
+                                                                  'Fn recoil_probe=&T::insert;\n',
+                                                        'compile_flags': ('/nologo',
+                                                                          '/c',
+                                                                          '/TP',
+                                                                          '/Gy',
+                                                                          '/O2',
+                                                                          '/Ob1',
+                                                                          '/Gr',
+                                                                          '/GX',
+                                                                          '/G5',
+                                                                          '/MD',
+                                                                          '/Zl',
+                                                                          '/X'),
+                                                        'comdat_selection': 2},
+    'vc5-vector-panel-pointer-insert-count-ob1-v1': {
+        'canonical_header': 'VC/INCLUDE/vector',
+        'semantic_provider': 'vc5-stl',
+        'object_symbol': '?insert@?$vector@PAUHudUiPanel@@V?$allocator@PAUHudUiPanel@@@std@@@std@@QAEXPAPAUHudUiPanel@@IABQAU3@@Z',
+        'retail_body_size': 560,
+        'source': '#include <vector>\nstruct HudUiPanel {};\ntypedef std::vector<HudUiPanel *> T;\ntypedef void (T::*Fn)(T::iterator,T::size_type,HudUiPanel *const &);\nFn recoil_probe=&T::insert;\n',
+        'compile_flags': ('/nologo', '/c', '/TP', '/Gy', '/O2', '/Ob1', '/Gr', '/GX', '/G5', '/MD', '/Zl', '/X'),
+        'comdat_selection': 2,
+    },
+    'vc5-vector-panel-pointer-erase-range-ob1-v1': {
+        'canonical_header': 'VC/INCLUDE/vector',
+        'semantic_provider': 'vc5-stl',
+        'object_symbol': '?erase@?$vector@PAUHudUiPanel@@V?$allocator@PAUHudUiPanel@@@std@@@std@@QAEPAPAUHudUiPanel@@PAPAU3@0@Z',
+        'retail_body_size': 64,
+        'source': '#include <vector>\nstruct HudUiPanel {};\ntypedef std::vector<HudUiPanel *> T;\ntypedef T::iterator (T::*Fn)(T::iterator,T::iterator);\nFn recoil_probe = &T::erase;\n',
+        'compile_flags': ('/nologo', '/c', '/TP', '/Gy', '/O2', '/Ob1', '/Gr', '/GX', '/G5', '/MD', '/Zl', '/X'),
+        'comdat_selection': 2,
+    },
+    'vc5-list-zbd-section-handler-sort-ob1-v1': {
+        'canonical_header': 'VC/INCLUDE/list',
+        'semantic_provider': 'vc5-stl',
+        'object_symbol': '?sort@?$list@UzZbdSectionHandler@@V?$allocator@UzZbdSectionHandler@@@std@@@std@@QAEXXZ',
+        'retail_body_size': 912,
+        'source': '#include <list>\nstruct zZbdSectionHandler { unsigned char data[0x14]; static bool __fastcall CompareSortOrderLessThan(const zZbdSectionHandler *,const zZbdSectionHandler *); bool operator<(const zZbdSectionHandler &other) const { return CompareSortOrderLessThan(this,&other); } };\ntypedef std::list<zZbdSectionHandler> T;\ntypedef void (T::*Fn)();\nFn recoil_probe=&T::sort;\n',
+        'compile_flags': ('/nologo', '/c', '/TP', '/Gy', '/O2', '/Ob1', '/Gr', '/GX', '/G5', '/MD', '/Zl', '/X'),
+        'comdat_selection': 2,
+    },
+    "vc5-save-load-entry-sort-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/algorithm",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Sort@std@@YIXPAUHudUiSaveLoadEntry@@00@Z",
+        "retail_body_size": 0x240,
+        "source": SAVE_LOAD_SORT_PROBE_SOURCE,
+        "compile_flags": ("/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X"),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-save-load-entry-unguarded-insert-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/algorithm",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Unguarded_insert@std@@YIXPAUHudUiSaveLoadEntry@@U2@@Z",
+        "retail_body_size": 0x50,
+        "source": SAVE_LOAD_SORT_PROBE_SOURCE,
+        "compile_flags": ("/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X"),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-save-load-entry-unguarded-partition-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/algorithm",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Unguarded_partition@std@@YIPAUHudUiSaveLoadEntry@@PAU2@0U2@@Z",
+        "retail_body_size": 0xb0,
+        "source": SAVE_LOAD_SORT_PROBE_SOURCE,
+        "compile_flags": ("/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X"),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
     "vc5-vector-int-size-ob1-v1": {
         "canonical_header": "VC/INCLUDE/vector",
         "semantic_provider": "vc5-stl",
@@ -209,6 +423,56 @@ HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
             "/X",
         ),
         "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-xmemory-construct-network-provider-pointer-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/xmemory", "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Construct@std@@YIXPAPAUzNetworkDPlayServiceProviderInfo@@ABQAU2@@Z",
+        "retail_body_size": 0x10, "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+        "compile_flags": ("/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X"),
+        "source": (
+            "#include <xmemory>\r\nstruct zNetworkDPlayServiceProviderInfo;\r\n"
+            "typedef zNetworkDPlayServiceProviderInfo *Pointer;\r\n#pragma inline_depth(1)\r\n"
+            "inline void recoil_provider_inline(Pointer *dst, Pointer const &value) { std::_Construct(dst, value); }\r\n"
+            "void recoil_provider_probe(Pointer *dst, Pointer const &value) { recoil_provider_inline(dst, value); }\r\n"
+        ),
+    },
+    "vc5-xmemory-construct-sample-set-pointer-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/xmemory", "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Construct@std@@YIXPAPAUzSndSampleSet@@ABQAU2@@Z",
+        "retail_body_size": 0x10, "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+        "compile_flags": ("/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X"),
+        "source": (
+            "#include <xmemory>\r\nstruct zSndSampleSet;\r\n"
+            "typedef zSndSampleSet *Pointer;\r\n#pragma inline_depth(1)\r\n"
+            "inline void recoil_provider_inline(Pointer *dst, Pointer const &value) { std::_Construct(dst, value); }\r\n"
+            "void recoil_provider_probe(Pointer *dst, Pointer const &value) { recoil_provider_inline(dst, value); }\r\n"
+        ),
+    },
+    "vc5-xmemory-construct-hud-panel-pointer-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/xmemory", "semantic_provider": "vc5-stl",
+        "object_symbol": "?_Construct@std@@YIXPAPAUHudUiPanel@@ABQAU2@@Z",
+        "retail_body_size": 0x10, "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+        "compile_flags": ("/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X"),
+        "source": (
+            "#include <xmemory>\r\nstruct HudUiPanel;\r\n"
+            "typedef HudUiPanel *Pointer;\r\n#pragma inline_depth(1)\r\n"
+            "inline void recoil_provider_inline(Pointer *dst, Pointer const &value) { std::_Construct(dst, value); }\r\n"
+            "void recoil_provider_probe(Pointer *dst, Pointer const &value) { recoil_provider_inline(dst, value); }\r\n"
+        ),
+    },
+    "vc5-vector-save-load-entry-insert-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector", "semantic_provider": "vc5-stl",
+        "object_symbol": "?insert@?$vector@UHudUiSaveLoadEntry@@V?$allocator@UHudUiSaveLoadEntry@@@std@@@std@@QAEXPAUHudUiSaveLoadEntry@@IABU3@@Z",
+        "retail_body_size": 0x320, "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+        "compile_flags": ("/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X"),
+        # This diagnostic type supplies the independently observed record
+        # extent. Production retains the recovered Win32 directory record.
+        "source": (
+            "#include <vector>\r\nstruct HudUiSaveLoadEntry { unsigned char data[0x140]; };\r\n"
+            "typedef std::vector<HudUiSaveLoadEntry> Base;\r\n"
+            "typedef void (Base::*InsertFn)(Base::iterator, Base::size_type, const HudUiSaveLoadEntry &);\r\n"
+            "InsertFn recoil_provider_probe = &Base::insert;\r\n"
+        ),
     },
     "vc5-xmemory-construct-int-ob1-v1": {
         "canonical_header": "VC/INCLUDE/xmemory",
@@ -316,6 +580,58 @@ HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
         ),
         "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
     },
+    "vc5-vector-panel-layout-destroy-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": (
+            "?_Destroy@?$vector@UHudUiPanelLayoutEntry@@"
+            "V?$allocator@UHudUiPanelLayoutEntry@@@std@@@std@@"
+            "IAEXPAUHudUiPanelLayoutEntry@@0@Z"
+        ),
+        "retail_body_size": 0x30,
+        # The retail loop supplies the 0x2ac stride and external destructor
+        # dependency. This probe describes that template argument's extent;
+        # it does not reconstruct its fields or implement the destructor.
+        "source": (
+            "#include <vector>\r\n"
+            "struct HudUiPanelLayoutEntry {\r\n"
+            " unsigned char extent[0x2ac]; ~HudUiPanelLayoutEntry();\r\n"
+            "};\r\n"
+            "struct RecoilProviderVectorProbe : std::vector<HudUiPanelLayoutEntry> {\r\n"
+            " typedef std::vector<HudUiPanelLayoutEntry> Base;\r\n"
+            " typedef void (Base::*DestroyFn)(iterator, iterator);\r\n"
+            " static DestroyFn destroy;\r\n"
+            "};\r\n"
+            "RecoilProviderVectorProbe::DestroyFn RecoilProviderVectorProbe::destroy =\r\n"
+            " &RecoilProviderVectorProbe::_Destroy;\r\n"
+        ),
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
+    "vc5-vector-save-load-entry-destroy-ob1-v1": {
+        "canonical_header": "VC/INCLUDE/vector",
+        "semantic_provider": "vc5-stl",
+        "object_symbol": (
+            "?_Destroy@?$vector@UHudUiSaveLoadEntry@@V?$allocator@UHudUiSaveLoadEntry@@@std@@@std@@IAEXPAUHudUiSaveLoadEntry@@0@Z"
+        ),
+        "retail_body_size": 0x10,
+        "source": (
+            "#include <vector>\n"
+            "struct HudUiSaveLoadEntry { unsigned char data[0x140]; };\n"
+            "struct RecoilProviderVectorProbe : std::vector<HudUiSaveLoadEntry> {\n"
+            "typedef std::vector<HudUiSaveLoadEntry> Base;\n"
+            "typedef void (Base::*DestroyFn)(iterator, iterator);\n"
+            "static DestroyFn destroy; };\n"
+            "RecoilProviderVectorProbe::DestroyFn RecoilProviderVectorProbe::destroy = "
+            "&RecoilProviderVectorProbe::_Destroy;\n"
+        ),
+        "compile_flags": (
+            "/nologo", "/c", "/TP", "/Gy", "/O2", "/Ob1", "/Gr", "/Zl", "/X",
+        ),
+        "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
+    },
     "vc5-vector-pointer-destroy-ob1-v1": {
         "canonical_header": "VC/INCLUDE/vector",
         "semantic_provider": "vc5-stl",
@@ -338,6 +654,22 @@ HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
         "comdat_selection": IMAGE_COMDAT_SELECT_ANY,
     },
 }
+
+
+# These two Recoil pointer payloads use the same canonical vector operations
+# as the bind-group pointer. Keep their emission shape identical; each named
+# specialization is still compiled and compared independently with retail.
+for _payload_name, _recipe_name in (
+    ("zNetworkDPlayServiceProviderInfo", "network-provider"),
+    ("zSndSampleSet", "sample-set"),
+):
+    for _operation in ("ufill", "ucopy", "size"):
+        _base_recipe = HEADER_PROBE_RECIPES[f"vc5-vector-bind-group-pointer-{_operation}-ob1-v1"]
+        HEADER_PROBE_RECIPES[f"vc5-vector-{_recipe_name}-pointer-{_operation}-ob1-v1"] = {
+            **_base_recipe,
+            "object_symbol": _base_recipe["object_symbol"].replace("zInput_BindGroupInfo", _payload_name),
+            "source": _base_recipe["source"].replace("zInput_BindGroupInfo", _payload_name),
+        }
 
 
 class ProviderFunctionMutationError(RuntimeError):
@@ -686,6 +1018,7 @@ def _validate_existing_function(
     *,
     function_id: str,
     address: str,
+    existing_provider_owner_id: str | None = None,
 ) -> tuple[dict[str, Any], int, int]:
     source = document.collection("symbols").get(function_id)
     if not isinstance(source, Mapping):
@@ -746,7 +1079,7 @@ def _validate_existing_function(
                 for relationship in relationships
             ):
                 primary_owner_ids.append(str(owner_id))
-        if primary_owner_ids:
+        if primary_owner_ids and primary_owner_ids != [existing_provider_owner_id]:
             raise ProviderFunctionMutationError(
                 "non-authored inventory row is still claimed by primary "
                 "source owners: " + ", ".join(sorted(primary_owner_ids))
@@ -780,6 +1113,41 @@ def _validate_existing_function(
     return row, start, end
 
 
+def _existing_header_inventory_owner(
+    document: ProgressDocument, *, function_id: str, address: str,
+    request: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Preserve a pre-existing provider census when proving one of its members.
+
+    This adds function object-identity evidence only. It neither replaces the
+    owner nor accepts its aggregate linkage, bytes, or remaining members.
+    """
+    source = document.collection("owners").get(request["owner_id"])
+    if source is None:
+        return None
+    owner = deepcopy(source)
+    gates = owner.get("gates") if isinstance(owner, dict) else None
+    if (
+        request["proof_mode"] != "canonical-header-comdat"
+        or not isinstance(owner, dict) or owner.get("kind") != "provider-boundary"
+        or owner.get("name") != request["owner_name"]
+        or not isinstance(owner.get("source_paths"), list)
+        or any(not isinstance(path, str) or re.fullmatch(r"provider:[a-z0-9][a-z0-9._-]*", path) is None
+               for path in owner["source_paths"])
+        or owner.get("provider_state") != "accepted" or owner.get("lifecycle_state") != "accepted"
+        or not isinstance(gates, Mapping)
+        or gates.get("boundary") != "accepted" or gates.get("source") != "accepted"
+    ):
+        raise ProviderFunctionMutationError("existing provider inventory owner is not accepted or does not match")
+    matching = [edge for edge in owner.get("relationships", [])
+        if isinstance(edge, Mapping) and edge.get("kind") == "primary-function"
+        and (edge.get("symbol_id") == function_id or edge.get("address") == address)]
+    if (len(matching) != 1 or matching[0].get("symbol_id") != function_id
+        or matching[0].get("address") != address):
+        raise ProviderFunctionMutationError("existing provider inventory requires one exact primary member")
+    return owner
+
+
 def _validate_header_provider_extension(
     document: ProgressDocument, *, function_id: str, address: str,
     request: Mapping[str, Any],
@@ -790,11 +1158,14 @@ def _validate_header_provider_extension(
     required = {
         "binary": "recoil", "kind": "provider-function", "address": address,
         "extent_state": "known", "pipeline_class": "non-authored",
-        "authored_order_role": "non-authored", "disposition": "provider",
+        "disposition": "provider",
         "ownership_state": "primary-owned", "output_section_id": "recoil:section:.text",
         "object_symbol": request["object_symbol"],
     }
-    if not isinstance(row, dict) or any(row.get(k) != v for k, v in required.items()):
+    if (not isinstance(row, dict)
+        or any(row.get(k) != v for k, v in required.items())
+        or row.get("authored_order_role") not in {
+            "non-authored", "compiler-generated-icf-representative"}):
         raise ProviderFunctionMutationError("header extension requires the same exact provider row")
     catalog = row.get("provider_object_identity")
     if not isinstance(catalog, Mapping) or (
@@ -1116,6 +1487,10 @@ def _coff_provider_object_proof(
                 "type_value": relocation.type,
                 "width": width,
                 "target_symbol": relocation.symbol_name,
+                "addend": int.from_bytes(
+                    body.data[relative_offset : relative_offset + width],
+                    "little",
+                ),
             }
         )
     return ProviderObjectProof(
@@ -1335,8 +1710,12 @@ def register_provider_function(
             document, function_id=function_id, address=normalized_address, request=request,
         )
     else:
+        existing_owner = _existing_header_inventory_owner(
+            document, function_id=function_id, address=normalized_address, request=request,
+        )
         function, start, end = _validate_existing_function(
-            document, function_id=function_id, address=normalized_address
+            document, function_id=function_id, address=normalized_address,
+            existing_provider_owner_id=request["owner_id"] if existing_owner is not None else None,
         )
     owner_id = str(request["owner_id"])
     _validate_tracker_ownership(

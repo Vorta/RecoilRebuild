@@ -194,7 +194,7 @@ def _is_bounded_dynamic_load(
             and not allow_exact_receiver_add
         )
         or "null" in abstract
-        or abstract.count("load(") not in {1, 2, 3}
+        or abstract.count("load(") not in {1, 2, 3, 4}
     ):
         return False
     if "entry-register(" in abstract:
@@ -618,26 +618,10 @@ def _canonical_indirect_storage(
             reviewed_exact_indirect_storage_bridges.get(instruction_address)
         )
         if exact_targetless_vptr_storage:
-            exact_zsnd_a3d_duplicate = (
-                exact_targetless_vptr_storage
-                == _cc_catalog._ZSND_A3D_DUPLICATE_CANDIDATE_VPTR
-                and base == "ecx"
-                and displacement == 0x08
-            )
-            exact_zsnd_directsound_duplicate = (
-                exact_targetless_vptr_storage
-                == _cc_catalog._ZSND_DIRECTSOUND_DUPLICATE_CANDIDATE_VPTR
-                and base == "ecx"
-                and displacement == 0x08
-            )
+            exact_slot = _cc_targets._exact_indirect_register_call_slot(instruction, allow_zero=True)
             if (
-                displacement is None
-                or displacement <= 0
-                or exact_expression
-                not in {
-                    f"{base}+0x{displacement:x}",
-                    f"{base}+{displacement}",
-                }
+                exact_slot is None
+                or exact_slot[0] != base
                 or not _cc_receiver_candidate._is_bounded_stack_vptr(
                     exact_targetless_vptr_storage
                 )
@@ -646,8 +630,9 @@ def _canonical_indirect_storage(
                     allow_entry_register_root=True,
                     allow_exact_receiver_add=True,
                 )
-                and not exact_zsnd_a3d_duplicate
-                and not exact_zsnd_directsound_duplicate
+                and not _cc_receiver_candidate._eligible_retail_cfg_targetless_vptr(
+                    exact_targetless_vptr_storage
+                )
             ):
                 raise ValueError(
                     "exact targetless vptr proof does not match invocation"
@@ -655,7 +640,7 @@ def _canonical_indirect_storage(
             return (
                 "virtual-slot",
                 "",
-                displacement,
+                exact_slot[1],
                 exact_targetless_vptr_storage,
             )
         if reviewed_exact_indirect is not None:

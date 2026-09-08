@@ -10,6 +10,7 @@ from _recoil.call_contract import cfg as _cc_cfg
 from _recoil.call_contract import extraction as _cc_extraction
 from _recoil.call_contract import identity as _cc_identity
 from _recoil.call_contract import receiver_instructions as _cc_receiver_instructions
+from _recoil.call_contract import receiver_candidate as _cc_receiver_candidate
 from _recoil.call_contract import recoil_hud_layout as _cc_recoil_hud_layout
 from _recoil.call_contract import targets as _cc_targets
 
@@ -4156,319 +4157,24 @@ def _hud_ui_mgr_stats_list_set_visible_candidate_bridges(
         )
 
     start = address_value(normalized_start)
-    end = address_value(caller_end_exclusive)
     instructions = candidate.instructions
     addresses = _cc_cfg._instruction_runtime_addresses(
-        instructions,
-        source="cod",
-        caller_start=start,
+        instructions, source="cod", caller_start=start,
     )
-    counts: dict[int, int] = {}
-    for address in addresses:
-        if address is not None:
-            counts[address] = counts.get(address, 0) + 1
-    by_offset = {
-        address - start: instruction
-        for instruction, address in zip(instructions, addresses)
-        if address is not None and counts.get(address) == 1
-    }
-    index_by_address = {
-        address: index
-        for index, address in enumerate(addresses)
-        if address is not None and counts.get(address) == 1
-    }
-    symbol_pattern = re.escape(_cc_catalog.HUD_UI_MGR_AGGREGATE_DECORATED_SYMBOL)
-    load_body = b"\x8b\x0d\x10\x76\x00\x00"
-    load_pattern = (
-        rf"mov\s+ecx\s*,\s*(?:dword\s+(?:ptr\s+)?)?"
-        rf"{symbol_pattern}\+30224"
+    proven = _cc_receiver_candidate._candidate_aggregate_field_vptr_calls(
+        instructions, addresses=addresses, caller_start=start, definition=definition,
+        aggregate_symbol=_cc_catalog.HUD_UI_MGR_AGGREGATE_DECORATED_SYMBOL,
+        displacement=_cc_catalog.HUD_UI_MGR_STATS_LIST_DISPLACEMENT,
+        slot_displacement=_cc_catalog.HUD_UI_MGR_STATS_LIST_VPTR_SLOT_DISPLACEMENT,
     )
-    load_offsets = [
-        offset
-        for offset, instruction in by_offset.items()
-        if (
-            bytes(int(value, 16) for value in instruction.bytes)
-            == load_body
-            and re.fullmatch(
-                load_pattern,
-                instruction.raw_text.strip(),
-                flags=re.IGNORECASE,
-            )
-            is not None
-            and definition.data[offset : offset + len(load_body)]
-            == load_body
-        )
-    ]
-    if len(load_offsets) != 1:
+    if len(proven) != 1:
         raise ValueError(
             "HUD stats-list SetVisible candidate bridge requires one exact "
-            "unique relocation-backed aggregate-field load anchor"
+            "COFF field receiver and vptr on every CFG path to the slot call"
         )
-    load_offset = load_offsets[0]
-    relative_rows = {
-        0x00: (
-            b"\x8b\x0d\x10\x76\x00\x00",
-            load_pattern,
-        ),
-        0x06: (
-            b"\xc7\x05\x10\x00\x00\x00\x01\x00\x00\x00",
-            rf"mov\s+(?:dword\s+(?:ptr\s+)?)?"
-            rf"{symbol_pattern}\+16\s*,\s*1",
-        ),
-        0x12: (
-            b"\x74\x17",
-            r"je\s+(?:SHORT\s+)?\$L[0-9]+",
-        ),
-        0x14: (
-            b"\x8b\x11",
-            r"mov\s+edx\s*,\s*(?:dword\s+(?:ptr\s+)?)?\[ecx\]",
-        ),
-        0x16: (
-            b"\x6a\x01",
-            r"push\s+1",
-        ),
-        0x18: (
-            b"\xff\x52\x60",
-            r"call\s+(?:dword\s+(?:ptr\s+)?)?\[edx\+96\]",
-        ),
-    }
-    exact_rows = {
-        load_offset + relative_offset: row
-        for relative_offset, row in relative_rows.items()
-    }
-    if (
-        not set(exact_rows).issubset(by_offset)
-        or any(counts.get(start + offset) != 1 for offset in exact_rows)
-    ):
-        raise ValueError(
-            "HUD stats-list SetVisible candidate bridge requires one unique "
-            "instruction at every reviewed contribution offset"
-        )
-    for offset, (body, pattern) in exact_rows.items():
-        instruction = by_offset[offset]
-        if (
-            bytes(int(value, 16) for value in instruction.bytes) != body
-            or re.fullmatch(
-                pattern,
-                instruction.raw_text.strip(),
-                flags=re.IGNORECASE,
-            )
-            is None
-            or definition.data[offset : offset + len(body)] != body
-        ):
-            raise ValueError(
-                "HUD stats-list SetVisible candidate bridge requires exact "
-                f"instruction bytes and operands at +{hex(offset)}"
-            )
-
-    null_check_offset = load_offset + 0x10
-    null_check = by_offset.get(null_check_offset)
-    null_check_match = (
-        re.fullmatch(
-            r"cmp\s+ecx\s*,\s*(?P<zero_register>"
-            r"e(?:ax|dx|bx|bp|si|di))",
-            null_check.raw_text.strip(),
-            flags=re.IGNORECASE,
-        )
-        if null_check is not None
-        else None
-    )
-    zero_register = (
-        null_check_match.group("zero_register").lower()
-        if null_check_match is not None
-        else ""
-    )
-    register_codes = {
-        "eax": 0,
-        "edx": 2,
-        "ebx": 3,
-        "ebp": 5,
-        "esi": 6,
-        "edi": 7,
-    }
-    null_check_body = (
-        bytes((0x3B, 0xC8 | register_codes[zero_register]))
-        if zero_register in register_codes
-        else b""
-    )
-    null_check_index = index_by_address.get(start + null_check_offset)
-    zero_writes = (
-        [
-            index
-            for index in range(null_check_index)
-            if _cc_cfg._instruction_may_clobber_register(
-                instructions[index],
-                zero_register,
-            )
-        ]
-        if null_check_index is not None and zero_register
-        else []
-    )
-    zero_seed_index = zero_writes[-1] if zero_writes else None
-    zero_seed = (
-        instructions[zero_seed_index]
-        if zero_seed_index is not None
-        else None
-    )
-    zero_seed_address = (
-        addresses[zero_seed_index]
-        if zero_seed_index is not None
-        else None
-    )
-    zero_seed_code = register_codes.get(zero_register)
-    zero_seed_body = (
-        bytes((0x33, 0xC0 | (zero_seed_code << 3) | zero_seed_code))
-        if zero_seed_code is not None
-        else b""
-    )
-    if (
-        null_check is None
-        or null_check_index is None
-        or counts.get(start + null_check_offset) != 1
-        or bytes(int(value, 16) for value in null_check.bytes)
-        != null_check_body
-        or definition.data[
-            null_check_offset : null_check_offset + len(null_check_body)
-        ]
-        != null_check_body
-        or zero_seed is None
-        or zero_seed_address is None
-        or bytes(int(value, 16) for value in zero_seed.bytes)
-        != zero_seed_body
-        or re.fullmatch(
-            rf"xor\s+{zero_register}\s*,\s*{zero_register}",
-            zero_seed.raw_text.strip(),
-            flags=re.IGNORECASE,
-        )
-        is None
-        or definition.data[
-            zero_seed_address - start :
-            zero_seed_address - start + len(zero_seed_body)
-        ]
-        != zero_seed_body
-    ):
-        raise ValueError(
-            "HUD stats-list SetVisible candidate bridge requires an exact "
-            "unique zero-register seed and unclobbered null comparison"
-        )
-
-    for relocation_offset, addend in (
-        (
-            load_offset + 0x02,
-            _cc_catalog.HUD_UI_MGR_STATS_LIST_DISPLACEMENT,
-        ),
-        (
-            load_offset + 0x08,
-            0x10,
-        ),
-    ):
-        relocations = [
-            relocation
-            for relocation in definition.relocations
-            if relocation.offset == relocation_offset
-        ]
-        if (
-            len(relocations) != 1
-            or relocations[0].type != IMAGE_REL_I386_DIR32
-            or relocations[0].symbol_name
-            != _cc_catalog.HUD_UI_MGR_AGGREGATE_DECORATED_SYMBOL
-            or struct.unpack_from(
-                "<I",
-                definition.data,
-                relocation_offset,
-            )[0]
-            != addend
-            or not all(
-                definition.relocation_mask[index]
-                for index in range(relocation_offset, relocation_offset + 4)
-            )
-        ):
-            raise ValueError(
-                "HUD stats-list SetVisible candidate bridge requires exact "
-                "aggregate-field DIR32 relocations"
-            )
-    if (
-        definition.undefined_external_data.count(
-            _cc_catalog.HUD_UI_MGR_AGGREGATE_DECORATED_SYMBOL
-        )
-        != 1
-        or _cc_catalog.HUD_UI_MGR_AGGREGATE_DECORATED_SYMBOL
-        in definition.defined_external_data
-    ):
-        raise ValueError(
-            "HUD stats-list SetVisible candidate bridge requires one exact "
-            "undefined aggregate data identity"
-        )
-
-    null_branch_offset = load_offset + 0x12
-    vptr_load_offset = load_offset + 0x14
-    call_offset = load_offset + 0x18
-    null_target_offset = load_offset + 0x2B
-    branch_address = start + null_branch_offset
-    branch_index = index_by_address[branch_address]
-    branch = _cc_cfg._exact_local_direct_branch(
-        instructions[branch_index],
-        instruction_index=branch_index,
-        instruction_addresses=addresses,
-        instruction_index_by_address=index_by_address,
-        source="cod",
-        caller_start=start,
-        caller_end=end,
-    )
-    load_index = index_by_address[start + load_offset]
-    vptr_index = index_by_address[start + vptr_load_offset]
-    call_index = index_by_address[start + call_offset]
-    reviewed_window = range(load_index, call_index + 1)
-    if (
-        branch is None
-        or branch[0] != "conditional"
-        or addresses[branch[1]] != start + null_target_offset
-        or sum(
-            1
-            for index in reviewed_window
-            if (
-                _cc_cfg._instruction_mnemonic(instructions[index]) == "call"
-                and _cc_targets._memory_slot(
-                    _cc_cfg._instruction_operand(instructions[index])
-                )[1]
-                == _cc_catalog.HUD_UI_MGR_STATS_LIST_VPTR_SLOT_DISPLACEMENT
-            )
-        )
-        != 1
-        or any(
-            _cc_cfg._instruction_mnemonic(instructions[index]).startswith("j")
-            for index in reviewed_window
-            if index != branch_index
-        )
-        or any(
-            _cc_cfg._instruction_may_clobber_register(
-                instructions[index],
-                "ecx",
-            )
-            for index in range(load_index + 1, vptr_index)
-        )
-        or any(
-            _cc_cfg._instruction_may_clobber_register(
-                instructions[index],
-                "ecx",
-            )
-            or _cc_cfg._instruction_may_clobber_register(
-                instructions[index],
-                "edx",
-            )
-            for index in range(vptr_index + 1, call_index)
-        )
-        or _cc_cfg._cleanup_after(instructions, call_index) is not None
-        or any(
-            definition.relocation_mask[
-                call_offset : call_offset + 3
-            ]
-        )
-    ):
-        raise ValueError(
-            "HUD stats-list SetVisible candidate bridge rejects alternate "
-            "calls, CFG, cleanup, receiver/vptr clobbers, or masked call bytes"
-        )
+    vptr_index, call_index, vptr_register = proven[0]
+    vptr_load_offset = addresses[vptr_index] - start
+    call_offset = addresses[call_index] - start
 
     expression = (
         f"{_cc_catalog.HUD_UI_MGR_AGGREGATE_DECORATED_SYMBOL}"
@@ -4485,7 +4191,7 @@ def _hud_ui_mgr_stats_list_set_visible_candidate_bridges(
         },
         {
             normalize_address(vptr_load_offset): ReviewedMemberVptrStorageBridge(
-                register="edx",
+                register=vptr_register,
                 source_register="ecx",
                 source_provenance=_cc_catalog.HUD_UI_MGR_STATS_LIST_IDENTITY,
                 receiver_register="ecx",

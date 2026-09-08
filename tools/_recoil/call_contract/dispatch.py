@@ -54,7 +54,7 @@ def _retail_register_definition_transfer_addresses(
     caller_start: int, caller_end: int, allow_exact_zero_guard: bool = False,
     local_control_flow_indices: frozenset[int] = frozenset(),
     local_control_flow_targets: Mapping[int, Sequence[int]] | None = None,
-    direct_call_cleanup_by_instruction_index: Mapping[int, int] | None = None,
+    call_cleanup_by_instruction_index: Mapping[int, int] | None = None,
     equivalent_absolute_load_address: str = "",
     bridge: BinaryNinjaBridge | None = None,
     _diagnostic_metrics: dict[str, int] | None = None,
@@ -111,7 +111,7 @@ def _retail_register_definition_transfer_addresses(
             raise ValueError("equivalent retail definition is not the governed absolute load")
     try:
         uses = _cc_flow.reaching_definition_uses(instructions, cfg, definition_index=load_index, register=destination,
-            call_cleanup=direct_call_cleanup_by_instruction_index, equivalent_definitions=equivalents)
+            call_cleanup=call_cleanup_by_instruction_index, equivalent_definitions=equivalents)
     except _cc_flow.FlowProofError as exc:
         sites = [(normalize_address(addresses[index]), instructions[index].raw_text)
                  for index in sorted(unresolved) if addresses[index] is not None]

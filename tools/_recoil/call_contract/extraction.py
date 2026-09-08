@@ -9,6 +9,7 @@ from _recoil.call_contract import cfg as _cc_cfg
 from _recoil.call_contract import dispatch as _cc_dispatch
 from _recoil.call_contract import identity as _cc_identity
 from _recoil.call_contract import listing as _cc_listing
+from _recoil.call_contract import proofs as _cc_proofs
 from _recoil.call_contract import receiver_candidate as _cc_receiver_candidate
 from _recoil.call_contract import receiver_cursor as _cc_receiver_cursor
 from _recoil.call_contract import receiver_instructions as _cc_receiver_instructions
@@ -88,13 +89,15 @@ def extract_invocation_contract(
     reviewed_inbound_entry_register_roots: frozenset[str] = frozenset(),
     local_control_flow_indices: frozenset[int] = frozenset(),
     local_control_flow_targets: Mapping[int, tuple[int, ...]] | None = None,
-    reviewed_direct_call_cleanup_by_instruction_index: (
+    reviewed_call_cleanup_by_instruction_index: (
         Mapping[int, int] | None
     ) = None,
     retail_proof_package: RetailCallerScopedProofPackage | None = None,
     invocation_call_sites_out: list[str] | None = None,
     reviewed_retail_call_sites_by_ordinal: Sequence[str] | None = None,
     candidate_caller_definition: CandidateCallerDefinition | None = None,
+    candidate_direct_callee_definitions: Mapping[str, Any] | None = None,
+    candidate_virtual_call_cleanup: Mapping[int, int] | None = None,
     candidate_classification_only_local_control_flow_targets: (
         Mapping[int, tuple[int, ...]] | None
     ) = None,
@@ -279,17 +282,17 @@ def extract_invocation_contract(
                 "caller-scoped retail proof package has colliding IAT definitions"
             )
         packaged_cleanup = dict(
-            retail_proof_package.direct_call_cleanup_by_instruction_index
+            retail_proof_package.call_cleanup_by_instruction_index
         )
         if (
-            reviewed_direct_call_cleanup_by_instruction_index is not None
-            and dict(reviewed_direct_call_cleanup_by_instruction_index)
+            reviewed_call_cleanup_by_instruction_index is not None
+            and dict(reviewed_call_cleanup_by_instruction_index)
             != packaged_cleanup
         ):
             raise ValueError(
                 "caller-scoped retail proof package conflicts with direct cleanup facts"
             )
-        reviewed_direct_call_cleanup_by_instruction_index = packaged_cleanup
+        reviewed_call_cleanup_by_instruction_index = packaged_cleanup
         packaged_switch_targets = dict(
             retail_proof_package.local_control_flow_targets
         )
@@ -482,11 +485,23 @@ def extract_invocation_contract(
     if not inbound_entry_roots.issubset({"ecx", "edx"}):
         raise ValueError("reviewed inbound entry-register roots are malformed")
     switch_targets = dict(local_control_flow_targets or {})
-    direct_call_cleanup_by_instruction_index = dict(
-        reviewed_direct_call_cleanup_by_instruction_index or {}
+    call_cleanup_by_instruction_index = dict(
+        reviewed_call_cleanup_by_instruction_index or {}
     )
-    if direct_call_cleanup_by_instruction_index and source != "bn":
+    if call_cleanup_by_instruction_index and source != "bn":
         raise ValueError("reviewed direct-callee cleanup is retail-only")
+    if candidate_direct_callee_definitions:
+        if source != "cod" or candidate_caller_definition is None:
+            raise ValueError("current compiled callee definitions are candidate-only")
+        from _recoil.call_contract.current_callees import candidate_direct_cleanup_map
+        call_cleanup_by_instruction_index = candidate_direct_cleanup_map(
+            instructions, candidate_caller_definition, candidate_direct_callee_definitions)
+    if candidate_virtual_call_cleanup:
+        if source != "cod" or candidate_caller_definition is None:
+            raise ValueError("current virtual callee cleanup is candidate-only")
+        if set(candidate_virtual_call_cleanup) & set(call_cleanup_by_instruction_index):
+            raise ValueError("direct and virtual callee cleanup proofs overlap")
+        call_cleanup_by_instruction_index.update(candidate_virtual_call_cleanup)
     if not set(switch_targets).issubset(local_control_flow_indices):
         raise ValueError(
             "local control-flow target mappings require matching dispatch indices"
@@ -861,13 +876,16 @@ def extract_invocation_contract(
             indexes=indexes,
             local_control_flow_indices=local_control_flow_indices,
             local_control_flow_targets=switch_targets,
-            direct_call_cleanup_by_instruction_index=(
-                direct_call_cleanup_by_instruction_index
+            call_cleanup_by_instruction_index=(
+                call_cleanup_by_instruction_index
             ),
             candidate_caller_definition=candidate_caller_definition,
+            candidate_bridge_names=names if source == "cod" else None,
             allow_exact_this_member=(source == "cod"),
         )
     )
+    _cc_proofs.merge_into(exact_targetless_vptr_proofs, getattr(candidate_virtual_call_cleanup, "receivers", {}),
+        family="extraction.native_virtual_receivers")
     if inbound_entry_roots:
         rebound_targetless_vptr_proofs: dict[int, str] = {}
         for proof_index, storage in exact_targetless_vptr_proofs.items():
@@ -1269,7 +1287,7 @@ def extract_invocation_contract(
                         caller_start=start, caller_end=end,
                         local_control_flow_indices=local_control_flow_indices,
                         local_control_flow_targets=switch_targets,
-                        direct_call_cleanup_by_instruction_index=dict(retail_proof_package.direct_call_cleanup_by_instruction_index) if retail_proof_package else {},
+                        call_cleanup_by_instruction_index=dict(retail_proof_package.call_cleanup_by_instruction_index) if retail_proof_package else {},
                         equivalent_absolute_load_address=normalize_address(int.from_bytes(bytes.fromhex(" ".join(instructions[int(reached_retail_iat_proofs[0].definition_instruction_index)].bytes))[2:], "little")),
                     )
                 ):

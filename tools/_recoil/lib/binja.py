@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from http.client import HTTPConnection, HTTPSConnection, RemoteDisconnected
 import json
 import os
 from pathlib import Path
 import tempfile
-from urllib.parse import urlencode
-from urllib.request import urlopen
+import threading
+from urllib.parse import urlencode, urlsplit
 
 DEFAULT_BRIDGE_URL = "http://127.0.0.1:9009"
 DEFAULT_BN_CALL_BUDGET = 200
@@ -122,6 +123,8 @@ class BinaryNinjaBridge:
         self._symbols_by_address: dict[str, Symbol] | None = None
         self._symbols_by_name: dict[str, Symbol] | None = None
         self._data_variables: tuple[DataVariable, ...] | None = None
+        self._connection: HTTPConnection | None = None
+        self._connection_lock = threading.Lock()
 
     def budget_state(self) -> BridgeBudgetState:
         if self.budget_file is None:
@@ -171,17 +174,66 @@ class BinaryNinjaBridge:
             result["binary"] = self.binary
         return result
 
-    def get_json(self, endpoint: str, **params: object) -> dict:
+    def close(self) -> None:
+        with self._connection_lock:
+            if self._connection is not None:
+                self._connection.close()
+                self._connection = None
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def _read_text(self, endpoint: str, params: dict[str, object]) -> str:
+        """Reuse one serialized connection; rapid cached reads must not churn ports."""
         query = urlencode(self._request_params(endpoint, params))
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         if query:
             url = f"{url}?{query}"
-        self._claim_call(endpoint)
+        target = urlsplit(url)
+        with self._connection_lock:
+            self._claim_call(endpoint)
+            try:
+                if target.scheme not in {"http", "https"} or not target.hostname:
+                    raise ValueError("Binary Ninja bridge requires an HTTP(S) URL")
+                reused = self._connection is not None and self._connection.sock is not None
+                for attempt in range(2):
+                    if self._connection is None:
+                        connection_type = HTTPSConnection if target.scheme == "https" else HTTPConnection
+                        self._connection = connection_type(target.hostname, target.port, timeout=self.timeout)
+                    try:
+                        self._connection.request("GET", target.path + (f"?{target.query}" if target.query else ""))
+                        response = self._connection.getresponse()
+                        break
+                    except (RemoteDisconnected, ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+                        self._connection.close()
+                        self._connection = None
+                        # The plugin expires idle sockets during long compiles.
+                        # Retry only a reused socket, before receiving a response.
+                        if attempt or not reused:
+                            raise
+                        self._claim_call(endpoint)
+                with response:
+                    body = response.read().decode("utf-8")
+                    if response.status >= 300:
+                        raise ValueError(f"HTTP {response.status} {response.reason}: {body[:800]}")
+                    return body
+            except Exception as exc:
+                if self._connection is not None:
+                    self._connection.close()
+                    self._connection = None
+                if isinstance(exc, BridgeBudgetExceeded):
+                    raise
+                raise BridgeError(f"Binary Ninja bridge request failed: {url}: {exc}") from exc
+
+    def get_json(self, endpoint: str, **params: object) -> dict:
+        text = self._read_text(endpoint, params)
         try:
-            with urlopen(url, timeout=self.timeout) as response:
-                return json.loads(response.read().decode("utf-8"))
-        except Exception as exc:  # pragma: no cover - useful CLI diagnostic
-            raise BridgeError(f"Binary Ninja bridge request failed: {url}: {exc}") from exc
+            return json.loads(text)
+        except ValueError as exc:
+            raise BridgeError(f"Binary Ninja bridge returned invalid JSON for {endpoint}: {exc}") from exc
 
     def function_info(self, address_or_name: str) -> dict:
         key = "address" if address_or_name.lower().startswith("0x") else "name"
@@ -191,14 +243,7 @@ class BinaryNinjaBridge:
         return str(self.get_json("assembly", name=address_or_name).get("assembly", ""))
 
     def hexdump(self, address: str, length: int) -> str:
-        query = urlencode(self._request_params("hexdump", {"address": address, "length": str(length)}))
-        url = f"{self.base_url}/hexdump?{query}"
-        self._claim_call("hexdump")
-        try:
-            with urlopen(url, timeout=self.timeout) as response:
-                return response.read().decode("utf-8")
-        except Exception as exc:  # pragma: no cover - useful CLI diagnostic
-            raise BridgeError(f"Binary Ninja bridge request failed: {url}: {exc}") from exc
+        return self._read_text("hexdump", {"address": address, "length": str(length)})
 
     def il(self, address_or_name: str, view: str = "mlil") -> str:
         key = "address" if address_or_name.lower().startswith("0x") else "name"

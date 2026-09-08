@@ -2998,7 +2998,9 @@ def _validate_call_contract_result(
         or result.get("contract_version") != CALL_CONTRACT_CONTRACT_VERSION
         or result.get("all_caller_divergences_collected") is not True
     ):
-        raise ProgressError("call-contract validator returned the wrong governed direct result")
+        detail = result.get("first_divergence")
+        suffix = f": {json.dumps(detail, ensure_ascii=False)}" if detail else ""
+        raise ProgressError("call-contract validator returned the wrong governed direct result" + suffix)
     for field in ("slice_id", "symbol_ids", "target_ids", "physical_block_ids"):
         expected = expected_slice.get("id") if field == "slice_id" else expected_slice.get(field)
         if result.get(field) != expected:

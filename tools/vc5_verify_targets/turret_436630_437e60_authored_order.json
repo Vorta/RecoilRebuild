@@ -208,10 +208,10 @@
       "retail_end_exclusive": "0x437e60",
       "predecessor": {
         "address": "0x436580",
-        "symbol": "?PartitionEntriesByPivot@@YIPAUHudUiSaveLoadEntry@@PAU1@0U1@@Z",
-        "name": "PartitionEntriesByPivot",
-        "pipeline_class": "authored",
-        "authored_order_role": "authored-body",
+        "symbol": "?_Unguarded_partition@std@@YIPAUHudUiSaveLoadEntry@@PAU2@0U2@@Z",
+        "name": "VC5 std::_Unguarded_partition<HudUiSaveLoadEntry>",
+        "pipeline_class": "non-authored",
+        "authored_order_role": "non-authored",
         "required_presence": true,
         "full_order_gate": true
       },
@@ -409,4 +409,3 @@
     }
   ]
 }
-

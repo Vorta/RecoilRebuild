@@ -40,8 +40,9 @@ def _exact_targetless_vptr_call_proofs(
     indexes: IdentityIndexes,
     local_control_flow_indices: frozenset[int] = frozenset(),
     local_control_flow_targets: Mapping[int, tuple[int, ...]] | None = None,
-    direct_call_cleanup_by_instruction_index: Mapping[int, int] | None = None,
+    call_cleanup_by_instruction_index: Mapping[int, int] | None = None,
     candidate_caller_definition: CandidateCallerDefinition | None = None,
+    candidate_bridge_names: Mapping[str, object] | None = None,
     allow_exact_this_member: bool = False,
 ) -> dict[int, str]:
     """Derive exact targetless vptr call storage from bounded raw lineages."""
@@ -227,44 +228,6 @@ def _exact_targetless_vptr_call_proofs(
             for index, marker in multi_field_proofs.items()
         ):
             _cc_proofs.merge_into(proof_by_index, multi_field_proofs, family="receiver_proofs.proof_by_index")
-        zsnd_a3d_duplicate_proofs = (
-            _cc_recoil_audio._exact_candidate_zsnd_a3d_duplicate_dynamic_vptr_proofs(
-                instructions,
-                invocation_indices=invocation_indices,
-                addresses=addresses,
-                caller_start=caller_start_value,
-                caller_end=caller_end_value,
-                local_control_flow_indices=local_control_flow_indices,
-                local_control_flow_targets=dict(
-                    local_control_flow_targets or {}
-                ),
-            )
-        )
-        if all(
-            index not in proof_by_index
-            or proof_by_index[index] == marker
-            for index, marker in zsnd_a3d_duplicate_proofs.items()
-        ):
-            _cc_proofs.merge_into(proof_by_index, zsnd_a3d_duplicate_proofs, family="receiver_proofs.proof_by_index")
-        zsnd_directsound_duplicate_proofs = (
-            _cc_recoil_audio._exact_candidate_zsnd_directsound_duplicate_dynamic_vptr_proofs(
-                instructions,
-                invocation_indices=invocation_indices,
-                addresses=addresses,
-                caller_start=caller_start_value,
-                caller_end=caller_end_value,
-                local_control_flow_indices=local_control_flow_indices,
-                local_control_flow_targets=dict(
-                    local_control_flow_targets or {}
-                ),
-            )
-        )
-        if all(
-            index not in proof_by_index
-            or proof_by_index[index] == marker
-            for index, marker in zsnd_directsound_duplicate_proofs.items()
-        ):
-            _cc_proofs.merge_into(proof_by_index, zsnd_directsound_duplicate_proofs, family="receiver_proofs.proof_by_index")
         zsnd_play_directsound_selected_backend_proofs = (
             _cc_recoil_audio._exact_candidate_zsnd_play_selected_backend_vptr_proofs(
                 instructions,
@@ -345,50 +308,6 @@ def _exact_targetless_vptr_call_proofs(
             for index, marker in zsnd_apply_mute_proofs.items()
         ):
             _cc_proofs.merge_into(proof_by_index, zsnd_apply_mute_proofs, family="receiver_proofs.proof_by_index")
-        zui_label_panel_proofs = (
-            _cc_receiver_equivalence._exact_candidate_zui_label_panels_vptr_proofs(
-                instructions,
-                source=source,
-                caller_start=caller_start,
-                caller_end_exclusive=caller_end_exclusive,
-                indexes=indexes,
-            )
-        )
-        if all(
-            index not in proof_by_index or proof_by_index[index] == marker
-            for index, marker in zui_label_panel_proofs.items()
-        ):
-            _cc_proofs.merge_into(proof_by_index, zui_label_panel_proofs, family="receiver_proofs.proof_by_index")
-        zui_spilled_receiver_proof = (
-            _cc_receiver_equivalence._exact_candidate_zui_spilled_receiver_vptr_proof(
-                instructions,
-                source=source,
-                caller_start=caller_start,
-                caller_end_exclusive=caller_end_exclusive,
-                indexes=indexes,
-                candidate_caller_definition=candidate_caller_definition,
-            )
-        )
-        if all(
-            index not in proof_by_index or proof_by_index[index] == marker
-            for index, marker in zui_spilled_receiver_proof.items()
-        ):
-            _cc_proofs.merge_into(proof_by_index, zui_spilled_receiver_proof, family="receiver_proofs.proof_by_index")
-        zui_cycle_entry_proofs = (
-            _cc_receiver_equivalence._exact_candidate_zui_cycle_entry_vptr_proofs(
-                instructions,
-                source=source,
-                caller_start=caller_start,
-                caller_end_exclusive=caller_end_exclusive,
-                indexes=indexes,
-                candidate_caller_definition=candidate_caller_definition,
-            )
-        )
-        if all(
-            index not in proof_by_index or proof_by_index[index] == marker
-            for index, marker in zui_cycle_entry_proofs.items()
-        ):
-            _cc_proofs.merge_into(proof_by_index, zui_cycle_entry_proofs, family="receiver_proofs.proof_by_index")
 
     # One reviewed RecoilApp state transition loads the aggregate's offset-zero
     # vptr and receiver address in adjacent absolute instructions.  Preserve
@@ -831,7 +750,7 @@ def _exact_targetless_vptr_call_proofs(
             _cc_cfg._instruction_mnemonic(call) != "call"
             or base_match is None
             or not isinstance(slot, int)
-            or slot <= 0
+            or slot < 0
         ):
             continue
         base = base_match.group("base")
@@ -883,12 +802,12 @@ def _exact_targetless_vptr_call_proofs(
                     ),
                     local_control_flow_indices=local_control_flow_indices,
                     local_control_flow_targets=local_control_flow_targets,
-                    direct_call_cleanup_by_instruction_index=(
-                        direct_call_cleanup_by_instruction_index
+                    call_cleanup_by_instruction_index=(
+                        call_cleanup_by_instruction_index
                     ),
                 )
                 if (
-                    _cc_receiver_candidate._eligible_retail_fresh_targetless_vptr(cfg_fresh)
+                    _cc_receiver_candidate._eligible_retail_cfg_targetless_vptr(cfg_fresh)
                     or cfg_fresh == "load(this)"
                 ):
                     proof_by_index[call_index] = cfg_fresh
@@ -925,15 +844,15 @@ def _exact_targetless_vptr_call_proofs(
                             local_control_flow_targets=(
                                 local_control_flow_targets
                             ),
-                            direct_call_cleanup_by_instruction_index=(
-                                direct_call_cleanup_by_instruction_index
+                            call_cleanup_by_instruction_index=(
+                                call_cleanup_by_instruction_index
                             ),
                             allow_exact_affine_receiver_roots=True,
                         )
                     )
                     if (
                         (
-                            _cc_receiver_candidate._eligible_retail_fresh_targetless_vptr(
+                            _cc_receiver_candidate._eligible_retail_cfg_targetless_vptr(
                                 affine_cfg_fresh
                             )
                         )
@@ -1099,8 +1018,8 @@ def _exact_targetless_vptr_call_proofs(
                         ),
                         local_control_flow_indices=local_control_flow_indices,
                         local_control_flow_targets=local_control_flow_targets,
-                        direct_call_cleanup_by_instruction_index=(
-                            direct_call_cleanup_by_instruction_index
+                        call_cleanup_by_instruction_index=(
+                            call_cleanup_by_instruction_index
                         ),
                         allow_exact_affine_receiver_roots=True,
                     )
@@ -1137,8 +1056,8 @@ def _exact_targetless_vptr_call_proofs(
                         ),
                         local_control_flow_indices=local_control_flow_indices,
                         local_control_flow_targets=local_control_flow_targets,
-                        direct_call_cleanup_by_instruction_index=(
-                            direct_call_cleanup_by_instruction_index
+                        call_cleanup_by_instruction_index=(
+                            call_cleanup_by_instruction_index
                         ),
                     )
                     index_value = _cc_receiver_retail._exact_retail_cfg_register_provenance(
@@ -1155,8 +1074,8 @@ def _exact_targetless_vptr_call_proofs(
                         ),
                         local_control_flow_indices=local_control_flow_indices,
                         local_control_flow_targets=local_control_flow_targets,
-                        direct_call_cleanup_by_instruction_index=(
-                            direct_call_cleanup_by_instruction_index
+                        call_cleanup_by_instruction_index=(
+                            call_cleanup_by_instruction_index
                         ),
                     )
                     if (
@@ -1191,8 +1110,8 @@ def _exact_targetless_vptr_call_proofs(
                 ),
                 local_control_flow_indices=local_control_flow_indices,
                 local_control_flow_targets=local_control_flow_targets,
-                direct_call_cleanup_by_instruction_index=(
-                    direct_call_cleanup_by_instruction_index
+                call_cleanup_by_instruction_index=(
+                    call_cleanup_by_instruction_index
                 ),
             )
             if (
@@ -1227,13 +1146,13 @@ def _exact_targetless_vptr_call_proofs(
                     ),
                     local_control_flow_indices=local_control_flow_indices,
                     local_control_flow_targets=local_control_flow_targets,
-                    direct_call_cleanup_by_instruction_index=(
-                        direct_call_cleanup_by_instruction_index
+                    call_cleanup_by_instruction_index=(
+                        call_cleanup_by_instruction_index
                     ),
                     allow_exact_caller_cleanup=True,
                 )
             if not (
-                _cc_receiver_candidate._eligible_retail_fresh_targetless_vptr(cfg_fresh)
+                _cc_receiver_candidate._eligible_retail_cfg_targetless_vptr(cfg_fresh)
                 or cfg_fresh == "load(this)"
             ):
                 affine_cfg_fresh = _cc_receiver_retail._exact_retail_cfg_register_provenance(
@@ -1258,14 +1177,14 @@ def _exact_targetless_vptr_call_proofs(
                     ),
                     local_control_flow_indices=local_control_flow_indices,
                     local_control_flow_targets=local_control_flow_targets,
-                    direct_call_cleanup_by_instruction_index=(
-                        direct_call_cleanup_by_instruction_index
+                    call_cleanup_by_instruction_index=(
+                        call_cleanup_by_instruction_index
                     ),
                     allow_exact_affine_receiver_roots=True,
                 )
                 if (
                     (
-                        _cc_receiver_candidate._eligible_retail_fresh_targetless_vptr(
+                        _cc_receiver_candidate._eligible_retail_cfg_targetless_vptr(
                             affine_cfg_fresh
                         )
                     )
@@ -1290,7 +1209,7 @@ def _exact_targetless_vptr_call_proofs(
                 is not None
             )
             if (
-                _cc_receiver_candidate._eligible_retail_fresh_targetless_vptr(cfg_fresh)
+                _cc_receiver_candidate._eligible_retail_cfg_targetless_vptr(cfg_fresh)
                 or cfg_fresh == "load(this)"
                 or (
                     allow_exact_this_member
@@ -1456,12 +1375,12 @@ def _exact_targetless_vptr_call_proofs(
                 ),
                 local_control_flow_indices=local_control_flow_indices,
                 local_control_flow_targets=local_control_flow_targets,
-                direct_call_cleanup_by_instruction_index=(
-                    direct_call_cleanup_by_instruction_index
+                call_cleanup_by_instruction_index=(
+                    call_cleanup_by_instruction_index
                 ),
             )
             if (
-                _cc_receiver_candidate._eligible_retail_fresh_targetless_vptr(cfg_fresh)
+                _cc_receiver_candidate._eligible_retail_cfg_targetless_vptr(cfg_fresh)
                 or cfg_fresh == "load(this)"
             ):
                 proof_by_index[call_index] = cfg_fresh
@@ -1487,14 +1406,14 @@ def _exact_targetless_vptr_call_proofs(
                 ),
                 local_control_flow_indices=local_control_flow_indices,
                 local_control_flow_targets=local_control_flow_targets,
-                direct_call_cleanup_by_instruction_index=(
-                    direct_call_cleanup_by_instruction_index
+                call_cleanup_by_instruction_index=(
+                    call_cleanup_by_instruction_index
                 ),
                 allow_exact_affine_receiver_roots=True,
             )
             if (
                 (
-                    _cc_receiver_candidate._eligible_retail_fresh_targetless_vptr(
+                    _cc_receiver_candidate._eligible_retail_cfg_targetless_vptr(
                         affine_cfg_fresh
                     )
                 )
@@ -1506,24 +1425,89 @@ def _exact_targetless_vptr_call_proofs(
                 )
             ):
                 proof_by_index[call_index] = affine_cfg_fresh
+    if source == "bn":
+        # A spilled vtable can be recovered without replacing reviewed
+        # member-load proofs. Require a fresh same-block stack reload of the
+        # actual dispatch register, then prove its value over every CFG path.
+        # Unknown cleanup discards old slots in that dataflow; a later spill
+        # may still establish this exact value relative to its new ESP origin.
+        for call_index, instruction in enumerate(instructions):
+            if call_index in proof_by_index and proof_by_index[call_index] != "bounded-stack-receiver-vptr":
+                continue
+            call = _cc_targets._exact_indirect_register_call_slot(instruction, allow_zero=True)
+            if call is None:
+                continue
+            value = _cc_receiver_retail._exact_retail_cfg_register_provenance(
+                instructions, before_index=call_index, register=call[0], addresses=addresses,
+                indexes=indexes, caller_start=address_value(caller_start),
+                caller_end=address_value(caller_end_exclusive) if caller_end_exclusive else
+                    max(address + len(row.bytes) for address, row in zip(addresses, instructions) if address is not None),
+                local_control_flow_indices=local_control_flow_indices,
+                local_control_flow_targets=local_control_flow_targets or {},
+                call_cleanup_by_instruction_index=call_cleanup_by_instruction_index,
+                allow_exact_affine_receiver_roots=True, allow_exact_caller_cleanup=True)
+            if (_cc_receiver_candidate._exact_allocation_vptr_storage(value)
+                    or _cc_receiver_candidate._exact_entry_stack_vptr(value)):
+                proof_by_index[call_index] = value
+                continue
+            for prior_index in range(call_index - 1, -1, -1):
+                prior = instructions[prior_index]
+                mnemonic = _cc_cfg._instruction_mnemonic(prior)
+                if mnemonic.startswith(("j", "loop")) or mnemonic == "call":
+                    break
+                if not _cc_cfg._instruction_may_clobber_register(prior, call[0]):
+                    continue
+                load = _cc_receiver_instructions._exact_stack_slot_load(prior)
+                if load is not None and load[0] == call[0]:
+                    if _cc_receiver_equivalence._canonical_exact_this_member_vptr_storage(value):
+                        proof_by_index[call_index] = value
+                break
     if source == "cod":
-        _cc_proofs.merge_into(proof_by_index, _cc_receiver_candidate._exact_candidate_cfg_vptr_proofs(
+        cfg_proofs = _cc_receiver_candidate._exact_candidate_cfg_vptr_proofs(
             instructions, addresses=addresses, caller_start=address_value(caller_start),
             indexes=indexes, definition=candidate_caller_definition,
             local_control_flow_indices=local_control_flow_indices,
             local_control_flow_targets=dict(local_control_flow_targets or {}),
-            direct_call_cleanup_by_instruction_index=direct_call_cleanup_by_instruction_index,
-        ), family="receiver_proofs.proof_by_index")
+            call_cleanup_by_instruction_index=call_cleanup_by_instruction_index,
+            bridge_names=candidate_bridge_names,
+        )
+        for index, value in cfg_proofs.items():
+            prior = proof_by_index.get(index)
+            if prior == "bounded-stack-receiver-vptr" and _cc_receiver_candidate._exact_entry_stack_vptr(value):
+                # Replace a slotless legacy description with the independently
+                # proved argument coordinate. Different concrete slots remain
+                # conflicting proofs and are never equated.
+                proof_by_index[index] = value
+            if prior is not None and (
+                _cc_receiver_equivalence._canonical_proven_member_storage(prior)
+                == _cc_receiver_equivalence._canonical_proven_member_storage(value)
+            ):
+                cfg_proofs[index] = prior
+        _cc_proofs.merge_into(proof_by_index, cfg_proofs, family="receiver_proofs.proof_by_index")
     # The finite AppFrame package validates the complete caller/call census and
     # exact receiver-lineage bytes.  It therefore owns these three sites over
     # the generic affine analysis, whose deliberately broader abstract domain
     # can describe the same stack slot with a non-retail spelling.
+    appframe_queue_proofs = {index: marker for index, marker in appframe_queue_proofs.items()
+        if not (marker == "bounded-stack-receiver-vptr"
+                and _cc_receiver_candidate._exact_entry_stack_vptr(proof_by_index.get(index, "")))}
     _cc_proofs.merge_into(proof_by_index, appframe_queue_proofs, family="receiver_proofs.proof_by_index")
     return proof_by_index
 
 
 def _bounded_scalar_index_provenance(abstract: str) -> bool:
     """Recognize one exact scalar source eligible for a bounded SIB index."""
+
+    if abstract.startswith("scalar-choice(") and abstract.endswith(")") and len(abstract) <= 384:
+        parts = _cc_receiver_candidate._split_abstract_arguments(abstract[14:-1])
+        return bool(parts and 2 <= len(parts) <= 4 and tuple(sorted(set(parts))) == tuple(parts)
+            and all(value == "null" or not value.startswith("scalar-choice(")
+                and _bounded_scalar_index_provenance(value) for value in parts))
+    argument_member = re.fullmatch(
+        r"load\(load\(entry-stack\+0x([0-9a-f]+)\)\+0x([0-9a-f]+)\)", abstract)
+    if argument_member is not None:
+        slot, member = (int(value, 16) for value in argument_member.groups())
+        return 4 <= slot <= 0x7FFFFFFF and slot % 4 == 0 and 0 < member <= 0x7FFFFFFF
 
     return (
         re.fullmatch(
@@ -1542,6 +1526,13 @@ def _bounded_scalar_index_provenance(abstract: str) -> bool:
 def _bounded_index_provenance(abstract: str) -> bool:
     """Accept one scalar root or one non-aliased exact two-root sum."""
 
+    if _cc_receiver_candidate._bounded_cfg_cursor(abstract) == "index":
+        return True
+    offset = re.fullmatch(r"index-offset\((.+),0x([0-9a-f]+)\)", abstract)
+    if offset is not None:
+        return (not offset.group(1).startswith("index-offset(")
+                and 0 < int(offset.group(2), 16) <= _cc_catalog._BOUNDED_TARGETLESS_ARITHMETIC_LIMIT
+                and _bounded_index_provenance(offset.group(1)))
     if _bounded_scalar_index_provenance(abstract):
         return True
     stride = _cc_receiver_candidate._bounded_stride_components(abstract)

@@ -730,7 +730,15 @@ void __cdecl HudUiTextLabel::SetTextFmt(
     Invalidate();
 }
 
-void HudUiPanel::SetClip(
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-setbltsourceandcliprect
+ * @recoil-artifact defines .text recoil:function:0x4bcd40: HudUiTextLabel::SetBltSourceAndClipRect.
+ * Purpose: update the label image and optional clipping rectangle, then
+ * invalidate its cached display through the inherited virtual operation.
+ * Retail constructor 0x4bcb50 installs the table at 0x4d3c70, whose +0x18
+ * slot selects this override. Panel and its derived classes inherit it.
+ */
+void HudUiTextLabel::SetBltSourceAndClipRect(
     void *bltSourceOrNull,
     const HudUiRect *rectOrNull
 ) {

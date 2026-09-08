@@ -563,6 +563,8 @@ def _provider_named_import_thunk_candidate_direct_bridges(
     *,
     thunks: Sequence[ProviderNamedImportThunk | ProviderPeNamedImportThunk],
     indexes: IdentityIndexes,
+    retail_call_sites: Sequence[str] = (),
+    retail_import_targets: Sequence[Any] = (),
 ) -> tuple[dict[str, str], dict[str, str]]:
     """Prove direct decorated import calls against retail thunk/IAT truth."""
     from _recoil.call_contract.records import (
@@ -613,11 +615,34 @@ def _provider_named_import_thunk_candidate_direct_bridges(
                     "named import direct bridge has ambiguous callable authority"
                 )
             thunks_by_callable[callable_name] = thunk
+    # VC5's native, non-dllimport stdio declaration uses this cdecl spelling.
+    # The local FF25 producer proves the retail target without accepting its
+    # unresolved source owner. Bind only that exact per-call import route;
+    # an arbitrary CRT export is not evidence of a cdecl ABI.
+    local_callables: dict[str, str] = {}
+    if "_tmpfile" in candidate_names and any(
+        value[1] == "iat:tmpfile"
+        for value in indexes.reviewed_exact_local_import_thunk_by_call_site.values()
+    ):
+        imports = [row for row in retail_import_targets
+                   if getattr(row, "import_name", "").casefold() == "tmpfile"]
+        if (
+            len(imports) != 1
+            or imports[0].import_name != "tmpfile"
+            or imports[0].dll.casefold() != "msvcrt.dll"
+            or imports[0].import_ordinal is not None
+            or "_tmpfile" in thunks_by_callable
+            or indexes.by_candidate_name.get("_tmpfile", "iat:tmpfile") != "iat:tmpfile"
+        ):
+            raise _cc_errors.CandidateCallContractEvidenceError(
+                "local named import direct bridge lacks one canonical import route"
+            )
+        local_callables["_tmpfile"] = "iat:tmpfile"
     sites: dict[str, list[tuple[int, int, Instruction]]] = {}
     for ordinal, instruction_index in enumerate(invocation_indices):
         instruction = candidate.instructions[instruction_index]
         name = _cc_cfg._instruction_operand(instruction).strip()
-        if name not in thunks_by_callable:
+        if name not in thunks_by_callable and name not in local_callables:
             continue
         offset = offsets[instruction_index]
         if offset is None:
@@ -628,8 +653,8 @@ def _provider_named_import_thunk_candidate_direct_bridges(
     bridges: dict[str, str] = {}
     equivalences: dict[str, str] = {}
     for name, rows in sites.items():
-        thunk = thunks_by_callable[name]
-        if (
+        thunk = thunks_by_callable.get(name)
+        if thunk is not None and (
             indexes.by_address.get(thunk.thunk_address) != thunk.provider_identity
             or thunk.provider_identity not in indexes.provider_ids
             or thunk.iat_identity != f"iat:{thunk.import_name}"
@@ -637,6 +662,7 @@ def _provider_named_import_thunk_candidate_direct_bridges(
             raise _cc_errors.CandidateCallContractEvidenceError(
                 "named import direct bridge lacks governed thunk authority"
             )
+        iat_identity = thunk.iat_identity if thunk is not None else local_callables[name]
         external_rows = [row for row in caller.coff_symbols if row.name == name]
         relocations = sorted(
             (row for row in caller.relocations if row.symbol_name == name),
@@ -652,13 +678,32 @@ def _provider_named_import_thunk_candidate_direct_bridges(
                 "named import direct bridge requires one exact COFF population"
             )
         external = external_rows[0]
+        if (
+            external.section_number != 0
+            or external.value != 0
+            or external.storage_class != 2
+            or external.symbol_type != 0x20
+        ):
+            raise _cc_errors.CandidateCallContractEvidenceError(
+                "named import direct bridge target is not an undefined COFF function"
+            )
         for (ordinal, offset, instruction), relocation in zip(rows, relocations):
             expected_row = expected[ordinal] if ordinal < len(expected) else {}
+            if thunk is None:
+                site = retail_call_sites[ordinal] if ordinal < len(retail_call_sites) else ""
+                route = indexes.reviewed_exact_local_import_thunk_by_call_site.get(site)
+                if (
+                    route is None or route[1] != iat_identity
+                    or indexes.reviewed_direct_import_thunk_by_call_site.get(site) != route
+                ):
+                    raise _cc_errors.CandidateCallContractEvidenceError(
+                        "local named import direct bridge lacks exact retail call-site lineage"
+                    )
             if (
                 expected_row.get("form") != "call"
                 or expected_row.get("dispatch") != "direct"
                 or expected_row.get("identity_kind") != "iat"
-                or expected_row.get("target_identity") != thunk.iat_identity
+                or expected_row.get("target_identity") != iat_identity
                 or expected_row.get("storage_identity") != ""
                 or expected_row.get("slot_displacement") is not None
                 or bytes(int(item, 16) for item in instruction.bytes)
@@ -672,8 +717,8 @@ def _provider_named_import_thunk_candidate_direct_bridges(
                 raise _cc_errors.CandidateCallContractEvidenceError(
                     "named import direct bridge disagrees with exact retail/COD/COFF truth"
                 )
-        bridges[name] = thunk.provider_identity
-        equivalences[thunk.provider_identity] = thunk.iat_identity
+        bridges[name] = thunk.provider_identity if thunk is not None else iat_identity
+        equivalences[bridges[name]] = iat_identity
     return bridges, equivalences
 
 

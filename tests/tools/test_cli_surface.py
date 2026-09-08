@@ -1,5 +1,23 @@
 from __future__ import annotations
 
+
+def test_memory_trace_supports_fresh_build_roots_without_creating_them(tmp_path, monkeypatch):
+    from _recoil.call_contract import catalog, reporting
+    import pytest
+    from _recoil.lib.progress import ProgressError
+    monkeypatch.setattr(catalog, "CALL_CONTRACT_MEMORY_TRACE_ROOT", tmp_path)
+    build_root = tmp_path / "fresh" / "scan"
+    trace = tmp_path / "trace.jsonl"
+    with reporting._open_call_contract_memory_trace_file(trace, build_root=build_root) as output:
+        output.write("diagnostic\n")
+    assert trace.read_text() == "diagnostic\n"
+    assert not build_root.exists()
+    with pytest.raises(ProgressError, match="overwrite"):
+        reporting._open_call_contract_memory_trace_file(trace, build_root=build_root)
+    build_root.mkdir(parents=True)
+    with pytest.raises(ProgressError, match="outside"):
+        reporting._open_call_contract_memory_trace_file(build_root / "trace.jsonl", build_root=build_root)
+
 import json
 from pathlib import Path
 import subprocess
@@ -55,6 +73,30 @@ def test_dispatch_preserves_prepend_arguments() -> None:
     item = recoil.COMMANDS[("verify", "vc5-order")]
     command = recoil.build_command(item, ["unit", "--build-root", "scratch"])
     assert command[-4:] == ["--order-only", "unit", "--build-root", "scratch"]
+
+
+def test_json_live_route_keeps_policy_output_on_stderr_and_blocks_failed_policy(monkeypatch, capsys):
+    calls = []
+    policy_code = 0
+    def run(command, **kwargs):
+        calls.append(command)
+        if command[-1] == "_recoil.commands.source_policy":
+            print("policy diagnostic", file=kwargs.get("stdout"))
+            return subprocess.CompletedProcess(command, policy_code)
+        print('{"status": "checked"}')
+        return subprocess.CompletedProcess(command, 0)
+    monkeypatch.setattr(recoil.subprocess, "run", run)
+    args = ["progress", "call-contract", "replay-live", "--apply", "--json"]
+    assert recoil.main(args) == 0
+    captured = capsys.readouterr()
+    assert json.loads(captured.out) == {"status": "checked"}
+    assert "policy diagnostic" in captured.err and len(calls) == 2
+    calls.clear()
+    policy_code = 1
+    assert recoil.main(args) == 1
+    captured = capsys.readouterr()
+    assert captured.out == "" and "policy diagnostic" in captured.err
+    assert len(calls) == 1
 
 
 def test_vc5_smoke_is_on_the_retained_verifier_route() -> None:

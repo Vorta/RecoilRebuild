@@ -124,7 +124,7 @@ def _comparison_scoped_retail_zero_callback_storage_indexes(
     local_control_flow_indices: frozenset[int] = frozenset(),
     local_control_flow_targets: Mapping[int, Sequence[int]] | None = None,
     precomposed_non_callback_loads: Mapping[str, str] | None = None,
-    direct_call_cleanup_by_instruction_index: Mapping[int, int] | None = None,
+    call_cleanup_by_instruction_index: Mapping[int, int] | None = None,
     _trace_overflow: Callable[[Mapping[str, Any]], None] | None = None,
 ) -> IdentityIndexes:
     """Publish exact targetless storage for immutable zero callback cells.
@@ -260,8 +260,8 @@ def _comparison_scoped_retail_zero_callback_storage_indexes(
             bridge=bridge,
             local_control_flow_indices=local_control_flow_indices,
             local_control_flow_targets=local_control_flow_targets,
-            direct_call_cleanup_by_instruction_index=(
-                direct_call_cleanup_by_instruction_index
+            call_cleanup_by_instruction_index=(
+                call_cleanup_by_instruction_index
             ),
             _trace_overflow=_trace_overflow,
         )
@@ -325,7 +325,7 @@ def _comparison_scoped_retail_stored_callback_targets(
     local_control_flow_indices: frozenset[int] = frozenset(),
     local_control_flow_targets: Mapping[int, Sequence[int]] | None = None,
     precomposed_non_callback_loads: Mapping[str, str] | None = None,
-    direct_call_cleanup_by_instruction_index: Mapping[int, int] | None = None,
+    call_cleanup_by_instruction_index: Mapping[int, int] | None = None,
     _trace_overflow: Callable[[Mapping[str, Any]], None] | None = None,
 ) -> IdentityIndexes:
     """Validate every reader/writer of one initially-zero callback cell.
@@ -470,8 +470,8 @@ def _comparison_scoped_retail_stored_callback_targets(
             bridge=bridge,
             local_control_flow_indices=local_control_flow_indices,
             local_control_flow_targets=local_control_flow_targets,
-            direct_call_cleanup_by_instruction_index=(
-                direct_call_cleanup_by_instruction_index
+            call_cleanup_by_instruction_index=(
+                call_cleanup_by_instruction_index
             ),
             _trace_overflow=_trace_overflow,
         )
@@ -972,8 +972,8 @@ def _comparison_scoped_retail_stored_callback_targets(
                         bridge=bridge,
                         local_control_flow_indices=source_switch_indices,
                         local_control_flow_targets=source_switch_targets,
-                        direct_call_cleanup_by_instruction_index=(
-                            direct_call_cleanup_by_instruction_index
+                        call_cleanup_by_instruction_index=(
+                            call_cleanup_by_instruction_index
                             if source_address == normalized_load
                             else _cc_identity._retail_direct_call_cleanup_by_instruction_index(
                                 source_rows,

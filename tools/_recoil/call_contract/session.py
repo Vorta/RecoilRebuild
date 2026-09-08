@@ -10,6 +10,7 @@ from _recoil.call_contract import candidate_session as _cc_candidate_session
 from _recoil.call_contract import catalog as _cc_catalog
 from _recoil.call_contract import comparison as _cc_comparison
 from _recoil.call_contract import contributions as _cc_contributions
+from _recoil.call_contract.current_callees import CurrentCalleeDefinitions
 from _recoil.call_contract import errors as _cc_errors
 from _recoil.call_contract import identity as _cc_identity
 from _recoil.call_contract import (
@@ -263,6 +264,9 @@ def live_call_contract_result(
         precompiled_target_units=precompiled_target_units,
         numeric_constructor_authority=numeric_constructor_authority,
     )
+    current_callees = CurrentCalleeDefinitions(document,
+        frozenset(dependency_paths), build_root, vc5_env,
+        candidate_session.toolchain_receipts)
     memory_trace.emit(
         "source-closure-complete",
         caller_total=caller_total,
@@ -681,6 +685,7 @@ def live_call_contract_result(
             caller_identity=caller_identity,
             caller_index=caller_index,
             candidate_assembly=candidate_assembly,
+            acquire_candidate_callee_definitions=current_callees.for_caller,
             candidate_cleanup_receipts_by_symbol=candidate_cleanup_receipts_by_symbol,
             candidate_expansion_receipts_by_symbol=candidate_expansion_receipts_by_symbol,
             document=document,

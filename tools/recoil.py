@@ -1129,6 +1129,7 @@ def main(argv: list[str] | None = None) -> int:
             policy_command,
             cwd=str(REPO_ROOT),
             env=internal_command_env(),
+            stdout=sys.stderr if "--json" in forward_rest else None,
         )
         if policy.returncode:
             print(

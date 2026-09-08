@@ -8,7 +8,6 @@ from _recoil.call_contract import callable_identity as _cc_callable_identity
 from _recoil.call_contract import catalog as _cc_catalog
 from _recoil.call_contract import cfg as _cc_cfg
 from _recoil.call_contract import errors as _cc_errors
-from _recoil.call_contract import recoil_ui as _cc_recoil_ui
 from _recoil.call_contract import targets as _cc_targets
 
 if TYPE_CHECKING:
@@ -422,400 +421,6 @@ def _r4578_appframe_state_queue_vptr_proofs(
 
 
 
-def _exact_candidate_zui_label_panels_vptr_proofs(
-    instructions: Sequence[Instruction],
-    *,
-    source: str,
-    caller_start: str,
-    caller_end_exclusive: str | None,
-    indexes: IdentityIndexes,
-) -> dict[int, str]:
-    """Prove the two guarded ``labelPanels[0]`` candidate vcalls.
-
-    VC5 keeps the nullable first-vector-element receiver in EDI across the
-    active/inactive branch.  The generic register join intentionally discards
-    a null-versus-loaded-object merge, so retain the targetless vptr only for
-    this complete, exact caller shape.  Retail independently supplies the
-    reviewed ``dynamic:labelPanels-element-vptr`` family for comparison.
-    """
-    from _recoil.call_contract.records import CandidateAssembly
-
-    start = normalize_address(caller_start)
-    if source != "cod" or start != "0x4b4ba0":
-        return {}
-
-    def reject(detail: str) -> NoReturn:
-        raise _cc_errors.CandidateCallContractEvidenceError(
-            "zUI SetInputActive labelPanels vptr projection requires "
-            + detail
-        )
-
-    caller_identity = "symbol:recoil:function:0x4b4ba0"
-    if (
-        normalize_address(caller_end_exclusive or "0x0") != "0x4b4c50"
-        or indexes.by_address.get(start) != caller_identity
-        or caller_identity in indexes.provider_ids
-    ):
-        reject("the exact authored caller identity and registered extent")
-
-    offsets = _cc_callable_identity._candidate_complete_instruction_offsets(
-        CandidateAssembly(tuple(instructions), frozenset())
-    )
-    if len(offsets) != len(instructions) or any(
-        offset is None for offset in offsets
-    ):
-        reject("complete unique COD instruction coordinates")
-    index_by_offset = {
-        int(offset): index
-        for index, offset in enumerate(offsets)
-        if offset is not None
-    }
-    if len(index_by_offset) != len(instructions):
-        reject("complete unique COD instruction coordinates")
-
-    expected_call_offsets = (0x4D, 0x5E, 0x6B, 0x7C, 0x89, 0x9A)
-    call_offsets = tuple(
-        int(offsets[index])
-        for index, instruction in enumerate(instructions)
-        if _cc_cfg._instruction_mnemonic(instruction) == "call"
-        and _cc_cfg._exact_invocation_encoding(instruction, mnemonic="call")
-    )
-    if call_offsets != expected_call_offsets:
-        reject("the complete exact current candidate call population")
-
-    exact_rows = {
-        0x00: bytes.fromhex("8b 54 24 04"),
-        0x06: bytes.fromhex("8b f1"),
-        0x09: bytes.fromhex("33 ff"),
-        0x17: bytes.fromhex("8b 8e 10 01 00 00"),
-        0x1D: bytes.fromhex("85 c9"),
-        0x1F: bytes.fromhex("75 04"),
-        0x21: bytes.fromhex("33 c0"),
-        0x23: bytes.fromhex("eb 0b"),
-        0x25: bytes.fromhex("8b 86 14 01 00 00"),
-        0x2B: bytes.fromhex("2b c1"),
-        0x2D: bytes.fromhex("c1 f8 02"),
-        0x30: bytes.fromhex("33 c9"),
-        0x32: bytes.fromhex("85 c0"),
-        0x34: bytes.fromhex("0f 94 c1"),
-        0x37: bytes.fromhex("84 c9"),
-        0x39: bytes.fromhex("75 08"),
-        0x3B: bytes.fromhex("8b 86 10 01 00 00"),
-        0x41: bytes.fromhex("8b 38"),
-        0x43: bytes.fromhex("85 d2"),
-        0x45: bytes.fromhex("74 2f"),
-        0x61: bytes.fromhex("85 ff"),
-        0x63: bytes.fromhex("74 38"),
-        0x65: bytes.fromhex("8b 17"),
-        0x67: bytes.fromhex("6a 01"),
-        0x69: bytes.fromhex("8b cf"),
-        0x6B: bytes.fromhex("ff 52 60"),
-        0x73: bytes.fromhex("c2 04 00"),
-        0x76: bytes.fromhex("8b 06"),
-        0x7C: bytes.fromhex("ff 50 60"),
-        0x7F: bytes.fromhex("85 ff"),
-        0x81: bytes.fromhex("74 09"),
-        0x83: bytes.fromhex("8b 17"),
-        0x85: bytes.fromhex("6a 00"),
-        0x87: bytes.fromhex("8b cf"),
-        0x89: bytes.fromhex("ff 52 60"),
-        0x9A: bytes.fromhex("ff 50 60"),
-        0xA2: bytes.fromhex("c2 04 00"),
-    }
-    for offset, expected_body in exact_rows.items():
-        index = index_by_offset.get(offset)
-        try:
-            body = (
-                bytes(int(item, 16) for item in instructions[index].bytes)
-                if index is not None
-                else b""
-            )
-        except (TypeError, ValueError):
-            body = b""
-        if body != expected_body:
-            reject(f"exact guarded receiver lineage at +0x{offset:x}")
-
-    storage = "load(load(load(this+0x110)))"
-    return {
-        index_by_offset[0x6B]: storage,
-        index_by_offset[0x89]: storage,
-    }
-
-
-def _exact_candidate_zui_spilled_receiver_vptr_proof(
-    instructions: Sequence[Instruction],
-    *,
-    source: str,
-    caller_start: str,
-    caller_end_exclusive: str | None,
-    indexes: IdentityIndexes,
-    candidate_caller_definition: CandidateCallerDefinition | None,
-) -> dict[int, str]:
-    """Prove one VC5 stack-spilled receiver-vptr call in zUI.
-
-    ``HudUiCheckToggleWidget::LoadFromZrd`` loads the vptr of its newly
-    allocated panel receiver, spills that value across one ``ZrdArrayInt``
-    call, and reloads the same absolute stack slot after the argument pushes.
-    The ordinary register interpreter deliberately does not retain arbitrary
-    stack values across calls.  Preserve this one targetless vptr only when
-    the complete caller body, relocation package, and exact spill/reload
-    window match the governed VC5 artifact.
-    """
-    from _recoil.call_contract.records import CandidateAssembly
-
-    start = normalize_address(caller_start)
-    if source != "cod" or start != "0x4b7340":
-        return {}
-
-    def reject(detail: str) -> NoReturn:
-        raise _cc_errors.CandidateCallContractEvidenceError(
-            "zUI spilled receiver-vptr projection requires " + detail
-        )
-
-    caller_identity = "symbol:recoil:function:0x4b7340"
-    caller = candidate_caller_definition
-    if (
-        normalize_address(caller_end_exclusive or "0x0") != "0x4b7d60"
-        or indexes.by_address.get(start) != caller_identity
-        or caller_identity in indexes.provider_ids
-        or caller is None
-    ):
-        reject("the exact authored caller identity, extent, and definition")
-
-    canonical_relocation_names = _cc_recoil_ui._canonical_zui_relocation_names(
-        caller.relocations
-    )
-    relocation_payload = _cc_recoil_ui._zui_relocation_payload(caller.relocations)
-    if (
-        caller.symbol
-        != (
-            "?LoadFromZrd@HudUiCheckToggleWidget@@UAEHPAUNode@zReader@@"
-            "PAUHudUiBackground@@@Z"
-        )
-        or len(caller.data) != 0x9A0
-        or len(caller.relocations) != 83
-        or any(
-            name != row.symbol_name
-            and _cc_catalog._ZUI_TU_RELOCATION_SYMBOL.search(row.symbol_name) is None
-            and _cc_catalog._VC5_PRIVATE_RELOCATION_LABEL.fullmatch(row.symbol_name) is None
-            for row, name in zip(
-                caller.relocations, canonical_relocation_names
-            )
-        )
-        or len(caller.relocation_mask) != len(caller.data)
-        or any(
-            caller.relocation_mask[index]
-            != any(
-                row.offset <= index < row.offset + 4
-                for row in caller.relocations
-            )
-            for index in range(len(caller.data))
-        )
-    ):
-        reject("the complete caller body, relocation package, and mask")
-
-    offsets = _cc_callable_identity._candidate_complete_instruction_offsets(
-        CandidateAssembly(tuple(instructions), frozenset())
-    )
-    unresolved_offsets = tuple(
-        index for index, offset in enumerate(offsets) if offset is None
-    )
-    if (
-        len(offsets) != len(instructions)
-        or unresolved_offsets != (0,)
-        or not instructions
-        or bytes(int(item, 16) for item in instructions[0].bytes)
-        != bytes.fromhex("64 a1 00 00 00 00")
-    ):
-        # VC5's COD listing omits only the coordinate of the leading FS
-        # exception-chain load.  The complete COFF body above authenticates
-        # that row; every later row, including the proof window, must retain
-        # one unique coordinate.
-        reject("the exact leading FS row and all later COD coordinates")
-    index_by_offset = {
-        int(offset): index
-        for index, offset in enumerate(offsets)
-        if offset is not None
-    }
-    if len(index_by_offset) != len(instructions) - 1:
-        reject("complete unique COD instruction coordinates")
-
-    exact_rows = {
-        0x7F3: bytes.fromhex("8b 06"),
-        0x7F5: bytes.fromhex("83 c4 08"),
-        0x7F8: bytes.fromhex("ba 03 00 00 00"),
-        0x7FD: bytes.fromhex("8b cb"),
-        0x7FF: bytes.fromhex("55"),
-        0x800: bytes.fromhex("89 44 24 38"),
-        0x804: bytes.fromhex("e8 00 00 00 00"),
-        0x809: bytes.fromhex("8b 8f c0 00 00 00"),
-        0x80F: bytes.fromhex("ba 02 00 00 00"),
-        0x814: bytes.fromhex("03 c1"),
-        0x816: bytes.fromhex("8b cb"),
-        0x818: bytes.fromhex("50"),
-        0x819: bytes.fromhex("6a 00"),
-        0x81B: bytes.fromhex("e8 00 00 00 00"),
-        0x820: bytes.fromhex("8b 8f bc 00 00 00"),
-        0x826: bytes.fromhex("03 c1"),
-        0x828: bytes.fromhex("8b ce"),
-        0x82A: bytes.fromhex("50"),
-        0x82B: bytes.fromhex("8b 44 24 3c"),
-        0x82F: bytes.fromhex("ff 50 0c"),
-    }
-    for offset, expected_body in exact_rows.items():
-        index = index_by_offset.get(offset)
-        try:
-            body = (
-                bytes(int(item, 16) for item in instructions[index].bytes)
-                if index is not None
-                else b""
-            )
-        except (TypeError, ValueError):
-            body = b""
-        if body != expected_body:
-            reject(f"the exact spill/reload lineage at +0x{offset:x}")
-
-    helper_relocations = tuple(
-        row
-        for row in caller.relocations
-        if row.offset in {0x805, 0x81C}
-    )
-    if (
-        len(helper_relocations) != 2
-        or tuple(row.offset for row in helper_relocations) != (0x805, 0x81C)
-        or any(row.type != IMAGE_REL_I386_REL32 for row in helper_relocations)
-        or any(
-            not row.symbol_name.startswith("?ZrdArrayInt@?")
-            for row in helper_relocations
-        )
-    ):
-        reject("the exact intervening helper relocations")
-
-    return {index_by_offset[0x82F]: "load(this)"}
-
-
-def _exact_candidate_zui_cycle_entry_vptr_proofs(
-    instructions: Sequence[Instruction],
-    *,
-    source: str,
-    caller_start: str,
-    caller_end_exclusive: str | None,
-    indexes: IdentityIndexes,
-    candidate_caller_definition: CandidateCallerDefinition | None,
-) -> dict[int, str]:
-    """Prove two indexed ``entriesA[index]`` vptr calls in AddTextEntry.
-
-    VC5's SEH prologue loads the first entry argument into EBX before the
-    constructor path, then uses ``[this+ebx*4+0x168]`` for SetPos and
-    SetVisible.  The generic candidate walk deliberately does not carry that
-    entry-stack/index lineage through the constructor join.  Retain it only
-    for the complete frozen caller and the two exact reload/vptr/call windows.
-    """
-    from _recoil.call_contract.records import CandidateAssembly
-
-    start = normalize_address(caller_start)
-    if source != "cod" or start != "0x4b7fd0":
-        return {}
-
-    def reject(detail: str) -> NoReturn:
-        raise _cc_errors.CandidateCallContractEvidenceError(
-            "zUI cycle-entry indexed-vptr projection requires " + detail
-        )
-
-    caller_identity = "symbol:recoil:function:0x4b7fd0"
-    caller = candidate_caller_definition
-    if (
-        normalize_address(caller_end_exclusive or "0x0") != "0x4b8100"
-        or indexes.by_address.get(start) != caller_identity
-        or caller_identity in indexes.provider_ids
-        or caller is None
-    ):
-        reject("the exact authored caller identity, extent, and definition")
-
-    relocation_payload = _cc_recoil_ui._zui_relocation_payload(caller.relocations)
-    if (
-        caller.symbol
-        != "?AddTextEntry@HudUiCycleSelectorWidget@@QAEXHPBDHH@Z"
-        or len(caller.data) != 0x130
-        or len(caller.relocations) != 8
-        or len(caller.relocation_mask) != len(caller.data)
-        or any(
-            caller.relocation_mask[index]
-            != any(
-                row.offset <= index < row.offset + 4
-                for row in caller.relocations
-            )
-            for index in range(len(caller.data))
-        )
-    ):
-        reject("the complete caller body, relocation package, and mask")
-
-    offsets = _cc_callable_identity._candidate_complete_instruction_offsets(
-        CandidateAssembly(tuple(instructions), frozenset())
-    )
-    unresolved_offsets = tuple(
-        index for index, offset in enumerate(offsets) if offset is None
-    )
-    if (
-        len(offsets) != len(instructions)
-        or unresolved_offsets != (0,)
-        or not instructions
-        or bytes(int(item, 16) for item in instructions[0].bytes)
-        != bytes.fromhex("64 a1 00 00 00 00")
-    ):
-        reject("the exact leading FS row and all later COD coordinates")
-    index_by_offset = {
-        int(offset): index
-        for index, offset in enumerate(offsets)
-        if offset is not None
-    }
-    if len(index_by_offset) + 1 != len(instructions):
-        reject("complete unique COD instruction coordinates")
-
-    exact_rows = {
-        0x016: (bytes.fromhex("8b 5c 24 14"), "ebx, dword _index$[esp+12]"),
-        0x01C: (bytes.fromhex("8b f1"), "esi, ecx"),
-        0x0D7: (
-            bytes.fromhex("8b 8c 9e 68 01 00 00"),
-            "ecx, dword [esi+ebx*4+360]",
-        ),
-        0x0E7: (bytes.fromhex("8b 11"), "edx, dword [ecx]"),
-        0x0F3: (bytes.fromhex("ff 52 0c"), "dword [edx+12]"),
-        0x0F6: (
-            bytes.fromhex("8b 8c 9e 68 01 00 00"),
-            "ecx, dword [esi+ebx*4+360]",
-        ),
-        0x0FE: (bytes.fromhex("8b 11"), "edx, dword [ecx]"),
-        0x100: (bytes.fromhex("ff 52 60"), "dword [edx+96]"),
-        0x103: (
-            bytes.fromhex("8b 84 9e 68 01 00 00"),
-            "eax, dword [esi+ebx*4+360]",
-        ),
-    }
-    for offset, (body, operand) in exact_rows.items():
-        index = index_by_offset.get(offset)
-        try:
-            observed_body = (
-                bytes(int(item, 16) for item in instructions[index].bytes)
-                if index is not None else b""
-            )
-        except (TypeError, ValueError):
-            observed_body = b""
-        if (
-            observed_body != body
-            or index is None
-            or _cc_cfg._instruction_operand(instructions[index]).strip() != operand
-            or caller.data[offset:offset + len(body)] != body
-        ):
-            reject(f"the exact indexed receiver lineage at +0x{offset:x}")
-
-    storage = (
-        "load(load(affine(this,load(entry-stack+0x4)*4,+0x168)))"
-    )
-    return {
-        index_by_offset[0x0F3]: storage,
-        index_by_offset[0x100]: storage,
-    }
 
 
 def _identical_relocated_call_body(
@@ -991,48 +596,56 @@ def _canonical_proven_member_storage(value: str) -> str:
             raise ValueError("field displacement overflow")
         return number
 
-    def expression(depth: int = 0) -> str:
+    def render(term: tuple[str, int]) -> str:
+        base, offset = term
+        return base + (f"+0x{offset:x}" if offset else "")
+
+    def expression(depth: int = 0) -> tuple[str, int]:
         nonlocal position
         if depth > 8:
             raise ValueError("member expression nesting limit")
+        offset = 0
         if value.startswith("this", position):
             consume("this")
             base = "this"
+        elif value.startswith("call-result(", position):
+            match = re.match(r"call-result\((?:symbol|provider):recoil:function:0x[0-9a-f]+\)", value[position:])
+            if match is None:
+                raise ValueError("not a typed call-result root")
+            base = match.group(0)
+            position += len(base)
+        elif value.startswith("address(", position):
+            consume("address(")
+            base, offset = expression(depth + 1)
+            consume(")")
         elif value.startswith("load(", position):
             consume("load(")
-            base = f"load({expression(depth + 1)})"
+            base = f"load({render(expression(depth + 1))})"
             consume(")")
         elif value.startswith("exact-receiver-field(", position):
             consume("exact-receiver-field(")
-            receiver = expression(depth + 1)
+            receiver, receiver_offset = expression(depth + 1)
             consume(",")
-            offset = displacement()
+            field_offset = receiver_offset + displacement()
+            if field_offset > 0x7FFFFFFF:
+                raise ValueError("receiver field displacement sum overflow")
             consume(")")
-            base = f"load({receiver}+0x{offset:x})"
+            base = f"load({render((receiver, field_offset))})"
         else:
             raise ValueError("unknown member expression root")
-        offset = 0
         while value.startswith("+0x", position):
             offset += displacement()
             if offset > 0x7FFFFFFF:
                 raise ValueError("member displacement sum overflow")
-        return base + (f"+0x{offset:x}" if offset else "")
+        return base, offset
 
     if len(value) <= 512 and value.startswith("load(") and value.endswith(")"):
         try:
-            canonical = expression()
+            canonical = render(expression())
             if position == len(value):
                 return canonical
         except ValueError:
             pass
-    embedded = re.fullmatch(
-        r"load\(address\(load\(this\+0x([0-9a-f]+)\)\+0x([0-9a-f]+)\)\)",
-        value,
-    )
-    if embedded is not None:
-        root_offset, member_offset = (int(item, 16) for item in embedded.groups())
-        if max(root_offset, member_offset) <= 0x7FFFFFFF:
-            return f"load(load(this+0x{root_offset:x})+0x{member_offset:x})"
     return value
 
 

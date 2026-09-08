@@ -1513,6 +1513,9 @@ def build_identity_indexes(
             )
         owner_id, owner = matching_owners[0]
         gates = owner.get("gates")
+        # A fresh canonical-header proof identifies this member independently.
+        # An existing provider census can contain other, unproved members, so
+        # its aggregate linkage gate must remain unchanged by this lookup.
         if (
             owner.get("kind") != "provider-boundary"
             or owner.get("provider_state") != "accepted"
@@ -1520,7 +1523,7 @@ def build_identity_indexes(
             or not isinstance(gates, Mapping)
             or gates.get("boundary") != "accepted"
             or gates.get("source") != "accepted"
-            or gates.get("owner_linkage") != "accepted"
+            or (archive_member_registration and gates.get("owner_linkage") != "accepted")
             or evidence_id not in owner.get("evidence_ids", ())
         ):
             raise ValueError(
@@ -1775,6 +1778,7 @@ def build_identity_indexes(
         _cc_recoil_hud_widgets._hud_cmd_binding_ptr_vector_erase_provider_supplier(
             document,
             by_address=by_address,
+            by_candidate_name=by_candidate_name,
             provider_ids=frozenset(provider_ids),
             bridge=bridge,
             fact_transcript=retail_provider_fact_transcript,
@@ -2389,17 +2393,19 @@ def _exact_unknown_push32(instruction: Instruction) -> bool:
     operand = _cc_cfg._instruction_operand(instruction).strip().lower()
     if len(body) == 2 and body[0] == 0x6A:
         try:
-            rendered = _cc_cfg._parse_unsigned_assembly_integer(operand)
+            rendered = (-_cc_cfg._parse_unsigned_assembly_integer(operand[1:])
+                if operand.startswith("-") else _cc_cfg._parse_unsigned_assembly_integer(operand))
         except ValueError:
             return False
         encoded = struct.unpack("<b", body[1:2])[0]
         return rendered in {encoded, encoded & 0xFFFFFFFF, body[1]}
     if len(body) == 5 and body[0] == 0x68:
         try:
-            rendered = _cc_cfg._parse_unsigned_assembly_integer(operand)
+            rendered = (-_cc_cfg._parse_unsigned_assembly_integer(operand[1:])
+                if operand.startswith("-") else _cc_cfg._parse_unsigned_assembly_integer(operand))
         except ValueError:
             return False
-        return rendered == struct.unpack("<I", body[1:5])[0]
+        return -0x80000000 <= rendered <= 0xFFFFFFFF and (rendered & 0xFFFFFFFF) == struct.unpack("<I", body[1:5])[0]
     return bool(
         len(body) >= 2
         and body[0] == 0xFF
@@ -2438,7 +2444,8 @@ def _exact_ret_cleanup_bytes(instruction: Instruction) -> int | None:
         return None
     operand = _cc_cfg._instruction_operand(instruction).strip().lower()
     if body == b"\xc3":
-        return 0 if not operand else None
+        # VC5's COD renders the operand-free C3 encoding as "ret 0".
+        return 0 if operand in {"", "0", "0x0"} else None
     if len(body) != 3 or body[0] != 0xC2:
         return None
     cleanup = struct.unpack("<H", body[1:3])[0]
@@ -2774,7 +2781,7 @@ def _compose_caller_scoped_retail_proof_package(
         local_control_flow_indices=switch_indices,
         local_control_flow_targets=switch_targets,
         precomposed_non_callback_loads=reviewed_non_callback_loads,
-        direct_call_cleanup_by_instruction_index=direct_cleanup_by_index,
+        call_cleanup_by_instruction_index=direct_cleanup_by_index,
         _trace_overflow=trace_overflow,
     )
     trace("retail-proof-zero-callback-complete")
@@ -2789,7 +2796,7 @@ def _compose_caller_scoped_retail_proof_package(
         local_control_flow_indices=switch_indices,
         local_control_flow_targets=switch_targets,
         precomposed_non_callback_loads=reviewed_non_callback_loads,
-        direct_call_cleanup_by_instruction_index=direct_cleanup_by_index,
+        call_cleanup_by_instruction_index=direct_cleanup_by_index,
         _trace_overflow=trace_overflow,
     )
     trace("retail-proof-stored-callback-complete")
@@ -2875,7 +2882,7 @@ def _compose_caller_scoped_retail_proof_package(
             local_control_flow_indices=switch_indices,
             local_control_flow_targets=switch_targets,
             precomposed_non_iat_loads=reviewed_non_callback_loads,
-            direct_call_cleanup_by_instruction_index=direct_cleanup_by_index,
+            call_cleanup_by_instruction_index=direct_cleanup_by_index,
             _trace_overflow=trace_overflow,
         )
     trace("retail-proof-register-iat-complete")
@@ -2938,6 +2945,12 @@ def _compose_caller_scoped_retail_proof_package(
                 )
             )
     trace("retail-proof-direct-cleanup-complete")
+    from _recoil.call_contract.virtual_callees import native_virtual_cleanup
+    virtual_cleanup = native_virtual_cleanup(instructions, document=document,
+        indexes=indexes, caller_start=normalize_address(caller_start),
+        caller_end=comparison_end_exclusive, known_cleanup=direct_cleanup_by_index or {}, bridge=bridge)
+    if virtual_cleanup:
+        direct_cleanup_by_index = dict(direct_cleanup_by_index or {}) | virtual_cleanup
     trace("retail-proof-targetless-vptr-start")
     targetless_proofs = _cc_receiver_proofs._exact_targetless_vptr_call_proofs(
         instructions,
@@ -2947,11 +2960,13 @@ def _compose_caller_scoped_retail_proof_package(
         indexes=indexes,
         local_control_flow_indices=switch_indices,
         local_control_flow_targets=switch_targets,
-        direct_call_cleanup_by_instruction_index=(
+        call_cleanup_by_instruction_index=(
             direct_cleanup_by_index or {}
         ),
     )
     trace("retail-proof-targetless-vptr-complete")
+    _cc_proofs.merge_into(targetless_proofs, getattr(virtual_cleanup, "receivers", {}),
+        family="identity.native_virtual_receivers")
     trace("retail-proof-zvid-dd-com-start")
     zvid_dd_com_proofs = _cc_receiver_fields._exact_retail_zvid_dd_com_vptr_call_proofs(
         instructions,
@@ -3007,7 +3022,7 @@ def _compose_caller_scoped_retail_proof_package(
         instruction_objects=instructions,
         iat_instruction_objects=iat_instruction_objects,
         stored_callback_load_indices=frozenset(stored_callback_load_indices),
-        direct_call_cleanup_by_instruction_index=tuple(
+        call_cleanup_by_instruction_index=tuple(
             sorted((direct_cleanup_by_index or {}).items())
         ),
         targetless_vptr_call_proofs=tuple(sorted(targetless_proofs.items())),
@@ -3961,13 +3976,31 @@ def _r4564_retail_provenance_adapters(
         ]
         if len(matches) != 1:
             raise ValueError("zNetwork MessageBoxA IAT identity drifted")
+        # Retain the proof population needed by IAT preemption, but establish
+        # each vptr's actual global storage through all current CFG arrivals.
+        from _recoil.call_contract.receiver_retail import _exact_retail_cfg_register_provenance
+        if bridge is None:
+            raise ValueError("DirectPlay vptr proof requires current retail switch targets")
+        switch_targets = _cc_cfg.retail_local_switch_targets(
+            retail_instructions, caller_start=start, caller_end_exclusive=end, bridge=bridge,
+            include_backward_targets=True)
+        addresses = _cc_cfg._instruction_runtime_addresses(
+            retail_instructions, source="bn", caller_start=address_value(start))
+        storage = indexes.storage_by_address.get("0x56aaf0", "")
+        if not storage.startswith("storage:"):
+            raise ValueError("DirectPlay vptr proof lacks its typed global pointer")
         for site, slot in (("0x48a564", 0x60), ("0x48a897", 0x10)):
+            positions = [i for i, address in enumerate(addresses) if address == address_value(site)]
+            if len(positions) != 1:
+                raise ValueError("DirectPlay vptr proof requires a unique invocation coordinate")
+            lineage = _exact_retail_cfg_register_provenance(
+                retail_instructions, before_index=positions[0], register="ecx", addresses=addresses,
+                indexes=indexes, caller_start=address_value(start), caller_end=address_value(end),
+                local_control_flow_indices=frozenset(switch_targets), local_control_flow_targets=switch_targets)
+            if lineage != f"load({storage})":
+                raise ValueError("DirectPlay vptr proof lost its exact global-pointer lineage")
             vptr_calls[site] = ReviewedLoopVptrStorageBridge(
-                register="ecx",
-                storage_identity="dynamic:zNetwork::DirectPlay-vptr",
-                slot_displacement=slot,
-                assembly_source="bn",
-            )
+                register="ecx", storage_identity=lineage, slot_displacement=slot, assembly_source="bn")
     render_specs = {
         "0x493df0": (
             "0x494af0",

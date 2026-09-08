@@ -15,8 +15,8 @@ from typing import Iterable, Mapping
 from _recoil.lib.tooling import REPO_ROOT
 
 
-CALL_CONTRACT_VERIFIER_GENERATION = 132
-EXPECTED_FACT_SCHEMA_VERSION = 77
+CALL_CONTRACT_VERIFIER_GENERATION = 142
+EXPECTED_FACT_SCHEMA_VERSION = 85
 
 
 CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
@@ -35,6 +35,11 @@ CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
         "tools/_recoil/call_contract/cli.py",
         "tools/_recoil/call_contract/comparison.py",
         "tools/_recoil/call_contract/contributions.py",
+        "tools/_recoil/call_contract/current_callees.py",
+        "tools/_recoil/call_contract/virtual_callees.py",
+        "tools/_recoil/call_contract/allocation_callees.py",
+        "tools/_recoil/call_contract/selector_callees.py",
+        "tools/_recoil/call_contract/receiver_stack_loops.py",
         "tools/_recoil/call_contract/dispatch.py",
         "tools/_recoil/call_contract/errors.py",
         "tools/_recoil/call_contract/extraction.py",
@@ -82,7 +87,6 @@ CALL_CONTRACT_VERIFIER_COMPONENT_PATHS = frozenset(
         "tools/_recoil/call_contract/recoil_mfc.py",
         "tools/_recoil/call_contract/recoil_network.py",
         "tools/_recoil/call_contract/recoil_player.py",
-        "tools/_recoil/call_contract/recoil_ui.py",
         "tools/_recoil/call_contract/recoil_weapons.py",
         "tools/_recoil/call_contract/recoil_world.py",
         "tools/_recoil/call_contract/records.py",
@@ -148,6 +152,11 @@ EXPECTED_FACT_COMPONENT_PATHS = frozenset(
         "tools/_recoil/call_contract/cli.py",
         "tools/_recoil/call_contract/comparison.py",
         "tools/_recoil/call_contract/contributions.py",
+        "tools/_recoil/call_contract/current_callees.py",
+        "tools/_recoil/call_contract/virtual_callees.py",
+        "tools/_recoil/call_contract/allocation_callees.py",
+        "tools/_recoil/call_contract/selector_callees.py",
+        "tools/_recoil/call_contract/receiver_stack_loops.py",
         "tools/_recoil/call_contract/dispatch.py",
         "tools/_recoil/call_contract/errors.py",
         "tools/_recoil/call_contract/extraction.py",
@@ -195,7 +204,6 @@ EXPECTED_FACT_COMPONENT_PATHS = frozenset(
         "tools/_recoil/call_contract/recoil_mfc.py",
         "tools/_recoil/call_contract/recoil_network.py",
         "tools/_recoil/call_contract/recoil_player.py",
-        "tools/_recoil/call_contract/recoil_ui.py",
         "tools/_recoil/call_contract/recoil_weapons.py",
         "tools/_recoil/call_contract/recoil_world.py",
         "tools/_recoil/call_contract/records.py",

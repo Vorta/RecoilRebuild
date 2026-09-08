@@ -142,6 +142,9 @@ void __cdecl ZAR_RequestStopGlobal() {
 } // namespace zUtil
 
 namespace zUtil_ZBD {
+// The namespace wrapper calls the CRT function through its import-library thunk.
+extern "C" FILE *__cdecl tmpfile(void);
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-opentempwritestream
  * @recoil-artifact defines .text recoil:function:0x4c0080: zUtil_ZBD::OpenTempWriteStream

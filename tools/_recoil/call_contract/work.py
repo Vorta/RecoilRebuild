@@ -35,6 +35,7 @@ if TYPE_CHECKING:
 
 @dataclass(slots=True, kw_only=True)
 class CallerWork:
+    acquire_candidate_callee_definitions: Callable[..., Mapping[str, Any]] = None
     _provider_named_import_thunks: tuple[ProviderNamedImportThunk, ...] = None
     absolute_storage_load_bridges: dict[str, ReviewedAbsoluteStorageLoadBridge] = None
     address: str = None

@@ -182,7 +182,7 @@ def mask_comments_and_literals(text: str) -> str:
             while index < len(text):
                 if text[index] == "\\":
                     chars[index] = " "
-                    if index + 1 < len(text):
+                    if index + 1 < len(text) and chars[index + 1] not in "\r\n":
                         chars[index + 1] = " "
                     index += 2
                 elif text[index] == quote:
@@ -216,6 +216,21 @@ def _nested(offset: int, ranges: list[tuple[int, int]]) -> bool:
 
 def parse_source_constructs(text: str) -> tuple[SourceConstruct, ...]:
     masked = mask_comments_and_literals(text)
+    # A directive's continued body is still preprocessing text. Otherwise a
+    # function-like macro invocation can consume the following real function's
+    # declaration and its provenance comment as one invented signature.
+    lines: list[str] = []
+    continued = False
+    for original_line, masked_line in zip(
+        text.splitlines(keepends=True), masked.splitlines(keepends=True)
+    ):
+        directive = continued or masked_line.lstrip(" \t").startswith("#")
+        continued = directive and original_line.rstrip("\r\n").endswith("\\")
+        lines.append(
+            "".join(char if char in "\r\n" else " " for char in masked_line)
+            if directive else masked_line
+        )
+    masked = "".join(lines)
     functions: list[SourceConstruct] = []
     for match in FUNCTION_RE.finditer(masked):
         name = match.group("name")

@@ -1218,8 +1218,7 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "size": 0x1E0,
         "physical_block_id": "recoil:block:0x43cf90",
         "symbol": (
-            "?SubmitVisibleSessionRequestsAndStatusText@"
-            "WestwoodOnlineUpgradeDialog@@QAEXXZ"
+            "?OnOK@WestwoodOnlineUpgradeDialog@@UAEXXZ"
         ),
         "retail_setup_offset": 0,
         "retail_call_offset": 5,
@@ -1443,8 +1442,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "address": "0x48daf0",
         "end_exclusive": "0x48e380",
         "size": 0x890,
-        "candidate_size": 0x720,
-        "candidate_section_index": 101,
         "physical_block_id": "recoil:block:0x48d340",
         "symbol": (
             "?FxPass3_ApplyToCurrentSurface@zVideo@@"
@@ -1697,8 +1694,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "address": "0x4af060",
         "end_exclusive": "0x4b0530",
         "size": 0x14D0,
-        "candidate_size": 0x14C0,
-        "candidate_section_index": 65,
         "physical_block_id": "recoil:block:0x4ae380",
         "symbol": "?ProcessRuntimeInstances@OptCatalog@@YAXXZ",
         "retail_ordinal": 0,
@@ -1747,8 +1742,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "address": "0x4b2960",
         "end_exclusive": "0x4b2bf0",
         "size": 0x290,
-        "candidate_size": 0x290,
-        "candidate_section_index": 4,
         "physical_block_id": "recoil:block:0x4b2960",
         "symbol": "?Options_LoadFromRegistry@zGame@@YAHXZ",
         "candidate_symbol": MSVC_CHKSTK_RETAIL_NAME,
@@ -1801,8 +1794,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "address": "0x4b2bf0",
         "end_exclusive": "0x4b2e80",
         "size": 0x290,
-        "candidate_size": 0x260,
-        "candidate_section_index": 5,
         "physical_block_id": "recoil:block:0x4b2960",
         "symbol": "?Options_SaveToRegistry@zGame@@YAHXZ",
         "candidate_symbol": MSVC_CHKSTK_RETAIL_NAME,
@@ -3541,66 +3532,6 @@ HUD_UI_MGR_LAYOUT_ARRAY_STRIDE = 0x2A4
 HUD_UI_MGR_LAYOUT_ARRAY_STORAGE_IDENTITY = (
     "load(address(hud-ui-panel-simple-loop-element))"
 )
-
-
-HUD_UI_MGR_PERCENT_PANEL_STORAGE_IDENTITY = (
-    "load(address(hud-ui-shield-message-percent-text-panel))"
-)
-
-
-HUD_UI_MGR_PERCENT_PANEL_NEW_IDENTITY = (
-    "provider:recoil:function:0x4c5b76"
-)
-
-
-HUD_UI_MGR_PERCENT_PANEL_NEW_ADDRESS = "0x4c5b76"
-
-
-HUD_UI_MGR_PERCENT_PANEL_NEW_SYMBOL = "??2@YAPAXI@Z"
-
-
-HUD_UI_MGR_PERCENT_PANEL_WIDGET_CONSTRUCTOR_SYMBOL = (
-    "??0HudUiWidget@@QAE@I@Z"
-)
-
-
-HUD_UI_MGR_PERCENT_PANEL_CONSTRUCTOR_SYMBOL = (
-    "??0HudUiPanel@@QAE@PBDHH@Z"
-)
-
-
-HUD_UI_MGR_PERCENT_PANEL_TEXT_COLOR_SYMBOL = (
-    "?SetTextColor@HudUiPanel@@QAEII@Z"
-)
-
-
-HUD_UI_MGR_PERCENT_PANEL_FONT_SYMBOL = (
-    "?SetFont@HudUiPanel@@UAEXPBDHHHHHH@Z"
-)
-
-
-HUD_UI_MGR_PERCENT_PANEL_FONT_IDENTITY = (
-    "symbol:recoil:function:0x4babb0"
-)
-
-
-HUD_UI_MGR_PERCENT_PANEL_FONT_ADDRESS = "0x4babb0"
-
-
-HUD_UI_MGR_PERCENT_PANEL_FONT_NAME_SYMBOL = (
-    "?g_HudFontName_Arial@@3PADA"
-)
-
-
-HUD_UI_MGR_PERCENT_PANEL_SHADOW_SYMBOL = (
-    "?SetShadow@HudUiPanel@@QAEIIHH@Z"
-)
-
-
-HUD_UI_MGR_PERCENT_PANEL_VPTR_SLOT_DISPLACEMENT = 0x80
-
-
-HUD_UI_MGR_PERCENT_PANEL_RETAIL_FONT_ORDINAL = 13
 
 
 HUD_BRIEFING_LOCATOR_PANEL_UPDATE_SYMBOL = (
@@ -12682,10 +12613,6 @@ ZINPUT_RUNTIME_DISPATCH_RETAIL_SPECS = {
             "0x46f6c0", "0x46f6da", "0x46f7e8", "0x46f7f5",
             "0x46f870", "0x46f89d",
         ),
-        "logical_calls": (
-            "0x46f6c0", "0x46f89d", "0x46f6da", "0x46f7e8",
-            "0x46f7f5", "0x46f870",
-        ),
         "vptr": (("0x46f6c0", "ecx", 0x28), ("0x46f6da", "ecx", 0x1C)),
         "register_callbacks": (("0x46f870", "eax", "key-table", "call"),),
         "raw_callback_call": "0x46f7f5",
@@ -12785,8 +12712,8 @@ ZINPUT_RUNTIME_DISPATCH_RETAIL_SPECS = {
 
 
 ZINPUT_POLL_REGISTER_CALLBACKS = (
-    (0x1A3, "esi", "raw", "call"),
-    (0x223, "eax", "key-table", "call"),
+    (0x18E, "esi", "raw", "call"),
+    (0x20E, "eax", "key-table", "call"),
 )
 
 
@@ -12951,97 +12878,97 @@ ZINPUT_BINDMAP_CANDIDATE_DISPATCH_SPECS = {
 
 ZINPUT_POLL_CALLBACK_PROVENANCE_ROWS = (
     (
-        "raw-callback", 0x189, bytes.fromhex("a1 14 3f 00 00"),
+        "raw-callback", 0x174, bytes.fromhex("a1 14 3f 00 00"),
         r"mov\s+eax\s*,\s*(?:dword\s+(?:ptr\s+)?)?"
         r"_g_zInput_GlobalStateStorage\+16148",
     ),
     (
-        "raw-callback", 0x18E, bytes.fromhex("85 c0"),
+        "raw-callback", 0x179, bytes.fromhex("85 c0"),
         r"test\s+eax\s*,\s*eax",
     ),
     (
-        "raw-callback", 0x190, bytes.fromhex("74 23"),
+        "raw-callback", 0x17B, bytes.fromhex("74 23"),
         r"je\s+(?:short\s+)?\$L[0-9]+",
     ),
     (
-        "raw-context", 0x192, bytes.fromhex("8b 1d 18 3f 00 00"),
+        "raw-context", 0x17D, bytes.fromhex("8b 1d 18 3f 00 00"),
         r"mov\s+ebx\s*,\s*(?:dword\s+(?:ptr\s+)?)?"
         r"_g_zInput_GlobalStateStorage\+16152",
     ),
     (
-        "raw-callback", 0x198, bytes.fromhex("8b f0"),
+        "raw-callback", 0x183, bytes.fromhex("8b f0"),
         r"mov\s+esi\s*,\s*eax",
     ),
     (
-        "direct-translate", 0x19A, bytes.fromhex("e8 00 00 00 00"),
+        "direct-translate", 0x185, bytes.fromhex("e8 00 00 00 00"),
         r"call\s+\?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z"
         r"(?:\s*;.*)?",
     ),
     (
-        "raw-callback", 0x19F, bytes.fromhex("8b c8"),
+        "raw-callback", 0x18A, bytes.fromhex("8b c8"),
         r"mov\s+ecx\s*,\s*eax",
     ),
     (
-        "raw-context", 0x1A1, bytes.fromhex("8b d3"),
+        "raw-context", 0x18C, bytes.fromhex("8b d3"),
         r"mov\s+edx\s*,\s*ebx",
     ),
     (
-        "raw-callback", 0x1A3, bytes.fromhex("ff d6"),
+        "raw-callback", 0x18E, bytes.fromhex("ff d6"),
         r"call\s+esi",
     ),
     (
-        "indexed-key-callback", 0x20C,
+        "indexed-key-callback", 0x1F7,
         bytes.fromhex("8b 04 f5 28 00 00 00"),
         r"mov\s+eax\s*,\s*(?:dword\s+(?:ptr\s+)?)?"
         r"_g_zInput_GlobalStateStorage\[esi\*8\+40\]",
     ),
     (
-        "indexed-key-callback", 0x213, bytes.fromhex("85 c0"),
+        "indexed-key-callback", 0x1FE, bytes.fromhex("85 c0"),
         r"test\s+eax\s*,\s*eax",
     ),
     (
-        "indexed-key-callback", 0x215, bytes.fromhex("74 23"),
+        "indexed-key-callback", 0x200, bytes.fromhex("74 23"),
         r"je\s+(?:short\s+)?\$L[0-9]+",
     ),
     (
-        "indexed-key-state", 0x217,
+        "indexed-key-state", 0x202,
         bytes.fromhex("f6 04 f5 24 00 00 00 01"),
         r"test\s+(?:byte\s+(?:ptr\s+)?)?"
         r"_g_zInput_GlobalStateStorage\[esi\*8\+36\]\s*,\s*1",
     ),
     (
-        "indexed-key-callback", 0x21F, bytes.fromhex("74 19"),
+        "indexed-key-callback", 0x20A, bytes.fromhex("74 19"),
         r"je\s+(?:short\s+)?\$L[0-9]+",
     ),
     (
-        "indexed-key-callback", 0x221, bytes.fromhex("8b ce"),
+        "indexed-key-callback", 0x20C, bytes.fromhex("8b ce"),
         r"mov\s+ecx\s*,\s*esi",
     ),
     (
-        "indexed-key-callback", 0x223, bytes.fromhex("ff d0"),
+        "indexed-key-callback", 0x20E, bytes.fromhex("ff d0"),
         r"call\s+eax",
     ),
 )
 
 
 ZINPUT_POLL_CALLBACK_BRANCH_TARGETS = (
-    (0x190, 0x1B5),
-    (0x215, 0x23A),
-    (0x21F, 0x23A),
+    (0x17B, 0x1A0),
+    (0x200, 0x225),
+    (0x20A, 0x225),
 )
 
 
 ZINPUT_POLL_CALLBACK_PROVENANCE_RELOCATIONS = (
-    (0x18A, IMAGE_REL_I386_DIR32, "_g_zInput_GlobalStateStorage", 0x3F14),
-    (0x194, IMAGE_REL_I386_DIR32, "_g_zInput_GlobalStateStorage", 0x3F18),
+    (0x175, IMAGE_REL_I386_DIR32, "_g_zInput_GlobalStateStorage", 0x3F14),
+    (0x17F, IMAGE_REL_I386_DIR32, "_g_zInput_GlobalStateStorage", 0x3F18),
     (
-        0x19B,
+        0x186,
         IMAGE_REL_I386_REL32,
         "?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z",
         0,
     ),
-    (0x20F, IMAGE_REL_I386_DIR32, "_g_zInput_GlobalStateStorage", 0x28),
-    (0x21A, IMAGE_REL_I386_DIR32, "_g_zInput_GlobalStateStorage", 0x24),
+    (0x1FA, IMAGE_REL_I386_DIR32, "_g_zInput_GlobalStateStorage", 0x28),
+    (0x205, IMAGE_REL_I386_DIR32, "_g_zInput_GlobalStateStorage", 0x24),
 )
 
 
@@ -13083,28 +13010,28 @@ ZINPUT_RUNTIME_DISPATCH_CANDIDATE_SPECS = {
         "name": "zInput::Keyboard_PollState",
         "anchor": "recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_pollstate",
         "retail_size": 0x2E0, "candidate_size": 0x310, "section": 9,
-        "calls": (0x2B, 0x45, 0x5A, 0x19A, 0x1A3, 0x223),
-        "leaf_calls": ((0x03, 0x25, 0x2A, 0x2B, "ecx", 0x28), (0x52, 0x58, 0x57, 0x5A, "ecx", 0x1C)),
+        "calls": (0x2B, 0x45, 0x185, 0x18E, 0x20E, 0x241),
+        "leaf_calls": ((0x03, 0x25, 0x2A, 0x2B, "ecx", 0x28), (0x3D, 0x43, 0x42, 0x45, "ecx", 0x1C)),
         "switch": {
             "relational_labels": True,
             "rows": (
-                (0x81, bytes.fromhex("81 fe 9b 00 00 00"), r"cmp\s+esi\s*,\s*155"),
-                (0x87, bytes.fromhex("0f 87 8d 00 00 00"), r"ja\s+\$L[0-9]+"),
-                (0x8F, bytes.fromhex("8a 96 00 00 00 00"), r"mov\s+dl\s*,\s*(?:byte\s+(?:ptr\s+)?)?\$L[0-9]+\[esi\]"),
-                (0x95, bytes.fromhex("ff 24 95 00 00 00 00"), r"jmp\s+(?:dword\s+(?:ptr\s+)?)?\$L[0-9]+\[edx\*4\]"),
+                (0x6C, bytes.fromhex("81 fe 9b 00 00 00"), r"cmp\s+esi\s*,\s*155"),
+                (0x72, bytes.fromhex("0f 87 8d 00 00 00"), r"ja\s+\$L[0-9]+"),
+                (0x7A, bytes.fromhex("8a 96 00 00 00 00"), r"mov\s+dl\s*,\s*(?:byte\s+(?:ptr\s+)?)?\$L[0-9]+\[esi\]"),
+                (0x80, bytes.fromhex("ff 24 95 00 00 00 00"), r"jmp\s+(?:dword\s+(?:ptr\s+)?)?\$L[0-9]+\[edx\*4\]"),
             ),
-            "classifier_offset": 0x268,
-            "classifier_load_relocation": (0x91, "classifier-data"),
-            "dispatch_offset": 0x95,
-            "dispatch_relocation": (0x98, "jump-table"),
-            "table_offset": 0x24C,
+            "classifier_offset": 0x26C,
+            "classifier_load_relocation": (0x7C, "classifier-data"),
+            "dispatch_offset": 0x80,
+            "dispatch_relocation": (0x83, "jump-table"),
+            "table_offset": 0x250,
             "table_targets": (
-                ("control-case", 0xC9), ("shift-case", 0xF3),
-                ("shift-case", 0xF3), ("alt-case", 0x9C),
-                ("control-case", 0xC9), ("alt-case", 0x9C),
-                ("default-case", 0x11A),
+                ("control-case", 0xB4), ("shift-case", 0xDE),
+                ("shift-case", 0xDE), ("alt-case", 0x87),
+                ("control-case", 0xB4), ("alt-case", 0x87),
+                ("default-case", 0x105),
             ),
-            "padding": (0x24A, bytes.fromhex("8b ff"), r"npad\s+2"),
+            "padding": (0x24E, bytes.fromhex("8b ff"), r"npad\s+2"),
         },
         "register_callbacks": ZINPUT_POLL_REGISTER_CALLBACKS,
         "callback_rows": ZINPUT_POLL_CALLBACK_PROVENANCE_ROWS,
@@ -13126,7 +13053,7 @@ ZINPUT_RUNTIME_DISPATCH_CANDIDATE_SPECS = {
 
 ZINPUT_RUNTIME_AGGREGATE_LEAF_LOGICAL_ORDINALS = {
     "0x46f450": (0, 1),
-    "0x46f690": (0, 2),
+    "0x46f690": (0, 1),
     "0x46fa10": (0, 1),
 }
 
@@ -14287,16 +14214,9 @@ APPFRAME_RUN_V9_XDATA = bytes.fromhex(
 )
 
 
-_ZUI_TU_RELOCATION_SYMBOL = re.compile(
-    r"(\?%D:\\Recoil Project\\RecoilRebuild\\src\\GameZRecoil\\"
-    r"zUI\\zui_widgets\.cpp)[0-9]+(?=@@)"
-)
-
-
-_VC5_PRIVATE_RELOCATION_LABEL = re.compile(r"^\$(?P<kind>[LT])[0-9]+$")
-
-
-BOUNDED_TARGETLESS_VPTR_STRIDES = frozenset({0x2AC, 0x2C0})
+# Retail HudUiTextStack4::PushLine walks inline HudUiPanel rows backwards
+# by 0x2a4; the other panel vectors use their distinct 0x2ac/0x2c0 records.
+BOUNDED_TARGETLESS_VPTR_STRIDES = frozenset({4, 0x4C, 0x2A4, 0x2AC, 0x2C0})
 
 
 BOUNDED_TARGETLESS_VPTR_SLOTS = frozenset(
@@ -14325,26 +14245,6 @@ BOUNDED_TARGETLESS_VPTR_SLOTS = frozenset(
 _BOUNDED_TARGETLESS_ARITHMETIC_LIMIT = 0x10000
 
 
-_ZSND_A3D_DUPLICATE_CANDIDATE_VPTR = (
-    "candidate-exact:zSndSample-duplicateVoices[i]+0x8-vptr"
-)
-
-
-_ZSND_A3D_DUPLICATE_RETAIL_VPTR = (
-    "dynamic:zSndSample-A3D-duplicate-backendBuffer-vptr"
-)
-
-
-_ZSND_DIRECTSOUND_DUPLICATE_CANDIDATE_VPTR = (
-    "candidate-exact:zSndSample-DirectSound-duplicateVoices[i]+0x8-vptr"
-)
-
-
-_ZSND_DIRECTSOUND_DUPLICATE_RETAIL_VPTR = (
-    "dynamic:zSndSample-DirectSound-duplicate-backendBuffer-vptr"
-)
-
-
 _ZSND_PLAY_ACQUIRE_HANDLE_SYMBOL = (
     "?AcquirePlayHandleDispatch@zSndSample@@QAEPAUzSndPlayHandle@@XZ"
 )
@@ -14355,14 +14255,14 @@ _ZSND_PLAY_ACQUIRE_HANDLE_IDENTITY = "symbol:recoil:function:0x49f6d0"
 
 _ZSND_PLAY_SELECTED_BACKEND_VPTR = (
     "load(load(runtime-object-join("
-    "call-result(symbol:recoil:function:0x49f6d0),this+0x44)+0x8))"
+    "call-result(symbol:recoil:function:0x49f6d0)+0x8,this+0x4c)))"
 )
 
 
 _ZSND_PLAY_DIRECTSOUND_INBOUND_SELECTED_BACKEND_VPTR = (
     "load(load(runtime-object-join("
-    "call-result(symbol:recoil:function:0x49f6d0),"
-    "entry-register(ecx)+0x44)+0x8))"
+    "call-result(symbol:recoil:function:0x49f6d0)+0x8,"
+    "entry-register(ecx)+0x4c)))"
 )
 
 
@@ -14460,19 +14360,6 @@ _ZSND_SNAPSHOT_NEW_NODE_SYMBOL = (
 
 
 _ZSND_SNAPSHOT_NEW_NODE_IDENTITY = "symbol:recoil:function:0x4a07c0"
-
-
-_ZUI_RECEIVER_RENDERING_CANDIDATE_PROFILES: Mapping[str, Mapping[str, Any]] = {
-    "0x4b8de0": {
-        "end": "0x4b90e0",
-        "symbol": (
-            "?LoadFromZrd@HudCmdBindButtonBase@@UAEHPAUNode@zReader@@"
-            "PAUHudUiBackground@@@Z"
-        ),
-        "size": 0x360,
-        "relocation_count": 16,
-    },
-}
 
 
 _ZNETWORK_DPLAY_TARGET_NAME = (

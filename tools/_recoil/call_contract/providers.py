@@ -773,11 +773,15 @@ def _candidate_canonical_header_provider_matches(
     candidate: CandidateAssembly,
     provider: Mapping[str, Any],
     retail_body: bytes,
+    *, indexes: IdentityIndexes,
+    retail_address: str,
 ) -> bool:
-    """Re-prove a named canonical specialization independently of the caller.
+    """Join a fresh canonical header proof with independent retail targets.
 
-    This path deliberately supports only relocation-free bodies. A masked
-    comparison cannot establish relocation target or ICF alias identity.
+    The canonical probe supplies relocation positions, types, names and
+    addends. Candidate fields cannot determine which retail bytes are masked
+    or which target is expected. Logical aliases carrying relocations remain
+    unsupported until each specialization has its own typed target proof.
     """
     from _recoil.commands.provider_function_mutation import (
         ProviderFunctionMutationError,
@@ -789,8 +793,8 @@ def _candidate_canonical_header_provider_matches(
         return False
     catalog = provider["provider_object_identity"]
     if (
-        helper.relocations or any(helper.relocation_mask)
-        or helper.data != retail_body
+        len(retail_body) != len(helper.data)
+        or len(helper.relocation_mask) != len(helper.data)
         or catalog.get("body_size") != len(helper.data)
         or catalog.get("comdat_selection") != helper.comdat_selection
     ):
@@ -822,10 +826,57 @@ def _candidate_canonical_header_provider_matches(
         )
     except (KeyError, OSError, TypeError, ValueError, ProviderFunctionMutationError) as exc:
         raise ValueError(f"canonical-header provider live proof failed: {exc}") from exc
-    return (
-        not proof.relocations and proof.masked_byte_count == 0
-        and proof.comdat_selection == helper.comdat_selection
-        and proof.body_size == len(helper.data)
+    if (
+        proof.comdat_selection != helper.comdat_selection
+        or proof.body_size != len(helper.data)
+        or len(proof.relocations) != len(helper.relocations)
+    ):
+        return False
+    expected_fields: dict[int, tuple[int, str]] = {}
+    masked: set[int] = set()
+    for relocation in proof.relocations:
+        offset, kind = relocation.get("offset"), relocation.get("type_value")
+        if (
+            type(offset) is not int or offset < 0 or offset + 4 > len(retail_body)
+            or kind not in {IMAGE_REL_I386_DIR32, IMAGE_REL_I386_REL32}
+            or relocation.get("width") != 4 or relocation.get("addend") != 0
+            or masked.intersection(range(offset, offset + 4))
+        ):
+            return False
+        name = relocation.get("target_symbol")
+        target_identity = (indexes.by_candidate_name.get(name, "")
+                           or indexes.storage_by_name.get(name, ""))
+        if not target_identity:
+            return False
+        target = struct.unpack_from("<I", retail_body, offset)[0]
+        if kind == IMAGE_REL_I386_REL32:
+            target = (address_value(retail_address) + offset + 4 + target) & 0xffffffff
+        actual_identity = (indexes.by_address.get(normalize_address(target), "")
+                           or indexes.storage_by_address.get(normalize_address(target), ""))
+        if actual_identity != target_identity:
+            return False
+        expected_fields[offset] = (kind, target_identity)
+        masked.update(range(offset, offset + 4))
+    if proof.masked_byte_count != len(masked) or {
+        index for index, value in enumerate(helper.relocation_mask) if value
+    } != masked:
+        return False
+    observed_offsets: set[int] = set()
+    for relocation in helper.relocations:
+        if relocation.offset in observed_offsets or relocation.offset not in expected_fields:
+            return False
+        observed_offsets.add(relocation.offset)
+        expected_kind, expected_identity = expected_fields[relocation.offset]
+        actual_identity = (indexes.by_candidate_name.get(relocation.symbol_name, "")
+                           or indexes.storage_by_name.get(relocation.symbol_name, ""))
+        if (
+            relocation.type != expected_kind or actual_identity != expected_identity
+            or struct.unpack_from("<I", helper.data, relocation.offset)[0] != 0
+        ):
+            return False
+    return observed_offsets == set(expected_fields) and all(
+        index in masked or actual == expected
+        for index, (actual, expected) in enumerate(zip(helper.data, retail_body))
     )
 
 
@@ -837,39 +888,30 @@ def _candidate_only_provider_comdat_catalog_matches(
     indexes: IdentityIndexes,
     bridge: BinaryNinjaBridge,
 ) -> tuple[str, ...]:
-    """Match one candidate COMDAT against every reviewed provider catalog row.
+    """Match a native helper through governed canonical-header registrations.
 
     Caller identity, expected ordinal/target, and expected cleanup are absent.
-    A tracker provider must explicitly carry the callable key and ABI package;
-    matching bytes alone cannot distinguish tiny template specializations.
+    The typed registration must explicitly carry the callable key; matching
+    bytes alone cannot distinguish template specializations.
     """
-
     helper = candidate.tu_local_function_definitions.get(callable_symbol)
     caller = candidate.caller_definition
     if helper is None or caller is None:
         return ()
-    exact_symbols = tuple(
-        row for row in caller.coff_symbols if row.name == callable_symbol
-    )
+    exact_symbols = tuple(row for row in caller.coff_symbols if row.name == callable_symbol)
     if len(exact_symbols) != 1:
         return ()
     symbol = exact_symbols[0]
     aliases = tuple(
         row for row in caller.coff_symbols
-        if row.index != symbol.index
-        and (
+        if row.index != symbol.index and (
             row.weak_external_tag_index == symbol.index
-            or (
-                row.section_number == symbol.section_number
-                and row.value == symbol.value
-                and row.storage_class == IMAGE_SYM_CLASS_EXTERNAL
-            )
+            or (row.section_number == symbol.section_number and row.value == symbol.value
+                and row.storage_class == IMAGE_SYM_CLASS_EXTERNAL)
         )
     )
     if (
-        aliases
-        or not helper.section_is_comdat
-        or helper.comdat_selection is None
+        aliases or not helper.section_is_comdat or helper.comdat_selection is None
         or helper.section_external_functions != (callable_symbol,)
         or helper.section_size != len(helper.data)
     ):
@@ -879,97 +921,25 @@ def _candidate_only_provider_comdat_catalog_matches(
         if not isinstance(provider, Mapping):
             continue
         identity = _cc_identity._symbol_identity(str(symbol_id), provider)
-        catalog = provider.get("call_contract_provider_catalog")
         raw_address = provider.get("address", provider.get("start"))
         if (
             identity not in indexes.provider_ids
             or provider.get("pipeline_class") != "non-authored"
             or provider.get("authored_order_role") != "non-authored"
             or provider.get("extent_state") != "known"
-            or not isinstance(raw_address, str)
-            or provider.get("size") != len(helper.data)
+            or not isinstance(raw_address, str) or provider.get("size") != len(helper.data)
+            or callable_symbol not in _canonical_header_provider_catalog_names(provider)
         ):
             continue
         address = normalize_address(raw_address)
         if indexes.by_address.get(address) != identity:
             continue
-        if callable_symbol in _canonical_header_provider_catalog_names(provider):
-            retail_body = _cc_cfg._hexdump_bytes(bridge.hexdump(address, len(helper.data)))
-            if _candidate_canonical_header_provider_matches(
-                helper, candidate, provider, retail_body,
-            ):
-                matches.append(identity)
-            continue
-        if (
-            not isinstance(catalog, Mapping)
-            or catalog.get("callable_symbol") != callable_symbol
-            or catalog.get("calling_convention") != "thiscall"
-            or type(catalog.get("parameter_bytes")) is not int
-            or catalog.get("icf_status") not in {"unique", "reviewed-unique"}
-            or catalog.get("logical_alias_status") not in {
-                "none", "reviewed-unique"
-            }
-        ):
-            continue
         retail_body = _cc_cfg._hexdump_bytes(bridge.hexdump(address, len(helper.data)))
-        if len(retail_body) != len(helper.data):
-            continue
-        candidate_normalized = bytearray(helper.data)
-        retail_normalized = bytearray(retail_body)
-        relocation_manifest: list[tuple[int, int, str]] = []
-        valid = True
-        occupied_fields: set[int] = set()
-        for relocation in helper.relocations:
-            if (
-                relocation.type not in {
-                    IMAGE_REL_I386_REL32,
-                    IMAGE_REL_I386_DIR32,
-                }
-                or relocation.offset < 0
-                or relocation.offset + 4 > len(helper.data)
-                or struct.unpack_from("<I", helper.data, relocation.offset)[0]
-                != 0
-                or occupied_fields.intersection(range(relocation.offset, relocation.offset + 4))
-            ):
-                valid = False
-                break
-            target_identity = indexes.by_candidate_name.get(
-                relocation.symbol_name, ""
-            )
-            if not target_identity:
-                valid = False
-                break
-            occupied_fields.update(range(relocation.offset, relocation.offset + 4))
-            raw_target = struct.unpack_from("<I", retail_body, relocation.offset)[0]
-            if relocation.type == IMAGE_REL_I386_REL32:
-                raw_target = (address_value(address) + relocation.offset + 4 + raw_target) & 0xffffffff
-            actual_identity = (indexes.by_address.get(normalize_address(raw_target))
-                               or indexes.storage_by_address.get(normalize_address(raw_target)))
-            if actual_identity != target_identity:
-                valid = False
-                break
-            relocation_manifest.append((
-                relocation.offset,
-                relocation.type,
-                target_identity,
-            ))
-            candidate_normalized[relocation.offset : relocation.offset + 4] = (
-                b"\x00" * 4
-            )
-            retail_normalized[relocation.offset : relocation.offset + 4] = (
-                b"\x00" * 4
-            )
-        reviewed_manifest = catalog.get("relocations")
-        if (
-            not valid
-            or len(helper.relocation_mask) != len(helper.data)
-            or {index for index, masked in enumerate(helper.relocation_mask) if masked} != occupied_fields
-            or [list(row) for row in relocation_manifest]
-            != reviewed_manifest
-            or bytes(candidate_normalized) != bytes(retail_normalized)
+        if _candidate_canonical_header_provider_matches(
+            helper, candidate, provider, retail_body,
+            indexes=indexes, retail_address=address,
         ):
-            continue
-        matches.append(identity)
+            matches.append(identity)
     return tuple(sorted(matches))
 
 

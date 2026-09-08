@@ -26,6 +26,140 @@ from _recoil.commands.bn_data_evidence import scan_assembly_text  # noqa: E402
 from _recoil.lib.binja import BridgeBudgetExceeded, BridgeError, Symbol  # noqa: E402
 
 
+@pytest.fixture
+def bridge_http_server():
+    import json
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from urllib.parse import parse_qs, urlsplit
+
+    requests = []
+
+    class Handler(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+        disable_nagle_algorithm = True
+
+        def log_message(self, *_):
+            pass
+
+        def do_GET(self):
+            target = urlsplit(self.path)
+            query = parse_qs(target.query)
+            requests.append((self.client_address, target.path, query))
+            if target.path == "/drop":
+                self.close_connection = True
+                return
+            body = json.dumps(query).encode()
+            if target.path == "/hexdump":
+                body = b"00001000  90 c3\n"
+            elif target.path == "/malformed":
+                body = b"{"
+            elif target.path == "/error":
+                body = b'{"error":"read_busy"}'
+            self.send_response(503 if target.path == "/error" else 200)
+            self.send_header("Content-Length", str(len(body) + (5 if target.path == "/truncated" else 0)))
+            self.end_headers()
+            self.wfile.write(body)
+            self.wfile.flush()
+            if target.path in {"/idle-close", "/truncated"}:
+                self.close_connection = True
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}", requests
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_bridge_reuses_one_connection_per_worker_and_preserves_qualification_and_budget(bridge_http_server):
+    from concurrent.futures import ThreadPoolExecutor
+    from _recoil.lib.binja import BinaryNinjaBridge
+
+    url, requests = bridge_http_server
+
+    def run(worker):
+        bridge = BinaryNinjaBridge(url, binary="unit.bndb", call_budget=17, use_environment_budget_file=False)
+        try:
+            for index in range(16):
+                assert bridge.get_json("facts", worker=worker, index=index) == {
+                    "binary": ["unit.bndb"], "worker": [str(worker)], "index": [str(index)]}
+            assert bridge.hexdump("0x1000", 2) == "00001000  90 c3\n"
+            with pytest.raises(BridgeBudgetExceeded):
+                bridge.get_json("facts")
+        finally:
+            bridge.close()
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        list(executor.map(run, range(8)))
+    assert len(requests) == 8 * 17
+    assert len({address for address, _, _ in requests}) == 8
+    shared = BinaryNinjaBridge(url, call_budget=16, use_environment_budget_file=False)
+    try:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            rows = list(executor.map(lambda index: shared.get_json("facts", index=index), range(16)))
+        assert rows == [{"index": [str(index)]} for index in range(16)]
+        assert len({address for address, _, _ in requests}) == 9
+    finally:
+        shared.close()
+
+
+def test_bridge_rejects_http_errors_malformed_json_and_partial_responses_without_retries(bridge_http_server):
+    from _recoil.lib.binja import BinaryNinjaBridge
+
+    url, requests = bridge_http_server
+    bridge = BinaryNinjaBridge(url, use_environment_budget_file=False)
+    try:
+        for endpoint, message in (("error", "HTTP 503.*read_busy"), ("malformed", "invalid JSON"), ("truncated", "IncompleteRead")):
+            with pytest.raises(BridgeError, match=message):
+                bridge.get_json(endpoint)
+            assert bridge.get_json("facts", after=endpoint) == {"after": [endpoint]}
+        for endpoint in ("error", "malformed", "truncated"):
+            assert sum(path == "/" + endpoint for _, path, _ in requests) == 1
+    finally:
+        bridge.close()
+
+
+def test_bridge_reconnects_once_for_idle_close_and_charges_retry_budget(bridge_http_server):
+    from _recoil.lib.binja import BinaryNinjaBridge
+
+    url, requests = bridge_http_server
+    bridge = BinaryNinjaBridge(url, call_budget=5, use_environment_budget_file=False)
+    try:
+        assert bridge.get_json("idle-close") == {}
+        assert bridge.get_json("facts", resumed=True) == {"resumed": ["True"]}
+        assert bridge.budget_state().used == 3
+        # A reused connection that repeatedly drops gets exactly one reconnect.
+        with pytest.raises(BridgeError):
+            bridge.get_json("drop")
+        assert sum(path == "/drop" for _, path, _ in requests) == 2
+        assert bridge.budget_state().used == 5
+        with pytest.raises(BridgeBudgetExceeded):
+            bridge.get_json("facts")
+    finally:
+        bridge.close()
+    fresh = BinaryNinjaBridge(url, call_budget=1, use_environment_budget_file=False)
+    try:
+        before = len(requests)
+        with pytest.raises(BridgeError):
+            fresh.get_json("drop")
+        assert len(requests) == before + 1
+    finally:
+        fresh.close()
+    limited = BinaryNinjaBridge(url, call_budget=2, use_environment_budget_file=False)
+    try:
+        assert limited.get_json("idle-close") == {}
+        with pytest.raises(BridgeBudgetExceeded):
+            limited.get_json("facts", exhausted=True)
+        assert limited.budget_state().used == 2
+        assert not any("exhausted" in query for _, _, query in requests)
+    finally:
+        limited.close()
+
+
 @pytest.mark.parametrize("failure", [BridgeError("read failed"), BridgeBudgetExceeded("budget"), ""])
 def test_data_assembly_scan_reports_incomplete_reads(failure: object) -> None:
     class Bridge:

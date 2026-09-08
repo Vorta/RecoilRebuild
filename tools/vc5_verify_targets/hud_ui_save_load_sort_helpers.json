@@ -1,6 +1,6 @@
 {
   "name": "hud_ui_save_load_sort_helpers",
-  "description": "HudUiSaveLoadEntry source-file sort helper byte checks.",
+  "description": "Canonical VC5 algorithm provider comparisons for the save/load entry ordering.",
   "source_filename": "RecoilApp_Late.cpp",
   "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
   "source_from": "src/Battlesport/RecoilApp.cpp",
@@ -21,18 +21,24 @@
   "functions": [
     {
       "address": "0x436530",
-      "symbol": "?InsertEntryIntoSortedPrefix@@YIXPAUHudUiSaveLoadEntry@@U1@@Z",
-      "name": "InsertEntryIntoSortedPrefix"
+      "symbol": "?_Unguarded_insert@std@@YIXPAUHudUiSaveLoadEntry@@U2@@Z",
+      "name": "VC5 std::_Unguarded_insert<HudUiSaveLoadEntry>",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored"
     },
     {
       "address": "0x436580",
-      "symbol": "?PartitionEntriesByPivot@@YIPAUHudUiSaveLoadEntry@@PAU1@0U1@@Z",
-      "name": "PartitionEntriesByPivot"
+      "symbol": "?_Unguarded_partition@std@@YIPAUHudUiSaveLoadEntry@@PAU2@0U2@@Z",
+      "name": "VC5 std::_Unguarded_partition<HudUiSaveLoadEntry>",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored"
     },
     {
       "address": "0x4362f0",
-      "symbol": "?SortEntryRange@@YIXPAUHudUiSaveLoadEntry@@0H@Z",
-      "name": "SortEntryRange"
+      "symbol": "?_Sort@std@@YIXPAUHudUiSaveLoadEntry@@00@Z",
+      "name": "VC5 std::_Sort<HudUiSaveLoadEntry>",
+      "pipeline_class": "non-authored",
+      "authored_order_role": "non-authored"
     }
   ]
 }

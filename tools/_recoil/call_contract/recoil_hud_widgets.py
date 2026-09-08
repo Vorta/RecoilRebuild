@@ -51,6 +51,7 @@ def _hud_cmd_binding_ptr_vector_erase_provider_supplier(
     document: ProgressDocument,
     *,
     by_address: Mapping[str, str],
+    by_candidate_name: Mapping[str, str],
     provider_ids: frozenset[str],
     bridge: BinaryNinjaBridge | None,
     fact_transcript: list[dict[str, Any]] | None = None,
@@ -59,15 +60,9 @@ def _hud_cmd_binding_ptr_vector_erase_provider_supplier(
     from _recoil.call_contract.records import StructuralPhysicalProviderSupplier
 
     physical_rows: list[tuple[str, Mapping[str, Any]]] = []
-    named_rows: list[tuple[str, Mapping[str, Any]]] = []
     for symbol_id, symbol in document.collection("symbols").items():
         if not isinstance(symbol, Mapping):
             continue
-        if (
-            symbol.get("navigation_name")
-            == _cc_catalog.HUD_CMD_BINDING_PTR_VECTOR_ERASE_NAVIGATION_NAME
-        ):
-            named_rows.append((str(symbol_id), symbol))
         raw_address = symbol.get("address", symbol.get("start"))
         if not isinstance(raw_address, str):
             continue
@@ -80,17 +75,24 @@ def _hud_cmd_binding_ptr_vector_erase_provider_supplier(
     expected_symbol_id = "recoil:function:0x4ba4d0"
     if (
         len(physical_rows) != 1
-        or len(named_rows) != 1
-        or physical_rows[0] != named_rows[0]
         or physical_rows[0][0] != expected_symbol_id
     ):
         return None
     symbol = physical_rows[0][1]
+    # The ordinary provider index validates the complete owner, evidence and
+    # canonical-header registration before calling this physical-body rule.
+    # Registration adds an object symbol and changes the row kind; it must
+    # not make an independently identical pointer-vector COMDAT disappear.
+    registered = (symbol.get("kind") == "provider-function"
+        and isinstance(symbol.get("object_symbol"), str)
+        and bool(symbol["object_symbol"])
+        and by_candidate_name.get(symbol["object_symbol"])
+            == _cc_catalog.HUD_CMD_BINDING_PTR_VECTOR_ERASE_IDENTITY)
     logical_aliases = symbol.get("logical_aliases")
     icf_group = symbol.get("icf_address_group")
     if (
         symbol.get("binary") != "recoil"
-        or symbol.get("kind") != "function"
+        or (symbol.get("kind") != "function" and not registered)
         or symbol.get("address")
         != _cc_catalog.HUD_CMD_BINDING_PTR_VECTOR_ERASE_ADDRESS
         or symbol.get("end_exclusive")
@@ -99,11 +101,9 @@ def _hud_cmd_binding_ptr_vector_erase_provider_supplier(
         or symbol.get("size") != 0x40
         or symbol.get("pipeline_class") != "non-authored"
         or symbol.get("authored_order_role") != "non-authored"
-        or symbol.get("navigation_name")
-        != _cc_catalog.HUD_CMD_BINDING_PTR_VECTOR_ERASE_NAVIGATION_NAME
         or symbol.get("logical_identity_key") not in {None, ""}
         or symbol.get("icf_fold_status") not in {None, ""}
-        or symbol.get("object_symbol") not in {None, ""}
+        or (symbol.get("object_symbol") not in {None, ""} and not registered)
         or logical_aliases not in (None, {})
         or icf_group not in (None, {})
         or by_address.get(_cc_catalog.HUD_CMD_BINDING_PTR_VECTOR_ERASE_ADDRESS)

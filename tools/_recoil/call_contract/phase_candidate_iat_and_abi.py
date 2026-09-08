@@ -175,6 +175,8 @@ def recover_candidate_iat_and_abi(work: _cc_work.CallerWork) -> None:
         work.candidate_assembly,
         thunks=work._provider_named_import_thunks,
         indexes=work.indexes,
+        retail_call_sites=work.retail_invocation_call_sites,
+        retail_import_targets=work.retail_import_targets,
     )
     # The ordinal-import bridge performs a provisional extraction of
     # the complete candidate caller.  Build the generic exact-IAT

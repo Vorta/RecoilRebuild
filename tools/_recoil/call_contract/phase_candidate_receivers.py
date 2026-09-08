@@ -6,7 +6,6 @@ from _recoil.call_contract import receiver_equivalence as _cc_receiver_equivalen
 from _recoil.call_contract import recoil_hud_layout as _cc_recoil_hud_layout
 from _recoil.call_contract import recoil_hud_panels as _cc_recoil_hud_panels
 from _recoil.call_contract import recoil_hud_reticle as _cc_recoil_hud_reticle
-from _recoil.call_contract import recoil_hud_timers_fonts as _cc_recoil_hud_timers_fonts
 from _recoil.call_contract import recoil_weapons as _cc_recoil_weapons
 from _recoil.call_contract import retail as _cc_retail
 from _recoil.call_contract import work as _cc_work
@@ -15,16 +14,6 @@ from _recoil.call_contract import work as _cc_work
 def recover_candidate_receivers(work: _cc_work.CallerWork) -> None:
 
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.zinput_joystick_member_vptr_bridges, family="session.member_vptr_storage_bridges")
-    percent_font_member_vptr_bridges = (
-        _cc_recoil_hud_timers_fonts._hud_ui_mgr_percent_font_candidate_vptr_storage_bridges(
-            work.expected,
-            work.candidate_assembly,
-            caller_identity=work.caller_identity,
-            caller_start=work.address,
-            caller_end_exclusive=work.end_exclusive,
-            indexes=work.indexes,
-        )
-    )
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.enable_current_layout_member_vptr_bridges, family="session.member_vptr_storage_bridges")
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.disable_current_layout_member_vptr_bridges, family="session.member_vptr_storage_bridges")
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.disable_visibility_member_vptr_bridges, family="session.member_vptr_storage_bridges")
@@ -34,7 +23,6 @@ def recover_candidate_receivers(work: _cc_work.CallerWork) -> None:
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.objective_begin_summary_member_vptr_bridges, family="session.member_vptr_storage_bridges")
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.objective_begin_desc_member_vptr_bridges, family="session.member_vptr_storage_bridges")
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.update_frame_member_vptr_bridges, family="session.member_vptr_storage_bridges")
-    _cc_proofs.merge_into(work.member_vptr_storage_bridges, percent_font_member_vptr_bridges, family="session.member_vptr_storage_bridges")
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.stats_list_member_vptr_bridges, family="session.member_vptr_storage_bridges")
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.first_delete_member_vptr_bridges, family="session.member_vptr_storage_bridges")
     _cc_proofs.merge_into(work.member_vptr_storage_bridges, work.timer_panel_delete_member_vptr_bridges, family="session.member_vptr_storage_bridges")

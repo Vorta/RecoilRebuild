@@ -10,6 +10,7 @@ from _recoil.call_contract import cfg as _cc_cfg
 from _recoil.call_contract import extraction as _cc_extraction
 from _recoil.call_contract import identity as _cc_identity
 from _recoil.call_contract import instructions as _cc_instructions
+from _recoil.call_contract import receiver_candidate as _cc_receiver_candidate
 from _recoil.call_contract import receiver_storage as _cc_receiver_storage
 from _recoil.call_contract import recoil_hud_widgets as _cc_recoil_hud_widgets
 from _recoil.call_contract import targets as _cc_targets
@@ -5338,151 +5339,6 @@ def _hud_ui_mgr_layout_array_loop_vptr_storage_bridges(
                 "candidate destructor anchor"
             )
         anchor = anchor_addresses[0]
-        prior_fixed = {
-            "base": anchor - 0x1C,
-            "array_destructor_target": anchor,
-            "array_constructor_target": anchor + 0x05,
-            "array_count_argument": anchor + 0x0A,
-            "array_base_argument": anchor + 0x0C,
-            "array_stride_argument": anchor + 0x0F,
-            "array_base_push": anchor + 0x14,
-            "array_eh_state": anchor + 0x15,
-            "array_constructor_call": anchor + 0x1A,
-            "null_base": anchor + 0x27,
-            "seed": anchor + 0x36,
-            "count": anchor + 0x39,
-            "header": anchor + 0x3E,
-            "load_first": anchor + 0x3E,
-            "arg_y": anchor + 0x40,
-            "arg_x": anchor + 0x41,
-            "receiver_first": anchor + 0x43,
-            "call_first": anchor + 0x45,
-            "add_child_receiver": anchor + 0x48,
-            "add_child_argument": anchor + 0x4A,
-            "add_child_call": anchor + 0x4B,
-            "load_second": anchor + 0x50,
-            "receiver_second": anchor + 0x52,
-            "arg_second": anchor + 0x54,
-            "call_second": anchor + 0x56,
-            "x_increment": anchor + 0x59,
-            "stride": anchor + 0x5C,
-            "decrement": anchor + 0x62,
-            "backedge": anchor + 0x63,
-        }
-        prior_rows = {
-            prior_fixed["base"]: (
-                ("8b", "d8"),
-                r"mov\s+ebx\s*,\s*eax",
-            ),
-            prior_fixed["array_destructor_target"]: (
-                ("68", "00", "00", "00", "00"),
-                destructor_pattern,
-            ),
-            prior_fixed["array_constructor_target"]: (
-                ("68", "00", "00", "00", "00"),
-                rf"push\s+(?:OFFSET\s+FLAT:)?"
-                rf"{re.escape(
-                    _cc_catalog.HUD_UI_MGR_PANEL_SIMPLE_DEFAULT_CONSTRUCTOR_CLOSURE_SYMBOL
-                )}"
-                r"(?:\s*;.*)?",
-            ),
-            prior_fixed["array_count_argument"]: (
-                ("6a", "17"),
-                r"push\s+(?:23|0x17)",
-            ),
-            prior_fixed["array_base_argument"]: (
-                ("8d", "43", "20"),
-                r"lea\s+eax\s*,\s*(?:dword\s+(?:ptr\s+)?)?"
-                r"\[ebx(?:\+32|\+0x20)\]",
-            ),
-            prior_fixed["array_stride_argument"]: (
-                ("68", "a4", "02", "00", "00"),
-                r"push\s+(?:676|0x2a4)",
-            ),
-            prior_fixed["array_base_push"]: (
-                ("50",),
-                r"push\s+eax",
-            ),
-            prior_fixed["array_eh_state"]: (
-                ("c6", "44", "24", "38", "02"),
-                r"mov\s+byte\s+__\$EHRec\$\[esp\+68\]\s*,\s*"
-                r"(?:2|0x2)",
-            ),
-            prior_fixed["array_constructor_call"]: (
-                ("e8", "00", "00", "00", "00"),
-                rf"call\s+{re.escape(
-                    _cc_catalog.HUD_UI_MGR_LAYOUT_ARRAY_EH_CONSTRUCTOR_SYMBOL
-                )}(?:\s*;.*)?",
-            ),
-            prior_fixed["null_base"]: (
-                ("33", "db"),
-                r"xor\s+ebx\s*,\s*ebx",
-            ),
-            prior_fixed["seed"]: (
-                ("8d", "73", "20"),
-                r"lea\s+esi\s*,\s*(?:dword\s+(?:ptr\s+)?)?"
-                r"\[ebx(?:\+32|\+0x20)\]",
-            ),
-            prior_fixed["count"]: (
-                ("bd", "17", "00", "00", "00"),
-                r"mov\s+ebp\s*,\s*(?:23|0x17)",
-            ),
-            prior_fixed["load_first"]: (
-                ("8b", "16"),
-                r"mov\s+edx\s*,\s*(?:dword\s+(?:ptr\s+)?)?\[esi\]",
-            ),
-            prior_fixed["arg_y"]: (("57",), r"push\s+edi"),
-            prior_fixed["arg_x"]: (("6a", "05"), r"push\s+5"),
-            prior_fixed["receiver_first"]: (
-                ("8b", "ce"),
-                r"mov\s+ecx\s*,\s*esi",
-            ),
-            prior_fixed["call_first"]: (
-                ("ff", "52", "0c"),
-                r"call\s+(?:dword\s+(?:ptr\s+)?)?"
-                r"\[edx(?:\+12|\+0xc)\]",
-            ),
-            prior_fixed["add_child_receiver"]: (
-                ("8b", "cb"),
-                r"mov\s+ecx\s*,\s*ebx",
-            ),
-            prior_fixed["add_child_argument"]: (("56",), r"push\s+esi"),
-            prior_fixed["add_child_call"]: (
-                ("e8", "00", "00", "00", "00"),
-                rf"call\s+{re.escape(_cc_catalog.HUD_SHIELD_LAYOUT_ADD_CHILD_SYMBOL)}"
-                r"(?:\s*;.*)?",
-            ),
-            prior_fixed["load_second"]: (
-                ("8b", "06"),
-                r"mov\s+eax\s*,\s*(?:dword\s+(?:ptr\s+)?)?\[esi\]",
-            ),
-            prior_fixed["receiver_second"]: (
-                ("8b", "ce"),
-                r"mov\s+ecx\s*,\s*esi",
-            ),
-            prior_fixed["arg_second"]: (("6a", "01"), r"push\s+1"),
-            prior_fixed["call_second"]: (
-                ("ff", "50", "60"),
-                r"call\s+(?:dword\s+(?:ptr\s+)?)?"
-                r"\[eax(?:\+96|\+0x60)\]",
-            ),
-            prior_fixed["x_increment"]: (
-                ("83", "c7", "0f"),
-                r"add\s+edi\s*,\s*(?:15|0xf)",
-            ),
-            prior_fixed["stride"]: (
-                ("81", "c6", "a4", "02", "00", "00"),
-                r"add\s+esi\s*,\s*(?:676|0x2a4)",
-            ),
-            prior_fixed["decrement"]: (
-                ("4d",),
-                r"dec\s+ebp",
-            ),
-            prior_fixed["backedge"]: (
-                ("75", "d9"),
-                r"jne\s+(?:(?:short|near)\s+)?\$L[0-9A-Za-z_]+",
-            ),
-        }
         current_fixed = {
             "base": anchor - 0x1C,
             "null_compare": anchor - 0x13,
@@ -5521,8 +5377,8 @@ def _hud_ui_mgr_layout_array_loop_vptr_storage_bridges(
             "post_argument": anchor + 0x5D,
             "post_receiver": anchor + 0x5F,
             "post_call": anchor + 0x61,
-            "zero_ebx": anchor + 0x64,
-            "minus_one_ebp": anchor + 0x66,
+            "zero_register": anchor + 0x64,
+            "minus_one_register": anchor + 0x66,
             "tail_branch": anchor + 0x69,
             "null_base": anchor + 0x6B,
             "tail_join": anchor + 0x6D,
@@ -5533,8 +5389,8 @@ def _hud_ui_mgr_layout_array_loop_vptr_storage_bridges(
                 r"mov\s+edi\s*,\s*eax",
             ),
             current_fixed["null_compare"]: (
-                ("3b", "fb"),
-                r"cmp\s+edi\s*,\s*ebx",
+                ("3b", "fd"),
+                r"cmp\s+edi\s*,\s*ebp",
             ),
             current_fixed["null_branch"]: (
                 ("74", "72"),
@@ -5575,8 +5431,8 @@ def _hud_ui_mgr_layout_array_loop_vptr_storage_bridges(
             ),
             current_fixed["array_base_push"]: (("56",), r"push\s+esi"),
             current_fixed["array_eh_state"]: (
-                ("c6", "44", "24", "38", "02"),
-                r"mov\s+byte\s+__\$EHRec\$\[esp\+68\]\s*,\s*"
+                ("c6", "44", "24", "3c", "02"),
+                r"mov\s+byte\s+__\$EHRec\$\[esp\+72\]\s*,\s*"
                 r"(?:2|0x2)",
             ),
             current_fixed["array_constructor_call"]: (
@@ -5665,13 +5521,13 @@ def _hud_ui_mgr_layout_array_loop_vptr_storage_bridges(
                 r"call\s+(?:dword\s+(?:ptr\s+)?)?"
                 r"\[eax(?:\+4|\+0x4)\]",
             ),
-            current_fixed["zero_ebx"]: (
-                ("33", "db"),
-                r"xor\s+ebx\s*,\s*ebx",
+            current_fixed["zero_register"]: (
+                ("33", "ed"),
+                r"xor\s+ebp\s*,\s*ebp",
             ),
-            current_fixed["minus_one_ebp"]: (
-                ("83", "cd", "ff"),
-                r"or\s+ebp\s*,\s*-1",
+            current_fixed["minus_one_register"]: (
+                ("83", "cb", "ff"),
+                r"or\s+ebx\s*,\s*-1",
             ),
             current_fixed["tail_branch"]: (
                 ("eb", "02"),
@@ -5712,32 +5568,12 @@ def _hud_ui_mgr_layout_array_loop_vptr_storage_bridges(
                 for address, (body, pattern) in rows.items()
             )
 
-        matching_variants = [
-            (name, variant_fixed, variant_rows)
-            for name, variant_fixed, variant_rows in (
-                ("prior", prior_fixed, prior_rows),
-                ("current", current_fixed, current_rows),
-            )
-            if rows_match(variant_rows)
-        ]
-        if len(matching_variants) != 1:
-            mismatch_addresses = {
-                name: [
-                    normalize_address(address)
-                    for address, (body, pattern) in rows.items()
-                    if not row_matches(address, body, pattern)
-                ][:3]
-                for name, rows in (
-                    ("prior", prior_rows),
-                    ("current", current_rows),
-                )
-            }
-            raise ValueError(
-                "HUD layout-array loop bridge requires one unique instruction "
-                "and exact instruction candidate structural variant; "
-                f"mismatches={mismatch_addresses}"
-            )
-        candidate_variant, fixed, expected_rows = matching_variants[0]
+        if not rows_match(current_rows):
+            mismatches = [normalize_address(address)
+                for address, (encoding, pattern) in current_rows.items()
+                if not row_matches(address, encoding, pattern)]
+            raise ValueError("HUD native layout loop has changed instruction rows: " + str(mismatches))
+        candidate_variant, fixed, expected_rows = "current", current_fixed, current_rows
         if candidate_variant == "current":
             bridge_addresses = {
                 fixed["call_first"] - start:
@@ -5776,35 +5612,9 @@ def _hud_ui_mgr_layout_array_loop_vptr_storage_bridges(
                 "receiver_second", "arg_second", "call_second",
                 "x_increment", "stride", "decrement", "backedge",
                 "post_load", "post_argument", "post_receiver",
-                "post_call", "zero_ebx", "minus_one_ebp",
+                "post_call", "zero_register", "minus_one_register",
                 "tail_branch", "null_base",
             )
-        else:
-            bridge_addresses = {
-                fixed["call_first"] - start:
-                ReviewedLoopVptrStorageBridge(
-                    register="edx",
-                    storage_identity=(
-                        _cc_catalog.HUD_UI_MGR_LAYOUT_ARRAY_STORAGE_IDENTITY
-                    ),
-                    slot_displacement=0x0C,
-                    assembly_source="cod",
-                ),
-                fixed["call_second"] - start:
-                ReviewedLoopVptrStorageBridge(
-                    register="eax",
-                    storage_identity=(
-                        _cc_catalog.HUD_UI_MGR_LAYOUT_ARRAY_STORAGE_IDENTITY
-                    ),
-                    slot_displacement=0x60,
-                    assembly_source="cod",
-                ),
-            }
-            base_register = "ebx"
-            first_vptr_register = "edx"
-            second_vptr_register = "eax"
-            x_register = "edi"
-            candidate_ordered_keys = tuple(prior_fixed)
 
     required_addresses = set(expected_rows)
     if (
@@ -6009,6 +5819,9 @@ def _hud_ui_mgr_layout_array_loop_vptr_storage_bridges(
             or definition.symbol != _cc_catalog.HUD_UI_MGR_INIT_LAYOUTS_CALLER_SYMBOL
             or len(definition.data) != len(definition.relocation_mask)
             or len(definition.data) <= fixed["backedge"] - start + 1
+            or not _cc_receiver_candidate._candidate_listing_matches_coff(
+                instructions, addresses=addresses, caller_start=start,
+                definition=definition)
         ):
             raise ValueError(
                 "HUD layout-array loop bridge requires the exact candidate "

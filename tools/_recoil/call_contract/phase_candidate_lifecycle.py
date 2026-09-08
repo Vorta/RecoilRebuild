@@ -14,7 +14,6 @@ from _recoil.call_contract import recoil_audio as _cc_recoil_audio
 from _recoil.call_contract import recoil_callbacks as _cc_recoil_callbacks
 from _recoil.call_contract import recoil_hud_widgets as _cc_recoil_hud_widgets
 from _recoil.call_contract import recoil_network as _cc_recoil_network
-from _recoil.call_contract import recoil_ui as _cc_recoil_ui
 from _recoil.call_contract import work as _cc_work
 
 
@@ -149,6 +148,19 @@ def recover_candidate_lifecycle(work: _cc_work.CallerWork) -> None:
         address=work.address,
     )
     candidate_invocation_call_sites: list[str] = []
+    from _recoil.call_contract.current_callees import candidate_direct_cleanup_map
+    from _recoil.call_contract.virtual_callees import native_virtual_cleanup
+    callee_definitions = (work.acquire_candidate_callee_definitions(work.candidate_assembly)
+        if work.acquire_candidate_callee_definitions is not None
+        else work.candidate_assembly.tu_local_function_definitions)
+    virtual_cleanup = native_virtual_cleanup(work.candidate_assembly.instructions,
+        document=work.document, indexes=work.candidate_exact_iat_indexes,
+        caller_start=work.address, caller_end=work.end_exclusive, candidate=work.candidate_assembly,
+        definitions=callee_definitions, bridge=work.bridge,
+        provider_bridges=work.compiler_generated_bridges,
+        bridge_names=work.exact_bridge_names,
+        known_cleanup=candidate_direct_cleanup_map(work.candidate_assembly.instructions,
+            work.candidate_assembly.caller_definition, callee_definitions))
     work.candidate = _cc_extraction.extract_invocation_contract(
         work.candidate_assembly.instructions,
         source="cod",
@@ -211,6 +223,8 @@ def recover_candidate_lifecycle(work: _cc_work.CallerWork) -> None:
         candidate_caller_definition=(
             work.candidate_assembly.caller_definition
         ),
+        candidate_direct_callee_definitions=callee_definitions,
+        candidate_virtual_call_cleanup=virtual_cleanup,
         candidate_classification_only_local_control_flow_targets=(
             work.candidate_assembly.classification_only_local_control_flow_targets
         ),
@@ -245,44 +259,6 @@ def recover_candidate_lifecycle(work: _cc_work.CallerWork) -> None:
     if cleanup_receipts:
         work.candidate_cleanup_receipts_by_symbol[work.symbol_id] = (
             cleanup_receipts
-        )
-    work.candidate, zui_helper_receipt = (
-        _cc_recoil_ui._zui_check_toggle_inline_helper_occurrence_projection(
-            work.candidate,
-            work.candidate_assembly,
-            caller_identity=work.caller_identity,
-            caller_start=work.address,
-            caller_end_exclusive=work.end_exclusive,
-        )
-    )
-    if zui_helper_receipt is not None:
-        if work.symbol_id in work.candidate_expansion_receipts_by_symbol:
-            raise ValueError(
-                "zUI caller emitted overlapping finite helper-graph "
-                "expansions"
-            )
-        work.candidate_expansion_receipts_by_symbol[work.symbol_id] = (
-            zui_helper_receipt
-        )
-    work.candidate, zui_vector_receipt = (
-        _cc_recoil_ui._zui_candidate_local_vector_occurrence_projection(
-            work.expected,
-            work.candidate,
-            work.candidate_assembly,
-            caller_identity=work.caller_identity,
-            caller_start=work.address,
-            caller_end_exclusive=work.end_exclusive,
-            indexes=work.indexes,
-        )
-    )
-    if zui_vector_receipt is not None:
-        if work.symbol_id in work.candidate_expansion_receipts_by_symbol:
-            raise ValueError(
-                "zUI caller emitted overlapping finite helper-graph "
-                "expansions"
-            )
-        work.candidate_expansion_receipts_by_symbol[work.symbol_id] = (
-            zui_vector_receipt
         )
     work.candidate = _cc_recoil_application._appframe_run_primary_contract_projection(
         work.expected,
@@ -367,31 +343,6 @@ def recover_candidate_lifecycle(work: _cc_work.CallerWork) -> None:
     )
     work.candidate = _cc_providers.candidate_provider_comdat_contract(work.candidate, work.candidate_assembly,
         document=work.document, indexes=work.indexes, bridge=work.bridge)
-    work.candidate = _cc_recoil_ui._zui_exact_stack_receiver_storage_projection(
-        work.expected,
-        work.candidate,
-        work.candidate_assembly,
-        caller_identity=work.caller_identity,
-        caller_start=work.address,
-        caller_end_exclusive=work.end_exclusive,
-    )
-    work.candidate = _cc_recoil_ui._zui_r4905_exact_receiver_rendering_projection(
-        work.expected,
-        work.candidate,
-        work.candidate_assembly,
-        caller_identity=work.caller_identity,
-        caller_start=work.address,
-        caller_end_exclusive=work.end_exclusive,
-        indexes=work.indexes,
-    )
-    work.candidate = _cc_recoil_ui._zui_check_toggle_receiver_storage_projection(
-        work.expected,
-        work.candidate,
-        work.candidate_assembly,
-        caller_identity=work.caller_identity,
-        caller_start=work.address,
-        caller_end_exclusive=work.end_exclusive,
-    )
     work.candidate = (
         _cc_recoil_network._mission_current_artifact_invocation_population_contract(
             work.expected,
