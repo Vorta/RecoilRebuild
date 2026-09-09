@@ -17,8 +17,8 @@
     {"address":"0x4a10e0","symbol":"?SetFreqScaled@zSndPlayHandle@@QAEHM@Z","name":"zSndPlayHandle::SetFreqScaled","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a11d0","symbol":"?SetEnableScale@zSndPlayHandle@@QAEXM@Z","name":"zSndPlayHandle::SetEnableScale","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a1240","symbol":"?SetPlaybackEventHandler@zSndSample@@QAIXP6IXH@Z@Z","name":"zSndSample::SetPlaybackEventHandler","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4a1250","symbol":"@zSndPlayHandle_TryEnableManaged@4","name":"zSndPlayHandle_TryEnableManaged","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4a1270","symbol":"@zSndPlayHandle_TryDisableManaged@4","name":"zSndPlayHandle_TryDisableManaged","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1250","symbol":"@zSndPlayHandleTryEnableManaged@4","name":"zSndPlayHandleTryEnableManaged","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1270","symbol":"@zSndPlayHandleTryDisableManaged@4","name":"zSndPlayHandleTryDisableManaged","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a1290","symbol":"?SetActiveBackendPreInit@zSnd@@YIHH@Z","name":"zSnd::SetActiveBackendPreInit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a12b0","symbol":"?GetActiveBackend@zSnd@@YAHXZ","name":"zSnd::GetActiveBackend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],
@@ -37,7 +37,7 @@
       "retail_end_exclusive": "0x4a12c0",
       "predecessor": {"address":"0x4a10d0","symbol":"?SetFlag10PlaybackEnabled@zSnd@@YIXH@Z","name":"zSnd::SetFlag10PlaybackEnabled","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": ["0x4a10e0","0x4a11d0","0x4a1240","0x4a1250","0x4a1270","0x4a1290","0x4a12b0"],
-      "successor": {"address":"0x4a12c0","symbol":"@zSnd_PreInitializeRuntimeState@4","name":"zSnd::PreInitializeRuntimeState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x4a12c0","symbol":"@zSndPreInitializeRuntimeState@4","name":"zSnd::PreInitializeRuntimeState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

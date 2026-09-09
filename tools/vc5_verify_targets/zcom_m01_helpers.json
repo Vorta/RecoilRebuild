@@ -17,13 +17,13 @@
   "functions": [
     {
       "address": "0x42dc30",
-      "symbol": "?ConnectionPointContainer_Advise@zCom@@YGJPAUIUnknown@@0ABU_GUID@@PAK@Z",
-      "name": "zCom::ConnectionPointContainer_Advise"
+      "symbol": "?ConnectionPointContainerAdvise@zCom@@YGJPAUIUnknown@@0ABU_GUID@@PAK@Z",
+      "name": "zCom::ConnectionPointContainerAdvise"
     },
     {
       "address": "0x42dcf0",
-      "symbol": "?ConnectionPointContainer_Unadvise@zCom@@YGJPAUIUnknown@@ABU_GUID@@K@Z",
-      "name": "zCom::ConnectionPointContainer_Unadvise"
+      "symbol": "?ConnectionPointContainerUnadvise@zCom@@YGJPAUIUnknown@@ABU_GUID@@K@Z",
+      "name": "zCom::ConnectionPointContainerUnadvise"
     }
   ]
 }

@@ -19,18 +19,18 @@
   "functions": [
     {
       "address": "0x499930",
-      "symbol": "?zRndr_SetPaletteRemapKey@@YIXPAUzVidPaletteRemapRecipe@@M@Z",
-      "name": "zRndr_SetPaletteRemapKey"
+      "symbol": "?zRndrSetPaletteRemapKey@@YIXPAUzVidPaletteRemapRecipe@@M@Z",
+      "name": "zRndrSetPaletteRemapKey"
     },
     {
       "address": "0x499990",
-      "symbol": "?zRndr_SetPaletteRemapKeyFromRgb01@@YIXPAUzColorRgb@@M@Z",
-      "name": "zRndr_SetPaletteRemapKeyFromRgb01"
+      "symbol": "?zRndrSetPaletteRemapKeyFromRgb01@@YIXPAUzColorRgb@@M@Z",
+      "name": "zRndrSetPaletteRemapKeyFromRgb01"
     },
     {
       "address": "0x499a00",
-      "symbol": "?zRndr_SetPaletteShadeRecipeIndex@@YIXPAUzVidPaletteRemapRecipe@@@Z",
-      "name": "zRndr_SetPaletteShadeRecipeIndex"
+      "symbol": "?zRndrSetPaletteShadeRecipeIndex@@YIXPAUzVidPaletteRemapRecipe@@@Z",
+      "name": "zRndrSetPaletteShadeRecipeIndex"
     }
   ]
 }

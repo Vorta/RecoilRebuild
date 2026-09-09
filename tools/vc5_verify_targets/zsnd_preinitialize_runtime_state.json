@@ -22,7 +22,7 @@
   "functions": [
     {
       "address": "0x4a12c0",
-      "symbol": "@zSnd_PreInitializeRuntimeState@4",
+      "symbol": "@zSndPreInitializeRuntimeState@4",
       "name": "zSnd::PreInitializeRuntimeState"
     }
   ],

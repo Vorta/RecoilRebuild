@@ -19,28 +19,28 @@
   "functions": [
     {
       "address": "0x4aa9d0",
-      "symbol": "?TextureRecord_Create@zVideo_dd3d@@YAPAUzVideo_TextureRecordPartial@@XZ",
-      "name": "zVideo_dd3d::TextureRecord_Create"
+      "symbol": "?TextureRecordCreate@zVideo_dd3d@@YAPAUzVideo_TextureRecordPartial@@XZ",
+      "name": "zVideo_dd3d::TextureRecordCreate"
     },
     {
       "address": "0x4aa8b0",
-      "symbol": "?TextureRecord_LockUploadSurface@zVideo_dd3d@@YIHPAUzVideo_TextureRecordPartial@@PAPAXPAH@Z",
-      "name": "zVideo_dd3d::TextureRecord_LockUploadSurface"
+      "symbol": "?TextureRecordLockUploadSurface@zVideo_dd3d@@YIHPAUzVideo_TextureRecordPartial@@PAPAXPAH@Z",
+      "name": "zVideo_dd3d::TextureRecordLockUploadSurface"
     },
     {
       "address": "0x4aa8f0",
-      "symbol": "?TextureRecord_UnlockUploadSurface@zVideo_dd3d@@YIHPAUzVideo_TextureRecordPartial@@@Z",
-      "name": "zVideo_dd3d::TextureRecord_UnlockUploadSurface"
+      "symbol": "?TextureRecordUnlockUploadSurface@zVideo_dd3d@@YIHPAUzVideo_TextureRecordPartial@@@Z",
+      "name": "zVideo_dd3d::TextureRecordUnlockUploadSurface"
     },
     {
       "address": "0x4aa900",
-      "symbol": "?TextureRecord_ReleaseUploadSurfaceRef@zVideo_dd3d@@YIXPAUzVideo_TextureRecordPartial@@@Z",
-      "name": "zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef"
+      "symbol": "?TextureRecordReleaseUploadSurfaceRef@zVideo_dd3d@@YIXPAUzVideo_TextureRecordPartial@@@Z",
+      "name": "zVideo_dd3d::TextureRecordReleaseUploadSurfaceRef"
     },
     {
       "address": "0x4aa980",
-      "symbol": "?TextureRecord_Destroy@zVideo_dd3d@@YIXPAUzVideo_TextureRecordPartial@@@Z",
-      "name": "zVideo_dd3d::TextureRecord_Destroy"
+      "symbol": "?TextureRecordDestroy@zVideo_dd3d@@YIXPAUzVideo_TextureRecordPartial@@@Z",
+      "name": "zVideo_dd3d::TextureRecordDestroy"
     }
   ]
 }

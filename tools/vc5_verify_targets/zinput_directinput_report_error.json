@@ -1,6 +1,6 @@
 {
   "name": "zinput_directinput_report_error",
-  "description": "zInput::DI_ReportError maps DirectInput HRESULTs to report text and return values.",
+  "description": "zInput::DIReportError maps DirectInput HRESULTs to report text and return values.",
   "source_filename": "zin_joystick.cpp",
   "compiler_profile": "vc5_o2_ob1_md_facs",
   "include_dirs": [
@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x472490",
-      "symbol": "?DI_ReportError@zInput@@YIHHPBDH@Z",
-      "name": "zInput::DI_ReportError"
+      "symbol": "?DIReportError@zInput@@YIHHPBDH@Z",
+      "name": "zInput::DIReportError"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp"

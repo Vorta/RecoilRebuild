@@ -81,22 +81,22 @@ int __cdecl CheckCpuSignatureMask();
 }
 
 namespace {
-unsigned short zVideo_BlendPixel565Alpha8(
+unsigned short zVideoBlendPixel565Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
 );
-unsigned short zVideo_BlendPixel555Alpha8(
+unsigned short zVideoBlendPixel555Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
 );
-unsigned short zVideo_BlendFramebufferPixelAlpha8(
+unsigned short zVideoBlendFramebufferPixelAlpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
 );
-int zVideo_GetAlphaSkipThreshold();
+int zVideoGetAlphaSkipThreshold();
 }
 
 namespace zVideo {
@@ -139,17 +139,17 @@ static void __fastcall zVideoFxPass3CopyScratchToSurface(
 );
 void __fastcall SetFogColorFromRgb01(zVideo_ColorRgbFloat *color);
 void __fastcall SetFogTargetColorFromRgb01(zVideo_ColorRgbFloat *color);
-void __fastcall PixelPack_GetRgbBits(
+void __fastcall PixelPackGetRgbBits(
     int *outRBits,
     int *outGBits,
     int *outBBits
 );
-void __fastcall PixelPack_GetRgbMasks(
+void __fastcall PixelPackGetRgbMasks(
     unsigned int *outRMask,
     unsigned int *outGMask,
     unsigned int *outBMask
 );
-void __fastcall PixelPack_GetPackingParams(
+void __fastcall PixelPackGetPackingParams(
     int *outPackedBase,
     int *outSumMinus8,
     int *outBShiftTo8
@@ -580,7 +580,7 @@ PointOpProc g_pfnPointOpCandidate = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-pfnpointopactive
  * @recoil-artifact defines .data recoil:data:0x632100: gRndr_pfnPointOpActive.
- * BN xrefs: zRndr::SelectSpanRoutines installs zRndr_PlotPixel16; span
+ * BN xrefs: zRndr::SelectSpanRoutines installs zRndrPlotPixel16; span
  * occlusion sample and circle octant emitters load this fastcall callback with
  * gRndr_pFrameBuffer plus y/x/color stack arguments.
  * Purpose: active software point operation used by sample and circle drawing.
@@ -1286,22 +1286,10 @@ void InsertPendingSpanSorted(
     }
 
     while (current != 0 && current->sampleXMin <= pending->sampleXMax + 1) {
-        pending->sampleXMin = MinValue(
-            pending->sampleXMin,
-            current->sampleXMin
-        );
-        pending->sampleXMax = MaxValue(
-            pending->sampleXMax,
-            current->sampleXMax
-        );
-        pending->invDepth = MaxValue(
-            pending->invDepth,
-            current->invDepth
-        );
-        pending->invDepthStep = MaxValue(
-            pending->invDepthStep,
-            current->invDepthStep
-        );
+        pending->sampleXMin = MinValue(pending->sampleXMin, current->sampleXMin);
+        pending->sampleXMax = MaxValue(pending->sampleXMax, current->sampleXMax);
+        pending->invDepth = MaxValue(pending->invDepth, current->invDepth);
+        pending->invDepthStep = MaxValue(pending->invDepthStep, current->invDepthStep);
         current = current->next;
     }
 
@@ -1314,11 +1302,7 @@ void InsertPendingSpanSorted(
 
     g_spanIterPrevLink = previous;
     g_spanIterNode = pending;
-    AppendSpanListNode(
-        spanList,
-        spanCount,
-        pending
-    );
+    AppendSpanListNode(spanList, spanCount, pending);
     ++g_spanAllocCursor;
 }
 
@@ -1348,17 +1332,8 @@ void InsertPendingSpanNoDepthTest(
     }
 
     if (current == 0 || pending->sampleXMax < current->sampleXMin) {
-        LinkSpanNode(
-            columnIndex,
-            previous,
-            pending,
-            current
-        );
-        AppendSpanListNode(
-            spanList,
-            spanCount,
-            pending
-        );
+        LinkSpanNode(columnIndex, previous, pending, current);
+        AppendSpanListNode(spanList, spanCount, pending);
         ++g_spanAllocCursor;
         return;
     }
@@ -1396,11 +1371,7 @@ void InsertPendingSpanNoDepthTest(
 
                     pending->next = rightSplit;
                     current->next = pending;
-                    AppendSpanListNode(
-                        spanList,
-                        spanCount,
-                        pending
-                    );
+                    AppendSpanListNode(spanList, spanCount, pending);
                     g_spanIterPrevLink = current;
                     g_spanIterNode = pending;
                     g_spanLastNode = rightSplit;
@@ -1427,26 +1398,12 @@ void InsertPendingSpanNoDepthTest(
 
         current->sampleXMin = pending->sampleXMax + 1;
         current->invDepth =
-            SpanDepthAtX(
-                currentMin,
-                currentInvDepth,
-                currentDepthSlope,
-                current->sampleXMin
-            );
+            SpanDepthAtX(currentMin, currentInvDepth, currentDepthSlope, current->sampleXMin);
         break;
     }
 
-    LinkSpanNode(
-        columnIndex,
-        previous,
-        pending,
-        current
-    );
-    AppendSpanListNode(
-        spanList,
-        spanCount,
-        pending
-    );
+    LinkSpanNode(columnIndex, previous, pending, current);
+    AppendSpanListNode(spanList, spanCount, pending);
     ++g_spanAllocCursor;
 }
 
@@ -1481,10 +1438,7 @@ void BuildVisibleSpanListWithDepthTest(
 
         SpanNodePartial occluder = *current;
         const bool pendingInFront =
-            zRndr_SpanOcclusion_TestSpanDepthOrderPair(
-                pending,
-                &occluder
-            ) != 0;
+            zRndrSpanOcclusionTestSpanDepthOrderPair(pending, &occluder) != 0;
 
         const int pendingMin = pending->sampleXMin;
         const int pendingMax = pending->sampleXMax;
@@ -1497,17 +1451,8 @@ void BuildVisibleSpanListWithDepthTest(
                 const int splitMax = occluder.sampleXMax;
                 pending->sampleXMax = splitMax;
                 pending->invDepthStep =
-                    SpanDepthAtX(
-                        pendingMin,
-                        pendingInvDepth,
-                        pendingDepthSlope,
-                        splitMax
-                    );
-                AppendSpanListNode(
-                    spanList,
-                    spanCount,
-                    pending
-                );
+                    SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, splitMax);
+                AppendSpanListNode(spanList, spanCount, pending);
                 ++g_spanAllocCursor;
 
                 pending = g_spanAllocCursor;
@@ -1527,11 +1472,7 @@ void BuildVisibleSpanListWithDepthTest(
             }
 
             if (occluder.sampleXMax >= pendingMax) {
-                AppendSpanListNode(
-                    spanList,
-                    spanCount,
-                    pending
-                );
+                AppendSpanListNode(spanList, spanCount, pending);
                 ++g_spanAllocCursor;
                 return;
             }
@@ -1563,17 +1504,8 @@ void BuildVisibleSpanListWithDepthTest(
             const int leftMax = occluder.sampleXMin - 1;
             pending->sampleXMax = leftMax;
             pending->invDepthStep =
-                SpanDepthAtX(
-                    pendingMin,
-                    pendingInvDepth,
-                    pendingDepthSlope,
-                    leftMax
-                );
-            AppendSpanListNode(
-                spanList,
-                spanCount,
-                pending
-            );
+                SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, leftMax);
+            AppendSpanListNode(spanList, spanCount, pending);
             ++g_spanAllocCursor;
 
             if (occluder.sampleXMax >= pendingMax) {
@@ -1585,12 +1517,7 @@ void BuildVisibleSpanListWithDepthTest(
             pending->sampleXMin = occluder.sampleXMax + 1;
             pending->sampleXMax = pendingMax;
             pending->invDepth =
-                SpanDepthAtX(
-                    pendingMin,
-                    pendingInvDepth,
-                    pendingDepthSlope,
-                    pending->sampleXMin
-                );
+                SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, pending->sampleXMin);
             pending->invDepthStep = pendingInvDepthStep;
             pending->depthSlope = pendingDepthSlope;
         }
@@ -1598,11 +1525,7 @@ void BuildVisibleSpanListWithDepthTest(
         current = current->next;
     }
 
-    AppendSpanListNode(
-        spanList,
-        spanCount,
-        pending
-    );
+    AppendSpanListNode(spanList, spanCount, pending);
     ++g_spanAllocCursor;
 }
 
@@ -1638,10 +1561,7 @@ void InsertPendingSpanWithDepthTest(
         }
 
         const bool pendingInFront =
-            zRndr_SpanOcclusion_TestSpanDepthOrderPair(
-                pending,
-                current
-            ) != 0;
+            zRndrSpanOcclusionTestSpanDepthOrderPair(pending, current) != 0;
 
         const int pendingMin = pending->sampleXMin;
         const int pendingMax = pending->sampleXMax;
@@ -1681,11 +1601,7 @@ void InsertPendingSpanWithDepthTest(
 
                     pending->next = rightSplit;
                     current->next = pending;
-                    AppendSpanListNode(
-                        spanList,
-                        spanCount,
-                        pending
-                    );
+                    AppendSpanListNode(spanList, spanCount, pending);
                     g_spanIterPrevLink = current;
                     g_spanIterNode = pending;
                     g_spanLastNode = rightSplit;
@@ -1711,12 +1627,7 @@ void InsertPendingSpanWithDepthTest(
 
             current->sampleXMin = pendingMax + 1;
             current->invDepth =
-                SpanDepthAtX(
-                    currentMin,
-                    currentInvDepth,
-                    currentDepthSlope,
-                    current->sampleXMin
-                );
+                SpanDepthAtX(currentMin, currentInvDepth, currentDepthSlope, current->sampleXMin);
             break;
         }
 
@@ -1744,23 +1655,9 @@ void InsertPendingSpanWithDepthTest(
             const int leftMax = current->sampleXMin - 1;
             pending->sampleXMax = leftMax;
             pending->invDepthStep =
-                SpanDepthAtX(
-                    pendingMin,
-                    pendingInvDepth,
-                    pendingDepthSlope,
-                    leftMax
-                );
-            LinkSpanNode(
-                columnIndex,
-                previous,
-                pending,
-                current
-            );
-            AppendSpanListNode(
-                spanList,
-                spanCount,
-                pending
-            );
+                SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, leftMax);
+            LinkSpanNode(columnIndex, previous, pending, current);
+            AppendSpanListNode(spanList, spanCount, pending);
             ++g_spanAllocCursor;
 
             if (current->sampleXMax >= pendingMax) {
@@ -1773,12 +1670,7 @@ void InsertPendingSpanWithDepthTest(
             pending->sampleXMin = current->sampleXMax + 1;
             pending->sampleXMax = pendingMax;
             pending->invDepth =
-                SpanDepthAtX(
-                    pendingMin,
-                    pendingInvDepth,
-                    pendingDepthSlope,
-                    pending->sampleXMin
-                );
+                SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, pending->sampleXMin);
             pending->invDepthStep = pendingInvDepthStep;
             pending->depthSlope = pendingDepthSlope;
             current = current->next;
@@ -1789,17 +1681,8 @@ void InsertPendingSpanWithDepthTest(
         current = current->next;
     }
 
-    LinkSpanNode(
-        columnIndex,
-        previous,
-        pending,
-        current
-    );
-    AppendSpanListNode(
-        spanList,
-        spanCount,
-        pending
-    );
+    LinkSpanNode(columnIndex, previous, pending, current);
+    AppendSpanListNode(spanList, spanCount, pending);
     ++g_spanAllocCursor;
 }
 
@@ -2118,10 +2001,7 @@ static inline unsigned short FogBlendPixel565(
     const unsigned int pixel32 = pixel;
     const unsigned int green = ((((pixel32 & 0x07e0u) >> 5) * rampIndex) + rampValue) & 0x07e0u;
     const unsigned int redBlue =
-        (((pixel32 & 0xf81fu) * rampIndex + RotateRight32(
-            rampValue,
-            11
-        )) >> 5) & 0xf81fu;
+        (((pixel32 & 0xf81fu) * rampIndex + RotateRight32(rampValue, 11)) >> 5) & 0xf81fu;
     return (unsigned short)(green + redBlue);
 }
 
@@ -2147,10 +2027,7 @@ static inline unsigned short FogBlendPixel555(
     const unsigned int pixel32 = pixel;
     const unsigned int green = ((((pixel32 & 0x03e0u) >> 5) * rampIndex) + rampValue) & 0x03e0u;
     const unsigned int redBlue =
-        (((pixel32 & 0x7c1fu) * rampIndex + RotateRight32(
-            rampValue,
-            11
-        )) >> 5) & 0x7c1fu;
+        (((pixel32 & 0x7c1fu) * rampIndex + RotateRight32(rampValue, 11)) >> 5) & 0x7c1fu;
     return (unsigned short)(green + redBlue);
 }
 
@@ -2176,10 +2053,7 @@ static inline unsigned int FogBlendPair565(
     const unsigned int green =
         ((((packedPixels & 0xf81f07e0u) >> 5) * rampIndex) + rampValue) & 0xf81f07e0u;
     const unsigned int redBlue =
-        (((packedPixels & 0x07e0f81fu) * rampIndex + RotateRight32(
-            rampValue,
-            11
-        )) >> 5) &
+        (((packedPixels & 0x07e0f81fu) * rampIndex + RotateRight32(rampValue, 11)) >> 5) &
         0x07e0f81fu;
     return green + redBlue;
 }
@@ -2206,10 +2080,7 @@ static inline unsigned int FogBlendPair555(
     const unsigned int green =
         ((((packedPixels & 0x7c1f03e0u) >> 5) * rampIndex) + rampValue) & 0x7c1f03e0u;
     const unsigned int redBlue =
-        (((packedPixels & 0x03e07c1fu) * rampIndex + RotateRight32(
-            rampValue,
-            11
-        )) >> 5) &
+        (((packedPixels & 0x03e07c1fu) * rampIndex + RotateRight32(rampValue, 11)) >> 5) &
         0x03e07c1fu;
     return green + redBlue;
 }
@@ -2265,10 +2136,7 @@ static inline unsigned short FogBlendMmxLane(
 ) {
     const short factor = (short)(fogFactor);
     const short redDelta =
-        SaturatingSubWord(
-            g_mmxBitsRed255[lane],
-            (unsigned short)(pixel >> redShift)
-        );
+        SaturatingSubWord(g_mmxBitsRed255[lane], (unsigned short)(pixel >> redShift));
     const short greenDelta = SaturatingSubWord(
         g_mmxBitsGreen255[lane],
         (unsigned short)((pixel & g_mmxMaskGreenBits[lane]) >> 5)
@@ -2278,18 +2146,9 @@ static inline unsigned short FogBlendMmxLane(
         (unsigned short)(pixel & g_mmxMaskBlueBits[lane])
     );
 
-    const unsigned short redProduct = MultiplyLowWord(
-        redDelta,
-        factor
-    );
-    const unsigned short greenProduct = MultiplyLowWord(
-        greenDelta,
-        factor
-    );
-    const unsigned short blueProduct = MultiplyLowWord(
-        blueDelta,
-        factor
-    );
+    const unsigned short redProduct = MultiplyLowWord(redDelta, factor);
+    const unsigned short greenProduct = MultiplyLowWord(greenDelta, factor);
+    const unsigned short blueProduct = MultiplyLowWord(blueDelta, factor);
 
     const unsigned short redTerm =
         (unsigned short)(redProduct << redTermShift) & g_mmxMaskRedPacked[lane];
@@ -2328,12 +2187,7 @@ static inline unsigned short SpanTex16Sample(
     int texUMask
 ) {
     const unsigned short *texels = (const unsigned short *)(g_spanActiveTexPixels);
-    return texels[SpanTex16SampleIndex(
-        texU,
-        texV,
-        texVShift,
-        texUMask
-    )];
+    return texels[SpanTex16SampleIndex(texU, texV, texVShift, texUMask)];
 }
 
 /**
@@ -2347,12 +2201,7 @@ static inline unsigned short SpanPal8SampleExpanded(
     int texVShift,
     int texUMask
 ) {
-    const int sourceIndex = SpanTex16SampleIndex(
-        texU,
-        texV,
-        texVShift,
-        texUMask
-    );
+    const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, texUMask);
     return g_spanActiveTexPalette[g_spanActiveTexPixels[sourceIndex]];
 }
 
@@ -2490,11 +2339,7 @@ static inline unsigned short BlendLensFlarePixel(
         if (alpha >= 0xfc) {
             return to;
         }
-        return BlendPacked565(
-            from,
-            to,
-            alpha
-        );
+        return BlendPacked565(from, to, alpha);
     }
 
     if (alpha <= 7) {
@@ -2503,11 +2348,7 @@ static inline unsigned short BlendLensFlarePixel(
     if (alpha >= 0xfc) {
         return to;
     }
-    return BlendPacked555(
-        from,
-        to,
-        alpha
-    );
+    return BlendPacked555(from, to, alpha);
 }
 } // namespace
 
@@ -2524,11 +2365,7 @@ void SpanOcclusionInsertPendingSpanSorted(
     int columnIndex,
     int *spanCount
 ) {
-    InsertPendingSpanSorted(
-        spanList,
-        columnIndex,
-        spanCount
-    );
+    InsertPendingSpanSorted(spanList, columnIndex, spanCount);
 }
 
 /**
@@ -2542,11 +2379,7 @@ void SpanOcclusionInsertPendingSpanWithDepthTest(
     int columnIndex,
     int *spanCount
 ) {
-    InsertPendingSpanWithDepthTest(
-        spanList,
-        columnIndex,
-        spanCount
-    );
+    InsertPendingSpanWithDepthTest(spanList, columnIndex, spanCount);
 }
 
 /**
@@ -2560,11 +2393,7 @@ void SpanOcclusionInsertPendingSpanNoDepthTest(
     int columnIndex,
     int *spanCount
 ) {
-    InsertPendingSpanNoDepthTest(
-        spanList,
-        columnIndex,
-        spanCount
-    );
+    InsertPendingSpanNoDepthTest(spanList, columnIndex, spanCount);
 }
 
 /**
@@ -2578,11 +2407,7 @@ void SpanOcclusionBuildVisibleSpanListWithDepthTest(
     int columnIndex,
     int *spanCount
 ) {
-    BuildVisibleSpanListWithDepthTest(
-        spanList,
-        columnIndex,
-        spanCount
-    );
+    BuildVisibleSpanListWithDepthTest(spanList, columnIndex, spanCount);
 }
 } // namespace zRndr
 
@@ -2780,10 +2605,7 @@ int BuildScanConvertEdges(
     float sampleY = (float)(yStart) + 0.5f;
 
     while (vertexIndex != stopIndex && edgeCount < 0x40) {
-        const int nextIndex = WrapPolygonIndex(
-            vertexIndex + step,
-            vertexCount
-        );
+        const int nextIndex = WrapPolygonIndex(vertexIndex + step, vertexCount);
         const zVec3 &start = vertices[vertexIndex];
         const zVec3 &end = vertices[nextIndex];
 
@@ -2851,10 +2673,7 @@ Plane2f BuildScreenPlaneFromTriangle(
     const zVec3 *triVerts,
     const float values[3]
 ) {
-    Plane2f plane = BuildPlaneFromTriangle(
-        triVerts,
-        values
-    );
+    Plane2f plane = BuildPlaneFromTriangle(triVerts, values);
     plane.base = values[0] - triVerts[0].x * plane.gradient.x - triVerts[0].y * plane.gradient.y;
     return plane;
 }
@@ -2884,7 +2703,7 @@ TexturedPlanes BuildQueuedTexturePlanes(
                                     clippedTriVerts[2].z < 10.0f);
 
     if (useClippedNearPlane) {
-        zMath_BuildPerspectiveTextureInterpolants(
+        zMathBuildPerspectiveTextureInterpolants(
             clippedTriVerts,
             triUVs,
             (zVec2 *)(&gRndr_PerspInvDepthStepX),
@@ -2919,18 +2738,9 @@ TexturedPlanes BuildQueuedTexturePlanes(
             gRndr_PerspTexScaledVOverZ2
         };
 
-        const Plane2f reciprocalZ = BuildPlaneFromTriangle(
-            triVerts,
-            reciprocalValues
-        );
-        const Plane2f uOverZ = BuildPlaneFromTriangle(
-            triVerts,
-            uValues
-        );
-        const Plane2f vOverZ = BuildPlaneFromTriangle(
-            triVerts,
-            vValues
-        );
+        const Plane2f reciprocalZ = BuildPlaneFromTriangle(triVerts, reciprocalValues);
+        const Plane2f uOverZ = BuildPlaneFromTriangle(triVerts, uValues);
+        const Plane2f vOverZ = BuildPlaneFromTriangle(triVerts, vValues);
         gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
         gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
         gRndr_PerspInvDepthBase = reciprocalZ.base;
@@ -3008,10 +2818,7 @@ int SelectPerspectiveChunkPixels(
     float reciprocalZStepX
 ) {
     if (zRndr::g_perspectiveAdaptiveMinSpan == 0) {
-        return MaxValue(
-            1,
-            zRndr::g_perspectiveTextureDeltaXPow2
-        );
+        return MaxValue(1, zRndr::g_perspectiveTextureDeltaXPow2);
     }
 
     int chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
@@ -3021,18 +2828,9 @@ int SelectPerspectiveChunkPixels(
         ));
     }
 
-    chunkPixels = MinValue(
-        chunkPixels,
-        zRndr::g_perspectiveAdaptiveMaxSpan
-    );
-    chunkPixels = MaxValue(
-        chunkPixels,
-        zRndr::g_perspectiveAdaptiveMinSpan
-    );
-    return MaxValue(
-        1,
-        chunkPixels
-    );
+    chunkPixels = MinValue(chunkPixels, zRndr::g_perspectiveAdaptiveMaxSpan);
+    chunkPixels = MaxValue(chunkPixels, zRndr::g_perspectiveAdaptiveMinSpan);
+    return MaxValue(1, chunkPixels);
 }
 
 /**
@@ -3053,10 +2851,7 @@ void DispatchTexturedSpanChunks(
     int remaining = span->sampleXMax - span->sampleXMin + 1;
     int x = span->sampleXMin;
     while (remaining > 0) {
-        const int count = MinValue(
-            remaining,
-            chunkPixels
-        );
+        const int count = MinValue(remaining, chunkPixels);
         const float startX = (float)(x);
         const float endX = (float)(x + count);
         const float sampleY = (float)(y);
@@ -3113,23 +2908,9 @@ void DispatchTexturedSpanChunks(
         zRndr::g_spanActiveTexVStepFixed20 = RoundToFixed20((endV - startV) * textureScale / (float)(count));
         if (shadePlane != 0) {
             const float startShade =
-                MaxValue(
-                    0.0f,
-                    MinValue(255.0f, EvalPlane(
-                        *shadePlane,
-                        startX,
-                        sampleY
-                    ))
-                );
+                MaxValue(0.0f, MinValue(255.0f, EvalPlane( *shadePlane, startX, sampleY )));
             const float endShade =
-                MaxValue(
-                    0.0f,
-                    MinValue(255.0f, EvalPlane(
-                        *shadePlane,
-                        endX,
-                        sampleY
-                    ))
-                );
+                MaxValue(0.0f, MinValue(255.0f, EvalPlane( *shadePlane, endX, sampleY )));
             zRndr::g_spanActiveShadeFixed16 = RoundToFixed20(startShade * 65536.0f);
             zRndr::g_spanActiveShadeStepFixed16 =
                 RoundToFixed20((endShade - startShade) * 65536.0f / (float)(count));
@@ -3190,13 +2971,13 @@ void DispatchTexturedSpanChunks(
 namespace zVid {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-noise-initbuffers
- * @recoil-artifact defines .text recoil:function:0x48d340: zVid::Noise_InitBuffers
+ * @recoil-artifact defines .text recoil:function:0x48d340: zVid::NoiseInitBuffers
  * Data-gate evidence: BN writes gRndr_pfnOverlayBlendRow to
- * zRndr::OverlayBlendRow555_Scalar after allocating the noise and FX scratch
+ * zRndr::OverlayBlendRow555Scalar after allocating the noise and FX scratch
  * buffers, so data acceptance waits on the zRndr overlay callback owner.
  * Purpose: Allocate the software-noise byte table and FX pass scratch buffer.
  */
-void __cdecl Noise_InitBuffers() {
+void __cdecl NoiseInitBuffers() {
     const int width = zVideo::GetPrimarySurfaceWidth();
     const int height = zVideo::GetPrimarySurfaceHeight();
 
@@ -3213,21 +2994,21 @@ void __cdecl Noise_InitBuffers() {
     g_zVideo_FxSurfaceHeight = 0;
     g_zVideo_FxSurfacePitchBytes = 0;
     g_zVideo_FxSurfacePitchPixels16 = 0;
-    zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555_Scalar;
+    zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555Scalar;
 }
 } // namespace zVid
 
 namespace zVid {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-noise-shutdownbuffers
- * @recoil-artifact defines .text recoil:function:0x48d3e0: zVid::Noise_ShutdownBuffers.
+ * @recoil-artifact defines .text recoil:function:0x48d3e0: zVid::NoiseShutdownBuffers.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Data owner evidence: current BN loads the noise table pointer, conditionally
  * frees it, loads the pass-3 scratch pointer, clears g_zVid_NoiseByteTable,
  * then conditionally frees and clears g_zVideo_FxPass3_ScratchPixels16.
  * Purpose: release the software-noise byte table and pass-3 scratch buffer.
  */
-void __cdecl Noise_ShutdownBuffers() {
+void __cdecl NoiseShutdownBuffers() {
     if (g_zVid_NoiseByteTable != 0) {
         free(g_zVid_NoiseByteTable);
     }
@@ -3245,10 +3026,10 @@ void __cdecl Noise_ShutdownBuffers() {
 namespace zVideo {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fx-setsurfacestate
- * @recoil-artifact defines .text recoil:function:0x48d420: zVideo::Fx_SetSurfaceState.
+ * @recoil-artifact defines .text recoil:function:0x48d420: zVideo::FxSetSurfaceState.
  * Purpose: Publishes the active FX surface descriptor and derives the 16-bit pitch.
  */
-void __fastcall Fx_SetSurfaceState(
+void __fastcall FxSetSurfaceState(
     void *pixels,
     int width,
     int height,
@@ -3265,7 +3046,7 @@ void __fastcall Fx_SetSurfaceState(
 namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-overlayblendrow555-scalar
- * @recoil-artifact defines .text recoil:function:0x48d450: zRndr::OverlayBlendRow555_Scalar
+ * @recoil-artifact defines .text recoil:function:0x48d450: zRndr::OverlayBlendRow555Scalar
  * @recoil-match byte
  *
  * Source-shape evidence: BN zRndr_Overlay.cpp loads and stores two 555 pixels
@@ -3275,7 +3056,7 @@ namespace zRndr {
  * 0x48d4b0, 0x48d510, and 0x48d5f0.
  * Purpose: Blend one 555 overlay row using the cached software overlay alpha and premultiplied source color.
  */
-void __fastcall OverlayBlendRow555_Scalar(
+void __fastcall OverlayBlendRow555Scalar(
     unsigned short *rowPixels16,
     int rightDelta
 ) {
@@ -3300,14 +3081,14 @@ void __fastcall OverlayBlendRow555_Scalar(
 namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-overlayblendrow565-scalar
- * @recoil-artifact defines .text recoil:function:0x48d4b0: zRndr::OverlayBlendRow565_Scalar
+ * @recoil-artifact defines .text recoil:function:0x48d4b0: zRndr::OverlayBlendRow565Scalar
  * Source-shape evidence: BN zRndr_Overlay.cpp matches the 555 row shape with
  * two 565 pixels per uint32_t and the inclusive right-left delta row extent.
  * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with 0x48d7a0,
  * 0x48d450, 0x48d510, and 0x48d5f0.
  * Purpose: Blend one 565 overlay row using the active pixel masks and cached overlay alpha.
  */
-void __fastcall OverlayBlendRow565_Scalar(
+void __fastcall OverlayBlendRow565Scalar(
     unsigned short *rowPixels16,
     int rightDelta
 ) {
@@ -3348,7 +3129,7 @@ namespace zRndr {
  * `emms`; VC5SP3 has no usable intrinsic surface for this instruction shape.
  * Purpose: Blend one RGB555 overlay row through the user-approved zRndr MMX inline-assembly exception.
  */
-void __fastcall OverlayBlendRow555_Mmx(
+void __fastcall OverlayBlendRow555Mmx(
     unsigned short *rowPixels16,
     int pixelCount
 ) {
@@ -3428,7 +3209,7 @@ void __fastcall OverlayBlendRow555_Mmx(
  * Original function evidence: retail 0x48d510 has this portable conditional definition.
  * Purpose: Preserve portable RGB555 overlay row behavior when the VC5 inline-MMX exception is disabled.
  */
-void __fastcall OverlayBlendRow555_Mmx(
+void __fastcall OverlayBlendRow555Mmx(
     unsigned short *rowPixels16,
     int pixelCount
 ) {
@@ -3459,12 +3240,12 @@ void __fastcall OverlayBlendRow555_Mmx(
 } // namespace zRndr
 namespace {
 /**
- * Recovered helper: zVideo_BlendPixel565Alpha8.
+ * Recovered helper: zVideoBlendPixel565Alpha8.
  * Original-source helper evidence: no standalone retail function is present; recovered from
  * address-backed framebuffer blit callers in this source file.
  * Purpose: Blend one 565 destination/source pixel pair using an 8-bit alpha value.
  */
-unsigned short zVideo_BlendPixel565Alpha8(
+unsigned short zVideoBlendPixel565Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
@@ -3480,12 +3261,12 @@ unsigned short zVideo_BlendPixel565Alpha8(
 }
 
 /**
- * Recovered helper: zVideo_BlendPixel555Alpha8.
+ * Recovered helper: zVideoBlendPixel555Alpha8.
  * Original-source helper evidence: no standalone retail function is present; recovered from
  * address-backed framebuffer blit callers in this source file.
  * Purpose: Blend one 555 destination/source pixel pair using an 8-bit alpha value.
  */
-unsigned short zVideo_BlendPixel555Alpha8(
+unsigned short zVideoBlendPixel555Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
@@ -3501,38 +3282,30 @@ unsigned short zVideo_BlendPixel555Alpha8(
 }
 
 /**
- * Recovered helper: zVideo_BlendFramebufferPixelAlpha8.
+ * Recovered helper: zVideoBlendFramebufferPixelAlpha8.
  * Original-source helper evidence: no standalone retail function is present; recovered from
  * address-backed framebuffer blit callers in this source file.
  * Purpose: Select the current framebuffer pixel format and blend one alpha-scaled pixel.
  */
-unsigned short zVideo_BlendFramebufferPixelAlpha8(
+unsigned short zVideoBlendFramebufferPixelAlpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
 ) {
     if (zRndr::g_pixelPackGreenBits == 6) {
-        return zVideo_BlendPixel565Alpha8(
-            dstPixel,
-            srcPixel,
-            alpha
-        );
+        return zVideoBlendPixel565Alpha8(dstPixel, srcPixel, alpha);
     }
 
-    return zVideo_BlendPixel555Alpha8(
-        dstPixel,
-        srcPixel,
-        alpha
-    );
+    return zVideoBlendPixel555Alpha8(dstPixel, srcPixel, alpha);
 }
 
 /**
- * Recovered helper: zVideo_GetAlphaSkipThreshold.
+ * Recovered helper: zVideoGetAlphaSkipThreshold.
  * Original-source helper evidence: no standalone retail function is present; recovered from
  * address-backed framebuffer blit callers in this source file.
  * Purpose: Return the alpha-map threshold below which framebuffer pixels are skipped.
  */
-int zVideo_GetAlphaSkipThreshold() {
+int zVideoGetAlphaSkipThreshold() {
     return zRndr::g_pixelPackGreenBits == 6 ? 3 : 7;
 }
 
@@ -3542,7 +3315,7 @@ namespace zVideo {
 /**
  * Original-source helper evidence: no standalone retail address is assigned to
  * this helper shape in current plan/BN evidence; observed in caller
- * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0. The BN body clamps the
+ * zVideo::FxPass3ApplyToCurrentSurface at 0x48daf0. The BN body clamps the
  * current radius against a non-negative max radius before the early-exit test.
  * Purpose: clamp the pass-3 current radius to the valid [0, max] range.
  */
@@ -3566,7 +3339,7 @@ static int __fastcall zVideoFxPass3ClampCurrentRadius(
 /**
  * Original-source helper evidence: no standalone retail address is assigned to
  * this helper shape in current plan/BN evidence; observed twice in caller
- * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0. BN uses the repeated
+ * zVideo::FxPass3ApplyToCurrentSurface at 0x48daf0. BN uses the repeated
  * integer-bit square-root approximation, then clamps the result to maxRadius.
  * Purpose: approximate the radius-table index used by the pass-3 radial warp.
  */
@@ -3587,7 +3360,7 @@ static int __fastcall zVideoFxPass3ApproxRadiusIndex(
 /**
  * Original-source helper evidence: no standalone retail address is assigned to
  * this helper shape in current plan/BN evidence; observed in the non-clipped
- * scatter path of zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0. BN uses
+ * scatter path of zVideo::FxPass3ApplyToCurrentSurface at 0x48daf0. BN uses
  * center-relative deltas and direct pointer indexing with surface pitch for the
  * source and tight surface width for scratch.
  * Purpose: copy one pass-3 sample through the direct in-bounds scatter path.
@@ -3610,7 +3383,7 @@ static void __fastcall zVideoFxPass3CopyDirect(
 /**
  * Original-source helper evidence: no standalone retail address is assigned to
  * this helper shape in current plan/BN evidence; observed as the repeated
- * eight-way direct scatter pattern in zVideo::FxPass3_ApplyToCurrentSurface at
+ * eight-way direct scatter pattern in zVideo::FxPass3ApplyToCurrentSurface at
  * 0x48daf0.
  * Purpose: scatter a direct pass-3 sample to the eight mirrored ring positions.
  */
@@ -3622,76 +3395,20 @@ static void __fastcall zVideoFxPass3ScatterDirectSymmetric(
     int srcX,
     int srcY
 ) {
-    zVideoFxPass3CopyDirect(
-        centerX,
-        centerY,
-        x,
-        y,
-        srcX,
-        srcY
-    );
-    zVideoFxPass3CopyDirect(
-        centerX,
-        centerY,
-        y,
-        x,
-        srcY,
-        srcX
-    );
-    zVideoFxPass3CopyDirect(
-        centerX,
-        centerY,
-        -x,
-        y,
-        -srcX,
-        srcY
-    );
-    zVideoFxPass3CopyDirect(
-        centerX,
-        centerY,
-        y,
-        -x,
-        srcY,
-        -srcX
-    );
-    zVideoFxPass3CopyDirect(
-        centerX,
-        centerY,
-        x,
-        -y,
-        srcX,
-        -srcY
-    );
-    zVideoFxPass3CopyDirect(
-        centerX,
-        centerY,
-        -y,
-        x,
-        -srcY,
-        srcX
-    );
-    zVideoFxPass3CopyDirect(
-        centerX,
-        centerY,
-        -x,
-        -y,
-        -srcX,
-        -srcY
-    );
-    zVideoFxPass3CopyDirect(
-        centerX,
-        centerY,
-        -y,
-        -x,
-        -srcY,
-        -srcX
-    );
+    zVideoFxPass3CopyDirect(centerX, centerY, x, y, srcX, srcY);
+    zVideoFxPass3CopyDirect(centerX, centerY, y, x, srcY, srcX);
+    zVideoFxPass3CopyDirect(centerX, centerY, -x, y, -srcX, srcY);
+    zVideoFxPass3CopyDirect(centerX, centerY, y, -x, srcY, -srcX);
+    zVideoFxPass3CopyDirect(centerX, centerY, x, -y, srcX, -srcY);
+    zVideoFxPass3CopyDirect(centerX, centerY, -y, x, -srcY, srcX);
+    zVideoFxPass3CopyDirect(centerX, centerY, -x, -y, -srcX, -srcY);
+    zVideoFxPass3CopyDirect(centerX, centerY, -y, -x, -srcY, -srcX);
 }
 
 /**
  * Original-source helper evidence: no standalone retail address is assigned to
  * this helper shape in current plan/BN evidence; observed as the repeated
- * eight-call clipped scatter pattern in zVideo::FxPass3_ApplyToCurrentSurface
+ * eight-call clipped scatter pattern in zVideo::FxPass3ApplyToCurrentSurface
  * at 0x48daf0, with each arm calling the address-backed helper at 0x48da60.
  * Purpose: scatter a pass-3 sample to eight mirrored ring positions through
  * the active clip bounds.
@@ -3702,60 +3419,20 @@ static void __fastcall zVideoFxPass3ScatterClippedSymmetric(
     int srcX,
     int srcY
 ) {
-    FxPass3_CopySurfacePixelToScratchClipped(
-        x,
-        y,
-        srcX,
-        srcY
-    );
-    FxPass3_CopySurfacePixelToScratchClipped(
-        y,
-        x,
-        srcY,
-        srcX
-    );
-    FxPass3_CopySurfacePixelToScratchClipped(
-        -x,
-        y,
-        -srcX,
-        srcY
-    );
-    FxPass3_CopySurfacePixelToScratchClipped(
-        y,
-        -x,
-        srcY,
-        -srcX
-    );
-    FxPass3_CopySurfacePixelToScratchClipped(
-        x,
-        -y,
-        srcX,
-        -srcY
-    );
-    FxPass3_CopySurfacePixelToScratchClipped(
-        -y,
-        x,
-        -srcY,
-        srcX
-    );
-    FxPass3_CopySurfacePixelToScratchClipped(
-        -x,
-        -y,
-        -srcX,
-        -srcY
-    );
-    FxPass3_CopySurfacePixelToScratchClipped(
-        -y,
-        -x,
-        -srcY,
-        -srcX
-    );
+    FxPass3CopySurfacePixelToScratchClipped(x, y, srcX, srcY);
+    FxPass3CopySurfacePixelToScratchClipped(y, x, srcY, srcX);
+    FxPass3CopySurfacePixelToScratchClipped(-x, y, -srcX, srcY);
+    FxPass3CopySurfacePixelToScratchClipped(y, -x, srcY, -srcX);
+    FxPass3CopySurfacePixelToScratchClipped(x, -y, srcX, -srcY);
+    FxPass3CopySurfacePixelToScratchClipped(-y, x, -srcY, srcX);
+    FxPass3CopySurfacePixelToScratchClipped(-x, -y, -srcX, -srcY);
+    FxPass3CopySurfacePixelToScratchClipped(-y, -x, -srcY, -srcX);
 }
 
 /**
  * Original-source helper evidence: no standalone retail address is assigned to
  * this helper shape in current plan/BN evidence; observed at the tail of
- * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0. BN copies a bounded
+ * zVideo::FxPass3ApplyToCurrentSurface at 0x48daf0. BN copies a bounded
  * scratch region back to the active FX surface while skipping coordinates that
  * remain inside the current radius.
  * Purpose: copy the staged pass-3 scratch region back to the active FX surface.
@@ -3888,11 +3565,7 @@ static void DrawFxSurfaceSpanPixel(
             *pixel = color;
             return;
         }
-        *pixel = BlendFxSurfacePixel555(
-            *pixel,
-            color,
-            alpha
-        );
+        *pixel = BlendFxSurfacePixel555(*pixel, color, alpha);
         return;
     }
 
@@ -3903,11 +3576,7 @@ static void DrawFxSurfaceSpanPixel(
         *pixel = color;
         return;
     }
-    *pixel = BlendFxSurfacePixel565(
-        *pixel,
-        color,
-        alpha
-    );
+    *pixel = BlendFxSurfacePixel565(*pixel, color, alpha);
 }
 
 } // namespace zVideo_FxSurface
@@ -3931,7 +3600,7 @@ namespace zRndr {
  * `emms`; VC5SP3 has no usable intrinsic surface for this instruction shape.
  * Purpose: Blend one RGB565 overlay row through the user-approved zRndr MMX inline-assembly exception.
  */
-void __fastcall OverlayBlendRow565_Mmx(
+void __fastcall OverlayBlendRow565Mmx(
     unsigned short *rowPixels16,
     int pixelCount
 ) {
@@ -4011,7 +3680,7 @@ void __fastcall OverlayBlendRow565_Mmx(
  * Original function evidence: retail 0x48d5f0 has this portable conditional definition.
  * Purpose: Preserve portable RGB565 overlay row behavior when the VC5 inline-MMX exception is disabled.
  */
-void __fastcall OverlayBlendRow565_Mmx(
+void __fastcall OverlayBlendRow565Mmx(
     unsigned short *rowPixels16,
     int pixelCount
 ) {
@@ -4043,12 +3712,12 @@ void __fastcall OverlayBlendRow565_Mmx(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-overlayrect-submit
- * @recoil-artifact defines .text recoil:function:0x48d6d0: zRndr_OverlayRect_Submit
+ * @recoil-artifact defines .text recoil:function:0x48d6d0: zRndrOverlayRectSubmit
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp.
  * Source file evidence: recovered original path on the prior source label.
  * Purpose: Submit an overlay rectangle to Direct3D or stage it for software overlay blending.
  */
-void __fastcall zRndr_OverlayRect_Submit(
+void __fastcall zRndrOverlayRectSubmit(
     unsigned int packedColor16,
     zVidRect32 *rectOrNull,
     double alpha
@@ -4070,11 +3739,7 @@ void __fastcall zRndr_OverlayRect_Submit(
 
     if (g_zVideo_ActiveRendererPath != 0) {
         rect.right = xMax + 1;
-        zVideo_dd3d::QueueSolidQuad(
-            overlayColor16,
-            &rect,
-            alpha
-        );
+        zVideo_dd3d::QueueSolidQuad(overlayColor16, &rect, alpha);
         return;
     }
 
@@ -4089,7 +3754,7 @@ void __fastcall zRndr_OverlayRect_Submit(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-overlayrect-flushsw
- * @recoil-artifact defines .text recoil:function:0x48d7a0: zRndr_OverlayRect_FlushSw
+ * @recoil-artifact defines .text recoil:function:0x48d7a0: zRndrOverlayRectFlushSw
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp.
  * Source file evidence: recovered original path on the prior source label.
  * Source-shape evidence: BN selects the 555/565 scalar or MMX row callback,
@@ -4099,7 +3764,7 @@ void __fastcall zRndr_OverlayRect_Submit(
  * 0x48d450, 0x48d4b0, 0x48d510, and 0x48d5f0.
  * Purpose: Blend the staged software overlay rectangle into the active 16-bit video surface.
  */
-void __cdecl zRndr_OverlayRect_FlushSw() {
+void __cdecl zRndrOverlayRectFlushSw() {
     if (zRndr::g_overlayBlendEnabled == 0) {
         return;
     }
@@ -4107,26 +3772,22 @@ void __cdecl zRndr_OverlayRect_FlushSw() {
     const unsigned char graphicsFlags = *(const unsigned char *)(zRndr::g_graphicsFlags);
     if ((graphicsFlags & 4U) != 0) {
         if (zRndr::g_pixelPackGreenBits == 5) {
-            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555_Mmx;
+            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555Mmx;
         } else {
-            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow565_Mmx;
+            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow565Mmx;
         }
     } else {
         if (zRndr::g_pixelPackGreenBits == 5) {
-            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555_Scalar;
+            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555Scalar;
         } else {
-            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow565_Scalar;
+            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow565Scalar;
         }
     }
 
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int blueMask;
-    zVideo::PixelPack_GetRgbMasks(
-        &redMask,
-        &greenMask,
-        &blueMask
-    );
+    zVideo::PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
 
     const int srcScale5 = (int)(zRndr::g_overlayBlendAlpha * 32.0);
     const unsigned int overlayColor16 = zRndr::g_overlayBlendPackedColor16;
@@ -4151,10 +3812,7 @@ void __cdecl zRndr_OverlayRect_FlushSw() {
     unsigned short *rowPixels16 =
         g_zVideo_FxSurfacePixels16 + pitchPixels16 * rowY + rectLeft;
     while (rowY < zRndr::g_overlayBlendRectBottom) {
-        zRndr::g_pfnOverlayBlendRow(
-            rowPixels16,
-            pixelCount
-        );
+        zRndr::g_pfnOverlayBlendRow(rowPixels16, pixelCount);
         ++rowY;
         rowPixels16 += g_zVideo_FxSurfacePitchPixels16;
     }
@@ -4191,11 +3849,7 @@ void __fastcall DrawNoiseRect(
     int rBits = 0;
     int gBits = 0;
     int bBits = 0;
-    zVideo::PixelPack_GetRgbBits(
-        &rBits,
-        &gBits,
-        &bBits
-    );
+    zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
 
     int gShift = bBits;
     const int rShift = bBits + gBits;
@@ -4223,7 +3877,7 @@ void __fastcall DrawNoiseRect(
 namespace zVideo {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fxpass3-copysurfacepixeltoscratchclipped
- * @recoil-artifact defines .text recoil:function:0x48da60: zVideo::FxPass3_CopySurfacePixelToScratchClipped.
+ * @recoil-artifact defines .text recoil:function:0x48da60: zVideo::FxPass3CopySurfacePixelToScratchClipped.
  * Source owner evidence: current BN assembly shows a zVideo namespace helper
  * with no direct callees, fastcall destination deltas in ECX/EDX, source deltas
  * on the stack, scratch-offset biasing for both endpoints, and strict clip
@@ -4238,7 +3892,7 @@ namespace zVideo {
  * Purpose: copy one biased 16-bpp FX-surface pixel into pass-3 scratch only
  * when both the source and destination endpoints are inside the active clip.
  */
-void __fastcall FxPass3_CopySurfacePixelToScratchClipped(
+void __fastcall FxPass3CopySurfacePixelToScratchClipped(
     int dstDx,
     int dstDy,
     int srcDx,
@@ -4270,7 +3924,7 @@ void __fastcall FxPass3_CopySurfacePixelToScratchClipped(
 namespace zVideo {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fxpass3-applytocurrentsurface
- * @recoil-artifact defines .text recoil:function:0x48daf0: zVideo::FxPass3_ApplyToCurrentSurface.
+ * @recoil-artifact defines .text recoil:function:0x48daf0: zVideo::FxPass3ApplyToCurrentSurface.
  * Source owner evidence: current BN assembly identifies the original file as
  * GameZRecoil/zVideo/zVideo.cpp and shows the complete local pass-3 ring-warp
  * source cluster: radius clamp, two alloca float tables, optional clipped
@@ -4287,7 +3941,7 @@ namespace zVideo {
  * Purpose: apply the local pass-3 animated radial ring warp to the active
  * 16-bpp FX surface.
  */
-void __fastcall FxPass3_ApplyToCurrentSurface(
+void __fastcall FxPass3ApplyToCurrentSurface(
     int centerX,
     int centerY,
     int currentRadius,
@@ -4460,23 +4114,23 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
                     const int srcX = x + (int)((float)(x) * scale);
                     const int srcY = y + (int)((float)(y) * scale);
 
-                    FxPass3_CopySurfacePixelToScratchClipped(x, y, srcX, srcY);
-                    FxPass3_CopySurfacePixelToScratchClipped(y, x, srcY, srcX);
-                    FxPass3_CopySurfacePixelToScratchClipped(-x, y, -srcX, srcY);
-                    FxPass3_CopySurfacePixelToScratchClipped(y, -x, srcY, -srcX);
-                    FxPass3_CopySurfacePixelToScratchClipped(x, -y, srcX, -srcY);
-                    FxPass3_CopySurfacePixelToScratchClipped(-y, x, -srcY, srcX);
-                    FxPass3_CopySurfacePixelToScratchClipped(-x, -y, -srcX, -srcY);
-                    FxPass3_CopySurfacePixelToScratchClipped(-y, -x, -srcY, -srcX);
+                    FxPass3CopySurfacePixelToScratchClipped(x, y, srcX, srcY);
+                    FxPass3CopySurfacePixelToScratchClipped(y, x, srcY, srcX);
+                    FxPass3CopySurfacePixelToScratchClipped(-x, y, -srcX, srcY);
+                    FxPass3CopySurfacePixelToScratchClipped(y, -x, srcY, -srcX);
+                    FxPass3CopySurfacePixelToScratchClipped(x, -y, srcX, -srcY);
+                    FxPass3CopySurfacePixelToScratchClipped(-y, x, -srcY, srcX);
+                    FxPass3CopySurfacePixelToScratchClipped(-x, -y, -srcX, -srcY);
+                    FxPass3CopySurfacePixelToScratchClipped(-y, -x, -srcY, -srcX);
                 } else {
-                    FxPass3_CopySurfacePixelToScratchClipped(x, y, x, y);
-                    FxPass3_CopySurfacePixelToScratchClipped(y, x, y, x);
-                    FxPass3_CopySurfacePixelToScratchClipped(-x, y, -x, y);
-                    FxPass3_CopySurfacePixelToScratchClipped(y, -x, y, -x);
-                    FxPass3_CopySurfacePixelToScratchClipped(x, -y, x, -y);
-                    FxPass3_CopySurfacePixelToScratchClipped(-y, x, -y, x);
-                    FxPass3_CopySurfacePixelToScratchClipped(-x, -y, -x, -y);
-                    FxPass3_CopySurfacePixelToScratchClipped(-y, -x, -y, -x);
+                    FxPass3CopySurfacePixelToScratchClipped(x, y, x, y);
+                    FxPass3CopySurfacePixelToScratchClipped(y, x, y, x);
+                    FxPass3CopySurfacePixelToScratchClipped(-x, y, -x, y);
+                    FxPass3CopySurfacePixelToScratchClipped(y, -x, y, -x);
+                    FxPass3CopySurfacePixelToScratchClipped(x, -y, x, -y);
+                    FxPass3CopySurfacePixelToScratchClipped(-y, x, -y, x);
+                    FxPass3CopySurfacePixelToScratchClipped(-x, -y, -x, -y);
+                    FxPass3CopySurfacePixelToScratchClipped(-y, -x, -y, -x);
                 }
             }
         }
@@ -4526,10 +4180,10 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
 namespace zVideo {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregioncombined
- * @recoil-artifact defines .text recoil:function:0x48e380: zVideo::buff_BlurRegionCombined.
+ * @recoil-artifact defines .text recoil:function:0x48e380: zVideo::buffBlurRegionCombined.
  * Purpose: Applies vertical then horizontal 1-2-1 blur over a 16bpp FX-surface region.
  */
-void __fastcall buff_BlurRegionCombined(
+void __fastcall buffBlurRegionCombined(
     zVidRect32 *rectOrNull,
     int
 ) {
@@ -4569,11 +4223,7 @@ void __fastcall buff_BlurRegionCombined(
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int rbMask;
-    PixelPack_GetRgbMasks(
-        &redMask,
-        &greenMask,
-        &blueMask
-    );
+    PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
     rbMask = redMask | blueMask;
 
     int rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
@@ -4674,10 +4324,10 @@ void __fastcall buff_BlurRegionCombined(
 namespace zVideo {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregionvertical
- * @recoil-artifact defines .text recoil:function:0x48e670: zVideo::buff_BlurRegionVertical.
+ * @recoil-artifact defines .text recoil:function:0x48e670: zVideo::buffBlurRegionVertical.
  * Purpose: Applies the vertical 1-2-1 blur pass over a 16bpp FX-surface region.
  */
-void __fastcall buff_BlurRegionVertical(
+void __fastcall buffBlurRegionVertical(
     zVidRect32 *rectOrNull,
     int
 ) {
@@ -4714,11 +4364,7 @@ void __fastcall buff_BlurRegionVertical(
     unsigned int greenMask;
     unsigned int blueMask;
     unsigned int rbMask;
-    PixelPack_GetRgbMasks(
-        &redMask,
-        &greenMask,
-        &blueMask
-    );
+    PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
     rbMask = redMask | blueMask;
 
     unsigned short *srcRow =
@@ -4784,10 +4430,10 @@ void __fastcall buff_BlurRegionVertical(
 namespace zVideo {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregionhorizontal
- * @recoil-artifact defines .text recoil:function:0x48e870: zVideo::buff_BlurRegionHorizontal.
+ * @recoil-artifact defines .text recoil:function:0x48e870: zVideo::buffBlurRegionHorizontal.
  * Purpose: Applies the horizontal 1-2-1 blur pass over a 16bpp FX-surface region.
  */
-void __fastcall buff_BlurRegionHorizontal(
+void __fastcall buffBlurRegionHorizontal(
     zVidRect32 *rectOrNull,
     int
 ) {
@@ -4825,11 +4471,7 @@ void __fastcall buff_BlurRegionHorizontal(
     unsigned int rbMask;
     ++bottom;
     int columnCount = right - left;
-    PixelPack_GetRgbMasks(
-        &redMask,
-        &greenMask,
-        &blueMask
-    );
+    PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
     rbMask = redMask | blueMask;
 
     unsigned short *src =
@@ -4885,28 +4527,19 @@ void __fastcall buff_BlurRegionHorizontal(
 namespace zVideo {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregionbymode
- * @recoil-artifact defines .text recoil:function:0x48ea00: zVideo::buff_BlurRegionByMode.
+ * @recoil-artifact defines .text recoil:function:0x48ea00: zVideo::buffBlurRegionByMode.
  * Purpose: Dispatches a blur-region request to horizontal, vertical, or combined mode.
  */
-void __fastcall buff_BlurRegionByMode(
+void __fastcall buffBlurRegionByMode(
     zVidRect32 *rectOrNull,
     int mode
 ) {
     if (mode == 1) {
-        buff_BlurRegionHorizontal(
-            rectOrNull,
-            mode
-        );
+        buffBlurRegionHorizontal(rectOrNull, mode);
     } else if (mode == 2) {
-        buff_BlurRegionVertical(
-            rectOrNull,
-            mode
-        );
+        buffBlurRegionVertical(rectOrNull, mode);
     } else {
-        buff_BlurRegionCombined(
-            rectOrNull,
-            mode
-        );
+        buffBlurRegionCombined(rectOrNull, mode);
     }
 }
 } // namespace zVideo
@@ -4937,18 +4570,10 @@ void __fastcall ApplyBlueTintRect(
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int blueMask;
-    zVideo::PixelPack_GetRgbMasks(
-        &redMask,
-        &greenMask,
-        &blueMask
-    );
+    zVideo::PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        zVideo_dd3d::QueueSolidQuad(
-            blueMask,
-            &clipRect,
-            0.3
-        );
+        zVideo_dd3d::QueueSolidQuad(blueMask, &clipRect, 0.3);
         return;
     }
 
@@ -5007,18 +4632,10 @@ void __fastcall ApplyGreenMaskRect(
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int blueMask;
-    zVideo::PixelPack_GetRgbMasks(
-        &redMask,
-        &greenMask,
-        &blueMask
-    );
+    zVideo::PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        zVideo_dd3d::QueueSolidQuad(
-            greenMask,
-            &clipRect,
-            0.3
-        );
+        zVideo_dd3d::QueueSolidQuad(greenMask, &clipRect, 0.3);
         return;
     }
 
@@ -5421,23 +5038,11 @@ void __fastcall BlitToActiveTarget(
     zVidRect32 *srcRect
 ) {
     if (image->surface != 0 && zRndr::g_frameBuffer == zVideo::GetPrimarySurfacePixels()) {
-        zVideo_buff::BltSourceToPrimaryClipped(
-            image,
-            dstX,
-            dstY,
-            clipFlags & 0xffff,
-            srcRect
-        );
+        zVideo_buff::BltSourceToPrimaryClipped(image, dstX, dstY, clipFlags & 0xffff, srcRect);
         return;
     }
 
-    g_zVideo_pfnBltSourceToPrimary(
-        image,
-        dstX,
-        dstY,
-        clipFlags,
-        srcRect
-    );
+    g_zVideo_pfnBltSourceToPrimary(image, dstX, dstY, clipFlags, srcRect);
 }
 } // namespace zVid_Image
 
@@ -5594,11 +5199,7 @@ void __fastcall BlitToFramebufferClipped(
         }
 
         for (int row_2 = 0; row_2 < clippedHeight; ++row_2) {
-            memcpy(
-                dstRow,
-                sourceRow,
-                (size_t)(clippedWidth) * sizeof(unsigned short)
-            );
+            memcpy(dstRow, sourceRow, (size_t)(clippedWidth) * sizeof(unsigned short));
             dstRow += framebufferPitch;
             sourceRow += sourcePitch;
         }
@@ -5718,8 +5319,8 @@ int __cdecl InitGlobals() {
     color.blue = 0.04f;
     color.green = 0.04f;
     color.red = 0.04f;
-    FogColor_SetRgb01Clamped(&color);
-    FogColor_SetRgb01Clamped((zColorRgb *)(g_fogColorParams.colorRgb01));
+    FogColorSetRgb01Clamped(&color);
+    FogColorSetRgb01Clamped((zColorRgb *)(g_fogColorParams.colorRgb01));
     g_fogTargetParamsStaged = g_fogColorParams;
     g_fogParamsActive = g_fogColorParams;
 
@@ -5748,7 +5349,7 @@ int __cdecl InitGlobals() {
     g_zVideo_pfnBltSourceToPrimary = zVid_Image::BlitToFramebufferClipped;
     g_defaultGraphicsFlags = -1;
     zOptionEntryPartial *option =
-        zGame::Options_FindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
+        zGame::OptionsFindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
     g_graphicsFlags = option != 0 ? &option->payloadOrBuffer : &g_defaultGraphicsFlags;
     g_perspectiveTextureDeltaXBytes = g_perspectiveTextureDeltaXPow2 * g_bytesPerPixel;
     return 0;
@@ -5763,7 +5364,7 @@ namespace zVid {
  * Purpose: release the frame scratch and noise buffers used by software video effects.
  */
 int __cdecl ShutdownFrameScratchBuffers() {
-    Noise_ShutdownBuffers();
+    NoiseShutdownBuffers();
     return 0;
 }
 } // namespace zVid
@@ -5776,7 +5377,7 @@ namespace zVid {
  * Purpose: initialize noise buffers and select the active renderer span routine table.
  */
 int __cdecl InitFrameScratchBuffers() {
-    Noise_InitBuffers();
+    NoiseInitBuffers();
     zRndr::SelectSpanRoutines();
     return 0;
 }
@@ -5789,17 +5390,9 @@ namespace zRndr {
  * Purpose: Refresh pixel-pack state and install the active 16-bit point, line, and span routines.
  */
 void __cdecl SelectSpanRoutines() {
-    zVideo::PixelPack_GetRgbBits(
-        &g_pixelPackRedBits,
-        &g_pixelPackGreenBits,
-        &g_pixelPackBlueBits
-    );
-    zVideo::PixelPack_GetRgbMasks(
-        &g_pixelPackRedMask,
-        &g_pixelPackGreenMask,
-        &g_pixelPackBlueMask
-    );
-    zVideo::PixelPack_GetPackingParams(
+    zVideo::PixelPackGetRgbBits(&g_pixelPackRedBits, &g_pixelPackGreenBits, &g_pixelPackBlueBits);
+    zVideo::PixelPackGetRgbMasks(&g_pixelPackRedMask, &g_pixelPackGreenMask, &g_pixelPackBlueMask);
+    zVideo::PixelPackGetPackingParams(
         &g_pixelPackRedShift,
         &g_pixelPackGreenShift,
         &g_pixelPackBlueShift
@@ -5821,15 +5414,15 @@ void __cdecl SelectSpanRoutines() {
         return;
     }
 
-    g_pfnPointOpCandidate = (PointOpProc)zRndr_PlotPixel16;
-    g_pfnPointOpActive = (PointOpProc)zRndr_PlotPixel16;
-    g_pfnImmediateRaster4 = zRndr_DrawLine16;
-    g_pfnImmediateRasterReserved = zRndr_DrawLine16_Segmented;
-    g_pfnImmediateRaster5 = zRndr_DrawLine16_Clipped;
-    g_pfnSelectedSpanOp = (SpanRoutineProc)zRndr_FillSpan16Opaque;
+    g_pfnPointOpCandidate = (PointOpProc)zRndrPlotPixel16;
+    g_pfnPointOpActive = (PointOpProc)zRndrPlotPixel16;
+    g_pfnImmediateRaster4 = zRndrDrawLine16;
+    g_pfnImmediateRasterReserved = zRndrDrawLine16Segmented;
+    g_pfnImmediateRaster5 = zRndrDrawLine16Clipped;
+    g_pfnSelectedSpanOp = (SpanRoutineProc)zRndrFillSpan16Opaque;
     g_pfnSelectedSpanOp_Mode0 = SpanMasked16FromTex16SwitchVShift;
     if (g_pixelPackGreenBits == 5) {
-        g_pfnFlatImmediateSpanOp = (FlatImmediateSpanProc)zRndr_FillSpan555Solid;
+        g_pfnFlatImmediateSpanOp = (FlatImmediateSpanProc)zRndrFillSpan555Solid;
         if ((graphicsFlags & 0x4) != 0) {
             g_pfnTexturedQueuedSpanOp_Mode0 = zSys::CheckCpuSignatureMask() != 0
                                                   ? SpanCopy16FromTex16ExplicitVShift
@@ -5845,7 +5438,7 @@ void __cdecl SelectSpanRoutines() {
             g_pfnTexturedQueuedFinalizeAlt = 0;
         }
     } else {
-        g_pfnFlatImmediateSpanOp = (FlatImmediateSpanProc)zRndr_FillSpan565Solid;
+        g_pfnFlatImmediateSpanOp = (FlatImmediateSpanProc)zRndrFillSpan565Solid;
         if ((graphicsFlags & 0x4) != 0) {
             g_pfnTexturedQueuedSpanOp_Mode0 = zSys::CheckCpuSignatureMask() != 0
                                                   ? SpanCopy16FromTex16ExplicitVShift
@@ -6164,10 +5757,7 @@ int __fastcall SpanOcclusionInit(
     g_spanColumnCount = height;
     g_spanColumnCountPadded = height + 0x80;
     g_spanColumnHeadTable =
-        (SpanNodePartial **)(calloc(
-            (size_t)(g_spanColumnCountPadded),
-            sizeof(SpanNodePartial *)
-        ));
+        (SpanNodePartial **)(calloc((size_t)(g_spanColumnCountPadded), sizeof(SpanNodePartial *)));
     g_spanPoolBase = (SpanNodePartial *)(calloc(
         (size_t)(g_spanColumnCountPadded) << 8,
         sizeof(SpanNodePartial)
@@ -6176,7 +5766,7 @@ int __fastcall SpanOcclusionInit(
     SpanOcclusionBuildColumnHeadTable();
     g_spanOccluderPolyCount = 0;
     g_pfnBuildSpanList = zRndr_SpanOcclusion_InsertSpanNode_Local;
-    g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanList;
+    g_pfnBuildSpanListSecondary = zRndrSpanOcclusionBuildSpanList;
     return 0;
 }
 } // namespace zRndr
@@ -6211,10 +5801,7 @@ void __cdecl SpanOcclusionBuildColumnHeadTable() {
     if (polyIndex < g_spanOccluderPolyCount) {
         SpanOccluderPolyPartial *poly = g_spanOccluderPolys;
         do {
-            SpanOcclusionRasterizeOccluderPoly(
-                poly,
-                poly->vertCount
-            );
+            SpanOcclusionRasterizeOccluderPoly(poly, poly->vertCount);
             ++polyIndex;
             ++poly;
         } while (polyIndex < g_spanOccluderPolyCount);
@@ -6276,10 +5863,7 @@ void __fastcall SpanOcclusionSubmitOccluderRect(
     vertices[1].z = z;
     vertices[2].z = z;
     vertices[3].z = z;
-    SpanOcclusionAddPolygon(
-        vertices,
-        4
-    );
+    SpanOcclusionAddPolygon(vertices, 4);
 }
 } // namespace zRndr
 
@@ -6352,7 +5936,7 @@ int __cdecl SpanOcclusionShutdown() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testspandepthorderpair
- * @recoil-artifact defines .text recoil:function:0x4907c0: zRndr_SpanOcclusion_TestSpanDepthOrderPair.
+ * @recoil-artifact defines .text recoil:function:0x4907c0: zRndrSpanOcclusionTestSpanDepthOrderPair.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: decide whether one overlapping span node is in front of another
  * using the recovered inverse-depth bias thresholds.
@@ -6362,7 +5946,7 @@ int __cdecl SpanOcclusionShutdown() {
  * gRndr_SpanDepthBiasPlusOne and gRndr_SpanDepthBiasPlusOneInv, and returns the
  * depth-order predicate used by span-occlusion insertion and visibility tests.
  */
-int __fastcall zRndr_SpanOcclusion_TestSpanDepthOrderPair(
+int __fastcall zRndrSpanOcclusionTestSpanDepthOrderPair(
     zRndr::SpanNodePartial *lhs,
     zRndr::SpanNodePartial *rhs
 ) {
@@ -6478,10 +6062,7 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
         }
 
         const bool pendingInFront =
-            zRndr_SpanOcclusion_TestSpanDepthOrderPair(
-                pending,
-                current
-            ) != 0;
+            zRndrSpanOcclusionTestSpanDepthOrderPair(pending, current) != 0;
 
         const int pendingMin = pending->sampleXMin;
         const int pendingMax = pending->sampleXMax;
@@ -6651,7 +6232,7 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-insertspannode-nodepthtest
- * @recoil-artifact defines .text recoil:function:0x4912a0: zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest.
+ * @recoil-artifact defines .text recoil:function:0x4912a0: zRndrSpanOcclusionInsertSpanNodeNoDepthTest.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: insert the pending span into a column without depth-order testing.
  *
@@ -6659,7 +6240,7 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
  * forwards into the no-depth insertion helper that preserves the column-list
  * split/visible-span contract.
  */
-void __fastcall zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
+void __fastcall zRndrSpanOcclusionInsertSpanNodeNoDepthTest(
     zRndr::SpanNodePartial **spanList,
     int columnIndex,
     int *spanCount
@@ -6773,7 +6354,7 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-buildspanlist
- * @recoil-artifact defines .text recoil:function:0x491840: zRndr_SpanOcclusion_BuildSpanList.
+ * @recoil-artifact defines .text recoil:function:0x491840: zRndrSpanOcclusionBuildSpanList.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: build visible fragments for one pending span against the current
  * column's occlusion list.
@@ -6782,7 +6363,7 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
  * gRndr_pfnBuildSpanListSecondary; it forwards the callback arguments into the
  * recovered depth-tested visible-span builder.
  */
-void __fastcall zRndr_SpanOcclusion_BuildSpanList(
+void __fastcall zRndrSpanOcclusionBuildSpanList(
     zRndr::SpanNodePartial **spanList,
     int columnIndex,
     int *spanCount
@@ -6809,10 +6390,7 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanList(
 
         SpanNodePartial occluder = *current;
         const bool pendingInFront =
-            zRndr_SpanOcclusion_TestSpanDepthOrderPair(
-                pending,
-                &occluder
-            ) != 0;
+            zRndrSpanOcclusionTestSpanDepthOrderPair(pending, &occluder) != 0;
 
         const int pendingMin = pending->sampleXMin;
         const int pendingMax = pending->sampleXMax;
@@ -6950,7 +6528,7 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanList(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-buildspanlistfast
- * @recoil-artifact defines .text recoil:function:0x491da0: zRndr_SpanOcclusion_BuildSpanListFast.
+ * @recoil-artifact defines .text recoil:function:0x491da0: zRndrSpanOcclusionBuildSpanListFast.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
@@ -6960,7 +6538,7 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanList(
  * writes spanCount = 1, increments the cursor by one zRndr_SpanNode, and
  * returns.
  */
-void __fastcall zRndr_SpanOcclusion_BuildSpanListFast(
+void __fastcall zRndrSpanOcclusionBuildSpanListFast(
     zRndr::SpanNodePartial **spanList,
     int,
     int *spanCount
@@ -6973,17 +6551,17 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanListFast(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testcolumnvisibility
- * @recoil-artifact defines .text recoil:function:0x491dd0: zRndr_SpanOcclusion_TestColumnVisibility.
+ * @recoil-artifact defines .text recoil:function:0x491dd0: zRndrSpanOcclusionTestColumnVisibility.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: test whether the pending span node remains visible in one occlusion
  * column.
  *
  * Evidence: BN validates output clearing and column table lookup, copies
  * gRndr_SpanAllocCursor into a local candidate span, walks the column head
- * list, uses zRndr_SpanOcclusion_TestSpanDepthOrderPair for overlap depth
+ * list, uses zRndrSpanOcclusionTestSpanDepthOrderPair for overlap depth
  * decisions, trims candidate ranges, and writes the out visibility flag.
  */
-void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
+void __fastcall zRndrSpanOcclusionTestColumnVisibility(
     int columnIndex,
     int *isVisible
 ) {
@@ -7012,10 +6590,7 @@ void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
         }
 
         zRndr::SpanNodePartial occluder = *current;
-        if (zRndr_SpanOcclusion_TestSpanDepthOrderPair(
-            &candidate,
-            &occluder
-        ) != 0) {
+        if (zRndrSpanOcclusionTestSpanDepthOrderPair(&candidate, &occluder) != 0) {
             *isVisible = 1;
             return;
         }
@@ -7046,11 +6621,11 @@ void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-rasterizepolywithspanlist
- * @recoil-artifact defines .text recoil:function:0x492000: zRndr_RasterizePolyWithSpanList
+ * @recoil-artifact defines .text recoil:function:0x492000: zRndrRasterizePolyWithSpanList
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Rasterize one polygon through the active span-list builder and selected span routine.
  */
-void __fastcall zRndr_RasterizePolyWithSpanList(
+void __fastcall zRndrRasterizePolyWithSpanList(
     zVec3 *vertices,
     zVec3 *planeVerts,
     int vertCount,
@@ -7108,10 +6683,7 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        vertices[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, vertices[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -7130,27 +6702,18 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
             edgeTableA[edgeCountA].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableA[edgeCountA].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
             }
 
             ++edgeCountA;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
             edgeYStart = (fixed16Value + 0x7fff) >> 16;
             edgeSampleY = (float)(edgeYStart) + 0.5f;
         }
@@ -7158,10 +6721,7 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        vertices[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, vertices[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -7180,27 +6740,18 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
             edgeTableB[edgeCountB].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableB[edgeCountB].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
             }
 
             ++edgeCountB;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
             edgeYStart = (fixed16Value + 0x7fff) >> 16;
             edgeSampleY = (float)(edgeYStart) + 0.5f;
         }
@@ -7211,15 +6762,9 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
         return;
     }
 
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        vertices[topVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, vertices[topVertexIndex].y);
     const int firstScanline = (fixed16Value + 0x7fff) >> 16;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        vertices[bottomVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, vertices[bottomVertexIndex].y);
     const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
@@ -7273,21 +6818,14 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
             zRndr::g_spanAllocCursor->depthSlope = invDepthSlopeX;
 
             int spanCount = 0;
-            zRndr::g_pfnBuildSpanList(
-                visibleSpans,
-                y,
-                &spanCount
-            );
+            zRndr::g_pfnBuildSpanList(visibleSpans, y, &spanCount);
 
             for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
                 zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
                 const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
                 const int byteOffset = (int)(span->sampleXMin) * zRndr::g_bytesPerPixel;
                 zRndr::g_spanCurrentSpanBaseAddr = (unsigned short *)(scanlineBase + byteOffset);
-                zRndr::g_pfnSelectedSpanOp(
-                    spanOpContext,
-                    pixelCount
-                );
+                zRndr::g_pfnSelectedSpanOp(spanOpContext, pixelCount);
             }
         }
 
@@ -7364,10 +6902,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
 
     if (g_scanConvertMode != 0) {
         edgeVertexIndex = topVertexIndex;
-        ZRNDR_SET_FIXED16_FROM_FLOAT(
-            fixed16Value,
-            scratch.reducedVerts[edgeVertexIndex].y
-        );
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, scratch.reducedVerts[edgeVertexIndex].y);
         edgeYStart = (fixed16Value + 0x7fff) >> 16;
         edgeSampleY = (float)(edgeYStart) + 0.5f;
         while (edgeVertexIndex != bottomVertexIndex) {
@@ -7383,27 +6918,18 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
                 edgeTableA[edgeCountA].reserved = 0;
                 if (dy != 0.0f) {
                     const float xSlope = (end.x - start.x) / dy;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edgeTableA[edgeCountA].xStepFixed,
-                        xSlope
-                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, xSlope);
                     ZRNDR_SET_FIXED16_FROM_FLOAT(
                         edgeTableA[edgeCountA].currentXFixed,
                         start.x + (edgeSampleY - start.y) * xSlope
                     );
                 } else {
                     edgeTableA[edgeCountA].xStepFixed = 0;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edgeTableA[edgeCountA].currentXFixed,
-                        start.x
-                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
                 }
 
                 ++edgeCountA;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    fixed16Value,
-                    end.y
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
                 edgeYStart = (fixed16Value + 0x7fff) >> 16;
                 edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
@@ -7411,10 +6937,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
         }
 
         edgeVertexIndex = topVertexIndex;
-        ZRNDR_SET_FIXED16_FROM_FLOAT(
-            fixed16Value,
-            scratch.reducedVerts[edgeVertexIndex].y
-        );
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, scratch.reducedVerts[edgeVertexIndex].y);
         edgeYStart = (fixed16Value + 0x7fff) >> 16;
         edgeSampleY = (float)(edgeYStart) + 0.5f;
         while (edgeVertexIndex != bottomVertexIndex) {
@@ -7430,27 +6953,18 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
                 edgeTableB[edgeCountB].reserved = 0;
                 if (dy != 0.0f) {
                     const float xSlope = (end.x - start.x) / dy;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edgeTableB[edgeCountB].xStepFixed,
-                        xSlope
-                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, xSlope);
                     ZRNDR_SET_FIXED16_FROM_FLOAT(
                         edgeTableB[edgeCountB].currentXFixed,
                         start.x + (edgeSampleY - start.y) * xSlope
                     );
                 } else {
                     edgeTableB[edgeCountB].xStepFixed = 0;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edgeTableB[edgeCountB].currentXFixed,
-                        start.x
-                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
                 }
 
                 ++edgeCountB;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    fixed16Value,
-                    end.y
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
                 edgeYStart = (fixed16Value + 0x7fff) >> 16;
                 edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
@@ -7458,10 +6972,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
         }
     } else {
         edgeVertexIndex = topVertexIndex;
-        ZRNDR_SET_FIXED16_FROM_FLOAT(
-            fixed16Value,
-            scratch.reducedVerts[edgeVertexIndex].y
-        );
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, scratch.reducedVerts[edgeVertexIndex].y);
         edgeYStart = (fixed16Value + 0x7fff) >> 16;
         edgeSampleY = (float)(edgeYStart) + 0.5f;
         while (edgeVertexIndex != bottomVertexIndex) {
@@ -7477,27 +6988,18 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
                 edgeTableB[edgeCountB].reserved = 0;
                 if (dy != 0.0f) {
                     const float xSlope = (end.x - start.x) / dy;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edgeTableB[edgeCountB].xStepFixed,
-                        xSlope
-                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, xSlope);
                     ZRNDR_SET_FIXED16_FROM_FLOAT(
                         edgeTableB[edgeCountB].currentXFixed,
                         start.x + (edgeSampleY - start.y) * xSlope
                     );
                 } else {
                     edgeTableB[edgeCountB].xStepFixed = 0;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edgeTableB[edgeCountB].currentXFixed,
-                        start.x
-                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
                 }
 
                 ++edgeCountB;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    fixed16Value,
-                    end.y
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
                 edgeYStart = (fixed16Value + 0x7fff) >> 16;
                 edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
@@ -7505,10 +7007,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
         }
 
         edgeVertexIndex = topVertexIndex;
-        ZRNDR_SET_FIXED16_FROM_FLOAT(
-            fixed16Value,
-            scratch.reducedVerts[edgeVertexIndex].y
-        );
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, scratch.reducedVerts[edgeVertexIndex].y);
         edgeYStart = (fixed16Value + 0x7fff) >> 16;
         edgeSampleY = (float)(edgeYStart) + 0.5f;
         while (edgeVertexIndex != bottomVertexIndex) {
@@ -7524,27 +7023,18 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
                 edgeTableA[edgeCountA].reserved = 0;
                 if (dy != 0.0f) {
                     const float xSlope = (end.x - start.x) / dy;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edgeTableA[edgeCountA].xStepFixed,
-                        xSlope
-                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, xSlope);
                     ZRNDR_SET_FIXED16_FROM_FLOAT(
                         edgeTableA[edgeCountA].currentXFixed,
                         start.x + (edgeSampleY - start.y) * xSlope
                     );
                 } else {
                     edgeTableA[edgeCountA].xStepFixed = 0;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edgeTableA[edgeCountA].currentXFixed,
-                        start.x
-                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
                 }
 
                 ++edgeCountA;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    fixed16Value,
-                    end.y
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
                 edgeYStart = (fixed16Value + 0x7fff) >> 16;
                 edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
@@ -7552,15 +7042,9 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
         }
     }
 
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        scratch.reducedVerts[topVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, scratch.reducedVerts[topVertexIndex].y);
     const int firstScanline = (fixed16Value + 0x7fff) >> 16;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        scratch.reducedVerts[bottomVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, scratch.reducedVerts[bottomVertexIndex].y);
     const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
@@ -7607,11 +7091,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
             g_spanAllocCursor->depthSlope = 0.0f;
 
             int spanCount = 0;
-            g_pfnBuildSpanList(
-                spanList,
-                y,
-                &spanCount
-            );
+            g_pfnBuildSpanList(spanList, y, &spanCount);
         }
     }
 }
@@ -7619,11 +7099,11 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawflatimmediate
- * @recoil-artifact defines .text recoil:function:0x492f00: zRndr_DrawFlatImmediate
+ * @recoil-artifact defines .text recoil:function:0x492f00: zRndrDrawFlatImmediate
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Draw an immediate flat polygon through the flat span callback path.
  */
-void __fastcall zRndr_DrawFlatImmediate(
+void __fastcall zRndrDrawFlatImmediate(
     zVec3 *vertices,
     zVec3 *planeVertices,
     int vertCount,
@@ -7679,10 +7159,7 @@ void __fastcall zRndr_DrawFlatImmediate(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        vertices[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, vertices[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -7701,27 +7178,18 @@ void __fastcall zRndr_DrawFlatImmediate(
             edgeTableA[edgeCountA].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableA[edgeCountA].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
             }
 
             ++edgeCountA;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
             edgeYStart = (fixed16Value + 0x7fff) >> 16;
             edgeSampleY = (float)(edgeYStart) + 0.5f;
         }
@@ -7729,10 +7197,7 @@ void __fastcall zRndr_DrawFlatImmediate(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        vertices[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, vertices[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -7751,27 +7216,18 @@ void __fastcall zRndr_DrawFlatImmediate(
             edgeTableB[edgeCountB].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableB[edgeCountB].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
             }
 
             ++edgeCountB;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
             edgeYStart = (fixed16Value + 0x7fff) >> 16;
             edgeSampleY = (float)(edgeYStart) + 0.5f;
         }
@@ -7782,15 +7238,9 @@ void __fastcall zRndr_DrawFlatImmediate(
         return;
     }
 
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        vertices[topVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, vertices[topVertexIndex].y);
     const int firstScanline = (fixed16Value + 0x7fff) >> 16;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        vertices[bottomVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, vertices[bottomVertexIndex].y);
     const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
@@ -7844,22 +7294,14 @@ void __fastcall zRndr_DrawFlatImmediate(
             zRndr::g_spanAllocCursor->depthSlope = invDepthSlopeX;
 
             int spanCount = 0;
-            zRndr::g_pfnBuildSpanListSecondary(
-                visibleSpans,
-                y,
-                &spanCount
-            );
+            zRndr::g_pfnBuildSpanListSecondary(visibleSpans, y, &spanCount);
 
             for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
                 zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
                 const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
                 const int byteOffset = (int)(span->sampleXMin) * zRndr::g_bytesPerPixel;
                 zRndr::g_spanCurrentSpanBaseAddr = (unsigned short *)(scanlineBase + byteOffset);
-                zRndr::g_pfnFlatImmediateSpanOp(
-                    flatSpanOpEcxArg,
-                    flatSpanOpEdxArg,
-                    pixelCount
-                );
+                zRndr::g_pfnFlatImmediateSpanOp(flatSpanOpEcxArg, flatSpanOpEdxArg, pixelCount);
             }
         }
 
@@ -7869,11 +7311,11 @@ void __fastcall zRndr_DrawFlatImmediate(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-rasterizepoly
- * @recoil-artifact defines .text recoil:function:0x4936d0: zRndr_RasterizePoly
+ * @recoil-artifact defines .text recoil:function:0x4936d0: zRndrRasterizePoly
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Scan-convert a polygon and dispatch each covered span to the selected span routine.
  */
-void __fastcall zRndr_RasterizePoly(
+void __fastcall zRndrRasterizePoly(
     zVec3 *vertices,
     int vertCount,
     int spanOpContext
@@ -7933,10 +7375,7 @@ void __fastcall zRndr_RasterizePoly(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        reducedVerts[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -7955,27 +7394,18 @@ void __fastcall zRndr_RasterizePoly(
             edgeTableA[edgeCountA].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableA[edgeCountA].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
             }
 
             ++edgeCountA;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
             edgeYStart = (fixed16Value + 0x7fff) >> 16;
             edgeSampleY = (float)(edgeYStart) + 0.5f;
         }
@@ -7983,10 +7413,7 @@ void __fastcall zRndr_RasterizePoly(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        reducedVerts[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -8005,27 +7432,18 @@ void __fastcall zRndr_RasterizePoly(
             edgeTableB[edgeCountB].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableB[edgeCountB].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
             }
 
             ++edgeCountB;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
             edgeYStart = (fixed16Value + 0x7fff) >> 16;
             edgeSampleY = (float)(edgeYStart) + 0.5f;
         }
@@ -8036,15 +7454,9 @@ void __fastcall zRndr_RasterizePoly(
         return;
     }
 
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        reducedVerts[topVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[topVertexIndex].y);
     const int firstScanline = (fixed16Value + 0x7fff) >> 16;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        reducedVerts[bottomVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[bottomVertexIndex].y);
     const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
@@ -8090,10 +7502,7 @@ void __fastcall zRndr_RasterizePoly(
             if (pixelCount > 0) {
                 zRndr::g_spanCurrentSpanBaseAddr =
                     (unsigned short *)(scanlineBase + xStart * zRndr::g_bytesPerPixel);
-                zRndr::g_pfnSelectedSpanOp(
-                    spanOpContext,
-                    pixelCount
-                );
+                zRndr::g_pfnSelectedSpanOp(spanOpContext, pixelCount);
             }
         }
 
@@ -8103,11 +7512,11 @@ void __fastcall zRndr_RasterizePoly(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawflatqueued
- * @recoil-artifact defines .text recoil:function:0x493df0: zRndr_DrawFlatQueued
+ * @recoil-artifact defines .text recoil:function:0x493df0: zRndrDrawFlatQueued
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Draw a queued flat/textured polygon through the active span callback path.
  */
-void __fastcall zRndr_DrawFlatQueued(
+void __fastcall zRndrDrawFlatQueued(
     zImage_TexDirEntryPartial *entry,
     zVec3 *polyVerts,
     zVec3 *triVerts,
@@ -8201,7 +7610,7 @@ void __fastcall zRndr_DrawFlatQueued(
         adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
 
     if (entry->nextVariant != 0) {
-        selectedImage = zRndr_TextureMip_SelectVariantImage(
+        selectedImage = zRndrTextureMipSelectVariantImage(
             entry,
             triVerts,
             3,
@@ -8242,10 +7651,7 @@ void __fastcall zRndr_DrawFlatQueued(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        polyVerts[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -8264,27 +7670,18 @@ void __fastcall zRndr_DrawFlatQueued(
             edgeTableA[edgeCountA].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableA[edgeCountA].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
             }
 
             ++edgeCountA;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
             edgeYStart = (fixed16Value + 0x7fff) >> 16;
             edgeSampleY = (float)(edgeYStart) + 0.5f;
         }
@@ -8292,10 +7689,7 @@ void __fastcall zRndr_DrawFlatQueued(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        polyVerts[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -8314,27 +7708,18 @@ void __fastcall zRndr_DrawFlatQueued(
             edgeTableB[edgeCountB].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableB[edgeCountB].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
             }
 
             ++edgeCountB;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
+            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
             edgeYStart = (fixed16Value + 0x7fff) >> 16;
             edgeSampleY = (float)(edgeYStart) + 0.5f;
         }
@@ -8345,15 +7730,9 @@ void __fastcall zRndr_DrawFlatQueued(
         return;
     }
 
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        polyVerts[topVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
     const int firstScanline = (fixed16Value + 0x7fff) >> 16;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        polyVerts[bottomVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[bottomVertexIndex].y);
     const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
@@ -8440,11 +7819,7 @@ void __fastcall zRndr_DrawFlatQueued(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            zRndr::g_pfnBuildSpanListSecondary(
-                visibleSpans,
-                y,
-                &spanCount
-            );
+            zRndr::g_pfnBuildSpanListSecondary(visibleSpans, y, &spanCount);
             {
                 for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
                     zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
@@ -8527,10 +7902,10 @@ void __fastcall zRndr_DrawFlatQueued(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-renderer-drawpolytlv
- * @recoil-artifact defines .text recoil:function:0x494af0: Renderer_DrawPolyTLV
+ * @recoil-artifact defines .text recoil:function:0x494af0: RendererDrawPolyTLV
  * Purpose: Draw a transformed lit polygon through the active software texture span path.
  */
-void __fastcall Renderer_DrawPolyTLV(
+void __fastcall RendererDrawPolyTLV(
     zImage_TexDirEntryPartial *entry,
     zVec3 *polyVerts,
     zVec3 *triVerts,
@@ -8630,7 +8005,7 @@ void __fastcall Renderer_DrawPolyTLV(
         adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
 
     if (entry->nextVariant != 0) {
-        selectedImage = zRndr_TextureMip_SelectVariantImage(
+        selectedImage = zRndrTextureMipSelectVariantImage(
             entry,
             triVerts,
             3,
@@ -8674,10 +8049,7 @@ void __fastcall Renderer_DrawPolyTLV(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        polyVerts[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -8696,20 +8068,14 @@ void __fastcall Renderer_DrawPolyTLV(
             edgeTableA[edgeCountA].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableA[edgeCountA].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
             }
             ++edgeCountA;
             ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
@@ -8720,10 +8086,7 @@ void __fastcall Renderer_DrawPolyTLV(
     }
 
     edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        polyVerts[edgeVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[edgeVertexIndex].y);
     edgeYStart = (fixed16Value + 0x7fff) >> 16;
     edgeSampleY = (float)(edgeYStart) + 0.5f;
     while (edgeVertexIndex != bottomVertexIndex) {
@@ -8742,20 +8105,14 @@ void __fastcall Renderer_DrawPolyTLV(
             edgeTableB[edgeCountB].reserved = 0;
             if (dy != 0.0f) {
                 const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].xStepFixed,
-                    xSlope
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, xSlope);
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
                     edgeTableB[edgeCountB].currentXFixed,
                     start.x + (edgeSampleY - start.y) * xSlope
                 );
             } else {
                 edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x
-                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
             }
             ++edgeCountB;
             ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
@@ -8769,15 +8126,9 @@ void __fastcall Renderer_DrawPolyTLV(
         return;
     }
 
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        polyVerts[topVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
     const int firstScanline = (fixed16Value + 0x7fff) >> 16;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        polyVerts[bottomVertexIndex].y
-    );
+    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[bottomVertexIndex].y);
     const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
@@ -8790,11 +8141,7 @@ void __fastcall Renderer_DrawPolyTLV(
     if (selectedImage->alphaMap != 0) {
         zRndr::g_spanActiveTexAlphaMap = selectedImage->alphaMap;
         int alphaBits = 0;
-        memcpy(
-            &alphaBits,
-            &alpha,
-            sizeof(alphaBits)
-        );
+        memcpy(&alphaBits, &alpha, sizeof(alphaBits));
         zRndr::g_spanActiveConstAlphaBits = alphaBits;
         spanProc = zRndr::g_pfnPolyTlvSpanOp_Mode0;
         paletteSpanProc = zRndr::g_pfnPolyTlvSpanOpAlt_Mode0;
@@ -8875,11 +8222,7 @@ void __fastcall Renderer_DrawPolyTLV(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            zRndr::g_pfnBuildSpanListSecondary(
-                visibleSpans,
-                y,
-                &spanCount
-            );
+            zRndr::g_pfnBuildSpanListSecondary(visibleSpans, y, &spanCount);
             {
                 for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
                     zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
@@ -8962,10 +8305,10 @@ void __fastcall Renderer_DrawPolyTLV(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawtexturedqueued
- * @recoil-artifact defines .text recoil:function:0x495850: zRndr_DrawTexturedQueued
+ * @recoil-artifact defines .text recoil:function:0x495850: zRndrDrawTexturedQueued
  * Purpose: Draw a depth-sorted textured polygon using perspective-correct queued spans.
  */
-void __fastcall zRndr_DrawTexturedQueued(
+void __fastcall zRndrDrawTexturedQueued(
     zImage_TexDirEntryPartial *entry,
     zVec3 *projectedVerts,
     zVec3 *clippedTriVerts,
@@ -8998,7 +8341,7 @@ void __fastcall zRndr_DrawTexturedQueued(
         (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f ||
          clippedTriVerts[2].z < 10.0f);
     if (useClippedNearPlane) {
-        zMath_BuildPerspectiveTextureInterpolants(
+        zMathBuildPerspectiveTextureInterpolants(
             clippedTriVerts,
             triUVs,
             (zVec2 *)(&gRndr_PerspInvDepthStepX),
@@ -9095,7 +8438,7 @@ void __fastcall zRndr_DrawTexturedQueued(
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
-        selectedImage = zRndr_TextureMip_SelectVariantImage(
+        selectedImage = zRndrTextureMipSelectVariantImage(
             entry,
             triVerts,
             3,
@@ -9256,7 +8599,7 @@ void __fastcall zRndr_DrawTexturedQueued(
         } else {
             int shadeRecipe = g_zRndr_ActivePaletteShadeRecipeIndex;
             if (shadeRecipe < 0) {
-                shadeRecipe = zVid_PaletteRemap_FindRecipeIndexFromRgb(
+                shadeRecipe = zVidPaletteRemapFindRecipeIndexFromRgb(
                     (zColorRgb *)(zRndr::g_fogParamsActive.colorRgb01)
                 );
             }
@@ -9345,11 +8688,7 @@ void __fastcall zRndr_DrawTexturedQueued(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            zRndr::g_pfnBuildSpanList(
-                visibleSpans,
-                y,
-                &spanCount
-            );
+            zRndr::g_pfnBuildSpanList(visibleSpans, y, &spanCount);
             {
                 for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
                     zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
@@ -9572,10 +8911,10 @@ void __fastcall zRndr_DrawTexturedQueued(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawtexturedqueuedalpha
- * @recoil-artifact defines .text recoil:function:0x4969d0: zRndr_DrawTexturedQueuedAlpha
+ * @recoil-artifact defines .text recoil:function:0x4969d0: zRndrDrawTexturedQueuedAlpha
  * Purpose: Queue an alpha-blended textured polygon for deferred depth-sorted rendering.
  */
-void __fastcall zRndr_DrawTexturedQueuedAlpha(
+void __fastcall zRndrDrawTexturedQueuedAlpha(
     zImage_TexDirEntryPartial *entry,
     zVec3 *projectedVerts,
     zVec3 *clippedTriVerts,
@@ -9605,7 +8944,7 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
         (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f ||
          clippedTriVerts[2].z < 10.0f);
     if (useClippedNearPlane) {
-        zMath_BuildPerspectiveTextureInterpolants(
+        zMathBuildPerspectiveTextureInterpolants(
             clippedTriVerts,
             triUVs,
             (zVec2 *)(&gRndr_PerspInvDepthStepX),
@@ -9702,7 +9041,7 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
-        selectedImage = zRndr_TextureMip_SelectVariantImage(
+        selectedImage = zRndrTextureMipSelectVariantImage(
             entry,
             triVerts,
             3,
@@ -9918,11 +9257,7 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            zRndr::g_pfnBuildSpanList(
-                visibleSpans,
-                y,
-                &spanCount
-            );
+            zRndr::g_pfnBuildSpanList(visibleSpans, y, &spanCount);
             {
                 for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
                     zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
@@ -10065,10 +9400,10 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawtexturedfantri
- * @recoil-artifact defines .text recoil:function:0x497ac0: zRndr_DrawTexturedFanTri
+ * @recoil-artifact defines .text recoil:function:0x497ac0: zRndrDrawTexturedFanTri
  * Purpose: Draw one textured triangle from a fan using the selected active span callback.
  */
-void __fastcall zRndr_DrawTexturedFanTri(
+void __fastcall zRndrDrawTexturedFanTri(
     zImage_TexDirEntryPartial *entry,
     zVec3 *projectedVerts,
     zVec3 *clippedTriVerts,
@@ -10099,7 +9434,7 @@ void __fastcall zRndr_DrawTexturedFanTri(
         (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f ||
          clippedTriVerts[2].z < 10.0f);
     if (useClippedNearPlane) {
-        zMath_BuildPerspectiveTextureInterpolants(
+        zMathBuildPerspectiveTextureInterpolants(
             clippedTriVerts,
             triUVs,
             (zVec2 *)(&gRndr_PerspInvDepthStepX),
@@ -10196,7 +9531,7 @@ void __fastcall zRndr_DrawTexturedFanTri(
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
-        selectedImage = zRndr_TextureMip_SelectVariantImage(
+        selectedImage = zRndrTextureMipSelectVariantImage(
             entry,
             triVerts,
             3,
@@ -10413,11 +9748,7 @@ void __fastcall zRndr_DrawTexturedFanTri(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            zRndr::g_pfnBuildSpanListSecondary(
-                visibleSpans,
-                y,
-                &spanCount
-            );
+            zRndr::g_pfnBuildSpanListSecondary(visibleSpans, y, &spanCount);
             {
                 for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
                     zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
@@ -10560,38 +9891,31 @@ void __fastcall zRndr_DrawTexturedFanTri(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawimmediateline
- * @recoil-artifact defines .text recoil:function:0x498bd0: zRndr_DrawImmediateLine
+ * @recoil-artifact defines .text recoil:function:0x498bd0: zRndrDrawImmediateLine
  * @recoil-match byte
  *
  * Source file evidence: zRndr immediate line draw cluster in this source file.
  * Purpose: Dispatch one unclipped immediate line to the selected software line raster routine.
  */
-void __fastcall zRndr_DrawImmediateLine(
+void __fastcall zRndrDrawImmediateLine(
     int x0,
     int y0,
     int x1,
     int y1,
     int color16
 ) {
-    zRndr::g_pfnImmediateRaster4(
-        (unsigned short *)(zRndr::g_frameBuffer),
-        x0,
-        y0,
-        x1,
-        y1,
-        color16
-    );
+    zRndr::g_pfnImmediateRaster4((unsigned short *)(zRndr::g_frameBuffer), x0, y0, x1, y1, color16);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawclippedimmediatelinestrip
- * @recoil-artifact defines .text recoil:function:0x498c00: zRndr_DrawClippedImmediateLineStrip
+ * @recoil-artifact defines .text recoil:function:0x498c00: zRndrDrawClippedImmediateLineStrip
  * @recoil-match byte
  *
  * Source file evidence: zRndr immediate line draw cluster in this source file.
  * Purpose: Dispatch each segment of a clipped immediate line strip to the selected raster routine.
  */
-void __fastcall zRndr_DrawClippedImmediateLineStrip(
+void __fastcall zRndrDrawClippedImmediateLineStrip(
     const zRndr_LinePoint2I *points,
     int segmentCount,
     const void *clipRect,
@@ -10621,16 +9945,16 @@ void __fastcall zRndr_DrawClippedImmediateLineStrip(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testpointvisibility
- * @recoil-artifact defines .text recoil:function:0x498c40: zRndr_SpanOcclusion_TestPointVisibility.
+ * @recoil-artifact defines .text recoil:function:0x498c40: zRndrSpanOcclusionTestPointVisibility.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: stage one projected point as a single-pixel pending span and test
  * column visibility.
  *
  * Evidence: BN writes samplePoint z/x fields into gRndr_SpanAllocCursor,
  * truncates x/y through the original integer conversion path, calls
- * zRndr_SpanOcclusion_TestColumnVisibility, and returns one only when visible.
+ * zRndrSpanOcclusionTestColumnVisibility, and returns one only when visible.
  */
-int __fastcall zRndr_SpanOcclusion_TestPointVisibility(
+int __fastcall zRndrSpanOcclusionTestPointVisibility(
     zVec3 *samplePoint
 ) {
     zRndr::g_spanAllocCursor->invDepth = samplePoint->z;
@@ -10640,20 +9964,17 @@ int __fastcall zRndr_SpanOcclusion_TestPointVisibility(
     zRndr::g_spanAllocCursor->sampleXMax = zRndr::g_spanAllocCursor->sampleXMin;
 
     int isVisible;
-    zRndr_SpanOcclusion_TestColumnVisibility(
-        (int)(samplePoint->y),
-        &isVisible
-    );
+    zRndrSpanOcclusionTestColumnVisibility((int)(samplePoint->y), &isVisible);
     return isVisible > 0 ? 1 : 0;
 }
 
 namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-drawqueuedsample16-clippedframebuffer
- * @recoil-artifact defines .text recoil:function:0x498cb0: zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer
+ * @recoil-artifact defines .text recoil:function:0x498cb0: zRndr::LensFlareDrawQueuedSample16ClippedFramebuffer
  * Purpose: Draw one queued lens-flare sample into the clipped 16-bit framebuffer.
  */
-void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
+void __fastcall LensFlareDrawQueuedSample16ClippedFramebuffer(
     LensFlareSamplePartial *sample,
     int yOffsetPixels,
     float screenScale
@@ -10810,7 +10131,7 @@ void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testsample
- * @recoil-artifact defines .text recoil:function:0x498f90: zRndr_SpanOcclusion_TestSample.
+ * @recoil-artifact defines .text recoil:function:0x498f90: zRndrSpanOcclusionTestSample.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
@@ -10820,22 +10141,17 @@ void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
  * and color16 in the observed fastcall/stack shape, and performs no additional
  * span state updates.
  */
-void __fastcall zRndr_SpanOcclusion_TestSample(
+void __fastcall zRndrSpanOcclusionTestSample(
     int x,
     int y,
     int color16
 ) {
-    zRndr::g_pfnPointOpActive(
-        zRndr::g_frameBuffer,
-        y,
-        x,
-        color16
-    );
+    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, y, x, color16);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawcircleoutline16-framebuffer
- * @recoil-artifact defines .text recoil:function:0x498fb0: zRndr_DrawCircleOutline16_Framebuffer.
+ * @recoil-artifact defines .text recoil:function:0x498fb0: zRndrDrawCircleOutline16Framebuffer.
  * Provisional source-placement hypothesis: zRndr_Draw.cpp.
  * Purpose: draw a 16-bit framebuffer circle outline through midpoint octant
  * batches.
@@ -10844,7 +10160,7 @@ void __fastcall zRndr_SpanOcclusion_TestSample(
  * non-positive radius values, dispatches the initial y=0 octants, then advances
  * the midpoint decision variable until x <= y.
  */
-void __fastcall zRndr_DrawCircleOutline16_Framebuffer(
+void __fastcall zRndrDrawCircleOutline16Framebuffer(
     int centerX,
     int centerY,
     int radius,
@@ -10862,11 +10178,7 @@ void __fastcall zRndr_DrawCircleOutline16_Framebuffer(
     g_zRndr_CircleCenterY = centerY;
     g_zRndr_CircleDrawAuxArg = auxArg;
 
-    zRndr_DrawCircleOctants16_Framebuffer(
-        0,
-        x,
-        packedColor
-    );
+    zRndrDrawCircleOctants16Framebuffer(0, x, packedColor);
     do {
         if (decisionVar < 0) {
             decisionVar += (y << 1) + 3;
@@ -10876,17 +10188,13 @@ void __fastcall zRndr_DrawCircleOutline16_Framebuffer(
         }
 
         ++y;
-        zRndr_DrawCircleOctants16_Framebuffer(
-            y,
-            x,
-            packedColor
-        );
+        zRndrDrawCircleOctants16Framebuffer(y, x, packedColor);
     } while (x > y);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawcircleoctants16-framebuffer
- * @recoil-artifact defines .text recoil:function:0x499020: zRndr_DrawCircleOctants16_Framebuffer.
+ * @recoil-artifact defines .text recoil:function:0x499020: zRndrDrawCircleOctants16Framebuffer.
  * Provisional source-placement hypothesis: zRndr_Draw.cpp.
  * Purpose: emit the eight symmetric framebuffer points for one circle-outline
  * midpoint step.
@@ -10895,7 +10203,7 @@ void __fastcall zRndr_DrawCircleOutline16_Framebuffer(
  * and calls gRndr_pfnPointOpActive for each octant using fastcall y/x inputs
  * plus the caller-supplied packed color.
  */
-void __fastcall zRndr_DrawCircleOctants16_Framebuffer(
+void __fastcall zRndrDrawCircleOctants16Framebuffer(
     int y,
     int x,
     int packedColor
@@ -10952,11 +10260,11 @@ void __fastcall zRndr_DrawCircleOctants16_Framebuffer(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-texturemip-selectvariantimage
- * @recoil-artifact defines .text recoil:function:0x499130: zRndr_TextureMip_SelectVariantImage
+ * @recoil-artifact defines .text recoil:function:0x499130: zRndrTextureMipSelectVariantImage
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Select a mip/variant image for a textured polygon from its projected texture metric.
  */
-zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
+zVidImagePartial *__fastcall zRndrTextureMipSelectVariantImage(
     zImage_TexDirEntryPartial *entry,
     const zVec3 *triVerts,
     int vertCount,
@@ -11012,12 +10320,12 @@ zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-plotpixel16
- * @recoil-artifact defines .text recoil:function:0x4992b0: zRndr_PlotPixel16
+ * @recoil-artifact defines .text recoil:function:0x4992b0: zRndrPlotPixel16
  * @recoil-match byte
  *
  * Purpose: Plot one 16-bit pixel into the active framebuffer row pitch.
  */
-void __fastcall zRndr_PlotPixel16(
+void __fastcall zRndrPlotPixel16(
     unsigned short *dstPixels,
     int y,
     int x,
@@ -11029,10 +10337,10 @@ void __fastcall zRndr_PlotPixel16(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawline16
- * @recoil-artifact defines .text recoil:function:0x4992d0: zRndr_DrawLine16
+ * @recoil-artifact defines .text recoil:function:0x4992d0: zRndrDrawLine16
  * Purpose: Rasterize an unclipped 16-bit Bresenham line into the active framebuffer.
  */
-void __fastcall zRndr_DrawLine16(
+void __fastcall zRndrDrawLine16(
     unsigned short *dstPixels,
     int x0,
     int y0,
@@ -11093,10 +10401,10 @@ void __fastcall zRndr_DrawLine16(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawline16-segmented
- * @recoil-artifact defines .text recoil:function:0x4993a0: zRndr_DrawLine16_Segmented
+ * @recoil-artifact defines .text recoil:function:0x4993a0: zRndrDrawLine16Segmented
  * Purpose: Rasterize a segmented 16-bit Bresenham line into the active framebuffer.
  */
-void __fastcall zRndr_DrawLine16_Segmented(
+void __fastcall zRndrDrawLine16Segmented(
     unsigned short *dstPixels,
     int x0,
     int y0,
@@ -11181,10 +10489,10 @@ void __fastcall zRndr_DrawLine16_Segmented(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawline16-clipped
- * @recoil-artifact defines .text recoil:function:0x499500: zRndr_DrawLine16_Clipped
+ * @recoil-artifact defines .text recoil:function:0x499500: zRndrDrawLine16Clipped
  * Purpose: Clip and rasterize a 16-bit line into the active framebuffer.
  */
-void __fastcall zRndr_DrawLine16_Clipped(
+void __fastcall zRndrDrawLine16Clipped(
     unsigned short *dstPixels,
     const zRndr_LineClipRect2I *clipRect,
     int x0,
@@ -11321,7 +10629,7 @@ void __fastcall zRndr_DrawLine16_Clipped(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan16opaque
- * @recoil-artifact defines .text recoil:function:0x4997d0: zRndr_FillSpan16Opaque
+ * @recoil-artifact defines .text recoil:function:0x4997d0: zRndrFillSpan16Opaque
  * Purpose: Fill the active reverse span with one opaque 16-bit color.
  *
  * Evidence: BN reads gRndr_CurrentSpanBaseAddr, computes the end of the span,
@@ -11329,7 +10637,7 @@ void __fastcall zRndr_DrawLine16_Clipped(
  * gRndr_SavedEspSlot, so source keeps this leaf as a typed reverse fill rather
  * than part of the switch-vshift ESP-pivot source family.
  */
-void __fastcall zRndr_FillSpan16Opaque(
+void __fastcall zRndrFillSpan16Opaque(
     int packedColor16,
     int pixelCount
 ) {
@@ -11346,13 +10654,13 @@ void __fastcall zRndr_FillSpan16Opaque(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan555solid
- * @recoil-artifact defines .text recoil:function:0x499810: zRndr_FillSpan555Solid
+ * @recoil-artifact defines .text recoil:function:0x499810: zRndrFillSpan555Solid
  * Purpose: Blend a solid color into the active 555 span using the supplied alpha.
  *
  * Evidence: BN uses gRndr_CurrentSpanBaseAddr as an ordinary word pointer for
  * this solid-fill leaf; there is no ESP-pivot write shape here.
  */
-void __fastcall zRndr_FillSpan555Solid(
+void __fastcall zRndrFillSpan555Solid(
     int packedColor16,
     int blendAlpha,
     int pixelCount
@@ -11385,13 +10693,13 @@ void __fastcall zRndr_FillSpan555Solid(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan565solid
- * @recoil-artifact defines .text recoil:function:0x4998a0: zRndr_FillSpan565Solid
+ * @recoil-artifact defines .text recoil:function:0x4998a0: zRndrFillSpan565Solid
  * Purpose: Blend a solid color into the active 565 span using the supplied alpha.
  *
  * Evidence: BN uses gRndr_CurrentSpanBaseAddr as an ordinary word pointer here;
  * the limited reconstruction marker records only BN's partial-register display.
  */
-void __fastcall zRndr_FillSpan565Solid(
+void __fastcall zRndrFillSpan565Solid(
     int packedColor16,
     int blendAlpha,
     int pixelCount
@@ -11424,12 +10732,12 @@ void __fastcall zRndr_FillSpan565Solid(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteremapkey
- * @recoil-artifact defines .text recoil:function:0x499930: zRndr_SetPaletteRemapKey.
+ * @recoil-artifact defines .text recoil:function:0x499930: zRndrSetPaletteRemapKey.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Select the active palette remap key from a recipe and shade level.
  */
-void __fastcall zRndr_SetPaletteRemapKey(
+void __fastcall zRndrSetPaletteRemapKey(
     zVidPaletteRemapRecipe *recipe,
     float shadeLevel
 ) {
@@ -11438,7 +10746,7 @@ void __fastcall zRndr_SetPaletteRemapKey(
         return;
     }
 
-    const int recipeIndex = zVid_PaletteRemap_BuildPaletteVariant(recipe);
+    const int recipeIndex = zVidPaletteRemapBuildPaletteVariant(recipe);
     int shadeBucket = (int)(shadeLevel * 0.125f);
     if (shadeBucket > 31) {
         shadeBucket = 31;
@@ -11451,14 +10759,14 @@ void __fastcall zRndr_SetPaletteRemapKey(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteremapkeyfromrgb01
- * @recoil-artifact defines .text recoil:function:0x499990: zRndr_SetPaletteRemapKeyFromRgb01.
+ * @recoil-artifact defines .text recoil:function:0x499990: zRndrSetPaletteRemapKeyFromRgb01.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Build a single-color palette remap recipe from RGB values and select its remap key.
  */
-void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
+void __fastcall zRndrSetPaletteRemapKeyFromRgb01(
     zColorRgb *rgb01,
     float shadeLevel
 ) {
@@ -11476,22 +10784,19 @@ void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
     recipe.color1G = rgb01->green;
     recipe.color1B = rgb01->blue;
     recipe.color1Strength = 1.0f;
-    zRndr_SetPaletteRemapKey(
-        &recipe,
-        shadeLevel
-    );
+    zRndrSetPaletteRemapKey(&recipe, shadeLevel);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteshaderecipeindex
- * @recoil-artifact defines .text recoil:function:0x499a00: zRndr_SetPaletteShadeRecipeIndex.
+ * @recoil-artifact defines .text recoil:function:0x499a00: zRndrSetPaletteShadeRecipeIndex.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Select the active palette shade recipe variant index.
  */
-void __fastcall zRndr_SetPaletteShadeRecipeIndex(
+void __fastcall zRndrSetPaletteShadeRecipeIndex(
     zVidPaletteRemapRecipe *recipe
 ) {
     if (recipe == 0) {
@@ -11499,17 +10804,17 @@ void __fastcall zRndr_SetPaletteShadeRecipeIndex(
         return;
     }
 
-    g_zRndr_ActivePaletteShadeRecipeIndex = zVid_PaletteRemap_BuildPaletteVariant(recipe);
+    g_zRndr_ActivePaletteShadeRecipeIndex = zVidPaletteRemapBuildPaletteVariant(recipe);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-submitpolywithspanlist
- * @recoil-artifact defines .text recoil:function:0x499a20: zRndr_SubmitPolyWithSpanList
+ * @recoil-artifact defines .text recoil:function:0x499a20: zRndrSubmitPolyWithSpanList
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
  * Source file evidence: embedded zError file path in this function.
  * Purpose: Submit a flat polygon for immediate drawing or deferred transparent/overwrite queues.
  */
-void __fastcall zRndr_SubmitPolyWithSpanList(
+void __fastcall zRndrSubmitPolyWithSpanList(
     zVec3 *entryVertices,
     zVec3 *entryPlaneVertices,
     int spanOpContext,
@@ -11536,16 +10841,8 @@ void __fastcall zRndr_SubmitPolyWithSpanList(
         ++zRndr::g_overwriteQueueCount;
         zRndr::OverwriteQueuedPolyDrawCmd &cmd = zRndr::g_overwriteQueue[queueIndex];
         cmd.hasClippedTriVerts = 0;
-        memcpy(
-            cmd.polyVerts,
-            entryVertices,
-            (size_t)(vertCount) * sizeof(zVec3)
-        );
-        memcpy(
-            cmd.triVerts,
-            entryPlaneVertices,
-            3 * sizeof(zVec3)
-        );
+        memcpy(cmd.polyVerts, entryVertices, (size_t)(vertCount) * sizeof(zVec3));
+        memcpy(cmd.triVerts, entryPlaneVertices, 3 * sizeof(zVec3));
         cmd.alphaOrShadeF = (float)(alpha255);
         cmd.materialRef = 0;
         cmd.vertexCount = vertCount;
@@ -11557,7 +10854,7 @@ void __fastcall zRndr_SubmitPolyWithSpanList(
     }
 
     if (alpha255 >= 0xff) {
-        zRndr_RasterizePolyWithSpanList(
+        zRndrRasterizePolyWithSpanList(
             entryVertices,
             entryPlaneVertices,
             vertCount,
@@ -11579,16 +10876,8 @@ void __fastcall zRndr_SubmitPolyWithSpanList(
     }
 
     zRndr::TransparentQueuedPolyDrawCmd &cmd = zRndr::g_transparentQueue[queueIndex];
-    memcpy(
-        cmd.polyVerts,
-        entryVertices,
-        (size_t)(vertCount) * sizeof(zVec3)
-    );
-    memcpy(
-        cmd.triVerts,
-        entryPlaneVertices,
-        3 * sizeof(zVec3)
-    );
+    memcpy(cmd.polyVerts, entryVertices, (size_t)(vertCount) * sizeof(zVec3));
+    memcpy(cmd.triVerts, entryPlaneVertices, 3 * sizeof(zVec3));
     cmd.materialRef = 0;
     cmd.vertexCount = vertCount;
     cmd.shadeOrSpanMode = spanOpContext;
@@ -11601,12 +10890,12 @@ void __fastcall zRndr_SubmitPolyWithSpanList(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-submittexturedpolyuniformalphaorshade
- * @recoil-artifact defines .text recoil:function:0x499c40: zRndr_SubmitTexturedPolyUniformAlphaOrShade
+ * @recoil-artifact defines .text recoil:function:0x499c40: zRndrSubmitTexturedPolyUniformAlphaOrShade
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
  * Source file evidence: embedded zError file path in this function.
  * Purpose: Submit a textured polygon with one alpha/shade value to the immediate or queued paths.
  */
-void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
+void __fastcall zRndrSubmitTexturedPolyUniformAlphaOrShade(
     zVec3 *projectedPolyVerts,
     zVec3 *clippedTriVerts,
     zVec3 *triData9f,
@@ -11641,27 +10930,11 @@ void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
         cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
         cmd.scanConvertMode = zRndr::g_scanConvertMode;
         cmd.alphaOrShadeF = alphaOrShadeF;
-        memcpy(
-            cmd.polyVerts,
-            projectedPolyVerts,
-            (size_t)(vertexCount) * sizeof(zVec3)
-        );
-        memcpy(
-            cmd.triVerts,
-            triData9f,
-            3 * sizeof(zVec3)
-        );
-        memcpy(
-            cmd.triUVs,
-            triUVs,
-            3 * sizeof(zVec2)
-        );
+        memcpy(cmd.polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
+        memcpy(cmd.triVerts, triData9f, 3 * sizeof(zVec3));
+        memcpy(cmd.triUVs, triUVs, 3 * sizeof(zVec2));
         if (clippedTriVerts != 0) {
-            memcpy(
-                cmd.clippedTriVertOverlay.clippedTriVerts,
-                clippedTriVerts,
-                3 * sizeof(zVec3)
-            );
+            memcpy(cmd.clippedTriVertOverlay.clippedTriVerts, clippedTriVerts, 3 * sizeof(zVec3));
             cmd.hasClippedTriVerts = 1;
         } else {
             cmd.hasClippedTriVerts = 0;
@@ -11672,7 +10945,7 @@ void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
 
     zVidImagePartial *image = entry != 0 ? entry->image : 0;
     if ((image->formatFlagsPacked & 2) == 0 && alphaOrShadeF < 1.0f) {
-        zRndr_DrawTexturedQueuedAlpha(
+        zRndrDrawTexturedQueuedAlpha(
             entry,
             projectedPolyVerts,
             clippedTriVerts,
@@ -11703,35 +10976,15 @@ void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
     cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
     cmd.scanConvertMode = zRndr::g_scanConvertMode;
     if ((image->formatFlagsPacked & 2) != 0) {
-        memcpy(
-            &cmd.alphaOrShadeBits,
-            &alphaOrShadeF,
-            sizeof(float)
-        );
+        memcpy(&cmd.alphaOrShadeBits, &alphaOrShadeF, sizeof(float));
     } else {
         cmd.alphaOrShadeBits = (int)(alphaOrShadeF * 255.0f);
     }
-    memcpy(
-        cmd.polyVerts,
-        projectedPolyVerts,
-        (size_t)(vertexCount) * sizeof(zVec3)
-    );
-    memcpy(
-        cmd.triVerts,
-        triData9f,
-        3 * sizeof(zVec3)
-    );
-    memcpy(
-        cmd.triUVs,
-        triUVs,
-        3 * sizeof(zVec2)
-    );
+    memcpy(cmd.polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
+    memcpy(cmd.triVerts, triData9f, 3 * sizeof(zVec3));
+    memcpy(cmd.triUVs, triUVs, 3 * sizeof(zVec2));
     if (clippedTriVerts != 0) {
-        memcpy(
-            cmd.clippedTriVertOverlay.clippedTriVerts,
-            clippedTriVerts,
-            3 * sizeof(zVec3)
-        );
+        memcpy(cmd.clippedTriVertOverlay.clippedTriVerts, clippedTriVerts, 3 * sizeof(zVec3));
         cmd.hasClippedTriVerts = 1;
     } else {
         cmd.hasClippedTriVerts = 0;
@@ -11742,12 +10995,12 @@ void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-submittexturedpolypervertexalphaorshade
- * @recoil-artifact defines .text recoil:function:0x499ec0: zRndr_SubmitTexturedPolyPerVertexAlphaOrShade
+ * @recoil-artifact defines .text recoil:function:0x499ec0: zRndrSubmitTexturedPolyPerVertexAlphaOrShade
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
  * Source file evidence: embedded zError file path in this function.
  * Purpose: Submit a textured polygon with per-vertex alpha/shade values to draw or queue paths.
  */
-void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
+void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
     zVec3 *projectedPolyVerts,
     zVec3 *clippedTriVerts,
     zVec3 *triData9f,
@@ -11768,7 +11021,7 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
 
     if (texKey == -1 && preservePaletteRemapKey == 0 && entry != 0 &&
         entry->image->paletteMetaPacked > 0) {
-        texKey = zVid_PaletteRemap_FindRecipeIndexFromRgb(
+        texKey = zVidPaletteRemapFindRecipeIndexFromRgb(
             (zColorRgb *)(zRndr::g_fogParamsActive.colorRgb01)
         );
         if (texKey >= 0) {
@@ -11785,7 +11038,7 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
                 if (queueOverwrite != 0) {
                     usingDerivedPaletteKey = 1;
                 } else {
-                    zRndr_DrawTexturedQueuedAlpha(
+                    zRndrDrawTexturedQueuedAlpha(
                         entry,
                         projectedPolyVerts,
                         clippedTriVerts,
@@ -11822,21 +11075,9 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
         cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
         cmd.scanConvertMode = zRndr::g_scanConvertMode;
         cmd.alphaOrShadeF = (float)(shadeOrSpanMode);
-        memcpy(
-            cmd.polyVerts,
-            projectedPolyVerts,
-            (size_t)(vertexCount) * sizeof(zVec3)
-        );
-        memcpy(
-            cmd.triVerts,
-            triData9f,
-            3 * sizeof(zVec3)
-        );
-        memcpy(
-            cmd.triUVs,
-            triUVs,
-            3 * sizeof(zVec2)
-        );
+        memcpy(cmd.polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
+        memcpy(cmd.triVerts, triData9f, 3 * sizeof(zVec3));
+        memcpy(cmd.triUVs, triUVs, 3 * sizeof(zVec2));
         if (usingDerivedPaletteKey == 0) {
             memcpy(
                 cmd.perVertexAlphaOrShadeF,
@@ -11845,11 +11086,7 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
             );
         }
         if (clippedTriVerts != 0) {
-            memcpy(
-                cmd.clippedTriVertOverlay.clippedTriVerts,
-                clippedTriVerts,
-                3 * sizeof(zVec3)
-            );
+            memcpy(cmd.clippedTriVertOverlay.clippedTriVerts, clippedTriVerts, 3 * sizeof(zVec3));
             cmd.hasClippedTriVerts = 1;
         } else {
             cmd.hasClippedTriVerts = 0;
@@ -11873,7 +11110,7 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
                 fanVerts[2] = projectedPolyVerts[fanTriIndex + 2];
                 shadeTriplet.y = perVertexAlphaOrShadeF[fanTriIndex + 1];
                 shadeTriplet.z = perVertexAlphaOrShadeF[fanTriIndex + 2];
-                zRndr_DrawTexturedQueued(
+                zRndrDrawTexturedQueued(
                     entry,
                     fanVerts,
                     clippedTriVerts,
@@ -11908,32 +11145,20 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
     cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
     cmd.scanConvertMode = zRndr::g_scanConvertMode;
     cmd.alphaOrShadeBits = 0xff;
-    memcpy(
-        cmd.polyVerts,
-        projectedPolyVerts,
-        (size_t)(vertexCount) * sizeof(zVec3)
-    );
-    memcpy(
-        cmd.triVerts,
-        triData9f,
-        3 * sizeof(zVec3)
-    );
-    memcpy(
-        cmd.triUVs,
-        triUVs,
-        3 * sizeof(zVec2)
-    );
+    memcpy(cmd.polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
+    memcpy(cmd.triVerts, triData9f, 3 * sizeof(zVec3));
+    memcpy(cmd.triUVs, triUVs, 3 * sizeof(zVec2));
     cmd.texKey = texKey;
     ++zRndr::g_transparentQueueCount;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-flushtransparentqueue
- * @recoil-artifact defines .text recoil:function:0x49a2b0: zRndr_FlushTransparentQueue
+ * @recoil-artifact defines .text recoil:function:0x49a2b0: zRndrFlushTransparentQueue
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Sort and draw queued transparent polygons, then reset the transparent queue.
  */
-void __cdecl zRndr_FlushTransparentQueue() {
+void __cdecl zRndrFlushTransparentQueue() {
     {
         for (int i = 0; i < zRndr::g_transparentQueueCount; ++i) {
             zRndr::g_transparentQueueSortIndices[i] = zRndr::g_transparentQueueCount - i - 1;
@@ -11976,13 +11201,9 @@ void __cdecl zRndr_FlushTransparentQueue() {
 
                 if ((cmd.materialRef->image->formatFlagsPacked & 2) != 0) {
                     float alpha = 0.0f;
-                    memcpy(
-                        &alpha,
-                        &cmd.alphaOrShadeBits,
-                        sizeof(float)
-                    );
+                    memcpy(&alpha, &cmd.alphaOrShadeBits, sizeof(float));
                     if (alpha >= 1.0f) {
-                        zRndr_DrawFlatQueued(
+                        zRndrDrawFlatQueued(
                             cmd.materialRef,
                             polyVerts,
                             triVerts,
@@ -11991,7 +11212,7 @@ void __cdecl zRndr_FlushTransparentQueue() {
                             cmd.texKey
                         );
                     } else {
-                        Renderer_DrawPolyTLV(
+                        RendererDrawPolyTLV(
                             cmd.materialRef,
                             polyVerts,
                             triVerts,
@@ -12002,7 +11223,7 @@ void __cdecl zRndr_FlushTransparentQueue() {
                         );
                     }
                 } else {
-                    zRndr_DrawTexturedFanTri(
+                    zRndrDrawTexturedFanTri(
                         cmd.materialRef,
                         polyVerts,
                         clippedTriVerts,
@@ -12014,7 +11235,7 @@ void __cdecl zRndr_FlushTransparentQueue() {
                     );
                 }
             } else {
-                zRndr_DrawFlatImmediate(
+                zRndrDrawFlatImmediate(
                     (zVec3 *)(cmd.polyVerts),
                     (zVec3 *)(cmd.triVerts),
                     cmd.vertexCount,
@@ -12030,13 +11251,13 @@ void __cdecl zRndr_FlushTransparentQueue() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-flushoverwritequeue
- * @recoil-artifact defines .text recoil:function:0x49a490: zRndr_FlushOverwriteQueue
+ * @recoil-artifact defines .text recoil:function:0x49a490: zRndrFlushOverwriteQueue
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Draw queued overwrite polygons through the appropriate flat or textured paths.
  */
-void __cdecl zRndr_FlushOverwriteQueue() {
-    zRndr::g_pfnBuildSpanList = zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest;
-    zRndr::g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanListFast;
+void __cdecl zRndrFlushOverwriteQueue() {
+    zRndr::g_pfnBuildSpanList = zRndrSpanOcclusionInsertSpanNodeNoDepthTest;
+    zRndr::g_pfnBuildSpanListSecondary = zRndrSpanOcclusionBuildSpanListFast;
 
     {
         for (int queueIndex = 0; queueIndex < zRndr::g_overwriteQueueCount; ++queueIndex) {
@@ -12062,7 +11283,7 @@ void __cdecl zRndr_FlushOverwriteQueue() {
             switch (commandTag) {
             case 0:
                 if (cmd.alphaOrShadeF >= 255.0f) {
-                    zRndr_RasterizePolyWithSpanList(
+                    zRndrRasterizePolyWithSpanList(
                         polyVerts,
                         triVerts,
                         cmd.vertexCount,
@@ -12076,7 +11297,7 @@ void __cdecl zRndr_FlushOverwriteQueue() {
             case 1:
                 if ((image->formatFlagsPacked & 2) == 0) {
                     if (cmd.alphaOrShadeF >= 1.0f) {
-                        zRndr_DrawTexturedQueuedAlpha(
+                        zRndrDrawTexturedQueuedAlpha(
                             cmd.materialRef,
                             polyVerts,
                             clippedTriVerts,
@@ -12105,7 +11326,7 @@ void __cdecl zRndr_FlushOverwriteQueue() {
                             fanVerts[2] = polyVerts[fanTriIndex + 2];
                             shadeTriplet.y = perVertexAlphaOrShadeF[fanTriIndex + 1];
                             shadeTriplet.z = perVertexAlphaOrShadeF[fanTriIndex + 2];
-                            zRndr_DrawTexturedQueued(
+                            zRndrDrawTexturedQueued(
                                 cmd.materialRef,
                                 fanVerts,
                                 clippedTriVerts,
@@ -12132,7 +11353,7 @@ void __cdecl zRndr_FlushOverwriteQueue() {
             if (image != 0) {
                 if ((image->formatFlagsPacked & 2) != 0) {
                     if (cmd.alphaOrShadeF >= 1.0f) {
-                        zRndr_DrawFlatQueued(
+                        zRndrDrawFlatQueued(
                             cmd.materialRef,
                             polyVerts,
                             triVerts,
@@ -12141,7 +11362,7 @@ void __cdecl zRndr_FlushOverwriteQueue() {
                             texKey
                         );
                     } else {
-                        Renderer_DrawPolyTLV(
+                        RendererDrawPolyTLV(
                             cmd.materialRef,
                             polyVerts,
                             triVerts,
@@ -12152,7 +11373,7 @@ void __cdecl zRndr_FlushOverwriteQueue() {
                         );
                     }
                 } else {
-                    zRndr_DrawTexturedFanTri(
+                    zRndrDrawTexturedFanTri(
                         cmd.materialRef,
                         polyVerts,
                         clippedTriVerts,
@@ -12164,7 +11385,7 @@ void __cdecl zRndr_FlushOverwriteQueue() {
                     );
                 }
             } else {
-                zRndr_DrawFlatImmediate(
+                zRndrDrawFlatImmediate(
                     polyVerts,
                     triVerts,
                     cmd.vertexCount,
@@ -12177,15 +11398,15 @@ void __cdecl zRndr_FlushOverwriteQueue() {
 
     zRndr::g_overwriteQueueCount = 0;
     zRndr::g_pfnBuildSpanList = zRndr_SpanOcclusion_InsertSpanNode_Local;
-    zRndr::g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanList;
+    zRndr::g_pfnBuildSpanListSecondary = zRndrSpanOcclusionBuildSpanList;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-queueprojectedsample
- * @recoil-artifact defines .text recoil:function:0x49a830: zRndr_LensFlare_QueueProjectedSample
+ * @recoil-artifact defines .text recoil:function:0x49a830: zRndrLensFlareQueueProjectedSample
  * Purpose: Queue a projected lens-flare sample after applying the active inverse-depth transform.
  */
-void __fastcall zRndr_LensFlare_QueueProjectedSample(
+void __fastcall zRndrLensFlareQueueProjectedSample(
     zProjectedPoint *projectedPoint,
     int packedColor16,
     int lensFlareSource
@@ -12209,29 +11430,29 @@ void __fastcall zRndr_LensFlare_QueueProjectedSample(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-getqueuedsamplecount
- * @recoil-artifact defines .text recoil:function:0x49a8b0: zRndr_LensFlare_GetQueuedSampleCount
+ * @recoil-artifact defines .text recoil:function:0x49a8b0: zRndrLensFlareGetQueuedSampleCount
  * @recoil-match byte
  *
  * Purpose: Return the number of lens-flare samples queued for the frame.
  */
-int __cdecl zRndr_LensFlare_GetQueuedSampleCount() {
+int __cdecl zRndrLensFlareGetQueuedSampleCount() {
     return zRndr::g_lensFlareSampleQueueCount;
 }
 
 namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-drawqueuedsamplesscaled16-clippedframebuffer
- * @recoil-artifact defines .text recoil:function:0x49a8c0: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer
+ * @recoil-artifact defines .text recoil:function:0x49a8c0: zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer
  * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Draw every queued lens-flare sample with a shared screen scale and Y offset.
  */
-void __fastcall LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
+void __fastcall LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(
     int yOffsetPixels,
     float screenScale
 ) {
     {
         for (int sampleIndex = 0; sampleIndex < g_lensFlareSampleQueueCount; ++sampleIndex) {
-            LensFlare_DrawQueuedSample16_ClippedFramebuffer(
+            LensFlareDrawQueuedSample16ClippedFramebuffer(
                 &g_lensFlareSampleQueue[sampleIndex],
                 yOffsetPixels,
                 screenScale
@@ -12247,23 +11468,23 @@ void __fastcall LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
 namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-resetsamplequeue
- * @recoil-artifact defines .text recoil:function:0x49a910: zRndr::LensFlare_ResetSampleQueue
+ * @recoil-artifact defines .text recoil:function:0x49a910: zRndr::LensFlareResetSampleQueue
  * @recoil-match byte
  *
  * Purpose: Reset the queued lens-flare sample count for the frame.
  */
-void __cdecl LensFlare_ResetSampleQueue() {
+void __cdecl LensFlareResetSampleQueue() {
     g_lensFlareSampleQueueCount = 0;
 }
 } // namespace zRndr
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawqueuedsamples16-andbuildvisiblelist
- * @recoil-artifact defines .text recoil:function:0x49a920: zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList
+ * @recoil-artifact defines .text recoil:function:0x49a920: zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList
  * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Cull queued lens-flare samples and build the visible-sample list for 16-bit drawing.
  */
-void __fastcall zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
+void __fastcall zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList(
     int startIndex
 ) {
     if (startIndex >= zRndr::g_lensFlareSampleQueueCount) {
@@ -12272,18 +11493,14 @@ void __fastcall zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
 
     zRndr::LensFlareSamplePartial *sample = &zRndr::g_lensFlareSampleQueue[startIndex];
     while (startIndex < zRndr::g_lensFlareSampleQueueCount) {
-        if (zRndr_SpanOcclusion_TestPointVisibility((zVec3 *)(sample)) == 0) {
+        if (zRndrSpanOcclusionTestPointVisibility((zVec3 *)(sample)) == 0) {
             const int newCount = zRndr::g_lensFlareSampleQueueCount - 1;
             zRndr::g_lensFlareSampleQueueCount = newCount;
             if (startIndex >= newCount) {
                 break;
             }
 
-            memcpy(
-                sample,
-                &zRndr::g_lensFlareSampleQueue[newCount],
-                sizeof(*sample)
-            );
+            memcpy(sample, &zRndr::g_lensFlareSampleQueue[newCount], sizeof(*sample));
             continue;
         }
 
@@ -12306,7 +11523,7 @@ void __fastcall zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
  * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Build the visible lens-flare sample list from queued samples without visibility testing.
  */
-int __fastcall zRndr_LensFlare_BuildVisibleSampleListFromQueue(
+int __fastcall zRndrLensFlareBuildVisibleSampleListFromQueue(
     int startIndex
 ) {
     int visibleSampleCount = 0;
@@ -12335,30 +11552,26 @@ int __fastcall zRndr_LensFlare_BuildVisibleSampleListFromQueue(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-filtersamplelist
- * @recoil-artifact defines .text recoil:function:0x49aa30: zRndr_SpanOcclusion_FilterSampleList
+ * @recoil-artifact defines .text recoil:function:0x49aa30: zRndrSpanOcclusionFilterSampleList
  * @recoil-match byte
  *
  * Purpose: Unproject one visible lens-flare sample into an occlusion-test point.
  */
-void __fastcall zRndr_SpanOcclusion_FilterSampleList(
+void __fastcall zRndrSpanOcclusionFilterSampleList(
     int visibleSampleIndex,
     zVec3 *outPoint
 ) {
     zRndr_LensFlareVisibleSampleDef *sample =
         zRndr::g_lensFlareVisibleSampleDefs[visibleSampleIndex];
-    zMath_UnprojectPointBatchZBuf(
-        (const zProjectedPoint *)(sample),
-        outPoint,
-        1
-    );
+    zMathUnprojectPointBatchZBuf((const zProjectedPoint *)(sample), outPoint, 1);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-setvisiblesamplestage
- * @recoil-artifact defines .text recoil:function:0x49aa40: zRndr_LensFlare_SetVisibleSampleStage
+ * @recoil-artifact defines .text recoil:function:0x49aa40: zRndrLensFlareSetVisibleSampleStage
  * Purpose: Store one lens-flare stage texture and refresh the visibility-active flag.
  */
-void __fastcall zRndr_LensFlare_SetVisibleSampleStage(
+void __fastcall zRndrLensFlareSetVisibleSampleStage(
     int stageIndex,
     zImage_TexDirEntryPartial *stageTexDirEntry
 ) {
@@ -12378,12 +11591,12 @@ void __fastcall zRndr_LensFlare_SetVisibleSampleStage(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawsamplestageclipped
- * @recoil-artifact defines .text recoil:function:0x49aa90: zRndr_LensFlare_DrawSampleStageClipped
+ * @recoil-artifact defines .text recoil:function:0x49aa90: zRndrLensFlareDrawSampleStageClipped
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Draw one clipped lens-flare stage quad through hardware or software rendering.
  */
-void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
+void __fastcall zRndrLensFlareDrawSampleStageClipped(
     const zVec2 *sampleCenter,
     zImage_TexDirEntryPartial *stageTexDirEntry,
     float sampleRadius,
@@ -12529,7 +11742,7 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
         }
     }
 
-    zRndr_SubmitTexturedPolyUniformAlphaOrShade(
+    zRndrSubmitTexturedPolyUniformAlphaOrShade(
         projectedVerts,
         clippedTriVerts,
         projectedVerts,
@@ -12543,10 +11756,10 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawvisiblesample
- * @recoil-artifact defines .text recoil:function:0x49afb0: zRndr_LensFlare_DrawVisibleSample
+ * @recoil-artifact defines .text recoil:function:0x49afb0: zRndrLensFlareDrawVisibleSample
  * Purpose: Draw one visible lens-flare sample after applying near/far fade.
  */
-void __fastcall zRndr_LensFlare_DrawVisibleSample(
+void __fastcall zRndrLensFlareDrawVisibleSample(
     int sampleIndex
 ) {
     zRndr_LensFlareVisibleSampleDef *visibleSampleDef =
@@ -12563,14 +11776,11 @@ void __fastcall zRndr_LensFlare_DrawVisibleSample(
     }
 
     if (visibility < lensFlareSource->fadeNear) {
-        zRndr_LensFlare_DrawVisibleSampleStages(
-            visibleSampleDef,
-            1.0f
-        );
+        zRndrLensFlareDrawVisibleSampleStages(visibleSampleDef, 1.0f);
         return;
     }
 
-    zRndr_LensFlare_DrawVisibleSampleStages(
+    zRndrLensFlareDrawVisibleSampleStages(
         visibleSampleDef,
         (lensFlareSource->fadeFar - visibility) /
             (lensFlareSource->fadeFar - lensFlareSource->fadeNear)
@@ -12579,12 +11789,12 @@ void __fastcall zRndr_LensFlare_DrawVisibleSample(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawvisiblesamplestages
- * @recoil-artifact defines .text recoil:function:0x49b020: zRndr_LensFlare_DrawVisibleSampleStages
+ * @recoil-artifact defines .text recoil:function:0x49b020: zRndrLensFlareDrawVisibleSampleStages
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Draw the four staged lens-flare quads for one visible sample.
  */
-void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
+void __fastcall zRndrLensFlareDrawVisibleSampleStages(
     zRndr_LensFlareVisibleSampleDef *visibleSampleDef,
     float visibilityAlpha
 ) {
@@ -12600,7 +11810,7 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
         (const zRndr_LineClipRect2I *)(&zRndr::g_activeRegionRect);
 
     zVec2 sampleCenter = {visibleSampleDef->sampleCenterX, visibleSampleDef->sampleCenterY};
-    zRndr_LensFlare_DrawSampleStageClipped(
+    zRndrLensFlareDrawSampleStageClipped(
         &sampleCenter,
         zRndr::g_lensFlareVisibleSampleStages[0],
         largeRadius,
@@ -12609,7 +11819,7 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
 
     sampleCenter.x = halfClipWidth + sampleOffsetX * 0.5f;
     sampleCenter.y = halfClipHeight + sampleOffsetY * 0.5f;
-    zRndr_LensFlare_DrawSampleStageClipped(
+    zRndrLensFlareDrawSampleStageClipped(
         &sampleCenter,
         zRndr::g_lensFlareVisibleSampleStages[1],
         largeRadius,
@@ -12618,7 +11828,7 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
 
     sampleCenter.x = halfClipWidth + sampleOffsetX * 0.100000001f;
     sampleCenter.y = halfClipHeight + sampleOffsetY * 0.100000001f;
-    zRndr_LensFlare_DrawSampleStageClipped(
+    zRndrLensFlareDrawSampleStageClipped(
         &sampleCenter,
         zRndr::g_lensFlareVisibleSampleStages[2],
         baseRadius,
@@ -12627,7 +11837,7 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
 
     sampleCenter.x = halfClipWidth - sampleOffsetX;
     sampleCenter.y = halfClipHeight - sampleOffsetY;
-    zRndr_LensFlare_DrawSampleStageClipped(
+    zRndrLensFlareDrawSampleStageClipped(
         &sampleCenter,
         zRndr::g_lensFlareVisibleSampleStages[3],
         baseRadius * 3.0f,
@@ -12637,18 +11847,18 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawvisiblesamples
- * @recoil-artifact defines .text recoil:function:0x49b1a0: zRndr_LensFlare_DrawVisibleSamples
+ * @recoil-artifact defines .text recoil:function:0x49b1a0: zRndrLensFlareDrawVisibleSamples
  * @recoil-match byte
  *
  * Purpose: Draw all visible lens-flare samples and clear the visible-sample list.
  */
-void __cdecl zRndr_LensFlare_DrawVisibleSamples() {
+void __cdecl zRndrLensFlareDrawVisibleSamples() {
     if (zRndr::g_lensFlareVisibilityActive == 0) {
         return;
     }
 
     for (int sampleIndex = 0; sampleIndex < zRndr::g_lensFlareVisibleSampleCount; ++sampleIndex) {
-        zRndr_LensFlare_DrawVisibleSample(sampleIndex);
+        zRndrLensFlareDrawVisibleSample(sampleIndex);
     }
 
     zRndr::g_lensFlareVisibleSampleCount = 0;
@@ -12657,10 +11867,10 @@ void __cdecl zRndr_LensFlare_DrawVisibleSamples() {
 namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogcolor-setrgb01clamped
- * @recoil-artifact defines .text recoil:function:0x49b1e0: zRndr::FogColor_SetRgb01Clamped
+ * @recoil-artifact defines .text recoil:function:0x49b1e0: zRndr::FogColorSetRgb01Clamped
  * Purpose: Clamp and commit the active fog color, then rebuild its packed 16-bit ramp.
  */
-void __fastcall FogColor_SetRgb01Clamped(
+void __fastcall FogColorSetRgb01Clamped(
     zColorRgb *color
 ) {
     if (color->red > 1.0f) {
@@ -12698,7 +11908,7 @@ void __fastcall FogColor_SetRgb01Clamped(
     const int red = (int)(color->red * 255.0f + 0.5f);
     const int green = (int)(color->green * 255.0f + 0.5f);
     const unsigned int blue = (unsigned int)(color->blue * 255.0f + 0.5f);
-    FogTarget565_SetPackedColorAndRamp(
+    FogTarget565SetPackedColorAndRamp(
         &g_fogColorParams,
         (red << g_pixelPackRedShift) & (int)(g_pixelPackRedMask),
         (green << g_pixelPackGreenShift) & (int)(g_pixelPackGreenMask),
@@ -12751,7 +11961,7 @@ void __fastcall SetFogTargetColorRgb01Clamped(
     const int red = (int)(color->red * 255.0f + 0.5f);
     const int green = (int)(color->green * 255.0f + 0.5f);
     const int blue = (int)(color->blue * 255.0f + 0.5f);
-    FogTarget565_SetPackedColorAndRamp(
+    FogTarget565SetPackedColorAndRamp(
         &g_fogParamsActive,
         (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
         (green << g_zVideo_PixelPack.sumMinus8) & (int)(g_zVideo_PixelPack.gMask),
@@ -12770,11 +11980,7 @@ void __cdecl CommitDirectFogParamsIfChanged() {
     if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogTargetParamsDirect.colorRgb01[0]) >= 0.01f ||
         fabs(g_fogParamsActive.colorRgb01[1] - g_fogTargetParamsDirect.colorRgb01[1]) >= 0.01f ||
         fabs(g_fogParamsActive.colorRgb01[2] - g_fogTargetParamsDirect.colorRgb01[2]) >= 0.01f) {
-        memcpy(
-            &g_fogParamsActive,
-            &g_fogTargetParamsDirect,
-            sizeof(g_fogParamsActive)
-        );
+        memcpy(&g_fogParamsActive, &g_fogTargetParamsDirect, sizeof(g_fogParamsActive));
     }
 }
 } // namespace zRndr
@@ -12789,21 +11995,17 @@ void __cdecl CommitFogColorParamsIfChanged() {
     if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogColorParams.colorRgb01[0]) >= 0.01f ||
         fabs(g_fogParamsActive.colorRgb01[1] - g_fogColorParams.colorRgb01[1]) >= 0.01f ||
         fabs(g_fogParamsActive.colorRgb01[2] - g_fogColorParams.colorRgb01[2]) >= 0.01f) {
-        memcpy(
-            &g_fogParamsActive,
-            &g_fogColorParams,
-            sizeof(g_fogParamsActive)
-        );
+        memcpy(&g_fogParamsActive, &g_fogColorParams, sizeof(g_fogParamsActive));
     }
 }
 } // namespace zRndr
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fogtargetcolorstaged-setrgb01clamped
- * @recoil-artifact defines .text recoil:function:0x49b5a0: zRndr_FogTargetColorStaged_SetRgb01Clamped
+ * @recoil-artifact defines .text recoil:function:0x49b5a0: zRndrFogTargetColorStagedSetRgb01Clamped
  * Purpose: Clamp and stage the pending fog target color, then rebuild its packed 16-bit ramp.
  */
-void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(
+void __fastcall zRndrFogTargetColorStagedSetRgb01Clamped(
     zColorRgb *color
 ) {
     if (color->red > 1.0f) {
@@ -12836,13 +12038,13 @@ void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(
     staged->colorRgb01[2] = color->blue;
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        zVideo_SetPendingFogTargetColorFromRgb01((zVideo_ColorRgbFloat *)(color));
+        zVideoSetPendingFogTargetColorFromRgb01((zVideo_ColorRgbFloat *)(color));
     }
 
     const int red = (int)(color->red * 255.0f + 0.5f);
     const int green = (int)(color->green * 255.0f + 0.5f);
     const int blue = (int)(color->blue * 255.0f + 0.5f);
-    zRndr::FogTarget565_SetPackedColorAndRamp(
+    zRndr::FogTarget565SetPackedColorAndRamp(
         staged,
         (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
         (green << g_zVideo_PixelPack.sumMinus8) & (int)(g_zVideo_PixelPack.gMask),
@@ -12860,11 +12062,7 @@ void __cdecl CommitStagedFogParamsIfChanged() {
     if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogTargetParamsStaged.colorRgb01[0]) >= 0.01f ||
         fabs(g_fogParamsActive.colorRgb01[1] - g_fogTargetParamsStaged.colorRgb01[1]) >= 0.01f ||
         fabs(g_fogParamsActive.colorRgb01[2] - g_fogTargetParamsStaged.colorRgb01[2]) >= 0.01f) {
-        memcpy(
-            &g_fogParamsActive,
-            &g_fogTargetParamsStaged,
-            sizeof(g_fogParamsActive)
-        );
+        memcpy(&g_fogParamsActive, &g_fogTargetParamsStaged, sizeof(g_fogParamsActive));
     }
 }
 } // namespace zRndr
@@ -14169,11 +13367,7 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(
                     packedPixels =
                         (unsigned int)(sourceTexel) | ((unsigned int)(sourceTexel) << 16);
                 } else {
-                    memcpy(
-                        &packedPixels,
-                        dst,
-                        sizeof(packedPixels)
-                    );
+                    memcpy(&packedPixels, dst, sizeof(packedPixels));
                     const unsigned int sourcePair =
                         (unsigned int)(sourceTexel) |
                         ((unsigned int)(sourceTexel) << 16);
@@ -14190,11 +13384,7 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(
                     packedPixels = lowTerms | highTerms;
                 }
 
-                memcpy(
-                    dst,
-                    &packedPixels,
-                    sizeof(packedPixels)
-                );
+                memcpy(dst, &packedPixels, sizeof(packedPixels));
             }
 
             texU += g_spanActiveTexUStepFixed20 * 2;
@@ -14265,11 +13455,7 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(
                     packedPixels =
                         (unsigned int)(sourceTexel) | ((unsigned int)(sourceTexel) << 16);
                 } else {
-                    memcpy(
-                        &packedPixels,
-                        dst,
-                        sizeof(packedPixels)
-                    );
+                    memcpy(&packedPixels, dst, sizeof(packedPixels));
                     const unsigned int sourcePair =
                         (unsigned int)(sourceTexel) |
                         ((unsigned int)(sourceTexel) << 16);
@@ -14286,11 +13472,7 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(
                     packedPixels = highTerms | lowTerms;
                 }
 
-                memcpy(
-                    dst,
-                    &packedPixels,
-                    sizeof(packedPixels)
-                );
+                memcpy(dst, &packedPixels, sizeof(packedPixels));
             }
 
             texU += g_spanActiveTexUStepFixed20 * 2;
@@ -14410,11 +13592,7 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     float alphaScale = 0.0f;
-    memcpy(
-        &alphaScale,
-        &g_spanActiveConstAlphaBits,
-        sizeof(alphaScale)
-    );
+    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
 
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
@@ -14468,11 +13646,7 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     float alphaScale = 0.0f;
-    memcpy(
-        &alphaScale,
-        &g_spanActiveConstAlphaBits,
-        sizeof(alphaScale)
-    );
+    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
 
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
@@ -14691,17 +13865,8 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
 #else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
-        *dst = BlendPixel565Alpha8(
-            *dst,
-            texels16[sourceIndex],
-            alphaMap[sourceIndex]
-        );
+        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        *dst = BlendPixel565Alpha8(*dst, texels16[sourceIndex], alphaMap[sourceIndex]);
 
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
@@ -14709,23 +13874,14 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
     }
 
     for (int i_1490 = quadPixels; i_1490 < pixelCount; ++i_1490) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 3) {
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel565Alpha8(
-                    *dst,
-                    sourceTexel,
-                    alpha
-                );
+                *dst = BlendPixel565Alpha8(*dst, sourceTexel, alpha);
             }
         }
 
@@ -14916,17 +14072,8 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
 #else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
-        *dst = BlendPixel555Alpha8(
-            *dst,
-            texels16[sourceIndex],
-            alphaMap[sourceIndex]
-        );
+        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        *dst = BlendPixel555Alpha8(*dst, texels16[sourceIndex], alphaMap[sourceIndex]);
 
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
@@ -14934,23 +14081,14 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
     }
 
     for (int i_1529 = quadPixels; i_1529 < pixelCount; ++i_1529) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 7) {
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel555Alpha8(
-                    *dst,
-                    sourceTexel,
-                    alpha
-                );
+                *dst = BlendPixel555Alpha8(*dst, sourceTexel, alpha);
             }
         }
 
@@ -15022,11 +14160,7 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(
                 dst[1] = sourcePixel;
             } else {
                 unsigned int packedPixels = 0;
-                memcpy(
-                    &packedPixels,
-                    dst,
-                    sizeof(packedPixels)
-                );
+                memcpy(&packedPixels, dst, sizeof(packedPixels));
                 const unsigned int sourcePair =
                     (unsigned int)(sourcePixel) |
                     ((unsigned int)(sourcePixel) << 16);
@@ -15041,11 +14175,7 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(
                      (((sourcePair >> 5) & 0x07c0f83fu) * alpha5)) &
                     0xf81f07e0u;
                 packedPixels = lowTerms | highTerms;
-                memcpy(
-                    dst,
-                    &packedPixels,
-                    sizeof(packedPixels)
-                );
+                memcpy(dst, &packedPixels, sizeof(packedPixels));
             }
         }
 
@@ -15116,11 +14246,7 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(
                 dst[1] = sourcePixel;
             } else {
                 unsigned int packedPixels = 0;
-                memcpy(
-                    &packedPixels,
-                    dst,
-                    sizeof(packedPixels)
-                );
+                memcpy(&packedPixels, dst, sizeof(packedPixels));
                 const unsigned int sourcePair =
                     (unsigned int)(sourcePixel) |
                     ((unsigned int)(sourcePixel) << 16);
@@ -15135,11 +14261,7 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(
                      (((sourcePair >> 5) & 0x03e0f81fu) * alpha5)) &
                     0x7c1f03e0u;
                 packedPixels = highTerms | lowTerms;
-                memcpy(
-                    dst,
-                    &packedPixels,
-                    sizeof(packedPixels)
-                );
+                memcpy(dst, &packedPixels, sizeof(packedPixels));
             }
         }
 
@@ -15260,11 +14382,7 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
     const unsigned short *palette = g_spanActiveTexPalette;
 
     float alphaScale = 0.0f;
-    memcpy(
-        &alphaScale,
-        &g_spanActiveConstAlphaBits,
-        sizeof(alphaScale)
-    );
+    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
 
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
@@ -15320,11 +14438,7 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
     const unsigned short *palette = g_spanActiveTexPalette;
 
     float alphaScale = 0.0f;
-    memcpy(
-        &alphaScale,
-        &g_spanActiveConstAlphaBits,
-        sizeof(alphaScale)
-    );
+    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
 
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
@@ -15551,17 +14665,8 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
 #else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
-        *dst = BlendPixel565Alpha8(
-            *dst,
-            palette[texels8[sourceIndex]],
-            alphaMap[sourceIndex]
-        );
+        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        *dst = BlendPixel565Alpha8(*dst, palette[texels8[sourceIndex]], alphaMap[sourceIndex]);
 
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
@@ -15569,23 +14674,14 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
     }
 
     for (int i_1733 = quadPixels; i_1733 < pixelCount; ++i_1733) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         const unsigned short sourcePixel = palette[texels8[sourceIndex]];
         if (alpha > 3) {
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel565Alpha8(
-                    *dst,
-                    sourcePixel,
-                    alpha
-                );
+                *dst = BlendPixel565Alpha8(*dst, sourcePixel, alpha);
             }
         }
 
@@ -15784,17 +14880,8 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
 #else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
-        *dst = BlendPixel555Alpha8(
-            *dst,
-            palette[texels8[sourceIndex]],
-            alphaMap[sourceIndex]
-        );
+        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        *dst = BlendPixel555Alpha8(*dst, palette[texels8[sourceIndex]], alphaMap[sourceIndex]);
 
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
@@ -15802,23 +14889,14 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
     }
 
     for (int i_1773 = quadPixels; i_1773 < pixelCount; ++i_1773) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         const unsigned short sourcePixel = palette[texels8[sourceIndex]];
         if (alpha > 7) {
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel555Alpha8(
-                    *dst,
-                    sourcePixel,
-                    alpha
-                );
+                *dst = BlendPixel555Alpha8(*dst, sourcePixel, alpha);
             }
         }
 
@@ -15833,13 +14911,13 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
 namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogtarget565-setpackedcolorandramp
- * @recoil-artifact defines .text recoil:function:0x49e0e0: zRndr::FogTarget565_SetPackedColorAndRamp
+ * @recoil-artifact defines .text recoil:function:0x49e0e0: zRndr::FogTarget565SetPackedColorAndRamp
  * Source file evidence: GameZRecoil/zRndr/zRndr_Span.cpp.
  * Data evidence: stores RGB565 component fields, writes packedColor16 as a
  * 16-bit field, replicates the packed 565 color, and fills packedColorRamp[31..0].
  * Purpose: Build the packed fog color and ramp table used by 16-bit fog blending.
  */
-void __fastcall FogTarget565_SetPackedColorAndRamp(
+void __fastcall FogTarget565SetPackedColorAndRamp(
     FogParamsPartial *params,
     int packedRed,
     int packedGreen,
@@ -16079,12 +15157,7 @@ void __fastcall FogBlendSpan565Mmx(
     }
 
     if (headPixels != 0) {
-        FogBlendSpan565Scalar(
-            cursor,
-            headPixels,
-            (int)(fogCoord),
-            fogCoordStepFixed24
-        );
+        FogBlendSpan565Scalar(cursor, headPixels, (int)(fogCoord), fogCoordStepFixed24);
         cursor += headPixels;
         fogCoord += (unsigned int)(headPixels)*fogStep;
         remaining -= headPixels;
@@ -16170,37 +15243,13 @@ void __fastcall FogBlendSpan565Mmx(
         g_mmxFogFactors[3] = (unsigned short)(fogCoord >> 16);
 
         cursor[0] =
-            FogBlendMmxLane(
-                cursor[0],
-                g_mmxFogFactors[0],
-                0,
-                11,
-                3
-            );
+            FogBlendMmxLane(cursor[0], g_mmxFogFactors[0], 0, 11, 3);
         cursor[1] =
-            FogBlendMmxLane(
-                cursor[1],
-                g_mmxFogFactors[1],
-                1,
-                11,
-                3
-            );
+            FogBlendMmxLane(cursor[1], g_mmxFogFactors[1], 1, 11, 3);
         cursor[2] =
-            FogBlendMmxLane(
-                cursor[2],
-                g_mmxFogFactors[2],
-                2,
-                11,
-                3
-            );
+            FogBlendMmxLane(cursor[2], g_mmxFogFactors[2], 2, 11, 3);
         cursor[3] =
-            FogBlendMmxLane(
-                cursor[3],
-                g_mmxFogFactors[3],
-                3,
-                11,
-                3
-            );
+            FogBlendMmxLane(cursor[3], g_mmxFogFactors[3], 3, 11, 3);
 
         fogCoord += fogStep;
         fogCoord += fogStep;
@@ -16210,12 +15259,7 @@ void __fastcall FogBlendSpan565Mmx(
 #endif
 
     if (tailPixels != 0) {
-        FogBlendSpan565Scalar(
-            cursor,
-            tailPixels,
-            (int)(fogCoord),
-            fogCoordStepFixed24
-        );
+        FogBlendSpan565Scalar(cursor, tailPixels, (int)(fogCoord), fogCoordStepFixed24);
     }
 }
 } // namespace zRndr
@@ -16248,12 +15292,7 @@ void __fastcall FogBlendSpan555Mmx(
     }
 
     if (headPixels != 0) {
-        FogBlendSpan555Scalar(
-            cursor,
-            headPixels,
-            (int)(fogCoord),
-            fogCoordStepFixed24
-        );
+        FogBlendSpan555Scalar(cursor, headPixels, (int)(fogCoord), fogCoordStepFixed24);
         cursor += headPixels;
         fogCoord += (unsigned int)(headPixels)*fogStep;
         remaining -= headPixels;
@@ -16339,37 +15378,13 @@ void __fastcall FogBlendSpan555Mmx(
         g_mmxFogFactors[3] = (unsigned short)(fogCoord >> 16);
 
         cursor[0] =
-            FogBlendMmxLane(
-                cursor[0],
-                g_mmxFogFactors[0],
-                0,
-                10,
-                2
-            );
+            FogBlendMmxLane(cursor[0], g_mmxFogFactors[0], 0, 10, 2);
         cursor[1] =
-            FogBlendMmxLane(
-                cursor[1],
-                g_mmxFogFactors[1],
-                1,
-                10,
-                2
-            );
+            FogBlendMmxLane(cursor[1], g_mmxFogFactors[1], 1, 10, 2);
         cursor[2] =
-            FogBlendMmxLane(
-                cursor[2],
-                g_mmxFogFactors[2],
-                2,
-                10,
-                2
-            );
+            FogBlendMmxLane(cursor[2], g_mmxFogFactors[2], 2, 10, 2);
         cursor[3] =
-            FogBlendMmxLane(
-                cursor[3],
-                g_mmxFogFactors[3],
-                3,
-                10,
-                2
-            );
+            FogBlendMmxLane(cursor[3], g_mmxFogFactors[3], 3, 10, 2);
 
         fogCoord += fogStep;
         fogCoord += fogStep;
@@ -16379,12 +15394,7 @@ void __fastcall FogBlendSpan555Mmx(
 #endif
 
     if (tailPixels != 0) {
-        FogBlendSpan555Scalar(
-            cursor,
-            tailPixels,
-            (int)(fogCoord),
-            fogCoordStepFixed24
-        );
+        FogBlendSpan555Scalar(cursor, tailPixels, (int)(fogCoord), fogCoordStepFixed24);
     }
 }
 } // namespace zRndr

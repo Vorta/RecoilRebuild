@@ -20,7 +20,7 @@ struct zSndCdTrackState {
 
 /**
  * Purpose: Stores the pre-initialization CD track-list count reset by
- * zSnd_PreInitializeRuntimeState; distinct from the static CD track-list
+ * zSndPreInitializeRuntimeState; distinct from the static CD track-list
  * lifecycle count.
  */
 extern "C" int g_zSndCdTrackListCount = 0;
@@ -85,18 +85,9 @@ RECOIL_NO_GS int __fastcall Init(
 
     MCI_OPEN_PARMSA openParms = {0};
     openParms.lpstrDeviceType = "cdaudio";
-    DWORD mciError = mciSendCommandA(
-        0,
-        MCI_OPEN,
-        MCI_OPEN_TYPE,
-        (DWORD_PTR)(&openParms)
-    );
+    DWORD mciError = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD_PTR)(&openParms));
     if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x43
-        );
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x43);
     }
 
     g_zSndCdDeviceId = (g_zSndCdDeviceId & 0xffff0000) | (unsigned short)(openParms.wDeviceID);
@@ -110,11 +101,7 @@ RECOIL_NO_GS int __fastcall Init(
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x4d
-        );
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x4d);
     }
 
     if (statusParms.dwReturn == 0) {
@@ -131,18 +118,10 @@ RECOIL_NO_GS int __fastcall Init(
         (DWORD_PTR)(&setParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x5d
-        );
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x5d);
     }
 
-    memset(
-        &statusParms,
-        0,
-        sizeof(statusParms)
-    );
+    memset(&statusParms, 0, sizeof(statusParms));
     statusParms.dwItem = 3;
     mciError = mciSendCommandA(
         (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
@@ -151,11 +130,7 @@ RECOIL_NO_GS int __fastcall Init(
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x66
-        );
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x66);
     }
 
     g_zSndCdTrackCountCached = (int)(statusParms.dwReturn);
@@ -168,11 +143,7 @@ RECOIL_NO_GS int __fastcall Init(
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x70
-        );
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x70);
     }
 
     const UINT auxCount = auxGetNumDevs();
@@ -190,10 +161,7 @@ RECOIL_NO_GS int __fastcall Init(
 
     if (g_zSndCdAuxDeviceId != -1) {
         DWORD volume = 0;
-        if (auxGetVolume(
-            (UINT)(g_zSndCdAuxDeviceId),
-            &volume
-        ) == 0) {
+        if (auxGetVolume((UINT)(g_zSndCdAuxDeviceId), &volume) == 0) {
             g_zSndCdAuxVolumeSecondary = (unsigned short)(volume & 0xffff);
             g_zSndCdAuxVolumePrimary = (unsigned short)((volume >> 16) & 0xffff);
         }
@@ -344,11 +312,7 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
         (DWORD_PTR)(&playParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0xf1
-        );
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0xf1);
     }
 
     g_zSndCdLastPlayMode = playbackMode;
@@ -369,10 +333,7 @@ void __fastcall OnMciNotify(
         return;
     }
 
-    PlayTrackWithMode(
-        g_zSndCdCurrentTrack,
-        5
-    );
+    PlayTrackWithMode(g_zSndCdCurrentTrack, 5);
 }
 
 /**
@@ -393,11 +354,7 @@ RECOIL_NO_GS int __cdecl Stop() {
         (DWORD_PTR)(&stopParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x10e
-        );
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x10e);
     }
 
     g_zSndCdLastPlayMode = 0;
@@ -427,11 +384,7 @@ RECOIL_NO_GS int __fastcall PlayTrack(
         (DWORD_PTR)(&seekParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x16e
-        );
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x16e);
     }
 
     ResetTrackState();
@@ -473,16 +426,9 @@ int __fastcall GetVolume(
 
     const int stereoAuxEnabled = IsStereoAuxEnabled();
     DWORD volume = 0;
-    const DWORD mciError = auxGetVolume(
-        (UINT)(g_zSndCdAuxDeviceId),
-        &volume
-    );
+    const DWORD mciError = auxGetVolume((UINT)(g_zSndCdAuxDeviceId), &volume);
     if (mciError != 0) {
-        zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x194
-        );
+        zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x194);
         return 0;
     }
 
@@ -522,16 +468,9 @@ int __fastcall SetVolume(
         volume = ((DWORD)(secondaryVolume) << 16) | (DWORD)(primaryVolume);
     }
 
-    const DWORD mciError = auxSetVolume(
-        (UINT)(g_zSndCdAuxDeviceId),
-        volume
-    );
+    const DWORD mciError = auxSetVolume((UINT)(g_zSndCdAuxDeviceId), volume);
     if (mciError != 0) {
-        zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x1b2
-        );
+        zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x1b2);
         return 0;
     }
 

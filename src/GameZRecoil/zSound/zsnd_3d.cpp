@@ -45,17 +45,13 @@ const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
 /**
  * Purpose: update cached listener state or forward it to the A3D listener.
  */
-extern "C" int __fastcall zSnd_UpdateListenerState(
+extern "C" int __fastcall zSndUpdateListenerState(
     zSndListenerState *listenerState,
     zVec3 *listenerVelocity
 ) {
     if (g_zSnd_ActiveBackend == 0) {
         if (listenerState != 0) {
-            memcpy(
-                &g_zSnd_ListenerState,
-                listenerState,
-                sizeof(g_zSnd_ListenerState)
-            );
+            memcpy(&g_zSnd_ListenerState, listenerState, sizeof(g_zSnd_ListenerState));
         }
 
         if (listenerVelocity != 0) {
@@ -90,11 +86,7 @@ extern "C" int __fastcall zSnd_UpdateListenerState(
         }
 
         if (listenerVelocity != 0) {
-            listener->SetVelocity3f(
-                listenerVelocity->x,
-                listenerVelocity->y,
-                listenerVelocity->z
-            );
+            listener->SetVelocity3f(listenerVelocity->x, listenerVelocity->y, listenerVelocity->z);
         }
     }
 
@@ -111,19 +103,11 @@ int __fastcall zSndPlayHandle::Update3DDispatch(
     int velocityScaleMode
 ) {
     if (g_zSnd_ActiveBackend == 1) {
-        return Update3D_A3D(
-            worldPos,
-            velocity,
-            velocityScaleMode
-        );
+        return Update3DA3D(worldPos, velocity, velocityScaleMode);
     }
 
     if (g_zSnd_ActiveBackend == 0) {
-        return Update3D(
-            worldPos,
-            velocity,
-            velocityScaleMode
-        );
+        return Update3D(worldPos, velocity, velocityScaleMode);
     }
 
     return 0;
@@ -132,7 +116,7 @@ int __fastcall zSndPlayHandle::Update3DDispatch(
 /**
  * Purpose: update A3D provider position, velocity, gain, and Doppler state.
  */
-int __fastcall zSndPlayHandle::Update3D_A3D(
+int __fastcall zSndPlayHandle::Update3DA3D(
     zVec3 *worldPos,
     zVec3 *velocity,
     int velocityScaleMode
@@ -152,32 +136,20 @@ int __fastcall zSndPlayHandle::Update3D_A3D(
     }
 
     if (worldPos != 0) {
-        source->SetPosition3f(
-            worldPos->x,
-            worldPos->y,
-            worldPos->z
-        );
+        source->SetPosition3f(worldPos->x, worldPos->y, worldPos->z);
     }
 
     if (velocity != 0) {
-        ((zA3dProviderSource *)backendBuffer)->SetVelocity3f(
-            velocity->x,
-            velocity->y,
-            velocity->z
-        );
+        ((zA3dProviderSource *)backendBuffer)->SetVelocity3f(velocity->x, velocity->y, velocity->z);
     }
 
     if (zSnd::IsMuted() != 0) {
         source->SetGain(0.0f);
     } else {
-        source->SetGain(
-            zSndSample_PlaySimple(*(float *)&sourceGainScaled)
-        );
+        source->SetGain(zSndSamplePlaySimple(*(float *)&sourceGainScaled));
     }
 
-    source->SetDopplerScale(
-        velocityScaleMode != 0 ? 1.0f : 0.0f
-    );
+    source->SetDopplerScale(velocityScaleMode != 0 ? 1.0f : 0.0f);
     return 1;
 }
 
@@ -283,20 +255,12 @@ int __fastcall zSndPlayHandle::Update3D(
 
     int error = buffer->SetPan(pan);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(
-            error,
-            kZSnd3dSourceFile,
-            0x160
-        );
+        return zSnd::ReportDirectSoundError(error, kZSnd3dSourceFile, 0x160);
     }
 
     error = buffer->SetVolume(gain);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(
-            error,
-            kZSnd3dSourceFile,
-            0x164
-        );
+        return zSnd::ReportDirectSoundError(error, kZSnd3dSourceFile, 0x164);
     }
 
     return 1;
@@ -306,7 +270,7 @@ int __fastcall zSndPlayHandle::Update3D(
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
  * Purpose: return the current 3D-audio speed-of-sound setting.
  */
-extern "C" float __cdecl zSnd_GetSpeedOfSoundMps() {
+extern "C" float __cdecl zSndGetSpeedOfSoundMps() {
     return g_zSndSpeedOfSoundMps;
 }
 

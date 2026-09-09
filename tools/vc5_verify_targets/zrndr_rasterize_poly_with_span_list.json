@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x492000",
-      "symbol": "?zRndr_RasterizePolyWithSpanList@@YIXPAUzVec3@@0HH@Z",
-      "name": "zRndr_RasterizePolyWithSpanList"
+      "symbol": "?zRndrRasterizePolyWithSpanList@@YIXPAUzVec3@@0HH@Z",
+      "name": "zRndrRasterizePolyWithSpanList"
     }
   ],
   "data_symbols": [

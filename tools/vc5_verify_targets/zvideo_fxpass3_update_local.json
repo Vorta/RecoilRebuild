@@ -1,6 +1,6 @@
 {
   "name": "zvideo_fxpass3_update_local",
-  "description": "zVideo::FxPass3_UpdateLocal local pass-3 FX update wrapper.",
+  "description": "zVideo::FxPass3UpdateLocal local pass-3 FX update wrapper.",
   "source_filename": "zVideo.cpp",
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4bef70",
-      "symbol": "?FxPass3_UpdateLocal@zVideo@@YIXM@Z",
-      "name": "zVideo::FxPass3_UpdateLocal"
+      "symbol": "?FxPass3UpdateLocal@zVideo@@YIXM@Z",
+      "name": "zVideo::FxPass3UpdateLocal"
     }
   ]
 }

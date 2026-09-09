@@ -1,6 +1,6 @@
 {
   "name": "zvid_texture_pack_ensure_default_image_pack_loaded",
-  "description": "VC verification target for zVid_TexturePack_EnsureDefaultImagePackLoaded.",
+  "description": "VC verification target for zVidTexturePackEnsureDefaultImagePackLoaded.",
   "source_filename": "zVideo.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x46da40",
-      "symbol": "_zVid_TexturePack_EnsureDefaultImagePackLoaded",
-      "name": "zVid_TexturePack_EnsureDefaultImagePackLoaded"
+      "symbol": "_zVidTexturePackEnsureDefaultImagePackLoaded",
+      "name": "zVidTexturePackEnsureDefaultImagePackLoaded"
     }
   ]
 }

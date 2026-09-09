@@ -55,7 +55,7 @@
       "retail_end_exclusive": "0x4a2950",
       "predecessor": {"address":"0x4a1f40","symbol":"?Shutdown@zSndBackend@@YAHXZ","name":"zSndBackend::Shutdown","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": ["0x4a20d0","0x4a2490","0x4a24d0","0x4a25e0","0x4a2600","0x4a26b0","0x4a26f0","0x4a2750","0x4a27d0","0x4a27f0","0x4a2880","0x4a2930"],
-      "successor": {"address":"0x4a2950","symbol":"@zSnd_UpdateListenerState@8","name":"zSnd::UpdateListenerState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x4a2950","symbol":"@zSndUpdateListenerState@8","name":"zSnd::UpdateListenerState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

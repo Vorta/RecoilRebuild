@@ -70,18 +70,18 @@ def path_depths(instructions, data: bytes, call_effects: dict[int, int]) -> dict
 
 
 MATRIX_CALL_EFFECTS = {
-    "?zMath_UnprojectPointBatch@@YIXPBUzProjectedPoint@@PAUzVec3@@H@Z": (0x474bc0, 0),
+    "?zMathUnprojectPointBatch@@YIXPBUzProjectedPoint@@PAUzVec3@@H@Z": (0x474bc0, 0),
     "?MatStackPushPtr@zMath@@YIXPAM@Z": (0x472f30, 1),
     "?MatLoadCameraScratchA@zMath@@YAXXZ": (0x472fa0, 0),
     "?MatStackPopPtr@zMath@@YAXXZ": (0x472f60, -1),
 }
-UNPROJECT_SYMBOL = "?zMath_UnprojectPointBatchZBuf@@YIXPBUzProjectedPoint@@PAUzVec3@@H@Z"
+UNPROJECT_SYMBOL = "?zMathUnprojectPointBatchZBuf@@YIXPBUzProjectedPoint@@PAUzVec3@@H@Z"
 LIGHT_CALL_EFFECTS = {
     "?ReportOld@zError@@YAXHPBDH0ZZ": (0x404e80, 0),
     "?ComputeWorldTransform@zClass_Light@@YIHPAUzClass_NodePartial@@PAUzClass_LightDataPartial@@@Z": (0x453620, 0),
     "?MatStackPushAndCloneParent@zMath@@YIXPAM@Z": (0x472ef0, 1),
     "?MatLoadCameraScratchB@zMath@@YAXXZ": (0x472f90, 0),
-    "?zMath_Mat_TransformNormalBatch@@YIXPBUzVec3@@PAU1@H@Z": (0x474710, 0),
+    "?zMathMatTransformNormalBatch@@YIXPBUzVec3@@PAU1@H@Z": (0x474710, 0),
     "?MatStackPopPtr@zMath@@YAXXZ": (0x472f60, -1),
 }
 MATRIX_PATH_BODIES = {

@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x4a6d40",
-      "symbol": "@zVid_PackColorRgbFloats@4",
-      "name": "zVid_PackColorRgbFloats"
+      "symbol": "@zVidPackColorRgbFloats@4",
+      "name": "zVidPackColorRgbFloats"
     }
   ],
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c"

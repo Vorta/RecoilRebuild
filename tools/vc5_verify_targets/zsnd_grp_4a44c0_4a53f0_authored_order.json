@@ -1,6 +1,6 @@
 {
   "name": "zsnd_grp_4a44c0_4a53f0_authored_order",
-  "description": "Authored-order target for the complete literal-backed zSound/zsnd_grp.cpp physical block [0x4a44c0,0x4a53f0). It checks eighteen ordinary authored bodies and the authored lifecycle bodies zSndStreamMgr::Shutdown and zSndStreamMgr::EnsureInit in exact retail relative order. The five-dword .text switch table [0x4a4c98,0x4a4cac) is compiler output attached to UpdateActiveRequestPredicate, not a separate function or data owner. Unlisted raw helpers remain mechanically nonblocking diagnostics. This target proves no semantic owner, tier, byte identity, provider ABI, exact linked RVA, or final-image fact.",
+  "description": "Authored-order target for the complete literal-backed zSound/zsnd_grp.cpp physical block [0x4a44c0,0x4a53f0). It checks twenty authored bodies in exact retail relative order. The five-dword .text switch table [0x4a4c98,0x4a4cac) is compiler output attached to UpdateActiveRequestPredicate, not a separate function or data owner. Unlisted raw helpers remain mechanically nonblocking diagnostics. This target proves no semantic owner, tier, byte identity, provider ABI, exact linked RVA, or final-image fact.",
   "target_binary": "recoil",
   "retail_start": "0x4a44c0",
   "retail_end_exclusive": "0x4a53f0",
@@ -15,7 +15,7 @@
   "functions": [
     {
       "address": "0x4a44c0",
-      "symbol": "@zSndPendingList_FindByName@4",
+      "symbol": "@zSndPendingListFindByName@4",
       "name": "zSndPendingList::FindByName",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -24,7 +24,7 @@
     },
     {
       "address": "0x4a44e0",
-      "symbol": "@zSndPendingList_MatchNamePredicate@8",
+      "symbol": "@zSndPendingListMatchNamePredicate@8",
       "name": "zSndPendingList::MatchNamePredicate",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -33,7 +33,7 @@
     },
     {
       "address": "0x4a4530",
-      "symbol": "@zSndGroup_QueuePendingLoadsFromConfigNode@4",
+      "symbol": "@zSndGroupQueuePendingLoadsFromConfigNode@4",
       "name": "zSndGroup::QueuePendingLoadsFromConfigNode",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -42,7 +42,7 @@
     },
     {
       "address": "0x4a4590",
-      "symbol": "@zSndGroup_LoadFromConfigNode@4",
+      "symbol": "@zSndGroupLoadFromConfigNode@4",
       "name": "zSndGroup::LoadFromConfigNode",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -51,7 +51,7 @@
     },
     {
       "address": "0x4a49b0",
-      "symbol": "@zSndGroup_LoadConfigBlock@12",
+      "symbol": "@zSndGroupLoadConfigBlock@12",
       "name": "zSndGroup::LoadConfigBlock",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -114,7 +114,7 @@
     },
     {
       "address": "0x4a5050",
-      "symbol": "_zSndStreamMgr_RecycleFinishedRequest",
+      "symbol": "_zSndStreamMgrRecycleFinishedRequest",
       "name": "zSndStreamMgr::RecycleFinishedRequest",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -125,8 +125,8 @@
       "address": "0x4a50a0",
       "symbol": "?Shutdown@zSndStreamMgr@@YAHXZ",
       "name": "zSndStreamMgr::Shutdown",
-      "pipeline_class": "authored-lifecycle",
-      "authored_order_role": "authored-lifecycle-body",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true
     },
@@ -141,7 +141,7 @@
     },
     {
       "address": "0x4a51f0",
-      "symbol": "@zSndStreamRequest_StopIfActive@4",
+      "symbol": "@zSndStreamRequestStopIfActive@4",
       "name": "zSndStreamRequest::StopIfActive",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -150,7 +150,7 @@
     },
     {
       "address": "0x4a5220",
-      "symbol": "@zSndStreamRequest_MatchGroupPredicate@8",
+      "symbol": "@zSndStreamRequestMatchGroupPredicate@8",
       "name": "zSndStreamRequest::MatchGroupPredicate",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -177,10 +177,10 @@
     },
     {
       "address": "0x4a5350",
-      "symbol": "_zSndStreamMgr_EnsureInit",
+      "symbol": "_zSndStreamMgrEnsureInit",
       "name": "zSndStreamMgr::EnsureInit",
-      "pipeline_class": "authored-lifecycle",
-      "authored_order_role": "authored-lifecycle-body",
+      "pipeline_class": "authored",
+      "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true
     },
@@ -199,10 +199,26 @@
       "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
       "order_scope": "authored",
       "function_address_refs": [
-        "0x4a44c0", "0x4a44e0", "0x4a4530", "0x4a4590", "0x4a49b0",
-        "0x4a4c40", "0x4a4cb0", "0x4a4d10", "0x4a4ea0", "0x4a4fd0",
-        "0x4a5020", "0x4a5050", "0x4a50a0", "0x4a51e0", "0x4a51f0",
-        "0x4a5220", "0x4a5230", "0x4a5250", "0x4a5350", "0x4a53d0"
+        "0x4a44c0",
+        "0x4a44e0",
+        "0x4a4530",
+        "0x4a4590",
+        "0x4a49b0",
+        "0x4a4c40",
+        "0x4a4cb0",
+        "0x4a4d10",
+        "0x4a4ea0",
+        "0x4a4fd0",
+        "0x4a5020",
+        "0x4a5050",
+        "0x4a50a0",
+        "0x4a51e0",
+        "0x4a51f0",
+        "0x4a5220",
+        "0x4a5230",
+        "0x4a5250",
+        "0x4a5350",
+        "0x4a53d0"
       ]
     }
   ],
@@ -222,10 +238,26 @@
         "full_order_gate": true
       },
       "function_address_refs": [
-        "0x4a44c0", "0x4a44e0", "0x4a4530", "0x4a4590", "0x4a49b0",
-        "0x4a4c40", "0x4a4cb0", "0x4a4d10", "0x4a4ea0", "0x4a4fd0",
-        "0x4a5020", "0x4a5050", "0x4a50a0", "0x4a51e0", "0x4a51f0",
-        "0x4a5220", "0x4a5230", "0x4a5250", "0x4a5350", "0x4a53d0"
+        "0x4a44c0",
+        "0x4a44e0",
+        "0x4a4530",
+        "0x4a4590",
+        "0x4a49b0",
+        "0x4a4c40",
+        "0x4a4cb0",
+        "0x4a4d10",
+        "0x4a4ea0",
+        "0x4a4fd0",
+        "0x4a5020",
+        "0x4a5050",
+        "0x4a50a0",
+        "0x4a51e0",
+        "0x4a51f0",
+        "0x4a5220",
+        "0x4a5230",
+        "0x4a5250",
+        "0x4a5350",
+        "0x4a53d0"
       ],
       "successor": {
         "address": "0x4a53f0",

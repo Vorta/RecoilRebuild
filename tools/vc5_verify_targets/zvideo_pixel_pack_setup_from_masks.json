@@ -18,23 +18,23 @@
   "functions": [
     {
       "address": "0x4a6bb0",
-      "symbol": "?PixelPack_GetRgbMasks@zVideo@@YIXPAI00@Z",
-      "name": "zVideo::PixelPack_GetRgbMasks"
+      "symbol": "?PixelPackGetRgbMasks@zVideo@@YIXPAI00@Z",
+      "name": "zVideo::PixelPackGetRgbMasks"
     },
     {
       "address": "0x4a6bd0",
-      "symbol": "?PixelPack_GetPackingParams@zVideo@@YIXPAH00@Z",
-      "name": "zVideo::PixelPack_GetPackingParams"
+      "symbol": "?PixelPackGetPackingParams@zVideo@@YIXPAH00@Z",
+      "name": "zVideo::PixelPackGetPackingParams"
     },
     {
       "address": "0x4a6bf0",
-      "symbol": "?PixelPack_SetupFromMasks@zVideo@@YIXHHHIII@Z",
-      "name": "zVideo::PixelPack_SetupFromMasks"
+      "symbol": "?PixelPackSetupFromMasks@zVideo@@YIXHHHIII@Z",
+      "name": "zVideo::PixelPackSetupFromMasks"
     },
     {
       "address": "0x4a6db0",
-      "symbol": "?TexturePixelPack_SetupFromMasks@zVideo@@YIXHHHHIIII@Z",
-      "name": "zVideo::TexturePixelPack_SetupFromMasks"
+      "symbol": "?TexturePixelPackSetupFromMasks@zVideo@@YIXHHHHIIII@Z",
+      "name": "zVideo::TexturePixelPackSetupFromMasks"
     }
   ],
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c"

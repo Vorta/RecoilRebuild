@@ -46,7 +46,7 @@
       "order_scope": "authored",
       "retail_start": "0x44d990",
       "retail_end_exclusive": "0x44e630",
-      "predecessor": {"address":"0x44d600","symbol":"?zVideo_sw_RenderFrame@@YIHPAUzClass_NodePartial@@H@Z","name":"zVideo_sw::RenderFrame","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "predecessor": {"address":"0x44d600","symbol":"?zVideoswRenderFrame@@YIHPAUzClass_NodePartial@@H@Z","name":"zVideo_sw::RenderFrame","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "functions": [
         {"address":"0x44d990","symbol":"?PropagateTransformDirtyRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@@Z","name":"zClass_Node::PropagateTransformDirtyRecursive","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
         {"address":"0x44d9e0","symbol":"?PropagateTransformDirty@zClass_Object3D@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Object3D::PropagateTransformDirty","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},

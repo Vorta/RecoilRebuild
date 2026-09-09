@@ -18,33 +18,33 @@
   "functions": [
     {
       "address": "0x462330",
-      "symbol": "??0zFMV_Playback@@QAE@PBDPAUHWND__@@@Z",
-      "name": "zFMV_Playback::Constructor"
+      "symbol": "??0CZFMVPlayback@@QAE@PBDPAUHWND__@@@Z",
+      "name": "CZFMVPlayback::Constructor"
     },
     {
       "address": "0x462360",
-      "symbol": "??1zFMV_Playback@@QAE@XZ",
-      "name": "zFMV_Playback::~zFMV_Playback"
+      "symbol": "??1CZFMVPlayback@@QAE@XZ",
+      "name": "CZFMVPlayback::~CZFMVPlayback"
     },
     {
       "address": "0x462370",
-      "symbol": "?OpenAndPlay@zFMV_Playback@@QAEXIHH@Z",
-      "name": "zFMV_Playback::OpenAndPlay"
+      "symbol": "?OpenAndPlay@CZFMVPlayback@@QAEXIHH@Z",
+      "name": "CZFMVPlayback::OpenAndPlay"
     },
     {
       "address": "0x4624f0",
-      "symbol": "?StopAndClose@zFMV_Playback@@QAEXXZ",
-      "name": "zFMV_Playback::StopAndClose"
+      "symbol": "?StopAndClose@CZFMVPlayback@@QAEXXZ",
+      "name": "CZFMVPlayback::StopAndClose"
     },
     {
       "address": "0x462540",
-      "symbol": "?SetDestRect@zFMV_Playback@@QAEHPBUzFMV_Rect@@@Z",
-      "name": "zFMV_Playback::SetDestRect"
+      "symbol": "?SetDestRect@CZFMVPlayback@@QAEHPBUzFMV_Rect@@@Z",
+      "name": "CZFMVPlayback::SetDestRect"
     },
     {
       "address": "0x462570",
-      "symbol": "?ReportMciError@zFMV_Playback@@QAEHI@Z",
-      "name": "zFMV_Playback::ReportMciError"
+      "symbol": "?ReportMciError@CZFMVPlayback@@QAEHI@Z",
+      "name": "CZFMVPlayback::ReportMciError"
     }
   ],
   "source_from": "src/GameZRecoil/zFMV/fmv_main.cpp"

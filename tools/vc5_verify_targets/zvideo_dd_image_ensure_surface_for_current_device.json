@@ -1,6 +1,6 @@
 {
   "name": "zvideo_dd_image_ensure_surface_for_current_device",
-  "description": "VC verification target for zVideo_dd::Image_EnsureSurfaceForCurrentDevice.",
+  "description": "VC verification target for zVideo_dd::ImageEnsureSurfaceForCurrentDevice.",
   "source_filename": "zVideo.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4a8650",
-      "symbol": "?Image_EnsureSurfaceForCurrentDevice@zVideo_dd@@YIXPAUzVidImagePartial@@@Z",
-      "name": "zVideo_dd::Image_EnsureSurfaceForCurrentDevice"
+      "symbol": "?ImageEnsureSurfaceForCurrentDevice@zVideo_dd@@YIXPAUzVidImagePartial@@@Z",
+      "name": "zVideo_dd::ImageEnsureSurfaceForCurrentDevice"
     }
   ]
 }

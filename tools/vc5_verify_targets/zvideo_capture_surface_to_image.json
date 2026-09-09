@@ -1,6 +1,6 @@
 {
   "name": "zvideo_capture_surface_to_image",
-  "description": "VC verification target for zVideo_buff_CaptureSurfaceToImage.",
+  "description": "VC verification target for zVideobuffCaptureSurfaceToImage.",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_filename": "zVideo.cpp",
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4a6e80",
-      "symbol": "@zVideo_buff_CaptureSurfaceToImage@4",
-      "name": "zVideo_buff_CaptureSurfaceToImage"
+      "symbol": "@zVideobuffCaptureSurfaceToImage@4",
+      "name": "zVideobuffCaptureSurfaceToImage"
     }
   ]
 }

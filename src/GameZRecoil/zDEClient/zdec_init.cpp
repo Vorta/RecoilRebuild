@@ -261,11 +261,7 @@ int __fastcall LoadConfigResources(
     SetCameraNode(worldNode);
     zVideo::ReturnSuccessStub();
 
-    g_zDEClient_ConfigReaderRoot = zReader::Load(
-        g_zDEClient_ConfigArchiveName,
-        0,
-        0
-    );
+    g_zDEClient_ConfigReaderRoot = zReader::Load(g_zDEClient_ConfigArchiveName, 0, 0);
     srand((unsigned int)(time(0)));
 
     if (g_zDEClient_ConfigReaderRoot == 0) {
@@ -318,10 +314,7 @@ int __fastcall LoadConfigResources(
     zDEClient_CraterDisplaySourceEntry *defaultDisplaySource = g_zDEClient_CraterDisplaySourceList;
     if (LoadMaterialFromTexturePath_Local(
             &defaultDisplaySource->craterMaterial,
-            (char *)(zReader::GetString(
-                craterNode,
-                g_zDEClient_DefaultTextureNodeName
-            ))
+            (char *)(zReader::GetString(craterNode, g_zDEClient_DefaultTextureNodeName))
         ) != 0) {
         textureLoadPending = 1;
     }
@@ -332,10 +325,7 @@ int __fastcall LoadConfigResources(
             g_zDEClient_DefaultAnimNodeName
         ));
 
-    zReader::Node *const textureAnimNode = zRdrGetNode(
-        craterNode,
-        g_zDEClient_TextureAnimNodeName
-    );
+    zReader::Node *const textureAnimNode = zRdrGetNode(craterNode, g_zDEClient_TextureAnimNodeName);
     if (textureAnimNode != 0) {
         const int textureAnimEntryCount =
             textureAnimNode->value.nodes[0].value.i32;
@@ -358,10 +348,7 @@ int __fastcall LoadConfigResources(
             }
 
             zReader::Node *const entryNode =
-                zRdrGetNode(
-                    textureAnimNode,
-                    textureAnimNode->value.nodes[i].value.str
-                );
+                zRdrGetNode(textureAnimNode, textureAnimNode->value.nodes[i].value.str);
             if (entryNode != 0) {
                 if (LoadMaterialFromTexturePath_Local(
                         &displaySource->craterMaterial,
@@ -372,9 +359,7 @@ int __fastcall LoadConfigResources(
 
                 if (entryNode->value.nodes[0].value.i32 > 2) {
                     displaySource->effectAnimEntry =
-                        zEffectAnim::FindEntryByName(
-                            entryNode->value.nodes[2].value.str
-                        );
+                        zEffectAnim::FindEntryByName(entryNode->value.nodes[2].value.str);
                 } else {
                     displaySource->effectAnimEntry =
                         g_zDEClient_CraterDisplaySourceList[0].effectAnimEntry;
@@ -386,16 +371,10 @@ int __fastcall LoadConfigResources(
     }
 
     zReader::Node *const quickSandNode =
-        zRdrGetNode(
-            g_zDEClient_ConfigReaderRoot,
-            g_zDEClient_QuickSandNodeName
-        );
+        zRdrGetNode(g_zDEClient_ConfigReaderRoot, g_zDEClient_QuickSandNodeName);
     if (quickSandNode != 0) {
         zReader::Node *const defaultTextureNode =
-            zRdrGetNode(
-                quickSandNode,
-                g_zDEClient_DefaultTextureNodeName
-            );
+            zRdrGetNode(quickSandNode, g_zDEClient_DefaultTextureNodeName);
         int textureCount = 1;
         if (defaultTextureNode != 0) {
             g_zDEClient_QuickSandAnimSpeed = defaultTextureNode->value.nodes[1].value.f32;
@@ -448,30 +427,21 @@ int __fastcall LoadConfigResources(
         material.flags = (unsigned short)(material.flags | 0x0100);
 
         if (textureCount > 1) {
-            zModel_Material::SetCycleTextureCount(
-                &material,
-                textureCount
-            );
-            zModel_Material::SetCycleTextureSpeed(
-                &material,
-                g_zDEClient_QuickSandAnimSpeed
-            );
-            zModel_Material::SetCycleTextureLoop(
-                &material,
-                1
-            );
+            zModel_Material::SetCycleTextureCount(&material, textureCount);
+            zModel_Material::SetCycleTextureSpeed(&material, g_zDEClient_QuickSandAnimSpeed);
+            zModel_Material::SetCycleTextureLoop(&material, 1);
 
             for (int i = 0; i < textureCount; ++i) {
                 zModel_Material::AddCycleTexture(
                     &material,
-                    zImage::TexDir_FindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[i])
+                    zImage::TexDirFindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[i])
                 );
             }
 
             textureLoadPending = 1;
             g_zDEClient_QuickSandMaterial = zModel_Material::FindOrClone(&material);
         } else if (textureCount == 1) {
-            zImage::TexDir_FindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[0]);
+            zImage::TexDirFindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[0]);
             textureLoadPending = 1;
             g_zDEClient_QuickSandMaterial = zModel_Material::FindOrClone(&material);
         } else {
@@ -486,10 +456,7 @@ int __fastcall LoadConfigResources(
         }
 
         if (g_zDEClient_QuickSandMaterial != 0) {
-            zModel_Material::SetUserTag(
-                g_zDEClient_QuickSandMaterial,
-                3
-            );
+            zModel_Material::SetUserTag(g_zDEClient_QuickSandMaterial, 3);
         }
 
         if (textureCount >= 1 && g_zDEClient_QuickSandTexturePaths != 0) {
@@ -497,10 +464,7 @@ int __fastcall LoadConfigResources(
             material.flags = (unsigned short)(material.flags | 0x0100);
             material.currentTextureDirectoryEntry =
                 zImage::FindTexDirEntryByName(g_zDEClient_QuickSandTexturePaths[0]);
-            zModel_Material::SetUserTag(
-                &material,
-                0
-            );
+            zModel_Material::SetUserTag(&material, 0);
             g_zDEClient_QuickSandMaterialCycle = zModel_Material::Clone(&material);
             g_zDEClient_QuickSandEnabled = 1;
         } else {
@@ -512,7 +476,7 @@ int __fastcall LoadConfigResources(
     }
 
     if (textureLoadPending != 0) {
-        zImage::TexDir_LoadPendingEntries();
+        zImage::TexDirLoadPendingEntries();
     }
 
     zReader::Free(g_zDEClient_ConfigReaderRoot);
@@ -548,7 +512,7 @@ RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
     int result = 0;
     zImage_TexDirEntryPartial *textureDirectoryEntry = zImage::FindTexDirEntryByName(texturePath);
     if (textureDirectoryEntry == 0) {
-        textureDirectoryEntry = zImage::TexDir_FindOrAppendByPath(texturePath);
+        textureDirectoryEntry = zImage::TexDirFindOrAppendByPath(texturePath);
         result = 1;
         *outMaterial = 0;
     } else {

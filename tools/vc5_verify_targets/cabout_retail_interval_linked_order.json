@@ -102,8 +102,8 @@
           "pipeline_class": "non-authored"
         },
         {
-          "symbol": "?_Destroy@std@@YAXPAPAUzInput_BindGroupInfo@@@Z",
-          "name": "std::_Destroy(zInput_BindGroupInfo**) (VC5 STL provider/template cleanup helper)",
+          "symbol": "?_Destroy@std@@YAXPAPAUCZInputBindGroupInfo@@@Z",
+          "name": "std::_Destroy(CZInputBindGroupInfo**) (VC5 STL provider/template cleanup helper)",
           "pipeline_class": "non-authored"
         },
         {

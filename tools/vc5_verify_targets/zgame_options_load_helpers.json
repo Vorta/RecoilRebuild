@@ -63,8 +63,8 @@
     },
     {
       "address": "0x407700",
-      "symbol": "?Options_LoadGameOptions@zGame@@YAHXZ",
-      "name": "zGame::Options_LoadGameOptions",
+      "symbol": "?OptionsLoadGameOptions@zGame@@YAHXZ",
+      "name": "zGame::OptionsLoadGameOptions",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -72,8 +72,8 @@
     },
     {
       "address": "0x407e00",
-      "symbol": "?Options_SaveGameOptions@zGame@@YAHXZ",
-      "name": "zGame::Options_SaveGameOptions",
+      "symbol": "?OptionsSaveGameOptions@zGame@@YAHXZ",
+      "name": "zGame::OptionsSaveGameOptions",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -171,8 +171,8 @@
     },
     {
       "address": "0x408190",
-      "symbol": "?zOpt_GetPlayerName@@YAPADXZ",
-      "name": "zOpt_GetPlayerName",
+      "symbol": "?zOptGetPlayerName@@YAPADXZ",
+      "name": "zOptGetPlayerName",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,

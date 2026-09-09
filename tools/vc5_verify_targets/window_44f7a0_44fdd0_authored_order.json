@@ -39,7 +39,7 @@
       "order_scope": "authored",
       "retail_start": "0x44f7a0",
       "retail_end_exclusive": "0x44fdd0",
-      "predecessor": {"address":"0x44f750","symbol":"?gwNodeFindNextByName_Predicate@zClass_Class@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Class::gwNodeFindNextByName_Predicate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "predecessor": {"address":"0x44f750","symbol":"?gwNodeFindNextByNamePredicate@zClass_Class@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Class::gwNodeFindNextByNamePredicate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": [
         "0x44f7a0","0x44f870","0x44f8b0","0x44f930","0x44f9c0","0x44fa40","0x44fad0","0x44fb40","0x44fbd0","0x44fcf0"
       ],

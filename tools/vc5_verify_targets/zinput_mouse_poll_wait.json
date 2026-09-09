@@ -25,18 +25,18 @@
   "functions": [
     {
       "address": "0x4703b0",
-      "symbol": "?Mouse_PollAndStoreState@zInput@@YIXE@Z",
-      "name": "zInput::Mouse_PollAndStoreState"
+      "symbol": "?MousePollAndStoreState@zInput@@YIXE@Z",
+      "name": "zInput::MousePollAndStoreState"
     },
     {
       "address": "0x4703c0",
-      "symbol": "?Mouse_PollState@zInput@@YIHE@Z",
-      "name": "zInput::Mouse_PollState"
+      "symbol": "?MousePollState@zInput@@YIHE@Z",
+      "name": "zInput::MousePollState"
     },
     {
       "address": "0x470680",
-      "symbol": "?Mouse_WaitForButtonPress@zInput@@YIHH@Z",
-      "name": "zInput::Mouse_WaitForButtonPress"
+      "symbol": "?MouseWaitForButtonPress@zInput@@YIHH@Z",
+      "name": "zInput::MouseWaitForButtonPress"
     }
   ],
   "data_symbols": [

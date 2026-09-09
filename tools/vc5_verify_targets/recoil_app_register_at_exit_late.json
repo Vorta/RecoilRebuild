@@ -23,8 +23,8 @@
     },
     {
       "address": "0x42eea0",
-      "symbol": "??0RecoilApp_PlayState@@QAE@XZ",
-      "name": "RecoilApp_PlayState::Constructor"
+      "symbol": "??0CRecoilAppPlayState@@QAE@XZ",
+      "name": "CRecoilAppPlayState::Constructor"
     },
     {
       "address": "0x42dfa0",

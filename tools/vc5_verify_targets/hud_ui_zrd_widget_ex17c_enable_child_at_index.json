@@ -1,6 +1,6 @@
 {
   "name": "hud_ui_zrd_widget_ex17c_enable_child_at_index",
-  "description": "HudUiZrdWidgetEx17C::EnableChildAtIndex compile coverage.",
+  "description": "CHudRadioGroupWidget::EnableChildAtIndex compile coverage.",
   "source_filename": "hud.cpp",
   "source_from": "src/Battlesport/hud.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -20,8 +20,8 @@
   "functions": [
     {
       "address": "0x409010",
-      "symbol": "?EnableChildAtIndex@HudUiZrdWidgetEx17C@@QAEXH@Z",
-      "name": "HudUiZrdWidgetEx17C::EnableChildAtIndex"
+      "symbol": "?EnableChildAtIndex@CHudRadioGroupWidget@@QAEXH@Z",
+      "name": "CHudRadioGroupWidget::EnableChildAtIndex"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "zinput_mouse_get_button_transition_state",
-  "description": "zInput::Mouse_GetButtonTransitionState compares current and previous 1-based mouse button bytes.",
+  "description": "zInput::MouseGetButtonTransitionState compares current and previous 1-based mouse button bytes.",
   "source_filename": "zin_mouse.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
@@ -24,8 +24,8 @@
   "functions": [
     {
       "address": "0x4702e0",
-      "symbol": "?Mouse_GetButtonTransitionState@zInput@@YIHH@Z",
-      "name": "zInput::Mouse_GetButtonTransitionState"
+      "symbol": "?MouseGetButtonTransitionState@zInput@@YIHH@Z",
+      "name": "zInput::MouseGetButtonTransitionState"
     }
   ],
   "data_symbols": [

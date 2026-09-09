@@ -21,8 +21,8 @@
   "functions": [
     {
       "address": "0x48c250",
-      "symbol": "@zNetwork_DPlay_ReportError@12",
-      "name": "zNetwork_DPlay_ReportError"
+      "symbol": "@zNetworkDPlayReportError@12",
+      "name": "zNetworkDPlayReportError"
     }
   ]
 }

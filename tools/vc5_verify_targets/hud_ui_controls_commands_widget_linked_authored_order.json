@@ -8,8 +8,8 @@
       "order_scope": "authored",
       "predecessor": {
         "address": "0x408a20",
-        "symbol": "?zOpt_GetWolPasswordFlagValue@@YAHXZ",
-        "name": "zOpt_GetWolPasswordFlagValue",
+        "symbol": "?zOptGetWolPasswordFlagValue@@YAHXZ",
+        "name": "zOptGetWolPasswordFlagValue",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body"
       },

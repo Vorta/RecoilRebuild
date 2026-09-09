@@ -1,6 +1,6 @@
 {
   "name": "zrndr_lens_flare_get_queued_sample_count",
-  "description": "zRndr_LensFlare_GetQueuedSampleCount lens-flare queue count accessor.",
+  "description": "zRndrLensFlareGetQueuedSampleCount lens-flare queue count accessor.",
   "source_filename": "zRndr.cpp",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49a8b0",
-      "symbol": "?zRndr_LensFlare_GetQueuedSampleCount@@YAHXZ",
-      "name": "zRndr_LensFlare_GetQueuedSampleCount"
+      "symbol": "?zRndrLensFlareGetQueuedSampleCount@@YAHXZ",
+      "name": "zRndrLensFlareGetQueuedSampleCount"
     }
   ]
 }

@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x472410",
-      "symbol": "?DI_ResetTransitionState@zInput@@YAXXZ",
-      "name": "zInput::DI_ResetTransitionState"
+      "symbol": "?DIResetTransitionState@zInput@@YAXXZ",
+      "name": "zInput::DIResetTransitionState"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp"

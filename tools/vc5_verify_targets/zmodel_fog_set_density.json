@@ -21,8 +21,8 @@
   "functions": [
     {
       "address": "0x4762a0",
-      "symbol": "?zModel_Fog_SetDensity@@YGXM@Z",
-      "name": "zModel_Fog_SetDensity"
+      "symbol": "?zModelFogSetDensity@@YGXM@Z",
+      "name": "zModelFogSetDensity"
     }
   ],
   "source_from": "src/GameZRecoil/zModel/gmod_init.c"

@@ -1,6 +1,6 @@
 {
   "name": "zinput_mouse_update_client_rect_and_center",
-  "description": "zInput::Mouse_UpdateClientRectAndCenter reads the input window client rect and updates cached mouse center state.",
+  "description": "zInput::MouseUpdateClientRectAndCenter reads the input window client rect and updates cached mouse center state.",
   "source_filename": "zin_mouse.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x470060",
-      "symbol": "?Mouse_UpdateClientRectAndCenter@zInput@@YAXXZ",
-      "name": "zInput::Mouse_UpdateClientRectAndCenter"
+      "symbol": "?MouseUpdateClientRectAndCenter@zInput@@YAXXZ",
+      "name": "zInput::MouseUpdateClientRectAndCenter"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp"

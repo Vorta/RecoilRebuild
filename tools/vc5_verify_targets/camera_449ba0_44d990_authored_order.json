@@ -76,7 +76,7 @@
     {"address":"0x44d260","symbol":"?gwCameraSetVariantTagOverride@zClass_Camera@@YIHPAUzClass_NodePartial@@PAUzTag4Partial@@@Z","name":"zClass_Camera::gwCameraSetVariantTagOverride"},
     {"address":"0x44d320","symbol":"?SyncViewContextPositions@zClass_Camera@@YAXXZ","name":"zClass_Camera::SyncViewContextPositions"},
     {"address":"0x44d3a0","symbol":"?RenderScene@zClass_Camera@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Camera::RenderScene"},
-    {"address":"0x44d600","symbol":"?zVideo_sw_RenderFrame@@YIHPAUzClass_NodePartial@@H@Z","name":"zVideo_sw_RenderFrame"}
+    {"address":"0x44d600","symbol":"?zVideoswRenderFrame@@YIHPAUzClass_NodePartial@@H@Z","name":"zVideoswRenderFrame"}
   ],
   "translation_unit_function_order": [
     {

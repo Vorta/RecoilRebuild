@@ -18,7 +18,7 @@
   "functions": [
     {
       "address": "0x4a0920",
-      "symbol": "@zSndSampleSetRegistry_FindByName@4",
+      "symbol": "@zSndSampleSetRegistryFindByName@4",
       "name": "zSndSampleSetRegistry::FindByName"
     }
   ]

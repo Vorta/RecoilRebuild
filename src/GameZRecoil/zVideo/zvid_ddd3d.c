@@ -333,25 +333,15 @@ namespace {
 int __cdecl BeginSceneAndFlushPendingRenderStates() {
     const HRESULT hresult = g_zVideo_pD3DDevice->BeginScene();
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            76
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 76);
     }
 
     const int pendingWireframeState = g_zVideo_PendingWireframeState;
     if (pendingWireframeState == 0) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_FILLMODE,
-            D3DFILL_SOLID
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FILLMODE, D3DFILL_SOLID);
         g_zVideo_PendingWireframeState = -1;
     } else if (pendingWireframeState == 1) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_FILLMODE,
-            D3DFILL_WIREFRAME
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FILLMODE, D3DFILL_WIREFRAME);
         g_zVideo_PendingWireframeState = -1;
     }
 
@@ -377,11 +367,7 @@ int __cdecl BeginSceneAndFlushPendingRenderStates() {
 int __cdecl EndScene() {
     const HRESULT hresult = g_zVideo_pD3DDevice->EndScene();
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            115
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 115);
     }
 
     return 0;
@@ -424,10 +410,7 @@ int __fastcall PresentDisplayModeSurface(
             displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
         }
 
-        HRESULT hresult = displaySurface->Flip(
-            0,
-            waitForPresent != 0 ? DDFLIP_WAIT : 0
-        );
+        HRESULT hresult = displaySurface->Flip(0, waitForPresent != 0 ? DDFLIP_WAIT : 0);
         if (hresult == DD_OK) {
             return 0;
         }
@@ -447,11 +430,7 @@ int __fastcall PresentDisplayModeSurface(
             continue;
         }
 
-        zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0xae
-        );
+        zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xae);
         return 0x5a56ffff;
     }
 }
@@ -470,11 +449,7 @@ int __cdecl CreateDeviceState() {
     D3DVIEWPORT2 viewport2 = {0};
     D3DMATERIAL mat = {0};
     // VC5/BN evidence shows the original C source zeroed this provider record again here.
-    memset(
-        &zBufferDesc,
-        0,
-        sizeof(zBufferDesc)
-    );
+    memset(&zBufferDesc, 0, sizeof(zBufferDesc));
     zBufferDesc.dwWidth = (DWORD)(g_zVideo_SwSurfaceState.width);
     zBufferDesc.dwHeight = (DWORD)(g_zVideo_SwSurfaceState.height);
     g_zVideo_ClearScreenBufferEnabled = 1;
@@ -489,11 +464,7 @@ int __cdecl CreateDeviceState() {
         0
     );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0xd3
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xd3);
     }
 
     hresult = g_zVideo_pZBufferSurface->QueryInterface(
@@ -501,34 +472,19 @@ int __cdecl CreateDeviceState() {
         (void **)(&g_zVideo_pZBufferAttachSurface)
     );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0xd9
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xd9);
     }
 
     hresult = g_zVideo_SwSurfaceState.surf->AddAttachedSurface(
         (IDirectDrawSurface3 *)(g_zVideo_pZBufferAttachSurface)
     );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0xde
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xde);
     }
 
-    hresult = g_zVideo_pDirectDraw2->QueryInterface(
-        IID_IDirect3D2,
-        (void **)(&g_zVideo_pD3D2)
-    );
+    hresult = g_zVideo_pDirectDraw2->QueryInterface(IID_IDirect3D2, (void **)(&g_zVideo_pD3D2));
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0xe5
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xe5);
     }
 
     hresult = g_zVideo_pD3D2->CreateDevice(
@@ -537,32 +493,17 @@ int __cdecl CreateDeviceState() {
         &g_zVideo_pD3DDevice
     );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0xed
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xed);
     }
 
-    hresult = g_zVideo_pD3D2->CreateViewport(
-        &g_zVideo_pD3DViewport2,
-        0
-    );
+    hresult = g_zVideo_pD3D2->CreateViewport(&g_zVideo_pD3DViewport2, 0);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0xf4
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xf4);
     }
 
     hresult = g_zVideo_pD3DDevice->AddViewport(g_zVideo_pD3DViewport2);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0xf9
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xf9);
     }
 
     const DWORD width = (DWORD)(g_zVideo_DisplayModeSurfaceState.width);
@@ -581,32 +522,17 @@ int __cdecl CreateDeviceState() {
 
     hresult = g_zVideo_pD3DViewport2->SetViewport2(&viewport2);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0x10a
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x10a);
     }
 
     hresult = g_zVideo_pD3DDevice->SetCurrentViewport(g_zVideo_pD3DViewport2);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0x10f
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x10f);
     }
 
-    hresult = g_zVideo_pD3D2->CreateMaterial(
-        &g_zVideo_pD3DMaterial2,
-        0
-    );
+    hresult = g_zVideo_pD3D2->CreateMaterial(&g_zVideo_pD3DMaterial2, 0);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0x116
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x116);
     }
 
     mat.dwSize = sizeof(mat);
@@ -620,88 +546,36 @@ int __cdecl CreateDeviceState() {
 
     hresult = g_zVideo_pD3DMaterial2->SetMaterial(&mat);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0x124
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x124);
     }
 
-    hresult = g_zVideo_pD3DMaterial2->GetHandle(
-        g_zVideo_pD3DDevice,
-        &g_zVideo_D3DMaterialHandle
-    );
+    hresult = g_zVideo_pD3DMaterial2->GetHandle(g_zVideo_pD3DDevice, &g_zVideo_D3DMaterialHandle);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0x12a
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x12a);
     }
 
     hresult = g_zVideo_pD3DViewport2->SetBackground(g_zVideo_D3DMaterialHandle);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0x12f
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x12f);
     }
 
     g_zVideo_D3DHelDeviceDesc.dwSize = sizeof(g_zVideo_D3DHelDeviceDesc);
     g_zVideo_D3DHalDeviceDesc.dwSize = sizeof(g_zVideo_D3DHalDeviceDesc);
-    hresult = g_zVideo_pD3DDevice->GetCaps(
-        &g_zVideo_D3DHalDeviceDesc,
-        &g_zVideo_D3DHelDeviceDesc
-    );
+    hresult = g_zVideo_pD3DDevice->GetCaps(&g_zVideo_D3DHalDeviceDesc, &g_zVideo_D3DHelDeviceDesc);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0x139
-        );
+        return zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x139);
     }
 
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_CULLMODE,
-        1
-    );
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_ZENABLE,
-        1
-    );
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_ZFUNC,
-        7
-    );
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_SPECULARENABLE,
-        0
-    );
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_SHADEMODE,
-        1
-    );
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_TEXTUREPERSPECTIVE,
-        1
-    );
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_TEXTUREMAG,
-        2
-    );
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_TEXTUREMIN,
-        2
-    );
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_SRCBLEND,
-        5
-    );
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_DESTBLEND,
-        6
-    );
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, 1);
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, 7);
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, 0);
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, 2);
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, 2);
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
 
     g_zVideo_PendingWireframeState = -1;
     SetFogEnable(1);
@@ -718,7 +592,7 @@ int __cdecl CreateDeviceState() {
  * Evidence: BN assembly checks device texture dimensions, power-of-two and
  * aspect-ratio caps, optionally resamples square-only textures, rejects
  * initially paletted images, builds upload/video DDSURFACEDESC records, calls
- * TexturePixelPack_SetupFromMasks and UploadImageToSurface, performs
+ * TexturePixelPackSetupFromMasks and UploadImageToSurface, performs
  * DirectDraw/Direct3D provider QueryInterface/Load/GetHandle calls, fills the
  * zVideo_TextureRecordPartial fields, and releases temporary provider objects
  * on failure.
@@ -785,13 +659,8 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
 
     if ((g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_SQUAREONLY) != 0 &&
         image->width != image->height) {
-        const int squareSide = FloorPowerOfTwo(
-            (int)(sqrt((double)(image->height * image->width)))
-        );
-        zVid_Image::ResampleSquare(
-            image,
-            squareSide
-        );
+        const int squareSide = FloorPowerOfTwo((int)(sqrt((double)(image->height * image->width))));
+        zVid_Image::ResampleSquare(image, squareSide);
     }
 
     if (image->palette != 0) {
@@ -850,7 +719,7 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
         }
     }
 
-    zVideo::TexturePixelPack_SetupFromMasks(
+    zVideo::TexturePixelPackSetupFromMasks(
         redBits,
         greenBits,
         blueBits,
@@ -861,23 +730,11 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
         desc.ddpfPixelFormat.dwRGBAlphaBitMask
     );
 
-    HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(
-        &desc,
-        &uploadSurface,
-        0
-    );
+    HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(&desc, &uploadSurface, 0);
     if (hresult == DD_OK && image->palette != 0) {
         PALETTEENTRY paletteEntries[256];
-        memset(
-            paletteEntries,
-            0,
-            sizeof(paletteEntries)
-        );
-        memcpy(
-            paletteEntries,
-            image->palette,
-            image->paletteMetaPacked
-        );
+        memset(paletteEntries, 0, sizeof(paletteEntries));
+        memcpy(paletteEntries, image->palette, image->paletteMetaPacked);
         hresult = g_zVideo_pDirectDraw2->CreatePalette(
             DDPCAPS_8BIT | DDPCAPS_ALLOW256,
             (LPPALETTEENTRY)(image->palette),
@@ -889,15 +746,8 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
         }
     }
     if (hresult == DD_OK) {
-        UploadImageToSurface(
-            uploadSurface,
-            image,
-            useAlpha
-        );
-        hresult = uploadSurface->QueryInterface(
-            IID_IDirect3DTexture2,
-            (void **)(&uploadTexture)
-        );
+        UploadImageToSurface(uploadSurface, image, useAlpha);
+        hresult = uploadSurface->QueryInterface(IID_IDirect3DTexture2, (void **)(&uploadTexture));
     }
 
     textureHandle = 0;
@@ -907,32 +757,22 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
             desc.ddsCaps.dwCaps |= DDSCAPS_NONLOCALVIDMEM;
         }
 
-        hresult = g_zVideo_pDirectDraw2->CreateSurface(
-            &desc,
-            &textureSurface,
-            0
-        );
+        hresult = g_zVideo_pDirectDraw2->CreateSurface(&desc, &textureSurface, 0);
     }
     if (hresult == DD_OK && ddPalette != 0) {
         hresult = textureSurface->SetPalette(ddPalette);
     }
     if (hresult == DD_OK) {
-        hresult = textureSurface->QueryInterface(
-            IID_IDirect3DTexture2,
-            (void **)(&texture)
-        );
+        hresult = textureSurface->QueryInterface(IID_IDirect3DTexture2, (void **)(&texture));
     }
     if (hresult == DD_OK) {
         hresult = texture->Load(uploadTexture);
     }
     if (hresult == DD_OK) {
-        hresult = texture->GetHandle(
-            g_zVideo_pD3DDevice,
-            &textureHandle
-        );
+        hresult = texture->GetHandle(g_zVideo_pD3DDevice, &textureHandle);
     }
     if (hresult == DD_OK) {
-        result = TextureRecord_Create();
+        result = TextureRecordCreate();
         if (result != 0) {
             result->m_uploadSurface = uploadSurface;
             result->m_textureSurface = textureSurface;
@@ -946,11 +786,7 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
     }
 
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0x30f
-        );
+        zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x30f);
         if (texture != 0) {
             texture->Release();
         }
@@ -973,10 +809,10 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
  * Purpose: locks a DirectDraw upload surface, copies or converts image pixels
  * into its pitch layout, and unlocks the surface after upload.
  *
- * Evidence: BN assembly locks through zVideo_dd::LockSurface_WaitRestore,
+ * Evidence: BN assembly locks through zVideo_dd::LockSurfaceWaitRestore,
  * chooses ConvertImagePixelsForTexture only when useAlpha is nonzero, otherwise
  * copies either one contiguous block or one row per pitch, then unlocks through
- * zVideo_dd::UnlockSurface_WaitRestore and returns one unconditionally.
+ * zVideo_dd::UnlockSurfaceWaitRestore and returns one unconditionally.
  */
 int __fastcall UploadImageToSurface(
     IDirectDrawSurface *uploadSurface,
@@ -984,10 +820,7 @@ int __fastcall UploadImageToSurface(
     int useAlpha
 ) {
     DDSURFACEDESC lockedDescOut = {0};
-    zVideo_dd::LockSurface_WaitRestore(
-        (IDirectDrawSurface3 *)(uploadSurface),
-        &lockedDescOut
-    );
+    zVideo_dd::LockSurfaceWaitRestore((IDirectDrawSurface3 *)(uploadSurface), &lockedDescOut);
 
     unsigned char *dstPixels = (unsigned char *)(lockedDescOut.lpSurface);
     unsigned char *srcPixels = (unsigned char *)(image->pixels);
@@ -1003,20 +836,12 @@ int __fastcall UploadImageToSurface(
         const int height = image->height;
         if (lockedDescOut.lPitch == width) {
             const int bytesPerPixel = (g_zVideo_DisplayModeBpp + 7) >> 3;
-            memcpy(
-                dstPixels,
-                srcPixels,
-                (size_t)(height * bytesPerPixel * width)
-            );
+            memcpy(dstPixels, srcPixels, (size_t)(height * bytesPerPixel * width));
         } else {
             const int rowCopyBytes = (g_zVideo_DisplayModeBpp * width + 7) >> 3;
             {
                 for (int row = 0; row < height; ++row) {
-                    memcpy(
-                        dstPixels,
-                        srcPixels,
-                        (size_t)(rowCopyBytes)
-                    );
+                    memcpy(dstPixels, srcPixels, (size_t)(rowCopyBytes));
                     dstPixels += lockedDescOut.lPitch;
                     srcPixels += width << 1;
                 }
@@ -1024,7 +849,7 @@ int __fastcall UploadImageToSurface(
         }
     }
 
-    zVideo_dd::UnlockSurface_WaitRestore((IDirectDrawSurface3 *)(uploadSurface));
+    zVideo_dd::UnlockSurfaceWaitRestore((IDirectDrawSurface3 *)(uploadSurface));
     return 1;
 }
 
@@ -1111,18 +936,18 @@ void __fastcall ConvertImagePixelsForTexture(
  * pixel pointer and row pitch to the caller.
  *
  * Evidence: BN loads m_uploadSurface at offset zero, calls
- * zVideo_dd::LockSurface_WaitRestore with an uninitialized stack
+ * zVideo_dd::LockSurfaceWaitRestore with an uninitialized stack
  * DDSURFACEDESC, copies lpSurface and lPitch to the output pointers only on
  * success, and returns one or zero. The callee owns descriptor clearing and
  * dwSize initialization.
  */
-int __fastcall TextureRecord_LockUploadSurface(
+int __fastcall TextureRecordLockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord,
     void **outPixels,
     int *outPitchBytes
 ) {
     DDSURFACEDESC lockedDescOut;
-    if (zVideo_dd::LockSurface_WaitRestore(
+    if (zVideo_dd::LockSurfaceWaitRestore(
             (IDirectDrawSurface3 *)(textureRecord->m_uploadSurface),
             &lockedDescOut
         ) == 0) {
@@ -1140,13 +965,13 @@ int __fastcall TextureRecord_LockUploadSurface(
  * success to a one-or-zero result.
  *
  * Evidence: BN loads m_uploadSurface at offset zero, calls
- * zVideo_dd::UnlockSurface_WaitRestore, and uses neg/sbb/inc to return one
+ * zVideo_dd::UnlockSurfaceWaitRestore, and uses neg/sbb/inc to return one
  * only when the unlock wrapper returns zero.
  */
-int __fastcall TextureRecord_UnlockUploadSurface(
+int __fastcall TextureRecordUnlockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord
 ) {
-    return zVideo_dd::UnlockSurface_WaitRestore(
+    return zVideo_dd::UnlockSurfaceWaitRestore(
                (IDirectDrawSurface3 *)(textureRecord->m_uploadSurface)
            ) == 0
                ? 1
@@ -1161,7 +986,7 @@ int __fastcall TextureRecord_UnlockUploadSurface(
  * Evidence: BN tests m_uploadSurface at offset zero, calls the provider Release
  * slot at vtable offset 8 when non-null, and stores null back to offset zero.
  */
-void __fastcall TextureRecord_ReleaseUploadSurfaceRef(
+void __fastcall TextureRecordReleaseUploadSurfaceRef(
     zVideo_TextureRecordPartial *textureRecord
 ) {
     if (textureRecord->m_uploadSurface != 0) {
@@ -1180,7 +1005,7 @@ void __fastcall TextureRecord_ReleaseUploadSurfaceRef(
  * surface for IDirect3DTexture2, calls targetTexture->Load(uploadTexture), and
  * releases the temporary upload texture only when Load succeeds.
  */
-void __fastcall TextureRecord_FinalizeUpload(
+void __fastcall TextureRecordFinalizeUpload(
     zVideo_TextureRecordPartial *textureRecord,
     void *,
     zVidImagePartial *image
@@ -1192,19 +1017,12 @@ void __fastcall TextureRecord_FinalizeUpload(
 
     IDirect3DTexture2 *targetTexture = textureRecord->m_texture;
     if (image != 0) {
-        UploadImageToSurface(
-            uploadSurface,
-            image,
-            image->formatFlagsPacked & 2
-        );
+        UploadImageToSurface(uploadSurface, image, image->formatFlagsPacked & 2);
     }
 
     IDirect3DTexture2 *uploadTexture = 0;
     HRESULT hresult =
-        uploadSurface->QueryInterface(
-            IID_IDirect3DTexture2,
-            (void **)(&uploadTexture)
-        );
+        uploadSurface->QueryInterface(IID_IDirect3DTexture2, (void **)(&uploadTexture));
     if (hresult != DD_OK) {
         return;
     }
@@ -1224,7 +1042,7 @@ void __fastcall TextureRecord_FinalizeUpload(
  * before checking the default texture record, then releases each provider
  * reference in field order before freeing the record.
  */
-void __fastcall TextureRecord_Destroy(
+void __fastcall TextureRecordDestroy(
     zVideo_TextureRecordPartial *textureRecord
 ) {
     IDirectDrawSurface *uploadSurface = textureRecord->m_uploadSurface;
@@ -1255,11 +1073,8 @@ void __fastcall TextureRecord_Destroy(
  * Evidence: BN assembly is a leaf that calls calloc(1, 0x1c) and returns the
  * provider result directly; zVideo_TextureRecordPartial is asserted to 0x1c.
  */
-zVideo_TextureRecordPartial *__cdecl TextureRecord_Create() {
-    return (zVideo_TextureRecordPartial *)(calloc(
-        1,
-        sizeof(zVideo_TextureRecordPartial)
-    ));
+zVideo_TextureRecordPartial *__cdecl TextureRecordCreate() {
+    return (zVideo_TextureRecordPartial *)(calloc(1, sizeof(zVideo_TextureRecordPartial)));
 }
 
 /**
@@ -1276,18 +1091,12 @@ void __fastcall SetFogEnable(
     int enable
 ) {
     if (g_zVideo_CachedFogEnableRenderState != enable) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_FOGENABLE,
-            (DWORD)(enable)
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, (DWORD)(enable));
         g_zVideo_CachedFogEnableRenderState = enable;
     }
 
     if (g_zVideo_CachedFogModeLightState != 3) {
-        g_zVideo_pD3DDevice->SetLightState(
-            D3DLIGHTSTATE_FOGMODE,
-            D3DFOG_LINEAR
-        );
+        g_zVideo_pD3DDevice->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_LINEAR);
         g_zVideo_CachedFogModeLightState = 3;
     }
 }
@@ -1306,10 +1115,7 @@ void __stdcall SetFogStart(
     float fogStart
 ) {
     if (g_zVideo_CachedFogStartLightStateValue != fogStart) {
-        g_zVideo_pD3DDevice->SetLightState(
-            (D3DLIGHTSTATETYPE)(5),
-            *(DWORD *)(&fogStart)
-        );
+        g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(5), *(DWORD *)(&fogStart));
         g_zVideo_CachedFogStartLightStateValue = fogStart;
     }
 }
@@ -1329,10 +1135,7 @@ void __stdcall SetFogEnd(
     float fogEnd
 ) {
     if (g_zVideo_CachedFogEndLightStateValue != fogEnd) {
-        g_zVideo_pD3DDevice->SetLightState(
-            (D3DLIGHTSTATETYPE)(5),
-            *(DWORD *)(&fogEnd)
-        );
+        g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(5), *(DWORD *)(&fogEnd));
         g_zVideo_CachedFogEndLightStateValue = fogEnd;
     }
 }
@@ -1354,10 +1157,7 @@ void __stdcall ApplyFogStateFromGlobals(
     float unused
 ) {
     (void)unused;
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_FOGENABLE,
-        1
-    );
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
 
     g_zVideo_pD3DDevice->SetRenderState(
         D3DRENDERSTATE_FOGCOLOR,
@@ -1366,18 +1166,9 @@ void __stdcall ApplyFogStateFromGlobals(
         (DWORD)((int)(g_zVideo_FogColorPendingB255 + 0.5f))
     );
 
-    g_zVideo_pD3DDevice->SetLightState(
-        D3DLIGHTSTATE_FOGMODE,
-        D3DFOG_LINEAR
-    );
-    g_zVideo_pD3DDevice->SetLightState(
-        (D3DLIGHTSTATETYPE)(5),
-        *(DWORD *)(&fogStart)
-    );
-    g_zVideo_pD3DDevice->SetLightState(
-        (D3DLIGHTSTATETYPE)(6),
-        *(DWORD *)(&fogEnd)
-    );
+    g_zVideo_pD3DDevice->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_LINEAR);
+    g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(5), *(DWORD *)(&fogStart));
+    g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(6), *(DWORD *)(&fogEnd));
 }
 
 /**
@@ -1412,18 +1203,10 @@ void __fastcall SubmitPolyFlatColor16(
     int vertexCount,
     int queueMode
 ) {
-    const DWORD packedColor = PackD3DColorFrom16(
-        packedColor16,
-        alpha
-    );
+    const DWORD packedColor = PackD3DColorFrom16(packedColor16, alpha);
 
     if (alpha >= 0xff) {
-        CopyFlatVerticesReverse(
-            g_zVideo_D3DSubmitTempVertices,
-            vertices,
-            vertexCount,
-            packedColor
-        );
+        CopyFlatVerticesReverse(g_zVideo_D3DSubmitTempVertices, vertices, vertexCount, packedColor);
 
         if (queueMode != 0) {
             const int queueIndex = g_zVideo_OverwriteQueueCount;
@@ -1455,17 +1238,11 @@ void __fastcall SubmitPolyFlatColor16(
         }
 
         if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_TEXTUREHANDLE,
-                0
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
             g_zVideo_D3DRenderStateCache.textureHandle = 0;
         }
         if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_SHADEMODE,
-                1
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
             g_zVideo_D3DRenderStateCache.shadeMode = 1;
         }
 
@@ -1477,11 +1254,7 @@ void __fastcall SubmitPolyFlatColor16(
             0
         );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdd3dC,
-                0x520
-            );
+            zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x520);
         }
         return;
     }
@@ -1506,12 +1279,7 @@ void __fastcall SubmitPolyFlatColor16(
         entry.renderClass = 0;
         entry.renderParam = renderParam;
         if (vertexCount > 0) {
-            CopyFlatVerticesReverse(
-                entry.vertices,
-                vertices,
-                vertexCount,
-                packedColor
-            );
+            CopyFlatVerticesReverse(entry.vertices, vertices, vertexCount, packedColor);
         }
         return;
     }
@@ -1533,12 +1301,7 @@ void __fastcall SubmitPolyFlatColor16(
     entry.renderClass = 0;
     entry.renderParam = renderParam;
     if (vertexCount > 0) {
-        CopyFlatVerticesReverse(
-            entry.vertices,
-            vertices,
-            vertexCount,
-            packedColor
-        );
+        CopyFlatVerticesReverse(entry.vertices, vertices, vertexCount, packedColor);
     }
     ++g_zVideo_SortedPolyQueueCount;
 }
@@ -1595,17 +1358,11 @@ void __fastcall SubmitPolyGouraudColor16(
         }
 
         if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_TEXTUREHANDLE,
-                0
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
             g_zVideo_D3DRenderStateCache.textureHandle = 0;
         }
         if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_SHADEMODE,
-                1
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
             g_zVideo_D3DRenderStateCache.shadeMode = 1;
         }
 
@@ -1617,11 +1374,7 @@ void __fastcall SubmitPolyGouraudColor16(
             0
         );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdd3dC,
-                0x5bb
-            );
+            zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x5bb);
         }
         return;
     }
@@ -1674,13 +1427,7 @@ void __fastcall SubmitPolyGouraudColor16(
     entry.renderClass = 0;
     entry.renderParam = renderParam;
     if (vertexCount > 0) {
-        CopyGouraudVerticesReverse(
-            entry.vertices,
-            vertices,
-            packedColors16,
-            vertexCount,
-            alpha
-        );
+        CopyGouraudVerticesReverse(entry.vertices, vertices, packedColors16, vertexCount, alpha);
     }
     ++g_zVideo_SortedPolyQueueCount;
 }
@@ -1706,26 +1453,13 @@ void __fastcall SubmitPolyColorAttr(
     const float attr1Scale = 1.0f - *attr1;
     const DWORD alphaBits = alpha < 0xff ? (DWORD)(alpha << 24) : 0xff000000;
 
-    FillColorAttrSpecularReverse(
-        attr2,
-        vertexCount
-    );
-    FillColorAttrColorsReverse(
-        *baseColor,
-        attr0,
-        attr1Scale,
-        alphaBits,
-        vertexCount
-    );
+    FillColorAttrSpecularReverse(attr2, vertexCount);
+    FillColorAttrColorsReverse(*baseColor, attr0, attr1Scale, alphaBits, vertexCount);
     if (alpha < 0xff) {
         return;
     }
 
-    CopyPositionsReverse(
-        g_zVideo_D3DSubmitTempVertices,
-        vertices,
-        vertexCount
-    );
+    CopyPositionsReverse(g_zVideo_D3DSubmitTempVertices, vertices, vertexCount);
 
     if (queueMode != 0) {
         const int queueIndex = g_zVideo_OverwriteQueueCount;
@@ -1757,17 +1491,11 @@ void __fastcall SubmitPolyColorAttr(
     }
 
     if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_TEXTUREHANDLE,
-            0
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
         g_zVideo_D3DRenderStateCache.textureHandle = 0;
     }
     if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_SHADEMODE,
-            1
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
         g_zVideo_D3DRenderStateCache.shadeMode = 1;
     }
 
@@ -1779,11 +1507,7 @@ void __fastcall SubmitPolyColorAttr(
         0
     );
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0x6ba
-        );
+        zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x6ba);
     }
 }
 
@@ -1848,10 +1572,7 @@ void __fastcall SubmitPolyRenderClass(
         }
 
         if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_SHADEMODE,
-                1
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
             g_zVideo_D3DRenderStateCache.shadeMode = 1;
         }
         if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
@@ -1891,11 +1612,7 @@ void __fastcall SubmitPolyRenderClass(
             0
         );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdd3dC,
-                0x71d
-            );
+            zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x71d);
         }
         return;
     }
@@ -1950,13 +1667,7 @@ void __fastcall SubmitPolyRenderClass(
     entry.renderClass = (int)(renderClass);
     entry.renderParam = (int)(renderParam);
     if (vertexCount > 0) {
-        CopyTexturedVerticesReverse(
-            entry.vertices,
-            vertices,
-            texCoords,
-            vertexCount,
-            alphaWhite
-        );
+        CopyTexturedVerticesReverse(entry.vertices, vertices, texCoords, vertexCount, alphaWhite);
     }
     ++g_zVideo_SortedPolyQueueCount;
 }
@@ -1981,16 +1692,8 @@ void __fastcall SubmitPolygon(
     const DWORD alphaBits = alpha < 1.0f ? ((DWORD)((int)(alpha * 255.0f)) << 24) : 0xff000000;
     const float grayBase = attr1Scale * 255.0f;
 
-    FillColorAttrSpecularReverse(
-        attr2,
-        vertexCount
-    );
-    FillPolygonColorsReverse(
-        attr0,
-        grayBase,
-        alphaBits,
-        vertexCount
-    );
+    FillColorAttrSpecularReverse(attr2, vertexCount);
+    FillPolygonColorsReverse(attr0, grayBase, alphaBits, vertexCount);
 
     const bool opaquePath = renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
 
@@ -2002,10 +1705,7 @@ void __fastcall SubmitPolygon(
             uvPairs,
             preparedVertexCount
         );
-        AppendFanCloseVertexIfNeeded(
-            g_zVideo_D3DSubmitTempVertices,
-            preparedVertexCount
-        );
+        AppendFanCloseVertexIfNeeded(g_zVideo_D3DSubmitTempVertices, preparedVertexCount);
 
         if (queueMode != 0) {
             const int queueIndex = g_zVideo_OverwriteQueueCount;
@@ -2037,10 +1737,7 @@ void __fastcall SubmitPolygon(
         }
 
         if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_SHADEMODE,
-                2
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
             g_zVideo_D3DRenderStateCache.shadeMode = 2;
         }
         if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
@@ -2051,10 +1748,7 @@ void __fastcall SubmitPolygon(
             g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
         }
         if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(2)) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_TEXTUREMAPBLEND,
-                2
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 2);
             g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
         }
         if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
@@ -2080,11 +1774,7 @@ void __fastcall SubmitPolygon(
             0
         );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdd3dC,
-                0x84a
-            );
+            zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x84a);
         }
         return;
     }
@@ -2117,10 +1807,7 @@ void __fastcall SubmitPolygon(
                 vertexCount
             );
         }
-        AppendFanCloseVertexIfNeeded(
-            entry.vertices,
-            preparedVertexCount
-        );
+        AppendFanCloseVertexIfNeeded(entry.vertices, preparedVertexCount);
         entry.vertexCount = preparedVertexCount;
         return;
     }
@@ -2150,10 +1837,7 @@ void __fastcall SubmitPolygon(
             vertexCount
         );
     }
-    AppendFanCloseVertexIfNeeded(
-        entry.vertices,
-        preparedVertexCount
-    );
+    AppendFanCloseVertexIfNeeded(entry.vertices, preparedVertexCount);
     entry.vertexCount = preparedVertexCount;
     ++g_zVideo_SortedPolyQueueCount;
 }
@@ -2176,16 +1860,8 @@ void __fastcall SubmitPolygonLit(
 ) {
     const DWORD alphaBits = alpha < 1.0f ? ((DWORD)((int)(alpha * 255.0f)) << 24) : 0xff000000;
 
-    FillColorAttrSpecularReverse(
-        attr2,
-        vertexCount
-    );
-    FillPolygonLitColorsReverse(
-        attr1,
-        attr0,
-        alphaBits,
-        vertexCount
-    );
+    FillColorAttrSpecularReverse(attr2, vertexCount);
+    FillPolygonLitColorsReverse(attr1, attr0, alphaBits, vertexCount);
 
     const bool opaquePath = renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
 
@@ -2197,10 +1873,7 @@ void __fastcall SubmitPolygonLit(
             uvPairs,
             preparedVertexCount
         );
-        AppendFanCloseVertexIfNeeded(
-            g_zVideo_D3DSubmitTempVertices,
-            preparedVertexCount
-        );
+        AppendFanCloseVertexIfNeeded(g_zVideo_D3DSubmitTempVertices, preparedVertexCount);
 
         if (queueMode != 0) {
             const int queueIndex = g_zVideo_OverwriteQueueCount;
@@ -2232,10 +1905,7 @@ void __fastcall SubmitPolygonLit(
         }
 
         if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_SHADEMODE,
-                2
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
             g_zVideo_D3DRenderStateCache.shadeMode = 2;
         }
         if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
@@ -2246,10 +1916,7 @@ void __fastcall SubmitPolygonLit(
             g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
         }
         if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(2)) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_TEXTUREMAPBLEND,
-                2
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 2);
             g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
         }
         if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
@@ -2275,11 +1942,7 @@ void __fastcall SubmitPolygonLit(
             0
         );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdd3dC,
-                0x9a4
-            );
+            zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0x9a4);
         }
         return;
     }
@@ -2312,10 +1975,7 @@ void __fastcall SubmitPolygonLit(
                 vertexCount
             );
         }
-        AppendFanCloseVertexIfNeeded(
-            entry.vertices,
-            preparedVertexCount
-        );
+        AppendFanCloseVertexIfNeeded(entry.vertices, preparedVertexCount);
         entry.vertexCount = preparedVertexCount;
         return;
     }
@@ -2345,10 +2005,7 @@ void __fastcall SubmitPolygonLit(
             vertexCount
         );
     }
-    AppendFanCloseVertexIfNeeded(
-        entry.vertices,
-        preparedVertexCount
-    );
+    AppendFanCloseVertexIfNeeded(entry.vertices, preparedVertexCount);
     entry.vertexCount = preparedVertexCount;
     ++g_zVideo_SortedPolyQueueCount;
 }
@@ -2370,24 +2027,15 @@ void __fastcall DrawPointColor16(
     vertex.sy = pointPos->y;
     vertex.sz = pointPos->z;
     vertex.rhw = pointPos->z;
-    vertex.color = PackD3DColorFrom16(
-        packedColor16,
-        0xff
-    );
+    vertex.color = PackD3DColorFrom16(packedColor16, 0xff);
     vertex.specular = 0xff000000;
 
     if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_TEXTUREHANDLE,
-            0
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
         g_zVideo_D3DRenderStateCache.textureHandle = 0;
     }
     if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_SHADEMODE,
-            1
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
         g_zVideo_D3DRenderStateCache.shadeMode = 1;
     }
 
@@ -2399,11 +2047,7 @@ void __fastcall DrawPointColor16(
         0
     );
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError(
-            (int)(hresult),
-            g_zVideo_SourceFile_ZvidDdd3dC,
-            0xa4c
-        );
+        zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xa4c);
     }
 }
 
@@ -2475,10 +2119,7 @@ void __fastcall QueueSolidQuad(
     item.vertices[3].sy = bottom;
 
     const int alphaByte = (int)(alpha * 255.0);
-    const DWORD packedColor = PackD3DColorFrom16(
-        packedColor16,
-        alphaByte
-    );
+    const DWORD packedColor = PackD3DColorFrom16(packedColor16, alphaByte);
     for (int i = 0; i < 4; ++i) {
         item.vertices[i].color = packedColor;
     }
@@ -2497,26 +2138,17 @@ void __cdecl FlushSortedPolys() {
     }
 
     if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_SHADEMODE,
-            2
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
         queueCount = g_zVideo_SortedPolyQueueCount;
         g_zVideo_D3DRenderStateCache.shadeMode = 2;
     }
     if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_ALPHABLENDENABLE,
-            1
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
         queueCount = g_zVideo_SortedPolyQueueCount;
         g_zVideo_D3DRenderStateCache.alphaBlendEnable = 1;
     }
     if (g_zVideo_D3DRenderStateCache.zWriteEnable != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_ZWRITEENABLE,
-            0
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
         queueCount = g_zVideo_SortedPolyQueueCount;
         g_zVideo_D3DRenderStateCache.zWriteEnable = 0;
     }
@@ -2563,10 +2195,7 @@ void __cdecl FlushSortedPolys() {
                 (entry.vertices[0].color & 0xff000000) != 0xff000000;
             if (forceTransparentTextureBlend) {
                 if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(4)) {
-                    g_zVideo_pD3DDevice->SetRenderState(
-                        D3DRENDERSTATE_TEXTUREMAPBLEND,
-                        4
-                    );
+                    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 4);
                     g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(4);
                 }
             } else if (g_zVideo_D3DRenderStateCache.textureMapBlend != textureMapBlend) {
@@ -2592,10 +2221,7 @@ void __cdecl FlushSortedPolys() {
                 g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
             }
         } else if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
-            g_zVideo_pD3DDevice->SetRenderState(
-                D3DRENDERSTATE_TEXTUREHANDLE,
-                0
-            );
+            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
             g_zVideo_D3DRenderStateCache.textureHandle = 0;
         }
 
@@ -2607,26 +2233,16 @@ void __cdecl FlushSortedPolys() {
             0
         );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdd3dC,
-                0xb09
-            );
+            zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xb09);
         }
     }
 
     if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_ALPHABLENDENABLE,
-            0
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
         g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
     }
     if (g_zVideo_D3DRenderStateCache.zWriteEnable != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_ZWRITEENABLE,
-            1
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
         g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
     }
     g_zVideo_SortedPolyQueueCount = 0;
@@ -2642,38 +2258,23 @@ void __cdecl FlushQuadBatch() {
     }
 
     if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_SHADEMODE,
-            2
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
         g_zVideo_D3DRenderStateCache.shadeMode = 2;
     }
     if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_ALPHABLENDENABLE,
-            1
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
         g_zVideo_D3DRenderStateCache.alphaBlendEnable = 1;
     }
     if (g_zVideo_D3DRenderStateCache.zWriteEnable != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_ZWRITEENABLE,
-            0
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
         g_zVideo_D3DRenderStateCache.zWriteEnable = 0;
     }
     if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_TEXTUREHANDLE,
-            0
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
         g_zVideo_D3DRenderStateCache.textureHandle = 0;
     }
 
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_ZFUNC,
-        D3DCMP_ALWAYS
-    );
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_ALWAYS);
 
     for (unsigned int i = 0; i < (unsigned int)(g_zVideo_QuadBatchCount); ++i) {
         g_zVideo_pD3DDevice->DrawPrimitive(
@@ -2686,23 +2287,14 @@ void __cdecl FlushQuadBatch() {
     }
 
     g_zVideo_QuadBatchCount = 0;
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_ZFUNC,
-        D3DCMP_GREATEREQUAL
-    );
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_GREATEREQUAL);
 
     if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_ALPHABLENDENABLE,
-            0
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
         g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
     }
     if (g_zVideo_D3DRenderStateCache.zWriteEnable != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(
-            D3DRENDERSTATE_ZWRITEENABLE,
-            1
-        );
+        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
         g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
     }
 }
@@ -2712,10 +2304,7 @@ void __cdecl FlushQuadBatch() {
  * Purpose: Draw overwrite-queue primitives with the Direct3D render-state cache and restore depth testing.
  */
 void __cdecl FlushOverwritePolys() {
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_ZFUNC,
-        D3DCMP_ALWAYS
-    );
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_ALWAYS);
 
     HRESULT hresult = DD_OK;
     for (int i = 0; i < g_zVideo_OverwriteQueueCount; ++i) {
@@ -2724,24 +2313,15 @@ void __cdecl FlushOverwritePolys() {
 
         if (entryType == 0) {
             if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_SHADEMODE,
-                    2
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
                 g_zVideo_D3DRenderStateCache.shadeMode = 2;
             }
             if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 1) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_ALPHABLENDENABLE,
-                    1
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
                 g_zVideo_D3DRenderStateCache.alphaBlendEnable = 1;
             }
             if (g_zVideo_D3DRenderStateCache.zWriteEnable != 0) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_ZWRITEENABLE,
-                    0
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
                 g_zVideo_D3DRenderStateCache.zWriteEnable = 0;
             }
 
@@ -2761,10 +2341,7 @@ void __cdecl FlushOverwritePolys() {
                     (entry.vertices[0].color & 0xff000000) != 0xff000000;
                 if (forceTransparentTextureBlend) {
                     if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(4)) {
-                        g_zVideo_pD3DDevice->SetRenderState(
-                            D3DRENDERSTATE_TEXTUREMAPBLEND,
-                            4
-                        );
+                        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 4);
                         g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(4);
                     }
                 } else if (g_zVideo_D3DRenderStateCache.textureMapBlend != textureMapBlend) {
@@ -2792,10 +2369,7 @@ void __cdecl FlushOverwritePolys() {
             }
             if (renderClass == 0) {
                 if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
-                    g_zVideo_pD3DDevice->SetRenderState(
-                        D3DRENDERSTATE_TEXTUREHANDLE,
-                        0
-                    );
+                    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
                     g_zVideo_D3DRenderStateCache.textureHandle = 0;
                 }
             }
@@ -2809,33 +2383,21 @@ void __cdecl FlushOverwritePolys() {
             );
 
             if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 0) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_ALPHABLENDENABLE,
-                    0
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
                 g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
             }
             if (g_zVideo_D3DRenderStateCache.zWriteEnable != 1) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_ZWRITEENABLE,
-                    1
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
                 g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
             }
         }
         if (entryType == 1 || entryType == 2 || entryType == 3) {
             if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_TEXTUREHANDLE,
-                    0
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
                 g_zVideo_D3DRenderStateCache.textureHandle = 0;
             }
             if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_SHADEMODE,
-                    1
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
                 g_zVideo_D3DRenderStateCache.shadeMode = 1;
             }
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -2848,10 +2410,7 @@ void __cdecl FlushOverwritePolys() {
         }
         if (entryType == 4) {
             if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_SHADEMODE,
-                    1
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
                 g_zVideo_D3DRenderStateCache.shadeMode = 1;
             }
 
@@ -2880,10 +2439,7 @@ void __cdecl FlushOverwritePolys() {
         }
         if (entryType == 5 || entryType == 6) {
             if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_SHADEMODE,
-                    2
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
                 g_zVideo_D3DRenderStateCache.shadeMode = 2;
             }
 
@@ -2896,10 +2452,7 @@ void __cdecl FlushOverwritePolys() {
                 g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
             }
             if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(2)) {
-                g_zVideo_pD3DDevice->SetRenderState(
-                    D3DRENDERSTATE_TEXTUREMAPBLEND,
-                    2
-                );
+                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 2);
                 g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
             }
             if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
@@ -2929,18 +2482,11 @@ void __cdecl FlushOverwritePolys() {
         }
 
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError(
-                (int)(hresult),
-                g_zVideo_SourceFile_ZvidDdd3dC,
-                0xbb7
-            );
+            zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xbb7);
         }
     }
 
-    g_zVideo_pD3DDevice->SetRenderState(
-        D3DRENDERSTATE_ZFUNC,
-        D3DCMP_GREATEREQUAL
-    );
+    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_GREATEREQUAL);
     g_zVideo_OverwriteQueueCount = 0;
 }
 
@@ -3434,16 +2980,8 @@ RECOIL_NO_GS int __fastcall ReportError(
         int videoMemTotalBytes;
         int videoMemFreeBytes;
 
-        g_zVideo_pfnQueryTextureMemoryBytes(
-            -1,
-            &textureMemTotalBytes,
-            &textureMemFreeBytes
-        );
-        g_zVideo_pfnQueryDeviceVideoMemoryBytes(
-            -1,
-            &videoMemTotalBytes,
-            &videoMemFreeBytes
-        );
+        g_zVideo_pfnQueryTextureMemoryBytes(-1, &textureMemTotalBytes, &textureMemFreeBytes);
+        g_zVideo_pfnQueryDeviceVideoMemoryBytes(-1, &videoMemTotalBytes, &videoMemFreeBytes);
     }
 
     char reportMessageBuffer[0x100];
@@ -3454,12 +2992,7 @@ RECOIL_NO_GS int __fastcall ReportError(
         sourceFile,
         sourceLine
     );
-    zError::ReportOld(
-        0x400,
-        sourceFile,
-        sourceLine,
-        reportMessageBuffer
-    );
+    zError::ReportOld(0x400, sourceFile, sourceLine, reportMessageBuffer);
     return -1;
 }
 

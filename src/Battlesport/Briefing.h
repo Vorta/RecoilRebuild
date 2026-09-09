@@ -19,12 +19,12 @@ struct BriefingAction {
  * node layout and cleanup are the official VC5 std::list implementation; the
  * queue owns list nodes while retaining non-owning BriefingAction pointers.
  */
-struct Briefing_ActionQueue {
+struct CBriefingActionQueue {
     std::list<BriefingAction *> actions;
     std::list<BriefingAction *>::iterator current;
     int active;
 
-    Briefing_ActionQueue();
+    CBriefingActionQueue();
     int AddHideElement(HudUiElement *element);
     int AddShowElement(HudUiElement *element);
     int AddFadeInElement(HudUiElement *element);
@@ -46,9 +46,9 @@ struct Briefing_ActionQueue {
 };
 #if defined(_MSC_VER) && _MSC_VER == 1100
 RECOIL_STATIC_ASSERT(sizeof(std::list<BriefingAction *>) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(Briefing_ActionQueue, current) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(Briefing_ActionQueue, active) == 0x10);
-RECOIL_STATIC_ASSERT(sizeof(Briefing_ActionQueue) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(CBriefingActionQueue, current) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(CBriefingActionQueue, active) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(CBriefingActionQueue) == 0x14);
 #endif
 
 /**
@@ -105,7 +105,7 @@ struct HudUiBriefingTransportProgress : HudUiFillBitmapSlider {
  * @recoil-artifact emits .text recoil:function:0x403d90: VC5 scalar deleting destructor for this virtual-destructor model.
  */
 struct HudUiBriefingRuntime : HudUiBackground {
-    Briefing_ActionQueue actionQueue;
+    CBriefingActionQueue actionQueue;
     HudUiBriefingTransportProgress transportProgress;
     HudUiPanel missionName;
     HudUiPanel objectiveSummary;

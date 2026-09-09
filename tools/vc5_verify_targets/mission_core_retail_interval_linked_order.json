@@ -52,23 +52,23 @@
         },
         {
           "address": "0x417680",
-          "symbol_regex": "\\?ZarMission_SaveCallback@HudSensorTracker@@.*",
-          "name": "HudSensorTracker::ZarMission_SaveCallback"
+          "symbol_regex": "\\?ZarMissionSaveCallback@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ZarMissionSaveCallback"
         },
         {
           "address": "0x417690",
-          "symbol_regex": "\\?ZarMission_RestoreCallback@HudSensorTracker@@.*",
-          "name": "HudSensorTracker::ZarMission_RestoreCallback"
+          "symbol_regex": "\\?ZarMissionRestoreCallback@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ZarMissionRestoreCallback"
         },
         {
           "address": "0x4176b0",
-          "symbol_regex": "\\?ZarMissionLate_SaveCallback@HudSensorTracker@@.*",
-          "name": "HudSensorTracker::ZarMissionLate_SaveCallback"
+          "symbol_regex": "\\?ZarMissionLateSaveCallback@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ZarMissionLateSaveCallback"
         },
         {
           "address": "0x4176d0",
-          "symbol_regex": "\\?ZarMissionLate_RestoreCallback@HudSensorTracker@@.*",
-          "name": "HudSensorTracker::ZarMissionLate_RestoreCallback"
+          "symbol_regex": "\\?ZarMissionLateRestoreCallback@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::ZarMissionLateRestoreCallback"
         },
         {
           "address": "0x4176f0",
@@ -152,8 +152,8 @@
         },
         {
           "address": "0x418730",
-          "symbol_regex": "\\?Command_ToggleObjectivePanel@HudSensorTracker@@.*",
-          "name": "HudSensorTracker::Command_ToggleObjectivePanel"
+          "symbol_regex": "\\?CommandToggleObjectivePanel@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::CommandToggleObjectivePanel"
         },
         {
           "address": "0x418760",
@@ -162,8 +162,8 @@
         },
         {
           "address": "0x4188f0",
-          "symbol_regex": "\\?Command_ShowObjectivePickupInfo@HudSensorTracker@@.*",
-          "name": "HudSensorTracker::Command_ShowObjectivePickupInfo"
+          "symbol_regex": "\\?CommandShowObjectivePickupInfo@HudSensorTracker@@.*",
+          "name": "HudSensorTracker::CommandShowObjectivePickupInfo"
         },
         {
           "address": "0x418940",

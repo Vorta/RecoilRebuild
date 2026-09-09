@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x42ebf0",
-      "symbol": "?OnTryBecomeCurrent@RecoilApp_AttractFmvState@@UAEHXZ",
-      "name": "RecoilApp_AttractFmvState::OnTryBecomeCurrent"
+      "symbol": "?OnTryBecomeCurrent@CRecoilAppAttractFmvState@@UAEHXZ",
+      "name": "CRecoilAppAttractFmvState::OnTryBecomeCurrent"
     }
   ],
   "source_from": "src/Battlesport/RecoilApp.cpp"

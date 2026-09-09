@@ -1,6 +1,6 @@
 {
   "name": "zinput_bindmap_get_command_hint",
-  "description": "zInput::BindMap_GetCommandHint command hint localization accessor.",
+  "description": "zInput::BindMapGetCommandHint command hint localization accessor.",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_filename": "player.cpp",
   "source_from": "src/Battlesport/player.cpp",
@@ -20,8 +20,8 @@
   "functions": [
     {
       "address": "0x42a4f0",
-      "symbol": "?BindMap_GetCommandHint@zInput@@YIPADH@Z",
-      "name": "zInput::BindMap_GetCommandHint"
+      "symbol": "?BindMapGetCommandHint@zInput@@YIPADH@Z",
+      "name": "zInput::BindMapGetCommandHint"
     }
   ]
 }

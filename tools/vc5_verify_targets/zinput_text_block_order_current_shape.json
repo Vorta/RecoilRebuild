@@ -29,8 +29,8 @@
   "functions": [
     {
       "address": "0x470020",
-      "symbol": "?Mouse_ApplyClientCursorPosToOS@zInput@@YAXXZ",
-      "name": "zInput::Mouse_ApplyClientCursorPosToOS"
+      "symbol": "?MouseApplyClientCursorPosToOS@zInput@@YAXXZ",
+      "name": "zInput::MouseApplyClientCursorPosToOS"
     },
     {
       "address": "0x4706c0",
@@ -39,18 +39,18 @@
     },
     {
       "address": "0x4710a0",
-      "symbol": "?BindMapSystem_Init@zInput@@YIXH@Z",
-      "name": "zInput::BindMapSystem_Init"
+      "symbol": "?BindMapSystemInit@zInput@@YIXH@Z",
+      "name": "zInput::BindMapSystemInit"
     },
     {
       "address": "0x471860",
-      "symbol": "?BindMapContext_Push@zInput@@YIXPAUzInput_BindMapContext@@@Z",
-      "name": "zInput::BindMapContext_Push"
+      "symbol": "?BindMapContextPush@zInput@@YIXPAUzInput_BindMapContext@@@Z",
+      "name": "zInput::BindMapContextPush"
     },
     {
       "address": "0x471950",
-      "symbol": "?BindMapContext_Pop@zInput@@YAXXZ",
-      "name": "zInput::BindMapContext_Pop"
+      "symbol": "?BindMapContextPop@zInput@@YAXXZ",
+      "name": "zInput::BindMapContextPop"
     },
     {
       "address": "0x4719e0",
@@ -64,23 +64,23 @@
     },
     {
       "address": "0x471e40",
-      "symbol": "?DI_InitJoystickDevice@zInput@@YIHPAUHWND__@@@Z",
-      "name": "zInput::DI_InitJoystickDevice"
+      "symbol": "?DIInitJoystickDevice@zInput@@YIHPAUHWND__@@@Z",
+      "name": "zInput::DIInitJoystickDevice"
     },
     {
       "address": "0x472450",
-      "symbol": "@zInput_DI_CreateForceFeedbackEffect@8",
+      "symbol": "@zInputDICreateForceFeedbackEffect@8",
       "name": "zInputDI::CreateForceFeedbackEffect"
     },
     {
       "address": "0x472480",
-      "symbol": "_zInput_DI_HasForceFeedback",
+      "symbol": "_zInputDIHasForceFeedback",
       "name": "zInputDI::HasForceFeedback"
     },
     {
       "address": "0x472490",
-      "symbol": "?DI_ReportError@zInput@@YIHHPBDH@Z",
-      "name": "zInput::DI_ReportError"
+      "symbol": "?DIReportError@zInput@@YIHHPBDH@Z",
+      "name": "zInput::DIReportError"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp"

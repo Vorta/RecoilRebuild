@@ -17,13 +17,13 @@
   "functions": [
     {
       "address": "0x48cca0",
-      "symbol": "@zUtil_ZRDR_SetPath@4",
+      "symbol": "@zRdrSetPath@4",
       "name": "zUtil_ZRDR::SetPath"
     },
     {
       "address": "0x48cc70",
-      "symbol": "?ZRDR_Init@zUtil@@YIHPBD@Z",
-      "name": "zUtil::ZRDR_Init"
+      "symbol": "?zRdrInit@zUtil@@YIHPBD@Z",
+      "name": "zUtil::zRdrInit"
     }
   ],
   "source_from": "src/GameZRecoil/zReader/zreader.cpp"

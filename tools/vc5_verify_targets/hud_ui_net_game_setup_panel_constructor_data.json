@@ -42,7 +42,7 @@
     },
     {
       "address": "0x4cf8d0",
-      "symbol": "??_7HudUiNetGameSetupPanel_GameNameInput@@6B@",
+      "symbol": "??_7CHudUiNetGameSetupPanelGameNameInput@@6B@",
       "name": "g_HudUiNumericTextInput_MpGameName_Vtbl",
       "bn_name": "g_HudUiNumericTextInput_MpGameName_Vtbl",
       "byte_length": 144
@@ -70,7 +70,7 @@
     },
     {
       "address": "0x4cf6a8",
-      "symbol": "??_7HudUiNetGameSetupPanel_TimeLimitInput@@6B@",
+      "symbol": "??_7CHudUiNetGameSetupPanelTimeLimitInput@@6B@",
       "name": "g_HudUiClampedIntTextInput_MpTimeLimit_Vtbl",
       "bn_name": "g_HudUiClampedIntTextInput_MpTimeLimit_Vtbl",
       "byte_length": 144
@@ -91,7 +91,7 @@
     },
     {
       "address": "0x4cf508",
-      "symbol": "??_7HudUiNetGameSetupPanel_KillsInput@@6B@",
+      "symbol": "??_7CHudUiNetGameSetupPanelKillsInput@@6B@",
       "name": "g_HudUiClampedIntTextInput_MpKills_Vtbl",
       "bn_name": "g_HudUiClampedIntTextInput_MpKills_Vtbl",
       "byte_length": 144
@@ -112,7 +112,7 @@
     },
     {
       "address": "0x4cf368",
-      "symbol": "??_7HudUiNetGameSetupPanel_MaxPlayersInput@@6B@",
+      "symbol": "??_7CHudUiNetGameSetupPanelMaxPlayersInput@@6B@",
       "name": "g_HudUiClampedIntTextInput_MpMaxPlayers_Vtbl",
       "bn_name": "g_HudUiClampedIntTextInput_MpMaxPlayers_Vtbl",
       "byte_length": 144

@@ -189,73 +189,27 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
     }
 
     char pathBuf[0x40];
-    strcpy(
-        pathBuf,
-        exePath
-    );
-    strcat(
-        pathBuf,
-        g_zApp_StderrLogSuffix
-    );
-    FILE *stream = freopen(
-        pathBuf,
-        g_zApp_LogFileOpenMode,
-        stderr
-    );
-    if (stream == 0 && GetTempPathA(
-        sizeof(pathBuf),
-        pathBuf
-    ) != 0) {
-        strcat(
-            pathBuf,
-            g_zApp_DefaultStderrLogName
-        );
-        stream = freopen(
-            pathBuf,
-            g_zApp_LogFileOpenMode,
-            stderr
-        );
+    strcpy(pathBuf, exePath);
+    strcat(pathBuf, g_zApp_StderrLogSuffix);
+    FILE *stream = freopen(pathBuf, g_zApp_LogFileOpenMode, stderr);
+    if (stream == 0 && GetTempPathA(sizeof(pathBuf), pathBuf) != 0) {
+        strcat(pathBuf, g_zApp_DefaultStderrLogName);
+        stream = freopen(pathBuf, g_zApp_LogFileOpenMode, stderr);
     }
     if (stream != 0) {
-        fprintf(
-            stream,
-            g_zApp_LogFileStartBanner
-        );
+        fprintf(stream, g_zApp_LogFileStartBanner);
         fflush(stream);
     }
 
-    strcpy(
-        pathBuf,
-        exePath
-    );
-    strcat(
-        pathBuf,
-        g_zApp_StdoutLogSuffix
-    );
-    stream = freopen(
-        pathBuf,
-        g_zApp_LogFileOpenMode,
-        stdout
-    );
-    if (stream == 0 && GetTempPathA(
-        sizeof(pathBuf),
-        pathBuf
-    ) != 0) {
-        strcat(
-            pathBuf,
-            g_zApp_DefaultStdoutLogName
-        );
-        stream = freopen(
-            pathBuf,
-            g_zApp_LogFileOpenMode,
-            stdout
-        );
+    strcpy(pathBuf, exePath);
+    strcat(pathBuf, g_zApp_StdoutLogSuffix);
+    stream = freopen(pathBuf, g_zApp_LogFileOpenMode, stdout);
+    if (stream == 0 && GetTempPathA(sizeof(pathBuf), pathBuf) != 0) {
+        strcat(pathBuf, g_zApp_DefaultStdoutLogName);
+        stream = freopen(pathBuf, g_zApp_LogFileOpenMode, stdout);
     }
     if (stream != 0) {
-        fprintf(
-            stream,
-            g_zApp_LogFileStartBanner
-        );
+        fprintf(stream, g_zApp_LogFileStartBanner);
         fflush(stream);
     }
 }
@@ -308,12 +262,12 @@ namespace zInput {
 /**
  * Purpose: Enables or disables joystick acquisition and gameplay axis ranges.
  */
-int __fastcall DI_SetJoystickEnabled(
+int __fastcall DISetJoystickEnabled(
     int enable
 ) {
-    if (enable != 0 && DI_IsJoystickDeviceReady() != 0) {
-        if (DI_GetJoystickRefCount() == 0) {
-            DI_AddJoystickRef();
+    if (enable != 0 && DIIsJoystickDeviceReady() != 0) {
+        if (DIGetJoystickRefCount() == 0) {
+            DIAddJoystickRef();
         }
         JoystickAxisConfig &cfg = g_zInput_JoystickAxisConfig_Gameplay;
         cfg.axes[0].lMin = -1000;
@@ -328,11 +282,11 @@ int __fastcall DI_SetJoystickEnabled(
         cfg.axes[1].deadzone = 3000;
         cfg.axes[2].deadzone = 1500;
         cfg.axes[3].deadzone = 2000;
-        DI_ApplyAxisConfig(&cfg);
+        DIApplyAxisConfig(&cfg);
         return 1;
     }
-    if (DI_GetJoystickRefCount() != 0) {
-        DI_ReleaseJoystickRef();
+    if (DIGetJoystickRefCount() != 0) {
+        DIReleaseJoystickRef();
     }
     return 0;
 }
@@ -350,36 +304,18 @@ RECOIL_NO_GS int RecoilApp::StartEngine(
         g_RecoilApp_TurretStatusPrintfFmt,
         turretResult == 0 ? g_RecoilApp_StartupStatusPassed : g_RecoilApp_StartupStatusFailed
     );
-    zSndSystem_Init(
-        (RecoilPtr32)((unsigned int)hwnd),
-        g_RecoilApp_SoundsZrdName
-    );
+    zSndSystemInit((RecoilPtr32)((unsigned int)hwnd), g_RecoilApp_SoundsZrdName);
     zSnd::SetAudioApiOption(zSnd::GetActiveBackend());
     if (InitializeDisplay(hwnd) == 0) {
         char caption[0x80];
-        strcpy(
-            caption,
-            zLoc::GetMessageString(0x901)
-        );
-        MessageBoxExA(
-            hwnd,
-            zLoc::GetMessageString(0x1f),
-            caption,
-            MB_ICONHAND,
-            0
-        );
+        strcpy(caption, zLoc::GetMessageString(0x901));
+        MessageBoxExA(hwnd, zLoc::GetMessageString(0x1f), caption, MB_ICONHAND, 0);
         return 0;
     }
-    zInput::Init(
-        hwnd,
-        g_RecoilApp_hInstance
-    );
-    const int height = zOpt_DisplaySection_GetHeight();
-    zInput::Mouse_SetClientSizeAndCenter(
-        zOpt_DisplaySection_GetWidth(),
-        height
-    );
-    zInput::DI_SetJoystickEnabled(zInp::GetJoystickOption());
+    zInput::Init(hwnd, g_RecoilApp_hInstance);
+    const int height = zOptDisplaySectionGetHeight();
+    zInput::MouseSetClientSizeAndCenter(zOptDisplaySectionGetWidth(), height);
+    zInput::DISetJoystickEnabled(zInp::GetJoystickOption());
     zOpt_ViewRectSection *const windowSection = zOpt::GetWindowSection();
     HudUiMgr::InitHudLayouts(
         (const HudUiRect *)(zOpt::GetDisplaySection()),
@@ -419,24 +355,11 @@ int __fastcall RecoilApp::InitializeDisplay(
     zRndr::SetVideoStrideMirrors(zOpt::GetVideoStrideValue());
     zVid::InitFrameScratchBuffers();
     const int oldClearState = zVideo::ExchangeClearScreenBufferEnabled(1);
-    zVideo::CallClearSwSurfaceAndZBuffer(
-        0,
-        0
-    );
+    zVideo::CallClearSwSurfaceAndZBuffer(0, 0);
     zVideo::CallClearPrimarySurfaceAndZBuffer(0);
-    zVideo::AdjustSurfacesIfEnabled(
-        0,
-        0,
-        1,
-        1
-    );
+    zVideo::AdjustSurfacesIfEnabled(0, 0, 1, 1);
     zVideo::CallClearPrimarySurfaceAndZBuffer(0);
-    zVideo::AdjustSurfacesIfEnabled(
-        0,
-        0,
-        1,
-        1
-    );
+    zVideo::AdjustSurfacesIfEnabled(0, 0, 1, 1);
     zVideo::ExchangeClearScreenBufferEnabled(oldClearState);
     return 1;
 }
@@ -473,10 +396,7 @@ void RecoilApp::ShutdownEngine() {
  */
 int RecoilApp::LoadZbdAndStartEngine() {
     if (g_HudSensorTracker.missionFlags != 0) {
-        zArchive::Mount(
-            g_RecoilApp_StartupArchivePath,
-            1
-        );
+        zArchive::Mount(g_RecoilApp_StartupArchivePath, 1);
     }
 
     StartEngineAndQueueStartupState();
@@ -500,10 +420,7 @@ int RecoilApp::LoadZbdAndSetupSensorTracker(
         return 1;
     }
 
-    g_HudSensorTracker.InitMissionIdAndFlags(
-        missionId,
-        missionFlags
-    );
+    g_HudSensorTracker.InitMissionIdAndFlags(missionId, missionFlags);
     return 1;
 }
 
@@ -520,18 +437,9 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
     wndClass.lpfnWndProc = DefWindowProcA;
     wndClass.hInstance = AfxGetModuleState()->m_hCurrentInstanceHandle;
     wndClass.hIcon =
-        ::LoadIconA(
-            AfxFindResourceHandle(
-                (LPCSTR)0x97,
-                (LPCSTR)0x0e
-            ),
-            (LPCSTR)0x97
-        );
+        ::LoadIconA(AfxFindResourceHandle( (LPCSTR)0x97, (LPCSTR)0x0e ), (LPCSTR)0x97);
     wndClass.hCursor = ::LoadCursorA(
-        AfxFindResourceHandle(
-            (LPCSTR)0x7f00,
-            (LPCSTR)0x0c
-        ),
+        AfxFindResourceHandle((LPCSTR)0x7f00, (LPCSTR)0x0c),
         (LPCSTR)0x7f00
     );
     wndClass.hbrBackground = CreateSolidBrush(0);
@@ -570,43 +478,21 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
             0,
             0
         );
-        strcpy(
-            errorTextBuffer,
-            systemErrorText
-        );
-        strcat(
-            errorTextBuffer,
-            g_RecoilApp_DoubleNewline
-        );
-        strcat(
-            errorTextBuffer,
-            g_RecoilApp_MessagesDllName
-        );
+        strcpy(errorTextBuffer, systemErrorText);
+        strcat(errorTextBuffer, g_RecoilApp_DoubleNewline);
+        strcat(errorTextBuffer, g_RecoilApp_MessagesDllName);
         LocalFree(systemErrorText);
         zVideo_dd::FlipToGDIIfAttached();
         MessageBeep(MB_ICONASTERISK);
-        MessageBoxA(
-            0,
-            errorTextBuffer,
-            "",
-            MB_ICONASTERISK
-        );
+        MessageBoxA(0, errorTextBuffer, "", MB_ICONASTERISK);
         ExitProcess(0);
     }
 
-    zLoc::FormatMessage(
-        messageCaptionBuffer,
-        0x100,
-        0x83
-    );
+    zLoc::FormatMessage(messageCaptionBuffer, 0x100, 0x83);
     int searchForIntroFmv = 1;
     while (searchForIntroFmv != 0) {
         searchForIntroFmv = 0;
-        if (zSys::FindFileOnDriveType(
-                5,
-                g_RecoilApp_IntroFmvPath,
-                0
-            ) == 0) {
+        if (zSys::FindFileOnDriveType(5, g_RecoilApp_IntroFmvPath, 0) == 0) {
             MessageBeep(MB_ICONEXCLAMATION);
             if (MessageBoxA(
                     g_RecoilApp_hWndMain,
@@ -622,67 +508,38 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
 
     zSysVideoCapsLevel videoCaps = ZSYS_VIDEO_CAPS_NONE;
     zSysPlatformCapsLevel platformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
-    zSys::ProbePlatformAndVideoCaps(
-        &videoCaps,
-        &platformCaps
-    );
+    zSys::ProbePlatformAndVideoCaps(&videoCaps, &platformCaps);
     if ((unsigned int)(videoCaps) < (unsigned int)(ZSYS_VIDEO_CAPS_SURFACE4)) {
-        zLoc::FormatMessage(
-            messageCaptionBuffer,
-            0x100,
-            0x14
-        );
-        zLoc::FormatMessage(
-            sharedTextBuffer,
-            0x100,
-            0x16
-        );
+        zLoc::FormatMessage(messageCaptionBuffer, 0x100, 0x14);
+        zLoc::FormatMessage(sharedTextBuffer, 0x100, 0x16);
         MessageBeep(MB_ICONHAND);
-        MessageBoxA(
-            g_RecoilApp_hWndMain,
-            sharedTextBuffer,
-            messageCaptionBuffer,
-            MB_ICONHAND
-        );
+        MessageBoxA(g_RecoilApp_hWndMain, sharedTextBuffer, messageCaptionBuffer, MB_ICONHAND);
         ExitProcess(0);
     }
 
     zGame::ReturnOnlyStub();
-    zUtil::ZBD_Init();
-    zUtil::ZRDR_InitNodePool(0x200);
-    zUtil::ZRDR_AddSearchPaths(
-        0,
-        g_zUtil_ZbdSearchPathLeaf
-    );
-    zUtil::ZRDR_Init(g_zUtil_ZrdrCommonDataPath);
+    zUtil::ZBDInit();
+    zUtil::zRdrInitNodePool(0x200);
+    zUtil::zRdrAddSearchPaths(0, g_zUtil_ZbdSearchPathLeaf);
+    zUtil::zRdrInit(g_zUtil_ZrdrCommonDataPath);
 
     strncpy(
         registryCompanyNameBuffer,
         zLoc::GetMessageString(0x900),
         sizeof(registryCompanyNameBuffer)
     );
-    strncpy(
-        sharedTextBuffer,
-        zLoc::GetMessageString(0x901),
-        sizeof(sharedTextBuffer)
-    );
-    zGame::Options_InitRegistryContext(
+    strncpy(sharedTextBuffer, zLoc::GetMessageString(0x901), sizeof(sharedTextBuffer));
+    zGame::OptionsInitRegistryContext(
         registryCompanyNameBuffer,
         sharedTextBuffer,
         RecoilVersion::GetString()
     );
-    zInput::BindMapSystem_Init(0x2f);
+    zInput::BindMapSystemInit(0x2f);
 
-    if (zGame::Options_LoadGameOptions() == 0) {
-        zArchive::Mount(
-            g_RecoilApp_StartupArchivePath,
-            1
-        );
-        if (zGame::Options_LoadGameOptions() == 0) {
-            strcpy(
-                sharedTextBuffer,
-                zLoc::GetMessageString(0x901)
-            );
+    if (zGame::OptionsLoadGameOptions() == 0) {
+        zArchive::Mount(g_RecoilApp_StartupArchivePath, 1);
+        if (zGame::OptionsLoadGameOptions() == 0) {
+            strcpy(sharedTextBuffer, zLoc::GetMessageString(0x901));
             MessageBeep(MB_ICONHAND);
             MessageBoxA(
                 g_RecoilApp_hWndMain,
@@ -707,20 +564,17 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
 int RecoilApp::ExitInstance() {
     if (g_RecoilApp_WindowClassRegistered != 0) {
         HINSTANCE instanceHandle = AfxGetModuleState()->m_hCurrentInstanceHandle;
-        UnregisterClassA(
-            g_RecoilApp_WndClassNamePtr,
-            instanceHandle
-        );
-        zGame::Options_SaveGameOptions();
+        UnregisterClassA(g_RecoilApp_WndClassNamePtr, instanceHandle);
+        zGame::OptionsSaveGameOptions();
         zGame::ReturnOnlyStub();
-        zGame::Options_ShutdownRegistryContext();
-        zUtil_ZRDR_Exit();
-        zUtil_ZRDR_FreeNodePool();
-        zUtil::ZBD_DestroyGlobalManager();
+        zGame::OptionsShutdownRegistryContext();
+        zRdrExit();
+        zRdrFreeNodePool();
+        zUtil::ZBDDestroyGlobalManager();
         zLoc::UnloadMessagesDll();
     }
 
-    zInput::BindMapSystem_Shutdown();
+    zInput::BindMapSystemShutdown();
     ((CWinApp *)(this))->CWinApp::ExitInstance();
     zSys::ExitProcessWithCleanup(0);
     return 0;
@@ -730,10 +584,7 @@ int RecoilApp::ExitInstance() {
  * Purpose: Activates an existing Recoil window or permits this instance to continue.
  */
 int RecoilApp::ActivateExistingInstance() {
-    CWnd *const existingWindow = CWnd::FromHandle(FindWindowA(
-        g_RecoilApp_WndClassNamePtr,
-        0
-    ));
+    CWnd *const existingWindow = CWnd::FromHandle(FindWindowA( g_RecoilApp_WndClassNamePtr, 0 ));
     if (existingWindow != 0) {
         CWnd *const popup = CWnd::FromHandle(GetLastActivePopup(existingWindow->m_hWnd));
         if (IsIconic(existingWindow->m_hWnd) != 0) {
@@ -767,7 +618,7 @@ int RecoilApp::PreTranslateMessage(
 /**
  * Purpose: Configures rendering and prepares the intro FMV state for activation.
  */
-int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
+int CRecoilAppIntroFmvState::OnTryBecomeCurrent() {
     zRndr::SetFrameBufferRegion(
         zVideo::GetPrimarySurfacePixels(),
         zOpt::GetWindowSection(),
@@ -776,7 +627,7 @@ int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
     );
     zRndr::SetVideoStrideMirrors(zOpt::GetVideoStrideValue());
 
-    zVideo::Fx_SetSurfaceState(
+    zVideo::FxSetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
         zVideo::GetPrimarySurfaceWidth(),
         zVideo::GetPrimarySurfaceHeight(),
@@ -790,10 +641,7 @@ int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
             script->m_hWnd = g_RecoilApp_hWndMain;
         }
 
-        if (script->LoadActionsFromZrd(
-            g_zFMV_ScriptFileName,
-            g_RecoilApp_IntroFmvTag
-        ) != -1) {
+        if (script->LoadActionsFromZrd(g_zFMV_ScriptFileName, g_RecoilApp_IntroFmvTag) != -1) {
             script->BeginAtTime();
         }
     }
@@ -804,22 +652,16 @@ int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
 /**
  * Purpose: Advances or skips the intro FMV and queues the mission FMV state.
  */
-int RecoilApp_IntroFmvState::OnUpdateShouldQuit() {
+int CRecoilAppIntroFmvState::OnUpdateShouldQuit() {
     if (g_RecoilApp.m_skipIntroFmv != 0) {
-        g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_missionFmvState,
-            0
-        );
+        g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_missionFmvState, 0);
         return 0;
     }
 
     zFMV_Script *const script = &m_fmv;
     const int stateParam = script->UpdateAtTime();
     if (stateParam == 0) {
-        g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_mainMenuPrepState,
-            stateParam
-        );
+        g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_mainMenuPrepState, stateParam);
     }
 
     return 0;
@@ -838,7 +680,7 @@ int RecoilApp_FmvState::OnIdleOrDispatch(
 /**
  * Purpose: Applies the intro FMV's deactivation transition.
  */
-void RecoilApp_IntroFmvState::OnDeactivate() {
+void CRecoilAppIntroFmvState::OnDeactivate() {
     m_fmv.BeginNow(1);
 }
 
@@ -846,7 +688,7 @@ void RecoilApp_IntroFmvState::OnDeactivate() {
  * Purpose: Configures the video surface and resets main-menu preparation state.
  */
 int RecoilApp_MainMenuPrepState::OnTryBecomeCurrent() {
-    zVideo::Fx_SetSurfaceState(
+    zVideo::FxSetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
         zVideo::GetPrimarySurfaceWidth(),
         zVideo::GetPrimarySurfaceHeight(),
@@ -867,30 +709,24 @@ int RecoilApp_MainMenuPrepState::OnUpdateShouldQuit() {
 /**
  * Purpose: Establishes the attract-mode FMV state object.
  */
-RecoilApp_AttractFmvState::RecoilApp_AttractFmvState() {
+CRecoilAppAttractFmvState::CRecoilAppAttractFmvState() {
 }
 
 /**
  * Purpose: Configures the display and prepares attract-mode FMV playback.
  */
-int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
-    zVideo::Fx_SetSurfaceState(
+int CRecoilAppAttractFmvState::OnTryBecomeCurrent() {
+    zVideo::FxSetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
         zVideo::GetPrimarySurfaceWidth(),
         zVideo::GetPrimarySurfaceHeight(),
         zVideo::GetPrimarySurfacePitch()
     );
 
-    GetClientRect(
-        g_RecoilApp_hWndMain,
-        (RECT *)(m_clientRect)
-    );
+    GetClientRect(g_RecoilApp_hWndMain, (RECT *)(m_clientRect));
 
     if (g_RecoilApp_AttractFmvReloadMode != 0) {
-        m_fmv.LoadActionsFromZrd(
-            g_zFMV_ScriptFileName,
-            g_RecoilApp_AttractFmvTag
-        );
+        m_fmv.LoadActionsFromZrd(g_zFMV_ScriptFileName, g_RecoilApp_AttractFmvTag);
         g_RecoilApp_AttractFmvReloadMode = 0;
     }
 
@@ -899,10 +735,7 @@ int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
         script->m_hWnd = g_RecoilApp_hWndMain;
     }
 
-    if (script->LoadActionsFromZrd(
-        g_zFMV_ScriptFileName,
-        g_RecoilApp_AttractFmvTag
-    ) != -1) {
+    if (script->LoadActionsFromZrd(g_zFMV_ScriptFileName, g_RecoilApp_AttractFmvTag) != -1) {
         script->BeginAtTime();
     }
 
@@ -912,14 +745,11 @@ int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
 /**
  * Purpose: Advances attract-mode playback and returns to the menu when it finishes.
  */
-int RecoilApp_AttractFmvState::OnUpdateShouldQuit() {
+int CRecoilAppAttractFmvState::OnUpdateShouldQuit() {
     zFMV_Script *const script = &m_fmv;
     const int stateParam = script->UpdateAtTime();
     if (stateParam == 0) {
-        g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_mainMenuPrepState,
-            stateParam
-        );
+        g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_mainMenuPrepState, stateParam);
     }
 
     return 0;
@@ -928,7 +758,7 @@ int RecoilApp_AttractFmvState::OnUpdateShouldQuit() {
 /**
  * Purpose: Applies the attract-mode FMV's deactivation transition.
  */
-void RecoilApp_AttractFmvState::OnDeactivate() {
+void CRecoilAppAttractFmvState::OnDeactivate() {
     m_fmv.BeginNow(0);
 }
 
@@ -941,34 +771,19 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(
 ) {
     char pathText[256];
 
-    zUtil_ZRDR_FreePathList(0);
-    ZRDR_AddSearchPaths(
-        0,
-        "zbd"
-    );
-    zImage_InitMissionResources(g_zImage_CommonTextureSearchPaths);
+    zRdrFreePathList(0);
+    zRdrAddSearchPaths(0, "zbd");
+    zImageInitMissionResources(g_zImage_CommonTextureSearchPaths);
 
-    sprintf(
-        pathText,
-        g_zUtil_MissionZrdrSearchPathsFmt,
-        missionId,
-        missionId
-    );
-    zUtil_ZRDR_SetPath(pathText);
+    sprintf(pathText, g_zUtil_MissionZrdrSearchPathsFmt, missionId, missionId);
+    zRdrSetPath(pathText);
 
     if (g_HudSensorTracker.missionFlags == 0) {
         return 0;
     }
 
-    sprintf(
-        pathText,
-        g_zUtil_MissionZrdrArchivePathFmt,
-        missionId
-    );
-    return zArchive::Mount(
-        pathText,
-        0
-    );
+    sprintf(pathText, g_zUtil_MissionZrdrArchivePathFmt, missionId);
+    return zArchive::Mount(pathText, 0);
 }
 } // namespace zUtil
 
@@ -993,11 +808,7 @@ int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
     zUtil::SetMissionZrdrPathsAndMountZbd(m_missionId);
 
     char missionFmvTag[sizeof(g_RecoilApp_MissionFmvTagTemplate)];
-    memcpy(
-        missionFmvTag,
-        g_RecoilApp_MissionFmvTagTemplate,
-        sizeof(missionFmvTag)
-    );
+    memcpy(missionFmvTag, g_RecoilApp_MissionFmvTagTemplate, sizeof(missionFmvTag));
     missionFmvTag[1] = (char)(m_missionId + '0');
 
     if (m_skipMissionFmv == 0) {
@@ -1006,10 +817,7 @@ int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
             script->m_hWnd = g_RecoilApp_hWndMain;
         }
 
-        if (script->LoadActionsFromZrd(
-            g_zFMV_ScriptFileName,
-            missionFmvTag
-        ) != -1) {
+        if (script->LoadActionsFromZrd(g_zFMV_ScriptFileName, missionFmvTag) != -1) {
             script->BeginAtTime();
         }
     }
@@ -1044,10 +852,7 @@ void RecoilApp_MissionFmvState::OnDeactivate() {
  */
 int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
     if (m_skipMissionFmv != 0 || m_fmv.UpdateAtTime() == 0) {
-        g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_playState,
-            0
-        );
+        g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_playState, 0);
     }
 
     return 0;
@@ -1056,7 +861,7 @@ int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
 /**
  * Purpose: Initializes transient gameplay transition and pending-load state.
  */
-RecoilApp_PlayState::RecoilApp_PlayState() {
+CRecoilAppPlayState::CRecoilAppPlayState() {
     m_transitionScratch = 0;
     pPendingLoadGameStartPath = 0;
 }
@@ -1064,7 +869,7 @@ RecoilApp_PlayState::RecoilApp_PlayState() {
 /**
  * Purpose: Reactivates the current HUD layout when the gameplay window gains focus.
  */
-void RecoilApp_PlayState::OnWndActivate(
+void CRecoilAppPlayState::OnWndActivate(
     int bActivate
 ) {
     if (bActivate != 0) {
@@ -1075,17 +880,12 @@ void RecoilApp_PlayState::OnWndActivate(
 /**
  * Purpose: Configures runtime state before the application enters active gameplay.
  */
-int RecoilApp_PlayState::OnTryBecomeCurrent() {
+int CRecoilAppPlayState::OnTryBecomeCurrent() {
     const int completedObjectiveCount = g_HudSensorTracker.completedObjectiveCount;
 
     if (zVid::GetAccelerationOption() != 0) {
         BOOL screenSaverRunning = FALSE;
-        SystemParametersInfoA(
-            SPI_SETSCREENSAVERRUNNING,
-            1,
-            &screenSaverRunning,
-            0
-        );
+        SystemParametersInfoA(SPI_SETSCREENSAVERRUNNING, 1, &screenSaverRunning, 0);
     }
 
     Time::Reset();
@@ -1104,17 +904,12 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
     HudUiMgr::EnsureHudLoaded("hud.zrd");
     HudUiLoadingCheckpoint::InitTable();
     HudUiLoadingCheckpoint::AdvanceAndLog("Loading common sounds");
-    zSndSampleSet_InitByName("COMMON");
+    zSndSampleSetInitByName("COMMON");
 
     Briefing::StartForMission(g_HudSensorTracker.GetMissionId());
 
     char loadingMessage[0x100];
-    zLoc::FormatMessage(
-        loadingMessage,
-        sizeof(loadingMessage),
-        3,
-        RecoilVersion::GetString()
-    );
+    zLoc::FormatMessage(loadingMessage, sizeof(loadingMessage), 3, RecoilVersion::GetString());
     HudUiLoadingCheckpoint::AdvanceAndLog(loadingMessage);
 
     zLoc::FormatMessage(
@@ -1136,7 +931,7 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10d));
 
     g_HudSensorTracker.LoadObjectivesFromPath(g_HudSensorTracker_ObjectivesZrdPath);
-    Player::ZAR_RegisterSections();
+    Player::zZarRegisterSections();
     Briefing::BuildObjectiveActionsGlobal(completedObjectiveCount);
 
     if (g_HudSensorTracker.LoadMissionCoreResources() == 0) {
@@ -1157,7 +952,7 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
         }
 
         char *const pendingLoadPath = pPendingLoadGameStartPath;
-        zUtil::ZAR_LoadFileGlobal(pendingLoadPath);
+        zUtil::zZarLoadFileGlobal(pendingLoadPath);
         free(pendingLoadPath);
         pPendingLoadGameStartPath = 0;
         startAnimNodeName = "LOAD_GAME_START";
@@ -1165,17 +960,14 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
         startAnimNodeName = g_RecoilApp_NewGameStartAnimStateName;
     }
 
-    g_HudSensorTracker.RunStartAnimsFromZrd(
-        "StartAnims.zrd",
-        startAnimNodeName
-    );
+    g_HudSensorTracker.RunStartAnimsFromZrd("StartAnims.zrd", startAnimNodeName);
 
     pRenderSection = zOpt::GetRenderSection();
     pDisplaySection = zOpt::GetDisplaySection();
     pWindowSection = zOpt::GetWindowSection();
 
-    zInput::Keyboard_ResetTransitionState();
-    zInput::Mouse_RecenterCursor();
+    zInput::KeyboardResetTransitionState();
+    zInput::MouseRecenterCursor();
 
     if (zVid::GetAccelerationOption() != 0) {
         zClass_Camera::SetActiveCamera(0);
@@ -1190,23 +982,23 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
     }
 
     TickAndRenderFrame(0);
-    zInput::Keyboard_ResetTransitionState();
-    zInput::Mouse_RecenterCursor();
+    zInput::KeyboardResetTransitionState();
+    zInput::MouseRecenterCursor();
 
     g_zVideo_FrameTick = 0;
     g_RecoilApp.m_reserved148 = 1;
     zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_ENABLED);
     g_HudSensorTracker.ResetHudForMissionStart();
 
-    if (zInput::Mouse_IsInitialized() != 0) {
+    if (zInput::MouseIsInitialized() != 0) {
         g_zInput_MouseActive = 0;
-        zInput::Mouse_UpdateAcquireState();
+        zInput::MouseUpdateAcquireState();
     }
 
     zInput::ResetAllTransitionState();
 
     zOpt::SetGraphicsFlagsForCurrentHwMode(zOpt::GetGraphicsFlagsForCurrentHwMode());
-    zInp::SetJoystickOption(zInput::DI_SetJoystickEnabled(zInp::GetJoystickOption()));
+    zInp::SetJoystickOption(zInput::DISetJoystickEnabled(zInp::GetJoystickOption()));
     zOpt::SetCursorMode(zOpt::GetCursorMode());
     zOpt::SetCameraMode(zOpt::GetCameraModePlayerState());
     zOpt::SetThrottleMode(zOpt::GetThrottleMode());
@@ -1215,10 +1007,7 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
     if (zSnd::GetCDAudioOption() != 0) {
         const int missionId = g_HudSensorTracker.GetMissionId();
         const int trackCount = zSndCd::GetTrackCount();
-        zSndCd::PlayTrackWithMode(
-            (missionId % (trackCount - 2)) + 2,
-            5
-        );
+        zSndCd::PlayTrackWithMode((missionId % (trackCount - 2)) + 2, 5);
     }
 
     if (zOpt::GetNetworkEnabled() != 0) {
@@ -1242,18 +1031,15 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
  * Purpose: tick input, simulation, rendering, HUD, audio, and presentation for
  * one active play-state frame.
  */
-int RecoilApp_PlayState::TickAndRenderFrame(
+int CRecoilAppPlayState::TickAndRenderFrame(
     int shouldPresent
 ) {
     Time::Tick();
 
-    if (g_Player_ActiveDebugScriptAsyncEntry != 0 && zInput::Keyboard_WaitForAnyKeyPress(0) != 0) {
+    if (g_Player_ActiveDebugScriptAsyncEntry != 0 && zInput::KeyboardWaitForAnyKeyPress(0) != 0) {
         zEffectAnimEntry *const entry = g_Player_ActiveDebugScriptAsyncEntry;
         g_Player_ActiveDebugScriptAsyncEntry = 0;
-        zEffect_Anim::NodeActionCallback(
-            entry,
-            0
-        );
+        zEffect_Anim::NodeActionCallback(entry, 0);
     }
 
     zInput::PollActiveDevices(1);
@@ -1270,14 +1056,11 @@ int RecoilApp_PlayState::TickAndRenderFrame(
         return 1;
     }
 
-    zSnd_Tick(0);
+    zSndTick(0);
 
     if (g_Player_HorizonNodeFollowCameraEnabled != 0 && g_Player_HorizonNode != 0) {
         zVec3 cameraPosition = {0};
-        gwNode::GetWorldPosition(
-            g_MainCamera,
-            &cameraPosition
-        );
+        gwNode::GetWorldPosition(g_MainCamera, &cameraPosition);
         zClass_Object3D::gwObject3DSetPosition(
             g_Player_HorizonNode,
             cameraPosition.x,
@@ -1315,17 +1098,9 @@ int RecoilApp_PlayState::TickAndRenderFrame(
         pixels = zVideo::GetPrimarySurfacePixels();
     }
 
-    zRndr::SetFrameBufferRegion(
-        pixels,
-        renderSection,
-        bitsPerPixel,
-        pitchBytes
-    );
+    zRndr::SetFrameBufferRegion(pixels, renderSection, bitsPerPixel, pitchBytes);
     zClass_List::RenderActiveCameras();
-    zVideo::FxPass3_SetInputRectByIndex(
-        0,
-        (HudUiRect *)(renderSection)
-    );
+    zVideo::FxPass3SetInputRectByIndex(0, (HudUiRect *)(renderSection));
 
     HudUiMgrSensor::GetFxRect(&g_HudUiMgrSensor_FxRectScratch);
     int fxTop = g_HudUiMgrSensor_FxRectScratch.top;
@@ -1346,22 +1121,19 @@ int RecoilApp_PlayState::TickAndRenderFrame(
         }
         fxRectOrNull = &g_HudUiMgrSensor_FxRectScratch;
     }
-    zVideo::FxPass3_SetInputRectByIndex(
-        1,
-        fxRectOrNull
-    );
+    zVideo::FxPass3SetInputRectByIndex(1, fxRectOrNull);
 
-    const int quitTransition = zInput::Keyboard_GetKeyTransitionState(1) & 3;
+    const int quitTransition = zInput::KeyboardGetKeyTransitionState(1) & 3;
 
     if (zVid::GetAccelerationOption() != 0) {
-        zRndr::LensFlare_ResetSampleQueue();
+        zRndr::LensFlareResetSampleQueue();
         g_HudSensorTracker.UpdateObjectiveFlow();
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         zVideo::RunPostprocessOnSwBuffer();
-        zVideo::FxPass3_UpdateLocal(g_FrameDeltaTimeSec);
+        zVideo::FxPass3UpdateLocal(g_FrameDeltaTimeSec);
 
         if (quitTransition != 0) {
-            zVideo::Dispatch_UnlockSwSurfaceState();
+            zVideo::DispatchUnlockSwSurfaceState();
             return 1;
         }
 
@@ -1370,11 +1142,11 @@ int RecoilApp_PlayState::TickAndRenderFrame(
         if (zOpt::GetNetworkEnabled() != 0) {
             HudUiNetExitPanel::Tick();
         }
-        zVideo::Dispatch_UnlockSwSurfaceState();
+        zVideo::DispatchUnlockSwSurfaceState();
     } else if (zOpt::GetReplicateMode() != 0) {
         zVideo::RunPostprocessOnSwBuffer();
-        zVideo::FxPass3_UpdateLocal(g_FrameDeltaTimeSec);
-        zVideo::Dispatch_UnlockSwSurfaceState();
+        zVideo::FxPass3UpdateLocal(g_FrameDeltaTimeSec);
+        zVideo::DispatchUnlockSwSurfaceState();
 
         if (shouldPresent != 0) {
             g_zVideo_pfnBltSwToPrimaryRectDirect(
@@ -1385,55 +1157,39 @@ int RecoilApp_PlayState::TickAndRenderFrame(
 
         zVideo::RunPostprocessOnPrimaryBuffer();
         if (quitTransition != 0) {
-            zVideo::Dispatch_UnlockPrimarySurfaceState();
-            zVideo::AdjustSurfacesIfEnabled(
-                0,
-                0,
-                0,
-                1
-            );
+            zVideo::DispatchUnlockPrimarySurfaceState();
+            zVideo::AdjustSurfacesIfEnabled(0, 0, 0, 1);
             return 1;
         }
 
         g_HudSensorTracker.UpdateObjectiveFlow();
         zRndr::SetActiveRegionSizeFromRect((HudUiRect *)(windowSection));
-        zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
-            0,
-            2.0f
-        );
+        zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(0, 2.0f);
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {
             HudUiNetExitPanel::Tick();
         }
-        zVideo::Dispatch_UnlockPrimarySurfaceState();
+        zVideo::DispatchUnlockPrimarySurfaceState();
     } else {
         zVideo::RunPostprocessOnPrimaryBuffer();
-        zVideo::FxPass3_UpdateLocal(g_FrameDeltaTimeSec);
+        zVideo::FxPass3UpdateLocal(g_FrameDeltaTimeSec);
 
         if (quitTransition != 0) {
-            zVideo::Dispatch_UnlockPrimarySurfaceState();
-            zVideo::AdjustSurfacesIfEnabled(
-                0,
-                0,
-                0,
-                1
-            );
+            zVideo::DispatchUnlockPrimarySurfaceState();
+            zVideo::AdjustSurfacesIfEnabled(0, 0, 0, 1);
             return 1;
         }
 
         g_HudSensorTracker.UpdateObjectiveFlow();
         zRndr::SetActiveRegionSizeFromRect((HudUiRect *)(windowSection));
-        zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
-            0,
-            1.0f
-        );
+        zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(0, 1.0f);
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {
             HudUiNetExitPanel::Tick();
         }
-        zVideo::Dispatch_UnlockPrimarySurfaceState();
+        zVideo::DispatchUnlockPrimarySurfaceState();
     }
 
     if (shouldPresent != 0) {
@@ -1451,7 +1207,7 @@ int RecoilApp_PlayState::TickAndRenderFrame(
 /**
  * Purpose: Advances gameplay and completes any active fade-driven state transition.
  */
-int RecoilApp_PlayState::OnUpdateShouldQuit() {
+int CRecoilAppPlayState::OnUpdateShouldQuit() {
     if (g_RecoilApp.m_transitionFadeTimer > 0.0f) {
         g_zVideo_SoftwareModeHotkeyEnabled = ZVIDEO_SOFTWARE_MODE_HOTKEY_DISABLED;
         TickAndRenderFrame(0);
@@ -1475,11 +1231,7 @@ int RecoilApp_PlayState::OnUpdateShouldQuit() {
             const double overlayAlpha = g_RecoilApp.m_transitionFadeTimer > 0.0f
                                             ? (double)(g_RecoilApp.m_transitionFadeTimer)
                                             : 0.0;
-            zRndr_OverlayRect_Submit(
-                0,
-                0,
-                overlayAlpha
-            );
+            zRndrOverlayRectSubmit(0, 0, overlayAlpha);
         }
 
         zVideo::AdjustSurfacesIfEnabled(
@@ -1506,28 +1258,18 @@ int RecoilApp_PlayState::OnUpdateShouldQuit() {
         zSndCd::Stop();
 
         zFMV_Script fmvScript;
-        fmvScript.Init(
-            g_zFMV_ScriptFileName,
-            g_zFMV_GrandPrizeScriptName,
-            0
-        );
+        fmvScript.Init(g_zFMV_ScriptFileName, g_zFMV_GrandPrizeScriptName, 0);
         fmvScript.RunBlocking(0);
 
         if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
-            g_zVideo_pfnBltSwToPrimaryRectDirect(
-                0,
-                0
-            );
+            g_zVideo_pfnBltSwToPrimaryRectDirect(0, 0);
         }
 
         zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
         HudUi::SetInvalidateMode(0);
 
         {
-            zFMV_ActionBlur blurAction(
-                12,
-                1
-            );
+            zFMV_ActionBlur blurAction(12, 1);
 
             zFMV_Action *const action = &blurAction;
             action->Begin(0.0);
@@ -1561,33 +1303,25 @@ int RecoilApp_PlayState::OnUpdateShouldQuit() {
 /**
  * Purpose: Restarts mission CD audio when gameplay resumes.
  */
-void RecoilApp_PlayState::OnResume(
+void CRecoilAppPlayState::OnResume(
     int
 ) {
     if (zSnd::GetCDAudioOption() != 0) {
         const int missionId = g_HudSensorTracker.GetMissionId();
         const int trackCount = zSndCd::GetTrackCount();
-        zSndCd::PlayTrackWithMode(
-            (missionId % (trackCount - 2)) + 2,
-            5
-        );
+        zSndCd::PlayTrackWithMode((missionId % (trackCount - 2)) + 2, 5);
     }
 }
 
 /**
  * Purpose: Restores system and engine state while leaving active gameplay.
  */
-void RecoilApp_PlayState::OnDeactivate() {
+void CRecoilAppPlayState::OnDeactivate() {
     HudUiLoadingCheckpoint::AdvanceAndLog(g_RecoilApp_LeavingPlayStateMsg);
 
     if (zVid::GetAccelerationOption() != 0) {
         BOOL screenSaverRunning = FALSE;
-        SystemParametersInfoA(
-            SPI_SETSCREENSAVERRUNNING,
-            0,
-            &screenSaverRunning,
-            0
-        );
+        SystemParametersInfoA(SPI_SETSCREENSAVERRUNNING, 0, &screenSaverRunning, 0);
     }
 
     zSndCd::Stop();
@@ -1605,18 +1339,14 @@ void RecoilApp_PlayState::OnDeactivate() {
     }
 
     zFMV_Script fmvScript;
-    fmvScript.Init(
-        g_zFMV_ScriptFileName,
-        g_RecoilApp_MissionOverFmvTag,
-        0
-    );
+    fmvScript.Init(g_zFMV_ScriptFileName, g_RecoilApp_MissionOverFmvTag, 0);
     fmvScript.RunBlocking(1);
 
     if (g_RecoilApp.m_missionShutdownMode == RECOILAPP_MISSION_SHUTDOWN_ON_EXIT) {
         g_HudSensorTracker.ShutdownMissionGameplaySystems();
     }
 
-    zUtil_ZRDR_Unmount(0);
+    zRdrUnmount(0);
     fmvScript.Cleanup();
 }
 
@@ -1624,7 +1354,7 @@ void RecoilApp_PlayState::OnDeactivate() {
  * Purpose: Tears down the local network player, engine, and sound backend.
  */
 int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
-    zNetwork_DPlay_DestroyCachedLocalPlayer();
+    zNetworkDPlayDestroyCachedLocalPlayer();
     g_RecoilApp.ShutdownEngine();
     zSndBackend::Shutdown();
     return 1;
@@ -1642,28 +1372,22 @@ int RecoilApp_LeaveNetworkState::OnUpdateShouldQuit() {
  * Purpose: create the seven gameplay force-feedback effects and start the
  * steady steer and pitch force effects when creation succeeds.
  */
-zInput_FFEffectSet *__fastcall zInput_DI_InitForceFeedbackEffectSet(
+zInput_FFEffectSet *__fastcall zInputDIInitForceFeedbackEffectSet(
     zInput_FFEffectSet *effectSet
 ) {
-    effectSet->PrimaryFire = zInput_DI_CreateConstantForceEffectScaled(0.25f);
-    effectSet->AltFire = zInput_DI_CreateConstantForceEffectScaled(0.5f);
-    effectSet->CollisionImpact = zInput_DI_CreateConstantForceEffectScaled(0.5f);
-    effectSet->DamageHit = zInput_DI_CreateConstantForceEffectScaled(0.5f);
-    effectSet->AmbientSine = zInput_DI_CreateSineEffectScaled(0.05f);
-    effectSet->SteerForce = zInput_DI_CreateConstantForceEffectWithDirection(0x6978);
-    effectSet->PitchForce = zInput_DI_CreateConstantForceEffectWithDirection(0x4650);
+    effectSet->PrimaryFire = zInputDICreateConstantForceEffectScaled(0.25f);
+    effectSet->AltFire = zInputDICreateConstantForceEffectScaled(0.5f);
+    effectSet->CollisionImpact = zInputDICreateConstantForceEffectScaled(0.5f);
+    effectSet->DamageHit = zInputDICreateConstantForceEffectScaled(0.5f);
+    effectSet->AmbientSine = zInputDICreateSineEffectScaled(0.05f);
+    effectSet->SteerForce = zInputDICreateConstantForceEffectWithDirection(0x6978);
+    effectSet->PitchForce = zInputDICreateConstantForceEffectWithDirection(0x4650);
 
     if (effectSet->SteerForce != 0) {
-        effectSet->SteerForce->Start(
-            1,
-            0
-        );
+        effectSet->SteerForce->Start(1, 0);
     }
     if (effectSet->PitchForce != 0) {
-        effectSet->PitchForce->Start(
-            1,
-            0
-        );
+        effectSet->PitchForce->Start(1, 0);
     }
     return effectSet;
 }
@@ -1675,8 +1399,8 @@ zInput_FFEffectSet *__fastcall zInput_DI_InitForceFeedbackEffectSet(
  *
  * Purpose: Reports whether joystick input and force feedback are both available.
  */
-extern "C" int __cdecl zInput_DI_IsForceFeedbackEnabled() {
-    if (zInp::GetJoystickOption() != 0 && zInput_DI_HasForceFeedback() != 0) {
+extern "C" int __cdecl zInputDIIsForceFeedbackEnabled() {
+    if (zInp::GetJoystickOption() != 0 && zInputDIHasForceFeedback() != 0) {
         return 1;
     }
     return 0;
@@ -1685,7 +1409,7 @@ extern "C" int __cdecl zInput_DI_IsForceFeedbackEnabled() {
 /**
  * Purpose: Stops and restarts the primary-fire force-feedback effect.
  */
-void __fastcall zInput_DI_RestartPrimaryFireEffect(
+void __fastcall zInputDIRestartPrimaryFireEffect(
     zInput_FFEffectSet *effectSet
 ) {
     zInput_DiEffect *const effect = effectSet->PrimaryFire;
@@ -1693,16 +1417,13 @@ void __fastcall zInput_DI_RestartPrimaryFireEffect(
         return;
     }
     effect->Stop();
-    effectSet->PrimaryFire->Start(
-        1,
-        0
-    );
+    effectSet->PrimaryFire->Start(1, 0);
 }
 
 /**
  * Purpose: Applies the requested gain and starts the alternate-fire effect.
  */
-void __fastcall zInput_DI_PlayAltFireEffect(
+void __fastcall zInputDIPlayAltFireEffect(
     zInput_FFEffectSet *effectSet,
     float gain
 ) {
@@ -1722,14 +1443,8 @@ void __fastcall zInput_DI_PlayAltFireEffect(
     }
     desc.dwSize = sizeof(desc);
     desc.dwGain = (DWORD)(gain * 10000.0f);
-    effectSet->AltFire->SetParameters(
-        &desc,
-        DIEP_GAIN
-    );
-    effectSet->AltFire->Start(
-        1,
-        0
-    );
+    effectSet->AltFire->SetParameters(&desc, DIEP_GAIN);
+    effectSet->AltFire->Start(1, 0);
 }
 
 /**
@@ -1749,10 +1464,7 @@ void zInput_FFEffectSet::PlayCollisionImpactEffect(
         const float kPi = 3.14159274f;
         const zInput_PlayerStatePartial *const playerState =
             g_GameStateOrMapTable->playerState;
-        const float sourceBearing = (float)(atan2(
-            -impactWorldPosXZ->z,
-            -impactWorldPosXZ->x
-        ));
+        const float sourceBearing = (float)(atan2(-impactWorldPosXZ->z, -impactWorldPosXZ->x));
         const float playerBearing = (float)(atan2(
             -playerState->cameraDirNextZ,
             -playerState->cameraDirNextX
@@ -1784,14 +1496,8 @@ void zInput_FFEffectSet::PlayCollisionImpactEffect(
         desc.dwGain = (DWORD)(gain * 10000.0f);
         desc.cAxes = 2;
         desc.rglDirection = polarDirection;
-        effect->SetParameters(
-            &desc,
-            0x44
-        );
-        effect->Start(
-            1,
-            0
-        );
+        effect->SetParameters(&desc, 0x44);
+        effect->Start(1, 0);
     }
 }
 
@@ -1847,21 +1553,15 @@ void zInput_FFEffectSet::PlayDamageHitEffect(
         desc.dwGain = (DWORD)(gain * 10000.0f);
         desc.cAxes = 2;
         desc.rglDirection = polarDirection;
-        effect->SetParameters(
-            &desc,
-            0x44
-        );
-        effect->Start(
-            1,
-            0
-        );
+        effect->SetParameters(&desc, 0x44);
+        effect->Start(1, 0);
     }
 }
 
 /**
  * Purpose: Updates continuous steering and pitch forces from current player motion.
  */
-void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
+void __fastcall zInputDIUpdateSteerAndPitchForceEffects(
     zInput_FFEffectSet *effectSet
 ) {
     zInput_PlayerStatePartial *const playerState = g_GameStateOrMapTable->playerState;
@@ -1886,14 +1586,8 @@ void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
             desc.dwGain = (DWORD)(magnitude * 10000.0f);
             desc.cAxes = 2;
             desc.rglDirection = polarDirection;
-            steerEffect->SetParameters(
-                &desc,
-                0x44
-            );
-            steerEffect->Start(
-                1,
-                0
-            );
+            steerEffect->SetParameters(&desc, 0x44);
+            steerEffect->Start(1, 0);
         }
     }
     zInput_DiEffect *const pitchEffect = effectSet->PitchForce;
@@ -1905,11 +1599,7 @@ void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
         int bits = (int)(g_Player_DeltaTime * -3.0f * 12102200.0f);
         bits += 0x3f800000;
         float factor = 0.0f;
-        memcpy(
-            &factor,
-            &bits,
-            sizeof(factor)
-        );
+        memcpy(&factor, &bits, sizeof(factor));
         lowpassFactor = factor;
     }
     g_zInput_DiPitchAngleLowpassRad = (g_zInput_DiPitchAngleLowpassRad * lowpassFactor) +
@@ -1933,21 +1623,15 @@ void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
         desc.dwGain = (DWORD)(residual * 10000.0f);
         desc.cAxes = 2;
         desc.rglDirection = polarDirection;
-        pitchEffect->SetParameters(
-            &desc,
-            0x44
-        );
-        pitchEffect->Start(
-            1,
-            0
-        );
+        pitchEffect->SetParameters(&desc, 0x44);
+        pitchEffect->Start(1, 0);
     }
 }
 
 /**
  * Purpose: Creates a constant-force effect with a clamped gain.
  */
-zInput_DiEffect *__stdcall zInput_DI_CreateConstantForceEffectScaled(
+zInput_DiEffect *__stdcall zInputDICreateConstantForceEffectScaled(
     float gain
 ) {
     DWORD axes[2] = {0, 4};
@@ -1969,16 +1653,13 @@ zInput_DiEffect *__stdcall zInput_DI_CreateConstantForceEffectScaled(
     effect.rglDirection = direction;
     effect.cbTypeSpecificParams = sizeof(constantForce);
     effect.lpvTypeSpecificParams = &constantForce;
-    return zInput_DI_CreateForceFeedbackEffect(
-        &GUID_ConstantForce,
-        &effect
-    );
+    return zInputDICreateForceFeedbackEffect(&GUID_ConstantForce, &effect);
 }
 
 /**
  * Purpose: Creates a sustained constant-force effect in the requested direction.
  */
-zInput_DiEffect *__fastcall zInput_DI_CreateConstantForceEffectWithDirection(
+zInput_DiEffect *__fastcall zInputDICreateConstantForceEffectWithDirection(
     int directionValue
 ) {
     DWORD axes[2] = {0, 4};
@@ -1994,16 +1675,13 @@ zInput_DiEffect *__fastcall zInput_DI_CreateConstantForceEffectWithDirection(
     effect.rglDirection = direction;
     effect.cbTypeSpecificParams = sizeof(constantForce);
     effect.lpvTypeSpecificParams = &constantForce;
-    return zInput_DI_CreateForceFeedbackEffect(
-        &GUID_ConstantForce,
-        &effect
-    );
+    return zInputDICreateForceFeedbackEffect(&GUID_ConstantForce, &effect);
 }
 
 /**
  * Purpose: Creates a periodic sine-force effect with a clamped gain.
  */
-zInput_DiEffect *__stdcall zInput_DI_CreateSineEffectScaled(
+zInput_DiEffect *__stdcall zInputDICreateSineEffectScaled(
     float gain
 ) {
     DWORD axes[2] = {0, 4};
@@ -2027,10 +1705,7 @@ zInput_DiEffect *__stdcall zInput_DI_CreateSineEffectScaled(
     effect.rglDirection = direction;
     effect.cbTypeSpecificParams = sizeof(periodic);
     effect.lpvTypeSpecificParams = &periodic;
-    return zInput_DI_CreateForceFeedbackEffect(
-        &GUID_Sine,
-        &effect
-    );
+    return zInputDICreateForceFeedbackEffect(&GUID_Sine, &effect);
 }
 
 extern "C" {
@@ -2333,10 +2008,7 @@ CZRecoilFrame::~CZRecoilFrame() {
 void CZRecoilFrame::SetMenuBarVisibility(
     int visible
 ) {
-    LONG style = GetWindowLongA(
-        m_hWnd,
-        GWL_STYLE
-    );
+    LONG style = GetWindowLongA(m_hWnd, GWL_STYLE);
     CMenu *menu = 0;
     if (visible != 0) {
         style |= (LONG)(0x82ca0000);
@@ -2345,23 +2017,13 @@ void CZRecoilFrame::SetMenuBarVisibility(
         style &= (LONG)(0xfff7ffff);
     }
 
-    SetWindowLongA(
-        m_hWnd,
-        GWL_STYLE,
-        style
-    );
+    SetWindowLongA(m_hWnd, GWL_STYLE, style);
     if (menu != 0) {
-        ::SetMenu(
-            m_hWnd,
-            menu->m_hMenu
-        );
+        ::SetMenu(m_hWnd, menu->m_hMenu);
         return;
     }
 
-    ::SetMenu(
-        m_hWnd,
-        0
-    );
+    ::SetMenu(m_hWnd, 0);
 }
 
 /**
@@ -2469,12 +2131,7 @@ void CZRecoilFrame::OnMenuOpenCampaign() {
  */
 RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog() {
     char filter[0x100];
-    const int filterLength = LoadStringA(
-        g_RecoilApp_hInstance,
-        0xc8,
-        filter,
-        sizeof(filter)
-    );
+    const int filterLength = LoadStringA(g_RecoilApp_hInstance, 0xc8, filter, sizeof(filter));
     if (filter[0] != '\0') {
         const char separator = filterLength > 0 ? filter[filterLength - 1] : '\0';
         for (char *cursor = filter; *cursor != '\0'; ++cursor) {
@@ -2486,11 +2143,7 @@ RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog() {
 
     char fileTitle[0x100] = {0};
     OPENFILENAMEA ofn;
-    memset(
-        &ofn,
-        0,
-        sizeof(ofn)
-    );
+    memset(&ofn, 0, sizeof(ofn));
     ofn.lStructSize = 0x4c;
     ofn.hwndOwner = m_hWnd;
     ofn.lpstrFilter = filter;
@@ -2503,35 +2156,18 @@ RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog() {
     ofn.lpstrDefExt = g_CZRecoilFrame_DefaultFileExt;
 
     if (GetOpenFileNameA((LPOPENFILENAMEA)(&ofn)) != 0) {
-        strcpy(
-            m_openZbdFilePath,
-            ofn.lpstrFile
-        );
-        g_RecoilApp.LoadZbdAndSetupSensorTracker(
-            0,
-            m_openZbdFilePath,
-            1,
-            1
-        );
+        strcpy(m_openZbdFilePath, ofn.lpstrFile);
+        g_RecoilApp.LoadZbdAndSetupSensorTracker(0, m_openZbdFilePath, 1, 1);
     }
 
-    ::InvalidateRect(
-        m_hWnd,
-        0,
-        TRUE
-    );
+    ::InvalidateRect(m_hWnd, 0, TRUE);
 }
 
 /**
  * Purpose: Posts a close request to the main Recoil frame.
  */
 void CZRecoilFrame::OnMenuExitGame() {
-    ::PostMessageA(
-        m_hWnd,
-        WM_CLOSE,
-        0,
-        0
-    );
+    ::PostMessageA(m_hWnd, WM_CLOSE, 0, 0);
 }
 
 /**
@@ -2543,58 +2179,28 @@ void CZRecoilFrame::ConfigureModeFeatureFlags() {
     const int mode = zVid::GetVideoModeIndexFromOptions();
 
     if (zVid::GetAccelerationOption() == 0) {
-        m_videoModeCmdUiState[0] = CommandCheckedIfMode(
-            mode,
-            2
-        );
-        m_videoModeCmdUiState[1] = CommandCheckedIfMode(
-            mode,
-            3
-        );
-        m_videoModeCmdUiState[2] = CommandCheckedIfMode(
-            mode,
-            4
-        );
-        m_videoModeCmdUiState[3] = CommandCheckedIfMode(
-            mode,
-            5
-        );
-        m_videoModeCmdUiState[4] = CommandCheckedIfMode(
-            mode,
-            6
-        );
-        m_videoModeCmdUiState[5] = CommandCheckedIfMode(
-            mode,
-            7
-        );
+        m_videoModeCmdUiState[0] = CommandCheckedIfMode(mode, 2);
+        m_videoModeCmdUiState[1] = CommandCheckedIfMode(mode, 3);
+        m_videoModeCmdUiState[2] = CommandCheckedIfMode(mode, 4);
+        m_videoModeCmdUiState[3] = CommandCheckedIfMode(mode, 5);
+        m_videoModeCmdUiState[4] = CommandCheckedIfMode(mode, 6);
+        m_videoModeCmdUiState[5] = CommandCheckedIfMode(mode, 7);
         return;
     }
 
     m_videoModeCmdUiState[0] = kCmdUiDisabled;
     m_videoModeCmdUiState[1] = kCmdUiDisabled;
-    m_videoModeCmdUiState[2] = CommandCheckedIfMode(
-        mode,
-        4
-    );
-    m_videoModeCmdUiState[3] = CommandCheckedIfMode(
-        mode,
-        5
-    );
+    m_videoModeCmdUiState[2] = CommandCheckedIfMode(mode, 4);
+    m_videoModeCmdUiState[3] = CommandCheckedIfMode(mode, 5);
 
     if (m_vidMemFreeBytes > kVidMem800x600Threshold) {
-        m_videoModeCmdUiState[4] = CommandCheckedIfMode(
-            mode,
-            6
-        );
+        m_videoModeCmdUiState[4] = CommandCheckedIfMode(mode, 6);
     } else {
         m_videoModeCmdUiState[4] = kCmdUiDisabled;
     }
 
     if (m_vidMemFreeBytes > kVidMem1024x768Threshold) {
-        m_videoModeCmdUiState[5] = CommandCheckedIfMode(
-            mode,
-            7
-        );
+        m_videoModeCmdUiState[5] = CommandCheckedIfMode(mode, 7);
     } else {
         m_videoModeCmdUiState[5] = kCmdUiDisabled;
     }
@@ -2724,51 +2330,28 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuOpenHelpDocs() {
         3};
 
     char associatedExecutablePath[0x100];
-    HINSTANCE findResult = FindExecutableA(
-        "Docs\\Index.html",
-        0,
-        associatedExecutablePath
-    );
+    HINSTANCE findResult = FindExecutableA("Docs\\Index.html", 0, associatedExecutablePath);
 
     char messageBoxTitle[0x80];
-    strcpy(
-        messageBoxTitle,
-        zLoc::GetMessageString(0x19)
-    );
+    strcpy(messageBoxTitle, zLoc::GetMessageString(0x19));
 
     const UINT resultCode = (UINT)((UINT_PTR)(findResult));
     if (resultCode <= 0x1f) {
         switch (kFindExecutableErrorMap[resultCode]) {
         case 0:
-            ((CWnd *)(this))->MessageBoxA(
-                zLoc::GetMessageString(0x20),
-                messageBoxTitle,
-                0x30
-            );
+            ((CWnd *)(this))->MessageBoxA(zLoc::GetMessageString(0x20), messageBoxTitle, 0x30);
             return;
 
         case 1:
-            ((CWnd *)(this))->MessageBoxA(
-                zLoc::GetMessageString(0x22),
-                messageBoxTitle,
-                0x30
-            );
+            ((CWnd *)(this))->MessageBoxA(zLoc::GetMessageString(0x22), messageBoxTitle, 0x30);
             return;
 
         case 2:
-            ((CWnd *)(this))->MessageBoxA(
-                zLoc::GetMessageString(0x24),
-                messageBoxTitle,
-                0x30
-            );
+            ((CWnd *)(this))->MessageBoxA(zLoc::GetMessageString(0x24), messageBoxTitle, 0x30);
             return;
 
         case 3:
-            ((CWnd *)(this))->MessageBoxA(
-                zLoc::GetMessageString(0x21),
-                messageBoxTitle,
-                0x30
-            );
+            ((CWnd *)(this))->MessageBoxA(zLoc::GetMessageString(0x21), messageBoxTitle, 0x30);
             return;
 
         default:
@@ -2776,14 +2359,7 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuOpenHelpDocs() {
         }
     }
 
-    ShellExecuteA(
-        g_RecoilApp_hWndMain,
-        "open",
-        "Docs\\Index.html",
-        0,
-        0,
-        SW_HIDE
-    );
+    ShellExecuteA(g_RecoilApp_hWndMain, "open", "Docs\\Index.html", 0, 0, SW_HIDE);
 }
 
 /**
@@ -2807,33 +2383,18 @@ RECOIL_NO_GS void __fastcall RecoilApp::FatalErrorAndExit(
 
     char caption[0x80];
     char text[0x80];
-    strcpy(
-        caption,
-        zLoc::GetMessageString(0x12)
-    );
-    strcpy(
-        text,
-        zLoc::GetMessageString(0x30)
-    );
+    strcpy(caption, zLoc::GetMessageString(0x12));
+    strcpy(text, zLoc::GetMessageString(0x30));
 
     Briefing::StopAndShutdownThread(0);
     zVideo_dd::FlipToGDIIfAttached();
     zSndSystem::Shutdown();
     zNetwork::ShutdownSessionRuntime();
     zVideo::ShutdownVideoSystem();
-    printf(
-        "%s: %s\n",
-        caption,
-        text
-    );
+    printf("%s: %s\n", caption, text);
     Sleep(1000);
     MessageBeep(MB_ICONHAND);
-    MessageBoxA(
-        g_RecoilApp_hWndMain,
-        text,
-        caption,
-        MB_ICONHAND
-    );
+    MessageBoxA(g_RecoilApp_hWndMain, text, caption, MB_ICONHAND);
     zSys::ExitProcessWithCleanup(0);
 }
 
@@ -2870,7 +2431,7 @@ void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser() {
                         statusFields.eventCode = kDefaultMultiplayerEventCode;
                         zNetwork::RegisterPacketHandler(
                             kHudTimerAndFlagsSyncPacketType,
-                            (zNetworkPacketHandler)&GameNet::HandlePkt14_HudTimerAndFlagsSync,
+                            (zNetworkPacketHandler)&GameNet::HandlePkt14HudTimerAndFlagsSync,
                             kDispatchModeSession
                         );
                     }
@@ -2913,12 +2474,7 @@ void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser() {
  * Purpose: start the default multiplayer mission setup path.
  */
 void CZRecoilFrame::OnMenuStartMultiplayer() {
-    g_RecoilApp.LoadZbdAndSetupSensorTracker(
-        1,
-        0,
-        1,
-        m_useArchiveBanks
-    );
+    g_RecoilApp.LoadZbdAndSetupSensorTracker(1, 0, 1, m_useArchiveBanks);
 }
 
 /**
@@ -2926,12 +2482,7 @@ void CZRecoilFrame::OnMenuStartMultiplayer() {
  * Purpose: start campaign mission slot 2 with the current archive-bank flag.
  */
 void CZRecoilFrame::OnMenuStartCampaignMode() {
-    g_RecoilApp.LoadZbdAndSetupSensorTracker(
-        2,
-        0,
-        1,
-        m_useArchiveBanks
-    );
+    g_RecoilApp.LoadZbdAndSetupSensorTracker(2, 0, 1, m_useArchiveBanks);
 }
 
 /**
@@ -2939,12 +2490,7 @@ void CZRecoilFrame::OnMenuStartCampaignMode() {
  * Purpose: start campaign mission slot 3 with the current archive-bank flag.
  */
 void CZRecoilFrame::OnMenuStartCampaignMode2() {
-    g_RecoilApp.LoadZbdAndSetupSensorTracker(
-        3,
-        0,
-        1,
-        m_useArchiveBanks
-    );
+    g_RecoilApp.LoadZbdAndSetupSensorTracker(3, 0, 1, m_useArchiveBanks);
 }
 
 /**
@@ -2952,12 +2498,7 @@ void CZRecoilFrame::OnMenuStartCampaignMode2() {
  * Purpose: start campaign mission slot 4 with the current archive-bank flag.
  */
 void CZRecoilFrame::OnMenuStartCampaignMode3() {
-    g_RecoilApp.LoadZbdAndSetupSensorTracker(
-        4,
-        0,
-        1,
-        m_useArchiveBanks
-    );
+    g_RecoilApp.LoadZbdAndSetupSensorTracker(4, 0, 1, m_useArchiveBanks);
 }
 
 /**
@@ -2965,12 +2506,7 @@ void CZRecoilFrame::OnMenuStartCampaignMode3() {
  * Purpose: start campaign mission slot 5 with the current archive-bank flag.
  */
 void CZRecoilFrame::OnMenuStartCampaignMode4() {
-    g_RecoilApp.LoadZbdAndSetupSensorTracker(
-        5,
-        0,
-        1,
-        m_useArchiveBanks
-    );
+    g_RecoilApp.LoadZbdAndSetupSensorTracker(5, 0, 1, m_useArchiveBanks);
 }
 
 /**
@@ -2978,12 +2514,7 @@ void CZRecoilFrame::OnMenuStartCampaignMode4() {
  * Purpose: start campaign mission slot 6 with the current archive-bank flag.
  */
 void CZRecoilFrame::OnMenuStartCampaignMode5() {
-    g_RecoilApp.LoadZbdAndSetupSensorTracker(
-        6,
-        0,
-        1,
-        m_useArchiveBanks
-    );
+    g_RecoilApp.LoadZbdAndSetupSensorTracker(6, 0, 1, m_useArchiveBanks);
 }
 
 
@@ -2993,11 +2524,7 @@ void CZRecoilFrame::OnMenuStartCampaignMode5() {
  */
 void CZRecoilFrame::OnMenuToggleArchiveBanks() {
     m_useArchiveBanks = m_useArchiveBanks == 0 ? 1 : 0;
-    CheckMenuItem(
-        m_mainMenu.m_hMenu,
-        0x9c6b,
-        m_useArchiveBanks == 0 ? MF_UNCHECKED : MF_CHECKED
-    );
+    CheckMenuItem(m_mainMenu.m_hMenu, 0x9c6b, m_useArchiveBanks == 0 ? MF_UNCHECKED : MF_CHECKED);
     g_HudSensorTracker.missionFlags = m_useArchiveBanks;
     zSnd::SetUseArchiveBanksFlag(m_useArchiveBanks);
 }
@@ -3009,20 +2536,12 @@ void CZRecoilFrame::OnMenuToggleArchiveBanks() {
 void CZRecoilFrame::OnMenuToggleTexturePacks() {
     if (zVid::GetTexturePackLoadState() != 0) {
         zVid::SetTexturePackLoadState(0);
-        CheckMenuItem(
-            m_mainMenu.m_hMenu,
-            0x9c7b,
-            MF_UNCHECKED
-        );
+        CheckMenuItem(m_mainMenu.m_hMenu, 0x9c7b, MF_UNCHECKED);
         return;
     }
 
     zVid::SetTexturePackLoadState(1);
-    CheckMenuItem(
-        m_mainMenu.m_hMenu,
-        0x9c7b,
-        MF_CHECKED
-    );
+    CheckMenuItem(m_mainMenu.m_hMenu, 0x9c7b, MF_CHECKED);
 }
 
 /**
@@ -3032,10 +2551,7 @@ void CZRecoilFrame::OnMenuToggleTexturePacks() {
 void CZRecoilFrame::OnUpdateVideoMode2CmdUI(
     CCmdUI *cmdUi
 ) {
-    UpdateCmdUiFromState(
-        cmdUi,
-        m_videoModeCmdUiState[0]
-    );
+    UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[0]);
 }
 
 /**
@@ -3045,10 +2561,7 @@ void CZRecoilFrame::OnUpdateVideoMode2CmdUI(
 void CZRecoilFrame::OnUpdateVideoMode3CmdUI(
     CCmdUI *cmdUi
 ) {
-    UpdateCmdUiFromState(
-        cmdUi,
-        m_videoModeCmdUiState[1]
-    );
+    UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[1]);
 }
 
 /**
@@ -3058,10 +2571,7 @@ void CZRecoilFrame::OnUpdateVideoMode3CmdUI(
 void CZRecoilFrame::OnUpdateVideoMode4CmdUI(
     CCmdUI *cmdUi
 ) {
-    UpdateCmdUiFromState(
-        cmdUi,
-        m_videoModeCmdUiState[2]
-    );
+    UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[2]);
 }
 
 /**
@@ -3071,10 +2581,7 @@ void CZRecoilFrame::OnUpdateVideoMode4CmdUI(
 void CZRecoilFrame::OnUpdateVideoMode5CmdUI(
     CCmdUI *cmdUi
 ) {
-    UpdateCmdUiFromState(
-        cmdUi,
-        m_videoModeCmdUiState[3]
-    );
+    UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[3]);
 }
 
 /**
@@ -3084,10 +2591,7 @@ void CZRecoilFrame::OnUpdateVideoMode5CmdUI(
 void CZRecoilFrame::OnUpdateVideoMode6CmdUI(
     CCmdUI *cmdUi
 ) {
-    UpdateCmdUiFromState(
-        cmdUi,
-        m_videoModeCmdUiState[4]
-    );
+    UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[4]);
 }
 
 /**
@@ -3097,10 +2601,7 @@ void CZRecoilFrame::OnUpdateVideoMode6CmdUI(
 void CZRecoilFrame::OnUpdateVideoMode7CmdUI(
     CCmdUI *cmdUi
 ) {
-    UpdateCmdUiFromState(
-        cmdUi,
-        m_videoModeCmdUiState[5]
-    );
+    UpdateCmdUiFromState(cmdUi, m_videoModeCmdUiState[5]);
 }
 
 /**
@@ -3243,11 +2744,7 @@ RECOIL_NO_GS void CZRecoilFrame::UpdateHwApiMenuItem(
         return;
     }
 
-    RemoveMenu(
-        cmdUi->m_pMenu->m_hMenu,
-        m_hwApiMenuCommandIds[apiIndex],
-        MF_BYCOMMAND
-    );
+    RemoveMenu(cmdUi->m_pMenu->m_hMenu, m_hwApiMenuCommandIds[apiIndex], MF_BYCOMMAND);
 }
 
 /**
@@ -3272,10 +2769,7 @@ void CZRecoilFrame::OnUpdateHwApi0CmdUI(
 void CZRecoilFrame::OnUpdateHwApi1CmdUI(
     CCmdUI *cmdUi
 ) {
-    UpdateHwApiMenuItem(
-        cmdUi,
-        1
-    );
+    UpdateHwApiMenuItem(cmdUi, 1);
 }
 
 /**
@@ -3285,10 +2779,7 @@ void CZRecoilFrame::OnUpdateHwApi1CmdUI(
 void CZRecoilFrame::OnUpdateHwApi2CmdUI(
     CCmdUI *cmdUi
 ) {
-    UpdateHwApiMenuItem(
-        cmdUi,
-        2
-    );
+    UpdateHwApiMenuItem(cmdUi, 2);
 }
 
 /**
@@ -3298,10 +2789,7 @@ void CZRecoilFrame::OnUpdateHwApi2CmdUI(
 void CZRecoilFrame::OnUpdateHwApi3CmdUI(
     CCmdUI *cmdUi
 ) {
-    UpdateHwApiMenuItem(
-        cmdUi,
-        3
-    );
+    UpdateHwApiMenuItem(cmdUi, 3);
 }
 
 /**
@@ -3311,11 +2799,7 @@ void CZRecoilFrame::OnUpdateHwApi3CmdUI(
 void CZRecoilFrame::OnUpdateFullscreenCmdUI(
     CCmdUI *cmdUi
 ) {
-    RemoveMenu(
-        cmdUi->m_pMenu->m_hMenu,
-        kFullscreenMenuCommandId,
-        MF_BYCOMMAND
-    );
+    RemoveMenu(cmdUi->m_pMenu->m_hMenu, kFullscreenMenuCommandId, MF_BYCOMMAND);
 }
 
 /**
@@ -3379,18 +2863,9 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuWestwoodOnlineUpgrade() {
         char messageFormat[0x200];
 
         g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 1;
-        strcpy(
-            caption,
-            zLoc::GetMessageString(18)
-        );
-        strcpy(
-            messageFormat,
-            zLoc::GetMessageString(38)
-        );
-        if (NetUi::VerifyWinsock2OrPromptContinue(
-            caption,
-            messageFormat
-        ) == 0) {
+        strcpy(caption, zLoc::GetMessageString(18));
+        strcpy(messageFormat, zLoc::GetMessageString(38));
+        if (NetUi::VerifyWinsock2OrPromptContinue(caption, messageFormat) == 0) {
             canShowUpgrade = 0;
         }
     }
@@ -3472,11 +2947,7 @@ void CZRecoilFrame::OnSize(
     int cx,
     int cy
 ) {
-    CZGameFrame::OnSize(
-        nType,
-        cx,
-        cy
-    );
+    CZGameFrame::OnSize(nType, cx, cy);
 
     if (nType == 4 || nType == 1) {
         m_app->OnAppDeactivate();
@@ -3583,17 +3054,13 @@ void __cdecl RegisterGameplayHandlersAndOptCatalogCallbacks() {
     if (g_GameNet_HandlersRegistered == 0) {
         zNetwork::RegisterPacketHandler(
             6,
-            (zNetworkPacketHandler)&HandlePkt06_PlayerStateSnapshot,
+            (zNetworkPacketHandler)&HandlePkt06PlayerStateSnapshot,
             2
         );
-        zNetwork::RegisterPacketHandler(
-            7,
-            (zNetworkPacketHandler)&HandlePkt07_AltGunDispatch,
-            2
-        );
+        zNetwork::RegisterPacketHandler(7, (zNetworkPacketHandler)&HandlePkt07_AltGunDispatch, 2);
         zNetwork::RegisterPacketHandler(
             0x0a,
-            (zNetworkPacketHandler)&OptCatalog::HandlePkt0A_RemoveRuntimeRelay,
+            (zNetworkPacketHandler)&OptCatalog::HandlePkt0ARemoveRuntimeRelay,
             2
         );
         zNetwork::RegisterPacketHandler(
@@ -3601,34 +3068,26 @@ void __cdecl RegisterGameplayHandlersAndOptCatalogCallbacks() {
             (zNetworkPacketHandler)&ReassignPlayerColorsAndRefreshRows,
             2
         );
-        zNetwork::RegisterPacketHandler(
-            8,
-            (zNetworkPacketHandler)&HandlePkt08_PlayerKillEvent,
-            2
-        );
+        zNetwork::RegisterPacketHandler(8, (zNetworkPacketHandler)&HandlePkt08PlayerKillEvent, 2);
         zNetwork::RegisterPacketHandler(
             9,
-            (zNetworkPacketHandler)&HandlePkt09_PlayerScoreboardSnapshot,
+            (zNetworkPacketHandler)&HandlePkt09PlayerScoreboardSnapshot,
             2
         );
-        zNetwork::RegisterPacketHandler(
-            0x0b,
-            (zNetworkPacketHandler)&HandlePkt0B_ChatMessage,
-            2
-        );
+        zNetwork::RegisterPacketHandler(0x0b, (zNetworkPacketHandler)&HandlePkt0BChatMessage, 2);
         zNetwork::RegisterPacketHandler(
             0x0e,
-            (zNetworkPacketHandler)&HandlePkt0E_PlayerLapProgress,
+            (zNetworkPacketHandler)&HandlePkt0EPlayerLapProgress,
             2
         );
         zNetwork::RegisterPacketHandler(
             0x0c,
-            (zNetworkPacketHandler)&HandlePkt0C_HudTimerStatusBits,
+            (zNetworkPacketHandler)&HandlePkt0CHudTimerStatusBits,
             2
         );
         zNetwork::RegisterPacketHandler(
             0x0d,
-            (zNetworkPacketHandler)&HandlePkt0D_HudTimerPanelState,
+            (zNetworkPacketHandler)&HandlePkt0DHudTimerPanelState,
             2
         );
         zNetwork::RegisterPacketHandler(
@@ -3643,41 +3102,38 @@ void __cdecl RegisterGameplayHandlersAndOptCatalogCallbacks() {
         );
         zNetwork::RegisterPacketHandler(
             0x11,
-            (zNetworkPacketHandler)&Pickup::HandlePkt11_SpawnDelta,
+            (zNetworkPacketHandler)&Pickup::HandlePkt11SpawnDelta,
             2
         );
         zNetwork::RegisterPacketHandler(
             0x12,
-            (zNetworkPacketHandler)&Pickup::HandlePkt12_AirdropSpawnChuteRelay,
+            (zNetworkPacketHandler)&Pickup::HandlePkt12AirdropSpawnChuteRelay,
             2
         );
         zNetwork::RegisterPacketHandler(
             0x13,
-            (zNetworkPacketHandler)&HandlePkt13_EffectAnimActivationRecord,
+            (zNetworkPacketHandler)&HandlePkt13EffectAnimActivationRecord,
             2
         );
         zNetwork::RegisterPacketHandler(
             0x14,
-            (zNetworkPacketHandler)&HandlePkt14_HudTimerAndFlagsSync,
+            (zNetworkPacketHandler)&HandlePkt14HudTimerAndFlagsSync,
             2
         );
         zNetwork::RegisterPacketHandler(
             3,
-            (zNetworkPacketHandler)&HandlePkt03_RemoveRemotePlayer,
+            (zNetworkPacketHandler)&HandlePkt03RemoveRemotePlayer,
             2
         );
         g_GameNet_HandlersRegistered = 1;
     }
 
     g_zDEClientCraterNetRelayCallback = (zDEClient_NetRelayCallback)&zDEClient_Crater::Execute;
-    g_zDEClientQSandNetRelayCallback = (zDEClient_NetRelayCallback)&SendPkt10_QSandEvent;
+    g_zDEClientQSandNetRelayCallback = (zDEClient_NetRelayCallback)&SendPkt10QSandEvent;
     g_OptCatalog_AllocRuntimeGateCallback = &OptCatalog::AltGunDispatchAllocRuntimeGateCallback;
     g_OptCatalog_AltGunDispatchNoOpCallback = &AltGunDispatchNoOpCallback;
-    g_OptCatalog_RemoveRuntimeRelayCallback = &OptCatalog::SendPkt0A_RemoveRuntimeRelay;
-    zEffect_Anim::SetActivationDispatchContext(
-        &SendPkt13_EffectAnimActivationRecord,
-        0x0c
-    );
+    g_OptCatalog_RemoveRuntimeRelayCallback = &OptCatalog::SendPkt0ARemoveRuntimeRelay;
+    zEffect_Anim::SetActivationDispatchContext(&SendPkt13EffectAnimActivationRecord, 0x0c);
 }
 } // namespace GameNet
 
@@ -3694,20 +3150,13 @@ void __cdecl InitFromZrd() {
         if (playerState->lifecycleState == 2) {
             playerState->lifecycleState = 4;
             zClass_NodePartial *const rootNode = playerState->rootNode;
-            zClass_Class::RemoveChild(
-                rootNode->listA[0],
-                rootNode
-            );
+            zClass_Class::RemoveChild(rootNode->listA[0], rootNode);
         }
         saveState = saveState->next;
     }
 
     zTurret_System::DisableTickCallback();
-    zReader::Node *const treeRoot = zReader::Load(
-        "net.zrd",
-        0,
-        0
-    );
+    zReader::Node *const treeRoot = zReader::Load("net.zrd", 0, 0);
     if (treeRoot != 0) {
         GameNetReaderArray *const rootArray = (GameNetReaderArray *)(treeRoot->value.ptr);
         GameNetReaderArray *const spawnArray =
@@ -3716,11 +3165,7 @@ void __cdecl InitFromZrd() {
         for (int index = 0; index < spawnPointCount; ++index) {
             GameNetSpawnPoint *const spawnPoint =
                 (GameNetSpawnPoint *)(::operator new(sizeof(GameNetSpawnPoint)));
-            memset(
-                spawnPoint,
-                0,
-                sizeof(GameNetSpawnPoint)
-            );
+            memset(spawnPoint, 0, sizeof(GameNetSpawnPoint));
             if (g_GameNetSpawnPointCount == 0) {
                 g_GameNetSpawnPointHead = spawnPoint;
             } else {
@@ -3746,13 +3191,13 @@ void __cdecl InitFromZrd() {
         1
     );
     playerRow->saveState = (GameNetPlayerSaveState *)(localSaveState);
-    playerRow->playerKey = zNetwork_GetLocalPlayerKey();
+    playerRow->playerKey = zNetworkGetLocalPlayerKey();
     zNetwork::GetPlayerNameByKey(
         playerRow->playerKey,
         playerRow->displayName,
         sizeof(playerRow->displayName)
     );
-    playerRow->playerColorIndex = zNetwork_GetPlayerColorIndexByKey(playerRow->playerKey);
+    playerRow->playerColorIndex = zNetworkGetPlayerColorIndexByKey(playerRow->playerKey);
 
     if (playerRow->playerColorIndex <= 0) {
         if (zNetwork::IsHost() == 0) {
@@ -3766,27 +3211,12 @@ void __cdecl InitFromZrd() {
             zVideo::ShutdownVideoSystem();
             char fatalErrorCaption[0x80];
             char fatalErrorMessage[0x80];
-            strcpy(
-                fatalErrorCaption,
-                zLoc::GetMessageString(18)
-            );
-            strcpy(
-                fatalErrorMessage,
-                zLoc::GetMessageString(26)
-            );
-            printf(
-                "%s: %s\n",
-                fatalErrorCaption,
-                fatalErrorMessage
-            );
+            strcpy(fatalErrorCaption, zLoc::GetMessageString(18));
+            strcpy(fatalErrorMessage, zLoc::GetMessageString(26));
+            printf("%s: %s\n", fatalErrorCaption, fatalErrorMessage);
             Sleep(1000);
             MessageBeep(MB_ICONHAND);
-            MessageBoxA(
-                g_RecoilApp_hWndMain,
-                fatalErrorMessage,
-                fatalErrorCaption,
-                MB_ICONHAND
-            );
+            MessageBoxA(g_RecoilApp_hWndMain, fatalErrorMessage, fatalErrorCaption, MB_ICONHAND);
             zSys::ExitProcessWithCleanup(2);
         }
     }
@@ -3807,10 +3237,7 @@ void __cdecl InitFromZrd() {
                 sizeof(runtimeTimerSec)
             );
             g_GameNetHostHudTimerInitFlag = 0;
-            HudUiTimerPanel::SetSeconds(
-                runtimeTimerSec,
-                -1.0f
-            );
+            HudUiTimerPanel::SetSeconds(runtimeTimerSec, -1.0f);
             g_HudTimerPanelNetState.timerDirectionNeg = 1;
             g_HudTimerPanelNetState.statusBitsResendDeadline = 30.0f;
         }
@@ -3820,10 +3247,7 @@ void __cdecl InitFromZrd() {
     g_HudTimerPanelNetState.oneMinuteWarningShown = 0;
     GameNet::RefreshPlayerListMenu(playerRow);
     localSaveState->netPlayerRow = playerRow;
-    GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed(
-        localSaveState,
-        1
-    );
+    GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed(localSaveState, 1);
     if (g_HudSensorTracker.raceCheckpointMode != 0) {
         GameNet::ResetHudTimerPanelNetStateLongCountdown();
     }
@@ -3844,7 +3268,7 @@ int __fastcall WaitForLocalPlayerColorIndex(
     while (waitedSeconds < maxWaitSeconds) {
         zNetworkDPlay::ReceivePendingMessages(-1);
 
-        const int colorIndex = zNetwork_GetLocalPlayerColorIndex();
+        const int colorIndex = zNetworkGetLocalPlayerColorIndex();
         if (colorIndex > 0) {
             return colorIndex;
         }
@@ -3901,46 +3325,25 @@ namespace GameNet {
  * Purpose: Remove all gameplay packet handlers registered with zNetwork.
  */
 void __cdecl UnregisterGameplayPacketHandlers() {
-    zNetwork::UnregisterPacketHandler(
-        6,
-        (zNetworkPacketHandler)&HandlePkt06_PlayerStateSnapshot
-    );
-    zNetwork::UnregisterPacketHandler(
-        7,
-        (zNetworkPacketHandler)&HandlePkt07_AltGunDispatch
-    );
+    zNetwork::UnregisterPacketHandler(6, (zNetworkPacketHandler)&HandlePkt06PlayerStateSnapshot);
+    zNetwork::UnregisterPacketHandler(7, (zNetworkPacketHandler)&HandlePkt07_AltGunDispatch);
     zNetwork::UnregisterPacketHandler(
         0x0a,
-        (zNetworkPacketHandler)&OptCatalog::HandlePkt0A_RemoveRuntimeRelay
+        (zNetworkPacketHandler)&OptCatalog::HandlePkt0ARemoveRuntimeRelay
     );
     zNetwork::UnregisterPacketHandler(
         1,
         (zNetworkPacketHandler)&ReassignPlayerColorsAndRefreshRows
     );
-    zNetwork::UnregisterPacketHandler(
-        8,
-        (zNetworkPacketHandler)&HandlePkt08_PlayerKillEvent
-    );
+    zNetwork::UnregisterPacketHandler(8, (zNetworkPacketHandler)&HandlePkt08PlayerKillEvent);
     zNetwork::UnregisterPacketHandler(
         9,
-        (zNetworkPacketHandler)&HandlePkt09_PlayerScoreboardSnapshot
+        (zNetworkPacketHandler)&HandlePkt09PlayerScoreboardSnapshot
     );
-    zNetwork::UnregisterPacketHandler(
-        0x0b,
-        (zNetworkPacketHandler)&HandlePkt0B_ChatMessage
-    );
-    zNetwork::UnregisterPacketHandler(
-        0x0e,
-        (zNetworkPacketHandler)&HandlePkt0E_PlayerLapProgress
-    );
-    zNetwork::UnregisterPacketHandler(
-        0x0c,
-        (zNetworkPacketHandler)&HandlePkt0C_HudTimerStatusBits
-    );
-    zNetwork::UnregisterPacketHandler(
-        0x0d,
-        (zNetworkPacketHandler)&HandlePkt0D_HudTimerPanelState
-    );
+    zNetwork::UnregisterPacketHandler(0x0b, (zNetworkPacketHandler)&HandlePkt0BChatMessage);
+    zNetwork::UnregisterPacketHandler(0x0e, (zNetworkPacketHandler)&HandlePkt0EPlayerLapProgress);
+    zNetwork::UnregisterPacketHandler(0x0c, (zNetworkPacketHandler)&HandlePkt0CHudTimerStatusBits);
+    zNetwork::UnregisterPacketHandler(0x0d, (zNetworkPacketHandler)&HandlePkt0DHudTimerPanelState);
     zNetwork::UnregisterPacketHandler(
         0x0f,
         (zNetworkPacketHandler)&zDEClient_Crater::NetRelayCallback
@@ -3949,17 +3352,14 @@ void __cdecl UnregisterGameplayPacketHandlers() {
         0x10,
         (zNetworkPacketHandler)&zDEClient_QSand::NetRelayCallback
     );
-    zNetwork::UnregisterPacketHandler(
-        0x11,
-        (zNetworkPacketHandler)&Pickup::HandlePkt11_SpawnDelta
-    );
+    zNetwork::UnregisterPacketHandler(0x11, (zNetworkPacketHandler)&Pickup::HandlePkt11SpawnDelta);
     zNetwork::UnregisterPacketHandler(
         0x12,
-        (zNetworkPacketHandler)&Pickup::HandlePkt12_AirdropSpawnChuteRelay
+        (zNetworkPacketHandler)&Pickup::HandlePkt12AirdropSpawnChuteRelay
     );
     zNetwork::UnregisterPacketHandler(
         0x13,
-        (zNetworkPacketHandler)&HandlePkt13_EffectAnimActivationRecord
+        (zNetworkPacketHandler)&HandlePkt13EffectAnimActivationRecord
     );
     g_GameNet_HandlersRegistered = 0;
 }
@@ -3972,10 +3372,7 @@ void __cdecl UnregisterGameplayPacketHandlers() {
  */
 void __cdecl ResetHudTimerPanelNetStateLongCountdown() {
     g_HudTimerPanelNetState.timerSeconds = 36000.0f;
-    HudUiTimerPanel::SetSeconds(
-        36000.0f,
-        -1.0f
-    );
+    HudUiTimerPanel::SetSeconds(36000.0f, -1.0f);
     g_HudTimerPanelNetState.startCountdownTriggered = 0;
     g_HudTimerPanelNetState.tenSecondWarningsEnabled = 0;
     g_HudTimerPanelNetState.timeWarningThresholdSec = 120.0f;
@@ -3983,11 +3380,7 @@ void __cdecl ResetHudTimerPanelNetStateLongCountdown() {
     g_HudTimerPanelNetState.startGateTriggered = 0;
     g_HudTimerPanelNetState.raceFinishCountdownTriggered = 0;
     g_GameNetAllPlayersLapTargetCheckStarted = 0;
-    memset(
-        g_HudTimerPanelNetState.tailFlags,
-        0,
-        sizeof(g_HudTimerPanelNetState.tailFlags)
-    );
+    memset(g_HudTimerPanelNetState.tailFlags, 0, sizeof(g_HudTimerPanelNetState.tailFlags));
     g_GameNetOneLapLeftMessageShown = 0;
 }
 
@@ -4020,7 +3413,7 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
     NetPkt06_PlayerStateSnapshot *const packet = &g_NetPkt06_PlayerStateSnapshotBuf;
     packet->header.packetType = 0x06;
     packet->header.packetSizeBytes = 0x44;
-    packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet->cachedAltSelectionCode = (short)(playerState->cachedAltSelectionCode);
     packet->cachedPrimarySelectionCode = (short)(playerState->cachedPrimarySelectionCode);
 
@@ -4065,7 +3458,7 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
     }
     packet->packedMasterTypeColorFlags = packedFlags;
 
-    const int sendResult = zNetwork_SendPacketUnreliable(&packet->header);
+    const int sendResult = zNetworkSendPacketUnreliable(&packet->header);
     const int raceCheckpointMode = g_HudSensorTracker.raceCheckpointMode;
     if (zNetwork::IsHost() != 0) {
         if (raceCheckpointMode != 0) {
@@ -4087,14 +3480,14 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
                      * Purpose: name the replicated start-gate effect animation
                      * stopped when the host race countdown reaches zero.
                      */
-                    zEffectAnim::SetVelocity_Thunk(
+                    zEffectAnim::SetVelocityThunk(
                         zEffectAnim::FindEntryByName("startgate"),
                         0,
                         0.0f,
                         0.0f,
                         0.0f
                     );
-                    SendPkt0D_HudTimerPanelState(&timerState);
+                    SendPkt0DHudTimerPanelState(&timerState);
                 } else if (g_HudTimerPanelNetState.startCountdownTriggered == 0 &&
                            g_HudTimerPanelNetState.tenSecondWarningsEnabled != 0 &&
                            timerSeconds <= ::kGameNetHudTimerTenSecondThreshold) {
@@ -4104,7 +3497,7 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
                         -1.0f
                     );
                     timerState.startCountdownTriggered = 1;
-                    SendPkt0D_HudTimerPanelState(&timerState);
+                    SendPkt0DHudTimerPanelState(&timerState);
                 } else if (timerSeconds > ::kGameNetHudTimerTenSecondThreshold &&
                            (int)(timerSeconds) % 10 == 0) {
                     if (g_GameNetHudTimerTenSecondWarningArmed != 0) {
@@ -4125,7 +3518,7 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
 
             if (timerState.raceFinishCountdownTriggered != 0 && timerState.timeWarningShown == 0) {
                 timerState.timeWarningShown = 1;
-                SendPkt0D_HudTimerPanelState(&timerState);
+                SendPkt0DHudTimerPanelState(&timerState);
                 return sendResult;
             }
         } else {
@@ -4136,17 +3529,17 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
             if (timerState.oneMinuteWarningShown == 0 &&
                 timerSeconds < g_FrameDeltaTimeSec + ::kGameNetHudTimerOneMinuteLeadSec) {
                 timerState.oneMinuteWarningShown = 1;
-                SendPkt0C_HudTimerStatusBits(&timerState);
+                SendPkt0CHudTimerStatusBits(&timerState);
             }
 
             if (g_HudTimerPanelNetState.timeWarningShown == 0 &&
                 timerSeconds < g_FrameDeltaTimeSec) {
                 timerState.timeWarningShown = 1;
-                SendPkt0C_HudTimerStatusBits(&timerState);
+                SendPkt0CHudTimerStatusBits(&timerState);
             }
 
             if (g_Time_AccumulatedTimeSec > g_HudTimerPanelNetState.statusBitsResendDeadline) {
-                SendPkt0C_HudTimerStatusBits(&timerState);
+                SendPkt0CHudTimerStatusBits(&timerState);
                 return sendResult;
             }
         }
@@ -4181,7 +3574,7 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
  * Purpose: Dispatch an incoming player-state snapshot to row creation or
  * existing-row update handling.
  */
-int __fastcall HandlePkt06_PlayerStateSnapshot(
+int __fastcall HandlePkt06PlayerStateSnapshot(
     int senderPlayerId,
     NetPkt06_PlayerStateSnapshot *packet
 ) {
@@ -4196,17 +3589,11 @@ int __fastcall HandlePkt06_PlayerStateSnapshot(
 
     if (packet->header.packetType == 6) {
         if (row == 0) {
-            SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
-                senderPlayerId,
-                packet
-            );
+            SpawnRemotePlayerFromPkt06PlayerStateSnapshot(senderPlayerId, packet);
             return 0;
         }
 
-        ApplyPkt06_PlayerStateSnapshotToRow(
-            row,
-            packet
-        );
+        ApplyPkt06PlayerStateSnapshotToRow(row, packet);
     }
 
     return 0;
@@ -4234,7 +3621,7 @@ GameNetPlayerRow *__fastcall FindPlayerRowByKey(
  * Purpose: Create a remote player row and cloned player node from an incoming
  * player-state snapshot packet.
  */
-int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
+int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(
     int senderPlayerId,
     NetPkt06_PlayerStateSnapshot *packet
 ) {
@@ -4247,39 +3634,22 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
         zNetwork_DPlay::EnumPlayers();
     }
 
-    zClass_NodePartial *const sourceNode = zClass::FindByTypeAndName(
-        6,
-        "bft_99"
-    );
+    zClass_NodePartial *const sourceNode = zClass::FindByTypeAndName(6, "bft_99");
     zClass_NodePartial *clonedNode = 0;
     if (sourceNode != 0) {
-        clonedNode = zClass_cls_util::CopyNodeWithCloneOptions(
-            sourceNode,
-            1,
-            1
-        );
+        clonedNode = zClass_cls_util::CopyNodeWithCloneOptions(sourceNode, 1, 1);
     }
 
     if (clonedNode == 0) {
-        HudUi::ShowTopMessageLine(
-            zLoc::GetMessageString(0x911),
-            5.0f
-        );
+        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x911), 5.0f);
         return 0;
     }
 
     clonedNode->flags |= ::kGameNetRemoteCloneNodeFlag;
 
     char netNodeName[0x14];
-    sprintf(
-        netNodeName,
-        "net%d",
-        packet->header.payloadDword0
-    );
-    zClass_Class::gwNodeSetName(
-        clonedNode,
-        netNodeName
-    );
+    sprintf(netNodeName, "net%d", packet->header.payloadDword0);
+    zClass_Class::gwNodeSetName(clonedNode, netNodeName);
 
     zUtil_SaveGameState *const saveState = Player::CreateFromNamesAtPoseGetState(
         &packet->worldPos,
@@ -4303,36 +3673,21 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
     }
 
     GameNetPlayerRowListState *const rowList = &g_GameNetPlayerRowList;
-    GameNetPlayerRow *const row = GameNetPlayerRowList::AppendNewRow(
-        rowList,
-        0
-    );
+    GameNetPlayerRow *const row = GameNetPlayerRowList::AppendNewRow(rowList, 0);
     row->playerKey = packet->header.payloadDword0;
     row->playerColorIndex = (int)((packet->packedMasterTypeColorFlags >> 8) & 0xffu);
     row->playerNode = clonedNode;
     row->score = 0;
     row->lapCount = 0;
-    row->turretNode = zClass_Class::FindSubNodeByName(
-        clonedNode,
-        g_Player_NodeName_Turret
-    );
-    row->gunNode = zClass_Class::FindSubNodeByName(
-        clonedNode,
-        "gun"
-    );
+    row->turretNode = zClass_Class::FindSubNodeByName(clonedNode, g_Player_NodeName_Turret);
+    row->gunNode = zClass_Class::FindSubNodeByName(clonedNode, "gun");
     row->saveState = (GameNetPlayerSaveState *)saveState;
 
     if (zNetwork::GetPlayerNameByKey(senderPlayerId, row->displayName, sizeof(row->displayName)) !=
         0) {
-        HudUi::ShowTopMessageLine(
-            row->displayName,
-            5.0f
-        );
+        HudUi::ShowTopMessageLine(row->displayName, 5.0f);
     }
-    HudUi::ShowTopMessageLine(
-        zLoc::GetMessageString(0x912),
-        5.0f
-    );
+    HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x912), 5.0f);
 
     HudUiPanel *const hudWidget = &row->hudWidget;
     hudWidget->SetText(row->displayName);
@@ -4346,30 +3701,21 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
     if (saveState != 0) {
         saveState->netPlayerRow = row;
         if (row->playerNode->listCountA == 0) {
-            zClass_Class::AddChild(
-                g_Player_RuntimeDiScene,
-                row->playerNode
-            );
+            zClass_Class::AddChild(g_Player_RuntimeDiScene, row->playerNode);
         }
-        zClass_Class::gwNodeSetActive(
-            row->playerNode,
-            1
-        );
+        zClass_Class::gwNodeSetActive(row->playerNode, 1);
     }
 
     RefreshPlayerListMenu(row);
-    ReassignPlayerColorsAndRefreshRows(
-        0,
-        0
-    );
+    ReassignPlayerColorsAndRefreshRows(0, 0);
 
     if (zNetwork::IsHost() != 0) {
-        SendPkt09_PlayerScoreboardSnapshot();
+        SendPkt09PlayerScoreboardSnapshot();
         zDEClient::DispatchFeatureEventTemplates(
-            HostSendPkt0F_CraterFeature,
-            HostSendPkt10_QSandFeature
+            HostSendPkt0FCraterFeature,
+            HostSendPkt10QSandFeature
         );
-        SendAllPkt13_EffectAnimActivationRecords();
+        SendAllPkt13EffectAnimActivationRecords();
         Pickup::ReconcilePrimaryAndNetworkCopySpawnLists();
 
         HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
@@ -4378,16 +3724,13 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
             if (g_HudTimerPanelNetState.startGateTriggered != 0) {
                 timerState.ClearTailFlagsLocal();
             }
-            SendPkt0D_HudTimerPanelState(&timerState);
+            SendPkt0DHudTimerPanelState(&timerState);
         } else {
-            SendPkt0C_HudTimerStatusBits(&timerState);
+            SendPkt0CHudTimerStatusBits(&timerState);
         }
     }
 
-    ApplyPkt06_PlayerStateSnapshotToRow(
-        row,
-        packet
-    );
+    ApplyPkt06PlayerStateSnapshotToRow(row, packet);
     return 1;
 }
 
@@ -4395,7 +3738,7 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
  * Purpose: Apply a replicated player-state snapshot packet to an existing
  * remote-player row and its save-state storage.
  */
-int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
+int __fastcall ApplyPkt06PlayerStateSnapshotToRow(
     GameNetPlayerRow *row,
     NetPkt06_PlayerStateSnapshot *packet
 ) {
@@ -4421,11 +3764,7 @@ int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
 
     const int masterType = (int)(packedFlags & 0xffu);
     if (masterType != masterModalData->masterType) {
-        Player::ApplyMasterTypeTransition(
-            saveState,
-            masterType,
-            0
-        );
+        Player::ApplyMasterTypeTransition(saveState, masterType, 0);
     }
 
     playerState->netReceivedPos = packet->worldPos;
@@ -4507,10 +3846,7 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
     }
 
     zVec3 projectedPoint;
-    const int clipped = zMath::ProjectPointAndClampToScreenClip(
-        &labelWorldPos,
-        &projectedPoint
-    );
+    const int clipped = zMath::ProjectPointAndClampToScreenClip(&labelWorldPos, &projectedPoint);
     int screenX;
     int screenY;
     if (zOpt::GetReplicateMode() != 0) {
@@ -4532,10 +3868,7 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
         return 0;
     }
 
-    hudWidget->SetPos(
-        screenX,
-        screenY
-    );
+    hudWidget->SetPos(screenX, screenY);
     hudWidget->SetVisible(1);
     return 1;
 }
@@ -4551,7 +3884,7 @@ int __cdecl ReassignPlayerColorsAndRefreshRows(
 ) {
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
     while (row != 0) {
-        const int colorIndex = zNetwork_GetPlayerColorIndexByKey(row->playerKey);
+        const int colorIndex = zNetworkGetPlayerColorIndexByKey(row->playerKey);
         row->playerColorIndex = colorIndex;
 
         const unsigned int color = g_GameNetPlayerRowStyleColors_00RRGGBB[colorIndex];
@@ -4572,7 +3905,7 @@ int __cdecl ReassignPlayerColorsAndRefreshRows(
  * Purpose: Handle the remote-player remove packet by retiring the player's
  * runtime state, unlinking the HUD row, and deleting the player row.
  */
-int __fastcall HandlePkt03_RemoveRemotePlayer(
+int __fastcall HandlePkt03RemoveRemotePlayer(
     int senderPlayerId,
     zNetworkPacketHeader *
 ) {
@@ -4591,16 +3924,8 @@ int __fastcall HandlePkt03_RemoveRemotePlayer(
     }
 
     char message[0x80] = {0};
-    zLoc::FormatMessage(
-        message,
-        sizeof(message),
-        0x913,
-        row->displayName
-    );
-    HudUi::ShowTopMessageLine(
-        message,
-        5.0f
-    );
+    zLoc::FormatMessage(message, sizeof(message), 0x913, row->displayName);
+    HudUi::ShowTopMessageLine(message, 5.0f);
     HudUi::RemoveScoreboardEntryRow(row);
     HudUiPanel *const hudWidget = &row->hudWidget;
     hudWidget->SetVisible(0);
@@ -4643,7 +3968,7 @@ int __fastcall HandlePkt03_RemoveRemotePlayer(
 /**
  * Purpose: Build, send, and locally dispatch a packet-08 player kill event.
  */
-void __fastcall SendPkt08_PlayerKillEvent(
+void __fastcall SendPkt08PlayerKillEvent(
     zUtil_SaveGameState *saveState,
     short killMethodOrOptCatalogEntryId
 ) {
@@ -4655,22 +3980,19 @@ void __fastcall SendPkt08_PlayerKillEvent(
     NetPkt08_PlayerKillEvent packet;
     packet.header.packetType = 0x08;
     packet.header.packetSizeBytes = sizeof(NetPkt08_PlayerKillEvent);
-    packet.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet.killMethodOrOptCatalogEntryId = killMethodOrOptCatalogEntryId;
     packet.targetPlayerKey = saveStateOrLocal->netPlayerRow->playerKey;
 
-    zNetwork_SendPacketReliable(&packet.header);
-    HandlePkt08_PlayerKillEvent(
-        zNetwork_GetLocalPlayerKey(),
-        &packet
-    );
+    zNetworkSendPacketReliable(&packet.header);
+    HandlePkt08PlayerKillEvent(zNetworkGetLocalPlayerKey(), &packet);
 }
 
 /**
  * Purpose: Apply an incoming packet-08 player kill event and host-side
  * scoreboard update.
  */
-int __fastcall HandlePkt08_PlayerKillEvent(
+int __fastcall HandlePkt08PlayerKillEvent(
     int localPlayerKey,
     NetPkt08_PlayerKillEvent *packet
 ) {
@@ -4686,11 +4008,7 @@ int __fastcall HandlePkt08_PlayerKillEvent(
         killEntry = OptCatalog::FindEntryById(killEntryId);
     }
 
-    ShowPlayerKillMessage(
-        victimRow,
-        killEntry,
-        killerRow
-    );
+    ShowPlayerKillMessage(victimRow, killEntry, killerRow);
 
     if (zNetwork::IsHost() != 0) {
         const int score = victimRow->score;
@@ -4703,7 +4021,7 @@ int __fastcall HandlePkt08_PlayerKillEvent(
             }
         }
 
-        SendPkt09_PlayerScoreboardSnapshot();
+        SendPkt09PlayerScoreboardSnapshot();
     }
 
     return 1;
@@ -4712,7 +4030,7 @@ int __fastcall HandlePkt08_PlayerKillEvent(
 /**
  * Purpose: Publish the local player's packed lap count and lap time packet.
  */
-void __fastcall SendPkt0E_PlayerLapProgress(
+void __fastcall SendPkt0EPlayerLapProgress(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -4720,7 +4038,7 @@ void __fastcall SendPkt0E_PlayerLapProgress(
     NetPkt0E_PlayerLapProgress packet;
     packet.header.packetType = 0x0e;
     packet.header.packetSizeBytes = sizeof(NetPkt0E_PlayerLapProgress);
-    packet.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet.lapCountPacked = (short)(playerState->lapCount);
     packet.reserved_0a = 0;
     packet.lapTimeSec = playerState->lapTimeSec;
@@ -4728,12 +4046,9 @@ void __fastcall SendPkt0E_PlayerLapProgress(
     if (zNetwork::IsHost() != 0) {
         saveState->netPlayerRow->lapCount = playerState->lapCount;
         saveState->netPlayerRow->lapTimeSec = playerState->lapTimeSec;
-        HandlePkt0E_PlayerLapProgress(
-            packet.header.payloadDword0,
-            &packet
-        );
+        HandlePkt0EPlayerLapProgress(packet.header.payloadDword0, &packet);
     } else {
-        zNetwork_SendPacketReliable(&packet.header);
+        zNetworkSendPacketReliable(&packet.header);
     }
 }
 
@@ -4741,7 +4056,7 @@ void __fastcall SendPkt0E_PlayerLapProgress(
  * Purpose: Apply a host-side player lap-progress packet and refresh race HUD
  * state when the lap target is reached.
  */
-int __fastcall HandlePkt0E_PlayerLapProgress(
+int __fastcall HandlePkt0EPlayerLapProgress(
     int senderPlayerId,
     NetPkt0E_PlayerLapProgress *packet
 ) {
@@ -4757,7 +4072,7 @@ int __fastcall HandlePkt0E_PlayerLapProgress(
 
     row->lapCount = packet->lapCountPacked;
     row->lapTimeSec = packet->lapTimeSec;
-    SendPkt09_PlayerScoreboardSnapshot();
+    SendPkt09PlayerScoreboardSnapshot();
 
     if (row->lapCount >= g_HudSensorTracker.runtimeGoalValue) {
         HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
@@ -4766,7 +4081,7 @@ int __fastcall HandlePkt0E_PlayerLapProgress(
             timerState.raceFinishCountdownTriggered = 1;
         }
 
-        SendPkt0D_HudTimerPanelState(&timerState);
+        SendPkt0DHudTimerPanelState(&timerState);
     }
 
     return 1;
@@ -4798,7 +4113,7 @@ int __cdecl AreAllPlayersAtLapTarget() {
 /**
  * Purpose: Apply the host HUD timer panel state packet to local timer state.
  */
-int __fastcall HandlePkt0D_HudTimerPanelState(
+int __fastcall HandlePkt0DHudTimerPanelState(
     int,
     NetPkt0D_HudTimerPanelState *packet
 ) {
@@ -4811,17 +4126,14 @@ int __fastcall HandlePkt0D_HudTimerPanelState(
         secondsStep = 1.0f;
     }
 
-    HudUiTimerPanel::SetSeconds(
-        g_HudTimerPanelNetState.timerSeconds,
-        secondsStep
-    );
+    HudUiTimerPanel::SetSeconds(g_HudTimerPanelNetState.timerSeconds, secondsStep);
 
     if (g_HudTimerPanelNetState.startGateTriggered == 0 && (statusBits & 8) != 0) {
         g_HudTimerPanelNetState.startGateTriggered = 1;
     }
 
     if ((statusBits & 0x20) != 0) {
-        zEffectAnim::SetVelocity_Thunk(
+        zEffectAnim::SetVelocityThunk(
             /* Retail literal 0x4dcfd4 names the replicated start-countdown
                effect animation; data ownership remains blocked outside this
                source slice. */
@@ -4840,10 +4152,7 @@ int __fastcall HandlePkt0D_HudTimerPanelState(
 
     g_HudTimerPanelNetState.timeWarningShown = statusBits & 2;
     if (g_HudTimerPanelNetState.timeWarningShown != 0) {
-        g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_mpExitDialogState,
-            0
-        );
+        g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_mpExitDialogState, 0);
     }
 
     return 1;
@@ -4852,14 +4161,14 @@ int __fastcall HandlePkt0D_HudTimerPanelState(
 /**
  * Purpose: Send and locally apply the host HUD timer panel state packet.
  */
-void __fastcall SendPkt0D_HudTimerPanelState(
+void __fastcall SendPkt0DHudTimerPanelState(
     HudTimerPanelNetState *timerState
 ) {
     if (zNetwork::IsHost() == 0) {
         return;
     }
 
-    g_NetPkt0D_HudTimerPanelStateBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt0D_HudTimerPanelStateBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt0D_HudTimerPanelStateBuf.seconds = HudUiTimerPanel::GetSeconds();
 
     short statusBits = 0;
@@ -4880,8 +4189,8 @@ void __fastcall SendPkt0D_HudTimerPanelState(
     }
 
     g_NetPkt0D_HudTimerPanelStateBuf.hudTimerFlagsPacked = statusBits;
-    zNetwork_SendPacketReliable(&g_NetPkt0D_HudTimerPanelStateBuf.header);
-    HandlePkt0D_HudTimerPanelState(
+    zNetworkSendPacketReliable(&g_NetPkt0D_HudTimerPanelStateBuf.header);
+    HandlePkt0DHudTimerPanelState(
         g_NetPkt0D_HudTimerPanelStateBuf.header.payloadDword0,
         &g_NetPkt0D_HudTimerPanelStateBuf
     );
@@ -4890,7 +4199,7 @@ void __fastcall SendPkt0D_HudTimerPanelState(
 /**
  * Purpose: Send and locally apply replicated HUD timer status bits.
  */
-int __fastcall SendPkt0C_HudTimerStatusBits(
+int __fastcall SendPkt0CHudTimerStatusBits(
     HudTimerPanelNetState *timerState
 ) {
     const int result = zNetwork::IsHost();
@@ -4898,7 +4207,7 @@ int __fastcall SendPkt0C_HudTimerStatusBits(
         return result;
     }
 
-    g_NetPkt0C_HudTimerStatusBitsBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt0C_HudTimerStatusBitsBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt0C_HudTimerStatusBitsBuf.timerSeconds = HudUiTimerPanel::GetSeconds();
 
     short statusBits = 0;
@@ -4914,8 +4223,8 @@ int __fastcall SendPkt0C_HudTimerStatusBits(
 
     g_NetPkt0C_HudTimerStatusBitsBuf.statusBitsPackedHiWord = statusBits;
     g_HudTimerPanelNetState.statusBitsResendDeadline = g_Time_AccumulatedTimeSec + 30.0f;
-    zNetwork_SendPacketReliable(&g_NetPkt0C_HudTimerStatusBitsBuf.header);
-    return HandlePkt0C_HudTimerStatusBits(
+    zNetworkSendPacketReliable(&g_NetPkt0C_HudTimerStatusBitsBuf.header);
+    return HandlePkt0CHudTimerStatusBits(
         g_NetPkt0C_HudTimerStatusBitsBuf.header.payloadDword0,
         &g_NetPkt0C_HudTimerStatusBitsBuf
     );
@@ -4924,7 +4233,7 @@ int __fastcall SendPkt0C_HudTimerStatusBits(
 /**
  * Purpose: Apply replicated HUD timer seconds and warning status bits.
  */
-int __fastcall HandlePkt0C_HudTimerStatusBits(
+int __fastcall HandlePkt0CHudTimerStatusBits(
     int,
     NetPkt0C_HudTimerStatusBits *packet
 ) {
@@ -4937,38 +4246,21 @@ int __fastcall HandlePkt0C_HudTimerStatusBits(
         secondsStep = 1.0f;
     }
 
-    HudUiTimerPanel::SetSeconds(
-        g_HudTimerPanelNetState.timerSeconds,
-        secondsStep
-    );
+    HudUiTimerPanel::SetSeconds(g_HudTimerPanelNetState.timerSeconds, secondsStep);
 
     if (g_HudSensorTracker.raceCheckpointMode == 0 &&
         g_HudTimerPanelNetState.oneMinuteWarningShown == 0 && (statusBits & 4) != 0) {
         g_HudTimerPanelNetState.oneMinuteWarningShown = 1;
-        HudUi::ShowTopMessageLine(
-            zLoc::GetMessageString(0x914),
-            5.0f
-        );
+        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x914), 5.0f);
         if (zNetwork::IsHost() != 0) {
-            HostUpdateSessionDescStatusFields(
-                0x100,
-                0,
-                0,
-                0
-            );
+            HostUpdateSessionDescStatusFields(0x100, 0, 0, 0);
         }
     }
 
     if (g_HudTimerPanelNetState.timeWarningShown == 0 && (statusBits & 2) != 0) {
-        HudUi::ShowTopMessageLine(
-            zLoc::GetMessageString(0x915),
-            5.0f
-        );
+        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x915), 5.0f);
         g_HudTimerPanelNetState.timeWarningShown = 1;
-        g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_mpExitDialogState,
-            0
-        );
+        g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_mpExitDialogState, 0);
     }
 
     return 1;
@@ -4976,10 +4268,10 @@ int __fastcall HandlePkt0C_HudTimerStatusBits(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-send-pkt09-player-scoreboard-snapshot
- * @recoil-artifact defines .text recoil:function:0x4334f0: GameNet::SendPkt09_PlayerScoreboardSnapshot.
+ * @recoil-artifact defines .text recoil:function:0x4334f0: GameNet::SendPkt09PlayerScoreboardSnapshot.
  * Purpose: Send the host's packed player score and lap snapshot to peers.
  */
-void __cdecl SendPkt09_PlayerScoreboardSnapshot() {
+void __cdecl SendPkt09PlayerScoreboardSnapshot() {
     if (zNetwork::IsHost() == 0) {
         return;
     }
@@ -4989,15 +4281,11 @@ void __cdecl SendPkt09_PlayerScoreboardSnapshot() {
                               (size_t)(entryCount) * sizeof(NetPkt09_PlayerScoreboardEntry);
     NetPkt09_PlayerScoreboardSnapshot *const packet =
         (NetPkt09_PlayerScoreboardSnapshot *)(malloc(packetSize));
-    memset(
-        packet,
-        0,
-        packetSize
-    );
+    memset(packet, 0, packetSize);
 
     packet->header.packetType = 0x09;
     packet->header.packetSizeBytes = (unsigned short)(packetSize);
-    packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet->entryCount = entryCount;
 
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
@@ -5010,12 +4298,9 @@ void __cdecl SendPkt09_PlayerScoreboardSnapshot() {
         ++entry;
     }
 
-    zNetwork_SendPacketReliable(&packet->header);
+    zNetworkSendPacketReliable(&packet->header);
     if (zNetwork::IsHost() != 0) {
-        HandlePkt09_PlayerScoreboardSnapshot(
-            zNetwork_GetLocalPlayerKey(),
-            packet
-        );
+        HandlePkt09PlayerScoreboardSnapshot(zNetworkGetLocalPlayerKey(), packet);
     }
 
     free(packet);
@@ -5024,7 +4309,7 @@ void __cdecl SendPkt09_PlayerScoreboardSnapshot() {
 /**
  * Purpose: Apply packed player score and lap rows and trigger HUD warnings.
  */
-int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
+int __fastcall HandlePkt09PlayerScoreboardSnapshot(
     int,
     NetPkt09_PlayerScoreboardSnapshot *packet
 ) {
@@ -5054,7 +4339,7 @@ int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
                 HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
                 if (timerState.timeWarningShown == 0) {
                     timerState.timeWarningShown = 1;
-                    SendPkt0C_HudTimerStatusBits(&timerState);
+                    SendPkt0CHudTimerStatusBits(&timerState);
                 }
             }
         }
@@ -5063,24 +4348,11 @@ int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
     if (g_HudSensorTracker.raceCheckpointMode != 0 && g_GameNetOneLapLeftMessageShown == 0 &&
         oneLapLeftRow != 0) {
         char message[0x80];
-        zLoc::FormatMessage(
-            message,
-            sizeof(message),
-            0x918,
-            oneLapLeftRow->displayName
-        );
-        HudUi::ShowTopMessageLine(
-            message,
-            5.0f
-        );
+        zLoc::FormatMessage(message, sizeof(message), 0x918, oneLapLeftRow->displayName);
+        HudUi::ShowTopMessageLine(message, 5.0f);
         g_GameNetOneLapLeftMessageShown = 1;
         if (zNetwork::IsHost() != 0) {
-            HostUpdateSessionDescStatusFields(
-                0x100,
-                0,
-                0,
-                0
-            );
+            HostUpdateSessionDescStatusFields(0x100, 0, 0, 0);
         }
     }
 
@@ -5132,38 +4404,30 @@ int __cdecl GetStatusBitNameTags() {
 /**
  * Purpose: Build and send a packet-0B chat message for the local player.
  */
-void __fastcall SendPkt0B_ChatMessage(
+void __fastcall SendPkt0BChatMessage(
     const char *message
 ) {
     const int messageLength = (int)(strlen(message));
     const int packetSize = messageLength + 12;
     NetPkt0B_ChatMessage *const packet = (NetPkt0B_ChatMessage *)(malloc((size_t)(packetSize)));
-    memset(
-        packet,
-        0,
-        (size_t)(packetSize)
-    );
+    memset(packet, 0, (size_t)(packetSize));
 
     packet->header.packetType = 0x0b;
     packet->header.packetSizeBytes = (short)(packetSize);
-    packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet->messageLength = (short)(messageLength);
     if (messageLength > 0) {
-        memcpy(
-            packet->message,
-            message,
-            (size_t)(messageLength)
-        );
+        memcpy(packet->message, message, (size_t)(messageLength));
     }
 
-    zNetwork_SendPacketReliable(&packet->header);
+    zNetworkSendPacketReliable(&packet->header);
     free(packet);
 }
 
 /**
  * Purpose: Copy an incoming chat payload into a bounded local string and show it.
  */
-int __fastcall HandlePkt0B_ChatMessage(
+int __fastcall HandlePkt0BChatMessage(
     int,
     NetPkt0B_ChatMessage *packet
 ) {
@@ -5174,18 +4438,11 @@ int __fastcall HandlePkt0B_ChatMessage(
     }
 
     if (messageLength > 0) {
-        memcpy(
-            message,
-            packet->message,
-            (size_t)(messageLength)
-        );
+        memcpy(message, packet->message, (size_t)(messageLength));
     }
 
     message[messageLength] = '\0';
-    HudUi::ShowChatLine(
-        message,
-        5.0f
-    );
+    HudUi::ShowChatLine(message, 5.0f);
     return 1;
 }
 
@@ -5223,7 +4480,7 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
         entry.rotation = playerState->vehicleRotationAngles;
         PickupSpawnDef *const pickupSpawn = Pickup::SpawnFromParsedZrdEntry(&entry);
         if (pickupSpawn != 0) {
-            Pickup::SendPkt11_CreateDelta(pickupSpawn);
+            Pickup::SendPkt11CreateDelta(pickupSpawn);
         }
 
         selectedSpawn = 0;
@@ -5231,10 +4488,7 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
         GameNetPlayerSaveState *nearestSaveState = 0;
         while (spawnPoint != 0) {
             const float nearestDistanceSq =
-                GetNearestOtherPlayerDistanceToSpawnPoint(
-                    spawnPoint,
-                    &nearestSaveState
-                );
+                GetNearestOtherPlayerDistanceToSpawnPoint(spawnPoint, &nearestSaveState);
             if (nearestDistanceSq > bestNearestDistanceSq) {
                 bestNearestDistanceSq = nearestDistanceSq;
                 selectedSpawn = spawnPoint;
@@ -5246,19 +4500,12 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
     if (selectedSpawn != 0) {
         const double kDegreesToRadians = 0.017453292519943295;
         const float yawRad = (float)(selectedSpawn->yawDegrees * kDegreesToRadians);
-        Player::SetWorldPoseAndRestartAnchor(
-            saveState,
-            &selectedSpawn->position,
-            yawRad
-        );
+        Player::SetWorldPoseAndRestartAnchor(saveState, &selectedSpawn->position, yawRad);
     }
 
     if (saveState->primaryModalState->masterModalData->masterType != 3 &&
         g_HudSensorTracker.raceCheckpointMode == 0) {
-        Player::TransitionToMasterTypeTrack(
-            saveState,
-            1
-        );
+        Player::TransitionToMasterTypeTrack(saveState, 1);
     }
 
     Player::ResetMouseControlStateAndRecenterCursor(saveState);
@@ -5285,10 +4532,7 @@ float __fastcall GetNearestOtherPlayerDistanceToSpawnPoint(
         GameNetPlayerSaveState *const saveState = row->saveState;
         if (saveState != localSaveState) {
             const float distanceSq =
-                zMath::Vec3DeltaLengthSq(
-                    &saveState->playerState->worldPos,
-                    &spawnPoint->position
-                );
+                zMath::Vec3DeltaLengthSq(&saveState->playerState->worldPos, &spawnPoint->position);
             if (distanceSq < nearestDistanceSq) {
                 nearestDistanceSq = distanceSq;
                 *outSaveState = saveState;
@@ -5322,15 +4566,8 @@ void GameNetPlayerRow::ApplyPlayerColorTint() {
         (float)((packedColor >> 8) & 0xff),
         (float)((packedColor >> 16) & 0xff),
     };
-    zClass_Object3D::gwObject3DSetColorAlpha(
-        primaryModalState->modalNode,
-        &color,
-        0.2f
-    );
-    zClass_Object3D::gwObject3DSetVisibleFlag(
-        primaryModalState->modalNode,
-        1
-    );
+    zClass_Object3D::gwObject3DSetColorAlpha(primaryModalState->modalNode, &color, 0.2f);
+    zClass_Object3D::gwObject3DSetVisibleFlag(primaryModalState->modalNode, 1);
 }
 
 namespace zDEClient_Crater {
@@ -5348,19 +4585,16 @@ int __fastcall Execute(
     if (eventTemplate->damageOwnerNode != saveState->playerState->rootNode) {
         return 0;
     }
-    g_NetPkt0F_CraterEventRelayBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt0F_CraterEventRelayBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt0F_CraterEventRelayBuf.craterTypeId =
         zModel_MatlSlot::IndexFromPtrOrMinus1(eventTemplate->craterMaterialSlot);
     g_NetPkt0F_CraterEventRelayBuf.center = eventTemplate->center;
     g_NetPkt0F_CraterEventRelayBuf.radius = eventTemplate->radius;
     if (zNetwork::IsHost() != 0) {
-        NetRelayCallback(
-            zNetwork_GetLocalPlayerKey(),
-            &g_NetPkt0F_CraterEventRelayBuf
-        );
+        NetRelayCallback(zNetworkGetLocalPlayerKey(), &g_NetPkt0F_CraterEventRelayBuf);
         return 0;
     }
-    zNetwork_SendPacketReliable(&g_NetPkt0F_CraterEventRelayBuf.header);
+    zNetworkSendPacketReliable(&g_NetPkt0F_CraterEventRelayBuf.header);
     return 0;
 }
 
@@ -5378,9 +4612,9 @@ int __fastcall NetRelayCallback(
         eventTemplate.center = packet->center;
         eventTemplate.radius = -packet->radius;
         if (InstanceEventMaybeRelay(&eventTemplate) == 0) {
-            packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+            packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
             packet->eventFlags |= 0x80u;
-            zNetwork_SendPacketReliable(&packet->header);
+            zNetworkSendPacketReliable(&packet->header);
         }
         return 1;
     }
@@ -5398,20 +4632,20 @@ namespace GameNet {
 /**
  * Purpose: Relay a host-authored crater feature event to network peers.
  */
-int __fastcall HostSendPkt0F_CraterFeature(
+int __fastcall HostSendPkt0FCraterFeature(
     zDEClient_CraterEventTemplate *eventTemplate
 ) {
     if (zNetwork::IsHost() == 0) {
         return 0;
     }
 
-    g_NetPkt0F_CraterEventSendBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt0F_CraterEventSendBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt0F_CraterEventSendBuf.craterTypeId =
         zModel_MatlSlot::IndexFromPtrOrMinus1(eventTemplate->craterMaterialSlot);
     g_NetPkt0F_CraterEventSendBuf.center = eventTemplate->center;
     g_NetPkt0F_CraterEventSendBuf.eventFlags |= 0x80u;
     g_NetPkt0F_CraterEventSendBuf.radius = eventTemplate->radius;
-    zNetwork_SendPacketReliable(&g_NetPkt0F_CraterEventSendBuf.header);
+    zNetworkSendPacketReliable(&g_NetPkt0F_CraterEventSendBuf.header);
     return 1;
 }
 
@@ -5419,7 +4653,7 @@ int __fastcall HostSendPkt0F_CraterFeature(
  * Purpose: relay local quicksand feature events through packet 0x10 after
  * validating local damage ownership.
  */
-int __fastcall SendPkt10_QSandEvent(
+int __fastcall SendPkt10QSandEvent(
     zDEClient_QSandEventTemplate *eventTemplate
 ) {
     if (eventTemplate->radius <= 0.0f) {
@@ -5432,20 +4666,20 @@ int __fastcall SendPkt10_QSandEvent(
         return 0;
     }
 
-    ::g_NetPkt10_QSandEventRelayBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    ::g_NetPkt10_QSandEventRelayBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     ::g_NetPkt10_QSandEventRelayBuf.center = eventTemplate->center;
     ::g_NetPkt10_QSandEventRelayBuf.radius = eventTemplate->radius;
     ::g_NetPkt10_QSandEventRelayBuf.eventFlags &= 0xffff0000u;
 
     if (zNetwork::IsHost() != 0) {
         zDEClient_QSand::NetRelayCallback(
-            zNetwork_GetLocalPlayerKey(),
+            zNetworkGetLocalPlayerKey(),
             &::g_NetPkt10_QSandEventRelayBuf
         );
         return 0;
     }
 
-    zNetwork_SendPacketReliable(&::g_NetPkt10_QSandEventRelayBuf.header);
+    zNetworkSendPacketReliable(&::g_NetPkt10_QSandEventRelayBuf.header);
     return 0;
 }
 } // namespace GameNet
@@ -5464,9 +4698,9 @@ int __fastcall NetRelayCallback(
         eventTemplate.center = packet->center;
         eventTemplate.radius = -packet->radius;
         if (InstanceEventMaybeRelay(&eventTemplate) == 0) {
-            packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+            packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
             packet->eventFlags |= 0x80u;
-            zNetwork_SendPacketReliable(&packet->header);
+            zNetworkSendPacketReliable(&packet->header);
         }
         return 1;
     }
@@ -5483,18 +4717,18 @@ namespace GameNet {
 /**
  * Purpose: Relay a host-authored quicksand feature event to network peers.
  */
-int __fastcall HostSendPkt10_QSandFeature(
+int __fastcall HostSendPkt10QSandFeature(
     zDEClient_QSandEventTemplate *eventTemplate
 ) {
     if (zNetwork::IsHost() == 0) {
         return 0;
     }
 
-    g_NetPkt10_QSandEventSendBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt10_QSandEventSendBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt10_QSandEventSendBuf.center = eventTemplate->center;
     g_NetPkt10_QSandEventSendBuf.eventFlags |= 0x80u;
     g_NetPkt10_QSandEventSendBuf.radius = eventTemplate->radius;
-    zNetwork_SendPacketReliable(&g_NetPkt10_QSandEventSendBuf.header);
+    zNetworkSendPacketReliable(&g_NetPkt10_QSandEventSendBuf.header);
     return 1;
 }
 } // namespace GameNet
@@ -5503,43 +4737,39 @@ namespace Pickup {
 /**
  * Purpose: Sends the flag-2 state update for a pickup spawn.
  */
-int __fastcall SendPkt11_Flag2Delta(
+int __fastcall SendPkt11Flag2Delta(
     PickupSpawnDef *spawn
 ) {
-    g_PickupPkt11Flag2Delta.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_PickupPkt11Flag2Delta.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_PickupPkt11Flag2Delta.flags = 2;
     g_PickupPkt11Flag2Delta.pickupId = spawn->pickupId;
-    return zNetwork_SendPacketReliable(&g_PickupPkt11Flag2Delta.header);
+    return zNetworkSendPacketReliable(&g_PickupPkt11Flag2Delta.header);
 }
 
 /**
  * Purpose: Sends the flag-8 state update for a pickup spawn.
  */
-int __fastcall SendPkt11_Flag8Delta(
+int __fastcall SendPkt11Flag8Delta(
     PickupSpawnDef *spawn
 ) {
-    g_PickupPkt11Flag8Delta.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_PickupPkt11Flag8Delta.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_PickupPkt11Flag8Delta.flags = 8;
     g_PickupPkt11Flag8Delta.pickupId = spawn->pickupId;
-    return zNetwork_SendPacketReliable(&g_PickupPkt11Flag8Delta.header);
+    return zNetworkSendPacketReliable(&g_PickupPkt11Flag8Delta.header);
 }
 
 /**
  * Purpose: Builds and sends the network create-state packet for a pickup spawn.
  */
-void __fastcall SendPkt11_CreateDelta(
+void __fastcall SendPkt11CreateDelta(
     PickupSpawnDef *spawn
 ) {
     PickupPkt11CreateDelta *const packet =
         (PickupPkt11CreateDelta *)(malloc(sizeof(PickupPkt11CreateDelta)));
-    memset(
-        packet,
-        0,
-        sizeof(PickupPkt11CreateDelta)
-    );
+    memset(packet, 0, sizeof(PickupPkt11CreateDelta));
     packet->header.packetType = 0x11;
     packet->header.packetSizeBytes = sizeof(PickupPkt11CreateDelta);
-    packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet->flags = 1;
     packet->pickupId = spawn->pickupId;
     packet->typeKeyIndex =
@@ -5548,29 +4778,22 @@ void __fastcall SendPkt11_CreateDelta(
     packet->position = spawn->position;
     packet->rotation = spawn->rotation;
     packet->respawnDelay = spawn->respawnDelay;
-    zNetwork_SendPacketReliable(&packet->header);
+    zNetworkSendPacketReliable(&packet->header);
     free(packet);
 }
 
 /**
  * Purpose: Applies an incoming pickup creation or state-change packet.
  */
-int __fastcall HandlePkt11_SpawnDelta(
+int __fastcall HandlePkt11SpawnDelta(
     int,
     PickupPkt11CreateDelta *packet
 ) {
-    PickupSpawnDef *const spawn = FindSpawnByPickupId(
-        packet->pickupId,
-        &g_PickupSpawnList_Primary
-    );
+    PickupSpawnDef *const spawn = FindSpawnByPickupId(packet->pickupId, &g_PickupSpawnList_Primary);
     const unsigned int flags = packet->flags;
     if ((flags & 1u) != 0 && spawn == 0) {
         PickupParsedZrdEntry entry;
-        memset(
-            &entry,
-            0,
-            sizeof(entry)
-        );
+        memset(&entry, 0, sizeof(entry));
         entry.typeDesc = PickupType::GetByIndex((int)(packet->typeKeyIndex));
         entry.amount = packet->amount;
         entry.position = packet->position;
@@ -5587,28 +4810,15 @@ int __fastcall HandlePkt11_SpawnDelta(
         return 1;
     }
     if ((flags & 2u) != 0) {
-        PickupSpawnList::RemoveAndFreeNode(
-            spawn,
-            &g_PickupSpawnList_Primary
-        );
+        PickupSpawnList::RemoveAndFreeNode(spawn, &g_PickupSpawnList_Primary);
         return 1;
     }
     if ((flags & 8u) != 0) {
         zClass_NodePartial *const pickupObj = spawn->pickupObj;
         zClass_Node::ClearPickupFlagsRecursive(pickupObj);
-        zClass_Class::gwNodeSetRaycastable(
-            pickupObj,
-            0
-        );
-        zClass_Class::gwNodeSetPickable(
-            pickupObj,
-            0
-        );
-        RemoveObject(
-            0,
-            pickupObj,
-            0
-        );
+        zClass_Class::gwNodeSetRaycastable(pickupObj, 0);
+        zClass_Class::gwNodeSetPickable(pickupObj, 0);
+        RemoveObject(0, pickupObj, 0);
     }
     return 1;
 }
@@ -5616,30 +4826,27 @@ int __fastcall HandlePkt11_SpawnDelta(
 /**
  * Purpose: Sends an airdrop pickup spawn and chute update to network peers.
  */
-void __fastcall SendPkt12_AirdropSpawnChuteRelay(
+void __fastcall SendPkt12AirdropSpawnChuteRelay(
     int pickupTypeIndex,
     zVec3 *spawnPos,
     int nextPickupId
 ) {
-    g_PickupPkt12AirdropSpawnChuteRelay.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_PickupPkt12AirdropSpawnChuteRelay.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_PickupPkt12AirdropSpawnChuteRelay.spawnPos = *spawnPos;
     g_PickupPkt12AirdropSpawnChuteRelay.pickupTypeIndex = (unsigned short)(pickupTypeIndex);
     g_PickupPkt12AirdropSpawnChuteRelay.nextPickupId = nextPickupId;
-    zNetwork_SendPacketReliable(&g_PickupPkt12AirdropSpawnChuteRelay.header);
+    zNetworkSendPacketReliable(&g_PickupPkt12AirdropSpawnChuteRelay.header);
 }
 
 /**
  * Purpose: Applies an incoming airdrop pickup spawn and next-id update.
  */
-int __fastcall HandlePkt12_AirdropSpawnChuteRelay(
+int __fastcall HandlePkt12AirdropSpawnChuteRelay(
     int,
     PickupPkt12AirdropSpawnChuteRelay *packet
 ) {
     SetNextPickupId(packet->nextPickupId);
-    SpawnWithAirdropChute(
-        (int)(packet->pickupTypeIndex),
-        &packet->spawnPos
-    );
+    SpawnWithAirdropChute((int)(packet->pickupTypeIndex), &packet->spawnPos);
     return 1;
 }
 } // namespace Pickup
@@ -5662,10 +4869,7 @@ int __fastcall AltGunDispatchAllocRuntimeGateCallback(
     }
     if (saveState == (zUtil_SaveGameState *)(g_GameStateOrMapTable)) {
         *saveStateSlot = (void *)(zVideo::ReturnSuccessStub());
-        GameNet::SendPkt07_AltGunDispatch(
-            (short)(ordinalIndex),
-            (unsigned int)(*saveStateSlot)
-        );
+        GameNet::SendPkt07_AltGunDispatch((short)(ordinalIndex), (unsigned int)(*saveStateSlot));
         *saveStateSlot = (void *)((unsigned int)(*saveStateSlot) | 0x01000000u);
         return 1;
     }
@@ -5690,11 +4894,11 @@ void __fastcall SendPkt07_AltGunDispatch(
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
-    g_NetPkt07_AltGunDispatchBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt07_AltGunDispatchBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt07_AltGunDispatchBuf.weaponId = weaponId;
     g_NetPkt07_AltGunDispatchBuf.dispatchFlags = dispatchFlags;
     g_NetPkt07_AltGunDispatchBuf.targetPos = playerState->storedTargetPos;
-    zNetwork_SendPacketReliable(&g_NetPkt07_AltGunDispatchBuf.header);
+    zNetworkSendPacketReliable(&g_NetPkt07_AltGunDispatchBuf.header);
 }
 
 /**
@@ -5719,10 +4923,7 @@ int __fastcall HandlePkt07_AltGunDispatch(
 
     PlayerGunFireController *const oldActiveAltGunController = playerState->activeAltGunController;
     playerState->activeAltGunController =
-        Player::FindAltGunFireControllerForWeaponId(
-            saveState,
-            (int)(packet->weaponId)
-        );
+        Player::FindAltGunFireControllerForWeaponId(saveState, (int)(packet->weaponId));
 
     OptCatalog::SetPendingSpawnTargetOverrides(
         &playerState->progressTargetCount,
@@ -5732,10 +4933,7 @@ int __fastcall HandlePkt07_AltGunDispatch(
 
     playerState->altGunDispatchFlags = 0;
     playerState->activeAltGunController = oldActiveAltGunController;
-    OptCatalog::SetPendingSpawnTargetOverrides(
-        0,
-        0
-    );
+    OptCatalog::SetPendingSpawnTargetOverrides(0, 0);
     return 1;
 }
 
@@ -5755,7 +4953,7 @@ namespace OptCatalog {
 /**
  * Purpose: Sends a network relay describing removal of a runtime catalog object.
  */
-void __fastcall SendPkt0A_RemoveRuntimeRelay(
+void __fastcall SendPkt0ARemoveRuntimeRelay(
     OptCatalogEntryDef *self,
     zVec3 *pointOrVec3,
     zClass_NodePartial *ownerNode
@@ -5771,7 +4969,7 @@ void __fastcall SendPkt0A_RemoveRuntimeRelay(
     zUtil_SaveGameState *const ownerSaveState =
         (zUtil_SaveGameState *)(ownerTrackContext->payload);
     g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header.payloadDword0 =
-        zNetwork_GetLocalPlayerKey();
+        zNetworkGetLocalPlayerKey();
     g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.optCatalogEntryId =
         (short)(self->ordinalIndex);
     if (pointOrVec3 != 0) {
@@ -5783,13 +4981,13 @@ void __fastcall SendPkt0A_RemoveRuntimeRelay(
     }
     g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.ownerPlayerKey =
         ownerSaveState->netPlayerRow->playerKey;
-    zNetwork_SendPacketReliable(&g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header);
+    zNetworkSendPacketReliable(&g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header);
 }
 
 /**
  * Purpose: Resolves and applies an incoming runtime-object removal relay.
  */
-int __fastcall HandlePkt0A_RemoveRuntimeRelay(
+int __fastcall HandlePkt0ARemoveRuntimeRelay(
     int,
     NetPkt0A_RemoveRuntimeRelay *packet
 ) {
@@ -5824,7 +5022,7 @@ namespace GameNet {
  * Purpose: Send a reliable pkt13 effect-animation activation record unless
  * replay echo suppression is active.
  */
-void __fastcall SendPkt13_EffectAnimActivationRecord(
+void __fastcall SendPkt13EffectAnimActivationRecord(
     zEffectAnimActivationRecord *record
 ) {
     if (g_GameNetSuppressPkt13ActivationEcho != 0) {
@@ -5834,22 +5032,18 @@ void __fastcall SendPkt13_EffectAnimActivationRecord(
     const int packedRecordSize = zEffect_Anim::GetActivationRecordPackedSize(record);
     const int packetSize = (int)(sizeof(zNetworkPacketHeader)) + packedRecordSize;
     zNetworkPacketHeader *const packet = (zNetworkPacketHeader *)(malloc((size_t)(packetSize)));
-    memset(
-        packet,
-        0,
-        (size_t)(packetSize)
-    );
+    memset(packet, 0, (size_t)(packetSize));
 
     packet->packetType = 0x13;
     packet->packetSizeBytes = (short)(packetSize);
-    packet->payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet->payloadDword0 = zNetworkGetLocalPlayerKey();
     memcpy(
         ((unsigned char *)(packet)) + sizeof(zNetworkPacketHeader),
         record,
         (size_t)(packedRecordSize)
     );
 
-    zNetwork_SendPacketReliable(packet);
+    zNetworkSendPacketReliable(packet);
     free(packet);
 }
 
@@ -5857,7 +5051,7 @@ void __fastcall SendPkt13_EffectAnimActivationRecord(
  * Purpose: Apply a new remote effect-animation activation record while
  * suppressing replay echo.
  */
-int __fastcall HandlePkt13_EffectAnimActivationRecord(
+int __fastcall HandlePkt13EffectAnimActivationRecord(
     int,
     zNetworkPacketHeader *packet
 ) {
@@ -5876,38 +5070,38 @@ int __fastcall HandlePkt13_EffectAnimActivationRecord(
  * Purpose: Broadcast every queued effect-animation activation record from the
  * host.
  */
-void __cdecl SendAllPkt13_EffectAnimActivationRecords() {
+void __cdecl SendAllPkt13EffectAnimActivationRecords() {
     if (zNetwork::IsHost() == 0) {
         return;
     }
 
     const int recordCount = zEffect_Anim::GetActivationRecordCount();
     for (int index = 0; index < recordCount; ++index) {
-        SendPkt13_EffectAnimActivationRecord(zEffect_Anim::GetActivationRecordAt(index));
+        SendPkt13EffectAnimActivationRecord(zEffect_Anim::GetActivationRecordAt(index));
     }
 }
 
 /**
  * Purpose: Send the reliable packet that synchronizes HUD timer and status flags.
  */
-int __fastcall SendPkt14_HudTimerAndFlagsSync(
+int __fastcall SendPkt14HudTimerAndFlagsSync(
     int eventCode,
     unsigned int statusFlags,
     int valueOrTime,
     int auxParam
 ) {
-    g_NetPkt14_HudTimerAndFlagsSyncBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt14_HudTimerAndFlagsSyncBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt14_HudTimerAndFlagsSyncBuf.valueOrTime = valueOrTime;
     g_NetPkt14_HudTimerAndFlagsSyncBuf.eventCode = (short)(eventCode);
     g_NetPkt14_HudTimerAndFlagsSyncBuf.auxParam = (short)(auxParam);
     g_NetPkt14_HudTimerAndFlagsSyncBuf.statusFlags = statusFlags;
-    return zNetwork_SendPacketReliable(&g_NetPkt14_HudTimerAndFlagsSyncBuf.header);
+    return zNetworkSendPacketReliable(&g_NetPkt14_HudTimerAndFlagsSyncBuf.header);
 }
 
 /**
  * Purpose: Receive the HUD timer/status sync packet and start the matching mission state.
  */
-int __fastcall HandlePkt14_HudTimerAndFlagsSync(
+int __fastcall HandlePkt14HudTimerAndFlagsSync(
     int senderPlayerId,
     NetPkt14_HudTimerAndFlagsSync *packet
 ) {
@@ -5920,23 +5114,14 @@ int __fastcall HandlePkt14_HudTimerAndFlagsSync(
         float seconds;
         int raw;
     } timerSeconds = {(float)(packet->valueOrTime) * 60.0f};
-    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(
-        timerSeconds.raw,
-        packet->auxParam
-    );
+    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.raw, packet->auxParam);
 
     CZRecoilFrame *const mainWnd = (CZRecoilFrame *)((unsigned int)(g_RecoilApp.GetMainWnd()));
-    g_HudSensorTracker.InitMissionIdAndFlags(
-        packet->eventCode + 6,
-        mainWnd->m_useArchiveBanks
-    );
+    g_HudSensorTracker.InitMissionIdAndFlags(packet->eventCode + 6, mainWnd->m_useArchiveBanks);
     SetStatusBitsFromFlags(packet->statusFlags);
 
     g_RecoilApp.m_missionFmvState.m_missionId = 0;
-    g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_introFmvState,
-        0
-    );
+    g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_introFmvState, 0);
 
     if (zNetwork::IsHost() != 0) {
         HostUpdateSessionDescStatusFields(
@@ -5964,7 +5149,7 @@ int __fastcall HostUpdateSessionDescStatusFields(
     }
 
     zNetworkSessionDescStatusFields statusFields;
-    if (zNetwork_ExtractStatusFieldsFromSessionDesc(&statusFields) == 0) {
+    if (zNetworkExtractStatusFieldsFromSessionDesc(&statusFields) == 0) {
         return 0;
     }
 
@@ -5972,7 +5157,7 @@ int __fastcall HostUpdateSessionDescStatusFields(
     statusFields.eventCode = eventCode;
     statusFields.statusFlags = statusFlags;
     statusFields.auxParam = auxParam;
-    return zNetwork_ApplyStatusFieldsToSessionDesc(&statusFields);
+    return zNetworkApplyStatusFieldsToSessionDesc(&statusFields);
 }
 } // namespace GameNet
 
@@ -5986,17 +5171,9 @@ GameNetPlayerRow *__fastcall AppendNewRow(
     int zeroInitializeRow
 ) {
     GameNetPlayerRow *const row = (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
-    row->hudWidget.ConstructorDefault(
-        0,
-        0,
-        0
-    );
+    row->hudWidget.ConstructorDefault(0, 0, 0);
     if (zeroInitializeRow != 0) {
-        memset(
-            row,
-            0,
-            sizeof(GameNetPlayerRow)
-        );
+        memset(row, 0, sizeof(GameNetPlayerRow));
     }
 
     row->next = 0;
@@ -6719,11 +5896,7 @@ RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule() {
         }
 
         ::operator delete(m_stateQueue.m_chunkBaseList);
-        memset(
-            &m_stateQueue,
-            0,
-            sizeof(m_stateQueue)
-        );
+        memset(&m_stateQueue, 0, sizeof(m_stateQueue));
     }
 #endif
 }
@@ -6784,10 +5957,7 @@ inline void PrintEngineInitZeroStatus(
     const char *format,
     int result
 ) {
-    printf(
-        format,
-        result == 0 ? g_RecoilApp_StartupStatusPassed : g_RecoilApp_StartupStatusFailed
-    );
+    printf(format, result == 0 ? g_RecoilApp_StartupStatusPassed : g_RecoilApp_StartupStatusFailed);
 }
 
 /**
@@ -6802,10 +5972,7 @@ inline void PrintEngineInitNonzeroStatus(
     const char *format,
     int result
 ) {
-    printf(
-        format,
-        result != 0 ? g_RecoilApp_StartupStatusPassed : g_RecoilApp_StartupStatusFailed
-    );
+    printf(format, result != 0 ? g_RecoilApp_StartupStatusPassed : g_RecoilApp_StartupStatusFailed);
 }
 
 } // namespace
@@ -6819,44 +5986,23 @@ inline void PrintEngineInitNonzeroStatus(
 int RecoilApp::EngineInit(
     HWND hwnd
 ) {
-    zUtil::ZRDR_InitNodePool(0);
-    zUtil::ZRDR_Init(0);
+    zUtil::zRdrInitNodePool(0);
+    zUtil::zRdrInit(0);
 
-    PrintEngineInitZeroStatus(
-        g_RecoilApp_GModInitStatusFmt,
-        zModel_Display_Init()
-    );
-    PrintEngineInitZeroStatus(
-        g_RecoilApp_GClsInitStatusFmt,
-        zVideo::ReturnSuccessStub()
-    );
-    PrintEngineInitZeroStatus(
-        g_RecoilApp_ZEffInitStatusFmt,
-        zEffect::Init()
-    );
-    PrintEngineInitZeroStatus(
-        g_RecoilApp_ZRndrInitStatusFmt,
-        zRndr::InitGlobals()
-    );
+    PrintEngineInitZeroStatus(g_RecoilApp_GModInitStatusFmt, zModelDisplayInit());
+    PrintEngineInitZeroStatus(g_RecoilApp_GClsInitStatusFmt, zVideo::ReturnSuccessStub());
+    PrintEngineInitZeroStatus(g_RecoilApp_ZEffInitStatusFmt, zEffect::Init());
+    PrintEngineInitZeroStatus(g_RecoilApp_ZRndrInitStatusFmt, zRndr::InitGlobals());
     PrintEngineInitNonzeroStatus(
         g_RecoilApp_ZSndInitStatusFmt,
-        zSnd_PreInitializeRuntimeState((RecoilPtr32)((unsigned int)hwnd))
+        zSndPreInitializeRuntimeState((RecoilPtr32)((unsigned int)hwnd))
     );
-    PrintEngineInitZeroStatus(
-        g_RecoilApp_ZUtlInitStatusFmt,
-        zVideo::ReturnSuccessStub()
-    );
-    PrintEngineInitZeroStatus(
-        g_RecoilApp_ZWepInitStatusFmt,
-        zWepInit()
-    );
-    PrintEngineInitZeroStatus(
-        g_RecoilApp_ZImgInitStatusFmt,
-        zImage_Init(0)
-    );
+    PrintEngineInitZeroStatus(g_RecoilApp_ZUtlInitStatusFmt, zVideo::ReturnSuccessStub());
+    PrintEngineInitZeroStatus(g_RecoilApp_ZWepInitStatusFmt, zWepInit());
+    PrintEngineInitZeroStatus(g_RecoilApp_ZImgInitStatusFmt, zImageInit(0));
 
     if (g_zVideo_ActiveRendererPath == 2) {
-        zInput::Mouse_SetCooperativeLevelFlags(5);
+        zInput::MouseSetCooperativeLevelFlags(5);
     }
 
     PrintEngineInitZeroStatus(
@@ -6890,15 +6036,15 @@ int __cdecl ShutdownGlobals();
 void RecoilApp::ShutdownSubsystems() {
     zInput::Shutdown();
     zImage::ShutdownSubsystem();
-    zUtil_ZRDR_ShutdownWildcardPath();
+    zRdrShutdownWildcardPath();
     zVid::ShutdownFrameScratchBuffers();
     zEffect::ShutdownAll();
     OptCatalog::Shutdown();
     zClass::Shutdown();
     zModel_Display::ShutdownThunk();
     zSndSystem::Shutdown();
-    zUtil_ZRDR_Exit();
-    zUtil_ZRDR_FreeNodePool();
+    zRdrExit();
+    zRdrFreeNodePool();
 }
 
 /**
@@ -6927,10 +6073,7 @@ int RecoilApp::StartEngineAndQueueStartupState() {
 
     m_skipWait = 1;
     m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
-    QueueSwitchCurrentState(
-        m_pendingState,
-        0
-    );
+    QueueSwitchCurrentState(m_pendingState, 0);
     return 1;
 }
 
@@ -7009,10 +6152,7 @@ inline void RecoilApp_StateQueue::PushBack(
             m_readBlock.m_cursor = oldReadCursor;
             m_readBlock.m_chunkBaseSlot = centeredSlot;
             RecoilApp_StateQueueBlock writeBlock;
-            m_writeBlock = *writeBlock.InitFromCursor(
-                chunk,
-                newWriteSlot
-            );
+            m_writeBlock = *writeBlock.InitFromCursor(chunk, newWriteSlot);
         }
     }
 
@@ -7107,11 +6247,7 @@ RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
     m_skipWait = 0;
     m_pendingState = 0;
     m_currentStateIndex = -1;
-    memset(
-        m_stateStack,
-        0,
-        sizeof(m_stateStack)
-    );
+    memset(m_stateStack, 0, sizeof(m_stateStack));
 }
 #else
 /**
@@ -7129,11 +6265,7 @@ RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
       m_missionShutdownMode(RECOILAPP_MISSION_SHUTDOWN_ON_EXIT),
       m_stateQueue(),
       m_reserved148(0) {
-    memset(
-        m_stateStack,
-        0,
-        sizeof(m_stateStack)
-    );
+    memset(m_stateStack, 0, sizeof(m_stateStack));
 }
 #endif
 
@@ -7156,13 +6288,7 @@ int RecoilApp_MfcOleModule::Run() {
         CWinThread::SetThreadPriority(THREAD_PRIORITY_HIGHEST);
 
         for (;;) {
-            while (PeekMessageA(
-                &m_msgCur,
-                0,
-                0,
-                0,
-                PM_NOREMOVE
-            ) != 0) {
+            while (PeekMessageA(&m_msgCur, 0, 0, 0, PM_NOREMOVE) != 0) {
                 if (PumpMessage() == 0) {
                     return ExitInstance();
                 }
@@ -7238,13 +6364,7 @@ int RecoilApp_MfcOleModule::Run() {
                     PostQuitMessage(0);
                 }
             } else {
-                if (PeekMessageA(
-                    &m_msgCur,
-                    0,
-                    0,
-                    0,
-                    PM_NOREMOVE
-                ) == 0) {
+                if (PeekMessageA(&m_msgCur, 0, 0, 0, PM_NOREMOVE) == 0) {
                     WaitMessage();
                 }
                 continue;
@@ -7304,13 +6424,7 @@ int RecoilApp_MfcOleModule::Run() {
           default:
             break;
         }
-        ::MessageBoxExA(
-            0,
-            message,
-            g_RecoilApp_Run_FileErrorTitle,
-            MB_OK | MB_ICONSTOP,
-            0
-        );
+        ::MessageBoxExA(0, message, g_RecoilApp_Run_FileErrorTitle, MB_OK | MB_ICONSTOP, 0);
         ::exit(0);
     } catch (CException *exception) {
         ::MessageBoxExA(
@@ -7377,11 +6491,7 @@ RecoilApp_IState * RecoilApp::QueueSwitchCurrentState(
 ) {
     RecoilApp_IState *const currentState = GetCurrentState();
     RecoilApp_StateQueueItem *item =
-        new RecoilApp_StateQueueItem(
-            RecoilApp_StateQueueKind_SwitchCurrent,
-            state,
-            stateParam
-        );
+        new RecoilApp_StateQueueItem(RecoilApp_StateQueueKind_SwitchCurrent, state, stateParam);
     m_stateQueue.PushBack(item);
 
     if (currentState != 0) {
@@ -7403,11 +6513,7 @@ RecoilApp_IState * RecoilApp::QueuePushState(
 ) {
     RecoilApp_IState *const currentState = GetCurrentState();
     RecoilApp_StateQueueItem *item =
-        new RecoilApp_StateQueueItem(
-            RecoilApp_StateQueueKind_PushState,
-            state,
-            suspendParam
-        );
+        new RecoilApp_StateQueueItem(RecoilApp_StateQueueKind_PushState, state, suspendParam);
     m_stateQueue.PushBack(item);
 
     state->OnEnter();
@@ -7424,11 +6530,7 @@ RecoilApp_IState * RecoilApp::QueueExitCurrentState(
 ) {
     RecoilApp_IState *const currentState = GetCurrentState();
     RecoilApp_StateQueueItem *item =
-        new RecoilApp_StateQueueItem(
-            RecoilApp_StateQueueKind_ExitCurrent,
-            0,
-            stateParam
-        );
+        new RecoilApp_StateQueueItem(RecoilApp_StateQueueKind_ExitCurrent, 0, stateParam);
     m_stateQueue.PushBack(item);
 
     if (currentState != 0) {
@@ -7448,18 +6550,12 @@ int RecoilApp::OnIdleOrDispatch(
     unsigned int lParam
 ) {
     RecoilApp_IState *const currentState = GetCurrentState();
-    zSndCd::OnMciNotify(
-        wParam,
-        lParam
-    );
+    zSndCd::OnMciNotify(wParam, lParam);
     if (currentState == 0) {
         return 0;
     }
 
-    return currentState->OnIdleOrDispatch(
-        wParam,
-        lParam
-    );
+    return currentState->OnIdleOrDispatch(wParam, lParam);
 }
 
 #if !(defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86))
@@ -7594,9 +6690,9 @@ void RecoilApp_IState::OnResume(
     int
 ) {}
 
-// RecoilApp_AttractFmvState instances use the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
-// RecoilApp_IntroFmvState instances use the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
-// RecoilApp_MissionFmvState instances use the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
+// CRecoilAppAttractFmvState instances use the implicit VC5 destructor and CRecoilAppFmvScript member cleanup.
+// CRecoilAppIntroFmvState instances use the implicit VC5 destructor and CRecoilAppFmvScript member cleanup.
+// RecoilApp_MissionFmvState instances use the implicit VC5 destructor and CRecoilAppFmvScript member cleanup.
 
 /**
  * operator<(HudUiSaveLoadEntry const &, HudUiSaveLoadEntry const &).
@@ -7616,55 +6712,19 @@ int __fastcall operator<(
  * Purpose: Builds the save-game dialog controls from dialog.zrd and initializes list contents.
  */
 HudUiSaveGameDialog::HudUiSaveGameDialog() {
-    zReader::Node *const loadedSection = LoadFromZrd(
-        "dialog.zrd",
-        "SAVE_GAME_DIALOG",
-        0
-    );
+    zReader::Node *const loadedSection = LoadFromZrd("dialog.zrd", "SAVE_GAME_DIALOG", 0);
     if (loadedSection != 0) {
-        BindWidgetByName(
-            loadedSection,
-            &backButton,
-            "BACK"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &nextEntryButton,
-            "NEXT_GAME_BTN"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &prevEntryButton,
-            "PREV_GAME_BTN"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &deleteButton,
-            "DELETE_BTN"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &primaryActionButton,
-            "SAVE"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &gameNameInput,
-            "GAMENAME"
-        );
+        BindWidgetByName(loadedSection, &backButton, "BACK");
+        BindWidgetByName(loadedSection, &nextEntryButton, "NEXT_GAME_BTN");
+        BindWidgetByName(loadedSection, &prevEntryButton, "PREV_GAME_BTN");
+        BindWidgetByName(loadedSection, &deleteButton, "DELETE_BTN");
+        BindWidgetByName(loadedSection, &primaryActionButton, "SAVE");
+        BindWidgetByName(loadedSection, &gameNameInput, "GAMENAME");
 
         char listNodeName[32];
         for (int i = 0; i < 9; ++i) {
-            sprintf(
-                listNodeName,
-                "LIST_%d",
-                i
-            );
-            BindPrimitiveNodeToElement(
-                loadedSection,
-                &entryWidgets[i],
-                listNodeName
-            );
+            sprintf(listNodeName, "LIST_%d", i);
+            BindPrimitiveNodeToElement(loadedSection, &entryWidgets[i], listNodeName);
         }
 
         FreeLoadedTreeRoots((int)(unsigned int)(loadedSection));
@@ -7689,10 +6749,7 @@ void HudUiSaveLoadGameNameInput::OnActivate() {
 int HudUiSaveLoadGameNameInput::OnRawKeyboardChar(
     int key
 ) {
-    if (strchr(
-        k_SaveGameNameAllowedChars,
-        key
-    ) != 0) {
+    if (strchr(k_SaveGameNameAllowedChars, key) != 0) {
         textInput.DispatchKeyAction(key);
     }
 
@@ -7743,55 +6800,19 @@ HudUiSaveGameDialog::~HudUiSaveGameDialog() {
  * Purpose: Builds the load-game dialog controls from dialog.zrd and initializes list contents.
  */
 HudUiLoadGameDialog::HudUiLoadGameDialog() {
-    zReader::Node *const loadedSection = LoadFromZrd(
-        "dialog.zrd",
-        "LOAD_GAME_DIALOG",
-        0
-    );
+    zReader::Node *const loadedSection = LoadFromZrd("dialog.zrd", "LOAD_GAME_DIALOG", 0);
     if (loadedSection != 0) {
-        BindWidgetByName(
-            loadedSection,
-            &backButton,
-            "BACK"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &nextEntryButton,
-            "NEXT_GAME_BTN"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &prevEntryButton,
-            "PREV_GAME_BTN"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &deleteButton,
-            "DELETE_BTN"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &primaryActionButton,
-            "LOAD"
-        );
-        BindWidgetByName(
-            loadedSection,
-            &gameNameInput,
-            "GAMENAME"
-        );
+        BindWidgetByName(loadedSection, &backButton, "BACK");
+        BindWidgetByName(loadedSection, &nextEntryButton, "NEXT_GAME_BTN");
+        BindWidgetByName(loadedSection, &prevEntryButton, "PREV_GAME_BTN");
+        BindWidgetByName(loadedSection, &deleteButton, "DELETE_BTN");
+        BindWidgetByName(loadedSection, &primaryActionButton, "LOAD");
+        BindWidgetByName(loadedSection, &gameNameInput, "GAMENAME");
 
         char listNodeName[32];
         for (int i = 0; i < 9; ++i) {
-            sprintf(
-                listNodeName,
-                "LIST_%d",
-                i
-            );
-            BindPrimitiveNodeToElement(
-                loadedSection,
-                &entryWidgets[i],
-                listNodeName
-            );
+            sprintf(listNodeName, "LIST_%d", i);
+            BindPrimitiveNodeToElement(loadedSection, &entryWidgets[i], listNodeName);
         }
 
         FreeLoadedTreeRoots((int)(unsigned int)(loadedSection));
@@ -7835,13 +6856,8 @@ void HudUiSaveLoadDialog::InitializeFileEntries() {
     HudUiSaveLoadListItem *listItem = entryWidgets;
     while (entry != fileEntries.end() && index < 9) {
         listItem->layoutX = index;
-        listItem->SetTextFmt(
-            "%s",
-            entry->cFileName
-        );
-        listItem->SetVisible(
-            1
-        );
+        listItem->SetTextFmt("%s", entry->cFileName);
+        listItem->SetVisible(1);
 
         ++entry;
         ++index;
@@ -7863,11 +6879,7 @@ void HudUiSaveLoadDialog::DeleteSaveFile(
     _mkdir("SavedGames");
 
     char saveGamePath[MAX_PATH];
-    sprintf(
-        saveGamePath,
-        "SavedGames\\%s",
-        gameName
-    );
+    sprintf(saveGamePath, "SavedGames\\%s", gameName);
     if (zReader::FileExists(saveGamePath) == 0) {
         return;
     }
@@ -7876,19 +6888,9 @@ void HudUiSaveLoadDialog::DeleteSaveFile(
     if (confirmDelete != 0) {
         char titleText[128];
         char messageText[128];
-        strcpy(
-            titleText,
-            zLoc::GetMessageString(138)
-        );
-        strcpy(
-            messageText,
-            zLoc::GetMessageString(139)
-        );
-        shouldDelete = HudUi::ShowMessageBox(
-            messageText,
-            titleText,
-            (void *)1
-        ) == 1 ? 1 : 0;
+        strcpy(titleText, zLoc::GetMessageString(138));
+        strcpy(messageText, zLoc::GetMessageString(139));
+        shouldDelete = HudUi::ShowMessageBox(messageText, titleText, (void *)1) == 1 ? 1 : 0;
     }
 
     if (shouldDelete == 0) {
@@ -7980,49 +6982,25 @@ void HudUiSaveGameDialog::ProcessDialogResult() {
     _mkdir("SavedGames");
 
     char saveGamePath[MAX_PATH];
-    sprintf(
-        saveGamePath,
-        "SavedGames\\%s",
-        gameName
-    );
+    sprintf(saveGamePath, "SavedGames\\%s", gameName);
     if (zReader::FileExists(saveGamePath) != 0) {
         char titleText[128];
         char messageText[128];
-        strcpy(
-            titleText,
-            zLoc::GetMessageString(136)
-        );
-        strcpy(
-            messageText,
-            zLoc::GetMessageString(137)
-        );
-        if (HudUi::ShowMessageBox(
-            messageText,
-            titleText,
-            (void *)1
-        ) == 2) {
+        strcpy(titleText, zLoc::GetMessageString(136));
+        strcpy(messageText, zLoc::GetMessageString(137));
+        if (HudUi::ShowMessageBox(messageText, titleText, (void *)1) == 2) {
             return;
         }
     }
 
-    while (zUtil::ZBD_LoadEntriesGlobal(saveGamePath) == 0) {
+    while (zUtil::ZBDLoadEntriesGlobal(saveGamePath) == 0) {
         DeleteSaveFile(0);
 
         char titleText[128];
         char messageText[128];
-        strcpy(
-            titleText,
-            zLoc::GetMessageString(136)
-        );
-        strcpy(
-            messageText,
-            zLoc::GetMessageString(140)
-        );
-        if (HudUi::ShowMessageBox(
-            messageText,
-            titleText,
-            (void *)1
-        ) == 2) {
+        strcpy(titleText, zLoc::GetMessageString(136));
+        strcpy(messageText, zLoc::GetMessageString(140));
+        if (HudUi::ShowMessageBox(messageText, titleText, (void *)1) == 2) {
             break;
         }
     }
@@ -8061,21 +7039,14 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
 
             if ((unsigned int)entryIndex < entryCount) {
                 listItem->layoutX = entryIndex;
-                listItem->SetTextFmt(
-                    "%s",
-                    fileEntries.begin()[entryIndex].cFileName
-                );
-                listItem->SetVisible(
-                    1
-                );
+                listItem->SetTextFmt("%s", fileEntries.begin()[entryIndex].cFileName);
+                listItem->SetVisible(1);
                 listItem->Invalidate();
                 continue;
             }
         }
 
-        listItem->SetVisible(
-            0
-        );
+        listItem->SetVisible(0);
     }
 
     if (selectedEntryIndexValue >= 0) {
@@ -8104,22 +7075,15 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
 
             if ((unsigned int)entryIndex < entryCount) {
                 listItem->layoutX = entryIndex;
-                listItem->SetTextFmt(
-                    "%s",
-                    fileEntries.begin()[entryIndex].cFileName
-                );
-                listItem->SetVisible(
-                    1
-                );
+                listItem->SetTextFmt("%s", fileEntries.begin()[entryIndex].cFileName);
+                listItem->SetVisible(1);
                 listItem->Invalidate();
                 continue;
             }
         }
 
 
-        listItem->SetVisible(
-            0
-        );
+        listItem->SetVisible(0);
     }
 }
 
@@ -8131,19 +7095,13 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
     entries->clear();
 
     HudUiSaveLoadEntry findData;
-    HANDLE findHandle = FindFirstFileA(
-        "SavedGames\\*.*",
-        &findData
-    );
+    HANDLE findHandle = FindFirstFileA("SavedGames\\*.*", &findData);
     if (findHandle != INVALID_HANDLE_VALUE) {
         if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
             entries->push_back(findData);
         }
 
-        while (FindNextFileA(
-            findHandle,
-            &findData
-        ) != 0) {
+        while (FindNextFileA(findHandle, &findData) != 0) {
             if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
                 entries->push_back(findData);
             }
@@ -8208,16 +7166,12 @@ void HudUiLoadGameDialog::ProcessDialogResult() {
         return;
     }
 
-    sprintf(
-        saveGamePath,
-        "SavedGames\\%s",
-        gameName
-    );
+    sprintf(saveGamePath, "SavedGames\\%s", gameName);
     if (zReader::FileExists(saveGamePath) == 0) {
         return;
     }
 
-    if (zUtil::ZAR_LoadFileGlobal(saveGamePath) == 0) {
+    if (zUtil::zZarLoadFileGlobal(saveGamePath) == 0) {
         return;
     }
 
@@ -8229,7 +7183,7 @@ void HudUiLoadGameDialog::ProcessDialogResult() {
         g_RecoilStateSaveLoadTransition.m_pausedAudioSnapshot = 0;
     }
 
-    zInp::SetJoystickOption(zInput::DI_SetJoystickEnabled(zInp::GetJoystickOption()));
+    zInp::SetJoystickOption(zInput::DISetJoystickEnabled(zInp::GetJoystickOption()));
     zOpt::SetCursorMode(zOpt::GetCursorMode());
     zOpt::SetCameraMode(zOpt::GetCameraModePlayerState());
     zOpt::SetThrottleMode(zOpt::GetThrottleMode());
@@ -8241,10 +7195,7 @@ void HudUiLoadGameDialog::ProcessDialogResult() {
             g_RecoilApp.m_playState.pPendingLoadGameStartPath = _strdup(saveGamePath);
             g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 1;
             g_RecoilApp.QueueExitCurrentState(1);
-            g_RecoilApp.QueueSwitchCurrentState(
-                &g_RecoilApp.m_missionFmvState,
-                0
-            );
+            g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_missionFmvState, 0);
         } else {
             g_RecoilApp.QueueExitCurrentState(0);
         }
@@ -8304,10 +7255,7 @@ RecoilStateSaveLoadTransition::~RecoilStateSaveLoadTransition() {
 int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
     if (m_capturePresentationMode != RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED) {
         if (g_zVideo_ActiveRendererPath != 0) {
-            g_zVideo_pfnBltSwToPrimaryRectDirect(
-                0,
-                0
-            );
+            g_zVideo_pfnBltSwToPrimaryRectDirect(0, 0);
         }
 
         m_savedHalfResAdjustMode =
@@ -8320,17 +7268,14 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
         m_pausedAudioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
         audioSnapshot->StopAllIfPlaying();
 
-        zFMV_ActionBlur blurAction(
-            4,
-            1
-        );
+        zFMV_ActionBlur blurAction(4, 1);
         zFMV_Action *const action = &blurAction;
         action->Begin(0.0);
         while (action->Update(0.0) != 0) {
         }
         action->End();
 
-        zSndSampleSet_InitByName("DIALOG");
+        zSndSampleSetInitByName("DIALOG");
     }
 
     HudUiSaveLoadDialog *dialog = 0;
@@ -8381,7 +7326,7 @@ int RecoilStateMainMenuTransition::OnUpdateShouldQuit() {
 
         ((HudUiContainer *)m_mainMenuDialog)->UpdateAll(g_FrameDeltaTimeSec);
 
-        zVideo::Dispatch_UnlockPrimarySurfaceState();
+        zVideo::DispatchUnlockPrimarySurfaceState();
     }
 
     zVideo::AdjustSurfacesIfEnabled(
@@ -8411,17 +7356,12 @@ int RecoilStateSaveLoadTransition::OnUpdateShouldQuit() {
 
         ((HudUiSaveLoadDialog *)((unsigned int)m_dialog))->UpdateAll(g_FrameDeltaTimeSec);
 
-        zVideo::Dispatch_UnlockPrimarySurfaceState();
+        zVideo::DispatchUnlockPrimarySurfaceState();
     }
 
     zOpt_ViewRectSection *const dstRect = zOpt::GetWindowSection();
     zOpt_ViewRectSection *const srcRect = zOpt::GetWindowSection();
-    zVideo::AdjustSurfacesIfEnabled(
-        (zVidRect32 *)srcRect,
-        (zVidRect32 *)dstRect,
-        1,
-        1
-    );
+    zVideo::AdjustSurfacesIfEnabled((zVidRect32 *)srcRect, (zVidRect32 *)dstRect, 1, 1);
     return 0;
 }
 
@@ -8436,7 +7376,7 @@ void RecoilStateSaveLoadTransition::OnDeactivate() {
         dialog->SetEnabled(0);
 
         ((HudUiDialogController *)((unsigned int)m_dialog))->BlitOwnedSurfaceToPrimary();
-        zVideo::Dispatch_UnlockPrimarySurfaceState();
+        zVideo::DispatchUnlockPrimarySurfaceState();
 
         dialog = (HudUiSaveLoadDialog *)((unsigned int)m_dialog);
         delete dialog;
@@ -8448,7 +7388,7 @@ void RecoilStateSaveLoadTransition::OnDeactivate() {
         return;
     }
 
-    zSndSampleSet_DestroyByName("DIALOG");
+    zSndSampleSetDestroyByName("DIALOG");
 
     zSndPlayHandleSnapshot *const audioSnapshot =
         (zSndPlayHandleSnapshot *)((unsigned int)m_pausedAudioSnapshot);
@@ -8474,10 +7414,7 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
 
     g_RecoilStateSaveLoadTransition.m_capturePresentationMode = capturePresentationMode;
     g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE;
-    g_RecoilApp.QueuePushState(
-        &g_RecoilStateSaveLoadTransition,
-        0
-    );
+    g_RecoilApp.QueuePushState(&g_RecoilStateSaveLoadTransition, 0);
 }
 
 /**
@@ -8501,10 +7438,7 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
     }
 
     g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
-    g_RecoilApp.QueuePushState(
-        &g_RecoilStateSaveLoadTransition,
-        0
-    );
+    g_RecoilApp.QueuePushState(&g_RecoilStateSaveLoadTransition, 0);
 }
 
 /**

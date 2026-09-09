@@ -359,6 +359,7 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
 )
 
 _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
+    spec("progress relocation-target refresh-source-names", "relocation_source_names", summary="Refresh exact reviewed source spellings in existing relocation contexts while preserving every other fact and re-deriving current retail context.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
     spec("progress relocation-target repair-created-owner", "relocation_target_repair", summary="Repair one pending data creation's duplicate owner by restoring its exact pre-existing owner relationship and preserving storage, tiers, and gates.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
     spec("progress relocation-exception set", "relocation_expectation_mutation", prepend=("set",), summary="Revision-guard one reviewed retail-relocation ambiguity exception against exact current source and target context.", category="progress", examples=("python tools/recoil.py progress relocation-exception set --source-symbol-id <physical-symbol-id> --source-address 0xNNNNNN --payload-json '<json-object>' --expected-revision <revision> --dry-run --json",), mutates=True),
     spec("progress relocation-exception remove", "relocation_expectation_mutation", prepend=("remove",), summary="Retract one complete exact-match reviewed exception without changing target or owner facts; dry-run first.", category="progress", mutates=True),
@@ -600,6 +601,13 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
             "python tools/recoil.py progress symbol set-logical-alias-group --payload-file build/diagnostic/<recoil-logical-alias-group-v4.json> --expected-revision <revision> --dry-run --json",
         ),
         mutates=True,
+    ),
+    spec(
+        "progress symbol rename-batch",
+        "symbol_names",
+        summary="Revision-guarded replacement of reviewed symbol and owner display names; changes no identities or acceptance facts.",
+        category="progress", mutates=True, required_revision_domains=("global",),
+        mutation_scope="symbol-navigation-names", acceptance_effects=(),
     ),
     spec(
         "progress symbol separate-tail-padding",

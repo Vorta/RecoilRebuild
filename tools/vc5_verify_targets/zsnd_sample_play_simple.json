@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49fa00",
-      "symbol": "_zSndSample_PlaySimple@4",
-      "name": "zSndSample_PlaySimple"
+      "symbol": "_zSndSamplePlaySimple@4",
+      "name": "zSndSamplePlaySimple"
     }
   ]
 }

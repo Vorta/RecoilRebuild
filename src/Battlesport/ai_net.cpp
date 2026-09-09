@@ -161,11 +161,7 @@ void AINet::LoadAllFromZrd() {
  */
 AINet *AINet::Alloc() {
     AINet *const aiNet = (AINet *)(malloc(sizeof(AINet)));
-    memset(
-        aiNet,
-        0,
-        sizeof(AINet)
-    );
+    memset(aiNet, 0, sizeof(AINet));
 
     if (g_AINetListHead != 0) {
         g_AINetListTail->next = aiNet;
@@ -190,32 +186,17 @@ AINet *__fastcall AINet::LoadFromZrd(
 ) {
     char baseName[8];
     char nodeName[8];
-    sprintf(
-        baseName,
-        "net_%02d",
-        netId
-    );
+    sprintf(baseName, "net_%02d", netId);
 
     char path[0x104];
-    sprintf(
-        path,
-        "%s.zrd",
-        baseName
-    );
+    sprintf(path, "%s.zrd", baseName);
 
-    zReader::Node *const root = zReader::Load(
-        path,
-        0,
-        0
-    );
+    zReader::Node *const root = zReader::Load(path, 0, 0);
     if (root == 0) {
         return 0;
     }
 
-    zReader::Node *versionNode = zRdrGetNode(
-        root,
-        "version"
-    );
+    zReader::Node *versionNode = zRdrGetNode(root, "version");
     if (versionNode != 0 && versionNode->value.nodes[1].value.i32 != 105) {
         zError::ReportOld(
             0x200,
@@ -229,129 +210,74 @@ AINet *__fastcall AINet::LoadFromZrd(
     AINet *const aiNet = AINet::Alloc();
     aiNet->netId = netId;
 
-    zReader::Node *nameNode = zRdrGetNode(
-        root,
-        "name"
-    );
+    zReader::Node *nameNode = zRdrGetNode(root, "name");
     if (nameNode != 0) {
-        strcpy(
-            aiNet->name,
-            nameNode->value.nodes[1].value.str
-        );
+        strcpy(aiNet->name, nameNode->value.nodes[1].value.str);
     } else {
-        strcpy(
-            aiNet->name,
-            baseName
-        );
+        strcpy(aiNet->name, baseName);
     }
 
     char token[0x18];
     zReader::Node *typeNode = zRdrGetNode(root, "type");
     if (typeNode != 0) {
-        strcpy(
-            token,
-            typeNode->value.nodes[1].value.str
-        );
+        strcpy(token, typeNode->value.nodes[1].value.str);
         _strupr(token);
 
-        if (strncmp(
-            token,
-            "ST",
-            2
-        ) == 0) {
+        if (strncmp(token, "ST", 2) == 0) {
             aiNet->aiType = AINET_TYPE_ST;
-        } else if (strncmp(
-            token,
-            "HI",
-            2
-        ) == 0) {
+        } else if (strncmp(token, "HI", 2) == 0) {
             aiNet->aiType = AINET_TYPE_HI;
-        } else if (strncmp(
-            token,
-            "FI",
-            2
-        ) == 0) {
+        } else if (strncmp(token, "FI", 2) == 0) {
             aiNet->aiType = AINET_TYPE_FI;
-        } else if (strncmp(
-            token,
-            "DE",
-            2
-        ) == 0) {
+        } else if (strncmp(token, "DE", 2) == 0) {
             aiNet->aiType = AINET_TYPE_DE;
         }
     } else {
         aiNet->aiType = AINET_TYPE_ST;
     }
 
-    zReader::Node *pathWidthNode = zRdrGetNode(
-        root,
-        "path_width"
-    );
+    zReader::Node *pathWidthNode = zRdrGetNode(root, "path_width");
     if (pathWidthNode != 0) {
         aiNet->pathWidth = pathWidthNode->value.nodes[1].value.f32;
     } else {
         aiNet->pathWidth = 10.0f;
     }
 
-    zReader::Node *activateRadiusNode = zRdrGetNode(
-        root,
-        "activate_rad"
-    );
+    zReader::Node *activateRadiusNode = zRdrGetNode(root, "activate_rad");
     if (activateRadiusNode != 0) {
         aiNet->activateRadius = activateRadiusNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *attackRadiusNode = zRdrGetNode(
-        root,
-        "attack_rad"
-    );
+    zReader::Node *attackRadiusNode = zRdrGetNode(root, "attack_rad");
     if (attackRadiusNode != 0) {
         aiNet->attackRadius = attackRadiusNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *attackDwellNode = zRdrGetNode(
-        root,
-        "attack_dwell"
-    );
+    zReader::Node *attackDwellNode = zRdrGetNode(root, "attack_dwell");
     if (attackDwellNode != 0) {
         aiNet->attackDwell = attackDwellNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *pursuitNode = zRdrGetNode(
-        root,
-        "pursuit_params"
-    );
+    zReader::Node *pursuitNode = zRdrGetNode(root, "pursuit_params");
     if (pursuitNode == 0) {
-        pursuitNode = zRdrGetNode(
-            root,
-            "pursuit_range"
-        );
+        pursuitNode = zRdrGetNode(root, "pursuit_range");
     }
     if (pursuitNode != 0) {
         aiNet->pursuitParam0 = pursuitNode->value.nodes[1].value.f32;
         aiNet->pursuitParam1 = pursuitNode->value.nodes[2].value.f32;
     }
 
-    zReader::Node *notPursuitDwellNode = zRdrGetNode(
-        root,
-        "not_pursuit_dwell"
-    );
+    zReader::Node *notPursuitDwellNode = zRdrGetNode(root, "not_pursuit_dwell");
     if (notPursuitDwellNode != 0) {
         aiNet->notPursuitDwell = notPursuitDwellNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *returnRangeNode = zRdrGetNode(
-        root,
-        "return_range"
-    );
+    zReader::Node *returnRangeNode = zRdrGetNode(root, "return_range");
     if (returnRangeNode != 0) {
         aiNet->returnRange = returnRangeNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *hideTimesNode = zRdrGetNode(
-        root,
-        "hide_times"
-    );
+    zReader::Node *hideTimesNode = zRdrGetNode(root, "hide_times");
     if (hideTimesNode != 0) {
         aiNet->hideTime0 = hideTimesNode->value.nodes[1].value.f32;
         aiNet->hideTime1 = hideTimesNode->value.nodes[2].value.f32;
@@ -360,71 +286,35 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->hideTime1 = 4.0f;
     }
 
-    zReader::Node *attackBuddyNode = zRdrGetNode(
-        root,
-        "attack_buddy"
-    );
+    zReader::Node *attackBuddyNode = zRdrGetNode(root, "attack_buddy");
     if (attackBuddyNode != 0) {
         aiNet->attackBuddyNetId = attackBuddyNode->value.nodes[1].value.i32;
     } else {
         aiNet->attackBuddyNetId = 0;
     }
 
-    zReader::Node *activateBuddyNode = zRdrGetNode(
-        root,
-        "activate_buddy"
-    );
+    zReader::Node *activateBuddyNode = zRdrGetNode(root, "activate_buddy");
     if (activateBuddyNode != 0) {
         aiNet->activateBuddyNetId = activateBuddyNode->value.nodes[1].value.i32;
     } else {
         aiNet->attackBuddyNetId = 0;
     }
 
-    zReader::Node *attackStrategyNode = zRdrGetNode(
-        root,
-        "attack_strategy"
-    );
+    zReader::Node *attackStrategyNode = zRdrGetNode(root, "attack_strategy");
     if (attackStrategyNode != 0) {
-        strcpy(
-            token,
-            attackStrategyNode->value.nodes[1].value.str
-        );
+        strcpy(token, attackStrategyNode->value.nodes[1].value.str);
         _strupr(token);
-        if (strncmp(
-            token,
-            "FOL",
-            3
-        ) == 0) {
+        if (strncmp(token, "FOL", 3) == 0) {
             aiNet->attackStrategy = AINET_STRAT_FOL;
-        } else if (strncmp(
-            token,
-            "CIR",
-            3
-        ) == 0) {
+        } else if (strncmp(token, "CIR", 3) == 0) {
             aiNet->attackStrategy = AINET_STRAT_CIR;
-        } else if (strncmp(
-            token,
-            "HEA",
-            3
-        ) == 0) {
+        } else if (strncmp(token, "HEA", 3) == 0) {
             aiNet->attackStrategy = AINET_STRAT_HEA;
-        } else if (strncmp(
-            token,
-            "BAC",
-            3
-        ) == 0) {
+        } else if (strncmp(token, "BAC", 3) == 0) {
             aiNet->attackStrategy = AINET_STRAT_BAC;
-        } else if (strncmp(
-            token,
-            "ZIG",
-            3
-        ) == 0) {
+        } else if (strncmp(token, "ZIG", 3) == 0) {
             aiNet->attackStrategy = AINET_STRAT_ZIG;
-        } else if (strncmp(
-            token,
-            "SIT",
-            3
-        ) == 0) {
+        } else if (strncmp(token, "SIT", 3) == 0) {
             aiNet->attackStrategy = AINET_STRAT_SIT;
         }
     } else {
@@ -433,26 +323,15 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     AINetNode *tail = 0;
     for (int nodeIndex = 0; nodeIndex < 99; ++nodeIndex) {
-        sprintf(
-            nodeName,
-            "node_%02d",
-            nodeIndex
-        );
+        sprintf(nodeName, "node_%02d", nodeIndex);
 
-        zReader::Node *node = zRdrGetNode(
-            root,
-            nodeName
-        );
+        zReader::Node *node = zRdrGetNode(root, nodeName);
         if (node == 0) {
             continue;
         }
 
         AINetNode *const aiNode = (AINetNode *)(malloc(sizeof(AINetNode)));
-        memset(
-            aiNode,
-            0,
-            sizeof(AINetNode)
-        );
+        memset(aiNode, 0, sizeof(AINetNode));
 
         if (tail == 0) {
             aiNet->nodeListHead = aiNode;
@@ -471,10 +350,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNode->neighborIndices[2] = node->value.nodes[3].value.nodes[3].value.i32;
     }
 
-    AINet::ResolveNeighborLinksAndBuildProbeFans(
-        aiNet->nodeListHead,
-        aiNet->pathWidth
-    );
+    AINet::ResolveNeighborLinksAndBuildProbeFans(aiNet->nodeListHead, aiNet->pathWidth);
     zReader::Free(root);
     return aiNet;
 }
@@ -547,11 +423,7 @@ void __fastcall AINet::ResolveNeighborLinksAndBuildProbeFans(
 
                 *(AINetPathProbeFan **)(neighborIndexPtr + 3) =
                     (AINetPathProbeFan *)(malloc(sizeof(AINetPathProbeFan)));
-                memset(
-                    *(AINetPathProbeFan **)(neighborIndexPtr + 3),
-                    0,
-                    sizeof(AINetPathProbeFan)
-                );
+                memset(*(AINetPathProbeFan **)(neighborIndexPtr + 3), 0, sizeof(AINetPathProbeFan));
                 (*(AINetPathProbeFan **)(neighborIndexPtr + 3))->InitFromSegment(
                     fromPosition,
                     (*(AINetNode **)neighborIndexPtr)->position,
@@ -593,27 +465,14 @@ void AINetPathProbeFan::InitFromSegment(
 #endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-    AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA_KEEP_PTR(
-        delta,
-        toPosition,
-        fromPosition,
-        v2
-    );
+    AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA_KEEP_PTR(delta, toPosition, fromPosition, v2);
 #else
-    AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA(
-        delta,
-        toPosition,
-        fromPosition
-    );
+    AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA(delta, toPosition, fromPosition);
 #endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
     float xzLength;
-    AINET_PATH_PROBE_CLAMP_TRAVEL_VC5(
-        v2,
-        xzLength,
-        pathWidth
-    );
+    AINET_PATH_PROBE_CLAMP_TRAVEL_VC5(v2, xzLength, pathWidth);
 #else
     float xzLength;
     xzLength = sqrt(delta.x * delta.x + delta.z * delta.z);
@@ -623,25 +482,11 @@ void AINetPathProbeFan::InitFromSegment(
             : (pathWidth * g_AINetPathProbeHalfWidthScale);
 #endif
 
-    zMath::Vec3NormalizeXZ(
-        &delta,
-        &delta
-    );
+    zMath::Vec3NormalizeXZ(&delta, &delta);
     zVec3 *const perpendicularPtr = &perpendicular;
-    zMath::Vec3PerpXZ(
-        &delta,
-        perpendicularPtr
-    );
-    zMath::Vec3RotateY(
-        45.0f,
-        &probeDirPlus45,
-        perpendicularPtr
-    );
-    zMath::Vec3RotateY(
-        -45.0f,
-        &probeDirMinus45,
-        perpendicularPtr
-    );
+    zMath::Vec3PerpXZ(&delta, perpendicularPtr);
+    zMath::Vec3RotateY(45.0f, &probeDirPlus45, perpendicularPtr);
+    zMath::Vec3RotateY(-45.0f, &probeDirMinus45, perpendicularPtr);
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
     /**
      * AINetPathProbeFan::InitFromSegment path-width store.
@@ -682,10 +527,7 @@ AINetNode *__fastcall AINet::FindNearestNode(
     float bestDistanceSq = -1.0f;
 
     while (nodeListHead != 0) {
-        const float distanceSq = zMath::Vec3DeltaLengthSq(
-            position,
-            &nodeListHead->position
-        );
+        const float distanceSq = zMath::Vec3DeltaLengthSq(position, &nodeListHead->position);
         if (distanceSq < bestDistanceSq || bestDistanceSq < minimumDistanceSq) {
             bestDistanceSq = distanceSq;
             nearest = nodeListHead;

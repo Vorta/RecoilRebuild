@@ -141,8 +141,8 @@
     },
     {
       "address": "0x46d810",
-      "symbol": "?TexDir_FindOrAppendByPath@zImage@@YIPAUzImage_TexDirEntryPartial@@PAD@Z",
-      "name": "zImage::TexDir_FindOrAppendByPath",
+      "symbol": "?TexDirFindOrAppendByPath@zImage@@YIPAUzImage_TexDirEntryPartial@@PAD@Z",
+      "name": "zImage::TexDirFindOrAppendByPath",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -159,7 +159,7 @@
     },
     {
       "address": "0x46d900",
-      "symbol": "?TexDir_FindOrCreateByPath@zImage@@YIPAUzVidImagePartial@@PBD@Z",
+      "symbol": "?TexDirFindOrCreateByPath@zImage@@YIPAUzVidImagePartial@@PBD@Z",
       "name": "zImage::TexDirFindOrCreateByPath",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -168,7 +168,7 @@
     },
     {
       "address": "0x46d940",
-      "symbol": "@zVid_TexturePack_LoadImageByName@4",
+      "symbol": "@zVidTexturePackLoadImageByName@4",
       "name": "zVid_TexturePack::LoadImageByName",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -177,7 +177,7 @@
     },
     {
       "address": "0x46da40",
-      "symbol": "_zVid_TexturePack_EnsureDefaultImagePackLoaded",
+      "symbol": "_zVidTexturePackEnsureDefaultImagePackLoaded",
       "name": "zVid_TexturePack::EnsureDefaultImagePackLoaded",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -186,7 +186,7 @@
     },
     {
       "address": "0x46dae0",
-      "symbol": "@zVid_TexturePackEntry_LoadFromFile@4",
+      "symbol": "@zVidTexturePackEntryLoadFromFile@4",
       "name": "zVid_TexturePackEntry::LoadFromFile",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -195,7 +195,7 @@
     },
     {
       "address": "0x46dd30",
-      "symbol": "@zVid_TexturePack_LoadBuiltinImageByName@4",
+      "symbol": "@zVidTexturePackLoadBuiltinImageByName@4",
       "name": "zVid_TexturePack::LoadBuiltinImageByName",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -204,8 +204,8 @@
     },
     {
       "address": "0x46de50",
-      "symbol": "?TexDir_LoadPendingEntries@zImage@@YAHXZ",
-      "name": "zImage::TexDir_LoadPendingEntries",
+      "symbol": "?TexDirLoadPendingEntries@zImage@@YAHXZ",
+      "name": "zImage::TexDirLoadPendingEntries",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -213,7 +213,7 @@
     },
     {
       "address": "0x46df50",
-      "symbol": "_zVid_TexturePack_EnsureBuiltinTexturePacksLoaded",
+      "symbol": "_zVidTexturePackEnsureBuiltinTexturePacksLoaded",
       "name": "zVid_TexturePack::EnsureBuiltinTexturePacksLoaded",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -285,7 +285,7 @@
     },
     {
       "address": "0x46e720",
-      "symbol": "@zVid_PaletteRemap_BuildPaletteVariant@4",
+      "symbol": "@zVidPaletteRemapBuildPaletteVariant@4",
       "name": "zVid_PaletteRemap::BuildPaletteVariant",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -294,7 +294,7 @@
     },
     {
       "address": "0x46e8d0",
-      "symbol": "@zVid_PaletteRemap_BuildAllRecipeVariantsForPalette@8",
+      "symbol": "@zVidPaletteRemapBuildAllRecipeVariantsForPalette@8",
       "name": "zVid_PaletteRemap::BuildAllRecipeVariantsForPalette",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -303,7 +303,7 @@
     },
     {
       "address": "0x46e960",
-      "symbol": "@zVid_PaletteRemap_FindRecipeIndexFromRgb@4",
+      "symbol": "@zVidPaletteRemapFindRecipeIndexFromRgb@4",
       "name": "zVid_PaletteRemap::FindRecipeIndexFromRgb",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -321,7 +321,7 @@
     },
     {
       "address": "0x46eb20",
-      "symbol": "@zImage_Init@4",
+      "symbol": "@zImageInit@4",
       "name": "zImage::Init",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -357,7 +357,7 @@
     },
     {
       "address": "0x46ebd0",
-      "symbol": "@zImage_InitMissionResources@4",
+      "symbol": "@zImageInitMissionResources@4",
       "name": "zImage::InitMissionResources",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -411,7 +411,7 @@
     },
     {
       "address": "0x46ec70",
-      "symbol": "@zVid_Image_SetPixels@12",
+      "symbol": "@zVidImageSetPixels@12",
       "name": "zVid_Image::SetPixels",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

@@ -44,7 +44,7 @@ struct HudUiScoreboardEntry;
 struct HudUiTriplet;
 struct HudUiCircle;
 struct HudUiBar;
-struct HudUiZrdWidgetEx17C;
+struct CHudRadioGroupWidget;
 struct HudUiSlot;
 struct HudUiManagerMeterBaseCandidate;
 struct HudUiManagerMeterCandidate;
@@ -387,7 +387,7 @@ struct HudLayoutBase : HudUiContainer {
     HudUiWidget widget0;
 
     HudLayoutBase();
-    static void Shutdown_Stub();
+    static void ShutdownShieldWidget();
     void Destructor();
     virtual int SetActive(int active);
     virtual void UpdateAll(float deltaSeconds);
@@ -441,7 +441,7 @@ int __fastcall ApplyViewportRect(HudUiRect *activeRect);
 }
 
 namespace HudUiMgrSensor {
-HudUiMgrSensorTrackNode *__fastcall TrackList_Add(
+HudUiMgrSensorTrackNode *__fastcall TrackListAdd(
     int trackKind,
     void *payload
 );
@@ -969,9 +969,9 @@ struct HudUiFillBitmapSlider : HudUiFillBitmap {
     virtual void SetNormalizedValueAndRebuild(float value);
 };
 
-struct HudUiZrdWidgetEx17C_Item : HudUiZrdWidget {
+struct CHudRadioButtonWidget : HudUiZrdWidget {
     int selected;
-    HudUiZrdWidgetEx17C *ownerSelector;
+    CHudRadioGroupWidget *ownerSelector;
     int itemIndex;
     int mouseRectValid;
     HudUiRect mouseRect;
@@ -980,9 +980,9 @@ struct HudUiZrdWidgetEx17C_Item : HudUiZrdWidget {
     zVidImagePartial *selectedRolloverImage;
     zVidImagePartial *unselectedRolloverImage;
 
-    HudUiZrdWidgetEx17C_Item();
-    HudUiZrdWidgetEx17C_Item * Constructor();
-    ~HudUiZrdWidgetEx17C_Item();
+    CHudRadioButtonWidget();
+    CHudRadioButtonWidget * Constructor();
+    ~CHudRadioButtonWidget();
     void ShowPreviewIfNotSelected();
     void HidePreviewIfNotSelected();
     void ShowPreview();
@@ -997,14 +997,14 @@ struct HudUiZrdWidgetEx17C_Item : HudUiZrdWidget {
     virtual HudUiRect * GetBoundsRectOrNull();
 };
 
-struct HudUiZrdWidgetEx17C : HudUiZrdWidget {
+struct CHudRadioGroupWidget : HudUiZrdWidget {
     int optionCount;
-    HudUiZrdWidgetEx17C_Item *options[10];
+    CHudRadioButtonWidget *options[10];
     int selectedIndex;
 
-    HudUiZrdWidgetEx17C();
-    ~HudUiZrdWidgetEx17C();
-    HudUiZrdWidgetEx17C * Constructor();
+    CHudRadioGroupWidget();
+    ~CHudRadioGroupWidget();
+    CHudRadioGroupWidget * Constructor();
     void DestructorCore();
     void SetVisible(int childIndex);
     int LoadFromZrd(
@@ -1060,11 +1060,7 @@ struct HudUiPanel : HudUiTextLabel {
         int x,
         int y
     ) {
-        new (this) HudUiPanel(
-            text,
-            x,
-            y
-        );
+        new (this) HudUiPanel(text, x, y);
         return this;
     }
     HudUiPanel * ConstructorDefaultThunk();
@@ -1601,7 +1597,7 @@ struct HudUiTripletPanel : HudUiElement {
     HudUiTripletPanel();
     void Draw();
     void SetVisibleCount(int count);
-    void ShutdownItems_Stub();
+    void ShutdownItems();
     void DestructorCore();
     void UnwindDestructFirstItem();
 };
@@ -2306,10 +2302,7 @@ struct HudUiCompositePanel : HudUiPanel {
         int x,
         int y
     ) {
-        SetPos(
-            x,
-            y
-        );
+        SetPos(x, y);
     }
     void ResizeEntryVectorAndRelayout(int entryCount);
     void ReapplyEntryCount();
@@ -2559,13 +2552,13 @@ HudUiOptionsPanelBackButton() {
     void OnActivate();
 };
 
-struct HudUiOptionsPanel_Lighting : HudUiCheckToggleWidget {
+struct CHudUiOptionsPanelLighting : HudUiCheckToggleWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Lighting.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelLighting.
      */
-HudUiOptionsPanel_Lighting() {
+CHudUiOptionsPanelLighting() {
     }
 
     void OnActivate();
@@ -2574,13 +2567,13 @@ HudUiOptionsPanel_Lighting() {
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_Perspective : HudUiCheckToggleWidget {
+struct CHudUiOptionsPanelPerspective : HudUiCheckToggleWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Perspective.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelPerspective.
      */
-HudUiOptionsPanel_Perspective() {
+CHudUiOptionsPanelPerspective() {
     }
 
     void OnActivate();
@@ -2589,13 +2582,13 @@ HudUiOptionsPanel_Perspective() {
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_FullHud : HudUiCheckToggleWidget {
+struct CHudUiOptionsPanelFullHud : HudUiCheckToggleWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_FullHud.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelFullHud.
      */
-HudUiOptionsPanel_FullHud() {
+CHudUiOptionsPanelFullHud() {
     }
 
     void OnActivate();
@@ -2603,28 +2596,13 @@ HudUiOptionsPanel_FullHud() {
     void InitFromOptions();
 };
 
-struct HudUiOptionsPanel_ObjectDetail : HudUiCycleSelectorWidget {
+struct CHudUiOptionsPanelObjectDetail : HudUiCycleSelectorWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_ObjectDetail.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelObjectDetail.
      */
-HudUiOptionsPanel_ObjectDetail() {
-    }
-
-    void OnActivate();
-    void PostLoadFromZrd();
-    void InitFromOptions();
-    void SyncFromOptions();
-};
-
-struct HudUiOptionsPanel_TextureMemory : HudUiCycleSelectorWidget {
-    /**
-     * Original-source helper; no standalone retail function exists.
-     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_TextureMemory.
-     */
-HudUiOptionsPanel_TextureMemory() {
+CHudUiOptionsPanelObjectDetail() {
     }
 
     void OnActivate();
@@ -2633,13 +2611,13 @@ HudUiOptionsPanel_TextureMemory() {
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_Effects : HudUiCycleSelectorWidget {
+struct CHudUiOptionsPanelTextureMemory : HudUiCycleSelectorWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Effects.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelTextureMemory.
      */
-HudUiOptionsPanel_Effects() {
+CHudUiOptionsPanelTextureMemory() {
     }
 
     void OnActivate();
@@ -2648,13 +2626,13 @@ HudUiOptionsPanel_Effects() {
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_SoundActive : HudUiCheckToggleWidget {
+struct CHudUiOptionsPanelEffects : HudUiCycleSelectorWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundActive.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelEffects.
      */
-HudUiOptionsPanel_SoundActive() {
+CHudUiOptionsPanelEffects() {
     }
 
     void OnActivate();
@@ -2663,13 +2641,13 @@ HudUiOptionsPanel_SoundActive() {
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_SoundQuality : HudUiCycleSelectorWidget {
+struct CHudUiOptionsPanelSoundActive : HudUiCheckToggleWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundQuality.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelSoundActive.
      */
-HudUiOptionsPanel_SoundQuality() {
+CHudUiOptionsPanelSoundActive() {
     }
 
     void OnActivate();
@@ -2678,13 +2656,28 @@ HudUiOptionsPanel_SoundQuality() {
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_SoundVolume : HudUiFillBitmapSlider {
+struct CHudUiOptionsPanelSoundQuality : HudUiCycleSelectorWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundVolume.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelSoundQuality.
      */
-HudUiOptionsPanel_SoundVolume() {
+CHudUiOptionsPanelSoundQuality() {
+    }
+
+    void OnActivate();
+    void PostLoadFromZrd();
+    void InitFromOptions();
+    void SyncFromOptions();
+};
+
+struct CHudUiOptionsPanelSoundVolume : HudUiFillBitmapSlider {
+    /**
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelSoundVolume.
+     */
+CHudUiOptionsPanelSoundVolume() {
     }
 
     void PostLoadFromZrd();
@@ -2692,13 +2685,13 @@ HudUiOptionsPanel_SoundVolume() {
     void OnActivate();
 };
 
-struct HudUiOptionsPanel_MusicEnable : HudUiCheckToggleWidget {
+struct CHudUiOptionsPanelMusicEnable : HudUiCheckToggleWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicEnable.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelMusicEnable.
      */
-HudUiOptionsPanel_MusicEnable() {
+CHudUiOptionsPanelMusicEnable() {
     }
 
     void PostLoadFromZrd();
@@ -2706,13 +2699,13 @@ HudUiOptionsPanel_MusicEnable() {
     void OnActivate();
 };
 
-struct HudUiOptionsPanel_MusicVolume : HudUiFillBitmapSlider {
+struct CHudUiOptionsPanelMusicVolume : HudUiFillBitmapSlider {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicVolume.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelMusicVolume.
      */
-HudUiOptionsPanel_MusicVolume() {
+CHudUiOptionsPanelMusicVolume() {
     }
 
     void PostLoadFromZrd();
@@ -2720,13 +2713,13 @@ HudUiOptionsPanel_MusicVolume() {
     void OnActivate();
 };
 
-struct HudUiOptionsPanel_Resolution : HudUiCycleSelectorWidget {
+struct CHudUiOptionsPanelResolution : HudUiCycleSelectorWidget {
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Resolution.
+     * Purpose: preserve the recovered HUD behavior for CHudUiOptionsPanelResolution.
      */
-HudUiOptionsPanel_Resolution() {
+CHudUiOptionsPanelResolution() {
     }
 
     void PostLoadFromZrd();
@@ -2741,18 +2734,18 @@ HudUiOptionsPanel_Resolution() {
  */
 struct HudOptionsDialog : HudUiBackground {
     HudUiOptionsPanelBackButton backButton;
-    HudUiOptionsPanel_Lighting lightingToggle;
-    HudUiOptionsPanel_Perspective perspectiveToggle;
-    HudUiOptionsPanel_FullHud fullHudToggle;
-    HudUiOptionsPanel_ObjectDetail objectDetailSelector;
-    HudUiOptionsPanel_TextureMemory textureMemorySelector;
-    HudUiOptionsPanel_Effects effectsSelector;
-    HudUiOptionsPanel_SoundActive soundActiveToggle;
-    HudUiOptionsPanel_SoundQuality soundQualitySelector;
-    HudUiOptionsPanel_SoundVolume soundVolumeWidget;
-    HudUiOptionsPanel_MusicEnable musicEnableToggle;
-    HudUiOptionsPanel_MusicVolume musicVolumeWidget;
-    HudUiOptionsPanel_Resolution resolutionSelector;
+    CHudUiOptionsPanelLighting lightingToggle;
+    CHudUiOptionsPanelPerspective perspectiveToggle;
+    CHudUiOptionsPanelFullHud fullHudToggle;
+    CHudUiOptionsPanelObjectDetail objectDetailSelector;
+    CHudUiOptionsPanelTextureMemory textureMemorySelector;
+    CHudUiOptionsPanelEffects effectsSelector;
+    CHudUiOptionsPanelSoundActive soundActiveToggle;
+    CHudUiOptionsPanelSoundQuality soundQualitySelector;
+    CHudUiOptionsPanelSoundVolume soundVolumeWidget;
+    CHudUiOptionsPanelMusicEnable musicEnableToggle;
+    CHudUiOptionsPanelMusicVolume musicVolumeWidget;
+    CHudUiOptionsPanelResolution resolutionSelector;
 
     HudOptionsDialog();
     ~HudOptionsDialog();
@@ -2926,21 +2919,13 @@ struct HudUiPanelSpan {
         unsigned int count,
         const HudUiPanelLayoutEntry &templatePanel
     ) {
-        InsertN(
-            insertPos,
-            count,
-            &templatePanel
-        );
+        InsertN(insertPos, count, &templatePanel);
     }
     void insert(
         iterator insertPos,
         const HudUiPanelLayoutEntry &templatePanel
     ) {
-        InsertN(
-            insertPos,
-            1,
-            &templatePanel
-        );
+        InsertN(insertPos, 1, &templatePanel);
     }
     void Clear();
     HudUiPanelSpan * CopyInit(const HudUiPanelSpan *source);
@@ -3015,21 +3000,13 @@ struct HudUiPanelSpanVec {
         unsigned int count,
         const HudUiPanelSpan &templateSpan
     ) {
-        InsertN(
-            insertPos,
-            count,
-            &templateSpan
-        );
+        InsertN(insertPos, count, &templateSpan);
     }
     void insert(
         iterator insertPos,
         const HudUiPanelSpan &templateSpan
     ) {
-        InsertN(
-            insertPos,
-            1,
-            &templateSpan
-        );
+        InsertN(insertPos, 1, &templateSpan);
     }
     void InsertN(
         HudUiPanelSpan *insertPos,
@@ -4071,77 +4048,77 @@ RECOIL_STATIC_ASSERT(
         previewOffsetY
     ) == 0x184
 );
-RECOIL_STATIC_ASSERT(sizeof(HudUiZrdWidgetEx17C_Item) == 0x17c);
+RECOIL_STATIC_ASSERT(sizeof(CHudRadioButtonWidget) == 0x17c);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C_Item,
+        CHudRadioButtonWidget,
         selected
     ) == 0x14c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C_Item,
+        CHudRadioButtonWidget,
         ownerSelector
     ) == 0x150
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C_Item,
+        CHudRadioButtonWidget,
         itemIndex
     ) == 0x154
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C_Item,
+        CHudRadioButtonWidget,
         mouseRectValid
     ) == 0x158
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C_Item,
+        CHudRadioButtonWidget,
         mouseRect
     ) == 0x15c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C_Item,
+        CHudRadioButtonWidget,
         selectedImage
     ) == 0x16c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C_Item,
+        CHudRadioButtonWidget,
         unselectedImage
     ) == 0x170
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C_Item,
+        CHudRadioButtonWidget,
         selectedRolloverImage
     ) == 0x174
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C_Item,
+        CHudRadioButtonWidget,
         unselectedRolloverImage
     ) == 0x178
 );
-RECOIL_STATIC_ASSERT(sizeof(HudUiZrdWidgetEx17C) == 0x17c);
+RECOIL_STATIC_ASSERT(sizeof(CHudRadioGroupWidget) == 0x17c);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C,
+        CHudRadioGroupWidget,
         optionCount
     ) == 0x14c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C,
+        CHudRadioGroupWidget,
         options
     ) == 0x150
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiZrdWidgetEx17C,
+        CHudRadioGroupWidget,
         selectedIndex
     ) == 0x178
 );

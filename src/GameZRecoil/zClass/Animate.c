@@ -25,12 +25,7 @@ namespace zClass_Animate {
      */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kAnimateSourceFile,
-                0x72,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kAnimateSourceFile, 0x72, "Null node pointer.");
             return 5;
         }
 
@@ -50,28 +45,15 @@ namespace zClass_Animate {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kAnimateSourceFile,
-                0x80,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kAnimateSourceFile, 0x80, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kAnimateSourceFile,
-                0x81,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kAnimateSourceFile, 0x81, "Null node pointer.");
             return 5;
         }
 
-        return zClass_Class::AddChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::AddChildGeneric(parent, child);
     }
 
     int __fastcall
@@ -87,37 +69,19 @@ namespace zClass_Animate {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kAnimateSourceFile,
-                0x97,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kAnimateSourceFile, 0x97, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kAnimateSourceFile,
-                0x98,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kAnimateSourceFile, 0x98, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kAnimateSourceFile,
-                0x99,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kAnimateSourceFile, 0x99, "Null class data pointer");
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::RemoveChildGeneric(parent, child);
     }
 
     /**
@@ -131,31 +95,18 @@ namespace zClass_Animate {
         zClass_AnimateDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kAnimateSourceFile,
-                0x1a9,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kAnimateSourceFile, 0x1a9, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_AnimateDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kAnimateSourceFile,
-                0x1aa,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kAnimateSourceFile, 0x1aa, "Null class data pointer");
             return 5;
         }
 
         if ((data->statusFlags & 0x04) != 0) {
-            if (AdvanceTime(
-                &data->runtime,
-                g_FrameDeltaTimeSec
-            ) == kAnimateStateStopped) {
+            if (AdvanceTime(&data->runtime, g_FrameDeltaTimeSec) == kAnimateStateStopped) {
                 data->statusFlags &= ~0x04;
                 return 0;
             }
@@ -163,10 +114,7 @@ namespace zClass_Animate {
             SampleTransform(&data->runtime);
             data->flags |= 0x01;
             if ((node->flags & 0x01) == 0) {
-                if (zClass_TypeList::Insert(
-                    7,
-                    node
-                ) == 0) {
+                if (zClass_TypeList::Insert(7, node) == 0) {
                     node->flags |= 0x01;
                 }
             }

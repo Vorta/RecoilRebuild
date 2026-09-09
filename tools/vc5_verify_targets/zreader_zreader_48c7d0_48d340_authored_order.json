@@ -15,8 +15,8 @@
   "functions": [
     {
       "address": "0x48c7d0",
-      "symbol": "?ZRDR_InitNodePool@zUtil@@YIXH@Z",
-      "name": "zUtil::ZRDR_InitNodePool",
+      "symbol": "?zRdrInitNodePool@zUtil@@YIXH@Z",
+      "name": "zUtil::zRdrInitNodePool",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -24,7 +24,7 @@
     },
     {
       "address": "0x48c800",
-      "symbol": "_zUtil_ZRDR_GrowNodePool",
+      "symbol": "_zRdrGrowNodePool",
       "name": "zUtil_ZRDR::GrowNodePool",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -33,7 +33,7 @@
     },
     {
       "address": "0x48c820",
-      "symbol": "@zUtil_ZRDR_FreeNode@4",
+      "symbol": "@zRdrFreeNode@4",
       "name": "zUtil_ZRDR::FreeNode",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -42,7 +42,7 @@
     },
     {
       "address": "0x48c890",
-      "symbol": "_zUtil_ZRDR_FreeNodePool",
+      "symbol": "_zRdrFreeNodePool",
       "name": "zUtil_ZRDR::FreeNodePool",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -60,7 +60,7 @@
     },
     {
       "address": "0x48c950",
-      "symbol": "_zArchiveList_New",
+      "symbol": "_zArchiveListNew",
       "name": "zArchiveList::New",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -69,7 +69,7 @@
     },
     {
       "address": "0x48c970",
-      "symbol": "@zArchiveList_Free@4",
+      "symbol": "@zArchiveListFree@4",
       "name": "zArchiveList::Free",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -78,7 +78,7 @@
     },
     {
       "address": "0x48c9a0",
-      "symbol": "@zArchiveList_Link@12",
+      "symbol": "@zArchiveListLink@12",
       "name": "zArchiveList::Link",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -87,7 +87,7 @@
     },
     {
       "address": "0x48c9c0",
-      "symbol": "@zArchiveList_AddHead@8",
+      "symbol": "@zArchiveListAddHead@8",
       "name": "zArchiveList::AddHead",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -96,8 +96,8 @@
     },
     {
       "address": "0x48ca10",
-      "symbol": "@zArchiveList_AllocNode@4",
-      "name": "zArchiveList_AllocNode",
+      "symbol": "@zArchiveListAllocNode@4",
+      "name": "zArchiveListAllocNode",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -105,7 +105,7 @@
     },
     {
       "address": "0x48ca30",
-      "symbol": "@zArchiveList_AddTail@8",
+      "symbol": "@zArchiveListAddTail@8",
       "name": "zArchiveList::AddTail",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -114,7 +114,7 @@
     },
     {
       "address": "0x48ca70",
-      "symbol": "@zArchiveList_Remove@8",
+      "symbol": "@zArchiveListRemove@8",
       "name": "zArchiveList::Remove",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -123,7 +123,7 @@
     },
     {
       "address": "0x48cae0",
-      "symbol": "@zArchiveList_FreeNode@4",
+      "symbol": "@zArchiveListFreeNode@4",
       "name": "zArchiveList::FreeNode",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -132,7 +132,7 @@
     },
     {
       "address": "0x48cb00",
-      "symbol": "@zArchiveList_FindNode@8",
+      "symbol": "@zArchiveListFindNode@8",
       "name": "zArchiveList::FindNode",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -141,7 +141,7 @@
     },
     {
       "address": "0x48cb30",
-      "symbol": "@zArchiveList_Get@8",
+      "symbol": "@zArchiveListGet@8",
       "name": "zArchiveList::Get",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -150,7 +150,7 @@
     },
     {
       "address": "0x48cb70",
-      "symbol": "@zArchiveList_RemoveHead@4",
+      "symbol": "@zArchiveListRemoveHead@4",
       "name": "zArchiveList::RemoveHead",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -159,7 +159,7 @@
     },
     {
       "address": "0x48cbd0",
-      "symbol": "@zArchiveList_FindCompare@12",
+      "symbol": "@zArchiveListFindCompare@12",
       "name": "zArchiveList::FindCompare",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -168,7 +168,7 @@
     },
     {
       "address": "0x48cc20",
-      "symbol": "@zArchiveList_FindKey@8",
+      "symbol": "@zArchiveListFindKey@8",
       "name": "zArchiveList::FindKey",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -177,7 +177,7 @@
     },
     {
       "address": "0x48cc50",
-      "symbol": "@zArchiveList_Find@12",
+      "symbol": "@zArchiveListFind@12",
       "name": "zArchiveList::FindCompareThunk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -186,7 +186,7 @@
     },
     {
       "address": "0x48cc60",
-      "symbol": "@zArchiveList_Count@4",
+      "symbol": "@zArchiveListCount@4",
       "name": "zArchiveList::Count",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -195,8 +195,8 @@
     },
     {
       "address": "0x48cc70",
-      "symbol": "?ZRDR_Init@zUtil@@YIHPBD@Z",
-      "name": "zUtil::ZRDR_Init",
+      "symbol": "?zRdrInit@zUtil@@YIHPBD@Z",
+      "name": "zUtil::zRdrInit",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -204,7 +204,7 @@
     },
     {
       "address": "0x48cca0",
-      "symbol": "@zUtil_ZRDR_SetPath@4",
+      "symbol": "@zRdrSetPath@4",
       "name": "zUtil_ZRDR::SetPath",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -213,7 +213,7 @@
     },
     {
       "address": "0x48cce0",
-      "symbol": "@zUtil_ZRDR_AddPath@4",
+      "symbol": "@zRdrAddPath@4",
       "name": "zUtil_ZRDR::AddPath",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -222,7 +222,7 @@
     },
     {
       "address": "0x48cd10",
-      "symbol": "_zUtil_ZRDR_Exit",
+      "symbol": "_zRdrExit",
       "name": "zUtil_ZRDR::Exit",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -348,7 +348,7 @@
     },
     {
       "address": "0x48d2c0",
-      "symbol": "@zUtil_ZRDR_Unmount@4",
+      "symbol": "@zRdrUnmount@4",
       "name": "zUtil_ZRDR::Unmount",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -410,7 +410,7 @@
       "retail_end_exclusive": "0x48d340",
       "predecessor": {
         "address": "0x48c250",
-        "symbol": "@zNetwork_DPlay_ReportError@12",
+        "symbol": "@zNetworkDPlayReportError@12",
         "name": "zNetwork_DPlay::ReportError",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
@@ -459,8 +459,8 @@
       ],
       "successor": {
         "address": "0x48d340",
-        "symbol": "?Noise_InitBuffers@zVid@@YAXXZ",
-        "name": "zVid::Noise_InitBuffers",
+        "symbol": "?NoiseInitBuffers@zVid@@YAXXZ",
+        "name": "zVid::NoiseInitBuffers",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

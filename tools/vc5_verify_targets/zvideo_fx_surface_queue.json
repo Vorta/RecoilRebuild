@@ -23,8 +23,8 @@
     },
     {
       "address": "0x48d420",
-      "symbol": "?Fx_SetSurfaceState@zVideo@@YIXPAXHHH@Z",
-      "name": "zVideo::Fx_SetSurfaceState"
+      "symbol": "?FxSetSurfaceState@zVideo@@YIXPAXHHH@Z",
+      "name": "zVideo::FxSetSurfaceState"
     },
     {
       "address": "0x4bee20",
@@ -33,8 +33,8 @@
     },
     {
       "address": "0x4bef50",
-      "symbol": "?FxPass3_QueuePrimitive@zVideo@@YIXPAXHHH@Z",
-      "name": "zVideo::FxPass3_QueuePrimitive"
+      "symbol": "?FxPass3QueuePrimitive@zVideo@@YIXPAXHHH@Z",
+      "name": "zVideo::FxPass3QueuePrimitive"
     },
     {
       "address": "0x4a6840",
@@ -43,8 +43,8 @@
     },
     {
       "address": "0x4a68d0",
-      "symbol": "?Dispatch_UnlockPrimarySurfaceState@zVideo@@YAHXZ",
-      "name": "zVideo::Dispatch_UnlockPrimarySurfaceState"
+      "symbol": "?DispatchUnlockPrimarySurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::DispatchUnlockPrimarySurfaceState"
     }
   ],
   "data_symbols": [

@@ -12,6 +12,142 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 
+
+def _check_relocation_source_name_refresh_preserves_context(monkeypatch):
+    from copy import deepcopy
+    from types import SimpleNamespace
+    from _recoil.commands import relocation_source_names as names
+
+    identity = "recoil:function:0x1000"
+    snapshot = dict(symbol_id=identity, object_symbol="?Old@@", address="0x1000", end_exclusive="0x1020")
+    native_context = dict(source=deepcopy(snapshot), owner_id=None, evidence_ids=["proof"], retail={"target": 4096})
+    data = {"symbols": {
+        identity: dict(binary="recoil", kind="function", pipeline_class="authored",
+            native_eh_relocation_binding=dict(context=native_context, reviewed=True, reason="prior proof"),
+            relocation_expectation_exceptions=[dict(source_binding=deepcopy(snapshot), object_symbol="?Old@@", target=8192)]),
+        "recoil:data:0x2000": dict(relocation_target_binding=dict(
+            binding_context=dict(source_binding=deepcopy(snapshot)), target=8192)),
+    }, "accepted": {"owner": "unchanged"}}
+    document = SimpleNamespace(data=data, collection=lambda key: data[key])
+    payload = dict(schema="recoil-relocation-source-names-v1", reviewed=True, renames=[dict(
+        source_symbol_id=identity, expected_object_symbol="?Old@@", object_symbol="?New@@",
+        expected_occurrences=3, reason="Reviewed source identifier rename")])
+    before = deepcopy(data)
+    with monkeypatch.context() as patch:
+        patch.setattr(names.expectations, "build_object_binding_snapshot",
+            lambda *a, **kw: dict(snapshot, object_symbol=kw["object_symbol"]))
+        patch.setattr(names.expectations, "relocation_target_binding_staleness",
+            lambda binding, **kw: (binding, []))
+        patch.setattr(names.expectations, "reviewed_exception_staleness", lambda binding, **kw: (binding, []))
+        patch.setattr(names.eh, "binding_context", lambda *a: dict(native_context,
+            source=dict(snapshot, object_symbol=a[3])))
+        proposed, changes = names.plan_refresh(document, payload, bindings={}, reference=Path("unused"))
+        assert len(changes) == 3 and data == before
+        expected = deepcopy(before)
+        expected["symbols"][identity]["native_eh_relocation_binding"]["context"]["source"]["object_symbol"] = "?New@@"
+        exception = expected["symbols"][identity]["relocation_expectation_exceptions"][0]
+        exception["source_binding"]["object_symbol"] = exception["object_symbol"] = "?New@@"
+        expected["symbols"]["recoil:data:0x2000"]["relocation_target_binding"]["binding_context"]["source_binding"]["object_symbol"] = "?New@@"
+        assert proposed == expected
+        for key, value, error in (("expected_occurrences", 2, "population changed"),
+                                  ("expected_object_symbol", "?Missing@@", "population changed"),
+                                  ("source_symbol_id", "messages:function:0x1000", "existing authored")):
+            invalid = deepcopy(payload)
+            invalid["renames"][0][key] = value
+            with pytest.raises(names.ProgressError, match=error):
+                names.plan_refresh(document, invalid, bindings={}, reference=Path("unused"))
+            assert data == before
+        patch.setattr(names.expectations, "relocation_target_binding_staleness",
+            lambda binding, **kw: (binding, [{"field": "retail_target"}]))
+        with pytest.raises(names.ProgressError, match="target context is stale"):
+            names.plan_refresh(document, payload, bindings={}, reference=Path("unused"))
+        patch.setattr(names.expectations, "build_object_binding_snapshot",
+            lambda *a, **kw: dict(snapshot, object_symbol=kw["object_symbol"], end_exclusive="0x1030"))
+        with pytest.raises(names.ProgressError, match="differs beyond object_symbol"):
+            names.plan_refresh(document, payload, bindings={}, reference=Path("unused"))
+        assert data == before
+
+
+def _check_symbol_name_batch_is_atomic_and_preserves_semantic_facts():
+    from copy import deepcopy
+    from types import SimpleNamespace
+    from _recoil.commands.symbol_names import plan_renames, ProgressError
+
+    data = {"symbols": {
+        "recoil:function:one": {"binary": "recoil", "navigation_name": "Old", "accepted": {"bytes": True}},
+        "recoil:function:two": {"binary": "recoil", "navigation_name": "Other"},
+    }, "owners": {"recoil:owner:one": {"binary": "recoil", "name": "Old owner",
+        "gates": {"source": "accepted"}, "relationships": {"primary_functions": ["one"]},
+        "address_metadata": {"0x401000": {"name": "Old method", "source_path": "src/a.cpp"}}}}}
+    original = deepcopy(data)
+    row = dict(symbol_id="recoil:function:one", expected_name="Old", name="ReadLine", reason="reads one line")
+    payload = dict(schema="recoil-symbol-names-v1", reviewed=True, binary="recoil", renames=[row])
+    document = SimpleNamespace(data=data)
+    proposed = plan_renames(document, payload)
+    expected = deepcopy(data)
+    expected["symbols"][row["symbol_id"]]["navigation_name"] = "ReadLine"
+    assert proposed == expected and data == original
+    bad_rows = [dict(row, expected_name="stale"), dict(row, symbol_id="recoil:function:missing"),
+                dict(row, name="Old"), dict(row, name="bad\nname"), dict(row, name=" padded"),
+                dict(row, reason=""), dict(row, address="0x401000")]
+    for bad in bad_rows:
+        with pytest.raises(ProgressError):
+            plan_renames(document, {**payload, "renames": [
+                dict(row, symbol_id="recoil:function:two", expected_name="Other"), bad]})
+        assert data == original
+    owner_row = dict(owner_id="recoil:owner:one", address="0x401000", expected_name="Old method",
+                     name="ReadLine", reason="synchronize display name only")
+    combined = {**payload, "owner_renames": [owner_row]}
+    expected["owners"]["recoil:owner:one"]["address_metadata"]["0x401000"]["name"] = "ReadLine"
+    assert plan_renames(document, combined) == expected and data == original
+    for bad in (dict(owner_row, address="0x402000"), dict(owner_row, expected_name="stale"),
+                dict(owner_row, owner_id="messages:owner:one"), dict(owner_row, gates={}),
+                dict(owner_row, name="bad\nname")):
+        with pytest.raises(ProgressError):
+            plan_renames(document, {**payload, "owner_renames": [bad]})
+        assert data == original
+    with pytest.raises(ProgressError):
+        plan_renames(document, {**payload, "owner_renames": [owner_row, owner_row]})
+    for change in ({"renames": [row, row]}, {"renames": []}, {"binary": "messages"},
+                   {"reviewed": 1}, {"owners": {}}, {"schema": "unknown"}):
+        with pytest.raises(ProgressError):
+            plan_renames(document, {**payload, **change})
+        assert data == original
+
+
+def _check_symbol_name_cli_dry_run_and_stale_revision(tmp_path, monkeypatch, capsys):
+    from copy import deepcopy
+    from types import SimpleNamespace
+    from _recoil.commands import symbol_names as command
+
+    data = {"symbols": {"recoil:function:one": {"binary": "recoil", "navigation_name": "Old"}}}
+    payload = dict(schema="recoil-symbol-names-v1", reviewed=True, binary="recoil", renames=[
+        dict(symbol_id="recoil:function:one", expected_name="Old", name="ReadLine", reason="observed input")])
+    build = tmp_path / "build"
+    build.mkdir()
+    path = build / "names.json"
+    path.write_text(json.dumps(payload))
+    commits = []
+    def commit(proposed, *, expected_revision, apply):
+        assert expected_revision == 7
+        commits.append(apply)
+        if apply:
+            data.clear()
+            data.update(deepcopy(proposed))
+        return SimpleNamespace(to_dict=lambda: {"applied": apply})
+    monkeypatch.setattr(command, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(command, "ProgressStore", lambda _: SimpleNamespace(
+        load=lambda: SimpleNamespace(data=data, revision=7), commit=commit))
+    args = ["--payload-file", str(path), "--expected-revision", "6", "--dry-run", "--json"]
+    assert command.main(args) == 2 and commits == []
+    args[3] = "7"
+    assert command.main(args) == 0 and commits == [False]
+    assert data["symbols"]["recoil:function:one"]["navigation_name"] == "Old"
+    args[4] = "--apply"
+    assert command.main(args) == 0 and commits == [False, True]
+    assert data["symbols"]["recoil:function:one"]["navigation_name"] == "ReadLine"
+    assert command.main(args) == 2 and commits == [False, True]
+
 from _recoil.lib.progress import ProgressDocument  # noqa: E402
 from _recoil.commands.progress_cli import (  # noqa: E402
     OrderTargetRoleGateError,
@@ -117,7 +253,10 @@ def test_function_tail_separation_requires_exact_snapshot_and_live_boundary_proo
         controls.clear()
 
 
-def test_exception_removal_requires_complete_typed_match_and_preserves_other_facts(monkeypatch):
+def test_exception_removal_requires_complete_typed_match_and_preserves_other_facts(monkeypatch, tmp_path, capsys):
+    _check_relocation_source_name_refresh_preserves_context(monkeypatch)
+    _check_symbol_name_batch_is_atomic_and_preserves_semantic_facts()
+    _check_symbol_name_cli_dry_run_and_stale_revision(tmp_path, monkeypatch, capsys)
     from copy import deepcopy
     from types import SimpleNamespace as Row
     from _recoil.commands import relocation_expectation_mutation as mutation
@@ -400,13 +539,42 @@ def test_order_role_gate_rejects_independent_role_disagreement():
         )
 
 
-def test_order_role_gate_preserves_legacy_missing_role_fallback():
+def test_order_role_gate_preserves_legacy_missing_role_fallback(monkeypatch):
     _order_row_role_gate(
         target_id="unit-target", phase="authored-function-order",
         row={"pipeline_class": "authored", "authored_order_role": "authored-body"},
         tracker_row={"pipeline_class": "authored"},
         address="0x401000", identity="recoil:function:0x401000",
     )
+    from types import SimpleNamespace
+    from _recoil.commands import progress_cli as cli
+
+    block = {"start": "0x402000", "end_exclusive": "0x402100", "order_targets": {}}
+    targets = {name: {"binary": "recoil", "kind": "vc5", "name": name,
+                      "registration": {}, "interval": interval}
+               for name, interval in {
+                   "before": ("0x401000", "0x402000"),
+                   "current": ("0x402000", "0x402100"),
+                   "after": ("0x402100", "0x403000"),
+               }.items()}
+    document = SimpleNamespace(
+        pipeline=lambda *a, **k: {"phase": "authored-function-order", "physical_block_id": "block"},
+        collection=lambda name: {"block": block} if name == "physical_blocks" else targets)
+    visited = []
+    monkeypatch.setattr(cli, "_registered_order_interval", lambda target: target["interval"])
+    monkeypatch.setattr(cli, "_registered_order_scope", lambda *a: "authored")
+    def contract(doc, target_id, **kwargs):
+        visited.append(target_id)
+        return {"target": targets[target_id], "covered_block_ids": ["block"]}
+    monkeypatch.setattr(cli, "_target_order_contract", contract)
+    result = cli.resolve_current_order_target(document)
+    assert result["status"] == "ready" and result["target_id"] == "current"
+    assert visited == ["current"]
+    targets["overlapping"] = {**targets["current"], "interval": ("0x401000", "0x402080")}
+    visited.clear()
+    result = cli.resolve_current_order_target(document)
+    assert result["reason_code"] == "order-target-ambiguous"
+    assert visited == ["current", "overlapping"]
 
 
 def test_provider_registration_accepts_only_detached_non_authored_inventory():

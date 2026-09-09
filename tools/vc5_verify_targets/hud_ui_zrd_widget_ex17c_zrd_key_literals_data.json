@@ -1,6 +1,6 @@
 {
   "name": "hud_ui_zrd_widget_ex17c_zrd_key_literals_data",
-  "description": "HudUiZrdWidgetEx17C writable .data ZRD key literals for RADIO items and MOUSERECT overrides.",
+  "description": "CHudRadioGroupWidget writable .data ZRD key literals for RADIO items and MOUSERECT overrides.",
   "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
   "source_filename": "zhud_ui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",

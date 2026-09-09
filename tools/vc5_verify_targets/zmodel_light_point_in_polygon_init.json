@@ -1,6 +1,6 @@
 {
   "name": "zmodel_light_point_in_polygon_init",
-  "description": "zModel_Light_PointInPolygonInitXZ active-light list and software ambient setup.",
+  "description": "zModelLightPointInPolygonInitXZ active-light list and software ambient setup.",
   "source_filename": "gmod_light.c",
   "source_from": "src/GameZRecoil/zModel/gmod_light.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -20,8 +20,8 @@
   "functions": [
     {
       "address": "0x487a30",
-      "symbol": "?zModel_Light_PointInPolygonInitXZ@@YIXPAPAUzClass_LightDataPartial@@PAPAUzModel_LightStatePartial@@H@Z",
-      "name": "zModel_Light_PointInPolygonInitXZ"
+      "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUzClass_LightDataPartial@@PAPAUzModel_LightStatePartial@@H@Z",
+      "name": "zModelLightPointInPolygonInitXZ"
     }
   ]
 }

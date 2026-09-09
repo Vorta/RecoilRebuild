@@ -45,7 +45,7 @@ struct zFMV_Rect {
 extern "C" zVidRect32 g_zFMV_ActionImage_BlitRect;
 extern "C" zVidRect32 g_zFMV_ActionImage_ActiveRegion;
 
-struct zFMV_Playback {
+struct CZFMVPlayback {
     int mciPutFlags;
     unsigned short mciDeviceId;
     unsigned short reserved06;
@@ -58,15 +58,15 @@ struct zFMV_Playback {
      * Original inline helper evidence: default local setup construction has no standalone retail body.
      * Purpose: let tests and stack setup create playback records before explicit field initialization.
      */
-    zFMV_Playback() {}
+    CZFMVPlayback() {}
     /**
      * Purpose: initialize playback state with duplicated media path and notify window.
      */
-    zFMV_Playback(
+    CZFMVPlayback(
         const char *mediaPath,
         HWND notifyHwnd
     );
-    ~zFMV_Playback();
+    ~CZFMVPlayback();
     void OpenAndPlay(
         unsigned int startMs,
         int endMs,
@@ -108,7 +108,7 @@ struct zFMV_Action {
     void RunBlockingTimed();
 };
 
-struct zFMV_ActionImage : zFMV_Action {
+struct CZFMVActionImage : zFMV_Action {
     char *imagePath;
     void *image;
     int doAdjustSurfaces;
@@ -119,11 +119,11 @@ struct zFMV_ActionImage : zFMV_Action {
      * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
      * Purpose: let compiler-generated construction install the image-action vtable for local setup.
      */
-    zFMV_ActionImage() {}
+    CZFMVActionImage() {}
     /**
      * Purpose: initialize an image action with an explicit screen blit origin.
      */
-    zFMV_ActionImage(
+    CZFMVActionImage(
         const char *imagePath,
         int doAdjustSurfaces,
         int blitX,
@@ -132,17 +132,17 @@ struct zFMV_ActionImage : zFMV_Action {
     /**
      * Purpose: initialize an image action sized to the active render region.
      */
-    zFMV_ActionImage(
+    CZFMVActionImage(
         const char *imagePath,
         int doAdjustSurfaces
     );
     void Begin(double timeSec);
     int Update(double timeSec);
     void End();
-    ~zFMV_ActionImage();
+    ~CZFMVActionImage();
 };
 
-struct zFMV_ActionFade : zFMV_Action {
+struct CZFMVActionFade : zFMV_Action {
     int fadeDirectionSign;
     unsigned short fadeColorPacked16;
     unsigned short reserved0e;
@@ -156,11 +156,11 @@ struct zFMV_ActionFade : zFMV_Action {
      * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
      * Purpose: let compiler-generated construction install the fade-action vtable for local setup.
      */
-    zFMV_ActionFade() {}
+    CZFMVActionFade() {}
     /**
      * Purpose: initialize fade color, duration, direction, and alpha settings.
      */
-    zFMV_ActionFade(
+    CZFMVActionFade(
         int red,
         int green,
         int blue,
@@ -173,7 +173,7 @@ struct zFMV_ActionFade : zFMV_Action {
     void End();
 };
 
-struct zFMV_ActionPlayAvi : zFMV_Action {
+struct CZFMVActionPlayAvi : zFMV_Action {
     char *mediaPath;
     int modeFlags;
     zFMV_Stream *stream;
@@ -187,45 +187,45 @@ struct zFMV_ActionPlayAvi : zFMV_Action {
      * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
      * Purpose: let compiler-generated construction install the PlayAvi-action vtable for local setup.
      */
-    zFMV_ActionPlayAvi() {}
+    CZFMVActionPlayAvi() {}
     /**
      * Purpose: build the AVI media path, resolve CD-ROM fallback, and store mode flags.
      */
-    zFMV_ActionPlayAvi(
+    CZFMVActionPlayAvi(
         const char *mediaRootPath,
         const char *mediaFileName,
         int modeFlags
     );
-    ~zFMV_ActionPlayAvi();
+    ~CZFMVActionPlayAvi();
     int Update(double timeSec);
     void Begin(double timeSec);
     void End();
 };
 
-struct zFMV_ActionPlayMci : zFMV_Action {
+struct CZFMVActionPlayMci : zFMV_Action {
     char *mediaPath;
-    zFMV_Playback *playback;
+    CZFMVPlayback *playback;
 
     /**
      * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
      * Purpose: let compiler-generated construction install the PlayMci-action vtable for local setup.
      */
-    zFMV_ActionPlayMci() {}
+    CZFMVActionPlayMci() {}
     void Begin(double timeSec);
     int Update(double timeSec);
     void End();
     /**
      * Purpose: build the MCI media path, create playback state, and set its destination rect.
      */
-    zFMV_ActionPlayMci(
+    CZFMVActionPlayMci(
         HWND notifyHwnd,
         const char *mediaRootPath,
         const char *playbackTitle
     );
-    ~zFMV_ActionPlayMci();
+    ~CZFMVActionPlayMci();
 };
 
-struct zFMV_ActionWait : zFMV_Action {
+struct CZFMVActionWait : zFMV_Action {
     float durationSec;
     float startSec;
 
@@ -233,12 +233,12 @@ struct zFMV_ActionWait : zFMV_Action {
      * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
      * Purpose: let compiler-generated construction install the wait-action vtable for local setup.
      */
-    zFMV_ActionWait() {}
+    CZFMVActionWait() {}
     /**
      * Original inline helper evidence: Retail LoadActionsFromZrd inlines wait-action construction.
      * Purpose: initialize a wait action duration before Begin records the start time.
      */
-    zFMV_ActionWait(
+    CZFMVActionWait(
         float durationSecParam
     ) {
         durationSec = durationSecParam;
@@ -277,17 +277,17 @@ struct zFMV_ActionBlur : zFMV_Action {
     void RunBlocking();
 };
 
-struct zFMV_ActionBlurH : zFMV_ActionBlur {
+struct CZFMVActionBlurH : zFMV_ActionBlur {
     /**
      * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
      * Purpose: let compiler-generated construction install the horizontal-blur vtable for local setup.
      */
-    zFMV_ActionBlurH() {}
+    CZFMVActionBlurH() {}
     /**
      * Original inline helper evidence: Retail constructs horizontal blur actions through the blur constructor body plus the derived vtable.
      * Purpose: initialize horizontal blur action state while preserving the derived update dispatch.
      */
-    zFMV_ActionBlurH(
+    CZFMVActionBlurH(
         int framesRemaining,
         int blurPassCount
     ) : zFMV_ActionBlur(
@@ -297,17 +297,17 @@ struct zFMV_ActionBlurH : zFMV_ActionBlur {
     int Update(double timeSec);
 };
 
-struct zFMV_ActionBlurV : zFMV_ActionBlur {
+struct CZFMVActionBlurV : zFMV_ActionBlur {
     /**
      * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
      * Purpose: let compiler-generated construction install the vertical-blur vtable for local setup.
      */
-    zFMV_ActionBlurV() {}
+    CZFMVActionBlurV() {}
     /**
      * Original inline helper evidence: Retail constructs vertical blur actions through the blur constructor body plus the derived vtable.
      * Purpose: initialize vertical blur action state while preserving the derived update dispatch.
      */
-    zFMV_ActionBlurV(
+    CZFMVActionBlurV(
         int framesRemaining,
         int blurPassCount
     ) : zFMV_ActionBlur(
@@ -317,7 +317,7 @@ struct zFMV_ActionBlurV : zFMV_ActionBlur {
     int Update(double timeSec);
 };
 
-struct zFMV_ActionPlaySound : zFMV_Action {
+struct CZFMVActionPlaySound : zFMV_Action {
     zSndSample *sample;
     zSndPlayHandle *voice;
     char sampleName[0x32];
@@ -327,12 +327,12 @@ struct zFMV_ActionPlaySound : zFMV_Action {
      * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
      * Purpose: let compiler-generated construction install the sound-action vtable for local setup.
      */
-    zFMV_ActionPlaySound() {}
+    CZFMVActionPlaySound() {}
     /**
      * Original inline helper evidence: Retail LoadActionsFromZrd inlines sound-action construction.
      * Purpose: copy the sample name and clear the playback voice before action start.
      */
-    zFMV_ActionPlaySound(
+    CZFMVActionPlaySound(
         const char *sampleNameParam
     ) {
         strncpy(
@@ -425,178 +425,178 @@ extern "C" zFMV_Rect g_zFMV_ActionPlayMci_DestRect;
 
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(sizeof(zFMV_Rect) == 0x10);
-RECOIL_STATIC_ASSERT(sizeof(zFMV_Playback) == 0x30);
+RECOIL_STATIC_ASSERT(sizeof(CZFMVPlayback) == 0x30);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_Playback,
+        CZFMVPlayback,
         mciPutFlags
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_Playback,
+        CZFMVPlayback,
         mciDeviceId
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_Playback,
+        CZFMVPlayback,
         notifyHwnd
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_Playback,
+        CZFMVPlayback,
         sourceRect
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_Playback,
+        CZFMVPlayback,
         destinationRect
     ) == 0x1c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_Playback,
+        CZFMVPlayback,
         mediaPathDup
     ) == 0x2c
 );
 RECOIL_STATIC_ASSERT(sizeof(zFMV_Action) == 0x08);
-RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionWait) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(CZFMVActionWait) == 0x10);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionWait,
+        CZFMVActionWait,
         durationSec
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionWait,
+        CZFMVActionWait,
         startSec
     ) == 0x0c
 );
-RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionImage) == 0x28);
+RECOIL_STATIC_ASSERT(sizeof(CZFMVActionImage) == 0x28);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionImage,
+        CZFMVActionImage,
         imagePath
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionImage,
+        CZFMVActionImage,
         image
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionImage,
+        CZFMVActionImage,
         doAdjustSurfaces
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionImage,
+        CZFMVActionImage,
         forcePrimaryPostprocess
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionImage,
+        CZFMVActionImage,
         blitRect
     ) == 0x18
 );
-RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionFade) == 0x28);
+RECOIL_STATIC_ASSERT(sizeof(CZFMVActionFade) == 0x28);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionFade,
+        CZFMVActionFade,
         fadeDirectionSign
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionFade,
+        CZFMVActionFade,
         fadeColorPacked16
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionFade,
+        CZFMVActionFade,
         durationSecRaw
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionFade,
+        CZFMVActionFade,
         startSec
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionFade,
+        CZFMVActionFade,
         capturedFrame
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionFade,
+        CZFMVActionFade,
         maxAlpha
     ) == 0x24
 );
-RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionPlayAvi) == 0x38);
+RECOIL_STATIC_ASSERT(sizeof(CZFMVActionPlayAvi) == 0x38);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlayAvi,
+        CZFMVActionPlayAvi,
         mediaPath
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlayAvi,
+        CZFMVActionPlayAvi,
         modeFlags
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlayAvi,
+        CZFMVActionPlayAvi,
         stream
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlayAvi,
+        CZFMVActionPlayAvi,
         startTimeSec
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlayAvi,
+        CZFMVActionPlayAvi,
         lastDecodedFrameIndex
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlayAvi,
+        CZFMVActionPlayAvi,
         destRect
     ) == 0x24
 );
-RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionPlayMci) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(CZFMVActionPlayMci) == 0x10);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlayMci,
+        CZFMVActionPlayMci,
         mediaPath
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlayMci,
+        CZFMVActionPlayMci,
         playback
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionBlur) == 0x30);
-RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionBlurH) == 0x30);
-RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionBlurV) == 0x30);
+RECOIL_STATIC_ASSERT(sizeof(CZFMVActionBlurH) == 0x30);
+RECOIL_STATIC_ASSERT(sizeof(CZFMVActionBlurV) == 0x30);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zFMV_ActionBlur,
@@ -621,16 +621,16 @@ RECOIL_STATIC_ASSERT(
         primarySurfaceRect
     ) == 0x20
 );
-RECOIL_STATIC_ASSERT(sizeof(zFMV_ActionPlaySound) == 0x44);
+RECOIL_STATIC_ASSERT(sizeof(CZFMVActionPlaySound) == 0x44);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlaySound,
+        CZFMVActionPlaySound,
         voice
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zFMV_ActionPlaySound,
+        CZFMVActionPlaySound,
         sampleName
     ) == 0x10
 );

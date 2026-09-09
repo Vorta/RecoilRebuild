@@ -14,8 +14,8 @@
   "functions": [
     {
       "address": "0x487a30",
-      "symbol": "?zModel_Light_PointInPolygonInitXZ@@YIXPAPAUzClass_LightDataPartial@@PAPAUzModel_LightStatePartial@@H@Z",
-      "name": "zModel_Light_PointInPolygonInitXZ",
+      "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUzClass_LightDataPartial@@PAPAUzModel_LightStatePartial@@H@Z",
+      "name": "zModelLightPointInPolygonInitXZ",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -41,8 +41,8 @@
     },
     {
       "address": "0x488d60",
-      "symbol": "?zModel_Light_BuildLightWeights@@YIHPAUzVec3@@HPAHM@Z",
-      "name": "zModel_Light_BuildLightWeights",
+      "symbol": "?zModelLightBuildLightWeights@@YIHPAUzVec3@@HPAHM@Z",
+      "name": "zModelLightBuildLightWeights",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,

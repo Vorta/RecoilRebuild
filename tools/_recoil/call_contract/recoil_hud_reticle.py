@@ -162,7 +162,7 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
         (
             0x296,
             IMAGE_REL_I386_REL32,
-            "?zMath_UnprojectPointBatchZBuf@@"
+            "?zMathUnprojectPointBatchZBuf@@"
             "YIXPBUzProjectedPoint@@PAUzVec3@@H@Z",
             0,
         ),
@@ -170,7 +170,7 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
         (
             0x2CC,
             IMAGE_REL_I386_REL32,
-            "?zMath_UnprojectPointBatchZBuf@@"
+            "?zMathUnprojectPointBatchZBuf@@"
             "YIXPBUzProjectedPoint@@PAUzVec3@@H@Z",
             0,
         ),
@@ -562,7 +562,7 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
         ),
         (
             IMAGE_REL_I386_REL32,
-            "?zMath_UnprojectPointBatchZBuf@@"
+            "?zMathUnprojectPointBatchZBuf@@"
             "YIXPBUzProjectedPoint@@PAUzVec3@@H@Z",
             0,
             (0x291, 0x2C7),

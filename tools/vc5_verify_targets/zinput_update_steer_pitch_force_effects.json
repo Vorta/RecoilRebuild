@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x42fdc0",
-      "symbol": "@zInput_DI_UpdateSteerAndPitchForceEffects@4",
+      "symbol": "@zInputDIUpdateSteerAndPitchForceEffects@4",
       "name": "zInputDI::UpdateSteerAndPitchForceEffects"
     }
   ],

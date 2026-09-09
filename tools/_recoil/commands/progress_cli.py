@@ -2203,6 +2203,16 @@ def resolve_current_order_target(document: ProgressDocument) -> dict[str, Any]:
                 or _registered_order_scope(registration, phase) != expected_scope
             ):
                 continue
+            # A valid contract's exact block envelope must contain this cursor
+            # block. Reject disjoint envelopes before loading and validating
+            # unrelated targets' complete source/identity contracts. Overlap
+            # is only a prefilter: all existing contract and ambiguity gates
+            # still run for every potentially applicable target.
+            if (
+                address_value(interval[1]) <= address_value(block["start"])
+                or address_value(interval[0]) >= address_value(block["end_exclusive"])
+            ):
+                continue
             contract = _target_order_contract(
                 document,
                 candidate_id,

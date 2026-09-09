@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x475130",
-      "symbol": "?zMath_SolveLinearGradient2D@@YIXPAM0MMMMMMMMM@Z",
-      "name": "zMath_SolveLinearGradient2D"
+      "symbol": "?zMathSolveLinearGradient2D@@YIXPAM0MMMMMMMMM@Z",
+      "name": "zMathSolveLinearGradient2D"
     }
   ],
   "source_from": "src/GameZRecoil/zMath/zmth_main.c"

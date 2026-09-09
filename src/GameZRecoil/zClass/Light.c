@@ -47,14 +47,9 @@ namespace zClass_Light {
      * default bounds, modes, color, range, and type-list membership.
      */
     zClass_NodePartial *__cdecl gwLightNew() {
-        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kLightSourceFile,
-                0x96,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kLightSourceFile, 0x96, "Null node pointer.");
             return 0;
         }
 
@@ -68,10 +63,7 @@ namespace zClass_Light {
         node->classId = kZClassNodeLight;
 
         zClass_LightDataPartial *data =
-            (zClass_LightDataPartial *)(calloc(
-                1,
-                sizeof(zClass_LightDataPartial)
-            ));
+            (zClass_LightDataPartial *)(calloc(1, sizeof(zClass_LightDataPartial)));
         node->classData = data;
 
         data->worldDir.x = 0.0f;
@@ -96,17 +88,11 @@ namespace zClass_Light {
         data->range2Sq = 4096.0f;
         data->invRangeDelta = 0.03125f;
         data->dirty = 1;
-        zClass_Class::gwNodeSetActive(
-            node,
-            1
-        );
+        zClass_Class::gwNodeSetActive(node, 1);
         data->attachedWorldCount = 0;
         data->attachedWorlds = 0;
 
-        zClass_TypeList::Insert(
-            9,
-            node
-        );
+        zClass_TypeList::Insert(9, node);
         return node;
     }
 
@@ -118,23 +104,13 @@ namespace zClass_Light {
      */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kLightSourceFile,
-                0xf8,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kLightSourceFile, 0xf8, "Null node pointer.");
             return 5;
         }
 
         zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kLightSourceFile,
-                0xf9,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kLightSourceFile, 0xf9, "Null class data pointer");
             return 5;
         }
 
@@ -169,29 +145,16 @@ namespace zClass_Light {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kLightSourceFile,
-                0x127,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kLightSourceFile, 0x127, "Null node pointer.");
             return 5;
         }
 
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kLightSourceFile,
-                0x128,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kLightSourceFile, 0x128, "Null node pointer.");
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::RemoveChildGeneric(parent, child);
     }
 
     /**
@@ -267,11 +230,7 @@ namespace zClass_Light {
             return 5;
         }
 
-        memcpy(
-            &data->coneAngle,
-            &coneAngleBits,
-            sizeof(data->coneAngle)
-        );
+        memcpy(&data->coneAngle, &coneAngleBits, sizeof(data->coneAngle));
         data->dirty = 1;
         return 0;
     }
@@ -494,10 +453,7 @@ namespace zClass_Light {
 
         zMath::MatStackPushPtr((float *)(&slotBuffer));
         zMath::MatLoadIdentity();
-        gwNode::BuildNodeToAncestorMatrix(
-            node,
-            1
-        );
+        gwNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
 
         zVec3 pointA = localPointA;
         if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
@@ -524,11 +480,7 @@ namespace zClass_Light {
                     + localPointB.z * matrix->zz + matrix->posZ;
             }
             zVec3 outAngles = {0};
-            zMath::Vec3DirectionAnglesBetweenPoints(
-                &pointA,
-                &pointB,
-                &outAngles
-            );
+            zMath::Vec3DirectionAnglesBetweenPoints(&pointA, &pointB, &outAngles);
             outAngles.z = 0.0f;
             data->worldRotation = outAngles;
         }
@@ -550,12 +502,7 @@ namespace zClass_Light {
      */
     int __fastcall gwLightUpdate(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kLightSourceFile,
-                0x395,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kLightSourceFile, 0x395, "Null node pointer.");
             return 5;
         }
 
@@ -565,29 +512,17 @@ namespace zClass_Light {
 
         zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kLightSourceFile,
-                0x39b,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kLightSourceFile, 0x39b, "Null class data pointer");
             return 5;
         }
 
         zMat4x3 slotBuffer = {0};
-        ComputeWorldTransform(
-            node,
-            data
-        );
+        ComputeWorldTransform(node, data);
         zMath::MatStackPushAndCloneParent((float *)(&slotBuffer));
         zMath::MatLoadCameraScratchB();
 
         if (data->isPointMode != 0 || data->coneAngle != 0.0f) {
-            zMath_Mat_TransformNormalBatch(
-                &data->worldDir,
-                &data->viewDir,
-                1
-            );
+            zMathMatTransformNormalBatch(&data->worldDir, &data->viewDir, 1);
             data->viewDir.x = -data->viewDir.x;
             data->viewDir.y = -data->viewDir.y;
             data->viewDir.z = -data->viewDir.z;
@@ -675,7 +610,7 @@ namespace zClass_Light {
         data->specularColor.red = red;
         data->specularColor.green = green;
         data->specularColor.blue = blue;
-        zRndr_FogTargetColorStaged_SetRgb01Clamped(&data->specularColor);
+        zRndrFogTargetColorStagedSetRgb01Clamped(&data->specularColor);
         return 0;
     }
 

@@ -131,8 +131,8 @@
         },
         {
           "address": "0x409010",
-          "symbol": "?EnableChildAtIndex@HudUiZrdWidgetEx17C@@QAEXH@Z",
-          "name": "HudUiZrdWidgetEx17C::EnableChildAtIndex"
+          "symbol": "?EnableChildAtIndex@CHudRadioGroupWidget@@QAEXH@Z",
+          "name": "CHudRadioGroupWidget::EnableChildAtIndex"
         }
       ]
     }

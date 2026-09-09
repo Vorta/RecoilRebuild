@@ -140,8 +140,8 @@
         },
         {
           "address": "0x404140",
-          "symbol": "@zInput_WaitForAnyKeyPressWithTimeoutMs@4",
-          "name": "zInput_WaitForAnyKeyPressWithTimeoutMs",
+          "symbol": "@zInputWaitForAnyKeyPressWithTimeoutMs@4",
+          "name": "zInputWaitForAnyKeyPressWithTimeoutMs",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -176,8 +176,8 @@
         },
         {
           "address": "0x4045b0",
-          "symbol": "?AddHideElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
-          "name": "Briefing_ActionQueue::AddHideElement",
+          "symbol": "?AddHideElement@CBriefingActionQueue@@QAEHPAUHudUiElement@@@Z",
+          "name": "CBriefingActionQueue::AddHideElement",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -194,8 +194,8 @@
         },
         {
           "address": "0x404640",
-          "symbol": "?AddShowElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
-          "name": "Briefing_ActionQueue::AddShowElement",
+          "symbol": "?AddShowElement@CBriefingActionQueue@@QAEHPAUHudUiElement@@@Z",
+          "name": "CBriefingActionQueue::AddShowElement",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -212,8 +212,8 @@
         },
         {
           "address": "0x4046d0",
-          "symbol": "?AddFadeInElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
-          "name": "Briefing_ActionQueue::AddFadeInElement",
+          "symbol": "?AddFadeInElement@CBriefingActionQueue@@QAEHPAUHudUiElement@@@Z",
+          "name": "CBriefingActionQueue::AddFadeInElement",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -230,8 +230,8 @@
         },
         {
           "address": "0x404780",
-          "symbol": "?AddSetPanelText@Briefing_ActionQueue@@QAEHPBDPAUHudUiPanel@@@Z",
-          "name": "Briefing_ActionQueue::AddSetPanelText",
+          "symbol": "?AddSetPanelText@CBriefingActionQueue@@QAEHPBDPAUHudUiPanel@@@Z",
+          "name": "CBriefingActionQueue::AddSetPanelText",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -248,8 +248,8 @@
         },
         {
           "address": "0x4048a0",
-          "symbol": "?AddSetWidgetImageTimed@Briefing_ActionQueue@@QAEHPAUzVidImagePartial@@PAUHudUiWidget@@@Z",
-          "name": "Briefing_ActionQueue::AddSetWidgetImageTimed",
+          "symbol": "?AddSetWidgetImageTimed@CBriefingActionQueue@@QAEHPAUzVidImagePartial@@PAUHudUiWidget@@@Z",
+          "name": "CBriefingActionQueue::AddSetWidgetImageTimed",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -266,8 +266,8 @@
         },
         {
           "address": "0x4049d0",
-          "symbol": "?AddPlaySampleByName@Briefing_ActionQueue@@QAEHPBDMHH@Z",
-          "name": "Briefing_ActionQueue::AddPlaySampleByName",
+          "symbol": "?AddPlaySampleByName@CBriefingActionQueue@@QAEHPBDMHH@Z",
+          "name": "CBriefingActionQueue::AddPlaySampleByName",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -293,8 +293,8 @@
         },
         {
           "address": "0x404b40",
-          "symbol": "?AddDelayUntilProgress@Briefing_ActionQueue@@QAEHH@Z",
-          "name": "Briefing_ActionQueue::AddDelayUntilProgress",
+          "symbol": "?AddDelayUntilProgress@CBriefingActionQueue@@QAEHH@Z",
+          "name": "CBriefingActionQueue::AddDelayUntilProgress",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -339,8 +339,8 @@
       ],
       "candidate_only_extras": [
         {
-          "symbol": "??1Briefing_ActionQueue@@QAE@XZ",
-          "name": "Briefing_ActionQueue implicit std::list cleanup destructor",
+          "symbol": "??1CBriefingActionQueue@@QAE@XZ",
+          "name": "CBriefingActionQueue implicit std::list cleanup destructor",
           "pipeline_class": "non-authored"
         },
         {
@@ -359,13 +359,13 @@
           "pipeline_class": "non-authored"
         },
         {
-          "symbol": "??1HudUiOptionsPanel_MusicVolume@@UAE@XZ",
-          "name": "HudUiOptionsPanel_MusicVolume implicit ordinary destructor alias",
+          "symbol": "??1CHudUiOptionsPanelMusicVolume@@UAE@XZ",
+          "name": "CHudUiOptionsPanelMusicVolume implicit ordinary destructor alias",
           "pipeline_class": "non-authored"
         },
         {
-          "symbol": "??1HudUiOptionsPanel_SoundVolume@@UAE@XZ",
-          "name": "HudUiOptionsPanel_SoundVolume implicit ordinary destructor alias",
+          "symbol": "??1CHudUiOptionsPanelSoundVolume@@UAE@XZ",
+          "name": "CHudUiOptionsPanelSoundVolume implicit ordinary destructor alias",
           "pipeline_class": "non-authored"
         },
         {

@@ -30,8 +30,8 @@
       ],
       "successor": {
         "address": "0x41cc10",
-        "symbol": "?Primary_Init@PickupSpawnList@@SAXXZ",
-        "name": "PickupSpawnList::Primary_Init",
+        "symbol": "?PrimaryInit@PickupSpawnList@@SAXXZ",
+        "name": "PickupSpawnList::PrimaryInit",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

@@ -26,18 +26,18 @@
   "functions": [
     {
       "address": "0x42a000",
-      "symbol": "?Destroy@zInput_BindGroupInfo@@QAEXXZ",
-      "name": "zInput_BindGroupInfo::Destroy"
+      "symbol": "?Destroy@CZInputBindGroupInfo@@QAEXXZ",
+      "name": "CZInputBindGroupInfo::Destroy"
     },
     {
       "address": "0x429f80",
-      "symbol": "?BindGroupList_Clear@zInput@@YAXXZ",
-      "name": "zInput::BindGroupList_Clear"
+      "symbol": "?BindGroupListClear@zInput@@YAXXZ",
+      "name": "zInput::BindGroupListClear"
     },
     {
       "address": "0x42a070",
-      "symbol": "?BindGroupList_AddGroup@zInput@@YIHPBD@Z",
-      "name": "zInput::BindGroupList_AddGroup"
+      "symbol": "?BindGroupListAddGroup@zInput@@YIHPBD@Z",
+      "name": "zInput::BindGroupListAddGroup"
     },
     {
       "address": "0x4706c0",
@@ -71,8 +71,8 @@
     },
     {
       "address": "0x470a10",
-      "symbol": "?BindMap_PackBindingCode@zInput@@YIHHHHH@Z",
-      "name": "zInput::BindMap_PackBindingCode"
+      "symbol": "?BindMapPackBindingCode@zInput@@YIHHHHH@Z",
+      "name": "zInput::BindMapPackBindingCode"
     },
     {
       "address": "0x470a40",
@@ -101,58 +101,58 @@
     },
     {
       "address": "0x46f9b0",
-      "symbol": "?Keyboard_RegisterKeyCallback@zInput@@YIHHPAXPBD@Z",
-      "name": "zInput::Keyboard_RegisterKeyCallback"
+      "symbol": "?KeyboardRegisterKeyCallback@zInput@@YIHHPAXPBD@Z",
+      "name": "zInput::KeyboardRegisterKeyCallback"
     },
     {
       "address": "0x42a500",
-      "symbol": "?BindMap_AddDefaultBinding@zInput@@YIXHHHHHH@Z",
-      "name": "zInput::BindMap_AddDefaultBinding"
+      "symbol": "?BindMapAddDefaultBinding@zInput@@YIXHHHHHH@Z",
+      "name": "zInput::BindMapAddDefaultBinding"
     },
     {
       "address": "0x42a550",
-      "symbol": "?BindMap_InitDefaultBindings@zInput@@YAHXZ",
-      "name": "zInput::BindMap_InitDefaultBindings"
+      "symbol": "?BindMapInitDefaultBindings@zInput@@YAHXZ",
+      "name": "zInput::BindMapInitDefaultBindings"
     },
     {
       "address": "0x4710a0",
-      "symbol": "?BindMapSystem_Init@zInput@@YIXH@Z",
-      "name": "zInput::BindMapSystem_Init"
+      "symbol": "?BindMapSystemInit@zInput@@YIXH@Z",
+      "name": "zInput::BindMapSystemInit"
     },
     {
       "address": "0x471660",
-      "symbol": "?BindMapSystem_Shutdown@zInput@@YAXXZ",
-      "name": "zInput::BindMapSystem_Shutdown"
+      "symbol": "?BindMapSystemShutdown@zInput@@YAXXZ",
+      "name": "zInput::BindMapSystemShutdown"
     },
     {
       "address": "0x471860",
-      "symbol": "?BindMapContext_Push@zInput@@YIXPAUzInput_BindMapContext@@@Z",
-      "name": "zInput::BindMapContext_Push"
+      "symbol": "?BindMapContextPush@zInput@@YIXPAUzInput_BindMapContext@@@Z",
+      "name": "zInput::BindMapContextPush"
     },
     {
       "address": "0x471120",
-      "symbol": "?BindMap_InitDikKeyNameTable@zInput@@YAXXZ",
-      "name": "zInput::BindMap_InitDikKeyNameTable"
+      "symbol": "?BindMapInitDikKeyNameTable@zInput@@YAXXZ",
+      "name": "zInput::BindMapInitDikKeyNameTable"
     },
     {
       "address": "0x4715e0",
-      "symbol": "?BindMap_InitJoystickButtonNameTable@zInput@@YAXXZ",
-      "name": "zInput::BindMap_InitJoystickButtonNameTable"
+      "symbol": "?BindMapInitJoystickButtonNameTable@zInput@@YAXXZ",
+      "name": "zInput::BindMapInitJoystickButtonNameTable"
     },
     {
       "address": "0x471640",
-      "symbol": "?BindMap_InitMouseButtonNameTable@zInput@@YAXXZ",
-      "name": "zInput::BindMap_InitMouseButtonNameTable"
+      "symbol": "?BindMapInitMouseButtonNameTable@zInput@@YAXXZ",
+      "name": "zInput::BindMapInitMouseButtonNameTable"
     },
     {
       "address": "0x4716b0",
-      "symbol": "?BindMap_Current_RebuildLookupIndices@zInput@@YAXXZ",
-      "name": "zInput::BindMap_Current_RebuildLookupIndices"
+      "symbol": "?BindMapCurrentRebuildLookupIndices@zInput@@YAXXZ",
+      "name": "zInput::BindMapCurrentRebuildLookupIndices"
     },
     {
       "address": "0x471950",
-      "symbol": "?BindMapContext_Pop@zInput@@YAXXZ",
-      "name": "zInput::BindMapContext_Pop"
+      "symbol": "?BindMapContextPop@zInput@@YAXXZ",
+      "name": "zInput::BindMapContextPop"
     }
   ],
   "data_symbols": [

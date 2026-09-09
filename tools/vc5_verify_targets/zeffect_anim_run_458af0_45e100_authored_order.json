@@ -608,8 +608,8 @@
     },
     {
       "address": "0x45dc70",
-      "symbol": "?SetTransformRotAndVelocity_Thunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMMMMMMMM@Z",
-      "name": "zEffectAnim::SetTransformRotAndVelocity_Thunk",
+      "symbol": "?SetTransformRotAndVelocityThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMMMMMMMM@Z",
+      "name": "zEffectAnim::SetTransformRotAndVelocityThunk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -626,8 +626,8 @@
     },
     {
       "address": "0x45dde0",
-      "symbol": "?SetVelocity_Thunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMM@Z",
-      "name": "zEffectAnim::SetVelocity_Thunk",
+      "symbol": "?SetVelocityThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMM@Z",
+      "name": "zEffectAnim::SetVelocityThunk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -644,8 +644,8 @@
     },
     {
       "address": "0x45df70",
-      "symbol": "?SetPositionRefAndVelocity_Thunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@2@Z",
-      "name": "zEffectAnim::SetPositionRefAndVelocity_Thunk",
+      "symbol": "?SetPositionRefAndVelocityThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@2@Z",
+      "name": "zEffectAnim::SetPositionRefAndVelocityThunk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -662,8 +662,8 @@
     },
     {
       "address": "0x45e0b0",
-      "symbol": "?SetTransformRefs_Thunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@12@Z",
-      "name": "zEffectAnim::SetTransformRefs_Thunk",
+      "symbol": "?SetTransformRefsThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@12@Z",
+      "name": "zEffectAnim::SetTransformRefsThunk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,

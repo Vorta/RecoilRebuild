@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x475070",
-      "symbol": "?zMath_Vec3_TriangleNormal@@YIXPBUzVec3@@00PAU1@@Z",
-      "name": "zMath_Vec3_TriangleNormal"
+      "symbol": "?zMathVec3TriangleNormal@@YIXPBUzVec3@@00PAU1@@Z",
+      "name": "zMathVec3TriangleNormal"
     }
   ],
   "source_from": "src/GameZRecoil/zMath/zmth_main.c"

@@ -1,6 +1,6 @@
 {
   "name": "zvideo_dispatch_unlock_display_mode_surface_state",
-  "description": "VC verification target for zVideo::Dispatch_UnlockDisplayModeSurfaceState.",
+  "description": "VC verification target for zVideo::DispatchUnlockDisplayModeSurfaceState.",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_filename": "zVideo.cpp",
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4a68f0",
-      "symbol": "?Dispatch_UnlockDisplayModeSurfaceState@zVideo@@YAHXZ",
-      "name": "zVideo::Dispatch_UnlockDisplayModeSurfaceState"
+      "symbol": "?DispatchUnlockDisplayModeSurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::DispatchUnlockDisplayModeSurfaceState"
     }
   ]
 }

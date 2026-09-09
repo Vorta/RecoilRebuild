@@ -1,6 +1,6 @@
 {
   "name": "zvideo_dd_zbuffer_depth_fill_rect",
-  "description": "VC verification target for zVideo_dd::ZBuffer_DepthFillRect.",
+  "description": "VC verification target for zVideo_dd::ZBufferDepthFillRect.",
   "source_filename": "zVideo.cpp",
   "compiler_profile": "vc5_o2_ob1_md_facs",
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4a81a0",
-      "symbol": "?ZBuffer_DepthFillRect@zVideo_dd@@YIHPAUzVidRect32@@@Z",
-      "name": "zVideo_dd::ZBuffer_DepthFillRect"
+      "symbol": "?ZBufferDepthFillRect@zVideo_dd@@YIHPAUzVidRect32@@@Z",
+      "name": "zVideo_dd::ZBufferDepthFillRect"
     }
   ]
 }

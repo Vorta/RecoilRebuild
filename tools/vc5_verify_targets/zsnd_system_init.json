@@ -1,6 +1,6 @@
 {
   "name": "zsnd_system_init",
-  "description": "zSndSystem_Init top-level sound system initialization gate and dispatch.",
+  "description": "zSndSystemInit top-level sound system initialization gate and dispatch.",
   "source_filename": "zsnd_init.cpp",
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "include_dirs": [
@@ -21,8 +21,8 @@
   "functions": [
     {
       "address": "0x4a1420",
-      "symbol": "@zSndSystem_Init@8",
-      "name": "zSndSystem_Init"
+      "symbol": "@zSndSystemInit@8",
+      "name": "zSndSystemInit"
     }
   ],
   "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp"

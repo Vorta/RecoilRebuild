@@ -283,43 +283,43 @@ extern char g_zNetwork_ProviderName_TcpIp[0x7];
 extern char g_zNetwork_ProviderName_Ipx[0x4];
 extern char g_zNetwork_ModemSessionName[0xd];
 
-int __cdecl zNetwork_DPlay_DestroyCachedLocalPlayer();
-int __cdecl zNetwork_GetLocalPlayerKey();
-int __cdecl zNetwork_GetLocalPlayerColorIndex();
-int __fastcall zNetwork_DPlay_SendUnreliable(
+int __cdecl zNetworkDPlayDestroyCachedLocalPlayer();
+int __cdecl zNetworkGetLocalPlayerKey();
+int __cdecl zNetworkGetLocalPlayerColorIndex();
+int __fastcall zNetworkDPlaySendUnreliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 );
-int __fastcall zNetwork_DPlay_SendReliable(
+int __fastcall zNetworkDPlaySendReliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 );
-int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
+int __fastcall zNetworkDPlaySendExUnreliableTracked(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 );
-int __fastcall zNetwork_DPlay_SendExReliable(
+int __fastcall zNetworkDPlaySendExReliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 );
-int __fastcall zNetwork_SendPacketUnreliable(zNetworkPacketHeader *packet);
-int __fastcall zNetwork_SendPacketReliable(zNetworkPacketHeader *packet);
-int __fastcall zNetwork_DPlay_ReportError(
+int __fastcall zNetworkSendPacketUnreliable(zNetworkPacketHeader *packet);
+int __fastcall zNetworkSendPacketReliable(zNetworkPacketHeader *packet);
+int __fastcall zNetworkDPlayReportError(
     int hresult,
     const char *sourceFile,
     int sourceLine
 );
-int __fastcall zNetwork_ApplyPkt01_PlayerColorAssignments(
+int __fastcall zNetworkApplyPkt01PlayerColorAssignments(
     int senderPlayerId,
     zNetworkPacketHeader *packet
 );
-zNetwork_PlayerRecord *__fastcall zNetwork_FindPlayerRecordByKey(int playerKey);
-int __fastcall zNetwork_GetPlayerColorIndexByKey(int playerKey);
-int __cdecl zNetwork_GetPlayerRecordCount();
-int __fastcall zNetwork_ExtractStatusFieldsFromSessionDesc(
+zNetwork_PlayerRecord *__fastcall zNetworkFindPlayerRecordByKey(int playerKey);
+int __fastcall zNetworkGetPlayerColorIndexByKey(int playerKey);
+int __cdecl zNetworkGetPlayerRecordCount();
+int __fastcall zNetworkExtractStatusFieldsFromSessionDesc(
     zNetworkSessionDescStatusFields *outFields
 );
-int __fastcall zNetwork_ApplyStatusFieldsToSessionDesc(
+int __fastcall zNetworkApplyStatusFieldsToSessionDesc(
     zNetworkSessionDescStatusFields *statusFields
 );
 }
@@ -345,7 +345,7 @@ void __fastcall DispatchPacketToHandlers(
 namespace zNetworkDPlay {
 int __fastcall CreateLobby3AInterface(IDirectPlayLobby3A **outLobby3A);
 zNetworkServiceProviderListVec *__cdecl RefreshAndGetServiceProviderList();
-int __stdcall EnumConnectionsCallback_AddServiceProviderInfo(
+int __stdcall EnumConnectionsCallbackAddServiceProviderInfo(
     const GUID *serviceProviderGuid,
     void *connectionData,
     DWORD connectionDataSize,
@@ -360,13 +360,13 @@ void __fastcall GetEnumeratedSessionPlayerCountsByIndex(
     int *maxPlayersOut
 );
 int __cdecl QueryCapsAndConfigureSendMode();
-int __stdcall EnumSessionCallback_AddSessionDescCache(
+int __stdcall EnumSessionCallbackAddSessionDescCache(
     const zNetworkDPlaySessionDesc *sessionDesc,
     DWORD *timeoutMs,
     DWORD flags,
     void *context
 );
-int __stdcall EnumPlayerCallback_AddPlayerRecord(
+int __stdcall EnumPlayerCallbackAddPlayerRecord(
     DPID playerId,
     DWORD playerType,
     const zNetworkDPlayName *playerNameInfo,

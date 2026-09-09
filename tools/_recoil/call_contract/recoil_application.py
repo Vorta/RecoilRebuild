@@ -1974,10 +1974,10 @@ def _recoil_app_mp_exit_deactivate_candidate_indirect_bridge(
         (0x07, IMAGE_REL_I386_REL32, "?UnloadLayout@HudUiMpExitDialog@@QAEXXZ"),
         (0x0D, IMAGE_REL_I386_DIR32, _cc_catalog.RECOIL_APP_MP_EXIT_DIALOG_OBJECT_SYMBOL),
         (0x1E, IMAGE_REL_I386_DIR32, _cc_catalog.RECOIL_APP_MP_EXIT_DIALOG_OBJECT_SYMBOL),
-        (0x27, IMAGE_REL_I386_REL32, "?BindMapContext_Pop@zInput@@YIXXZ"),
+        (0x27, IMAGE_REL_I386_REL32, "?BindMapContextPop@zInput@@YIXXZ"),
         (0x32, IMAGE_REL_I386_DIR32, "__imp__Sleep@4"),
         (0x37, IMAGE_REL_I386_DIR32, "?g_HudUiDialogSampleSetName@@3PADA"),
-        (0x3C, IMAGE_REL_I386_REL32, "@zSndSampleSet_DestroyByName@4"),
+        (0x3C, IMAGE_REL_I386_REL32, "@zSndSampleSetDestroyByName@4"),
         (0x43, IMAGE_REL_I386_REL32, "?SetScaleAndRebuild@HudScoreboard@@YGXM@Z"),
     )
     observed_relocations = tuple(
@@ -2602,7 +2602,7 @@ def _recoilapp_terminal_frame_candidate_cleanup_projection(
         or len(result) != 17
         or result[16] != exact_row
         or definition is None
-        or definition.symbol != "?OnDeactivate@RecoilApp_PlayState@@UAEXXZ"
+        or definition.symbol != "?OnDeactivate@CRecoilAppPlayState@@UAEXXZ"
         or bytes(int(item, 16) for item in by_offset[0x00].bytes)
         != b"\x83\xec\x24"
         or bytes(int(item, 16) for item in by_offset[0xB0].bytes)

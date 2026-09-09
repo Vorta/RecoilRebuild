@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x46f450",
-      "symbol": "?Keyboard_ResetTransitionState@zInput@@YAXXZ",
-      "name": "zInput::Keyboard_ResetTransitionState",
+      "symbol": "?KeyboardResetTransitionState@zInput@@YAXXZ",
+      "name": "zInput::KeyboardResetTransitionState",
       "bn_byte_length": 576
     }
   ],

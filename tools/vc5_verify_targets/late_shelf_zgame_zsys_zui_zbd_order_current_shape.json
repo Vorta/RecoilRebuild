@@ -44,13 +44,13 @@
       "functions": [
         {
           "address": "0x4b2960",
-          "symbol": "?Options_LoadFromRegistry@zGame@@YAHXZ",
-          "name": "zGame::Options_LoadFromRegistry"
+          "symbol": "?OptionsLoadFromRegistry@zGame@@YAHXZ",
+          "name": "zGame::OptionsLoadFromRegistry"
         },
         {
           "address": "0x4b2bf0",
-          "symbol": "?Options_SaveToRegistry@zGame@@YAHXZ",
-          "name": "zGame::Options_SaveToRegistry"
+          "symbol": "?OptionsSaveToRegistry@zGame@@YAHXZ",
+          "name": "zGame::OptionsSaveToRegistry"
         },
         {
           "address": "0x4b3090",
@@ -59,8 +59,8 @@
         },
         {
           "address": "0x4b32c0",
-          "symbol": "?Options_ShutdownRegistryContext@zGame@@YAXXZ",
-          "name": "zGame::Options_ShutdownRegistryContext"
+          "symbol": "?OptionsShutdownRegistryContext@zGame@@YAXXZ",
+          "name": "zGame::OptionsShutdownRegistryContext"
         }
       ]
     },
@@ -114,8 +114,8 @@
         },
         {
           "address": "0x4c0100",
-          "symbol": "?ZBD_Init@zUtil@@YAHXZ",
-          "name": "zUtil::ZBD_Init"
+          "symbol": "?ZBDInit@zUtil@@YAHXZ",
+          "name": "zUtil::ZBDInit"
         }
       ]
     },
@@ -124,8 +124,8 @@
       "functions": [
         {
           "address": "0x4c0d20",
-          "symbol_regex": "\\?\\?0zInterp_Context@@.*",
-          "name": "zInterp_Context::zInterp_Context"
+          "symbol_regex": "\\?\\?0CZInterp@@.*",
+          "name": "CZInterp::CZInterp"
         }
       ]
     }

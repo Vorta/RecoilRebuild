@@ -32,29 +32,18 @@ namespace zClass_Sequence {
      * seed the forward step, and register the node with the type list.
      */
     zClass_NodePartial *__cdecl gwSequenceNew() {
-        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x41,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x41, "Null node pointer.");
             return 0;
         }
 
         node->classId = 7;
         zClass_SequenceDataPartial *data =
-            (zClass_SequenceDataPartial *)(calloc(
-                1,
-                sizeof(zClass_SequenceDataPartial)
-            ));
+            (zClass_SequenceDataPartial *)(calloc(1, sizeof(zClass_SequenceDataPartial)));
         node->classData = data;
         data->step = 1;
-        zClass_TypeList::Insert(
-            11,
-            node
-        );
+        zClass_TypeList::Insert(11, node);
         return node;
     }
 
@@ -77,37 +66,19 @@ namespace zClass_Sequence {
         int i;
 
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x94,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x94, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x95,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x95, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x96,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x96, "Null class data pointer");
             return 5;
         }
 
-        addResult = zClass_Class::AddChildGeneric(
-            parent,
-            child
-        );
+        addResult = zClass_Class::AddChildGeneric(parent, child);
         if (addResult != 0) {
             return addResult;
         }
@@ -144,37 +115,19 @@ namespace zClass_Sequence {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0xd3,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0xd3, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0xd4,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0xd4, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0xd5,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0xd5, "Null class data pointer");
             return 5;
         }
 
-        const int removeResult = zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
+        const int removeResult = zClass_Class::RemoveChildGeneric(parent, child);
         if (removeResult != 0) {
             return removeResult;
         }
@@ -215,23 +168,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x113,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x113, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x114,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x114, "Null class data pointer");
             return 5;
         }
 
@@ -253,23 +196,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x133,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x133, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x134,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x134, "Null class data pointer");
             return 5;
         }
 
@@ -291,23 +224,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x153,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x153, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x154,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x154, "Null class data pointer");
             return 5;
         }
 
@@ -329,23 +252,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x173,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x173, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x174,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x174, "Null class data pointer");
             return 5;
         }
 
@@ -364,23 +277,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x193,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x193, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0x194,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSequenceSourceFile, 0x194, "Null class data pointer");
             return 5;
         }
 
@@ -454,14 +357,11 @@ namespace zClass_Lod {
      * original default range and active-distance settings.
      */
     zClass_NodePartial *__cdecl gwLodNew() {
-        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        zClass_NodePartial *node = zClass_Class::gwNodeNew();
         node->classId = kZClassNodeLod;
 
         zClass_LodDataPartial *data =
-            (zClass_LodDataPartial *)(calloc(
-                1,
-                sizeof(zClass_LodDataPartial)
-            ));
+            (zClass_LodDataPartial *)(calloc(1, sizeof(zClass_LodDataPartial)));
         node->classData = data;
         data->computeOwnDistance = 1;
         data->nearRange = 1000.0f;
@@ -485,10 +385,7 @@ namespace zClass_Lod {
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ) {
-        return zClass_Class::AddChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::AddChildGeneric(parent, child);
     }
 
     int __fastcall
@@ -506,10 +403,7 @@ namespace zClass_Lod {
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ) {
-        zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
+        zClass_Class::RemoveChildGeneric(parent, child);
         return 0;
     }
 

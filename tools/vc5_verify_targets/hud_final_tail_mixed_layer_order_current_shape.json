@@ -39,38 +39,38 @@
       "functions": [
         {
           "address": "0x414a60",
-          "symbol_regex": "\\?StaticInitAndRegisterAtExit@zInterp_GlobalContext@@.*",
-          "name": "zInterp_GlobalContext::StaticInitAndRegisterAtExit",
+          "symbol_regex": "\\?StaticInitAndRegisterAtExit@CRecoilInterp@@.*",
+          "name": "CRecoilInterp::StaticInitAndRegisterAtExit",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x414a70",
-          "symbol_regex": "\\?StaticInit@zInterp_GlobalContext@@.*",
-          "name": "zInterp_GlobalContext::StaticInit",
+          "symbol_regex": "\\?StaticInit@CRecoilInterp@@.*",
+          "name": "CRecoilInterp::StaticInit",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x414a80",
-          "symbol_regex": "\\?RegisterAtExit@zInterp_GlobalContext@@.*",
-          "name": "zInterp_GlobalContext::RegisterAtExit",
+          "symbol_regex": "\\?RegisterAtExit@CRecoilInterp@@.*",
+          "name": "CRecoilInterp::RegisterAtExit",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x414a90",
-          "symbol_regex": "\\?AtExitDestructor@zInterp_GlobalContext@@.*",
-          "name": "zInterp_GlobalContext::AtExitDestructor",
+          "symbol_regex": "\\?AtExitDestructor@CRecoilInterp@@.*",
+          "name": "CRecoilInterp::AtExitDestructor",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x414ab0",
-          "symbol_regex": "\\?\\?0zInterp_GlobalContext@@.*",
-          "name": "zInterp_GlobalContext::Constructor",
+          "symbol_regex": "\\?\\?0CRecoilInterp@@.*",
+          "name": "CRecoilInterp::Constructor",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x414ad0",
-          "symbol_regex": "\\?DispatchHook@zInterp_GlobalContext@@.*",
-          "name": "zInterp_GlobalContext::DispatchHook / zInterp_Command::WeaponSetMaxTetherAltitude",
+          "symbol_regex": "\\?DispatchHook@CRecoilInterp@@.*",
+          "name": "CRecoilInterp::DispatchHook / zInterp_Command::WeaponSetMaxTetherAltitude",
           "provenance": "compiler-emitted-noncovering"
         },
         {
@@ -99,20 +99,20 @@
         },
         {
           "address": "0x414f40",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_CreditsButton@@.*",
-          "name": "HudUiMainMenuDialog_CreditsButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogCreditsButton@@.*",
+          "name": "CHudUiMainMenuDialogCreditsButton::OnActivate",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x414f60",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_SaveButton@@.*",
-          "name": "HudUiMainMenuDialog_SaveButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogSaveButton@@.*",
+          "name": "CHudUiMainMenuDialogSaveButton::OnActivate",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x414f80",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_NewGameButton@@.*",
-          "name": "HudUiMainMenuDialog_NewGameButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogNewGameButton@@.*",
+          "name": "CHudUiMainMenuDialogNewGameButton::OnActivate",
           "provenance": "compiler-emitted-noncovering"
         },
         {
@@ -123,20 +123,20 @@
         },
         {
           "address": "0x414fc0",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_OptionsButton@@.*",
-          "name": "HudUiMainMenuDialog_OptionsButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogOptionsButton@@.*",
+          "name": "CHudUiMainMenuDialogOptionsButton::OnActivate",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x414fe0",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_QuitButton@@.*",
-          "name": "HudUiMainMenuDialog_QuitButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogQuitButton@@.*",
+          "name": "CHudUiMainMenuDialogQuitButton::OnActivate",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x415000",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_ControlsButton@@.*",
-          "name": "HudUiMainMenuDialog_ControlsButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogControlsButton@@.*",
+          "name": "CHudUiMainMenuDialogControlsButton::OnActivate",
           "provenance": "compiler-emitted-noncovering"
         },
         {
@@ -177,8 +177,8 @@
         },
         {
           "address": "0x415140",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_LoadButton@@.*",
-          "name": "HudUiMainMenuDialog_LoadButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogLoadButton@@.*",
+          "name": "CHudUiMainMenuDialogLoadButton::OnActivate",
           "provenance": "compiler-emitted-noncovering"
         },
         {

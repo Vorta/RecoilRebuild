@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x4703a0",
-      "symbol": "?Mouse_GetStateSnapshotPtr@zInput@@YAPAUMouseStateSnapshot@1@XZ",
-      "name": "zInput::Mouse_GetStateSnapshotPtr"
+      "symbol": "?MouseGetStateSnapshotPtr@zInput@@YAPAUMouseStateSnapshot@1@XZ",
+      "name": "zInput::MouseGetStateSnapshotPtr"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp"

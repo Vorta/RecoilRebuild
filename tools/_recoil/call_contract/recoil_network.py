@@ -1001,7 +1001,7 @@ def _gamenet_end_chat_compose_strncat_register_storage_bridges(
     expected_relocations = (
         (0x04, IMAGE_REL_I386_DIR32, "_g_GameStateOrMapTable", 0),
         (0x14, IMAGE_REL_I386_DIR32, _cc_catalog.HUD_UI_MGR_AGGREGATE_DECORATED_SYMBOL, 0xAB4),
-        (0x19, IMAGE_REL_I386_REL32, "?BindMapContext_Pop@zInput@@YIXXZ", 0),
+        (0x19, IMAGE_REL_I386_REL32, "?BindMapContextPop@zInput@@YIXXZ", 0),
         (0x1E, IMAGE_REL_I386_REL32, "?Begin@HudUiMgrObjective@@YIXXZ", 0),
         (0x23, IMAGE_REL_I386_DIR32, _cc_catalog.HUD_UI_MGR_AGGREGATE_DECORATED_SYMBOL, 0xAB8),
         (0x28, IMAGE_REL_I386_REL32, "?GetBuffer@HudUiTextInput@@QAEPADXZ", 0),
@@ -1019,7 +1019,7 @@ def _gamenet_end_chat_compose_strncat_register_storage_bridges(
         (
             0xBB,
             IMAGE_REL_I386_REL32,
-            "?SendPkt0B_ChatMessage@GameNet@@YIXPBD@Z",
+            "?SendPkt0BChatMessage@GameNet@@YIXPBD@Z",
             0,
         ),
     )

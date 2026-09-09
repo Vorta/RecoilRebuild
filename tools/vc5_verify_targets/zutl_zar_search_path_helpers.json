@@ -17,22 +17,22 @@
   "functions": [
     {
       "address": "0x4a5ce0",
-      "symbol": "?ZRDR_AddSearchPaths@zUtil@@YIXPAUzArchiveList@@PBD@Z",
-      "name": "zUtil::ZRDR_AddSearchPaths"
+      "symbol": "?zRdrAddSearchPaths@zUtil@@YIXPAUzArchiveList@@PBD@Z",
+      "name": "zUtil::zRdrAddSearchPaths"
     },
     {
       "address": "0x4a5da0",
-      "symbol": "@zUtil_ZRDR_StrCmpPredicate@8",
+      "symbol": "@zRdrStrCmpPredicate@8",
       "name": "zUtil_ZRDR::StrCmpPredicate"
     },
     {
       "address": "0x4a5ca0",
-      "symbol": "@zUtil_ZRDR_CreateSearchPathList@4",
+      "symbol": "@zRdrCreateSearchPathList@4",
       "name": "zUtil_ZRDR::CreateSearchPathList"
     },
     {
       "address": "0x4a5e10",
-      "symbol": "@zUtil_ZRDR_FreePathList@4",
+      "symbol": "@zRdrFreePathList@4",
       "name": "zUtil_ZRDR::FreePathList"
     }
   ],

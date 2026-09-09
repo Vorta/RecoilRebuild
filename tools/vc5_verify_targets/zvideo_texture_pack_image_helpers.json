@@ -22,12 +22,12 @@
     },
     {
       "address": "0x46d940",
-      "symbol": "@zVid_TexturePack_LoadImageByName@4",
+      "symbol": "@zVidTexturePackLoadImageByName@4",
       "name": "zVid_TexturePack::LoadImageByName"
     },
     {
       "address": "0x46dd30",
-      "symbol": "@zVid_TexturePack_LoadBuiltinImageByName@4",
+      "symbol": "@zVidTexturePackLoadBuiltinImageByName@4",
       "name": "zVid_TexturePack::LoadBuiltinImageByName"
     }
   ],

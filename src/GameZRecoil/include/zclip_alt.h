@@ -36,7 +36,7 @@ extern int gAltClipSourceRectValid;
 extern int gAltClipPassEnabled;
 }
 
-void __fastcall zClipAlt_BuildFrustumPlanes(
+void __fastcall zClipAltBuildFrustumPlanes(
     zClass_CameraDataPartial *cameraData
 );
 

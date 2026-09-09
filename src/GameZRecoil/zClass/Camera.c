@@ -240,23 +240,15 @@ namespace zClass_Camera {
      * Purpose: allocate and initialize a camera node and its class data.
      */
     zClass_NodePartial *__cdecl gwCameraNew() {
-        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x1e8,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x1e8, "Null node pointer.");
             return 0;
         }
 
         node->classId = kZClassNodeCamera;
         zClass_CameraDataPartial *data =
-            (zClass_CameraDataPartial *)(calloc(
-                1,
-                sizeof(zClass_CameraDataPartial)
-        ));
+            (zClass_CameraDataPartial *)(calloc(1, sizeof(zClass_CameraDataPartial)));
         node->classData = data;
         data->targetOrEuler.x = 0.0f;
         data->targetOrEuler.y = 0.0f;
@@ -271,10 +263,7 @@ namespace zClass_Camera {
         data->localFrustumNormalsDirty = 1;
         data->variantOverrideEnabled = 0;
         zTag4::Clear(&data->variantTag);
-        zClass_TypeList::Insert(
-            8,
-            node
-        );
+        zClass_TypeList::Insert(8, node);
         return node;
     }
 
@@ -290,28 +279,15 @@ namespace zClass_Camera {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x239,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x239, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x23a,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x23a, "Null node pointer.");
             return 5;
         }
 
-        return zClass_Class::AddChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::AddChildGeneric(parent, child);
     }
 
     /**
@@ -326,28 +302,15 @@ namespace zClass_Camera {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x251,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x251, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x252,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x252, "Null node pointer.");
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::RemoveChildGeneric(parent, child);
     }
 
     /**
@@ -361,10 +324,7 @@ namespace zClass_Camera {
         zClass_NodePartial * node,
         int active
     ) {
-        return zClass_Class::gwNodeSetActive(
-            node,
-            active
-        );
+        return zClass_Class::gwNodeSetActive(node, active);
     }
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetflagbit0
@@ -378,13 +338,7 @@ namespace zClass_Camera {
         int enabled
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            node,
-            &data,
-            0x274,
-            0x275,
-            0x276
-        );
+        const int result = ValidateCameraNode(node, &data, 0x274, 0x275, 0x276);
         if (result != 0) {
             return result;
         }
@@ -447,40 +401,20 @@ namespace zClass_Camera {
         zClass_NodePartial * world
     ) {
         if (camera == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x2be,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x2be, "Null node pointer.");
             return 5;
         }
         if (world == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x2bf,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x2bf, "Null node pointer.");
             return 5;
         }
 
         if (camera->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x2c1,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x2c1, "Null class data pointer");
             return 5;
         }
         if (world->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x2c2,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x2c2, "Null class data pointer");
             return 5;
         }
 
@@ -553,13 +487,7 @@ namespace zClass_Camera {
         float z
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x3a7,
-            0x3a8,
-            0x3a9
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x3a7, 0x3a8, 0x3a9);
         if (result != 0) {
             return result;
         }
@@ -570,10 +498,7 @@ namespace zClass_Camera {
         data->posOffset.z = z;
         data->cameraFlags &= ~0x02;
         if (camera->listCountA > 0) {
-            ActivateChildren(
-                camera,
-                data
-            );
+            ActivateChildren(camera, data);
         }
 
         return 0;
@@ -591,10 +516,7 @@ namespace zClass_Camera {
     ) {
         data->cameraFlags |= 0x04;
         if ((camera->flags & 0x01) == 0) {
-            zClass_TypeList::Insert(
-                7,
-                camera
-            );
+            zClass_TypeList::Insert(7, camera);
             camera->flags |= 0x01;
         }
         camera->flags |= 0x02;
@@ -619,13 +541,7 @@ namespace zClass_Camera {
         float dz
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x3df,
-            0x3e0,
-            0x3e1
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x3df, 0x3e0, 0x3e1);
         if (result != 0) {
             return result;
         }
@@ -635,10 +551,7 @@ namespace zClass_Camera {
         data->posOffset.z += dz;
         data->transformDirty = 1;
         if (camera->listCountA > 0) {
-            ActivateChildren(
-                camera,
-                data
-            );
+            ActivateChildren(camera, data);
         }
 
         return 0;
@@ -657,13 +570,7 @@ namespace zClass_Camera {
         float *outZ
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x414,
-            0x415,
-            0x416
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x414, 0x415, 0x416);
         if (result != 0) {
             return result;
         }
@@ -687,13 +594,7 @@ namespace zClass_Camera {
         float z
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x43c,
-            0x43d,
-            0x43e
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x43c, 0x43d, 0x43e);
         if (result != 0) {
             return result;
         }
@@ -703,10 +604,7 @@ namespace zClass_Camera {
         target->y = y;
         target->z = z;
         if (camera->listCountA > 0) {
-            ActivateChildren(
-                camera,
-                data
-            );
+            ActivateChildren(camera, data);
         }
 
         return 0;
@@ -725,13 +623,7 @@ namespace zClass_Camera {
         float dz
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x46f,
-            0x470,
-            0x471
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x46f, 0x470, 0x471);
         if (result != 0) {
             return result;
         }
@@ -741,10 +633,7 @@ namespace zClass_Camera {
         target->y += dy;
         target->z += dz;
         if (camera->listCountA > 0) {
-            ActivateChildren(
-                camera,
-                data
-            );
+            ActivateChildren(camera, data);
         }
 
         return 0;
@@ -763,13 +652,7 @@ namespace zClass_Camera {
         float *outZ
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x4a1,
-            0x4a2,
-            0x4a3
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x4a1, 0x4a2, 0x4a3);
         if (result != 0) {
             return result;
         }
@@ -793,13 +676,7 @@ namespace zClass_Camera {
         float farClip
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x509,
-            0x50a,
-            0x50b
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x509, 0x50a, 0x50b);
         if (result != 0) {
             return result;
         }
@@ -822,13 +699,7 @@ namespace zClass_Camera {
         float *outFar
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x52f,
-            0x530,
-            0x531
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x52f, 0x530, 0x531);
         if (result != 0) {
             return result;
         }
@@ -850,13 +721,7 @@ namespace zClass_Camera {
         float viewportHeight
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x553,
-            0x554,
-            0x555
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x553, 0x554, 0x555);
         if (result != 0) {
             return result;
         }
@@ -899,13 +764,7 @@ namespace zClass_Camera {
         float *outHeight
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x58e,
-            0x58f,
-            0x590
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x58e, 0x58f, 0x590);
         if (result != 0) {
             return result;
         }
@@ -927,13 +786,7 @@ namespace zClass_Camera {
         float fovY
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x5b2,
-            0x5b3,
-            0x5b4
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x5b2, 0x5b3, 0x5b4);
         if (result != 0) {
             return result;
         }
@@ -973,13 +826,7 @@ namespace zClass_Camera {
         float *outFovY
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x5e7,
-            0x5e8,
-            0x5e9
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x5e7, 0x5e8, 0x5e9);
         if (result != 0) {
             return result;
         }
@@ -1000,13 +847,7 @@ namespace zClass_Camera {
         float *outClipDistance
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x609,
-            0x60a,
-            0x60b
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x609, 0x60a, 0x60b);
         if (result != 0) {
             return result;
         }
@@ -1026,13 +867,7 @@ namespace zClass_Camera {
         float clipDistance
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x62a,
-            0x62b,
-            0x62c
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x62a, 0x62b, 0x62c);
         if (result != 0) {
             return result;
         }
@@ -1053,13 +888,7 @@ namespace zClass_Camera {
         zClass_NodePartial * horizonNode
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x64d,
-            0x64e,
-            0x64f
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x64d, 0x64e, 0x64f);
         if (result != 0) {
             return result;
         }
@@ -1079,13 +908,7 @@ namespace zClass_Camera {
         zClass_NodePartial * horizonXZNode
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int result = ValidateCameraNode(
-            camera,
-            &data,
-            0x66e,
-            0x66f,
-            0x670
-        );
+        const int result = ValidateCameraNode(camera, &data, 0x66e, 0x66f, 0x670);
         if (result != 0) {
             return result;
         }
@@ -1101,29 +924,16 @@ namespace zClass_Camera {
      */
     int __fastcall gwCameraUpdate(zClass_NodePartial * camera) {
         if (camera == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x75c,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x75c, "Null node pointer.");
             return 5;
         }
 
         if (camera->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kCameraSourceFile,
-                0x75d,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kCameraSourceFile, 0x75d, "Null class data pointer");
             return 5;
         }
 
-        return UpdateImpl(
-            camera,
-            0
-        );
+        return UpdateImpl(camera, 0);
     }
 
     /**
@@ -1137,21 +947,17 @@ namespace zClass_Camera {
     ) {
         zClass_CameraDataPartial *data = (zClass_CameraDataPartial *)(camera->classData);
 
-        BuildWorldTransform(
-            camera,
-            data,
-            posOffset
-        );
+        BuildWorldTransform(camera, data, posOffset);
 
         data->transformDirty = 1;
         if (data->localFrustumNormalsDirty != 0) {
             data->localFrustumNormalsDirty = 0;
-            zVideo_UpdateProjectionStateFromCameraData(data);
+            zVideoUpdateProjectionStateFromCameraData(data);
             data->transformDirty = 1;
         }
 
         data->transformDirty = 0;
-        zClipAlt_BuildFrustumPlanes(data);
+        zClipAltBuildFrustumPlanes(data);
 
         if (data->frustumVectorsDirty != 0) {
             const float farClip = data->farClip;
@@ -1202,12 +1008,9 @@ namespace zClass_Camera {
         zVec3 * posOffset
     ) {
         zMath::MatLoadIdentity();
-        gwNode::BuildNodeToAncestorMatrix(
-            camera,
-            1
-        );
+        gwNode::gwNodeBuildNodeToAncestorMatrix(camera, 1);
 
-        zMat4x3 *matrix = zMath_Mat_GetCurrent();
+        zMat4x3 *matrix = zMathMatGetCurrent();
         if (posOffset != 0) {
             matrix->posX += posOffset->x;
             matrix->posY += posOffset->y;
@@ -1221,17 +1024,10 @@ namespace zClass_Camera {
         data->forwardDir.y = -matrix->zy;
         data->forwardDir.z = -matrix->zz;
 
-        memcpy(
-            data->worldTransform,
-            matrix,
-            sizeof(zMat4x3)
-        );
-        zMath_Mat_ExtractEulerAngles(
-            matrix,
-            &data->eulerAngles
-        );
+        memcpy(data->worldTransform, matrix, sizeof(zMat4x3));
+        zMathMatExtractEulerAngles(matrix, &data->eulerAngles);
         zMath::MatLoadIdentity();
-        zMath_Camera_StageInverseRotation((zMat4x3 *)(data->worldTransform));
+        zMathCameraStageInverseRotation((zMat4x3 *)(data->worldTransform));
 
         if ((data->cameraFlags & 0x01) != 0) {
             /*
@@ -1253,7 +1049,7 @@ namespace zClass_Camera {
                     listenerVelocity.y * listenerVelocity.y +
                     listenerVelocity.z * listenerVelocity.z
                 );
-                if (zSnd_GetSpeedOfSoundMps() <= listenerSpeed) {
+                if (zSndGetSpeedOfSoundMps() <= listenerSpeed) {
                     listenerVelocity.x = 0.0f;
                     listenerVelocity.y = 0.0f;
                     listenerVelocity.z = 0.0f;
@@ -1263,7 +1059,7 @@ namespace zClass_Camera {
             g_zSnd_PreviousListenerPos.x = data->worldTransform[9];
             g_zSnd_PreviousListenerPos.y = data->worldTransform[10];
             g_zSnd_PreviousListenerPos.z = data->worldTransform[11];
-            zSnd_UpdateListenerState(
+            zSndUpdateListenerState(
                 (zSndListenerState *)(data->worldTransform),
                 &listenerVelocity
             );
@@ -1299,15 +1095,8 @@ namespace zClass_Camera {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0 ||
                 (node->flags & 0x00080000) == 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    viewSphereCenter,
-                    viewSphereRadius
-                );
+                zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+                BBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
@@ -1316,7 +1105,7 @@ namespace zClass_Camera {
                     g_zClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideo_FrustumTestSphereClipMask(
+            result = zVideoFrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
@@ -1333,11 +1122,7 @@ namespace zClass_Camera {
             const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->worldTransform);
-            zMath::MatApplyLocalTRS(
-                &data->posOffset,
-                &data->targetOrEuler,
-                &unitScale
-            );
+            zMath::MatApplyLocalTRS(&data->posOffset, &data->targetOrEuler, &unitScale);
             if (g_zClass_RenderBoundsContextActive == 0) {
                 boundsContextPushed = 1;
                 g_zClass_RenderBoundsContextActive = 1;
@@ -1354,10 +1139,7 @@ namespace zClass_Camera {
                 ++gModel_ClipMaskStackTop;
                 *gModel_ClipMaskStackTop = clipMask;
                 for (int i = 0; i < node->listCountB; ++i) {
-                    zClass_Class::gwNodeRenderDispatch(
-                        node->listB[i],
-                        node->listCountB
-                    );
+                    zClass_Class::gwNodeRenderDispatch(node->listB[i], node->listCountB);
                 }
                 --gModel_ClipMaskStackTop;
             }
@@ -1403,15 +1185,8 @@ namespace zClass_Sound {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0 ||
                 (node->flags & 0x00080000) == 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    viewSphereCenter,
-                    viewSphereRadius
-                );
+                zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+                BBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
@@ -1420,7 +1195,7 @@ namespace zClass_Sound {
                     g_zClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideo_FrustumTestSphereClipMask(
+            result = zVideoFrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
@@ -1438,11 +1213,7 @@ namespace zClass_Sound {
             const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
-            zMath::MatApplyLocalTRS(
-                &angles,
-                &data->localPosition,
-                &unitScale
-            );
+            zMath::MatApplyLocalTRS(&angles, &data->localPosition, &unitScale);
             if (g_zClass_RenderBoundsContextActive == 0) {
                 boundsContextPushed = 1;
                 g_zClass_RenderBoundsContextActive = 1;
@@ -1459,10 +1230,7 @@ namespace zClass_Sound {
                 ++gModel_ClipMaskStackTop;
                 *gModel_ClipMaskStackTop = clipMask;
                 for (int i = 0; i < node->listCountB; ++i) {
-                    zClass_Class::gwNodeRenderDispatch(
-                        node->listB[i],
-                        node->listCountB
-                    );
+                    zClass_Class::gwNodeRenderDispatch(node->listB[i], node->listCountB);
                 }
                 --gModel_ClipMaskStackTop;
             }
@@ -1506,15 +1274,8 @@ namespace zClass_Light {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0 ||
                 (node->flags & 0x00080000) == 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    viewSphereCenter,
-                    viewSphereRadius
-                );
+                zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+                BBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
@@ -1523,7 +1284,7 @@ namespace zClass_Light {
                     g_zClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideo_FrustumTestSphereClipMask(
+            result = zVideoFrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
@@ -1540,11 +1301,7 @@ namespace zClass_Light {
             const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
-            zMath::MatApplyLocalTRS(
-                &data->localRotation,
-                &data->localPosition,
-                &unitScale
-            );
+            zMath::MatApplyLocalTRS(&data->localRotation, &data->localPosition, &unitScale);
             if (g_zClass_RenderBoundsContextActive == 0) {
                 boundsContextPushed = 1;
                 g_zClass_RenderBoundsContextActive = 1;
@@ -1561,10 +1318,7 @@ namespace zClass_Light {
                 ++gModel_ClipMaskStackTop;
                 *gModel_ClipMaskStackTop = clipMask;
                 for (int i = 0; i < node->listCountB; ++i) {
-                    zClass_Class::gwNodeRenderDispatch(
-                        node->listB[i],
-                        node->listCountB
-                    );
+                    zClass_Class::gwNodeRenderDispatch(node->listB[i], node->listCountB);
                 }
                 --gModel_ClipMaskStackTop;
             }
@@ -1618,24 +1372,21 @@ namespace zClass_Object3D {
         if ((node->boundsFlags & kNodeBoundsDirtyFlag) != 0 ||
             g_zClass_RenderBoundsContextActive != 0 || (node->flags & kSingleParentFlag) == 0) {
             zBBoxCorners corners = {0};
-            zClass_Class::gwNodeGetViewBBoxCorners(
-                node,
-                &corners
-            );
+            zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
             BBox::CornersToBoundingSphere(
                 &corners,
-                zClass_NodeViewSphereCenter(node),
-                zClass_NodeViewSphereRadius(node)
+                zClassNodeViewSphereCenter(node),
+                zClassNodeViewSphereRadius(node)
             );
             if ((node->flags & kSingleParentFlag) != 0) {
                 node->boundsFlags &= ~kNodeBoundsDirtyFlag;
             }
         }
 
-        int result = zVideo_FrustumTestSphereClipMask(
-            zClass_NodeViewSphereCenter(node),
+        int result = zVideoFrustumTestSphereClipMask(
+            zClassNodeViewSphereCenter(node),
             clipMask,
-            *zClass_NodeViewSphereRadius(node)
+            *zClassNodeViewSphereRadius(node)
         );
         if ((node->flags & 0x80) != 0 && result == 0x20) {
             result = 0;
@@ -1665,17 +1416,11 @@ namespace zClass_Object3D {
         *pushed = 1;
         if ((flags & kObject3DTransformDirtyFlag) != 0) {
             zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-            zMath::MatMultiply(
-                (const zMat4x3 *)data->localMatrix,
-                3
-            );
+            zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
             data->flags &= ~kObject3DTransformDirtyFlag;
         } else if ((flags & kSingleParentFlag) == 0) {
             zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-            zMath::MatMultiply(
-                (const zMat4x3 *)data->localMatrix,
-                3
-            );
+            zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
         } else {
             zMath::MatStackPushPtr(data->cachedWorldMatrix);
         }
@@ -1703,14 +1448,14 @@ namespace zClass_Object3D {
         if ((node->flags & 0x00800000) != 0 && g_zClass_RenderVertexAlphaOverrideActive == 0) {
             *pushedVertexAlpha = 1;
             g_zClass_RenderVertexAlphaOverrideActive = 1;
-            zModel_RenderVertexAlphaEnabled_SetCurrent(1);
+            zModelRenderVertexAlphaEnabledSetCurrent(1);
         }
 
         if ((data->flags & 0x02) != 0) {
             *pushedAlphaScale = 1;
             ++g_zClass_RenderAlphaScaleStackTop;
             g_zClass_RenderAlphaScaleStack[g_zClass_RenderAlphaScaleStackTop] = data->alphaScale;
-            zModel_RenderAlphaScale_SetCurrent(data->alphaScale);
+            zModelRenderAlphaScaleSetCurrent(data->alphaScale);
         }
 
         if ((data->flags & 0x04) != 0) {
@@ -1720,7 +1465,7 @@ namespace zClass_Object3D {
                 data->color;
             g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop].alpha =
                 data->colorAlpha;
-            zModel_FogTargetColorOverride_SetCurrent(
+            zModelFogTargetColorOverrideSetCurrent(
                 &g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop].color,
                 data->colorAlpha
             );
@@ -1742,7 +1487,7 @@ namespace zClass_Object3D {
     ) {
         if (pushedVertexAlpha != 0) {
             g_zClass_RenderVertexAlphaOverrideActive = 0;
-            zModel_RenderVertexAlphaEnabled_SetCurrent(0);
+            zModelRenderVertexAlphaEnabledSetCurrent(0);
         }
 
         if (pushedAlphaScale != 0) {
@@ -1751,22 +1496,19 @@ namespace zClass_Object3D {
                 g_zClass_RenderAlphaScaleStackTop >= 0
                     ? g_zClass_RenderAlphaScaleStack[g_zClass_RenderAlphaScaleStackTop]
                     : 1.0f;
-            zModel_RenderAlphaScale_SetCurrent(scale);
+            zModelRenderAlphaScaleSetCurrent(scale);
         }
 
         if (pushedSoftwareState != 0) {
             --g_zClass_SoftwarePathStateStackTop;
             if (g_zClass_SoftwarePathStateStackTop >= 0) {
-                zModel_FogTargetColorOverride_SetCurrent(
+                zModelFogTargetColorOverrideSetCurrent(
                     &g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop]
                         .color,
                     g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop].alpha
                 );
             } else {
-                zModel_FogTargetColorOverride_SetCurrent(
-                    0,
-                    0.0f
-                );
+                zModelFogTargetColorOverrideSetCurrent(0, 0.0f);
             }
         }
     }
@@ -1793,16 +1535,10 @@ namespace zClass_Object3D {
             zClass_NodePartial *child = node->listB[i];
             if (child != 0 && child->classId == kZClassNodeObject3D) {
                 if (VariantTag::CurrentAllowsId(child->nodeType) != 0) {
-                    zClass_Object3D::RenderTraverse(
-                        child,
-                        node->listCountB
-                    );
+                    zClass_Object3D::RenderTraverse(child, node->listCountB);
                 }
             } else if (child != 0) {
-                zClass_Class::gwNodeRenderDispatch(
-                    child,
-                    node->listCountB
-                );
+                zClass_Class::gwNodeRenderDispatch(child, node->listCountB);
             }
         }
         --gModel_ClipMaskStackTop;
@@ -1860,15 +1596,8 @@ namespace zClass_Object3D {
                     return 0;
                 }
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    viewSphereCenter,
-                    viewSphereRadius
-                );
+                zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+                BBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 if ((node->flags & kSingleParentFlag) != 0) {
                     node->boundsFlags &= ~kNodeBoundsDirtyFlag;
                 }
@@ -1878,7 +1607,7 @@ namespace zClass_Object3D {
                 }
             }
 
-            result = zVideo_FrustumTestSphereClipMask(
+            result = zVideoFrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
@@ -1897,10 +1626,7 @@ namespace zClass_Object3D {
                 matrixPushed = 1;
                 if ((node->flags & kSingleParentFlag) == 0) {
                     zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)data->localMatrix,
-                        3
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
                 }
                 if ((node->flags & kSingleParentFlag) != 0 &&
                     (dataFlags & kObject3DTransformDirtyFlag) == 0) {
@@ -1909,10 +1635,7 @@ namespace zClass_Object3D {
                 if ((node->flags & kSingleParentFlag) != 0 &&
                     (dataFlags & kObject3DTransformDirtyFlag) != 0) {
                     zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)data->localMatrix,
-                        3
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
                     data->flags &= ~kObject3DTransformDirtyFlag;
                 }
             }
@@ -1932,7 +1655,7 @@ namespace zClass_Object3D {
                 g_zClass_RenderVertexAlphaOverrideActive == 0) {
                 pushedVertexAlpha = 1;
                 g_zClass_RenderVertexAlphaOverrideActive = 1;
-                zModel_RenderVertexAlphaEnabled_SetCurrent(1);
+                zModelRenderVertexAlphaEnabledSetCurrent(1);
             }
 
             if ((data->flags & 0x02) != 0) {
@@ -1940,7 +1663,7 @@ namespace zClass_Object3D {
                 ++g_zClass_RenderAlphaScaleStackTop;
                 g_zClass_RenderAlphaScaleStack[g_zClass_RenderAlphaScaleStackTop] =
                     data->alphaScale;
-                zModel_RenderAlphaScale_SetCurrent(data->alphaScale);
+                zModelRenderAlphaScaleSetCurrent(data->alphaScale);
             }
 
             if ((data->flags & 0x04) != 0) {
@@ -1952,7 +1675,7 @@ namespace zClass_Object3D {
                 g_zClass_SoftwarePathRenderStateStack[
                     g_zClass_SoftwarePathStateStackTop
                 ].alpha = data->colorAlpha;
-                zModel_FogTargetColorOverride_SetCurrent(
+                zModelFogTargetColorOverrideSetCurrent(
                     &g_zClass_SoftwarePathRenderStateStack[
                         g_zClass_SoftwarePathStateStackTop
                     ].color,
@@ -1976,10 +1699,7 @@ namespace zClass_Object3D {
                         di->flags |= 0x08;
                         di->blendScale = g_zClass_RenderRangeFadeScale;
                     }
-                    gModel_RenderFn(
-                        node,
-                        clipMask
-                    );
+                    gModel_RenderFn(node, clipMask);
                 }
                 if (node->listCountB > 0) {
                     ++gModel_ClipMaskStackTop;
@@ -1988,16 +1708,10 @@ namespace zClass_Object3D {
                         zClass_NodePartial *child = node->listB[i];
                         if (child != 0 && child->classId == kZClassNodeObject3D) {
                             if (VariantTag::CurrentAllowsId(child->nodeType) != 0) {
-                                zClass_Object3D::RenderTraverse(
-                                    child,
-                                    node->listCountB
-                                );
+                                zClass_Object3D::RenderTraverse(child, node->listCountB);
                             }
                         } else if (child != 0) {
-                            zClass_Class::gwNodeRenderDispatch(
-                                child,
-                                node->listCountB
-                            );
+                            zClass_Class::gwNodeRenderDispatch(child, node->listCountB);
                         }
                     }
                     --gModel_ClipMaskStackTop;
@@ -2006,7 +1720,7 @@ namespace zClass_Object3D {
 
             if (pushedVertexAlpha != 0) {
                 g_zClass_RenderVertexAlphaOverrideActive = 0;
-                zModel_RenderVertexAlphaEnabled_SetCurrent(0);
+                zModelRenderVertexAlphaEnabledSetCurrent(0);
             }
 
             if (pushedAlphaScale != 0) {
@@ -2017,13 +1731,13 @@ namespace zClass_Object3D {
                               g_zClass_RenderAlphaScaleStackTop
                           ]
                         : 1.0f;
-                zModel_RenderAlphaScale_SetCurrent(scale);
+                zModelRenderAlphaScaleSetCurrent(scale);
             }
 
             if (pushedSoftwareState != 0) {
                 --g_zClass_SoftwarePathStateStackTop;
                 if (g_zClass_SoftwarePathStateStackTop >= 0) {
-                    zModel_FogTargetColorOverride_SetCurrent(
+                    zModelFogTargetColorOverrideSetCurrent(
                         &g_zClass_SoftwarePathRenderStateStack[
                             g_zClass_SoftwarePathStateStackTop
                         ].color,
@@ -2032,10 +1746,7 @@ namespace zClass_Object3D {
                         ].alpha
                     );
                 } else {
-                    zModel_FogTargetColorOverride_SetCurrent(
-                        0,
-                        0.0f
-                    );
+                    zModelFogTargetColorOverrideSetCurrent(0, 0.0f);
                 }
             }
             if (matrixPushed != 0) {
@@ -2090,15 +1801,8 @@ namespace zClass_Animate {
                 g_zClass_RenderBoundsContextActive != 0 ||
                 (node->flags & 0x00080000) == 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    viewSphereCenter,
-                    viewSphereRadius
-                );
+                zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+                BBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
@@ -2107,7 +1811,7 @@ namespace zClass_Animate {
                     g_zClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideo_FrustumTestSphereClipMask(
+            result = zVideoFrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
@@ -2126,10 +1830,7 @@ namespace zClass_Animate {
             if ((data->statusFlags & 0x04) != 0) {
                 matrixPushed = 1;
                 zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
-                zMath::MatMultiply(
-                    (const zMat4x3 *)data->animatedTransform,
-                    3
-                );
+                zMath::MatMultiply((const zMat4x3 *)data->animatedTransform, 3);
                 if (g_zClass_RenderBoundsContextActive == 0) {
                     boundsContextPushed = 1;
                     g_zClass_RenderBoundsContextActive = 1;
@@ -2147,10 +1848,7 @@ namespace zClass_Animate {
                 ++gModel_ClipMaskStackTop;
                 *gModel_ClipMaskStackTop = clipMask;
                 for (int i = 0; i < node->listCountB; ++i) {
-                    zClass_Class::gwNodeRenderDispatch(
-                        node->listB[i],
-                        node->listCountB
-                    );
+                    zClass_Class::gwNodeRenderDispatch(node->listB[i], node->listCountB);
                 }
                 --gModel_ClipMaskStackTop;
             }
@@ -2203,15 +1901,8 @@ namespace zClass_Lod {
             g_zClass_RenderBoundsContextActive != 0 ||
             (node->flags & 0x00080000) == 0) {
             zBBoxCorners corners = {0};
-            zClass_Class::gwNodeGetViewBBoxCorners(
-                node,
-                &corners
-            );
-            BBox::CornersToBoundingSphere(
-                &corners,
-                viewSphereCenter,
-                viewSphereRadius
-            );
+            zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+            BBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
             if ((node->flags & 0x00080000) != 0) {
                 node->boundsFlags &= ~0x04;
             }
@@ -2243,18 +1934,10 @@ namespace zClass_Lod {
         float alphaScale = 1.0f;
 
         int distanceBits = 0;
-        memcpy(
-            &distanceBits,
-            &state.distanceSq,
-            sizeof(distanceBits)
-        );
+        memcpy(&distanceBits, &state.distanceSq, sizeof(distanceBits));
         distanceBits = (distanceBits >> 1) + 0x1fc00000;
         float distance = 0.0f;
-        memcpy(
-            &distance,
-            &distanceBits,
-            sizeof(distance)
-        );
+        memcpy(&distance, &distanceBits, sizeof(distance));
         if (distance < data->nearRange) {
             distance = data->nearRange;
         }
@@ -2296,18 +1979,10 @@ namespace zClass_Lod {
         }
         if (data->fogFadeAmount > 0.01f) {
             int nearDistanceBits = 0;
-            memcpy(
-                &nearDistanceBits,
-                &data->nearRangeSq,
-                sizeof(nearDistanceBits)
-            );
+            memcpy(&nearDistanceBits, &data->nearRangeSq, sizeof(nearDistanceBits));
             nearDistanceBits = (nearDistanceBits >> 1) + 0x1fc00000;
             float nearDistance = 0.0f;
-            memcpy(
-                &nearDistance,
-                &nearDistanceBits,
-                sizeof(nearDistance)
-            );
+            memcpy(&nearDistance, &nearDistanceBits, sizeof(nearDistance));
             if (distance < nearDistance) {
                 distance = nearDistance;
             }
@@ -2323,7 +1998,7 @@ namespace zClass_Lod {
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if (clipMask != 0 && siblingCountHint > 1) {
-            result = zVideo_FrustumTestSphereClipMask(
+            result = zVideoFrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
@@ -2360,30 +2035,23 @@ namespace zClass_Lod {
             zMat4x3 slotBuffer;
             if (pushScaleMatrix != 0) {
                 zMath::MatStackPushAndCloneParent((float *)&slotBuffer);
-                zMath_Mat_Scale(
-                    scaleX,
-                    scaleY,
-                    scaleZ
-                );
+                zMath_Mat_Scale(scaleX, scaleY, scaleZ);
             }
             if (pushAlphaScale != 0) {
                 ++g_zClass_RenderAlphaScaleStackTop;
                 g_zClass_RenderAlphaScaleStack[g_zClass_RenderAlphaScaleStackTop] = alphaScale;
-                zModel_RenderAlphaScale_SetCurrent(alphaScale);
+                zModelRenderAlphaScaleSetCurrent(alphaScale);
             }
 
             int pushedVertexAlpha = 0;
             if ((node->flags & 0x00800000) != 0 && g_zClass_RenderVertexAlphaOverrideActive == 0) {
                 pushedVertexAlpha = 1;
                 g_zClass_RenderVertexAlphaOverrideActive = 1;
-                zModel_RenderVertexAlphaEnabled_SetCurrent(1);
+                zModelRenderVertexAlphaEnabledSetCurrent(1);
             }
 
             for (int i = 0; i < node->listCountB; ++i) {
-                zClass_Class::gwNodeRenderDispatch(
-                    node->listB[i],
-                    node->listCountB
-                );
+                zClass_Class::gwNodeRenderDispatch(node->listB[i], node->listCountB);
             }
 
             if (pushScaleMatrix != 0) {
@@ -2395,11 +2063,11 @@ namespace zClass_Lod {
                     g_zClass_RenderAlphaScaleStackTop >= 0
                         ? g_zClass_RenderAlphaScaleStack[g_zClass_RenderAlphaScaleStackTop]
                         : 1.0f;
-                zModel_RenderAlphaScale_SetCurrent(previousAlphaScale);
+                zModelRenderAlphaScaleSetCurrent(previousAlphaScale);
             }
             if (pushedVertexAlpha != 0) {
                 g_zClass_RenderVertexAlphaOverrideActive = 0;
-                zModel_RenderVertexAlphaEnabled_SetCurrent(0);
+                zModelRenderVertexAlphaEnabledSetCurrent(0);
             }
             --g_zClass_LodDistanceStateStackTop;
             g_zClass_RenderRangeFadeActive = 0;
@@ -2450,18 +2118,11 @@ namespace zClass_Sequence {
             if ((node->boundsFlags & 0x04) != 0 ||
                 g_zClass_RenderBoundsContextActive != 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    viewSphereCenter,
-                    viewSphereRadius
-                );
+                zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+                BBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 node->boundsFlags &= ~0x04;
             }
-            result = zVideo_FrustumTestSphereClipMask(
+            result = zVideoFrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
@@ -2526,18 +2187,11 @@ namespace zClass_Switch {
             if ((node->boundsFlags & 0x04) != 0 ||
                 g_zClass_RenderBoundsContextActive != 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    viewSphereCenter,
-                    viewSphereRadius
-                );
+                zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
+                BBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 node->boundsFlags &= ~0x04;
             }
-            result = zVideo_FrustumTestSphereClipMask(
+            result = zVideoFrustumTestSphereClipMask(
                 viewSphereCenter,
                 &clipMask,
                 *viewSphereRadius
@@ -2559,10 +2213,7 @@ namespace zClass_Switch {
             const unsigned int activeMask = data->childMasks[data->activeMaskIndex];
             for (int i = 0; i < node->listCountB; ++i) {
                 if (((activeMask >> i) & 1U) != 0) {
-                    zClass_Class::gwNodeRenderDispatch(
-                        node->listB[i],
-                        node->listCountB
-                    );
+                    zClass_Class::gwNodeRenderDispatch(node->listB[i], node->listCountB);
                 }
             }
             --gModel_ClipMaskStackTop;
@@ -2595,51 +2246,23 @@ namespace zClass_Class {
 
         switch (node->classId - 1) {
         case 4:
-            return zClass_Object3D::RenderTraverse(
-                node,
-                siblingCountHint
-            );
+            return zClass_Object3D::RenderTraverse(node, siblingCountHint);
         case 5:
-            return zClass_Lod::RenderTraverse(
-                node,
-                siblingCountHint
-            );
+            return zClass_Lod::RenderTraverse(node, siblingCountHint);
         case 8:
-            return zClass_Light::RenderTraverse(
-                node,
-                siblingCountHint
-            );
+            return zClass_Light::RenderTraverse(node, siblingCountHint);
         case 9:
-            return zClass_Sound::RenderTraverse(
-                node,
-                siblingCountHint
-            );
+            return zClass_Sound::RenderTraverse(node, siblingCountHint);
         case 0:
-            return zClass_Camera::RenderTraverse(
-                node,
-                siblingCountHint
-            );
+            return zClass_Camera::RenderTraverse(node, siblingCountHint);
         case 7:
-            return zClass_Animate::RenderTraverse(
-                node,
-                siblingCountHint
-            );
+            return zClass_Animate::RenderTraverse(node, siblingCountHint);
         case 6:
-            return zClass_Sequence::RenderTraverse(
-                node,
-                siblingCountHint
-            );
+            return zClass_Sequence::RenderTraverse(node, siblingCountHint);
         case 10:
-            return zClass_Switch::RenderTraverse(
-                node,
-                siblingCountHint
-            );
+            return zClass_Switch::RenderTraverse(node, siblingCountHint);
         default:
-            return fprintf(
-                stderr,
-                "Unrecognized node rendering type: %s\n",
-                node->name
-            );
+            return fprintf(stderr, "Unrecognized node rendering type: %s\n", node->name);
         }
     }
 
@@ -2722,10 +2345,7 @@ namespace zClass_Camera {
                     zVec3 *candidate = hullPoint + 1;
                     int scanIndex = scanStart;
                     do {
-                        const float angle = FastAngleXZ(
-                            hullPoint,
-                            candidate
-                        );
+                        const float angle = FastAngleXZ(hullPoint, candidate);
                         if (angle > minAngle && angle < previousAngle) {
                             previousAngle = angle;
                             selectedIndex = scanIndex;
@@ -2865,13 +2485,7 @@ namespace zClass_Camera {
 
         int minCol = 0;
         int minRow = 0;
-        result = zClass_World::WorldToGridCoordsClamped(
-            world,
-            &minCol,
-            minX,
-            minZ,
-            &minRow
-        );
+        result = zClass_World::WorldToGridCoordsClamped(world, &minCol, minX, minZ, &minRow);
         if (result != 0) {
             zMath::MatStackPopPtr();
             return result;
@@ -2879,13 +2493,7 @@ namespace zClass_Camera {
 
         int maxCol = 0;
         int maxRow = 0;
-        result = zClass_World::WorldToGridCoordsClamped(
-            world,
-            &maxCol,
-            maxX,
-            maxZ,
-            &maxRow
-        );
+        result = zClass_World::WorldToGridCoordsClamped(world, &maxCol, maxX, maxZ, &maxRow);
         if (result != 0) {
             zMath::MatStackPopPtr();
             return result;
@@ -2947,7 +2555,7 @@ namespace zClass_Camera {
                             bboxRadius = area->bboxRadius;
                         }
 
-                        if (zVideo_FrustumTestSphereClipMask(sphereCenter, &clipMask, bboxRadius) ==
+                        if (zVideoFrustumTestSphereClipMask(sphereCenter, &clipMask, bboxRadius) ==
                             0) {
                             const int colDelta = col - originCol;
                             const int rowDelta = row - originRow;
@@ -3214,7 +2822,7 @@ namespace zClass_Camera {
                                 sphereCenter = &area->bboxCenter;
                                 bboxRadius = area->bboxRadius;
                             }
-                            frustumVisible = zVideo_FrustumTestSphereClipMask(
+                            frustumVisible = zVideoFrustumTestSphereClipMask(
                                 sphereCenter,
                                 &clipMask,
                                 bboxRadius
@@ -3282,26 +2890,18 @@ namespace zClass_Camera {
         int result = 0;
 
         if (worldData->clampQueriesToBounds != 0) {
-            result = BuildFrustumGridTilesFromParams(
-                world,
-                worldData,
-                cameraData
-            );
+            result = BuildFrustumGridTilesFromParams(world, worldData, cameraData);
         } else {
-            result = BuildFrustumGridTiles(
-                world,
-                worldData,
-                cameraData
-            );
+            result = BuildFrustumGridTiles(world, worldData, cameraData);
         }
         if (result != 0) {
             return result;
         }
 
-        const int fogWasEnabled = zModel_Fog_IsEnabled();
+        const int fogWasEnabled = zModelFogIsEnabled();
         float fogDistanceStart = 0.0f;
         if (fogWasEnabled != 0) {
-            fogDistanceStart = zModel_Fog_GetDistanceStart();
+            fogDistanceStart = zModelFogGetDistanceStart();
         }
 
         g_zClass_RenderFrustumGridTileIndex = 0;
@@ -3320,10 +2920,7 @@ namespace zClass_Camera {
 
                         if (tile->hasPosOffset != 0) {
                             zVec3 posOffset = {-tile->posOffsetX, 0.0f, -tile->posOffsetZ};
-                            UpdateImpl(
-                                camera,
-                                &posOffset
-                            );
+                            UpdateImpl(camera, &posOffset);
                             cameraAtBasePos = 0;
                         } else if (cameraAtBasePos == 0) {
                             gwCameraUpdate(camera);
@@ -3331,10 +2928,7 @@ namespace zClass_Camera {
                         }
 
                         if (g_zClass_ObjectHseTestEnabled != 0 && ringIndex > 0 &&
-                            zScene::TestProjectedSphereVisible(
-                                &center,
-                                area->bboxRadius
-                            ) == 0) {
+                            zScene::TestProjectedSphereVisible(&center, area->bboxRadius) == 0) {
                             continue;
                         }
 
@@ -3365,20 +2959,12 @@ namespace zClass_Camera {
                             const float dz = center.z - cameraData->cameraPos.z;
                             float distanceSq = dx * dx + dy * dy + dz * dz;
                             int bits = 0;
-                            memcpy(
-                                &bits,
-                                &distanceSq,
-                                sizeof(bits)
-                            );
+                            memcpy(&bits, &distanceSq, sizeof(bits));
                             bits = (bits >> 1) + 0x1fc00000;
                             float distance = 0.0f;
-                            memcpy(
-                                &distance,
-                                &bits,
-                                sizeof(distance)
-                            );
+                            memcpy(&distance, &bits, sizeof(distance));
                             distance += area->bboxRadius * 1.10000002f;
-                            zModel_Fog_SetEnabled(distance < fogDistanceStart ? 0 : 1);
+                            zModelFogSetEnabled(distance < fogDistanceStart ? 0 : 1);
                         }
 
                         *gModel_ClipMaskStackTop = tile->clipMask;
@@ -3392,14 +2978,8 @@ namespace zClass_Camera {
                         } else {
                             for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
                                 zClass_NodePartial *child = area->childList[childIndex];
-                                if (strstr(
-                                    child->name,
-                                    g_zClass_VapStaticsNodeName
-                                ) != 0) {
-                                    zClass_Class::gwNodeRenderDispatch(
-                                        child,
-                                        area->childCount
-                                    );
+                                if (strstr(child->name, g_zClass_VapStaticsNodeName) != 0) {
+                                    zClass_Class::gwNodeRenderDispatch(child, area->childCount);
                                 }
                             }
                         }
@@ -3419,7 +2999,7 @@ namespace zClass_Camera {
             }
         }
         if (fogWasEnabled != 0) {
-            zModel_Fog_SetEnabled(fogWasEnabled);
+            zModelFogSetEnabled(fogWasEnabled);
         }
         return result;
     }
@@ -3434,10 +3014,7 @@ namespace zClass_Camera {
     void __fastcall RenderOverlayNodes(zClass_NodePartial * world) {
         *gModel_ClipMaskStackTop = 0x3f;
         for (int i = 0; i < world->listCountB; ++i) {
-            zClass_Class::gwNodeRenderDispatch(
-                world->listB[i],
-                2
-            );
+            zClass_Class::gwNodeRenderDispatch(world->listB[i], 2);
         }
     }
 
@@ -3453,11 +3030,7 @@ namespace zClass_Camera {
         zClass_NodePartial * camera,
         zClass_CameraDataPartial * cameraData
     ) {
-        RenderFrustumGridTiles(
-            world,
-            camera,
-            cameraData
-        );
+        RenderFrustumGridTiles(world, camera, cameraData);
         RenderOverlayNodes(world);
     }
 
@@ -3472,13 +3045,7 @@ namespace zClass_Camera {
         zTag4Partial * variantTag
     ) {
         zClass_CameraDataPartial *data = 0;
-        const int validateResult = ValidateCameraNode(
-            camera,
-            &data,
-            0x1527,
-            0x1528,
-            0x1529
-        );
+        const int validateResult = ValidateCameraNode(camera, &data, 0x1527, 0x1528, 0x1529);
         if (validateResult != 0) {
             return validateResult;
         }
@@ -3552,7 +3119,7 @@ namespace zClass_Camera {
         zClass_NodePartial * camera,
         int updateFxPass3Local
     ) {
-        const int queuedLensFlareSampleCount = zRndr_LensFlare_GetQueuedSampleCount();
+        const int queuedLensFlareSampleCount = zRndrLensFlareGetQueuedSampleCount();
         zMat4x3 slotBuffer = {0};
         zMath::MatStackPushPtr((float *)&slotBuffer);
 
@@ -3576,17 +3143,14 @@ namespace zClass_Camera {
                 g_zClass_CameraAutoClipDistanceScale = g_zClass_CameraAutoClipDistanceMinScale;
             }
 
-            gwCameraSetClipDistance(
-                camera,
-                g_zClass_CameraAutoClipDistanceScale
-            );
+            gwCameraSetClipDistance(camera, g_zClass_CameraAutoClipDistanceScale);
         }
 
         zClass_World::InitLightPointInPolygonXZ(world);
         zVideo::ReturnSuccessStub();
         gwCameraUpdate(camera);
         SyncViewContextPositions();
-        zVideo_SetActiveViewContext(g_zVideo_pActiveViewContext);
+        zVideoSetActiveViewContext(g_zVideo_pActiveViewContext);
         zClass_World::UpdateAllLights(world);
         zClass_World::UpdateAllSounds(world);
 
@@ -3633,21 +3197,17 @@ namespace zClass_Camera {
             g_zVideo_ActiveViewVariantTag = g_zVideo_pActiveViewContext->variantTag;
         }
 
-        RenderWorld(
-            world,
-            camera,
-            g_zVideo_pActiveViewContext
-        );
+        RenderWorld(world, camera, g_zVideo_pActiveViewContext);
         zMath::MatStackPopPtr();
-        zRndr_FlushTransparentQueue();
+        zRndrFlushTransparentQueue();
         if (updateFxPass3Local != 0) {
-            zVideo::FxPass3_UpdateLocal(g_FrameDeltaTimeSec);
+            zVideo::FxPass3UpdateLocal(g_FrameDeltaTimeSec);
         }
-        zRndr_FlushOverwriteQueue();
-        zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(queuedLensFlareSampleCount);
-        zRndr_LensFlare_DrawVisibleSamples();
-        zRndr_FlushTransparentQueue();
-        zRndr_OverlayRect_FlushSw();
+        zRndrFlushOverwriteQueue();
+        zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList(queuedLensFlareSampleCount);
+        zRndrLensFlareDrawVisibleSamples();
+        zRndrFlushTransparentQueue();
+        zRndrOverlayRectFlushSw();
         zTag4::Clear(&g_zVideo_pActiveViewContext->variantTag);
 
         return 0;
@@ -3663,13 +3223,13 @@ namespace zClass_Camera {
  * updates the active variant tag at 0x5398f8, dispatches the three renderer
  * flush callbacks at 0x56bc6c..0x56bc74, and brackets rendering through the
  * scene-depth owner at 0x632148.
- * Purpose: provide the recovered zVideo_sw_RenderFrame behavior.
+ * Purpose: provide the recovered zVideoswRenderFrame behavior.
  */
-int __fastcall zVideo_sw_RenderFrame(
+int __fastcall zVideoswRenderFrame(
     zClass_NodePartial *camera,
     int updateFxPass3Local
 ) {
-    const int queuedLensFlareSampleCount = zRndr_LensFlare_GetQueuedSampleCount();
+    const int queuedLensFlareSampleCount = zRndrLensFlareGetQueuedSampleCount();
     zMat4x3 slotBuffer = {0};
     zMath::MatStackPushPtr((float *)&slotBuffer);
 
@@ -3692,17 +3252,14 @@ int __fastcall zVideo_sw_RenderFrame(
             g_zClass_CameraAutoClipDistanceScale = g_zClass_CameraAutoClipDistanceMinScale;
         }
 
-        zClass_Camera::gwCameraSetClipDistance(
-            camera,
-            g_zClass_CameraAutoClipDistanceScale
-        );
+        zClass_Camera::gwCameraSetClipDistance(camera, g_zClass_CameraAutoClipDistanceScale);
     }
 
     zClass_World::InitLightPointInPolygonXZ(world);
     zVideo::ReturnSuccessStub();
     zClass_Camera::gwCameraUpdate(camera);
     zClass_Camera::SyncViewContextPositions();
-    zVideo_SetActiveViewContext(g_zVideo_pActiveViewContext);
+    zVideoSetActiveViewContext(g_zVideo_pActiveViewContext);
     zClass_World::UpdateAllLights(world);
     zClass_World::UpdateAllSounds(world);
 
@@ -3738,28 +3295,21 @@ int __fastcall zVideo_sw_RenderFrame(
     }
 
     zVideoD3D::SceneEnter();
-    zClass_Camera::RenderWorld(
-        world,
-        camera,
-        g_zVideo_pActiveViewContext
-    );
+    zClass_Camera::RenderWorld(world, camera, g_zVideo_pActiveViewContext);
     zMath::MatStackPopPtr();
 
     g_zVideo_pfnFlushSortedPolys();
     if (updateFxPass3Local != 0) {
-        zVideo::FxPass3_UpdateLocal(g_FrameDeltaTimeSec);
+        zVideo::FxPass3UpdateLocal(g_FrameDeltaTimeSec);
     }
     g_zVideo_pfnFlushSortedPolys();
     g_zVideo_pfnFlushOverwritePolys();
 
     const int visibleLensFlareSampleCount =
-        zRndr_LensFlare_BuildVisibleSampleListFromQueue(queuedLensFlareSampleCount);
+        zRndrLensFlareBuildVisibleSampleListFromQueue(queuedLensFlareSampleCount);
     for (int sampleIndex = 0; sampleIndex < visibleLensFlareSampleCount; ++sampleIndex) {
         zVec3 visibleSamplePoint = {0};
-        zRndr_SpanOcclusion_FilterSampleList(
-            sampleIndex,
-            &visibleSamplePoint
-        );
+        zRndrSpanOcclusionFilterSampleList(sampleIndex, &visibleSamplePoint);
         zClass_cls_di::SetStopAfterFirstHit(0x40000);
         zClass_cls_di::SetBreakOnFirstCandidate(1);
         viewContext = g_zVideo_pActiveViewContext;
@@ -3775,7 +3325,7 @@ int __fastcall zVideo_sw_RenderFrame(
         );
         zClass_cls_di::SetBreakOnFirstCandidate(0);
         if (raycastHit != 0 || pickCandidates.candidateCount == 0) {
-            zRndr_LensFlare_DrawVisibleSample(sampleIndex);
+            zRndrLensFlareDrawVisibleSample(sampleIndex);
         }
     }
 

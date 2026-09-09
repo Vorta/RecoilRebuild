@@ -21,10 +21,7 @@ int __fastcall VerifyWinsock2OrPromptContinue(
 ) {
     int result = TRUE;
     WSADATA wsaData;
-    if (WSAStartup(
-        2,
-        &wsaData
-    ) != 0) {
+    if (WSAStartup(2, &wsaData) != 0) {
         result = FALSE;
     } else if (LOBYTE(wsaData.wHighVersion) != 2 || HIBYTE(wsaData.wHighVersion) != 0) {
         WSACleanup();
@@ -40,12 +37,7 @@ int __fastcall VerifyWinsock2OrPromptContinue(
             (unsigned int)HIBYTE(wsaData.wHighVersion)
         );
         MessageBeep(MB_ICONEXCLAMATION);
-        if (MessageBoxA(
-            GetFocus(),
-            promptText,
-            caption,
-            MB_ICONQUESTION | MB_YESNO
-        ) == IDYES) {
+        if (MessageBoxA(GetFocus(), promptText, caption, MB_ICONQUESTION | MB_YESNO) == IDYES) {
             result = TRUE;
         }
     }

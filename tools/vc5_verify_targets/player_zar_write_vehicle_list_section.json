@@ -27,8 +27,8 @@
   "functions": [
     {
       "address": "0x41f6a0",
-      "symbol": "?ZAR_WriteVehicleListSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z",
-      "name": "Player::ZAR_WriteVehicleListSection"
+      "symbol": "?zZarWriteVehicleListSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z",
+      "name": "Player::zZarWriteVehicleListSection"
     }
   ],
   "source_from": "src/Battlesport/player.cpp"

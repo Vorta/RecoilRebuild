@@ -54,7 +54,7 @@ def _exact_candidate_zsnd_playwithdelta_a3d_backend_vptr_proofs(
     local_control_flow_indices: frozenset[int],
     local_control_flow_targets: Mapping[int, tuple[int, ...]],
 ) -> dict[int, str]:
-    """Prove the complete PlayWithDelta_A3D backendBuffer call population.
+    """Prove the complete PlayWithDeltaA3D backendBuffer call population.
 
     VC5 retains the first backendBuffer vptr in callee-saved EBP across the
     exact PlaySimple conversion call.  The ordinary register interpreter

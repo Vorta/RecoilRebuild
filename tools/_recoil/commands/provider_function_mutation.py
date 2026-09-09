@@ -341,12 +341,12 @@ HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
     "vc5-vector-bind-group-pointer-size-ob1-v1": {
         "canonical_header": "VC/INCLUDE/vector",
         "semantic_provider": "vc5-stl",
-        "object_symbol": "?size@?$vector@PAUzInput_BindGroupInfo@@V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@QBEIXZ",
+        "object_symbol": "?size@?$vector@PAUCZInputBindGroupInfo@@V?$allocator@PAUCZInputBindGroupInfo@@@std@@@std@@QBEIXZ",
         "retail_body_size": 0x20,
         "source": (
             "#include <vector>\r\n"
-            "struct zInput_BindGroupInfo;\r\n"
-            "typedef std::vector<zInput_BindGroupInfo *> RecoilProviderVectorPointer;\r\n"
+            "struct CZInputBindGroupInfo;\r\n"
+            "typedef std::vector<CZInputBindGroupInfo *> RecoilProviderVectorPointer;\r\n"
             "typedef RecoilProviderVectorPointer::size_type\r\n"
             "    (RecoilProviderVectorPointer::*RecoilProviderVectorSizeFn)() const;\r\n"
             "RecoilProviderVectorSizeFn recoil_provider_vector_size =\r\n"
@@ -381,14 +381,14 @@ HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
     "vc5-vector-bind-group-pointer-ucopy-ob1-v1": {
         "canonical_header": "VC/INCLUDE/vector",
         "semantic_provider": "vc5-stl",
-        "object_symbol": "?_Ucopy@?$vector@PAUzInput_BindGroupInfo@@V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@IAEPAPAUzInput_BindGroupInfo@@PBQAU3@0PAPAU3@@Z",
+        "object_symbol": "?_Ucopy@?$vector@PAUCZInputBindGroupInfo@@V?$allocator@PAUCZInputBindGroupInfo@@@std@@@std@@IAEPAPAUCZInputBindGroupInfo@@PBQAU3@0PAPAU3@@Z",
         "retail_body_size": 0x30,
         "source": (
             "#include <vector>\r\n"
-            "struct zInput_BindGroupInfo;\r\n"
-            "struct RecoilProviderVectorPointerCopyProbe : std::vector<zInput_BindGroupInfo *>\r\n"
+            "struct CZInputBindGroupInfo;\r\n"
+            "struct RecoilProviderVectorPointerCopyProbe : std::vector<CZInputBindGroupInfo *>\r\n"
             "{\r\n"
-            "    typedef std::vector<zInput_BindGroupInfo *> Base;\r\n"
+            "    typedef std::vector<CZInputBindGroupInfo *> Base;\r\n"
             "    typedef iterator (Base::*CopyFn)(const_iterator, const_iterator, iterator);\r\n"
             "    static CopyFn copy;\r\n"
             "};\r\n"
@@ -561,15 +561,15 @@ HEADER_PROBE_RECIPES: dict[str, dict[str, Any]] = {
     "vc5-vector-bind-group-pointer-ufill-ob1-v1": {
         "canonical_header": "VC/INCLUDE/vector",
         "semantic_provider": "vc5-stl",
-        "object_symbol": "?_Ufill@?$vector@PAUzInput_BindGroupInfo@@V?$allocator@PAUzInput_BindGroupInfo@@@std@@@std@@IAEXPAPAUzInput_BindGroupInfo@@IABQAU3@@Z",
+        "object_symbol": "?_Ufill@?$vector@PAUCZInputBindGroupInfo@@V?$allocator@PAUCZInputBindGroupInfo@@@std@@@std@@IAEXPAPAUCZInputBindGroupInfo@@IABQAU3@@Z",
         "retail_body_size": 0x30,
         "source": (
             "#include <vector>\r\n"
-            "struct zInput_BindGroupInfo;\r\n"
-            "struct RecoilProviderVectorPointerFillProbe : std::vector<zInput_BindGroupInfo *>\r\n"
+            "struct CZInputBindGroupInfo;\r\n"
+            "struct RecoilProviderVectorPointerFillProbe : std::vector<CZInputBindGroupInfo *>\r\n"
             "{\r\n"
-            "    typedef std::vector<zInput_BindGroupInfo *> Base;\r\n"
-            "    typedef void (Base::*FillFn)(iterator, size_type, zInput_BindGroupInfo *const &);\r\n"
+            "    typedef std::vector<CZInputBindGroupInfo *> Base;\r\n"
+            "    typedef void (Base::*FillFn)(iterator, size_type, CZInputBindGroupInfo *const &);\r\n"
             "    static FillFn fill;\r\n"
             "};\r\n"
             "RecoilProviderVectorPointerFillProbe::FillFn RecoilProviderVectorPointerFillProbe::fill =\r\n"
@@ -667,8 +667,8 @@ for _payload_name, _recipe_name in (
         _base_recipe = HEADER_PROBE_RECIPES[f"vc5-vector-bind-group-pointer-{_operation}-ob1-v1"]
         HEADER_PROBE_RECIPES[f"vc5-vector-{_recipe_name}-pointer-{_operation}-ob1-v1"] = {
             **_base_recipe,
-            "object_symbol": _base_recipe["object_symbol"].replace("zInput_BindGroupInfo", _payload_name),
-            "source": _base_recipe["source"].replace("zInput_BindGroupInfo", _payload_name),
+            "object_symbol": _base_recipe["object_symbol"].replace("CZInputBindGroupInfo", _payload_name),
+            "source": _base_recipe["source"].replace("CZInputBindGroupInfo", _payload_name),
         }
 
 

@@ -18,12 +18,12 @@
   "functions": [
     {
       "address": "0x4a0900",
-      "symbol": "_zSndSampleSetRegistry_GetCount",
+      "symbol": "_zSndSampleSetRegistryGetCount",
       "name": "zSndSampleSetRegistry::GetCount"
     },
     {
       "address": "0x4a08d0",
-      "symbol": "@zSndSampleSetRegistry_GetByIndex@4",
+      "symbol": "@zSndSampleSetRegistryGetByIndex@4",
       "name": "zSndSampleSetRegistry::GetByIndex"
     }
   ],

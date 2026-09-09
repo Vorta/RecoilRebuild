@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x42fa80",
-      "symbol": "_zInput_DI_IsForceFeedbackEnabled",
+      "symbol": "_zInputDIIsForceFeedbackEnabled",
       "name": "zInputDI::IsForceFeedbackEnabled"
     }
   ],

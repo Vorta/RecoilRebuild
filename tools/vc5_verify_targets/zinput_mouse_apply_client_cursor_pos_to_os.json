@@ -1,6 +1,6 @@
 {
   "name": "zinput_mouse_apply_client_cursor_pos_to_os",
-  "description": "zInput::Mouse_ApplyClientCursorPosToOS converts cached client cursor coordinates to screen coordinates and applies them.",
+  "description": "zInput::MouseApplyClientCursorPosToOS converts cached client cursor coordinates to screen coordinates and applies them.",
   "source_filename": "zin_mouse.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x470020",
-      "symbol": "?Mouse_ApplyClientCursorPosToOS@zInput@@YAXXZ",
-      "name": "zInput::Mouse_ApplyClientCursorPosToOS"
+      "symbol": "?MouseApplyClientCursorPosToOS@zInput@@YAXXZ",
+      "name": "zInput::MouseApplyClientCursorPosToOS"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp"

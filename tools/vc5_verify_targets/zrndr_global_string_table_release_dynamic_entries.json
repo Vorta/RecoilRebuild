@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x480ec0",
-      "symbol": "?GlobalStringTable_ReleaseDynamicEntries@zRndr@@YAXXZ",
-      "name": "zRndr::GlobalStringTable_ReleaseDynamicEntries"
+      "symbol": "?GlobalStringTableReleaseDynamicEntries@zRndr@@YAXXZ",
+      "name": "zRndr::GlobalStringTableReleaseDynamicEntries"
     }
   ],
   "source_from": "src/GameZRecoil/zModel/gmod_matl.c"

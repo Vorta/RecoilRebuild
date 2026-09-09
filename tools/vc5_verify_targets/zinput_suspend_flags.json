@@ -18,18 +18,18 @@
   "functions": [
     {
       "address": "0x471cf0",
-      "symbol": "?Mouse_Suspend@zInput@@YAXXZ",
-      "name": "zInput::Mouse_Suspend"
+      "symbol": "?MouseSuspend@zInput@@YAXXZ",
+      "name": "zInput::MouseSuspend"
     },
     {
       "address": "0x471d00",
-      "symbol": "?Joystick_Suspend@zInput@@YAXXZ",
-      "name": "zInput::Joystick_Suspend"
+      "symbol": "?JoystickSuspend@zInput@@YAXXZ",
+      "name": "zInput::JoystickSuspend"
     },
     {
       "address": "0x471d10",
-      "symbol": "?Keyboard_Suspend@zInput@@YAXXZ",
-      "name": "zInput::Keyboard_Suspend"
+      "symbol": "?KeyboardSuspend@zInput@@YAXXZ",
+      "name": "zInput::KeyboardSuspend"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_init.cpp"

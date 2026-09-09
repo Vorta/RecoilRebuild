@@ -1,6 +1,6 @@
 {
   "name": "zinput_mouse_update_acquire_state",
-  "description": "zInput::Mouse_UpdateAcquireState acquires or unacquires the mouse device based on active state.",
+  "description": "zInput::MouseUpdateAcquireState acquires or unacquires the mouse device based on active state.",
   "source_filename": "zin_mouse.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
@@ -24,8 +24,8 @@
   "functions": [
     {
       "address": "0x470310",
-      "symbol": "?Mouse_UpdateAcquireState@zInput@@YAXXZ",
-      "name": "zInput::Mouse_UpdateAcquireState"
+      "symbol": "?MouseUpdateAcquireState@zInput@@YAXXZ",
+      "name": "zInput::MouseUpdateAcquireState"
     }
   ],
   "data_symbols": [

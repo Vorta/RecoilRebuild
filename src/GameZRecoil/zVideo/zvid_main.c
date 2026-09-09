@@ -111,7 +111,7 @@ extern "C" {
 zVideo_PixelPackParams g_zVideo_PixelPack = {0};
 /*
  * BN models the texture pixel-pack BSS block at 0x632188..0x6321c4 as the
- * scalar field order below; TexturePixelPack_SetupFromMasks is the writer.
+ * scalar field order below; TexturePixelPackSetupFromMasks is the writer.
  */
 int g_zVideo_TexturePixelPack_RBits = 0;
 int g_zVideo_TexturePixelPack_GBits = 0;
@@ -291,7 +291,7 @@ int g_zVideo_PendingDitherEnable = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-f-0x56bbf4
  * @recoil-artifact defines .data recoil:data:0x56bbf4: g_zVideo_InverseZTolerancePending.
- * BN xrefs: zModel_Display_Init, zRndr::SetInverseZTolerance, and
+ * BN xrefs: zModelDisplayInit, zRndr::SetInverseZTolerance, and
  * zVideo::ModuleInit write this staged hardware-renderer inverse-Z tolerance.
  * Purpose: cache the inverse-Z tolerance pending for non-software renderer paths.
  */
@@ -333,7 +333,7 @@ zVidTexturePackEntry *g_zVid_TexturePacks = 0;
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-x04
  * @recoil-artifact defines .data recoil:data:0x4e07e8: g_zVid_DefaultImageTexturePackReadonlyNameFmt.
  * BN identifies this row as g_str_fmt_r_s, a writable char[0x04] format
- * literal used by zVid_TexturePack_EnsureDefaultImagePackLoaded.
+ * literal used by zVidTexturePackEnsureDefaultImagePackLoaded.
  * Purpose: provide the renderer-prefixed default image-pack filename format.
  *
  * Retail stores this row immediately before the "image.zbd" row; both remain
@@ -344,13 +344,13 @@ char g_zVid_DefaultImageTexturePackReadonlyNameFmt[0x04] = "r%s";
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-x0a
  * @recoil-artifact defines .data recoil:data:0x4e07ec: g_zVid_DefaultImageTexturePackName.
  * BN identifies this row as g_str_image_zbd, a writable char[0x0a] literal
- * used by zVid_TexturePack_EnsureDefaultImagePackLoaded.
+ * used by zVidTexturePackEnsureDefaultImagePackLoaded.
  * Purpose: provide the default image texture-pack archive filename.
  */
 char g_zVid_DefaultImageTexturePackName[0x0a] = "image.zbd";
 /**
  * Purpose: writable archive filename pieces used by
- * zVid_TexturePack_EnsureBuiltinTexturePacksLoaded when probing built-in
+ * zVidTexturePackEnsureBuiltinTexturePacksLoaded when probing built-in
  * texture packs.
  *
  * Retail keeps these strings in this row order, with padding bytes preserved
@@ -1305,7 +1305,7 @@ RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchoffsetx
  * @recoil-artifact defines .data recoil:data:0x56b190: g_zVideo_FxPass3_ScratchOffsetX.
- * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the center
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the center
  * X bias before clipped scatter calls; BN assembly for 0x48da60 loads it once
  * and applies it to both the destination delta in ECX and the source X stack
  * delta before clip tests.
@@ -1315,7 +1315,7 @@ int g_zVideo_FxPass3_ScratchOffsetX;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchoffsety
  * @recoil-artifact defines .data recoil:data:0x56b194: g_zVideo_FxPass3_ScratchOffsetY.
- * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the center
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the center
  * Y bias before clipped scatter calls; BN assembly for 0x48da60 loads it once
  * and applies it to both the destination delta in EDX and the source Y stack
  * delta before clip tests.
@@ -1325,7 +1325,7 @@ int g_zVideo_FxPass3_ScratchOffsetY;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipminx
  * @recoil-artifact defines .data recoil:data:0x56b1a0: g_zVideo_FxPass3_ClipMinX.
- * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
  * current pass-3 clip rectangle and the clipped scatter helper tests source
  * and destination X coordinates against it as an inclusive lower bound.
  * Purpose: cache the inclusive minimum X clip edge for pass-3 scatter copies.
@@ -1334,7 +1334,7 @@ int g_zVideo_FxPass3_ClipMinX;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipminy
  * @recoil-artifact defines .data recoil:data:0x56b1a4: g_zVideo_FxPass3_ClipMinY.
- * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
  * current pass-3 clip rectangle and the clipped scatter helper tests source
  * and destination Y coordinates against it as an inclusive lower bound.
  * Purpose: cache the inclusive minimum Y clip edge for pass-3 scatter copies.
@@ -1343,7 +1343,7 @@ int g_zVideo_FxPass3_ClipMinY;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipmaxx
  * @recoil-artifact defines .data recoil:data:0x56b1a8: g_zVideo_FxPass3_ClipMaxX.
- * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
  * current pass-3 clip rectangle and the clipped scatter helper treats this as
  * the exclusive maximum X edge.
  * Purpose: cache the exclusive maximum X clip edge for pass-3 scatter copies.
@@ -1352,7 +1352,7 @@ int g_zVideo_FxPass3_ClipMaxX;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipmaxy
  * @recoil-artifact defines .data recoil:data:0x56b1ac: g_zVideo_FxPass3_ClipMaxY.
- * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
  * current pass-3 clip rectangle and the clipped scatter helper treats this as
  * the exclusive maximum Y edge.
  * Purpose: cache the exclusive maximum Y clip edge for pass-3 scatter copies.
@@ -1361,7 +1361,7 @@ int g_zVideo_FxPass3_ClipMaxY;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvid-noisebytetablesize
  * @recoil-artifact defines .data recoil:data:0x56b1b8: g_zVid_NoiseByteTableSize.
- * Data owner evidence: zVid::Noise_InitBuffers writes the primary-surface
+ * Data owner evidence: zVid::NoiseInitBuffers writes the primary-surface
  * width multiplied by 25 before filling the byte table; DrawNoiseRect uses it
  * as the random row-window limit.
  * Purpose: cache the allocated noise-byte table length.
@@ -1370,8 +1370,8 @@ int g_zVid_NoiseByteTableSize;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvid-noisebytetable
  * @recoil-artifact defines .data recoil:data:0x56b1bc: g_zVid_NoiseByteTable.
- * Data owner evidence: zVid::Noise_InitBuffers allocates and fills this byte
- * table, DrawNoiseRect samples it, and zVid::Noise_ShutdownBuffers frees and
+ * Data owner evidence: zVid::NoiseInitBuffers allocates and fills this byte
+ * table, DrawNoiseRect samples it, and zVid::NoiseShutdownBuffers frees and
  * clears it when non-null.
  * Purpose: hold the software noise bytes used by the FX surface overlay path.
  */
@@ -1379,12 +1379,12 @@ unsigned char *g_zVid_NoiseByteTable;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchpixels16
  * @recoil-artifact defines .data recoil:data:0x56b1c0: g_zVideo_FxPass3_ScratchPixels16.
- * Data owner evidence: zVid::Noise_InitBuffers allocates a width*height
+ * Data owner evidence: zVid::NoiseInitBuffers allocates a width*height
  * 16-bpp scratch buffer and stores it after clearing the active FX-surface
- * descriptor; zVid::Noise_ShutdownBuffers frees and clears it when non-null.
- * zVideo::FxPass3_CopySurfacePixelToScratchClipped at 0x48da60 writes through
+ * descriptor; zVid::NoiseShutdownBuffers frees and clears it when non-null.
+ * zVideo::FxPass3CopySurfacePixelToScratchClipped at 0x48da60 writes through
  * this pointer with tight g_zVideo_FxSurfaceWidth row stride, while
- * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0 stages the radial ring
+ * zVideo::FxPass3ApplyToCurrentSurface at 0x48daf0 stages the radial ring
  * warp here before copying back to the active FX surface.
  * Purpose: stage pass-3 warp, blur, and related 16-bpp FX surface pixels.
  */
@@ -1392,10 +1392,10 @@ unsigned short *g_zVideo_FxPass3_ScratchPixels16;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacepixels16
  * @recoil-artifact defines .data recoil:data:0x56b1c4: g_zVideo_FxSurfacePixels16.
- * Data owner evidence: zVideo::Fx_SetSurfaceState writes this active surface
- * pointer, zVid::Noise_InitBuffers clears it during scratch initialization,
+ * Data owner evidence: zVideo::FxSetSurfaceState writes this active surface
+ * pointer, zVid::NoiseInitBuffers clears it during scratch initialization,
  * and noise/blur/pass-3/FX-surface routines use it as the 16-bpp destination.
- * zVideo::FxPass3_CopySurfacePixelToScratchClipped at 0x48da60 reads source
+ * zVideo::FxPass3CopySurfacePixelToScratchClipped at 0x48da60 reads source
  * pixels through this pointer using g_zVideo_FxSurfacePitchPixels16.
  * Purpose: point at the currently active 16-bpp FX surface pixel buffer.
  */
@@ -1403,8 +1403,8 @@ unsigned short *g_zVideo_FxSurfacePixels16;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacewidth
  * @recoil-artifact defines .data recoil:data:0x56b1c8: g_zVideo_FxSurfaceWidth.
- * Data owner evidence: zVideo::Fx_SetSurfaceState writes the active width,
- * zVid::Noise_InitBuffers clears it, and FX/noise/blur paths use it for bounds
+ * Data owner evidence: zVideo::FxSetSurfaceState writes the active width,
+ * zVid::NoiseInitBuffers clears it, and FX/noise/blur paths use it for bounds
  * and tight scratch-buffer row stride. FxPass3 clipped copies use this for
  * scratch row indexing, distinct from the provider pitch used for source rows.
  * Purpose: cache the active FX surface width in pixels.
@@ -1413,8 +1413,8 @@ int g_zVideo_FxSurfaceWidth;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfaceheight
  * @recoil-artifact defines .data recoil:data:0x56b1cc: g_zVideo_FxSurfaceHeight.
- * Data owner evidence: zVideo::Fx_SetSurfaceState writes the active height,
- * zVid::Noise_InitBuffers clears it, and FX/noise/blur paths use it for full
+ * Data owner evidence: zVideo::FxSetSurfaceState writes the active height,
+ * zVid::NoiseInitBuffers clears it, and FX/noise/blur paths use it for full
  * surface clipping.
  * Purpose: cache the active FX surface height in pixels.
  */
@@ -1422,15 +1422,15 @@ int g_zVideo_FxSurfaceHeight;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacepitchbytes
  * @recoil-artifact defines .data recoil:data:0x56b1d0: g_zVideo_FxSurfacePitchBytes.
- * Data owner evidence: zVideo::Fx_SetSurfaceState writes the provider pitch in
- * bytes and zVid::Noise_InitBuffers clears it with the active surface record.
+ * Data owner evidence: zVideo::FxSetSurfaceState writes the provider pitch in
+ * bytes and zVid::NoiseInitBuffers clears it with the active surface record.
  * Purpose: retain the active FX surface row pitch in bytes.
  */
 int g_zVideo_FxSurfacePitchBytes;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacepitchpixels16
  * @recoil-artifact defines .data recoil:data:0x56b1d4: g_zVideo_FxSurfacePitchPixels16.
- * Data owner evidence: zVideo::Fx_SetSurfaceState derives this from pitch
+ * Data owner evidence: zVideo::FxSetSurfaceState derives this from pitch
  * bytes divided by two; FX/noise/blur paths use it for source/destination row
  * stepping while scratch rows use g_zVideo_FxSurfaceWidth. BN assembly for
  * 0x48da60 reads g_zVideo_FxSurfacePixels16 after multiplying the biased
@@ -1950,7 +1950,7 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
 
     switch (currentModeIndex - 2) {
     case 0:
-        if (Init_ApplyModeIndex(4) == 0) {
+        if (InitApplyModeIndex(4) == 0) {
             zVid::SetVideoModeIndex(4);
             if (zVid::GetAccelerationOption() == 0)
                 SetHalfResAdjustMode(1);
@@ -1959,7 +1959,7 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
         break;
 
     case 1:
-        if (Init_ApplyModeIndex(5) == 0) {
+        if (InitApplyModeIndex(5) == 0) {
             zVid::SetVideoModeIndex(5);
             if (zVid::GetAccelerationOption() == 0)
                 SetHalfResAdjustMode(1);
@@ -1967,7 +1967,7 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
         zOpt::SetHudTypeForCurrentHwMode(previousHudType);
         break;
     case 2:
-        if (Init_ApplyModeIndex(2) == 0) {
+        if (InitApplyModeIndex(2) == 0) {
             zVid::SetVideoModeIndex(2);
             if (zVid::GetAccelerationOption() == 0) {
                 SetHalfResAdjustMode(0);
@@ -1976,7 +1976,7 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
         zOpt::SetHudTypeForCurrentHwMode(previousHudType);
         break;
     case 3:
-        if (Init_ApplyModeIndex(3) == 0) {
+        if (InitApplyModeIndex(3) == 0) {
             zVid::SetVideoModeIndex(3);
             if (zVid::GetAccelerationOption() == 0) {
                 SetHalfResAdjustMode(0);
@@ -2004,15 +2004,15 @@ int __cdecl GetDisplayModeBpp() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-init-applymodeindex
- * @recoil-artifact defines .text recoil:function:0x4a66f0: zVideo::Init_ApplyModeIndex.
+ * @recoil-artifact defines .text recoil:function:0x4a66f0: zVideo::InitApplyModeIndex.
  * @recoil-match byte
  *
- * Purpose: provide the recovered zVideo::Init_ApplyModeIndex behavior.
+ * Purpose: provide the recovered zVideo::InitApplyModeIndex behavior.
  */
-int __fastcall Init_ApplyModeIndex(
+int __fastcall InitApplyModeIndex(
     int modeIndex
 ) {
-    Init_SetSurfaceGeometryFromModeIndex(modeIndex);
+    InitSetSurfaceGeometryFromModeIndex(modeIndex);
     return g_zVideo_pfnSetVideoMode(modeIndex);
 }
 
@@ -2100,10 +2100,7 @@ void __fastcall CallClearSwSurfaceAndZBuffer(
     zVidRect32 *surfaceRect,
     zVidRect32 *zRect
 ) {
-    g_zVideo_pfnClearSwSurfaceAndZBuffer(
-        surfaceRect,
-        zRect
-    );
+    g_zVideo_pfnClearSwSurfaceAndZBuffer(surfaceRect, zRect);
 }
 
 /**
@@ -2120,13 +2117,13 @@ void __cdecl RunPostprocessOnSwBuffer() {
         0,
         g_zVideo_SwSurfaceState.pitch
     );
-    Fx_SetSurfaceState(
+    FxSetSurfaceState(
         g_zVideo_SwSurfaceState.pixels,
         g_zVideo_SwSurfaceState.width,
         g_zVideo_SwSurfaceState.height,
         g_zVideo_SwSurfaceState.pitch
     );
-    FxPass3_QueuePrimitive(
+    FxPass3QueuePrimitive(
         g_zVideo_SwSurfaceState.pixels,
         g_zVideo_SwSurfaceState.width,
         g_zVideo_SwSurfaceState.height,
@@ -2136,12 +2133,12 @@ void __cdecl RunPostprocessOnSwBuffer() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockswsurfacestate
- * @recoil-artifact defines .text recoil:function:0x4a67d0: zVideo::Dispatch_UnlockSwSurfaceState.
+ * @recoil-artifact defines .text recoil:function:0x4a67d0: zVideo::DispatchUnlockSwSurfaceState.
  * @recoil-match byte
  *
  * Purpose: Dispatches the configured surface unlock provider for the software surface state.
  */
-int __cdecl Dispatch_UnlockSwSurfaceState() {
+int __cdecl DispatchUnlockSwSurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_SwSurfaceState);
 }
 
@@ -2215,10 +2212,7 @@ int __cdecl GetPrimarySurfacePitch() {
 void __fastcall CallClearPrimarySurfaceAndZBuffer(
     zVidRect32 *rect
 ) {
-    g_zVideo_pfnClearStateSurfaceAndZBuffer(
-        rect,
-        &g_zVideo_PrimarySurfaceState
-    );
+    g_zVideo_pfnClearStateSurfaceAndZBuffer(rect, &g_zVideo_PrimarySurfaceState);
 }
 
 /**
@@ -2237,13 +2231,13 @@ int __cdecl RunPostprocessOnPrimaryBuffer() {
         0,
         g_zVideo_PrimarySurfaceState.pitch
     );
-    Fx_SetSurfaceState(
+    FxSetSurfaceState(
         g_zVideo_PrimarySurfaceState.pixels,
         g_zVideo_PrimarySurfaceState.width,
         g_zVideo_PrimarySurfaceState.height,
         g_zVideo_PrimarySurfaceState.pitch
     );
-    FxPass3_QueuePrimitive(
+    FxPass3QueuePrimitive(
         g_zVideo_PrimarySurfaceState.pixels,
         g_zVideo_PrimarySurfaceState.width,
         g_zVideo_PrimarySurfaceState.height,
@@ -2259,34 +2253,34 @@ int __cdecl RunPostprocessOnPrimaryBuffer() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockprimarysurfacestate
- * @recoil-artifact defines .text recoil:function:0x4a68d0: zVideo::Dispatch_UnlockPrimarySurfaceState.
+ * @recoil-artifact defines .text recoil:function:0x4a68d0: zVideo::DispatchUnlockPrimarySurfaceState.
  * @recoil-match byte
  *
  * Purpose: Dispatches the configured surface unlock provider for the primary surface state.
  */
-int __cdecl Dispatch_UnlockPrimarySurfaceState() {
+int __cdecl DispatchUnlockPrimarySurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-lockdisplaymodesurfacestate
- * @recoil-artifact defines .text recoil:function:0x4a68e0: zVideo::Dispatch_LockDisplayModeSurfaceState.
+ * @recoil-artifact defines .text recoil:function:0x4a68e0: zVideo::DispatchLockDisplayModeSurfaceState.
  * @recoil-match byte
  *
  * Purpose: Dispatches the configured surface lock provider for the display-mode surface state.
  */
-int __cdecl Dispatch_LockDisplayModeSurfaceState() {
+int __cdecl DispatchLockDisplayModeSurfaceState() {
     return g_zVideo_pfnLockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockdisplaymodesurfacestate
- * @recoil-artifact defines .text recoil:function:0x4a68f0: zVideo::Dispatch_UnlockDisplayModeSurfaceState.
+ * @recoil-artifact defines .text recoil:function:0x4a68f0: zVideo::DispatchUnlockDisplayModeSurfaceState.
  * @recoil-match byte
  *
  * Purpose: Dispatches the configured surface unlock provider for the display-mode surface state.
  */
-int __cdecl Dispatch_UnlockDisplayModeSurfaceState() {
+int __cdecl DispatchUnlockDisplayModeSurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
 }
 
@@ -2306,12 +2300,7 @@ int __fastcall AdjustSurfacesIfEnabled(
 ) {
     int result = g_zVideo_AdjustSurfacesDisableGate;
     if (result <= 0) {
-        result = g_zVideo_pfnAdjustSurfaces(
-            srcRect,
-            dstRect,
-            waitForPresent,
-            blitPrimaryToSwFirst
-        );
+        result = g_zVideo_pfnAdjustSurfaces(srcRect, dstRect, waitForPresent, blitPrimaryToSwFirst);
         ++g_zVideo_FrameTick;
     }
 
@@ -2328,31 +2317,16 @@ int __fastcall LoadPaletteFileAndApplyBrightness(
     const char *palettePath
 ) {
     if (palettePath != 0) {
-        strcpy(
-            g_zVideo_PalettePathBuffer,
-            palettePath
-        );
+        strcpy(g_zVideo_PalettePathBuffer, palettePath);
     }
 
-    FILE *paletteStream = fopen(
-        g_zVideo_PalettePathBuffer,
-        "rb"
-    );
+    FILE *paletteStream = fopen(g_zVideo_PalettePathBuffer, "rb");
     if (paletteStream == 0) {
-        fprintf(
-            stderr,
-            g_zVideo_PaletteOpenFailedFormat,
-            g_zVideo_PalettePathBuffer
-        );
+        fprintf(stderr, g_zVideo_PaletteOpenFailedFormat, g_zVideo_PalettePathBuffer);
         return 0x800;
     }
 
-    fread(
-        g_zVideo_PaletteFileEntries,
-        3,
-        256,
-        paletteStream
-    );
+    fread(g_zVideo_PaletteFileEntries, 3, 256, paletteStream);
     fclose(paletteStream);
     return ApplyBrightnessToPaletteEntries(g_zVideo_PaletteFileEntries);
 }
@@ -2379,11 +2353,7 @@ int __fastcall ApplyBrightnessToPaletteEntries(
     }
 
     PALETTEENTRY adjustedEntries[256];
-    memcpy(
-        adjustedEntries,
-        g_zVideo_SystemPaletteEntries,
-        sizeof(adjustedEntries)
-    );
+    memcpy(adjustedEntries, g_zVideo_SystemPaletteEntries, sizeof(adjustedEntries));
 
     const int brightnessDelta =
         ((int)((unsigned char)g_zVideo_PaletteBrightnessLevel) << 3) - 32;
@@ -2407,11 +2377,7 @@ int __fastcall ApplyBrightnessToPaletteEntries(
         }
     }
 
-    return g_zVideo_pfnPaletteSetEntries(
-        0,
-        256,
-        adjustedEntries
-    );
+    return g_zVideo_pfnPaletteSetEntries(0, 256, adjustedEntries);
 }
 
 
@@ -2578,40 +2544,18 @@ namespace zVideo_dd {
  * g_zVideo_SystemPaletteEntries before returning zero.
  */
 int __cdecl PrepareWindowForMode() {
-    SetMenu(
-        g_zVideo_hWnd,
-        0
-    );
-    SetWindowLongA(
-        g_zVideo_hWnd,
-        GWL_EXSTYLE,
-        WS_EX_APPWINDOW
-    );
-    SetWindowLongA(
-        g_zVideo_hWnd,
-        GWL_STYLE,
-        (LONG)(0x82000000u)
-    );
+    SetMenu(g_zVideo_hWnd, 0);
+    SetWindowLongA(g_zVideo_hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
+    SetWindowLongA(g_zVideo_hWnd, GWL_STYLE, (LONG)(0x82000000u));
     UpdateWindow(g_zVideo_hWnd);
     SetFocus(g_zVideo_hWnd);
 
     if (g_zVideo_hWnd != 0) {
         HDC screenDc = GetDC(0);
-        if ((GetDeviceCaps(
-            screenDc,
-            RASTERCAPS
-        ) & RC_PALETTE) != 0) {
-            GetSystemPaletteEntries(
-                screenDc,
-                0,
-                0x100,
-                g_zVideo_SystemPaletteEntries
-            );
+        if ((GetDeviceCaps(screenDc, RASTERCAPS) & RC_PALETTE) != 0) {
+            GetSystemPaletteEntries(screenDc, 0, 0x100, g_zVideo_SystemPaletteEntries);
         }
-        ReleaseDC(
-            0,
-            screenDc
-        );
+        ReleaseDC(0, screenDc);
     }
 
     return 0;

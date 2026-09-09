@@ -1,6 +1,6 @@
 {
   "name": "zrndr_draw_textured_queued",
-  "description": "zRndr_DrawTexturedQueued queued textured polygon renderer.",
+  "description": "zRndrDrawTexturedQueued queued textured polygon renderer.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x495850",
-      "symbol": "?zRndr_DrawTexturedQueued@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@11PAUzVec2@@1HHH@Z",
-      "name": "zRndr_DrawTexturedQueued"
+      "symbol": "?zRndrDrawTexturedQueued@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@11PAUzVec2@@1HHH@Z",
+      "name": "zRndrDrawTexturedQueued"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

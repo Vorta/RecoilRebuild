@@ -1,6 +1,6 @@
 {
   "name": "zrndr_texture_mip_select_variant_image",
-  "description": "zRndr_TextureMip_SelectVariantImage texture mip variant selector.",
+  "description": "zRndrTextureMipSelectVariantImage texture mip variant selector.",
   "source_filename": "zRndr.cpp",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x499130",
-      "symbol": "?zRndr_TextureMip_SelectVariantImage@@YIPAUzVidImagePartial@@PAUzImage_TexDirEntryPartial@@PBUzVec3@@HPBUzVec2@@222@Z",
-      "name": "zRndr_TextureMip_SelectVariantImage"
+      "symbol": "?zRndrTextureMipSelectVariantImage@@YIPAUzVidImagePartial@@PAUzImage_TexDirEntryPartial@@PBUzVec3@@HPBUzVec2@@222@Z",
+      "name": "zRndrTextureMipSelectVariantImage"
     }
   ]
 }

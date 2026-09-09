@@ -23,13 +23,13 @@
     },
     {
       "address": "0x473230",
-      "symbol": "?zMath_Mat_GetCurrent@@YAPAUzMat4x3@@XZ",
-      "name": "zMath_Mat_GetCurrent"
+      "symbol": "?zMathMatGetCurrent@@YAPAUzMat4x3@@XZ",
+      "name": "zMathMatGetCurrent"
     },
     {
       "address": "0x473240",
-      "symbol": "?zMath_Mat_IsCurrentIdentity@@YAHXZ",
-      "name": "zMath_Mat_IsCurrentIdentity"
+      "symbol": "?zMathMatIsCurrentIdentity@@YAHXZ",
+      "name": "zMathMatIsCurrentIdentity"
     },
     {
       "address": "0x473250",

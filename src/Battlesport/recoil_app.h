@@ -218,7 +218,7 @@ RECOIL_STATIC_ASSERT(sizeof(RecoilApp_FmvState) == 0x04);
  * Embedded FMV script member used by RecoilApp states. Retail state
  * constructors initialize this subobject before installing the final state vptr.
  */
-struct RecoilApp_FmvScript : zFMV_Script {
+struct CRecoilAppFmvScript : zFMV_Script {
     /**
      * No standalone retail function; original inline helper observed in callers
      * 0x42eb70 and 0x42ed30 through RecoilApp FMV state construction.
@@ -226,7 +226,7 @@ struct RecoilApp_FmvScript : zFMV_Script {
      * Purpose: initialize the embedded zFMV_Script member to its empty script
      * state before the owning RecoilApp state installs its final vptr.
      */
-    RecoilApp_FmvScript() {
+    CRecoilAppFmvScript() {
         Init(
             0,
             0,
@@ -241,29 +241,29 @@ struct RecoilApp_FmvScript : zFMV_Script {
      *
      * Purpose: clean up the embedded zFMV_Script member when an FMV state is destroyed.
      */
-    ~RecoilApp_FmvScript() {
+    ~CRecoilAppFmvScript() {
         Cleanup();
     }
 };
-RECOIL_STATIC_ASSERT(sizeof(RecoilApp_FmvScript) == 0x20);
+RECOIL_STATIC_ASSERT(sizeof(CRecoilAppFmvScript) == 0x20);
 
-struct RecoilApp_AttractFmvState : RecoilApp_FmvState {
+struct CRecoilAppAttractFmvState : RecoilApp_FmvState {
     int m_reservedForFmvScriptAlign[3];
-    RecoilApp_FmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x10.
+    CRecoilAppFmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x10.
     int m_clientRect[4];
 
-    RecoilApp_AttractFmvState();
-    ~RecoilApp_AttractFmvState() {
+    CRecoilAppAttractFmvState();
+    ~CRecoilAppAttractFmvState() {
     }
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
 };
-RECOIL_STATIC_ASSERT(sizeof(RecoilApp_AttractFmvState) == 0x40);
+RECOIL_STATIC_ASSERT(sizeof(CRecoilAppAttractFmvState) == 0x40);
 
-struct RecoilApp_IntroFmvState : RecoilApp_FmvState {
+struct CRecoilAppIntroFmvState : RecoilApp_FmvState {
     int m_stateData04;
-    RecoilApp_FmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x08.
+    CRecoilAppFmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x08.
 
     /**
      * No standalone retail function; original inline helper observed in caller
@@ -272,13 +272,13 @@ struct RecoilApp_IntroFmvState : RecoilApp_FmvState {
      *
      * Purpose: construct the intro FMV state as an embedded RecoilApp member.
      */
-    RecoilApp_IntroFmvState() {
+    CRecoilAppIntroFmvState() {
     }
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
 };
-RECOIL_STATIC_ASSERT(sizeof(RecoilApp_IntroFmvState) == 0x28);
+RECOIL_STATIC_ASSERT(sizeof(CRecoilAppIntroFmvState) == 0x28);
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.main-menu-prep-state.type
@@ -314,7 +314,7 @@ RECOIL_STATIC_ASSERT(sizeof(RecoilApp_LeaveNetworkState) == 0x08);
 
 struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
     int m_missionId;
-    RecoilApp_FmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x08.
+    CRecoilAppFmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x08.
     int m_skipMissionFmv;
     int m_reserved2c;
 
@@ -326,14 +326,14 @@ struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MissionFmvState) == 0x30);
 
-struct RecoilApp_PlayState : RecoilApp_IState {
+struct CRecoilAppPlayState : RecoilApp_IState {
     struct zOpt_ViewRectSection *pWindowSection;
     struct zOpt_ViewRectSection *pDisplaySection;
     struct zOpt_ViewRectSection *pRenderSection;
     int m_transitionScratch;
     char *pPendingLoadGameStartPath;
 
-    RecoilApp_PlayState();
+    CRecoilAppPlayState();
     void OnWndActivate(int bActivate);
     int OnTryBecomeCurrent();
     int TickAndRenderFrame(int shouldPresent);
@@ -341,7 +341,7 @@ struct RecoilApp_PlayState : RecoilApp_IState {
     void OnDeactivate();
     void OnResume(int param);
 };
-RECOIL_STATIC_ASSERT(sizeof(RecoilApp_PlayState) == 0x18);
+RECOIL_STATIC_ASSERT(sizeof(CRecoilAppPlayState) == 0x18);
 
 struct RecoilApp_MpExitDialogState : RecoilApp_IState {
     int m_stateData04;
@@ -393,12 +393,12 @@ class RecoilApp : public RecoilApp_MfcOleModule {
     int m_skipIntroFmv;
     float m_transitionFadeTimer;
     int m_transitionReserved[3];
-    RecoilApp_AttractFmvState m_attractFmvState;
-    RecoilApp_IntroFmvState m_introFmvState;
+    CRecoilAppAttractFmvState m_attractFmvState;
+    CRecoilAppIntroFmvState m_introFmvState;
     RecoilApp_MainMenuPrepState m_mainMenuPrepState;
     RecoilApp_LeaveNetworkState m_leaveNetworkState;
     RecoilApp_MissionFmvState m_missionFmvState;
-    RecoilApp_PlayState m_playState;
+    CRecoilAppPlayState m_playState;
     RecoilApp_MpExitDialogState m_mpExitDialogState;
 
     RecoilApp();

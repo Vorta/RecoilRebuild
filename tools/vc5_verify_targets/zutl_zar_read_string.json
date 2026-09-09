@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4a6110",
-      "symbol": "@zReader_ReadString@8",
-      "name": "zReader_ReadString"
+      "symbol": "@zReaderReadString@8",
+      "name": "zReaderReadString"
     }
   ]
 }

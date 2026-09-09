@@ -19,13 +19,13 @@
   "functions": [
     {
       "address": "0x498bd0",
-      "symbol": "?zRndr_DrawImmediateLine@@YIXHHHHH@Z",
-      "name": "zRndr_DrawImmediateLine"
+      "symbol": "?zRndrDrawImmediateLine@@YIXHHHHH@Z",
+      "name": "zRndrDrawImmediateLine"
     },
     {
       "address": "0x498c00",
-      "symbol": "?zRndr_DrawClippedImmediateLineStrip@@YIXPBUzRndr_LinePoint2I@@HPBXH@Z",
-      "name": "zRndr_DrawClippedImmediateLineStrip"
+      "symbol": "?zRndrDrawClippedImmediateLineStrip@@YIXPBUzRndr_LinePoint2I@@HPBXH@Z",
+      "name": "zRndrDrawClippedImmediateLineStrip"
     }
   ]
 }

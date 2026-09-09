@@ -26,37 +26,19 @@ namespace zClass_Class {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                0x80,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, g_zClass_SourceFile_SwitchC, 0x80, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                0x81,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, g_zClass_SourceFile_SwitchC, 0x81, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                0x82,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, g_zClass_SourceFile_SwitchC, 0x82, "Null class data pointer");
             return 5;
         }
 
-        return AddChildGeneric(
-            parent,
-            child
-        );
+        return AddChildGeneric(parent, child);
     }
 
     /**
@@ -69,21 +51,11 @@ namespace zClass_Class {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                0x9f,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, g_zClass_SourceFile_SwitchC, 0x9f, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                0xa0,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, g_zClass_SourceFile_SwitchC, 0xa0, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
@@ -96,10 +68,7 @@ namespace zClass_Class {
             return 5;
         }
 
-        return RemoveChildGeneric(
-            parent,
-            child
-        );
+        return RemoveChildGeneric(parent, child);
     }
 }
 

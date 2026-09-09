@@ -18,13 +18,13 @@
   "functions": [
     {
       "address": "0x48da60",
-      "symbol": "?FxPass3_CopySurfacePixelToScratchClipped@zVideo@@YIXHHHH@Z",
-      "name": "zVideo::FxPass3_CopySurfacePixelToScratchClipped"
+      "symbol": "?FxPass3CopySurfacePixelToScratchClipped@zVideo@@YIXHHHH@Z",
+      "name": "zVideo::FxPass3CopySurfacePixelToScratchClipped"
     },
     {
       "address": "0x48daf0",
-      "symbol": "?FxPass3_ApplyToCurrentSurface@zVideo@@YIXHHHHHMMPAUzVidRect32@@@Z",
-      "name": "zVideo::FxPass3_ApplyToCurrentSurface"
+      "symbol": "?FxPass3ApplyToCurrentSurface@zVideo@@YIXHHHHHMMPAUzVidRect32@@@Z",
+      "name": "zVideo::FxPass3ApplyToCurrentSurface"
     }
   ],
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c"

@@ -1,6 +1,6 @@
 {
   "name": "zrndr_fill_span565_solid",
-  "description": "VC verification target for zRndr_FillSpan565Solid.",
+  "description": "VC verification target for zRndrFillSpan565Solid.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4998a0",
-      "symbol": "?zRndr_FillSpan565Solid@@YIXHHH@Z",
-      "name": "zRndr_FillSpan565Solid"
+      "symbol": "?zRndrFillSpan565Solid@@YIXHHH@Z",
+      "name": "zRndrFillSpan565Solid"
     }
   ]
 }

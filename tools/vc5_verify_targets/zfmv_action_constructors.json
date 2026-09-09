@@ -19,28 +19,28 @@
   "functions": [
     {
       "address": "0x463130",
-      "symbol": "??0zFMV_ActionImage@@QAE@PBDHHH@Z",
-      "name": "zFMV_ActionImage::ConstructorWithScreenRect"
+      "symbol": "??0CZFMVActionImage@@QAE@PBDHHH@Z",
+      "name": "CZFMVActionImage::ConstructorWithScreenRect"
     },
     {
       "address": "0x4631f0",
-      "symbol": "??0zFMV_ActionImage@@QAE@PBDH@Z",
-      "name": "zFMV_ActionImage::ConstructorScaled"
+      "symbol": "??0CZFMVActionImage@@QAE@PBDH@Z",
+      "name": "CZFMVActionImage::ConstructorScaled"
     },
     {
       "address": "0x4633c0",
-      "symbol": "??0zFMV_ActionFade@@QAE@HHHIHH@Z",
-      "name": "zFMV_ActionFade::Constructor"
+      "symbol": "??0CZFMVActionFade@@QAE@HHHIHH@Z",
+      "name": "CZFMVActionFade::Constructor"
     },
     {
       "address": "0x463570",
-      "symbol": "??0zFMV_ActionPlayAvi@@QAE@PBD0H@Z",
-      "name": "zFMV_ActionPlayAvi::Constructor"
+      "symbol": "??0CZFMVActionPlayAvi@@QAE@PBD0H@Z",
+      "name": "CZFMVActionPlayAvi::Constructor"
     },
     {
       "address": "0x463b00",
-      "symbol": "??0zFMV_ActionPlayMci@@QAE@PAUHWND__@@PBD1@Z",
-      "name": "zFMV_ActionPlayMci::Constructor"
+      "symbol": "??0CZFMVActionPlayMci@@QAE@PAUHWND__@@PBD1@Z",
+      "name": "CZFMVActionPlayMci::Constructor"
     },
     {
       "address": "0x463850",

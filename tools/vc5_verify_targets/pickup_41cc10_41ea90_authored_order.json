@@ -21,19 +21,19 @@
           "address": "0x41cc10",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "PickupSpawnList::Primary_Init",
+          "name": "PickupSpawnList::PrimaryInit",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Primary_Init@PickupSpawnList@@SAXXZ"
+          "symbol": "?PrimaryInit@PickupSpawnList@@SAXXZ"
         },
         {
           "address": "0x41cc40",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "PickupSpawnList::NetCopy_Init",
+          "name": "PickupSpawnList::NetCopyInit",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?NetCopy_Init@PickupSpawnList@@SAXXZ"
+          "symbol": "?NetCopyInit@PickupSpawnList@@SAXXZ"
         },
         {
           "address": "0x41cc70",
@@ -174,10 +174,10 @@
           "address": "0x41db40",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "PickupType::GetByIndex_Pure",
+          "name": "PickupType::GetByIndexPure",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?GetByIndex_Pure@PickupType@@SIPAU1@H@Z"
+          "symbol": "?GetByIndexPure@PickupType@@SIPAU1@H@Z"
         },
         {
           "address": "0x41db60",
@@ -481,19 +481,19 @@
           "address": "0x41cc10",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "PickupSpawnList::Primary_Init",
+          "name": "PickupSpawnList::PrimaryInit",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Primary_Init@PickupSpawnList@@SAXXZ"
+          "symbol": "?PrimaryInit@PickupSpawnList@@SAXXZ"
         },
         {
           "address": "0x41cc40",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "PickupSpawnList::NetCopy_Init",
+          "name": "PickupSpawnList::NetCopyInit",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?NetCopy_Init@PickupSpawnList@@SAXXZ"
+          "symbol": "?NetCopyInit@PickupSpawnList@@SAXXZ"
         },
         {
           "address": "0x41cc70",
@@ -634,10 +634,10 @@
           "address": "0x41db40",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "PickupType::GetByIndex_Pure",
+          "name": "PickupType::GetByIndexPure",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?GetByIndex_Pure@PickupType@@SIPAU1@H@Z"
+          "symbol": "?GetByIndexPure@PickupType@@SIPAU1@H@Z"
         },
         {
           "address": "0x41db60",

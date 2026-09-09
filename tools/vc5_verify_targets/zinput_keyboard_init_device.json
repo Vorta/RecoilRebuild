@@ -1,6 +1,6 @@
 {
   "name": "zinput_keyboard_init_device",
-  "description": "zInput::Keyboard_InitDevice creates and configures the DirectInput keyboard device.",
+  "description": "zInput::KeyboardInitDevice creates and configures the DirectInput keyboard device.",
   "source_filename": "zin_kbd.cpp",
   "compiler_profile": "vc5_o2_ob1_md_facs",
   "include_dirs": [
@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x46f300",
-      "symbol": "?Keyboard_InitDevice@zInput@@YAHXZ",
-      "name": "zInput::Keyboard_InitDevice"
+      "symbol": "?KeyboardInitDevice@zInput@@YAHXZ",
+      "name": "zInput::KeyboardInitDevice"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp"

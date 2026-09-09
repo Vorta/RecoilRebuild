@@ -25,8 +25,8 @@
     },
     {
       "address": "0x4a66f0",
-      "symbol": "?Init_ApplyModeIndex@zVideo@@YIHH@Z",
-      "name": "zVideo::Init_ApplyModeIndex"
+      "symbol": "?InitApplyModeIndex@zVideo@@YIHH@Z",
+      "name": "zVideo::InitApplyModeIndex"
     },
     {
       "address": "0x4a6710",
@@ -50,8 +50,8 @@
     },
     {
       "address": "0x4a67d0",
-      "symbol": "?Dispatch_UnlockSwSurfaceState@zVideo@@YAHXZ",
-      "name": "zVideo::Dispatch_UnlockSwSurfaceState"
+      "symbol": "?DispatchUnlockSwSurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::DispatchUnlockSwSurfaceState"
     },
     {
       "address": "0x4a67e0",
@@ -75,8 +75,8 @@
     },
     {
       "address": "0x4a68d0",
-      "symbol": "?Dispatch_UnlockPrimarySurfaceState@zVideo@@YAHXZ",
-      "name": "zVideo::Dispatch_UnlockPrimarySurfaceState"
+      "symbol": "?DispatchUnlockPrimarySurfaceState@zVideo@@YAHXZ",
+      "name": "zVideo::DispatchUnlockPrimarySurfaceState"
     },
     {
       "address": "0x4a6900",

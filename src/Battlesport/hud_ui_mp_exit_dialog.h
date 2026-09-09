@@ -5,12 +5,12 @@
 
 /**
  * Original inline constructor evidence: BN 0x419740 installs the
- * HudUiMpExitDialog_NewGameButton dispatch table after the HudUiZrdWidget base
+ * CHudUiMpExitDialogNewGameButton dispatch table after the HudUiZrdWidget base
  * constructor, with no standalone retail constructor body.
  * Purpose: let VC5 emit the button subclass dispatch identity for the MpExit
  * dialog owner.
  */
-struct HudUiMpExitDialog_NewGameButton : HudUiZrdWidget {
+struct CHudUiMpExitDialogNewGameButton : HudUiZrdWidget {
     /**
      * Original inline constructor evidence: no standalone retail function;
      * BN 0x419740 installs this subclass dispatch identity after the
@@ -18,7 +18,7 @@ struct HudUiMpExitDialog_NewGameButton : HudUiZrdWidget {
      * Purpose: construct the multiplayer-exit new-game button with its
      * recovered C++ dispatch identity.
      */
-    HudUiMpExitDialog_NewGameButton() : HudUiZrdWidget() {
+    CHudUiMpExitDialogNewGameButton() : HudUiZrdWidget() {
     }
 
     void OnActivate();
@@ -26,12 +26,12 @@ struct HudUiMpExitDialog_NewGameButton : HudUiZrdWidget {
 
 /**
  * Original inline constructor evidence: BN 0x419740 installs the
- * HudUiMpExitDialog_ExitButton dispatch table after the HudUiZrdWidget base
+ * CHudUiMpExitDialogExitButton dispatch table after the HudUiZrdWidget base
  * constructor, with no standalone retail constructor body.
  * Purpose: let VC5 emit the button subclass dispatch identity for the MpExit
  * dialog owner.
  */
-struct HudUiMpExitDialog_ExitButton : HudUiZrdWidget {
+struct CHudUiMpExitDialogExitButton : HudUiZrdWidget {
     /**
      * Original inline constructor evidence: no standalone retail function;
      * BN 0x419740 installs this subclass dispatch identity after the
@@ -39,7 +39,7 @@ struct HudUiMpExitDialog_ExitButton : HudUiZrdWidget {
      * Purpose: construct the multiplayer-exit leave button with its recovered
      * C++ dispatch identity.
      */
-    HudUiMpExitDialog_ExitButton() : HudUiZrdWidget() {
+    CHudUiMpExitDialogExitButton() : HudUiZrdWidget() {
     }
 
     void OnActivate();
@@ -51,8 +51,8 @@ struct HudUiMpExitDialog_ExitButton : HudUiZrdWidget {
  * dispatch identity before storing the singleton pointer.
  */
 struct HudUiMpExitDialog : HudUiBackground {
-    HudUiMpExitDialog_NewGameButton m_mpNewGameButton;
-    HudUiMpExitDialog_ExitButton m_mpExitButton;
+    CHudUiMpExitDialogNewGameButton m_mpNewGameButton;
+    CHudUiMpExitDialogExitButton m_mpExitButton;
     zVidImagePartial *m_capturedBackgroundImage;
     float m_fadeElapsedSeconds;
     int m_mpNewGameButtonMode;

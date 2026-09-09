@@ -329,12 +329,12 @@ const GUID kIID_IA3dListener = {0xc398e563,
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsnd-preinitializeruntimestate
- * @recoil-artifact defines .text recoil:function:0x4a12c0: zSnd_PreInitializeRuntimeState.
+ * @recoil-artifact defines .text recoil:function:0x4a12c0: zSndPreInitializeRuntimeState.
  *
  * Purpose: reset sound runtime globals, cache option pointers, and prepare the
  * selected backend for later initialization.
  */
-extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
+extern "C" int __fastcall zSndPreInitializeRuntimeState(
     unsigned int hwnd
 ) {
     if (g_zSnd_PreInitialized != 0) {
@@ -361,13 +361,13 @@ extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
     g_zSndCdLastPlayMode = 2;
 
     g_zSnd_SoundLodDefault = 0;
-    g_zSnd_SoundLodValuePtr = zGame::Options_FindOption("SoundLOD");
+    g_zSnd_SoundLodValuePtr = zGame::OptionsFindOption("SoundLOD");
     if (g_zSnd_SoundLodValuePtr == 0) {
         g_zSnd_SoundLodValuePtr = &g_zSnd_SoundLodDefault;
     }
 
     g_zSnd_MuteOptionDefault = 0;
-    g_zSnd_MuteOptionValuePtr = zGame::Options_FindOption("MuteSound");
+    g_zSnd_MuteOptionValuePtr = zGame::OptionsFindOption("MuteSound");
     if (g_zSnd_MuteOptionValuePtr == 0) {
         g_zSnd_MuteOptionValuePtr = &g_zSnd_MuteOptionDefault;
     }
@@ -377,7 +377,7 @@ extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
     g_zSndLastVoice = 0;
 
     g_zSnd_VolumeScaleDefault = 1.0f;
-    g_zSnd_GlobalVolumeScalePtr = zGame::Options_FindOption("SoundVolume");
+    g_zSnd_GlobalVolumeScalePtr = zGame::OptionsFindOption("SoundVolume");
     if (g_zSnd_GlobalVolumeScalePtr == 0) {
         g_zSnd_GlobalVolumeScalePtr = &g_zSnd_VolumeScaleDefault;
     }
@@ -397,7 +397,7 @@ int __cdecl Shutdown() {
     zSndStreamMgr::Shutdown();
     zSndBackend::Shutdown();
     zSndCd::Shutdown();
-    zSndSampleSetRegistry_DestroyAll();
+    zSndSampleSetRegistryDestroyAll();
     zSndFadeLists::StopAllAndShutdown();
 
     if (g_zSnd_ConfigRootNode != 0) {
@@ -406,7 +406,7 @@ int __cdecl Shutdown() {
     }
 
     if (g_zSnd_SearchPathList != 0) {
-        g_zSnd_SearchPathList = zUtil_ZRDR_FreeSearchPathList(g_zSnd_SearchPathList);
+        g_zSnd_SearchPathList = zRdrFreeSearchPathList(g_zSnd_SearchPathList);
     }
 
     return 1;
@@ -415,12 +415,12 @@ int __cdecl Shutdown() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndsystem-init
- * @recoil-artifact defines .text recoil:function:0x4a1420: zSndSystem_Init.
+ * @recoil-artifact defines .text recoil:function:0x4a1420: zSndSystemInit.
  *
  * Purpose: initialize the selected sound backend, load the sound configuration
  * tree, and dispatch the supported syntax parser.
  */
-extern "C" int __fastcall zSndSystem_Init(
+extern "C" int __fastcall zSndSystemInit(
     unsigned int hwnd,
     const char *zrdPath
 ) {
@@ -433,25 +433,18 @@ extern "C" int __fastcall zSndSystem_Init(
     }
 
     if (g_zSnd_ActiveBackend == 1) {
-        if (zSndBackend_InitA3D() == 0) {
+        if (zSndBackendInitA3D() == 0) {
             g_zSnd_ActiveBackend = 0;
-            return zSndSystem_Init(
-                hwnd,
-                zrdPath
-            );
+            return zSndSystemInit(hwnd, zrdPath);
         }
     } else if (g_zSnd_ActiveBackend == 0) {
-        if (zSndBackend_InitDirectSound() == 0) {
+        if (zSndBackendInitDirectSound() == 0) {
             return 0;
         }
     }
 
     g_zSnd_IsInitialized = 1;
-    g_zSnd_ConfigRootNode = zReader::Load(
-        zrdPath,
-        0,
-        0
-    );
+    g_zSnd_ConfigRootNode = zReader::Load(zrdPath, 0, 0);
     if (g_zSnd_ConfigRootNode == 0) {
         zError::ReportOld(
             0x200,
@@ -464,18 +457,14 @@ extern "C" int __fastcall zSndSystem_Init(
     }
 
     int syntax = 0;
-    if (zReader::GetInt(
-        g_zSnd_ConfigRootNode,
-        g_zSndConfig_SyntaxKey,
-        &syntax
-    ) == 0) {
+    if (zReader::GetInt(g_zSnd_ConfigRootNode, g_zSndConfig_SyntaxKey, &syntax) == 0) {
         syntax = 1;
     }
 
     if (syntax == 2) {
-        zSndSystem_InitNamedSetsSyntax(g_zSnd_ConfigRootNode);
+        zSndSystemInitNamedSetsSyntax(g_zSnd_ConfigRootNode);
     } else if (syntax == 1) {
-        zSndSystem_InitLegacySetsSyntax(g_zSnd_ConfigRootNode);
+        zSndSystemInitLegacySetsSyntax(g_zSnd_ConfigRootNode);
     }
 
     return 1;
@@ -487,28 +476,19 @@ extern "C" int __fastcall zSndSystem_Init(
  * Purpose: load legacy sound sets, optional CD tracks, search paths, groups,
  * and speed-of-sound settings from the sound config tree.
  */
-extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
+extern "C" int __fastcall zSndSystemInitLegacySetsSyntax(
     zReader::Node *configRootNode
 ) {
     (void)configRootNode;
 
-    zSndCd::Init(zRdrGetNode(
-        g_zSnd_ConfigRootNode,
-        g_zSndConfig_CdTracksKey
-    ));
+    zSndCd::Init(zRdrGetNode( g_zSnd_ConfigRootNode, g_zSndConfig_CdTracksKey ));
 
-    const char *pathText = zReader::GetString(
-        g_zSnd_ConfigRootNode,
-        g_zSndConfig_SoundPathKey
-    );
+    const char *pathText = zReader::GetString(g_zSnd_ConfigRootNode, g_zSndConfig_SoundPathKey);
     if (pathText != 0) {
         if (g_zSnd_SearchPathList == 0) {
-            g_zSnd_SearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
+            g_zSnd_SearchPathList = zRdrCreateSearchPathList(pathText);
         } else {
-            zUtil::ZRDR_AddSearchPaths(
-                g_zSnd_SearchPathList,
-                pathText
-            );
+            zUtil::zRdrAddSearchPaths(g_zSnd_SearchPathList, pathText);
         }
     }
 
@@ -521,10 +501,7 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
         zSnd::SetSpeedOfSoundMps(speedOfSound);
     }
 
-    zReader::Node *setsNode = zRdrGetNode(
-        g_zSnd_ConfigRootNode,
-        g_zSndConfig_SetsKey
-    );
+    zReader::Node *setsNode = zRdrGetNode(g_zSnd_ConfigRootNode, g_zSndConfig_SetsKey);
     zReader::Node *sets = setsNode->value.nodes;
     const int setCount = (sets[0].value.i32 - 1) / 2;
     for (int i = 0; i < setCount; ++i) {
@@ -534,10 +511,7 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
         zSndSampleSet *sampleSet =
             (zSndSampleSet *)(::operator new(sizeof(zSndSampleSet)));
         if (sampleSet != 0) {
-            sampleSet = sampleSet->RegistryAddEntry(
-                setNameNode->value.str,
-                sampleCount
-            );
+            sampleSet = sampleSet->RegistryAddEntry(setNameNode->value.str, sampleCount);
         }
 
         zReader::Node *entries = sampleListNode->value.nodes;
@@ -558,30 +532,21 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
                 sample->replayFields.gain = 1.0f;
             }
 
-            if (strcmp(
-                entry[tailIndex].value.str,
-                "TRUE"
-            ) == 0) {
+            if (strcmp(entry[tailIndex].value.str, "TRUE") == 0) {
                 sample->replayFields.flags |= 0x01;
             } else {
                 sample->replayFields.flags &= ~0x01;
             }
             ++tailIndex;
 
-            if (strcmp(
-                entry[tailIndex].value.str,
-                "TRUE"
-            ) == 0) {
+            if (strcmp(entry[tailIndex].value.str, "TRUE") == 0) {
                 sample->replayFields.flags |= 0x04;
             } else {
                 sample->replayFields.flags &= ~0x04;
             }
             ++tailIndex;
 
-            if (strcmp(
-                entry[tailIndex].value.str,
-                "TRUE"
-            ) == 0) {
+            if (strcmp(entry[tailIndex].value.str, "TRUE") == 0) {
                 sample->replayFields.flags |= 0x02;
             } else {
                 sample->replayFields.flags &= ~0x02;
@@ -610,12 +575,9 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
         }
     }
 
-    zReader::Node *groupsNode = zRdrGetNode(
-        g_zSnd_ConfigRootNode,
-        g_zSndConfig_SoundGroupsKey
-    );
+    zReader::Node *groupsNode = zRdrGetNode(g_zSnd_ConfigRootNode, g_zSndConfig_SoundGroupsKey);
     if (groupsNode != 0) {
-        zSndGroup_QueuePendingLoadsFromConfigNode(groupsNode);
+        zSndGroupQueuePendingLoadsFromConfigNode(groupsNode);
     }
 
     return 1;
@@ -627,28 +589,19 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
  * Purpose: load named sound sets, optional CD tracks, search paths, groups,
  * and speed-of-sound settings from the sound config tree.
  */
-extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
+extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(
     zReader::Node *configRootNode
 ) {
     (void)configRootNode;
 
-    zSndCd::Init(zRdrGetNode(
-        g_zSnd_ConfigRootNode,
-        g_zSndConfig_CdTracksKey
-    ));
+    zSndCd::Init(zRdrGetNode( g_zSnd_ConfigRootNode, g_zSndConfig_CdTracksKey ));
 
-    const char *pathText = zReader::GetString(
-        g_zSnd_ConfigRootNode,
-        g_zSndConfig_SoundPathKey
-    );
+    const char *pathText = zReader::GetString(g_zSnd_ConfigRootNode, g_zSndConfig_SoundPathKey);
     if (pathText != 0) {
         if (g_zSnd_SearchPathList == 0) {
-            g_zSnd_SearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
+            g_zSnd_SearchPathList = zRdrCreateSearchPathList(pathText);
         } else {
-            zUtil::ZRDR_AddSearchPaths(
-                g_zSnd_SearchPathList,
-                pathText
-            );
+            zUtil::zRdrAddSearchPaths(g_zSnd_SearchPathList, pathText);
         }
     }
 
@@ -661,10 +614,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
         zSnd::SetSpeedOfSoundMps(speedOfSound);
     }
 
-    zReader::Node *setsNode = zRdrGetNode(
-        g_zSnd_ConfigRootNode,
-        g_zSndConfig_SetsKey
-    );
+    zReader::Node *setsNode = zRdrGetNode(g_zSnd_ConfigRootNode, g_zSndConfig_SetsKey);
     zReader::Node *sets = setsNode->value.nodes;
     const int setCount = (sets[0].value.i32 - 1) / 2;
     for (int i = 0; i < setCount; ++i) {
@@ -674,10 +624,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
         zSndSampleSet *sampleSet =
             (zSndSampleSet *)(::operator new(sizeof(zSndSampleSet)));
         if (sampleSet != 0) {
-            sampleSet = sampleSet->RegistryAddEntry(
-                setNameNode->value.str,
-                sampleCount
-            );
+            sampleSet = sampleSet->RegistryAddEntry(setNameNode->value.str, sampleCount);
         }
 
         zReader::Node *samples = sampleListNode->value.nodes;
@@ -690,66 +637,44 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
             sample->replayFields.sampleId = sampleFields[1].value.str;
             sample->replayFields.resourceName = sampleFields[2].value.str;
 
-            if (zRdrGetNode(
-                sampleNode,
-                g_zSndConfig_3dKey
-            ) != 0) {
+            if (zRdrGetNode(sampleNode, g_zSndConfig_3dKey) != 0) {
                 sample->replayFields.flags |= 0x04;
             } else {
                 sample->replayFields.flags &= ~0x04;
             }
 
-            if (zRdrGetNode(
-                sampleNode,
-                g_zSndConfig_LoopedKey
-            ) != 0) {
+            if (zRdrGetNode(sampleNode, g_zSndConfig_LoopedKey) != 0) {
                 sample->replayFields.flags |= 0x01;
             } else {
                 sample->replayFields.flags &= ~0x01;
             }
 
-            if (zRdrGetNode(
-                sampleNode,
-                g_zSndConfig_FrequencyKey
-            ) != 0) {
+            if (zRdrGetNode(sampleNode, g_zSndConfig_FrequencyKey) != 0) {
                 sample->replayFields.flags |= 0x20;
             } else {
                 sample->replayFields.flags &= ~0x20;
             }
 
-            if (zRdrGetNode(
-                sampleNode,
-                g_zSndConfig_HardwareKey
-            ) != 0) {
+            if (zRdrGetNode(sampleNode, g_zSndConfig_HardwareKey) != 0) {
                 sample->replayFields.flags |= 0x40;
             } else {
                 sample->replayFields.flags &= ~0x40;
             }
 
-            if (zRdrGetNode(
-                sampleNode,
-                g_zSndConfig_PurgeableKey
-            ) != 0) {
+            if (zRdrGetNode(sampleNode, g_zSndConfig_PurgeableKey) != 0) {
                 sample->replayFields.flags |= 0x02;
             } else {
                 sample->replayFields.flags &= ~0x02;
             }
 
-            if (zRdrGetNode(
-                sampleNode,
-                g_zSndConfig_VoiceKey
-            ) != 0) {
+            if (zRdrGetNode(sampleNode, g_zSndConfig_VoiceKey) != 0) {
                 sample->replayFields.flags |= 0x10;
             } else {
                 sample->replayFields.flags &= ~0x10;
             }
 
             sample->replayFields.gain = 1.0f;
-            zReader::GetFloat(
-                sampleNode,
-                g_zSndConfig_VolumeKey,
-                &sample->replayFields.gain
-            );
+            zReader::GetFloat(sampleNode, g_zSndConfig_VolumeKey, &sample->replayFields.gain);
             if (sample->replayFields.gain > 1.0f) {
                 sample->replayFields.gain = 1.0f;
             } else if (!(sample->replayFields.gain >= 0.0f)) {
@@ -757,16 +682,9 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
             }
 
             sample->a3dDistanceScale = 1.0f;
-            zReader::GetFloat(
-                sampleNode,
-                g_zSndConfig_A3dDistanceKey,
-                &sample->a3dDistanceScale
-            );
+            zReader::GetFloat(sampleNode, g_zSndConfig_A3dDistanceKey, &sample->a3dDistanceScale);
 
-            zReader::Node *rangeNode = zRdrGetNode(
-                sampleNode,
-                g_zEffectAnim_TokenRange
-            );
+            zReader::Node *rangeNode = zRdrGetNode(sampleNode, g_zEffectAnim_TokenRange);
             if (rangeNode != 0) {
                 sample->replayFields.flags |= 0x04;
                 zReader::Node *range = rangeNode->value.nodes;
@@ -777,10 +695,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
                 sample->rangeMax = 400.0f;
             }
 
-            zReader::Node *variantNode = zRdrGetNode(
-                sampleNode,
-                "HIGH"
-            );
+            zReader::Node *variantNode = zRdrGetNode(sampleNode, "HIGH");
             if (variantNode == 0) {
                 sample->highVariant.sampleName = 0;
                 sample->highVariant.samplesPerSec = 44100;
@@ -799,10 +714,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
                 sample->highVariant.channelCount = format[3].value.i32;
             }
 
-            variantNode = zRdrGetNode(
-                sampleNode,
-                g_zSndConfig_QualityMedToken
-            );
+            variantNode = zRdrGetNode(sampleNode, g_zSndConfig_QualityMedToken);
             if (variantNode == 0) {
                 sample->medVariant.sampleName = 0;
                 sample->medVariant.samplesPerSec = 22050;
@@ -821,10 +733,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
                 sample->medVariant.channelCount = format[3].value.i32;
             }
 
-            variantNode = zRdrGetNode(
-                sampleNode,
-                "LOW"
-            );
+            variantNode = zRdrGetNode(sampleNode, "LOW");
             if (variantNode == 0) {
                 sample->lowVariant.sampleName = 0;
                 sample->lowVariant.samplesPerSec = 11025;
@@ -848,12 +757,9 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
         }
     }
 
-    zReader::Node *groupsNode = zRdrGetNode(
-        g_zSnd_ConfigRootNode,
-        g_zSndConfig_SoundGroupsKey
-    );
+    zReader::Node *groupsNode = zRdrGetNode(g_zSnd_ConfigRootNode, g_zSndConfig_SoundGroupsKey);
     if (groupsNode != 0) {
-        zSndGroup_QueuePendingLoadsFromConfigNode(groupsNode);
+        zSndGroupQueuePendingLoadsFromConfigNode(groupsNode);
     }
 
     return 1;
@@ -861,12 +767,12 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndbackend-inita3d
- * @recoil-artifact defines .text recoil:function:0x4a1d10: zSndBackend_InitA3D.
+ * @recoil-artifact defines .text recoil:function:0x4a1d10: zSndBackendInitA3D.
  *
  * Purpose: create the A3D provider object, query geometry/listener interfaces,
  * configure output mode, and validate buffer creation.
  */
-extern "C" int __cdecl zSndBackend_InitA3D() {
+extern "C" int __cdecl zSndBackendInitA3D() {
     if (CoInitialize(0) < 0) {
         return 0;
     }
@@ -893,11 +799,7 @@ extern "C" int __cdecl zSndBackend_InitA3D() {
         return 0;
     }
 
-    ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->Init(
-        0,
-        0x28,
-        0x0c
-    );
+    ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->Init(0, 0x28, 0x0c);
     ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->SetCooperativeLevel(
         (HWND)(g_zSnd_WindowHandle),
         1
@@ -909,11 +811,7 @@ extern "C" int __cdecl zSndBackend_InitA3D() {
             (void **)(&g_zSnd_BackendAuxHandleOrConfig)
         );
     if (a3dError != 0) {
-        return zSnd::ReportA3DError(
-            a3dError,
-            g_zSnd_SourceFile_zsnd_init_cpp,
-            0x245
-        );
+        return zSnd::ReportA3DError(a3dError, g_zSnd_SourceFile_zsnd_init_cpp, 0x245);
     }
 
     a3dError =
@@ -922,32 +820,19 @@ extern "C" int __cdecl zSndBackend_InitA3D() {
             (void **)(&g_zSnd_BackendListenerHandle)
         );
     if (a3dError != 0) {
-        return zSnd::ReportA3DError(
-            a3dError,
-            g_zSnd_SourceFile_zsnd_init_cpp,
-            0x24b
-        );
+        return zSnd::ReportA3DError(a3dError, g_zSnd_SourceFile_zsnd_init_cpp, 0x24b);
     }
 
     a3dError =
-        ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->SetResourceManagerMode(
-            2
-        );
+        ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->SetResourceManagerMode(2);
     if (a3dError != 0) {
-        return zSnd::ReportA3DError(
-            a3dError,
-            g_zSnd_SourceFile_zsnd_init_cpp,
-            0x24e
-        );
+        return zSnd::ReportA3DError(a3dError, g_zSnd_SourceFile_zsnd_init_cpp, 0x24e);
     }
 
     ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->Clear();
 
     zA3dProviderSource *outBuffer = 0;
-    ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->NewSource(
-        0,
-        &outBuffer
-    );
+    ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->NewSource(0, &outBuffer);
     if (outBuffer != 0) {
         outBuffer->Release();
     }
@@ -957,17 +842,13 @@ extern "C" int __cdecl zSndBackend_InitA3D() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndbackend-initdirectsound
- * @recoil-artifact defines .text recoil:function:0x4a1e50: zSndBackend_InitDirectSound.
+ * @recoil-artifact defines .text recoil:function:0x4a1e50: zSndBackendInitDirectSound.
  *
  * Purpose: create the DirectSound device, set cooperative level, cache device
  * caps, and create the primary listener buffer.
  */
-extern "C" int __cdecl zSndBackend_InitDirectSound() {
-    HRESULT directSoundError = DirectSoundCreate(
-        0,
-        &g_zSnd_BackendDevice,
-        0
-    );
+extern "C" int __cdecl zSndBackendInitDirectSound() {
+    HRESULT directSoundError = DirectSoundCreate(0, &g_zSnd_BackendDevice, 0);
     if (directSoundError != DS_OK) {
         return zSnd::ReportDirectSoundError(
             directSoundError,
@@ -977,10 +858,7 @@ extern "C" int __cdecl zSndBackend_InitDirectSound() {
     }
 
     directSoundError =
-        g_zSnd_BackendDevice->SetCooperativeLevel(
-            (HWND)(g_zSnd_WindowHandle),
-            DSSCL_NORMAL
-        );
+        g_zSnd_BackendDevice->SetCooperativeLevel((HWND)(g_zSnd_WindowHandle), DSSCL_NORMAL);
     if (directSoundError != DS_OK) {
         return zSnd::ReportDirectSoundError(
             directSoundError,
@@ -1003,11 +881,7 @@ extern "C" int __cdecl zSndBackend_InitDirectSound() {
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPAN;
     directSoundError =
-        g_zSnd_BackendDevice->CreateSoundBuffer(
-            &desc,
-            &g_zSnd_BackendListenerHandle,
-            0
-        );
+        g_zSnd_BackendDevice->CreateSoundBuffer(&desc, &g_zSnd_BackendListenerHandle, 0);
     if (directSoundError != DS_OK) {
         return zSnd::ReportDirectSoundError(
             directSoundError,
@@ -1035,7 +909,7 @@ int __cdecl Shutdown() {
 
     zSndCd::Shutdown();
     zSndStreamMgr::Shutdown();
-    zSndSampleSetRegistry_DestroyAll();
+    zSndSampleSetRegistryDestroyAll();
 
     if (g_zSnd_ActiveBackend == 1) {
         void *&auxObject = *(void **)&g_zSnd_BackendAuxHandleOrConfig;

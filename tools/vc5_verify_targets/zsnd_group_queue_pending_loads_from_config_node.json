@@ -1,6 +1,6 @@
 {
   "name": "zsnd_group_queue_pending_loads_from_config_node",
-  "description": "VC verification target for zSndGroup_QueuePendingLoadsFromConfigNode.",
+  "description": "VC verification target for zSndGroupQueuePendingLoadsFromConfigNode.",
   "source_filename": "zsnd_group.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -17,8 +17,8 @@
   "functions": [
     {
       "address": "0x4a4530",
-      "symbol": "@zSndGroup_QueuePendingLoadsFromConfigNode@4",
-      "name": "zSndGroup_QueuePendingLoadsFromConfigNode"
+      "symbol": "@zSndGroupQueuePendingLoadsFromConfigNode@4",
+      "name": "zSndGroupQueuePendingLoadsFromConfigNode"
     }
   ],
   "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp"

@@ -15,15 +15,15 @@
   "functions": [
     {"address":"0x4bffe0","symbol":"?RegisterSectionHandler@zUtil_ZAR@@YIXPBDPAX1H1@Z","name":"zUtil_ZAR::RegisterSectionHandler","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c0010","symbol":"?WriteSectionBlob@zUtil_ZAR@@YIHPAUzZbdSectionCallbackCtx@@PBDPBXI@Z","name":"zUtil_ZAR::WriteSectionBlob","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c0030","symbol":"?ZBD_LoadEntriesGlobal@zUtil@@YIHPBD@Z","name":"zUtil::ZBD_LoadEntriesGlobal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c0050","symbol":"?ZAR_LoadFileGlobal@zUtil@@YIHPBD@Z","name":"zUtil::ZAR_LoadFileGlobal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c0070","symbol":"?ZAR_RequestStopGlobal@zUtil@@YAXXZ","name":"zUtil::ZAR_RequestStopGlobal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0030","symbol":"?ZBDLoadEntriesGlobal@zUtil@@YIHPBD@Z","name":"zUtil::ZBDLoadEntriesGlobal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0050","symbol":"?zZarLoadFileGlobal@zUtil@@YIHPBD@Z","name":"zUtil::zZarLoadFileGlobal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0070","symbol":"?zZarRequestStopGlobal@zUtil@@YAXXZ","name":"zUtil::zZarRequestStopGlobal","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c0080","symbol":"?OpenTempWriteStream@zUtil_ZBD@@YAPAU_iobuf@@XZ","name":"zUtil_ZBD::OpenTempWriteStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c00a0","symbol":"?FlushTempWriteStreamToSectionRecord@zUtil_ZBD@@YIXPAU_iobuf@@PAUzZbdSectionCallbackCtx@@PBD@Z","name":"zUtil_ZBD::FlushTempWriteStreamToSectionRecord","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c00c0","symbol":"?OpenTempReadStream@zUtil_ZBD@@YIPAU_iobuf@@PAXI@Z","name":"zUtil_ZBD::OpenTempReadStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c00e0","symbol":"?CloseTempReadStream@zUtil_ZBD@@YIXPAU_iobuf@@@Z","name":"zUtil_ZBD::CloseTempReadStream","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c0100","symbol":"?ZBD_Init@zUtil@@YAHXZ","name":"zUtil::ZBD_Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c0180","symbol":"?ZBD_DestroyGlobalManager@zUtil@@YAXXZ","name":"zUtil::ZBD_DestroyGlobalManager","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0100","symbol":"?ZBDInit@zUtil@@YAHXZ","name":"zUtil::ZBDInit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c0180","symbol":"?ZBDDestroyGlobalManager@zUtil@@YAXXZ","name":"zUtil::ZBDDestroyGlobalManager","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c01b0","symbol":"?Destroy@zZbdManager@@QAEXXZ","name":"zZbdManager::Destroy","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c0260","symbol":"?CompareSortOrderLessThan@zZbdSectionHandler@@SI_NPBU1@0@Z","name":"zZbdSectionHandler::CompareSortOrderLessThan","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c0280","symbol":"?RegisterSectionHandler@zZbdManager@@QAEXPBDPAX1H1@Z","name":"zZbdManager::RegisterSectionHandler","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
@@ -52,7 +52,7 @@
       "retail_end_exclusive": "0x4c0d20",
       "predecessor": {"address":"0x4bffb0","symbol":"?SetSegmentEndpoints@HudUiPrimitiveBindTarget@@QAEXHHHH@Z","name":"HudUiPrimitiveBindTarget::SetSegmentEndpoints","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": ["0x4bffe0","0x4c0010","0x4c0030","0x4c0050","0x4c0070","0x4c0080","0x4c00a0","0x4c00c0","0x4c00e0","0x4c0100","0x4c0180","0x4c01b0","0x4c0260","0x4c0280","0x4c0370","0x4c0400","0x4c0620","0x4c0630","0x4c06a0","0x4c06c0","0x4c0700","0x4c0780","0x4c07c0"],
-      "successor": {"address":"0x4c0d20","symbol":"??0zInterp_Context@@QAE@PBD0@Z","name":"zInterp_Context::zInterp_Context","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x4c0d20","symbol":"??0CZInterp@@QAE@PBD0@Z","name":"CZInterp::CZInterp","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

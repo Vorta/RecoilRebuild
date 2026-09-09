@@ -18,13 +18,13 @@
   "functions": [
     {
       "address": "0x4a8100",
-      "symbol": "?LockSurface_WaitRestore@zVideo_dd@@YIHPAUIDirectDrawSurface3@@PAU_DDSURFACEDESC@@@Z",
-      "name": "zVideo_dd::LockSurface_WaitRestore"
+      "symbol": "?LockSurfaceWaitRestore@zVideo_dd@@YIHPAUIDirectDrawSurface3@@PAU_DDSURFACEDESC@@@Z",
+      "name": "zVideo_dd::LockSurfaceWaitRestore"
     },
     {
       "address": "0x4a8160",
-      "symbol": "?UnlockSurface_WaitRestore@zVideo_dd@@YIHPAUIDirectDrawSurface3@@@Z",
-      "name": "zVideo_dd::UnlockSurface_WaitRestore"
+      "symbol": "?UnlockSurfaceWaitRestore@zVideo_dd@@YIHPAUIDirectDrawSurface3@@@Z",
+      "name": "zVideo_dd::UnlockSurfaceWaitRestore"
     }
   ],
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c"

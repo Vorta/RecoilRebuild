@@ -24,8 +24,8 @@
     },
     {
       "address": "0x471770",
-      "symbol": "?BindMapCurrent_SetJoystickBinding@zInput@@YIXHH@Z",
-      "name": "zInput::BindMapCurrent_SetJoystickBinding"
+      "symbol": "?BindMapCurrentSetJoystickBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrentSetJoystickBinding"
     }
   ]
 }

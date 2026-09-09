@@ -264,27 +264,27 @@ RECOIL_STATIC_ASSERT(
     ) == 0x30
 );
 
-int __fastcall zModel_Instance_UpdateScrollingTexturesIfNeeded(
+int __fastcall zModelInstanceUpdateScrollingTexturesIfNeeded(
     zModel_InstancePartial *instance
 );
-void __fastcall zModel_Instance_UpdateScrollingTextures(
+void __fastcall zModelInstanceUpdateScrollingTextures(
     const zModel_TextureScrollInfoPartial *textureInfo,
     zModel_Uv *uvs,
     const float *scrollRates,
     int uvCount
 );
-void __fastcall zModel_RenderPointQueueEntry(
+void __fastcall zModelRenderPointQueueEntry(
     const zVec3 *pointPos,
     int packedColor16,
     zModel_PointEntryPartial *pointEntry
 );
-int __fastcall zModel_Light_BuildLightWeights(
+int __fastcall zModelLightBuildLightWeights(
     zVec3 *surfaceNormal,
     int vertexCount,
     int *outPackedFogColor,
     float fogBlendScale
 );
-void __fastcall zModel_Light_PointInPolygonInitXZ(
+void __fastcall zModelLightPointInPolygonInitXZ(
     zClass_LightDataPartial **lightDataList,
     zModel_LightStatePartial **lightNodeStates,
     int lightCount
@@ -322,25 +322,25 @@ float __cdecl GetBackfaceEliminationToleranceScalar();
 void __stdcall UpdateSmallPolyRejectThresholds(float baseRejectArea);
 } // namespace zModel
 
-int __cdecl zModel_Display_Init();
-void __stdcall OptCatalog_SetDamageMaskUv(
+int __cdecl zModelDisplayInit();
+void __stdcall OptCatalogSetDamageMaskUv(
     float u,
     float v
 );
-int __cdecl OptCatalog_IsDamageMaskEnabled();
-void __fastcall OptCatalog_SetDamageMaskEnabled(int enabled);
-int __fastcall OptCatalog_IsDamageMaskSlotPtrRegistered(void *slotPtr);
-void __fastcall zModel_Fog_SetEnabled(int enabled);
-int __cdecl zModel_Fog_IsEnabled();
-void __stdcall zModel_Fog_SetDistanceStart(float distanceStart);
-float __cdecl zModel_Fog_GetDistanceStart();
-void __stdcall zModel_Fog_SetDistanceEnd(float distanceEnd);
-void __stdcall zModel_Fog_SetHeightHigh(float heightHigh);
-void __stdcall zModel_Fog_SetHeightLow(float heightLow);
-void __stdcall zModel_Fog_SetDensity(float density);
-void __fastcall zModel_Fog_SetLinearModeEnabled(int enabled);
-void __fastcall zModel_Fog_SetColorRgb01(zColorRgb *rgb01);
-void __cdecl zModel_Fog_ApplyCurrentColor();
+int __cdecl OptCatalogIsDamageMaskEnabled();
+void __fastcall OptCatalogSetDamageMaskEnabled(int enabled);
+int __fastcall OptCatalogIsDamageMaskSlotPtrRegistered(void *slotPtr);
+void __fastcall zModelFogSetEnabled(int enabled);
+int __cdecl zModelFogIsEnabled();
+void __stdcall zModelFogSetDistanceStart(float distanceStart);
+float __cdecl zModelFogGetDistanceStart();
+void __stdcall zModelFogSetDistanceEnd(float distanceEnd);
+void __stdcall zModelFogSetHeightHigh(float heightHigh);
+void __stdcall zModelFogSetHeightLow(float heightLow);
+void __stdcall zModelFogSetDensity(float density);
+void __fastcall zModelFogSetLinearModeEnabled(int enabled);
+void __fastcall zModelFogSetColorRgb01(zColorRgb *rgb01);
+void __cdecl zModelFogApplyCurrentColor();
 
 namespace zModel_Light {
 float __fastcall EvalDistanceWeight(
@@ -405,7 +405,7 @@ zVec3 *__fastcall SetNormalizedCrossFromVertexTriplet(
     zVec3 *outNormal,
     zVec3 *vertex2
 );
-int __fastcall RemoveColinearVerticesInPlace(
+int __fastcall check_colinearity(
     int *vertexCount,
     zVec3 *points,
     zClipUV *uvPairsA,
@@ -500,12 +500,12 @@ int __fastcall TestProjectedSphereVisible(
 );
 }
 
-void __fastcall zModel_FogTargetColorOverride_SetCurrent(
+void __fastcall zModelFogTargetColorOverrideSetCurrent(
     zColorRgb *colorRgb01,
     float weight
 );
-void __stdcall zModel_RenderAlphaScale_SetCurrent(float scale);
-void __fastcall zModel_RenderVertexAlphaEnabled_SetCurrent(int enabled);
+void __stdcall zModelRenderAlphaScaleSetCurrent(float scale);
+void __fastcall zModelRenderVertexAlphaEnabledSetCurrent(int enabled);
 
 namespace VariantTag {
 int __fastcall TagsOverlap(

@@ -139,51 +139,48 @@ char g_zSnd_SoundGroupDelayPlayKey[0xb] = "DELAY_PLAY";
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndpendinglist-findbyname
- * @recoil-artifact defines .text recoil:function:0x4a44c0: zSndPendingList_FindByName.
+ * @recoil-artifact defines .text recoil:function:0x4a44c0: zSndPendingListFindByName.
  * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp.
  * Purpose: search the pending stream group list for a group with the requested sample name.
  */
-extern "C" zSndSample *__fastcall zSndPendingList_FindByName(
+extern "C" zSndSample *__fastcall zSndPendingListFindByName(
     const char *sampleName
 ) {
     if (g_zSndStream_PendingList == 0) {
         return 0;
     }
 
-    return (zSndSample *)(zArchiveList_FindCompare(
+    return (zSndSample *)(zArchiveListFindCompare(
         g_zSndStream_PendingList,
-        &zSndPendingList_MatchNamePredicate,
+        &zSndPendingListMatchNamePredicate,
         (char *)(sampleName)
     ));
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndpendinglist-matchnamepredicate
- * @recoil-artifact defines .text recoil:function:0x4a44e0: zSndPendingList_MatchNamePredicate.
+ * @recoil-artifact defines .text recoil:function:0x4a44e0: zSndPendingListMatchNamePredicate.
  * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp.
  * Purpose: compare a pending sound group name with the requested sample name.
  */
-extern "C" int __fastcall zSndPendingList_MatchNamePredicate(
+extern "C" int __fastcall zSndPendingListMatchNamePredicate(
     void *payload,
     void *sampleName
 ) {
-    return strcmp(
-        ((zSndGroup *)(payload))->groupName,
-        (const char *)(sampleName)
-    ) != 0 ? 1 : 0;
+    return strcmp(((zSndGroup *)(payload))->groupName, (const char *)(sampleName)) != 0 ? 1 : 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuependingloadsfromconfignode
- * @recoil-artifact defines .text recoil:function:0x4a4530: zSndGroup_QueuePendingLoadsFromConfigNode.
+ * @recoil-artifact defines .text recoil:function:0x4a4530: zSndGroupQueuePendingLoadsFromConfigNode.
  * Purpose: queue every parsed sound group from a top-level config array for
  * deferred stream loading.
  */
-extern "C" int __fastcall zSndGroup_QueuePendingLoadsFromConfigNode(
+extern "C" int __fastcall zSndGroupQueuePendingLoadsFromConfigNode(
     zReader::Node *readerNode
 ) {
     if (readerNode->type != zReader::ZRDR_NODE_ARRAY) {
@@ -191,7 +188,7 @@ extern "C" int __fastcall zSndGroup_QueuePendingLoadsFromConfigNode(
     }
 
     if (g_zSndStream_PendingList == 0) {
-        g_zSndStream_PendingList = zArchiveList_New();
+        g_zSndStream_PendingList = zArchiveListNew();
         if (g_zSndStream_PendingList == 0) {
             return 0;
         }
@@ -199,12 +196,9 @@ extern "C" int __fastcall zSndGroup_QueuePendingLoadsFromConfigNode(
 
     zReader::Node *nodeArray = readerNode->value.nodes;
     for (int i = 1; i < nodeArray[0].value.i32; ++i) {
-        zSndGroup *payload = zSndGroup_LoadFromConfigNode(&nodeArray[i]);
+        zSndGroup *payload = zSndGroupLoadFromConfigNode(&nodeArray[i]);
         if (payload != 0) {
-            zArchiveList_AddHead(
-                g_zSndStream_PendingList,
-                payload
-            );
+            zArchiveListAddHead(g_zSndStream_PendingList, payload);
         }
     }
 
@@ -213,20 +207,17 @@ extern "C" int __fastcall zSndGroup_QueuePendingLoadsFromConfigNode(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-loadfromconfignode
- * @recoil-artifact defines .text recoil:function:0x4a4590: zSndGroup_LoadFromConfigNode.
+ * @recoil-artifact defines .text recoil:function:0x4a4590: zSndGroupLoadFromConfigNode.
  * Purpose: allocate and populate one sound group from a zReader array node.
  */
-extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
+extern "C" zSndGroup *__fastcall zSndGroupLoadFromConfigNode(
     zReader::Node *readerNode
 ) {
     if (readerNode->type != zReader::ZRDR_NODE_ARRAY) {
         return 0;
     }
 
-    zSndGroup *result = (zSndGroup *)(calloc(
-        1,
-        sizeof(zSndGroup)
-    ));
+    zSndGroup *result = (zSndGroup *)(calloc(1, sizeof(zSndGroup)));
     if (result == 0) {
         return 0;
     }
@@ -244,12 +235,8 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 result->configBlocks = blocks;
                 if (blocks != 0) {
                     zSndGroupConfigBlock *block = &blocks[result->configBlockCount];
-                    memset(
-                        block,
-                        0,
-                        sizeof(*block)
-                    );
-                    zSndGroup_LoadConfigBlock(
+                    memset(block, 0, sizeof(*block));
+                    zSndGroupLoadConfigBlock(
                         childNode,
                         (zSndGroupRuntimeFields *)(&result->groupName),
                         block
@@ -265,10 +252,7 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
 
             const char *key = childNode->value.str;
             zReader::Node *valueNode = &nodeArray[childIndex + 1];
-            if (strcmp(
-                key,
-                g_zSnd_SoundGroupDelayRepeatKey
-            ) == 0) {
+            if (strcmp(key, g_zSnd_SoundGroupDelayRepeatKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     result->delayRepeatSec = valueNode->value.f32;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
@@ -283,10 +267,7 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                     );
                 }
                 ++childIndex;
-            } else if (strcmp(
-                key,
-                g_zSnd_SoundGroupDelayTerminationKey
-            ) == 0) {
+            } else if (strcmp(key, g_zSnd_SoundGroupDelayTerminationKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     result->delayTerminationSec = valueNode->value.f32;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
@@ -301,10 +282,7 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                     );
                 }
                 ++childIndex;
-            } else if (strcmp(
-                key,
-                g_zSnd_SoundGroupDynamicWeightsKey
-            ) == 0) {
+            } else if (strcmp(key, g_zSnd_SoundGroupDynamicWeightsKey) == 0) {
                 result->dynamicWeightsEnabled = 1;
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     result->dynamicWeightScale = valueNode->value.f32;
@@ -326,15 +304,9 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                     result->dynamicWeightScale = 1.0f;
                 }
                 ++childIndex;
-            } else if (strcmp(
-                key,
-                g_zSnd_SoundGroupPlaySoloKey
-            ) == 0) {
+            } else if (strcmp(key, g_zSnd_SoundGroupPlaySoloKey) == 0) {
                 result->playSolo = 1;
-            } else if (strcmp(
-                key,
-                g_zSnd_SoundGroupRepeatKey
-            ) == 0) {
+            } else if (strcmp(key, g_zSnd_SoundGroupRepeatKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     result->repeatCount = (unsigned short)(valueNode->value.f32);
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
@@ -375,11 +347,11 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-loadconfigblock
- * @recoil-artifact defines .text recoil:function:0x4a49b0: zSndGroup_LoadConfigBlock.
+ * @recoil-artifact defines .text recoil:function:0x4a49b0: zSndGroupLoadConfigBlock.
  * Purpose: parse one sound-group config block, including nested blocks and
  * per-entry playback controls.
  */
-extern "C" int __fastcall zSndGroup_LoadConfigBlock(
+extern "C" int __fastcall zSndGroupLoadConfigBlock(
     zReader::Node *readerNode,
     zSndGroupRuntimeFields *groupFields,
     zSndGroupConfigBlock *outConfigBlock
@@ -395,24 +367,13 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
             zReader::Node *childNode = &nodeArray[childIndex];
             if (childNode->type == zReader::ZRDR_NODE_ARRAY) {
                 if (childIndex == 1) {
-                    zSndGroup_LoadConfigBlock(
-                        childNode,
-                        groupFields,
-                        outConfigBlock
-                    );
+                    zSndGroupLoadConfigBlock(childNode, groupFields, outConfigBlock);
                 } else {
                     zSndGroupConfigBlock *nested =
-                        (zSndGroupConfigBlock *)(calloc(
-                            1,
-                            sizeof(zSndGroupConfigBlock)
-                        ));
+                        (zSndGroupConfigBlock *)(calloc(1, sizeof(zSndGroupConfigBlock)));
                     if (nested != 0) {
                         outConfigBlock->child = nested;
-                        zSndGroup_LoadConfigBlock(
-                            childNode,
-                            groupFields,
-                            nested
-                        );
+                        zSndGroupLoadConfigBlock(childNode, groupFields, nested);
                         outConfigBlock = nested;
                     }
                 }
@@ -425,10 +386,7 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
 
             const char *key = childNode->value.str;
             zReader::Node *valueNode = &nodeArray[childIndex + 1];
-            if (strcmp(
-                key,
-                g_zSnd_SoundGroupDelayPlayKey
-            ) == 0) {
+            if (strcmp(key, g_zSnd_SoundGroupDelayPlayKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->delayPlaySec = valueNode->value.f32;
                     ++childIndex;
@@ -445,10 +403,7 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
                     );
                     ++childIndex;
                 }
-            } else if (strcmp(
-                key,
-                g_zSnd_SoundGroupPlayCountKey
-            ) == 0) {
+            } else if (strcmp(key, g_zSnd_SoundGroupPlayCountKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->maxPlayCount =
                         (unsigned short)(valueNode->value.f32 + 0.5f);
@@ -470,10 +425,7 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
                     ++childIndex;
                     outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
                 }
-            } else if (strcmp(
-                key,
-                g_zSnd_SoundGroupWeightKey
-            ) == 0) {
+            } else if (strcmp(key, g_zSnd_SoundGroupWeightKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->weight = valueNode->value.f32;
                     ++childIndex;
@@ -642,10 +594,7 @@ void zSndStreamRequest::StatePlayCurrentEntry() {
         if (entry->currentPlayCount != 0) {
             if (entry->cachedSample == 0) {
                 const char *sampleName = entry->streamName;
-                if (strcmp(
-                        sampleName,
-                        "NULL"
-                    ) != 0) {
+                if (strcmp(sampleName, "NULL") != 0) {
                     entry->cachedSample = zSnd::FindSampleByName(sampleName);
                 }
             }
@@ -653,11 +602,7 @@ void zSndStreamRequest::StatePlayCurrentEntry() {
             zSndSample *sample = entry->cachedSample;
             if (sample != 0) {
                 if (hasWorldPos != 0) {
-                    sample->PlayA3D(
-                        &worldPos,
-                        gain,
-                        &velocity
-                    );
+                    sample->PlayA3D(&worldPos, gain, &velocity);
                 } else {
                     sample->PlayA3DSimple(gain);
                 }
@@ -735,8 +680,8 @@ void zSndStreamRequest::StateWaitTerminationDelay() {
  * Purpose: run active stream-request updates and recycle the first finished
  * request back to the free list.
  */
-extern "C" void __cdecl zSndStreamMgr_RecycleFinishedRequest() {
-    zArchiveList_FindCompare(
+extern "C" void __cdecl zSndStreamMgrRecycleFinishedRequest() {
+    zArchiveListFindCompare(
         g_zSndStream_ActiveList,
         &zSndStreamMgr::UpdateActiveRequestPredicate,
         0
@@ -746,14 +691,8 @@ extern "C" void __cdecl zSndStreamMgr_RecycleFinishedRequest() {
         return;
     }
 
-    zArchiveList_Remove(
-        g_zSndStream_ActiveList,
-        g_zSndStream_MatchedRequest
-    );
-    zArchiveList_AddHead(
-        g_zSndStream_FreeList,
-        g_zSndStream_MatchedRequest
-    );
+    zArchiveListRemove(g_zSndStream_ActiveList, g_zSndStream_MatchedRequest);
+    zArchiveListAddHead(g_zSndStream_FreeList, g_zSndStream_MatchedRequest);
     g_zSndStream_MatchedRequest = 0;
     --g_zSndStream_MatchedRequestCount;
 }
@@ -767,37 +706,34 @@ namespace zSndStreamMgr {
  */
 int __cdecl Shutdown() {
     if (g_zSndStream_RootNode != 0 && zClass::IsInitialized() != 0) {
-        zClass_Class::gwNodeSetActionCallback(
-            g_zSndStream_RootNode,
-            0
-        );
+        zClass_Class::gwNodeSetActionCallback(g_zSndStream_RootNode, 0);
         zClass_Object3D::DeleteNode(g_zSndStream_RootNode);
     }
     g_zSndStream_RootNode = 0;
 
     if (g_zSndStream_ActiveList != 0) {
-        void *payload = zArchiveList_RemoveHead(g_zSndStream_ActiveList);
+        void *payload = zArchiveListRemoveHead(g_zSndStream_ActiveList);
         while (payload != 0) {
             free(payload);
-            payload = zArchiveList_RemoveHead(g_zSndStream_ActiveList);
+            payload = zArchiveListRemoveHead(g_zSndStream_ActiveList);
         }
-        zArchiveList_Free(g_zSndStream_ActiveList);
+        zArchiveListFree(g_zSndStream_ActiveList);
         g_zSndStream_ActiveList = 0;
     }
 
     if (g_zSndStream_FreeList != 0) {
-        void *payload = zArchiveList_RemoveHead(g_zSndStream_FreeList);
+        void *payload = zArchiveListRemoveHead(g_zSndStream_FreeList);
         while (payload != 0) {
             free(payload);
-            payload = zArchiveList_RemoveHead(g_zSndStream_FreeList);
+            payload = zArchiveListRemoveHead(g_zSndStream_FreeList);
         }
-        zArchiveList_Free(g_zSndStream_FreeList);
+        zArchiveListFree(g_zSndStream_FreeList);
         g_zSndStream_FreeList = 0;
     }
 
     if (g_zSndStream_PendingList != 0) {
         zSndGroup *pendingConfig = (zSndGroup *)(
-            zArchiveList_RemoveHead(g_zSndStream_PendingList)
+            zArchiveListRemoveHead(g_zSndStream_PendingList)
         );
         while (pendingConfig != 0) {
             if (pendingConfig->createGuard == 1) {
@@ -815,11 +751,11 @@ int __cdecl Shutdown() {
                 free(pendingConfig);
             }
             pendingConfig = (zSndGroup *)(
-                zArchiveList_RemoveHead(g_zSndStream_PendingList)
+                zArchiveListRemoveHead(g_zSndStream_PendingList)
             );
         }
 
-        zArchiveList_Free(g_zSndStream_PendingList);
+        zArchiveListFree(g_zSndStream_PendingList);
         g_zSndStream_PendingList = 0;
     }
     return 1;
@@ -848,10 +784,10 @@ int __fastcall MatchStreamRequestPredicate(
  * Purpose: find an active stream request matching the play handle and move it
  * into the stop state.
  */
-extern "C" int __fastcall zSndStreamRequest_StopIfActive(
+extern "C" int __fastcall zSndStreamRequestStopIfActive(
     zSndPlayHandle *request
 ) {
-    void *const found = zArchiveList_FindCompare(
+    void *const found = zArchiveListFindCompare(
         g_zSndStream_ActiveList,
         &MatchStreamRequestPredicate,
         request
@@ -866,13 +802,13 @@ extern "C" int __fastcall zSndStreamRequest_StopIfActive(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-matchgrouppredicate
- * @recoil-artifact defines .text recoil:function:0x4a5220: zSndStreamRequest_MatchGroupPredicate.
+ * @recoil-artifact defines .text recoil:function:0x4a5220: zSndStreamRequestMatchGroupPredicate.
  * @recoil-match byte
  *
  * Purpose: compare a queued stream request with a sound group while searching
  * active request lists.
  */
-extern "C" int __fastcall zSndStreamRequest_MatchGroupPredicate(
+extern "C" int __fastcall zSndStreamRequestMatchGroupPredicate(
     void *payload,
     void *group
 ) {
@@ -887,12 +823,7 @@ extern "C" int __fastcall zSndStreamRequest_MatchGroupPredicate(
 zSndPlayHandle * zSndGroup::QueueStreamRequestSimple(
     float gain
 ) {
-    return QueueStreamRequest(
-        0,
-        gain,
-        0,
-        0
-    );
+    return QueueStreamRequest(0, gain, 0, 0);
 }
 
 /**
@@ -908,19 +839,19 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
     zVec3 *velocity
 ) {
     if (g_zSndStream_RootNode == 0) {
-        zSndStreamMgr_EnsureInit();
+        zSndStreamMgrEnsureInit();
     }
 
-    if (playSolo != 0 && zArchiveList_FindCompare(
+    if (playSolo != 0 && zArchiveListFindCompare(
                              g_zSndStream_ActiveList,
-                             &zSndStreamRequest_MatchGroupPredicate,
+                             &zSndStreamRequestMatchGroupPredicate,
                              this
                          ) != 0) {
         return 0;
     }
 
     zSndStreamRequest *request =
-        (zSndStreamRequest *)(zArchiveList_RemoveHead(g_zSndStream_FreeList));
+        (zSndStreamRequest *)(zArchiveListRemoveHead(g_zSndStream_FreeList));
     if (request == 0) {
         request = (zSndStreamRequest *)(malloc(sizeof(zSndStreamRequest)));
         if (request == 0) {
@@ -928,15 +859,8 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
         }
     }
 
-    memset(
-        request,
-        0,
-        sizeof(*request)
-    );
-    zArchiveList_AddHead(
-        g_zSndStream_ActiveList,
-        request
-    );
+    memset(request, 0, sizeof(*request));
+    zArchiveListAddHead(g_zSndStream_ActiveList, request);
 
     request->gain = gain;
     request->handleKind = ZSND_PLAYHANDLE_STREAM_REQUEST;
@@ -955,12 +879,12 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-ensureinit
- * @recoil-artifact defines .text recoil:function:0x4a5350: zSndStreamMgr_EnsureInit.
+ * @recoil-artifact defines .text recoil:function:0x4a5350: zSndStreamMgrEnsureInit.
  * @recoil-match byte
  *
  * Purpose: lazily create the stream-manager root node and request lists.
  */
-extern "C" int __cdecl zSndStreamMgr_EnsureInit() {
+extern "C" int __cdecl zSndStreamMgrEnsureInit() {
     if (g_zSndStream_RootNode == 0) {
         g_zSndStream_RootNode = zClass_Object3D::gwObject3DInit();
         if (g_zSndStream_RootNode == 0) {
@@ -969,26 +893,26 @@ extern "C" int __cdecl zSndStreamMgr_EnsureInit() {
 
         zClass_Class::gwNodeSetActionCallbackTail(
             g_zSndStream_RootNode,
-            (void *)(&zSndStreamMgr_RecycleFinishedRequest)
+            (void *)(&zSndStreamMgrRecycleFinishedRequest)
         );
     }
 
     if (g_zSndStream_PendingList == 0) {
-        g_zSndStream_PendingList = zArchiveList_New();
+        g_zSndStream_PendingList = zArchiveListNew();
         if (g_zSndStream_PendingList == 0) {
             return 0;
         }
     }
 
     if (g_zSndStream_ActiveList == 0) {
-        g_zSndStream_ActiveList = zArchiveList_New();
+        g_zSndStream_ActiveList = zArchiveListNew();
         if (g_zSndStream_ActiveList == 0) {
             return 0;
         }
     }
 
     if (g_zSndStream_FreeList == 0) {
-        g_zSndStream_FreeList = zArchiveList_New();
+        g_zSndStream_FreeList = zArchiveListNew();
         if (g_zSndStream_FreeList == 0) {
             return 0;
         }
@@ -1007,10 +931,5 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequestWithWorldPos(
     float gain,
     zVec3 *velocity
 ) {
-    return QueueStreamRequest(
-        1,
-        gain,
-        worldPos,
-        velocity
-    );
+    return QueueStreamRequest(1, gain, worldPos, velocity);
 }

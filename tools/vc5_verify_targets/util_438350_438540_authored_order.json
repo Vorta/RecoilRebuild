@@ -29,7 +29,7 @@
         },
         {
           "address": "0x4383e0",
-          "symbol": "?zUtil_SaveGameStateList_Init@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
+          "symbol": "?zUtilSaveGameStateListInit@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
           "name": "zUtil_SaveGameStateList::Init",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -47,7 +47,7 @@
         },
         {
           "address": "0x4384e0",
-          "symbol": "?zUtil_SaveGameStateList_AllocAppend@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
+          "symbol": "?zUtilSaveGameStateListAllocAppend@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
           "name": "zUtil_SaveGameStateList::AllocAppend",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -84,7 +84,7 @@
         },
         {
           "address": "0x4383e0",
-          "symbol": "?zUtil_SaveGameStateList_Init@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
+          "symbol": "?zUtilSaveGameStateListInit@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
           "name": "zUtil_SaveGameStateList::Init",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -102,7 +102,7 @@
         },
         {
           "address": "0x4384e0",
-          "symbol": "?zUtil_SaveGameStateList_AllocAppend@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
+          "symbol": "?zUtilSaveGameStateListAllocAppend@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
           "name": "zUtil_SaveGameStateList::AllocAppend",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",

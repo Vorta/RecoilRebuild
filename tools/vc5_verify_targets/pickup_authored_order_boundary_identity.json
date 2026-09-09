@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x41cc10",
-      "symbol": "?Primary_Init@PickupSpawnList@@SAXXZ",
-      "name": "PickupSpawnList::Primary_Init"
+      "symbol": "?PrimaryInit@PickupSpawnList@@SAXXZ",
+      "name": "PickupSpawnList::PrimaryInit"
     }
   ]
 }

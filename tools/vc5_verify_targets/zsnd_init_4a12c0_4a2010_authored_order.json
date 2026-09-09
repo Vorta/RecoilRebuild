@@ -14,13 +14,13 @@
     "src/GameZRecoil/zSound/zsnd.h"
   ],
   "functions": [
-    {"address":"0x4a12c0","symbol":"@zSnd_PreInitializeRuntimeState@4","name":"zSnd::PreInitializeRuntimeState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a12c0","symbol":"@zSndPreInitializeRuntimeState@4","name":"zSnd::PreInitializeRuntimeState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a13d0","symbol":"?Shutdown@zSndSystem@@YAHXZ","name":"zSndSystem::Shutdown","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4a1420","symbol":"@zSndSystem_Init@8","name":"zSndSystem::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4a1510","symbol":"@zSndSystem_InitLegacySetsSyntax@4","name":"zSndSystem::InitLegacySetsSyntax","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4a1870","symbol":"@zSndSystem_InitNamedSetsSyntax@4","name":"zSndSystem::InitNamedSetsSyntax","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4a1d10","symbol":"_zSndBackend_InitA3D","name":"zSndBackend::InitA3D","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4a1e50","symbol":"_zSndBackend_InitDirectSound","name":"zSndBackend::InitDirectSound","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1420","symbol":"@zSndSystemInit@8","name":"zSndSystem::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1510","symbol":"@zSndSystemInitLegacySetsSyntax@4","name":"zSndSystem::InitLegacySetsSyntax","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1870","symbol":"@zSndSystemInitNamedSetsSyntax@4","name":"zSndSystem::InitNamedSetsSyntax","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1d10","symbol":"_zSndBackendInitA3D","name":"zSndBackend::InitA3D","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4a1e50","symbol":"_zSndBackendInitDirectSound","name":"zSndBackend::InitDirectSound","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4a1f40","symbol":"?Shutdown@zSndBackend@@YAHXZ","name":"zSndBackend::Shutdown","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],
   "translation_unit_function_order": [

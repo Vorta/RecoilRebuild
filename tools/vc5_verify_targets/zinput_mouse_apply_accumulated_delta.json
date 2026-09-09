@@ -1,6 +1,6 @@
 {
   "name": "zinput_mouse_apply_accumulated_delta",
-  "description": "zInput::Mouse_ApplyAccumulatedDelta scales deltas, accumulates the client cursor, clamps non-wrapping movement, and recomputes normalized mouse fields.",
+  "description": "zInput::MouseApplyAccumulatedDelta scales deltas, accumulates the client cursor, clamps non-wrapping movement, and recomputes normalized mouse fields.",
   "source_filename": "zin_mouse.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
@@ -24,8 +24,8 @@
   "functions": [
     {
       "address": "0x4704f0",
-      "symbol": "?Mouse_ApplyAccumulatedDelta@zInput@@YAXXZ",
-      "name": "zInput::Mouse_ApplyAccumulatedDelta"
+      "symbol": "?MouseApplyAccumulatedDelta@zInput@@YAXXZ",
+      "name": "zInput::MouseApplyAccumulatedDelta"
     }
   ],
   "data_symbols": [

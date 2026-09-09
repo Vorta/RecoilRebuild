@@ -76,7 +76,7 @@
       ],
       "successor": {
         "address": "0x4a44c0",
-        "symbol": "@zSndPendingList_FindByName@4",
+        "symbol": "@zSndPendingListFindByName@4",
         "name": "zSndPendingList::FindByName",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",

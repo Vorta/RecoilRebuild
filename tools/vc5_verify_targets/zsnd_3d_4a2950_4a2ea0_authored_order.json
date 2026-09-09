@@ -16,7 +16,7 @@
   "functions": [
     {
       "address": "0x4a2950",
-      "symbol": "@zSnd_UpdateListenerState@8",
+      "symbol": "@zSndUpdateListenerState@8",
       "name": "zSnd::UpdateListenerState",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -34,8 +34,8 @@
     },
     {
       "address": "0x4a2a70",
-      "symbol": "?Update3D_A3D@zSndPlayHandle@@QAIHPAUzVec3@@0H@Z",
-      "name": "zSndPlayHandle::Update3D_A3D",
+      "symbol": "?Update3DA3D@zSndPlayHandle@@QAIHPAUzVec3@@0H@Z",
+      "name": "zSndPlayHandle::Update3DA3D",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -52,7 +52,7 @@
     },
     {
       "address": "0x4a2e70",
-      "symbol": "_zSnd_GetSpeedOfSoundMps",
+      "symbol": "_zSndGetSpeedOfSoundMps",
       "name": "zSnd::GetSpeedOfSoundMps",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

@@ -1,6 +1,6 @@
 {
   "name": "hud_ui_zrd_widget_ex17c_selection",
-  "description": "HudUiZrdWidgetEx17C option selection helpers.",
+  "description": "CHudRadioGroupWidget option selection helpers.",
   "source_filename": "zhud_ui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -20,13 +20,13 @@
   "functions": [
     {
       "address": "0x4b8a90",
-      "symbol": "?SetSelected@HudUiZrdWidgetEx17C_Item@@QAEXH@Z",
-      "name": "HudUiZrdWidgetEx17C_Item::SetSelected"
+      "symbol": "?SetSelected@CHudRadioButtonWidget@@QAEXH@Z",
+      "name": "CHudRadioButtonWidget::SetSelected"
     },
     {
       "address": "0x4b8cf0",
-      "symbol": "?SetSelectedIndex@HudUiZrdWidgetEx17C@@QAEHH@Z",
-      "name": "HudUiZrdWidgetEx17C::SetSelectedIndex"
+      "symbol": "?SetSelectedIndex@CHudRadioGroupWidget@@QAEHH@Z",
+      "name": "CHudRadioGroupWidget::SetSelectedIndex"
     }
   ]
 }

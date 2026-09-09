@@ -20,20 +20,20 @@
     {"address":"0x471b50","symbol":"?Init@zInput@@YIHPAUHWND__@@PAUHINSTANCE__@@@Z","name":"zInput::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x471c10","symbol":"?Shutdown@zInput@@YAHXZ","name":"zInput::Shutdown","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x471c50","symbol":"?ResetAllTransitionState@zInput@@YAXXZ","name":"zInput::ResetAllTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471c60","symbol":"?Mouse_IsUnsuspended@zInput@@YAHXZ","name":"zInput::Mouse_IsUnsuspended","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471c70","symbol":"?Joystick_IsUnsuspended@zInput@@YAHXZ","name":"zInput::Joystick_IsUnsuspended","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471c80","symbol":"_zInput_Keyboard_IsUnsuspended","name":"zInputKeyboard::IsUnsuspended","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471c90","symbol":"?Mouse_ResumeFromSuspend@zInput@@YAXXZ","name":"zInput::Mouse_ResumeFromSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471cb0","symbol":"?Joystick_ResumeFromSuspend@zInput@@YAXXZ","name":"zInput::Joystick_ResumeFromSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471cd0","symbol":"?Keyboard_ResumeFromSuspend@zInput@@YAXXZ","name":"zInput::Keyboard_ResumeFromSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471cf0","symbol":"?Mouse_Suspend@zInput@@YAXXZ","name":"zInput::Mouse_Suspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471d00","symbol":"?Joystick_Suspend@zInput@@YAXXZ","name":"zInput::Joystick_Suspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471d10","symbol":"?Keyboard_Suspend@zInput@@YAXXZ","name":"zInput::Keyboard_Suspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471d20","symbol":"?Keyboard_AddRef@zInput@@YAHXZ","name":"zInput::Keyboard_AddRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471d50","symbol":"?DI_AddJoystickRef@zInput@@YAHXZ","name":"zInput::DI_AddJoystickRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471d80","symbol":"?DI_ReleaseJoystickRef@zInput@@YAHXZ","name":"zInput::DI_ReleaseJoystickRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471da0","symbol":"?Mouse_AddRef@zInput@@YAHXZ","name":"zInput::Mouse_AddRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x471dd0","symbol":"?DI_GetJoystickRefCount@zInput@@YAHXZ","name":"zInput::DI_GetJoystickRefCount","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c60","symbol":"?MouseIsUnsuspended@zInput@@YAHXZ","name":"zInput::MouseIsUnsuspended","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c70","symbol":"?JoystickIsUnsuspended@zInput@@YAHXZ","name":"zInput::JoystickIsUnsuspended","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c80","symbol":"_zInputKeyboardIsUnsuspended","name":"zInputKeyboard::IsUnsuspended","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471c90","symbol":"?MouseResumeFromSuspend@zInput@@YAXXZ","name":"zInput::MouseResumeFromSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471cb0","symbol":"?JoystickResumeFromSuspend@zInput@@YAXXZ","name":"zInput::JoystickResumeFromSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471cd0","symbol":"?KeyboardResumeFromSuspend@zInput@@YAXXZ","name":"zInput::KeyboardResumeFromSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471cf0","symbol":"?MouseSuspend@zInput@@YAXXZ","name":"zInput::MouseSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d00","symbol":"?JoystickSuspend@zInput@@YAXXZ","name":"zInput::JoystickSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d10","symbol":"?KeyboardSuspend@zInput@@YAXXZ","name":"zInput::KeyboardSuspend","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d20","symbol":"?KeyboardAddRef@zInput@@YAHXZ","name":"zInput::KeyboardAddRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d50","symbol":"?DIAddJoystickRef@zInput@@YAHXZ","name":"zInput::DIAddJoystickRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471d80","symbol":"?DIReleaseJoystickRef@zInput@@YAHXZ","name":"zInput::DIReleaseJoystickRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471da0","symbol":"?MouseAddRef@zInput@@YAHXZ","name":"zInput::MouseAddRef","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x471dd0","symbol":"?DIGetJoystickRefCount@zInput@@YAHXZ","name":"zInput::DIGetJoystickRefCount","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x471de0","symbol":"?PollActiveDevices@zInput@@YIXE@Z","name":"zInput::PollActiveDevices","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],
   "translation_unit_function_order": [
@@ -51,11 +51,11 @@
       "order_scope": "authored",
       "retail_start": "0x4719e0",
       "retail_end_exclusive": "0x471e40",
-      "predecessor": {"address":"0x471950","symbol":"?BindMapContext_Pop@zInput@@YAXXZ","name":"zInput::PopBindMapContextOverlay","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "predecessor": {"address":"0x471950","symbol":"?BindMapContextPop@zInput@@YAXXZ","name":"zInput::PopBindMapContextOverlay","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": [
         "0x471a20","0x471ab0","0x471ae0","0x471b20","0x471b50","0x471c10","0x471c50","0x471c60","0x471c70","0x471c80","0x471c90","0x471cb0","0x471cd0","0x471cf0","0x471d00","0x471d10","0x471d20","0x471d50","0x471d80","0x471da0","0x471dd0","0x471de0"
       ],
-      "successor": {"address":"0x471e40","symbol":"?DI_InitJoystickDevice@zInput@@YIHPAUHWND__@@@Z","name":"zInput::DI_InitJoystickDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x471e40","symbol":"?DIInitJoystickDevice@zInput@@YIHPAUHWND__@@@Z","name":"zInput::DIInitJoystickDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

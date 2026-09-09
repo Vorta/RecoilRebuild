@@ -1,6 +1,6 @@
 {
   "name": "zvideo_dd_image_populate_surface_from_heap_pixels",
-  "description": "VC verification target for zVideo_dd::Image_PopulateSurfaceFromHeapPixels.",
+  "description": "VC verification target for zVideo_dd::ImagePopulateSurfaceFromHeapPixels.",
   "source_filename": "zVideo.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4a8500",
-      "symbol": "?Image_PopulateSurfaceFromHeapPixels@zVideo_dd@@YIHPAUzVidImagePartial@@@Z",
-      "name": "zVideo_dd::Image_PopulateSurfaceFromHeapPixels"
+      "symbol": "?ImagePopulateSurfaceFromHeapPixels@zVideo_dd@@YIHPAUzVidImagePartial@@@Z",
+      "name": "zVideo_dd::ImagePopulateSurfaceFromHeapPixels"
     }
   ]
 }

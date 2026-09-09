@@ -1,6 +1,6 @@
 {
   "name": "zinput_keyboard_wait_for_any_key_press",
-  "description": "zInput::Keyboard_WaitForAnyKeyPress function and keyboard wait-event globals.",
+  "description": "zInput::KeyboardWaitForAnyKeyPress function and keyboard wait-event globals.",
   "source_filename": "zin_kbd.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
@@ -24,8 +24,8 @@
   "functions": [
     {
       "address": "0x46fa10",
-      "symbol": "?Keyboard_WaitForAnyKeyPress@zInput@@YIHH@Z",
-      "name": "zInput::Keyboard_WaitForAnyKeyPress"
+      "symbol": "?KeyboardWaitForAnyKeyPress@zInput@@YIHH@Z",
+      "name": "zInput::KeyboardWaitForAnyKeyPress"
     }
   ],
   "data_symbols": [

@@ -128,7 +128,7 @@ const int kDiInputLost = (int)(0x8007001e);
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-initjoystickdevice
- * @recoil-artifact defines .text recoil:function:0x471e40: zInput::DI_InitJoystickDevice.
+ * @recoil-artifact defines .text recoil:function:0x471e40: zInput::DIInitJoystickDevice.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Enumerate and configure the DirectInput joystick device, cache
  * capabilities, apply startup axis ranges, acquire the device, and mark it initialized.
@@ -138,7 +138,7 @@ const int kDiInputLost = (int)(0x8007001e);
  * zInput_GlobalState aggregate, chooses cooperative flags from force-feedback
  * support, applies four-axis startup ranges/deadzones, and returns 1 on success.
  */
-int __fastcall DI_InitJoystickDevice(
+int __fastcall DIInitJoystickDevice(
     HWND hwnd
 ) {
     if (g_zInput_GlobalState == 0) {
@@ -146,12 +146,7 @@ int __fastcall DI_InitJoystickDevice(
     }
 
     g_zInput_JoystickDevice = 0;
-    g_zInput_GlobalState->EnumDevices(
-        4,
-        DI_EnumDevicesCallback_SelectFirstJoystick,
-        0,
-        1
-    );
+    g_zInput_GlobalState->EnumDevices(4, DIEnumDevicesCallbackSelectFirstJoystick, 0, 1);
 
     DIDevice *joystickDevice = g_zInput_JoystickDevice;
     if (joystickDevice == 0) {
@@ -160,12 +155,8 @@ int __fastcall DI_InitJoystickDevice(
 
     DIDeviceCaps caps;
     caps.dwSize = 0x2c;
-    joystickDevice->SetDataFormat(
-        &c_dfDIJoystick
-    );
-    joystickDevice->GetCapabilities(
-        (LPDIDEVCAPS)(&caps)
-    );
+    joystickDevice->SetDataFormat(&c_dfDIJoystick);
+    joystickDevice->GetCapabilities((LPDIDEVCAPS)(&caps));
 
     g_zInput_JoystickAxisCount = caps.dwAxes;
     g_zInput_JoystickCaps_ForceFeedback = caps.dwFlags & 0x100;
@@ -173,17 +164,10 @@ int __fastcall DI_InitJoystickDevice(
     g_zInput_JoystickCaps_FFFade = caps.dwFlags & 0x400;
 
     const unsigned int coopFlags = g_zInput_JoystickCaps_ForceFeedback != 0 ? 5U : 9U;
-    joystickDevice->SetCooperativeLevel(
-        hwnd,
-        coopFlags
-    );
+    joystickDevice->SetCooperativeLevel(hwnd, coopFlags);
 
     JoystickAxisConfig axisCfg;
-    memset(
-        &axisCfg,
-        0,
-        sizeof(axisCfg)
-    );
+    memset(&axisCfg, 0, sizeof(axisCfg));
     axisCfg.axes[0].lMin = -1000;
     axisCfg.axes[0].lMax = 1000;
     axisCfg.axes[1].lMin = -1000;
@@ -196,47 +180,40 @@ int __fastcall DI_InitJoystickDevice(
     axisCfg.axes[1].deadzone = 1000;
     axisCfg.axes[2].deadzone = 0;
     axisCfg.axes[3].deadzone = 2500;
-    DI_ApplyAxisConfig(&axisCfg);
-    DI_AcquireJoystickDevice();
+    DIApplyAxisConfig(&axisCfg);
+    DIAcquireJoystickDevice();
     g_zInput_JoystickInitialized = 1;
     return 1;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-enumdevicescallback-selectfirstjoystick
- * @recoil-artifact defines .text recoil:function:0x471f60: zInput::DI_EnumDevicesCallback_SelectFirstJoystick.
+ * @recoil-artifact defines .text recoil:function:0x471f60: zInput::DIEnumDevicesCallbackSelectFirstJoystick.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Create the first enumerated joystick device and store the upgraded
  * IDirectInputDevice2A pointer for zInput joystick setup.
  */
-int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
+int __stdcall DIEnumDevicesCallbackSelectFirstJoystick(
     const DIDeviceInstance *instance,
     void *
 ) {
     LPDIRECTINPUTDEVICEA baseDevice;
-    const int hr = g_zInput_GlobalState->CreateDevice(
-        instance->guidInstance,
-        &baseDevice,
-        0
-    );
+    const int hr = g_zInput_GlobalState->CreateDevice(instance->guidInstance, &baseDevice, 0);
     if (hr != 0) {
         return 1;
     }
 
-    baseDevice->QueryInterface(
-        IID_IDirectInputDevice2A,
-        (void **)(&g_zInput_JoystickDevice)
-    );
+    baseDevice->QueryInterface(IID_IDirectInputDevice2A, (void **)(&g_zInput_JoystickDevice));
     baseDevice->Release();
     return 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-acquirejoystickdevice
- * @recoil-artifact defines .text recoil:function:0x471fb0: zInput::DI_AcquireJoystickDevice.
+ * @recoil-artifact defines .text recoil:function:0x471fb0: zInput::DIAcquireJoystickDevice.
  * Purpose: Acquire the DirectInput joystick device when one is available.
  */
-int __cdecl DI_AcquireJoystickDevice() {
+int __cdecl DIAcquireJoystickDevice() {
     if (g_zInput_JoystickDevice != 0) {
         const int result = g_zInput_JoystickDevice->Acquire();
         const int success = (result == 0);
@@ -247,7 +224,7 @@ int __cdecl DI_AcquireJoystickDevice() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-applyaxisconfig
- * @recoil-artifact defines .text recoil:function:0x471fd0: zInput::DI_ApplyAxisConfig.
+ * @recoil-artifact defines .text recoil:function:0x471fd0: zInput::DIApplyAxisConfig.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply the recovered four-axis joystick range and deadzone
  * configuration to the active DirectInput joystick device.
@@ -256,7 +233,7 @@ int __cdecl DI_AcquireJoystickDevice() {
  * sequence for X/Y and conditionally for Z/Rz; keeping the sequence in this
  * function avoids a helper with no standalone retail body.
  */
-int __fastcall DI_ApplyAxisConfig(
+int __fastcall DIApplyAxisConfig(
     JoystickAxisConfig *axisCfg
 ) {
     if (axisCfg == 0) {
@@ -265,82 +242,38 @@ int __fastcall DI_ApplyAxisConfig(
 
     int result = 1;
     JoystickAxisConfigEntry &axisX = axisCfg->axes[0];
-    if (DI_SetAxisRange(
-        DIJOFS_X,
-        axisX.lMin,
-        axisX.lMax
-    ) < 0) {
-        DI_GetAxisRange(
-            DIJOFS_X,
-            &axisX.lMin,
-            &axisX.lMax
-        );
+    if (DISetAxisRange(DIJOFS_X, axisX.lMin, axisX.lMax) < 0) {
+        DIGetAxisRange(DIJOFS_X, &axisX.lMin, &axisX.lMax);
     }
     axisX.midpoint = (float)(axisX.lMin + axisX.lMax) * 0.5f;
     axisX.normScale = 2.0f / (float)(axisX.lMax - axisX.lMin);
-    result &= DI_SetAxisDeadzone(
-        DIJOFS_X,
-        axisX.deadzone
-    ) >= 0 ? 1 : 0;
+    result &= DISetAxisDeadzone(DIJOFS_X, axisX.deadzone) >= 0 ? 1 : 0;
 
     JoystickAxisConfigEntry &axisY = axisCfg->axes[1];
-    if (DI_SetAxisRange(
-        DIJOFS_Y,
-        axisY.lMin,
-        axisY.lMax
-    ) < 0) {
-        DI_GetAxisRange(
-            DIJOFS_Y,
-            &axisY.lMin,
-            &axisY.lMax
-        );
+    if (DISetAxisRange(DIJOFS_Y, axisY.lMin, axisY.lMax) < 0) {
+        DIGetAxisRange(DIJOFS_Y, &axisY.lMin, &axisY.lMax);
     }
     axisY.midpoint = (float)(axisY.lMin + axisY.lMax) * 0.5f;
     axisY.normScale = 2.0f / (float)(axisY.lMax - axisY.lMin);
-    result &= DI_SetAxisDeadzone(
-        DIJOFS_Y,
-        axisY.deadzone
-    ) >= 0 ? 1 : 0;
+    result &= DISetAxisDeadzone(DIJOFS_Y, axisY.deadzone) >= 0 ? 1 : 0;
 
     if (g_zInput_JoystickAxisCount > 2) {
         JoystickAxisConfigEntry &axisZ = axisCfg->axes[2];
-        if (DI_SetAxisRange(
-            DIJOFS_Z,
-            axisZ.lMin,
-            axisZ.lMax
-        ) < 0) {
-            DI_GetAxisRange(
-                DIJOFS_Z,
-                &axisZ.lMin,
-                &axisZ.lMax
-            );
+        if (DISetAxisRange(DIJOFS_Z, axisZ.lMin, axisZ.lMax) < 0) {
+            DIGetAxisRange(DIJOFS_Z, &axisZ.lMin, &axisZ.lMax);
         }
         axisZ.midpoint = (float)(axisZ.lMin + axisZ.lMax) * 0.5f;
         axisZ.normScale = 2.0f / (float)(axisZ.lMax - axisZ.lMin);
-        result &= DI_SetAxisDeadzone(
-            DIJOFS_Z,
-            axisZ.deadzone
-        ) >= 0 ? 1 : 0;
+        result &= DISetAxisDeadzone(DIJOFS_Z, axisZ.deadzone) >= 0 ? 1 : 0;
     }
     if (g_zInput_JoystickAxisCount > 3) {
         JoystickAxisConfigEntry &axisRz = axisCfg->axes[3];
-        if (DI_SetAxisRange(
-            DIJOFS_RZ,
-            axisRz.lMin,
-            axisRz.lMax
-        ) < 0) {
-            DI_GetAxisRange(
-                DIJOFS_RZ,
-                &axisRz.lMin,
-                &axisRz.lMax
-            );
+        if (DISetAxisRange(DIJOFS_RZ, axisRz.lMin, axisRz.lMax) < 0) {
+            DIGetAxisRange(DIJOFS_RZ, &axisRz.lMin, &axisRz.lMax);
         }
         axisRz.midpoint = (float)(axisRz.lMin + axisRz.lMax) * 0.5f;
         axisRz.normScale = 2.0f / (float)(axisRz.lMax - axisRz.lMin);
-        result &= DI_SetAxisDeadzone(
-            DIJOFS_RZ,
-            axisRz.deadzone
-        ) >= 0 ? 1 : 0;
+        result &= DISetAxisDeadzone(DIJOFS_RZ, axisRz.deadzone) >= 0 ? 1 : 0;
     }
 
     g_zInput_JoystickAxisConfig = *axisCfg;
@@ -349,11 +282,11 @@ int __fastcall DI_ApplyAxisConfig(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-setaxisdeadzone
- * @recoil-artifact defines .text recoil:function:0x4721a0: zInput::DI_SetAxisDeadzone.
+ * @recoil-artifact defines .text recoil:function:0x4721a0: zInput::DISetAxisDeadzone.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply one DirectInput axis deadzone property by object offset.
  */
-int __fastcall DI_SetAxisDeadzone(
+int __fastcall DISetAxisDeadzone(
     int axisOffset,
     int deadzone
 ) {
@@ -370,19 +303,16 @@ int __fastcall DI_SetAxisDeadzone(
     prop.dwObj = (unsigned int)(axisOffset);
     prop.dwHow = 1;
     prop.dwData = (unsigned int)(deadzone);
-    return g_zInput_JoystickDevice->SetProperty(
-        DIPROP_DEADZONE,
-        (LPCDIPROPHEADER)(&prop)
-    );
+    return g_zInput_JoystickDevice->SetProperty(DIPROP_DEADZONE, (LPCDIPROPHEADER)(&prop));
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-setaxisrange
- * @recoil-artifact defines .text recoil:function:0x4721e0: zInput::DI_SetAxisRange.
+ * @recoil-artifact defines .text recoil:function:0x4721e0: zInput::DISetAxisRange.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply one DirectInput axis range property by object offset.
  */
-int __fastcall DI_SetAxisRange(
+int __fastcall DISetAxisRange(
     int axisOffset,
     int rangeMin,
     int rangeMax
@@ -402,19 +332,16 @@ int __fastcall DI_SetAxisRange(
     prop.dwHow = 1;
     prop.lMin = rangeMin;
     prop.lMax = rangeMax;
-    return g_zInput_JoystickDevice->SetProperty(
-        DIPROP_RANGE,
-        (LPCDIPROPHEADER)(&prop)
-    );
+    return g_zInput_JoystickDevice->SetProperty(DIPROP_RANGE, (LPCDIPROPHEADER)(&prop));
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getaxisrange
- * @recoil-artifact defines .text recoil:function:0x472230: zInput::DI_GetAxisRange.
+ * @recoil-artifact defines .text recoil:function:0x472230: zInput::DIGetAxisRange.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Read one DirectInput axis range property by object offset.
  */
-int __fastcall DI_GetAxisRange(
+int __fastcall DIGetAxisRange(
     int axisOffset,
     int *pOutMin,
     int *pOutMax
@@ -433,10 +360,7 @@ int __fastcall DI_GetAxisRange(
     prop.dwObj = (unsigned int)(axisOffset);
     prop.dwHow = 1;
     const int result =
-        g_zInput_JoystickDevice->GetProperty(
-            DIPROP_RANGE,
-            (LPDIPROPHEADER)(&prop)
-        );
+        g_zInput_JoystickDevice->GetProperty(DIPROP_RANGE, (LPDIPROPHEADER)(&prop));
     *pOutMin = prop.lMin;
     *pOutMax = prop.lMax;
     return result;
@@ -444,7 +368,7 @@ int __fastcall DI_GetAxisRange(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.joystick-shutdowndevice
- * @recoil-artifact defines .text recoil:function:0x472280: zInput::Joystick_ShutdownDevice.
+ * @recoil-artifact defines .text recoil:function:0x472280: zInput::JoystickShutdownDevice.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: unacquire and release the joystick DirectInput device during zInput
  * shutdown.
@@ -453,7 +377,7 @@ int __fastcall DI_GetAxisRange(
  * Release through the DirectInput device vtable, clears the device pointer,
  * and returns 1.
  */
-int __cdecl Joystick_ShutdownDevice() {
+int __cdecl JoystickShutdownDevice() {
     DIDevice *const joystick = g_zInput_JoystickDevice;
     if (joystick != 0) {
         joystick->Unacquire();
@@ -466,23 +390,23 @@ int __cdecl Joystick_ShutdownDevice() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-isjoystickdeviceready
- * @recoil-artifact defines .text recoil:function:0x4722b0: zInput::DI_IsJoystickDeviceReady.
+ * @recoil-artifact defines .text recoil:function:0x4722b0: zInput::DIIsJoystickDeviceReady.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Report whether joystick input is initialized and has an active
  * DirectInput device pointer.
  */
-int __cdecl DI_IsJoystickDeviceReady() {
+int __cdecl DIIsJoystickDeviceReady() {
     return g_zInput_JoystickInitialized == 1 ? 1 : 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-polljoystickstate
- * @recoil-artifact defines .text recoil:function:0x4722c0: zInput::DI_PollJoystickState.
+ * @recoil-artifact defines .text recoil:function:0x4722c0: zInput::DIPollJoystickState.
  *
  * Purpose: poll the DirectInput joystick, normalize absent axes, and update
  * the current/previous joystick state snapshots.
  */
-DIJOYSTATE2 *__fastcall DI_PollJoystickState(
+DIJOYSTATE2 *__fastcall DIPollJoystickState(
     unsigned char dispatchCallbacks
 ) {
     if (g_zInput_JoystickInitialized == 0) {
@@ -491,10 +415,7 @@ DIJOYSTATE2 *__fastcall DI_PollJoystickState(
 
     DIDevice *device = g_zInput_JoystickDevice;
     device->Poll();
-    const int result = device->GetDeviceState(
-        sizeof(DIJOYSTATE2),
-        &g_zInput_JoystickRawDIState
-    );
+    const int result = device->GetDeviceState(sizeof(DIJOYSTATE2), &g_zInput_JoystickRawDIState);
 
     if (g_zInput_JoystickAxisCount < 3) {
         g_zInput_JoystickRawDIState.lZ = 0;
@@ -510,7 +431,7 @@ DIJOYSTATE2 *__fastcall DI_PollJoystickState(
     }
 
     if (result == kDiInputLost) {
-        DI_AcquireJoystickDevice();
+        DIAcquireJoystickDevice();
         return 0;
     }
     if (result != kDiOk) {
@@ -523,26 +444,26 @@ DIJOYSTATE2 *__fastcall DI_PollJoystickState(
         g_zInput_BindMap_Current->DispatchJoystickButtonCallbacks();
     }
 
-    return DI_GetCurrentState();
+    return DIGetCurrentState();
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getcurrentstate
- * @recoil-artifact defines .text recoil:function:0x472390: zInput::DI_GetCurrentState.
+ * @recoil-artifact defines .text recoil:function:0x472390: zInput::DIGetCurrentState.
  *
  * Purpose: return the current DirectInput joystick state snapshot.
  */
-DIJOYSTATE2 *__cdecl DI_GetCurrentState() {
+DIJOYSTATE2 *__cdecl DIGetCurrentState() {
     return &g_zInput_JoystickCurrentState;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getbuttontransitionstate
- * @recoil-artifact defines .text recoil:function:0x4723a0: zInput::DI_GetButtonTransitionState.
+ * @recoil-artifact defines .text recoil:function:0x4723a0: zInput::DIGetButtonTransitionState.
  * Purpose: Return the pressed, held, released, or idle transition state for a
  * 1-based joystick button slot from the paired DirectInput state snapshots.
  */
-int __fastcall DI_GetButtonTransitionState(
+int __fastcall DIGetButtonTransitionState(
     int buttonIndex
 ) {
     if (g_zInput_JoystickCurrentState.rgbButtons[buttonIndex - 1] != 0) {
@@ -554,26 +475,26 @@ int __fastcall DI_GetButtonTransitionState(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-waitforbuttonpress
- * @recoil-artifact defines .text recoil:function:0x4723d0: zInput::DI_WaitForButtonPress.
+ * @recoil-artifact defines .text recoil:function:0x4723d0: zInput::DIWaitForButtonPress.
  * Purpose: Poll joystick state until a newly pressed button is found or the
  * caller requests a single scan.
  */
-int __fastcall DI_WaitForButtonPress(
+int __fastcall DIWaitForButtonPress(
     int loopUntilPressed
 ) {
     int result = 0;
     do {
-        DI_PollJoystickState(1);
+        DIPollJoystickState(1);
         {
             for (int button = 1; button < 0x0b; ++button) {
-                if (DI_GetButtonTransitionState(button) == 1) {
+                if (DIGetButtonTransitionState(button) == 1) {
                     result = button;
                     break;
                 }
             }
         }
 
-        DI_ResetTransitionState();
+        DIResetTransitionState();
     } while (result == 0 && loopUntilPressed != 0);
 
     return result;
@@ -581,7 +502,7 @@ int __fastcall DI_WaitForButtonPress(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-resettransitionstate
- * @recoil-artifact defines .text recoil:function:0x472410: zInput::DI_ResetTransitionState.
+ * @recoil-artifact defines .text recoil:function:0x472410: zInput::DIResetTransitionState.
  *
  * Purpose: clear joystick button transition bytes and reset POV transition
  * state while preserving the untouched first button byte.
@@ -590,7 +511,7 @@ int __fastcall DI_WaitForButtonPress(
  * zeroes current/previous rgbButtons[1..10], and writes 0xffff to
  * current/previous rgdwPOV[0..3] across the two DIJOYSTATE2 BSS globals.
  */
-void __cdecl DI_ResetTransitionState() {
+void __cdecl DIResetTransitionState() {
     if (g_zInput_JoystickInitialized == 0) {
         return;
     }
@@ -609,14 +530,14 @@ void __cdecl DI_ResetTransitionState() {
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.zinput-di-createforcefeedbackeffect
- * @recoil-artifact defines .text recoil:function:0x472450: zInput_DI_CreateForceFeedbackEffect.
+ * @recoil-artifact defines .text recoil:function:0x472450: zInputDICreateForceFeedbackEffect.
  * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * The retail order shelf places this body between joystick transition reset
  * and the adjacent force-feedback capability query; no separate zin_ff.cpp
  * contribution is proven.
  * Purpose: create a DirectInput force-feedback effect on the active joystick.
  */
-zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
+zInput_DiEffect *__fastcall zInputDICreateForceFeedbackEffect(
     const GUID *rguidEffect,
     const DIEFFECT *effect
 ) {
@@ -625,35 +546,30 @@ zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     }
 
     zInput_DiEffect *outEffect = 0;
-    const int result = g_zInput_JoystickDevice->CreateEffect(
-        *rguidEffect,
-        effect,
-        &outEffect,
-        0
-    );
+    const int result = g_zInput_JoystickDevice->CreateEffect(*rguidEffect, effect, &outEffect, 0);
     return result < 0 ? 0 : outEffect;
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.zinput-di-hasforcefeedback
- * @recoil-artifact defines .text recoil:function:0x472480: zInput_DI_HasForceFeedback.
+ * @recoil-artifact defines .text recoil:function:0x472480: zInputDIHasForceFeedback.
  * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * No separate zin_ff.cpp contribution is proven by the retail order shelf.
  * Purpose: return the detected DirectInput joystick force-feedback capability.
  */
-int __cdecl zInput_DI_HasForceFeedback() {
+int __cdecl zInputDIHasForceFeedback() {
     return g_zInput_JoystickCaps_ForceFeedback;
 }
 namespace zInput {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-reporterror
- * @recoil-artifact defines .text recoil:function:0x472490: zInput::DI_ReportError.
+ * @recoil-artifact defines .text recoil:function:0x472490: zInput::DIReportError.
  * Binary Ninja shows the original zin_joystick.cpp routine inlining the
  * ordered DirectInput HRESULT compare tree before the shared sprintf/report
  * tail; there is no standalone retail error-name helper.
  * Purpose: Report failing DirectInput HRESULTs through the legacy zError path.
  */
-RECOIL_NO_GS int __fastcall DI_ReportError(
+RECOIL_NO_GS int __fastcall DIReportError(
     int hresult,
     const char *sourceFile,
     int sourceLine
@@ -661,124 +577,64 @@ RECOIL_NO_GS int __fastcall DI_ReportError(
     char errorNameBuffer[0x100];
     switch (hresult) {
     case (int)(0x80004005):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_Generic
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_Generic);
         break;
     case (int)(0x80004002):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_NoInterface
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_NoInterface);
         break;
     case (int)(0x80004001):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_Unsupported
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_Unsupported);
         break;
     case (int)(0x80040110):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_NoAggregation
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_NoAggregation);
         break;
     case (int)(0x80040154):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_DeviceNotReg
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_DeviceNotReg);
         break;
     case (int)(0x80070002):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_ObjectNotFound
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_ObjectNotFound);
         break;
     case (int)(0x80070005):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_ReadOnly
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_ReadOnly);
         break;
     case (int)(0x8007000c):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_NotAcquired
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_NotAcquired);
         break;
     case (int)(0x8007000e):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_OutOfMemory
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_OutOfMemory);
         break;
     case (int)(0x80070015):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_NotInitialized
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_NotInitialized);
         break;
     case (int)(0x8007001e):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_InputLost
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_InputLost);
         break;
     case (int)(0x80070057):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_InvalidParam
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_InvalidParam);
         break;
     case (int)(0x80070077):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_BadDriverVersion
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_BadDriverVersion);
         break;
     case (int)(0x800700aa):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_Acquired
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_Acquired);
         break;
     case (int)(0x8007047e):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_OldDirectInputVersion
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_OldDirectInputVersion);
         break;
     case (int)(0x80070481):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_BetaDirectInputVersion
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_BetaDirectInputVersion);
         break;
     case kDiOk:
         return 1;
     case (int)(0x800704df):
-        sprintf(
-            errorNameBuffer,
-            g_zInput_DiErrorName_AlreadyInitialized
-        );
+        sprintf(errorNameBuffer, g_zInput_DiErrorName_AlreadyInitialized);
         break;
     default:
-        sprintf(
-            errorNameBuffer,
-            "Unknown Error"
-        );
+        sprintf(errorNameBuffer, "Unknown Error");
         break;
     }
 
-    zError::ReportOld(
-        0x800,
-        sourceFile,
-        sourceLine,
-        g_zInput_DirectInputErrorFmt,
-        errorNameBuffer
-    );
+    zError::ReportOld(0x800, sourceFile, sourceLine, g_zInput_DirectInputErrorFmt, errorNameBuffer);
     return 0;
 }
 

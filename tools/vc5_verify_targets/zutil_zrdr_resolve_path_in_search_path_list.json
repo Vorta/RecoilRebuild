@@ -1,6 +1,6 @@
 {
   "name": "zutil_zrdr_resolve_path_in_search_path_list",
-  "description": "VC verification target for zUtil_ZRDR_ResolvePathInSearchPathList.",
+  "description": "VC verification target for zRdrResolvePathInSearchPathList.",
   "source_filename": "zutl_zar.cpp",
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "include_dirs": [
@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x4a5e50",
-      "symbol": "@zUtil_ZRDR_ResolvePathInSearchPathList@8",
+      "symbol": "@zRdrResolvePathInSearchPathList@8",
       "name": "zUtil::ZRDR_ResolvePathInSearchPathList"
     }
   ],

@@ -56,13 +56,13 @@
     },
     {
       "address": "0x46d810",
-      "symbol": "?TexDir_FindOrAppendByPath@zImage@@YIPAUzImage_TexDirEntryPartial@@PAD@Z",
-      "name": "zImage::TexDir_FindOrAppendByPath"
+      "symbol": "?TexDirFindOrAppendByPath@zImage@@YIPAUzImage_TexDirEntryPartial@@PAD@Z",
+      "name": "zImage::TexDirFindOrAppendByPath"
     },
     {
       "address": "0x46de50",
-      "symbol": "?TexDir_LoadPendingEntries@zImage@@YAHXZ",
-      "name": "zImage::TexDir_LoadPendingEntries"
+      "symbol": "?TexDirLoadPendingEntries@zImage@@YAHXZ",
+      "name": "zImage::TexDirLoadPendingEntries"
     },
     {
       "address": "0x46e250",

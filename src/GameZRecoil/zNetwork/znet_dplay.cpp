@@ -376,7 +376,7 @@ int __fastcall InitSessionRuntime(
     }
 
     if (g_zNetwork_EnumeratedSessionList == 0) {
-        g_zNetwork_EnumeratedSessionList = zArchiveList_New();
+        g_zNetwork_EnumeratedSessionList = zArchiveListNew();
     }
 
     zNetworkPlayerRecordList *playerRecordList =
@@ -395,11 +395,7 @@ int __fastcall InitSessionRuntime(
 
     g_zNetwork_ServiceProviderList = new zNetworkServiceProviderListVec;
 
-    RegisterPacketHandler(
-        1,
-        zNetwork_ApplyPkt01_PlayerColorAssignments,
-        2
-    );
+    RegisterPacketHandler(1, zNetworkApplyPkt01PlayerColorAssignments, 2);
     return 0;
 }
 
@@ -412,13 +408,10 @@ int __fastcall InitSessionRuntime(
 int __cdecl ShutdownSessionRuntime() {
     zNetwork_DPlay::CloseReleaseAndCoUninitialize(g_zNetwork_pDirectPlay4);
     g_zNetwork_SessionRuntimeInitialized = 0;
-    UnregisterPacketHandler(
-        1,
-        zNetwork_ApplyPkt01_PlayerColorAssignments
-    );
+    UnregisterPacketHandler(1, zNetworkApplyPkt01PlayerColorAssignments);
 
     ClearEnumeratedSessionList();
-    zArchiveList_Free(g_zNetwork_EnumeratedSessionList);
+    zArchiveListFree(g_zNetwork_EnumeratedSessionList);
     g_zNetwork_EnumeratedSessionList = 0;
     g_zNetwork_CurrentSessionDescCache = 0;
 
@@ -464,7 +457,7 @@ int __cdecl ShutdownSessionRuntime() {
  * reserved-data buffers.
  */
 void __cdecl ClearEnumeratedSessionList() {
-    zNetworkDPlaySessionDesc *desc = (zNetworkDPlaySessionDesc *)(zArchiveList_RemoveHead(
+    zNetworkDPlaySessionDesc *desc = (zNetworkDPlaySessionDesc *)(zArchiveListRemoveHead(
         g_zNetwork_EnumeratedSessionList
     ));
     while (desc != 0) {
@@ -472,7 +465,7 @@ void __cdecl ClearEnumeratedSessionList() {
             free((void *)(desc->dwReserved1));
         }
         free(desc);
-        desc = (zNetworkDPlaySessionDesc *)(zArchiveList_RemoveHead(
+        desc = (zNetworkDPlaySessionDesc *)(zArchiveListRemoveHead(
             g_zNetwork_EnumeratedSessionList
         ));
     }
@@ -482,13 +475,13 @@ void __cdecl ClearEnumeratedSessionList() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-getlocalplayerkey
- * @recoil-artifact defines .text recoil:function:0x489f70: zNetwork_GetLocalPlayerKey.
+ * @recoil-artifact defines .text recoil:function:0x489f70: zNetworkGetLocalPlayerKey.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zNetwork\zNetwork.cpp.
  * Purpose: Return the cached DirectPlay local-player key.
  */
-extern "C" int __cdecl zNetwork_GetLocalPlayerKey() {
+extern "C" int __cdecl zNetworkGetLocalPlayerKey() {
     return g_zNetwork_LocalPlayerKey;
 }
 
@@ -600,16 +593,12 @@ int __cdecl RefreshServiceProviderList() {
     const int hresult = directPlay->EnumConnections(
         g_zNetwork_AppGuid,
         (LPDPENUMCONNECTIONSCALLBACK)
-            zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo,
+            zNetworkDPlay::EnumConnectionsCallbackAddServiceProviderInfo,
         g_RecoilApp_hWndMain,
         0
     );
     if (hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x6b
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x6b);
     }
 
     return (int)g_zNetwork_ServiceProviderList->size();
@@ -641,10 +630,7 @@ int __fastcall InitializeConnectionFromProviderInfo(
 ) {
     const int kDPlayUserCancel = (int)(0x88770118);
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult = directPlay->InitializeConnection(
-        providerInfo->connectionData,
-        0
-    );
+    const int hresult = directPlay->InitializeConnection(providerInfo->connectionData, 0);
 
     if (hresult >= 0) {
         return 1;
@@ -654,11 +640,7 @@ int __fastcall InitializeConnectionFromProviderInfo(
         return 0;
     }
 
-    return zNetwork_DPlay_ReportError(
-        hresult,
-        g_zNetwork_SourceFile_ZnetDplayCpp,
-        0x7d
-    );
+    return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x7d);
 }
 
 /**
@@ -692,11 +674,7 @@ int __fastcall SelectServiceProviderAndInitConnection(
     }
 
     if (hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x8f
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x8f);
     }
 
     return 0;
@@ -721,11 +699,7 @@ int __cdecl EnumSessions() {
     }
 
     zNetworkDPlaySessionDesc desc;
-    memset(
-        &desc,
-        0,
-        sizeof(desc)
-    );
+    memset(&desc, 0, sizeof(desc));
     desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
     desc.guidApplication = *g_zNetwork_AppGuid;
 
@@ -733,7 +707,7 @@ int __cdecl EnumSessions() {
         (LPDPSESSIONDESC2)&desc,
         0,
         (LPDPENUMSESSIONSCALLBACK2)
-            zNetworkDPlay::EnumSessionCallback_AddSessionDescCache,
+            zNetworkDPlay::EnumSessionCallbackAddSessionDescCache,
         0,
         2
     );
@@ -742,14 +716,10 @@ int __cdecl EnumSessions() {
     }
 
     if (hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0xb3
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0xb3);
     }
 
-    return zArchiveList_Count(g_zNetwork_EnumeratedSessionList);
+    return zArchiveListCount(g_zNetwork_EnumeratedSessionList);
 }
 
 } // namespace zNetwork_DPlay
@@ -766,10 +736,7 @@ char *__fastcall GetEnumeratedSessionNameByIndex(
     int entryIndex
 ) {
     zNetworkDPlaySessionDescCache *const entry = (zNetworkDPlaySessionDescCache
-            *)(zArchiveList_Get(
-                g_zNetwork_EnumeratedSessionList,
-                entryIndex
-            ));
+            *)(zArchiveListGet(g_zNetwork_EnumeratedSessionList, entryIndex));
     if (entry == 0) {
         return 0;
     }
@@ -790,10 +757,7 @@ void __fastcall GetEnumeratedSessionPlayerCountsByIndex(
     int *maxPlayersOut
 ) {
     zNetworkDPlaySessionDescCache *const entry = (zNetworkDPlaySessionDescCache
-            *)(zArchiveList_Get(
-                g_zNetwork_EnumeratedSessionList,
-                entryIndex
-            ));
+            *)(zArchiveListGet(g_zNetwork_EnumeratedSessionList, entryIndex));
     if (entry != 0) {
         *maxPlayersOut = entry->desc.dwMaxPlayers;
         *currentPlayersOut = entry->desc.dwCurrentPlayers;
@@ -815,16 +779,12 @@ int __cdecl EnumPlayers() {
     const int hresult = directPlay->EnumPlayers(
         0,
         (LPDPENUMPLAYERSCALLBACK2)
-            zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord,
+            zNetworkDPlay::EnumPlayerCallbackAddPlayerRecord,
         0,
         0
     );
     if (hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0xd9
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0xd9);
     }
 
     return g_zNetwork_PlayerRecordList->count;
@@ -844,24 +804,14 @@ int __cdecl QueryCapsAndConfigureSendMode() {
     g_zNetwork_DPlayCaps.dwSize = sizeof(zNetworkDPlayCaps);
     const int hresult = directPlay->GetCaps((LPDPCAPS)&g_zNetwork_DPlayCaps, 1);
     if (hresult < 0) {
-        fprintf(
-            stderr,
-            g_zNetwork_GetCapabilitiesFailedMsg
-        );
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0xea
-        );
+        fprintf(stderr, g_zNetwork_GetCapabilitiesFailedMsg);
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0xea);
     }
 
     if (g_zNetwork_ActiveProviderIsTcpIp != 0) {
         const int flags = g_zNetwork_DPlayCaps.dwFlags;
         if ((flags & 0x40) == 0) {
-            fprintf(
-                stderr,
-                g_zNetwork_GuaranteedTcpIpNotSupportedMsg
-            );
+            fprintf(stderr, g_zNetwork_GuaranteedTcpIpNotSupportedMsg);
             return 0;
         }
 
@@ -900,11 +850,7 @@ int __fastcall CreateSessionFromStatusFields(
 
     zNetworkDPlaySessionDescCache *const cache =
         (zNetworkDPlaySessionDescCache *)(malloc(sizeof(zNetworkDPlaySessionDescCache)));
-    memset(
-        cache,
-        0,
-        sizeof(zNetworkDPlaySessionDescCache)
-    );
+    memset(cache, 0, sizeof(zNetworkDPlaySessionDescCache));
     cache->desc.dwFlags = 0x44;
     cache->desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
     cache->desc.guidApplication = *g_zNetwork_AppGuid;
@@ -916,20 +862,13 @@ int __fastcall CreateSessionFromStatusFields(
     cache->desc.lpszSessionNameA = _strdup(g_zNetwork_SessionNameCache);
 
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult = directPlay->Open(
-        (LPDPSESSIONDESC2)&cache->desc,
-        2
-    );
+    const int hresult = directPlay->Open((LPDPSESSIONDESC2)&cache->desc, 2);
     if (hresult == (int)(0x88770118)) {
         return 0;
     }
 
     if (hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x11e
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x11e);
     }
 
     if (zNetworkDPlay::QueryCapsAndConfigureSendMode() == 0) {
@@ -958,10 +897,7 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(
     zNetworkSessionDescStatusFields *statusFields
 ) {
     zNetworkDPlaySessionDescCache *const sessionCache = (zNetworkDPlaySessionDescCache *)
-        zArchiveList_Get(
-            g_zNetwork_EnumeratedSessionList,
-            statusFields->selectedSessionIndex
-        );
+        zArchiveListGet(g_zNetwork_EnumeratedSessionList, statusFields->selectedSessionIndex);
     g_zNetwork_CurrentSessionDescCache = sessionCache;
     if (sessionCache == 0) {
         return 0;
@@ -971,10 +907,7 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(
     sessionCache->desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
 
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int openResult = directPlay->Open(
-        (LPDPSESSIONDESC2)&sessionCache->desc,
-        1
-    );
+    const int openResult = directPlay->Open((LPDPSESSIONDESC2)&sessionCache->desc, 1);
     if (openResult < 0) {
         switch (openResult) {
         case (int)(0x80070057) :
@@ -1171,12 +1104,12 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-destroycachedlocalplayer
- * @recoil-artifact defines .text recoil:function:0x48a980: zNetwork_DPlay_DestroyCachedLocalPlayer.
+ * @recoil-artifact defines .text recoil:function:0x48a980: zNetworkDPlayDestroyCachedLocalPlayer.
  * @recoil-match byte
  *
  * Purpose: destroy the cached local DirectPlay player if one is registered.
  */
-extern "C" int __cdecl zNetwork_DPlay_DestroyCachedLocalPlayer() {
+extern "C" int __cdecl zNetworkDPlayDestroyCachedLocalPlayer() {
     zNetwork_PlayerRecord *localPlayer = g_zNetwork_LocalPlayerRecord;
     if (localPlayer == 0) {
         return 0;
@@ -1185,11 +1118,7 @@ extern "C" int __cdecl zNetwork_DPlay_DestroyCachedLocalPlayer() {
     zNetwork_DPlay4 *directPlay = g_zNetwork_pDirectPlay4;
     const int hresult = directPlay->DestroyPlayer(localPlayer->playerKey);
     if (hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x1ba
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x1ba);
     }
 
     return 1;
@@ -1209,22 +1138,14 @@ int __fastcall CreateLocalPlayerRecordAndRegister(
     zNetwork_PlayerRecord *const localPlayerRecord =
         (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
     if (localPlayerRecord != 0) {
-        strncpy(
-            localPlayerRecord->playerName,
-            g_zNetwork_DefaultPlayerName,
-            0x50
-        );
+        strncpy(localPlayerRecord->playerName, g_zNetwork_DefaultPlayerName, 0x50);
         localPlayerRecord->playerName[0x4f] = 0;
     }
 
     EnumPlayers();
     g_zNetwork_LocalPlayerRecord = localPlayerRecord;
 
-    memcpy(
-        g_zNetwork_LocalPlayerNameScratch,
-        playerName,
-        strlen(playerName) + 1
-    );
+    memcpy(g_zNetwork_LocalPlayerNameScratch, playerName, strlen(playerName) + 1);
     localPlayerRecord->playerNameInfo.lpszShortNameA = g_zNetwork_LocalPlayerNameScratch;
     localPlayerRecord->playerNameInfo.lpszLongNameA = g_zNetwork_LocalPlayerNameScratch;
     localPlayerRecord->createPlayerEventHandle = 0;
@@ -1297,11 +1218,7 @@ int __fastcall CreateLocalPlayerRecordAndRegister(
         return 0;
     }
 
-    memset(
-        &localPlayerRecord->playerCaps,
-        0,
-        sizeof(zNetworkDPlayCaps)
-    );
+    memset(&localPlayerRecord->playerCaps, 0, sizeof(zNetworkDPlayCaps));
     localPlayerRecord->playerCaps.dwSize = sizeof(zNetworkDPlayCaps);
     const int capsResult = directPlay->GetPlayerCaps(
         localPlayerRecord->playerKey,
@@ -1311,11 +1228,7 @@ int __fastcall CreateLocalPlayerRecordAndRegister(
     g_zNetwork_IsHostFlag = localPlayerRecord->playerCaps.dwFlags & 2;
     zNetworkDPlay::ReceivePendingMessages(-1);
     if (capsResult < 0) {
-        return zNetwork_DPlay_ReportError(
-            capsResult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x20e
-        );
+        return zNetworkDPlayReportError(capsResult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x20e);
     }
 
     zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
@@ -1350,13 +1263,13 @@ int __fastcall CreateLocalPlayerRecordAndRegister(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendunreliable
- * @recoil-artifact defines .text recoil:function:0x48acf0: zNetwork_DPlay_SendUnreliable.
+ * @recoil-artifact defines .text recoil:function:0x48acf0: zNetworkDPlaySendUnreliable.
  * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zNetwork/znet_dplay.cpp.
  * Purpose: send a packet through DirectPlay without reliable delivery flags.
  */
-extern "C" int __fastcall zNetwork_DPlay_SendUnreliable(
+extern "C" int __fastcall zNetworkDPlaySendUnreliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 ) {
@@ -1368,11 +1281,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendUnreliable(
         packetSizeBytes
     );
     if (hresult != kDPlayPending && hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x226
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x226);
     }
 
     return 0;
@@ -1380,13 +1289,13 @@ extern "C" int __fastcall zNetwork_DPlay_SendUnreliable(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendreliable
- * @recoil-artifact defines .text recoil:function:0x48ad30: zNetwork_DPlay_SendReliable.
+ * @recoil-artifact defines .text recoil:function:0x48ad30: zNetworkDPlaySendReliable.
  * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: send a packet through DirectPlay with reliable delivery.
  */
-extern "C" int __fastcall zNetwork_DPlay_SendReliable(
+extern "C" int __fastcall zNetworkDPlaySendReliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 ) {
@@ -1398,11 +1307,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendReliable(
         packetSizeBytes
     );
     if (hresult != 0 && hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x234
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x234);
     }
 
     return 0;
@@ -1410,12 +1315,12 @@ extern "C" int __fastcall zNetwork_DPlay_SendReliable(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendexunreliabletracked
- * @recoil-artifact defines .text recoil:function:0x48ad70: zNetwork_DPlay_SendExUnreliableTracked.
+ * @recoil-artifact defines .text recoil:function:0x48ad70: zNetworkDPlaySendExUnreliableTracked.
  * Retail literal-backed physical source block: GameZRecoil/zNetwork/znet_dplay.cpp.
  * Purpose: send an asynchronous unreliable packet and track the DirectPlay
  * message handle for packet type 6.
  */
-extern "C" int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
+extern "C" int __fastcall zNetworkDPlaySendExUnreliableTracked(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 ) {
@@ -1423,10 +1328,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
     if (packet->packetType == 6) {
         flags = 0x200;
         if (g_zNetwork_LastSendExCompleted == 0) {
-            g_zNetwork_pDirectPlay4->CancelMessage(
-                g_zNetwork_LastSendExHandle,
-                0
-            );
+            g_zNetwork_pDirectPlay4->CancelMessage(g_zNetwork_LastSendExHandle, 0);
         } else {
             g_zNetwork_LastSendExCompleted = 0;
         }
@@ -1444,11 +1346,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
         (LPDWORD)&g_zNetwork_LastSendExHandle
     );
     if (hresult != kDPlayPending && hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x25a
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x25a);
     }
 
     return 0;
@@ -1456,11 +1354,11 @@ extern "C" int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendexreliable
- * @recoil-artifact defines .text recoil:function:0x48ae10: zNetwork_DPlay_SendExReliable.
+ * @recoil-artifact defines .text recoil:function:0x48ae10: zNetworkDPlaySendExReliable.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: send an asynchronous reliable packet through DirectPlay.
  */
-extern "C" int __fastcall zNetwork_DPlay_SendExReliable(
+extern "C" int __fastcall zNetworkDPlaySendExReliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 ) {
@@ -1477,11 +1375,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendExReliable(
         (LPDWORD)&asyncHandle
     );
     if (hresult != kDPlayPending && hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x26f
-        );
+        return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x26f);
     }
 
     return 0;
@@ -1521,10 +1415,7 @@ int __fastcall ReceivePendingMessages(
 
         if (hresult == kDPlayBufferTooSmall) {
             const unsigned int oldCapacity = g_zNetwork_ReceiveBufferCapacity;
-            g_zNetwork_ReceiveBuffer = realloc(
-                g_zNetwork_ReceiveBuffer,
-                receiveBufferCapacity
-            );
+            g_zNetwork_ReceiveBuffer = realloc(g_zNetwork_ReceiveBuffer, receiveBufferCapacity);
             zError::ReportOld(
                 0x100,
                 g_zNetwork_SourceFile_ZnetDplayCpp,
@@ -1578,16 +1469,12 @@ int __fastcall GetPlayerNameByKey(
     char *destination,
     unsigned int maxCount
 ) {
-    zNetwork_PlayerRecord *const playerRecord = zNetwork_FindPlayerRecordByKey(playerKey);
+    zNetwork_PlayerRecord *const playerRecord = zNetworkFindPlayerRecordByKey(playerKey);
     if (playerRecord == 0 || playerRecord->playerName == 0) {
         return 0;
     }
 
-    strncpy(
-        destination,
-        playerRecord->playerName,
-        maxCount
-    );
+    strncpy(destination, playerRecord->playerName, maxCount);
     return 1;
 }
 
@@ -1615,11 +1502,7 @@ int __fastcall PumpIncomingMessages(
         zNetwork_PlayerRecord *playerRecord =
             (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
         if (playerRecord != 0) {
-            strncpy(
-                playerRecord->playerName,
-                g_zNetwork_DefaultPlayerName,
-                0x50
-            );
+            strncpy(playerRecord->playerName, g_zNetwork_DefaultPlayerName, 0x50);
             playerRecord->playerName[0x4f] = 0;
         }
 
@@ -1628,14 +1511,8 @@ int __fastcall PumpIncomingMessages(
         playerRecord->playerNameInfo.dwFlags = systemMessage->fields.nameShortOrAsyncHandle;
         playerRecord->playerNameInfo.lpszShortNameA = systemMessage->fields.nameLong;
         playerRecord->playerNameInfo.lpszLongNameA = systemMessage->fields.nameDisplay;
-        strcpy(
-            playerRecord->playerName,
-            playerRecord->playerNameInfo.lpszLongNameA
-        );
-        strcpy(
-            playerRecord->altName,
-            playerRecord->playerNameInfo.lpszShortNameA
-        );
+        strcpy(playerRecord->playerName, playerRecord->playerNameInfo.lpszLongNameA);
+        strcpy(playerRecord->altName, playerRecord->playerNameInfo.lpszShortNameA);
         playerRecord->colorIndex = 0;
 
         zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
@@ -1654,10 +1531,7 @@ int __fastcall PumpIncomingMessages(
         packet.packetType = 2;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
-        zNetwork_DPlay::DispatchPacketToHandlers(
-            systemMessage->fields.playerId,
-            &packet
-        );
+        zNetwork_DPlay::DispatchPacketToHandlers(systemMessage->fields.playerId, &packet);
         if (zNetwork::IsHost() != 0) {
             zNetwork::HostSendPlayerColorAssignmentsPacket(systemMessage->fields.playerId);
         }
@@ -1670,10 +1544,7 @@ int __fastcall PumpIncomingMessages(
         packet.packetType = 3;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
-        zNetwork_DPlay::DispatchPacketToHandlers(
-            systemMessage->fields.playerId,
-            &packet
-        );
+        zNetwork_DPlay::DispatchPacketToHandlers(systemMessage->fields.playerId, &packet);
         zNetwork::RemovePlayerRecordByKey(systemMessage->fields.playerId);
         --g_zNetworkCurrentPlayerCountCached;
         break;
@@ -1696,10 +1567,7 @@ int __fastcall PumpIncomingMessages(
         packet.packetType = 4;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
-        zNetwork_DPlay::DispatchPacketToHandlers(
-            systemMessage->fields.playerId,
-            &packet
-        );
+        zNetwork_DPlay::DispatchPacketToHandlers(systemMessage->fields.playerId, &packet);
         break;
     }
 
@@ -1708,10 +1576,7 @@ int __fastcall PumpIncomingMessages(
         packet.packetType = 5;
         packet.packetSizeBytes = 8;
         packet.payloadDword0 = 0;
-        zNetwork_DPlay::DispatchPacketToHandlers(
-            systemMessage->fields.playerId,
-            &packet
-        );
+        zNetwork_DPlay::DispatchPacketToHandlers(systemMessage->fields.playerId, &packet);
         break;
     }
 
@@ -1743,11 +1608,11 @@ int __fastcall PumpIncomingMessages(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumconnectionscallback-addserviceproviderinfo
- * @recoil-artifact defines .text recoil:function:0x48b3a0: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo.
+ * @recoil-artifact defines .text recoil:function:0x48b3a0: zNetworkDPlay::EnumConnectionsCallbackAddServiceProviderInfo.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: copy an enumerated DirectPlay provider record into the provider list.
  */
-int __stdcall EnumConnectionsCallback_AddServiceProviderInfo(
+int __stdcall EnumConnectionsCallbackAddServiceProviderInfo(
     const GUID *serviceProviderGuid,
     void *connectionData,
     DWORD connectionDataSize,
@@ -1770,10 +1635,10 @@ int __stdcall EnumConnectionsCallback_AddServiceProviderInfo(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumsessioncallback-addsessiondesccache
- * @recoil-artifact defines .text recoil:function:0x48b5e0: zNetworkDPlay::EnumSessionCallback_AddSessionDescCache.
+ * @recoil-artifact defines .text recoil:function:0x48b5e0: zNetworkDPlay::EnumSessionCallbackAddSessionDescCache.
  * Purpose: cache a DirectPlay session descriptor during session enumeration.
  */
-int __stdcall EnumSessionCallback_AddSessionDescCache(
+int __stdcall EnumSessionCallbackAddSessionDescCache(
     const zNetworkDPlaySessionDesc *sessionDesc,
     DWORD *,
     DWORD,
@@ -1785,42 +1650,31 @@ int __stdcall EnumSessionCallback_AddSessionDescCache(
 
     zNetworkDPlaySessionDescCache *const cache =
         (zNetworkDPlaySessionDescCache *)(malloc(sizeof(zNetworkDPlaySessionDescCache)));
-    memcpy(
-        &cache->desc,
-        sessionDesc,
-        sizeof(zNetworkDPlaySessionDesc)
-    );
+    memcpy(&cache->desc, sessionDesc, sizeof(zNetworkDPlaySessionDesc));
     cache->desc.lpszSessionNameA = _strdup(sessionDesc->lpszSessionNameA);
-    zArchiveList_AddTail(
-        g_zNetwork_EnumeratedSessionList,
-        cache
-    );
+    zArchiveListAddTail(g_zNetwork_EnumeratedSessionList, cache);
     return 1;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumplayercallback-addplayerrecord
- * @recoil-artifact defines .text recoil:function:0x48b660: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord.
+ * @recoil-artifact defines .text recoil:function:0x48b660: zNetworkDPlay::EnumPlayerCallbackAddPlayerRecord.
  * Purpose: append an enumerated DirectPlay player record if it is not cached.
  */
-int __stdcall EnumPlayerCallback_AddPlayerRecord(
+int __stdcall EnumPlayerCallbackAddPlayerRecord(
     DPID playerId,
     DWORD,
     const zNetworkDPlayName *playerNameInfo,
     DWORD,
     void *
 ) {
-    if (zNetwork_FindPlayerRecordByKey((int)(playerId)) != 0) {
+    if (zNetworkFindPlayerRecordByKey((int)(playerId)) != 0) {
         return 1;
     }
 
     zNetwork_PlayerRecord *const playerRecord =
         (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
-    strncpy(
-        playerRecord->playerName,
-        playerNameInfo->lpszShortNameA,
-        0x50
-    );
+    strncpy(playerRecord->playerName, playerNameInfo->lpszShortNameA, 0x50);
     playerRecord->playerName[0x4f] = 0;
     playerRecord->playerKey = playerId;
 
@@ -1896,11 +1750,7 @@ int __fastcall CreateInterfaceAndCoInitialize(
         return hresult;
     }
 
-    zNetwork_DPlay_ReportError(
-        hresult,
-        g_zNetwork_SourceFile_ZnetDplayCpp,
-        0x39a
-    );
+    zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x39a);
     return hresult;
 }
 
@@ -1927,13 +1777,13 @@ int __fastcall CloseReleaseAndCoUninitialize(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-applypkt01-playercolorassignments
- * @recoil-artifact defines .text recoil:function:0x48b820: zNetwork_ApplyPkt01_PlayerColorAssignments.
+ * @recoil-artifact defines .text recoil:function:0x48b820: zNetworkApplyPkt01PlayerColorAssignments.
  * @recoil-match byte
  *
  * Purpose: apply host-provided player color assignments to matching player
  * records.
  */
-extern "C" int __fastcall zNetwork_ApplyPkt01_PlayerColorAssignments(
+extern "C" int __fastcall zNetworkApplyPkt01PlayerColorAssignments(
     int,
     zNetworkPacketHeader *packet
 ) {
@@ -1941,7 +1791,7 @@ extern "C" int __fastcall zNetwork_ApplyPkt01_PlayerColorAssignments(
     const int assignmentCount = assignments->pairCount;
     for (int i = 0; i < assignmentCount; ++i) {
         const zNetworkPlayerColorPair &pair = assignments->pairs[i];
-        zNetwork_PlayerRecord *const playerRecord = zNetwork_FindPlayerRecordByKey(pair.playerKey);
+        zNetwork_PlayerRecord *const playerRecord = zNetworkFindPlayerRecordByKey(pair.playerKey);
         if (playerRecord != 0) {
             playerRecord->colorIndex = pair.colorIndex;
             g_zNetwork_PlayerColorInUseFlags[pair.colorIndex] = 1;
@@ -1964,7 +1814,7 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(
         return;
     }
 
-    zNetwork_PlayerRecord *const joiningPlayer = zNetwork_FindPlayerRecordByKey(joiningPlayerKey);
+    zNetwork_PlayerRecord *const joiningPlayer = zNetworkFindPlayerRecordByKey(joiningPlayerKey);
     if (joiningPlayer == 0) {
         return;
     }
@@ -1973,18 +1823,14 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(
         joiningPlayer->colorIndex = AllocFreePlayerColorIndex();
     }
 
-    const int playerCount = zNetwork_GetPlayerRecordCount();
+    const int playerCount = zNetworkGetPlayerRecordCount();
     const int packetSizeBytes = (int)(sizeof(zNetworkPacketHeader) + sizeof(int) +
                                       (sizeof(zNetworkPlayerColorPair) * playerCount));
     NetPkt01_PlayerColorAssignments *const packet =
         (NetPkt01_PlayerColorAssignments *)(malloc(packetSizeBytes));
-    memset(
-        packet,
-        0,
-        packetSizeBytes
-    );
+    memset(packet, 0, packetSizeBytes);
     packet->header.packetType = 1;
-    packet->header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet->header.packetSizeBytes = (short)(packetSizeBytes);
     packet->pairCount = playerCount;
 
@@ -1998,7 +1844,7 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(
         ++pairIndex;
     }
 
-    zNetwork_SendPacketReliable(&packet->header);
+    zNetworkSendPacketReliable(&packet->header);
     free(packet);
 }
 
@@ -2024,11 +1870,11 @@ int __cdecl AllocFreePlayerColorIndex() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-getlocalplayercolorindex
- * @recoil-artifact defines .text recoil:function:0x48b980: zNetwork_GetLocalPlayerColorIndex.
+ * @recoil-artifact defines .text recoil:function:0x48b980: zNetworkGetLocalPlayerColorIndex.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork.cpp.
  * Purpose: return the local player record's assigned color index.
  */
-extern "C" int __cdecl zNetwork_GetLocalPlayerColorIndex() {
+extern "C" int __cdecl zNetworkGetLocalPlayerColorIndex() {
     if (g_zNetwork_LocalPlayerRecord == 0) {
         return 0;
     }
@@ -2038,17 +1884,17 @@ extern "C" int __cdecl zNetwork_GetLocalPlayerColorIndex() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-getplayercolorindexbykey
- * @recoil-artifact defines .text recoil:function:0x48b9a0: zNetwork_GetPlayerColorIndexByKey.
+ * @recoil-artifact defines .text recoil:function:0x48b9a0: zNetworkGetPlayerColorIndexByKey.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork.cpp.
  * Purpose: look up a player color index and reject values outside the session
  * player range.
  */
-extern "C" int __fastcall zNetwork_GetPlayerColorIndexByKey(
+extern "C" int __fastcall zNetworkGetPlayerColorIndexByKey(
     int playerKey
 ) {
-    zNetwork_PlayerRecord *const playerRecord = zNetwork_FindPlayerRecordByKey(playerKey);
+    zNetwork_PlayerRecord *const playerRecord = zNetworkFindPlayerRecordByKey(playerKey);
     if (playerRecord == 0 || g_zNetwork_CurrentSessionDescCache == 0) {
         return 0;
     }
@@ -2064,13 +1910,13 @@ extern "C" int __fastcall zNetwork_GetPlayerColorIndexByKey(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-getplayerrecordcount
- * @recoil-artifact defines .text recoil:function:0x48b9d0: zNetwork_GetPlayerRecordCount.
+ * @recoil-artifact defines .text recoil:function:0x48b9d0: zNetworkGetPlayerRecordCount.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: return the current DirectPlay player-record list count.
  */
-extern "C" int __cdecl zNetwork_GetPlayerRecordCount() {
+extern "C" int __cdecl zNetworkGetPlayerRecordCount() {
     return g_zNetwork_PlayerRecordList->count;
 }
 
@@ -2083,7 +1929,7 @@ namespace zNetwork {
 void __fastcall RemovePlayerRecordByKey(
     int playerKey
 ) {
-    zNetwork_PlayerRecord *const playerRecord = zNetwork_FindPlayerRecordByKey(playerKey);
+    zNetwork_PlayerRecord *const playerRecord = zNetworkFindPlayerRecordByKey(playerKey);
     if (playerRecord == 0) {
         return;
     }
@@ -2114,11 +1960,11 @@ void __fastcall RemovePlayerRecordByKey(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-findplayerrecordbykey
- * @recoil-artifact defines .text recoil:function:0x48ba60: zNetwork_FindPlayerRecordByKey.
+ * @recoil-artifact defines .text recoil:function:0x48ba60: zNetworkFindPlayerRecordByKey.
  * Purpose: find a player record in the runtime player list by DirectPlay
  * player key.
  */
-extern "C" zNetwork_PlayerRecord *__fastcall zNetwork_FindPlayerRecordByKey(
+extern "C" zNetwork_PlayerRecord *__fastcall zNetworkFindPlayerRecordByKey(
     int playerKey
 ) {
     zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
@@ -2135,11 +1981,11 @@ extern "C" zNetwork_PlayerRecord *__fastcall zNetwork_FindPlayerRecordByKey(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-extractstatusfieldsfromsessiondesc
- * @recoil-artifact defines .text recoil:function:0x48bab0: zNetwork_ExtractStatusFieldsFromSessionDesc.
+ * @recoil-artifact defines .text recoil:function:0x48bab0: zNetworkExtractStatusFieldsFromSessionDesc.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: copy session status fields from the current DirectPlay descriptor.
  */
-extern "C" int __fastcall zNetwork_ExtractStatusFieldsFromSessionDesc(
+extern "C" int __fastcall zNetworkExtractStatusFieldsFromSessionDesc(
     zNetworkSessionDescStatusFields *outFields
 ) {
     const zNetworkDPlaySessionDesc sessionDesc = g_zNetwork_CurrentSessionDescCache->desc;
@@ -2152,21 +1998,17 @@ extern "C" int __fastcall zNetwork_ExtractStatusFieldsFromSessionDesc(
     outFields->selectedSessionIndex = -1;
 
     const size_t sessionNameBytes = strlen(sessionDesc.lpszSessionNameA) + 1;
-    memcpy(
-        outFields->sessionNameBuf,
-        sessionDesc.lpszSessionNameA,
-        sessionNameBytes
-    );
+    memcpy(outFields->sessionNameBuf, sessionDesc.lpszSessionNameA, sessionNameBytes);
     return 1;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-applystatusfieldstosessiondesc
- * @recoil-artifact defines .text recoil:function:0x48bb20: zNetwork_ApplyStatusFieldsToSessionDesc.
+ * @recoil-artifact defines .text recoil:function:0x48bb20: zNetworkApplyStatusFieldsToSessionDesc.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: apply status fields to the current DirectPlay session descriptor.
  */
-extern "C" int __fastcall zNetwork_ApplyStatusFieldsToSessionDesc(
+extern "C" int __fastcall zNetworkApplyStatusFieldsToSessionDesc(
     zNetworkSessionDescStatusFields *statusFields
 ) {
     zNetworkDPlaySessionDesc *const sessionDesc = &g_zNetwork_CurrentSessionDescCache->desc;
@@ -2221,33 +2063,16 @@ int __fastcall SelectTcpIpProviderAndEnumSessions(
     CreateLobby3AInterface(&lobby3A);
 
     DWORD compoundAddressSize;
-    lobby3A->CreateCompoundAddress(
-        elements,
-        2,
-        0,
-        &compoundAddressSize
-    );
+    lobby3A->CreateCompoundAddress(elements, 2, 0, &compoundAddressSize);
     void *const compoundAddress = malloc(compoundAddressSize);
-    lobby3A->CreateCompoundAddress(
-        elements,
-        2,
-        compoundAddress,
-        &compoundAddressSize
-    );
+    lobby3A->CreateCompoundAddress(elements, 2, compoundAddress, &compoundAddressSize);
     const DWORD compoundAddressBytes = compoundAddressSize;
 
     zNetworkDPlayServiceProviderInfo providerInfo;
     providerInfo.serviceProviderGuid = DPSPGUID_TCPIP;
     providerInfo.displayName = _strdup(g_zNetwork_ForcedTcpIpModeName);
-    providerInfo.connectionData = calloc(
-        compoundAddressBytes,
-        1
-    );
-    memcpy(
-        providerInfo.connectionData,
-        compoundAddress,
-        compoundAddressBytes
-    );
+    providerInfo.connectionData = calloc(compoundAddressBytes, 1);
+    memcpy(providerInfo.connectionData, compoundAddress, compoundAddressBytes);
     providerInfo.providerFlags = 0;
 
     SelectServiceProviderAndInitConnection(&providerInfo);
@@ -2278,18 +2103,9 @@ int __fastcall CreateLobby3AInterface(
 ) {
     IDirectPlayLobby *lobby = 0;
     IDirectPlayLobby3A *lobby3A = 0;
-    int result = DirectPlayLobbyCreateA(
-        0,
-        &lobby,
-        0,
-        0,
-        0
-    );
+    int result = DirectPlayLobbyCreateA(0, &lobby, 0, 0, 0);
     if (result >= 0) {
-        result = lobby->QueryInterface(
-            IID_IDirectPlayLobby3A,
-            (void **)&lobby3A
-        );
+        result = lobby->QueryInterface(IID_IDirectPlayLobby3A, (void **)&lobby3A);
         if (result >= 0) {
             lobby->Release();
             result = 0;
@@ -2317,18 +2133,14 @@ int __cdecl EnumSessionsForCurrentApp() {
     }
 
     zNetworkDPlaySessionDesc desc;
-    memset(
-        &desc,
-        0,
-        sizeof(desc)
-    );
+    memset(&desc, 0, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.guidApplication = *g_zNetwork_AppGuid;
     return directPlay->EnumSessions(
         (LPDPSESSIONDESC2)&desc,
         0,
         (LPDPENUMSESSIONSCALLBACK2)
-            zNetworkDPlay::EnumSessionCallback_AddSessionDescCache,
+            zNetworkDPlay::EnumSessionCallbackAddSessionDescCache,
         0,
         0x82
     );
@@ -2407,48 +2219,36 @@ zNetworkDispatchHandlerList g_zNetwork_DispatchHandlerList;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-sendpacketunreliable
- * @recoil-artifact defines .text recoil:function:0x48c060: zNetwork_SendPacketUnreliable.
+ * @recoil-artifact defines .text recoil:function:0x48c060: zNetworkSendPacketUnreliable.
  * Retail literal-backed physical source block: GameZRecoil/zNetwork/znet_dplay.cpp.
  * Purpose: route an unreliable packet to the sync or async DirectPlay send path.
  */
-extern "C" int __fastcall zNetwork_SendPacketUnreliable(
+extern "C" int __fastcall zNetworkSendPacketUnreliable(
     zNetworkPacketHeader *packet
 ) {
     const unsigned int packetSizeBytes = (unsigned short)(packet->packetSizeBytes);
     if (g_zNetwork_TcpIpAsyncSendEnabled != 0) {
-        return zNetwork_DPlay_SendExUnreliableTracked(
-            packet,
-            packetSizeBytes
-        );
+        return zNetworkDPlaySendExUnreliableTracked(packet, packetSizeBytes);
     }
 
-    return zNetwork_DPlay_SendUnreliable(
-        packet,
-        packetSizeBytes
-    );
+    return zNetworkDPlaySendUnreliable(packet, packetSizeBytes);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-sendpacketreliable
- * @recoil-artifact defines .text recoil:function:0x48c080: zNetwork_SendPacketReliable.
+ * @recoil-artifact defines .text recoil:function:0x48c080: zNetworkSendPacketReliable.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: route a reliable packet to the sync or async DirectPlay send path.
  */
-extern "C" int __fastcall zNetwork_SendPacketReliable(
+extern "C" int __fastcall zNetworkSendPacketReliable(
     zNetworkPacketHeader *packet
 ) {
     const unsigned int packetSizeBytes = (unsigned short)(packet->packetSizeBytes);
     if (g_zNetwork_TcpIpAsyncSendEnabled != 0) {
-        return zNetwork_DPlay_SendExReliable(
-            packet,
-            packetSizeBytes
-        );
+        return zNetworkDPlaySendExReliable(packet, packetSizeBytes);
     }
 
-    return zNetwork_DPlay_SendReliable(
-        packet,
-        packetSizeBytes
-    );
+    return zNetworkDPlaySendReliable(packet, packetSizeBytes);
 }
 
 namespace zNetwork {
@@ -2540,10 +2340,7 @@ void __fastcall DispatchPacketToHandlers(
         do {
             zNetworkDispatchHandlerRecord *const record = *node;
             if (record->packetType == packet->packetType) {
-                record->handler(
-                    senderPlayerId,
-                    packet
-                );
+                record->handler(senderPlayerId, packet);
             }
 
             ++node;
@@ -2555,11 +2352,11 @@ void __fastcall DispatchPacketToHandlers(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-reporterror
- * @recoil-artifact defines .text recoil:function:0x48c250: zNetwork_DPlay_ReportError.
+ * @recoil-artifact defines .text recoil:function:0x48c250: zNetworkDPlayReportError.
  * Purpose: report a DirectPlay HRESULT with the original inline error-name
  * comparisons and message format.
  */
-extern "C" RECOIL_NO_GS int __fastcall zNetwork_DPlay_ReportError(
+extern "C" RECOIL_NO_GS int __fastcall zNetworkDPlayReportError(
     int hresult,
     const char *sourceFile,
     int sourceLine

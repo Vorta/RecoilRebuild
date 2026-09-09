@@ -367,12 +367,12 @@ def _candidate_local_coff_callable_bridges(
             name == _cc_catalog.HUD_CMD_BINDING_PTR_VECTOR_ERASE_SYMBOL
         )
         is_player_bind_group_scalar_destructor = (
-            name == "??_GzInput_BindGroupInfo@@QAEPAXI@Z"
-            and caller.symbol == "?BindGroupList_Clear@zInput@@YAXXZ"
+            name == "??_GCZInputBindGroupInfo@@QAEPAXI@Z"
+            and caller.symbol == "?BindGroupListClear@zInput@@YAXXZ"
         )
         is_player_bind_group_int_vector_destructor = (
             name == "??1?$vector@HV?$allocator@H@std@@@std@@QAE@XZ"
-            and caller.symbol == "??1zInput_BindGroupInfo@@QAE@XZ"
+            and caller.symbol == "??1CZInputBindGroupInfo@@QAE@XZ"
         )
         is_reviewed_candidate_local_provider = (
             is_noop_vector_destroy

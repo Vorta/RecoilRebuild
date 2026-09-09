@@ -299,7 +299,7 @@ ZSND_WAVE_DATA_DESTRUCTOR_CALLER_END_EXCLUSIVE = "0x4a3910"
 
 
 ZSND_WAVE_DATA_DESTRUCTOR_CALLER_SYMBOL = (
-    "@zSndSample_CreateQueuedStreamingSample@12"
+    "@zSndSampleCreateQueuedStreamingSample@12"
 )
 
 
@@ -1411,7 +1411,7 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "end_exclusive": "0x4894f0",
         "size": 0x790,
         "physical_block_id": "recoil:block:0x487a30",
-        "symbol": "?zModel_Light_BuildLightWeights@@YIHPAUzVec3@@HPAHM@Z",
+        "symbol": "?zModelLightBuildLightWeights@@YIHPAUzVec3@@HPAHM@Z",
         "retail_setup_offset": 0x03,
         "retail_call_offset": 0x08,
         "retail_frame_size": 0x10158,
@@ -1444,7 +1444,7 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "size": 0x890,
         "physical_block_id": "recoil:block:0x48d340",
         "symbol": (
-            "?FxPass3_ApplyToCurrentSurface@zVideo@@"
+            "?FxPass3ApplyToCurrentSurface@zVideo@@"
             "YIXHHHHHMMPAUzVidRect32@@@Z"
         ),
         "candidate_symbol": MSVC_CHKSTK_RETAIL_NAME,
@@ -1743,7 +1743,7 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "end_exclusive": "0x4b2bf0",
         "size": 0x290,
         "physical_block_id": "recoil:block:0x4b2960",
-        "symbol": "?Options_LoadFromRegistry@zGame@@YAHXZ",
+        "symbol": "?OptionsLoadFromRegistry@zGame@@YAHXZ",
         "candidate_symbol": MSVC_CHKSTK_RETAIL_NAME,
         "retail_call_offset": 0x52,
         "candidate_call_offset": 0x57,
@@ -1795,7 +1795,7 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "end_exclusive": "0x4b2e80",
         "size": 0x290,
         "physical_block_id": "recoil:block:0x4b2960",
-        "symbol": "?Options_SaveToRegistry@zGame@@YAHXZ",
+        "symbol": "?OptionsSaveToRegistry@zGame@@YAHXZ",
         "candidate_symbol": MSVC_CHKSTK_RETAIL_NAME,
         "retail_call_offset": 0x54,
         "candidate_call_offset": 0x57,
@@ -2831,7 +2831,7 @@ WOL_CONFIG_CEDIT_INVOCATION_ORDER = (
     "??_L@YGXPAXIHP6EX0@Z1@Z",
     "??_L@YGXPAXIHP6EX0@Z1@Z",
     "??4CString@@QAEABV0@PBD@Z",
-    "?zOpt_GetWolPasswordFlagValue@@YIHXZ",
+    "?zOptGetWolPasswordFlagValue@@YIHXZ",
 )
 
 
@@ -6260,8 +6260,8 @@ GAMENET_CHAT_COMPOSE_CANDIDATE_CALL_ORDER = (0x00, 0x10, 0x21, 0x2E)
 GAMENET_CHAT_COMPOSE_DIRECT_CALLS = (
     (
         "0x46fba0",
-        "?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z",
-        "zInput::Keyboard_TranslateDikToAscii",
+        "?KeyboardTranslateDikToAscii@zInput@@YIHH@Z",
+        "zInput::KeyboardTranslateDikToAscii",
     ),
     (
         "0x4b4460",
@@ -6307,11 +6307,11 @@ GAMENET_END_CHAT_COMPOSE_STRNCAT_CANDIDATE_SYMBOL = "__imp__strncat"
 
 
 GAMENET_END_CHAT_COMPOSE_DIRECT_TARGETS = (
-    ("0x471950", "?BindMapContext_Pop@zInput@@YIXXZ"),
+    ("0x471950", "?BindMapContextPop@zInput@@YIXXZ"),
     ("0x411a20", "?Begin@HudUiMgrObjective@@YIXXZ"),
     ("0x4b4410", "?GetBuffer@HudUiTextInput@@QAEPADXZ"),
     ("0x4138f0", "?ShowChatLine@HudUi@@YIXPBDM@Z"),
-    ("0x433750", "?SendPkt0B_ChatMessage@GameNet@@YIXPBD@Z"),
+    ("0x433750", "?SendPkt0BChatMessage@GameNet@@YIXPBD@Z"),
 )
 
 
@@ -7896,9 +7896,9 @@ HUD_NET_GAME_SETUP_CLAMPED_INPUT_CONSTRUCTOR_SYMBOL_ID = (
 
 HUD_NET_GAME_SETUP_INLINE_INPUT_SPECS = (
     (
-        "HudUiNetGameSetupPanel_TimeLimitInput",
-        "??0HudUiNetGameSetupPanel_TimeLimitInput@@QAE@XZ",
-        "??_7HudUiNetGameSetupPanel_TimeLimitInput@@6B@",
+        "CHudUiNetGameSetupPanelTimeLimitInput",
+        "??0CHudUiNetGameSetupPanelTimeLimitInput@@QAE@XZ",
+        "??_7CHudUiNetGameSetupPanelTimeLimitInput@@6B@",
         4,
         7,
         HUD_NET_GAME_SETUP_NUMERIC_RETAIL_IDENTITY,
@@ -7910,9 +7910,9 @@ HUD_NET_GAME_SETUP_INLINE_INPUT_SPECS = (
         0xC1,
     ),
     (
-        "HudUiNetGameSetupPanel_KillsInput",
-        "??0HudUiNetGameSetupPanel_KillsInput@@QAE@XZ",
-        "??_7HudUiNetGameSetupPanel_KillsInput@@6B@",
+        "CHudUiNetGameSetupPanelKillsInput",
+        "??0CHudUiNetGameSetupPanelKillsInput@@QAE@XZ",
+        "??_7CHudUiNetGameSetupPanelKillsInput@@6B@",
         2,
         10,
         HUD_NET_GAME_SETUP_CLAMPED_INPUT_CONSTRUCTOR_IDENTITY,
@@ -7924,9 +7924,9 @@ HUD_NET_GAME_SETUP_INLINE_INPUT_SPECS = (
         0x10B,
     ),
     (
-        "HudUiNetGameSetupPanel_MaxPlayersInput",
-        "??0HudUiNetGameSetupPanel_MaxPlayersInput@@QAE@XZ",
-        "??_7HudUiNetGameSetupPanel_MaxPlayersInput@@6B@",
+        "CHudUiNetGameSetupPanelMaxPlayersInput",
+        "??0CHudUiNetGameSetupPanelMaxPlayersInput@@QAE@XZ",
+        "??_7CHudUiNetGameSetupPanelMaxPlayersInput@@6B@",
         2,
         13,
         HUD_NET_GAME_SETUP_CLAMPED_INPUT_CONSTRUCTOR_IDENTITY,
@@ -8133,7 +8133,7 @@ HUD_NET_GAME_SETUP_WORLD_SELECTOR_SET_INDEX_CALL_OFFSET = 0x404
 HUD_NET_GAME_SETUP_WORLD_SELECTOR_SET_INDEX_RELOCATION_OFFSET = 0x405
 
 
-HUD_NET_GAME_SETUP_PLAYER_NAME_GETTER_SYMBOL = "?zOpt_GetPlayerName@@YIPADXZ"
+HUD_NET_GAME_SETUP_PLAYER_NAME_GETTER_SYMBOL = "?zOptGetPlayerName@@YIPADXZ"
 
 
 HUD_NET_GAME_SETUP_PLAYER_NAME_GETTER_IDENTITY = (
@@ -8786,15 +8786,15 @@ HUD_NET_GAME_SETUP_PRE_STEP_BUTTON_CALLER_RELOCATIONS = (
     (0x9f, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0xa5, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_PrevWorldButton@@6B@'),
     (0xb9, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0xbf, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_TimeLimitInput@@6B@'),
+    (0xbf, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelTimeLimitInput@@6B@'),
     (0xcf, IMAGE_REL_I386_REL32, '??0HudUiNetGameSetupPanel_IncTimeLimitButton@@QAE@XZ'),
     (0xdf, IMAGE_REL_I386_REL32, '??0HudUiNetGameSetupPanel_DecTimeLimitButton@@QAE@XZ'),
     (0xf1, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0xfb, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_KillsInput@@6B@'),
+    (0xfb, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelKillsInput@@6B@'),
     (0x10b, IMAGE_REL_I386_REL32, '??0HudUiNetGameSetupPanel_IncKillsButton@@QAE@XZ'),
     (0x11b, IMAGE_REL_I386_REL32, '??0HudUiNetGameSetupPanel_DecKillsButton@@QAE@XZ'),
     (0x12d, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0x137, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_MaxPlayersInput@@6B@'),
+    (0x137, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelMaxPlayersInput@@6B@'),
     (0x147, IMAGE_REL_I386_REL32, '??0HudUiNetGameSetupPanel_IncMaxPlayersButton@@QAE@XZ'),
     (0x157, IMAGE_REL_I386_REL32, '??0HudUiNetGameSetupPanel_DecMaxPlayersButton@@QAE@XZ'),
     (0x167, IMAGE_REL_I386_REL32, '??0HudUiNetGameSetupPanel_AllowMapsToggle@@QAE@XZ'),
@@ -8849,7 +8849,7 @@ HUD_NET_GAME_SETUP_PRE_STEP_BUTTON_CALLER_RELOCATIONS = (
     (0x3a2, IMAGE_REL_I386_REL32, '?BindWidgetByName@HudUiBackground@@QAEHPAUNode@zReader@@PAUHudUiWidget@@PBD@Z'),
     (0x3aa, IMAGE_REL_I386_REL32, '?FreeLoadedTreeRoots@HudUiBackground@@QAEXH@Z'),
     (0x3d9, IMAGE_REL_I386_REL32, '?SetIndexClamped@HudUiCycleSelectorWidget@@QAEHH@Z'),
-    (0x3e8, IMAGE_REL_I386_REL32, '?zOpt_GetPlayerName@@YIPADXZ'),
+    (0x3e8, IMAGE_REL_I386_REL32, '?zOptGetPlayerName@@YIPADXZ'),
     (0x3ee, IMAGE_REL_I386_DIR32, '__imp__sprintf'),
     (0x3f8, IMAGE_REL_I386_DIR32, '??_C@_05LEAO@?$CF?421s?$AA@'),
     (0x40a, IMAGE_REL_I386_REL32, '?Update@HudUiNumericTextInput@@QAEXPBD@Z'),
@@ -9643,7 +9643,7 @@ HUD_NET_GAME_SETUP_STEP_BUTTON_CURRENT_RELOCATIONS = (
         '??_7HudUiNetGameSetupPanel_DecTimeLimitButton@@6B@',
     ),
     (0x105, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0x10F, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_KillsInput@@6B@'),
+    (0x10F, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelKillsInput@@6B@'),
     (0x11F, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (
         0x129,
@@ -9660,7 +9660,7 @@ HUD_NET_GAME_SETUP_STEP_BUTTON_CURRENT_RELOCATIONS = (
     (
         0x15F,
         IMAGE_REL_I386_DIR32,
-        '??_7HudUiNetGameSetupPanel_MaxPlayersInput@@6B@',
+        '??_7CHudUiNetGameSetupPanelMaxPlayersInput@@6B@',
     ),
     (0x16F, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (
@@ -10094,19 +10094,19 @@ HUD_NET_GAME_SETUP_CANDIDATE_CALLER_RELOCATIONS = (
     (0x0A1, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x0A7, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_PrevWorldButton@@6B@'),
     (0x0BB, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0x0C1, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_TimeLimitInput@@6B@'),
+    (0x0C1, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelTimeLimitInput@@6B@'),
     (0x0D3, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x0D9, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_IncTimeLimitButton@@6B@'),
     (0x0EB, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x0F1, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_DecTimeLimitButton@@6B@'),
     (0x105, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0x10B, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_KillsInput@@6B@'),
+    (0x10B, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelKillsInput@@6B@'),
     (0x11D, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x123, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_IncKillsButton@@6B@'),
     (0x135, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x13B, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_DecKillsButton@@6B@'),
     (0x14F, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0x155, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_MaxPlayersInput@@6B@'),
+    (0x155, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelMaxPlayersInput@@6B@'),
     (0x167, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x16D, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_IncMaxPlayersButton@@6B@'),
     (0x17F, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
@@ -10165,7 +10165,7 @@ HUD_NET_GAME_SETUP_CANDIDATE_CALLER_RELOCATIONS = (
     (0x3E8, IMAGE_REL_I386_REL32, '?BindWidgetByName@HudUiBackground@@QAEHPAUNode@zReader@@PAUHudUiWidget@@PBD@Z'),
     (0x3F0, IMAGE_REL_I386_REL32, '?FreeLoadedTreeRoots@HudUiBackground@@QAEXH@Z'),
     (0x423, IMAGE_REL_I386_REL32, '?SetIndexClamped@HudUiCycleSelectorWidget@@QAEHH@Z'),
-    (0x432, IMAGE_REL_I386_REL32, '?zOpt_GetPlayerName@@YIPADXZ'),
+    (0x432, IMAGE_REL_I386_REL32, '?zOptGetPlayerName@@YIPADXZ'),
     (0x438, IMAGE_REL_I386_DIR32, '__imp__sprintf'),
     (0x442, IMAGE_REL_I386_DIR32, '??_C@_05LEAO@?$CF?421s?$AA@'),
     (0x454, IMAGE_REL_I386_REL32, '?Update@HudUiNumericTextInput@@QAEXPBD@Z'),
@@ -10268,19 +10268,19 @@ HUD_NET_GAME_SETUP_CANDIDATE_CALLER_RELOCATIONS = (
     (0x0A1, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x0A7, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_PrevWorldButton@@6B@'),
     (0x0BB, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0x0C1, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_TimeLimitInput@@6B@'),
+    (0x0C1, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelTimeLimitInput@@6B@'),
     (0x0D3, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x0D9, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_IncTimeLimitButton@@6B@'),
     (0x0EB, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x0F1, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_DecTimeLimitButton@@6B@'),
     (0x105, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0x10B, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_KillsInput@@6B@'),
+    (0x10B, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelKillsInput@@6B@'),
     (0x11D, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x123, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_IncKillsButton@@6B@'),
     (0x135, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x13B, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_DecKillsButton@@6B@'),
     (0x14F, IMAGE_REL_I386_REL32, '??0HudUiClampedIntTextInput@@QAE@I@Z'),
-    (0x155, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_MaxPlayersInput@@6B@'),
+    (0x155, IMAGE_REL_I386_DIR32, '??_7CHudUiNetGameSetupPanelMaxPlayersInput@@6B@'),
     (0x167, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
     (0x16D, IMAGE_REL_I386_DIR32, '??_7HudUiNetGameSetupPanel_IncMaxPlayersButton@@6B@'),
     (0x17F, IMAGE_REL_I386_REL32, '??0HudUiZrdWidget@@QAE@XZ'),
@@ -10339,7 +10339,7 @@ HUD_NET_GAME_SETUP_CANDIDATE_CALLER_RELOCATIONS = (
     (0x3E7, IMAGE_REL_I386_REL32, '?Update@HudUiNumericTextInput@@QAEXPBD@Z'),
     (0x3F0, IMAGE_REL_I386_REL32, '?SetInputActive@HudUiNumericTextInput@@QAEHH@Z'),
     (0x41F, IMAGE_REL_I386_REL32, '?SetIndexClamped@HudUiCycleSelectorWidget@@QAEHH@Z'),
-    (0x42E, IMAGE_REL_I386_REL32, '?zOpt_GetPlayerName@@YIPADXZ'),
+    (0x42E, IMAGE_REL_I386_REL32, '?zOptGetPlayerName@@YIPADXZ'),
     (0x434, IMAGE_REL_I386_DIR32, '__imp__sprintf'),
     (0x43E, IMAGE_REL_I386_DIR32, '??_C@_05LEAO@?$CF?421s?$AA@'),
     (0x450, IMAGE_REL_I386_REL32, '?Update@HudUiNumericTextInput@@QAEXPBD@Z'),
@@ -10435,7 +10435,7 @@ HUD_NET_GAME_SETUP_CANDIDATE_CALLER_RELOCATIONS = (
         (0x40D, IMAGE_REL_I386_REL32, '?Update@HudUiNumericTextInput@@QAEXPBD@Z'),
         (0x416, IMAGE_REL_I386_REL32, '?SetInputActive@HudUiNumericTextInput@@QAEHH@Z'),
         (0x423, IMAGE_REL_I386_REL32, '?SetIndexClamped@HudUiCycleSelectorWidget@@QAEHH@Z'),
-        (0x432, IMAGE_REL_I386_REL32, '?zOpt_GetPlayerName@@YIPADXZ'),
+        (0x432, IMAGE_REL_I386_REL32, '?zOptGetPlayerName@@YIPADXZ'),
         (0x438, IMAGE_REL_I386_DIR32, '__imp__sprintf'),
         (0x442, IMAGE_REL_I386_DIR32, '??_C@_05LEAO@?$CF?421s?$AA@'),
         (0x454, IMAGE_REL_I386_REL32, '?Update@HudUiNumericTextInput@@QAEXPBD@Z'),
@@ -10633,7 +10633,7 @@ HUD_NET_GAME_SETUP_CANDIDATE_CALLER_RELOCATIONS = (
     ((0x003, IMAGE_REL_I386_DIR32, '$L86196'),)
     + HUD_NET_GAME_SETUP_CANDIDATE_CALLER_RELOCATIONS[1:82]
     + (
-        (0x40A, IMAGE_REL_I386_REL32, '?zOpt_GetPlayerName@@YIPADXZ'),
+        (0x40A, IMAGE_REL_I386_REL32, '?zOptGetPlayerName@@YIPADXZ'),
         (0x415, IMAGE_REL_I386_REL32, '?AllocTextBuffer@HudUiNumericTextInput@@QAEXI@Z'),
         (0x41A, IMAGE_REL_I386_DIR32, '??_C@_00A@?$AA@'),
         (0x421, IMAGE_REL_I386_REL32, '?Update@HudUiNumericTextInput@@QAEXPBD@Z'),
@@ -11358,7 +11358,7 @@ HUD_NET_GAME_SETUP_CANDIDATE_CALLER_RELOCATIONS = (
         (0x3CA, IMAGE_REL_I386_REL32, '?BindWidgetByName@HudUiBackground@@QAEHPAUNode@zReader@@PAUHudUiWidget@@PBD@Z'),
         (0x3D2, IMAGE_REL_I386_REL32, '?FreeLoadedTreeRoots@HudUiBackground@@QAEXH@Z'),
         (0x405, IMAGE_REL_I386_REL32, '?SetIndexClamped@HudUiCycleSelectorWidget@@QAEHH@Z'),
-        (0x40A, IMAGE_REL_I386_REL32, '?zOpt_GetPlayerName@@YIPADXZ'),
+        (0x40A, IMAGE_REL_I386_REL32, '?zOptGetPlayerName@@YIPADXZ'),
         (0x414, IMAGE_REL_I386_DIR32, '??_C@_05LEAO@?$CF?421s?$AA@'),
         (0x41B, IMAGE_REL_I386_DIR32, '__imp__sprintf'),
         (0x42A, IMAGE_REL_I386_REL32, '?Update@HudUiNumericTextInput@@QAEXPBD@Z'),
@@ -11632,19 +11632,19 @@ HUD_NET_GAME_SETUP_RETAINED_RETAIL_RELOCATIONS = (
     (0xA0, 0x14, "??0HudUiZrdWidget@@QAE@XZ"),
     (0xA6, 0x6, "??_7HudUiNetGameSetupPanel_PrevWorldButton@@6B@"),
     (0xBA, 0x14, "??0HudUiClampedIntTextInput@@QAE@I@Z"),
-    (0xC0, 0x6, "??_7HudUiNetGameSetupPanel_TimeLimitInput@@6B@"),
+    (0xC0, 0x6, "??_7CHudUiNetGameSetupPanelTimeLimitInput@@6B@"),
     (0xD2, 0x14, "??0HudUiZrdWidget@@QAE@XZ"),
     (0xD8, 0x6, "??_7HudUiNetGameSetupPanel_IncTimeLimitButton@@6B@"),
     (0xEA, 0x14, "??0HudUiZrdWidget@@QAE@XZ"),
     (0xF0, 0x6, "??_7HudUiNetGameSetupPanel_DecTimeLimitButton@@6B@"),
     (0x104, 0x14, "??0HudUiClampedIntTextInput@@QAE@I@Z"),
-    (0x10A, 0x6, "??_7HudUiNetGameSetupPanel_KillsInput@@6B@"),
+    (0x10A, 0x6, "??_7CHudUiNetGameSetupPanelKillsInput@@6B@"),
     (0x11C, 0x14, "??0HudUiZrdWidget@@QAE@XZ"),
     (0x122, 0x6, "??_7HudUiNetGameSetupPanel_IncKillsButton@@6B@"),
     (0x134, 0x14, "??0HudUiZrdWidget@@QAE@XZ"),
     (0x13A, 0x6, "??_7HudUiNetGameSetupPanel_DecKillsButton@@6B@"),
     (0x14E, 0x14, "??0HudUiClampedIntTextInput@@QAE@I@Z"),
-    (0x155, 0x6, "??_7HudUiNetGameSetupPanel_MaxPlayersInput@@6B@"),
+    (0x155, 0x6, "??_7CHudUiNetGameSetupPanelMaxPlayersInput@@6B@"),
     (0x167, 0x14, "??0HudUiZrdWidget@@QAE@XZ"),
     (0x16D, 0x6, "??_7HudUiNetGameSetupPanel_IncMaxPlayersButton@@6B@"),
     (0x17F, 0x14, "??0HudUiZrdWidget@@QAE@XZ"),
@@ -11699,7 +11699,7 @@ HUD_NET_GAME_SETUP_RETAINED_RETAIL_RELOCATIONS = (
     (0x3CA, 0x14, "?BindWidgetByName@HudUiBackground@@QAEHPAUNode@zReader@@PAUHudUiWidget@@PBD@Z"),
     (0x3D2, 0x14, "?FreeLoadedTreeRoots@HudUiBackground@@QAEXH@Z"),
     (0x405, 0x14, "?SetIndexClamped@HudUiCycleSelectorWidget@@QAEHH@Z"),
-    (0x40A, 0x14, "?zOpt_GetPlayerName@@YIPADXZ"),
+    (0x40A, 0x14, "?zOptGetPlayerName@@YIPADXZ"),
     (0x410, 0x6, "__imp__sprintf"),
     (0x41A, 0x6, "??_C@_05LEAO@?$CF?421s?$AA@"),
     (0x42C, 0x14, "?Update@HudUiNumericTextInput@@QAEXPBD@Z"),
@@ -12081,7 +12081,7 @@ ZINPUT_WAIT_SLEEP_REGISTER_IAT_BRIDGE = ReviewedRegisterIatBridgeSpec(
     caller_identity="symbol:recoil:function:0x404140",
     caller_start="0x404140",
     caller_end_exclusive="0x404180",
-    caller_symbol="@zInput_WaitForAnyKeyPressWithTimeoutMs@4",
+    caller_symbol="@zInputWaitForAnyKeyPressWithTimeoutMs@4",
     register="edi",
     import_dll="KERNEL32.dll",
     import_name="Sleep",
@@ -12142,7 +12142,7 @@ ZINPUT_JOYSTICK_INIT_CALLER_IDENTITY = (
 
 
 ZINPUT_JOYSTICK_INIT_CALLER_SYMBOL = (
-    "?DI_InitJoystickDevice@zInput@@YIHPAUHWND__@@@Z"
+    "?DIInitJoystickDevice@zInput@@YIHPAUHWND__@@@Z"
 )
 
 
@@ -12158,7 +12158,7 @@ ZINPUT_JOYSTICK_ACQUIRE_CALLER_IDENTITY = (
 
 
 ZINPUT_JOYSTICK_ACQUIRE_CALLER_SYMBOL = (
-    "?DI_AcquireJoystickDevice@zInput@@YAHXZ"
+    "?DIAcquireJoystickDevice@zInput@@YAHXZ"
 )
 
 
@@ -12239,8 +12239,8 @@ ZINPUT_JOYSTICK_DEVICE_VIRTUAL_SLOT = 0x2C
 ZINPUT_JOYSTICK_LATER_AGGREGATE_LEAF_SPECS = {
     "0x4721a0": {
         "end": "0x4721e0",
-        "symbol": "?DI_SetAxisDeadzone@zInput@@YIHHH@Z",
-        "name": "zInput::DI_SetAxisDeadzone",
+        "symbol": "?DISetAxisDeadzone@zInput@@YIHHH@Z",
+        "name": "zInput::DISetAxisDeadzone",
         "anchor": (
             "recoil:anchor:gamezrecoil.zinput.zin-joystick."
             "di-setaxisdeadzone"
@@ -12261,8 +12261,8 @@ ZINPUT_JOYSTICK_LATER_AGGREGATE_LEAF_SPECS = {
     },
     "0x4721e0": {
         "end": "0x472230",
-        "symbol": "?DI_SetAxisRange@zInput@@YIHHHH@Z",
-        "name": "zInput::DI_SetAxisRange",
+        "symbol": "?DISetAxisRange@zInput@@YIHHHH@Z",
+        "name": "zInput::DISetAxisRange",
         "anchor": (
             "recoil:anchor:gamezrecoil.zinput.zin-joystick.di-setaxisrange"
         ),
@@ -12284,8 +12284,8 @@ ZINPUT_JOYSTICK_LATER_AGGREGATE_LEAF_SPECS = {
     },
     "0x472230": {
         "end": "0x472280",
-        "symbol": "?DI_GetAxisRange@zInput@@YIHHPAH0@Z",
-        "name": "zInput::DI_GetAxisRange",
+        "symbol": "?DIGetAxisRange@zInput@@YIHHPAH0@Z",
+        "name": "zInput::DIGetAxisRange",
         "anchor": (
             "recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getaxisrange"
         ),
@@ -12307,8 +12307,8 @@ ZINPUT_JOYSTICK_LATER_AGGREGATE_LEAF_SPECS = {
     },
     "0x472280": {
         "end": "0x4722b0",
-        "symbol": "?Joystick_ShutdownDevice@zInput@@YAHXZ",
-        "name": "zInput::Joystick_ShutdownDevice",
+        "symbol": "?JoystickShutdownDevice@zInput@@YAHXZ",
+        "name": "zInput::JoystickShutdownDevice",
         "anchor": (
             "recoil:anchor:gamezrecoil.zinput.zin-joystick."
             "joystick-shutdowndevice"
@@ -12335,8 +12335,8 @@ ZINPUT_JOYSTICK_LATER_AGGREGATE_LEAF_SPECS = {
     },
     "0x4722c0": {
         "end": "0x472390",
-        "symbol": "?DI_PollJoystickState@zInput@@YIPAUDIJOYSTATE2@@E@Z",
-        "name": "zInput::DI_PollJoystickState",
+        "symbol": "?DIPollJoystickState@zInput@@YIPAUDIJOYSTATE2@@E@Z",
+        "name": "zInput::DIPollJoystickState",
         "anchor": (
             "recoil:anchor:gamezrecoil.zinput.zin-joystick."
             "di-polljoystickstate"
@@ -12370,7 +12370,7 @@ ZINPUT_JOYSTICK_LATER_AGGREGATE_LEAF_SPECS = {
             (0x62, 0x06, "_g_zInput_JoystickRawDIState"),
             (0x68, 0x06, "_g_zInput_JoystickRawDIState"),
             (0x6E, 0x06, "_g_zInput_JoystickRawDIState"),
-            (0x7A, 0x14, "?DI_AcquireJoystickDevice@zInput@@YAHXZ"),
+            (0x7A, 0x14, "?DIAcquireJoystickDevice@zInput@@YAHXZ"),
             (0x94, 0x06, "_g_zInput_GlobalStateStorage"),
             (0x99, 0x06, "_g_zInput_GlobalStateStorage"),
             (0xA5, 0x06, "_g_zInput_JoystickRawDIState"),
@@ -12382,7 +12382,7 @@ ZINPUT_JOYSTICK_LATER_AGGREGATE_LEAF_SPECS = {
                 "?DispatchJoystickButtonCallbacks@"
                 "zInput_BindMapContext@@QAEXXZ",
             ),
-            (0xC0, 0x14, "?DI_GetCurrentState@zInput@@YAPAUDIJOYSTATE2@@XZ"),
+            (0xC0, 0x14, "?DIGetCurrentState@zInput@@YAPAUDIJOYSTATE2@@XZ"),
         ),
         "load_offsets": (0x16,),
         "load_relocation_offsets": (0x18,),
@@ -12395,7 +12395,7 @@ ZINPUT_JOYSTICK_LATER_AGGREGATE_LEAF_SPECS = {
     },
     "0x472450": {
         "end": "0x472480",
-        "symbol": "@zInput_DI_CreateForceFeedbackEffect@8",
+        "symbol": "@zInputDICreateForceFeedbackEffect@8",
         "name": "zInputDI::CreateForceFeedbackEffect",
         "anchor": (
             "recoil:anchor:gamezrecoil.zinput.zin-joystick."
@@ -12441,10 +12441,10 @@ ZINPUT_KEYBOARD_INIT_CALLER_END_EXCLUSIVE = "0x46f420"
 ZINPUT_KEYBOARD_INIT_CALLER_IDENTITY = "symbol:recoil:function:0x46f300"
 
 
-ZINPUT_KEYBOARD_INIT_CALLER_SYMBOL = "?Keyboard_InitDevice@zInput@@YAHXZ"
+ZINPUT_KEYBOARD_INIT_CALLER_SYMBOL = "?KeyboardInitDevice@zInput@@YAHXZ"
 
 
-ZINPUT_KEYBOARD_INIT_CALLER_NAME = "zInput::Keyboard_InitDevice"
+ZINPUT_KEYBOARD_INIT_CALLER_NAME = "zInput::KeyboardInitDevice"
 
 
 ZINPUT_KEYBOARD_INIT_CALLER_ANCHOR_ID = (
@@ -12516,11 +12516,11 @@ ZINPUT_KEYBOARD_SHUTDOWN_CALLER_IDENTITY = (
 
 
 ZINPUT_KEYBOARD_SHUTDOWN_CALLER_SYMBOL = (
-    "?Keyboard_ShutdownDevice@zInput@@YAHXZ"
+    "?KeyboardShutdownDevice@zInput@@YAHXZ"
 )
 
 
-ZINPUT_KEYBOARD_SHUTDOWN_CALLER_NAME = "zInput::Keyboard_ShutdownDevice"
+ZINPUT_KEYBOARD_SHUTDOWN_CALLER_NAME = "zInput::KeyboardShutdownDevice"
 
 
 ZINPUT_KEYBOARD_SHUTDOWN_CALLER_ANCHOR_ID = (
@@ -12767,7 +12767,7 @@ ZINPUT_BINDMAP_CANDIDATE_DISPATCH_SPECS = {
             (
                 0,
                 0x05,
-                "?Mouse_GetStateSnapshotPtr@zInput@@"
+                "?MouseGetStateSnapshotPtr@zInput@@"
                 "YAPAUMouseStateSnapshot@1@XZ",
             ),
             (
@@ -12823,12 +12823,12 @@ ZINPUT_BINDMAP_CANDIDATE_DISPATCH_SPECS = {
             (
                 0,
                 0x0C,
-                "?DI_GetButtonTransitionState@zInput@@YIHH@Z",
+                "?DIGetButtonTransitionState@zInput@@YIHH@Z",
             ),
             (
                 1,
                 0x18,
-                "?BindMapCurrent_GetCommandByJoystickSlot@zInput@@YIHH@Z",
+                "?BindMapCurrentGetCommandByJoystickSlot@zInput@@YIHH@Z",
             ),
         ),
         "body": bytes.fromhex(
@@ -12840,7 +12840,7 @@ ZINPUT_BINDMAP_CANDIDATE_DISPATCH_SPECS = {
     },
     "0x470e80": {
         "end": "0x470eb0",
-        "symbol": "@zInput_BindMapContext_DispatchFromKeyboardEvent@4",
+        "symbol": "@zInputBindMapContextDispatchFromKeyboardEvent@4",
         "name": "zInput_BindMapContext::DispatchFromKeyboardEvent",
         "anchor": (
             "recoil:anchor:gamezrecoil.zinput.zinput."
@@ -12901,7 +12901,7 @@ ZINPUT_POLL_CALLBACK_PROVENANCE_ROWS = (
     ),
     (
         "direct-translate", 0x185, bytes.fromhex("e8 00 00 00 00"),
-        r"call\s+\?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z"
+        r"call\s+\?KeyboardTranslateDikToAscii@zInput@@YIHH@Z"
         r"(?:\s*;.*)?",
     ),
     (
@@ -12964,7 +12964,7 @@ ZINPUT_POLL_CALLBACK_PROVENANCE_RELOCATIONS = (
     (
         0x186,
         IMAGE_REL_I386_REL32,
-        "?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z",
+        "?KeyboardTranslateDikToAscii@zInput@@YIHH@Z",
         0,
     ),
     (0x1FA, IMAGE_REL_I386_DIR32, "_g_zInput_GlobalStateStorage", 0x28),
@@ -12974,11 +12974,11 @@ ZINPUT_POLL_CALLBACK_PROVENANCE_RELOCATIONS = (
 
 ZINPUT_RUNTIME_DISPATCH_CANDIDATE_SPECS = {
     "0x46f450": {
-        "end": "0x46f690", "symbol": "?Keyboard_ResetTransitionState@zInput@@YAXXZ",
+        "end": "0x46f690", "symbol": "?KeyboardResetTransitionState@zInput@@YAXXZ",
         "candidate_aliases": (
-            "?Keyboard_ResetTransitionState@zInput@@YIXXZ",
+            "?KeyboardResetTransitionState@zInput@@YIXXZ",
         ),
-        "name": "zInput::Keyboard_ResetTransitionState",
+        "name": "zInput::KeyboardResetTransitionState",
         "anchor": "recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_resettransitionstate",
         "retail_size": 0x240, "candidate_size": 0x240, "section": 7,
         "calls": (0x33, 0x4D, 0x17D),
@@ -13005,9 +13005,9 @@ ZINPUT_RUNTIME_DISPATCH_CANDIDATE_SPECS = {
         },
     },
     "0x46f690": {
-        "end": "0x46f970", "symbol": "?Keyboard_PollState@zInput@@YIXE@Z",
+        "end": "0x46f970", "symbol": "?KeyboardPollState@zInput@@YIXE@Z",
         "candidate_aliases": (),
-        "name": "zInput::Keyboard_PollState",
+        "name": "zInput::KeyboardPollState",
         "anchor": "recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_pollstate",
         "retail_size": 0x2E0, "candidate_size": 0x310, "section": 9,
         "calls": (0x2B, 0x45, 0x185, 0x18E, 0x20E, 0x241),
@@ -13039,9 +13039,9 @@ ZINPUT_RUNTIME_DISPATCH_CANDIDATE_SPECS = {
         "callback_relocations": ZINPUT_POLL_CALLBACK_PROVENANCE_RELOCATIONS,
     },
     "0x46fa10": {
-        "end": "0x46fba0", "symbol": "?Keyboard_WaitForAnyKeyPress@zInput@@YIHH@Z",
+        "end": "0x46fba0", "symbol": "?KeyboardWaitForAnyKeyPress@zInput@@YIHH@Z",
         "candidate_aliases": (),
-        "name": "zInput::Keyboard_WaitForAnyKeyPress",
+        "name": "zInput::KeyboardWaitForAnyKeyPress",
         "anchor": "recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_waitforanykeypress",
         "retail_size": 0x190, "candidate_size": 0x190, "section": 21,
         "calls": (0x38, 0x52, 0x168),
@@ -13068,11 +13068,11 @@ ZINPUT_TRANSLATE_CALLER_IDENTITY = "symbol:recoil:function:0x46fba0"
 
 
 ZINPUT_TRANSLATE_CALLER_SYMBOL = (
-    "?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z"
+    "?KeyboardTranslateDikToAscii@zInput@@YIHH@Z"
 )
 
 
-ZINPUT_TRANSLATE_CALLER_NAME = "zInput::Keyboard_TranslateDikToAscii"
+ZINPUT_TRANSLATE_CALLER_NAME = "zInput::KeyboardTranslateDikToAscii"
 
 
 ZINPUT_TRANSLATE_CALLER_ANCHOR = (
@@ -13165,7 +13165,7 @@ ZINPUT_TRANSLATE_CODE_OFFSETS = (
 
 ZINPUT_TRANSLATE_RELOCATIONS = (
     (0x01, IMAGE_REL_I386_DIR32, "_g_zInput_KbdDikToAsciiTableReady", 0),
-    (0x0D, IMAGE_REL_I386_REL32, "?Keyboard_InitDikToAsciiTable@zInput@@YAXXZ", 0),
+    (0x0D, IMAGE_REL_I386_REL32, "?KeyboardInitDikToAsciiTable@zInput@@YAXXZ", 0),
     (0x13, IMAGE_REL_I386_DIR32, "_g_zInput_KbdDikToAsciiTableReady", 0),
     (0x25, IMAGE_REL_I386_DIR32, "_g_zInput_KbdDikToAsciiTable", 0),
     (0x51, IMAGE_REL_I386_DIR32, "classifier-data", 0),
@@ -13198,10 +13198,10 @@ ZINPUT_MOUSE_INIT_CALLER_END_EXCLUSIVE = "0x4702e0"
 ZINPUT_MOUSE_INIT_CALLER_IDENTITY = "symbol:recoil:function:0x4701f0"
 
 
-ZINPUT_MOUSE_INIT_CALLER_SYMBOL = "?Mouse_InitDevice@zInput@@YAHXZ"
+ZINPUT_MOUSE_INIT_CALLER_SYMBOL = "?MouseInitDevice@zInput@@YAHXZ"
 
 
-ZINPUT_MOUSE_INIT_CALLER_NAME = "zInput::Mouse_InitDevice"
+ZINPUT_MOUSE_INIT_CALLER_NAME = "zInput::MouseInitDevice"
 
 
 ZINPUT_MOUSE_INIT_CALLER_ANCHOR_ID = (
@@ -13265,12 +13265,12 @@ ZINPUT_MOUSE_UPDATE_ACQUIRE_CALLER_IDENTITY = (
 
 
 ZINPUT_MOUSE_UPDATE_ACQUIRE_CALLER_SYMBOL = (
-    "?Mouse_UpdateAcquireState@zInput@@YAXXZ"
+    "?MouseUpdateAcquireState@zInput@@YAXXZ"
 )
 
 
 ZINPUT_MOUSE_UPDATE_ACQUIRE_CALLER_NAME = (
-    "zInput::Mouse_UpdateAcquireState"
+    "zInput::MouseUpdateAcquireState"
 )
 
 
@@ -13334,10 +13334,10 @@ ZINPUT_MOUSE_SHUTDOWN_CALLER_END_EXCLUSIVE = "0x4703a0"
 ZINPUT_MOUSE_SHUTDOWN_CALLER_IDENTITY = "symbol:recoil:function:0x470360"
 
 
-ZINPUT_MOUSE_SHUTDOWN_CALLER_SYMBOL = "?Mouse_ShutdownDevice@zInput@@YAHXZ"
+ZINPUT_MOUSE_SHUTDOWN_CALLER_SYMBOL = "?MouseShutdownDevice@zInput@@YAHXZ"
 
 
-ZINPUT_MOUSE_SHUTDOWN_CALLER_NAME = "zInput::Mouse_ShutdownDevice"
+ZINPUT_MOUSE_SHUTDOWN_CALLER_NAME = "zInput::MouseShutdownDevice"
 
 
 ZINPUT_MOUSE_SHUTDOWN_CALLER_ANCHOR_ID = (
@@ -13408,10 +13408,10 @@ ZINPUT_MOUSE_POLL_CALLER_END_EXCLUSIVE = "0x4704f0"
 ZINPUT_MOUSE_POLL_CALLER_IDENTITY = "symbol:recoil:function:0x4703c0"
 
 
-ZINPUT_MOUSE_POLL_CALLER_SYMBOL = "?Mouse_PollState@zInput@@YIHE@Z"
+ZINPUT_MOUSE_POLL_CALLER_SYMBOL = "?MousePollState@zInput@@YIHE@Z"
 
 
-ZINPUT_MOUSE_POLL_CALLER_NAME = "zInput::Mouse_PollState"
+ZINPUT_MOUSE_POLL_CALLER_NAME = "zInput::MousePollState"
 
 
 ZINPUT_MOUSE_POLL_CALLER_ANCHOR_ID = (
@@ -13467,12 +13467,12 @@ ZINPUT_MOUSE_POLL_RELOCATIONS = (
     (0xD0, IMAGE_REL_I386_DIR32, ZINPUT_JOYSTICK_AGGREGATE_OBJECT_SYMBOL, 0x41D8),
     (0xD5, IMAGE_REL_I386_DIR32, "_g_zInput_MouseStateSnapshot", 0x10),
     (0xDB, IMAGE_REL_I386_DIR32, "_g_zInput_MouseStateSnapshot", 0x14),
-    (0xE0, IMAGE_REL_I386_REL32, "?Mouse_ApplyAccumulatedDelta@zInput@@YAXXZ", 0),
-    (0xEA, IMAGE_REL_I386_REL32, "?Mouse_GetButtonTransitionState@zInput@@YIHH@Z", 0),
+    (0xE0, IMAGE_REL_I386_REL32, "?MouseApplyAccumulatedDelta@zInput@@YAXXZ", 0),
+    (0xEA, IMAGE_REL_I386_REL32, "?MouseGetButtonTransitionState@zInput@@YIHH@Z", 0),
     (0xF4, IMAGE_REL_I386_DIR32, "_g_zInput_MouseStateSnapshot", 0x20),
-    (0xF9, IMAGE_REL_I386_REL32, "?Mouse_GetButtonTransitionState@zInput@@YIHH@Z", 0),
+    (0xF9, IMAGE_REL_I386_REL32, "?MouseGetButtonTransitionState@zInput@@YIHH@Z", 0),
     (0x103, IMAGE_REL_I386_DIR32, "_g_zInput_MouseStateSnapshot", 0x24),
-    (0x108, IMAGE_REL_I386_REL32, "?Mouse_GetButtonTransitionState@zInput@@YIHH@Z", 0),
+    (0x108, IMAGE_REL_I386_REL32, "?MouseGetButtonTransitionState@zInput@@YIHH@Z", 0),
     (0x10E, IMAGE_REL_I386_DIR32, ZINPUT_JOYSTICK_AGGREGATE_OBJECT_SYMBOL, 0x41F0),
     (0x113, IMAGE_REL_I386_DIR32, "_g_zInput_MouseStateSnapshot", 0x28),
     (0x124, IMAGE_REL_I386_REL32, "?DispatchMouseButtonCallbacks@zInput_BindMapContext@@QAEXXZ", 0),
@@ -13519,7 +13519,7 @@ ZSND_DIRECTSOUND_CREATE_CALLER_IDENTITY = (
 )
 
 
-ZSND_DIRECTSOUND_CREATE_CALLER_SYMBOL = "_zSndBackend_InitDirectSound"
+ZSND_DIRECTSOUND_CREATE_CALLER_SYMBOL = "_zSndBackendInitDirectSound"
 
 
 ZSND_DIRECTSOUND_CREATE_CALLER_ANCHOR_ID = (
@@ -14294,7 +14294,7 @@ _ZSND_APPLY_MUTE_RETAIL_VPTR = (
 )
 
 
-_ZSND_PLAY_SIMPLE_SYMBOL = "_zSndSample_PlaySimple@4"
+_ZSND_PLAY_SIMPLE_SYMBOL = "_zSndSamplePlaySimple@4"
 
 
 _ZSND_PLAY_SIMPLE_IDENTITY = "symbol:recoil:function:0x49fa00"
@@ -14485,7 +14485,7 @@ _ZINTERP_LOGF_CALLER_START = "0x4c1b30"
 _ZINTERP_LOGF_CALLER_END_EXCLUSIVE = "0x4c1b50"
 
 
-_ZINTERP_LOGF_CANDIDATE_SYMBOL = "?Logf@zInterp_Context@@SAXPAU1@PBDZZ"
+_ZINTERP_LOGF_CANDIDATE_SYMBOL = "?Logf@CZInterp@@SAXPAU1@PBDZZ"
 
 
 _ZINTERP_LOGF_FASTCALL_TAIL_BODY = bytes.fromhex(
@@ -14515,7 +14515,7 @@ _ZINTERP_REPORT_ERRORF_CALLER_END_EXCLUSIVE = "0x4c5550"
 
 
 _ZINTERP_REPORT_ERRORF_CANDIDATE_SYMBOL = (
-    "?ReportErrorf@zInterp_Context@@SAXPAU1@PBDZZ"
+    "?ReportErrorf@CZInterp@@SAXPAU1@PBDZZ"
 )
 
 
@@ -14738,7 +14738,7 @@ _ZMATH_CAMERA_STAGE_INVERSE_ROTATION_CALLER_END = "0x473fc0"
 
 
 _ZMATH_CAMERA_STAGE_INVERSE_ROTATION_CALLER_SYMBOL = (
-    "?zMath_Camera_StageInverseRotation@@YIXPBUzMat4x3@@@Z"
+    "?zMathCameraStageInverseRotation@@YIXPBUzMat4x3@@@Z"
 )
 
 
@@ -15086,7 +15086,7 @@ _ZNETWORK_APPEND_RETAIL_PROVIDER_AUTHORITIES = {
 
 
 _ZNETWORK_APPEND_CALLER_SYMBOL = (
-    "?EnumConnectionsCallback_AddServiceProviderInfo@zNetworkDPlay@@YGH"
+    "?EnumConnectionsCallbackAddServiceProviderInfo@zNetworkDPlay@@YGH"
     "PBU_GUID@@PAXKPBUDPNAME@@K1@Z"
 )
 

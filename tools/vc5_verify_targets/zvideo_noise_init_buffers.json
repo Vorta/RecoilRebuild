@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x48d340",
-      "symbol": "?Noise_InitBuffers@zVid@@YAXXZ",
-      "name": "zVid::Noise_InitBuffers"
+      "symbol": "?NoiseInitBuffers@zVid@@YAXXZ",
+      "name": "zVid::NoiseInitBuffers"
     },
     {
       "address": "0x48ff70",
@@ -34,8 +34,8 @@
     },
     {
       "address": "0x48d3e0",
-      "symbol": "?Noise_ShutdownBuffers@zVid@@YAXXZ",
-      "name": "zVid::Noise_ShutdownBuffers"
+      "symbol": "?NoiseShutdownBuffers@zVid@@YAXXZ",
+      "name": "zVid::NoiseShutdownBuffers"
     },
     {
       "address": "0x48d910",

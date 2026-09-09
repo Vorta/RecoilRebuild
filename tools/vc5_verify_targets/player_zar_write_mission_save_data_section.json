@@ -31,8 +31,8 @@
   "functions": [
     {
       "address": "0x41f5f0",
-      "symbol": "?ZAR_WriteMissionSaveDataSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z",
-      "name": "Player::ZAR_WriteMissionSaveDataSection"
+      "symbol": "?zZarWriteMissionSaveDataSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z",
+      "name": "Player::zZarWriteMissionSaveDataSection"
     }
   ],
   "source_from": "src/Battlesport/player.cpp"

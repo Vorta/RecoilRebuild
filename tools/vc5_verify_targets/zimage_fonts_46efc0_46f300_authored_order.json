@@ -35,7 +35,7 @@
       "retail_end_exclusive": "0x46f300",
       "predecessor": {"address":"0x46ef70","symbol":"?ReadFromFile@zVid_Image@@YIPAUzVidImagePartial@@PAU_iobuf@@@Z","name":"zVid_Image::ReadFromFile","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": ["0x46efc0","0x46efe0","0x46f130","0x46f210","0x46f260"],
-      "successor": {"address":"0x46f300","symbol":"?Keyboard_InitDevice@zInput@@YAHXZ","name":"zInput::Keyboard_InitDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x46f300","symbol":"?KeyboardInitDevice@zInput@@YAHXZ","name":"zInput::KeyboardInitDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

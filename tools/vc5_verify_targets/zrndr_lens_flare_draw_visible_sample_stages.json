@@ -1,6 +1,6 @@
 {
   "name": "zrndr_lens_flare_draw_visible_sample_stages",
-  "description": "zRndr_LensFlare_DrawVisibleSampleStages four-stage lens-flare layout helper.",
+  "description": "zRndrLensFlareDrawVisibleSampleStages four-stage lens-flare layout helper.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49b020",
-      "symbol": "?zRndr_LensFlare_DrawVisibleSampleStages@@YIXPAUzRndr_LensFlareVisibleSampleDef@@M@Z",
-      "name": "zRndr_LensFlare_DrawVisibleSampleStages"
+      "symbol": "?zRndrLensFlareDrawVisibleSampleStages@@YIXPAUzRndr_LensFlareVisibleSampleDef@@M@Z",
+      "name": "zRndrLensFlareDrawVisibleSampleStages"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

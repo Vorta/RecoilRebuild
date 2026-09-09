@@ -275,12 +275,12 @@ int __fastcall AltGunDispatchAllocRuntimeGateCallback(
     OptCatalogEntryDef *self,
     void **saveStateSlot
 );
-void __fastcall SendPkt0A_RemoveRuntimeRelay(
+void __fastcall SendPkt0ARemoveRuntimeRelay(
     OptCatalogEntryDef *self,
     zVec3 *pointOrVec3,
     zClass_NodePartial *ownerNode
 );
-int __fastcall HandlePkt0A_RemoveRuntimeRelay(
+int __fastcall HandlePkt0ARemoveRuntimeRelay(
     int senderPlayerId,
     NetPkt0A_RemoveRuntimeRelay *packet
 );

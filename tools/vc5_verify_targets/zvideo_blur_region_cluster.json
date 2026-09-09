@@ -21,23 +21,23 @@
   "functions": [
     {
       "address": "0x48e380",
-      "symbol": "?buff_BlurRegionCombined@zVideo@@YIXPAUzVidRect32@@H@Z",
-      "name": "zVideo::buff_BlurRegionCombined"
+      "symbol": "?buffBlurRegionCombined@zVideo@@YIXPAUzVidRect32@@H@Z",
+      "name": "zVideo::buffBlurRegionCombined"
     },
     {
       "address": "0x48e670",
-      "symbol": "?buff_BlurRegionVertical@zVideo@@YIXPAUzVidRect32@@H@Z",
-      "name": "zVideo::buff_BlurRegionVertical"
+      "symbol": "?buffBlurRegionVertical@zVideo@@YIXPAUzVidRect32@@H@Z",
+      "name": "zVideo::buffBlurRegionVertical"
     },
     {
       "address": "0x48e870",
-      "symbol": "?buff_BlurRegionHorizontal@zVideo@@YIXPAUzVidRect32@@H@Z",
-      "name": "zVideo::buff_BlurRegionHorizontal"
+      "symbol": "?buffBlurRegionHorizontal@zVideo@@YIXPAUzVidRect32@@H@Z",
+      "name": "zVideo::buffBlurRegionHorizontal"
     },
     {
       "address": "0x48ea00",
-      "symbol": "?buff_BlurRegionByMode@zVideo@@YIXPAUzVidRect32@@H@Z",
-      "name": "zVideo::buff_BlurRegionByMode"
+      "symbol": "?buffBlurRegionByMode@zVideo@@YIXPAUzVidRect32@@H@Z",
+      "name": "zVideo::buffBlurRegionByMode"
     }
   ]
 }

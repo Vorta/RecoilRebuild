@@ -1105,8 +1105,7 @@ void WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls() {
         dialog->m_queryStatusFlagBit1
     );
     IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-    api->SubmitEncodedQueryString(encodedQuery
-    );
+    api->SubmitEncodedQueryString(encodedQuery);
 }
 
 /**
@@ -1120,15 +1119,8 @@ int WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(
     ...
 ) {
     va_list args;
-    va_start(
-        args,
-        format
-    );
-    vsprintf(
-        g_WestwoodOnlineUpgradeStatusAppendBuffer,
-        format,
-        args
-    );
+    va_start(args, format);
+    vsprintf(g_WestwoodOnlineUpgradeStatusAppendBuffer, format, args);
     va_end(args);
 
     const unsigned int formattedLength =
@@ -1146,21 +1138,11 @@ int WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(
         g_WestwoodOnlineUpgradeStatusAppendBuffer[formattedLength - 1] = '\0';
     }
 
-    ::SendMessageA(
-        m_statusList.m_hWnd,
-        LB_ADDSTRING,
-        0,
-        (LPARAM)appendText
-    );
+    ::SendMessageA(m_statusList.m_hWnd, LB_ADDSTRING, 0, (LPARAM)appendText);
     ++m_statusLineCount;
     if ((int)m_statusLineCount > kStatusListMaxLineCount) {
         --m_statusLineCount;
-        ::SendMessageA(
-            m_statusList.m_hWnd,
-            LB_DELETESTRING,
-            0,
-            0
-        );
+        ::SendMessageA(m_statusList.m_hWnd, LB_DELETESTRING, 0, 0);
     }
 
     if ((int)m_statusLineCount > kStatusListScrollThreshold) {
@@ -1206,21 +1188,11 @@ int WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(
     );
 
     if (g_pWestwoodOnlineUpgradeApi == 0) {
-        CopyFailureMessage(
-            failureCaption,
-            zLoc::GetMessageString(kWolApiFailureCaptionMessageId)
-        );
-        CopyFailureMessage(
-            failureText,
-            zLoc::GetMessageString(kWolApiFailureTextMessageId)
-        );
+        CopyFailureMessage(failureCaption, zLoc::GetMessageString(kWolApiFailureCaptionMessageId));
+        CopyFailureMessage(failureText, zLoc::GetMessageString(kWolApiFailureTextMessageId));
         MessageBeep(kWolApiFailureMessageBoxType);
         ((CWnd *)((unsigned int)g_RecoilApp.m_pMainWnd))
-            ->MessageBoxA(
-                failureText,
-                failureCaption,
-                kWolApiFailureMessageBoxType
-            );
+            ->MessageBoxA(failureText, failureCaption, kWolApiFailureMessageBoxType);
         return 0;
     }
 
@@ -1228,7 +1200,7 @@ int WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(
     WestwoodOnlineUpgradeApiEventSink::CreateInstance(
         (WestwoodOnlineUpgradeApiEventSink **)&g_pWestwoodOnlineUpgradeApiEventSink
     );
-    zCom::ConnectionPointContainer_Advise(
+    zCom::ConnectionPointContainerAdvise(
         g_pWestwoodOnlineUpgradeApi,
         (IUnknown *)((unsigned char *)g_pWestwoodOnlineUpgradeApiEventSink +
                      g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[0].interfaceOffset),
@@ -1256,7 +1228,7 @@ void WestwoodOnlineUpgradeApi::Shutdown() {
         return;
     }
 
-    zCom::ConnectionPointContainer_Unadvise(
+    zCom::ConnectionPointContainerUnadvise(
         g_pWestwoodOnlineUpgradeApi,
         g_WestwoodOnlineUpgradeApiEventSink_IID,
         g_WestwoodOnlineUpgradeApiAdviseCookie
@@ -1291,33 +1263,15 @@ int WestwoodOnlineUpgradeApi::Init() {
         return 0;
     }
 
-    g_WestwoodOnlineUpgradeBootstrapServerListEvent = CreateEventA(
-        0,
-        FALSE,
-        FALSE,
-        0
-    );
-    g_WestwoodOnlineUpgradeStatusTextEvent = CreateEventA(
-        0,
-        FALSE,
-        FALSE,
-        0
-    );
-    g_WestwoodOnlineUpgradeFailureEvent = CreateEventA(
-        0,
-        FALSE,
-        FALSE,
-        0
-    );
+    g_WestwoodOnlineUpgradeBootstrapServerListEvent = CreateEventA(0, FALSE, FALSE, 0);
+    g_WestwoodOnlineUpgradeStatusTextEvent = CreateEventA(0, FALSE, FALSE, 0);
+    g_WestwoodOnlineUpgradeFailureEvent = CreateEventA(0, FALSE, FALSE, 0);
     g_WestwoodOnlineUpgradeInitWaitEvents[0] = g_WestwoodOnlineUpgradeBootstrapServerListEvent;
     g_WestwoodOnlineUpgradeInitWaitEvents[1] = g_WestwoodOnlineUpgradeStatusTextEvent;
     g_WestwoodOnlineUpgradeInitWaitEvents[2] = g_WestwoodOnlineUpgradeFailureEvent;
 
     ((CDialog *)g_pWestwoodOnlineUpgradeProgressDialog)
-        ->Create(
-            (LPCSTR)kWestwoodOnlineUpgradeApi_ProgressDialogResourceId,
-            0
-        );
+        ->Create((LPCSTR)kWestwoodOnlineUpgradeApi_ProgressDialogResourceId, 0);
     ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)
         ->SetDlgItemTextA(
             kWestwoodOnlineUpgradeApi_ProgressStatusControlId,
@@ -1384,27 +1338,14 @@ int WestwoodOnlineUpgradeApi::Init() {
 
     if (waitResult != WAIT_OBJECT_0 + 2) {
         apiCom = GetApiComObject();
-        apiCom->RequestListMode(
-            kWolRequestListMode,
-            1
-        );
+        apiCom->RequestListMode(kWolRequestListMode, 1);
         return 1;
     }
 
-    CopyFailureMessage(
-        failureCaption,
-        zLoc::GetMessageString(kWolApiInitFailureCaptionMessageId)
-    );
-    CopyFailureMessage(
-        failureText,
-        zLoc::GetMessageString(kWolApiInitFailureTextMessageId)
-    );
+    CopyFailureMessage(failureCaption, zLoc::GetMessageString(kWolApiInitFailureCaptionMessageId));
+    CopyFailureMessage(failureText, zLoc::GetMessageString(kWolApiInitFailureTextMessageId));
     ((CWnd *)((unsigned int)g_RecoilApp.m_pMainWnd))
-        ->MessageBoxA(
-            failureText,
-            failureCaption,
-            kWolApiFailureMessageBoxType
-        );
+        ->MessageBoxA(failureText, failureCaption, kWolApiFailureMessageBoxType);
     return 0;
 }
 
@@ -1419,12 +1360,7 @@ void WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList(
     const char *sessionName
 ) {
     char statusText[kConnectStatusBufferSize];
-    zLoc::FormatMessage(
-        statusText,
-        kConnectStatusBufferSize,
-        kConnectStatusMessageId,
-        sessionName
-    );
+    zLoc::FormatMessage(statusText, kConnectStatusBufferSize, kConnectStatusMessageId, sessionName);
     AppendStatusTextFmt(statusText);
     ResetSelectedBrowseRecordAndRefreshList();
 }
@@ -1570,11 +1506,7 @@ void WestwoodOnlineUpgradeDialog::DoDataExchange(
         kWestwoodOnlineUpgradeSubmitPendingSessionListButtonId,
         *((CWnd *)&m_submitPendingSessionListButton)
     );
-    DDX_Control(
-        dataExchange,
-        kWestwoodOnlineUpgradeConnectButtonId,
-        *((CWnd *)&m_connectButton)
-    );
+    DDX_Control(dataExchange, kWestwoodOnlineUpgradeConnectButtonId, *((CWnd *)&m_connectButton));
     DDX_Control(
         dataExchange,
         kWestwoodOnlineUpgradeQuerySessionsByNameButtonId,
@@ -1585,11 +1517,7 @@ void WestwoodOnlineUpgradeDialog::DoDataExchange(
         kWestwoodOnlineUpgradeQueueVisibleSessionRequestsButtonId,
         *((CWnd *)&m_queueVisibleSessionRequestsButton)
     );
-    DDX_Control(
-        dataExchange,
-        kWestwoodOnlineUpgradeStatusListId,
-        *((CWnd *)&m_statusList)
-    );
+    DDX_Control(dataExchange, kWestwoodOnlineUpgradeStatusListId, *((CWnd *)&m_statusList));
     DDX_Control(
         dataExchange,
         kWestwoodOnlineUpgradeSessionModeComboId,
@@ -1615,21 +1543,9 @@ void WestwoodOnlineUpgradeDialog::DoDataExchange(
         kWestwoodOnlineUpgradeDialog_BrowseRecordListId,
         *((CWnd *)&m_browseRecordList)
     );
-    DDX_Text(
-        dataExchange,
-        kWestwoodOnlineUpgradeQueryAuxParamEditId,
-        m_queryAuxParam
-    );
-    DDX_Text(
-        dataExchange,
-        kWestwoodOnlineUpgradeQueryMaxPlayersEditId,
-        m_queryMaxPlayers
-    );
-    DDX_Text(
-        dataExchange,
-        kWestwoodOnlineUpgradeQueryValueOrTimeEditId,
-        m_queryValueOrTime
-    );
+    DDX_Text(dataExchange, kWestwoodOnlineUpgradeQueryAuxParamEditId, m_queryAuxParam);
+    DDX_Text(dataExchange, kWestwoodOnlineUpgradeQueryMaxPlayersEditId, m_queryMaxPlayers);
+    DDX_Text(dataExchange, kWestwoodOnlineUpgradeQueryValueOrTimeEditId, m_queryValueOrTime);
     DDX_Check(
         dataExchange,
         kWestwoodOnlineUpgradeQueryStatusFlag0CheckId,
@@ -1681,19 +1597,9 @@ BOOL WestwoodOnlineUpgradeDialog::OnInitDialog() {
             0,
             (LPARAM)sessionModeText[index]
         );
-        ::SendMessageA(
-            m_sessionModeCombo.m_hWnd,
-            CB_SETITEMDATA,
-            itemIndex,
-            index
-        );
+        ::SendMessageA(m_sessionModeCombo.m_hWnd, CB_SETITEMDATA, itemIndex, index);
     }
-    ::SendMessageA(
-        m_sessionModeCombo.m_hWnd,
-        CB_SETCURSEL,
-        0,
-        0
-    );
+    ::SendMessageA(m_sessionModeCombo.m_hWnd, CB_SETCURSEL, 0, 0);
 
     ((CWnd *)this)
         ->SetDlgItemTextA(
@@ -1716,42 +1622,12 @@ BOOL WestwoodOnlineUpgradeDialog::OnInitDialog() {
         return 0;
     }
 
-    ::SetTimer(
-        m_hWnd,
-        kWolRefreshListTimerId,
-        kWolRefreshListTimerMs,
-        0
-    );
-    ::SendMessageA(
-        m_sessionNameEdit.m_hWnd,
-        EM_LIMITTEXT,
-        kWolSessionNameEditLimit,
-        0
-    );
-    ::SendMessageA(
-        m_serverAddressEdit.m_hWnd,
-        EM_LIMITTEXT,
-        kWolServerAddressEditLimit,
-        0
-    );
-    ::SendMessageA(
-        m_statusServerEdit.m_hWnd,
-        EM_LIMITTEXT,
-        kWolStatusServerEditLimit,
-        0
-    );
-    ::SendMessageA(
-        m_statusTokenEdit.m_hWnd,
-        EM_LIMITTEXT,
-        kWolStatusTokenEditLimit,
-        0
-    );
-    ::SendMessageA(
-        m_statusList.m_hWnd,
-        LB_SETHORIZONTALEXTENT,
-        kWolStatusListHorizontalExtent,
-        0
-    );
+    ::SetTimer(m_hWnd, kWolRefreshListTimerId, kWolRefreshListTimerMs, 0);
+    ::SendMessageA(m_sessionNameEdit.m_hWnd, EM_LIMITTEXT, kWolSessionNameEditLimit, 0);
+    ::SendMessageA(m_serverAddressEdit.m_hWnd, EM_LIMITTEXT, kWolServerAddressEditLimit, 0);
+    ::SendMessageA(m_statusServerEdit.m_hWnd, EM_LIMITTEXT, kWolStatusServerEditLimit, 0);
+    ::SendMessageA(m_statusTokenEdit.m_hWnd, EM_LIMITTEXT, kWolStatusTokenEditLimit, 0);
+    ::SendMessageA(m_statusList.m_hWnd, LB_SETHORIZONTALEXTENT, kWolStatusListHorizontalExtent, 0);
     g_WestwoodOnlineUpgradeDisconnectInFlightFlag = 0;
     return 1;
 }
@@ -1773,9 +1649,7 @@ void WestwoodOnlineUpgradeDialog::OnRefreshListTimer(
             api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
             g_WestwoodOnlineUpgradeNextAutoRefreshTime =
                 g_Time_UnscaledAccumulatedTimeSec - (-60.0);
-            api->RequestListMode(kWestwoodOnlineUpgradeAutoRefreshListMode,
-                    1
-                );
+            api->RequestListMode(kWestwoodOnlineUpgradeAutoRefreshListMode, 1);
         }
     }
 
@@ -1788,12 +1662,7 @@ void WestwoodOnlineUpgradeDialog::OnRefreshListTimer(
  * Purpose: load a selected browse record and update the dialog selection.
  */
 void WestwoodOnlineUpgradeDialog::OnBrowseRecordListDblClk() {
-    LRESULT const selectedIndex = ::SendMessageA(
-        m_browseRecordList.m_hWnd,
-        LB_GETCURSEL,
-        0,
-        0
-    );
+    LRESULT const selectedIndex = ::SendMessageA(m_browseRecordList.m_hWnd, LB_GETCURSEL, 0, 0);
     if (selectedIndex != LB_ERR &&
         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] != '\0') {
         if (strcmp(
@@ -1817,8 +1686,7 @@ void WestwoodOnlineUpgradeDialog::OnBrowseRecordListDblClk() {
     IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
     WestwoodOnlineUpgradeBrowseRecord *const selectedRecord =
         &g_WestwoodOnlineUpgradeCachedBrowseRecordList[selectedIndex];
-    int const result = api->LoadBrowseRecord(selectedRecord
-    );
+    int const result = api->LoadBrowseRecord(selectedRecord);
     if (result == kWolQueryDuplicateNameResult) {
         g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
             zLoc::GetMessageString(kWolQuerySessionDuplicateMessageId)
@@ -1849,10 +1717,7 @@ void WestwoodOnlineUpgradeDialog::OnDestroy() {
         }
     }
 
-    ::KillTimer(
-        m_hWnd,
-        kWolRefreshListTimerId
-    );
+    ::KillTimer(m_hWnd, kWolRefreshListTimerId);
     WestwoodOnlineUpgradeApi::Shutdown();
 
     ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
@@ -1876,12 +1741,7 @@ void WestwoodOnlineUpgradeDialog::OnOK() {
     ((CWnd *)&m_statusServerEdit)->SetWindowTextA("");
 
     g_WestwoodOnlineUpgradeVisibleSessionResultCount =
-        (int) ::SendMessageA(
-            m_sessionResultsList.m_hWnd,
-            LB_GETSELCOUNT,
-            0,
-            0
-        );
+        (int) ::SendMessageA(m_sessionResultsList.m_hWnd, LB_GETSELCOUNT, 0, 0);
     if (g_WestwoodOnlineUpgradeVisibleSessionResultCount == 0) {
         ((IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi)->SubmitStatusText(
             pendingStatusText
@@ -1907,11 +1767,7 @@ void WestwoodOnlineUpgradeDialog::OnOK() {
     for (int rowIndex = 0; rowIndex < g_WestwoodOnlineUpgradeVisibleSessionResultCount;
         ++rowIndex) {
         sessionRequest = new WestwoodOnlineUpgradeSessionRequest;
-        memset(
-            sessionRequest,
-            0,
-            sizeof(WestwoodOnlineUpgradeSessionRequest)
-        );
+        memset(sessionRequest, 0, sizeof(WestwoodOnlineUpgradeSessionRequest));
         ::SendMessageA(
             m_sessionResultsList.m_hWnd,
             LB_GETTEXT,
@@ -1961,12 +1817,7 @@ void WestwoodOnlineUpgradeDialog::ResetSelectedBrowseRecordAndRefreshList() {
         );
     }
 
-    ::SendMessageA(
-        m_sessionResultsList.m_hWnd,
-        LB_RESETCONTENT,
-        0,
-        0
-    );
+    ::SendMessageA(m_sessionResultsList.m_hWnd, LB_RESETCONTENT, 0, 0);
     g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;
     g_pWestwoodOnlineUpgradeDialog->EnableQueryControls(0);
     g_pWestwoodOnlineUpgradeDialog->EnableConnectButton(0);
@@ -1974,9 +1825,7 @@ void WestwoodOnlineUpgradeDialog::ResetSelectedBrowseRecordAndRefreshList() {
     ((CWnd *)&m_queueVisibleSessionRequestsButton)->EnableWindow(0);
 
     IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-    api->RequestListMode(g_WestwoodOnlineUpgradeActiveListMode,
-        1
-    );
+    api->RequestListMode(g_WestwoodOnlineUpgradeActiveListMode, 1);
 }
 
 /**
@@ -1990,10 +1839,7 @@ void WestwoodOnlineUpgradeDialog::BeginDisconnectAndShowProgress() {
     }
 
     ((CDialog *)g_pWestwoodOnlineUpgradeProgressDialog)
-        ->Create(
-            (LPCSTR)kWestwoodOnlineUpgradeDialog_ProgressDialogResourceId,
-            0
-        );
+        ->Create((LPCSTR)kWestwoodOnlineUpgradeDialog_ProgressDialogResourceId, 0);
     ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)
         ->SetDlgItemTextA(
             kWestwoodOnlineUpgradeDialog_ProgressStatusControlId,
@@ -2013,15 +1859,11 @@ void WestwoodOnlineUpgradeDialog::BeginDisconnectAndShowProgress() {
 void WestwoodOnlineUpgradeDialog::BeginConnect() {
     WestwoodOnlineUpgradeConnectContext context;
     ((CWnd *)&m_statusServerEdit)
-        ->GetWindowTextA(
-            context.m_requestText,
-            kWolConnectRequestTextMaxChars
-        );
+        ->GetWindowTextA(context.m_requestText, kWolConnectRequestTextMaxChars);
 
     IWestwoodOnlineUpgradeProviderApi *api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
     int mode;
-    if (api->PrepareConnectContextAndMode(&context
-    ) == 0) {
+    if (api->PrepareConnectContextAndMode(&context) == 0) {
         mode = 0;
         AppendStatusTextFmt(zLoc::GetMessageString(kWolBeginConnectMode0MessageId));
     } else {
@@ -2030,9 +1872,7 @@ void WestwoodOnlineUpgradeDialog::BeginConnect() {
     }
 
     api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-    api->BeginConnectWithPreparedContext(&context,
-        mode
-    );
+    api->BeginConnectWithPreparedContext(&context, mode);
 }
 
 /**
@@ -2043,14 +1883,10 @@ void WestwoodOnlineUpgradeDialog::BeginConnect() {
 int WestwoodOnlineUpgradeDialog::CheckAndApplyUpgrade() {
     WestwoodOnlineUpgradeConnectContext context;
     ((CWnd *)&m_statusServerEdit)
-        ->GetWindowTextA(
-            context.m_requestText,
-            kWolConnectRequestTextMaxChars
-        );
+        ->GetWindowTextA(context.m_requestText, kWolConnectRequestTextMaxChars);
 
     IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-    return api->RequestUpgradeDownloadReadyResult(&context
-    );
+    return api->RequestUpgradeDownloadReadyResult(&context);
 }
 
 /**
@@ -2061,54 +1897,30 @@ int WestwoodOnlineUpgradeDialog::CheckAndApplyUpgrade() {
  */
 int WestwoodOnlineUpgradeDialog::QueryStatus() {
     char tokenInputText[kWolQueryStatusTokenTextBufferSize];
-    ((CWnd *)&m_statusTokenEdit)->GetWindowTextA(
-        tokenInputText,
-        kWolQueryStatusTokenTextMaxChars
-    );
+    ((CWnd *)&m_statusTokenEdit)->GetWindowTextA(tokenInputText, kWolQueryStatusTokenTextMaxChars);
     ((CWnd *)&m_statusTokenEdit)->SetWindowTextA("");
 
-    char *token = strtok(
-        tokenInputText,
-        kWolQueryStatusTokenDelimiter
-    );
+    char *token = strtok(tokenInputText, kWolQueryStatusTokenDelimiter);
     if (token != 0) {
         WestwoodOnlineUpgradeConnectContext tokenContext;
-        strcpy(
-            tokenContext.m_requestText,
-            token
-        );
+        strcpy(tokenContext.m_requestText, token);
 
         char serverText[kWolQueryStatusServerTextBufferSize];
         ((CWnd *)&m_statusServerEdit)
-            ->GetWindowTextA(
-                serverText,
-                kWolQueryStatusServerTextMaxChars
-            );
+            ->GetWindowTextA(serverText, kWolQueryStatusServerTextMaxChars);
         ((CWnd *)&m_statusServerEdit)->SetWindowTextA("");
 
         IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-        return api->QueryStatusWithTokenAndServer(&tokenContext,
-                serverText
-            );
+        return api->QueryStatusWithTokenAndServer(&tokenContext, serverText);
     }
 
     char messageBoxTitle[kWolQueryStatusMessageBoxTitleBufferSize];
-    strcpy(
-        messageBoxTitle,
-        zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId)
-    );
+    strcpy(messageBoxTitle, zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId));
 
     char messageBoxText[kWolQueryStatusMessageBoxTextBufferSize];
-    strcpy(
-        messageBoxText,
-        zLoc::GetMessageString(kWolQueryStatusMissingTokenMessageId)
-    );
+    strcpy(messageBoxText, zLoc::GetMessageString(kWolQueryStatusMissingTokenMessageId));
 
-    return ((CWnd *)this)->MessageBoxA(
-        messageBoxText,
-        messageBoxTitle,
-        MB_ICONHAND
-    );
+    return ((CWnd *)this)->MessageBoxA(messageBoxText, messageBoxTitle, MB_ICONHAND);
 }
 
 /**
@@ -2120,9 +1932,7 @@ int WestwoodOnlineUpgradeDialog::QueryStatus() {
  */
 void WestwoodOnlineUpgradeDialog::RequestActiveListMode() {
     IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-    api->RequestListMode(g_WestwoodOnlineUpgradeActiveListMode,
-        1
-    );
+    api->RequestListMode(g_WestwoodOnlineUpgradeActiveListMode, 1);
 }
 
 /**
@@ -2143,57 +1953,26 @@ void WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery() {
     if (((const char *)sessionNameText)[0] == '\0') {
         char messageBoxTitle[kWolQueryStatusMessageBoxTitleBufferSize];
         char messageBoxText[kWolQueryStatusMessageBoxTextBufferSize];
-        strcpy(
-            messageBoxText,
-            zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId)
-        );
-        strcpy(
-            messageBoxTitle,
-            zLoc::GetMessageString(kWolQuerySessionNameRequiredMessageId)
-        );
-        ((CWnd *)this)->MessageBoxA(
-            messageBoxTitle,
-            messageBoxText,
-            0
-        );
+        strcpy(messageBoxText, zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId));
+        strcpy(messageBoxTitle, zLoc::GetMessageString(kWolQuerySessionNameRequiredMessageId));
+        ((CWnd *)this)->MessageBoxA(messageBoxTitle, messageBoxText, 0);
         return;
     }
 
-    if (strstr(
-        sessionNameText,
-        kWolQueryStatusTokenDelimiter
-    ) != 0) {
+    if (strstr(sessionNameText, kWolQueryStatusTokenDelimiter) != 0) {
         char messageBoxTitle[kWolQueryStatusMessageBoxTitleBufferSize];
         char messageBoxText[kWolQueryStatusMessageBoxTextBufferSize];
-        strcpy(
-            messageBoxText,
-            zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId)
-        );
-        strcpy(
-            messageBoxTitle,
-            zLoc::GetMessageString(kWolQuerySessionSubmitFailedMessageId)
-        );
-        ((CWnd *)this)->MessageBoxA(
-            messageBoxTitle,
-            messageBoxText,
-            0
-        );
+        strcpy(messageBoxText, zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId));
+        strcpy(messageBoxTitle, zLoc::GetMessageString(kWolQuerySessionSubmitFailedMessageId));
+        ((CWnd *)this)->MessageBoxA(messageBoxTitle, messageBoxText, 0);
         return;
     }
 
     m_sessionNameEdit.SetWindowTextA("");
 
     WestwoodOnlineUpgradeQueryRequest request;
-    memset(
-        &request,
-        0,
-        sizeof(request)
-    );
-    strncpy(
-        request.m_sessionName,
-        sessionNameText,
-        kWolQuerySessionNameCopyMaxChars
-    );
+    memset(&request, 0, sizeof(request));
+    strncpy(request.m_sessionName, sessionNameText, kWolQuerySessionNameCopyMaxChars);
     request.m_listMode = 0;
     request.m_queryVariant = 2;
     request.m_queryMaxPlayers = m_queryMaxPlayers;
@@ -2205,8 +1984,7 @@ void WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery() {
     }
 
     IWestwoodOnlineUpgradeProviderApi *api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-    int result = api->SubmitQueryRequest(&request
-    );
+    int result = api->SubmitQueryRequest(&request);
     if (result < 0) {
         if (result != kWolQueryDuplicateNameResult) {
             g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
@@ -2236,53 +2014,22 @@ void WestwoodOnlineUpgradeDialog::OnQuerySessionsByName() {
     char messageBoxText[kWolQueryStatusMessageBoxTextBufferSize];
     char messageBoxTitle[kWolQueryStatusMessageBoxTitleBufferSize];
     if (sessionNameText.GetLength() == 0) {
-        strcpy(
-            messageBoxTitle,
-            zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId)
-        );
-        strcpy(
-            messageBoxText,
-            zLoc::GetMessageString(kWolQuerySessionNameRequiredMessageId)
-        );
-        ((CWnd *)this)->MessageBoxA(
-            messageBoxText,
-            messageBoxTitle,
-            0
-        );
+        strcpy(messageBoxTitle, zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId));
+        strcpy(messageBoxText, zLoc::GetMessageString(kWolQuerySessionNameRequiredMessageId));
+        ((CWnd *)this)->MessageBoxA(messageBoxText, messageBoxTitle, 0);
         return;
     }
 
-    if (strstr(
-        sessionNameText,
-        kWolQueryStatusTokenDelimiter
-    ) != 0) {
-        strcpy(
-            messageBoxTitle,
-            zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId)
-        );
-        strcpy(
-            messageBoxText,
-            zLoc::GetMessageString(kWolQuerySessionSubmitFailedMessageId)
-        );
-        ((CWnd *)this)->MessageBoxA(
-            messageBoxText,
-            messageBoxTitle,
-            0
-        );
+    if (strstr(sessionNameText, kWolQueryStatusTokenDelimiter) != 0) {
+        strcpy(messageBoxTitle, zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId));
+        strcpy(messageBoxText, zLoc::GetMessageString(kWolQuerySessionSubmitFailedMessageId));
+        ((CWnd *)this)->MessageBoxA(messageBoxText, messageBoxTitle, 0);
         return;
     }
 
     WestwoodOnlineUpgradeQueryRequest request;
-    memset(
-        &request,
-        0,
-        sizeof(request)
-    );
-    strncpy(
-        request.m_sessionName,
-        sessionNameText,
-        kWolQuerySessionNameCopyMaxChars
-    );
+    memset(&request, 0, sizeof(request));
+    strncpy(request.m_sessionName, sessionNameText, kWolQuerySessionNameCopyMaxChars);
     request.m_listMode = kWolQuerySessionsByNameListMode;
     request.m_queryVariant = 2;
     request.m_queryMaxPlayers = m_queryMaxPlayers;
@@ -2299,13 +2046,9 @@ void WestwoodOnlineUpgradeDialog::OnQuerySessionsByName() {
     }
 
     IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-    int result = api->SubmitQueryRequest(&request
-    );
+    int result = api->SubmitQueryRequest(&request);
     if (result < 0) {
-        strcpy(
-            messageBoxTitle,
-            zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId)
-        );
+        strcpy(messageBoxTitle, zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId));
         unsigned int messageId = kWolQueryStatusErrorTitleMessageId;
         if (result != kWolQueryDuplicateNameResult) {
             if (result == kWolQuerySubmitFailedResult) {
@@ -2314,15 +2057,8 @@ void WestwoodOnlineUpgradeDialog::OnQuerySessionsByName() {
         } else {
             messageId = kWolQuerySessionDuplicateMessageId;
         }
-        strcpy(
-            messageBoxText,
-            zLoc::GetMessageString(messageId)
-        );
-        ((CWnd *)this)->MessageBoxA(
-            messageBoxText,
-            messageBoxTitle,
-            0
-        );
+        strcpy(messageBoxText, zLoc::GetMessageString(messageId));
+        ((CWnd *)this)->MessageBoxA(messageBoxText, messageBoxTitle, 0);
         return;
     }
 
@@ -2341,12 +2077,7 @@ void WestwoodOnlineUpgradeDialog::OnQuerySessionsByName() {
  * Purpose: clear the visible status list and reset the dialog line counter.
  */
 void WestwoodOnlineUpgradeDialog::ClearStatusList() {
-    ::SendMessageA(
-        m_statusList.m_hWnd,
-        LB_RESETCONTENT,
-        0,
-        0
-    );
+    ::SendMessageA(m_statusList.m_hWnd, LB_RESETCONTENT, 0, 0);
     m_statusLineCount = 0;
 }
 
@@ -2361,12 +2092,7 @@ void WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests() {
     }
 
     g_WestwoodOnlineUpgradeVisibleSessionResultCount =
-        (int) ::SendMessageA(
-            m_sessionResultsList.m_hWnd,
-            LB_GETSELCOUNT,
-            0,
-            0
-        );
+        (int) ::SendMessageA(m_sessionResultsList.m_hWnd, LB_GETSELCOUNT, 0, 0);
     if (g_WestwoodOnlineUpgradeVisibleSessionResultCount == 0 ||
         g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag != 1) {
         return;
@@ -2383,11 +2109,7 @@ void WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests() {
     WestwoodOnlineUpgradeSessionRequest *sessionRequest = new WestwoodOnlineUpgradeSessionRequest;
     for (int rowIndex = 0; rowIndex < g_WestwoodOnlineUpgradeVisibleSessionResultCount;
         ++rowIndex) {
-        memset(
-            sessionRequest,
-            0,
-            sizeof(WestwoodOnlineUpgradeSessionRequest)
-        );
+        memset(sessionRequest, 0, sizeof(WestwoodOnlineUpgradeSessionRequest));
         ::SendMessageA(
             m_sessionResultsList.m_hWnd,
             LB_GETTEXT,
@@ -2395,13 +2117,9 @@ void WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests() {
             (LPARAM)sessionRequest->m_sessionName
         );
         WestwoodOnlineUpgrade::TruncateStringAtFirstSpace(sessionRequest->m_sessionName);
-        if (strstr(
-            sessionRequest->m_sessionName,
-            (const char *)m_selectedProfilePlayerName
-        ) == 0) {
+        if (strstr(sessionRequest->m_sessionName, (const char *)m_selectedProfilePlayerName) == 0) {
             IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-            api->QueueSessionRequest(sessionRequest
-            );
+            api->QueueSessionRequest(sessionRequest);
         }
     }
     delete sessionRequest;
@@ -2416,12 +2134,7 @@ void WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseReco
     }
 
     g_WestwoodOnlineUpgradeVisibleSessionResultCount =
-        (int) ::SendMessageA(
-            m_sessionResultsList.m_hWnd,
-            LB_GETSELCOUNT,
-            0,
-            0
-        );
+        (int) ::SendMessageA(m_sessionResultsList.m_hWnd, LB_GETSELCOUNT, 0, 0);
     if (g_WestwoodOnlineUpgradeVisibleSessionResultCount == 0 ||
         g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag != 1) {
         return;
@@ -2438,11 +2151,7 @@ void WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseReco
     WestwoodOnlineUpgradeSessionRequest *sessionRequest = new WestwoodOnlineUpgradeSessionRequest;
     for (int rowIndex = 0; rowIndex < g_WestwoodOnlineUpgradeVisibleSessionResultCount;
         ++rowIndex) {
-        memset(
-            sessionRequest,
-            0,
-            sizeof(WestwoodOnlineUpgradeSessionRequest)
-        );
+        memset(sessionRequest, 0, sizeof(WestwoodOnlineUpgradeSessionRequest));
         ::SendMessageA(
             m_sessionResultsList.m_hWnd,
             LB_GETTEXT,
@@ -2450,17 +2159,11 @@ void WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseReco
             (LPARAM)sessionRequest->m_sessionName
         );
         WestwoodOnlineUpgrade::TruncateStringAtFirstSpace(sessionRequest->m_sessionName);
-        if (strstr(
-            sessionRequest->m_sessionName,
-            (const char *)m_selectedProfilePlayerName
-        ) == 0) {
+        if (strstr(sessionRequest->m_sessionName, (const char *)m_selectedProfilePlayerName) == 0) {
             IWestwoodOnlineUpgradeProviderApi *api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-            api->LookupBrowseRecordBySessionName(sessionRequest->m_sessionName,
-                1
-            );
+            api->LookupBrowseRecordBySessionName(sessionRequest->m_sessionName, 1);
             api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-            api->QueueSessionRequest(sessionRequest
-            );
+            api->QueueSessionRequest(sessionRequest);
         }
     }
     delete sessionRequest;
@@ -2476,9 +2179,7 @@ void WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseReco
 void WestwoodOnlineUpgradeDialog::RequestListMode0() {
     IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
     g_WestwoodOnlineUpgradeActiveListMode = 0;
-    api->RequestListMode(0,
-        0
-    );
+    api->RequestListMode(0, 0);
 }
 
 /**
@@ -2491,9 +2192,7 @@ void WestwoodOnlineUpgradeDialog::RequestListMode0() {
 void WestwoodOnlineUpgradeDialog::RequestListMode11() {
     IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
     g_WestwoodOnlineUpgradeActiveListMode = kWestwoodOnlineUpgradeAutoRefreshListMode;
-    api->RequestListMode(kWestwoodOnlineUpgradeAutoRefreshListMode,
-        1
-    );
+    api->RequestListMode(kWestwoodOnlineUpgradeAutoRefreshListMode, 1);
 }
 
 /**
@@ -2503,19 +2202,9 @@ void WestwoodOnlineUpgradeDialog::RequestListMode11() {
  * changes.
  */
 void WestwoodOnlineUpgradeDialog::OnSessionModeComboSelChange() {
-    LRESULT const selectedIndex = ::SendMessageA(
-        m_sessionModeCombo.m_hWnd,
-        CB_GETCURSEL,
-        0,
-        0
-    );
+    LRESULT const selectedIndex = ::SendMessageA(m_sessionModeCombo.m_hWnd, CB_GETCURSEL, 0, 0);
     LRESULT const selectedModeKind =
-        ::SendMessageA(
-            m_sessionModeCombo.m_hWnd,
-            CB_GETITEMDATA,
-            selectedIndex,
-            0
-        );
+        ::SendMessageA(m_sessionModeCombo.m_hWnd, CB_GETITEMDATA, selectedIndex, 0);
     m_querySessionModeKind = selectedModeKind;
     if (selectedModeKind == 2) {
         ((CWnd *)this)
@@ -2553,11 +2242,7 @@ void WestwoodOnlineUpgradeDialog::SubmitPendingSessionListFromResults() {
         ++rowIndex) {
         WestwoodOnlineUpgradeSessionRequest *sessionRequest =
             new WestwoodOnlineUpgradeSessionRequest;
-        memset(
-            sessionRequest,
-            0,
-            sizeof(WestwoodOnlineUpgradeSessionRequest)
-        );
+        memset(sessionRequest, 0, sizeof(WestwoodOnlineUpgradeSessionRequest));
         if (::SendMessageA(
                 m_sessionResultsList.m_hWnd,
                 LB_GETTEXT,
@@ -2573,8 +2258,7 @@ void WestwoodOnlineUpgradeDialog::SubmitPendingSessionListFromResults() {
     }
 
     IWestwoodOnlineUpgradeProviderApi *const api = (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
-    api->SubmitPendingSessionList(sessionRequestList
-    );
+    api->SubmitPendingSessionList(sessionRequestList);
 
     while (sessionRequestList != 0) {
         WestwoodOnlineUpgradeSessionRequest *const nextSessionRequest = sessionRequestList->m_next;
@@ -2660,11 +2344,7 @@ void WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus() {
     }
 
     char valueText[kWolEditTextBufferSize];
-    _ltoa(
-        (long)m_queryMaxPlayers,
-        valueText,
-        kWolEditTextRadix
-    );
+    _ltoa((long)m_queryMaxPlayers, valueText, kWolEditTextRadix);
     ((CWnd *)&m_queryMaxPlayersEdit)->SetWindowTextA(valueText);
 }
 
@@ -2689,11 +2369,7 @@ void WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus() {
     }
 
     char valueText[kWolEditTextBufferSize];
-    _ltoa(
-        (long)m_queryAuxParam,
-        valueText,
-        kWolEditTextRadix
-    );
+    _ltoa((long)m_queryAuxParam, valueText, kWolEditTextRadix);
     ((CWnd *)&m_queryAuxParamEdit)->SetWindowTextA(valueText);
 }
 
@@ -2718,11 +2394,7 @@ void WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus() {
     }
 
     char valueText[kWolEditTextBufferSize];
-    _ltoa(
-        (long)m_queryValueOrTime,
-        valueText,
-        kWolEditTextRadix
-    );
+    _ltoa((long)m_queryValueOrTime, valueText, kWolEditTextRadix);
     ((CWnd *)&m_queryValueOrTimeEdit)->SetWindowTextA(valueText);
 }
 
@@ -2868,35 +2540,15 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult(
     }
 
     g_WestwoodOnlineUpgradeProcessCallbacksFlag = 0;
-    strcpy(
-        dialogCaption,
-        zLoc::GetMessageString(0x3001)
-    );
-    strcpy(
-        dialogMessage,
-        zLoc::GetMessageString(0x3002)
-    );
+    strcpy(dialogCaption, zLoc::GetMessageString(0x3001));
+    strcpy(dialogMessage, zLoc::GetMessageString(0x3002));
     if (((CWnd *)g_pWestwoodOnlineUpgradeDialog)
-            ->MessageBoxA(
-                dialogMessage,
-                dialogCaption,
-                MB_YESNO | MB_ICONQUESTION
-            ) == IDYES) {
+            ->MessageBoxA(dialogMessage, dialogCaption, MB_YESNO | MB_ICONQUESTION) == IDYES) {
         if (WestwoodOnlineUpgradeDialog::ShowDownloadReadyList(downloadReadyList) != 0) {
-            strcpy(
-                dialogCaption,
-                zLoc::GetMessageString(0x3001)
-            );
-            strcpy(
-                dialogMessage,
-                zLoc::GetMessageString(0x3046)
-            );
+            strcpy(dialogCaption, zLoc::GetMessageString(0x3001));
+            strcpy(dialogMessage, zLoc::GetMessageString(0x3046));
             ((CWnd *)g_pWestwoodOnlineUpgradeDialog)
-                ->MessageBoxA(
-                    dialogMessage,
-                    dialogCaption,
-                    MB_ICONEXCLAMATION
-                );
+                ->MessageBoxA(dialogMessage, dialogCaption, MB_ICONEXCLAMATION);
             SetEvent(g_WestwoodOnlineUpgradeFailureEvent);
             g_pWestwoodOnlineUpgradeDialog->OnDestroy();
             ExitProcess(0);
@@ -2965,11 +2617,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnServerError(
     const char *errorText
 ) {
     ((CWnd *)g_pWestwoodOnlineUpgradeDialog)
-        ->MessageBoxA(
-            errorText,
-            kWestwoodOnlineUpgradeServerErrorTitle,
-            MB_ICONHAND
-        );
+        ->MessageBoxA(errorText, kWestwoodOnlineUpgradeServerErrorTitle, MB_ICONHAND);
     return 0;
 }
 
@@ -2997,61 +2645,34 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
     if (statusCode <= kApiStatusFailure6a) {
         if (statusCode == kApiStatusFailure6a) {
             ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
-            strcpy(
-                failureCaption,
-                zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
-            );
+            strcpy(failureCaption, zLoc::GetMessageString(kApiStatusFailureCaptionMessageId));
             failureMessageId = kApiStatusFailure6aMessageId;
         } else if (statusCode == kApiStatusFailure64) {
             ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
-            strcpy(
-                failureCaption,
-                zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
-            );
+            strcpy(failureCaption, zLoc::GetMessageString(kApiStatusFailureCaptionMessageId));
             failureMessageId = kApiStatusFailure64MessageId;
         } else if (statusCode == kApiStatusFailure65) {
             ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
-            strcpy(
-                failureCaption,
-                zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
-            );
+            strcpy(failureCaption, zLoc::GetMessageString(kApiStatusFailureCaptionMessageId));
             failureMessageId = kApiStatusFailure65MessageId;
         } else {
             ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
-            strcpy(
-                failureCaption,
-                zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
-            );
-            strcpy(
-                failureMessage,
-                zLoc::GetMessageString(kApiStatusFailureDefaultMessageId)
-            );
+            strcpy(failureCaption, zLoc::GetMessageString(kApiStatusFailureCaptionMessageId));
+            strcpy(failureMessage, zLoc::GetMessageString(kApiStatusFailureDefaultMessageId));
             messageBoxFlags = MB_ICONHAND;
         }
     } else {
         if (statusCode != kApiStatusFailure72) {
             if (statusCode != 0) {
                 ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
-                strcpy(
-                    failureCaption,
-                    zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
-                );
-                strcpy(
-                    failureMessage,
-                    zLoc::GetMessageString(kApiStatusFailureDefaultMessageId)
-                );
+                strcpy(failureCaption, zLoc::GetMessageString(kApiStatusFailureCaptionMessageId));
+                strcpy(failureMessage, zLoc::GetMessageString(kApiStatusFailureDefaultMessageId));
                 messageBoxFlags = MB_ICONHAND;
             } else {
-                statusLine = strtok(
-                    _strdup(statusText),
-                    kApiStatusLineDelimiter
-                );
+                statusLine = strtok(_strdup(statusText), kApiStatusLineDelimiter);
                 while (statusLine != 0) {
                     g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusLine);
-                    statusLine = strtok(
-                        0,
-                        kApiStatusLineDelimiter
-                    );
+                    statusLine = strtok(0, kApiStatusLineDelimiter);
                 }
 
                 SetEvent(g_WestwoodOnlineUpgradeStatusTextEvent);
@@ -3086,28 +2707,18 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
             }
         } else {
             ((CWnd *)g_pWestwoodOnlineUpgradeProgressDialog)->DestroyWindow();
-            strcpy(
-                failureCaption,
-                zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
-            );
+            strcpy(failureCaption, zLoc::GetMessageString(kApiStatusFailureCaptionMessageId));
             failureMessageId = kApiStatusFailure72MessageId;
         }
     }
 
     if (failureMessageId != 0) {
-        strcpy(
-            failureMessage,
-            zLoc::GetMessageString(failureMessageId)
-        );
+        strcpy(failureMessage, zLoc::GetMessageString(failureMessageId));
         messageBoxFlags = MB_ICONEXCLAMATION;
     }
 
     ((CWnd *)((unsigned int)g_RecoilApp.m_pMainWnd))
-        ->MessageBoxA(
-            failureMessage,
-            failureCaption,
-            messageBoxFlags
-        );
+        ->MessageBoxA(failureMessage, failureCaption, messageBoxFlags);
     g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 1;
     SetEvent(g_WestwoodOnlineUpgradeFailureEvent);
 
@@ -3130,16 +2741,10 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived(
     }
 
     // Retail duplicates statusText for strtok and never frees the duplicate.
-    statusLine = strtok(
-        _strdup(statusText),
-        kApiStatusLineDelimiter
-    );
+    statusLine = strtok(_strdup(statusText), kApiStatusLineDelimiter);
     while (statusLine != 0) {
         g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusLine);
-        statusLine = strtok(
-            0,
-            kApiStatusLineDelimiter
-        );
+        statusLine = strtok(0, kApiStatusLineDelimiter);
     }
 
     SetEvent(g_WestwoodOnlineUpgradeStatusTextEvent);
@@ -3166,10 +2771,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(
         g_pWestwoodOnlineUpgradeDialog->EnableQueryControls(0);
         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = '\0';
         api = GetCallbackApiComObject();
-        api->RequestListMode(
-            g_WestwoodOnlineUpgradeActiveListMode,
-            1
-        );
+        api->RequestListMode(g_WestwoodOnlineUpgradeActiveListMode, 1);
         return 0;
     }
 
@@ -3191,10 +2793,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(
         g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusText);
         g_pWestwoodOnlineUpgradeDialog->EnableQueryControls(1);
         ((CWnd *)g_pWestwoodOnlineUpgradeDialog)
-            ->SetDlgItemTextA(
-                kWestwoodOnlineUpgradeGameButtonId,
-                browseRecord->m_sessionName
-            );
+            ->SetDlgItemTextA(kWestwoodOnlineUpgradeGameButtonId, browseRecord->m_sessionName);
     }
 
     g_WestwoodOnlineUpgradeCachedBrowseRecord = *browseRecord;
@@ -3225,14 +2824,8 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
 
     if (status < 0) {
         failureMessageId = 0;
-        strcpy(
-            statusText,
-            zLoc::GetMessageString(kBrowseSessionResolvedFailurePrefixMessageId)
-        );
-        strcat(
-            statusText,
-            " "
-        );
+        strcpy(statusText, zLoc::GetMessageString(kBrowseSessionResolvedFailurePrefixMessageId));
+        strcat(statusText, " ");
 
         if (status == kBrowseSessionResolvedFailure6c) {
             failureMessageId = kBrowseSessionResolvedFailure6cMessageId;
@@ -3247,10 +2840,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
         }
 
         if (failureMessageId != 0) {
-            strcat(
-                statusText,
-                zLoc::GetMessageString(failureMessageId)
-            );
+            strcat(statusText, zLoc::GetMessageString(failureMessageId));
             g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusText);
         } else {
             g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
@@ -3263,10 +2853,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
         g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;
         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = '\0';
         api = GetCallbackApiComObject();
-        api->RequestListMode(
-            g_WestwoodOnlineUpgradeActiveListMode,
-            1
-        );
+        api->RequestListMode(g_WestwoodOnlineUpgradeActiveListMode, 1);
         return 0;
     }
 
@@ -3277,20 +2864,14 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
 
     if ((sessionRequest->m_rowFlags & kSessionRequestSkipDetailsFlag) == 0) {
         api = GetCallbackApiComObject();
-        api->RequestListMode(
-            g_WestwoodOnlineUpgradeActiveListMode,
-            1
-        );
+        api->RequestListMode(g_WestwoodOnlineUpgradeActiveListMode, 1);
         if (browseRecord->m_recordFlags != 0 &&
             g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag == 1) {
             WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls();
         }
 
         ((CWnd *)g_pWestwoodOnlineUpgradeDialog)
-            ->SetDlgItemTextA(
-                kWestwoodOnlineUpgradeGameButtonId,
-                browseRecord->m_sessionName
-            );
+            ->SetDlgItemTextA(kWestwoodOnlineUpgradeGameButtonId, browseRecord->m_sessionName);
         zLoc::FormatMessage(
             statusText,
             kBrowseSessionResolvedStatusBufferSize,
@@ -3309,9 +2890,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
         ++g_WestwoodOnlineUpgradePendingSessionResultCount;
         g_pWestwoodOnlineUpgradeDialog->EnableConnectButton(1);
         api = GetCallbackApiComObject();
-        api->RequestSessionDetails(
-            sessionRequest
-        );
+        api->RequestSessionDetails(sessionRequest);
     }
 
     return 0;
@@ -3333,10 +2912,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
 
     if (status < 0) {
         api = GetCallbackApiComObject();
-        api->RequestListMode(
-            kApiStatusActiveListMode,
-            1
-        );
+        api->RequestListMode(kApiStatusActiveListMode, 1);
         api = GetCallbackApiComObject();
         api->CancelPendingSessionFlow();
         return 0;
@@ -3377,10 +2953,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
     }
 
     api = GetCallbackApiComObject();
-    api->RequestListMode(
-        g_WestwoodOnlineUpgradeActiveListMode,
-        1
-    );
+    api->RequestListMode(g_WestwoodOnlineUpgradeActiveListMode, 1);
     return 0;
 }
 
@@ -3418,10 +2991,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated
     while (sessionNode != 0) {
         rowFlags = sessionNode->m_rowFlags;
         ++g_WestwoodOnlineUpgradePendingSessionResultCount;
-        strcpy(
-            sessionResultText,
-            sessionNode->m_sessionName
-        );
+        strcpy(sessionResultText, sessionNode->m_sessionName);
 
         if ((rowFlags & kSessionRequestRefreshCacheFlag) != 0) {
             if ((rowFlags & kSessionRequestSkipDetailsFlag) != 0) {
@@ -3513,10 +3083,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
 
     if (selectedSessionNode != 0) {
         zNetwork::InitSessionRuntime(&g_zNetwork_WestwoodOnlineAppGuid);
-        Net::FormatIpv4Address(
-            hostAddressText,
-            selectedSessionNode->m_hostIpv4Packed
-        );
+        Net::FormatIpv4Address(hostAddressText, selectedSessionNode->m_hostIpv4Packed);
 
         if (zNetworkDPlay::SelectTcpIpProviderAndEnumSessions(
                 hostAddressText,
@@ -3534,19 +3101,11 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
             }
 
             statusFields.eventCode =
-                (int)SendMessageA(
-                    dialog->m_sessionModeCombo.m_hWnd,
-                    CB_GETCURSEL,
-                    0,
-                    0
-                ) + 1;
+                (int)SendMessageA(dialog->m_sessionModeCombo.m_hWnd, CB_GETCURSEL, 0, 0) + 1;
             statusFields.valueOrTime = dialog->m_queryValueOrTime;
             statusFields.auxParam = dialog->m_queryAuxParam;
             statusFields.maxPlayers = dialog->m_queryMaxPlayers;
-            strcpy(
-                statusFields.sessionNameBuf,
-                (const char *)dialog->m_sessionName
-            );
+            strcpy(statusFields.sessionNameBuf, (const char *)dialog->m_sessionName);
 
             if (zNetwork_DPlay::CreateSessionFromStatusFields(&statusFields) != 0) {
                 zOpt::SetNetworkEnabled(1);
@@ -3595,21 +3154,11 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
     }
 
     if (showConnectionFailureMessage != 0) {
-        strcpy(
-            failureCaptionText,
-            zLoc::GetMessageString(kApiStatusFailureCaptionMessageId)
-        );
-        strcpy(
-            failureMessageText,
-            zLoc::GetMessageString(kApiStatusFailureDefaultMessageId)
-        );
+        strcpy(failureCaptionText, zLoc::GetMessageString(kApiStatusFailureCaptionMessageId));
+        strcpy(failureMessageText, zLoc::GetMessageString(kApiStatusFailureDefaultMessageId));
         MessageBeep(MB_ICONHAND);
         ((CWnd *)g_RecoilApp.m_pMainWnd)
-            ->MessageBoxA(
-                failureMessageText,
-                failureCaptionText,
-                MB_ICONHAND
-            );
+            ->MessageBoxA(failureMessageText, failureCaptionText, MB_ICONHAND);
     }
 
     api = GetCallbackApiComObject();
@@ -3637,10 +3186,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString
     CString encodedQueryText(encodedQuery);
     CString queryFieldText;
     dialog = g_pWestwoodOnlineUpgradeDialog;
-    queryFieldText = encodedQueryText.Mid(
-        0,
-        1
-    );
+    queryFieldText = encodedQueryText.Mid(0, 1);
     SendMessageA(
         dialog->m_sessionModeCombo.m_hWnd,
         CB_SETCURSEL,
@@ -3648,34 +3194,19 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString
         0
     );
 
-    queryFieldText = encodedQueryText.Mid(
-        1,
-        4
-    );
+    queryFieldText = encodedQueryText.Mid(1, 4);
     dialog->m_queryValueOrTime = atoi((const char *)queryFieldText);
 
-    queryFieldText = encodedQueryText.Mid(
-        5,
-        4
-    );
+    queryFieldText = encodedQueryText.Mid(5, 4);
     dialog->m_queryAuxParam = atoi((const char *)queryFieldText);
 
-    queryFieldText = encodedQueryText.Mid(
-        9,
-        1
-    );
+    queryFieldText = encodedQueryText.Mid(9, 1);
     dialog->m_queryMaxPlayers = atoi((const char *)queryFieldText);
 
-    queryFieldText = encodedQueryText.Mid(
-        10,
-        1
-    );
+    queryFieldText = encodedQueryText.Mid(10, 1);
     dialog->m_queryStatusFlagBit0 = atoi((const char *)queryFieldText);
 
-    queryFieldText = encodedQueryText.Mid(
-        11,
-        1
-    );
+    queryFieldText = encodedQueryText.Mid(11, 1);
     dialog->m_queryStatusFlagBit1 = atoi((const char *)queryFieldText);
 
     ((CWnd *)dialog)->UpdateData(FALSE);
@@ -3701,10 +3232,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString
     CString encodedQueryText(encodedQuery);
     CString queryFieldText;
     dialog = g_pWestwoodOnlineUpgradeDialog;
-    queryFieldText = encodedQueryText.Mid(
-        0,
-        1
-    );
+    queryFieldText = encodedQueryText.Mid(0, 1);
     SendMessageA(
         dialog->m_sessionModeCombo.m_hWnd,
         CB_SETCURSEL,
@@ -3712,34 +3240,19 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString
         0
     );
 
-    queryFieldText = encodedQueryText.Mid(
-        1,
-        4
-    );
+    queryFieldText = encodedQueryText.Mid(1, 4);
     dialog->m_queryValueOrTime = atoi((const char *)queryFieldText);
 
-    queryFieldText = encodedQueryText.Mid(
-        5,
-        4
-    );
+    queryFieldText = encodedQueryText.Mid(5, 4);
     dialog->m_queryAuxParam = atoi((const char *)queryFieldText);
 
-    queryFieldText = encodedQueryText.Mid(
-        9,
-        1
-    );
+    queryFieldText = encodedQueryText.Mid(9, 1);
     dialog->m_queryMaxPlayers = atoi((const char *)queryFieldText);
 
-    queryFieldText = encodedQueryText.Mid(
-        10,
-        1
-    );
+    queryFieldText = encodedQueryText.Mid(10, 1);
     dialog->m_queryStatusFlagBit0 = atoi((const char *)queryFieldText);
 
-    queryFieldText = encodedQueryText.Mid(
-        11,
-        1
-    );
+    queryFieldText = encodedQueryText.Mid(11, 1);
     dialog->m_queryStatusFlagBit1 = atoi((const char *)queryFieldText);
 
     ((CWnd *)dialog)->UpdateData(FALSE);
@@ -3832,10 +3345,10 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestSta
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-appendconnectstatus301e-3021
- * @recoil-artifact defines .text recoil:function:0x440d90: WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021.
+ * @recoil-artifact defines .text recoil:function:0x440d90: WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301ETo3021.
  * Purpose: Maps connection status codes to localized connect-status text.
  */
-int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021(
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301ETo3021(
     int connectionStatusCode
 ) {
     unsigned int messageId;
@@ -3862,10 +3375,10 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-appendbrowserecordstatus3022-3025
- * @recoil-artifact defines .text recoil:function:0x440e10: WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025.
+ * @recoil-artifact defines .text recoil:function:0x440e10: WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022To3025.
  * Purpose: Maps browse-record status codes to localized browse-status text.
  */
-int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025(
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022To3025(
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord
 ) {
@@ -3899,9 +3412,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatu
             messageId = kBrowseRecordStatusFallbackMessageId;
         }
 
-        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
-            zLoc::GetMessageString(messageId)
-        );
+        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(zLoc::GetMessageString(messageId));
     }
     return 0;
 }
@@ -3964,12 +3475,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
         statusName = kNetworkStatusUnknownText;
     }
 
-    sprintf(
-        debugStatusText,
-        kNetworkStatusDebugFormat,
-        statusName,
-        connectionStatusCode
-    );
+    sprintf(debugStatusText, kNetworkStatusDebugFormat, statusName, connectionStatusCode);
     zGame::ReturnOnlyStub();
 
     if (connectionStatusCode == kNetworkStatusDisconnected &&
@@ -4181,12 +3687,12 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-appendvaluestatus302b-302c
- * @recoil-artifact defines .text recoil:function:0x4412c0: WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C.
+ * @recoil-artifact defines .text recoil:function:0x4412c0: WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302BTo302C.
  * @recoil-match byte
  *
  * Purpose: Appends one of the localized value status messages for a numeric field.
  */
-int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C(
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302BTo302C(
     int,
     int value,
     int usePrimaryMessage
@@ -4257,20 +3763,11 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItem
         0
     );
 
-    strcpy(
-        rowText,
-        sessionName
-    );
+    strcpy(rowText, sessionName);
     if ((flags & 1) != 0) {
-        strcat(
-            rowText,
-            kSessionResultReadySuffix
-        );
+        strcat(rowText, kSessionResultReadySuffix);
     }
-    strcat(
-        rowText,
-        kSessionResultPendingSuffix
-    );
+    strcat(rowText, kSessionResultPendingSuffix);
     g_pWestwoodOnlineUpgradeDialog->SendDlgItemMessageA(
         kWestwoodOnlineUpgradeApiEventSink_SessionResultsListId,
         LB_ADDSTRING,
@@ -4318,10 +3815,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
             api = GetCallbackApiComObject();
             g_WestwoodOnlineUpgradePendingSessionResultCount = 0;
             g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = '\0';
-            api->RequestListMode(
-                g_WestwoodOnlineUpgradeActiveListMode,
-                1
-            );
+            api->RequestListMode(g_WestwoodOnlineUpgradeActiveListMode, 1);
             ((CWnd *)g_pWestwoodOnlineUpgradeDialog)
                 ->SendDlgItemMessageA(
                     kWestwoodOnlineUpgradeApiEventSink_SessionResultsListId,
@@ -4418,11 +3912,7 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::QueryInterface(
     REFIID iid,
     void **outInterface
 ) {
-    return WestwoodOnlineUpgradeApiEventSink::QueryInterface(
-        this,
-        iid,
-        outInterface
-    );
+    return WestwoodOnlineUpgradeApiEventSink::QueryInterface(this, iid, outInterface);
 }
 
 /**
@@ -4474,7 +3964,7 @@ WestwoodOnlineUpgradeConfigDialog::WestwoodOnlineUpgradeConfigDialog(
     m_connectStringEditText()
 {
     m_connectStringEditText = kEmptyString;
-    m_wolPasswordFlag = zOpt_GetWolPasswordFlagValue();
+    m_wolPasswordFlag = zOptGetWolPasswordFlagValue();
 }
 
 /**
@@ -4512,11 +4002,7 @@ void WestwoodOnlineUpgradeConfigDialog::DoDataExchange(
         kWestwoodOnlineUpgradeConfigConnectStringEditId,
         m_connectStringEditText
     );
-    DDX_Check(
-        dataExchange,
-        kWestwoodOnlineUpgradeConfigRememberPasswordCheckId,
-        m_wolPasswordFlag
-    );
+    DDX_Check(dataExchange, kWestwoodOnlineUpgradeConfigRememberPasswordCheckId, m_wolPasswordFlag);
 }
 
 /**
@@ -4538,12 +4024,7 @@ const AFX_MSGMAP * WestwoodOnlineUpgradeConfigDialog::GetMessageMap() const {
  * Purpose: clears the selection in the connect-string edit control on focus.
  */
 void WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear() {
-    ::SendMessageA(
-        m_connectStringEdit.m_hWnd,
-        EM_SETSEL,
-        0,
-        0
-    );
+    ::SendMessageA(m_connectStringEdit.m_hWnd, EM_SETSEL, 0, 0);
 }
 
 /**
@@ -4576,18 +4057,8 @@ BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog() {
         displayName = zLoc::GetMessageString(kWestwoodOnlineUpgradeConfigUnnamedProfileMessageId);
     }
     LRESULT itemIndex =
-        ::SendMessageA(
-            m_profileCombo.m_hWnd,
-            CB_INSERTSTRING,
-            0,
-            (LPARAM)displayName
-        );
-    ::SendMessageA(
-        m_profileCombo.m_hWnd,
-        CB_SETITEMDATA,
-        itemIndex,
-        0
-    );
+        ::SendMessageA(m_profileCombo.m_hWnd, CB_INSERTSTRING, 0, (LPARAM)displayName);
+    ::SendMessageA(m_profileCombo.m_hWnd, CB_SETITEMDATA, itemIndex, 0);
 
     if (api->LoadConnectProfileStrings(2, &playerName, &connectString) != 0) {
         playerName = (char *)kEmptyString;
@@ -4603,29 +4074,14 @@ BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog() {
     if (displayName[0] == '\0') {
         displayName = zLoc::GetMessageString(kWestwoodOnlineUpgradeConfigUnnamedProfileMessageId);
     }
-    itemIndex = ::SendMessageA(
-        m_profileCombo.m_hWnd,
-        CB_INSERTSTRING,
-        1,
-        (LPARAM)displayName
-    );
-    ::SendMessageA(
-        m_profileCombo.m_hWnd,
-        CB_SETITEMDATA,
-        itemIndex,
-        1
-    );
+    itemIndex = ::SendMessageA(m_profileCombo.m_hWnd, CB_INSERTSTRING, 1, (LPARAM)displayName);
+    ::SendMessageA(m_profileCombo.m_hWnd, CB_SETITEMDATA, itemIndex, 1);
 
     m_profileConnectStringModes[0] = ((const char *)m_savedConnectStrings[0])[0] == '\0' ? 0 : 1;
     m_profileConnectStringModes[1] = ((const char *)m_savedConnectStrings[1])[0] == '\0' ? 0 : 1;
     m_selectedProfileIndex = 0;
     m_profileComboEditDirty = 0;
-    ::SendMessageA(
-        m_profileCombo.m_hWnd,
-        CB_SETCURSEL,
-        0,
-        0
-    );
+    ::SendMessageA(m_profileCombo.m_hWnd, CB_SETCURSEL, 0, 0);
     ((CWnd *)&m_connectStringEdit)->SetWindowTextA((const char *)m_profileConnectStrings[0]);
     return TRUE;
 }
@@ -4664,11 +4120,7 @@ int WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues() 
         char *playerName;
         char *connectString;
         int connectStringMode;
-        dialog.GetSelectedProfileValues(
-            &playerName,
-            &connectString,
-            &connectStringMode
-        );
+        dialog.GetSelectedProfileValues(&playerName, &connectString, &connectStringMode);
 
         g_pWestwoodOnlineUpgradeDialog->SetSelectedProfilePlayerName(CString(playerName));
         g_pWestwoodOnlineUpgradeDialog->SetSelectedProfileConnectString(CString(connectString));
@@ -4690,19 +4142,9 @@ int WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues() 
 void WestwoodOnlineUpgradeConfigDialog::OnOK() {
     if (m_wolPasswordFlag == 0) {
         ((IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi)
-            ->SaveConnectProfileStrings(
-            1,
-            (const char *)m_profilePlayerNames[0],
-            kEmptyString,
-            0
-        );
+            ->SaveConnectProfileStrings(1, (const char *)m_profilePlayerNames[0], kEmptyString, 0);
         ((IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi)
-            ->SaveConnectProfileStrings(
-            2,
-            (const char *)m_profilePlayerNames[1],
-            kEmptyString,
-            0
-        );
+            ->SaveConnectProfileStrings(2, (const char *)m_profilePlayerNames[1], kEmptyString, 0);
 
         zOpt::SetWolPasswordFlag(m_wolPasswordFlag);
         ((CDialogProviderAccessor *)this)->CallOnOK();
@@ -4739,12 +4181,7 @@ void WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus() {
         return;
     }
 
-    ::SendMessageA(
-        m_profileCombo.m_hWnd,
-        CB_DELETESTRING,
-        m_selectedProfileIndex,
-        0
-    );
+    ::SendMessageA(m_profileCombo.m_hWnd, CB_DELETESTRING, m_selectedProfileIndex, 0);
     ((CWnd *)&m_profileCombo)->GetWindowTextA(m_profilePlayerNames[m_selectedProfileIndex]);
     ::SendMessageA(
         m_profileCombo.m_hWnd,
@@ -4762,12 +4199,7 @@ void WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus() {
  * Purpose: tracks the selected profile and displays its connect string.
  */
 void WestwoodOnlineUpgradeConfigDialog::OnProfileComboSelChange() {
-    m_selectedProfileIndex = (int) ::SendMessageA(
-        m_profileCombo.m_hWnd,
-        CB_GETCURSEL,
-        0,
-        0
-    );
+    m_selectedProfileIndex = (int) ::SendMessageA(m_profileCombo.m_hWnd, CB_GETCURSEL, 0, 0);
     ((CWnd *)&m_connectStringEdit)
         ->SetWindowTextA((const char *)m_profileConnectStrings[m_selectedProfileIndex]);
 }
@@ -4865,7 +4297,7 @@ HRESULT WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise() {
     WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
         &g_pWestwoodOnlineUpgradeDownloadEventSink
     );
-    return zCom::ConnectionPointContainer_Advise(
+    return zCom::ConnectionPointContainerAdvise(
         g_pWestwoodOnlineUpgradeDownload,
         g_pWestwoodOnlineUpgradeDownloadEventSink,
         IID_WestwoodOnlineUpgradeDownloadEventSink,
@@ -4881,7 +4313,7 @@ HRESULT WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise() {
  * Purpose: Unadvises the download event sink and releases the Westwood download COM object.
  */
 ULONG WestwoodOnlineUpgradeDownload::UnadviseAndRelease() {
-    zCom::ConnectionPointContainer_Unadvise(
+    zCom::ConnectionPointContainerUnadvise(
         g_pWestwoodOnlineUpgradeDownload,
         IID_WestwoodOnlineUpgradeDownloadEventSink,
         g_WestwoodOnlineUpgradeDownloadAdviseCookie
@@ -4909,16 +4341,10 @@ BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
     }
 
     if (uMsg == WM_DESTROY) {
-        ::KillTimer(
-            hWnd,
-            kProgressTimerId
-        );
+        ::KillTimer(hWnd, kProgressTimerId);
         WestwoodOnlineUpgradeDownload::UnadviseAndRelease();
         SetCurrentDirectoryA(g_WestwoodOnlineUpgradeDownloadRestoreCwd);
-        ::EndDialog(
-            hWnd,
-            g_WestwoodOnlineUpgradeDownloadDialogResult
-        );
+        ::EndDialog(hWnd, g_WestwoodOnlineUpgradeDownloadDialogResult);
         return TRUE;
     }
 
@@ -4950,24 +4376,13 @@ BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
             kProgressStatusControlId,
             g_WestwoodOnlineUpgradeDownloadReadyPromptText
         );
-        GetCurrentDirectoryA(
-            kDownloadPathBufferSize,
-            g_WestwoodOnlineUpgradeDownloadRestoreCwd
-        );
+        GetCurrentDirectoryA(kDownloadPathBufferSize, g_WestwoodOnlineUpgradeDownloadRestoreCwd);
 
         entry = g_pWestwoodOnlineUpgradeDownloadReadyList;
-        sprintf(
-            sourcePath,
-            kDownloadSourcePathFormat,
-            entry->m_sourcePathBase,
-            entry->m_fileName
-        );
+        sprintf(sourcePath, kDownloadSourcePathFormat, entry->m_sourcePathBase, entry->m_fileName);
         if (SetCurrentDirectoryA(g_pWestwoodOnlineUpgradeDownloadReadyList->m_downloadDirectory) ==
             0) {
-            CreateDirectoryA(
-                g_pWestwoodOnlineUpgradeDownloadReadyList->m_downloadDirectory,
-                0
-            );
+            CreateDirectoryA(g_pWestwoodOnlineUpgradeDownloadReadyList->m_downloadDirectory, 0);
             SetCurrentDirectoryA(g_pWestwoodOnlineUpgradeDownloadReadyList->m_downloadDirectory);
         }
 
@@ -4989,12 +4404,7 @@ BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
         );
         g_hWestwoodOnlineUpgradeProgressDialog = hWnd;
         g_WestwoodOnlineUpgradeDownloadDialogResult = 0;
-        ::SetTimer(
-            hWnd,
-            kProgressTimerId,
-            kProgressTimerMs,
-            0
-        );
+        ::SetTimer(hWnd, kProgressTimerId, kProgressTimerMs, 0);
         return TRUE;
     }
 

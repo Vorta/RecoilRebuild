@@ -1,6 +1,6 @@
 {
   "name": "zrndr_lens_flare_draw_visible_sample",
-  "description": "zRndr_LensFlare_DrawVisibleSample visibility fade helper.",
+  "description": "zRndrLensFlareDrawVisibleSample visibility fade helper.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49afb0",
-      "symbol": "?zRndr_LensFlare_DrawVisibleSample@@YIXH@Z",
-      "name": "zRndr_LensFlare_DrawVisibleSample"
+      "symbol": "?zRndrLensFlareDrawVisibleSample@@YIXH@Z",
+      "name": "zRndrLensFlareDrawVisibleSample"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

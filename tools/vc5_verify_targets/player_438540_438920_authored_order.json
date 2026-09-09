@@ -93,7 +93,7 @@
       "retail_end_exclusive": "0x438920",
       "predecessor": {
         "address": "0x4384e0",
-        "symbol": "?zUtil_SaveGameStateList_AllocAppend@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
+        "symbol": "?zUtilSaveGameStateListAllocAppend@@YIPAUzUtil_SaveGameState@@PAU1@@Z",
         "name": "zUtil_SaveGameStateList::AllocAppend",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
@@ -167,8 +167,8 @@
       ],
       "successor": {
         "address": "0x438920",
-        "symbol": "?TrackList_Add@HudUiMgrSensor@@YIPAUHudUiMgrSensorTrackNode@@HPAX@Z",
-        "name": "HudUiMgrSensor::TrackList_Add",
+        "symbol": "?TrackListAdd@HudUiMgrSensor@@YIPAUHudUiMgrSensorTrackNode@@HPAX@Z",
+        "name": "HudUiMgrSensor::TrackListAdd",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

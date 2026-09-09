@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x489f70",
-      "symbol": "_zNetwork_GetLocalPlayerKey",
+      "symbol": "_zNetworkGetLocalPlayerKey",
       "name": "zNetwork::GetLocalPlayerKey"
     }
   ],

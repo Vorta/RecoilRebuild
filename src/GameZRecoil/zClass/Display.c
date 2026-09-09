@@ -34,23 +34,15 @@ namespace zClass_Display {
      * insert it into the display type list.
      */
     zClass_NodePartial *__cdecl gwDisplayInit() {
-        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                0x41,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kDisplaySourceFile, 0x41, "Null node pointer.");
             return 0;
         }
 
         node->classId = kZClassNodeDisplay;
         zClass_DisplayDataPartial *data =
-            (zClass_DisplayDataPartial *)(calloc(
-                1,
-                sizeof(zClass_DisplayDataPartial)
-            ));
+            (zClass_DisplayDataPartial *)(calloc(1, sizeof(zClass_DisplayDataPartial)));
         node->classData = data;
         data->width = 1;
         data->height = 1;
@@ -58,10 +50,7 @@ namespace zClass_Display {
         data->backgroundG = 0.392f;
         data->backgroundB = 1.0f;
 
-        if (zClass_TypeList::Insert(
-            15,
-            node
-        ) != 0) {
+        if (zClass_TypeList::Insert(15, node) != 0) {
             zClass_Class::DeleteNodeByType(node);
             return 0;
         }
@@ -81,29 +70,16 @@ namespace zClass_Display {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                0x8f,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kDisplaySourceFile, 0x8f, "Null node pointer.");
             return 5;
         }
 
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                0x90,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kDisplaySourceFile, 0x90, "Null node pointer.");
             return 5;
         }
 
-        zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
+        zClass_Class::RemoveChildGeneric(parent, child);
         return 0;
     }
 
@@ -119,21 +95,11 @@ namespace zClass_Display {
         int height
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                0xb0,
-                "node != NULL"
-            );
+            zError::ReportOld(0x400, kDisplaySourceFile, 0xb0, "node != NULL");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                0xb1,
-                "node->classData != NULL"
-            );
+            zError::ReportOld(0x400, kDisplaySourceFile, 0xb1, "node->classData != NULL");
             return 5;
         }
         if (node->classId != kZClassNodeDisplay) {
@@ -167,21 +133,11 @@ namespace zClass_Display {
         int y
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                0xee,
-                "node != NULL"
-            );
+            zError::ReportOld(0x400, kDisplaySourceFile, 0xee, "node != NULL");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                0xef,
-                "node->classData != NULL"
-            );
+            zError::ReportOld(0x400, kDisplaySourceFile, 0xef, "node->classData != NULL");
             return 5;
         }
         if (node->classId != kZClassNodeDisplay) {
@@ -217,21 +173,11 @@ namespace zClass_Display {
         float blue
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                0x133,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kDisplaySourceFile, 0x133, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kDisplaySourceFile,
-                0x134,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kDisplaySourceFile, 0x134, "Null class data pointer");
             return 5;
         }
         if (node->classId != kZClassNodeDisplay) {
@@ -252,8 +198,8 @@ namespace zClass_Display {
         data->backgroundG = green;
         data->backgroundB = blue;
         const unsigned short packedColor =
-            zVid_PackColorRgbFloats((zVideo_ColorRgbFloat *)(&data->backgroundR));
-        zVideo_SetClearColorPacked16(packedColor);
+            zVidPackColorRgbFloats((zVideo_ColorRgbFloat *)(&data->backgroundR));
+        zVideoSetClearColorPacked16(packedColor);
         return 0;
     }
 }

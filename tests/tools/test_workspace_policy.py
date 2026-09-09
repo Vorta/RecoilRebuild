@@ -76,10 +76,24 @@ def test_vc5_manifests_are_json_and_have_no_retired_scaffold() -> None:
         assert "authored_order_scaffold" not in data
 
 
-def test_source_policy_is_one_fail_fast_sequence_without_duplicate_routes() -> None:
+def test_source_policy_is_one_fail_fast_sequence_without_duplicate_routes(tmp_path) -> None:
     assert len(POLICY_COMMANDS) == len(set(POLICY_COMMANDS))
     assert POLICY_COMMANDS[-1] == ("audit", "provenance", "--strict")
     assert all(command[0] in {"guard", "audit"} for command in POLICY_COMMANDS)
+    from _recoil.commands.raw_offset_guard import find_raw_offset_locations
+
+    source = tmp_path / "Probe.cpp"
+    source.write_text("\n".join([
+        "char *p = (char *)(calloc(strlen(a) + strlen(b) + 0x1b, 1));",
+        "char *q = (char *)(allocate(size(a) + 0x10));",
+        "char *r = (char *)(object) + 0x10;",
+        "char *s = (char *)(allocate(size(a))) + 0x10;",
+        "take((char *)(object) + 0x10);",
+        "char *t = (char *)((pointer()) + 0x10);",
+        "char *u = (char *)(allocate((char *)(object) + 0x10));",
+    ]))
+    found = find_raw_offset_locations(tmp_path, tmp_path)
+    assert {row.line_no for row in found} == {3, 4, 5, 6, 7}
 
 
 def test_call_contract_surface_has_no_hash_or_normalizer_mechanism() -> None:

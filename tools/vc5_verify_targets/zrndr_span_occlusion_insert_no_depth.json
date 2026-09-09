@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4912a0",
-      "symbol": "?zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest@@YIXPAPAUSpanNodePartial@zRndr@@HPAH@Z",
-      "name": "zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest"
+      "symbol": "?zRndrSpanOcclusionInsertSpanNodeNoDepthTest@@YIXPAPAUSpanNodePartial@zRndr@@HPAH@Z",
+      "name": "zRndrSpanOcclusionInsertSpanNodeNoDepthTest"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

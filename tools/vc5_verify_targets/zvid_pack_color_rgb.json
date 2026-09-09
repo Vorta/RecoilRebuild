@@ -1,6 +1,6 @@
 {
   "name": "zvid_pack_color_rgb",
-  "description": "zVid_PackColorRGB.",
+  "description": "zVidPackColorRGB.",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_filename": "zVideo.cpp",
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
@@ -16,8 +16,8 @@
   "functions": [
     {
       "address": "0x4a6cf0",
-      "symbol": "@zVid_PackColorRGB@12",
-      "name": "zVid_PackColorRGB"
+      "symbol": "@zVidPackColorRGB@12",
+      "name": "zVidPackColorRGB"
     }
   ]
 }

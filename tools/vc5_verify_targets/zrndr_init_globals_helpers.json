@@ -26,8 +26,8 @@
     },
     {
       "address": "0x49b1e0",
-      "symbol": "?FogColor_SetRgb01Clamped@zRndr@@YIXPAUzColorRgb@@@Z",
-      "name": "zRndr::FogColor_SetRgb01Clamped"
+      "symbol": "?FogColorSetRgb01Clamped@zRndr@@YIXPAUzColorRgb@@@Z",
+      "name": "zRndr::FogColorSetRgb01Clamped"
     },
     {
       "address": "0x48fd80",

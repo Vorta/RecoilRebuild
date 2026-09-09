@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4a6b80",
-      "symbol": "@zVideo_SetClearColorPacked16@4",
-      "name": "zVideo_SetClearColorPacked16"
+      "symbol": "@zVideoSetClearColorPacked16@4",
+      "name": "zVideoSetClearColorPacked16"
     }
   ]
 }

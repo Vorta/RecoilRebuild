@@ -84,7 +84,7 @@ int zSndFadeEntry::TickAndMaybeDispatch(
         }
 
         ((zA3dProviderSource *)(handle->backendBuffer))->SetGain(
-            zSndSample_PlaySimple(currentValue)
+            zSndSamplePlaySimple(currentValue)
         );
         break;
     }
@@ -107,7 +107,7 @@ int zSndFadeEntry::TickAndMaybeDispatch(
  * Purpose: tick active fades, compact unfinished entries, and delete completed
  * fade-list nodes.
  */
-extern "C" void __stdcall zSndFadeActiveList_TickAll(
+extern "C" void __stdcall zSndFadeActiveListTickAll(
     float deltaTime
 ) {
     std::list<zSndFadeEntry *>::iterator compactIt =

@@ -548,19 +548,11 @@ static inline float ApproxSqrtScaleFromBits(
     float value
 ) {
     int bits;
-    memcpy(
-        &bits,
-        &value,
-        sizeof(bits)
-    );
+    memcpy(&bits, &value, sizeof(bits));
     bits = (bits >> 1) + 0x1fc00000;
 
     float approxValue;
-    memcpy(
-        &approxValue,
-        &bits,
-        sizeof(approxValue)
-    );
+    memcpy(&approxValue, &bits, sizeof(approxValue));
     return approxValue;
 }
 
@@ -680,12 +672,8 @@ int HudSensorMapNode::SetColorRgb(
     const unsigned char red = (unsigned char)(colorRgb[0]);
     const unsigned char green = (unsigned char)(colorRgb[2]);
     const unsigned char blue = (unsigned char)(colorRgb[1]);
-    const unsigned short fullColor = (unsigned short)(zVid_PackColorRGB(
-        red,
-        green,
-        blue
-    ));
-    const unsigned short halfColor = (unsigned short)(zVid_PackColorRGB(
+    const unsigned short fullColor = (unsigned short)(zVidPackColorRGB(red, green, blue));
+    const unsigned short halfColor = (unsigned short)(zVidPackColorRGB(
         (unsigned char)(red >> 1),
         (unsigned char)(green >> 1),
         (unsigned char)(blue >> 1)
@@ -708,21 +696,11 @@ int HudSensorMapNode::LoadFromStream(
         return 0;
     }
 
-    if (fread(
-        colorRgb,
-        3,
-        1,
-        stream
-    ) != 1) {
+    if (fread(colorRgb, 3, 1, stream) != 1) {
         return 0;
     }
 
-    if (fread(
-        &pointCount,
-        4,
-        1,
-        stream
-    ) != 1) {
+    if (fread(&pointCount, 4, 1, stream) != 1) {
         return 0;
     }
 
@@ -734,12 +712,7 @@ int HudSensorMapNode::LoadFromStream(
         return 0;
     }
 
-    if (fread(
-        &objectiveIndex,
-        4,
-        1,
-        stream
-    ) != 1) {
+    if (fread(&objectiveIndex, 4, 1, stream) != 1) {
         return 0;
     }
 
@@ -835,16 +808,13 @@ int HudSensorMapNode::DrawOnTracker(
         }
 
         const int splitResult = ((HudRectI *)(&tracker->innerRectExpanded))
-                                    ->ClipOrSplitSegment(
-                                        &segmentStart,
-                                        &segmentEnd
-                                    );
+                                    ->ClipOrSplitSegment(&segmentStart, &segmentEnd);
         if (splitResult == 0) {
             continue;
         }
 
         const int color16 = packedColor565Pair & 0xffff;
-        zRndr_DrawImmediateLine(
+        zRndrDrawImmediateLine(
             (int)(segmentStart.x),
             (int)(segmentStart.y),
             (int)(segmentEnd.x),
@@ -853,7 +823,7 @@ int HudSensorMapNode::DrawOnTracker(
         );
 
         if (splitResult == 2) {
-            zRndr_DrawImmediateLine(
+            zRndrDrawImmediateLine(
                 (int)(g_HudSensor_ClipSegmentStart.x),
                 (int)(g_HudSensor_ClipSegmentStart.y),
                 (int)(g_HudSensor_ClipSegmentEnd.x),
@@ -913,12 +883,7 @@ void __fastcall HudSensorTracker::DrawDiamondMarker(
     points[4].x = points[0].x;
     points[4].y = centerY;
 
-    zRndr_DrawClippedImmediateLineStrip(
-        points,
-        4,
-        tracker,
-        markerColor & 0xffff
-    );
+    zRndrDrawClippedImmediateLineStrip(points, 4, tracker, markerColor & 0xffff);
 }
 
 /**
@@ -952,52 +917,20 @@ int HudRectI::ClipOrSplitSegment(
             startOutcode = 0;
         }
 
-        if (SegmentIntersectsEdge(
-            8,
-            segmentStart,
-            segmentEnd
-        ) != 0) {
-            HudLineClip::ClipEndpointToY(
-                segmentEnd,
-                segmentStart,
-                (float)(top)
-            );
+        if (SegmentIntersectsEdge(8, segmentStart, segmentEnd) != 0) {
+            HudLineClip::ClipEndpointToY(segmentEnd, segmentStart, (float)(top));
             return 1;
         }
-        else if (SegmentIntersectsEdge(
-            4,
-            segmentStart,
-            segmentEnd
-        ) != 0) {
-            HudLineClip::ClipEndpointToY(
-                segmentStart,
-                segmentEnd,
-                (float)(bottom)
-            );
+        else if (SegmentIntersectsEdge(4, segmentStart, segmentEnd) != 0) {
+            HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(bottom));
             return 1;
         }
-        else if (SegmentIntersectsEdge(
-            1,
-            segmentStart,
-            segmentEnd
-        ) != 0) {
-            HudLineClip::ClipEndpointToX(
-                segmentStart,
-                segmentEnd,
-                (float)(left)
-            );
+        else if (SegmentIntersectsEdge(1, segmentStart, segmentEnd) != 0) {
+            HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(left));
             return 1;
         }
-        else if (SegmentIntersectsEdge(
-            2,
-            segmentStart,
-            segmentEnd
-        ) != 0) {
-            HudLineClip::ClipEndpointToX(
-                segmentStart,
-                segmentEnd,
-                (float)(right)
-            );
+        else if (SegmentIntersectsEdge(2, segmentStart, segmentEnd) != 0) {
+            HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(right));
             return 1;
         }
         return 0;
@@ -1006,21 +939,9 @@ int HudRectI::ClipOrSplitSegment(
     g_HudSensor_ClipSegmentStart = *segmentStart;
     g_HudSensor_ClipSegmentEnd = *segmentEnd;
     if ((SegmentIntersectsEdge(8, segmentStart, segmentEnd) |
-            SegmentIntersectsEdge(
-                4,
-                segmentStart,
-                segmentEnd
-            ) |
-            SegmentIntersectsEdge(
-                1,
-                segmentStart,
-                segmentEnd
-            ) |
-            SegmentIntersectsEdge(
-                2,
-                segmentStart,
-                segmentEnd
-            )) == 0) {
+            SegmentIntersectsEdge(4, segmentStart, segmentEnd) |
+            SegmentIntersectsEdge(1, segmentStart, segmentEnd) |
+            SegmentIntersectsEdge(2, segmentStart, segmentEnd)) == 0) {
         return 1;
     }
 
@@ -1034,31 +955,15 @@ int HudRectI::ClipOrSplitSegment(
     }
 
     if ((startOutcode & 1) != 0) {
-        HudLineClip::ClipEndpointToX(
-            segmentStart,
-            segmentEnd,
-            (float)(left)
-        );
+        HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(left));
     } else if ((startOutcode & 2) != 0) {
-        HudLineClip::ClipEndpointToX(
-            segmentStart,
-            segmentEnd,
-            (float)(right)
-        );
+        HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(right));
     }
 
     if ((startOutcode & 8) != 0) {
-        HudLineClip::ClipEndpointToY(
-            segmentStart,
-            segmentEnd,
-            (float)(top)
-        );
+        HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(top));
     } else if ((startOutcode & 4) != 0) {
-        HudLineClip::ClipEndpointToY(
-            segmentStart,
-            segmentEnd,
-            (float)(bottom)
-        );
+        HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(bottom));
     }
 
     if ((endOutcode & 1) != 0) {
@@ -1172,29 +1077,13 @@ int HudRectI::SegmentIntersectsEdge(
     }
 
     const int edgeStartSide =
-        HudGeom2D::ClassifyPointAgainstSegment(
-            &edgeStart,
-            &edgeEnd,
-            segmentStart
-        );
+        HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentStart);
     const int edgeEndSide =
-        HudGeom2D::ClassifyPointAgainstSegment(
-            &edgeStart,
-            &edgeEnd,
-            segmentEnd
-        );
+        HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentEnd);
     const int segEdgeStartSide =
-        HudGeom2D::ClassifyPointAgainstSegment(
-            segmentStart,
-            segmentEnd,
-            &edgeStart
-        );
+        HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeStart);
     const int segEdgeEndSide =
-        HudGeom2D::ClassifyPointAgainstSegment(
-            segmentStart,
-            segmentEnd,
-            &edgeEnd
-        );
+        HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeEnd);
 
     if (edgeStartSide * edgeEndSide <= 0 && segEdgeStartSide * segEdgeEndSide <= 0) {
         return edgeCode;
@@ -1254,11 +1143,7 @@ int HudSensorMapNode::DrawProjectedPath(
     zMath::MatLoadCameraScratchB();
 
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-        memcpy(
-            g_HudSensor_ProjectScratch,
-            points,
-            (size_t)(pointCount) * sizeof(zVec3)
-        );
+        memcpy(g_HudSensor_ProjectScratch, points, (size_t)(pointCount) * sizeof(zVec3));
     } else {
         const zMat4x3 *const matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
         for (int i = 0; i < pointCount; ++i) {
@@ -1283,18 +1168,11 @@ int HudSensorMapNode::DrawProjectedPath(
         segmentPoints[0] = g_HudSensor_ProjectScratch[i];
         segmentPoints[1] = g_HudSensor_ProjectScratch[i + 1];
 
-        if (zMath::ClipLineSegmentToZRange(
-            &segmentPoints[0],
-            &segmentPoints[1]
-        ) == 0) {
+        if (zMath::ClipLineSegmentToZRange(&segmentPoints[0], &segmentPoints[1]) == 0) {
             continue;
         }
 
-        zMath::ProjectPointBatch(
-            segmentPoints,
-            (zProjectedPoint *)(segmentPoints),
-            2
-        );
+        zMath::ProjectPointBatch(segmentPoints, (zProjectedPoint *)(segmentPoints), 2);
 
         zRndr_LinePoint2I linePoints[2];
         linePoints[0].x = (int)(segmentPoints[0].x) << 1;
@@ -1302,7 +1180,7 @@ int HudSensorMapNode::DrawProjectedPath(
         linePoints[1].x = (int)(segmentPoints[1].x) << 1;
         linePoints[1].y = (int)(segmentPoints[1].y) << 1;
 
-        zRndr_DrawClippedImmediateLineStrip(
+        zRndrDrawClippedImmediateLineStrip(
             linePoints,
             1,
             tracker,
@@ -1350,10 +1228,7 @@ void HudSensorTracker::Init(
     mapScaleCurrent.x = 0.0f;
     mapScaleCurrent.z = 0.0f;
     mapZoom = 0.7f;
-    SetBounds(
-        outerRectOrNull,
-        0
-    );
+    SetBounds(outerRectOrNull, 0);
     SetTrackedSaveState(0);
     mapWorldNode = 0;
     mapSndOff = 0;
@@ -1510,12 +1385,7 @@ int HudSensorTracker::LoadMapFromStream(
         return 0;
     }
 
-    fread(
-        &mapFileVersion,
-        sizeof(mapFileVersion),
-        1,
-        stream
-    );
+    fread(&mapFileVersion, sizeof(mapFileVersion), 1, stream);
     if (mapFileVersion != 5) {
         zError::ReportOld(
             0x200,
@@ -1528,18 +1398,8 @@ int HudSensorTracker::LoadMapFromStream(
         return 0;
     }
 
-    fread(
-        &mapHeaderDword,
-        sizeof(mapHeaderDword),
-        1,
-        stream
-    );
-    fread(
-        &mapBoundsMinX,
-        sizeof(HudSensorMapBounds),
-        1,
-        stream
-    );
+    fread(&mapHeaderDword, sizeof(mapHeaderDword), 1, stream);
+    fread(&mapBoundsMinX, sizeof(HudSensorMapBounds), 1, stream);
 
     for (;;) {
         HudSensorMapNode *mapNode = (HudSensorMapNode *)(::operator new(sizeof(HudSensorMapNode)));
@@ -1571,10 +1431,7 @@ int HudSensorTracker::LoadMapFromPath(
         return 0;
     }
 
-    FILE *const stream = fopen(
-        path,
-        "rb"
-    );
+    FILE *const stream = fopen(path, "rb");
     if (stream == 0) {
         return 0;
     }
@@ -1751,13 +1608,9 @@ int HudSensorTracker::DrawTrackedSaveStateMarker() {
     if (zOpt::GetNetworkEnabled() != 0) {
         zUtil_SaveGameState *const gameState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
         markerColor =
-            (unsigned short)(zVid_PackColor00RRGGBB(gameState->netPlayerRow->playerColorPackedRgb));
+            (unsigned short)(zVidPackColor00RRGGBB(gameState->netPlayerRow->playerColorPackedRgb));
     } else {
-        markerColor = (unsigned short)(zVid_PackColorRGB(
-            0,
-            0xff,
-            0
-        ));
+        markerColor = (unsigned short)(zVidPackColorRGB(0, 0xff, 0));
     }
 
     zVec3 projectedScreenPoint;
@@ -1797,23 +1650,13 @@ void __fastcall HudSensorTracker::DrawMarkerCross(
     points[0].y = centerY;
     points[1].x = centerX + armHalfWidth;
     points[1].y = centerY;
-    zRndr_DrawClippedImmediateLineStrip(
-        points,
-        1,
-        tracker,
-        color16
-    );
+    zRndrDrawClippedImmediateLineStrip(points, 1, tracker, color16);
 
     points[0].x = centerX;
     points[0].y = centerY + armHalfHeight;
     points[1].x = centerX;
     points[1].y = centerY - armHalfHeight;
-    zRndr_DrawClippedImmediateLineStrip(
-        points,
-        1,
-        tracker,
-        color16
-    );
+    zRndrDrawClippedImmediateLineStrip(points, 1, tracker, color16);
 }
 
 /**
@@ -1872,11 +1715,7 @@ int HudSensorTracker::DrawSaveStateMarker(
     }
 
     zVec3 relativeDelta;
-    const float distanceSq = GetSaveStateRelativeVectorLen(
-        saveState,
-        &relativeDelta,
-        0
-    );
+    const float distanceSq = GetSaveStateRelativeVectorLen(saveState, &relativeDelta, 0);
 
     zVec3 markerPoint;
     if (saveStateMarkerMaxDistSq != 0.0f && distanceSq > saveStateMarkerMaxDistSq) {
@@ -1898,58 +1737,29 @@ int HudSensorTracker::DrawSaveStateMarker(
         markerPoint.x = localWorldPos->x + relativeDelta.x;
         markerPoint.y = localWorldPos->y + relativeDelta.y;
         markerPoint.z = localWorldPos->z + relativeDelta.z;
-        ProjectWorldPointsToOverlay(
-            &markerPoint,
-            &markerPoint,
-            1
-        );
+        ProjectWorldPointsToOverlay(&markerPoint, &markerPoint, 1);
 
         const unsigned short markerColor =
-            (unsigned short)(zVid_PackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
-        if (IsPointStrictlyInsideRect(
-            outerRect,
-            markerPoint
-        )) {
-            DrawMarkerCross(
-                (int)(markerPoint.x),
-                (int)(markerPoint.y),
-                3,
-                3,
-                markerColor,
-                this
-            );
+            (unsigned short)(zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
+        if (IsPointStrictlyInsideRect(outerRect, markerPoint)) {
+            DrawMarkerCross((int)(markerPoint.x), (int)(markerPoint.y), 3, 3, markerColor, this);
         }
 
         return 1;
     }
 
-    ProjectWorldPointsToOverlay(
-        &playerState->worldPos,
-        &markerPoint,
-        1
-    );
+    ProjectWorldPointsToOverlay(&playerState->worldPos, &markerPoint, 1);
 
     unsigned short markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
         markerColor =
-            (unsigned short)(zVid_PackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
+            (unsigned short)(zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
     } else {
-        markerColor = (unsigned short)(zVid_PackColorRGB(
-            0xff,
-            0,
-            0
-        ));
+        markerColor = (unsigned short)(zVidPackColorRGB(0xff, 0, 0));
     }
 
-    if (IsPointStrictlyInsideRect(
-        outerRect,
-        markerPoint
-    )) {
-        zRndr_SpanOcclusion_TestSample(
-            (int)(markerPoint.x),
-            (int)(markerPoint.y),
-            markerColor
-        );
+    if (IsPointStrictlyInsideRect(outerRect, markerPoint)) {
+        zRndrSpanOcclusionTestSample((int)(markerPoint.x), (int)(markerPoint.y), markerColor);
     }
 
     return 1;
@@ -1983,10 +1793,7 @@ void HudSensorTracker::Update() {
     if (zOpt::GetNetworkEnabled() == 0) {
         HudSensorMapNode *mapNode = mapNodeListHead;
         while (mapNode != 0) {
-            mapNode->DrawOnTracker(
-                this,
-                trackedWorldPosPtr
-            );
+            mapNode->DrawOnTracker(this, trackedWorldPosPtr);
             mapNode = mapNode->next;
         }
     }
@@ -2038,11 +1845,7 @@ int HudSensorTracker::LoadMissionMapAndSfx(
     int missionIdValue
 ) {
     char mapPath[0x40];
-    sprintf(
-        mapPath,
-        g_HudSensorTracker_MissionMapPathFmt,
-        missionIdValue
-    );
+    sprintf(mapPath, g_HudSensorTracker_MissionMapPathFmt, missionIdValue);
 
     const int result = LoadMapFromPath(mapPath);
     mapSndOn = zSnd::FindSampleByName(g_HudSensorTracker_MapOnSfxName);

@@ -24,8 +24,8 @@
     },
     {
       "address": "0x4717e0",
-      "symbol": "?BindMapCurrent_CopyCommandLabel@zInput@@YIPADHPADH@Z",
-      "name": "zInput::BindMapCurrent_CopyCommandLabel"
+      "symbol": "?BindMapCurrentCopyCommandLabel@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrentCopyCommandLabel"
     }
   ]
 }

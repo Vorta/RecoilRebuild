@@ -1,6 +1,6 @@
 {
   "name": "zrndr_draw_textured_queued_alpha",
-  "description": "zRndr_DrawTexturedQueuedAlpha deferred alpha-textured polygon renderer.",
+  "description": "zRndrDrawTexturedQueuedAlpha deferred alpha-textured polygon renderer.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4969d0",
-      "symbol": "?zRndr_DrawTexturedQueuedAlpha@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@11PAUzVec2@@HH@Z",
-      "name": "zRndr_DrawTexturedQueuedAlpha"
+      "symbol": "?zRndrDrawTexturedQueuedAlpha@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@11PAUzVec2@@HH@Z",
+      "name": "zRndrDrawTexturedQueuedAlpha"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

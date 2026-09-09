@@ -462,29 +462,17 @@ namespace GameZ_ZBD {
         const size_t byteCount = (size_t)(entryCount) * sizeof(unsigned int);
         if (entryCount > g_GameZ_Zbd_NodeIndexScratchCapacity) {
             g_GameZ_Zbd_NodeIndexScratch =
-                (zClass_NodePartial **)(realloc(
-                    g_GameZ_Zbd_NodeIndexScratch,
-                    byteCount
-                ));
+                (zClass_NodePartial **)(realloc(g_GameZ_Zbd_NodeIndexScratch, byteCount));
             g_GameZ_Zbd_NodeIndexScratchCapacity = entryCount;
         }
 
-        memcpy(
-            g_GameZ_Zbd_NodeIndexScratch,
-            nodeRefList,
-            byteCount
-        );
+        memcpy(g_GameZ_Zbd_NodeIndexScratch, nodeRefList, byteCount);
         int *indices = (int *)(g_GameZ_Zbd_NodeIndexScratch);
         for (int i = 0; i < entryCount; ++i) {
             indices[i] = NodePtrToIndex(g_GameZ_Zbd_NodeIndexScratch[i]);
         }
 
-        if (fwrite(
-            g_GameZ_Zbd_NodeIndexScratch,
-            byteCount,
-            1,
-            (FILE *)(stream)
-        ) != 1) {
+        if (fwrite(g_GameZ_Zbd_NodeIndexScratch, byteCount, 1, (FILE *)(stream)) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zClass_SourceFile_ClsZbdC,
@@ -533,75 +521,39 @@ namespace GameZ_ZBD {
             );
 
             zClass_SoundDataPartial *data = (zClass_SoundDataPartial *)(node->classData);
-            if (!WriteZbdBlob(
-                data,
-                sizeof(zClass_SoundDataPartial),
-                stream
-            )) {
-                return ReportZbdWriteFailure(
-                    0x105,
-                    g_zClass_WriteNodeSoundDataErrorMsg
-                );
+            if (!WriteZbdBlob(data, sizeof(zClass_SoundDataPartial), stream)) {
+                return ReportZbdWriteFailure(0x105, g_zClass_WriteNodeSoundDataErrorMsg);
             }
 
             if (data->attachedWorldCount > 0) {
-                WriteNodeRefListIndices(
-                    data->attachedWorlds,
-                    data->attachedWorldCount,
-                    stream
-                );
+                WriteNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             }
             break;
         }
 
         case kZClassNodeObject3D:
             result = 1;
-            if (!WriteZbdBlob(
-                node->classData,
-                sizeof(zClass_Object3DDataPartial),
-                stream
-            )) {
-                return ReportZbdWriteFailure(
-                    0x119,
-                    g_zClass_WriteNodeObject3DDataErrorMsg
-                );
+            if (!WriteZbdBlob(node->classData, sizeof(zClass_Object3DDataPartial), stream)) {
+                return ReportZbdWriteFailure(0x119, g_zClass_WriteNodeObject3DDataErrorMsg);
             }
             break;
 
         case kZClassNodeLod:
             result = 1;
-            if (!WriteZbdBlob(
-                node->classData,
-                sizeof(zClass_LodDataPartial),
-                stream
-            )) {
-                return ReportZbdWriteFailure(
-                    0x128,
-                    g_zClass_WriteNodeLodDataErrorMsg
-                );
+            if (!WriteZbdBlob(node->classData, sizeof(zClass_LodDataPartial), stream)) {
+                return ReportZbdWriteFailure(0x128, g_zClass_WriteNodeLodDataErrorMsg);
             }
             break;
 
         case kZClassNodeLight: {
             result = 1;
             zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
-            if (!WriteZbdBlob(
-                data,
-                sizeof(zClass_LightDataPartial),
-                stream
-            )) {
-                return ReportZbdWriteFailure(
-                    0x137,
-                    g_zClass_WriteNodeLightDataErrorMsg
-                );
+            if (!WriteZbdBlob(data, sizeof(zClass_LightDataPartial), stream)) {
+                return ReportZbdWriteFailure(0x137, g_zClass_WriteNodeLightDataErrorMsg);
             }
 
             if (data->attachedWorldCount > 0) {
-                WriteNodeRefListIndices(
-                    data->attachedWorlds,
-                    data->attachedWorldCount,
-                    stream
-                );
+                WriteNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             }
             break;
         }
@@ -609,84 +561,44 @@ namespace GameZ_ZBD {
         case kZClassNodeCamera: {
             result = 1;
             zClass_CameraDataPartial data;
-            memcpy(
-                &data,
-                node->classData,
-                sizeof(data)
-            );
+            memcpy(&data, node->classData, sizeof(data));
             data.worldNode = (zClass_NodePartial *)((int)(NodePtrToIndex(data.worldNode)));
             data.windowNode = (zClass_NodePartial *)((int)(NodePtrToIndex(data.windowNode)));
             data.horizonNode = (zClass_NodePartial *)((int)(NodePtrToIndex(data.horizonNode)));
             data.horizonXZNode = (zClass_NodePartial *)((int)(NodePtrToIndex(data.horizonXZNode)));
 
-            if (!WriteZbdBlob(
-                &data,
-                sizeof(data),
-                stream
-            )) {
-                return ReportZbdWriteFailure(
-                    0x15a,
-                    g_zClass_WriteNodeCameraDataErrorMsg
-                );
+            if (!WriteZbdBlob(&data, sizeof(data), stream)) {
+                return ReportZbdWriteFailure(0x15a, g_zClass_WriteNodeCameraDataErrorMsg);
             }
             break;
         }
 
         case kZClassNodeDisplay:
             result = 1;
-            if (!WriteZbdBlob(
-                node->classData,
-                sizeof(zClass_DisplayDataPartial),
-                stream
-            )) {
-                return ReportZbdWriteFailure(
-                    0x16a,
-                    g_zClass_WriteNodeDisplayDataErrorMsg
-                );
+            if (!WriteZbdBlob(node->classData, sizeof(zClass_DisplayDataPartial), stream)) {
+                return ReportZbdWriteFailure(0x16a, g_zClass_WriteNodeDisplayDataErrorMsg);
             }
             break;
 
         case kZClassNodeWindow:
             result = 1;
-            if (!WriteZbdBlob(
-                node->classData,
-                sizeof(zClass_WindowDataPartial),
-                stream
-            )) {
-                return ReportZbdWriteFailure(
-                    0x179,
-                    g_zClass_WriteNodeWindowDataErrorMsg
-                );
+            if (!WriteZbdBlob(node->classData, sizeof(zClass_WindowDataPartial), stream)) {
+                return ReportZbdWriteFailure(0x179, g_zClass_WriteNodeWindowDataErrorMsg);
             }
             break;
 
         case kZClassNodeWorld: {
             result = 1;
             zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(node->classData);
-            if (!WriteZbdBlob(
-                data,
-                sizeof(zClass_WorldDataPartial),
-                stream
-            )) {
-                return ReportZbdWriteFailure(
-                    0x18c,
-                    g_zClass_WriteNodeWorldDataErrorMsg
-                );
+            if (!WriteZbdBlob(data, sizeof(zClass_WorldDataPartial), stream)) {
+                return ReportZbdWriteFailure(0x18c, g_zClass_WriteNodeWorldDataErrorMsg);
             }
 
             if (data->lightCount > 0) {
-                WriteNodeRefListIndices(
-                    data->lightNodes,
-                    data->lightCount,
-                    stream
-                );
+                WriteNodeRefListIndices(data->lightNodes, data->lightCount, stream);
             }
             if (data->soundCount > 0) {
-                WriteNodeRefListIndices(
-                    data->soundNodes,
-                    data->soundCount,
-                    stream
-                );
+                WriteNodeRefListIndices(data->soundNodes, data->soundCount, stream);
             }
 
             {
@@ -694,11 +606,7 @@ namespace GameZ_ZBD {
                     zWorldAreaPartial *area = data->areaGridRows[row];
                     {
                         for (int col = 0; col < data->areaGridColCount; ++col) {
-                            if (!WriteZbdBlob(
-                                area,
-                                sizeof(zWorldAreaPartial),
-                                stream
-                            )) {
+                            if (!WriteZbdBlob(area, sizeof(zWorldAreaPartial), stream)) {
                                 return ReportZbdWriteFailure(
                                     0x1a8,
                                     g_zClass_WriteWorldAreaPartitionDataErrorMsg
@@ -706,11 +614,7 @@ namespace GameZ_ZBD {
                             }
 
                             if (area->childCount > 0) {
-                                WriteNodeRefListIndices(
-                                    area->childList,
-                                    area->childCount,
-                                    stream
-                                );
+                                WriteNodeRefListIndices(area->childList, area->childCount, stream);
                             }
                             ++area;
                         }
@@ -734,19 +638,11 @@ namespace GameZ_ZBD {
 
         if (node->listCountA > 0) {
             result = 1;
-            WriteNodeRefListIndices(
-                node->listA,
-                node->listCountA,
-                stream
-            );
+            WriteNodeRefListIndices(node->listA, node->listCountA, stream);
         }
         if (node->listCountB > 0) {
             result = 1;
-            WriteNodeRefListIndices(
-                node->listB,
-                node->listCountB,
-                stream
-            );
+            WriteNodeRefListIndices(node->listB, node->listCountB, stream);
         }
 
         return result;
@@ -767,11 +663,7 @@ namespace GameZ_ZBD {
 
         const int byteCount = result * (int)(sizeof(zClass_NodeFreeListSlot));
         zClass_NodeFreeListSlot *nodeBuffer = (zClass_NodeFreeListSlot *)(malloc(byteCount));
-        memcpy(
-            nodeBuffer,
-            g_zClass_NodeArray,
-            byteCount
-        );
+        memcpy(nodeBuffer, g_zClass_NodeArray, byteCount);
 
         for (int i = 0; i < result; ++i) {
             zClass_NodePartial *node = &nodeBuffer[i].node;
@@ -789,12 +681,7 @@ namespace GameZ_ZBD {
 
         FILE *file = (FILE *)(stream);
         const long nodeTableOffset = ftell(file);
-        if (fwrite(
-            nodeBuffer,
-            byteCount,
-            1,
-            file
-        ) != 1) {
+        if (fwrite(nodeBuffer, byteCount, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zClass_SourceFile_ClsZbdC,
@@ -807,10 +694,7 @@ namespace GameZ_ZBD {
         if (result > 0) {
             for (int i = 0; i < result; ++i) {
                 const long classDataOffset = ftell(file);
-                if (WriteSingleNodeClassData(
-                    &nodeBuffer[i].node,
-                    stream
-                ) != 0) {
+                if (WriteSingleNodeClassData(&nodeBuffer[i].node, stream) != 0) {
                     const unsigned int freeTag = nodeBuffer[i].freeTag;
                     nodeBuffer[i].freeTag =
                         (((unsigned int)(classDataOffset) ^ freeTag) & 0x00ffffffu) ^ freeTag;
@@ -819,11 +703,7 @@ namespace GameZ_ZBD {
         }
 
         const long endOffset = ftell(file);
-        fseek(
-            file,
-            nodeTableOffset,
-            SEEK_SET
-        );
+        fseek(file, nodeTableOffset, SEEK_SET);
         if (fwrite(nodeBuffer, g_zClass_NodeArraySize * sizeof(zClass_NodeFreeListSlot), 1, file) !=
             1) {
             zError::ReportOld(
@@ -834,11 +714,7 @@ namespace GameZ_ZBD {
             );
             result = 0;
         }
-        fseek(
-            file,
-            endOffset,
-            SEEK_SET
-        );
+        fseek(file, endOffset, SEEK_SET);
 
         if (g_GameZ_Zbd_NodeIndexScratch != 0) {
             free(g_GameZ_Zbd_NodeIndexScratch);
@@ -866,11 +742,7 @@ namespace GameZ {
         }
 
         if (filenameLength < 0x2f) {
-            memcpy(
-                g_zClass_CurrentZbdPath,
-                filename,
-                filenameLength + 1
-            );
+            memcpy(g_zClass_CurrentZbdPath, filename, filenameLength + 1);
         } else {
             zError::ReportOld(
                 0x200,
@@ -882,10 +754,7 @@ namespace GameZ {
             );
         }
 
-        FILE *const file = fopen(
-            filename,
-            "wb"
-        );
+        FILE *const file = fopen(filename, "wb");
         if (file == 0) {
             return -1;
         }
@@ -893,16 +762,8 @@ namespace GameZ {
         zClass_ZbdHeader header;
         header.magic = 0x02971222;
         header.version = 0x0f;
-        if (fwrite(
-            &header,
-            sizeof(header),
-            1,
-            file
-        ) != 1) {
-            return ReportZbdWriteFailure(
-                0x285,
-                g_zClass_WriteGameZHeaderDataErrorMsg
-            );
+        if (fwrite(&header, sizeof(header), 1, file) != 1) {
+            return ReportZbdWriteFailure(0x285, g_zClass_WriteGameZHeaderDataErrorMsg);
         }
 
         header.texDirOffset = ftell(file);
@@ -916,21 +777,9 @@ namespace GameZ {
         header.nodeTableOffset = ftell(file);
         header.nodeCount = GameZ_ZBD::WriteNodeTable(file);
 
-        fseek(
-            file,
-            0,
-            SEEK_SET
-        );
-        if (fwrite(
-            &header,
-            sizeof(header),
-            1,
-            file
-        ) != 1) {
-            return ReportZbdWriteFailure(
-                0x2aa,
-                g_zClass_WriteGameZHeaderDataErrorMsg
-            );
+        fseek(file, 0, SEEK_SET);
+        if (fwrite(&header, sizeof(header), 1, file) != 1) {
+            return ReportZbdWriteFailure(0x2aa, g_zClass_WriteGameZHeaderDataErrorMsg);
         }
 
         fclose(file);
@@ -956,12 +805,7 @@ namespace GameZ_ZBD {
         }
 
         const size_t byteCount = (size_t)(entryCount) * sizeof(unsigned int);
-        if (fread(
-            nodeRefList,
-            byteCount,
-            1,
-            (FILE *)(stream)
-        ) != 1) {
+        if (fread(nodeRefList, byteCount, 1, (FILE *)(stream)) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zClass_SourceFile_ClsZbdC,
@@ -1007,15 +851,8 @@ namespace GameZ_ZBD {
             zClass_SoundDataPartial *data =
                 (zClass_SoundDataPartial *)(malloc(sizeof(zClass_SoundDataPartial)));
             node->classData = data;
-            if (!ReadZbdBlob(
-                data,
-                sizeof(zClass_SoundDataPartial),
-                stream
-            )) {
-                return ReportZbdReadFailure(
-                    0x2fc,
-                    g_zClass_ReadNodeSoundDataErrorMsg
-                );
+            if (!ReadZbdBlob(data, sizeof(zClass_SoundDataPartial), stream)) {
+                return ReportZbdReadFailure(0x2fc, g_zClass_ReadNodeSoundDataErrorMsg);
             }
 
             data->sample = 0;
@@ -1024,62 +861,32 @@ namespace GameZ_ZBD {
                 data->attachedWorlds = (zClass_NodePartial **)(malloc(
                     data->attachedWorldCount * sizeof(zClass_NodePartial *)
                 ));
-                ReadNodeRefListIndices(
-                    data->attachedWorlds,
-                    data->attachedWorldCount,
-                    stream
-                );
+                ReadNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             } else {
                 data->attachedWorlds = 0;
             }
 
-            zClass_TypeList::Insert(
-                6,
-                node
-            );
-            zClass_TypeList::Insert(
-                0x0a,
-                node
-            );
+            zClass_TypeList::Insert(6, node);
+            zClass_TypeList::Insert(0x0a, node);
             break;
         }
 
         case kZClassNodeObject3D:
             result = 1;
             node->classData = malloc(sizeof(zClass_Object3DDataPartial));
-            if (!ReadZbdBlob(
-                node->classData,
-                sizeof(zClass_Object3DDataPartial),
-                stream
-            )) {
-                return ReportZbdReadFailure(
-                    0x323,
-                    g_zClass_ReadNodeObject3DDataErrorMsg
-                );
+            if (!ReadZbdBlob(node->classData, sizeof(zClass_Object3DDataPartial), stream)) {
+                return ReportZbdReadFailure(0x323, g_zClass_ReadNodeObject3DDataErrorMsg);
             }
-            zClass_TypeList::Insert(
-                6,
-                node
-            );
+            zClass_TypeList::Insert(6, node);
             break;
 
         case kZClassNodeLod:
             result = 1;
             node->classData = malloc(sizeof(zClass_LodDataPartial));
-            if (!ReadZbdBlob(
-                node->classData,
-                sizeof(zClass_LodDataPartial),
-                stream
-            )) {
-                return ReportZbdReadFailure(
-                    0x338,
-                    g_zClass_ReadNodeLodDataErrorMsg
-                );
+            if (!ReadZbdBlob(node->classData, sizeof(zClass_LodDataPartial), stream)) {
+                return ReportZbdReadFailure(0x338, g_zClass_ReadNodeLodDataErrorMsg);
             }
-            zClass_TypeList::Insert(
-                6,
-                node
-            );
+            zClass_TypeList::Insert(6, node);
             break;
 
         case kZClassNodeLight: {
@@ -1087,38 +894,21 @@ namespace GameZ_ZBD {
             zClass_LightDataPartial *data =
                 (zClass_LightDataPartial *)(malloc(sizeof(zClass_LightDataPartial)));
             node->classData = data;
-            if (!ReadZbdBlob(
-                data,
-                sizeof(zClass_LightDataPartial),
-                stream
-            )) {
-                return ReportZbdReadFailure(
-                    0x34d,
-                    g_zClass_ReadNodeLightDataErrorMsg
-                );
+            if (!ReadZbdBlob(data, sizeof(zClass_LightDataPartial), stream)) {
+                return ReportZbdReadFailure(0x34d, g_zClass_ReadNodeLightDataErrorMsg);
             }
 
             if (data->attachedWorldCount > 0) {
                 data->attachedWorlds = (zClass_NodePartial **)(malloc(
                     data->attachedWorldCount * sizeof(zClass_NodePartial *)
                 ));
-                ReadNodeRefListIndices(
-                    data->attachedWorlds,
-                    data->attachedWorldCount,
-                    stream
-                );
+                ReadNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             } else {
                 data->attachedWorlds = 0;
             }
 
-            zClass_TypeList::Insert(
-                6,
-                node
-            );
-            zClass_TypeList::Insert(
-                9,
-                node
-            );
+            zClass_TypeList::Insert(6, node);
+            zClass_TypeList::Insert(9, node);
             break;
         }
 
@@ -1127,15 +917,8 @@ namespace GameZ_ZBD {
             zClass_CameraDataPartial *data =
                 (zClass_CameraDataPartial *)(malloc(sizeof(zClass_CameraDataPartial)));
             node->classData = data;
-            if (!ReadZbdBlob(
-                data,
-                sizeof(zClass_CameraDataPartial),
-                stream
-            )) {
-                return ReportZbdReadFailure(
-                    0x371,
-                    g_zClass_ReadNodeCameraDataErrorMsg
-                );
+            if (!ReadZbdBlob(data, sizeof(zClass_CameraDataPartial), stream)) {
+                return ReportZbdReadFailure(0x371, g_zClass_ReadNodeCameraDataErrorMsg);
             }
 
             data->worldNode = NodeIndexToPtr((int)((int)(data->worldNode)));
@@ -1143,24 +926,10 @@ namespace GameZ_ZBD {
             data->horizonNode = NodeIndexToPtr((int)((int)(data->horizonNode)));
             data->horizonXZNode = NodeIndexToPtr((int)((int)(data->horizonXZNode)));
 
-            zClass_TypeList::Insert(
-                6,
-                node
-            );
-            zClass_TypeList::Insert(
-                8,
-                node
-            );
-            zClass_Camera::gwCameraSetNearFarClip(
-                node,
-                data->nearClip,
-                data->farClip
-            );
-            zClass_Camera::gwCameraSetViewport(
-                node,
-                data->viewportWidth,
-                data->viewportHeight
-            );
+            zClass_TypeList::Insert(6, node);
+            zClass_TypeList::Insert(8, node);
+            zClass_Camera::gwCameraSetNearFarClip(node, data->nearClip, data->farClip);
+            zClass_Camera::gwCameraSetViewport(node, data->viewportWidth, data->viewportHeight);
             break;
         }
 
@@ -1169,25 +938,12 @@ namespace GameZ_ZBD {
             zClass_DisplayDataPartial *data =
                 (zClass_DisplayDataPartial *)(malloc(sizeof(zClass_DisplayDataPartial)));
             node->classData = data;
-            if (!ReadZbdBlob(
-                data,
-                sizeof(zClass_DisplayDataPartial),
-                stream
-            )) {
-                return ReportZbdReadFailure(
-                    0x39a,
-                    g_zClass_ReadNodeDisplayDataErrorMsg
-                );
+            if (!ReadZbdBlob(data, sizeof(zClass_DisplayDataPartial), stream)) {
+                return ReportZbdReadFailure(0x39a, g_zClass_ReadNodeDisplayDataErrorMsg);
             }
 
-            zClass_TypeList::Insert(
-                6,
-                node
-            );
-            zClass_TypeList::Insert(
-                0x0f,
-                node
-            );
+            zClass_TypeList::Insert(6, node);
+            zClass_TypeList::Insert(0x0f, node);
             zClass_Display::gwDisplaySetBackgroundColor(
                 node,
                 data->backgroundR,
@@ -1200,24 +956,11 @@ namespace GameZ_ZBD {
         case kZClassNodeWindow:
             result = 1;
             node->classData = malloc(sizeof(zClass_WindowDataPartial));
-            if (!ReadZbdBlob(
-                node->classData,
-                sizeof(zClass_WindowDataPartial),
-                stream
-            )) {
-                return ReportZbdReadFailure(
-                    0x3b7,
-                    g_zClass_ReadNodeWindowDataErrorMsg
-                );
+            if (!ReadZbdBlob(node->classData, sizeof(zClass_WindowDataPartial), stream)) {
+                return ReportZbdReadFailure(0x3b7, g_zClass_ReadNodeWindowDataErrorMsg);
             }
-            zClass_TypeList::Insert(
-                6,
-                node
-            );
-            zClass_TypeList::Insert(
-                0x0e,
-                node
-            );
+            zClass_TypeList::Insert(6, node);
+            zClass_TypeList::Insert(0x0e, node);
             break;
 
         case kZClassNodeWorld: {
@@ -1225,26 +968,15 @@ namespace GameZ_ZBD {
             zClass_WorldDataPartial *data =
                 (zClass_WorldDataPartial *)(malloc(sizeof(zClass_WorldDataPartial)));
             node->classData = data;
-            if (!ReadZbdBlob(
-                data,
-                sizeof(zClass_WorldDataPartial),
-                stream
-            )) {
-                return ReportZbdReadFailure(
-                    0x3d4,
-                    g_zClass_ReadNodeWorldDataErrorMsg
-                );
+            if (!ReadZbdBlob(data, sizeof(zClass_WorldDataPartial), stream)) {
+                return ReportZbdReadFailure(0x3d4, g_zClass_ReadNodeWorldDataErrorMsg);
             }
 
             if (data->lightCount > 0) {
                 data->lightNodes = (zClass_NodePartial **)(malloc(
                     data->lightCount * sizeof(zClass_NodePartial *)
                 ));
-                ReadNodeRefListIndices(
-                    data->lightNodes,
-                    data->lightCount,
-                    stream
-                );
+                ReadNodeRefListIndices(data->lightNodes, data->lightCount, stream);
                 data->lightDataList = (zClass_LightDataPartial **)(malloc(
                     data->lightCount * sizeof(zClass_LightDataPartial *)
                 ));
@@ -1257,11 +989,7 @@ namespace GameZ_ZBD {
                 data->soundNodes = (zClass_NodePartial **)(malloc(
                     data->soundCount * sizeof(zClass_NodePartial *)
                 ));
-                ReadNodeRefListIndices(
-                    data->soundNodes,
-                    data->soundCount,
-                    stream
-                );
+                ReadNodeRefListIndices(data->soundNodes, data->soundCount, stream);
                 data->soundDataList = (zClass_SoundDataPartial **)(malloc(
                     data->soundCount * sizeof(zClass_SoundDataPartial *)
                 ));
@@ -1271,10 +999,7 @@ namespace GameZ_ZBD {
             }
 
             data->areaGridRows =
-                (zWorldAreaPartial **)(calloc(
-                    data->areaGridRowCount,
-                    sizeof(zWorldAreaPartial *)
-                ));
+                (zWorldAreaPartial **)(calloc(data->areaGridRowCount, sizeof(zWorldAreaPartial *)));
             {
                 for (int row = 0; row < data->areaGridRowCount; ++row) {
                     data->areaGridRows[row] = (zWorldAreaPartial *)(calloc(
@@ -1289,11 +1014,7 @@ namespace GameZ_ZBD {
                     zWorldAreaPartial *area = data->areaGridRows[row];
                     {
                         for (int col = 0; col < data->areaGridColCount; ++col) {
-                            if (!ReadZbdBlob(
-                                area,
-                                sizeof(zWorldAreaPartial),
-                                stream
-                            )) {
+                            if (!ReadZbdBlob(area, sizeof(zWorldAreaPartial), stream)) {
                                 return ReportZbdReadFailure(
                                     0x423,
                                     g_zClass_ReadWorldAreaPartitionDataErrorMsg
@@ -1304,11 +1025,7 @@ namespace GameZ_ZBD {
                                 area->childList = (zClass_NodePartial **)(malloc(
                                     area->childCount * sizeof(zClass_NodePartial *)
                                 ));
-                                ReadNodeRefListIndices(
-                                    area->childList,
-                                    area->childCount,
-                                    stream
-                                );
+                                ReadNodeRefListIndices(area->childList, area->childCount, stream);
                             } else {
                                 area->childList = 0;
                             }
@@ -1321,38 +1038,18 @@ namespace GameZ_ZBD {
             data->pendingAreaUpdateCount = 0;
             data->pendingAreaUpdateCapacity = 0;
             data->pendingAreaUpdates = 0;
-            zClass_TypeList::Insert(
-                6,
-                node
-            );
-            zClass_TypeList::Insert(
-                0x0d,
-                node
-            );
-            zClass_World::SetPendingFogState(
-                node,
-                data->fogState
-            );
+            zClass_TypeList::Insert(6, node);
+            zClass_TypeList::Insert(0x0d, node);
+            zClass_World::SetPendingFogState(node, data->fogState);
             zClass_World::SetPendingFogColorRgb01(
                 node,
                 data->ambientColor.red,
                 data->ambientColor.green,
                 data->ambientColor.blue
             );
-            zClass_World::SetPendingFogAltitudeRange(
-                node,
-                data->fogHeightLow,
-                data->fogHeightHigh
-            );
-            zClass_World::SetPendingFogRange(
-                node,
-                data->fogDistanceStart,
-                data->fogDistanceEnd
-            );
-            zClass_World::SetPendingFogDensity(
-                node,
-                data->fogDensity
-            );
+            zClass_World::SetPendingFogAltitudeRange(node, data->fogHeightLow, data->fogHeightHigh);
+            zClass_World::SetPendingFogRange(node, data->fogDistanceStart, data->fogDistanceEnd);
+            zClass_World::SetPendingFogDensity(node, data->fogDensity);
             zClass_World::ApplyPendingFogSettings(node);
             break;
         }
@@ -1373,11 +1070,7 @@ namespace GameZ_ZBD {
             result = 1;
             node->listA =
                 (zClass_NodePartial **)(malloc(node->listCountA * sizeof(zClass_NodePartial *)));
-            ReadNodeRefListIndices(
-                node->listA,
-                node->listCountA,
-                stream
-            );
+            ReadNodeRefListIndices(node->listA, node->listCountA, stream);
         } else {
             node->listA = 0;
         }
@@ -1385,11 +1078,7 @@ namespace GameZ_ZBD {
         if (node->listCountB > 0) {
             node->listB =
                 (zClass_NodePartial **)(malloc(node->listCountB * sizeof(zClass_NodePartial *)));
-            ReadNodeRefListIndices(
-                node->listB,
-                node->listCountB,
-                stream
-            );
+            ReadNodeRefListIndices(node->listB, node->listCountB, stream);
             return 1;
         }
 
@@ -1419,10 +1108,7 @@ namespace GameZ_ZBD {
         } else if (nodeCount > g_zClass_NodeArraySize) {
             const int oldNodeCount = g_zClass_NodeArraySize;
             g_zClass_NodeArray =
-                (zClass_NodeFreeListSlot *)(realloc(
-                    g_zClass_NodeArray,
-                    byteCount
-                ));
+                (zClass_NodeFreeListSlot *)(realloc(g_zClass_NodeArray, byteCount));
             memset(
                 &g_zClass_NodeArray[oldNodeCount],
                 0,
@@ -1431,12 +1117,7 @@ namespace GameZ_ZBD {
             g_zClass_NodeArraySize = nodeCount;
         }
 
-        if (fread(
-            g_zClass_NodeArray,
-            byteCount,
-            1,
-            (FILE *)(stream)
-        ) != 1) {
+        if (fread(g_zClass_NodeArray, byteCount, 1, (FILE *)(stream)) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zClass_SourceFile_ClsZbdC,
@@ -1453,10 +1134,7 @@ namespace GameZ_ZBD {
                 (unsigned int)((unsigned int)(zDi::IndexToPtrOrNull((int)(node->userDataOrDiRef))));
             node->actionCallback = 0;
 
-            if (ReadSingleNodeClassData(
-                node,
-                stream
-            ) > 0) {
+            if (ReadSingleNodeClassData(node, stream) > 0) {
                 ++g_zClass_ActiveNodeCount;
                 g_zClass_NodeArray[i].freeTag |= 0x01000000u;
             } else {
@@ -1503,11 +1181,7 @@ namespace GameZ {
         }
 
         if (filenameLength < 0x2f) {
-            memcpy(
-                g_zClass_CurrentZbdPath,
-                filename,
-                filenameLength + 1
-            );
+            memcpy(g_zClass_CurrentZbdPath, filename, filenameLength + 1);
         } else {
             zError::ReportOld(
                 0x200,
@@ -1520,10 +1194,7 @@ namespace GameZ {
         }
 
         zClass_ZbdHeader header;
-        FILE *const file = OpenAndReadZBDHeader(
-            filename,
-            &header
-        );
+        FILE *const file = OpenAndReadZBDHeader(filename, &header);
         if (file == 0) {
             return -1;
         }
@@ -1531,25 +1202,14 @@ namespace GameZ {
         int sourceLine = 0;
         const char *message = 0;
 
-        fseek(
-            file,
-            header.texDirOffset,
-            SEEK_SET
-        );
-        if (zImage::ReadTextureDirectory(
-            header.texDirArg,
-            file
-        ) < 0) {
+        fseek(file, header.texDirOffset, SEEK_SET);
+        if (zImage::ReadTextureDirectory(header.texDirArg, file) < 0) {
             sourceLine = 0x562;
             message = g_zClass_ReadGameZTextureDataErrorMsg;
         }
 
         if (message == 0) {
-            fseek(
-                file,
-                header.matlOffset,
-                SEEK_SET
-            );
+            fseek(file, header.matlOffset, SEEK_SET);
             if (zModel_MatlBuffer::ReadGameZ(file) < 0) {
                 sourceLine = 0x56e;
                 message = g_zClass_ReadGameZMaterialDataErrorMsg;
@@ -1557,11 +1217,7 @@ namespace GameZ {
         }
 
         if (message == 0) {
-            fseek(
-                file,
-                header.model3dOffset,
-                SEEK_SET
-            );
+            fseek(file, header.model3dOffset, SEEK_SET);
             if (zModel_DiPool::ReadFromStream(file) < 0) {
                 sourceLine = 0x57a;
                 message = g_zClass_ReadGameZModel3DDataErrorMsg;
@@ -1569,15 +1225,8 @@ namespace GameZ {
         }
 
         if (message == 0) {
-            fseek(
-                file,
-                header.nodeTableOffset,
-                SEEK_SET
-            );
-            if (GameZ_ZBD::ReadNodeTable(
-                header.nodeCount,
-                file
-            ) < 0) {
+            fseek(file, header.nodeTableOffset, SEEK_SET);
+            if (GameZ_ZBD::ReadNodeTable(header.nodeCount, file) < 0) {
                 sourceLine = 0x586;
                 message = g_zClass_ReadGameZNodeDataErrorMsg;
             }
@@ -1585,12 +1234,7 @@ namespace GameZ {
 
         int result;
         if (message != 0) {
-            zError::ReportOld(
-                0x200,
-                g_zClass_SourceFile_ClsZbdC,
-                sourceLine,
-                message
-            );
+            zError::ReportOld(0x200, g_zClass_SourceFile_ClsZbdC, sourceLine, message);
             result = -1;
         } else {
             g_zClass_NodeFreeHeadIndex = header.nodeFreeHead;
@@ -1611,22 +1255,14 @@ namespace GameZ {
         const char *filename,
         zClass_ZbdHeader *outHeader
     ) {
-        FILE *file = fopen(
-            filename,
-            "rb"
-        );
+        FILE *file = fopen(filename, "rb");
         if (file == 0) {
             return 0;
         }
 
         int sourceLine = 0;
         const char *message = 0;
-        if (fread(
-            outHeader,
-            sizeof(zClass_ZbdHeader),
-            1,
-            file
-        ) != 1) {
+        if (fread(outHeader, sizeof(zClass_ZbdHeader), 1, file) != 1) {
             message = g_zClass_ReadGameZHeaderDataErrorMsg;
             sourceLine = 0x515;
         } else if (outHeader->magic != 0x02971222) {
@@ -1639,12 +1275,7 @@ namespace GameZ {
             return file;
         }
 
-        zError::ReportOld(
-            0x200,
-            g_zClass_SourceFile_ClsZbdC,
-            sourceLine,
-            message
-        );
+        zError::ReportOld(0x200, g_zClass_SourceFile_ClsZbdC, sourceLine, message);
         fclose(file);
         return 0;
     }
@@ -1669,21 +1300,13 @@ namespace GameZ_ZBD {
         }
 
         zClass_ZbdHeader header;
-        FILE *const file = GameZ::OpenAndReadZBDHeader(
-            g_zClass_CurrentZbdPath,
-            &header
-        );
+        FILE *const file = GameZ::OpenAndReadZBDHeader(g_zClass_CurrentZbdPath, &header);
         if (file == 0) {
             return 1;
         }
 
         const int result =
-            ReloadDisplayInstancesRecursive_Local(
-                file,
-                &header,
-                node,
-                recurseChildren
-            );
+            ReloadDisplayInstancesRecursive_Local(file, &header, node, recurseChildren);
         fclose(file);
         return result;
     }
@@ -1718,12 +1341,7 @@ namespace GameZ_ZBD {
         );
 
         zClass_NodeFreeListSlot serializedNode;
-        if (fread(
-            &serializedNode,
-            sizeof(serializedNode),
-            1,
-            file
-        ) != 1) {
+        if (fread(&serializedNode, sizeof(serializedNode), 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zClass_SourceFile_ClsZbdC,
@@ -1734,42 +1352,23 @@ namespace GameZ_ZBD {
         }
 
         const int displayInstanceIndex = (int)(serializedNode.node.userDataOrDiRef);
-        fseek(
-            file,
-            zbdHeader->model3dOffset,
-            SEEK_SET
-        );
+        fseek(file, zbdHeader->model3dOffset, SEEK_SET);
 
         unsigned int oldDisplayInstanceValue;
-        zClass_Class::gwNodeGetUserData(
-            node,
-            &oldDisplayInstanceValue
-        );
-        zClass_Class::gwNodeSetDisplayInstance(
-            node,
-            0
-        );
+        zClass_Class::gwNodeGetUserData(node, &oldDisplayInstanceValue);
+        zClass_Class::gwNodeSetDisplayInstance(node, 0);
 
         zDiPartial *const displayInstance =
-            zModel_DiPool::ReadEntryByIndexFromStream(
-                file,
-                displayInstanceIndex
-            );
+            zModel_DiPool::ReadEntryByIndexFromStream(file, displayInstanceIndex);
         zDiPartial *const oldDisplayInstance =
             (zDiPartial *)((unsigned int)(oldDisplayInstanceValue));
         if (displayInstance != 0) {
-            zClass_Class::gwNodeSetDisplayInstance(
-                node,
-                displayInstance
-            );
+            zClass_Class::gwNodeSetDisplayInstance(node, displayInstance);
             if (oldDisplayInstance != 0) {
                 zModel_DiPool::FreeIfUnreferenced(oldDisplayInstance);
             }
         } else {
-            zClass_Class::gwNodeSetDisplayInstance(
-                node,
-                oldDisplayInstance
-            );
+            zClass_Class::gwNodeSetDisplayInstance(node, oldDisplayInstance);
         }
 
         if (recurseChildren != 0) {

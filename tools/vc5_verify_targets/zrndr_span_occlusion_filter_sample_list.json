@@ -1,6 +1,6 @@
 {
   "name": "zrndr_span_occlusion_filter_sample_list",
-  "description": "VC verification target for zRndr_SpanOcclusion_FilterSampleList.",
+  "description": "VC verification target for zRndrSpanOcclusionFilterSampleList.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49aa30",
-      "symbol": "?zRndr_SpanOcclusion_FilterSampleList@@YIXHPAUzVec3@@@Z",
-      "name": "zRndr_SpanOcclusion_FilterSampleList"
+      "symbol": "?zRndrSpanOcclusionFilterSampleList@@YIXHPAUzVec3@@@Z",
+      "name": "zRndrSpanOcclusionFilterSampleList"
     }
   ]
 }

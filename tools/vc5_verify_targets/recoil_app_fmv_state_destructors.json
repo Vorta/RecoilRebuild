@@ -20,13 +20,13 @@
   "functions": [
     {
       "address": "0x42df10",
-      "symbol": "??1RecoilApp_AttractFmvState@@UAE@XZ",
-      "name": "RecoilApp_AttractFmvState::Destructor"
+      "symbol": "??1CRecoilAppAttractFmvState@@UAE@XZ",
+      "name": "CRecoilAppAttractFmvState::Destructor"
     },
     {
       "address": "0x42df50",
-      "symbol": "??1RecoilApp_IntroFmvState@@UAE@XZ",
-      "name": "RecoilApp_IntroFmvState::Destructor"
+      "symbol": "??1CRecoilAppIntroFmvState@@UAE@XZ",
+      "name": "CRecoilAppIntroFmvState::Destructor"
     },
     {
       "address": "0x42e070",

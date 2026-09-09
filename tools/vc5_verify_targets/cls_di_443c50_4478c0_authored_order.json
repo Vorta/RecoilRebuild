@@ -242,8 +242,8 @@
         },
         {
           "address": "0x446f60",
-          "symbol": "?FilterRegions_TryAppendNode@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
-          "name": "zClass_cls_di::FilterRegions_TryAppendNode",
+          "symbol": "?FilterRegionsTryAppendNode@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_cls_di::FilterRegionsTryAppendNode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -533,8 +533,8 @@
         },
         {
           "address": "0x446f60",
-          "symbol": "?FilterRegions_TryAppendNode@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
-          "name": "zClass_cls_di::FilterRegions_TryAppendNode",
+          "symbol": "?FilterRegionsTryAppendNode@zClass_cls_di@@YIHPAUzClass_NodePartial@@@Z",
+          "name": "zClass_cls_di::FilterRegionsTryAppendNode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -579,8 +579,8 @@
       ],
       "successor": {
         "address": "0x4478c0",
-        "symbol": "?AllocNodeFromFreeList@zClass_Class@@YAPAUzClass_NodePartial@@XZ",
-        "name": "zClass_Class::AllocNodeFromFreeList",
+        "symbol": "?gwNodeNew@zClass_Class@@YAPAUzClass_NodePartial@@XZ",
+        "name": "zClass_Class::gwNodeNew",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

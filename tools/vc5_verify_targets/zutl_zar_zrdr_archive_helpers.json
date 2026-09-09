@@ -17,12 +17,12 @@
   "functions": [
     {
       "address": "0x4a5df0",
-      "symbol": "_zUtil_ZRDR_FreeScratchSearchPathList",
+      "symbol": "_zRdrFreeScratchSearchPathList",
       "name": "zUtil_ZRDR::FreeScratchSearchPathList"
     },
     {
       "address": "0x4a6100",
-      "symbol": "_zUtil_ZRDR_ShutdownWildcardPath",
+      "symbol": "_zRdrShutdownWildcardPath",
       "name": "zUtil_ZRDR::ShutdownWildcardPath"
     },
     {

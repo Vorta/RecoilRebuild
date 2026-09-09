@@ -1,6 +1,6 @@
 {
   "name": "zrndr_fill_span16_opaque",
-  "description": "VC verification target for zRndr_FillSpan16Opaque.",
+  "description": "VC verification target for zRndrFillSpan16Opaque.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4997d0",
-      "symbol": "?zRndr_FillSpan16Opaque@@YIXHH@Z",
-      "name": "zRndr_FillSpan16Opaque"
+      "symbol": "?zRndrFillSpan16Opaque@@YIXHH@Z",
+      "name": "zRndrFillSpan16Opaque"
     }
   ],
   "data_symbols": [

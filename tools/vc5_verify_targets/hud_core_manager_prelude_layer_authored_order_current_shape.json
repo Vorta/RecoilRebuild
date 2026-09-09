@@ -231,8 +231,8 @@
         },
         {
           "address": "0x40ec90",
-          "symbol_regex": "\\?Shutdown_Stub@HudLayoutBase@@.*",
-          "name": "HudLayoutBase::Shutdown_Stub",
+          "symbol_regex": "\\?ShutdownShieldWidget@HudLayoutBase@@.*",
+          "name": "HudLayoutBase::ShutdownShieldWidget",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -384,8 +384,8 @@
         },
         {
           "address": "0x40f3e0",
-          "symbol_regex": "\\?ShutdownItems_Stub@HudUiTripletPanel@@.*",
-          "name": "HudUiTripletPanel::ShutdownItems_Stub",
+          "symbol_regex": "\\?ShutdownItems@HudUiTripletPanel@@.*",
+          "name": "HudUiTripletPanel::ShutdownItems",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,

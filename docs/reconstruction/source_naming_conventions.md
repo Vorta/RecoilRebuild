@@ -30,6 +30,7 @@ Use these labels when describing the basis for a naming decision:
 |---|---|
 | `Recoil-confirmed` | Direct Recoil evidence supports the exact spelling or path. |
 | `Same-engine default` | Same-engine terminology or a repeated family supports the default, but Recoil does not expose the exact spelling. |
+| `Inferred` | Current behavior supports a descriptive reconstruction; the original spelling is unknown. |
 | `Placement heuristic` | A pattern predicts a likely path or order; it proves neither. |
 
 Stronger evidence replaces a weaker default. A friendly Binary Ninja name,
@@ -83,10 +84,35 @@ It does not apply to:
 - provider, CRT, MFC, DirectX, COM, or compiler-owned types
 - temporary layouts, partial records, or unresolved source models
 
-Preserve exact contrary Recoil spellings. `RecoilApp`, `HudUiElement`, and
-`zFMV_Action` are examples of evidenced Recoil families that must not be
-renamed merely to make them start with `C` or `CZ`. Provider spellings come
-from the corresponding provider headers and ABI, not this convention.
+Preserve exact contrary Recoil spellings when supported by retail evidence.
+Existing source or Binary Ninja labels such as `RecoilApp` and `HudUiElement`
+do not establish original class spelling by themselves. Meaningful existing
+names may be retained as inferred reconstructions without claiming they were
+recovered from retail. Provider spellings come from the corresponding provider
+headers and ABI, not this convention.
+
+## Function Names And Naming Audits
+
+Prefer a surviving diagnostic's exact function spelling when its xref and call
+context identify that function. A string can name a callee or recommend another
+API, so the containing function is not automatically the named function.
+Recoil diagnostics establish the procedural families `gwNode…` and `zRdr…`.
+They also preserve `_gwListDeleteANode` and `check_colinearity`: underscores are
+not categorically forbidden. Exact leaf evidence does not establish a C++
+scope, namespace, class, or linkage on its own.
+
+When only behavior survives, choose a concise descriptive name and mark its
+basis `Inferred`. Distinguish a stream-processing loop from a one-line parser,
+and do not describe a wrapper that calls cleanup as a stub merely because its
+current callee is empty. Defer ambiguous offsets, folded bodies, and ownership
+questions instead of manufacturing precision through a spelling change.
+
+Apply a reviewed rename consistently to definitions, declarations, callers,
+candidate symbol bindings, and current navigation labels. Preserve runtime
+strings, provider APIs, stable artifact/anchor identifiers, physical placement,
+and source line counts. Naming audits record renamed, retained, deferred, and
+excluded entities with evidence confidence. Such an audit is a dated review
+artifact; live reconstruction state remains solely in the progress tracker.
 
 ## GameZ Module Folders And Filenames
 

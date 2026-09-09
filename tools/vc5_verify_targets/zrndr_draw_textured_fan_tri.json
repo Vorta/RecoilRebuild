@@ -1,6 +1,6 @@
 {
   "name": "zrndr_draw_textured_fan_tri",
-  "description": "zRndr_DrawTexturedFanTri textured fan-triangle renderer.",
+  "description": "zRndrDrawTexturedFanTri textured fan-triangle renderer.",
   "source_filename": "zRndr.cpp",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x497ac0",
-      "symbol": "?zRndr_DrawTexturedFanTri@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@11PAUzVec2@@HHH@Z",
-      "name": "zRndr_DrawTexturedFanTri"
+      "symbol": "?zRndrDrawTexturedFanTri@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@11PAUzVec2@@HHH@Z",
+      "name": "zRndrDrawTexturedFanTri"
     }
   ]
 }

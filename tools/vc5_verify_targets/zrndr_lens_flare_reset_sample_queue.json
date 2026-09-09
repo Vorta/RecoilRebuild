@@ -1,6 +1,6 @@
 {
   "name": "zrndr_lens_flare_reset_sample_queue",
-  "description": "VC verification target for zRndr::LensFlare_ResetSampleQueue.",
+  "description": "VC verification target for zRndr::LensFlareResetSampleQueue.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49a910",
-      "symbol": "?LensFlare_ResetSampleQueue@zRndr@@YAXXZ",
-      "name": "zRndr::LensFlare_ResetSampleQueue"
+      "symbol": "?LensFlareResetSampleQueue@zRndr@@YAXXZ",
+      "name": "zRndr::LensFlareResetSampleQueue"
     }
   ],
   "data_symbols": [

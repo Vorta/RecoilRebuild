@@ -21,18 +21,18 @@
   "functions": [
     {
       "address": "0x414f40",
-      "symbol": "?OnActivate@HudUiMainMenuDialog_CreditsButton@@QAEXXZ",
-      "name": "HudUiMainMenuDialog_CreditsButton::OnActivate"
+      "symbol": "?OnActivate@CHudUiMainMenuDialogCreditsButton@@QAEXXZ",
+      "name": "CHudUiMainMenuDialogCreditsButton::OnActivate"
     },
     {
       "address": "0x414f60",
-      "symbol": "?OnActivate@HudUiMainMenuDialog_SaveButton@@QAEXXZ",
-      "name": "HudUiMainMenuDialog_SaveButton::OnActivate"
+      "symbol": "?OnActivate@CHudUiMainMenuDialogSaveButton@@QAEXXZ",
+      "name": "CHudUiMainMenuDialogSaveButton::OnActivate"
     },
     {
       "address": "0x414f80",
-      "symbol": "?OnActivate@HudUiMainMenuDialog_NewGameButton@@QAEXXZ",
-      "name": "HudUiMainMenuDialog_NewGameButton::OnActivate"
+      "symbol": "?OnActivate@CHudUiMainMenuDialogNewGameButton@@QAEXXZ",
+      "name": "CHudUiMainMenuDialogNewGameButton::OnActivate"
     },
     {
       "address": "0x414fa0",
@@ -41,23 +41,23 @@
     },
     {
       "address": "0x414fc0",
-      "symbol": "?OnActivate@HudUiMainMenuDialog_OptionsButton@@QAEXXZ",
-      "name": "HudUiMainMenuDialog_OptionsButton::OnActivate"
+      "symbol": "?OnActivate@CHudUiMainMenuDialogOptionsButton@@QAEXXZ",
+      "name": "CHudUiMainMenuDialogOptionsButton::OnActivate"
     },
     {
       "address": "0x414fe0",
-      "symbol": "?OnActivate@HudUiMainMenuDialog_QuitButton@@QAEXXZ",
-      "name": "HudUiMainMenuDialog_QuitButton::OnActivate"
+      "symbol": "?OnActivate@CHudUiMainMenuDialogQuitButton@@QAEXXZ",
+      "name": "CHudUiMainMenuDialogQuitButton::OnActivate"
     },
     {
       "address": "0x415000",
-      "symbol": "?OnActivate@HudUiMainMenuDialog_ControlsButton@@QAEXXZ",
-      "name": "HudUiMainMenuDialog_ControlsButton::OnActivate"
+      "symbol": "?OnActivate@CHudUiMainMenuDialogControlsButton@@QAEXXZ",
+      "name": "CHudUiMainMenuDialogControlsButton::OnActivate"
     },
     {
       "address": "0x415140",
-      "symbol": "?OnActivate@HudUiMainMenuDialog_LoadButton@@QAEXXZ",
-      "name": "HudUiMainMenuDialog_LoadButton::OnActivate"
+      "symbol": "?OnActivate@CHudUiMainMenuDialogLoadButton@@QAEXXZ",
+      "name": "CHudUiMainMenuDialogLoadButton::OnActivate"
     }
   ]
 }

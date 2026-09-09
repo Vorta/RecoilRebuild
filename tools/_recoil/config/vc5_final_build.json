@@ -132,8 +132,8 @@
       "id": "zinput_bind_group_list_get_count",
       "identity": "recoil:function:0x42a480",
       "callee_source": "src/Battlesport/player.cpp",
-      "cdecl_symbol": "?BindGroupList_GetCount@zInput@@YAHXZ",
-      "fastcall_symbol": "?BindGroupList_GetCount@zInput@@YIHXZ",
+      "cdecl_symbol": "?BindGroupListGetCount@zInput@@YAHXZ",
+      "fastcall_symbol": "?BindGroupListGetCount@zInput@@YIHXZ",
       "callers": [
         {
           "source": "src/Battlesport/hud.cpp",
@@ -173,8 +173,8 @@
       "id": "zinput_keyboard_suspend",
       "identity": "recoil:function:0x471d10",
       "callee_source": "src/GameZRecoil/zInput/zin_init.cpp",
-      "cdecl_symbol": "?Keyboard_Suspend@zInput@@YAXXZ",
-      "fastcall_symbol": "?Keyboard_Suspend@zInput@@YIXXZ",
+      "cdecl_symbol": "?KeyboardSuspend@zInput@@YAXXZ",
+      "fastcall_symbol": "?KeyboardSuspend@zInput@@YIXXZ",
       "callers": [
         {
           "source": "src/Battlesport/hud.cpp",
@@ -214,8 +214,8 @@
       "id": "zinput_keyboard_resume_from_suspend",
       "identity": "recoil:function:0x471cd0",
       "callee_source": "src/GameZRecoil/zInput/zin_init.cpp",
-      "cdecl_symbol": "?Keyboard_ResumeFromSuspend@zInput@@YAXXZ",
-      "fastcall_symbol": "?Keyboard_ResumeFromSuspend@zInput@@YIXXZ",
+      "cdecl_symbol": "?KeyboardResumeFromSuspend@zInput@@YAXXZ",
+      "fastcall_symbol": "?KeyboardResumeFromSuspend@zInput@@YIXXZ",
       "callers": [
         {
           "source": "src/Battlesport/hud.cpp",
@@ -260,8 +260,8 @@
       "callers": [
         {
           "source": "src/Battlesport/hud.cpp",
-          "cdecl_symbol": "?SyncFromOptions@HudUiOptionsPanel_Perspective@@QAEXXZ",
-          "fastcall_symbol": "?SyncFromOptions@HudUiOptionsPanel_Perspective@@QAEXXZ"
+          "cdecl_symbol": "?SyncFromOptions@CHudUiOptionsPanelPerspective@@QAEXXZ",
+          "fastcall_symbol": "?SyncFromOptions@CHudUiOptionsPanelPerspective@@QAEXXZ"
         }
       ],
       "return_category": "void",
@@ -301,8 +301,8 @@
       "callers": [
         {
           "source": "src/Battlesport/hud.cpp",
-          "cdecl_symbol": "?OnActivate@HudUiOptionsPanel_MusicEnable@@UAEXXZ",
-          "fastcall_symbol": "?OnActivate@HudUiOptionsPanel_MusicEnable@@UAEXXZ"
+          "cdecl_symbol": "?OnActivate@CHudUiOptionsPanelMusicEnable@@UAEXXZ",
+          "fastcall_symbol": "?OnActivate@CHudUiOptionsPanelMusicEnable@@UAEXXZ"
         }
       ],
       "return_category": "integral32",
@@ -337,8 +337,8 @@
       "id": "znetwork_get_local_player_key",
       "identity": "recoil:function:0x489f70",
       "callee_source": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
-      "cdecl_symbol": "_zNetwork_GetLocalPlayerKey",
-      "fastcall_symbol": "@zNetwork_GetLocalPlayerKey@0",
+      "cdecl_symbol": "_zNetworkGetLocalPlayerKey",
+      "fastcall_symbol": "@zNetworkGetLocalPlayerKey@0",
       "callers": [
         {
           "source": "src/Battlesport/hud.cpp",
@@ -542,8 +542,8 @@
       "id": "zinput_bind_map_context_pop",
       "identity": "recoil:function:0x471950",
       "callee_source": "src/GameZRecoil/zInput/zInput.cpp",
-      "cdecl_symbol": "?BindMapContext_Pop@zInput@@YAXXZ",
-      "fastcall_symbol": "?BindMapContext_Pop@zInput@@YIXXZ",
+      "cdecl_symbol": "?BindMapContextPop@zInput@@YAXXZ",
+      "fastcall_symbol": "?BindMapContextPop@zInput@@YIXXZ",
       "callers": [
         {
           "source": "src/Battlesport/hud.cpp",
@@ -588,8 +588,8 @@
       "callers": [
         {
           "source": "src/Battlesport/hud.cpp",
-          "cdecl_symbol": "?OnActivate@HudUiMainMenuDialog_NewGameButton@@UAEXXZ",
-          "fastcall_symbol": "?OnActivate@HudUiMainMenuDialog_NewGameButton@@UAEXXZ"
+          "cdecl_symbol": "?OnActivate@CHudUiMainMenuDialogNewGameButton@@UAEXXZ",
+          "fastcall_symbol": "?OnActivate@CHudUiMainMenuDialogNewGameButton@@UAEXXZ"
         }
       ],
       "return_category": "void",
@@ -665,8 +665,8 @@
       "id": "zinput_keyboard_reset_transition_state",
       "identity": "recoil:function:0x46f450",
       "callee_source": "src/GameZRecoil/zInput/zin_kbd.cpp",
-      "cdecl_symbol": "?Keyboard_ResetTransitionState@zInput@@YAXXZ",
-      "fastcall_symbol": "?Keyboard_ResetTransitionState@zInput@@YIXXZ",
+      "cdecl_symbol": "?KeyboardResetTransitionState@zInput@@YAXXZ",
+      "fastcall_symbol": "?KeyboardResetTransitionState@zInput@@YIXXZ",
       "callers": [
         {
           "source": "src/Battlesport/hud.cpp",

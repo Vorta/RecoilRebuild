@@ -62,6 +62,30 @@ RAW_OFFSET_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
 OFFSET_EVIDENCE_RE = re.compile(r"\b(?:offsetof|RECOIL_STATIC_ASSERT)\s*\(")
 
 
+def _offset_inside_call_argument(expression: str) -> bool:
+    """The regex may backtrack into a call's numeric size argument.
+
+    Keep casts within that argument independently detectable, and keep offsets
+    applied to the completed call result. Only unmatched call parentheses at
+    the candidate arithmetic operator distinguish this false positive.
+    """
+    operator = max(expression.rfind("+"), expression.rfind("-"))
+    stack = []
+    for index, char in enumerate(expression[:operator]):
+        if char == "(":
+            stack.append(bool(re.search(r"[A-Za-z_]\w*\s*$", expression[:index])))
+        elif char == ")" and stack:
+            stack.pop()
+    return any(stack)
+
+
+def _overlapping_matches(pattern: re.Pattern[str], text: str):
+    position = 0
+    while match := pattern.search(text, position):
+        yield match
+        position = match.start() + 1
+
+
 @dataclass(frozen=True)
 class RawOffsetLocation:
     rel: str
@@ -117,7 +141,11 @@ def find_raw_offset_locations(
         rel = display_path(path, repo_root, fallback_root=scan_root)
 
         for label, pattern in RAW_OFFSET_PATTERNS:
-            for match in pattern.finditer(stripped):
+            matches = (_overlapping_matches(pattern, stripped)
+                       if label == "cast-offset-access" else pattern.finditer(stripped))
+            for match in matches:
+                if label in {"cast-offset-access", "byte-pointer-offset"} and _offset_inside_call_argument(match.group()):
+                    continue
                 line_no = stripped.count("\n", 0, match.start()) + 1
                 line = lines[line_no - 1].strip()
                 if OFFSET_EVIDENCE_RE.search(line):

@@ -1,6 +1,6 @@
 {
   "name": "zrndr_flush_transparent_queue",
-  "description": "zRndr_FlushTransparentQueue transparent queued polygon flush.",
+  "description": "zRndrFlushTransparentQueue transparent queued polygon flush.",
   "source_filename": "zRndr.cpp",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49a2b0",
-      "symbol": "?zRndr_FlushTransparentQueue@@YAXXZ",
-      "name": "zRndr_FlushTransparentQueue"
+      "symbol": "?zRndrFlushTransparentQueue@@YAXXZ",
+      "name": "zRndrFlushTransparentQueue"
     }
   ]
 }

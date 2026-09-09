@@ -24,13 +24,13 @@
   "functions": [
     {
       "address": "0x46fd20",
-      "symbol": "?Keyboard_InitDikToAsciiTable@zInput@@YAXXZ",
-      "name": "zInput::Keyboard_InitDikToAsciiTable"
+      "symbol": "?KeyboardInitDikToAsciiTable@zInput@@YAXXZ",
+      "name": "zInput::KeyboardInitDikToAsciiTable"
     },
     {
       "address": "0x46fba0",
-      "symbol": "?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z",
-      "name": "zInput::Keyboard_TranslateDikToAscii",
+      "symbol": "?KeyboardTranslateDikToAscii@zInput@@YIHH@Z",
+      "name": "zInput::KeyboardTranslateDikToAscii",
       "bn_byte_length": 384
     }
   ],

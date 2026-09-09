@@ -1,6 +1,6 @@
 {
   "name": "zrndr_draw_line16",
-  "description": "VC verification target for zRndr_DrawLine16.",
+  "description": "VC verification target for zRndrDrawLine16.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4992d0",
-      "symbol": "?zRndr_DrawLine16@@YIXPAGHHHHH@Z",
-      "name": "zRndr_DrawLine16"
+      "symbol": "?zRndrDrawLine16@@YIXPAGHHHHH@Z",
+      "name": "zRndrDrawLine16"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "zmodel_display_init_lifecycle_data",
-  "description": "zModel display initialization lifecycle data rows written by zModel_Display_Init.",
+  "description": "zModel display initialization lifecycle data rows written by zModelDisplayInit.",
   "source_filename": "gmod_init.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [

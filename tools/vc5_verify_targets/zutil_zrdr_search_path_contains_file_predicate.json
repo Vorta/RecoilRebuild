@@ -1,6 +1,6 @@
 {
   "name": "zutil_zrdr_search_path_contains_file_predicate",
-  "description": "VC verification target for zUtil_ZRDR_SearchPathContainsFilePredicate.",
+  "description": "VC verification target for zRdrSearchPathContainsFilePredicate.",
   "source_filename": "zutl_zar.cpp",
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "include_dirs": [
@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x4a5f20",
-      "symbol": "@zUtil_ZRDR_SearchPathContainsFilePredicate@8",
+      "symbol": "@zRdrSearchPathContainsFilePredicate@8",
       "name": "zUtil::ZRDR_SearchPathContainsFilePredicate"
     }
   ]

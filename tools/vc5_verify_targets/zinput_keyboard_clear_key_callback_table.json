@@ -1,6 +1,6 @@
 {
   "name": "zinput_keyboard_clear_key_callback_table",
-  "description": "zInput::Keyboard_ClearKeyCallbackTable clears keyboard callback slots without changing key state.",
+  "description": "zInput::KeyboardClearKeyCallbackTable clears keyboard callback slots without changing key state.",
   "source_filename": "zin_kbd.cpp",
   "compiler_profile": "vc5_o2_ob1_md_facs",
   "include_dirs": [
@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x46f9f0",
-      "symbol": "?Keyboard_ClearKeyCallbackTable@zInput@@YAXXZ",
-      "name": "zInput::Keyboard_ClearKeyCallbackTable"
+      "symbol": "?KeyboardClearKeyCallbackTable@zInput@@YAXXZ",
+      "name": "zInput::KeyboardClearKeyCallbackTable"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp"

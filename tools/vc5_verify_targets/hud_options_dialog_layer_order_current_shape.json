@@ -48,124 +48,124 @@
         },
         {
           "address": "0x40c9c0",
-          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_Lighting@@.*",
-          "name": "HudUiOptionsPanel_Lighting::InitFromOptions"
+          "symbol_regex": "\\?InitFromOptions@CHudUiOptionsPanelLighting@@.*",
+          "name": "CHudUiOptionsPanelLighting::InitFromOptions"
         },
         {
           "address": "0x40c9e0",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Lighting@@.*",
-          "name": "HudUiOptionsPanel_Lighting::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelLighting@@.*",
+          "name": "CHudUiOptionsPanelLighting::SyncFromOptions"
         },
         {
           "address": "0x40ca20",
-          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_Perspective@@.*",
-          "name": "HudUiOptionsPanel_Perspective::InitFromOptions"
+          "symbol_regex": "\\?InitFromOptions@CHudUiOptionsPanelPerspective@@.*",
+          "name": "CHudUiOptionsPanelPerspective::InitFromOptions"
         },
         {
           "address": "0x40ca40",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Perspective@@.*",
-          "name": "HudUiOptionsPanel_Perspective::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelPerspective@@.*",
+          "name": "CHudUiOptionsPanelPerspective::SyncFromOptions"
         },
         {
           "address": "0x40ca80",
-          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_FullHud@@.*",
-          "name": "HudUiOptionsPanel_FullHud::InitFromOptions"
+          "symbol_regex": "\\?InitFromOptions@CHudUiOptionsPanelFullHud@@.*",
+          "name": "CHudUiOptionsPanelFullHud::InitFromOptions"
         },
         {
           "address": "0x40caa0",
-          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_FullHud@@.*",
-          "name": "HudUiOptionsPanel_FullHud::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiOptionsPanelFullHud@@.*",
+          "name": "CHudUiOptionsPanelFullHud::OnActivate",
           "provenance": "compiler-emitted-noncovering"
         },
         {
           "address": "0x40cab0",
-          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_ObjectDetail@@.*",
-          "name": "HudUiOptionsPanel_ObjectDetail::InitFromOptions"
+          "symbol_regex": "\\?InitFromOptions@CHudUiOptionsPanelObjectDetail@@.*",
+          "name": "CHudUiOptionsPanelObjectDetail::InitFromOptions"
         },
         {
           "address": "0x40cad0",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_ObjectDetail@@.*",
-          "name": "HudUiOptionsPanel_ObjectDetail::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelObjectDetail@@.*",
+          "name": "CHudUiOptionsPanelObjectDetail::SyncFromOptions"
         },
         {
           "address": "0x40caf0",
-          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_TextureMemory@@.*",
-          "name": "HudUiOptionsPanel_TextureMemory::InitFromOptions"
+          "symbol_regex": "\\?InitFromOptions@CHudUiOptionsPanelTextureMemory@@.*",
+          "name": "CHudUiOptionsPanelTextureMemory::InitFromOptions"
         },
         {
           "address": "0x40cb10",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_TextureMemory@@.*",
-          "name": "HudUiOptionsPanel_TextureMemory::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelTextureMemory@@.*",
+          "name": "CHudUiOptionsPanelTextureMemory::SyncFromOptions"
         },
         {
           "address": "0x40cb30",
-          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_Effects@@.*",
-          "name": "HudUiOptionsPanel_Effects::InitFromOptions"
+          "symbol_regex": "\\?InitFromOptions@CHudUiOptionsPanelEffects@@.*",
+          "name": "CHudUiOptionsPanelEffects::InitFromOptions"
         },
         {
           "address": "0x40cb70",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Effects@@.*",
-          "name": "HudUiOptionsPanel_Effects::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelEffects@@.*",
+          "name": "CHudUiOptionsPanelEffects::SyncFromOptions"
         },
         {
           "address": "0x40cb90",
-          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_SoundActive@@.*",
-          "name": "HudUiOptionsPanel_SoundActive::InitFromOptions"
+          "symbol_regex": "\\?InitFromOptions@CHudUiOptionsPanelSoundActive@@.*",
+          "name": "CHudUiOptionsPanelSoundActive::InitFromOptions"
         },
         {
           "address": "0x40cbb0",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_SoundActive@@.*",
-          "name": "HudUiOptionsPanel_SoundActive::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelSoundActive@@.*",
+          "name": "CHudUiOptionsPanelSoundActive::SyncFromOptions"
         },
         {
           "address": "0x40cbd0",
-          "symbol_regex": "\\?InitFromOptions@HudUiOptionsPanel_SoundQuality@@.*",
-          "name": "HudUiOptionsPanel_SoundQuality::InitFromOptions"
+          "symbol_regex": "\\?InitFromOptions@CHudUiOptionsPanelSoundQuality@@.*",
+          "name": "CHudUiOptionsPanelSoundQuality::InitFromOptions"
         },
         {
           "address": "0x40cbf0",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_SoundQuality@@.*",
-          "name": "HudUiOptionsPanel_SoundQuality::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelSoundQuality@@.*",
+          "name": "CHudUiOptionsPanelSoundQuality::SyncFromOptions"
         },
         {
           "address": "0x40cc10",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_SoundVolume@@.*",
-          "name": "HudUiOptionsPanel_SoundVolume::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelSoundVolume@@.*",
+          "name": "CHudUiOptionsPanelSoundVolume::SyncFromOptions"
         },
         {
           "address": "0x40cc30",
-          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_SoundVolume@@.*",
-          "name": "HudUiOptionsPanel_SoundVolume::OnActivate"
+          "symbol_regex": "\\?OnActivate@CHudUiOptionsPanelSoundVolume@@.*",
+          "name": "CHudUiOptionsPanelSoundVolume::OnActivate"
         },
         {
           "address": "0x40cc60",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_MusicEnable@@.*",
-          "name": "HudUiOptionsPanel_MusicEnable::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelMusicEnable@@.*",
+          "name": "CHudUiOptionsPanelMusicEnable::SyncFromOptions"
         },
         {
           "address": "0x40cc80",
-          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_MusicEnable@@.*",
-          "name": "HudUiOptionsPanel_MusicEnable::OnActivate"
+          "symbol_regex": "\\?OnActivate@CHudUiOptionsPanelMusicEnable@@.*",
+          "name": "CHudUiOptionsPanelMusicEnable::OnActivate"
         },
         {
           "address": "0x40ccc0",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_MusicVolume@@.*",
-          "name": "HudUiOptionsPanel_MusicVolume::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelMusicVolume@@.*",
+          "name": "CHudUiOptionsPanelMusicVolume::SyncFromOptions"
         },
         {
           "address": "0x40cd00",
-          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_MusicVolume@@.*",
-          "name": "HudUiOptionsPanel_MusicVolume::OnActivate"
+          "symbol_regex": "\\?OnActivate@CHudUiOptionsPanelMusicVolume@@.*",
+          "name": "CHudUiOptionsPanelMusicVolume::OnActivate"
         },
         {
           "address": "0x40cd30",
-          "symbol_regex": "\\?SyncFromOptions@HudUiOptionsPanel_Resolution@@.*",
-          "name": "HudUiOptionsPanel_Resolution::SyncFromOptions"
+          "symbol_regex": "\\?SyncFromOptions@CHudUiOptionsPanelResolution@@.*",
+          "name": "CHudUiOptionsPanelResolution::SyncFromOptions"
         },
         {
           "address": "0x40ce80",
-          "symbol_regex": "\\?OnActivate@HudUiOptionsPanel_Resolution@@.*",
-          "name": "HudUiOptionsPanel_Resolution::OnActivate"
+          "symbol_regex": "\\?OnActivate@CHudUiOptionsPanelResolution@@.*",
+          "name": "CHudUiOptionsPanelResolution::OnActivate"
         },
         {
           "address": "0x40cf00",

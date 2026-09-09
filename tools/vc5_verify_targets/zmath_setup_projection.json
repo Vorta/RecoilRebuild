@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x474400",
-      "symbol": "?zMath_Setup_Projection@@YGXMMMMMMMM@Z",
-      "name": "zMath_Setup_Projection"
+      "symbol": "?zMathSetupProjection@@YGXMMMMMMMM@Z",
+      "name": "zMathSetupProjection"
     }
   ],
   "source_from": "src/GameZRecoil/zMath/zmth_main.c"

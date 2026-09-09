@@ -1,6 +1,6 @@
 {
   "name": "zinput_keyboard_poll_state",
-  "description": "zInput::Keyboard_PollState keyboard polling source-state globals and function-byte attempt.",
+  "description": "zInput::KeyboardPollState keyboard polling source-state globals and function-byte attempt.",
   "source_filename": "zin_kbd.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
@@ -24,8 +24,8 @@
   "functions": [
     {
       "address": "0x46f690",
-      "symbol": "?Keyboard_PollState@zInput@@YIXE@Z",
-      "name": "zInput::Keyboard_PollState"
+      "symbol": "?KeyboardPollState@zInput@@YIXE@Z",
+      "name": "zInput::KeyboardPollState"
     }
   ],
   "data_symbols": [

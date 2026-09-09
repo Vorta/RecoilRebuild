@@ -99,7 +99,7 @@
       "retail_end_exclusive": "0x4b2960",
       "predecessor": {"address":"0x4ad6a0","symbol":"?ReportError@zVideo_dd@@YIHHPBDH@Z","name":"zVideo_dd::ReportError","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": ["0x4ae380","0x4ae3c0","0x4ae450","0x4ae4a0","0x4ae4b0","0x4ae4e0","0x4ae520","0x4ae530","0x4ae590","0x4ae660","0x4aeaa0","0x4aeb50","0x4aebc0","0x4aebf0","0x4aed00","0x4aee40","0x4aefb0","0x4af060","0x4b0530","0x4b0600","0x4b0620","0x4b0640","0x4b0660","0x4b0710","0x4b07d0","0x4b0980","0x4b09d0","0x4b0a50","0x4b0ba0","0x4b0ca0","0x4b0e20","0x4b0f70","0x4b0fd0","0x4b1030","0x4b1090","0x4b1140","0x4b1160","0x4b1180","0x4b1190","0x4b1d80","0x4b1d90","0x4b1ec0","0x4b1f90","0x4b1fa0","0x4b2130","0x4b2160","0x4b21c0","0x4b21e0","0x4b2210","0x4b22d0","0x4b2300","0x4b2520","0x4b2570","0x4b25a0","0x4b25f0","0x4b2630","0x4b2670","0x4b26b0","0x4b26f0","0x4b2880","0x4b28e0","0x4b2900","0x4b2910","0x4b2920","0x4b2930","0x4b2940"],
-      "successor": {"address":"0x4b2960","symbol":"?Options_LoadFromRegistry@zGame@@YAHXZ","name":"zGame::Options_LoadFromRegistry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x4b2960","symbol":"?OptionsLoadFromRegistry@zGame@@YAHXZ","name":"zGame::OptionsLoadFromRegistry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

@@ -47,7 +47,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "_zNetwork_GetLocalPlayerKey"
+      "symbol": "_zNetworkGetLocalPlayerKey"
     },
     {
       "address": "0x489f80",
@@ -191,7 +191,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "_zNetwork_DPlay_DestroyCachedLocalPlayer"
+      "symbol": "_zNetworkDPlayDestroyCachedLocalPlayer"
     },
     {
       "address": "0x48a9c0",
@@ -204,39 +204,39 @@
     },
     {
       "address": "0x48acf0",
-      "name": "zNetwork_DPlay_SendUnreliable",
+      "name": "zNetworkDPlaySendUnreliable",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_DPlay_SendUnreliable@8"
+      "symbol": "@zNetworkDPlaySendUnreliable@8"
     },
     {
       "address": "0x48ad30",
-      "name": "zNetwork_DPlay_SendReliable",
+      "name": "zNetworkDPlaySendReliable",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_DPlay_SendReliable@8"
+      "symbol": "@zNetworkDPlaySendReliable@8"
     },
     {
       "address": "0x48ad70",
-      "name": "zNetwork_DPlay_SendExUnreliableTracked",
+      "name": "zNetworkDPlaySendExUnreliableTracked",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_DPlay_SendExUnreliableTracked@8"
+      "symbol": "@zNetworkDPlaySendExUnreliableTracked@8"
     },
     {
       "address": "0x48ae10",
-      "name": "zNetwork_DPlay_SendExReliable",
+      "name": "zNetworkDPlaySendExReliable",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_DPlay_SendExReliable@8"
+      "symbol": "@zNetworkDPlaySendExReliable@8"
     },
     {
       "address": "0x48ae70",
@@ -267,30 +267,30 @@
     },
     {
       "address": "0x48b3a0",
-      "name": "zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo",
+      "name": "zNetworkDPlay::EnumConnectionsCallbackAddServiceProviderInfo",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "?EnumConnectionsCallback_AddServiceProviderInfo@zNetworkDPlay@@YGHPBU_GUID@@PAXKPBUDPNAME@@K1@Z"
+      "symbol": "?EnumConnectionsCallbackAddServiceProviderInfo@zNetworkDPlay@@YGHPBU_GUID@@PAXKPBUDPNAME@@K1@Z"
     },
     {
       "address": "0x48b5e0",
-      "name": "zNetworkDPlay::EnumSessionCallback_AddSessionDescCache",
+      "name": "zNetworkDPlay::EnumSessionCallbackAddSessionDescCache",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "?EnumSessionCallback_AddSessionDescCache@zNetworkDPlay@@YGHPBUDPSESSIONDESC2@@PAKKPAX@Z"
+      "symbol": "?EnumSessionCallbackAddSessionDescCache@zNetworkDPlay@@YGHPBUDPSESSIONDESC2@@PAKKPAX@Z"
     },
     {
       "address": "0x48b660",
-      "name": "zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord",
+      "name": "zNetworkDPlay::EnumPlayerCallbackAddPlayerRecord",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "?EnumPlayerCallback_AddPlayerRecord@zNetworkDPlay@@YGHKKPBUDPNAME@@KPAX@Z"
+      "symbol": "?EnumPlayerCallbackAddPlayerRecord@zNetworkDPlay@@YGHKKPBUDPNAME@@KPAX@Z"
     },
     {
       "address": "0x48b730",
@@ -312,12 +312,12 @@
     },
     {
       "address": "0x48b820",
-      "name": "zNetwork_ApplyPkt01_PlayerColorAssignments",
+      "name": "zNetworkApplyPkt01PlayerColorAssignments",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_ApplyPkt01_PlayerColorAssignments@8"
+      "symbol": "@zNetworkApplyPkt01PlayerColorAssignments@8"
     },
     {
       "address": "0x48b860",
@@ -344,7 +344,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "_zNetwork_GetLocalPlayerColorIndex"
+      "symbol": "_zNetworkGetLocalPlayerColorIndex"
     },
     {
       "address": "0x48b9a0",
@@ -353,7 +353,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_GetPlayerColorIndexByKey@4"
+      "symbol": "@zNetworkGetPlayerColorIndexByKey@4"
     },
     {
       "address": "0x48b9d0",
@@ -362,7 +362,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "_zNetwork_GetPlayerRecordCount"
+      "symbol": "_zNetworkGetPlayerRecordCount"
     },
     {
       "address": "0x48b9e0",
@@ -380,7 +380,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_FindPlayerRecordByKey@4"
+      "symbol": "@zNetworkFindPlayerRecordByKey@4"
     },
     {
       "address": "0x48bab0",
@@ -389,7 +389,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_ExtractStatusFieldsFromSessionDesc@4"
+      "symbol": "@zNetworkExtractStatusFieldsFromSessionDesc@4"
     },
     {
       "address": "0x48bb20",
@@ -398,7 +398,7 @@
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_ApplyStatusFieldsToSessionDesc@4"
+      "symbol": "@zNetworkApplyStatusFieldsToSessionDesc@4"
     },
     {
       "address": "0x48bbe0",
@@ -518,21 +518,21 @@
     },
     {
       "address": "0x48c060",
-      "name": "zNetwork_SendPacketUnreliable",
+      "name": "zNetworkSendPacketUnreliable",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_SendPacketUnreliable@4"
+      "symbol": "@zNetworkSendPacketUnreliable@4"
     },
     {
       "address": "0x48c080",
-      "name": "zNetwork_SendPacketReliable",
+      "name": "zNetworkSendPacketReliable",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_SendPacketReliable@4"
+      "symbol": "@zNetworkSendPacketReliable@4"
     },
     {
       "address": "0x48c0a0",
@@ -563,12 +563,12 @@
     },
     {
       "address": "0x48c250",
-      "name": "zNetwork_DPlay_ReportError",
+      "name": "zNetworkDPlayReportError",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
       "full_order_gate": true,
-      "symbol": "@zNetwork_DPlay_ReportError@12"
+      "symbol": "@zNetworkDPlayReportError@12"
     }
   ],
   "translation_unit_function_order": [
@@ -716,8 +716,8 @@
       ],
       "successor": {
         "address": "0x48c7d0",
-        "symbol": "?ZRDR_InitNodePool@zUtil@@YIXH@Z",
-        "name": "zUtil::ZRDR_InitNodePool",
+        "symbol": "?zRdrInitNodePool@zUtil@@YIXH@Z",
+        "name": "zUtil::zRdrInitNodePool",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

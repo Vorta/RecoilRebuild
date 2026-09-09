@@ -230,8 +230,8 @@
     },
     {
       "address": "0x482b40",
-      "symbol": "?RemoveColinearVerticesInPlace@zModel_Const@@YIHPAHPAUzVec3@@PAUzClipUV@@12@Z",
-      "name": "zModel_Const::RemoveColinearVerticesInPlace",
+      "symbol": "?check_colinearity@zModel_Const@@YIHPAHPAUzVec3@@PAUzClipUV@@12@Z",
+      "name": "zModel_Const::check_colinearity",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -755,8 +755,8 @@
       ],
       "successor": {
         "address": "0x487a30",
-        "symbol": "?zModel_Light_PointInPolygonInitXZ@@YIXPAPAUzClass_LightDataPartial@@PAPAUzModel_LightStatePartial@@H@Z",
-        "name": "zModel_Light_PointInPolygonInitXZ",
+        "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUzClass_LightDataPartial@@PAPAUzModel_LightStatePartial@@H@Z",
+        "name": "zModelLightPointInPolygonInitXZ",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

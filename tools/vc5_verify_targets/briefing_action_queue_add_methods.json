@@ -1,6 +1,6 @@
 {
   "name": "briefing_action_queue_add_methods",
-  "description": "Briefing_ActionQueue action insertion helpers.",
+  "description": "CBriefingActionQueue action insertion helpers.",
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "source_filename": "Briefing.cpp",
   "source_from": "src/Battlesport/Briefing.cpp",
@@ -21,38 +21,38 @@
   "functions": [
     {
       "address": "0x4045b0",
-      "symbol": "?AddHideElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
-      "name": "Briefing_ActionQueue::AddHideElement"
+      "symbol": "?AddHideElement@CBriefingActionQueue@@QAEHPAUHudUiElement@@@Z",
+      "name": "CBriefingActionQueue::AddHideElement"
     },
     {
       "address": "0x404640",
-      "symbol": "?AddShowElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
-      "name": "Briefing_ActionQueue::AddShowElement"
+      "symbol": "?AddShowElement@CBriefingActionQueue@@QAEHPAUHudUiElement@@@Z",
+      "name": "CBriefingActionQueue::AddShowElement"
     },
     {
       "address": "0x4046d0",
-      "symbol": "?AddFadeInElement@Briefing_ActionQueue@@QAEHPAUHudUiElement@@@Z",
-      "name": "Briefing_ActionQueue::AddFadeInElement"
+      "symbol": "?AddFadeInElement@CBriefingActionQueue@@QAEHPAUHudUiElement@@@Z",
+      "name": "CBriefingActionQueue::AddFadeInElement"
     },
     {
       "address": "0x404780",
-      "symbol": "?AddSetPanelText@Briefing_ActionQueue@@QAEHPBDPAUHudUiPanel@@@Z",
-      "name": "Briefing_ActionQueue::AddSetPanelText"
+      "symbol": "?AddSetPanelText@CBriefingActionQueue@@QAEHPBDPAUHudUiPanel@@@Z",
+      "name": "CBriefingActionQueue::AddSetPanelText"
     },
     {
       "address": "0x4048a0",
-      "symbol": "?AddSetWidgetImageTimed@Briefing_ActionQueue@@QAEHPAUzVidImagePartial@@PAUHudUiWidget@@@Z",
-      "name": "Briefing_ActionQueue::AddSetWidgetImageTimed"
+      "symbol": "?AddSetWidgetImageTimed@CBriefingActionQueue@@QAEHPAUzVidImagePartial@@PAUHudUiWidget@@@Z",
+      "name": "CBriefingActionQueue::AddSetWidgetImageTimed"
     },
     {
       "address": "0x4049d0",
-      "symbol": "?AddPlaySampleByName@Briefing_ActionQueue@@QAEHPBDMHH@Z",
-      "name": "Briefing_ActionQueue::AddPlaySampleByName"
+      "symbol": "?AddPlaySampleByName@CBriefingActionQueue@@QAEHPBDMHH@Z",
+      "name": "CBriefingActionQueue::AddPlaySampleByName"
     },
     {
       "address": "0x404b40",
-      "symbol": "?AddDelayUntilProgress@Briefing_ActionQueue@@QAEHH@Z",
-      "name": "Briefing_ActionQueue::AddDelayUntilProgress"
+      "symbol": "?AddDelayUntilProgress@CBriefingActionQueue@@QAEHH@Z",
+      "name": "CBriefingActionQueue::AddDelayUntilProgress"
     }
   ]
 }

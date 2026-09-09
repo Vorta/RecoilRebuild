@@ -24,13 +24,13 @@
     },
     {
       "address": "0x4639e0",
-      "symbol": "?Update@zFMV_ActionBlurH@@UAEHN@Z",
-      "name": "zFMV_ActionBlurH::Update"
+      "symbol": "?Update@CZFMVActionBlurH@@UAEHN@Z",
+      "name": "CZFMVActionBlurH::Update"
     },
     {
       "address": "0x463a70",
-      "symbol": "?Update@zFMV_ActionBlurV@@UAEHN@Z",
-      "name": "zFMV_ActionBlurV::Update"
+      "symbol": "?Update@CZFMVActionBlurV@@UAEHN@Z",
+      "name": "CZFMVActionBlurV::Update"
     }
   ]
 }

@@ -20,17 +20,17 @@
   "functions": [
     {
       "address": "0x46ebd0",
-      "symbol": "@zImage_InitMissionResources@4",
+      "symbol": "@zImageInitMissionResources@4",
       "name": "zImage::InitMissionResources"
     },
     {
       "address": "0x46d900",
-      "symbol": "?TexDir_FindOrCreateByPath@zImage@@YIPAUzVidImagePartial@@PBD@Z",
+      "symbol": "?TexDirFindOrCreateByPath@zImage@@YIPAUzVidImagePartial@@PBD@Z",
       "name": "zImage::TexDirFindOrCreateByPath"
     },
     {
       "address": "0x46eb20",
-      "symbol": "@zImage_Init@4",
+      "symbol": "@zImageInit@4",
       "name": "zImage::Init"
     },
     {

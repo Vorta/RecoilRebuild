@@ -45,8 +45,8 @@
     },
     {
       "address": "0x408660",
-      "symbol": "?zOpt_DisplaySection_GetWidth@@YAHXZ",
-      "name": "zOpt_DisplaySection_GetWidth",
+      "symbol": "?zOptDisplaySectionGetWidth@@YAHXZ",
+      "name": "zOptDisplaySectionGetWidth",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -54,8 +54,8 @@
     },
     {
       "address": "0x408670",
-      "symbol": "?zOpt_DisplaySection_GetHeight@@YAHXZ",
-      "name": "zOpt_DisplaySection_GetHeight",
+      "symbol": "?zOptDisplaySectionGetHeight@@YAHXZ",
+      "name": "zOptDisplaySectionGetHeight",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,

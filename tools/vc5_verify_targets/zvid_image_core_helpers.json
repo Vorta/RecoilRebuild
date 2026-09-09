@@ -29,7 +29,7 @@
     },
     {
       "address": "0x46ec70",
-      "symbol": "@zVid_Image_SetPixels@12",
+      "symbol": "@zVidImageSetPixels@12",
       "name": "zVid_Image::SetPixels"
     }
   ]

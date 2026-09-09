@@ -1,6 +1,6 @@
 {
   "name": "zinput_bind_group_list_get_count",
-  "description": "zInput::BindGroupList_GetCount bind-group vector count helper.",
+  "description": "zInput::BindGroupListGetCount bind-group vector count helper.",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_filename": "player.cpp",
   "source_from": "src/Battlesport/player.cpp",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x42a480",
-      "symbol": "?BindGroupList_GetCount@zInput@@YAHXZ",
-      "name": "zInput::BindGroupList_GetCount"
+      "symbol": "?BindGroupListGetCount@zInput@@YAHXZ",
+      "name": "zInput::BindGroupListGetCount"
     }
   ]
 }

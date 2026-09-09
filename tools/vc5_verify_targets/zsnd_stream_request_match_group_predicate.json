@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x4a5220",
-      "symbol": "@zSndStreamRequest_MatchGroupPredicate@8",
+      "symbol": "@zSndStreamRequestMatchGroupPredicate@8",
       "name": "zSndStreamRequest::MatchGroupPredicate"
     }
   ]

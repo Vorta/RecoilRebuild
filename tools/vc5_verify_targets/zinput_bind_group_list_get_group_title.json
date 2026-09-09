@@ -1,6 +1,6 @@
 {
   "name": "zinput_bind_group_list_get_group_title",
-  "description": "zInput::BindGroupList_GetGroupTitle bind-group title accessor.",
+  "description": "zInput::BindGroupListGetGroupTitle bind-group title accessor.",
   "compiler_profile": "vc5_o2_ob1_md_facs",
   "source_filename": "player.cpp",
   "source_from": "src/Battlesport/player.cpp",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x42a4a0",
-      "symbol": "?BindGroupList_GetGroupTitle@zInput@@YIPADH@Z",
-      "name": "zInput::BindGroupList_GetGroupTitle"
+      "symbol": "?BindGroupListGetGroupTitle@zInput@@YIPADH@Z",
+      "name": "zInput::BindGroupListGetGroupTitle"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "zvideo_dd_image_upload_pixels_to_surface",
-  "description": "zVideo_dd::Image_UploadPixelsToSurface ensures an image surface and acquires a GDI DC.",
+  "description": "zVideo_dd::ImageUploadPixelsToSurface ensures an image surface and acquires a GDI DC.",
   "source_filename": "zVideo.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4a8680",
-      "symbol": "?Image_UploadPixelsToSurface@zVideo_dd@@YIHPAUzVidImagePartial@@PAPAUHDC__@@@Z",
-      "name": "zVideo_dd::Image_UploadPixelsToSurface"
+      "symbol": "?ImageUploadPixelsToSurface@zVideo_dd@@YIHPAUzVidImagePartial@@PAPAUHDC__@@@Z",
+      "name": "zVideo_dd::ImageUploadPixelsToSurface"
     }
   ]
 }

@@ -20,8 +20,8 @@
   "functions": [
     {
       "address": "0x48b820",
-      "symbol": "@zNetwork_ApplyPkt01_PlayerColorAssignments@8",
-      "name": "zNetwork_ApplyPkt01_PlayerColorAssignments"
+      "symbol": "@zNetworkApplyPkt01PlayerColorAssignments@8",
+      "name": "zNetworkApplyPkt01PlayerColorAssignments"
     }
   ]
 }

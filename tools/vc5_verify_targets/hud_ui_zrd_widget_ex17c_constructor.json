@@ -1,6 +1,6 @@
 {
   "name": "hud_ui_zrd_widget_ex17c_constructor",
-  "description": "HudUiZrdWidgetEx17C C++ constructor.",
+  "description": "CHudRadioGroupWidget C++ constructor.",
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "source_filename": "zhud_ui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
@@ -20,8 +20,8 @@
   "functions": [
     {
       "address": "0x4b8b10",
-      "symbol": "??0HudUiZrdWidgetEx17C@@QAE@XZ",
-      "name": "HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C"
+      "symbol": "??0CHudRadioGroupWidget@@QAE@XZ",
+      "name": "CHudRadioGroupWidget::CHudRadioGroupWidget"
     }
   ]
 }

@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x491da0",
-      "symbol": "?zRndr_SpanOcclusion_BuildSpanListFast@@YIXPAPAUSpanNodePartial@zRndr@@HPAH@Z",
-      "name": "zRndr_SpanOcclusion_BuildSpanListFast"
+      "symbol": "?zRndrSpanOcclusionBuildSpanListFast@@YIXPAPAUSpanNodePartial@zRndr@@HPAH@Z",
+      "name": "zRndrSpanOcclusionBuildSpanListFast"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

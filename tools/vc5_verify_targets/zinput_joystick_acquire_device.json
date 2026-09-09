@@ -1,6 +1,6 @@
 {
   "name": "zinput_joystick_acquire_device",
-  "description": "zInput::DI_AcquireJoystickDevice acquires the joystick device when present.",
+  "description": "zInput::DIAcquireJoystickDevice acquires the joystick device when present.",
   "source_filename": "zin_joystick.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
@@ -24,8 +24,8 @@
   "functions": [
     {
       "address": "0x471fb0",
-      "symbol": "?DI_AcquireJoystickDevice@zInput@@YAHXZ",
-      "name": "zInput::DI_AcquireJoystickDevice"
+      "symbol": "?DIAcquireJoystickDevice@zInput@@YAHXZ",
+      "name": "zInput::DIAcquireJoystickDevice"
     }
   ],
   "data_symbols": [

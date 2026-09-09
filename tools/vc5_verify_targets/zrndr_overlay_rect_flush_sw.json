@@ -1,6 +1,6 @@
 {
   "name": "zrndr_overlay_rect_flush_sw",
-  "description": "zRndr_OverlayRect_FlushSw software overlay rectangle flush.",
+  "description": "zRndrOverlayRectFlushSw software overlay rectangle flush.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x48d7a0",
-      "symbol": "?zRndr_OverlayRect_FlushSw@@YAXXZ",
-      "name": "zRndr_OverlayRect_FlushSw"
+      "symbol": "?zRndrOverlayRectFlushSw@@YAXXZ",
+      "name": "zRndrOverlayRectFlushSw"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

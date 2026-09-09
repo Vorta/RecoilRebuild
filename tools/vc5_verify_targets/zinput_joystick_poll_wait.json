@@ -30,18 +30,18 @@
     },
     {
       "address": "0x4722c0",
-      "symbol": "?DI_PollJoystickState@zInput@@YIPAUDIJOYSTATE2@@E@Z",
-      "name": "zInput::DI_PollJoystickState"
+      "symbol": "?DIPollJoystickState@zInput@@YIPAUDIJOYSTATE2@@E@Z",
+      "name": "zInput::DIPollJoystickState"
     },
     {
       "address": "0x472390",
-      "symbol": "?DI_GetCurrentState@zInput@@YAPAUDIJOYSTATE2@@XZ",
-      "name": "zInput::DI_GetCurrentState"
+      "symbol": "?DIGetCurrentState@zInput@@YAPAUDIJOYSTATE2@@XZ",
+      "name": "zInput::DIGetCurrentState"
     },
     {
       "address": "0x4723d0",
-      "symbol": "?DI_WaitForButtonPress@zInput@@YIHH@Z",
-      "name": "zInput::DI_WaitForButtonPress"
+      "symbol": "?DIWaitForButtonPress@zInput@@YIHH@Z",
+      "name": "zInput::DIWaitForButtonPress"
     }
   ],
   "data_symbols": [

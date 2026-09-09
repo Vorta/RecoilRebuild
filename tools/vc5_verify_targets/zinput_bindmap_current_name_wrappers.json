@@ -19,18 +19,18 @@
   "functions": [
     {
       "address": "0x471800",
-      "symbol": "?BindMapCurrent_FormatKeyComboName@zInput@@YIPADHPADH@Z",
-      "name": "zInput::BindMapCurrent_FormatKeyComboName"
+      "symbol": "?BindMapCurrentFormatKeyComboName@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrentFormatKeyComboName"
     },
     {
       "address": "0x471820",
-      "symbol": "?BindMapCurrent_CopyJoystickButtonName@zInput@@YIPADHPADH@Z",
-      "name": "zInput::BindMapCurrent_CopyJoystickButtonName"
+      "symbol": "?BindMapCurrentCopyJoystickButtonName@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrentCopyJoystickButtonName"
     },
     {
       "address": "0x471840",
-      "symbol": "?BindMapCurrent_CopyMouseButtonName@zInput@@YIPADHPADH@Z",
-      "name": "zInput::BindMapCurrent_CopyMouseButtonName"
+      "symbol": "?BindMapCurrentCopyMouseButtonName@zInput@@YIPADHPADH@Z",
+      "name": "zInput::BindMapCurrentCopyMouseButtonName"
     }
   ]
 }

@@ -18,13 +18,13 @@
   "functions": [
     {
       "address": "0x4c0100",
-      "symbol": "?ZBD_Init@zUtil@@YAHXZ",
-      "name": "zUtil::ZBD_Init"
+      "symbol": "?ZBDInit@zUtil@@YAHXZ",
+      "name": "zUtil::ZBDInit"
     },
     {
       "address": "0x4c0180",
-      "symbol": "?ZBD_DestroyGlobalManager@zUtil@@YAXXZ",
-      "name": "zUtil::ZBD_DestroyGlobalManager"
+      "symbol": "?ZBDDestroyGlobalManager@zUtil@@YAXXZ",
+      "name": "zUtil::ZBDDestroyGlobalManager"
     },
     {
       "address": "0x4c01b0",

@@ -24,8 +24,8 @@
     },
     {
       "address": "0x471740",
-      "symbol": "?BindMapCurrent_GetCommandByMouseSlot@zInput@@YIHH@Z",
-      "name": "zInput::BindMapCurrent_GetCommandByMouseSlot"
+      "symbol": "?BindMapCurrentGetCommandByMouseSlot@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrentGetCommandByMouseSlot"
     },
     {
       "address": "0x470c60",
@@ -34,8 +34,8 @@
     },
     {
       "address": "0x471780",
-      "symbol": "?BindMapCurrent_SetMouseBinding@zInput@@YIXHH@Z",
-      "name": "zInput::BindMapCurrent_SetMouseBinding"
+      "symbol": "?BindMapCurrentSetMouseBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrentSetMouseBinding"
     },
     {
       "address": "0x470d40",
@@ -44,8 +44,8 @@
     },
     {
       "address": "0x470e80",
-      "symbol": "@zInput_BindMapContext_DispatchFromKeyboardEvent@4",
-      "name": "zInput_BindMapContext_DispatchFromKeyboardEvent"
+      "symbol": "@zInputBindMapContextDispatchFromKeyboardEvent@4",
+      "name": "zInputBindMapContextDispatchFromKeyboardEvent"
     }
   ]
 }

@@ -505,7 +505,7 @@ int __fastcall FilterRegionsAgainstSphere(
     int requireLineOfSight,
     OptCatalogRaycastHitList *outHitList
 );
-int __fastcall FilterRegions_TryAppendNode(zClass_NodePartial *node);
+int __fastcall FilterRegionsTryAppendNode(zClass_NodePartial *node);
 int __fastcall FilterPointsBBox(
     zClass_NodePartial *node,
     void *pointData

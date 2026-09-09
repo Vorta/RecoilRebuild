@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x471e40",
-      "symbol": "?DI_InitJoystickDevice@zInput@@YIHPAUHWND__@@@Z",
-      "name": "zInput::DI_InitJoystickDevice"
+      "symbol": "?DIInitJoystickDevice@zInput@@YIHPAUHWND__@@@Z",
+      "name": "zInput::DIInitJoystickDevice"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp"

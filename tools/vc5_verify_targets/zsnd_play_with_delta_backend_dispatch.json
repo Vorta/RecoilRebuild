@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4a0490",
-      "symbol": "?PlayWithDelta_BackendDispatch@zSndPlayHandle@@SIXPAUzSndSample@@PAU1@HM@Z",
-      "name": "zSndPlayHandle::PlayWithDelta_BackendDispatch"
+      "symbol": "?PlayWithDeltaBackendDispatch@zSndPlayHandle@@SIXPAUzSndSample@@PAU1@HM@Z",
+      "name": "zSndPlayHandle::PlayWithDeltaBackendDispatch"
     }
   ],
   "data_symbols": [

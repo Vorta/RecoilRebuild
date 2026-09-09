@@ -19,13 +19,13 @@
   "functions": [
     {
       "address": "0x4a83d0",
-      "symbol": "?Image_LazyCreateBackingSurface@zVideo_dd@@YIPAUIDirectDrawSurface3@@PAUzVidImagePartial@@I@Z",
-      "name": "zVideo_dd::Image_LazyCreateBackingSurface"
+      "symbol": "?ImageLazyCreateBackingSurface@zVideo_dd@@YIPAUIDirectDrawSurface3@@PAUzVidImagePartial@@I@Z",
+      "name": "zVideo_dd::ImageLazyCreateBackingSurface"
     },
     {
       "address": "0x4a84c0",
-      "symbol": "?Image_LazyCreateVideoMemorySurface@zVideo_dd@@YIPAUIDirectDrawSurface3@@PAUzVidImagePartial@@@Z",
-      "name": "zVideo_dd::Image_LazyCreateVideoMemorySurface"
+      "symbol": "?ImageLazyCreateVideoMemorySurface@zVideo_dd@@YIPAUIDirectDrawSurface3@@PAUzVidImagePartial@@@Z",
+      "name": "zVideo_dd::ImageLazyCreateVideoMemorySurface"
     }
   ]
 }

@@ -19,23 +19,23 @@
   "functions": [
     {
       "address": "0x48d450",
-      "symbol": "?OverlayBlendRow555_Scalar@zRndr@@YIXPAGH@Z",
-      "name": "zRndr::OverlayBlendRow555_Scalar"
+      "symbol": "?OverlayBlendRow555Scalar@zRndr@@YIXPAGH@Z",
+      "name": "zRndr::OverlayBlendRow555Scalar"
     },
     {
       "address": "0x48d4b0",
-      "symbol": "?OverlayBlendRow565_Scalar@zRndr@@YIXPAGH@Z",
-      "name": "zRndr::OverlayBlendRow565_Scalar"
+      "symbol": "?OverlayBlendRow565Scalar@zRndr@@YIXPAGH@Z",
+      "name": "zRndr::OverlayBlendRow565Scalar"
     },
     {
       "address": "0x48d510",
-      "symbol": "?OverlayBlendRow555_Mmx@zRndr@@YIXPAGH@Z",
-      "name": "zRndr::OverlayBlendRow555_Mmx"
+      "symbol": "?OverlayBlendRow555Mmx@zRndr@@YIXPAGH@Z",
+      "name": "zRndr::OverlayBlendRow555Mmx"
     },
     {
       "address": "0x48d5f0",
-      "symbol": "?OverlayBlendRow565_Mmx@zRndr@@YIXPAGH@Z",
-      "name": "zRndr::OverlayBlendRow565_Mmx"
+      "symbol": "?OverlayBlendRow565Mmx@zRndr@@YIXPAGH@Z",
+      "name": "zRndr::OverlayBlendRow565Mmx"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

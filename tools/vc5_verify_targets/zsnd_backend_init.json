@@ -36,18 +36,18 @@
     },
     {
       "address": "0x4b2fc0",
-      "symbol": "?CachedDirectSound_GetCaps@zSnd@@YIJPAU_DSCAPS@@@Z",
-      "name": "zSnd::CachedDirectSound_GetCaps"
+      "symbol": "?CachedDirectSoundGetCaps@zSnd@@YIJPAU_DSCAPS@@@Z",
+      "name": "zSnd::CachedDirectSoundGetCaps"
     },
     {
       "address": "0x4a1d10",
-      "symbol": "_zSndBackend_InitA3D",
-      "name": "zSndBackend_InitA3D"
+      "symbol": "_zSndBackendInitA3D",
+      "name": "zSndBackendInitA3D"
     },
     {
       "address": "0x4a1e50",
-      "symbol": "_zSndBackend_InitDirectSound",
-      "name": "zSndBackend_InitDirectSound"
+      "symbol": "_zSndBackendInitDirectSound",
+      "name": "zSndBackendInitDirectSound"
     }
   ],
   "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp"

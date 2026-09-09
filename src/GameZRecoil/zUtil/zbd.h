@@ -101,11 +101,11 @@ extern zZbdManager *g_zUtil_ZbdManager;
 }
 
 namespace zUtil {
-int __fastcall ZBD_LoadEntriesGlobal(const char *filename);
-int __fastcall ZAR_LoadFileGlobal(const char *filepath);
-void __cdecl ZAR_RequestStopGlobal();
-int __cdecl ZBD_Init();
-void __cdecl ZBD_DestroyGlobalManager();
+int __fastcall ZBDLoadEntriesGlobal(const char *filename);
+int __fastcall zZarLoadFileGlobal(const char *filepath);
+void __cdecl zZarRequestStopGlobal();
+int __cdecl ZBDInit();
+void __cdecl ZBDDestroyGlobalManager();
 } // namespace zUtil
 
 namespace zUtil_ZAR {

@@ -25,13 +25,13 @@
   "functions": [
     {
       "address": "0x4723a0",
-      "symbol": "?DI_GetButtonTransitionState@zInput@@YIHH@Z",
-      "name": "zInput::DI_GetButtonTransitionState"
+      "symbol": "?DIGetButtonTransitionState@zInput@@YIHH@Z",
+      "name": "zInput::DIGetButtonTransitionState"
     },
     {
       "address": "0x4723d0",
-      "symbol": "?DI_WaitForButtonPress@zInput@@YIHH@Z",
-      "name": "zInput::DI_WaitForButtonPress"
+      "symbol": "?DIWaitForButtonPress@zInput@@YIHH@Z",
+      "name": "zInput::DIWaitForButtonPress"
     }
   ],
   "data_symbols": [

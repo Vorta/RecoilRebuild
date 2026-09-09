@@ -21,8 +21,8 @@
   "functions": [
     {
       "address": "0x4762c0",
-      "symbol": "?zModel_Fog_SetColorRgb01@@YIXPAUzColorRgb@@@Z",
-      "name": "zModel_Fog_SetColorRgb01"
+      "symbol": "?zModelFogSetColorRgb01@@YIXPAUzColorRgb@@@Z",
+      "name": "zModelFogSetColorRgb01"
     }
   ],
   "source_from": "src/GameZRecoil/zModel/gmod_init.c"

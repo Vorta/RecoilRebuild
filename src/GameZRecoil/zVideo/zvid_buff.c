@@ -77,22 +77,14 @@ void __fastcall BltSourceToPrimaryClipped(
     dstRectLocal.right = srcRight - srcX + dstX;
     dstRectLocal.bottom = srcBottom - srcY + dstY;
 
-    int clipped = ClipCoordToRange(
-        &dstRectLocal.left,
-        0,
-        g_zVideo_PrimarySurfaceState.width - 1
-    );
+    int clipped = ClipCoordToRange(&dstRectLocal.left, 0, g_zVideo_PrimarySurfaceState.width - 1);
     if (clipped < 0) {
         srcRectLocal.left -= clipped;
     } else if (clipped > 0) {
         return;
     }
 
-    clipped = ClipCoordToRange(
-        &dstRectLocal.right,
-        0,
-        g_zVideo_PrimarySurfaceState.width
-    );
+    clipped = ClipCoordToRange(&dstRectLocal.right, 0, g_zVideo_PrimarySurfaceState.width);
     if (clipped < 0) {
         return;
     }
@@ -100,22 +92,14 @@ void __fastcall BltSourceToPrimaryClipped(
         srcRectLocal.right -= clipped;
     }
 
-    clipped = ClipCoordToRange(
-        &dstRectLocal.top,
-        0,
-        g_zVideo_PrimarySurfaceState.height - 1
-    );
+    clipped = ClipCoordToRange(&dstRectLocal.top, 0, g_zVideo_PrimarySurfaceState.height - 1);
     if (clipped < 0) {
         srcRectLocal.top -= clipped;
     } else if (clipped > 0) {
         return;
     }
 
-    clipped = ClipCoordToRange(
-        &dstRectLocal.bottom,
-        0,
-        g_zVideo_PrimarySurfaceState.height
-    );
+    clipped = ClipCoordToRange(&dstRectLocal.bottom, 0, g_zVideo_PrimarySurfaceState.height);
     if (clipped < 0) {
         return;
     }
@@ -137,24 +121,14 @@ void __fastcall BltSourceToPrimaryClipped(
                            ((srcImage->formatFlagsPacked & 0x02u) != 0 ? DDBLT_KEYSRC : 0);
     const HRESULT hresult =
         primarySurface
-            ->Blt(
-                (RECT *)&dstRectLocal,
-                srcImage->surface,
-                (RECT *)&srcRectLocal,
-                bltFlags,
-                0
-            );
+            ->Blt((RECT *)&dstRectLocal, srcImage->surface, (RECT *)&srcRectLocal, bltFlags, 0);
 
     if (wasLocked != 0) {
         zVideo_dd::LockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
 
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError(
-            (int)(hresult),
-            ::g_zVideo_SourceFile_ZvidBuffC,
-            0x150
-        );
+        zVideo_dd::ReportError((int)(hresult), ::g_zVideo_SourceFile_ZvidBuffC, 0x150);
     }
 }
 

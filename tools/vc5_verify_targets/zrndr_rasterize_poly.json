@@ -1,6 +1,6 @@
 {
   "name": "zrndr_rasterize_poly",
-  "description": "zRndr_RasterizePoly selected-span polygon rasterizer.",
+  "description": "zRndrRasterizePoly selected-span polygon rasterizer.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x4936d0",
-      "symbol": "?zRndr_RasterizePoly@@YIXPAUzVec3@@HH@Z",
-      "name": "zRndr_RasterizePoly"
+      "symbol": "?zRndrRasterizePoly@@YIXPAUzVec3@@HH@Z",
+      "name": "zRndrRasterizePoly"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

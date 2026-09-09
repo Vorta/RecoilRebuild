@@ -29,18 +29,18 @@
     },
     {
       "address": "0x4b3260",
-      "symbol": "?Options_InitRegistryContext@zGame@@YIXPBD00@Z",
-      "name": "zGame::Options_InitRegistryContext"
+      "symbol": "?OptionsInitRegistryContext@zGame@@YIXPBD00@Z",
+      "name": "zGame::OptionsInitRegistryContext"
     },
     {
       "address": "0x4b3380",
-      "symbol": "?Options_FindOption@zGame@@YIPAUzOptionEntryPartial@@PBD@Z",
-      "name": "zGame::Options_FindOption"
+      "symbol": "?OptionsFindOption@zGame@@YIPAUzOptionEntryPartial@@PBD@Z",
+      "name": "zGame::OptionsFindOption"
     },
     {
       "address": "0x4b2e80",
-      "symbol": "?Options_GetOrCreateOption@zGame@@YIPAUzOptionEntryPartial@@PBDHHH@Z",
-      "name": "zGame::Options_GetOrCreateOption"
+      "symbol": "?OptionsGetOrCreateOption@zGame@@YIPAUzOptionEntryPartial@@PBDHHH@Z",
+      "name": "zGame::OptionsGetOrCreateOption"
     }
   ]
 }

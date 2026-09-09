@@ -33,7 +33,7 @@
       "order_scope": "authored",
       "retail_start": "0x463d50",
       "retail_end_exclusive": "0x464670",
-      "predecessor": {"address":"0x463cc0","symbol":"?End@zFMV_ActionPlayMci@@UAEXXZ","name":"zFMV_ActionPlayMci::End","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "predecessor": {"address":"0x463cc0","symbol":"?End@CZFMVActionPlayMci@@UAEXXZ","name":"CZFMVActionPlayMci::End","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": ["0x463d50","0x463dd0","0x463ef0","0x4641a0","0x4643a0","0x464540"],
       "successor": {"address":"0x464670","symbol":"?GetInputContourAPointList@zGeometry_Weiler@@YIHPAUzGeometry_WeilerStatePartial@@PAPAUzVec3@@@Z","name":"zGeometry_Weiler::GetInputContourAPointList","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }

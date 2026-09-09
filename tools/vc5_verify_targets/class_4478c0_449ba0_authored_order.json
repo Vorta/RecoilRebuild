@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x4478c0",
-      "symbol": "?AllocNodeFromFreeList@zClass_Class@@YAPAUzClass_NodePartial@@XZ",
-      "name": "zClass_Class::AllocNodeFromFreeList"
+      "symbol": "?gwNodeNew@zClass_Class@@YAPAUzClass_NodePartial@@XZ",
+      "name": "zClass_Class::gwNodeNew"
     },
     {
       "address": "0x447980",
@@ -208,8 +208,8 @@
     },
     {
       "address": "0x449480",
-      "symbol": "?BuildNodeToAncestorMatrix@gwNode@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "gwNode::BuildNodeToAncestorMatrix"
+      "symbol": "?gwNodeBuildNodeToAncestorMatrix@gwNode@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "gwNode::gwNodeBuildNodeToAncestorMatrix"
     },
     {
       "address": "0x4497b0",

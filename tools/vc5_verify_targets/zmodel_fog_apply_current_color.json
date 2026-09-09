@@ -21,8 +21,8 @@
   "functions": [
     {
       "address": "0x4762f0",
-      "symbol": "?zModel_Fog_ApplyCurrentColor@@YAXXZ",
-      "name": "zModel_Fog_ApplyCurrentColor"
+      "symbol": "?zModelFogApplyCurrentColor@@YAXXZ",
+      "name": "zModelFogApplyCurrentColor"
     }
   ],
   "source_from": "src/GameZRecoil/zModel/gmod_init.c"

@@ -57,15 +57,15 @@
     },
     {
       "address": "0x4b37f0",
-      "symbol": "?MeasureMhzViaBsfLoop_Qpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "symbol_regex": "\\?MeasureMhzViaBsfLoop_Qpc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "name": "CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc"
+      "symbol": "?MeasureMhzViaBsfLoopQpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?MeasureMhzViaBsfLoopQpc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc"
     },
     {
       "address": "0x4b38e0",
-      "symbol": "?MeasureCpuMhz_RdtscQpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "symbol_regex": "\\?MeasureCpuMhz_RdtscQpc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "name": "CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc"
+      "symbol": "?MeasureCpuMhzRdtscQpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?MeasureCpuMhzRdtscQpc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::MeasureCpuMhzRdtscQpc"
     },
     {
       "address": "0x4b3b00",
@@ -79,9 +79,9 @@
     },
     {
       "address": "0x4b3b50",
-      "symbol": "?MeasureCpuMhz_CmosRtc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "symbol_regex": "\\?MeasureCpuMhz_CmosRtc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "name": "CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc"
+      "symbol": "?MeasureCpuMhzCmosRtc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?MeasureCpuMhzCmosRtc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "name": "CpuBenchmarkResolver::MeasureCpuMhzCmosRtc"
     },
     {
       "address": "0x4b3ca0",

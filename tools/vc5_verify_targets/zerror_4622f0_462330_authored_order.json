@@ -63,8 +63,8 @@
       ],
       "successor": {
         "address": "0x462330",
-        "symbol": "??0zFMV_Playback@@QAE@PBDPAUHWND__@@@Z",
-        "name": "zFMV_Playback::Constructor",
+        "symbol": "??0CZFMVPlayback@@QAE@PBDPAUHWND__@@@Z",
+        "name": "CZFMVPlayback::Constructor",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

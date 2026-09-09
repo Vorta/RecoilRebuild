@@ -18,13 +18,13 @@
   "functions": [
     {
       "address": "0x4a1870",
-      "symbol": "@zSndSystem_InitNamedSetsSyntax@4",
-      "name": "zSndSystem_InitNamedSetsSyntax"
+      "symbol": "@zSndSystemInitNamedSetsSyntax@4",
+      "name": "zSndSystemInitNamedSetsSyntax"
     },
     {
       "address": "0x4a1510",
-      "symbol": "@zSndSystem_InitLegacySetsSyntax@4",
-      "name": "zSndSystem_InitLegacySetsSyntax"
+      "symbol": "@zSndSystemInitLegacySetsSyntax@4",
+      "name": "zSndSystemInitLegacySetsSyntax"
     },
     {
       "address": "0x4a13d0",

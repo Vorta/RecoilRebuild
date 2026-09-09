@@ -27,7 +27,7 @@
 /*
  * Recovered literal-backed zvid_init.c physical contribution
  * [0x4a6b40, 0x4a7b40). Definitions remain in natural retail source order;
- * compiler-emitted switch lowering belongs to Init_SetSurfaceGeometryFromModeIndex.
+ * compiler-emitted switch lowering belongs to InitSetSurfaceGeometryFromModeIndex.
  */
 
 namespace zVideo {
@@ -89,7 +89,7 @@ void __fastcall SetPendingDitherEnable(
  * Evidence: BN source file zVideo.cpp is a leaf fastcall store of ECX into
  * zero-initialized g_zVideo_ClearColorPacked16 at 0x6321cc.
  */
-void __fastcall zVideo_SetClearColorPacked16(
+void __fastcall zVideoSetClearColorPacked16(
     unsigned int packedColor16
 ) {
     g_zVideo_ClearColorPacked16 = packedColor16;
@@ -100,7 +100,7 @@ namespace zVideo {
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: return the cached display RGB channel bit counts.
  */
-void __fastcall PixelPack_GetRgbBits(
+void __fastcall PixelPackGetRgbBits(
     int *outRBits,
     int *outGBits,
     int *outBBits
@@ -116,7 +116,7 @@ namespace zVideo {
 /**
  * Purpose: Return the cached RGB bit masks from the active pixel-pack record.
  */
-void __fastcall PixelPack_GetRgbMasks(
+void __fastcall PixelPackGetRgbMasks(
     unsigned int *outRMask,
     unsigned int *outGMask,
     unsigned int *outBMask
@@ -133,7 +133,7 @@ namespace zVideo {
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: return the cached packed RGB shift parameters.
  */
-void __fastcall PixelPack_GetPackingParams(
+void __fastcall PixelPackGetPackingParams(
     int *outPackedBase,
     int *outSumMinus8,
     int *outBShiftTo8
@@ -151,7 +151,7 @@ namespace zVideo {
  * Purpose: initialize the global display pixel-pack bit counts, masks, and
  * shifted channel masks from DirectDraw pixel-format masks.
  */
-void __fastcall PixelPack_SetupFromMasks(
+void __fastcall PixelPackSetupFromMasks(
     int redBits,
     int greenBits,
     int blueBits,
@@ -180,9 +180,9 @@ void __fastcall PixelPack_SetupFromMasks(
 } // namespace zVideo
 
 /**
- * Purpose: provide the recovered zVid_PackColor00RRGGBB behavior.
+ * Purpose: provide the recovered zVidPackColor00RRGGBB behavior.
  */
-unsigned int __fastcall zVid_PackColor00RRGGBB(
+unsigned int __fastcall zVidPackColor00RRGGBB(
     unsigned int color00RRGGBB
 ) {
     const unsigned char red = (unsigned char)(color00RRGGBB);
@@ -199,7 +199,7 @@ unsigned int __fastcall zVid_PackColor00RRGGBB(
  * BN passes red and green as low-byte fastcall registers and consumes the low
  * byte of the stack blue argument.
  */
-unsigned int __fastcall zVid_PackColorRGB(
+unsigned int __fastcall zVidPackColorRGB(
     unsigned char red,
     unsigned char green,
     unsigned int blue
@@ -212,7 +212,7 @@ unsigned int __fastcall zVid_PackColorRGB(
 /**
  * Purpose: round RGB float channels and pack them through the active 16-bit pixel format.
  */
-unsigned short __fastcall zVid_PackColorRgbFloats(
+unsigned short __fastcall zVidPackColorRgbFloats(
     zVideo_ColorRgbFloat *color
 ) {
     unsigned short packed;
@@ -238,7 +238,7 @@ namespace zVideo {
  * shift rendering is a decompiler artifact, while assembly uses 32-bit shift
  * counts.
  */
-void __fastcall TexturePixelPack_SetupFromMasks(
+void __fastcall TexturePixelPackSetupFromMasks(
     int redBits,
     int greenBits,
     int blueBits,
@@ -276,10 +276,10 @@ void __fastcall TexturePixelPack_SetupFromMasks(
 /**
  * Purpose: Captures a selected 16-bit video surface into an owned zVid image.
  */
-extern "C" zVidImagePartial *__fastcall zVideo_buff_CaptureSurfaceToImage(
+extern "C" zVidImagePartial *__fastcall zVideobuffCaptureSurfaceToImage(
     int sourceSelector
 ) {
-    zVideo::Dispatch_LockDisplayModeSurfaceState();
+    zVideo::DispatchLockDisplayModeSurfaceState();
 
     zVideo_SurfaceStatePartial *surfaceState = 0;
     if (sourceSelector == 0) {
@@ -302,43 +302,27 @@ extern "C" zVidImagePartial *__fastcall zVideo_buff_CaptureSurfaceToImage(
         return 0;
     }
 
-    zVid_Image::SetSize(
-        image,
-        (short)(width),
-        (short)(height)
-    );
+    zVid_Image::SetSize(image, (short)(width), (short)(height));
     void *dstPixels = malloc((size_t)(image->pixelCount) * sizeof(unsigned short));
     image->formatFlagsPacked |= 0x20u;
-    zVid_Image_SetPixels(
-        image,
-        dstPixels,
-        0
-    );
+    zVidImageSetPixels(image, dstPixels, 0);
 
     unsigned char *dstBytes = (unsigned char *)(dstPixels);
     if (width == (int)(pitchWords)) {
-        memcpy(
-            dstBytes,
-            srcPixels,
-            (size_t)(image->pixelCount) * sizeof(unsigned short)
-        );
+        memcpy(dstBytes, srcPixels, (size_t)(image->pixelCount) * sizeof(unsigned short));
     } else if (height > 0) {
         const int rowBytes = width * sizeof(unsigned short);
         const int pitchBytes = (int)(pitchWords * sizeof(unsigned short));
         {
             for (int row = 0; row < height; ++row) {
-                memcpy(
-                    dstBytes,
-                    srcPixels,
-                    (size_t)(rowBytes)
-                );
+                memcpy(dstBytes, srcPixels, (size_t)(rowBytes));
                 dstBytes += rowBytes;
                 srcPixels += pitchBytes;
             }
         }
     }
 
-    zVideo::Dispatch_UnlockDisplayModeSurfaceState();
+    zVideo::DispatchUnlockDisplayModeSurfaceState();
     return image;
 }
 
@@ -372,42 +356,26 @@ zVidImagePartial *__fastcall CopySurfaceRectToImage(
     int dstOffsetY = 0;
     const int originalWidth = rect->right - rect->left;
 
-    int clipped = ClipCoordToRange(
-        &rect->left,
-        0,
-        surfaceWidth
-    );
+    int clipped = ClipCoordToRange(&rect->left, 0, surfaceWidth);
     if (clipped < 0) {
         dstOffsetX = -clipped;
     } else if (clipped > 0) {
         return 0;
     }
 
-    clipped = ClipCoordToRange(
-        &rect->right,
-        0,
-        surfaceWidth
-    );
+    clipped = ClipCoordToRange(&rect->right, 0, surfaceWidth);
     if (clipped < 0) {
         return 0;
     }
 
-    clipped = ClipCoordToRange(
-        &rect->top,
-        0,
-        surfaceHeight
-    );
+    clipped = ClipCoordToRange(&rect->top, 0, surfaceHeight);
     if (clipped < 0) {
         dstOffsetY = -clipped;
     } else if (clipped > 0) {
         return 0;
     }
 
-    clipped = ClipCoordToRange(
-        &rect->bottom,
-        0,
-        surfaceHeight
-    );
+    clipped = ClipCoordToRange(&rect->bottom, 0, surfaceHeight);
     if (clipped < 0) {
         return 0;
     }
@@ -425,11 +393,7 @@ zVidImagePartial *__fastcall CopySurfaceRectToImage(
             return 0;
         }
 
-        zVid_Image::SetSize(
-            image,
-            (short)(clippedHeight),
-            (short)(clippedWidth)
-        );
+        zVid_Image::SetSize(image, (short)(clippedHeight), (short)(clippedWidth));
         image->pixels = malloc((size_t)(image->pixelCount) * sizeof(unsigned short));
     }
 
@@ -443,11 +407,7 @@ zVidImagePartial *__fastcall CopySurfaceRectToImage(
 
     {
         for (int row = clippedHeight; row > 0; --row) {
-            memcpy(
-                dstBytes,
-                srcBytes,
-                (size_t)(rowBytes)
-            );
+            memcpy(dstBytes, srcBytes, (size_t)(rowBytes));
             dstBytes += dstStrideBytes;
             srcBytes += srcStrideBytes;
         }
@@ -480,10 +440,7 @@ int __fastcall SetHalfResAdjustMode(
     previousMode = g_zVideo_HalfResAdjustMode;
     g_zVideo_HalfResAdjustMode = mode;
     if (mode == 0 && g_zVideo_RendererType == 0) {
-        g_zVideo_pfnBltPrimaryToSwRectDirect(
-            0,
-            0
-        );
+        g_zVideo_pfnBltPrimaryToSwRectDirect(0, 0);
     }
 
     return previousMode;
@@ -533,7 +490,7 @@ void __fastcall SetFogColorFromRgb01(
  * index at 0x632140.
  * Purpose: scale a normalized fog target color into D3D color-bias globals.
  */
-void __fastcall zVideo_SetPendingFogTargetColorFromRgb01(
+void __fastcall zVideoSetPendingFogTargetColorFromRgb01(
     zVideo_ColorRgbFloat *color
 ) {
     g_zVideo_D3DColorAttrBiasR = color->r * 255.0f;
@@ -670,7 +627,7 @@ namespace zVid {
  * original spelling. Neighboring API order supports this implementation placement.
  */
 int __cdecl GetAcceptedHardwareRendererCount() {
-    return GetAcceptedHardwareRendererCount_Cached();
+    return GetAcceptedHardwareRendererCountCached();
 }
 
 /**
@@ -702,10 +659,7 @@ int __fastcall SelectHwApiDeviceOrFallback(
         return 1;
     }
 
-    BindRendererDispatch(
-        0,
-        1
-    );
+    BindRendererDispatch(0, 1);
     g_zVideo_pSelectedHwApiDeviceRecord = &g_zVideo_HwApiDeviceTable[0];
     g_zVideo_pSelectedD3DDeviceInfo = 0;
     return 0;
@@ -938,28 +892,9 @@ int __cdecl ModuleInit() {
     g_zVideo_InverseZTolerancePending = 0.0199999996f;
     g_zVideo_D3DAppendFanCloseVertexPending = 0;
 
-    PixelPack_SetupFromMasks(
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-    );
-    TexturePixelPack_SetupFromMasks(
-        4,
-        4,
-        4,
-        4,
-        0xf000,
-        0x0f00,
-        0x00f0,
-        0x000f
-    );
-    BindRendererDispatch(
-        0,
-        1
-    );
+    PixelPackSetupFromMasks(0, 0, 0, 0, 0, 0);
+    TexturePixelPackSetupFromMasks(4, 4, 4, 4, 0xf000, 0x0f00, 0x00f0, 0x000f);
+    BindRendererDispatch(0, 1);
     zVideo_dd::StartupEnumerateAndDefaultSelect();
     atexit(AtExitReleaseAllInterfacesAndSurfaces);
     return 0;
@@ -991,10 +926,7 @@ int __fastcall InitVideoSystem(
 
     g_zVideo_hWnd = hWnd;
     g_zVideo_FrameTick = 0;
-    BindRendererDispatch(
-        rendererBackend,
-        fullscreen
-    );
+    BindRendererDispatch(rendererBackend, fullscreen);
 
     const int openResult = g_zVideo_pfnOpenVideoMode(modeIndex);
     if (openResult != 0) {
@@ -1011,12 +943,7 @@ int __fastcall InitVideoSystem(
     g_zVideo_IsInitialized = 1;
     const int setModeResult = SetVideoMode(modeIndex);
     if (setModeResult != 0) {
-        zError::ReportOld(
-            0x800,
-            g_zVideo_SourceFile_ZvidInitC,
-            0x86,
-            g_zVideo_InitFailSetModeMsg
-        );
+        zError::ReportOld(0x800, g_zVideo_SourceFile_ZvidInitC, 0x86, g_zVideo_InitFailSetModeMsg);
         ShutdownVideoSystem();
         return setModeResult;
     }
@@ -1058,18 +985,9 @@ namespace zVideo {
  * points with ClientToScreen.
  */
 int __cdecl UpdateCachedClientRectScreenCoords() {
-    GetClientRect(
-        g_zVideo_hWnd,
-        &g_zVideo_CachedClientRectScreen
-    );
-    ClientToScreen(
-        g_zVideo_hWnd,
-        (POINT *)(&g_zVideo_CachedClientRectScreen.left)
-    );
-    ClientToScreen(
-        g_zVideo_hWnd,
-        (POINT *)(&g_zVideo_CachedClientRectScreen.right)
-    );
+    GetClientRect(g_zVideo_hWnd, &g_zVideo_CachedClientRectScreen);
+    ClientToScreen(g_zVideo_hWnd, (POINT *)(&g_zVideo_CachedClientRectScreen.left));
+    ClientToScreen(g_zVideo_hWnd, (POINT *)(&g_zVideo_CachedClientRectScreen.right));
     return 0;
 }
 
@@ -1098,9 +1016,9 @@ int __cdecl ShutdownVideoSystem() {
 } // namespace zVideo
 
 /**
- * Purpose: provide the recovered zVideo_RestoreIconicFullscreenWindowIfNeeded behavior.
+ * Purpose: provide the recovered zVideoRestoreIconicFullscreenWindowIfNeeded behavior.
  */
-void __cdecl zVideo_RestoreIconicFullscreenWindowIfNeeded() {
+void __cdecl zVideoRestoreIconicFullscreenWindowIfNeeded() {
     if (g_zVideo_IsInitialized != 0 && g_zVideo_FullscreenOption != 0 &&
         IsIconic(g_zVideo_hWnd) != 0) {
         OpenIcon(g_zVideo_hWnd);
@@ -1129,7 +1047,7 @@ void __fastcall BindRendererDispatch(
     }
     g_zVideo_pfnLockSurfaceState = zVideo_dd::LockSurfaceState;
     g_zVideo_pfnUnlockSurfaceState = zVideo_dd::UnlockSurfaceState;
-    g_zVideo_pfnClearZBufferRect = zVideo_dd::ZBuffer_DepthFillRect;
+    g_zVideo_pfnClearZBufferRect = zVideo_dd::ZBufferDepthFillRect;
     g_zVideo_pfnClearSwSurfaceAndZBuffer = zVideo_dd::ClearSwBackbufferAndZBufferRects;
     g_zVideo_pfnClearStateSurfaceAndZBuffer = zVideo_dd::ClearScreenAndZBufferRect;
     g_zVideo_pfnUpdateFogColor = zVideo_dd3d::UpdateFogColor;
@@ -1140,23 +1058,23 @@ void __fastcall BindRendererDispatch(
     g_zVideo_pfnBltSwToPrimaryRect = zVideo_dd::BltSwToPrimaryRect;
     g_zVideo_pfnGetHwApiDeviceFeatureFlags = zVideo_dd::GetHwApiDeviceFeatureFlags;
     g_zVideo_pfnImageUploadPixelsToSurface =
-        zVideo_dd::Image_UploadPixelsToSurface;
-    g_zVideo_pfnImageReleaseSurface = zVideo_dd::Image_ReleaseSurface;
+        zVideo_dd::ImageUploadPixelsToSurface;
+    g_zVideo_pfnImageReleaseSurface = zVideo_dd::ImageReleaseSurface;
     g_zVideo_pfnCreateTextureRecord = zVideo_dd3d::CreateTextureRecord;
     g_zVideo_pfnTextureRecordLockUploadSurface =
-        zVideo_dd3d::TextureRecord_LockUploadSurface;
+        zVideo_dd3d::TextureRecordLockUploadSurface;
     g_zVideo_pfnTextureRecordUnlockUploadSurface =
-        zVideo_dd3d::TextureRecord_UnlockUploadSurface;
+        zVideo_dd3d::TextureRecordUnlockUploadSurface;
     g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef =
-        zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef;
+        zVideo_dd3d::TextureRecordReleaseUploadSurfaceRef;
     g_zVideo_pfnTextureRecordFinalizeUpload =
-        zVideo_dd3d::TextureRecord_FinalizeUpload;
-    g_zVideo_pfnTextureRecordDestroy = zVideo_dd3d::TextureRecord_Destroy;
+        zVideo_dd3d::TextureRecordFinalizeUpload;
+    g_zVideo_pfnTextureRecordDestroy = zVideo_dd3d::TextureRecordDestroy;
     g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = zGame::ReturnOnlyStub;
     g_zVideo_pfnImageLazyCreateVideoMemorySurface =
-        zVideo_dd::Image_LazyCreateVideoMemorySurface;
+        zVideo_dd::ImageLazyCreateVideoMemorySurface;
     g_zVideo_pfnImageEnsureSurfaceForCurrentDevice =
-        zVideo_dd::Image_EnsureSurfaceForCurrentDevice;
+        zVideo_dd::ImageEnsureSurfaceForCurrentDevice;
     g_zVideo_pfnSetFogEnable = zVideo_dd3d::SetFogEnable;
     g_zVideo_pfnSetFogStart = zVideo_dd3d::SetFogStart;
     g_zVideo_pfnSetFogEnd = zVideo_dd3d::SetFogEnd;
@@ -1191,7 +1109,7 @@ namespace zVideo {
  * zVideo_SurfaceState records, clears gVideo_resolutionMenuValid for invalid
  * indices, and stores the legacy computed display bpp value at 0x632150.
  */
-void __fastcall Init_SetSurfaceGeometryFromModeIndex(
+void __fastcall InitSetSurfaceGeometryFromModeIndex(
     int modeIndex
 ) {
     switch (modeIndex) {
@@ -1266,7 +1184,7 @@ namespace zVideo {
  * mode switch through the active renderer backend.
  *
  * Evidence: BN checks g_zVideo_IsInitialized, calls
- * Init_SetSurfaceGeometryFromModeIndex, then dispatches through
+ * InitSetSurfaceGeometryFromModeIndex, then dispatches through
  * g_zVideo_pfnSetVideoMode with the original mode index.
  */
 int __fastcall SetVideoMode(
@@ -1276,7 +1194,7 @@ int __fastcall SetVideoMode(
         return 0x5a560000;
     }
 
-    Init_SetSurfaceGeometryFromModeIndex(modeIndex);
+    InitSetSurfaceGeometryFromModeIndex(modeIndex);
     return g_zVideo_pfnSetVideoMode(modeIndex);
 }
 

@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49a920",
-      "symbol": "?zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList@@YIXH@Z",
-      "name": "zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList"
+      "symbol": "?zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList@@YIXH@Z",
+      "name": "zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

@@ -1,6 +1,6 @@
 {
   "name": "zrndr_lens_flare_build_visible_sample_list_from_queue",
-  "description": "zRndr_LensFlare_BuildVisibleSampleListFromQueue visible lens-flare queue filter.",
+  "description": "zRndrLensFlareBuildVisibleSampleListFromQueue visible lens-flare queue filter.",
   "source_filename": "zRndr.cpp",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49a9c0",
-      "symbol": "?zRndr_LensFlare_BuildVisibleSampleListFromQueue@@YIHH@Z",
-      "name": "zRndr_LensFlare_BuildVisibleSampleListFromQueue"
+      "symbol": "?zRndrLensFlareBuildVisibleSampleListFromQueue@@YIHH@Z",
+      "name": "zRndrLensFlareBuildVisibleSampleListFromQueue"
     }
   ]
 }

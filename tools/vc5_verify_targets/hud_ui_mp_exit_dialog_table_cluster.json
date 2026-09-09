@@ -34,13 +34,13 @@
     },
     {
       "address": "0x419800",
-      "symbol": "?OnActivate@HudUiMpExitDialog_NewGameButton@@UAEXXZ",
-      "name": "HudUiMpExitDialog_NewGameButton::OnActivate"
+      "symbol": "?OnActivate@CHudUiMpExitDialogNewGameButton@@UAEXXZ",
+      "name": "CHudUiMpExitDialogNewGameButton::OnActivate"
     },
     {
       "address": "0x419830",
-      "symbol": "?OnActivate@HudUiMpExitDialog_ExitButton@@UAEXXZ",
-      "name": "HudUiMpExitDialog_ExitButton::OnActivate"
+      "symbol": "?OnActivate@CHudUiMpExitDialogExitButton@@UAEXXZ",
+      "name": "CHudUiMpExitDialogExitButton::OnActivate"
     },
     {
       "address": "0x419870",
@@ -58,14 +58,14 @@
     },
     {
       "address": "0x4cf028",
-      "symbol": "??_7HudUiMpExitDialog_ExitButton@@6B@",
+      "symbol": "??_7CHudUiMpExitDialogExitButton@@6B@",
       "name": "g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl",
       "bn_name": "g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl",
       "byte_length": 132
     },
     {
       "address": "0x4cf0b0",
-      "symbol": "??_7HudUiMpExitDialog_NewGameButton@@6B@",
+      "symbol": "??_7CHudUiMpExitDialogNewGameButton@@6B@",
       "name": "g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl",
       "bn_name": "g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl",
       "byte_length": 132

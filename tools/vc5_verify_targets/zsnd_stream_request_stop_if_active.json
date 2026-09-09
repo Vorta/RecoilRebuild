@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x4a51f0",
-      "symbol": "@zSndStreamRequest_StopIfActive@4",
+      "symbol": "@zSndStreamRequestStopIfActive@4",
       "name": "zSndStreamRequest::StopIfActive"
     }
   ]

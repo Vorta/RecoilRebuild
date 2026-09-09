@@ -23,8 +23,8 @@
     },
     {
       "address": "0x4a9910",
-      "symbol": "?GetAcceptedHardwareRendererCount_Cached@zVid@@YAHXZ",
-      "name": "zVid::GetAcceptedHardwareRendererCount_Cached"
+      "symbol": "?GetAcceptedHardwareRendererCountCached@zVid@@YAHXZ",
+      "name": "zVid::GetAcceptedHardwareRendererCountCached"
     }
   ],
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c"

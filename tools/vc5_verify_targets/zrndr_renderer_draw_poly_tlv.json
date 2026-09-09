@@ -1,6 +1,6 @@
 {
   "name": "zrndr_renderer_draw_poly_tlv",
-  "description": "Renderer_DrawPolyTLV transformed/lit polygon renderer.",
+  "description": "RendererDrawPolyTLV transformed/lit polygon renderer.",
   "source_filename": "zRndr.cpp",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x494af0",
-      "symbol": "?Renderer_DrawPolyTLV@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@1PAUzVec2@@HMH@Z",
-      "name": "Renderer_DrawPolyTLV"
+      "symbol": "?RendererDrawPolyTLV@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@1PAUzVec2@@HMH@Z",
+      "name": "RendererDrawPolyTLV"
     }
   ]
 }

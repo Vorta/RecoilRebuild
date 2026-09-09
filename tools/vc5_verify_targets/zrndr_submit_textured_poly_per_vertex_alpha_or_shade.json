@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x499ec0",
-      "symbol": "?zRndr_SubmitTexturedPolyPerVertexAlphaOrShade@@YIXPAUzVec3@@00PAUzVec2@@PAMHHPAUzImage_TexDirEntryPartial@@HH@Z",
-      "name": "zRndr_SubmitTexturedPolyPerVertexAlphaOrShade"
+      "symbol": "?zRndrSubmitTexturedPolyPerVertexAlphaOrShade@@YIXPAUzVec3@@00PAUzVec2@@PAMHHPAUzImage_TexDirEntryPartial@@HH@Z",
+      "name": "zRndrSubmitTexturedPolyPerVertexAlphaOrShade"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

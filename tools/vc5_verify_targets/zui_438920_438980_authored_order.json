@@ -19,8 +19,8 @@
       "functions": [
         {
           "address": "0x438920",
-          "symbol": "?TrackList_Add@HudUiMgrSensor@@YIPAUHudUiMgrSensorTrackNode@@HPAX@Z",
-          "name": "HudUiMgrSensor::TrackList_Add",
+          "symbol": "?TrackListAdd@HudUiMgrSensor@@YIPAUHudUiMgrSensorTrackNode@@HPAX@Z",
+          "name": "HudUiMgrSensor::TrackListAdd",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -47,8 +47,8 @@
       "functions": [
         {
           "address": "0x438920",
-          "symbol": "?TrackList_Add@HudUiMgrSensor@@YIPAUHudUiMgrSensorTrackNode@@HPAX@Z",
-          "name": "HudUiMgrSensor::TrackList_Add",
+          "symbol": "?TrackListAdd@HudUiMgrSensor@@YIPAUHudUiMgrSensorTrackNode@@HPAX@Z",
+          "name": "HudUiMgrSensor::TrackListAdd",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,

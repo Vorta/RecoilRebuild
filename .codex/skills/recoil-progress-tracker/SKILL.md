@@ -40,6 +40,29 @@ Strict stage order is:
 
 ## Mutation rules
 
+For reviewed names-only synchronization, use `progress symbol rename-batch`
+with `--payload-file <build/path.json> --expected-revision <revision>`; dry-run,
+review, then apply. The `recoil-symbol-names-v1` payload requires `reviewed:true`,
+`binary`, and `renames`. Each rename contains `symbol_id`, `expected_name`,
+`name`, and `reason`. Optional `owner_renames` rows contain `owner_id`, `address`,
+`expected_name`, `name`, and `reason`: a null address selects the owner display
+name; an existing address selects its address-metadata name. These are exact
+old-name guards. This command changes no identity, relationship, gate, tier,
+source path, evidence, or acceptance fact. Use the owner commands for actual
+ownership changes. Validate tool changes through `recoil-validation`.
+
+After source identifiers and verification registrations are synchronized, use
+`progress relocation-target refresh-source-names` for existing ordinary target,
+native EH, and reviewed-exception source bindings. Its reviewed
+`recoil-relocation-source-names-v1` payload contains `renames` with
+`source_symbol_id`, `expected_object_symbol`, `object_symbol`,
+`expected_occurrences`, and `reason`. Dry-run and review before apply with the
+expected revision. Every affected source snapshot must equal the current
+registration except for that spelling; complete retail/target/provider contexts
+must still validate. This route changes no target spelling, ownership, extent,
+operand, exception policy, or acceptance fact. Other binding families require
+their owning reviewed procedure. Follow it with a fresh full match refresh.
+
 Function match classification is distinct from serial stage acceptance. Use
 `progress match refresh --all` or `--at <address>` with a fresh build root,
 expected revision and dry-run/apply to record complete live `byte`/`instruction`

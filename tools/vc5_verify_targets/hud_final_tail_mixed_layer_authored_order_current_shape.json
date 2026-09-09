@@ -51,8 +51,8 @@
       "functions": [
         {
           "address": "0x414ab0",
-          "symbol_regex": "\\?\\?0zInterp_GlobalContext@@.*",
-          "name": "zInterp_GlobalContext::Constructor",
+          "symbol_regex": "\\?\\?0CRecoilInterp@@.*",
+          "name": "CRecoilInterp::Constructor",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "authored-lifecycle-body",
           "required_presence": true,
@@ -60,8 +60,8 @@
         },
         {
           "address": "0x414ad0",
-          "symbol_regex": "\\?DispatchHook@zInterp_GlobalContext@@.*",
-          "name": "zInterp_GlobalContext::DispatchHook / zInterp_Command::WeaponSetMaxTetherAltitude",
+          "symbol_regex": "\\?DispatchHook@CRecoilInterp@@.*",
+          "name": "CRecoilInterp::DispatchHook / zInterp_Command::WeaponSetMaxTetherAltitude",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -96,8 +96,8 @@
         },
         {
           "address": "0x414f40",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_CreditsButton@@.*",
-          "name": "HudUiMainMenuDialog_CreditsButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogCreditsButton@@.*",
+          "name": "CHudUiMainMenuDialogCreditsButton::OnActivate",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -105,8 +105,8 @@
         },
         {
           "address": "0x414f60",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_SaveButton@@.*",
-          "name": "HudUiMainMenuDialog_SaveButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogSaveButton@@.*",
+          "name": "CHudUiMainMenuDialogSaveButton::OnActivate",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -114,8 +114,8 @@
         },
         {
           "address": "0x414f80",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_NewGameButton@@.*",
-          "name": "HudUiMainMenuDialog_NewGameButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogNewGameButton@@.*",
+          "name": "CHudUiMainMenuDialogNewGameButton::OnActivate",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -132,8 +132,8 @@
         },
         {
           "address": "0x414fc0",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_OptionsButton@@.*",
-          "name": "HudUiMainMenuDialog_OptionsButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogOptionsButton@@.*",
+          "name": "CHudUiMainMenuDialogOptionsButton::OnActivate",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -141,8 +141,8 @@
         },
         {
           "address": "0x414fe0",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_QuitButton@@.*",
-          "name": "HudUiMainMenuDialog_QuitButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogQuitButton@@.*",
+          "name": "CHudUiMainMenuDialogQuitButton::OnActivate",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -150,8 +150,8 @@
         },
         {
           "address": "0x415000",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_ControlsButton@@.*",
-          "name": "HudUiMainMenuDialog_ControlsButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogControlsButton@@.*",
+          "name": "CHudUiMainMenuDialogControlsButton::OnActivate",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -159,8 +159,8 @@
         },
         {
           "address": "0x415140",
-          "symbol_regex": "\\?OnActivate@HudUiMainMenuDialog_LoadButton@@.*",
-          "name": "HudUiMainMenuDialog_LoadButton::OnActivate",
+          "symbol_regex": "\\?OnActivate@CHudUiMainMenuDialogLoadButton@@.*",
+          "name": "CHudUiMainMenuDialogLoadButton::OnActivate",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,

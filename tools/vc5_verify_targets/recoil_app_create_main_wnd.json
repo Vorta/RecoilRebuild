@@ -38,18 +38,18 @@
     },
     {
       "address": "0x42ea20",
-      "symbol": "?OnTryBecomeCurrent@RecoilApp_IntroFmvState@@UAEHXZ",
-      "name": "RecoilApp_IntroFmvState::OnTryBecomeCurrent"
+      "symbol": "?OnTryBecomeCurrent@CRecoilAppIntroFmvState@@UAEHXZ",
+      "name": "CRecoilAppIntroFmvState::OnTryBecomeCurrent"
     },
     {
       "address": "0x42eac0",
-      "symbol": "?OnUpdateShouldQuit@RecoilApp_IntroFmvState@@UAEHXZ",
-      "name": "RecoilApp_IntroFmvState::OnUpdateShouldQuit"
+      "symbol": "?OnUpdateShouldQuit@CRecoilAppIntroFmvState@@UAEHXZ",
+      "name": "CRecoilAppIntroFmvState::OnUpdateShouldQuit"
     },
     {
       "address": "0x42eb10",
-      "symbol": "?OnDeactivate@RecoilApp_IntroFmvState@@UAEXXZ",
-      "name": "RecoilApp_IntroFmvState::OnDeactivate"
+      "symbol": "?OnDeactivate@CRecoilAppIntroFmvState@@UAEXXZ",
+      "name": "CRecoilAppIntroFmvState::OnDeactivate"
     },
     {
       "address": "0x42eb20",
@@ -63,23 +63,23 @@
     },
     {
       "address": "0x42ebf0",
-      "symbol": "?OnTryBecomeCurrent@RecoilApp_AttractFmvState@@UAEHXZ",
-      "name": "RecoilApp_AttractFmvState::OnTryBecomeCurrent"
+      "symbol": "?OnTryBecomeCurrent@CRecoilAppAttractFmvState@@UAEHXZ",
+      "name": "CRecoilAppAttractFmvState::OnTryBecomeCurrent"
     },
     {
       "address": "0x42ec80",
-      "symbol": "?OnUpdateShouldQuit@RecoilApp_AttractFmvState@@UAEHXZ",
-      "name": "RecoilApp_AttractFmvState::OnUpdateShouldQuit"
+      "symbol": "?OnUpdateShouldQuit@CRecoilAppAttractFmvState@@UAEHXZ",
+      "name": "CRecoilAppAttractFmvState::OnUpdateShouldQuit"
     },
     {
       "address": "0x42eca0",
-      "symbol": "?OnDeactivate@RecoilApp_AttractFmvState@@UAEXXZ",
-      "name": "RecoilApp_AttractFmvState::OnDeactivate"
+      "symbol": "?OnDeactivate@CRecoilAppAttractFmvState@@UAEXXZ",
+      "name": "CRecoilAppAttractFmvState::OnDeactivate"
     },
     {
       "address": "0x42eec0",
-      "symbol": "?OnWndActivate@RecoilApp_PlayState@@UAEXH@Z",
-      "name": "RecoilApp_PlayState::OnWndActivate"
+      "symbol": "?OnWndActivate@CRecoilAppPlayState@@UAEXH@Z",
+      "name": "CRecoilAppPlayState::OnWndActivate"
     },
     {
       "address": "0x42e9f0",

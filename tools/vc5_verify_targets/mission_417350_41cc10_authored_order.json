@@ -110,37 +110,37 @@
           "address": "0x417680",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::ZarMission_SaveCallback",
+          "name": "HudSensorTracker::ZarMissionSaveCallback",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZarMission_SaveCallback@HudSensorTracker@@SIHPAUzZbdSectionCallbackCtx@@PAU1@@Z"
+          "symbol": "?ZarMissionSaveCallback@HudSensorTracker@@SIHPAUzZbdSectionCallbackCtx@@PAU1@@Z"
         },
         {
           "address": "0x417690",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::ZarMission_RestoreCallback",
+          "name": "HudSensorTracker::ZarMissionRestoreCallback",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZarMission_RestoreCallback@HudSensorTracker@@SIHPAXPBDPBXIPAU1@@Z"
+          "symbol": "?ZarMissionRestoreCallback@HudSensorTracker@@SIHPAXPBDPBXIPAU1@@Z"
         },
         {
           "address": "0x4176b0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::ZarMissionLate_SaveCallback",
+          "name": "HudSensorTracker::ZarMissionLateSaveCallback",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZarMissionLate_SaveCallback@HudSensorTracker@@SIXPAUzZbdSectionCallbackCtx@@PAU1@@Z"
+          "symbol": "?ZarMissionLateSaveCallback@HudSensorTracker@@SIXPAUzZbdSectionCallbackCtx@@PAU1@@Z"
         },
         {
           "address": "0x4176d0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::ZarMissionLate_RestoreCallback",
+          "name": "HudSensorTracker::ZarMissionLateRestoreCallback",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZarMissionLate_RestoreCallback@HudSensorTracker@@SIXPAXPBDPBXIPAU1@@Z"
+          "symbol": "?ZarMissionLateRestoreCallback@HudSensorTracker@@SIXPAXPBDPBXIPAU1@@Z"
         },
         {
           "address": "0x4176f0",
@@ -290,10 +290,10 @@
           "address": "0x418730",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::Command_ToggleObjectivePanel",
+          "name": "HudSensorTracker::CommandToggleObjectivePanel",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Command_ToggleObjectivePanel@HudSensorTracker@@QAEXXZ"
+          "symbol": "?CommandToggleObjectivePanel@HudSensorTracker@@QAEXXZ"
         },
         {
           "address": "0x418760",
@@ -308,10 +308,10 @@
           "address": "0x4188f0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::Command_ShowObjectivePickupInfo",
+          "name": "HudSensorTracker::CommandShowObjectivePickupInfo",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Command_ShowObjectivePickupInfo@HudSensorTracker@@QAEXXZ"
+          "symbol": "?CommandShowObjectivePickupInfo@HudSensorTracker@@QAEXXZ"
         },
         {
           "address": "0x418940",
@@ -461,19 +461,19 @@
           "address": "0x419800",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiMpExitDialog_NewGameButton::OnActivate",
+          "name": "CHudUiMpExitDialogNewGameButton::OnActivate",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnActivate@HudUiMpExitDialog_NewGameButton@@UAEXXZ"
+          "symbol": "?OnActivate@CHudUiMpExitDialogNewGameButton@@UAEXXZ"
         },
         {
           "address": "0x419830",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiMpExitDialog_ExitButton::OnActivate",
+          "name": "CHudUiMpExitDialogExitButton::OnActivate",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnActivate@HudUiMpExitDialog_ExitButton@@UAEXXZ"
+          "symbol": "?OnActivate@CHudUiMpExitDialogExitButton@@UAEXXZ"
         },
         {
           "address": "0x419870",
@@ -953,28 +953,28 @@
           "address": "0x41bf10",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiNetExitPanel_ResumeWidget::OnActivate",
+          "name": "CHudUiNetExitPanelResumeWidget::OnActivate",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnActivate@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
+          "symbol": "?OnActivate@CHudUiNetExitPanelResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41bf40",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiNetExitPanel_ResumeWidget::OnShowPreview",
+          "name": "CHudUiNetExitPanelResumeWidget::OnShowPreview",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ShowPreview@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
+          "symbol": "?ShowPreview@CHudUiNetExitPanelResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41bfa0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiNetExitPanel_ResumeWidget::OnHidePreview",
+          "name": "CHudUiNetExitPanelResumeWidget::OnHidePreview",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?HidePreview@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
+          "symbol": "?HidePreview@CHudUiNetExitPanelResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41c000",
@@ -1378,37 +1378,37 @@
           "address": "0x417680",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::ZarMission_SaveCallback",
+          "name": "HudSensorTracker::ZarMissionSaveCallback",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZarMission_SaveCallback@HudSensorTracker@@SIHPAUzZbdSectionCallbackCtx@@PAU1@@Z"
+          "symbol": "?ZarMissionSaveCallback@HudSensorTracker@@SIHPAUzZbdSectionCallbackCtx@@PAU1@@Z"
         },
         {
           "address": "0x417690",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::ZarMission_RestoreCallback",
+          "name": "HudSensorTracker::ZarMissionRestoreCallback",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZarMission_RestoreCallback@HudSensorTracker@@SIHPAXPBDPBXIPAU1@@Z"
+          "symbol": "?ZarMissionRestoreCallback@HudSensorTracker@@SIHPAXPBDPBXIPAU1@@Z"
         },
         {
           "address": "0x4176b0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::ZarMissionLate_SaveCallback",
+          "name": "HudSensorTracker::ZarMissionLateSaveCallback",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZarMissionLate_SaveCallback@HudSensorTracker@@SIXPAUzZbdSectionCallbackCtx@@PAU1@@Z"
+          "symbol": "?ZarMissionLateSaveCallback@HudSensorTracker@@SIXPAUzZbdSectionCallbackCtx@@PAU1@@Z"
         },
         {
           "address": "0x4176d0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::ZarMissionLate_RestoreCallback",
+          "name": "HudSensorTracker::ZarMissionLateRestoreCallback",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZarMissionLate_RestoreCallback@HudSensorTracker@@SIXPAXPBDPBXIPAU1@@Z"
+          "symbol": "?ZarMissionLateRestoreCallback@HudSensorTracker@@SIXPAXPBDPBXIPAU1@@Z"
         },
         {
           "address": "0x4176f0",
@@ -1558,10 +1558,10 @@
           "address": "0x418730",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::Command_ToggleObjectivePanel",
+          "name": "HudSensorTracker::CommandToggleObjectivePanel",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Command_ToggleObjectivePanel@HudSensorTracker@@QAEXXZ"
+          "symbol": "?CommandToggleObjectivePanel@HudSensorTracker@@QAEXXZ"
         },
         {
           "address": "0x418760",
@@ -1576,10 +1576,10 @@
           "address": "0x4188f0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudSensorTracker::Command_ShowObjectivePickupInfo",
+          "name": "HudSensorTracker::CommandShowObjectivePickupInfo",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Command_ShowObjectivePickupInfo@HudSensorTracker@@QAEXXZ"
+          "symbol": "?CommandShowObjectivePickupInfo@HudSensorTracker@@QAEXXZ"
         },
         {
           "address": "0x418940",
@@ -1729,19 +1729,19 @@
           "address": "0x419800",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiMpExitDialog_NewGameButton::OnActivate",
+          "name": "CHudUiMpExitDialogNewGameButton::OnActivate",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnActivate@HudUiMpExitDialog_NewGameButton@@UAEXXZ"
+          "symbol": "?OnActivate@CHudUiMpExitDialogNewGameButton@@UAEXXZ"
         },
         {
           "address": "0x419830",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiMpExitDialog_ExitButton::OnActivate",
+          "name": "CHudUiMpExitDialogExitButton::OnActivate",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnActivate@HudUiMpExitDialog_ExitButton@@UAEXXZ"
+          "symbol": "?OnActivate@CHudUiMpExitDialogExitButton@@UAEXXZ"
         },
         {
           "address": "0x419870",
@@ -2221,28 +2221,28 @@
           "address": "0x41bf10",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiNetExitPanel_ResumeWidget::OnActivate",
+          "name": "CHudUiNetExitPanelResumeWidget::OnActivate",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnActivate@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
+          "symbol": "?OnActivate@CHudUiNetExitPanelResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41bf40",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiNetExitPanel_ResumeWidget::OnShowPreview",
+          "name": "CHudUiNetExitPanelResumeWidget::OnShowPreview",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ShowPreview@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
+          "symbol": "?ShowPreview@CHudUiNetExitPanelResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41bfa0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "HudUiNetExitPanel_ResumeWidget::OnHidePreview",
+          "name": "CHudUiNetExitPanelResumeWidget::OnHidePreview",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?HidePreview@HudUiNetExitPanel_ResumeWidget@@UAEXXZ"
+          "symbol": "?HidePreview@CHudUiNetExitPanelResumeWidget@@UAEXXZ"
         },
         {
           "address": "0x41c000",
@@ -2554,8 +2554,8 @@
       ],
       "successor": {
         "address": "0x41cc10",
-        "symbol": "?Primary_Init@PickupSpawnList@@SAXXZ",
-        "name": "PickupSpawnList::Primary_Init",
+        "symbol": "?PrimaryInit@PickupSpawnList@@SAXXZ",
+        "name": "PickupSpawnList::PrimaryInit",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

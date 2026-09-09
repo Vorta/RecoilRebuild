@@ -47,7 +47,7 @@
     },
     {
       "address": "0x4a3c20",
-      "symbol": "_zSndFadeActiveList_TickAll@4",
+      "symbol": "_zSndFadeActiveListTickAll@4",
       "name": "zSndFadeActiveList::TickAll",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

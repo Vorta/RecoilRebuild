@@ -22,8 +22,8 @@
     },
     {
       "address": "0x46e960",
-      "symbol": "@zVid_PaletteRemap_FindRecipeIndexFromRgb@4",
-      "name": "zVid_PaletteRemap_FindRecipeIndexFromRgb"
+      "symbol": "@zVidPaletteRemapFindRecipeIndexFromRgb@4",
+      "name": "zVidPaletteRemapFindRecipeIndexFromRgb"
     }
   ],
   "source_from": "src/GameZRecoil/zVideo/zvid_main.c"

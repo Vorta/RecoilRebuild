@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x4a0860",
-      "symbol": "@zSndSampleSet_InitByName@4",
-      "name": "zSndSampleSet_InitByName"
+      "symbol": "@zSndSampleSetInitByName@4",
+      "name": "zSndSampleSetInitByName"
     }
   ]
 }

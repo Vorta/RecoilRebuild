@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x472480",
-      "symbol": "_zInput_DI_HasForceFeedback",
+      "symbol": "_zInputDIHasForceFeedback",
       "name": "zInputDI::HasForceFeedback"
     }
   ],

@@ -1,6 +1,6 @@
 {
   "name": "zrndr_rasterize_poly_with_span_list_data_tail",
-  "description": "VC data-symbol verification for remaining zRndr_RasterizePolyWithSpanList touched globals.",
+  "description": "VC data-symbol verification for remaining zRndrRasterizePolyWithSpanList touched globals.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",

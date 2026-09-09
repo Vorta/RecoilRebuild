@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x408530",
-      "symbol": "?RenderSection_SetPosition@zOpt@@YIXHH@Z",
-      "name": "zOpt::RenderSection_SetPosition",
+      "symbol": "?RenderSectionSetPosition@zOpt@@YIXHH@Z",
+      "name": "zOpt::RenderSectionSetPosition",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -27,8 +27,8 @@
     },
     {
       "address": "0x408500",
-      "symbol": "?RenderSection_SetSize@zOpt@@YIXHH@Z",
-      "name": "zOpt::RenderSection_SetSize",
+      "symbol": "?RenderSectionSetSize@zOpt@@YIXHH@Z",
+      "name": "zOpt::RenderSectionSetSize",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -36,8 +36,8 @@
     },
     {
       "address": "0x408700",
-      "symbol": "?WindowSection_SetPosition@zOpt@@YIXHH@Z",
-      "name": "zOpt::WindowSection_SetPosition",
+      "symbol": "?WindowSectionSetPosition@zOpt@@YIXHH@Z",
+      "name": "zOpt::WindowSectionSetPosition",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -45,8 +45,8 @@
     },
     {
       "address": "0x4086e0",
-      "symbol": "?WindowSection_SetSize@zOpt@@YIXHH@Z",
-      "name": "zOpt::WindowSection_SetSize",
+      "symbol": "?WindowSectionSetSize@zOpt@@YIXHH@Z",
+      "name": "zOpt::WindowSectionSetSize",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -54,8 +54,8 @@
     },
     {
       "address": "0x4085e0",
-      "symbol": "?DisplaySection_SetPosition@zOpt@@YIXHH@Z",
-      "name": "zOpt::DisplaySection_SetPosition",
+      "symbol": "?DisplaySectionSetPosition@zOpt@@YIXHH@Z",
+      "name": "zOpt::DisplaySectionSetPosition",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -63,8 +63,8 @@
     },
     {
       "address": "0x408620",
-      "symbol": "?DisplaySection_SetSize@zOpt@@YIXHH@Z",
-      "name": "zOpt::DisplaySection_SetSize",
+      "symbol": "?DisplaySectionSetSize@zOpt@@YIXHH@Z",
+      "name": "zOpt::DisplaySectionSetSize",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -72,8 +72,8 @@
     },
     {
       "address": "0x408680",
-      "symbol": "?DisplaySection_SetBitsPerPixel@zOpt@@YIXH@Z",
-      "name": "zOpt::DisplaySection_SetBitsPerPixel",
+      "symbol": "?DisplaySectionSetBitsPerPixel@zOpt@@YIXH@Z",
+      "name": "zOpt::DisplaySectionSetBitsPerPixel",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,

@@ -18,7 +18,7 @@
   "functions": [
     {
       "address": "0x48cbd0",
-      "symbol": "@zArchiveList_FindCompare@12",
+      "symbol": "@zArchiveListFindCompare@12",
       "name": "zArchiveList::FindCompare"
     }
   ]

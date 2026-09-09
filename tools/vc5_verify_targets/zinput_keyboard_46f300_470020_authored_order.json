@@ -13,18 +13,18 @@
     "src/GameZRecoil/zInput/zInput.h"
   ],
   "functions": [
-    {"address":"0x46f300","symbol":"?Keyboard_InitDevice@zInput@@YAHXZ","name":"zInput::Keyboard_InitDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46f420","symbol":"?Keyboard_ShutdownDevice@zInput@@YAHXZ","name":"zInput::Keyboard_ShutdownDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46f450","symbol":"?Keyboard_ResetTransitionState@zInput@@YAXXZ","name":"zInput::Keyboard_ResetTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46f690","symbol":"?Keyboard_PollState@zInput@@YIXE@Z","name":"zInput::Keyboard_PollState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46f970","symbol":"?Keyboard_SetRawEventCallback@zInput@@YIXPAX0@Z","name":"zInput::Keyboard_SetRawEventCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46f980","symbol":"?Keyboard_GetKeyTransitionState@zInput@@YIHH@Z","name":"zInput::Keyboard_GetKeyTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46f9b0","symbol":"?Keyboard_RegisterKeyCallback@zInput@@YIHHPAXPBD@Z","name":"zInput::Keyboard_RegisterKeyCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46f9d0","symbol":"?Keyboard_UnregisterKeyCallback@zInput@@YIXH@Z","name":"zInput::Keyboard_UnregisterKeyCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46f9f0","symbol":"?Keyboard_ClearKeyCallbackTable@zInput@@YAXXZ","name":"zInput::Keyboard_ClearKeyCallbackTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46fa10","symbol":"?Keyboard_WaitForAnyKeyPress@zInput@@YIHH@Z","name":"zInput::Keyboard_WaitForAnyKeyPress","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46fba0","symbol":"?Keyboard_TranslateDikToAscii@zInput@@YIHH@Z","name":"zInput::Keyboard_TranslateDikToAscii","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x46fd20","symbol":"?Keyboard_InitDikToAsciiTable@zInput@@YAXXZ","name":"zInput::Keyboard_InitDikToAsciiTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    {"address":"0x46f300","symbol":"?KeyboardInitDevice@zInput@@YAHXZ","name":"zInput::KeyboardInitDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f420","symbol":"?KeyboardShutdownDevice@zInput@@YAHXZ","name":"zInput::KeyboardShutdownDevice","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f450","symbol":"?KeyboardResetTransitionState@zInput@@YAXXZ","name":"zInput::KeyboardResetTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f690","symbol":"?KeyboardPollState@zInput@@YIXE@Z","name":"zInput::KeyboardPollState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f970","symbol":"?KeyboardSetRawEventCallback@zInput@@YIXPAX0@Z","name":"zInput::KeyboardSetRawEventCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f980","symbol":"?KeyboardGetKeyTransitionState@zInput@@YIHH@Z","name":"zInput::KeyboardGetKeyTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f9b0","symbol":"?KeyboardRegisterKeyCallback@zInput@@YIHHPAXPBD@Z","name":"zInput::KeyboardRegisterKeyCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f9d0","symbol":"?KeyboardUnregisterKeyCallback@zInput@@YIXH@Z","name":"zInput::KeyboardUnregisterKeyCallback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46f9f0","symbol":"?KeyboardClearKeyCallbackTable@zInput@@YAXXZ","name":"zInput::KeyboardClearKeyCallbackTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46fa10","symbol":"?KeyboardWaitForAnyKeyPress@zInput@@YIHH@Z","name":"zInput::KeyboardWaitForAnyKeyPress","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46fba0","symbol":"?KeyboardTranslateDikToAscii@zInput@@YIHH@Z","name":"zInput::KeyboardTranslateDikToAscii","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x46fd20","symbol":"?KeyboardInitDikToAsciiTable@zInput@@YAXXZ","name":"zInput::KeyboardInitDikToAsciiTable","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],
   "translation_unit_function_order": [
     {
@@ -45,7 +45,7 @@
       "function_address_refs": [
         "0x46f300","0x46f420","0x46f450","0x46f690","0x46f970","0x46f980","0x46f9b0","0x46f9d0","0x46f9f0","0x46fa10","0x46fba0","0x46fd20"
       ],
-      "successor": {"address":"0x470020","symbol":"?Mouse_ApplyClientCursorPosToOS@zInput@@YAXXZ","name":"zInput::Mouse_ApplyClientCursorPosToOS","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x470020","symbol":"?MouseApplyClientCursorPosToOS@zInput@@YAXXZ","name":"zInput::MouseApplyClientCursorPosToOS","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

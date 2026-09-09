@@ -36,13 +36,13 @@ struct CpuBenchmarkResolver {
     zSys::CpuBenchmarkResult * ResolveCpuBenchmarkPacket(
         zSys::CpuBenchmarkResult *outBuffer
     );
-    zSys::CpuBenchmarkResult * MeasureMhzViaBsfLoop_Qpc(
+    zSys::CpuBenchmarkResult * MeasureMhzViaBsfLoopQpc(
         zSys::CpuBenchmarkResult *outBuffer
     );
-    zSys::CpuBenchmarkResult * MeasureCpuMhz_RdtscQpc(
+    zSys::CpuBenchmarkResult * MeasureCpuMhzRdtscQpc(
         zSys::CpuBenchmarkResult *outBuffer
     );
-    zSys::CpuBenchmarkResult * MeasureCpuMhz_CmosRtc(
+    zSys::CpuBenchmarkResult * MeasureCpuMhzCmosRtc(
         zSys::CpuBenchmarkResult *outBuffer
     );
 };
@@ -510,12 +510,12 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
     zSys::CpuBenchmarkResult *measured;
     if ((featureFlags & 0x10u) != 0 && !forcedLowHint) {
         if (cpuClassHint == 0) {
-            measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureCpuMhz_RdtscQpc(&localResult);
+            measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureCpuMhzRdtscQpc(&localResult);
         } else {
-            measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureCpuMhz_CmosRtc(&localResult);
+            measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureCpuMhzCmosRtc(&localResult);
         }
     } else if ((cpuClass & 0xffff) >= 3) {
-        measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureMhzViaBsfLoop_Qpc(&localResult);
+        measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureMhzViaBsfLoopQpc(&localResult);
     } else {
         outBuffer->totalCycles = 0;
         outBuffer->totalMicroseconds = 0;
@@ -537,7 +537,7 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
  * raw-assembly timing exception retains the exact address-scoped benchmark
  * body.
  */
-__declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
+__declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(
     zSys::CpuBenchmarkResult *
 ) {
     __asm {
@@ -655,7 +655,7 @@ __declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzVia
  * Purpose: provide the portable fallback for the fixed BSF/QPC CPU benchmark
  * when the address-scoped VC5 x86 raw-assembly exception is not enabled.
  */
-zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
+zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(
     zSys::CpuBenchmarkResult *outBuffer
 ) {
     LARGE_INTEGER frequency;
@@ -705,7 +705,7 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
  * documented raw-assembly CPU timing exception retains the address-scoped
  * benchmark body.
  */
-__declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(
+__declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhzRdtscQpc(
     zSys::CpuBenchmarkResult *
 ) {
     __asm {
@@ -944,7 +944,7 @@ __declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz
  * Purpose: provide the portable fallback for the RDTSC/QPC CPU benchmark when
  * the address-scoped VC5 x86 raw-assembly exception is not enabled.
  */
-zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(
+zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhzRdtscQpc(
     zSys::CpuBenchmarkResult *outBuffer
 ) {
     LARGE_INTEGER frequency;
@@ -1041,7 +1041,7 @@ void __fastcall ReadTsc64(
  * documented raw-assembly CPU timing exception retains the address-scoped
  * benchmark body.
  */
-__declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
+__declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhzCmosRtc(
     zSys::CpuBenchmarkResult *
 ) {
     __asm {
@@ -1182,7 +1182,7 @@ __declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz
  * Purpose: provide the portable fallback for the CMOS/TSC CPU benchmark when
  * the address-scoped VC5 x86 raw-assembly exception is not enabled.
  */
-zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
+zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhzCmosRtc(
     zSys::CpuBenchmarkResult *outBuffer
 ) {
     unsigned int high0 = 0, low0 = 0, high1 = 0, low1 = 0;

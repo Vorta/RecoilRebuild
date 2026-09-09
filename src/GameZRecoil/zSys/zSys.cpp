@@ -93,28 +93,17 @@ RECOIL_NO_GS char *__fastcall zSys::FindFileOnDriveType(
     const char *searchPath;
     struct _stat statBuffer;
     searchPath = relativePath;
-    GetLogicalDriveStringsA(
-        kLogicalDriveStringsReadLimit,
-        driveStrings
-    );
+    GetLogicalDriveStringsA(kLogicalDriveStringsReadLimit, driveStrings);
 
     int driveListOffset = 0;
     int found = 0;
     while (1) {
         const char *drive = &driveStrings[driveListOffset];
-        sprintf(
-            g_zSys_DriveTypeSearchPathBuffer,
-            "%s%s",
-            drive,
-            searchPath
-        );
+        sprintf(g_zSys_DriveTypeSearchPathBuffer, "%s%s", drive, searchPath);
         switch (GetDriveTypeA(drive)) {
         case DRIVE_FIXED:
             if (driveType == DRIVE_FIXED) {
-                if (_stat(
-                    g_zSys_DriveTypeSearchPathBuffer,
-                    &statBuffer
-                ) == 0) {
+                if (_stat(g_zSys_DriveTypeSearchPathBuffer, &statBuffer) == 0) {
                     found = 1;
                 }
             }
@@ -122,10 +111,7 @@ RECOIL_NO_GS char *__fastcall zSys::FindFileOnDriveType(
 
         case DRIVE_CDROM:
             if (driveType == DRIVE_CDROM) {
-                if (_stat(
-                    g_zSys_DriveTypeSearchPathBuffer,
-                    &statBuffer
-                ) == 0) {
+                if (_stat(g_zSys_DriveTypeSearchPathBuffer, &statBuffer) == 0) {
                     found = 1;
                 }
             }
@@ -175,10 +161,7 @@ int __fastcall LoadMessagesDll(
     if (module != 0) {
         result = 1;
         g_zLoc_GetIdProc =
-            (unsigned int(__cdecl *)(const char *))GetProcAddress(
-                module,
-                "ZLocGetID"
-            );
+            (unsigned int(__cdecl *)(const char *))GetProcAddress(module, "ZLocGetID");
     }
     return result;
 }
@@ -263,11 +246,7 @@ unsigned int FormatMessage(
 
     source = (char *)(sourceHandle);
     if (source != 0) {
-        strncpy(
-            outBuffer,
-            source,
-            (size_t)(maxChars)
-        );
+        strncpy(outBuffer, source, (size_t)(maxChars));
         ::LocalFree(sourceHandle);
     }
 
@@ -285,11 +264,7 @@ char *__fastcall GetMessageString(
     unsigned int messageId
 ) {
     char *message = 0;
-    if (FormatMessage(
-        g_zLoc_TempMessageBuffer,
-        sizeof(g_zLoc_TempMessageBuffer),
-        messageId
-    ) != 0) {
+    if (FormatMessage(g_zLoc_TempMessageBuffer, sizeof(g_zLoc_TempMessageBuffer), messageId) != 0) {
         message = g_zLoc_TempMessageBuffer;
     }
     return message;

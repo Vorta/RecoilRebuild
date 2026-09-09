@@ -28,36 +28,36 @@ extern float g_zMath_ApproxExpNegScale;
 extern int g_zMath_ApproxExpNegDirty;
 extern const float g_zMath_MidpointHalf;
 
-void __fastcall zMath_Mat_TransformBBoxToCorners(
+void __fastcall zMathMatTransformBBoxToCorners(
     const zMat4x3 *matrix,
     const zBBox3f *bbox,
     zBBoxCorners *outCorners
 );
 
-void __fastcall zMath_Vec3_DivScalar(
+void __fastcall zMathVec3DivScalar(
     const zVec3 *vec,
     zVec3 *out,
     float scalar
 );
 
-void __fastcall zMath_Vec3Array_AddScaled(
+void __fastcall zMathVec3ArrayAddScaled(
     zVec3 *outArray,
     const zVec3 *biasArray,
     const zVec3 *srcArray,
     int count,
     float scale
 );
-void __fastcall zMath_Vec3_TriangleNormal(
+void __fastcall zMathVec3TriangleNormal(
     const zVec3 *p0,
     const zVec3 *p1,
     const zVec3 *p2,
     zVec3 *outNormal
 );
-float __fastcall zMath_Vec3_ElevationAngleBetweenPoints(
+float __fastcall zMathVec3ElevationAngleBetweenPoints(
     const zVec3 *pointA,
     const zVec3 *pointB
 );
-void __fastcall zMath_SolveLinearGradient2D(
+void __fastcall zMathSolveLinearGradient2D(
     float *outDuDx,
     float *outDuDy,
     float ax,
@@ -70,7 +70,7 @@ void __fastcall zMath_SolveLinearGradient2D(
     float ub,
     float uc
 );
-void __fastcall zMath_BuildPerspectiveTextureInterpolants(
+void __fastcall zMathBuildPerspectiveTextureInterpolants(
     const zVec3 *triVerts,
     const zVec2 *triUVs,
     zVec2 *outRecipZGrad,
@@ -80,30 +80,30 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
     zVec2 *outVOverZGrad,
     float *outVOverZBase
 );
-void __fastcall zMath_UnprojectPointBatch(
+void __fastcall zMathUnprojectPointBatch(
     const zProjectedPoint *projectedPoints,
     zVec3 *outPoints,
     int count
 );
-void __fastcall zMath_UnprojectPointBatchZBuf(
+void __fastcall zMathUnprojectPointBatchZBuf(
     const zProjectedPoint *projectedPoints,
     zVec3 *outPoints,
     int count
 );
-void __fastcall zMath_Mat_TransformNormalBatch(
+void __fastcall zMathMatTransformNormalBatch(
     const zVec3 *normals,
     zVec3 *outNormals,
     int count
 );
-void __fastcall zMath_Vec3Array_UntransformDirection(
+void __fastcall zMathVec3ArrayUntransformDirection(
     zVec3 *vectors,
     int count
 );
-void __stdcall zMath_SetScreenSize(
+void __stdcall zMathSetScreenSize(
     int screenWidthPx,
     int screenHeightPx
 );
-void __stdcall zMath_Setup_Projection(
+void __stdcall zMathSetupProjection(
     float viewportOriginX,
     float viewportOriginY,
     float halfViewWidthPx,
@@ -114,51 +114,51 @@ void __stdcall zMath_Setup_Projection(
     float projDepth
 );
 
-void __cdecl zMath_Mat_SetupCamera();
-void __cdecl zMath_Mat_LoadView();
-void __stdcall zMath_Mat_LoadProjection(float zOffset);
-zMat4x3 *__cdecl zMath_Mat_GetCurrent();
-int __cdecl zMath_Mat_IsCurrentIdentity();
-float __fastcall zMath_Mat_ExtractYaw(const zMat4x3 *matrix);
-void __fastcall zMath_Mat_ExtractEulerAngles(
+void __cdecl zMathMatSetupCamera();
+void __cdecl zMathMatLoadView();
+void __stdcall zMathMatLoadProjection(float zOffset);
+zMat4x3 *__cdecl zMathMatGetCurrent();
+int __cdecl zMathMatIsCurrentIdentity();
+float __fastcall zMathMatExtractYaw(const zMat4x3 *matrix);
+void __fastcall zMathMatExtractEulerAngles(
     const zMat4x3 *matrix,
     zVec3 *outEuler
 );
-void __fastcall zMath_Vec3_RotateX(
+void __fastcall zMathVec3RotateX(
     zVec3 *outVec,
     const zVec3 *inVec,
     float angleX
 );
-void __fastcall zMath_Vec3_DirFromYaw(
+void __fastcall zMathVec3DirFromYaw(
     zVec3 *outDir,
     float yawAngle
 );
-void __fastcall zMath_Camera_StageInverseRotation(const zMat4x3 *worldMatrix);
-void __fastcall zMath_Quat_FromEuler(
+void __fastcall zMathCameraStageInverseRotation(const zMat4x3 *worldMatrix);
+void __fastcall zMathQuatFromEuler(
     zQuat *outQuat,
     float angle0,
     float angle1,
     float angle2
 );
-void __fastcall zMath_Quat_Multiply(
+void __fastcall zMathQuatMultiply(
     const zQuat *quatA,
     const zQuat *quatB,
     zQuat *outAB
 );
-void __fastcall zMath_Quat_MultiplyInverse(
+void __fastcall zMathQuatMultiplyInverse(
     const zQuat *quatA,
     const zQuat *quatB,
     zQuat *outAConjB
 );
-void __fastcall zMath_Quat_ToMatrix(
+void __fastcall zMathQuatToMatrix(
     const zQuat *quat,
     zMat4x3 *outMatrix3x3
 );
-void __fastcall zMath_Quat_FromRotationVector(
+void __fastcall zMathQuatFromRotationVector(
     const zVec3 *rotationVector,
     zQuat *outQuat
 );
-zVec2 __cdecl zMath_Project_GetLastScreenScaleXY();
+zVec2 __cdecl zMathProjectGetLastScreenScaleXY();
 
 namespace zMath {
 extern zMat4x3 g_zMath_CameraScratchB;
@@ -325,7 +325,7 @@ namespace zFloat {
 void __fastcall Set255f(float *value);
 }
 
-void __fastcall zMath_ProjectSphereBatch(
+void __fastcall zMathProjectSphereBatch(
     const zVec3 *spherePoints,
     zProjectedSphere *projectedSpheres,
     int count

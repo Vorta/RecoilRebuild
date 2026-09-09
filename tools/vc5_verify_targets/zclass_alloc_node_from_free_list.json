@@ -1,6 +1,6 @@
 {
   "name": "zclass_alloc_node_from_free_list",
-  "description": "zClass_Class::AllocNodeFromFreeList node-pool allocator.",
+  "description": "zClass_Class::gwNodeNew node-pool allocator.",
   "source_filename": "Class.c",
   "source_from": "src/GameZRecoil/zClass/Class.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x4478c0",
-      "symbol": "?AllocNodeFromFreeList@zClass_Class@@YAPAUzClass_NodePartial@@XZ",
-      "name": "zClass_Class::AllocNodeFromFreeList"
+      "symbol": "?gwNodeNew@zClass_Class@@YAPAUzClass_NodePartial@@XZ",
+      "name": "zClass_Class::gwNodeNew"
     }
   ]
 }

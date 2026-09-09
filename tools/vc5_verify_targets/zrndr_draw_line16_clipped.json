@@ -1,6 +1,6 @@
 {
   "name": "zrndr_draw_line16_clipped",
-  "description": "VC verification target for zRndr_DrawLine16_Clipped.",
+  "description": "VC verification target for zRndrDrawLine16Clipped.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x499500",
-      "symbol": "?zRndr_DrawLine16_Clipped@@YIXPAGPBUzRndr_LineClipRect2I@@HHHHH@Z",
-      "name": "zRndr_DrawLine16_Clipped"
+      "symbol": "?zRndrDrawLine16Clipped@@YIXPAGPBUzRndr_LineClipRect2I@@HHHHH@Z",
+      "name": "zRndrDrawLine16Clipped"
     }
   ]
 }

@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x44d600",
-      "symbol": "?zVideo_sw_RenderFrame@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zVideo_sw_RenderFrame"
+      "symbol": "?zVideoswRenderFrame@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zVideoswRenderFrame"
     }
   ]
 }

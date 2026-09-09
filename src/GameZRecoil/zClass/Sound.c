@@ -25,14 +25,9 @@ namespace zClass_Sound {
      * state, activate it, and register it with the sound type list.
      */
     zClass_NodePartial *__cdecl gwSoundNew() {
-        zClass_NodePartial *const node = zClass_Class::AllocNodeFromFreeList();
+        zClass_NodePartial *const node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x76,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x76, "Null node pointer.");
             return 0;
         }
 
@@ -46,10 +41,7 @@ namespace zClass_Sound {
         node->classId = 10;
 
         zClass_SoundDataPartial *const soundData =
-            (zClass_SoundDataPartial *)(calloc(
-                1,
-                sizeof(zClass_SoundDataPartial)
-            ));
+            (zClass_SoundDataPartial *)(calloc(1, sizeof(zClass_SoundDataPartial)));
         node->classData = soundData;
         soundData->sample = 0;
         soundData->playHandle = 0;
@@ -60,16 +52,10 @@ namespace zClass_Sound {
         soundData->rangeMaxSq = 4096.0f;
         soundData->invRangeSpan = 0.03125f;
 
-        zClass_Class::gwNodeSetActive(
-            node,
-            1
-        );
+        zClass_Class::gwNodeSetActive(node, 1);
         soundData->attachedWorldCount = 0;
         soundData->attachedWorlds = 0;
-        zClass_TypeList::Insert(
-            10,
-            node
-        );
+        zClass_TypeList::Insert(10, node);
 
         return node;
     }
@@ -83,23 +69,13 @@ namespace zClass_Sound {
      */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0xc3,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0xc3, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0xc4,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0xc4, "Null class data pointer");
             return 5;
         }
 
@@ -107,7 +83,7 @@ namespace zClass_Sound {
         if (playHandle != 0) {
             playHandle->StopIfActive();
             if ((soundData->runtimeFlags & 0x08) != 0) {
-                zSndPlayHandle_TryDisableManaged(soundData->playHandle);
+                zSndPlayHandleTryDisableManaged(soundData->playHandle);
                 soundData->runtimeFlags &= ~0x08;
             }
             soundData->playHandle = 0;
@@ -146,28 +122,15 @@ namespace zClass_Sound {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x100,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x100, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x101,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x101, "Null node pointer.");
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::RemoveChildGeneric(parent, child);
     }
 
     int __fastcall
@@ -183,39 +146,21 @@ namespace zClass_Sound {
         const char *name
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x11e,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x11e, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x11f,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x11f, "Null class data pointer");
             return 5;
         }
 
         if (strlen(name) >= sizeof(soundData->sampleSetName)) {
-            strncpy(
-                soundData->sampleSetName,
-                name,
-                0x22
-            );
+            strncpy(soundData->sampleSetName, name, 0x22);
             soundData->sampleSetName[0x23] = '\0';
         } else {
-            sprintf(
-                soundData->sampleSetName,
-                "%s",
-                name
-            );
+            sprintf(soundData->sampleSetName, "%s", name);
         }
 
         soundData->sample = zSnd::FindSampleByName(soundData->sampleSetName);
@@ -237,23 +182,13 @@ namespace zClass_Sound {
         int active
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x149,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x149, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x14a,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x14a, "Null class data pointer");
             return 5;
         }
 
@@ -261,7 +196,7 @@ namespace zClass_Sound {
         if (playHandle != 0 && active == 0) {
             playHandle->StopIfActive();
             if ((soundData->runtimeFlags & 0x08) != 0) {
-                zSndPlayHandle_TryDisableManaged(soundData->playHandle);
+                zSndPlayHandleTryDisableManaged(soundData->playHandle);
                 soundData->runtimeFlags &= ~0x08;
             }
             soundData->playHandle = 0;
@@ -291,23 +226,13 @@ namespace zClass_Sound {
         float z
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x17e,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x17e, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x17f,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x17f, "Null class data pointer");
             return 5;
         }
 
@@ -333,23 +258,13 @@ namespace zClass_Sound {
         float *outZ
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x1d0,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x1d0, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x1d1,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x1d1, "Null class data pointer");
             return 5;
         }
 
@@ -368,12 +283,7 @@ namespace zClass_Sound {
      */
     int __fastcall UpdatePlayback(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x224,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x224, "Null node pointer.");
             return 5;
         }
 
@@ -383,12 +293,7 @@ namespace zClass_Sound {
 
         zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(
-                0x400,
-                kSoundSourceFile,
-                0x22a,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kSoundSourceFile, 0x22a, "Null class data pointer");
             return 5;
         }
 
@@ -398,10 +303,7 @@ namespace zClass_Sound {
         }
 
         if ((soundData->runtimeFlags & 0x04) != 0) {
-            ComputeWorldTransform(
-                node,
-                soundData
-            );
+            ComputeWorldTransform(node, soundData);
             if (soundData->playHandle == 0) {
                 if (soundData->sample != 0) {
                     soundData->playHandle = soundData->sample->PlayA3D(
@@ -409,22 +311,18 @@ namespace zClass_Sound {
                         1.0f,
                         0
                     );
-                    if (zSndPlayHandle_TryEnableManaged(soundData->playHandle) != 0) {
+                    if (zSndPlayHandleTryEnableManaged(soundData->playHandle) != 0) {
                         soundData->runtimeFlags |= 0x08;
                     }
                 }
             } else {
-                soundData->playHandle->Update3DDispatch(
-                    &soundData->worldPos,
-                    0,
-                    0
-                );
+                soundData->playHandle->Update3DDispatch(&soundData->worldPos, 0, 0);
                 soundData->runtimeFlags &= ~0x01;
                 return 0;
             }
         } else if (soundData->playHandle == 0 && soundData->sample != 0) {
             soundData->playHandle = soundData->sample->PlayA3DSimple(1.0f);
-            if (zSndPlayHandle_TryEnableManaged(soundData->playHandle) != 0) {
+            if (zSndPlayHandleTryEnableManaged(soundData->playHandle) != 0) {
                 soundData->runtimeFlags |= 0x08;
             }
         }
@@ -450,10 +348,7 @@ namespace zClass_Sound {
 
         zMath::MatStackPushPtr((float *)(&slotBuffer));
         zMath::MatLoadIdentity();
-        gwNode::BuildNodeToAncestorMatrix(
-            node,
-            1
-        );
+        gwNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
 
         zVec3 worldPoint = localPoint;
         if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {

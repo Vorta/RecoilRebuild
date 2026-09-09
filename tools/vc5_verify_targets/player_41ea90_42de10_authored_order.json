@@ -93,10 +93,10 @@
           "address": "0x41eb30",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui",
+          "name": "CPlayerUnderwaterFxPass3Ui::CPlayerUnderwaterFxPass3Ui",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "??0Player_UnderwaterFxPass3Ui@@QAE@XZ"
+          "symbol": "??0CPlayerUnderwaterFxPass3Ui@@QAE@XZ"
         },
         {
           "address": "0x41eb50",
@@ -158,10 +158,10 @@
           "address": "0x41eb90",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui",
+          "name": "CPlayerProjectileCameraFxPass3Ui::CPlayerProjectileCameraFxPass3Ui",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "??0Player_ProjectileCameraFxPass3Ui@@QAE@XZ"
+          "symbol": "??0CPlayerProjectileCameraFxPass3Ui@@QAE@XZ"
         },
         {
           "address": "0x41ebd0",
@@ -383,46 +383,46 @@
           "address": "0x41f5b0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_RegisterSections",
+          "name": "Player::zZarRegisterSections",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_RegisterSections@Player@@YAXXZ"
+          "symbol": "?zZarRegisterSections@Player@@YAXXZ"
         },
         {
           "address": "0x41f5f0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_WriteMissionSaveDataSection",
+          "name": "Player::zZarWriteMissionSaveDataSection",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_WriteMissionSaveDataSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+          "symbol": "?zZarWriteMissionSaveDataSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
         },
         {
           "address": "0x41f640",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_ReadMissionSaveDataSection",
+          "name": "Player::zZarReadMissionSaveDataSection",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_ReadMissionSaveDataSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMissionSaveData@@IPAX@Z"
+          "symbol": "?zZarReadMissionSaveDataSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMissionSaveData@@IPAX@Z"
         },
         {
           "address": "0x41f6a0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_WriteVehicleListSection",
+          "name": "Player::zZarWriteVehicleListSection",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_WriteVehicleListSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+          "symbol": "?zZarWriteVehicleListSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
         },
         {
           "address": "0x41f850",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_ReadVehicleListSection",
+          "name": "Player::zZarReadVehicleListSection",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_ReadVehicleListSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerVehicleListSaveEntry@@IPAX@Z"
+          "symbol": "?zZarReadVehicleListSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerVehicleListSaveEntry@@IPAX@Z"
         },
         {
           "address": "0x41fb80",
@@ -673,19 +673,19 @@
           "address": "0x423440",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_UnderwaterFxPass3Ui::ApplyBlueTint",
+          "name": "CPlayerUnderwaterFxPass3Ui::ApplyBlueTint",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ApplyPass3@Player_UnderwaterFxPass3Ui@@UAEXXZ"
+          "symbol": "?ApplyPass3@CPlayerUnderwaterFxPass3Ui@@UAEXXZ"
         },
         {
           "address": "0x423450",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_ProjectileCameraFxPass3Ui::ApplyGreenMask",
+          "name": "CPlayerProjectileCameraFxPass3Ui::ApplyGreenMask",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ApplyPass3@Player_ProjectileCameraFxPass3Ui@@UAEXXZ"
+          "symbol": "?ApplyPass3@CPlayerProjectileCameraFxPass3Ui@@UAEXXZ"
         },
         {
           "address": "0x423460",
@@ -808,10 +808,10 @@
           "address": "0x424bf0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::Vec3_FastNormalize",
+          "name": "Player::Vec3FastNormalize",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Vec3_FastNormalize@Player@@YIHPAUzVec3@@@Z"
+          "symbol": "?Vec3FastNormalize@Player@@YIHPAUzVec3@@@Z"
         },
         {
           "address": "0x424c90",
@@ -961,10 +961,10 @@
           "address": "0x427440",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::UpdateMasterTypeHover_FromModalProbe",
+          "name": "Player::UpdateMasterTypeHoverFromModalProbe",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?UpdateMasterTypeHover_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+          "symbol": "?UpdateMasterTypeHoverFromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
         },
         {
           "address": "0x4279f0",
@@ -979,10 +979,10 @@
           "address": "0x427ec0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::UpdateMasterTypeAmphib_FromModalProbe",
+          "name": "Player::UpdateMasterTypeAmphibFromModalProbe",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?UpdateMasterTypeAmphib_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+          "symbol": "?UpdateMasterTypeAmphibFromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
         },
         {
           "address": "0x428120",
@@ -997,10 +997,10 @@
           "address": "0x428350",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::UpdateMasterTypeBasicOrTrack_FromModalProbe",
+          "name": "Player::UpdateMasterTypeBasicOrTrackFromModalProbe",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?UpdateMasterTypeBasicOrTrack_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+          "symbol": "?UpdateMasterTypeBasicOrTrackFromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
         },
         {
           "address": "0x4283f0",
@@ -1159,109 +1159,109 @@
           "address": "0x429f80",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_Clear",
+          "name": "zInput::BindGroupListClear",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_Clear@zInput@@YAXXZ"
+          "symbol": "?BindGroupListClear@zInput@@YAXXZ"
         },
         {
           "address": "0x42a000",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput_BindGroupInfo::~zInput_BindGroupInfo",
+          "name": "CZInputBindGroupInfo::~CZInputBindGroupInfo",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "??1zInput_BindGroupInfo@@QAE@XZ"
+          "symbol": "??1CZInputBindGroupInfo@@QAE@XZ"
         },
         {
           "address": "0x42a070",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_AddGroup",
+          "name": "zInput::BindGroupListAddGroup",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_AddGroup@zInput@@YIHPBD@Z"
+          "symbol": "?BindGroupListAddGroup@zInput@@YIHPBD@Z"
         },
         {
           "address": "0x42a2c0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_AddCommandToGroup",
+          "name": "zInput::BindGroupListAddCommandToGroup",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_AddCommandToGroup@zInput@@YIXHH@Z"
+          "symbol": "?BindGroupListAddCommandToGroup@zInput@@YIXHH@Z"
         },
         {
           "address": "0x42a480",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_GetCount",
+          "name": "zInput::BindGroupListGetCount",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_GetCount@zInput@@YAHXZ"
+          "symbol": "?BindGroupListGetCount@zInput@@YAHXZ"
         },
         {
           "address": "0x42a4a0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_GetGroupTitle",
+          "name": "zInput::BindGroupListGetGroupTitle",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_GetGroupTitle@zInput@@YIPADH@Z"
+          "symbol": "?BindGroupListGetGroupTitle@zInput@@YIPADH@Z"
         },
         {
           "address": "0x42a4b0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_GetGroupCommandCount",
+          "name": "zInput::BindGroupListGetGroupCommandCount",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_GetGroupCommandCount@zInput@@YIHH@Z"
+          "symbol": "?BindGroupListGetGroupCommandCount@zInput@@YIHH@Z"
         },
         {
           "address": "0x42a4d0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_GetGroupCommandId",
+          "name": "zInput::BindGroupListGetGroupCommandId",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_GetGroupCommandId@zInput@@YIHHH@Z"
+          "symbol": "?BindGroupListGetGroupCommandId@zInput@@YIHHH@Z"
         },
         {
           "address": "0x42a4e0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindMap_GetCommandLabel",
+          "name": "zInput::BindMapGetCommandLabel",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindMap_GetCommandLabel@zInput@@YIPADH@Z"
+          "symbol": "?BindMapGetCommandLabel@zInput@@YIPADH@Z"
         },
         {
           "address": "0x42a4f0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindMap_GetCommandHint",
+          "name": "zInput::BindMapGetCommandHint",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindMap_GetCommandHint@zInput@@YIPADH@Z"
+          "symbol": "?BindMapGetCommandHint@zInput@@YIPADH@Z"
         },
         {
           "address": "0x42a500",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindMap_AddDefaultBinding",
+          "name": "zInput::BindMapAddDefaultBinding",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindMap_AddDefaultBinding@zInput@@YIXHHHHHH@Z"
+          "symbol": "?BindMapAddDefaultBinding@zInput@@YIXHHHHHH@Z"
         },
         {
           "address": "0x42a550",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindMap_InitDefaultBindings",
+          "name": "zInput::BindMapInitDefaultBindings",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindMap_InitDefaultBindings@zInput@@YAHXZ"
+          "symbol": "?BindMapInitDefaultBindings@zInput@@YAHXZ"
         },
         {
           "address": "0x42a9d0",
@@ -1272,7 +1272,7 @@
           "provenance": "provider-boundary",
           "required_presence": true,
           "symbol": "?size@?$vector@PAUHudCmdBindingEntry@@V?$allocator@PAUHudCmdBindingEntry@@@std@@@std@@QBEIXZ",
-          "symbol_regex": ".*\\?size@\\?\\$vector@PAUzInput_BindGroupInfo@@.*"
+          "symbol_regex": ".*\\?size@\\?\\$vector@PAUCZInputBindGroupInfo@@.*"
         },
         {
           "address": "0x42a9f0",
@@ -1670,7 +1670,7 @@
           "pipeline_class": "non-authored",
           "provenance": "provider-boundary",
           "required_presence": true,
-          "symbol": "?ConnectionPointContainer_Advise@zCom@@YGJPAUIUnknown@@0ABU_GUID@@PAK@Z"
+          "symbol": "?ConnectionPointContainerAdvise@zCom@@YGJPAUIUnknown@@0ABU_GUID@@PAK@Z"
         },
         {
           "address": "0x42dcf0",
@@ -1680,7 +1680,7 @@
           "pipeline_class": "non-authored",
           "provenance": "provider-boundary",
           "required_presence": true,
-          "symbol": "?ConnectionPointContainer_Unadvise@zCom@@YGJPAUIUnknown@@ABU_GUID@@K@Z"
+          "symbol": "?ConnectionPointContainerUnadvise@zCom@@YGJPAUIUnknown@@ABU_GUID@@K@Z"
         },
         {
           "address": "0x42dda0",
@@ -1853,10 +1853,10 @@
           "address": "0x41eb30",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui",
+          "name": "CPlayerUnderwaterFxPass3Ui::CPlayerUnderwaterFxPass3Ui",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "??0Player_UnderwaterFxPass3Ui@@QAE@XZ"
+          "symbol": "??0CPlayerUnderwaterFxPass3Ui@@QAE@XZ"
         },
         {
           "address": "0x41eb50",
@@ -1918,10 +1918,10 @@
           "address": "0x41eb90",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui",
+          "name": "CPlayerProjectileCameraFxPass3Ui::CPlayerProjectileCameraFxPass3Ui",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "??0Player_ProjectileCameraFxPass3Ui@@QAE@XZ"
+          "symbol": "??0CPlayerProjectileCameraFxPass3Ui@@QAE@XZ"
         },
         {
           "address": "0x41ebd0",
@@ -2103,46 +2103,46 @@
           "address": "0x41f5b0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_RegisterSections",
+          "name": "Player::zZarRegisterSections",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_RegisterSections@Player@@YAXXZ"
+          "symbol": "?zZarRegisterSections@Player@@YAXXZ"
         },
         {
           "address": "0x41f5f0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_WriteMissionSaveDataSection",
+          "name": "Player::zZarWriteMissionSaveDataSection",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_WriteMissionSaveDataSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+          "symbol": "?zZarWriteMissionSaveDataSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
         },
         {
           "address": "0x41f640",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_ReadMissionSaveDataSection",
+          "name": "Player::zZarReadMissionSaveDataSection",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_ReadMissionSaveDataSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMissionSaveData@@IPAX@Z"
+          "symbol": "?zZarReadMissionSaveDataSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMissionSaveData@@IPAX@Z"
         },
         {
           "address": "0x41f6a0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_WriteVehicleListSection",
+          "name": "Player::zZarWriteVehicleListSection",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_WriteVehicleListSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
+          "symbol": "?zZarWriteVehicleListSection@Player@@YIHPAUzZbdSectionCallbackCtx@@PAX@Z"
         },
         {
           "address": "0x41f850",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::ZAR_ReadVehicleListSection",
+          "name": "Player::zZarReadVehicleListSection",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ZAR_ReadVehicleListSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerVehicleListSaveEntry@@IPAX@Z"
+          "symbol": "?zZarReadVehicleListSection@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerVehicleListSaveEntry@@IPAX@Z"
         },
         {
           "address": "0x41fb80",
@@ -2373,19 +2373,19 @@
           "address": "0x423440",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_UnderwaterFxPass3Ui::ApplyBlueTint",
+          "name": "CPlayerUnderwaterFxPass3Ui::ApplyBlueTint",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ApplyPass3@Player_UnderwaterFxPass3Ui@@UAEXXZ"
+          "symbol": "?ApplyPass3@CPlayerUnderwaterFxPass3Ui@@UAEXXZ"
         },
         {
           "address": "0x423450",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player_ProjectileCameraFxPass3Ui::ApplyGreenMask",
+          "name": "CPlayerProjectileCameraFxPass3Ui::ApplyGreenMask",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ApplyPass3@Player_ProjectileCameraFxPass3Ui@@UAEXXZ"
+          "symbol": "?ApplyPass3@CPlayerProjectileCameraFxPass3Ui@@UAEXXZ"
         },
         {
           "address": "0x423460",
@@ -2508,10 +2508,10 @@
           "address": "0x424bf0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::Vec3_FastNormalize",
+          "name": "Player::Vec3FastNormalize",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Vec3_FastNormalize@Player@@YIHPAUzVec3@@@Z"
+          "symbol": "?Vec3FastNormalize@Player@@YIHPAUzVec3@@@Z"
         },
         {
           "address": "0x424c90",
@@ -2661,10 +2661,10 @@
           "address": "0x427440",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::UpdateMasterTypeHover_FromModalProbe",
+          "name": "Player::UpdateMasterTypeHoverFromModalProbe",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?UpdateMasterTypeHover_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+          "symbol": "?UpdateMasterTypeHoverFromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
         },
         {
           "address": "0x4279f0",
@@ -2679,10 +2679,10 @@
           "address": "0x427ec0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::UpdateMasterTypeAmphib_FromModalProbe",
+          "name": "Player::UpdateMasterTypeAmphibFromModalProbe",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?UpdateMasterTypeAmphib_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+          "symbol": "?UpdateMasterTypeAmphibFromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
         },
         {
           "address": "0x428120",
@@ -2697,10 +2697,10 @@
           "address": "0x428350",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "Player::UpdateMasterTypeBasicOrTrack_FromModalProbe",
+          "name": "Player::UpdateMasterTypeBasicOrTrackFromModalProbe",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?UpdateMasterTypeBasicOrTrack_FromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+          "symbol": "?UpdateMasterTypeBasicOrTrackFromModalProbe@Player@@YIXPAUzUtil_SaveGameState@@@Z"
         },
         {
           "address": "0x4283f0",
@@ -2859,109 +2859,109 @@
           "address": "0x429f80",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_Clear",
+          "name": "zInput::BindGroupListClear",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_Clear@zInput@@YAXXZ"
+          "symbol": "?BindGroupListClear@zInput@@YAXXZ"
         },
         {
           "address": "0x42a000",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput_BindGroupInfo::~zInput_BindGroupInfo",
+          "name": "CZInputBindGroupInfo::~CZInputBindGroupInfo",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "??1zInput_BindGroupInfo@@QAE@XZ"
+          "symbol": "??1CZInputBindGroupInfo@@QAE@XZ"
         },
         {
           "address": "0x42a070",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_AddGroup",
+          "name": "zInput::BindGroupListAddGroup",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_AddGroup@zInput@@YIHPBD@Z"
+          "symbol": "?BindGroupListAddGroup@zInput@@YIHPBD@Z"
         },
         {
           "address": "0x42a2c0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_AddCommandToGroup",
+          "name": "zInput::BindGroupListAddCommandToGroup",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_AddCommandToGroup@zInput@@YIXHH@Z"
+          "symbol": "?BindGroupListAddCommandToGroup@zInput@@YIXHH@Z"
         },
         {
           "address": "0x42a480",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_GetCount",
+          "name": "zInput::BindGroupListGetCount",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_GetCount@zInput@@YAHXZ"
+          "symbol": "?BindGroupListGetCount@zInput@@YAHXZ"
         },
         {
           "address": "0x42a4a0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_GetGroupTitle",
+          "name": "zInput::BindGroupListGetGroupTitle",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_GetGroupTitle@zInput@@YIPADH@Z"
+          "symbol": "?BindGroupListGetGroupTitle@zInput@@YIPADH@Z"
         },
         {
           "address": "0x42a4b0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_GetGroupCommandCount",
+          "name": "zInput::BindGroupListGetGroupCommandCount",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_GetGroupCommandCount@zInput@@YIHH@Z"
+          "symbol": "?BindGroupListGetGroupCommandCount@zInput@@YIHH@Z"
         },
         {
           "address": "0x42a4d0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindGroupList_GetGroupCommandId",
+          "name": "zInput::BindGroupListGetGroupCommandId",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindGroupList_GetGroupCommandId@zInput@@YIHHH@Z"
+          "symbol": "?BindGroupListGetGroupCommandId@zInput@@YIHHH@Z"
         },
         {
           "address": "0x42a4e0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindMap_GetCommandLabel",
+          "name": "zInput::BindMapGetCommandLabel",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindMap_GetCommandLabel@zInput@@YIPADH@Z"
+          "symbol": "?BindMapGetCommandLabel@zInput@@YIPADH@Z"
         },
         {
           "address": "0x42a4f0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindMap_GetCommandHint",
+          "name": "zInput::BindMapGetCommandHint",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindMap_GetCommandHint@zInput@@YIPADH@Z"
+          "symbol": "?BindMapGetCommandHint@zInput@@YIPADH@Z"
         },
         {
           "address": "0x42a500",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindMap_AddDefaultBinding",
+          "name": "zInput::BindMapAddDefaultBinding",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindMap_AddDefaultBinding@zInput@@YIXHHHHHH@Z"
+          "symbol": "?BindMapAddDefaultBinding@zInput@@YIXHHHHHH@Z"
         },
         {
           "address": "0x42a550",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zInput::BindMap_InitDefaultBindings",
+          "name": "zInput::BindMapInitDefaultBindings",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BindMap_InitDefaultBindings@zInput@@YAHXZ"
+          "symbol": "?BindMapInitDefaultBindings@zInput@@YAHXZ"
         },
         {
           "address": "0x42a9d0",
@@ -2972,7 +2972,7 @@
           "provenance": "provider-boundary",
           "required_presence": true,
           "symbol": "?size@?$vector@PAUHudCmdBindingEntry@@V?$allocator@PAUHudCmdBindingEntry@@@std@@@std@@QBEIXZ",
-          "symbol_regex": ".*\\?size@\\?\\$vector@PAUzInput_BindGroupInfo@@.*"
+          "symbol_regex": ".*\\?size@\\?\\$vector@PAUCZInputBindGroupInfo@@.*"
         },
         {
           "address": "0x42a9f0",
@@ -3370,7 +3370,7 @@
           "pipeline_class": "non-authored",
           "provenance": "provider-boundary",
           "required_presence": true,
-          "symbol": "?ConnectionPointContainer_Advise@zCom@@YGJPAUIUnknown@@0ABU_GUID@@PAK@Z"
+          "symbol": "?ConnectionPointContainerAdvise@zCom@@YGJPAUIUnknown@@0ABU_GUID@@PAK@Z"
         },
         {
           "address": "0x42dcf0",
@@ -3380,7 +3380,7 @@
           "pipeline_class": "non-authored",
           "provenance": "provider-boundary",
           "required_presence": true,
-          "symbol": "?ConnectionPointContainer_Unadvise@zCom@@YGJPAUIUnknown@@ABU_GUID@@K@Z"
+          "symbol": "?ConnectionPointContainerUnadvise@zCom@@YGJPAUIUnknown@@ABU_GUID@@K@Z"
         },
         {
           "address": "0x42dda0",

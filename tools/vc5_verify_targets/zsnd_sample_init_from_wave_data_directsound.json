@@ -1,6 +1,6 @@
 {
   "name": "zsnd_sample_init_from_wave_data_directsound",
-  "description": "VC verification target for zSndSample::InitFromWaveData_DirectSound.",
+  "description": "VC verification target for zSndSample::InitFromWaveDataDirectSound.",
   "compiler_profile": "vc5_o2_ob0_facs",
   "source_filename": "zsnd_create.cpp",
   "source_from": "src/GameZRecoil/zSound/zsnd_create.cpp",
@@ -23,8 +23,8 @@
   "functions": [
     {
       "address": "0x4a3180",
-      "symbol": "?InitFromWaveData_DirectSound@zSndSample@@QAIHPAUzSndWaveData@@@Z",
-      "name": "zSndSample::InitFromWaveData_DirectSound"
+      "symbol": "?InitFromWaveDataDirectSound@zSndSample@@QAIHPAUzSndWaveData@@@Z",
+      "name": "zSndSample::InitFromWaveDataDirectSound"
     }
   ]
 }

@@ -19,13 +19,13 @@
   "functions": [
     {
       "address": "0x499020",
-      "symbol": "?zRndr_DrawCircleOctants16_Framebuffer@@YIXHHH@Z",
-      "name": "zRndr_DrawCircleOctants16_Framebuffer"
+      "symbol": "?zRndrDrawCircleOctants16Framebuffer@@YIXHHH@Z",
+      "name": "zRndrDrawCircleOctants16Framebuffer"
     },
     {
       "address": "0x498fb0",
-      "symbol": "?zRndr_DrawCircleOutline16_Framebuffer@@YIXHHHHH@Z",
-      "name": "zRndr_DrawCircleOutline16_Framebuffer"
+      "symbol": "?zRndrDrawCircleOutline16Framebuffer@@YIXHHHHH@Z",
+      "name": "zRndrDrawCircleOutline16Framebuffer"
     }
   ]
 }

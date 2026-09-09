@@ -1,6 +1,6 @@
 {
   "name": "zinput_mouse_init_device",
-  "description": "zInput::Mouse_InitDevice creates and configures the DirectInput mouse device.",
+  "description": "zInput::MouseInitDevice creates and configures the DirectInput mouse device.",
   "source_filename": "zin_mouse.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x4701f0",
-      "symbol": "?Mouse_InitDevice@zInput@@YAHXZ",
-      "name": "zInput::Mouse_InitDevice"
+      "symbol": "?MouseInitDevice@zInput@@YAHXZ",
+      "name": "zInput::MouseInitDevice"
     }
   ],
   "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp"

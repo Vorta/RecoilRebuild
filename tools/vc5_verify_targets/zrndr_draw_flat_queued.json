@@ -1,6 +1,6 @@
 {
   "name": "zrndr_draw_flat_queued",
-  "description": "zRndr_DrawFlatQueued queued flat/textured polygon renderer.",
+  "description": "zRndrDrawFlatQueued queued flat/textured polygon renderer.",
   "source_filename": "zRndr.cpp",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x493df0",
-      "symbol": "?zRndr_DrawFlatQueued@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@1PAUzVec2@@HH@Z",
-      "name": "zRndr_DrawFlatQueued"
+      "symbol": "?zRndrDrawFlatQueued@@YIXPAUzImage_TexDirEntryPartial@@PAUzVec3@@1PAUzVec2@@HH@Z",
+      "name": "zRndrDrawFlatQueued"
     }
   ]
 }

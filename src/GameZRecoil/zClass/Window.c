@@ -27,7 +27,7 @@ namespace zClass_Window {
      * the active render region, and insert it into the window type bucket.
      */
     zClass_NodePartial *__cdecl gwWindowNew() {
-        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -40,10 +40,7 @@ namespace zClass_Window {
 
         node->classId = kZClassNodeWindow;
         zClass_WindowDataPartial *data =
-            (zClass_WindowDataPartial *)(calloc(
-                1,
-                sizeof(zClass_WindowDataPartial)
-            ));
+            (zClass_WindowDataPartial *)(calloc(1, sizeof(zClass_WindowDataPartial)));
         node->classData = data;
         data->resolutionWidth = 1;
         data->resolutionHeight = 1;
@@ -51,12 +48,7 @@ namespace zClass_Window {
 
         int pitchBytes = 0;
         void *buffer =
-            zRndr::GetActiveRegionState(
-                &data->fbWidth,
-                &data->fbHeight,
-                &data->fbBpp,
-                &pitchBytes
-            );
+            zRndr::GetActiveRegionState(&data->fbWidth, &data->fbHeight, &data->fbBpp, &pitchBytes);
         data->buffer = buffer;
         printf(
             "Window (new %x) buffer: %x (%d x %d x %d)\n",
@@ -67,10 +59,7 @@ namespace zClass_Window {
             data->fbBpp
         );
 
-        if (zClass_TypeList::Insert(
-            14,
-            node
-        ) != 0) {
+        if (zClass_TypeList::Insert(14, node) != 0) {
             zClass_Class::DeleteNodeByType(node);
             return 0;
         }
@@ -107,10 +96,7 @@ namespace zClass {
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::RemoveChildGeneric(parent, child);
     }
 }
 
@@ -127,12 +113,7 @@ namespace zClass_Window {
         int height
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "GameZRecoil/zClass/Window.c",
-                0xcd,
-                "node != NULL"
-            );
+            zError::ReportOld(0x400, "GameZRecoil/zClass/Window.c", 0xcd, "node != NULL");
             return 5;
         }
         if (node->classData == 0) {
@@ -222,12 +203,7 @@ namespace zClass_Window {
         int height
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "GameZRecoil/zClass/Window.c",
-                0x102,
-                "node != NULL"
-            );
+            zError::ReportOld(0x400, "GameZRecoil/zClass/Window.c", 0x102, "node != NULL");
             return 5;
         }
         if (node->classData == 0) {
@@ -529,10 +505,7 @@ namespace zClass_Window {
         }
 
         zClass_WindowClearPoly *poly = &data->clearPolys[polyIndex];
-        zRndr::SpanOcclusionAddPolygon(
-            poly->vertices,
-            poly->vertCount & 0x7fffffff
-        );
+        zRndr::SpanOcclusionAddPolygon(poly->vertices, poly->vertCount & 0x7fffffff);
         data->clearPolyIndexFlags = (data->clearPolyIndexFlags + 1) | (int)(0x80000000u);
         return polyIndex;
     }

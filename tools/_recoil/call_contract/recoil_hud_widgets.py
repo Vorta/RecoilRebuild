@@ -1312,7 +1312,7 @@ def _hud_ui_mp_exit_update_candidate_indirect_bridge(
         (0x76, IMAGE_REL_I386_REL32, "?DispatchSetScale@HudScoreboard@@YGXM@Z"),
         (0x7E, IMAGE_REL_I386_DIR32, _cc_catalog.HUD_UI_MP_EXIT_UPDATE_STACK_OBJECT_SYMBOL),
         (0x83, IMAGE_REL_I386_DIR32, "_g_Time_UnscaledDeltaTimeSec"),
-        (0x8D, IMAGE_REL_I386_REL32, "?Dispatch_UnlockPrimarySurfaceState@zVideo@@YAHXZ"),
+        (0x8D, IMAGE_REL_I386_REL32, "?DispatchUnlockPrimarySurfaceState@zVideo@@YAHXZ"),
         (0x92, IMAGE_REL_I386_REL32, "?GetWindowSection@zOpt@@YIPAUzOpt_ViewRectSection@@XZ"),
         (0x99, IMAGE_REL_I386_REL32, "?GetWindowSection@zOpt@@YIPAUzOpt_ViewRectSection@@XZ"),
         (0xA6, IMAGE_REL_I386_REL32, "?AdjustSurfacesIfEnabled@zVideo@@YIHPAUzVidRect32@@0HH@Z"),

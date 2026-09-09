@@ -45,8 +45,8 @@
       "retail_end_exclusive": "0x43cf90",
       "predecessor": {
         "address": "0x43cdf0",
-        "symbol": "?Mines_ZAR_ReadEntryOrReset@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMineSaveEntry@@IPAX@Z",
-        "name": "Player::Mines_ZAR_ReadEntryOrReset",
+        "symbol": "?MinesZARReadEntryOrReset@Player@@YIXPAUzZbdSectionCallbackCtx@@PBDPAUPlayerMineSaveEntry@@IPAX@Z",
+        "name": "Player::MinesZARReadEntryOrReset",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x474de0",
-      "symbol": "?zMath_Mat_ExtractYaw@@YIMPBUzMat4x3@@@Z",
-      "name": "zMath_Mat_ExtractYaw"
+      "symbol": "?zMathMatExtractYaw@@YIMPBUzMat4x3@@@Z",
+      "name": "zMathMatExtractYaw"
     }
   ],
   "source_from": "src/GameZRecoil/zMath/zmth_main.c"

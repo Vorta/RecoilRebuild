@@ -1,6 +1,6 @@
 {
   "name": "zrndr_draw_flat_queued_active_texture_data_tail",
-  "description": "VC data-symbol verification for the zRndr_DrawFlatQueued active texture U-mask global.",
+  "description": "VC data-symbol verification for the zRndrDrawFlatQueued active texture U-mask global.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",

@@ -18,7 +18,7 @@
   "functions": [
     {
       "address": "0x49f620",
-      "symbol": "@zSnd_Tick@4",
+      "symbol": "@zSndTick@4",
       "name": "zSnd::Tick"
     }
   ],

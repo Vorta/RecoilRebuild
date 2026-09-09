@@ -18,14 +18,14 @@
   "functions": [
     {
       "address": "0x4a7990",
-      "symbol": "?Init_SetSurfaceGeometryFromModeIndex@zVideo@@YIXH@Z",
-      "name": "zVideo::Init_SetSurfaceGeometryFromModeIndex",
+      "symbol": "?InitSetSurfaceGeometryFromModeIndex@zVideo@@YIXH@Z",
+      "name": "zVideo::InitSetSurfaceGeometryFromModeIndex",
       "bn_byte_length": 352
     },
     {
       "address": "0x4a66f0",
-      "symbol": "?Init_ApplyModeIndex@zVideo@@YIHH@Z",
-      "name": "zVideo::Init_ApplyModeIndex"
+      "symbol": "?InitApplyModeIndex@zVideo@@YIHH@Z",
+      "name": "zVideo::InitApplyModeIndex"
     },
     {
       "address": "0x4a7af0",

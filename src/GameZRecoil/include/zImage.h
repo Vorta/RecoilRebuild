@@ -71,7 +71,7 @@ void __fastcall TexDirSetBaseNameFromPath(
     char *destBaseName
 );
 int __fastcall FontsLoadFromPath(const char *path);
-zVidImagePartial *__fastcall TexDir_FindOrCreateByPath(const char *path);
+zVidImagePartial *__fastcall TexDirFindOrCreateByPath(const char *path);
 int __fastcall TexDirEntryToIndex(zImage_TexDirEntryPartial *texDirEntry);
 zImage_TexDirEntryPartial *__fastcall TexIndexToDirEntry(int index);
 zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
@@ -79,8 +79,8 @@ zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
 );
 zImage_TexDirEntryPartial *__cdecl GetDefaultImageRefPtr();
 int __cdecl InitTextureDirectory();
-zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(char *path);
-int __cdecl TexDir_LoadPendingEntries();
+zImage_TexDirEntryPartial *__fastcall TexDirFindOrAppendByPath(char *path);
+int __cdecl TexDirLoadPendingEntries();
 int __fastcall WriteTextureDirectory(void *stream);
 int __fastcall ReadTextureDirectory(
     int entryCount,
@@ -103,8 +103,8 @@ int __cdecl Init();
 }
 
 extern "C" {
-int __fastcall zImage_InitMissionResources(const char *pathText);
-int __fastcall zImage_Init(const char *fontsPath);
+int __fastcall zImageInitMissionResources(const char *pathText);
+int __fastcall zImageInit(const char *fontsPath);
 }
 
 RECOIL_STATIC_ASSERT(

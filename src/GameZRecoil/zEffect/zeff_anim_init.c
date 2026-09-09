@@ -164,10 +164,7 @@ void __fastcall SetZbdFilename(
         return;
     }
 
-    strcpy(
-        g_zEffectAnim_ZbdFilename,
-        filename
-    );
+    strcpy(g_zEffectAnim_ZbdFilename, filename);
 }
 
 } // namespace zEffect_Anim
@@ -202,10 +199,7 @@ int __fastcall FindSoundRefIndexByName(
 ) {
     for (int i = 0; i < self->soundRefCount; ++i) {
         zClass_NodePartial *const node = self->soundRefList[i].runtimeNode;
-        if (node != 0 && strcmp(
-            node->name,
-            name
-        ) == 0) {
+        if (node != 0 && strcmp(node->name, name) == 0) {
             return i;
         }
     }
@@ -224,10 +218,7 @@ int __fastcall FindLightRefIndexByName(
 ) {
     for (int i = 0; i < self->lightRefCount; ++i) {
         zClass_NodePartial *const node = self->lightRefList[i].runtimeNode;
-        if (node != 0 && strcmp(
-            node->name,
-            name
-        ) == 0) {
+        if (node != 0 && strcmp(node->name, name) == 0) {
             return i;
         }
     }
@@ -246,10 +237,7 @@ int __fastcall FindOrCreateSoundRef(
     zEffectAnimEntry *self,
     const char *name
 ) {
-    const int existingIndex = FindSoundRefIndexByName(
-        self,
-        name
-    );
+    const int existingIndex = FindSoundRefIndexByName(self, name);
     if (existingIndex > 0) {
         return existingIndex;
     }
@@ -259,14 +247,8 @@ int __fastcall FindOrCreateSoundRef(
         return -1;
     }
 
-    zClass_Class::gwNodeSetName(
-        node,
-        name
-    );
-    zClass_Sound::SetSampleSetByName(
-        node,
-        name
-    );
+    zClass_Class::gwNodeSetName(node, name);
+    zClass_Sound::SetSampleSetByName(node, name);
 
     if (self->soundRefList == 0) {
         const int initialCount = (int)(self->soundRefCount) + 1;
@@ -274,11 +256,7 @@ int __fastcall FindOrCreateSoundRef(
             0,
             initialCount * sizeof(zEffectAnimRuntimeNodeRef)
         ));
-        memset(
-            self->soundRefList,
-            0,
-            sizeof(zEffectAnimRuntimeNodeRef)
-        );
+        memset(self->soundRefList, 0, sizeof(zEffectAnimRuntimeNodeRef));
         ++self->soundRefCount;
     }
 
@@ -300,11 +278,7 @@ int __fastcall FindOrCreateSoundRef(
     ));
 
     zEffectAnimRuntimeNodeRef *const newRef = &self->soundRefList[self->soundRefCount];
-    memcpy(
-        newRef->name.text,
-        node->name,
-        sizeof(newRef->name.text)
-    );
+    memcpy(newRef->name.text, node->name, sizeof(newRef->name.text));
     newRef->runtimeNode = node;
     newRef->isAttached = 0;
     ++self->soundRefCount;
@@ -322,10 +296,7 @@ int __fastcall FindOrCreateLightRef(
     zEffectAnimEntry *self,
     const char *name
 ) {
-    const int existingIndex = FindLightRefIndexByName(
-        self,
-        name
-    );
+    const int existingIndex = FindLightRefIndexByName(self, name);
     if (existingIndex > 0) {
         return existingIndex;
     }
@@ -335,10 +306,7 @@ int __fastcall FindOrCreateLightRef(
         return -1;
     }
 
-    zClass_Class::gwNodeSetName(
-        node,
-        name
-    );
+    zClass_Class::gwNodeSetName(node, name);
 
     if (self->lightRefList == 0) {
         const int initialCount = (int)(self->lightRefCount) + 1;
@@ -346,11 +314,7 @@ int __fastcall FindOrCreateLightRef(
             0,
             initialCount * sizeof(zEffectAnimRuntimeNodeRef)
         ));
-        memset(
-            self->lightRefList,
-            0,
-            sizeof(zEffectAnimRuntimeNodeRef)
-        );
+        memset(self->lightRefList, 0, sizeof(zEffectAnimRuntimeNodeRef));
         ++self->lightRefCount;
     }
 
@@ -372,11 +336,7 @@ int __fastcall FindOrCreateLightRef(
     ));
 
     zEffectAnimRuntimeNodeRef *const newRef = &self->lightRefList[self->lightRefCount];
-    memcpy(
-        newRef->name.text,
-        node->name,
-        sizeof(newRef->name.text)
-    );
+    memcpy(newRef->name.text, node->name, sizeof(newRef->name.text));
     newRef->runtimeNode = node;
     newRef->isAttached = 0;
     ++self->lightRefCount;
@@ -394,26 +354,17 @@ zClass_NodePartial *__fastcall ResolveNodeByName(
     zEffectAnimEntry *self,
     const char *name
 ) {
-    zClass_NodePartial *resolvedNode = FindNodeRecursiveByName(
-        self->callbackNode,
-        name
-    );
+    zClass_NodePartial *resolvedNode = FindNodeRecursiveByName(self->callbackNode, name);
     if (resolvedNode != 0) {
         return resolvedNode;
     }
 
-    resolvedNode = FindNodeRecursiveByName(
-        self->boundNode,
-        name
-    );
+    resolvedNode = FindNodeRecursiveByName(self->boundNode, name);
     if (resolvedNode != 0) {
         return resolvedNode;
     }
 
-    const int lightRefIndex = FindLightRefIndexByName(
-        self,
-        name
-    );
+    const int lightRefIndex = FindLightRefIndexByName(self, name);
     if (lightRefIndex > 0) {
         resolvedNode = self->lightRefList[lightRefIndex].runtimeNode;
     }
@@ -421,10 +372,7 @@ zClass_NodePartial *__fastcall ResolveNodeByName(
         return resolvedNode;
     }
 
-    const int soundRefIndex = FindSoundRefIndexByName(
-        self,
-        name
-    );
+    const int soundRefIndex = FindSoundRefIndexByName(self, name);
     if (soundRefIndex > 0) {
         resolvedNode = self->soundRefList[soundRefIndex].runtimeNode;
     }
@@ -432,10 +380,7 @@ zClass_NodePartial *__fastcall ResolveNodeByName(
         return resolvedNode;
     }
 
-    return zClass::FindByTypeAndName(
-        6,
-        name
-    );
+    return zClass::FindByTypeAndName(6, name);
 }
 
 /**
@@ -453,18 +398,12 @@ zClass_NodePartial *__fastcall FindNodeRecursiveByName(
         return 0;
     }
 
-    if (strcmp(
-        rootNode->name,
-        name
-    ) == 0) {
+    if (strcmp(rootNode->name, name) == 0) {
         return rootNode;
     }
 
     for (int i = 0; i < rootNode->listCountB; ++i) {
-        zClass_NodePartial *const childMatch = FindNodeRecursiveByName(
-            rootNode->listB[i],
-            name
-        );
+        zClass_NodePartial *const childMatch = FindNodeRecursiveByName(rootNode->listB[i], name);
         if (childMatch != 0) {
             return childMatch;
         }
@@ -500,10 +439,7 @@ int __fastcall EnsureCopiedRootTree(
             return 0;
         }
 
-        RebindEntryToNode(
-            self,
-            copiedRoot
-        );
+        RebindEntryToNode(self, copiedRoot);
         self->flags &= ~kEffectAnimNeedsCopiedRootFlag;
     }
 
@@ -523,42 +459,22 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
         return 0;
     }
 
-    zEffectAnimEntry *const clonedEntry = (zEffectAnimEntry *)(calloc(
-        1,
-        sizeof(zEffectAnimEntry)
-    ));
-    memcpy(
-        clonedEntry,
-        self,
-        sizeof(zEffectAnimEntry)
-    );
+    zEffectAnimEntry *const clonedEntry = (zEffectAnimEntry *)(calloc(1, sizeof(zEffectAnimEntry)));
+    memcpy(clonedEntry, self, sizeof(zEffectAnimEntry));
 
     clonedEntry->runtimeNode = zClass_Object3D::gwObject3DInit();
 
     char runtimeNodeName[0x24];
-    sprintf(
-        runtimeNodeName,
-        "_%s",
-        self->name
-    );
-    zClass_Class::gwNodeSetName(
-        clonedEntry->runtimeNode,
-        runtimeNodeName
-    );
-    zClass_Class::gwNodeSetPriority(
-        clonedEntry->runtimeNode,
-        clonedEntry->priority
-    );
+    sprintf(runtimeNodeName, "_%s", self->name);
+    zClass_Class::gwNodeSetName(clonedEntry->runtimeNode, runtimeNodeName);
+    zClass_Class::gwNodeSetPriority(clonedEntry->runtimeNode, clonedEntry->priority);
 
     clonedEntry->runtimeSibling = 0;
     clonedEntry->flags &= ~0x00000100u;
 
     if (node != 0) {
         clonedEntry->boundNode = node;
-        strcpy(
-            clonedEntry->rootNodeName,
-            node->name
-        );
+        strcpy(clonedEntry->rootNodeName, node->name);
     } else {
         zClass_NodePartial *const copiedRoot = zClass_cls_util::CopyNode(
             self->boundNode,
@@ -581,16 +497,10 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
 
     if (self->callbackNode == self->boundNode) {
         clonedEntry->callbackNode = clonedEntry->boundNode;
-        strcpy(
-            clonedEntry->attachNodeName,
-            clonedEntry->boundNode->name
-        );
+        strcpy(clonedEntry->attachNodeName, clonedEntry->boundNode->name);
     } else {
         clonedEntry->callbackNode =
-            FindNodeRecursiveByName(
-                clonedEntry->boundNode,
-                self->attachNodeName
-            );
+            FindNodeRecursiveByName(clonedEntry->boundNode, self->attachNodeName);
     }
 
     if (clonedEntry->callbackNode == 0) {
@@ -609,10 +519,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->lightRefCount > 0) {
         const int count = clonedEntry->lightRefCount;
         clonedEntry->lightRefList =
-            (zEffectAnimRuntimeNodeRef *)(calloc(
-                count,
-                sizeof(zEffectAnimRuntimeNodeRef)
-            ));
+            (zEffectAnimRuntimeNodeRef *)(calloc(count, sizeof(zEffectAnimRuntimeNodeRef)));
         memcpy(
             clonedEntry->lightRefList,
             self->lightRefList,
@@ -624,10 +531,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
             if (self->lightRefList[i].runtimeNode != 0) {
                 zClass_NodePartial *const lightNode = zClass_Light::gwLightNew();
                 lightRef->runtimeNode = lightNode;
-                zClass_Class::gwNodeSetName(
-                    lightNode,
-                    lightRef->name.text
-                );
+                zClass_Class::gwNodeSetName(lightNode, lightRef->name.text);
             }
             lightRef->isAttached = 0;
         }
@@ -636,10 +540,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->soundRefCount > 0) {
         const int count = clonedEntry->soundRefCount;
         clonedEntry->soundRefList =
-            (zEffectAnimRuntimeNodeRef *)(calloc(
-                count,
-                sizeof(zEffectAnimRuntimeNodeRef)
-            ));
+            (zEffectAnimRuntimeNodeRef *)(calloc(count, sizeof(zEffectAnimRuntimeNodeRef)));
         memcpy(
             clonedEntry->soundRefList,
             self->soundRefList,
@@ -651,14 +552,8 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
             if (self->soundRefList[i].runtimeNode != 0) {
                 zClass_NodePartial *const soundNode = zClass_Sound::gwSoundNew();
                 soundRef->runtimeNode = soundNode;
-                zClass_Class::gwNodeSetName(
-                    soundNode,
-                    soundRef->name.text
-                );
-                zClass_Sound::SetSampleSetByName(
-                    soundNode,
-                    soundRef->name.text
-                );
+                zClass_Class::gwNodeSetName(soundNode, soundRef->name.text);
+                zClass_Sound::SetSampleSetByName(soundNode, soundRef->name.text);
             }
             soundRef->isAttached = 0;
         }
@@ -667,10 +562,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->trackedNodeCount > 0) {
         const int count = clonedEntry->trackedNodeCount;
         clonedEntry->trackedNodeList =
-            (zEffectAnimTrackedNode *)(calloc(
-                count,
-                sizeof(zEffectAnimTrackedNode)
-            ));
+            (zEffectAnimTrackedNode *)(calloc(count, sizeof(zEffectAnimTrackedNode)));
         memcpy(
             clonedEntry->trackedNodeList,
             self->trackedNodeList,
@@ -680,10 +572,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
         for (int i = 0; i < count; ++i) {
             if (self->trackedNodeList[i].trackedNode != 0) {
                 clonedEntry->trackedNodeList[i].trackedNode =
-                    ResolveNodeByName(
-                        clonedEntry,
-                        clonedEntry->trackedNodeList[i].trackedNodeName
-                    );
+                    ResolveNodeByName(clonedEntry, clonedEntry->trackedNodeList[i].trackedNodeName);
             }
         }
     }
@@ -691,23 +580,13 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->nodeRefCount > 0) {
         const int count = clonedEntry->nodeRefCount;
         clonedEntry->nodeRefList =
-            (zEffectAnimNodeRef28 *)(calloc(
-                count,
-                sizeof(zEffectAnimNodeRef28)
-            ));
-        memcpy(
-            clonedEntry->nodeRefList,
-            self->nodeRefList,
-            sizeof(zEffectAnimNodeRef28) * count
-        );
+            (zEffectAnimNodeRef28 *)(calloc(count, sizeof(zEffectAnimNodeRef28)));
+        memcpy(clonedEntry->nodeRefList, self->nodeRefList, sizeof(zEffectAnimNodeRef28) * count);
 
         for (int i = 0; i < count; ++i) {
             if (self->nodeRefList[i].node != 0) {
                 clonedEntry->nodeRefList[i].node =
-                    ResolveNodeByName(
-                        clonedEntry,
-                        clonedEntry->nodeRefList[i].name.text
-                    );
+                    ResolveNodeByName(clonedEntry, clonedEntry->nodeRefList[i].name.text);
             }
         }
     }
@@ -715,10 +594,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->runtimeSequenceCount > 0) {
         const int count = clonedEntry->runtimeSequenceCount;
         clonedEntry->runtimeList =
-            (zEffectAnimSurfaceRuntime *)(calloc(
-                count,
-                sizeof(zEffectAnimSurfaceRuntime)
-            ));
+            (zEffectAnimSurfaceRuntime *)(calloc(count, sizeof(zEffectAnimSurfaceRuntime)));
 
         for (int i = 0; i < count; ++i) {
             memcpy(
@@ -729,10 +605,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
 
             const int eventStreamSize = self->runtimeList[i].eventStreamSize;
             if (eventStreamSize > 0) {
-                clonedEntry->runtimeList[i].eventStream = calloc(
-                    1,
-                    eventStreamSize
-                );
+                clonedEntry->runtimeList[i].eventStream = calloc(1, eventStreamSize);
                 memcpy(
                     clonedEntry->runtimeList[i].eventStream,
                     self->runtimeList[i].eventStream,
@@ -743,10 +616,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     }
 
     if (self->surfacePrimary.eventStreamSize > 0) {
-        clonedEntry->surfacePrimary.eventStream = calloc(
-            1,
-            self->surfacePrimary.eventStreamSize
-        );
+        clonedEntry->surfacePrimary.eventStream = calloc(1, self->surfacePrimary.eventStreamSize);
         memcpy(
             clonedEntry->surfacePrimary.eventStream,
             self->surfacePrimary.eventStream,
@@ -757,10 +627,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->sampleRefCount > 0) {
         const int count = clonedEntry->sampleRefCount;
         clonedEntry->sampleRefList =
-            (zEffectAnimSampleRef *)(calloc(
-                count,
-                sizeof(zEffectAnimSampleRef)
-            ));
+            (zEffectAnimSampleRef *)(calloc(count, sizeof(zEffectAnimSampleRef)));
         memcpy(
             clonedEntry->sampleRefList,
             self->sampleRefList,
@@ -771,10 +638,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->effectTemplateRefCount > 0) {
         const int count = clonedEntry->effectTemplateRefCount;
         clonedEntry->effectTemplateRefList =
-            (zEffectAnimTemplateIndexRef *)(calloc(
-                count,
-                sizeof(zEffectAnimTemplateIndexRef)
-            ));
+            (zEffectAnimTemplateIndexRef *)(calloc(count, sizeof(zEffectAnimTemplateIndexRef)));
         memcpy(
             clonedEntry->effectTemplateRefList,
             self->effectTemplateRefList,
@@ -785,10 +649,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->activationPrereqCount > 0) {
         const int count = clonedEntry->activationPrereqCount;
         clonedEntry->activationPrereqList =
-            (zEffectAnimActivationPrereq *)(calloc(
-                count,
-                sizeof(zEffectAnimActivationPrereq)
-            ));
+            (zEffectAnimActivationPrereq *)(calloc(count, sizeof(zEffectAnimActivationPrereq)));
         memcpy(
             clonedEntry->activationPrereqList,
             self->activationPrereqList,
@@ -799,10 +660,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->runtimeRefCount > 0) {
         const int count = clonedEntry->runtimeRefCount;
         clonedEntry->runtimeRefList =
-            (zEffectAnimRuntimeRef *)(calloc(
-                count,
-                sizeof(zEffectAnimRuntimeRef)
-            ));
+            (zEffectAnimRuntimeRef *)(calloc(count, sizeof(zEffectAnimRuntimeRef)));
         memcpy(
             clonedEntry->runtimeRefList,
             self->runtimeRefList,
@@ -834,14 +692,8 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
     self->boundNode = node;
 
     if (callbackNeedsLookup) {
-        strcpy(
-            self->rootNodeName,
-            node->name
-        );
-        self->callbackNode = FindNodeRecursiveByName(
-            self->boundNode,
-            self->attachNodeName
-        );
+        strcpy(self->rootNodeName, node->name);
+        self->callbackNode = FindNodeRecursiveByName(self->boundNode, self->attachNodeName);
         if (self->callbackNode == 0) {
             zError::ReportOld(
                 0x400,
@@ -855,24 +707,15 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
             return 0;
         }
     } else {
-        strcpy(
-            self->rootNodeName,
-            node->name
-        );
+        strcpy(self->rootNodeName, node->name);
         self->callbackNode = node;
-        strcpy(
-            self->attachNodeName,
-            node->name
-        );
+        strcpy(self->attachNodeName, node->name);
     }
 
     for (int i = 0; i < self->trackedNodeCount; ++i) {
         zEffectAnimTrackedNode *const tracked = &self->trackedNodeList[i];
         if (tracked->trackedNode != 0) {
-            tracked->trackedNode = ResolveNodeByName(
-                self,
-                tracked->trackedNodeName
-            );
+            tracked->trackedNode = ResolveNodeByName(self, tracked->trackedNodeName);
             if (tracked->trackedNode == 0) {
                 zError::ReportOld(
                     0x400,
@@ -891,10 +734,7 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
     for (int i_1669 = 0; i_1669 < self->nodeRefCount; ++i_1669) {
         zEffectAnimNodeRef28 *const nodeRef = &self->nodeRefList[i_1669];
         if (nodeRef->node != 0) {
-            nodeRef->node = ResolveNodeByName(
-                self,
-                nodeRef->name.text
-            );
+            nodeRef->node = ResolveNodeByName(self, nodeRef->name.text);
             if (nodeRef->node == 0) {
                 zError::ReportOld(
                     0x400,
@@ -945,10 +785,7 @@ int __cdecl LoadZbd() {
         return -1;
     }
 
-    FILE *stream = fopen(
-        g_zEffectAnim_ZbdFilename,
-        "rb"
-    );
+    FILE *stream = fopen(g_zEffectAnim_ZbdFilename, "rb");
     if (stream == 0) {
         return -1;
     }
@@ -1010,12 +847,7 @@ int __cdecl LoadZbd() {
 
     zClass_NodePartial *const savedWorld = g_zEffect_World;
     zEffectAnimZbdHeaderBlock headerBlock = {0};
-    if (fread(
-            &headerBlock,
-            sizeof(headerBlock),
-            1,
-            stream
-        ) != 1) {
+    if (fread(&headerBlock, sizeof(headerBlock), 1, stream) != 1) {
         fclose(stream);
         return -1;
     }
@@ -1043,21 +875,12 @@ int __cdecl LoadZbd() {
         return -1;
     }
     if (entryCount > 0) {
-        memset(
-            g_zEffectAnim_EntryList,
-            0,
-            sizeof(zEffectAnimEntry) * entryCount
-        );
+        memset(g_zEffectAnim_EntryList, 0, sizeof(zEffectAnimEntry) * entryCount);
     }
 
     for (int i_2059 = 0; i_2059 < entryCount; ++i_2059) {
         zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i_2059];
-        if (fread(
-                entry,
-                sizeof(zEffectAnimEntry),
-                1,
-                stream
-            ) != 1) {
+        if (fread(entry, sizeof(zEffectAnimEntry), 1, stream) != 1) {
             fclose(stream);
             return -1;
         }
@@ -1207,12 +1030,7 @@ int __cdecl LoadZbd() {
                 return -1;
             }
         }
-        if (fread(
-                &entry->surfacePrimary,
-                sizeof(entry->surfacePrimary),
-                1,
-                stream
-            ) != 1) {
+        if (fread(&entry->surfacePrimary, sizeof(entry->surfacePrimary), 1, stream) != 1) {
             fclose(stream);
             return -1;
         }
@@ -1234,12 +1052,7 @@ int __cdecl LoadZbd() {
 
         for (int j_2108 = 0; j_2108 < entry->runtimeSequenceCount; ++j_2108) {
             zEffectAnimSurfaceRuntime *const runtime = &entry->runtimeList[j_2108];
-            if (fread(
-                    runtime,
-                    sizeof(zEffectAnimSurfaceRuntime),
-                    1,
-                    stream
-                ) != 1) {
+            if (fread(runtime, sizeof(zEffectAnimSurfaceRuntime), 1, stream) != 1) {
                 fclose(stream);
                 return -1;
             }
@@ -1247,12 +1060,7 @@ int __cdecl LoadZbd() {
             if (runtime->eventStreamSize > 0) {
                 runtime->eventStream = malloc(runtime->eventStreamSize);
                 if (runtime->eventStream == 0 ||
-                    fread(
-                        runtime->eventStream,
-                        runtime->eventStreamSize,
-                        1,
-                        stream
-                    ) != 1) {
+                    fread(runtime->eventStream, runtime->eventStreamSize, 1, stream) != 1) {
                     fclose(stream);
                     return -1;
                 }
@@ -1271,25 +1079,13 @@ int __cdecl LoadZbd() {
         if (i_2119 != 0 && entry->activationState != 5) {
             entry->boundNode = 0;
             if (previousRootNodeName != 0 &&
-                strcmp(
-                    previousRootNodeName,
-                    entry->rootNodeName
-                ) == 0) {
-                entry->boundNode = zClass_Class::gwNodeFindNextByName(
-                    0,
-                    0
-                );
+                strcmp(previousRootNodeName, entry->rootNodeName) == 0) {
+                entry->boundNode = zClass_Class::gwNodeFindNextByName(0, 0);
             }
 
             if (entry->boundNode == 0) {
-                zClass_Class::gwNodeFindNextByName(
-                    entry->rootNodeName,
-                    6
-                );
-                entry->boundNode = zClass_Class::gwNodeFindNextByName(
-                    0,
-                    0
-                );
+                zClass_Class::gwNodeFindNextByName(entry->rootNodeName, 6);
+                entry->boundNode = zClass_Class::gwNodeFindNextByName(0, 0);
                 previousRootNodeName = entry->rootNodeName;
             }
 
@@ -1313,10 +1109,7 @@ int __cdecl LoadZbd() {
                 }
             }
 
-            entry->callbackNode = zEffectAnim::ResolveNodeByName(
-                entry,
-                entry->attachNodeName
-            );
+            entry->callbackNode = zEffectAnim::ResolveNodeByName(entry, entry->attachNodeName);
             if (entry->callbackNode == 0) {
                 fclose(stream);
                 return -1;
@@ -1331,10 +1124,7 @@ int __cdecl LoadZbd() {
                 fclose(stream);
                 return -1;
             }
-            zClass_Class::gwNodeSetName(
-                lightRef->runtimeNode,
-                lightRef->name.text
-            );
+            zClass_Class::gwNodeSetName(lightRef->runtimeNode, lightRef->name.text);
         }
 
         entry->soundRefCount = savedSoundRefCount;
@@ -1345,22 +1135,13 @@ int __cdecl LoadZbd() {
                 fclose(stream);
                 return -1;
             }
-            zClass_Class::gwNodeSetName(
-                soundRef->runtimeNode,
-                soundRef->name.text
-            );
-            zClass_Sound::SetSampleSetByName(
-                soundRef->runtimeNode,
-                soundRef->name.text
-            );
+            zClass_Class::gwNodeSetName(soundRef->runtimeNode, soundRef->name.text);
+            zClass_Sound::SetSampleSetByName(soundRef->runtimeNode, soundRef->name.text);
         }
 
         for (int j_2186 = 1; j_2186 < entry->trackedNodeCount; ++j_2186) {
             zEffectAnimTrackedNode *const tracked = &entry->trackedNodeList[j_2186];
-            tracked->trackedNode = zEffectAnim::ResolveNodeByName(
-                entry,
-                tracked->trackedNodeName
-            );
+            tracked->trackedNode = zEffectAnim::ResolveNodeByName(entry, tracked->trackedNodeName);
             if (tracked->trackedNode == 0) {
                 fclose(stream);
                 return -1;
@@ -1369,10 +1150,7 @@ int __cdecl LoadZbd() {
 
         for (int j_2195 = 1; j_2195 < entry->nodeRefCount; ++j_2195) {
             zEffectAnimNodeRef28 *const nodeRef = &entry->nodeRefList[j_2195];
-            nodeRef->node = zEffectAnim::ResolveNodeByName(
-                entry,
-                nodeRef->name.text
-            );
+            nodeRef->node = zEffectAnim::ResolveNodeByName(entry, nodeRef->name.text);
             if (nodeRef->node == 0) {
                 fclose(stream);
                 return -1;
@@ -1403,15 +1181,9 @@ int __cdecl LoadZbd() {
             } else if (prereq->mode == 2 || prereq->mode == 3) {
                 const char *const nodeName = &prereq->targetName[4];
                 if (prereqSearchRoot == 0) {
-                    prereqSearchRoot = zClass::FindByTypeAndName(
-                        6,
-                        nodeName
-                    );
+                    prereqSearchRoot = zClass::FindByTypeAndName(6, nodeName);
                 } else {
-                    prereqSearchRoot = zClass_Class::FindSubNodeByName(
-                        prereqSearchRoot,
-                        nodeName
-                    );
+                    prereqSearchRoot = zClass_Class::FindSubNodeByName(prereqSearchRoot, nodeName);
                 }
 
                 cachedPrereqSearchRoot = prereqSearchRoot;
@@ -1513,27 +1285,14 @@ int __cdecl LoadAndInstantiate() {
         }
 
         if ((entry->flags & kEffectAnimNeedsCopiedRootFlag) != 0) {
-            zEffectAnim::EnsureCopiedRootTree(
-                entry,
-                entry->boundNode
-            );
+            zEffectAnim::EnsureCopiedRootTree(entry, entry->boundNode);
         }
 
         entry->runtimeNode = zClass_Object3D::gwObject3DInit();
         char runtimeNodeName[0x24];
-        sprintf(
-            runtimeNodeName,
-            "_%s",
-            entry->name
-        );
-        zClass_Class::gwNodeSetName(
-            entry->runtimeNode,
-            runtimeNodeName
-        );
-        zClass_Class::gwNodeSetPriority(
-            entry->runtimeNode,
-            entry->priority
-        );
+        sprintf(runtimeNodeName, "_%s", entry->name);
+        zClass_Class::gwNodeSetName(entry->runtimeNode, runtimeNodeName);
+        zClass_Class::gwNodeSetPriority(entry->runtimeNode, entry->priority);
 
         CaptureNodeStates(entry);
         if (entry->activationMode == 1) {
@@ -1564,20 +1323,10 @@ int __cdecl LoadAndInstantiate() {
         }
 
         if ((entry->flags & 0x20) != 0) {
-            zEffectAnim::StopAndCleanup(
-                entry,
-                0,
-                0
-            );
+            zEffectAnim::StopAndCleanup(entry, 0, 0);
         }
         if (entry->activationMode == 4) {
-            zEffectAnim::SetVelocity(
-                entry,
-                0,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zEffectAnim::SetVelocity(entry, 0, 0.0f, 0.0f, 0.0f);
         }
     }
 
@@ -1736,10 +1485,7 @@ zEffectAnimEntry *__fastcall FindEntryByName(
 
     const int count = g_zEffectAnim_EntryCount;
     for (int i = 0; i < count; ++i) {
-        if (strcmp(
-            g_zEffectAnim_EntryList[i].name,
-            name
-        ) == 0) {
+        if (strcmp(g_zEffectAnim_EntryList[i].name, name) == 0) {
             return &g_zEffectAnim_EntryList[i];
         }
     }

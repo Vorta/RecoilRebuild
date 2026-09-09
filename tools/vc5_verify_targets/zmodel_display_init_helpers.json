@@ -26,7 +26,7 @@
     },
     {
       "address": "0x475c40",
-      "symbol": "?zModel_Display_Init@@YAHXZ",
+      "symbol": "?zModelDisplayInit@@YAHXZ",
       "name": "zModel_Display::Init"
     },
     {

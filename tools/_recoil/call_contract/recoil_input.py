@@ -631,7 +631,7 @@ def _zinput_joystick_acquire_device_candidate_bridges(
     dict[str, ReviewedStaticStorageReferenceBridge],
     dict[str, ReviewedMemberVptrStorageBridge],
 ]:
-    """Prove the exact candidate leaf/vptr chain in DI_AcquireJoystickDevice."""
+    """Prove the exact candidate leaf/vptr chain in DIAcquireJoystickDevice."""
     from _recoil.call_contract.records import (
         ReviewedMemberVptrStorageBridge,
         ReviewedStaticStorageReferenceBridge,
@@ -762,7 +762,7 @@ def _zinput_joystick_acquire_device_candidate_bridges(
         or caller_symbol.get("extent_state") != "known"
         or caller_symbol.get("size") != 0x20
         or caller_symbol.get("navigation_name")
-        != "zInput::DI_AcquireJoystickDevice"
+        != "zInput::DIAcquireJoystickDevice"
         or caller_symbol.get("output_section_id") != "recoil:section:.text"
         or caller_symbol.get("physical_block_id") != "recoil:block:0x471e40"
         or caller_identity in indexes.provider_ids
@@ -898,7 +898,7 @@ def _zinput_joystick_acquire_device_candidate_bridges(
         != _cc_catalog.ZINPUT_JOYSTICK_ACQUIRE_CALLER_SYMBOL
         or getattr(contribution_row, "symbol_regex", None) is not None
         or getattr(contribution_row, "name", "")
-        != "zInput::DI_AcquireJoystickDevice"
+        != "zInput::DIAcquireJoystickDevice"
         or getattr(contribution_row, "pipeline_class", "") != "authored"
         or getattr(contribution_row, "authored_order_role", "")
         != "authored-body"
@@ -1837,7 +1837,7 @@ def _zinput_joystick_aggregate_leaf_candidate_bridges(
         or caller_symbol.get("extent_state") != "known"
         or caller_symbol.get("size") != 0x120
         or caller_symbol.get("navigation_name")
-        != "zInput::DI_InitJoystickDevice"
+        != "zInput::DIInitJoystickDevice"
         or caller_identity in indexes.provider_ids
         or indexes.by_address.get(_cc_catalog.ZINPUT_JOYSTICK_INIT_CALLER_START)
         != caller_identity
@@ -1966,7 +1966,7 @@ def _zinput_joystick_aggregate_leaf_candidate_bridges(
         != _cc_catalog.ZINPUT_JOYSTICK_INIT_CALLER_SYMBOL
         or getattr(contribution_row, "symbol_regex", None) is not None
         or getattr(contribution_row, "name", "")
-        != "zInput::DI_InitJoystickDevice"
+        != "zInput::DIInitJoystickDevice"
         or getattr(contribution_row, "pipeline_class", "") != "authored"
         or getattr(contribution_row, "authored_order_role", "")
         != "authored-body"
@@ -3011,7 +3011,7 @@ def _zinput_exact_aggregate_leaf_member_vptr_candidate_bridges(
             and (
                 normalized_start != "0x46f450"
                 or expected_caller_candidate_aliases != (
-                    "?Keyboard_ResetTransitionState@zInput@@YIXXZ",
+                    "?KeyboardResetTransitionState@zInput@@YIXXZ",
                 )
                 or not _cc_abi._is_exact_zeroarg_cdecl_fastcall_pair(
                     expected_caller_symbol,
@@ -4588,11 +4588,11 @@ def _zinput_mouse_aggregate_leaf_candidate_bridges(
             ),
             (
                 "0x4704f0",
-                "?Mouse_ApplyAccumulatedDelta@zInput@@YAXXZ",
+                "?MouseApplyAccumulatedDelta@zInput@@YAXXZ",
             ),
             (
                 "0x4702e0",
-                "?Mouse_GetButtonTransitionState@zInput@@YIHH@Z",
+                "?MouseGetButtonTransitionState@zInput@@YIHH@Z",
             ),
             (
                 "0x470d40",
@@ -4642,7 +4642,7 @@ def _zinput_mouse_aggregate_leaf_candidate_bridges(
         )
         update_symbol = _cc_catalog.ZINPUT_MOUSE_UPDATE_ACQUIRE_CALLER_SYMBOL
         get_button_symbol = (
-            "?Mouse_GetButtonTransitionState@zInput@@YIHH@Z"
+            "?MouseGetButtonTransitionState@zInput@@YIHH@Z"
         )
         static, member = (
             _zinput_exact_aggregate_leaf_member_vptr_candidate_bridges(
@@ -4689,7 +4689,7 @@ def _zinput_mouse_aggregate_leaf_candidate_bridges(
                     (2, virtual_fields(0x24)),
                     (3, direct_fields(update_symbol)),
                     (4, direct_fields(
-                        "?Mouse_ApplyAccumulatedDelta@zInput@@YAXXZ"
+                        "?MouseApplyAccumulatedDelta@zInput@@YAXXZ"
                     )),
                     (5, direct_fields(get_button_symbol)),
                     (6, direct_fields(get_button_symbol)),

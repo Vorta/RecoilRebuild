@@ -1,6 +1,6 @@
 {
   "name": "zrndr_lens_flare_draw_visible_samples",
-  "description": "zRndr_LensFlare_DrawVisibleSamples visible lens-flare replay loop.",
+  "description": "zRndrLensFlareDrawVisibleSamples visible lens-flare replay loop.",
   "source_filename": "zRndr.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x49b1a0",
-      "symbol": "?zRndr_LensFlare_DrawVisibleSamples@@YAXXZ",
-      "name": "zRndr_LensFlare_DrawVisibleSamples"
+      "symbol": "?zRndrLensFlareDrawVisibleSamples@@YAXXZ",
+      "name": "zRndrLensFlareDrawVisibleSamples"
     }
   ],
   "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"

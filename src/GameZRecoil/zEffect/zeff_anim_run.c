@@ -510,11 +510,7 @@ void __fastcall SetVariantOverridePackedIdsIfComplete(
     }
 
     unsigned int packedValue = 0;
-    memcpy(
-        &packedValue,
-        packedIds,
-        sizeof(packedValue)
-    );
+    memcpy(&packedValue, packedIds, sizeof(packedValue));
     g_zEffect_VariantOverrideEnabled = 1;
     g_zEffect_VariantOverridePackedIds = packedValue;
 }
@@ -600,58 +596,26 @@ float __fastcall UpdateBeamNodeBetweenPoints(
         return 0.0f;
     }
 
-    zClass_Object3D::gwObject3DSetPosition(
-        obj3d,
-        srcPos->x,
-        srcPos->y,
-        srcPos->z
-    );
+    zClass_Object3D::gwObject3DSetPosition(obj3d, srcPos->x, srcPos->y, srcPos->z);
 
     zVec3 angles = {0};
-    zMath::Vec3DirectionAnglesBetweenPoints(
-        srcPos,
-        destPos,
-        &angles
-    );
-    zClass_Object3D::gwObject3DSetRotation(
-        obj3d,
-        angles.x,
-        angles.y,
-        0.0f
-    );
+    zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos, &angles);
+    zClass_Object3D::gwObject3DSetRotation(obj3d, angles.x, angles.y, 0.0f);
 
     zVec3 scale = {0};
-    zClass_Object3D::gwObject3DGetScale(
-        obj3d,
-        &scale.x,
-        &scale.y,
-        &scale.z
-    );
+    zClass_Object3D::gwObject3DGetScale(obj3d, &scale.x, &scale.y, &scale.z);
 
     const float dx = destPos->x - srcPos->x;
     const float dy = destPos->y - srcPos->y;
     const float dz = destPos->z - srcPos->z;
     const float lengthSq = dx * dx + dy * dy + dz * dz;
     int lengthBits = 0;
-    memcpy(
-        &lengthBits,
-        &lengthSq,
-        sizeof(lengthBits)
-    );
+    memcpy(&lengthBits, &lengthSq, sizeof(lengthBits));
     lengthBits = (lengthBits >> 1) + 0x1fc00000;
     float length = 0.0f;
-    memcpy(
-        &length,
-        &lengthBits,
-        sizeof(length)
-    );
+    memcpy(&length, &lengthBits, sizeof(length));
 
-    zClass_Object3D::gwObject3DSetScale(
-        obj3d,
-        scale.x,
-        scale.y,
-        length
-    );
+    zClass_Object3D::gwObject3DSetScale(obj3d, scale.x, scale.y, length);
     return length;
 }
 
@@ -681,58 +645,26 @@ float __fastcall UpdateBeamNodeBetweenFractions(
         srcPos->y + delta.y * t1,
         srcPos->z + delta.z * t1};
 
-    zClass_Object3D::gwObject3DSetPosition(
-        obj3d,
-        start.x,
-        start.y,
-        start.z
-    );
+    zClass_Object3D::gwObject3DSetPosition(obj3d, start.x, start.y, start.z);
 
     zVec3 angles = {0};
-    zMath::Vec3DirectionAnglesBetweenPoints(
-        srcPos,
-        destPos,
-        &angles
-    );
-    zClass_Object3D::gwObject3DSetRotation(
-        obj3d,
-        angles.x,
-        angles.y,
-        0.0f
-    );
+    zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos, &angles);
+    zClass_Object3D::gwObject3DSetRotation(obj3d, angles.x, angles.y, 0.0f);
 
     zVec3 scale = {0};
-    zClass_Object3D::gwObject3DGetScale(
-        obj3d,
-        &scale.x,
-        &scale.y,
-        &scale.z
-    );
+    zClass_Object3D::gwObject3DGetScale(obj3d, &scale.x, &scale.y, &scale.z);
 
     const float dx = end.x - start.x;
     const float dy = end.y - start.y;
     const float dz = end.z - start.z;
     const float lengthSq = dx * dx + dy * dy + dz * dz;
     int lengthBits = 0;
-    memcpy(
-        &lengthBits,
-        &lengthSq,
-        sizeof(lengthBits)
-    );
+    memcpy(&lengthBits, &lengthSq, sizeof(lengthBits));
     lengthBits = (lengthBits >> 1) + 0x1fc00000;
     float length = 0.0f;
-    memcpy(
-        &length,
-        &lengthBits,
-        sizeof(length)
-    );
+    memcpy(&length, &lengthBits, sizeof(length));
 
-    zClass_Object3D::gwObject3DSetScale(
-        obj3d,
-        scale.x,
-        scale.y,
-        length
-    );
+    zClass_Object3D::gwObject3DSetScale(obj3d, scale.x, scale.y, length);
     return length;
 }
 
@@ -750,18 +682,11 @@ int __fastcall HandleSampleRefOffsetEvent(
     zSndSample *const sample = self->sampleRefList[event->refIndex].sample;
     if (event->nodeRefIndex > 0) {
         zVec3 worldPosition = {0};
-        gwNode::GetWorldPosition(
-            self->nodeRefList[event->nodeRefIndex].node,
-            &worldPosition
-        );
+        gwNode::GetWorldPosition(self->nodeRefList[event->nodeRefIndex].node, &worldPosition);
         worldPosition.x += event->offsetX;
         worldPosition.y += event->offsetY;
         worldPosition.z += event->offsetZ;
-        sample->PlayA3D(
-            &worldPosition,
-            1.0f,
-            0
-        );
+        sample->PlayA3D(&worldPosition, 1.0f, 0);
     } else {
         sample->PlayA3DSimple(1.0f);
     }
@@ -786,28 +711,13 @@ int __fastcall HandleEffectTemplateOffsetEvent(
         node = self->nodeRefList[event->nodeRefIndex].node;
     } else if (event->nodeRefIndex == -200) {
         node = (zClass_NodePartial *)((unsigned int)(self->resetScratch[0]));
-        memcpy(
-            &worldPosition.x,
-            &self->resetScratch[1],
-            sizeof(worldPosition.x)
-        );
-        memcpy(
-            &worldPosition.y,
-            &self->resetScratch[2],
-            sizeof(worldPosition.y)
-        );
-        memcpy(
-            &worldPosition.z,
-            &self->resetScratch[3],
-            sizeof(worldPosition.z)
-        );
+        memcpy(&worldPosition.x, &self->resetScratch[1], sizeof(worldPosition.x));
+        memcpy(&worldPosition.y, &self->resetScratch[2], sizeof(worldPosition.y));
+        memcpy(&worldPosition.z, &self->resetScratch[3], sizeof(worldPosition.z));
     }
 
     if (node != 0) {
-        gwNode::TransformPoint(
-            node,
-            &worldPosition
-        );
+        gwNode::TransformPoint(node, &worldPosition);
     }
 
     worldPosition.x += event->offsetX;
@@ -831,34 +741,22 @@ int __fastcall HandleSoundEvent(
     zEffectAnimSoundEvent *event
 ) {
     if (event->soundRefIndex <= 0) {
-        event->soundRefIndex = zEffectAnim::FindOrCreateSoundRef(
-            self,
-            event->soundName
-        );
+        event->soundRefIndex = zEffectAnim::FindOrCreateSoundRef(self, event->soundName);
         if (event->soundRefIndex <= 0) {
             return 2;
         }
     }
 
     zEffectAnimRuntimeNodeRef *const soundRef = &self->soundRefList[event->soundRefIndex];
-    zClass_Class::gwNodeSetActive(
-        soundRef->runtimeNode,
-        event->activeState
-    );
+    zClass_Class::gwNodeSetActive(soundRef->runtimeNode, event->activeState);
 
     if (event->activeState == 1) {
         if (soundRef->isAttached == 0) {
-            zClass_World::AddSound(
-                g_zEffect_World,
-                soundRef->runtimeNode
-            );
+            zClass_World::AddSound(g_zEffect_World, soundRef->runtimeNode);
             soundRef->isAttached = 1;
         }
     } else if (soundRef->isAttached != 0) {
-        zClass_World::RemoveSound(
-            g_zEffect_World,
-            soundRef->runtimeNode
-        );
+        zClass_World::RemoveSound(g_zEffect_World, soundRef->runtimeNode);
         soundRef->isAttached = 0;
     }
 
@@ -873,10 +771,7 @@ int __fastcall HandleSoundEvent(
 
     if ((event->fieldMask & 0x02) != 0 && event->parentNodeRefIndex > 0) {
         zVec3 worldPosition = {0};
-        gwNode::GetWorldPosition(
-            self->nodeRefList[event->parentNodeRefIndex].node,
-            &worldPosition
-        );
+        gwNode::GetWorldPosition(self->nodeRefList[event->parentNodeRefIndex].node, &worldPosition);
         worldPosition.x += event->offsetX;
         worldPosition.y += event->offsetY;
         worldPosition.z += event->offsetZ;
@@ -903,10 +798,7 @@ int __fastcall HandleLightEvent(
     zEffectAnimLightEvent *event
 ) {
     if (event->lightRefIndex <= 0) {
-        event->lightRefIndex = zEffectAnim::FindOrCreateLightRef(
-            self,
-            event->lightName
-        );
+        event->lightRefIndex = zEffectAnim::FindOrCreateLightRef(self, event->lightName);
         if (event->lightRefIndex <= 0) {
             return 2;
         }
@@ -914,24 +806,15 @@ int __fastcall HandleLightEvent(
 
     zEffectAnimRuntimeNodeRef *const lightRef = &self->lightRefList[event->lightRefIndex];
     zClass_NodePartial *const lightNode = lightRef->runtimeNode;
-    zClass_Class::gwNodeSetActive(
-        lightNode,
-        event->activeState
-    );
+    zClass_Class::gwNodeSetActive(lightNode, event->activeState);
 
     if (event->activeState == 1) {
         if (lightRef->isAttached == 0) {
-            zClass_World::AddLight(
-                g_zEffect_World,
-                lightNode
-            );
+            zClass_World::AddLight(g_zEffect_World, lightNode);
             lightRef->isAttached = 1;
         }
     } else if (lightRef->isAttached != 0) {
-        zClass_World::RemoveLight(
-            g_zEffect_World,
-            lightNode
-        );
+        zClass_World::RemoveLight(g_zEffect_World, lightNode);
         lightRef->isAttached = 0;
     }
 
@@ -958,28 +841,13 @@ int __fastcall HandleLightEvent(
             basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
         } else if (event->basisNodeRefIndex == -200) {
             basisNode = (zClass_NodePartial *)((unsigned int)(self->resetScratch[0]));
-            memcpy(
-                &worldPosition.x,
-                &self->resetScratch[1],
-                sizeof(worldPosition.x)
-            );
-            memcpy(
-                &worldPosition.y,
-                &self->resetScratch[2],
-                sizeof(worldPosition.y)
-            );
-            memcpy(
-                &worldPosition.z,
-                &self->resetScratch[3],
-                sizeof(worldPosition.z)
-            );
+            memcpy(&worldPosition.x, &self->resetScratch[1], sizeof(worldPosition.x));
+            memcpy(&worldPosition.y, &self->resetScratch[2], sizeof(worldPosition.y));
+            memcpy(&worldPosition.z, &self->resetScratch[3], sizeof(worldPosition.z));
         }
 
         if (basisNode != 0) {
-            gwNode::TransformPoint(
-                basisNode,
-                &worldPosition
-            );
+            gwNode::TransformPoint(basisNode, &worldPosition);
         }
 
         worldPosition.x += event->basisOrColorX;
@@ -1003,11 +871,7 @@ int __fastcall HandleLightEvent(
     }
 
     if ((event->fieldMask & 0x08) != 0) {
-        zClass_Light::gwLightSetRange(
-            lightNode,
-            event->rangeInner,
-            event->rangeOuter
-        );
+        zClass_Light::gwLightSetRange(lightNode, event->rangeInner, event->rangeOuter);
     }
 
     if ((event->fieldMask & 0x10) != 0) {
@@ -1020,31 +884,19 @@ int __fastcall HandleLightEvent(
     }
 
     if ((event->fieldMask & 0x20) != 0) {
-        zClass_Light::gwLightSetIntensity(
-            lightNode,
-            event->intensity
-        );
+        zClass_Light::gwLightSetIntensity(lightNode, event->intensity);
     }
 
     if ((event->fieldMask & 0x40) != 0) {
-        zClass_Light::gwLightSetFalloff(
-            lightNode,
-            event->falloff
-        );
+        zClass_Light::gwLightSetFalloff(lightNode, event->falloff);
     }
 
     if ((event->fieldMask & 0x80) != 0) {
-        zClass_Light::gwLightSetConeAngle(
-            lightNode,
-            event->coneAngleBits
-        );
+        zClass_Light::gwLightSetConeAngle(lightNode, event->coneAngleBits);
     }
 
     if ((event->fieldMask & 0x100) != 0) {
-        zClass_Light::gwLightSetParam(
-            lightNode,
-            event->param
-        );
+        zClass_Light::gwLightSetParam(lightNode, event->param);
     }
 
     return 2;
@@ -1063,10 +915,7 @@ int __fastcall HandleLightAnimEvent(
     zEffectLightRangeSpecularAnimEvent *animEvent
 ) {
     if (animEvent->lightRefIndex <= 0) {
-        animEvent->lightRefIndex = zEffectAnim::FindOrCreateLightRef(
-            self,
-            animEvent->lightName
-        );
+        animEvent->lightRefIndex = zEffectAnim::FindOrCreateLightRef(self, animEvent->lightName);
         if (animEvent->lightRefIndex <= 0) {
             return 2;
         }
@@ -1089,11 +938,7 @@ int __fastcall HandleLightAnimEvent(
 
     float lightRangeInner = 0.0f;
     float lightRangeOuter = 0.0f;
-    zClass_Light::gwLightGetRange(
-        lightRef->runtimeNode,
-        &lightRangeInner,
-        &lightRangeOuter
-    );
+    zClass_Light::gwLightGetRange(lightRef->runtimeNode, &lightRangeInner, &lightRangeOuter);
 
     lightRangeInner += stepSec * animEvent->currentRangeInner;
     lightRangeOuter += stepSec * animEvent->currentRangeOuter;
@@ -1106,11 +951,7 @@ int __fastcall HandleLightAnimEvent(
 
     animEvent->currentRangeInner += stepSec * animEvent->rangeInnerDelta;
     animEvent->currentRangeOuter += stepSec * animEvent->rangeOuterDelta;
-    zClass_Light::gwLightSetRange(
-        lightRef->runtimeNode,
-        lightRangeInner,
-        lightRangeOuter
-    );
+    zClass_Light::gwLightSetRange(lightRef->runtimeNode, lightRangeInner, lightRangeOuter);
 
     float specularR = 0.0f;
     float specularG = 0.0f;
@@ -1148,12 +989,7 @@ int __fastcall HandleLightAnimEvent(
         specularB = 0.0f;
     }
 
-    zClass_Light::gwLightSetSpecularColor(
-        lightRef->runtimeNode,
-        specularR,
-        specularG,
-        specularB
-    );
+    zClass_Light::gwLightSetSpecularColor(lightRef->runtimeNode, specularR, specularG, specularB);
 
     g_zEffect_FrameDeltaRemainingSec -= stepSec;
     return sequenceRuntime->eventElapsedSec > animEvent->durationSec ? 2 : 1;
@@ -1172,10 +1008,7 @@ int __fastcall HandleFogEvent(
     zEffectFogEvent *event
 ) {
     if ((event->flags & 0x01) != 0) {
-        zClass_World::SetPendingFogState(
-            g_zEffect_World,
-            event->fogState
-        );
+        zClass_World::SetPendingFogState(g_zEffect_World, event->fogState);
     }
 
     if ((event->flags & 0x02) != 0) {
@@ -1196,11 +1029,7 @@ int __fastcall HandleFogEvent(
     }
 
     if ((event->flags & 0x08) != 0) {
-        zClass_World::SetPendingFogRange(
-            g_zEffect_World,
-            event->fogRangeStart,
-            event->fogRangeEnd
-        );
+        zClass_World::SetPendingFogRange(g_zEffect_World, event->fogRangeStart, event->fogRangeEnd);
     }
 
     return 2;
@@ -1227,88 +1056,37 @@ int __fastcall HandleCameraParamsEvent(
     float secondaryValue = 0.0f;
 
     if ((event->flags & 0x01) != 0) {
-        zClass_Camera::gwCameraGetNearFarClip(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetNearFarClip(
-            node,
-            event->nearClip,
-            secondaryValue
-        );
+        zClass_Camera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetNearFarClip(node, event->nearClip, secondaryValue);
     }
 
     if ((event->flags & 0x02) != 0) {
-        zClass_Camera::gwCameraGetNearFarClip(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetNearFarClip(
-            node,
-            primaryValue,
-            event->farClip
-        );
+        zClass_Camera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetNearFarClip(node, primaryValue, event->farClip);
     }
 
     if ((event->flags & 0x04) != 0) {
-        zClass_Camera::gwCameraSetClipDistance(
-            node,
-            event->clipDistance
-        );
+        zClass_Camera::gwCameraSetClipDistance(node, event->clipDistance);
     }
 
     if ((event->flags & 0x08) != 0) {
-        zClass_Camera::gwCameraGetFOV(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetFOV(
-            node,
-            event->fovPrimary,
-            secondaryValue
-        );
+        zClass_Camera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetFOV(node, event->fovPrimary, secondaryValue);
     }
 
     if ((event->flags & 0x10) != 0) {
-        zClass_Camera::gwCameraGetFOV(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetFOV(
-            node,
-            primaryValue,
-            event->fovSecondary
-        );
+        zClass_Camera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetFOV(node, primaryValue, event->fovSecondary);
     }
 
     if ((event->flags & 0x20) != 0) {
-        zClass_Camera::gwCameraGetViewport(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetViewport(
-            node,
-            event->viewportPrimary,
-            secondaryValue
-        );
+        zClass_Camera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetViewport(node, event->viewportPrimary, secondaryValue);
     }
 
     if ((event->flags & 0x40) != 0) {
-        zClass_Camera::gwCameraGetViewport(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetViewport(
-            node,
-            primaryValue,
-            event->viewportSecondary
-        );
+        zClass_Camera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetViewport(node, primaryValue, event->viewportSecondary);
     }
 
     return 2;
@@ -1336,70 +1114,31 @@ int __fastcall AnimateCameraParamsOverTime(
 
     if (sequenceRuntime->runState == 0) {
         if ((animEvent->flags & 0x01) != 0) {
-            zClass_Camera::gwCameraGetNearFarClip(
-                node,
-                &primaryValue,
-                &secondaryValue
-            );
-            zClass_Camera::gwCameraSetNearFarClip(
-                node,
-                animEvent->nearClipStart,
-                secondaryValue
-            );
+            zClass_Camera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
+            zClass_Camera::gwCameraSetNearFarClip(node, animEvent->nearClipStart, secondaryValue);
         }
 
         if ((animEvent->flags & 0x02) != 0) {
-            zClass_Camera::gwCameraGetNearFarClip(
-                node,
-                &primaryValue,
-                &secondaryValue
-            );
-            zClass_Camera::gwCameraSetNearFarClip(
-                node,
-                primaryValue,
-                animEvent->farClipStart
-            );
+            zClass_Camera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
+            zClass_Camera::gwCameraSetNearFarClip(node, primaryValue, animEvent->farClipStart);
         }
 
         if ((animEvent->flags & 0x04) != 0) {
-            zClass_Camera::gwCameraSetClipDistance(
-                node,
-                animEvent->clipDistanceStart
-            );
+            zClass_Camera::gwCameraSetClipDistance(node, animEvent->clipDistanceStart);
         }
 
         if ((animEvent->flags & 0x08) != 0) {
-            zClass_Camera::gwCameraGetFOV(
-                node,
-                &primaryValue,
-                &secondaryValue
-            );
-            zClass_Camera::gwCameraSetFOV(
-                node,
-                animEvent->fovPrimaryStart,
-                secondaryValue
-            );
+            zClass_Camera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
+            zClass_Camera::gwCameraSetFOV(node, animEvent->fovPrimaryStart, secondaryValue);
         }
 
         if ((animEvent->flags & 0x10) != 0) {
-            zClass_Camera::gwCameraGetFOV(
-                node,
-                &primaryValue,
-                &secondaryValue
-            );
-            zClass_Camera::gwCameraSetFOV(
-                node,
-                primaryValue,
-                animEvent->fovSecondaryStart
-            );
+            zClass_Camera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
+            zClass_Camera::gwCameraSetFOV(node, primaryValue, animEvent->fovSecondaryStart);
         }
 
         if ((animEvent->flags & 0x20) != 0) {
-            zClass_Camera::gwCameraGetViewport(
-                node,
-                &primaryValue,
-                &secondaryValue
-            );
+            zClass_Camera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
             zClass_Camera::gwCameraSetViewport(
                 node,
                 animEvent->viewportPrimaryStart,
@@ -1408,11 +1147,7 @@ int __fastcall AnimateCameraParamsOverTime(
         }
 
         if ((animEvent->flags & 0x40) != 0) {
-            zClass_Camera::gwCameraGetViewport(
-                node,
-                &primaryValue,
-                &secondaryValue
-            );
+            zClass_Camera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
             zClass_Camera::gwCameraSetViewport(
                 node,
                 primaryValue,
@@ -1428,11 +1163,7 @@ int __fastcall AnimateCameraParamsOverTime(
     }
 
     if ((animEvent->flags & 0x01) != 0) {
-        zClass_Camera::gwCameraGetNearFarClip(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
+        zClass_Camera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
         zClass_Camera::gwCameraSetNearFarClip(
             node,
             primaryValue + animEvent->nearClipRate * stepSec,
@@ -1441,11 +1172,7 @@ int __fastcall AnimateCameraParamsOverTime(
     }
 
     if ((animEvent->flags & 0x02) != 0) {
-        zClass_Camera::gwCameraGetNearFarClip(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
+        zClass_Camera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
         zClass_Camera::gwCameraSetNearFarClip(
             node,
             primaryValue,
@@ -1454,10 +1181,7 @@ int __fastcall AnimateCameraParamsOverTime(
     }
 
     if ((animEvent->flags & 0x04) != 0) {
-        zClass_Camera::gwCameraGetClipDistance(
-            node,
-            &primaryValue
-        );
+        zClass_Camera::gwCameraGetClipDistance(node, &primaryValue);
         zClass_Camera::gwCameraSetClipDistance(
             node,
             primaryValue + animEvent->clipDistanceRate * stepSec
@@ -1465,11 +1189,7 @@ int __fastcall AnimateCameraParamsOverTime(
     }
 
     if ((animEvent->flags & 0x08) != 0) {
-        zClass_Camera::gwCameraGetFOV(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
+        zClass_Camera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
         zClass_Camera::gwCameraSetFOV(
             node,
             primaryValue + animEvent->fovPrimaryRate * stepSec,
@@ -1478,11 +1198,7 @@ int __fastcall AnimateCameraParamsOverTime(
     }
 
     if ((animEvent->flags & 0x10) != 0) {
-        zClass_Camera::gwCameraGetFOV(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
+        zClass_Camera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
         zClass_Camera::gwCameraSetFOV(
             node,
             primaryValue,
@@ -1491,11 +1207,7 @@ int __fastcall AnimateCameraParamsOverTime(
     }
 
     if ((animEvent->flags & 0x20) != 0) {
-        zClass_Camera::gwCameraGetViewport(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
+        zClass_Camera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
         zClass_Camera::gwCameraSetViewport(
             node,
             primaryValue + animEvent->viewportPrimaryRate * stepSec,
@@ -1504,11 +1216,7 @@ int __fastcall AnimateCameraParamsOverTime(
     }
 
     if ((animEvent->flags & 0x40) != 0) {
-        zClass_Camera::gwCameraGetViewport(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
+        zClass_Camera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
         zClass_Camera::gwCameraSetViewport(
             node,
             primaryValue,
@@ -1522,88 +1230,37 @@ int __fastcall AnimateCameraParamsOverTime(
     }
 
     if ((animEvent->flags & 0x01) != 0) {
-        zClass_Camera::gwCameraGetNearFarClip(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetNearFarClip(
-            node,
-            animEvent->nearClipEnd,
-            secondaryValue
-        );
+        zClass_Camera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetNearFarClip(node, animEvent->nearClipEnd, secondaryValue);
     }
 
     if ((animEvent->flags & 0x02) != 0) {
-        zClass_Camera::gwCameraGetNearFarClip(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetNearFarClip(
-            node,
-            primaryValue,
-            animEvent->farClipEnd
-        );
+        zClass_Camera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetNearFarClip(node, primaryValue, animEvent->farClipEnd);
     }
 
     if ((animEvent->flags & 0x04) != 0) {
-        zClass_Camera::gwCameraSetClipDistance(
-            node,
-            animEvent->clipDistanceEnd
-        );
+        zClass_Camera::gwCameraSetClipDistance(node, animEvent->clipDistanceEnd);
     }
 
     if ((animEvent->flags & 0x08) != 0) {
-        zClass_Camera::gwCameraGetFOV(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetFOV(
-            node,
-            animEvent->fovPrimaryEnd,
-            secondaryValue
-        );
+        zClass_Camera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetFOV(node, animEvent->fovPrimaryEnd, secondaryValue);
     }
 
     if ((animEvent->flags & 0x10) != 0) {
-        zClass_Camera::gwCameraGetFOV(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetFOV(
-            node,
-            primaryValue,
-            animEvent->fovSecondaryEnd
-        );
+        zClass_Camera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetFOV(node, primaryValue, animEvent->fovSecondaryEnd);
     }
 
     if ((animEvent->flags & 0x20) != 0) {
-        zClass_Camera::gwCameraGetViewport(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetViewport(
-            node,
-            animEvent->viewportPrimaryEnd,
-            secondaryValue
-        );
+        zClass_Camera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetViewport(node, animEvent->viewportPrimaryEnd, secondaryValue);
     }
 
     if ((animEvent->flags & 0x40) != 0) {
-        zClass_Camera::gwCameraGetViewport(
-            node,
-            &primaryValue,
-            &secondaryValue
-        );
-        zClass_Camera::gwCameraSetViewport(
-            node,
-            primaryValue,
-            animEvent->viewportSecondaryEnd
-        );
+        zClass_Camera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
+        zClass_Camera::gwCameraSetViewport(node, primaryValue, animEvent->viewportSecondaryEnd);
     }
 
     return 2;
@@ -1645,14 +1302,8 @@ int __fastcall HandleRotationEvent(
                     zMat4x3 matrix;
                     zMath::MatStackPushPtr((float *)(&matrix));
                     zMath::MatLoadIdentity();
-                    gwNode::BuildNodeToAncestorMatrix(
-                        basisNode,
-                        1
-                    );
-                    zMath_Mat_ExtractEulerAngles(
-                        &matrix,
-                        &basisAngles
-                    );
+                    gwNode::gwNodeBuildNodeToAncestorMatrix(basisNode, 1);
+                    zMathMatExtractEulerAngles(&matrix, &basisAngles);
                     zMath::MatStackPopPtr();
                 }
             }
@@ -1686,19 +1337,9 @@ int __fastcall HandleRotationEvent(
 
     if (targetNode->classId == 1) {
         if ((event->flags & 0x01) != 0) {
-            zClass_Camera::gwCameraTranslate(
-                targetNode,
-                event->vecX,
-                event->vecY,
-                event->vecZ
-            );
+            zClass_Camera::gwCameraTranslate(targetNode, event->vecX, event->vecY, event->vecZ);
         } else {
-            zClass_Camera::gwCameraSetPosition(
-                targetNode,
-                event->vecX,
-                event->vecY,
-                event->vecZ
-            );
+            zClass_Camera::gwCameraSetPosition(targetNode, event->vecX, event->vecY, event->vecZ);
         }
     }
 
@@ -1744,28 +1385,13 @@ int __fastcall HandlePositionEvent(
         basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
     } else if (event->basisNodeRefIndex == kEffectAnimResetScratchRefIndex) {
         basisNode = (zClass_NodePartial *)((unsigned int)(self->resetScratch[0]));
-        memcpy(
-            &point.x,
-            &self->resetScratch[1],
-            sizeof(point.x)
-        );
-        memcpy(
-            &point.y,
-            &self->resetScratch[2],
-            sizeof(point.y)
-        );
-        memcpy(
-            &point.z,
-            &self->resetScratch[3],
-            sizeof(point.z)
-        );
+        memcpy(&point.x, &self->resetScratch[1], sizeof(point.x));
+        memcpy(&point.y, &self->resetScratch[2], sizeof(point.y));
+        memcpy(&point.z, &self->resetScratch[3], sizeof(point.z));
     }
 
     if (basisNode != 0) {
-        gwNode::TransformPoint(
-            basisNode,
-            &point
-        );
+        gwNode::TransformPoint(basisNode, &point);
     }
 
     point.x += event->vecX;
@@ -1776,35 +1402,15 @@ int __fastcall HandlePositionEvent(
     if (targetNode != 0) {
         if (targetNode->classId == 5) {
             if ((event->flags & 0x01) != 0) {
-                zClass_Object3D::gwObject3DTranslatePosition(
-                    targetNode,
-                    point.x,
-                    point.y,
-                    point.z
-                );
+                zClass_Object3D::gwObject3DTranslatePosition(targetNode, point.x, point.y, point.z);
             } else {
-                zClass_Object3D::gwObject3DSetPosition(
-                    targetNode,
-                    point.x,
-                    point.y,
-                    point.z
-                );
+                zClass_Object3D::gwObject3DSetPosition(targetNode, point.x, point.y, point.z);
             }
         } else if (targetNode->classId == 1) {
             if ((event->flags & 0x01) != 0) {
-                zClass_Camera::gwCameraTranslateTarget(
-                    targetNode,
-                    point.x,
-                    point.y,
-                    point.z
-                );
+                zClass_Camera::gwCameraTranslateTarget(targetNode, point.x, point.y, point.z);
             } else {
-                zClass_Camera::gwCameraSetTarget(
-                    targetNode,
-                    point.x,
-                    point.y,
-                    point.z
-                );
+                zClass_Camera::gwCameraSetTarget(targetNode, point.x, point.y, point.z);
             }
         }
     }
@@ -1827,15 +1433,9 @@ int __fastcall HandleActivateEvent(
 ) {
     const short targetIndex = event->targetNodeRefIndex;
     if (targetIndex >= 0) {
-        zClass_Class::gwNodeSetActive(
-            self->nodeRefList[targetIndex].node,
-            event->activeValue
-        );
+        zClass_Class::gwNodeSetActive(self->nodeRefList[targetIndex].node, event->activeValue);
     } else if (targetIndex == kEffectAnimBoundNodeRefIndex) {
-        zClass_Class::gwNodeSetActive(
-            self->boundNode,
-            event->activeValue
-        );
+        zClass_Class::gwNodeSetActive(self->boundNode, event->activeValue);
     }
 
     return 2;
@@ -1917,10 +1517,7 @@ int __fastcall HandleNodeAnimEvent(
                 animEvent->positionOrTargetRate.x;
 
             zVec3 dir = {0};
-            zMath_Vec3_DirFromYaw(
-                &dir,
-                spinMagnitude * 0.01745329252f
-            );
+            zMathVec3DirFromYaw(&dir, spinMagnitude * 0.01745329252f);
             const float vertical = yaw * 0.0111111114f;
             const float horizontal = vertical < 0.0f ? vertical + 1.0f : 1.0f - vertical;
             const float vx = horizontal * dir.x;
@@ -1963,10 +1560,7 @@ int __fastcall HandleNodeAnimEvent(
             zMat4x3 slotBuffer = {0};
             zMath::MatStackPushPtr((float *)(&slotBuffer));
             zMath::MatLoadIdentity();
-            gwNode::BuildNodeToAncestorMatrix(
-                node,
-                2
-            );
+            gwNode::gwNodeBuildNodeToAncestorMatrix(node, 2);
             zMat4x3 basisMatrix = {0};
             basisMatrix.xx = slotBuffer.xx;
             basisMatrix.xy = slotBuffer.yx;
@@ -2029,23 +1623,11 @@ int __fastcall HandleNodeAnimEvent(
         int movementClamped = 0;
 
         if ((animEvent->flags & 0x01) != 0) {
-            gwNode::GetWorldPosition(
-                node,
-                &worldPos
-            );
-            zClass_Class::gwNodeSetCellPickable(
-                self->boundNode,
-                0
-            );
+            gwNode::GetWorldPosition(node, &worldPos);
+            zClass_Class::gwNodeSetCellPickable(self->boundNode, 0);
             zClassDiPickCandidateEntry candidate = {0};
-            const int found = FindNearestPickCandidateBelowPoint(
-                &worldPos,
-                &candidate
-            );
-            zClass_Class::gwNodeSetCellPickable(
-                self->boundNode,
-                1
-            );
+            const int found = FindNearestPickCandidateBelowPoint(&worldPos, &candidate);
+            zClass_Class::gwNodeSetCellPickable(self->boundNode, 1);
 
             if (dy < 0.0f && found != 0 && worldPos.y + dy < candidate.hitPos.y) {
                 movementClamped = 1;
@@ -2065,19 +1647,9 @@ int __fastcall HandleNodeAnimEvent(
         }
 
         if (node->classId == 5) {
-            zClass_Object3D::gwObject3DTranslatePosition(
-                node,
-                dx,
-                dy,
-                dz
-            );
+            zClass_Object3D::gwObject3DTranslatePosition(node, dx, dy, dz);
         } else if (node->classId == 1) {
-            zClass_Camera::gwCameraTranslateTarget(
-                node,
-                dx,
-                dy,
-                dz
-            );
+            zClass_Camera::gwCameraTranslateTarget(node, dx, dy, dz);
         }
 
         if (movementClamped != 0) {
@@ -2101,10 +1673,7 @@ int __fastcall HandleNodeAnimEvent(
         if (movementClamped != 0 && (animEvent->flags & 0x0800) != 0) {
             if (animEvent->packedRuntimeIndex < 0) {
                 for (int i = 0; i < self->runtimeSequenceCount; ++i) {
-                    if (strcmp(
-                            self->runtimeList[i].sequenceName,
-                            animEvent->targetName
-                        ) == 0) {
+                    if (strcmp(self->runtimeList[i].sequenceName, animEvent->targetName) == 0) {
                         animEvent->packedRuntimeIndex = (short)(i);
                         break;
                     }
@@ -2126,11 +1695,7 @@ int __fastcall HandleNodeAnimEvent(
                                                                   : animEvent->lookupScale;
             const float gain = speed >= threshold ? 1.0f : speed / threshold;
             zSndSample *const sample = self->sampleRefList[animEvent->sampleRefIndex].sample;
-            sample->PlayA3D(
-                &worldPos,
-                gain,
-                0
-            );
+            sample->PlayA3D(&worldPos, gain, 0);
         }
 
         animEvent->rotationOrCameraPosEnd.z += animEvent->rotationOrCameraPosRate.z * frameStepSec;
@@ -2143,19 +1708,9 @@ int __fastcall HandleNodeAnimEvent(
         const float dy = animEvent->runtimeVecB.y * frameStepSec;
         const float dz = animEvent->runtimeVecB.z * frameStepSec;
         if (node->classId == 5) {
-            zClass_Object3D::gwObject3DTranslateRotation(
-                node,
-                dx,
-                dy,
-                dz
-            );
+            zClass_Object3D::gwObject3DTranslateRotation(node, dx, dy, dz);
         } else if (node->classId == 1) {
-            zClass_Camera::gwCameraTranslate(
-                node,
-                dx,
-                dy,
-                dz
-            );
+            zClass_Camera::gwCameraTranslate(node, dx, dy, dz);
         }
         animEvent->runtimeVecB.x += animEvent->runtimeVecA.x * frameStepSec;
         animEvent->runtimeVecB.y += animEvent->runtimeVecA.y * frameStepSec;
@@ -2175,31 +1730,16 @@ int __fastcall HandleNodeAnimEvent(
         const float dx = animEvent->scaleEnd.y * frameStepSec * animEvent->scaleRate.y;
         const float dz = -animEvent->scaleStart.z * frameStepSec * animEvent->scaleRate.y;
         if (node->classId == 5) {
-            zClass_Object3D::gwObject3DTranslateRotation(
-                node,
-                dx,
-                0.0f,
-                dz
-            );
+            zClass_Object3D::gwObject3DTranslateRotation(node, dx, 0.0f, dz);
         } else if (node->classId == 1) {
-            zClass_Camera::gwCameraTranslate(
-                node,
-                dx,
-                0.0f,
-                dz
-            );
+            zClass_Camera::gwCameraTranslate(node, dx, 0.0f, dz);
         }
         animEvent->scaleRate.y += animEvent->scaleRate.x * frameStepSec;
     }
 
     if ((animEvent->flags & 0x0100) != 0) {
         zVec3 scale = {0};
-        zClass_Object3D::gwObject3DGetScale(
-            node,
-            &scale.x,
-            &scale.y,
-            &scale.z
-        );
+        zClass_Object3D::gwObject3DGetScale(node, &scale.x, &scale.y, &scale.z);
         scale.x += animEvent->runtimeVecE.x * frameStepSec;
         scale.y += animEvent->runtimeVecE.y * frameStepSec;
         scale.z += animEvent->runtimeVecE.z * frameStepSec;
@@ -2215,12 +1755,7 @@ int __fastcall HandleNodeAnimEvent(
         animEvent->runtimeVecD.x += animEvent->runtimeVecD.x * frameStepSec;
         animEvent->runtimeVecD.y += animEvent->runtimeVecD.y * frameStepSec;
         animEvent->runtimeVecD.z += animEvent->runtimeVecD.z * frameStepSec;
-        zClass_Object3D::gwObject3DSetScale(
-            node,
-            scale.x,
-            scale.y,
-            scale.z
-        );
+        zClass_Object3D::gwObject3DSetScale(node, scale.x, scale.y, scale.z);
     }
 
     if ((animEvent->flags & 0x0200) != 0) {
@@ -2407,12 +1942,7 @@ int __fastcall AnimateNodeOverTime(
 
     if ((nodeAnimEvent->flags & 0x04) != 0) {
         zVec3 scale = {0};
-        zClass_Object3D::gwObject3DGetScale(
-            node,
-            &scale.x,
-            &scale.y,
-            &scale.z
-        );
+        zClass_Object3D::gwObject3DGetScale(node, &scale.x, &scale.y, &scale.z);
         scale.x += nodeAnimEvent->scaleRate.x * deltaTimeSec;
         scale.y += nodeAnimEvent->scaleRate.y * deltaTimeSec;
         scale.z += nodeAnimEvent->scaleRate.z * deltaTimeSec;
@@ -2425,12 +1955,7 @@ int __fastcall AnimateNodeOverTime(
         if (scale.z < 0.001f) {
             scale.z = 0.001f;
         }
-        zClass_Object3D::gwObject3DSetScale(
-            node,
-            scale.x,
-            scale.y,
-            scale.z
-        );
+        zClass_Object3D::gwObject3DSetScale(node, scale.x, scale.y, scale.z);
     }
 
     if ((nodeAnimEvent->flags & 0x08) != 0) {
@@ -2573,11 +2098,7 @@ float __fastcall AnimateKeyframeSample(
     if (sequenceRuntime->eventElapsedSec > sampleHeader->endTimeSec) {
         const float savedLocalTime = keyframeEvent->keyframeLocalTime;
         const int savedOffset = keyframeEvent->currentKeyframeOffset;
-        if (AdvanceKeyframeSample(
-            sequenceRuntime,
-            keyframeEvent,
-            sampleHeader
-        ) != 0) {
+        if (AdvanceKeyframeSample(sequenceRuntime, keyframeEvent, sampleHeader) != 0) {
             zEffectKeyframeSampleHeader *const nextSample =
                 (zEffectKeyframeSampleHeader *)((unsigned char *)(keyframeEvent) +
                                                 keyframeEvent->currentKeyframeOffset);
@@ -2609,19 +2130,9 @@ float __fastcall AnimateKeyframeSample(
         outEuler.z = sampleChannel->rate.z * sampleLocalTime + sampleChannel->baseQuat.y;
 
         if (targetNode->classId == 5) {
-            zClass_Object3D::gwObject3DSetPosition(
-                targetNode,
-                outEuler.x,
-                outEuler.y,
-                outEuler.z
-            );
+            zClass_Object3D::gwObject3DSetPosition(targetNode, outEuler.x, outEuler.y, outEuler.z);
         } else if (targetNode->classId == 1) {
-            zClass_Camera::gwCameraSetTarget(
-                targetNode,
-                outEuler.x,
-                outEuler.y,
-                outEuler.z
-            );
+            zClass_Camera::gwCameraSetTarget(targetNode, outEuler.x, outEuler.y, outEuler.z);
         }
 
         ++sampleChannel;
@@ -2633,42 +2144,19 @@ float __fastcall AnimateKeyframeSample(
             sampleChannel->rate.z * sampleLocalTime};
 
         zQuat deltaQuat = {0};
-        zMath_Quat_FromRotationVector(
-            &rotationVector,
-            &deltaQuat
-        );
+        zMathQuatFromRotationVector(&rotationVector, &deltaQuat);
 
         zQuat blendedQuat = {0};
-        zMath_Quat_Multiply(
-            &deltaQuat,
-            &sampleChannel->baseQuat,
-            &blendedQuat
-        );
+        zMathQuatMultiply(&deltaQuat, &sampleChannel->baseQuat, &blendedQuat);
 
         zMat4x3 rotationMatrix = {0};
-        zMath_Quat_ToMatrix(
-            &blendedQuat,
-            &rotationMatrix
-        );
-        zMath_Mat_ExtractEulerAngles(
-            &rotationMatrix,
-            &outEuler
-        );
+        zMathQuatToMatrix(&blendedQuat, &rotationMatrix);
+        zMathMatExtractEulerAngles(&rotationMatrix, &outEuler);
 
         if (targetNode->classId == 5) {
-            zClass_Object3D::gwObject3DSetRotation(
-                targetNode,
-                outEuler.x,
-                outEuler.y,
-                outEuler.z
-            );
+            zClass_Object3D::gwObject3DSetRotation(targetNode, outEuler.x, outEuler.y, outEuler.z);
         } else if (targetNode->classId == 1) {
-            zClass_Camera::gwCameraSetPosition(
-                targetNode,
-                outEuler.x,
-                outEuler.y,
-                outEuler.z
-            );
+            zClass_Camera::gwCameraSetPosition(targetNode, outEuler.x, outEuler.y, outEuler.z);
         }
 
         ++sampleChannel;
@@ -2683,12 +2171,7 @@ float __fastcall AnimateKeyframeSample(
             sampleChannel->rate.z * keyframeEvent->keyframeLocalTime + sampleChannel->baseQuat.y;
 
         if (targetNode->classId == 5) {
-            zClass_Object3D::gwObject3DSetScale(
-                targetNode,
-                outEuler.x,
-                outEuler.y,
-                outEuler.z
-            );
+            zClass_Object3D::gwObject3DSetScale(targetNode, outEuler.x, outEuler.y, outEuler.z);
         }
     }
 
@@ -2737,11 +2220,7 @@ int __fastcall AdvanceKeyframe(
         g_zEffect_FrameDeltaRemainingSec -= consumedSec;
 
         if (sampleTimeSec < sequenceRuntime->eventElapsedSec &&
-            AdvanceKeyframeSample(
-                sequenceRuntime,
-                keyframeEvent,
-                sampleHeader
-            ) == 0) {
+            AdvanceKeyframeSample(sequenceRuntime, keyframeEvent, sampleHeader) == 0) {
             runState = 2;
         }
 
@@ -2772,16 +2251,10 @@ int __fastcall EvaluateKeyframe(
     }
 
     if (targetNode != 0) {
-        zClass_Object3D::gwObject3DSetLitFlag(
-            targetNode,
-            keyframeEvent->litFlag == 1 ? 1 : 0
-        );
+        zClass_Object3D::gwObject3DSetLitFlag(targetNode, keyframeEvent->litFlag == 1 ? 1 : 0);
 
         if (keyframeEvent->hasAlphaScale == 1) {
-            zClass_Object3D::gwObject3DSetAlphaScale(
-                targetNode,
-                keyframeEvent->alphaScale
-            );
+            zClass_Object3D::gwObject3DSetAlphaScale(targetNode, keyframeEvent->alphaScale);
         }
     }
 
@@ -2809,21 +2282,12 @@ int __fastcall RunKeyframes(
         self->nodeRefList[keyframeEvent->targetNodeRefIndex].node;
     if (sequenceRuntime->runState == 0) {
         if (keyframeEvent->startLitFlag == 1) {
-            zClass_Object3D::gwObject3DSetLitFlag(
-                targetNode,
-                1
-            );
+            zClass_Object3D::gwObject3DSetLitFlag(targetNode, 1);
         } else if (keyframeEvent->startLitFlag == 0) {
-            zClass_Object3D::gwObject3DSetLitFlag(
-                targetNode,
-                0
-            );
+            zClass_Object3D::gwObject3DSetLitFlag(targetNode, 0);
         }
 
-        zClass_Object3D::gwObject3DSetAlphaScale(
-            targetNode,
-            keyframeEvent->startAlphaScale
-        );
+        zClass_Object3D::gwObject3DSetAlphaScale(targetNode, keyframeEvent->startAlphaScale);
     }
 
     const float frameDeltaUsedSec =
@@ -2833,10 +2297,7 @@ int __fastcall RunKeyframes(
                   (sequenceRuntime->eventElapsedSec - keyframeEvent->endTimeSec);
 
     float alphaScale = 0.0f;
-    if (zClass_Object3D::gwObject3DGetAlphaScale(
-        targetNode,
-        &alphaScale
-    ) != 0) {
+    if (zClass_Object3D::gwObject3DGetAlphaScale(targetNode, &alphaScale) != 0) {
         return 2;
     }
 
@@ -2851,21 +2312,12 @@ int __fastcall RunKeyframes(
     }
 
     if (keyframeEvent->endLitFlag == 1) {
-        zClass_Object3D::gwObject3DSetLitFlag(
-            targetNode,
-            1
-        );
+        zClass_Object3D::gwObject3DSetLitFlag(targetNode, 1);
     } else if (keyframeEvent->endLitFlag == 0) {
-        zClass_Object3D::gwObject3DSetLitFlag(
-            targetNode,
-            0
-        );
+        zClass_Object3D::gwObject3DSetLitFlag(targetNode, 0);
     }
 
-    zClass_Object3D::gwObject3DSetAlphaScale(
-        targetNode,
-        keyframeEvent->endAlphaScale
-    );
+    zClass_Object3D::gwObject3DSetAlphaScale(targetNode, keyframeEvent->endAlphaScale);
     return 2;
 }
 
@@ -2894,10 +2346,7 @@ int __fastcall HandleAddChildEvent(
             }
         }
 
-        zClass_Class::AddChild(
-            parentNode,
-            childNode
-        );
+        zClass_Class::AddChild(parentNode, childNode);
     }
 
     return 2;
@@ -2994,30 +2443,15 @@ int __fastcall HandleDetachEvent(
             } else if ((flags & 0x10u) != 0) {
                 flags &= ~0x10u;
                 event->flags = (int)(flags);
-                memcpy(
-                    &point.x,
-                    &self->resetScratch[1],
-                    sizeof(point.x)
-                );
-                memcpy(
-                    &point.y,
-                    &self->resetScratch[2],
-                    sizeof(point.y)
-                );
-                memcpy(
-                    &point.z,
-                    &self->resetScratch[3],
-                    sizeof(point.z)
-                );
+                memcpy(&point.x, &self->resetScratch[1], sizeof(point.x));
+                memcpy(&point.y, &self->resetScratch[2], sizeof(point.y));
+                memcpy(&point.z, &self->resetScratch[3], sizeof(point.z));
             }
 
             zClass_NodePartial *const refNode =
                 (zClass_NodePartial *)((unsigned int)(self->resetScratch[0]));
             if (refNode != 0) {
-                gwNode::TransformPoint(
-                    refNode,
-                    &point
-                );
+                gwNode::TransformPoint(refNode, &point);
             }
             event->pointA = point;
             flags = (unsigned int)(event->flags) | 0x08u;
@@ -3037,30 +2471,15 @@ int __fastcall HandleDetachEvent(
             } else if ((flags & 0x0200u) != 0) {
                 flags &= ~0x0200u;
                 event->flags = (int)(flags);
-                memcpy(
-                    &point.x,
-                    &self->resetScratch[5],
-                    sizeof(point.x)
-                );
-                memcpy(
-                    &point.y,
-                    &self->resetScratch[6],
-                    sizeof(point.y)
-                );
-                memcpy(
-                    &point.z,
-                    &self->resetScratch[7],
-                    sizeof(point.z)
-                );
+                memcpy(&point.x, &self->resetScratch[5], sizeof(point.x));
+                memcpy(&point.y, &self->resetScratch[6], sizeof(point.y));
+                memcpy(&point.z, &self->resetScratch[7], sizeof(point.z));
             }
 
             zClass_NodePartial *const refNode =
                 (zClass_NodePartial *)((unsigned int)(self->resetScratch[4]));
             if (refNode != 0) {
-                gwNode::TransformPoint(
-                    refNode,
-                    &point
-                );
+                gwNode::TransformPoint(refNode, &point);
             }
             event->pointB = point;
             flags = (unsigned int)(event->flags) | 0x0100u;
@@ -3089,27 +2508,12 @@ int __fastcall HandleDetachEvent(
     if ((flags & 0x08u) != 0) {
         pointA = event->pointA;
     } else if ((flags & 0x10u) != 0) {
-        memcpy(
-            &pointA.x,
-            &self->resetScratch[1],
-            sizeof(pointA.x)
-        );
-        memcpy(
-            &pointA.y,
-            &self->resetScratch[2],
-            sizeof(pointA.y)
-        );
-        memcpy(
-            &pointA.z,
-            &self->resetScratch[3],
-            sizeof(pointA.z)
-        );
+        memcpy(&pointA.x, &self->resetScratch[1], sizeof(pointA.x));
+        memcpy(&pointA.y, &self->resetScratch[2], sizeof(pointA.y));
+        memcpy(&pointA.z, &self->resetScratch[3], sizeof(pointA.z));
     }
     if (pointANode != 0) {
-        gwNode::TransformPoint(
-            pointANode,
-            &pointA
-        );
+        gwNode::TransformPoint(pointANode, &pointA);
     }
 
     zClass_NodePartial *pointBNode = 0;
@@ -3126,27 +2530,12 @@ int __fastcall HandleDetachEvent(
     if ((flags & 0x0100u) != 0) {
         pointB = event->pointB;
     } else if ((flags & 0x0200u) != 0) {
-        memcpy(
-            &pointB.x,
-            &self->resetScratch[5],
-            sizeof(pointB.x)
-        );
-        memcpy(
-            &pointB.y,
-            &self->resetScratch[6],
-            sizeof(pointB.y)
-        );
-        memcpy(
-            &pointB.z,
-            &self->resetScratch[7],
-            sizeof(pointB.z)
-        );
+        memcpy(&pointB.x, &self->resetScratch[5], sizeof(pointB.x));
+        memcpy(&pointB.y, &self->resetScratch[6], sizeof(pointB.y));
+        memcpy(&pointB.z, &self->resetScratch[7], sizeof(pointB.z));
     }
     if (pointBNode != 0) {
-        gwNode::TransformPoint(
-            pointBNode,
-            &pointB
-        );
+        gwNode::TransformPoint(pointBNode, &pointB);
     }
 
     int fractionChanged = 0;
@@ -3185,11 +2574,7 @@ int __fastcall HandleDetachEvent(
             event->segmentEndCurrent
         );
     } else {
-        beamLength = UpdateBeamNodeBetweenPoints(
-            beamNode,
-            &pointA,
-            &pointB
-        );
+        beamLength = UpdateBeamNodeBetweenPoints(beamNode, &pointA, &pointB);
     }
 
     int result = 2;
@@ -3218,10 +2603,7 @@ int __fastcall HandleTransformRefsEvent(
     if (event->animEntryIndex <= 0) {
         zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
         for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
-            if (strcmp(
-                    entry->name,
-                    event->animName
-                ) == 0) {
+            if (strcmp(entry->name, event->animName) == 0) {
                 event->animEntryIndex = (short)(i);
                 break;
             }
@@ -3234,52 +2616,25 @@ int __fastcall HandleTransformRefsEvent(
         if ((flags & 0x10u) != 0) {
             refPointA = event->refPointA;
         } else if ((flags & 0x20u) != 0) {
-            memcpy(
-                &refPointA.x,
-                &self->resetScratch[1],
-                sizeof(refPointA.x)
-            );
-            memcpy(
-                &refPointA.y,
-                &self->resetScratch[2],
-                sizeof(refPointA.y)
-            );
-            memcpy(
-                &refPointA.z,
-                &self->resetScratch[3],
-                sizeof(refPointA.z)
-            );
+            memcpy(&refPointA.x, &self->resetScratch[1], sizeof(refPointA.x));
+            memcpy(&refPointA.y, &self->resetScratch[2], sizeof(refPointA.y));
+            memcpy(&refPointA.z, &self->resetScratch[3], sizeof(refPointA.z));
         }
 
         zVec3 refPointB = {0};
         if ((flags & 0x0400u) != 0) {
             refPointB = event->refPointB;
         } else if ((flags & 0x0800u) != 0) {
-            memcpy(
-                &refPointB.x,
-                &self->resetScratch[5],
-                sizeof(refPointB.x)
-            );
-            memcpy(
-                &refPointB.y,
-                &self->resetScratch[6],
-                sizeof(refPointB.y)
-            );
-            memcpy(
-                &refPointB.z,
-                &self->resetScratch[7],
-                sizeof(refPointB.z)
-            );
+            memcpy(&refPointB.x, &self->resetScratch[5], sizeof(refPointB.x));
+            memcpy(&refPointB.y, &self->resetScratch[6], sizeof(refPointB.y));
+            memcpy(&refPointB.z, &self->resetScratch[7], sizeof(refPointB.z));
         }
 
         zClass_NodePartial *refNodeA = 0;
         if ((flags & 0x01u) != 0) {
             refNodeA = self->nodeRefList[event->refNodeAIndex].node;
         } else if ((flags & 0x02u) != 0) {
-            gwNode::TransformPoint(
-                self->nodeRefList[event->refNodeAIndex].node,
-                &refPointA
-            );
+            gwNode::TransformPoint(self->nodeRefList[event->refNodeAIndex].node, &refPointA);
         } else if ((flags & 0x04u) != 0) {
             refNodeA =
                 (zClass_NodePartial *)((unsigned int)(self->resetScratch[0]));
@@ -3296,10 +2651,7 @@ int __fastcall HandleTransformRefsEvent(
         if ((flags & 0x40u) != 0) {
             refNodeB = self->nodeRefList[event->refNodeBIndex].node;
         } else if ((flags & 0x80u) != 0) {
-            gwNode::TransformPoint(
-                self->nodeRefList[event->refNodeBIndex].node,
-                &refPointB
-            );
+            gwNode::TransformPoint(self->nodeRefList[event->refNodeBIndex].node, &refPointB);
         } else if ((flags & 0x0100u) != 0) {
             refNodeB =
                 (zClass_NodePartial *)((unsigned int)(self->resetScratch[4]));
@@ -3341,10 +2693,7 @@ int __fastcall HandleSurfaceStopEvent(
 ) {
     if (event->surfaceSlotIndex < 0) {
         for (int i = 0; i < self->runtimeSequenceCount; ++i) {
-            if (strcmp(
-                    self->runtimeList[i].sequenceName,
-                    event->sequenceName
-                ) == 0) {
+            if (strcmp(self->runtimeList[i].sequenceName, event->sequenceName) == 0) {
                 event->surfaceSlotIndex = i;
                 break;
             }
@@ -3370,10 +2719,7 @@ int __fastcall HandleSurfacePlayEvent(
 ) {
     if (event->surfaceSlotIndex < 0) {
         for (int i = 0; i < self->runtimeSequenceCount; ++i) {
-            if (strcmp(
-                    self->runtimeList[i].sequenceName,
-                    event->sequenceName
-                ) == 0) {
+            if (strcmp(self->runtimeList[i].sequenceName, event->sequenceName) == 0) {
                 event->surfaceSlotIndex = i;
                 break;
             }
@@ -3408,10 +2754,7 @@ int __fastcall HandleSurfaceRefEvent(
         if (event->animEntryIndex <= 0) {
             zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
             for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
-                if (strcmp(
-                        entry->name,
-                        event->sequenceName
-                    ) == 0) {
+                if (strcmp(entry->name, event->sequenceName) == 0) {
                     event->animEntryIndex = (short)(i);
                     break;
                 }
@@ -3439,19 +2782,12 @@ int __fastcall HandleSurfaceRefEvent(
                     zVec3 position = event->position;
                     zVec3 orientation = {0};
                     if ((flags & 0x04u) != 0) {
-                        gwNode::GetWorldPosAndOrientation(
-                            refNode,
-                            &position,
-                            &orientation
-                        );
+                        gwNode::GetWorldPosAndOrientation(refNode, &position, &orientation);
                         orientation.x += event->orientationOffset.x;
                         orientation.y += event->orientationOffset.y;
                         orientation.z += event->orientationOffset.z;
                     } else {
-                        gwNode::TransformPoint(
-                            refNode,
-                            &position
-                        );
+                        gwNode::TransformPoint(refNode, &position);
                     }
 
                     childEntry = zEffectAnim::SetTransformRotAndVelocity(
@@ -3538,17 +2874,11 @@ int __fastcall CleanupLightRefs(
         }
 
         if ((runtimeNode->flags & 0x04) != 0) {
-            zClass_Class::gwNodeSetActive(
-                runtimeNode,
-                0
-            );
+            zClass_Class::gwNodeSetActive(runtimeNode, 0);
         }
 
         if (lightRef->isAttached != 0) {
-            zClass_World::RemoveLight(
-                g_zEffect_World,
-                runtimeNode
-            );
+            zClass_World::RemoveLight(g_zEffect_World, runtimeNode);
             lightRef->isAttached = 0;
         }
     }
@@ -3579,17 +2909,11 @@ int __fastcall CleanupSoundRefs(
         }
 
         if ((runtimeNode->flags & 0x04) != 0) {
-            zClass_Class::gwNodeSetActive(
-                runtimeNode,
-                0
-            );
+            zClass_Class::gwNodeSetActive(runtimeNode, 0);
         }
 
         if (soundRef->isAttached != 0) {
-            zClass_World::RemoveSound(
-                g_zEffect_World,
-                runtimeNode
-            );
+            zClass_World::RemoveSound(g_zEffect_World, runtimeNode);
             soundRef->isAttached = 0;
         }
     }
@@ -3664,10 +2988,7 @@ int __fastcall HandleNamedAnimStopEvent(
     if (event->cachedEntryIndex <= 0) {
         zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
         for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
-            if (strcmp(
-                    entry->name,
-                    event->animName
-                ) == 0) {
+            if (strcmp(entry->name, event->animName) == 0) {
                 event->cachedEntryIndex = i;
                 break;
             }
@@ -3696,10 +3017,7 @@ int __fastcall HandleEmitterPlayEvent(
     if (event->cachedEntryIndex <= 0) {
         zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
         for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
-            if (strcmp(
-                    entry->name,
-                    event->animName
-                ) == 0) {
+            if (strcmp(entry->name, event->animName) == 0) {
                 event->cachedEntryIndex = i;
                 break;
             }
@@ -3707,10 +3025,7 @@ int __fastcall HandleEmitterPlayEvent(
     }
     const int entryIndex = event->cachedEntryIndex;
     if (entryIndex > 0) {
-        zEffect_Anim::NodeActionCallback(
-            &g_zEffectAnim_EntryList[entryIndex],
-            0
-        );
+        zEffect_Anim::NodeActionCallback(&g_zEffectAnim_EntryList[entryIndex], 0);
     }
 
     return 2;
@@ -3729,10 +3044,7 @@ int __fastcall HandleEmitterStopEvent(
     if (event->cachedEntryIndex <= 0) {
         zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
         for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
-            if (strcmp(
-                    entry->name,
-                    event->animName
-                ) == 0) {
+            if (strcmp(entry->name, event->animName) == 0) {
                 event->cachedEntryIndex = i;
                 break;
             }
@@ -3923,10 +3235,7 @@ int __fastcall TraceUpwardHitFromNodeOrPos(
 ) {
     zVec3 startPosition = {0};
     if (nodeOrNull != 0) {
-        const int result = gwNode::GetWorldPosition(
-            nodeOrNull,
-            &startPosition
-        );
+        const int result = gwNode::GetWorldPosition(nodeOrNull, &startPosition);
         if (result != 0) {
             return result;
         }
@@ -3939,10 +3248,7 @@ int __fastcall TraceUpwardHitFromNodeOrPos(
     }
 
     const float height = rayHeight != 0 ? *rayHeight : 50.0f;
-    zClass_Class::gwNodeSetRaycastable(
-        nodeOrNull,
-        0
-    );
+    zClass_Class::gwNodeSetRaycastable(nodeOrNull, 0);
     zClass_cls_di::SetStopAfterFirstHit(0x40000);
     zClass_cls_di::SetBreakOnFirstCandidate(1);
 
@@ -3959,10 +3265,7 @@ int __fastcall TraceUpwardHitFromNodeOrPos(
     );
 
     zClass_cls_di::SetBreakOnFirstCandidate(0);
-    zClass_Class::gwNodeSetRaycastable(
-        nodeOrNull,
-        1
-    );
+    zClass_Class::gwNodeSetRaycastable(nodeOrNull, 1);
 
     *outHit = result == 0 && rayData.candidateCount > 0 ? 1 : 0;
     return result;
@@ -3979,10 +3282,7 @@ float __fastcall GetConditionalRefPosDistanceSq(
     zClass_NodePartial *node
 ) {
     zVec3 worldPosition = {0};
-    if (gwNode::GetWorldPosition(
-        node,
-        &worldPosition
-    ) != 0) {
+    if (gwNode::GetWorldPosition(node, &worldPosition) != 0) {
         return 0.0f;
     }
 
@@ -4048,11 +3348,7 @@ int __fastcall HandleCallbackEvent(
     zEffectAnimCallbackEvent *event
 ) {
     if (self->eventCallback != 0) {
-        self->eventCallback(
-            self,
-            self->eventCallbackContext,
-            event->value
-        );
+        self->eventCallback(self, self->eventCallbackContext, event->value);
     }
 
     return 2;
@@ -4118,15 +3414,12 @@ int __fastcall HandleScreenColorFxEvent(
     }
 
     const unsigned int packedColor =
-        zVid_PackColorRGB(
+        zVidPackColorRGB(
             (unsigned char)((int)(red * 255.0f + 0.5f)),
             (unsigned char)((int)(green * 255.0f + 0.5f)),
             (unsigned char)((int)(blue * 255.0f + 0.5f))
         );
-    zVideo::FxPass3_SetPrimaryElementParamsLocal(
-        packedColor,
-        (double)(alpha)
-    );
+    zVideo::FxPass3SetPrimaryElementParamsLocal(packedColor, (double)(alpha));
     return result;
 }
 
@@ -4151,20 +3444,12 @@ int __fastcall HandleScreenOverlayFxEvent(
         const float referenceDistanceSq =
             GetConditionalRefPosDistanceSq(self->callbackNode);
         int referenceDistanceBits = 0;
-        memcpy(
-            &referenceDistanceBits,
-            &referenceDistanceSq,
-            sizeof(referenceDistanceBits)
-        );
+        memcpy(&referenceDistanceBits, &referenceDistanceSq, sizeof(referenceDistanceBits));
         referenceDistanceBits =
             (referenceDistanceBits >> 1) + 0x1fc00000;
         float referenceDistance = 0.0f;
-        memcpy(
-            &referenceDistance,
-            &referenceDistanceBits,
-            sizeof(referenceDistance)
-        );
-        const zVec2 screenScale = zMath_Project_GetLastScreenScaleXY();
+        memcpy(&referenceDistance, &referenceDistanceBits, sizeof(referenceDistance));
+        const zVec2 screenScale = zMathProjectGetLastScreenScaleXY();
         event->maxRadiusNearPixels = event->maxRadiusNearWorld / referenceDistance * screenScale.x;
         event->maxRadiusFarPixels = event->maxRadiusFarWorld / referenceDistance * screenScale.x;
 
@@ -4199,16 +3484,10 @@ int __fastcall HandleScreenOverlayFxEvent(
             (short)((unsigned int)(event->flagsAndAnchorNodePacked) >> 16);
         if (anchorNodeRefIndex > 0) {
             zVec3 anchorPoint = event->worldAnchor;
-            gwNode::TransformPoint(
-                self->nodeRefList[anchorNodeRefIndex].node,
-                &anchorPoint
-            );
+            gwNode::TransformPoint(self->nodeRefList[anchorNodeRefIndex].node, &anchorPoint);
 
             zVec3 projectedPoint = {0};
-            if (zMath::ProjectPointAndClampToScreenClip(
-                &anchorPoint,
-                &projectedPoint
-            ) != 0) {
+            if (zMath::ProjectPointAndClampToScreenClip(&anchorPoint, &projectedPoint) != 0) {
                 return 1;
             }
 
@@ -4239,7 +3518,7 @@ int __fastcall HandleScreenOverlayFxEvent(
         result = 2;
     }
 
-    zVideo::FxPass3_QueueElementLocal(
+    zVideo::FxPass3QueueElementLocal(
         rectLeftPixels,
         rectTopPixels,
         0,
@@ -4271,10 +3550,7 @@ int __fastcall HandleTopMessageEvent(
             message = zLoc::GetMessageString((unsigned int)(messageId));
         }
 
-        HudUi::PushTopMessageLine(
-            message,
-            3.0f
-        );
+        HudUi::PushTopMessageLine(message, 3.0f);
     }
 
     return 2;
@@ -4380,10 +3656,7 @@ int __fastcall RunSequenceEvents(
             );
             break;
         case 0x1c:
-            dispatchResult = zEffect::HandleFogEvent(
-                self,
-                (zEffectFogEvent *)(currentEvent)
-            );
+            dispatchResult = zEffect::HandleFogEvent(self, (zEffectFogEvent *)(currentEvent));
             break;
         case 0x14:
             dispatchResult = zEffect::HandleCameraParamsEvent(
@@ -4555,11 +3828,7 @@ int __fastcall RunSequenceEvents(
             ));
             break;
         case 0x22:
-            dispatchResult = zEffect::HandleNoOpMarkerEvent(
-                self,
-                sequenceRuntime,
-                currentEvent
-            );
+            dispatchResult = zEffect::HandleNoOpMarkerEvent(self, sequenceRuntime, currentEvent);
             break;
         case 0x23:
             dispatchResult = zEffect::HandleCallbackEvent(
@@ -4643,13 +3912,7 @@ int __fastcall RunSequenceEvents(
             errorMessage = "Invalid Start Time\n  Animation: %s\n";
         }
 
-        zError::ReportOld(
-            0x400,
-            kZeffAnimRunSourceFile,
-            errorLine,
-            errorMessage,
-            self
-        );
+        zError::ReportOld(0x400, kZeffAnimRunSourceFile, errorLine, errorMessage, self);
         return -1;
     }
 }
@@ -4767,10 +4030,7 @@ int __fastcall RunSequence(
         g_zEffect_FrameDeltaRemainingSec = g_FrameDeltaTimeSec;
         const unsigned char runState = sequenceRuntime->runState;
         if (runState == 0 || runState == 1) {
-            if (RunSequenceEvents(
-                entry,
-                sequenceRuntime
-            ) != 0) {
+            if (RunSequenceEvents(entry, sequenceRuntime) != 0) {
                 entry->activationState = 5;
                 zError::ReportOld(
                     0x400,
@@ -4791,11 +4051,7 @@ int __fastcall RunSequence(
 
     if (allSequencesFinished != 0) {
         if (entry->eventCallback != 0) {
-            entry->eventCallback(
-                entry,
-                entry->eventCallbackContext,
-                0
-            );
+            entry->eventCallback(entry, entry->eventCallbackContext, 0);
         }
         zEffectAnim::Stop(entry);
     }
@@ -4886,16 +4142,10 @@ int __fastcall RestoreNodeStates(
         }
 
         zEffectAnimCapturedNodeState *const state = &tracked->capturedState;
-        zClass_Class::gwNodeSetActive(
-            node,
-            state->activeFlag
-        );
+        zClass_Class::gwNodeSetActive(node, state->activeFlag);
         if (node->classId == 5) {
             if (state->usesCachedMatrix != 0) {
-                zClass_Object3D::gwObject3DSetMatrix(
-                    node,
-                    state->transformSnapshot
-                );
+                zClass_Object3D::gwObject3DSetMatrix(node, state->transformSnapshot);
             } else {
                 zClass_Object3D::gwObject3DSetPosition(
                     node,
@@ -4947,10 +4197,7 @@ int __fastcall FinalizeStop(
     }
 
     if ((self->flags & kEffectAnimWorldChildAttachedFlag) != 0) {
-        if (zClass_World::RemoveChildAtGrid(
-            g_zEffect_World,
-            self->boundNode
-        ) != 0) {
+        if (zClass_World::RemoveChildAtGrid(g_zEffect_World, self->boundNode) != 0) {
             return -1;
         }
 
@@ -4970,10 +4217,7 @@ int __fastcall FinalizeStop(
     }
 
     if (self->runtimeNode != 0) {
-        zClass_Class::gwNodeSetActionCallback(
-            self->runtimeNode,
-            0
-        );
+        zClass_Class::gwNodeSetActionCallback(self->runtimeNode, 0);
     }
 
     const unsigned char activationState = self->activationState;
@@ -4981,11 +4225,7 @@ int __fastcall FinalizeStop(
         self->activationState = activationState == 6 ? 4 : 1;
     }
 
-    memcpy(
-        &self->activationCountdown,
-        &self->triggerContext,
-        sizeof(self->activationCountdown)
-    );
+    memcpy(&self->activationCountdown, &self->triggerContext, sizeof(self->activationCountdown));
     return 0;
 }
 
@@ -5014,10 +4254,7 @@ int __fastcall RunStopSequenceCallback(
         g_zEffect_FrameDeltaRemainingSec = g_FrameDeltaTimeSec;
         const unsigned char runState = entry->surfacePrimary.runState;
         if (runState == 0 || runState == 1) {
-            if (zEffect_Anim::RunSequenceEvents(
-                entry,
-                &entry->surfacePrimary
-            ) != 0) {
+            if (zEffect_Anim::RunSequenceEvents(entry, &entry->surfacePrimary) != 0) {
                 entry->activationState = 5;
                 zError::ReportOld(
                     0x400,
@@ -5088,10 +4325,7 @@ int __fastcall StopAndCleanup(
         entry->activationState != 1 &&
         entry->surfacePrimary.eventStream != 0) {
         zEffect::HandleEmitterResetEvent(&entry->surfacePrimary);
-        zEffect_Anim::RunSequenceEvents(
-            entry,
-            &entry->surfacePrimary
-        );
+        zEffect_Anim::RunSequenceEvents(entry, &entry->surfacePrimary);
         const unsigned char runState = entry->surfacePrimary.runState;
         if (runState == 0 || runState == 1) {
             zClass_Class::gwNodeSetActionCallbackTail(
@@ -5114,10 +4348,7 @@ int __fastcall StopAndCleanup(
     }
 
     if (entry->activationState == 2) {
-        zEffectAnimEntry *const clonedEntry = CloneEntryForNode(
-            entry,
-            targetNode
-        );
+        zEffectAnimEntry *const clonedEntry = CloneEntryForNode(entry, targetNode);
         entry->runtimeSibling = clonedEntry;
         if (clonedEntry == 0) {
             return -1;
@@ -5125,10 +4356,7 @@ int __fastcall StopAndCleanup(
         entry = clonedEntry;
     }
 
-    if (RebindEntryToNode(
-        entry,
-        targetNode
-    ) == 0) {
+    if (RebindEntryToNode(entry, targetNode) == 0) {
         return -1;
     }
     entry->activationState = 0;
@@ -5152,11 +4380,7 @@ int __fastcall NodeActionCallback(
     zEffectAnimEntry *self,
     zClass_NodePartial *rootNode
 ) {
-    return zEffectAnim::StopAndCleanup(
-        self,
-        rootNode,
-        1
-    );
+    return zEffectAnim::StopAndCleanup(self, rootNode, 1);
 }
 
 } // namespace zEffect_Anim
@@ -5185,10 +4409,7 @@ int __fastcall ResetForNode(
     if (rootNode->classId == 2 || rootNode->classId == 1) {
         self->flags &= ~0x00000100u;
     } else {
-        if (zClass_World::AddChildAtGrid(
-            g_zEffect_World,
-            self->boundNode
-        ) != 0) {
+        if (zClass_World::AddChildAtGrid(g_zEffect_World, self->boundNode) != 0) {
             return -1;
         }
         self->flags |= 0x00000100u;
@@ -5223,10 +4444,7 @@ int __fastcall RunStopDelayCallback(
 
     entry->triggerCurrentValue += g_FrameDeltaTimeSec;
     if (entry->triggerCurrentValue >= entry->triggerBaseValue) {
-        return zEffect_Anim::NodeActionCallback(
-            entry,
-            0
-        );
+        return zEffect_Anim::NodeActionCallback(entry, 0);
     }
 
     return 0;
@@ -5266,10 +4484,7 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
     float velocityY,
     float velocityZ
 ) {
-    zEffectAnimEntry *const activatedEntry = ActivateRuntime(
-        self,
-        boundNode
-    );
+    zEffectAnimEntry *const activatedEntry = ActivateRuntime(self, boundNode);
     if (activatedEntry == 0) {
         return 0;
     }
@@ -5277,34 +4492,14 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
     if ((activatedEntry->flags & kEffectAnimWorldChildAttachedFlag) != 0) {
         zClass_NodePartial *const activatedBoundNode = activatedEntry->boundNode;
         if (activatedBoundNode->classId == 5) {
-            zClass_Object3D::gwObject3DSetPosition(
-                activatedBoundNode,
-                posX,
-                posY,
-                posZ
-            );
+            zClass_Object3D::gwObject3DSetPosition(activatedBoundNode, posX, posY, posZ);
             if ((activatedEntry->flags & 0x00000200u) == 0) {
-                zClass_Object3D::gwObject3DSetRotation(
-                    activatedEntry->boundNode,
-                    rotX,
-                    rotY,
-                    rotZ
-                );
+                zClass_Object3D::gwObject3DSetRotation(activatedEntry->boundNode, rotX, rotY, rotZ);
             }
         } else if (activatedBoundNode->classId == 1) {
-            zClass_Camera::gwCameraSetTarget(
-                activatedBoundNode,
-                posX,
-                posY,
-                posZ
-            );
+            zClass_Camera::gwCameraSetTarget(activatedBoundNode, posX, posY, posZ);
             if ((activatedEntry->flags & 0x00000200u) == 0) {
-                zClass_Camera::gwCameraSetPosition(
-                    activatedEntry->boundNode,
-                    rotX,
-                    rotY,
-                    rotZ
-                );
+                zClass_Camera::gwCameraSetPosition(activatedEntry->boundNode, rotX, rotY, rotZ);
             }
         }
     }
@@ -5320,11 +4515,7 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
     activatedEntry->velocityX = velocityX;
     activatedEntry->velocityZ = velocityZ;
     activatedEntry->velocityY = velocityY;
-    memset(
-        activatedEntry->resetScratch,
-        0,
-        sizeof(activatedEntry->resetScratch)
-    );
+    memset(activatedEntry->resetScratch, 0, sizeof(activatedEntry->resetScratch));
 
     QueueCmdType1TransformRotVelocity(
         self,
@@ -5379,10 +4570,7 @@ zEffectAnimEntry *__fastcall ActivateRuntime(
 
                 if (entryToActivate->activationState == 2) {
                     zEffectAnimEntry *const clonedEntry =
-                        CloneEntryForNode(
-                            entryToActivate,
-                            targetNode
-                        );
+                        CloneEntryForNode(entryToActivate, targetNode);
                     entryToActivate->runtimeSibling = clonedEntry;
                     if (clonedEntry == 0) {
                         return 0;
@@ -5417,10 +4605,7 @@ zEffectAnimEntry *__fastcall ActivateRuntime(
                 }
 
                 if (matchedEntry == 0) {
-                    matchedEntry = CloneEntryForNode(
-                        siblingTail,
-                        targetNode
-                    );
+                    matchedEntry = CloneEntryForNode(siblingTail, targetNode);
                     siblingTail->runtimeSibling = matchedEntry;
                     if (matchedEntry == 0) {
                         return 0;
@@ -5432,10 +4617,7 @@ zEffectAnimEntry *__fastcall ActivateRuntime(
         }
     }
 
-    if (targetNode != 0 && RebindEntryToNode(
-        entryToActivate,
-        targetNode
-    ) == 0) {
+    if (targetNode != 0 && RebindEntryToNode(entryToActivate, targetNode) == 0) {
         return 0;
     }
 
@@ -5444,11 +4626,7 @@ zEffectAnimEntry *__fastcall ActivateRuntime(
     }
 
     if ((entryToActivate->flags & 0x20u) != 0) {
-        StopAndCleanup(
-            entryToActivate,
-            0,
-            immediateCleanup
-        );
+        StopAndCleanup(entryToActivate, 0, immediateCleanup);
     }
 
     if (ResetForNode(entryToActivate) != 0) {
@@ -5459,22 +4637,12 @@ zEffectAnimEntry *__fastcall ActivateRuntime(
         entryToActivate->runtimeNode = zClass_Object3D::gwObject3DInit();
 
         char runtimeNodeName[0x24];
-        sprintf(
-            runtimeNodeName,
-            "_%s",
-            entryToActivate->name
-        );
-        zClass_Class::gwNodeSetName(
-            entryToActivate->runtimeNode,
-            runtimeNodeName
-        );
+        sprintf(runtimeNodeName, "_%s", entryToActivate->name);
+        zClass_Class::gwNodeSetName(entryToActivate->runtimeNode, runtimeNodeName);
         if (entryToActivate->runtimeNode == 0) {
             return 0;
         }
-        zClass_Class::gwNodeSetPriority(
-            entryToActivate->runtimeNode,
-            entryToActivate->priority
-        );
+        zClass_Class::gwNodeSetPriority(entryToActivate->runtimeNode, entryToActivate->priority);
     }
 
     entryToActivate->runtimeNode->callbackContext = (zClass_NodePartial *)(entryToActivate);
@@ -5507,10 +4675,7 @@ int __fastcall CheckActivationPrereqs(
                 zEffectAnimEntry *candidate = g_zEffectAnim_EntryList;
                 for (int entryIndex = 0; entryIndex < g_zEffectAnim_EntryCount;
                     ++entryIndex, ++candidate) {
-                    if (strcmp(
-                        candidate->name,
-                        prereq->targetName
-                    ) == 0) {
+                    if (strcmp(candidate->name, prereq->targetName) == 0) {
                         prereq->targetEntry = candidate;
                         break;
                     }
@@ -5534,11 +4699,7 @@ int __fastcall CheckActivationPrereqs(
             if (targetNode != 0) {
                 const int nodeFlagValue = (targetNode->flags >> 2) & 1;
                 int expectedValue = 0;
-                memcpy(
-                    &expectedValue,
-                    prereq->targetName,
-                    sizeof(expectedValue)
-                );
+                memcpy(&expectedValue, prereq->targetName, sizeof(expectedValue));
                 if (nodeFlagValue == expectedValue) {
                     if (prereq->requireMatch != 0) {
                         ++matchedPrereqTotal;
@@ -5555,14 +4716,14 @@ int __fastcall CheckActivationPrereqs(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrotandvelocity-thunk
- * @recoil-artifact defines .text recoil:function:0x45dc70: zEffectAnim::SetTransformRotAndVelocity_Thunk.
+ * @recoil-artifact defines .text recoil:function:0x45dc70: zEffectAnim::SetTransformRotAndVelocityThunk.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward a saved transform, rotation, and velocity activation
  * command to SetTransformRotAndVelocity using the retail thunk ABI.
  */
-zEffectAnimEntry *__fastcall SetTransformRotAndVelocity_Thunk(
+zEffectAnimEntry *__fastcall SetTransformRotAndVelocityThunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float posX,
@@ -5604,10 +4765,7 @@ zEffectAnimEntry *__fastcall SetVelocity(
     float velocityY,
     float velocityZ
 ) {
-    zEffectAnimEntry *const activatedEntry = ActivateRuntime(
-        self,
-        boundNode
-    );
+    zEffectAnimEntry *const activatedEntry = ActivateRuntime(self, boundNode);
     if (activatedEntry == 0) {
         return 0;
     }
@@ -5616,34 +4774,14 @@ zEffectAnimEntry *__fastcall SetVelocity(
         zClass_NodePartial *const activatedBoundNode =
             activatedEntry->boundNode;
         if (activatedBoundNode->classId == 5) {
-            zClass_Object3D::gwObject3DSetPosition(
-                activatedBoundNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Object3D::gwObject3DSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             if ((activatedEntry->flags & 0x00000200u) == 0) {
-                zClass_Object3D::gwObject3DSetRotation(
-                    activatedBoundNode,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
+                zClass_Object3D::gwObject3DSetRotation(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             }
         } else if (activatedBoundNode->classId == 1) {
-            zClass_Camera::gwCameraSetTarget(
-                activatedBoundNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Camera::gwCameraSetTarget(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             if ((activatedEntry->flags & 0x00000200u) == 0) {
-                zClass_Camera::gwCameraSetPosition(
-                    activatedBoundNode,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
+                zClass_Camera::gwCameraSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             }
         }
     }
@@ -5658,45 +4796,29 @@ zEffectAnimEntry *__fastcall SetVelocity(
     activatedEntry->velocityX = velocityX;
     activatedEntry->velocityZ = velocityZ;
     activatedEntry->velocityY = velocityY;
-    memset(
-        activatedEntry->resetScratch,
-        0,
-        sizeof(activatedEntry->resetScratch)
-    );
+    memset(activatedEntry->resetScratch, 0, sizeof(activatedEntry->resetScratch));
 
-    QueueCmdType2Velocity(
-        self,
-        boundNode,
-        velocityX,
-        velocityY,
-        velocityZ
-    );
+    QueueCmdType2Velocity(self, boundNode, velocityX, velocityY, velocityZ);
     return activatedEntry;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setvelocity-thunk
- * @recoil-artifact defines .text recoil:function:0x45dde0: zEffectAnim::SetVelocity_Thunk.
+ * @recoil-artifact defines .text recoil:function:0x45dde0: zEffectAnim::SetVelocityThunk.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward the saved activation command to SetVelocity using the
  * retail stack-cleanup thunk ABI.
  */
-zEffectAnimEntry *__fastcall SetVelocity_Thunk(
+zEffectAnimEntry *__fastcall SetVelocityThunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float velocityX,
     float velocityY,
     float velocityZ
 ) {
-    return SetVelocity(
-        self,
-        boundNode,
-        velocityX,
-        velocityY,
-        velocityZ
-    );
+    return SetVelocity(self, boundNode, velocityX, velocityY, velocityZ);
 }
 
 /**
@@ -5713,10 +4835,7 @@ zEffectAnimEntry *__fastcall SetPositionRefAndVelocity(
     const zVec3 *refVec,
     const zVec3 *velocityVec
 ) {
-    zEffectAnimEntry *const activatedEntry = ActivateRuntime(
-        self,
-        boundNode
-    );
+    zEffectAnimEntry *const activatedEntry = ActivateRuntime(self, boundNode);
     if (activatedEntry == 0) {
         return 0;
     }
@@ -5725,54 +4844,22 @@ zEffectAnimEntry *__fastcall SetPositionRefAndVelocity(
         zClass_NodePartial *const activatedBoundNode =
             activatedEntry->boundNode;
         if (activatedBoundNode->classId == 5) {
-            zClass_Object3D::gwObject3DSetPosition(
-                activatedBoundNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Object3D::gwObject3DSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             if ((activatedEntry->flags & 0x00000200u) == 0) {
-                zClass_Object3D::gwObject3DSetRotation(
-                    activatedBoundNode,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
+                zClass_Object3D::gwObject3DSetRotation(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             }
         } else if (activatedBoundNode->classId == 1) {
-            zClass_Camera::gwCameraSetTarget(
-                activatedBoundNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Camera::gwCameraSetTarget(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             if ((activatedEntry->flags & 0x00000200u) == 0) {
-                zClass_Camera::gwCameraSetPosition(
-                    activatedBoundNode,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
+                zClass_Camera::gwCameraSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             }
         }
     }
     activatedEntry->resetScratch[0] = (unsigned int)((unsigned int)(refNode));
     if (refVec != 0) {
-        memcpy(
-            &activatedEntry->resetScratch[1],
-            &refVec->x,
-            sizeof(refVec->x)
-        );
-        memcpy(
-            &activatedEntry->resetScratch[2],
-            &refVec->y,
-            sizeof(refVec->y)
-        );
-        memcpy(
-            &activatedEntry->resetScratch[3],
-            &refVec->z,
-            sizeof(refVec->z)
-        );
+        memcpy(&activatedEntry->resetScratch[1], &refVec->x, sizeof(refVec->x));
+        memcpy(&activatedEntry->resetScratch[2], &refVec->y, sizeof(refVec->y));
+        memcpy(&activatedEntry->resetScratch[3], &refVec->z, sizeof(refVec->z));
     } else {
         activatedEntry->resetScratch[1] = 0;
         activatedEntry->resetScratch[2] = 0;
@@ -5798,39 +4885,27 @@ zEffectAnimEntry *__fastcall SetPositionRefAndVelocity(
         activatedEntry->velocityX = 0.0f;
     }
 
-    QueueCmdType3PositionRefAndVelocity(
-        self,
-        boundNode,
-        refNode,
-        refVec,
-        velocityVec
-    );
+    QueueCmdType3PositionRefAndVelocity(self, boundNode, refNode, refVec, velocityVec);
     return activatedEntry;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setpositionrefandvelocity-thunk
- * @recoil-artifact defines .text recoil:function:0x45df70: zEffectAnim::SetPositionRefAndVelocity_Thunk.
+ * @recoil-artifact defines .text recoil:function:0x45df70: zEffectAnim::SetPositionRefAndVelocityThunk.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward the saved activation command to SetPositionRefAndVelocity
  * using the retail stack-cleanup thunk ABI.
  */
-zEffectAnimEntry *__fastcall SetPositionRefAndVelocity_Thunk(
+zEffectAnimEntry *__fastcall SetPositionRefAndVelocityThunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNode,
     const zVec3 *refVec,
     const zVec3 *velocityVec
 ) {
-    return SetPositionRefAndVelocity(
-        self,
-        boundNode,
-        refNode,
-        refVec,
-        velocityVec
-    );
+    return SetPositionRefAndVelocity(self, boundNode, refNode, refVec, velocityVec);
 }
 
 /**
@@ -5847,10 +4922,7 @@ zEffectAnimEntry *__fastcall SetTransformRefs(
     zClass_NodePartial *refNodeB,
     const zVec3 *refVecB
 ) {
-    zEffectAnimEntry *const activatedEntry = ActivateRuntime(
-        self,
-        boundNode
-    );
+    zEffectAnimEntry *const activatedEntry = ActivateRuntime(self, boundNode);
     if (activatedEntry == 0) {
         return 0;
     }
@@ -5859,54 +4931,22 @@ zEffectAnimEntry *__fastcall SetTransformRefs(
         zClass_NodePartial *const activatedBoundNode =
             activatedEntry->boundNode;
         if (activatedBoundNode->classId == 5) {
-            zClass_Object3D::gwObject3DSetPosition(
-                activatedBoundNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Object3D::gwObject3DSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             if ((activatedEntry->flags & 0x00000200u) == 0) {
-                zClass_Object3D::gwObject3DSetRotation(
-                    activatedBoundNode,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
+                zClass_Object3D::gwObject3DSetRotation(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             }
         } else if (activatedBoundNode->classId == 1) {
-            zClass_Camera::gwCameraSetTarget(
-                activatedBoundNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Camera::gwCameraSetTarget(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             if ((activatedEntry->flags & 0x00000200u) == 0) {
-                zClass_Camera::gwCameraSetPosition(
-                    activatedBoundNode,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
+                zClass_Camera::gwCameraSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
             }
         }
     }
     activatedEntry->resetScratch[0] = (unsigned int)((unsigned int)(refNodeA));
     if (refVecA != 0) {
-        memcpy(
-            &activatedEntry->resetScratch[1],
-            &refVecA->x,
-            sizeof(refVecA->x)
-        );
-        memcpy(
-            &activatedEntry->resetScratch[2],
-            &refVecA->y,
-            sizeof(refVecA->y)
-        );
-        memcpy(
-            &activatedEntry->resetScratch[3],
-            &refVecA->z,
-            sizeof(refVecA->z)
-        );
+        memcpy(&activatedEntry->resetScratch[1], &refVecA->x, sizeof(refVecA->x));
+        memcpy(&activatedEntry->resetScratch[2], &refVecA->y, sizeof(refVecA->y));
+        memcpy(&activatedEntry->resetScratch[3], &refVecA->z, sizeof(refVecA->z));
     } else {
         activatedEntry->resetScratch[1] = 0;
         activatedEntry->resetScratch[2] = 0;
@@ -5914,48 +4954,29 @@ zEffectAnimEntry *__fastcall SetTransformRefs(
     }
     activatedEntry->resetScratch[4] = (unsigned int)((unsigned int)(refNodeB));
     if (refVecB != 0) {
-        memcpy(
-            &activatedEntry->resetScratch[5],
-            &refVecB->x,
-            sizeof(refVecB->x)
-        );
-        memcpy(
-            &activatedEntry->resetScratch[6],
-            &refVecB->y,
-            sizeof(refVecB->y)
-        );
-        memcpy(
-            &activatedEntry->resetScratch[7],
-            &refVecB->z,
-            sizeof(refVecB->z)
-        );
+        memcpy(&activatedEntry->resetScratch[5], &refVecB->x, sizeof(refVecB->x));
+        memcpy(&activatedEntry->resetScratch[6], &refVecB->y, sizeof(refVecB->y));
+        memcpy(&activatedEntry->resetScratch[7], &refVecB->z, sizeof(refVecB->z));
     } else {
         activatedEntry->resetScratch[5] = 0;
         activatedEntry->resetScratch[6] = 0;
         activatedEntry->resetScratch[7] = 0;
     }
 
-    QueueCmdType4TransformRefs(
-        self,
-        boundNode,
-        refNodeA,
-        refVecA,
-        refNodeB,
-        refVecB
-    );
+    QueueCmdType4TransformRefs(self, boundNode, refNodeA, refVecA, refNodeB, refVecB);
     return activatedEntry;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrefs-thunk
- * @recoil-artifact defines .text recoil:function:0x45e0b0: zEffectAnim::SetTransformRefs_Thunk.
+ * @recoil-artifact defines .text recoil:function:0x45e0b0: zEffectAnim::SetTransformRefsThunk.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward the saved activation command to SetTransformRefs using the
  * retail stack-cleanup thunk ABI.
  */
-zEffectAnimEntry *__fastcall SetTransformRefs_Thunk(
+zEffectAnimEntry *__fastcall SetTransformRefsThunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNodeA,
@@ -5963,14 +4984,7 @@ zEffectAnimEntry *__fastcall SetTransformRefs_Thunk(
     zClass_NodePartial *refNodeB,
     const zVec3 *refVecB
 ) {
-    return SetTransformRefs(
-        self,
-        boundNode,
-        refNodeA,
-        refVecA,
-        refNodeB,
-        refVecB
-    );
+    return SetTransformRefs(self, boundNode, refNodeA, refVecA, refNodeB, refVecB);
 }
 
 } // namespace zEffectAnim

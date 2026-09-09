@@ -19,23 +19,23 @@
   "functions": [
     {
       "address": "0x471710",
-      "symbol": "?BindMapCurrent_GetCommandByPrimaryKey@zInput@@YIHH@Z",
-      "name": "zInput::BindMapCurrent_GetCommandByPrimaryKey"
+      "symbol": "?BindMapCurrentGetCommandByPrimaryKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrentGetCommandByPrimaryKey"
     },
     {
       "address": "0x471720",
-      "symbol": "?BindMapCurrent_GetCommandBySecondaryKey@zInput@@YIHH@Z",
-      "name": "zInput::BindMapCurrent_GetCommandBySecondaryKey"
+      "symbol": "?BindMapCurrentGetCommandBySecondaryKey@zInput@@YIHH@Z",
+      "name": "zInput::BindMapCurrentGetCommandBySecondaryKey"
     },
     {
       "address": "0x471750",
-      "symbol": "?BindMapCurrent_SetPrimaryKeyBinding@zInput@@YIXHH@Z",
-      "name": "zInput::BindMapCurrent_SetPrimaryKeyBinding"
+      "symbol": "?BindMapCurrentSetPrimaryKeyBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrentSetPrimaryKeyBinding"
     },
     {
       "address": "0x471760",
-      "symbol": "?BindMapCurrent_SetSecondaryKeyBinding@zInput@@YIXHH@Z",
-      "name": "zInput::BindMapCurrent_SetSecondaryKeyBinding"
+      "symbol": "?BindMapCurrentSetSecondaryKeyBinding@zInput@@YIXHH@Z",
+      "name": "zInput::BindMapCurrentSetSecondaryKeyBinding"
     }
   ]
 }

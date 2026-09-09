@@ -16,12 +16,12 @@
     "src/GameZRecoil/zVideo/zvid.h"
   ],
   "functions": [
-    {"address":"0x4b2960","symbol":"?Options_LoadFromRegistry@zGame@@YAHXZ","name":"zGame::Options_LoadFromRegistry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4b2bf0","symbol":"?Options_SaveToRegistry@zGame@@YAHXZ","name":"zGame::Options_SaveToRegistry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4b2e80","symbol":"?Options_GetOrCreateOption@zGame@@YIPAUzOptionEntryPartial@@PBDHHH@Z","name":"zGame::Options_GetOrCreateOption","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2960","symbol":"?OptionsLoadFromRegistry@zGame@@YAHXZ","name":"zGame::OptionsLoadFromRegistry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2bf0","symbol":"?OptionsSaveToRegistry@zGame@@YAHXZ","name":"zGame::OptionsSaveToRegistry","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2e80","symbol":"?OptionsGetOrCreateOption@zGame@@YIPAUzOptionEntryPartial@@PBDHHH@Z","name":"zGame::OptionsGetOrCreateOption","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4b2f50","symbol":"?AcquireCachedDirectSound@zSnd@@YIPAUIDirectSound@@PBU_GUID@@@Z","name":"zSnd::AcquireCachedDirectSound","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4b2fa0","symbol":"?ReleaseCachedDirectSound@zSnd@@YAXXZ","name":"zSnd::ReleaseCachedDirectSound","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4b2fc0","symbol":"?CachedDirectSound_GetCaps@zSnd@@YIJPAU_DSCAPS@@@Z","name":"zSnd::CachedDirectSound_GetCaps","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b2fc0","symbol":"?CachedDirectSoundGetCaps@zSnd@@YIJPAU_DSCAPS@@@Z","name":"zSnd::CachedDirectSoundGetCaps","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4b2fe0","symbol":"?HasCpuidSupportRuntimeOptions@zSys@@YAHXZ","name":"zSys::HasCpuidSupportRuntimeOptions","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4b3020","symbol":"?HasMmxSupport@zCpu@@YAHXZ","name":"zCpu::HasMmxSupport","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4b3050","symbol":"?CheckCpuSignatureMask@zSys@@YAHXZ","name":"zSys::CheckCpuSignatureMask","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
@@ -33,9 +33,9 @@
     {"address":"0x4b3210","symbol":"?ReturnZeroStub@zSys@@YAHXZ","name":"zSys::ReturnZeroStub","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4b3220","symbol":"?HasAcceptedHardwareRenderer@zVid@@YAHXZ","name":"zVid::HasAcceptedHardwareRenderer","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4b3230","symbol":"?GetTotalPhysKb@zSys@@YAIXZ","name":"zSys::GetTotalPhysKb","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4b3260","symbol":"?Options_InitRegistryContext@zGame@@YIXPBD00@Z","name":"zGame::Options_InitRegistryContext","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4b32c0","symbol":"?Options_ShutdownRegistryContext@zGame@@YAXXZ","name":"zGame::Options_ShutdownRegistryContext","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4b3380","symbol":"?Options_FindOption@zGame@@YIPAUzOptionEntryPartial@@PBD@Z","name":"zGame::Options_FindOption","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    {"address":"0x4b3260","symbol":"?OptionsInitRegistryContext@zGame@@YIXPBD00@Z","name":"zGame::OptionsInitRegistryContext","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b32c0","symbol":"?OptionsShutdownRegistryContext@zGame@@YAXXZ","name":"zGame::OptionsShutdownRegistryContext","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4b3380","symbol":"?OptionsFindOption@zGame@@YIPAUzOptionEntryPartial@@PBD@Z","name":"zGame::OptionsFindOption","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],
   "translation_unit_function_order": [
     {

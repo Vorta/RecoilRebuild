@@ -20,8 +20,8 @@
   "functions": [
     {
       "address": "0x42eb70",
-      "symbol": "??0RecoilApp_AttractFmvState@@QAE@XZ",
-      "name": "RecoilApp_AttractFmvState::Constructor"
+      "symbol": "??0CRecoilAppAttractFmvState@@QAE@XZ",
+      "name": "CRecoilAppAttractFmvState::Constructor"
     },
     {
       "address": "0x42ed30",
