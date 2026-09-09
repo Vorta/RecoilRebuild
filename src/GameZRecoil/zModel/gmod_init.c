@@ -2690,6 +2690,8 @@ namespace zModel_Display {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-shutdownthunk
  * @recoil-artifact defines .text recoil:function:0x475e60: zModel_Display::ShutdownThunk
+ * @recoil-match byte
+ *
  * Purpose: registration thunk that invokes zModel_Display::Shutdown.
  */
 int __cdecl ShutdownThunk() {
@@ -2745,6 +2747,8 @@ namespace zModel_Display {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-reset
  * @recoil-artifact defines .text recoil:function:0x475f60: zModel_Display::Reset
+ * @recoil-match byte
+ *
  * Purpose: free all currently in-use display-instance pool entries.
  */
 int __cdecl Reset() {
@@ -2807,6 +2811,8 @@ namespace zModel {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setsoftwarepathactive
  * @recoil-artifact defines .text recoil:function:0x476020: zModel::SetSoftwarePathActive
+ * @recoil-match byte
+ *
  * Purpose: update the software render path flag when no hardware renderer is active.
  */
 void __fastcall SetSoftwarePathActive(
@@ -2822,6 +2828,8 @@ namespace zModel {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setvertexshadingenabled
  * @recoil-artifact defines .text recoil:function:0x476030: zModel::SetVertexShadingEnabled
+ * @recoil-match byte
+ *
  * Purpose: set the global vertex-shading enable flag.
  */
 void __fastcall SetVertexShadingEnabled(
@@ -2867,6 +2875,8 @@ namespace zModel {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-settextureworldpermeter
  * @recoil-artifact defines .text recoil:function:0x476090: zModel::SetTextureWorldPerMeter
+ * @recoil-match byte
+ *
  * Purpose: set global texture-world scale per meter.
  */
 void __stdcall SetTextureWorldPerMeter(
@@ -2882,6 +2892,8 @@ namespace zModel {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-settextureworldbase
  * @recoil-artifact defines .text recoil:function:0x4760b0: zModel::SetTextureWorldBase
+ * @recoil-match byte
+ *
  * Purpose: set global texture-world base coordinates.
  */
 void __stdcall SetTextureWorldBase(
@@ -3060,6 +3072,8 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zrndr-setinverseztolerance
  * @recoil-artifact defines .text recoil:function:0x476300: zRndr::SetInverseZTolerance
+ * @recoil-match byte
+ *
  * Purpose: update the software inverse-Z tolerance and mirror it to the active renderer path.
  */
 void __stdcall SetInverseZTolerance(
@@ -3094,12 +3108,12 @@ void __fastcall Clear(
 
 namespace zDi {
 /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zdi-setvarianttagifunset
-     * @recoil-artifact defines .text recoil:function:0x476340: zDi::SetVariantTagIfUnset
-     *
-     * Purpose: assign the variant tag to each display-instance entry that has
-     * not already initialized its variant-tag state.
-     */
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zdi-setvarianttagifunset
+ * @recoil-artifact defines .text recoil:function:0x476340: zDi::SetVariantTagIfUnset
+ *
+ * Purpose: assign the variant tag to each display-instance entry that has
+ * not already initialized its variant-tag state.
+ */
     void __fastcall SetVariantTagIfUnset(
         zDiPartial * self,
         int variantTag
@@ -3197,6 +3211,8 @@ namespace zModel {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setbackfaceeliminationtolerancescalar
  * @recoil-artifact defines .text recoil:function:0x476460: zModel::SetBackfaceEliminationToleranceScalar
+ * @recoil-match byte
+ *
  * Purpose: store the global backface-elimination tolerance scalar.
  */
 void __stdcall SetBackfaceEliminationToleranceScalar(
@@ -3210,6 +3226,8 @@ namespace zModel {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-getbackfaceeliminationtolerancescalar
  * @recoil-artifact defines .text recoil:function:0x476470: zModel::GetBackfaceEliminationToleranceScalar
+ * @recoil-match byte
+ *
  * Purpose: return the current global backface-elimination tolerance scalar.
  */
 float __cdecl GetBackfaceEliminationToleranceScalar() {
@@ -5012,6 +5030,8 @@ namespace OptCatalog {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-optcatalog-setdamagemaskslotindex
  * @recoil-artifact defines .text recoil:function:0x479c50: OptCatalog::SetDamageMaskSlotIndex
+ * @recoil-match byte
+ *
  * Purpose: select the active damage-mask handle slot.
  */
 void __fastcall SetDamageMaskSlotIndex(
@@ -5025,6 +5045,8 @@ namespace OptCatalog {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-optcatalog-registerdamagemaskslotptr
  * @recoil-artifact defines .text recoil:function:0x479c60: OptCatalog::RegisterDamageMaskSlotPtr
+ * @recoil-match byte
+ *
  * Purpose: register a damage-mask texture handle in the active OptCatalog slot.
  */
 void __fastcall RegisterDamageMaskSlotPtr(
@@ -5038,6 +5060,8 @@ void __fastcall RegisterDamageMaskSlotPtr(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-optcatalog-isdamagemaskenabled
  * @recoil-artifact defines .text recoil:function:0x479c80: OptCatalog_IsDamageMaskEnabled
+ * @recoil-match byte
+ *
  * Purpose: report whether OptCatalog damage-mask stamping is currently enabled.
  */
 int __cdecl OptCatalog_IsDamageMaskEnabled() {
@@ -5047,6 +5071,8 @@ int __cdecl OptCatalog_IsDamageMaskEnabled() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-optcatalog-setdamagemaskuv
  * @recoil-artifact defines .text recoil:function:0x479c90: OptCatalog_SetDamageMaskUv
+ * @recoil-match byte
+ *
  * Purpose: set the current damage-mask UV phase used by the OptCatalog stamp pass.
  */
 void __stdcall OptCatalog_SetDamageMaskUv(
@@ -5060,6 +5086,8 @@ void __stdcall OptCatalog_SetDamageMaskUv(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-optcatalog-setdamagemaskenabled
  * @recoil-artifact defines .text recoil:function:0x479cb0: OptCatalog_SetDamageMaskEnabled
+ * @recoil-match byte
+ *
  * Purpose: update the global OptCatalog damage-mask enable flag.
  */
 void __fastcall OptCatalog_SetDamageMaskEnabled(
@@ -5301,6 +5329,7 @@ void __fastcall zVideo_UpdateProjectionStateFromCameraData(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-buildfrustumplanes
  * @recoil-artifact defines .text recoil:function:0x47a1d0: zClipAlt_BuildFrustumPlanes
+ * @recoil-match byte
  *
  * Purpose: transform the camera's local frustum normals into world-space
  * clipping planes for the alternate clipping pass.
@@ -8097,12 +8126,12 @@ int __fastcall TrivialRejectPolyXY(
 
 namespace zModel {
 /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-updatesmallpolyrejectthresholds
-     * @recoil-artifact defines .text recoil:function:0x4804c0: zModel::UpdateSmallPolyRejectThresholds
-     *
-     * Purpose: cache the doubled and twenty-times small-polygon reject-area
-     * thresholds used by projected model clipping.
-     */
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-updatesmallpolyrejectthresholds
+ * @recoil-artifact defines .text recoil:function:0x4804c0: zModel::UpdateSmallPolyRejectThresholds
+ *
+ * Purpose: cache the doubled and twenty-times small-polygon reject-area
+ * thresholds used by projected model clipping.
+ */
     void __stdcall UpdateSmallPolyRejectThresholds(float baseRejectArea) {
         const float doubledArea = baseRejectArea + baseRejectArea;
         gModel_SmallPolyRejectArea2x = doubledArea;

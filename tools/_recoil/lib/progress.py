@@ -94,7 +94,8 @@ CALL_CONTRACT_LINKABILITY_SCHEMA = "recoil-whole-program-linkability-v1"
 EXACT_LINK_DIMENSIONS = ("linked_address", "linked_targets", "linked_byte")
 SYMBOL_BINARY_DIMENSIONS = tuple(
     dict.fromkeys(
-        (*AUTHORED_BYTE_DIMENSIONS, CALL_CONTRACT_DIMENSION, *EXACT_LINK_DIMENSIONS)
+        (*AUTHORED_BYTE_DIMENSIONS, CALL_CONTRACT_DIMENSION, *EXACT_LINK_DIMENSIONS,
+         "object_instruction", "linked_body_instruction", "linked_instruction")
     )
 )
 AUTHORED_ORDER_DIMENSIONS = (
@@ -620,6 +621,11 @@ class ProgressDocument:
 
     @staticmethod
     def _symbol_dimensions_current(symbol: Mapping[str, Any], dimensions: Iterable[str]) -> bool:
+        from _recoil.lib.match_evidence import stage_match_current
+        if tuple(dimensions) == AUTHORED_BYTE_DIMENSIONS:
+            return stage_match_current(symbol, "authored", is_current_accepted_state)
+        if tuple(dimensions) == EXACT_LINK_DIMENSIONS:
+            return stage_match_current(symbol, "linked", is_current_accepted_state)
         state = symbol.get("binary_state", {})
         return isinstance(state, Mapping) and all(
             is_current_accepted_state(state.get(dimension)) for dimension in dimensions
@@ -1624,6 +1630,15 @@ class ProgressDocument:
                     findings.append(Finding("error", "evidence.live", "current evidence must come from a live validator", str(evidence_id)))
         symbols = self.data.get("symbols", {})
         if isinstance(symbols, Mapping):
+            from _recoil.lib.function_match import MATCH_LEVELS, MATCH_VERSION
+            for symbol_id, symbol in symbols.items():
+                match = symbol.get("function_match") if isinstance(symbol, Mapping) else None
+                if match is not None and (not isinstance(match, Mapping)
+                        or type(match.get("version")) is not int or match.get("version", 0) < 1
+                        or match.get("level") not in MATCH_LEVELS
+                        or match.get("validation_mode") != "live" or not match.get("evidence_ids")):
+                    findings.append(Finding("error", "symbol.function-match", "invalid live function-match evidence", str(symbol_id)))
+        if isinstance(symbols, Mapping):
             for symbol_id, symbol in symbols.items():
                 if not isinstance(symbol, Mapping) or symbol.get("accepted_byte_facts") is None:
                     continue
@@ -1886,6 +1901,9 @@ def invalidate_order_dependencies(
             for dimension in SYMBOL_BINARY_DIMENSIONS:
                 state[dimension] = state_record("pending", "observed", "changed", [])
         symbol.pop("accepted_byte_facts", None)
+        if isinstance(symbol.get("function_match"), dict):
+            symbol["function_match"]["freshness"] = "changed"
+        symbol.pop("instruction_match_review", None)
         changed_symbols.append(str(symbol_id))
     return {"block_ids": changed_blocks, "symbol_ids": changed_symbols}
 

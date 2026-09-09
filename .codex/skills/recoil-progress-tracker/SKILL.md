@@ -40,6 +40,17 @@ Strict stage order is:
 
 ## Mutation rules
 
+Function match classification is distinct from serial stage acceptance. Use
+`progress match refresh --all` or `--at <address>` with a fresh build root,
+expected revision and dry-run/apply to record complete live `byte`/`instruction`
+proofs and synchronize `@recoil-match` source mirrors. This does not move the
+scheduler. Register specific Pro fallback eligibility through
+`progress match review-instruction --payload-file ...` (dry-run, review, apply).
+The executable runbook owns its exact payload. Old comparisons, annotations,
+and Pro answers cannot replace a fresh build. Keep exact-byte dimensions false
+for instruction matches; serial byte stages use the explicit approved
+instruction alternative, retaining every relocation and placement obligation.
+
 Live self-validating commands rebuild current source and apply their own CAS-guarded result:
 
 ```powershell
@@ -166,4 +177,9 @@ sets. This route changes only current implementation paths, retains historical
 provenance, and conservatively invalidates dependent order, call-contract, and
 byte facts.
 
-Run `python tools/recoil.py progress audit --scope pipeline --strict --json` after tracker-tool changes. A passing validation changes only the dimension named by that command.
+For positive existing-storage or owner acceptance, use the scoped live commands
+and review-template procedure in
+`docs/reconstruction/retail_executable_reproduction.md`. Registration and owner
+replacement are not substitutes for these guarded acceptance operations.
+
+Use `recoil-validation` after tracker-tool changes. A passing validation changes only the dimension named by that command.

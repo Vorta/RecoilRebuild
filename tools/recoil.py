@@ -18,6 +18,7 @@ from _recoil.lib.pipeline_obligations import (
     AcceptanceEffect, AUTHORED_ORDER_EFFECTS, FULL_ORDER_EFFECTS,
     AUTHORED_BYTE_EFFECTS, LINKED_BYTE_EFFECTS, CALL_EFFECTS,
     CLOSEOUT_EFFECTS, FINAL_EFFECTS, PROVIDER_IMPORT_EFFECTS,
+    STORAGE_EFFECTS, OWNER_EFFECTS, TIER_EFFECTS,
 )
 TOOLS_DIR = REPO_ROOT / "tools"
 
@@ -84,6 +85,24 @@ def spec(
 
 
 _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
+    spec("progress owner repair-entry-tiers", "owner_entry_repair",
+         summary="Repair only absent primary-entry tier records at X using exact reviewed owner snapshots; accept no facts.",
+         category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="owner-entry-bookkeeping"),
+    spec("progress storage accept-live", "scoped_acceptance", prepend=("storage",),
+         summary="Freshly compare and atomically accept explicitly selected authored storage dimensions.",
+         category="progress", mutates=True, required_revision_domains=("global",),
+         build_root_contract="fresh-direct-root", mutation_scope="authored-storage", acceptance_effects=STORAGE_EFFECTS),
+    spec("progress owner accept-live", "scoped_acceptance", prepend=("owner",),
+         summary="Review and freshly verify selected gates of one complete existing authored owner.",
+         category="progress", mutates=True, required_revision_domains=("global",),
+         build_root_contract="fresh-direct-root", mutation_scope="existing-authored-owner", acceptance_effects=OWNER_EFFECTS),
+    spec("progress owner promote-live", "scoped_acceptance", prepend=("promote",),
+         summary="Review and freshly verify complete primary-member evidence before promoting an existing authored owner.",
+         category="progress", mutates=True, required_revision_domains=("global",),
+         build_root_contract="fresh-direct-root", mutation_scope="existing-authored-owner-tier", acceptance_effects=TIER_EFFECTS),
+    spec("progress owner review-context", "scoped_acceptance", prepend=("review-context",),
+         summary="Freshly build a complete owner comparison and source review template without accepting facts.",
+         category="progress", mutates=True, build_root_contract="fresh-direct-root"),
     spec(
         "diagnose matrix-stack", "matrix_stack_diagnose",
         summary="Survey retail BN matrix-stack callers against an existing canonical build; diagnostic only, with explicit local-balance assumptions.",
@@ -736,6 +755,21 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
     spec("progress advance-live-authored-byte", "progress_cli", prepend=("advance-live-authored-byte",), summary="Freshly compile and directly accept the current authored byte group.", category="progress", examples=("python tools/recoil.py progress advance-live-authored-byte --build-root <fresh-root> --expected-revision <revision> --apply --json",), mutates=True, required_revision_domains=("global",), build_root_contract="fresh-direct-root", mutation_scope="byte", acceptance_effects=AUTHORED_BYTE_EFFECTS),
     spec("progress advance-live-linked-byte", "progress_cli", prepend=("advance-live-linked-byte",), summary="Freshly build and directly accept the current linked byte group.", category="progress", examples=("python tools/recoil.py progress advance-live-linked-byte --build-root <fresh-root> --expected-revision <revision> --apply --json",), mutates=True, required_revision_domains=("global",), build_root_contract="fresh-direct-root", mutation_scope="byte", acceptance_effects=LINKED_BYTE_EFFECTS),
     spec(
+        "progress match review-instruction",
+        "match_progress",
+        prepend=("review-instruction",),
+        summary="Record reviewed Pro eligibility for register-only instruction matching; accepts no function or stage.",
+        category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="match-review",
+    ),
+    spec(
+        "progress match refresh",
+        "match_progress",
+        prepend=("refresh",),
+        summary="Freshly classify complete function matches and synchronize source annotations without advancing a stage.",
+        category="progress", mutates=True, required_revision_domains=("global",),
+        build_root_contract="fresh-direct-root", mutation_scope="function-match",
+    ),
+    spec(
         "progress advance-live-call-contract",
         "progress_cli",
         prepend=("advance-live-call-contract",),
@@ -1016,6 +1050,9 @@ def internal_command_env() -> dict[str, str]:
 
 SOURCE_POLICY_APPLY_COMMANDS = frozenset(
     {
+        ("progress", "storage", "accept-live"),
+        ("progress", "owner", "accept-live"),
+        ("progress", "owner", "promote-live"),
         ("progress", "advance-live-order"),
         ("progress", "advance-live-call-contract"),
         ("progress", "advance-live-authored-byte"),

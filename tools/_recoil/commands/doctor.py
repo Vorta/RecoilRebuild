@@ -24,6 +24,7 @@ def _steps() -> list[tuple[str, list[str]]]:
         ("progress tracker", _command("progress", "audit", "--scope", "pipeline", "--strict", "--json")),
         ("live validation surface", _command("audit", "live-validation-surface", "--strict")),
         ("source policy", _command("audit", "source-policy")),
+        ("function match annotations", _command("audit", "source-trace", "--match-only")),
         ("serial pipeline reachability", _command("audit", "pipeline-reachability", "--strict")),
     ]
     return steps

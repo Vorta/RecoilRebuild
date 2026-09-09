@@ -885,7 +885,7 @@ def _owner_view(document: ProgressDocument, selector: str) -> dict[str, Any]:
                 and (
                     any(
                         isinstance(relationship, Mapping)
-                        and relationship.get("kind") == "primary-function"
+                        and relationship.get("kind") in {"primary-function", "primary-data"}
                         and relationship.get("symbol_id") in symbol_ids
                         for relationship in owner.get("relationships", [])
                     )
@@ -2831,6 +2831,17 @@ def _validate_byte_result(
     matched = _normalize_matched_groups(result.get("matched_groups"))
     if len(matched) > len(expected_groups):
         raise ProgressError("live byte result matched more groups than the tracker mode contains")
+    for group in result.get("matched_groups", []):
+        if group.get("match_level", "byte") not in {"byte", "instruction"}:
+            raise ProgressError("live byte result has an invalid match level")
+        if group.get("match_level") == "instruction":
+            identities = group.get("identity_results")
+            if not isinstance(identities, list) or not identities or any(
+                not item.get("passed") or (item.get("match_level") == "instruction" and
+                    (item.get("instruction_review_current") is not True or not item.get("review_evidence_id")))
+                for item in identities
+            ):
+                raise ProgressError("instruction result lacks complete fresh proof and Pro review")
     for index, scope_ids in enumerate(matched):
         expected = list(expected_groups[index]["scope_ids"])
         if scope_ids != expected:
@@ -2939,6 +2950,13 @@ def advance_live_byte(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         return (0 if result["passed"] else 1), details
 
     flat_scope = [symbol_id for group in groups_to_commit for symbol_id in group]
+    from _recoil.commands.match_progress import prepare_updates, prepare_annotations, record_updates, with_annotation_writes
+    from _recoil.commands.vc5_build import load_config, DEFAULT_MANIFEST
+    updates = prepare_updates(document, raw, load_config(DEFAULT_MANIFEST))
+    updates = {identity: value for identity, value in updates.items() if identity in flat_scope}
+    edits, _excluded = prepare_annotations(document, updates)
+    levels = {identity: group.get("match_level", "byte") for group in raw.get("matched_groups", [])
+              for identity in group["scope_ids"]}
 
     def transform(data: dict[str, Any]) -> None:
         evidence_id = add_live_evidence(
@@ -2952,20 +2970,18 @@ def advance_live_byte(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
                 "first_divergence": result["first_divergence"],
             },
         )
+        record_updates(data, updates, evidence_id)
         accept_live_byte_groups(
             data,
             mode=args.mode,
             groups=groups_to_commit,
             evidence_id=evidence_id,
-            facts={"validation_mode": "live", "mode": args.mode},
+            facts={"validation_mode": "live", "mode": args.mode, "match_levels": levels},
         )
         details["evidence_id"] = evidence_id
 
-    commit = store.mutate(
-        transform,
-        expected_revision=args.expected_revision,
-        apply=args.apply,
-    )
+    commit = with_annotation_writes(edits, args.apply, lambda: store.mutate(
+        transform, expected_revision=args.expected_revision, apply=args.apply))
     return (0 if result["passed"] else 1), _commit_payload(commit, details)
 
 

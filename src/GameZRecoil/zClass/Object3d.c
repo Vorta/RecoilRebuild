@@ -27,6 +27,8 @@ namespace zClass_Node {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.propagatetransformdirtyrecursive
      * @recoil-artifact defines .text recoil:function:0x44d990: zClass_Node::PropagateTransformDirtyRecursive
+     * @recoil-match byte
+     *
      * Purpose: mark Object3D transform data, node bounds, and descendants dirty
      * for transform-dependent world/render updates.
      */

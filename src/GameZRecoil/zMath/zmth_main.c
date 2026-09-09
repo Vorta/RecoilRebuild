@@ -651,6 +651,8 @@ float __fastcall Vec3DirectionTo(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3lerpnormalize-gamezrecoil-zmath-zmath-vec3-cpp
  * @recoil-artifact defines .text recoil:function:0x4729f0: zMath::Vec3LerpNormalize (GameZRecoil/zMath/zmath_vec3.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Blends the first vector toward a second vector and normalizes the result.
  */
 void __fastcall Vec3LerpNormalize(
@@ -848,6 +850,8 @@ int __cdecl zMath::CrtMatherrHandler(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-project-getlastscreenscalexy
  * @recoil-artifact defines .text recoil:function:0x472ed0: zMath_Project_GetLastScreenScaleXY.
+ * @recoil-match byte
+ *
  * Purpose: returns the last cached projection X/Y scale values as a zVec2.
  */
 zVec2 __cdecl zMath_Project_GetLastScreenScaleXY() {
@@ -861,6 +865,8 @@ namespace zMath {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matstackpushandcloneparent
  * @recoil-artifact defines .text recoil:function:0x472ef0: zMath::MatStackPushAndCloneParent.
+ * @recoil-match byte
+ *
  * Purpose: pushes a caller-supplied matrix slot and clones the parent matrix
  * and identity flag into the new top-of-stack slot.
  */
@@ -881,6 +887,8 @@ void __fastcall MatStackPushAndCloneParent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matstackpushptr
  * @recoil-artifact defines .text recoil:function:0x472f30: zMath::MatStackPushPtr.
+ * @recoil-match byte
+ *
  * Purpose: pushes a caller-supplied matrix pointer onto the zMath matrix
  * stack and marks the new slot non-identity.
  */
@@ -896,6 +904,8 @@ void __fastcall MatStackPushPtr(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matstackpopptr
  * @recoil-artifact defines .text recoil:function:0x472f60: zMath::MatStackPopPtr.
+ * @recoil-match byte
+ *
  * Purpose: pops the current zMath matrix pointer and identity-flag slots.
  */
 void __cdecl MatStackPopPtr() {
@@ -906,6 +916,8 @@ void __cdecl MatStackPopPtr() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadcamerascratchb
  * @recoil-artifact defines .text recoil:function:0x472f90: zMath::MatLoadCameraScratchB
+ * @recoil-match byte
+ *
  * Purpose: loads camera scratch B into the current matrix stack slot.
  */
 void __cdecl MatLoadCameraScratchB() {
@@ -915,6 +927,8 @@ void __cdecl MatLoadCameraScratchB() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadcamerascratcha
  * @recoil-artifact defines .text recoil:function:0x472fa0: zMath::MatLoadCameraScratchA
+ * @recoil-match byte
+ *
  * Purpose: loads camera scratch A into the current matrix stack slot.
  */
 void __cdecl MatLoadCameraScratchA() {
@@ -1042,6 +1056,8 @@ void __cdecl zMath_Mat_LoadView() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-setupcamera
  * @recoil-artifact defines .text recoil:function:0x4731f0: zMath_Mat_SetupCamera
+ * @recoil-match byte
+ *
  * Purpose: loads camera scratch B and composes it through the parent matrix
  * stack slot.
  */
@@ -1057,6 +1073,8 @@ namespace zMath {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matcopycurrentto
  * @recoil-artifact defines .text recoil:function:0x473210: zMath::MatCopyCurrentTo.
+ * @recoil-match byte
+ *
  * Purpose: copies the current matrix stack slot into caller-provided storage
  * and returns that storage pointer.
  */
@@ -1075,6 +1093,8 @@ zMat4x3 *__stdcall MatCopyCurrentTo(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-getcurrent
  * @recoil-artifact defines .text recoil:function:0x473230: zMath_Mat_GetCurrent.
+ * @recoil-match byte
+ *
  * Purpose: returns the current zMath matrix stack slot as a 4x3 matrix.
  */
 zMat4x3 *__cdecl zMath_Mat_GetCurrent() {
@@ -1084,6 +1104,8 @@ zMat4x3 *__cdecl zMath_Mat_GetCurrent() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-iscurrentidentity
  * @recoil-artifact defines .text recoil:function:0x473240: zMath_Mat_IsCurrentIdentity.
+ * @recoil-match byte
+ *
  * Purpose: returns the identity flag for the current zMath matrix stack slot.
  */
 int __cdecl zMath_Mat_IsCurrentIdentity() {
@@ -1094,6 +1116,8 @@ namespace zMath {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadcurrentfrom
  * @recoil-artifact defines .text recoil:function:0x473250: zMath::MatLoadCurrentFrom.
+ * @recoil-match byte
+ *
  * Purpose: copies a caller-supplied 4x3 matrix into the current zMath matrix
  * stack slot and clears the identity flag.
  */
@@ -1111,6 +1135,8 @@ void __fastcall MatLoadCurrentFrom(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadrotationfrom3x3
  * @recoil-artifact defines .text recoil:function:0x473280: zMath::MatLoadRotationFrom3x3.
+ * @recoil-match byte
+ *
  * Purpose: loads only the 3x3 rotation rows into the current matrix stack
  * slot and marks the slot non-identity.
  */
@@ -1135,6 +1161,8 @@ void __fastcall MatLoadRotationFrom3x3(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matloadidentity
  * @recoil-artifact defines .text recoil:function:0x4732f0: zMath::MatLoadIdentity.
+ * @recoil-match byte
+ *
  * Purpose: writes an identity 4x3 matrix into the current matrix stack slot
  * and marks the slot as identity.
  */
@@ -1582,6 +1610,8 @@ void __fastcall MatBuildEulerRotation3x3(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-setscreensize-gamezrecoil-zmath-zmath-proj-cpp
  * @recoil-artifact defines .text recoil:function:0x4743e0: zMath_SetScreenSize (GameZRecoil/zMath/zmath_proj.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Stores the active projection screen width and height globals.
  */
 void __stdcall zMath_SetScreenSize(
@@ -1671,6 +1701,8 @@ namespace zMath {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3perpxz
  * @recoil-artifact defines .text recoil:function:0x4745c0: zMath::Vec3PerpXZ.
+ * @recoil-match byte
+ *
  * Purpose: builds the XZ-plane perpendicular vector with a zero Y component.
  */
 void __fastcall Vec3PerpXZ(
@@ -2441,6 +2473,8 @@ void __fastcall zMath_Quat_FromEuler(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-multiply
  * @recoil-artifact defines .text recoil:function:0x475910: zMath_Quat_Multiply
+ * @recoil-match byte
+ *
  * Purpose: computes the quaternion product used by zMath rotation composition.
  */
 void __fastcall zMath_Quat_Multiply(

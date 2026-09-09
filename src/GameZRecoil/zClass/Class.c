@@ -379,7 +379,7 @@ namespace zClass_Class {
      * @recoil-artifact defines .text recoil:function:0x447980: zClass_Class::DeleteNodeByType.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: validate node ownership and dispatch deletion by classId.
-    */
+     */
     int __fastcall DeleteNodeByType(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
@@ -488,7 +488,7 @@ namespace zClass_Class {
      * @recoil-artifact defines .text recoil:function:0x447b60: zClass_Class::TryFreeNode.
      * Purpose: remove a node from active lists, then either free it
      * immediately or enqueue it for deferred freeing.
-    */
+     */
     int __fastcall TryFreeNode(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
@@ -2649,6 +2649,8 @@ namespace zClass_Class {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.setsingleparentflagrecursive
      * @recoil-artifact defines .text recoil:function:0x449b40: zClass_Class::SetSingleParentFlagRecursive.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: propagate the single-parent flag through a data-driven zClass
      * child subtree when listA ownership count changes.
@@ -2689,6 +2691,8 @@ namespace zClass_Node {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.setcontextrecursive
      * @recoil-artifact defines .text recoil:function:0x437e60: zClass_Node::SetContextRecursive
+     * @recoil-match byte
+     *
      * BN evidence: fastcall self/context, stack flagMask, callbackContext at
      * 0x40, flags at 0x24, signed listCountB at 0x5c, listB at 0x60,
      * recursive self-call only, and no global data references.
@@ -2715,6 +2719,8 @@ namespace zClass_Node {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.setdiflagbit0recursive
      * @recoil-artifact defines .text recoil:function:0x437ea0: zClass_Node::SetDiFlagBit0Recursive
+     * @recoil-match byte
+     *
      * BN evidence: fastcall node/enabled, gwNodeGetUserData for the typed
      * userDataOrDiRef display-instance reference, zDi::SetFlagBit0 when
      * non-null, signed listCountB at 0x5c, listB at 0x60, recursive self-call

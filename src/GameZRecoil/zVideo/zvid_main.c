@@ -1991,9 +1991,10 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getdisplaymodebpp
  * @recoil-artifact defines .text recoil:function:0x4a66e0: zVideo::GetDisplayModeBpp.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: returns the cached display-mode bits-per-pixel value.
- *
  * Evidence: BN assembly is a leaf load from g_zVideo_DisplayModeBpp at
  * 0x632150 followed by return.
  */
@@ -2004,6 +2005,8 @@ int __cdecl GetDisplayModeBpp() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-init-applymodeindex
  * @recoil-artifact defines .text recoil:function:0x4a66f0: zVideo::Init_ApplyModeIndex.
+ * @recoil-match byte
+ *
  * Purpose: provide the recovered zVideo::Init_ApplyModeIndex behavior.
  */
 int __fastcall Init_ApplyModeIndex(
@@ -2028,9 +2031,10 @@ void *__cdecl GetSwSurfacePixels() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacewidth
  * @recoil-artifact defines .text recoil:function:0x4a6720: zVideo::GetSwSurfaceWidth.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: returns the cached software surface width.
- *
  * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.width at 0x632200.
  */
 int __cdecl GetSwSurfaceWidth() {
@@ -2068,6 +2072,8 @@ namespace zVideo_dd3d {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-callclearzbufferrect
  * @recoil-artifact defines .text recoil:function:0x4a6750: zVideo_dd3d::CallClearZBufferRect.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Tail-dispatch the active Z-buffer clear callback.
@@ -2085,6 +2091,8 @@ namespace zVideo {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-callclearswsurfaceandzbuffer
  * @recoil-artifact defines .text recoil:function:0x4a6760: zVideo::CallClearSwSurfaceAndZBuffer.
+ * @recoil-match byte
+ *
  * Purpose: Tail-dispatches the installed software clear callback with surface
  * and Z-buffer rectangles.
  */
@@ -2129,6 +2137,8 @@ void __cdecl RunPostprocessOnSwBuffer() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockswsurfacestate
  * @recoil-artifact defines .text recoil:function:0x4a67d0: zVideo::Dispatch_UnlockSwSurfaceState.
+ * @recoil-match byte
+ *
  * Purpose: Dispatches the configured surface unlock provider for the software surface state.
  */
 int __cdecl Dispatch_UnlockSwSurfaceState() {
@@ -2159,6 +2169,8 @@ void *__cdecl GetPrimarySurfacePixels() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacewidth
  * @recoil-artifact defines .text recoil:function:0x4a6800: zVideo::GetPrimarySurfaceWidth.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: return the current primary surface width from the recovered surface-state global.
  */
@@ -2195,6 +2207,8 @@ int __cdecl GetPrimarySurfacePitch() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-callclearprimarysurfaceandzbuffer
  * @recoil-artifact defines .text recoil:function:0x4a6830: zVideo::CallClearPrimarySurfaceAndZBuffer.
+ * @recoil-match byte
+ *
  * Purpose: Tail-dispatches the installed primary clear callback with the
  * primary surface state.
  */
@@ -2246,6 +2260,8 @@ int __cdecl RunPostprocessOnPrimaryBuffer() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockprimarysurfacestate
  * @recoil-artifact defines .text recoil:function:0x4a68d0: zVideo::Dispatch_UnlockPrimarySurfaceState.
+ * @recoil-match byte
+ *
  * Purpose: Dispatches the configured surface unlock provider for the primary surface state.
  */
 int __cdecl Dispatch_UnlockPrimarySurfaceState() {
@@ -2255,6 +2271,8 @@ int __cdecl Dispatch_UnlockPrimarySurfaceState() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-lockdisplaymodesurfacestate
  * @recoil-artifact defines .text recoil:function:0x4a68e0: zVideo::Dispatch_LockDisplayModeSurfaceState.
+ * @recoil-match byte
+ *
  * Purpose: Dispatches the configured surface lock provider for the display-mode surface state.
  */
 int __cdecl Dispatch_LockDisplayModeSurfaceState() {
@@ -2264,6 +2282,8 @@ int __cdecl Dispatch_LockDisplayModeSurfaceState() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockdisplaymodesurfacestate
  * @recoil-artifact defines .text recoil:function:0x4a68f0: zVideo::Dispatch_UnlockDisplayModeSurfaceState.
+ * @recoil-match byte
+ *
  * Purpose: Dispatches the configured surface unlock provider for the display-mode surface state.
  */
 int __cdecl Dispatch_UnlockDisplayModeSurfaceState() {
@@ -2273,6 +2293,8 @@ int __cdecl Dispatch_UnlockDisplayModeSurfaceState() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-adjustsurfacesifenabled
  * @recoil-artifact defines .text recoil:function:0x4a6900: zVideo::PresentOrAdjustSurfacesIfEnabled.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: forward enabled surface-present requests through the renderer dispatch and tick the video frame counter.
  */

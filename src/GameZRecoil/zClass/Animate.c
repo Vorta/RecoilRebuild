@@ -180,6 +180,7 @@ namespace zClass_Animate {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.advancetime
      * @recoil-artifact defines .text recoil:function:0x453c90: zClass_Animate::AdvanceTime
+     * @recoil-match byte
      *
      * Purpose: advance the animation clock, stop non-looping animations at the
      * end, and wrap looping animations back to their loop base.

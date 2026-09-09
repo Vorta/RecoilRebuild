@@ -1048,6 +1048,8 @@ namespace zGeometry_ConvexPolygonSet {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-destroy
  * @recoil-artifact defines .text recoil:function:0x46c720: zGeometry_ConvexPolygonSet::Destroy
+ * @recoil-match byte
+ *
  * Purpose: Release a convex polygon set and its owned point and polygon arrays.
  */
 void __fastcall Destroy(

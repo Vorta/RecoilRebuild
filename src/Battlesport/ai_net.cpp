@@ -334,6 +334,8 @@ void AINet::LoadAllFromZrd() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-alloc
  * @recoil-artifact defines .text recoil:function:0x402ff0: AINet::Alloc (Battlesport/ai_net.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Allocates a zeroed AI network record and appends it to the global AI network list.
  */
 AINet *AINet::Alloc() {
@@ -358,6 +360,8 @@ AINet *AINet::Alloc() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x403040: AINet::LoadFromZrd (Battlesport/ai_net.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Parses one AI path network ZRD, builds its node list, resolves links, and returns the loaded network.
  */
 AINet *__fastcall AINet::LoadFromZrd(
@@ -657,6 +661,8 @@ AINet *__fastcall AINet::LoadFromZrd(
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-findbynetid
  * @recoil-artifact defines .text recoil:function:0x403510: AINet::FindByNetId (Battlesport/ai_net.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Finds the first loaded AI network with the requested network id.
  */
 AINet *__fastcall AINet::FindByNetId(
@@ -676,6 +682,8 @@ AINet *__fastcall AINet::FindByNetId(
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-findnodebyindex
  * @recoil-artifact defines .text recoil:function:0x403530: AINet::FindNodeByIndex (Battlesport/ai_net.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Finds the first AI path node with the requested parsed node index.
  */
 AINetNode *__fastcall AINet::FindNodeByIndex(
@@ -696,6 +704,8 @@ AINetNode *__fastcall AINet::FindNodeByIndex(
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-resolveneighborlinksandbuildprobefans
  * @recoil-artifact defines .text recoil:function:0x403550: AINet::ResolveNeighborLinksAndBuildProbeFans (Battlesport/ai_net.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Resolves neighbor indices into node pointers and allocates probe fans for valid AI path links.
  */
 void __fastcall AINet::ResolveNeighborLinksAndBuildProbeFans(
@@ -829,6 +839,8 @@ void AINetPathProbeFan::InitFromSegment(
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-findnearestnode
  * @recoil-artifact defines .text recoil:function:0x4036f0: AINet::FindNearestNode (Battlesport/ai_net.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Scans an AI node list and returns the node nearest to the query position.
  */
 AINetNode *__fastcall AINet::FindNearestNode(
@@ -866,6 +878,8 @@ AINetNode *__fastcall AINet::FindNearestNode(
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-buildaipeerringsbyainetid
  * @recoil-artifact defines .text recoil:function:0x403750: AINet::BuildAiPeerRingsByAiNetId.
+ * @recoil-match byte
+ *
  * Source placement audit: BN file-literal order makes accepted player.cpp
  * ownership invalid; this body remains here only until the AINet remap can
  * pull the required save-state declarations with it.
@@ -896,6 +910,8 @@ void AINet::BuildAiPeerRingsByAiNetId() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainetnode-free
  * @recoil-artifact defines .text recoil:function:0x4037c0: AINetNode::Free (Battlesport/ai_net.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Frees a path node and any probe-fan records allocated for its neighbor links.
  */
 void AINetNode::Free() {
@@ -918,6 +934,8 @@ void AINetNode::Free() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-free
  * @recoil-artifact defines .text recoil:function:0x403800: AINet::Free (Battlesport/ai_net.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Frees every node owned by this AI network and then releases the network record.
  */
 void AINet::Free() {
@@ -938,6 +956,7 @@ void AINet::Free() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-aidiscardnegativebranchpathnodes
  * @recoil-artifact defines .text recoil:function:0x403830: AINet::AiDiscardNegativeBranchPathNodes
+ * @recoil-match byte
  *
  * Purpose: discard temporary negative-index AI path nodes before the saved
  * player state releases or resumes its current path cursor.
@@ -961,6 +980,8 @@ void __fastcall AINet::AiDiscardNegativeBranchPathNodes(
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ainet-freeall
  * @recoil-artifact defines .text recoil:function:0x403870: AINet::FreeAll (Battlesport/ai_net.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Walks the global AI network list and frees every loaded network.
  */
 void AINet::FreeAll() {

@@ -118,12 +118,16 @@ def test_completion_routes_report_scoped_missing_acceptance_operations() -> None
 
     result = audit_completion_routes()
     missing = {row["id"] for row in result["obligations"] if not row["producers"]}
-    assert missing == (
+    assert not missing
+    scoped = (
         {f"authored-storage/{dimension}/accept" for dimension in STORAGE_DIMENSIONS}
         | {f"existing-authored-owner/{gate}/accept" for gate in OWNER_GATES}
         | {f"existing-authored-owner-tier/{tier}/promote" for tier in TIERS[1:]}
     )
-    assert result["completion_routes_complete"] is False
+    assert result["completion_routes_complete"] is True
+    routes = [spec for spec in recoil.COMMAND_SPECS if spec.module != "scoped_acceptance"]
+    without_scoped = audit_completion_routes(routes)
+    assert {row["id"] for row in without_scoped["obligations"] if not row["producers"]} == scoped
     assert all(row["operational"] for row in result["routes"])
     calls = next(row for row in result["obligations"] if row["dimension"] == "call_contract")
     assert set(calls["producers"]) == {
@@ -146,7 +150,7 @@ def test_reachability_rejects_a_registered_but_unimplemented_parser_route(monkey
     assert not any(row["producers"] for row in result["obligations"])
 
 
-def test_acceptance_effects_match_real_order_and_byte_writes_without_storage_promotion() -> None:
+def test_acceptance_effects_match_real_order_and_byte_writes_without_storage_promotion(tmp_path, monkeypatch) -> None:
     from _recoil.commands.progress_v2 import accept_live_order_block, accept_live_byte_groups
     from _recoil.commands.final_image_coverage import _storage_accepted
     from _recoil.lib.progress import STORAGE_DIMENSIONS
@@ -166,10 +170,182 @@ def test_acceptance_effects_match_real_order_and_byte_writes_without_storage_pro
         data["symbols"]["function"]["binary_state"] = {}
         accept_live_byte_groups(data, mode=mode, groups=[["function"]], evidence_id="proof", facts={})
         declared = recoil.COMMANDS[("progress", route)].acceptance_effects
-        assert set(data["symbols"]["function"]["binary_state"]) == {effect.dimension for effect in declared}
+        # Effects declare both alternatives; an exact match must not be
+        # required to write the optional instruction-fallback dimensions.
+        assert set(data["symbols"]["function"]["binary_state"]) == {
+            effect.dimension for effect in declared if not effect.dimension.endswith("instruction")}
     assert not _storage_accepted(storage)
     assert all(row == pending for row in storage["verification"].values())
     assert data["owners"] == {"owner": {"tier": "X"}}
+    _exercise_scoped_acceptance(tmp_path, monkeypatch)
+
+
+def _exercise_scoped_acceptance(tmp_path, monkeypatch):
+    from copy import deepcopy
+    from types import SimpleNamespace as Row
+    import pytest
+    from _recoil.commands import scoped_acceptance as scoped
+    from _recoil.lib.progress import OWNER_GATES, STORAGE_DIMENSIONS, ProgressError
+    from _recoil.lib.storage_proof import storage_scope
+
+    sid, oid, storage_id = "recoil:data:0x401000", "recoil:owner:unit", "recoil:storage:unit"
+    symbol = dict(binary="recoil", kind="data", disposition="authored", address="0x401000",
+        end_exclusive="0x401004", size=4, extent_state="known", output_section_id="recoil:section:.data",
+        storage_contribution_ids=[storage_id], source_traceability={"state": "resolved", "source_edges": [{}]})
+    owner = dict(binary="recoil", kind="data-owner", relationships=[{"kind": "primary-data", "symbol_id": sid}],
+        gates={key: "accepted" for key in OWNER_GATES}, reimplementation={"entries": {sid: {"tier": "X", "kind": "data"}}})
+    storage = dict(binary="recoil", reference={k: symbol[k] for k in ("address", "end_exclusive", "size", "extent_state")},
+        symbol_ids=[sid], owner_ids=[oid], output_section_id=symbol["output_section_id"],
+        applicability={key: True for key in STORAGE_DIMENSIONS}, verification={})
+    data = dict(symbols={sid: symbol}, owners={oid: owner}, storage_contributions={storage_id: storage})
+    from _recoil.commands import owner_entry_repair as repair
+    with monkeypatch.context() as patch:
+        patch.setattr(repair, "validate_owner_invariants", lambda value: None)
+        damaged = deepcopy(data)
+        damaged["owners"][oid]["relationships"][0]["address"] = symbol["address"]
+        damaged["owners"][oid]["reimplementation"]["entries"].clear()
+        before = deepcopy(damaged)
+        payload = dict(reviewed=True, reason="repair absent X bookkeeping", current_owners=deepcopy(damaged["owners"]))
+        changes = repair.repair(damaged, payload)
+        assert changes == [{"owner_id": oid, "symbol_id": sid, "tier": "X"}]
+        expected = deepcopy(before)
+        expected["owners"][oid]["reimplementation"]["entries"][sid] = {"kind": "data", "tier": "X", "evidence_ids": []}
+        assert damaged == expected
+        with pytest.raises(ProgressError): repair.repair(damaged, payload)
+        with pytest.raises(ProgressError): repair.repair(deepcopy(before), {**payload, "reviewed": False})
+    document = Row(data=data, revision=7, collection=lambda name: data[name])
+    assert storage_scope(document, storage_id)[1:] == ([sid], 0x401000, 0x401004)
+    for field, bad in (("owner_ids", []), ("symbol_ids", [sid, sid]), ("output_section_id", "recoil:section:.rdata")):
+        original = storage[field]
+        storage[field] = bad
+        with pytest.raises(ProgressError): storage_scope(document, storage_id)
+        storage[field] = original
+    data["storage_contributions"]["unknown"] = dict(binary="recoil", output_section_id=symbol["output_section_id"],
+        reference={"address": "0x401002", "extent_state": "unknown"})
+    with pytest.raises(ProgressError): storage_scope(document, storage_id)
+    del data["storage_contributions"]["unknown"]
+    data["symbols"]["extra"] = dict(symbol)
+    with pytest.raises(ProgressError, match="reciprocal"): storage_scope(document, storage_id)
+    del data["symbols"]["extra"]
+    comparison = dict(storage_id=storage_id, symbol_ids=[sid], dimensions={key: True for key in STORAGE_DIMENSIONS})
+    for dimension in STORAGE_DIMENSIONS:
+        proposal = deepcopy(data)
+        scoped.record_storage(proposal, comparison, [dimension], "proof")
+        assert set(proposal["storage_contributions"][storage_id]["verification"]) == {dimension}
+        assert proposal["owners"] == data["owners"]
+        bad = deepcopy(comparison); bad["dimensions"][dimension] = False
+        with pytest.raises(ProgressError): scoped.record_storage(proposal, bad, [dimension], "proof")
+    with monkeypatch.context() as patch:
+        patch.setattr(scoped, "validate_owner_invariants", lambda value: None)
+        events = []
+        live = Row(document=document, source_graph=lambda members: events.append(("source", members)),
+            storage=lambda identity: comparison, providers=lambda owner: {})
+        for tier in ("C", "B", "A", "S"):
+            report = scoped.verify_owner(live, oid, gates=[], tier=tier)
+            proposal = deepcopy(data)
+            scoped.record_owner(proposal, report, "proof")
+            assert proposal["owners"][oid]["reimplementation"]["entries"][sid]["tier"] == tier
+            assert proposal["symbols"] == data["symbols"]
+        for gate in OWNER_GATES:
+            report = scoped.verify_owner(live, oid, gates=[gate], tier=None)
+            proposal = deepcopy(data)
+            proposal["owners"][oid]["gates"] = {key: "pending" for key in OWNER_GATES}
+            scoped.record_owner(proposal, report, "proof")
+            assert [key for key, value in proposal["owners"][oid]["gates"].items() if value == "accepted"] == [gate]
+        owner["gates"]["boundary"] = "none"
+        with pytest.raises(ProgressError): scoped.verify_owner(live, oid, gates=[], tier="B")
+        owner["gates"]["boundary"] = "accepted"
+        symbol["source_traceability"]["state"] = "unresolved"
+        with pytest.raises(ProgressError): scoped.verify_owner(live, oid, gates=[], tier="C")
+        symbol["source_traceability"]["state"] = "resolved"
+        assert events
+        saved_gates = dict(owner["gates"])
+        owner["gates"] = {key: "pending" for key in OWNER_GATES}
+        live.data_presence = lambda identity: {"object_definition": identity}
+        # C and boundary discovery can bootstrap mutually dependent owners.
+        data["owners"]["dependency"] = {"kind": "data-owner", "gates": {"boundary": "pending"}}
+        owner["relationships"].append({"kind": "depends-on-owner", "target_owner_id": "dependency"})
+        assert scoped.verify_owner(live, oid, gates=[], tier="C")["passed"]
+        assert scoped.verify_owner(live, oid, gates=["boundary"], tier=None)["passed"]
+        owner["relationships"].pop(); del data["owners"]["dependency"]
+        owner["gates"] = saved_gates
+        owner["reimplementation"]["entries"][sid]["tier"] = "S"
+        comparison["dimensions"]["raw"] = False
+        with pytest.raises(ProgressError): scoped.verify_owner(live, oid, gates=[], tier="C")
+        comparison["dimensions"]["raw"] = True
+        owner["reimplementation"]["entries"][sid]["tier"] = "X"
+    from _recoil.lib.storage_proof import preserve_storage_relationships
+    def allocation(retail, candidate):
+        return {"retail_address": hex(retail), "size": 4, "identities": [{"candidate_address": hex(candidate)}]}
+    preserve_storage_relationships([allocation(0x1000, 0x2000), allocation(0x1010, 0x2020)])
+    preserve_storage_relationships([allocation(0x1000, 0x2000), allocation(0x1000, 0x2000)])
+    for pair in ([allocation(0x1000, 0x2000), allocation(0x1010, 0x2000)],
+                 [allocation(0x1000, 0x2000), allocation(0x1000, 0x2020)]):
+        with pytest.raises(ProgressError): preserve_storage_relationships(pair)
+    context = {"members": {sid: symbol}}
+    payload = dict(reviewed=True, context=context, gates=["source"], tier=None, rationale="reviewed source",
+        scrutiny={"decision": "ALLOW", "rationale": "complete source review"},
+        entries={sid: {"source": "attached definition", "behavior": "retail read semantics"}}, live_comparison={})
+    scoped.validate_review(payload, context, gates=["source"])
+    for changes in ({"reviewed": False}, {"context": {}}, {"entries": {}}, {"gates": ["byte"]},
+                    {"scrutiny": {"decision": "BLOCK", "rationale": "missing proof"}}):
+        with pytest.raises(ProgressError): scoped.validate_review({**payload, **changes}, context, gates=["source"])
+    fresh = scoped.REPO_ROOT / "build/live-validation/unit-fresh"
+    assert scoped.comparison_content({"object_path": fresh.as_posix()+"/unit.obj"}, fresh) == {"object_path": "<fresh-build>/unit.obj"}
+    # Currentness rejects both new input paths and mixed output generations.
+    live_inputs = object.__new__(scoped.LiveInputs)
+    live_inputs.before = [{"path": "source", "size": 1}]
+    live_inputs.input_inventory = lambda: list(live_inputs.before)
+    live_inputs.root = tmp_path
+    output = tmp_path/"one.obj"; output.write_bytes(b"one")
+    live_inputs.outputs = {output: b"one"}
+    live_inputs.unchanged()
+    output.write_bytes(b"two")
+    with pytest.raises(ProgressError): live_inputs.unchanged()
+    output.write_bytes(b"one")
+    extra = tmp_path/"extra.obj"; extra.write_bytes(b"extra")
+    with pytest.raises(ProgressError): live_inputs.unchanged()
+    extra.unlink()
+    live_inputs.input_inventory = lambda: live_inputs.before + [{"path": "new-header", "size": 1}]
+    with pytest.raises(ProgressError): live_inputs.unchanged()
+    # Exercise the public storage handler through its fresh-build and guarded
+    # mutation boundaries, with no native compiler or production ledger fixture.
+    with monkeypatch.context() as patch:
+        events, committed = [], []
+        class Store:
+            def __init__(self, path): pass
+            def load(self): return document
+            def mutate(self, transform, *, expected_revision, apply):
+                assert expected_revision == document.revision
+                proposal = deepcopy(data)
+                transform(proposal)
+                if apply: committed.append(proposal)
+                return Row(to_dict=lambda: {"applied": apply})
+        class Live:
+            def __init__(self, doc, root): assert doc is document
+            def build(self): events.append("build")
+            def unchanged(self): events.append("unchanged")
+            def storage(self, identity):
+                assert events == ["build"]
+                return deepcopy(comparison)
+        patch.setattr(scoped, "ProgressStore", Store)
+        patch.setattr(scoped, "LiveInputs", Live)
+        patch.setattr(scoped, "add_live_evidence", lambda *a, **kw: "proof")
+        args = Row(build_root=fresh, progress=tmp_path/"unused.sqlite3", expected_revision=7,
+                   storage=storage_id, dimension=["extent"], apply=False)
+        scoped.accept_storage(args)
+        assert events == ["build", "unchanged", "unchanged"] and not committed
+        events.clear(); args.apply = True
+        scoped.accept_storage(args)
+        assert len(committed) == 1 and committed[0]["owners"] == data["owners"]
+        events.clear(); args.expected_revision = 6
+        with pytest.raises(ProgressError, match="revision"): scoped.accept_storage(args)
+        assert not events and len(committed) == 1
+        args.expected_revision = 7
+        def drift(self): raise ProgressError("inputs changed")
+        patch.setattr(Live, "unchanged", drift)
+        with pytest.raises(ProgressError, match="changed"): scoped.accept_storage(args)
+        assert len(committed) == 1
 
 
 def test_doctor_runs_combined_completion_audit_once_and_last() -> None:

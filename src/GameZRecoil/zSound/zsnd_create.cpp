@@ -46,6 +46,7 @@ RECOIL_STATIC_ASSERT(sizeof(zSndDirectSoundLegacyBufferDesc) == 20);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-initfromwavedata
  * @recoil-artifact defines .text recoil:function:0x4a2ea0: zSndSample::InitFromWaveData.
+ * @recoil-match byte
  *
  * Evidence: BN assembly switches on the zSound active-backend selector and
  * dispatches backend 0 to the DirectSound initializer and backend 1 to the A3D

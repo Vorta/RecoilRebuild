@@ -399,6 +399,67 @@ An explicit empty expectation is valid. A missing deterministic target identity
 uses reviewed `progress relocation-target bind`. A genuine ambiguity alone
 uses reviewed `progress relocation-exception set`. Both are dry-run-first.
 
+### Function Match Levels and Pro-Reviewed Fallback
+
+`byte` and `instruction` are per-function levels, separate from owner tiers and
+serial-stage acceptance. Mirror the current complete proof in the function's
+attached canonical Doxygen comment with exactly one `@recoil-match byte` or
+`@recoil-match instruction`. An unproved function has no such directive.
+Both levels require all relocation semantics, linked presence/identity and
+normalized linked-body checks listed above. A masked object comparison alone
+does not qualify for an annotation. Exact linked RVA is required at stage 5.
+
+Always prefer exact bytes. The instruction alternative allows only general-purpose
+register reassignment while retaining instruction operations, ordering,
+boundaries, lengths, operand widths, constants, addressing and control-flow
+targets. The pinned x86 decoder and paired register-bit dataflow prove value
+equivalence through branches/loops, partial registers, implicit operands, flags,
+stack operations and ABI boundaries. Unsupported effects fail closed. No opcode
+replacement, instruction scheduling, changed stack layout, data/padding or
+provider exception is implied.
+
+Before using the alternative, send ChatGPT Pro the current source/compiler
+context, complete register differences, compiler evidence and credible failed
+C/C++ variants. Require explicit compiler attribution and an engineering
+judgment that no concrete credible source-faithful alternative remains untried.
+Ask for the standalone `INSTRUCTION_MATCH_APPROVED` decision only if both hold;
+a remaining required experiment, negative/ambiguous response, or transport
+failure grants no fallback. Pro is advisory eligibility, never machine proof.
+
+Register that specific reviewed decision, dry-run first:
+
+```powershell
+python tools/recoil.py progress match review-instruction --payload-file <review.json> --expected-revision <revision> --dry-run --json
+python tools/recoil.py progress match review-instruction --payload-file <review.json> --expected-revision <revision> --apply --json
+```
+
+The payload contains exactly `symbol_id`, `reviewed: true`,
+`decision: "compiler-register-allocation-only"`,
+`no_remaining_credible_source_options: true`, `reason`, `attempts`,
+`differences`, `source_context`, `prompt`, `answer`, `transcript`, and `receipt`.
+The four artifact fields are repository-relative paths to the captured Pro
+exchange. Source/compiler context and exact instruction differences must still
+agree with the live comparison. Artifacts document review; they cannot replace
+the current build. Refresh invalidates source-dependent match evidence on drift;
+an exact-byte upgrade requires no additional Pro review.
+
+For a workspace census or an explicit function, use:
+
+```powershell
+python tools/recoil.py progress match refresh --all --build-root <fresh-root> --expected-revision <revision> --apply --json
+python tools/recoil.py progress match refresh --at <address> --build-root <fresh-root> --expected-revision <revision> --apply --json
+```
+
+Each invocation makes one complete fresh canonical non-deploying build,
+classifies its selected functions, reports individual exclusions and records
+only complete matches. It synchronizes annotations without changing source line
+counts, preserves encoding/newlines and guards against intervening edits.
+`--dry-run` still builds and previews; a later apply uses another fresh root.
+This command does not advance any serial stage or owner tier. The stage 3/5
+commands independently rebuild and accept their own eligible groups, recording
+instruction proofs separately from exact-byte states. Mixed groups use their
+weakest fully proved level; an unproved member blocks the group.
+
 ## Stage 4: Full Function Order
 
 Full order begins only after authored call-contract closeout and authored byte
@@ -425,7 +486,8 @@ python tools/recoil.py progress advance-live-linked-byte --build-root <fresh-roo
 ```
 
 Linked validation requires exact linked RVA, resolved operands, target identity,
-and raw linked-image bytes. It may advance only explicitly matched physical
+and raw linked-image bytes, or the approved instruction proof for register
+encodings in authored bodies. It may advance only explicitly matched physical
 groups before the first typed divergence.
 
 ## Stage 6: Final Typed Validation
@@ -449,6 +511,13 @@ python tools/recoil.py verify final-image --json
 Every range must be covered exactly once. Gaps, overlaps, unknown extents,
 ambiguous padding, missing providers, or unresolved entities block before the
 unrestricted build.
+
+Final comparison freshly re-proves accepted instruction matches at their exact
+retail locations. Only the resulting register-encoding differences may differ
+in `.text` and the complete file; all other bytes and typed facts retain their
+exact checks. Reports preserve exact-byte booleans and separately identify
+instruction matches. Passing with instruction matches is not byte equality or
+tier S. Source annotations and old reports never grant a final-image exemption.
 
 ## Source Shape
 
@@ -541,6 +610,47 @@ The README contains only a static pointer to `progress next --json`. It is not
 a second current-state authority and no tracker transaction updates it.
 
 ## Validation
+
+Existing authored storage and owner acceptance use explicit scopes; they do
+not advance the serial scheduler or change membership. For storage, run
+`progress storage accept-live --storage <id> --dimension <dimension>` with an
+absent `--build-root` below `build/live-validation`, `--expected-revision`, and
+`--apply` (or diagnostic `--dry-run`). Repeat `--dimension` for the requested
+subset of extent, object, relocation, order, link, raw, and zero-fill. Every
+invocation builds all canonical sources and links once, compares registered
+data definitions with immutable retail and the fresh linked image, and writes
+only requested applicable dimensions that passed. Missing identities,
+ambiguous ownership, unresolved extents, or unmodelled overlap block acceptance.
+
+For an existing authored owner, first run
+`progress owner review-context --owner <id> --gate <gate> --build-root <fresh-root> --json`
+(repeat `--gate`, or use `--tier C|B|A|S` instead). This builds a current complete
+comparison and returns an unreviewed JSON template. Review every primary entry,
+the source closure, dependencies, and live comparison under the source-owner
+scrutiny and tier skills. Fill the substantive observations and ALLOW rationale,
+then set `reviewed` to true. Keep the generated context and comparison intact.
+Use `progress owner accept-live` with matching gates, or
+`progress owner promote-live` with the matching tier, plus `--payload-file`,
+`--expected-revision`, and a new fresh build root. Dry-run and review first;
+apply with another fresh root. Acceptance rebuilds and requires the reviewed
+comparison to reproduce; the earlier build is never reused as acceptance.
+
+Tier A reviews the complete current differences and grants no function match
+annotation. Owner byte gates and tier S reject instruction-only matches.
+Higher tiers require separately accepted boundary/source/data/linkage gates;
+S additionally requires the owner byte gate and fresh provider comparisons.
+Only the named gates or primary-entry tier promotions are written. Existing
+higher entry tiers and accepted gates are retained only after rechecking their
+stronger proof requirements in the same invocation. Owner invariants remain
+mandatory. C and initial boundary review do not require dependent owners'
+boundaries to be accepted first, so dependency cycles can be reviewed serially.
+
+If an existing primary member lacks its default tier bookkeeping, use
+`progress owner repair-entry-tiers` with `--payload-file`, the expected revision,
+and dry-run first. The payload contains `reviewed: true`, a substantive `reason`,
+and `current_owners` mapping exact owner ids to their complete current records.
+This route adds only absent X records with no evidence; it preserves all
+membership, gates and existing entries and accepts no reconstruction facts.
 
 Pipeline reachability has two separate results. `current_task_reachable` checks
 that the current scheduler task has the right public route, executable backend

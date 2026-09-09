@@ -45,8 +45,9 @@ void __fastcall zSys::ExitProcessWithCleanup(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zvid-setcachedclientrectupdatemask
  * @recoil-artifact defines .text recoil:function:0x4a59a0: zVid::SetCachedClientRectUpdateMask.
- * Purpose: store the client-rect update mask used by cached rect refresh helpers.
+ * @recoil-match byte
  *
+ * Purpose: store the client-rect update mask used by cached rect refresh helpers.
  * Data evidence: BN stores the fastcall mask argument into the zero-initialized
  * g_zVid_CachedClientRectUpdateMask int32 global at 0x56b564.
  */
@@ -59,9 +60,10 @@ void __fastcall zVid::SetCachedClientRectUpdateMask(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zvid-querycachedclientrectupdatemaskif3dfx
  * @recoil-artifact defines .text recoil:function:0x4a59b0: zVid::QueryCachedClientRectUpdateMaskIf3dfx.
+ * @recoil-match byte
+ *
  * Purpose: return the cached client-rect update mask unless the path-2
  * renderer is active.
- *
  * Data evidence: BN reads g_zVideo_ActiveRendererPath at 0x56bbe8 and
  * g_zVid_CachedClientRectUpdateMask at 0x56b564; the branchless predicate
  * subtracts renderer path 2, negates it, and uses sbb as a nonzero mask.
@@ -214,6 +216,8 @@ unsigned int __fastcall GetMessageId(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-resolvemessagekeyorfallback
  * @recoil-artifact defines .text recoil:function:0x4a5b40: zLoc::ResolveMessageKeyOrFallback.
+ * @recoil-match byte
+ *
  * Purpose: Resolves a localization key to a message string, or returns the key when lookup fails.
  */
 char *__fastcall ResolveMessageKeyOrFallback(
@@ -273,6 +277,8 @@ unsigned int FormatMessage(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-getmessagestring
  * @recoil-artifact defines .text recoil:function:0x4a5bf0: zLoc::GetMessageString.
+ * @recoil-match byte
+ *
  * Purpose: Formats a message resource into the shared temporary localization buffer.
  */
 char *__fastcall GetMessageString(

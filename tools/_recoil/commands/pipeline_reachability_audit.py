@@ -61,6 +61,11 @@ def _probe_arguments(item: Any) -> list[str]:
         result += ["--target", "recoil:verification-target:probe"]
     if item.name == "progress advance-live-call-contract":
         result += ["--slice", "recoil:call-contract-slice:0x401000-0x401010"]
+    if item.name == "progress storage accept-live":
+        result += ["--storage", "recoil:storage:va:0x500000", "--dimension", "extent"]
+    if item.name in {"progress owner accept-live", "progress owner promote-live"}:
+        result += ["--owner", "recoil:owner:probe", "--payload-file", "build/diagnostics/reachability-never-read.json"]
+        result += ["--gate", "boundary"] if item.name.endswith("accept-live") else ["--tier", "C"]
     return result
 
 
@@ -68,6 +73,9 @@ def _probe_arguments(item: Any) -> list[str]:
 # retained proof-kernel tests exercise their writes; this audit also checks that
 # the public handler still calls the evidence, freshness and commit boundaries.
 HANDLER_CONTRACTS = {
+    "progress storage accept-live": ("accept_storage", {"_absolute_fresh_build_root", "storage_scope", "record_storage", "add_live_evidence"}),
+    "progress owner accept-live": ("accept_owner", {"_absolute_fresh_build_root", "validate_review", "verify_owner", "record_owner", "add_live_evidence"}),
+    "progress owner promote-live": ("accept_owner", {"_absolute_fresh_build_root", "validate_review", "verify_owner", "record_owner", "add_live_evidence"}),
     "progress advance-live-order": ("advance_live_order", {"_absolute_fresh_build_root", "_validate_order_result", "accept_live_order_block"}),
     "progress advance-live-authored-byte": ("advance_live_byte", {"_absolute_fresh_build_root", "_validate_byte_result", "accept_live_byte_groups"}),
     "progress advance-live-linked-byte": ("advance_live_byte", {"_absolute_fresh_build_root", "_validate_byte_result", "accept_live_byte_groups"}),
@@ -161,6 +169,24 @@ def _handler_findings(item: Any, arguments: argparse.Namespace) -> list[str]:
     for name in sorted(required & called):
         if not callable(handler.__globals__.get(name)):
             findings.append(f"backend handler dependency {name} is unavailable")
+    if item.module == "scoped_acceptance":
+        attributes = {ast.unparse(node.func) for node in ast.walk(tree)
+                      if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)}
+        for edge in ("live.build", "live.unchanged", "store.mutate"):
+            if edge not in attributes:
+                findings.append(f"scoped handler lacks live proof/commit edge {edge}")
+        for method, dependency in (("build", "_run_fresh_build"), ("unchanged", "input_inventory"), ("input_inventory", "dependency_states")):
+            implementation = getattr(backend.LiveInputs, method, None)
+            if not callable(implementation):
+                findings.append(f"scoped live input method {method} is unavailable")
+                continue
+            import textwrap
+            code = ast.parse(textwrap.dedent(inspect.getsource(implementation)))
+            dependencies = {node.func.id if isinstance(node.func, ast.Name) else node.func.attr
+                            for node in ast.walk(code) if isinstance(node, ast.Call)
+                            and isinstance(node.func, (ast.Name, ast.Attribute))}
+            if dependency not in dependencies:
+                findings.append(f"scoped {method} lacks required dependency {dependency}")
     return findings
 
 

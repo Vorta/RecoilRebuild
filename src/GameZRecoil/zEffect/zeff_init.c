@@ -52,6 +52,8 @@ int __cdecl Init() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.shutdownall
  * @recoil-artifact defines .text recoil:function:0x460060: zEffect::ShutdownAll.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
  * Purpose: reset runtime effect state and shut down animation data when it is
  * loaded.

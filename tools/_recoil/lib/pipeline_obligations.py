@@ -34,11 +34,14 @@ def effects(subject: str, dimensions: tuple[str, ...],
 
 AUTHORED_ORDER_EFFECTS = effects("authored-block", AUTHORED_ORDER_DIMENSIONS)
 FULL_ORDER_EFFECTS = effects("full-block", FULL_ORDER_DIMENSIONS)
-AUTHORED_BYTE_EFFECTS = effects("authored-function", AUTHORED_BYTE_DIMENSIONS)
-LINKED_BYTE_EFFECTS = effects("selected-linked-function", EXACT_LINK_DIMENSIONS)
+AUTHORED_BYTE_EFFECTS = effects("authored-function", AUTHORED_BYTE_DIMENSIONS + ("object_instruction", "linked_body_instruction"))
+LINKED_BYTE_EFFECTS = effects("selected-linked-function", EXACT_LINK_DIMENSIONS + ("linked_instruction",))
 CALL_EFFECTS = effects("authored-function", (CALL_CONTRACT_DIMENSION,))
 CLOSEOUT_EFFECTS = effects("authored-call-census", ("fresh-scan-and-linkability",))
 FINAL_EFFECTS = effects("typed-final-image", ("complete-live-comparison",), "verify")
+STORAGE_EFFECTS = effects("authored-storage", STORAGE_DIMENSIONS)
+OWNER_EFFECTS = effects("existing-authored-owner", OWNER_GATES)
+TIER_EFFECTS = effects("existing-authored-owner-tier", TIERS[1:], "promote")
 PROVIDER_IMPORT_EFFECTS = (effects("provider-import-storage", ("extent",))
                            + effects("provider-import-owner", ("boundary", "source", "data")))
 

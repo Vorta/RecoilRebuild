@@ -3945,12 +3945,14 @@ namespace zClass_cls_di {
 
 namespace BBox {
 /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.expandtocorners
-     * @recoil-artifact defines .text recoil:function:0x446ed0: BBox::ExpandToCorners.
-     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
-     * behavior/global evidence; native smoke coverage exercises the owner slice.
-     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
-     */
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.expandtocorners
+ * @recoil-artifact defines .text recoil:function:0x446ed0: BBox::ExpandToCorners.
+ * @recoil-match byte
+ *
+ * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+ * behavior/global evidence; native smoke coverage exercises the owner slice.
+ * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+ */
     void __fastcall ExpandToCorners(
         const zBBox3f *bbox,
         zBBoxCorners *outCorners

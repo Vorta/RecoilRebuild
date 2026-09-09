@@ -23,6 +23,7 @@ POLICY_COMMANDS: tuple[tuple[str, ...], ...] = (
     ("guard", "source-placement", "--root", "src"),
     ("guard", "source-data"),
     ("guard", "vc5-manifest"),
+    ("audit", "source-trace", "--match-syntax-only"),
     ("audit", "provenance", "--strict"),
 )
 

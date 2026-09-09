@@ -35,6 +35,158 @@ def mapped_switch_bytes() -> tuple[int, bytes]:
     return base, bytes(code)
 
 
+def test_instruction_match_proves_values_and_requires_current_review(tmp_path, monkeypatch):
+    from copy import deepcopy
+    from _recoil.lib.function_match import compare_instructions, MATCH_VERSION
+    from _recoil.lib import match_evidence as evidence
+    from _recoil.lib.source_traceability import parse_source_trace_text
+    from _recoil.commands.progress_v2 import accept_live_byte_groups
+    from _recoil.lib.progress import ProgressError, is_current_accepted_state
+
+    def compare(a, b, **kwargs):
+        return compare_instructions(bytes.fromhex(a), bytes.fromhex(b), symbol="?f@@YAHXZ", **kwargs)
+
+    # Temporary values may change registers and later rejoin ABI-fixed EAX.
+    pairs = [
+        ("ba01000000 42 c1e207 8bc2 c3", "b901000000 41 c1e107 8bc1 c3"),
+        ("8b542404 85d2 7402 42 90 8bc2 c3", "8b4c2404 85c9 7402 41 90 8bc1 c3"),
+        ("ba03000000 4a 75fd 8bc2 c3", "b903000000 49 75fd 8bc1 c3"),
+        ("b201 b402 0fb6c2 c3", "b101 b402 0fb6c1 c3"),
+    ]
+    for first, second in pairs:
+        proof = compare(first, second)
+        assert proof["passed"], proof
+        assert proof["differences"] and not proof["exact"]
+    assert compare("33c0c3", "33c0c3")["exact"]
+    rejected = [
+        (pairs[0][0], "b901000000 41 c1e107 8bc2 c3"),  # unmatched use
+        (pairs[0][0], "b902000000 41 c1e107 8bc1 c3"),  # constant
+        (pairs[0][0], "b901000000 41 c1e106 8bc1 c3"),  # shift count
+        (pairs[0][0], "b901000000 41 c1e107 8bc1 90 c3"),  # added work
+        ("ba01000000 33c0 f7e2 c3", "b901000000 33c0 f7e1 c3 90"),
+        ("b201 b402 0fb6c2 c3", "b101 b102 0fb6c1 c3"),  # alias clobber
+        ("8bd0 8bc2 c3", "8bd1 8bc2 c3"),  # unequal entry values
+        ("ba03000000 4a 75fd 8bc2 c3", "b903000000 49 74fd 8bc1 c3"),  # branch
+        ("ba01000000 83ea01 c3", "b901000000 83e101 c3"),  # operation differs
+        ("ba01000000 c1e201 8bc2 c3", "b901000000 c1f101 8bc1 c3"),  # /6 not a selector
+        ("ba01000000 8bc2 c3", "bb01000000 8bc3 c3"),  # callee-save corruption
+    ]
+    for first, second in rejected:
+        assert not compare(first, second)["passed"], (first, second)
+    # A call through an IAT value can use a cdecl contract; a pointer DATA
+    # relocation is never permission to assume that callback's convention.
+    first = "ba01000000 52 ff1534124000 83c404 c3"
+    second = "b901000000 51 ff1534124000 83c404 c3"
+    relocation = {"offset": 8, "target_symbol": "__imp__fread", "target_symbol_id": "recoil:function:0x401234"}
+    assert compare(first, second, relocations=[relocation])["passed"]
+    assert not compare(first, second)["passed"]
+    assert not compare(first, second, relocations=[{**relocation, "target_symbol_id": "recoil:data:0x401234"}])["passed"]
+    # INC preserves unknown carry returned by the call; it cannot justify JB.
+    assert not compare("ba01000000 52 ff1534124000 40 7201 90 c3",
+                       "b901000000 51 ff1534124000 40 7201 90 c3", relocations=[relocation])["passed"]
+    # Live-range reuse, flags and implicit operands must be proved even for
+    # unchanged instructions after a differing definition.
+    for first, second in [
+        ("b801000000 f7e2 c3", "b901000000 f7e2 c3"),
+        ("b001 b202 d2e2 0fb6c2 c3", "b101 b202 d2e2 0fb6c2 c3"),
+    ]:
+        assert not compare(first, second)["passed"]
+
+    identity = "recoil:function:0x401000"
+    text = "/**\r\n * @recoil-anchor recoil:anchor:unit\r\n * @recoil-artifact defines .text " + identity + ": Unit.\r\n *\r\n *\r\n * Purpose: unit.\r\n */\r\nint f() { return 1; }\r\n"
+    path = tmp_path / "unit.cpp"
+    path.write_bytes(text.encode())
+    monkeypatch.setattr(evidence, "REPO_ROOT", tmp_path)
+    state = {"version": MATCH_VERSION, "level": "instruction", "validation_mode": "live", "freshness": "current",
+             "evidence_ids": ["proof"], "review_evidence_id": "review", "dependencies": evidence.dependency_states(["unit.cpp"])}
+    review = {"version": MATCH_VERSION, "evidence_id": "review", "decision": "compiler-register-allocation-only",
+              "no_remaining_credible_source_options": True, "context": {"code": "current"}, "differences": [{"offset": 1}]}
+    row = {"function_match": state, "instruction_match_review": review}
+    assert evidence.current_match_level(row) == "instruction"
+    assert evidence.review_current(review, {"code": "current"}, [{"offset": 1}])
+    for changes in ({"no_remaining_credible_source_options": False}, {"version": 0}, {"evidence_id": ""},
+                    {"decision": "not-approved"}, {"context": {"code": "changed"}}, {"differences": []}):
+        assert not evidence.review_current({**review, **changes}, {"code": "current"}, [{"offset": 1}])
+    assert not evidence.current_match_level({"function_match": state})
+    document = parse_source_trace_text(text, path="unit.cpp")
+    edits, _ = evidence.annotation_edits([document], {identity: row})
+    assert len(edits) == 1 and edits[0]["before"].count(b"\n") == edits[0]["after"].count(b"\n")
+    tagged = edits[0]["after"].decode()
+    assert " * @recoil-match instruction\r\n *\r\n * Purpose:" in tagged
+    assert tagged.splitlines()[-2] == " */"
+    for compact in (text.replace(" *\r\n *\r\n", " *\r\n"), text.replace(" *\r\n", "")):
+        path.write_bytes(compact.encode())
+        state["dependencies"] = evidence.dependency_states(["unit.cpp"])
+        compact_edits, exclusions = evidence.annotation_edits([parse_source_trace_text(compact, path="unit.cpp")], {identity: row})
+        assert not compact_edits and "prose separator" in exclusions[0]["reason"]
+    path.write_bytes(text.encode())
+    state["dependencies"] = evidence.dependency_states(["unit.cpp"])
+    parsed = parse_source_trace_text(tagged, path="unit.cpp")
+    assert parsed.matches[0].level == "instruction" and not parsed.findings
+    path.write_bytes(edits[0]["after"])
+    assert evidence.current_match_level(row) is None  # source-stat invalidation
+    state["dependencies"] = evidence.dependency_states(["unit.cpp"])
+    assert evidence.annotation_edits([parsed], {identity: row})[0] == []
+    # A match directive may precede the other annotations in the same group.
+    first_tag = tagged.replace(" * @recoil-match instruction\r\n", "").replace("/**\r\n", "/**\r\n * @recoil-match instruction\r\n")
+    path.write_bytes(first_tag.encode())
+    state["dependencies"] = evidence.dependency_states(["unit.cpp"])
+    assert evidence.annotation_edits([parse_source_trace_text(first_tag, path="unit.cpp")], {identity: row})[0] == []
+    for indentation in ("    ", "\t", "        "):
+        indented = "\r\n".join(indentation + line if line else line for line in text.split("\r\n"))
+        path.write_bytes(indented.encode())
+        state["dependencies"] = evidence.dependency_states(["unit.cpp"])
+        indent_edits, _ = evidence.annotation_edits([parse_source_trace_text(indented, path="unit.cpp")], {identity: row})
+        expected = indented.replace(indentation + " *\r\n", indentation + " * @recoil-match instruction\r\n", 1)
+        assert indent_edits[0]["after"].decode() == expected
+        assert expected.count("\n") == indented.count("\n")
+        assert evidence.strip_match_annotations(indentation + " * @recoil-match byte */") == indentation + " */"
+    path.write_bytes(tagged.encode())
+    state["dependencies"] = evidence.dependency_states(["unit.cpp"])
+    for bad in ("BYTE", "near", "byte instruction", ""):
+        assert parse_source_trace_text(tagged.replace("@recoil-match instruction", "@recoil-match " + bad), path="unit.cpp").findings
+    duplicate = tagged.replace(" * Purpose:", " * @recoil-match byte\r\n * Purpose:")
+    assert any(f.code == "duplicate-match-directive" for f in parse_source_trace_text(duplicate, path="unit.cpp").findings)
+    assert parse_source_trace_text("/** @recoil-match byte */\nint f();", path="unit.cpp").findings
+    assert any("match-directive" in f.code for f in
+               parse_source_trace_text(tagged.replace("/**", "/*"), path="unit.cpp").findings)
+    removed = evidence.annotation_edits([parsed], {})[0][0]["after"]
+    assert b"@recoil-match" not in removed and removed.count(b"\n") == edits[0]["after"].count(b"\n")
+    # A failed ledger compare-and-swap must roll back only our comment write;
+    # an intervening user edit must survive that rollback.
+    from _recoil.commands import match_progress
+    monkeypatch.setattr(match_progress, "REPO_ROOT", tmp_path)
+    path.write_bytes(edits[0]["before"])
+    def reject_commit():
+        raise ProgressError("revision changed")
+    with pytest.raises(ProgressError, match="revision changed"):
+        match_progress.with_annotation_writes(edits, True, reject_commit)
+    assert path.read_bytes() == edits[0]["before"]
+    def intervening_edit():
+        path.write_bytes(b"user edit\n")
+        raise ProgressError("revision changed")
+    with pytest.raises(ProgressError):
+        match_progress.with_annotation_writes(edits, True, intervening_edit)
+    assert path.read_bytes() == b"user edit\n"
+    path.write_bytes(edits[0]["after"])
+    state["dependencies"] = evidence.dependency_states(["unit.cpp"])
+    data = {"symbols": {identity: deepcopy(row)}}
+    for mode in ("authored", "linked"):
+        accept_live_byte_groups(data, mode=mode, groups=[[identity]], evidence_id="proof",
+            facts={"validation_mode": "live", "mode": mode, "match_levels": {identity: "instruction"}})
+        assert evidence.stage_match_current(data["symbols"][identity], mode, is_current_accepted_state)
+    assert data["symbols"][identity]["binary_state"]["linked_byte"]["result"] == "failed"
+    data["symbols"][identity]["instruction_match_review"]["evidence_id"] = "replaced"
+    assert not evidence.stage_match_current(data["symbols"][identity], "linked", is_current_accepted_state)
+    with pytest.raises(ProgressError):
+        accept_live_byte_groups(data, mode="linked", groups=[[identity]], evidence_id="proof",
+            facts={"validation_mode": "live", "mode": "linked", "match_levels": {identity: "instruction"}})
+    # Exact matching needs no Pro review and must restore exact-byte truth.
+    accept_live_byte_groups(data, mode="linked", groups=[[identity]], evidence_id="exact",
+        facts={"validation_mode": "live", "mode": "linked", "match_levels": {identity: "byte"}})
+    assert data["symbols"][identity]["binary_state"]["linked_byte"]["result"] == "passed"
+
+
 def test_retail_decoder_proves_remapped_and_direct_tables_in_one_trailing_island():
     from _recoil.commands.relocation_expectations import decode_x86_operand_sites
 
@@ -822,6 +974,38 @@ def test_named_static_stem_requires_exact_storage_contents_and_all_readers(monke
         binding=binding, config=None, paths=None, reference=Path("retail.exe"), parsed_map=None)
     assert not result["passed"] and result["stage"] == "object-symbol"
     assert result["symbol"] == "_entry" and "Symbol not found" in result["message"]
+    _exercise_near_byte_review(tmp_path, monkeypatch)
+
+
+def _exercise_near_byte_review(tmp_path, monkeypatch):
+    from types import SimpleNamespace as Row
+    from _recoil.commands import live_byte_verify as byte
+    reference = tmp_path/"retail.exe"
+    candidate = tmp_path/"candidate.exe"
+    obj_path = tmp_path/"unit.obj"; obj_path.write_bytes(b"fixture")
+    expected, actual = bytes.fromhex("b8 01 00 00 00 c3"), bytes.fromhex("b8 02 00 00 00 c3")
+    body = Row(start=0, data=actual, relocation_mask=(False,)*6, relocations=[], section_index=1)
+    obj = Row(function_bytes=lambda *a, **kw: body, symbols=[])
+    monkeypatch.setattr(byte, "object_path", lambda *a: obj_path)
+    monkeypatch.setattr(byte.CoffObject, "from_path", lambda *a: obj)
+    linked = [actual]
+    monkeypatch.setattr(byte, "_pe_bytes", lambda path, *a, **kw: expected if path == reference else linked[0])
+    monkeypatch.setattr(byte, "source_context", lambda *a: {})
+    row = dict(address="0x401000", end_exclusive="0x401006", symbol_id="recoil:function:0x401000")
+    binding = byte.TargetBinding(Row(source_from="unit.cpp", name="unit"), Row(symbol="_entry", symbol_regex=None), scope_id=row["symbol_id"])
+    def compare(allow=False, relocations=()):
+        return byte._compare_row(mode="authored", row=row, binding=binding, config=Row(sources=[tmp_path/"unit.cpp"]),
+            paths=Row(exe_path=candidate), reference=reference,
+            parsed_map=Row(symbols=[Row(symbol="_entry", address=0x402000, is_function=True)]),
+            relocation_catalog=relocations, target_rows={}, allow_near_byte_review=allow)
+    assert compare()["stage"] == "object-body"
+    reviewed = compare(True)
+    assert reviewed["structural_comparison_complete"] and not reviewed["passed"] and reviewed["match_level"] is None
+    linked[0] = expected
+    assert not compare(True)["structural_comparison_complete"]
+    linked[0] = actual
+    incomplete = compare(True, [{"offset": 1, "type": 6, "target_symbol": "_missing"}])
+    assert not incomplete.get("structural_comparison_complete", False) and not incomplete["passed"]
 
 
 def alias_object(alias: str = "_alias", target: str = "_target") -> bytes:

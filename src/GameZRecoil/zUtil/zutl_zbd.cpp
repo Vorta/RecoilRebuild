@@ -78,6 +78,8 @@ void __fastcall RegisterSectionHandler(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-writesectionblob
  * @recoil-artifact defines .text recoil:function:0x4c0010: zUtil_ZAR::WriteSectionBlob
+ * @recoil-match byte
+ *
  * Purpose: write a ZAR section blob through the callback manager context.
  */
 int __fastcall WriteSectionBlob(
@@ -131,6 +133,8 @@ int __fastcall ZAR_LoadFileGlobal(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zar-requeststopglobal
  * @recoil-artifact defines .text recoil:function:0x4c0070: zUtil::ZAR_RequestStopGlobal
+ * @recoil-match byte
+ *
  * Purpose: request cooperative ZAR loading stop through the active manager.
  */
 void __cdecl ZAR_RequestStopGlobal() {
@@ -238,6 +242,8 @@ int __cdecl ZBD_Init() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zbd-destroyglobalmanager
  * @recoil-artifact defines .text recoil:function:0x4c0180: zUtil::ZBD_DestroyGlobalManager
+ * @recoil-match byte
+ *
  * Purpose: destroy and clear the active global ZBD manager.
  */
 void __cdecl ZBD_DestroyGlobalManager() {
@@ -270,6 +276,8 @@ void zZbdManager::Destroy() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdsectionhandler-comparesortorderlessthan
  * @recoil-artifact defines .text recoil:function:0x4c0260: zZbdSectionHandler::CompareSortOrderLessThan
+ * @recoil-match byte
+ *
  * Purpose: compare section handlers by ascending sort order.
  */
 bool __fastcall zZbdSectionHandler::CompareSortOrderLessThan(
@@ -432,6 +440,8 @@ int zZbdManager::LoadZarFile(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-requeststop
  * @recoil-artifact defines .text recoil:function:0x4c0620: zZbdManager::RequestStop
+ * @recoil-match byte
+ *
  * Purpose: set the cooperative stop flag for archive loading.
  */
 void zZbdManager::RequestStop() {
@@ -490,6 +500,8 @@ int zZbdSectionHandler::InvokePreLoad(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdsectionhandler-invokedataready
  * @recoil-artifact defines .text recoil:function:0x4c06c0: zZbdSectionHandler::InvokeDataReady
+ * @recoil-match byte
+ *
  * Purpose: invoke an optional section data-ready callback with payload data.
  */
 void zZbdSectionHandler::InvokeDataReady(

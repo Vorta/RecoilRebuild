@@ -188,6 +188,8 @@ enum zVideoRendererBackend {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-draw
  * @recoil-artifact defines .text recoil:function:0x404ca0: HudUiElement::Draw.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: preserve the recovered HUD behavior for HudUiElement::Draw.
  */
@@ -198,6 +200,8 @@ void HudUiElement::Draw() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-drawbase
  * @recoil-artifact defines .text recoil:function:0x404cb0: HudUiElement::DrawBase.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: blit the element's attached image at its current position using its clip rect.
  */
@@ -216,6 +220,8 @@ void HudUiElement::DrawBase() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-setpos
  * @recoil-artifact defines .text recoil:function:0x404cd0: HudUiElement::SetPos.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: update both element position coordinates and invalidate the element.
  */
@@ -231,6 +237,8 @@ void HudUiElement::SetPos(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-setx
  * @recoil-artifact defines .text recoil:function:0x404cf0: HudUiElement::SetX.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: update the horizontal element position and invalidate the element.
  */
@@ -244,6 +252,8 @@ void HudUiElement::SetX(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-sety
  * @recoil-artifact defines .text recoil:function:0x404d00: HudUiElement::SetY.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: update the vertical element position and invalidate the element.
  */
@@ -257,6 +267,8 @@ void HudUiElement::SetY(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-hittesttrue
  * @recoil-artifact defines .text recoil:function:0x404d10: HudUiElement::HitTestTrue.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: accept all coordinates for default HUD elements.
  */
@@ -272,6 +284,8 @@ unsigned char HudUiElement::HitTestTrue(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-setvisible
  * @recoil-artifact defines .text recoil:function:0x404d20: HudUiElement::SetVisible.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: update the hidden flag for one HUD element and invalidate it.
  */
@@ -290,6 +304,8 @@ void HudUiElement::SetVisible(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-getcenterx
  * @recoil-artifact defines .text recoil:function:0x404d50: HudUiElement::GetX.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: return the base element x-coordinate from the recovered center-position virtual slot.
  */
@@ -300,6 +316,8 @@ int HudUiElement::GetCenterX() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-getcentery
  * @recoil-artifact defines .text recoil:function:0x404d60: HudUiElement::GetY.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: return the base element y-coordinate from the recovered center-position virtual slot.
  */
@@ -310,6 +328,8 @@ int HudUiElement::GetCenterY() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduiwidget-getcenterx
  * @recoil-artifact defines .text recoil:function:0x404d90: HudUiWidget::GetCenterX.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: return x directly or the aligned image center x when widget alignment is active.
  */
@@ -325,6 +345,8 @@ int HudUiWidget::GetCenterX() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduiwidget-getcentery
  * @recoil-artifact defines .text recoil:function:0x404dd0: HudUiWidget::GetCenterY.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: return y directly or the aligned image center y when widget alignment is active.
  */
@@ -362,6 +384,8 @@ RECOIL_NO_GS void HudUiWidget::RebuildBltRectFromImage() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicircle-hittest
  * @recoil-artifact defines .text recoil:function:0x404e60: HudUiCircle::HitTest.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: normalize circle hit-test membership to an integer result.
  */
@@ -1372,6 +1396,8 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.restorethirdpersoncamerafromobstructionstate
  * @recoil-artifact defines .text recoil:function:0x4063f0: Player::RestoreThirdPersonCameraFromObstructionState.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
  * Purpose: reimplement Player::RestoreThirdPersonCameraFromObstructionState from the recovered
  * Battlesport gameplay source file.
@@ -2372,6 +2398,8 @@ void RecoilStateCheatCode::AtExitDestructor() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecheatcode-recoilstatecheatcode
  * @recoil-artifact defines .text recoil:function:0x406ed0: RecoilStateCheatCode::RecoilStateCheatCode.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCheatCode.cpp.
  * Purpose: initialize the cheat-code app state and clear its dialog pointer.
  */
@@ -4516,6 +4544,8 @@ namespace zOpt {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.viewrectsection-setposition
  * @recoil-artifact defines .text recoil:function:0x4083d0: zOpt_ViewRectSection::SetPosition
+ * @recoil-match byte
+ *
  * Purpose: store origin and recompute bounds from size.
  */
 void __fastcall ViewRectSection_SetPosition(
@@ -4534,6 +4564,8 @@ void __fastcall ViewRectSection_SetPosition(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.viewrectsection-setsize
  * @recoil-artifact defines .text recoil:function:0x408400: zOpt_ViewRectSection::SetSize
+ * @recoil-match byte
+ *
  * Purpose: store size and recompute bounds from origin.
  */
 void __fastcall ViewRectSection_SetSize(
@@ -4552,6 +4584,8 @@ void __fastcall ViewRectSection_SetSize(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.viewrectsection-clamppointtoinclusivebounds
  * @recoil-artifact defines .text recoil:function:0x408430: zOpt::ViewRectSection_ClampPointToInclusiveBounds
+ * @recoil-match byte
+ *
  * Purpose: clamp a point to inclusive bounds.
  */
 void __fastcall ViewRectSection_ClampPointToInclusiveBounds(
@@ -5344,6 +5378,8 @@ HudUiControlsDialog::HudUiControlsDialog() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicontrolsdialog-commandswidget-onactivate
  * @recoil-artifact defines .text recoil:function:0x408c20: HudUiControlsDialog_CommandsWidget::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
  * Purpose: Queue the command-dialog state from the controls dialog Commands widget before running inherited ZRD activation.
  * Evidence: BN/source slice calls HudCmdDialogState::QueueEnter, then chains HudUiZrdWidget::OnActivate.
@@ -5623,6 +5659,8 @@ void RecoilStateControls::QueueEnter() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduizrdwidgetex17c-enablechildatindex
  * @recoil-artifact defines .text recoil:function:0x409010: HudUiZrdWidgetEx17C::EnableChildAtIndex.
+ * @recoil-match byte
+ *
  * Source file evidence: BN labels the source as D:\Proj\Battlesport\hudui_zrdwidget.cpp.
  * Purpose: enable an in-range option item and refresh its displayed widget state.
  */
@@ -5796,6 +5834,8 @@ void HudUiCreditsPanel::UpdateAll(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduizrdscrollingtext-update
  * @recoil-artifact defines .text recoil:function:0x409410: HudUiZrdScrollingText::Update
+ * @recoil-match byte
+ *
  * Purpose: update the scrolling credits widget and each row panel.
  */
 void HudUiZrdScrollingText::Update(
@@ -5852,6 +5892,8 @@ void HudUiZrdScrollingText::UpdateScrollPositions(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduizrdscrollingtext-onactivateresetownerfade
  * @recoil-artifact defines .text recoil:function:0x409550: HudUiZrdScrollingText::OnActivateResetOwnerFade
+ * @recoil-match byte
+ *
  * Purpose: reset the owning credits panel fade progress when the scrolling credits text activates.
  */
 void HudUiZrdScrollingText::OnActivateResetOwnerFade() {
@@ -6174,6 +6216,7 @@ RecoilStateCredits::RecoilStateCredits() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatedialoghost-onwndactivate
  * @recoil-artifact defines .text recoil:function:0x4099a0: RecoilStateDialogHost::OnWndActivate.
+ * @recoil-match byte
  *
  * Purpose: refresh the hosted HUD dialog surfaces when the application is
  * reactivated.
@@ -6236,6 +6279,7 @@ int RecoilStateCredits::OnTryBecomeCurrent() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatedialoghost-ondeactivate
  * @recoil-artifact defines .text recoil:function:0x409ad0: RecoilStateDialogHost::OnDeactivate.
+ * @recoil-match byte
  *
  * Purpose: disable, repaint, destroy, and clear the active hosted HUD dialog.
  */
@@ -6935,6 +6979,8 @@ int HudCmdDialog::ApplySecondaryKeyRebind(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialog-applyjoystickbuttonrebind
  * @recoil-artifact defines .text recoil:function:0x40b4e0: HudCmdDialog::ApplyJoystickButtonRebind.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: apply the recovered HUD layout or option state handled by HudCmdDialog::ApplyJoystickButtonRebind.
  */
@@ -6969,6 +7015,8 @@ int HudCmdDialog::ApplyJoystickButtonRebind(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialog-applymousebuttonrebind
  * @recoil-artifact defines .text recoil:function:0x40b560: HudCmdDialog::ApplyMouseButtonRebind.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: apply the recovered HUD layout or option state handled by HudCmdDialog::ApplyMouseButtonRebind.
  */
@@ -7003,6 +7051,8 @@ int HudCmdDialog::ApplyMouseButtonRebind(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialog-selectgrouprelative
  * @recoil-artifact defines .text recoil:function:0x40b5e0: HudCmdDialog::SelectGroupRelative.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: preserve the recovered HUD behavior for HudCmdDialog::SelectGroupRelative.
  */
@@ -7025,6 +7075,8 @@ int HudCmdDialog::SelectGroupRelative(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialog-selectcommandrelative
  * @recoil-artifact defines .text recoil:function:0x40b630: HudCmdDialog::SelectCommandRelative.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: preserve the recovered HUD behavior for HudCmdDialog::SelectCommandRelative.
  */
@@ -7125,6 +7177,8 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdresetbutton-onactivate
  * @recoil-artifact defines .text recoil:function:0x40b930: HudCmdResetButton::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: handle the recovered HUD event path for HudCmdResetButton::OnActivate.
  */
@@ -7139,6 +7193,8 @@ void HudCmdResetButton::OnActivate() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdsetlistwidget-onactivate
  * @recoil-artifact defines .text recoil:function:0x40b960: HudCmdSetListWidget::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: Advance the set-list selector and rebuild command bindings for the
  * selected group.
@@ -7197,6 +7253,8 @@ void HudCmdKeyAButton::OnBeginCapture() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdkeyabutton-onclearbinding
  * @recoil-artifact defines .text recoil:function:0x40ba60: HudCmdKeyAButton::OnClearBinding.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: clear the primary-key binding for the selected command row.
  */
@@ -7212,6 +7270,8 @@ void HudCmdKeyAButton::OnClearBinding() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdbindbuttonbase-onselectionchangedrefresh
  * @recoil-artifact defines .text recoil:function:0x40ba90: HudCmdBindButtonBase::OnSelectionChangedRefresh.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: forward a bind-button selection change to the owning command dialog.
  */
@@ -7236,6 +7296,8 @@ void HudCmdKeyBButton::OnBeginCapture() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdkeybbutton-onclearbinding
  * @recoil-artifact defines .text recoil:function:0x40bae0: HudCmdKeyBButton::OnClearBinding.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: clear the secondary-key binding for the selected command row.
  */
@@ -7261,6 +7323,8 @@ void HudCmdJoyButton::OnBeginCapture() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdjoybutton-onclearbinding
  * @recoil-artifact defines .text recoil:function:0x40bb30: HudCmdJoyButton::OnClearBinding.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: clear the joystick binding for the selected command row.
  */
@@ -7291,6 +7355,8 @@ void HudCmdMouseButton::OnBeginCapture() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdmousebutton-onclearbinding
  * @recoil-artifact defines .text recoil:function:0x40bb80: HudCmdMouseButton::OnClearBinding.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: clear the mouse binding for the selected command row when debounce is inactive.
  */
@@ -7308,6 +7374,8 @@ void HudCmdMouseButton::OnClearBinding() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdnextsetbutton-onactivate
  * @recoil-artifact defines .text recoil:function:0x40bba0: HudCmdNextSetButton::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: handle the recovered HUD event path for HudCmdNextSetButton::OnActivate.
  */
@@ -7319,6 +7387,8 @@ void HudCmdNextSetButton::OnActivate() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdprevsetbutton-onactivate
  * @recoil-artifact defines .text recoil:function:0x40bbc0: HudCmdPrevSetButton::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: handle the recovered HUD event path for HudCmdPrevSetButton::OnActivate.
  */
@@ -7330,6 +7400,8 @@ void HudCmdPrevSetButton::OnActivate() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdnextcommandbutton-onactivate
  * @recoil-artifact defines .text recoil:function:0x40bbe0: HudCmdNextCommandButton::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: handle the recovered HUD event path for HudCmdNextCommandButton::OnActivate.
  */
@@ -7341,6 +7413,8 @@ void HudCmdNextCommandButton::OnActivate() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdprevcommandbutton-onactivate
  * @recoil-artifact defines .text recoil:function:0x40bc00: HudCmdPrevCommandButton::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: handle the recovered HUD event path for HudCmdPrevCommandButton::OnActivate.
  */
@@ -7442,6 +7516,8 @@ int HudCmdDialogState::OnTryBecomeCurrent() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialogstate-ondeactivate
  * @recoil-artifact defines .text recoil:function:0x40bd60: HudCmdDialogState::OnDeactivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: Resume keyboard input, disable and dispose the active command
  * dialog, clear it, and rebuild current input-map lookup indices.
@@ -7581,6 +7657,10 @@ int HudCmdBindButtonBase::AddBindingEntry(
 }
 
 /**
+ * @recoil-match byte
+ * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdbindbuttonbase-clearbindingentries
+ * @recoil-artifact defines .text recoil:function:0x40c1d0: HudCmdBindButtonBase::ClearBindingEntries.
+ *
  * Compiler-emitted 0x40bdc0: canonical VC5
  * std::vector<HudCmdBindingEntry *>::clear provider selected by
  * bindingVec.clear().
@@ -7588,9 +7668,6 @@ int HudCmdBindButtonBase::AddBindingEntry(
  * selected by the entry-deletion pass.
  * Compiler-emitted 0x40be60: canonical VC5 std::copy specialization
  * selected by vector::clear().
- *
- * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdbindbuttonbase-clearbindingentries
- * @recoil-artifact defines .text recoil:function:0x40c1d0: HudCmdBindButtonBase::ClearBindingEntries.
  * Purpose: delete and null every owned entry, then clear the pointer range.
  */
 inline void HudCmdBindButtonBase::ClearBindingEntries() {
@@ -8315,6 +8392,8 @@ void HudUiOptionsPanel_SoundQuality::InitFromOptions() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduioptionspanel-soundquality-syncfromoptions
  * @recoil-artifact defines .text recoil:function:0x40cbf0: HudUiOptionsPanel_SoundQuality::SyncFromOptions.
+ * @recoil-match byte
+ *
  * Purpose: advance the sound quality selector and store its sound LOD option.
  */
 void HudUiOptionsPanel_SoundQuality::SyncFromOptions() {
@@ -9074,6 +9153,8 @@ HudUiMgrData::HudUiMgrData() : reticleWidget(0) {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicontainer-setenabled
  * @recoil-artifact defines .text recoil:function:0x40d9d0: HudUiContainer::SetEnabled.
+ * @recoil-match byte
+ *
  * Purpose: Apply the recovered HUD container enabled-state change.
  */
 inline void HudUiContainer::SetEnabled(
@@ -9132,6 +9213,8 @@ HudUiSlot * HudUiSlot::Constructor() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduislot-draw
  * @recoil-artifact defines .text recoil:function:0x40db90: HudUiSlot::Draw.
+ * @recoil-match byte
+ *
  * Purpose: Draws the visible slot and track-marker widgets in recovered HUD slot order.
  */
 void HudUiSlot::Draw() {
@@ -9542,6 +9625,8 @@ void HudUiTriplet::UpdateEntryData(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitriplet-removeentry
  * @recoil-artifact defines .text recoil:function:0x40e880: HudUiTriplet::RemoveEntry.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTriplet.cpp.
  * Purpose: remove the matching player row from the scoreboard entry vector and rebuild the display.
  */
@@ -9837,6 +9922,8 @@ void HudUiTimerPanel::UpdateHMSFromSeconds(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitimerpanel-settimeseconds
  * @recoil-artifact defines .text recoil:function:0x40ef00: HudUiTimerPanel::SetTimeSeconds.
+ * @recoil-match byte
+ *
  * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: format the timer panel text from hour, minute, and second fields.
  */
@@ -9897,6 +9984,8 @@ HudUiTimerPanelFloat::HudUiTimerPanelFloat()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitimerpanelfloat-draw
  * @recoil-artifact defines .text recoil:function:0x40f040: HudUiTimerPanelFloat::Draw.
+ * @recoil-match byte
+ *
  * Purpose: refresh the floating timer display text before drawing the base
  * panel.
  */
@@ -9912,6 +10001,8 @@ void HudUiTimerPanelFloat::Draw() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicounter-applyfromlayoutnode
  * @recoil-artifact defines .text recoil:function:0x40f070: HudUiCounter::ApplyFromLayoutNode.
+ * @recoil-match byte
+ *
  * Purpose: Loads counter image/layout data from a ZRD array node and registers the counter with the HUD manager.
  */
 int HudUiCounter::ApplyFromLayoutNode(
@@ -9937,6 +10028,8 @@ int HudUiCounter::ApplyFromLayoutNode(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicounter-releasestateimages
  * @recoil-artifact defines .text recoil:function:0x40f0f0: HudUiCounter::ReleaseStateImages.
+ * @recoil-match byte
+ *
  * Purpose: Releases and clears the counter's three variant images.
  */
 void HudUiCounter::ReleaseStateImages() {
@@ -10096,6 +10189,8 @@ void HudUiTripletPanel::ShutdownItems_Stub() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-draw
  * @recoil-artifact defines .text recoil:function:0x40f400: HudUiTripletPanel::Draw.
+ * @recoil-match byte
+ *
  * Purpose: Draws the triplet panel base and visible item widgets from back to front.
  */
 void HudUiTripletPanel::Draw() {
@@ -10117,6 +10212,8 @@ void HudUiTripletPanel::Draw() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-setvisiblecount
  * @recoil-artifact defines .text recoil:function:0x40f460: HudUiTripletPanel::SetVisibleCount.
+ * @recoil-match byte
+ *
  * Purpose: Applies the visible item count, updates child visibility, and invalidates the panel.
  */
 void HudUiTripletPanel::SetVisibleCount(
@@ -10284,6 +10381,8 @@ int __fastcall HudUiMgr::InitHudLayouts(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduipanel-settextcolor
  * @recoil-artifact defines .text recoil:function:0x40f9e0: HudUiPanel::SetTextColor.
+ * @recoil-match byte
+ *
  * Purpose: Sets both panel text colors, marks text metrics dirty, and returns the old primary color.
  */
 inline unsigned int HudUiPanel::SetTextColor(
@@ -10297,6 +10396,8 @@ inline unsigned int HudUiPanel::SetTextColor(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduistatslistelement-update
  * @recoil-artifact defines .text recoil:function:0x40fa10: HudUiStatsListElement::Update.
+ * @recoil-match byte
+ *
  * Purpose: Forward frame updates to the owned scoreboard triplet.
  */
 void HudUiStatsListElement::Update(
@@ -10378,6 +10479,8 @@ void __fastcall HudUiTimerPanel::ZarWriteTimerDataCallback(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitimerpanel-zarreadtimerdata
  * @recoil-artifact defines .text recoil:function:0x40fbb0: HudUiTimerPanel::ZarReadTimerData.
+ * @recoil-match byte
+ *
  * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: load persisted timer seconds and start the objective HUD flow.
  */
@@ -12799,6 +12902,8 @@ HudLayoutSW::HudLayoutSW() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutbase-setactive
  * @recoil-artifact defines .text recoil:function:0x412bd0: HudLayoutBase::SetActive.
+ * @recoil-match byte
+ *
  * Purpose: provide the default layout activation result for base layout callers.
  */
 int HudLayoutBase::SetActive(
@@ -12810,6 +12915,8 @@ int HudLayoutBase::SetActive(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutbase-updateall
  * @recoil-artifact defines .text recoil:function:0x412be0: HudLayoutBase::UpdateAll.
+ * @recoil-match byte
+ *
  * Purpose: forward per-frame layout updates through the recovered container base.
  */
 void HudLayoutBase::UpdateAll(
@@ -12821,6 +12928,8 @@ void HudLayoutBase::UpdateAll(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutbase-enable
  * @recoil-artifact defines .text recoil:function:0x412bf0: HudLayoutBase::Enable.
+ * @recoil-match byte
+ *
  * Purpose: activate this HUD layout through the recovered base SetEnabled slot.
  */
 void HudLayoutBase::Enable() {
@@ -12830,6 +12939,8 @@ void HudLayoutBase::Enable() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutbase-disable
  * @recoil-artifact defines .text recoil:function:0x412c00: HudLayoutBase::Disable.
+ * @recoil-match byte
+ *
  * Purpose: deactivate this HUD layout through the recovered base SetEnabled slot.
  */
 void HudLayoutBase::Disable() {
@@ -13108,6 +13219,8 @@ int HudLayoutHW::LoadTypeIIFromZarRoot(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayouthw-releaseimages
  * @recoil-artifact defines .text recoil:function:0x413080: HudLayoutHW::ReleaseImages.
+ * @recoil-match byte
+ *
  * Purpose: release hardware HUD layout alternate images and clear their cached pointers.
  */
 void HudLayoutHW::ReleaseImages() {
@@ -13332,6 +13445,8 @@ void HudLayoutHW::OnActivated() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimessage-draw
  * @recoil-artifact defines .text recoil:function:0x4134e0: HudUiMessage::Draw.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Draws the weapon-message base widget and its embedded text panel.
  */
@@ -13398,6 +13513,8 @@ void HudLayoutHW::Enable() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayouthw-disable
  * @recoil-artifact defines .text recoil:function:0x4135f0: HudLayoutHW::Disable.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: disable the hardware HUD layout container.
  */
@@ -13725,6 +13842,8 @@ void EnableTopAndChatStacks() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.disabletopandchatstacks
  * @recoil-artifact defines .text recoil:function:0x413950: HudUiMgr::DisableTopAndChatStacks.
+ * @recoil-match byte
+ *
  * Purpose: clear and disable the global top-message and chat text stacks.
  */
 void DisableTopAndChatStacks() {
@@ -13777,6 +13896,8 @@ int __fastcall ApplyTextLabel(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.readrectoffsetandsize
  * @recoil-artifact defines .text recoil:function:0x413a10: HudUiLayoutNode::ReadRectOffsetAndSize.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadRectOffsetAndSize.
  */
@@ -13818,6 +13939,8 @@ int __fastcall ReadRectOffsetAndSize(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.readrect
  * @recoil-artifact defines .text recoil:function:0x413aa0: HudUiLayoutNode::ReadRect.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadRect.
  */
@@ -13840,6 +13963,8 @@ int __fastcall ReadRect(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.readint3
  * @recoil-artifact defines .text recoil:function:0x413ad0: HudUiLayoutNode::ReadInt3.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadInt3.
  */
@@ -14145,6 +14270,8 @@ int HudUiMessage::LoadWeaponLayoutFromNode(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimessage-releaseimages
  * @recoil-artifact defines .text recoil:function:0x413ff0: HudUiMessage::ReleaseImages.
+ * @recoil-match byte
+ *
  * Purpose: Releases all borrowed weapon-message variant and side-image swap references and clears their storage.
  */
 void HudUiMessage::ReleaseImages() {
@@ -15272,8 +15399,9 @@ void HudUiMainMenuDialog_ControlsButton::OnActivate() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatedialoghost-onupdateshouldquit
  * @recoil-artifact defines .text recoil:function:0x435e80: RecoilStateSaveLoadTransition::OnUpdateShouldQuit
- * (BN canonical folded body).
+ * @recoil-match byte
  *
+ * (BN canonical folded body).
  * Source owner: app_shell.folded_dialog_update_should_quit. BN shows the
  * retail body shared by DialogHost, MainMenuTransition, SaveLoadTransition,
  * and other dialog-hosted state vtable slots; this definition preserves the
@@ -15544,6 +15672,7 @@ void RecoilStateMainMenuTransition::OnSuspend(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-onresume
  * @recoil-artifact defines .text recoil:function:0x415370: RecoilStateMainMenuTransition::OnResume.
+ * @recoil-match byte
  *
  * Purpose: re-enable and refresh the main-menu dialog after a child state
  * resumes back into the menu transition state.
@@ -15923,6 +16052,8 @@ int RecoilStateConfirmQuit::OnTryBecomeCurrent() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstateconfirmquit-ondeactivate
  * @recoil-artifact defines .text recoil:function:0x415960: RecoilStateConfirmQuit::OnDeactivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
  * Purpose: handle the recovered HUD event path for RecoilStateConfirmQuit::OnDeactivate.
  */
@@ -15964,6 +16095,8 @@ void RecoilStateConfirmQuit::QueueEnter() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.zfmv-action-update
  * @recoil-artifact defines .text recoil:function:0x4159d0: zFMV_Action::Update.
+ * @recoil-match byte
+ *
  * Purpose: report immediate completion for action types without update behavior.
  */
 int zFMV_Action::Update(

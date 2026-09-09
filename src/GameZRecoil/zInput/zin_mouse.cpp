@@ -109,6 +109,8 @@ void __cdecl Mouse_RecenterCursor() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-recentercursorx
  * @recoil-artifact defines .text recoil:function:0x470180: zInput::Mouse_RecenterCursorX.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Recenter only the cached mouse client X coordinate before applying
  * the position to the OS cursor.
@@ -290,6 +292,8 @@ int __cdecl Mouse_ShutdownDevice() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-getstatesnapshotptr
  * @recoil-artifact defines .text recoil:function:0x4703a0: zInput::Mouse_GetStateSnapshotPtr.
+ * @recoil-match byte
+ *
  * Purpose: Return the shared mouse state snapshot used by input consumers.
  */
 MouseStateSnapshot *__cdecl Mouse_GetStateSnapshotPtr() {
@@ -299,6 +303,8 @@ MouseStateSnapshot *__cdecl Mouse_GetStateSnapshotPtr() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-pollandstorestate
  * @recoil-artifact defines .text recoil:function:0x4703b0: zInput::Mouse_PollAndStoreState.
+ * @recoil-match byte
+ *
  * Purpose: Poll the mouse and store the latest DirectInput-style result code.
  */
 void __fastcall Mouse_PollAndStoreState(
@@ -411,6 +417,8 @@ void __cdecl Mouse_ApplyAccumulatedDelta() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-getstatesnapshot
  * @recoil-artifact defines .text recoil:function:0x4705f0: zInput::Mouse_GetStateSnapshot.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Copy the current derived mouse snapshot to the caller and return
  * the last DirectInput mouse poll result.
@@ -461,6 +469,8 @@ void __cdecl Mouse_ResetTransitionState() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-setcooperativelevelflags
  * @recoil-artifact defines .text recoil:function:0x470670: zInput::Mouse_SetCooperativeLevelFlags.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Replace the stored mouse DirectInput cooperative-level flags and
  * return the previous value.
@@ -476,6 +486,8 @@ int __fastcall Mouse_SetCooperativeLevelFlags(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-waitforbuttonpress
  * @recoil-artifact defines .text recoil:function:0x470680: zInput::Mouse_WaitForButtonPress.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Poll mouse input until a newly pressed button is found or the
  * caller requests a single scan.

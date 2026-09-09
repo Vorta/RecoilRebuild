@@ -445,8 +445,8 @@ namespace zClass_Lod {
     }
 
     /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodnew
- * @recoil-artifact defines .text recoil:function:0x4542a0: zClass_Lod::gwLodNew.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodnew
+     * @recoil-artifact defines .text recoil:function:0x4542a0: zClass_Lod::gwLodNew.
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
      *
@@ -472,11 +472,12 @@ namespace zClass_Lod {
 
     int __fastcall
     /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodaddchild
- * @recoil-artifact defines .text recoil:function:0x454310: zClass_Lod::gwLodAddChild.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodaddchild
+     * @recoil-artifact defines .text recoil:function:0x454310: zClass_Lod::gwLodAddChild.
+     * @recoil-match byte
+     *
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
-     *
      * Purpose: append a child to an LOD node using the shared zClass child-list
      * helper.
      */
@@ -492,11 +493,12 @@ namespace zClass_Lod {
 
     int __fastcall
     /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-removechild
- * @recoil-artifact defines .text recoil:function:0x454320: zClass_Lod::RemoveChild.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-removechild
+     * @recoil-artifact defines .text recoil:function:0x454320: zClass_Lod::RemoveChild.
+     * @recoil-match byte
+     *
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
-     *
      * Purpose: remove a child from an LOD node through the shared zClass
      * child-list helper and return success.
      */
@@ -513,11 +515,12 @@ namespace zClass_Lod {
 
     int __fastcall
     /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-setcomputeowndistance
- * @recoil-artifact defines .text recoil:function:0x454330: zClass_Lod::SetComputeOwnDistance.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-setcomputeowndistance
+     * @recoil-artifact defines .text recoil:function:0x454330: zClass_Lod::SetComputeOwnDistance.
+     * @recoil-match byte
+     *
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
-     *
      * Purpose: update whether this LOD node computes its own camera distance
      * during render traversal.
      */
@@ -531,11 +534,12 @@ namespace zClass_Lod {
 
     int __fastcall
     /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-settargetnodeandrange
- * @recoil-artifact defines .text recoil:function:0x454340: zClass_Lod::SetTargetNodeAndRange.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-settargetnodeandrange
+     * @recoil-artifact defines .text recoil:function:0x454340: zClass_Lod::SetTargetNodeAndRange.
+     * @recoil-match byte
+     *
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
-     *
      * Purpose: assign the range-fade target node and cache the squared fade
      * range when a target is present.
      */

@@ -112,6 +112,8 @@ def audit_documents(
     findings: list[SourceTraceFinding] = []
     for document in documents:
         findings.extend(validate_source_trace(document, index, strict=strict))
+        from _recoil.lib.match_evidence import annotation_findings
+        findings.extend(annotation_findings(document, {key: value.row for key, value in index.rows.items()}))
     findings.extend(merge_source_trace_documents(documents))
     return _dedupe_findings(findings)
 
@@ -393,6 +395,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="unified tracker used only for function/data/logical-id and output-section lookup",
     )
     parser.add_argument("--json", action="store_true", help="emit the complete JSON report")
+    match_scope = parser.add_mutually_exclusive_group()
+    match_scope.add_argument("--match-only", action="store_true", help="check only function-match annotations and current evidence")
+    match_scope.add_argument("--match-syntax-only", action="store_true", help="pre-build match syntax/attachment check without evidence currentness")
     parser.add_argument("--max", type=int, default=100, help="maximum text findings to print")
     return parser
 
@@ -409,6 +414,20 @@ def main(argv: list[str] | None = None) -> int:
             )
             for path in paths
         )
+        if args.match_only or args.match_syntax_only:
+            findings = [finding for document in documents for finding in document.findings
+                        if "match-directive" in finding.code]
+            if args.match_only:
+                from _recoil.lib.match_evidence import annotation_findings
+                index = load_artifact_rows(progress_path)
+                symbols = {key: value.row for key, value in index.rows.items()}
+                findings.extend(finding for document in documents for finding in annotation_findings(document, symbols))
+            payload = {"kind": "function-match-annotation-audit", "passed": not findings,
+                       "syntax_only": args.match_syntax_only, "annotations": sum(len(d.matches) for d in documents),
+                       "findings": [asdict(finding) for finding in findings]}
+            print(json.dumps(payload, indent=2) if args.json else
+                  f"Function-match annotations: {'PASS' if not findings else 'FAIL'} ({payload['annotations']} annotations, {len(findings)} findings)")
+            return 1 if findings else 0
         index = load_artifact_rows(progress_path)
         findings = list(audit_documents(
             documents,

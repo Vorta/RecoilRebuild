@@ -90,6 +90,8 @@ int __fastcall FileExists(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zreader-fileexists-wrapper
  * @recoil-artifact defines .text recoil:function:0x4a5c40: zReader_FileExists_Wrapper.
+ * @recoil-match byte
+ *
  * Purpose: expose zReader::FileExists through the original wrapper entry point.
  */
 extern "C" int __fastcall zReader_FileExists_Wrapper(
@@ -103,6 +105,8 @@ namespace zUtil {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-getfilesize
  * @recoil-artifact defines .text recoil:function:0x4a5c50: zUtil::ZRDR_GetFileSize.
+ * @recoil-match byte
+ *
  * Purpose: return the file size for a resolved ZRDR path.
  */
 int __fastcall ZRDR_GetFileSize(
@@ -132,6 +136,8 @@ int __fastcall ZRDR_GetFileSize(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-createsearchpathlist
  * @recoil-artifact defines .text recoil:function:0x4a5ca0: zUtil_ZRDR_CreateSearchPathList.
+ * @recoil-match byte
+ *
  * Purpose: allocate a search-path list and populate it from a path string.
  */
 extern "C" zArchiveList *__fastcall zUtil_ZRDR_CreateSearchPathList(
@@ -149,6 +155,8 @@ extern "C" zArchiveList *__fastcall zUtil_ZRDR_CreateSearchPathList(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-freesearchpathlist
  * @recoil-artifact defines .text recoil:function:0x4a5cc0: zUtil_ZRDR_FreeSearchPathList.
+ * @recoil-match byte
+ *
  * Purpose: free search-path payload strings and destroy the list container.
  */
 extern "C" zArchiveList *__fastcall zUtil_ZRDR_FreeSearchPathList(
@@ -223,6 +231,8 @@ void __fastcall ZRDR_AddSearchPaths(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-strcmppredicate
  * @recoil-artifact defines .text recoil:function:0x4a5da0: zUtil_ZRDR_StrCmpPredicate.
+ * @recoil-match byte
+ *
  * Purpose: compare a payload string against the requested string key.
  */
 extern "C" int __fastcall zUtil_ZRDR_StrCmpPredicate(
@@ -243,6 +253,8 @@ extern "C" int __fastcall zUtil_ZRDR_StrCmpPredicate(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-freescratchsearchpathlist
  * @recoil-artifact defines .text recoil:function:0x4a5df0: zUtil_ZRDR_FreeScratchSearchPathList.
+ * @recoil-match byte
+ *
  * Purpose: release the scratch search-path list and clear its global pointer.
  */
 extern "C" void __cdecl zUtil_ZRDR_FreeScratchSearchPathList() {
@@ -473,6 +485,8 @@ extern "C" char *__cdecl zUtil_ZRDR_NextWildcardPath() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-shutdownwildcardpath
  * @recoil-artifact defines .text recoil:function:0x4a6100: zUtil_ZRDR_ShutdownWildcardPath.
+ * @recoil-match byte
+ *
  * Purpose: free the active wildcard path buffer and reset wildcard state.
  */
 extern "C" int __cdecl zUtil_ZRDR_ShutdownWildcardPath() {
@@ -527,6 +541,8 @@ extern "C" int __fastcall zReader_ReadString(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-reset
  * @recoil-artifact defines .text recoil:function:0x4a6190: zIndexArchive::Reset.
+ * @recoil-match byte
+ *
  * Purpose: initialize archive fields to the closed empty state.
  */
 zIndexArchive * zIndexArchive::Reset() {
@@ -543,6 +559,8 @@ zIndexArchive * zIndexArchive::Reset() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-destroy
  * @recoil-artifact defines .text recoil:function:0x4a61b0: zIndexArchive::Destroy.
+ * @recoil-match byte
+ *
  * Purpose: close/free archive records and release the auxiliary reserved buffer.
  */
 void zIndexArchive::Destroy() {
@@ -651,6 +669,8 @@ int zIndexArchive::CloseAndFreeRecords() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-ensurecapacity
  * @recoil-artifact defines .text recoil:function:0x4a62f0: zIndexArchive::EnsureCapacity.
+ * @recoil-match byte
+ *
  * Purpose: grow the record table capacity to hold the requested record count.
  */
 void zIndexArchive::EnsureCapacity(
@@ -677,6 +697,8 @@ void zIndexArchive::EnsureCapacity(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-freerecordsandreset
  * @recoil-artifact defines .text recoil:function:0x4a6330: zIndexArchive::FreeRecordsAndReset.
+ * @recoil-match byte
+ *
  * Purpose: free the archive record table and restore the closed empty fields.
  */
 void zIndexArchive::FreeRecordsAndReset() {
@@ -870,6 +892,8 @@ int zIndexArchive::AddFileRecord(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-findrecordbynameci
  * @recoil-artifact defines .text recoil:function:0x4a65d0: zIndexArchive::FindRecordByNameCI.
+ * @recoil-match byte
+ *
  * Purpose: find an archive file record by case-insensitive name.
  */
 zZarFileRecord * zIndexArchive::FindRecordByNameCI(

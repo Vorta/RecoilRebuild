@@ -307,6 +307,79 @@ def _validate_coverage_text_population(
     return failures
 
 
+def _instruction_match_differences(reference_data, candidate_data, reference_headers, candidate_headers, coverage):
+    """Derive permitted file offsets from fresh complete function proofs only."""
+    from _recoil.lib.function_match import compare_instructions
+    from _recoil.lib.match_evidence import source_context, review_current, current_match_level
+    from _recoil.lib.pe import rva_to_offset
+    offsets, reports = set(), []
+    reference_text = next((s for s in reference_headers.sections if s.name == ".text"), None)
+    candidate_text = next((s for s in candidate_headers.sections if s.name == ".text"), None)
+    for section in coverage.get("sections", []):
+        if section.get("name") != ".text":
+            continue
+        for entity in section.get("typed_entities", []):
+            identities = entity.get("identities", [])
+            if not any(item.get("match_level") == "instruction" for item in identities):
+                continue
+            group_offsets = set()
+            group_passed = True
+            for identity in identities:
+                result = {"symbol_id": identity.get("symbol_id"), "passed": False,
+                          "reason": "instruction match lacks a current complete linked proof"}
+                try:
+                    if (reference_text is None or candidate_text is None or
+                            reference_headers.image_base != candidate_headers.image_base or
+                            _section_projection(reference_text) != _section_projection(candidate_text)):
+                        raise LiveFinalError("instruction matching does not relax linked placement")
+                    start, end = int(entity["start"]), int(entity["end"])
+                    if not 0 <= start < end <= reference_text.raw_size:
+                        raise LiveFinalError("invalid instruction-match typed extent")
+                    file_start = reference_text.raw_pointer + start
+                    retail = reference_data[file_start:reference_text.raw_pointer + end]
+                    candidate = candidate_data[file_start:reference_text.raw_pointer + end]
+                    if identity.get("match_level") != "instruction":
+                        if retail != candidate:
+                            raise LiveFinalError("a byte-matched alias does not permit register differences")
+                        result.update(passed=True, match_level="byte", reason="exact")
+                    else:
+                        state = identity.get("function_match", {})
+                        review = identity.get("instruction_match_review", {})
+                        if current_match_level(identity) != "instruction":
+                            raise LiveFinalError("stale instruction-match evidence")
+                        catalog = state.get("retail_relocations")
+                        if not isinstance(catalog, list):
+                            raise LiveFinalError("missing typed relocation contract")
+                        # Authenticate stored typed operand locations directly
+                        # against retail again; these are never candidate facts.
+                        body_va = reference_headers.image_base + reference_text.virtual_address + start
+                        for relocation in catalog:
+                            field = int(relocation["offset"])
+                            raw = int.from_bytes(retail[field:field + 4], "little")
+                            observed = ((body_va + field + 4 + (raw if raw < 0x80000000 else raw - 0x100000000))
+                                        if relocation["type"] == 20 else raw)
+                            if observed != int(relocation["retail_target"]):
+                                raise LiveFinalError("retail relocation context changed")
+                        proof = compare_instructions(retail, candidate, relocations=catalog,
+                                                     symbol=str(identity.get("map_symbol", "")))
+                        if not proof["passed"]:
+                            raise LiveFinalError(proof["reason"])
+                        if not proof.get("exact"):
+                            context = source_context(review["context"]["source"], load_config(DEFAULT_FINAL_CONFIG))
+                            if not review_current(review, context, proof["differences"]):
+                                raise LiveFinalError("Pro review does not cover this live instruction difference")
+                        result.update(passed=True, match_level="byte" if proof.get("exact") else "instruction",
+                                      proof=proof, reason="complete live instruction comparison")
+                        group_offsets.update(file_start + index for index, (a, b) in enumerate(zip(retail, candidate)) if a != b)
+                except (KeyError, TypeError, ValueError, OSError, LiveFinalError) as exc:
+                    result["reason"] = f"{identity.get('symbol_id')}: {exc}"
+                    group_passed = False
+                reports.append(result)
+            if group_passed:
+                offsets.update(group_offsets)
+    return offsets, reports
+
+
 def _compare_image_data(
     candidate: Path,
     reference: Path,
@@ -334,13 +407,21 @@ def _compare_image_data(
     if reference_header != candidate_header:
         failures.append("PE headers differ outside the candidate COFF TimeDateStamp field")
 
+    permitted_offsets, instruction_results = _instruction_match_differences(
+        reference_data, candidate_data, reference_headers, candidate_headers, coverage)
+    failures.extend(row["reason"] for row in instruction_results if not row["passed"])
     normalized_complete_file_equal = (
         _complete_image_bytes_without_timestamp(reference_data, reference_headers)
         == _complete_image_bytes_without_timestamp(candidate_data, candidate_headers)
     )
-    if not normalized_complete_file_equal:
+    expected_complete = _complete_image_bytes_without_timestamp(reference_data, reference_headers)
+    observed_complete = bytearray(_complete_image_bytes_without_timestamp(candidate_data, candidate_headers))
+    for offset in permitted_offsets:
+        observed_complete[offset] = expected_complete[offset]
+    permitted_complete_file_equal = expected_complete == bytes(observed_complete)
+    if not permitted_complete_file_equal:
         failures.append(
-            "complete PE file bytes differ outside the COFF TimeDateStamp field"
+            "complete PE file bytes differ outside the COFF TimeDateStamp field and live-proved register encodings"
         )
 
     reference_sections = {section.name: section for section in reference_headers.sections}
@@ -358,8 +439,15 @@ def _compare_image_data(
         candidate_payload = candidate_data[
             candidate_section.raw_pointer : candidate_section.raw_pointer + candidate_section.raw_size
         ]
-        passed = reference_payload == candidate_payload
-        section_results.append({"name": name, "passed": passed, "size": len(reference_payload)})
+        adjusted_payload = bytearray(candidate_payload)
+        for offset in permitted_offsets:
+            if reference_section.raw_pointer <= offset < reference_section.raw_pointer + reference_section.raw_size:
+                relative = offset - reference_section.raw_pointer
+                if relative < len(adjusted_payload):
+                    adjusted_payload[relative] = reference_payload[relative]
+        passed = reference_payload == bytes(adjusted_payload)
+        section_results.append({"name": name, "passed": passed, "size": len(reference_payload),
+                                "exact_bytes": reference_payload == candidate_payload})
         if not passed:
             failures.append(f"section {name} payload differs from its typed retail entities")
 
@@ -424,6 +512,9 @@ def _compare_image_data(
         "retail_timestamp": reference_headers.timestamp,
         "timestamp_is_diagnostic_only": True,
         "normalized_complete_file_equal": normalized_complete_file_equal,
+        "permitted_complete_file_equal": permitted_complete_file_equal,
+        "instruction_matches": instruction_results,
+        "contains_instruction_matches": bool(instruction_results),
         "raw_file_equal_diagnostic": candidate_data == reference_data,
         "raw_difference_ranges_diagnostic": raw_differences,
         "timestamp_only_raw_difference": timestamp_only,

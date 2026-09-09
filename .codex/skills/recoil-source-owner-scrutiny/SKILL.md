@@ -19,4 +19,10 @@ Require:
 
 Passing behavior or one matching body is not enough. Unknown extent, ownership, placement, emission cause, provider identity, or aliasing stays unresolved and blocks the positive gate it affects.
 
+`@recoil-match byte` and `@recoil-match instruction` mirror per-function proofs,
+not owner acceptance. Approved instruction matching leaves exact-byte fields
+false, does not relax owner gates, and cannot support tier S. It may satisfy the
+body-comparison alternative in the serial byte stages and final validation only
+under the separate Pro and live-proof requirements in the executable runbook.
+
 Return `ALLOW` only for the exact proposed scope and dimension, with the evidence that closes each gate. Otherwise return `BLOCK` with the first concrete missing or contradictory fact. Apply tracker mutations only through the governed dry-run-first command after scrutiny.

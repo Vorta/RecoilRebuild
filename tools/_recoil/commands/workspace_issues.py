@@ -343,6 +343,8 @@ def command_audit(args: argparse.Namespace) -> int:
         Path(args.ledger), document_validator=validate_issue_document
     )
     payload = {"passed": not findings, "findings": findings}
+    if not findings:
+        payload["revision"] = load_ledger(Path(args.ledger))["revision"]
     if args.json:
         print(json.dumps(payload, indent=2))
     else:

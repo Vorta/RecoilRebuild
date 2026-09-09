@@ -212,6 +212,8 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-getinputcontourapointlist
  * @recoil-artifact defines .text recoil:function:0x464670: zGeometry_Weiler::GetInputContourAPointList
+ * @recoil-match byte
+ *
  * Purpose: expose contour A's point buffer and count from an initialized
  * Weiler state.
  */
@@ -350,6 +352,8 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-destroystate
  * @recoil-artifact defines .text recoil:function:0x4647d0: zGeometry_Weiler::DestroyState
+ * @recoil-match byte
+ *
  * Purpose: Release Weiler clip state buffers and state storage.
  */
 void __fastcall DestroyState(
@@ -627,6 +631,8 @@ namespace zGeometry_WeilerClipOutput {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-destroy-0x464b30
  * @recoil-artifact defines .text recoil:function:0x464b30: zGeometry_WeilerClipOutput::Destroy
+ * @recoil-match byte
+ *
  * Purpose: Free and clear the point list and three polygon-set buffers owned by a clip output.
  */
 void __fastcall Destroy(
@@ -1930,6 +1936,8 @@ void __fastcall Init(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-destroy-0x467630
  * @recoil-artifact defines .text recoil:function:0x467630: zGeometry_WeilerBuffer::Destroy
+ * @recoil-match byte
+ *
  * Purpose: Release backing storage and clear buffer bookkeeping.
  */
 void __fastcall Destroy(
@@ -3355,6 +3363,8 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-getnextcontoursegmentfortraversal
  * @recoil-artifact defines .text recoil:function:0x469430: zGeometry_Weiler::GetNextContourSegmentForTraversal
+ * @recoil-match byte
+ *
  * Purpose: Advance Weiler contour traversal while reversing adjacent segment links for two-node contour cases.
  */
 zGeometry_WeilerContourSegmentPartial *__fastcall GetNextContourSegmentForTraversal(
@@ -3668,6 +3678,8 @@ namespace zGeometry_WeilerBuffer {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-setcountandappendptr
  * @recoil-artifact defines .text recoil:function:0x469ae0: zGeometry_WeilerBuffer::SetCountAndAppendPtr
+ * @recoil-match byte
+ *
  * Purpose: Reset the logical count and append pointer within the backing store.
  */
 void __fastcall SetCountAndAppendPtr(

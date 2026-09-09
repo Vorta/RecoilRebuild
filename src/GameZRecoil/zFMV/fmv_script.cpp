@@ -223,6 +223,8 @@ const char *StringArg(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-init
  * @recoil-artifact defines .text recoil:function:0x4625e0: zFMV_Script::Init.
+ * @recoil-match byte
+ *
  * Purpose: initialize an FMV script object and optionally load its action sequence.
  */
 zFMV_Script * zFMV_Script::Init(
@@ -250,6 +252,8 @@ zFMV_Script * zFMV_Script::Init(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-cleanup
  * @recoil-artifact defines .text recoil:function:0x462630: zFMV_Script::Cleanup.
+ * @recoil-match byte
+ *
  * Purpose: free the FMV path and destroy all loaded script actions.
  */
 void zFMV_Script::Cleanup() {
@@ -264,6 +268,8 @@ void zFMV_Script::Cleanup() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-reset
  * @recoil-artifact defines .text recoil:function:0x462660: zFMV_Script::Reset.
+ * @recoil-match byte
+ *
  * Purpose: reset the current action pointer and optionally destroy the loaded action list.
  */
 void zFMV_Script::Reset(
@@ -473,6 +479,8 @@ int zFMV_Script::LoadActionsFromZrd(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-action-runblockingimmediate
  * @recoil-artifact defines .text recoil:function:0x462e30: zFMV_Action::RunBlockingImmediate.
+ * @recoil-match byte
+ *
  * Purpose: run an action to completion without advancing elapsed time.
  */
 void zFMV_Action::RunBlockingImmediate() {
@@ -485,6 +493,8 @@ void zFMV_Action::RunBlockingImmediate() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionplaysound-begin
  * @recoil-artifact defines .text recoil:function:0x462e90: zFMV_ActionPlaySound::Begin.
+ * @recoil-match byte
+ *
  * Purpose: find and play the named FMV sound sample.
  */
 void zFMV_ActionPlaySound::Begin(
@@ -502,6 +512,8 @@ void zFMV_ActionPlaySound::Begin(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionwait-begin
  * @recoil-artifact defines .text recoil:function:0x462ed0: zFMV_ActionWait::Begin.
+ * @recoil-match byte
+ *
  * Purpose: capture the wait action start time.
  */
 void zFMV_ActionWait::Begin(
@@ -533,6 +545,8 @@ void zFMV_ActionWait::End() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-action-flipsurfaces
  * @recoil-artifact defines .text recoil:function:0x462f00: zFMV_Action::FlipSurfaces.
+ * @recoil-match byte
+ *
  * Purpose: restore adjusted video surfaces after an FMV action completes.
  */
 void zFMV_Action::FlipSurfaces() {
@@ -547,6 +561,8 @@ void zFMV_Action::FlipSurfaces() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-appendaction
  * @recoil-artifact defines .text recoil:function:0x462f10: zFMV_Script::AppendAction.
+ * @recoil-match byte
+ *
  * Purpose: append an action to the script's singly linked action list.
  */
 int zFMV_Script::AppendAction(
@@ -572,6 +588,8 @@ int zFMV_Script::AppendAction(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-runblocking
  * @recoil-artifact defines .text recoil:function:0x462f50: zFMV_Script::RunBlocking.
+ * @recoil-match byte
+ *
  * Purpose: run the loaded action sequence synchronously until completion.
  */
 int zFMV_Script::RunBlocking(
@@ -616,6 +634,8 @@ int zFMV_Script::BeginCurrentAction(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-update
  * @recoil-artifact defines .text recoil:function:0x463000: zFMV_Script::Update.
+ * @recoil-match byte
+ *
  * Purpose: advance the current action, handle abort input, and start the next action.
  */
 int zFMV_Script::Update(
@@ -670,6 +690,8 @@ int zFMV_Script::UpdateAtTime() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-beginnow
  * @recoil-artifact defines .text recoil:function:0x463120: zFMV_Script::BeginNow.
+ * @recoil-match byte
+ *
  * Purpose: reset the script action cursor, optionally destroying loaded actions.
  */
 void zFMV_Script::BeginNow(
@@ -743,6 +765,8 @@ zFMV_ActionImage::~zFMV_ActionImage() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionimage-begin
  * @recoil-artifact defines .text recoil:function:0x463300: zFMV_ActionImage::Begin.
+ * @recoil-match byte
+ *
  * Purpose: resolve the image resource used by this FMV image action.
  */
 void zFMV_ActionImage::Begin(double) {
@@ -752,6 +776,8 @@ void zFMV_ActionImage::Begin(double) {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionimage-update
  * @recoil-artifact defines .text recoil:function:0x463320: zFMV_ActionImage::Update.
+ * @recoil-match byte
+ *
  * Purpose: blit the resolved image through the active renderer path and finish immediately.
  */
 int zFMV_ActionImage::Update(double) {
@@ -798,6 +824,8 @@ int zFMV_ActionImage::Update(double) {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionimage-end
  * @recoil-artifact defines .text recoil:function:0x4633a0: zFMV_ActionImage::End.
+ * @recoil-match byte
+ *
  * Purpose: release the resolved image resource.
  */
 void zFMV_ActionImage::End() {
@@ -831,8 +859,9 @@ zFMV_ActionFade::zFMV_ActionFade(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionfade-begin
  * @recoil-artifact defines .text recoil:function:0x463410: zFMV_ActionFade::Begin.
- * Purpose: capture the current surface and record the fade start time.
+ * @recoil-match byte
  *
+ * Purpose: capture the current surface and record the fade start time.
  * Data audit: Begin/End have no direct authored global data references.
  * Update reads only the accepted zVideo renderer-dispatch globals
  * g_zVideo_ActiveRendererPath and g_zVideo_pfnFlushQuadBatch.
@@ -918,6 +947,8 @@ int zFMV_ActionFade::Update(double timeSec) {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionfade-end
  * @recoil-artifact defines .text recoil:function:0x463550: zFMV_ActionFade::End.
+ * @recoil-match byte
+ *
  * Purpose: release the captured fade frame.
  */
 void zFMV_ActionFade::End() {
@@ -1065,6 +1096,8 @@ void zFMV_ActionPlayAvi::Begin(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionplayavi-end
  * @recoil-artifact defines .text recoil:function:0x463820: zFMV_ActionPlayAvi::End.
+ * @recoil-match byte
+ *
  * Purpose: destroy the AVI stream object and clear the stream pointer.
  */
 void zFMV_ActionPlayAvi::End() {
@@ -1090,6 +1123,8 @@ zFMV_ActionBlur::zFMV_ActionBlur(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionblur-begin
  * @recoil-artifact defines .text recoil:function:0x463870: zFMV_ActionBlur::Begin.
+ * @recoil-match byte
+ *
  * Purpose: capture active surface bounds and seed the blur source surface.
  */
 void zFMV_ActionBlur::Begin(
@@ -1132,6 +1167,8 @@ void zFMV_ActionBlur::Begin(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionblur-end
  * @recoil-artifact defines .text recoil:function:0x463920: zFMV_ActionBlur::End.
+ * @recoil-match byte
+ *
  * Purpose: restore the video FX surface state to the primary surface.
  */
 void zFMV_ActionBlur::End() {
@@ -1155,6 +1192,8 @@ void zFMV_ActionBlur::RunBlocking() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionblur-update
  * @recoil-artifact defines .text recoil:function:0x463950: zFMV_ActionBlur::Update.
+ * @recoil-match byte
+ *
  * Purpose: apply combined blur passes for one frame and report whether frames remain.
  */
 int zFMV_ActionBlur::Update(
@@ -1207,6 +1246,8 @@ int zFMV_ActionBlur::Update(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionblurh-update
  * @recoil-artifact defines .text recoil:function:0x4639e0: zFMV_ActionBlurH::Update.
+ * @recoil-match byte
+ *
  * Purpose: apply horizontal blur passes for one frame and report whether frames remain.
  */
 int zFMV_ActionBlurH::Update(
@@ -1259,6 +1300,8 @@ int zFMV_ActionBlurH::Update(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionblurv-update
  * @recoil-artifact defines .text recoil:function:0x463a70: zFMV_ActionBlurV::Update.
+ * @recoil-match byte
+ *
  * Purpose: apply vertical blur passes for one frame and report whether frames remain.
  */
 int zFMV_ActionBlurV::Update(
@@ -1363,6 +1406,8 @@ zFMV_ActionPlayMci::~zFMV_ActionPlayMci() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionplaymci-update
  * @recoil-artifact defines .text recoil:function:0x463c90: zFMV_ActionPlayMci::Update.
+ * @recoil-match byte
+ *
  * Purpose: report immediate completion for MCI playback update polling.
  */
 int zFMV_ActionPlayMci::Update(
@@ -1374,6 +1419,8 @@ int zFMV_ActionPlayMci::Update(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionplaymci-begin
  * @recoil-artifact defines .text recoil:function:0x463ca0: zFMV_ActionPlayMci::Begin.
+ * @recoil-match byte
+ *
  * Purpose: start the configured MCI playback if a playback object exists.
  */
 void zFMV_ActionPlayMci::Begin(
@@ -1391,6 +1438,8 @@ void zFMV_ActionPlayMci::Begin(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionplaymci-end
  * @recoil-artifact defines .text recoil:function:0x463cc0: zFMV_ActionPlayMci::End.
+ * @recoil-match byte
+ *
  * Purpose: stop MCI playback while preserving and restoring the active video surface.
  */
 void zFMV_ActionPlayMci::End() {

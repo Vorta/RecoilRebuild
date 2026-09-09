@@ -16,6 +16,10 @@ Validate the changed dimension directly in the canonical checkout. Use a fresh b
 - Call contracts: `verify call-contract --slice ... --json --summary`, then direct live acceptance; complete the phase with `progress call-contract close-live`.
 - Authored bytes: object feedback as useful, then direct authored-byte live acceptance.
 - Linked bytes: direct linked-byte acceptance after strict prerequisites.
+- Function match rollout: `progress match refresh` in a fresh root; source tags
+  require complete code/relocation/linked proof. Validate register equivalence,
+  Pro-review currentness, annotation attachment and source line preservation.
+  Use generic proof-kernel cases for matcher infrastructure, not per-function tests.
 - Final candidate: PE manifest check, final-image catalog audit, and typed final-image validation.
 
 Production source is accepted only through the registered VC5/order,

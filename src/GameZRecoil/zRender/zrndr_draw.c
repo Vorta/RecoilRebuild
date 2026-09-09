@@ -3266,6 +3266,8 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-overlayblendrow555-scalar
  * @recoil-artifact defines .text recoil:function:0x48d450: zRndr::OverlayBlendRow555_Scalar
+ * @recoil-match byte
+ *
  * Source-shape evidence: BN zRndr_Overlay.cpp loads and stores two 555 pixels
  * per uint32_t using the precomputed overlay premul and destination-scale globals;
  * the row extent is the inclusive right-left delta passed by FlushSw.
@@ -5992,6 +5994,8 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setactiveregionsizefromrect
  * @recoil-artifact defines .text recoil:function:0x4903c0: zRndr::SetActiveRegionSizeFromRect
+ * @recoil-match byte
+ *
  * Source file evidence: D:\Proj\GameZRecoil\zModel\zmodel.cpp.
  * Data evidence: writes the active-region width and height globals at
  * 0x632054 and 0x632058 from the HudUiRect extents.
@@ -6011,6 +6015,8 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setvideostridemirrors
  * @recoil-artifact defines .text recoil:function:0x4903e0: zRndr::SetVideoStrideMirrors.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: copy the current video stride into the renderer span mirror globals.
  */
@@ -6026,6 +6032,8 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-getactiveregionstate
  * @recoil-artifact defines .text recoil:function:0x4903f0: zRndr::GetActiveRegionState
+ * @recoil-match byte
+ *
  * Source file evidence: GameZRecoil/zRndr/zRndr_Draw.cpp.
  * Data evidence: reads the active-region framebuffer, width, height,
  * bytes-per-pixel, and pitch globals at 0x632050-0x632060.
@@ -6049,6 +6057,8 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setperspectivetexturedeltax
  * @recoil-artifact defines .text recoil:function:0x490430: zRndr::SetPerspectiveTextureDeltaX
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Cache the perspective texture span chunk size and byte stride derived from delta X.
  */
@@ -6084,6 +6094,8 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setperspectiveadaptivespanparams
  * @recoil-artifact defines .text recoil:function:0x490480: zRndr::SetPerspectiveAdaptiveSpanParams
+ * @recoil-match byte
+ *
  * Purpose: Store the adaptive perspective span-size thresholds selected for the renderer.
  */
 void __fastcall SetPerspectiveAdaptiveSpanParams(
@@ -6173,10 +6185,11 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionbuildcolumnheadtable
  * @recoil-artifact defines .text recoil:function:0x490590: zRndr::SpanOcclusionBuildColumnHeadTable.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: clear per-column span heads and rebuild them from saved occluder
  * polygons.
- *
  * Evidence: BN clears gRndr_SpanColumnHeadTable for gRndr_SpanColumnCount
  * entries, resets allocation and iteration cursors to the span pool, then
  * rasterizes each saved gRndr_SpanOccluderPolys entry.
@@ -6213,9 +6226,10 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionresetframe
  * @recoil-artifact defines .text recoil:function:0x490600: zRndr::SpanOcclusionResetFrame.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: clear saved span-occluder polygons for a new rendered frame.
- *
  * Evidence: BN writes zero to gRndr_SpanOccluderPolyCount and returns.
  */
 void __cdecl SpanOcclusionResetFrame() {
@@ -6313,9 +6327,10 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionshutdown
  * @recoil-artifact defines .text recoil:function:0x490780: zRndr::SpanOcclusionShutdown.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: release the software span-occlusion column table and span-node pool.
- *
  * Evidence: BN frees non-null gRndr_SpanColumnHeadTable and gRndr_SpanPoolBase
  * through the CRT free import, clears those two globals, and returns zero in
  * eax before the epilogue.
@@ -6936,10 +6951,11 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanList(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-buildspanlistfast
  * @recoil-artifact defines .text recoil:function:0x491da0: zRndr_SpanOcclusion_BuildSpanListFast.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: emit the pending span as the only visible span and advance the span
  * allocation cursor.
- *
  * Evidence: BN writes null next, stores gRndr_SpanAllocCursor into spanList[0],
  * writes spanCount = 1, increments the cursor by one zRndr_SpanNode, and
  * returns.
@@ -10545,6 +10561,8 @@ void __fastcall zRndr_DrawTexturedFanTri(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawimmediateline
  * @recoil-artifact defines .text recoil:function:0x498bd0: zRndr_DrawImmediateLine
+ * @recoil-match byte
+ *
  * Source file evidence: zRndr immediate line draw cluster in this source file.
  * Purpose: Dispatch one unclipped immediate line to the selected software line raster routine.
  */
@@ -10568,6 +10586,8 @@ void __fastcall zRndr_DrawImmediateLine(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawclippedimmediatelinestrip
  * @recoil-artifact defines .text recoil:function:0x498c00: zRndr_DrawClippedImmediateLineStrip
+ * @recoil-match byte
+ *
  * Source file evidence: zRndr immediate line draw cluster in this source file.
  * Purpose: Dispatch each segment of a clipped immediate line strip to the selected raster routine.
  */
@@ -10791,10 +10811,11 @@ void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testsample
  * @recoil-artifact defines .text recoil:function:0x498f90: zRndr_SpanOcclusion_TestSample.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: dispatch one visible sample point through the active zRndr point
  * operation.
- *
  * Evidence: BN loads gRndr_pFrameBuffer and gRndr_pfnPointOpActive, passes y/x
  * and color16 in the observed fastcall/stack shape, and performs no additional
  * span state updates.
@@ -10992,6 +11013,8 @@ zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-plotpixel16
  * @recoil-artifact defines .text recoil:function:0x4992b0: zRndr_PlotPixel16
+ * @recoil-match byte
+ *
  * Purpose: Plot one 16-bit pixel into the active framebuffer row pitch.
  */
 void __fastcall zRndr_PlotPixel16(
@@ -11429,6 +11452,8 @@ void __fastcall zRndr_SetPaletteRemapKey(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteremapkeyfromrgb01
  * @recoil-artifact defines .text recoil:function:0x499990: zRndr_SetPaletteRemapKeyFromRgb01.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Build a single-color palette remap recipe from RGB values and select its remap key.
@@ -11460,6 +11485,8 @@ void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteshaderecipeindex
  * @recoil-artifact defines .text recoil:function:0x499a00: zRndr_SetPaletteShadeRecipeIndex.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Select the active palette shade recipe variant index.
@@ -12183,6 +12210,8 @@ void __fastcall zRndr_LensFlare_QueueProjectedSample(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-getqueuedsamplecount
  * @recoil-artifact defines .text recoil:function:0x49a8b0: zRndr_LensFlare_GetQueuedSampleCount
+ * @recoil-match byte
+ *
  * Purpose: Return the number of lens-flare samples queued for the frame.
  */
 int __cdecl zRndr_LensFlare_GetQueuedSampleCount() {
@@ -12219,6 +12248,8 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-resetsamplequeue
  * @recoil-artifact defines .text recoil:function:0x49a910: zRndr::LensFlare_ResetSampleQueue
+ * @recoil-match byte
+ *
  * Purpose: Reset the queued lens-flare sample count for the frame.
  */
 void __cdecl LensFlare_ResetSampleQueue() {
@@ -12305,6 +12336,8 @@ int __fastcall zRndr_LensFlare_BuildVisibleSampleListFromQueue(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-filtersamplelist
  * @recoil-artifact defines .text recoil:function:0x49aa30: zRndr_SpanOcclusion_FilterSampleList
+ * @recoil-match byte
+ *
  * Purpose: Unproject one visible lens-flare sample into an occlusion-test point.
  */
 void __fastcall zRndr_SpanOcclusion_FilterSampleList(
@@ -12605,6 +12638,8 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawvisiblesamples
  * @recoil-artifact defines .text recoil:function:0x49b1a0: zRndr_LensFlare_DrawVisibleSamples
+ * @recoil-match byte
+ *
  * Purpose: Draw all visible lens-flare samples and clear the visible-sample list.
  */
 void __cdecl zRndr_LensFlare_DrawVisibleSamples() {

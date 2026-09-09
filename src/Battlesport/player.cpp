@@ -2071,6 +2071,8 @@ zSndPlayHandle * zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-startmodalloopsfxhandle-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
  * @recoil-artifact defines .text recoil:function:0x4385f0: Player::StartModalLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-match byte
+ *
  * Purpose: start one modal engine loop sample at the player world position and cache the returned play handle on the active modal state.
  */
 void zUtil_SaveGameState::StartModalLoopSfxHandle(
@@ -2091,6 +2093,8 @@ void zUtil_SaveGameState::StartModalLoopSfxHandle(
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-ensuremastertypeloopsfxhandle-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
  * @recoil-artifact defines .text recoil:function:0x438630: Player::EnsureMasterTypeLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-match byte
+ *
  * Purpose: lazily start the selected master-type loop sample when configured and no cached handle is active.
  */
 void zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(
@@ -2111,6 +2115,8 @@ void zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-stopmastertypeloopsfxhandle-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
  * @recoil-artifact defines .text recoil:function:0x438660: Player::StopMasterTypeLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-match byte
+ *
  * Purpose: stop a cached master-type loop handle and clear the player-state handle slot when the handle is present.
  */
 void zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(
@@ -2127,6 +2133,8 @@ void zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-stopmodalloopsfxhandle-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
  * @recoil-artifact defines .text recoil:function:0x438690: Player::StopModalLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-match byte
+ *
  * Purpose: stop a cached modal engine loop handle and clear the modal-state slot when the handle is present.
  */
 void zUtil_SaveGameState::StopModalLoopSfxHandle(
@@ -3420,6 +3428,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-writemissionsavedatasection
  * @recoil-artifact defines .text recoil:function:0x41f5f0: Player::ZAR_WriteMissionSaveDataSection
+ * @recoil-match byte
+ *
  * BN evidence: __fastcall ZAR pre-load callback; builds PlayerMissionSaveData,
  * copies g_Player_LastValidCameraVariantTag as one packed zTag4 value, and writes
  * a 0x140-byte blob under the local player's root-node name.
@@ -3446,6 +3456,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-readmissionsavedatasection
  * @recoil-artifact defines .text recoil:function:0x41f640: Player::ZAR_ReadMissionSaveDataSection
+ * @recoil-match byte
+ *
  * BN evidence: __fastcall ZAR data-ready callback; applies PlayerMissionSaveData,
  * copies lastValidCameraVariantTag to g_Player_LastValidCameraVariantTag, refreshes
  * HUD/layout state, and restores recorded node flags.
@@ -3479,6 +3491,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-writevehiclelistsection
  * @recoil-artifact defines .text recoil:function:0x41f6a0: Player::ZAR_WriteVehicleListSection
+ * @recoil-match byte
+ *
  * BN evidence: __fastcall ZAR pre-load callback; walks g_PlayerSaveStateList.head,
  * fills the 0x80-byte PlayerVehicleListSaveEntry from typed player-state fields,
  * and writes each blob under the player's root-node name.
@@ -5439,11 +5453,11 @@ int __fastcall CreateFromNamesAtPose(
 } // namespace Player
 namespace zClass_Node {
 /**
-     * BN evidence: fastcall self/mask, auxFlags at 0x28, signed
-     * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
-     * global data references.
-     * Purpose: AND a mask into auxFlags across a node's child-list subtree.
-     */
+ * BN evidence: fastcall self/mask, auxFlags at 0x28, signed
+ * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
+ * global data references.
+ * Purpose: AND a mask into auxFlags across a node's child-list subtree.
+ */
     void __fastcall MaskExtraFlagsRecursive(
         zClass_NodePartial * self,
         int mask
@@ -5460,11 +5474,11 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace zClass_Node {
 /**
-     * BN evidence: fastcall self/flags, auxFlags at 0x28, signed
-     * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
-     * global data references.
-     * Purpose: OR auxFlags into each node in a child-list subtree.
-     */
+ * BN evidence: fastcall self/flags, auxFlags at 0x28, signed
+ * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
+ * global data references.
+ * Purpose: OR auxFlags into each node in a child-list subtree.
+ */
     void __fastcall PropagateExtraFlagsRecursive(
         zClass_NodePartial * self,
         int flags
@@ -5481,11 +5495,11 @@ namespace zClass_Node {
 } // namespace zClass_Node
 namespace zClass_Node {
 /**
-     * BN evidence: fastcall self/flags, flags at 0x24, signed listCountB at
-     * 0x5c, listB at 0x60, recursive self-call only, and no global data
-     * references.
-     * Purpose: OR normal node flags into each node in a child-list subtree.
-     */
+ * BN evidence: fastcall self/flags, flags at 0x24, signed listCountB at
+ * 0x5c, listB at 0x60, recursive self-call only, and no global data
+ * references.
+ * Purpose: OR normal node flags into each node in a child-list subtree.
+ */
     void __fastcall PropagateFlagsRecursive(
         zClass_NodePartial * self,
         int flags
@@ -5573,6 +5587,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-buildcollisionpointsfrommodel
  * @recoil-artifact defines .text recoil:function:0x421ed0: Player::BuildCollisionPointsFromModel
+ * @recoil-match byte
+ *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: read collide00..collide11 nodes from the model, deactivate them,
  * and store the reordered probe points in the modal data.
@@ -5634,6 +5650,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-buildsupportpointsfrommodel
  * @recoil-artifact defines .text recoil:function:0x4220f0: Player::BuildSupportPointsFromModel
+ * @recoil-match byte
+ *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: read support00..support03 nodes from the model, deactivate them,
  * and cache their positions in modal probe-point slots 15..18.
@@ -7161,6 +7179,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingworldcollisioncontact
  * @recoil-artifact defines .text recoil:function:0x424110: Player::ResolvePendingWorldCollisionContact.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingWorldCollisionContact from the recovered
  * Battlesport gameplay source file.
@@ -7247,6 +7267,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-processpendingpickupcontacts
  * @recoil-artifact defines .text recoil:function:0x424210: Player::ProcessPendingPickupContacts.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ProcessPendingPickupContacts from the recovered
  * Battlesport gameplay source file.
@@ -8376,6 +8398,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-resetmousecontrolstateandrecentercursor
  * @recoil-artifact defines .text recoil:function:0x426330: Player::ResetMouseControlStateAndRecenterCursor
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\Player\Player_Camera.cpp.
  * Purpose: Reset a save state's mouse-look offsets and recenter the mouse
  * cursor.
@@ -10315,6 +10339,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisfrommotionbasis
  * @recoil-artifact defines .text recoil:function:0x4294d0: Player::RebuildSteerBasisFromMotionBasis.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::RebuildSteerBasisFromMotionBasis from the recovered
  * Battlesport gameplay source file.
@@ -10724,6 +10750,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-startslipsfx
  * @recoil-artifact defines .text recoil:function:0x429ed0: Player::StartSlipSfx.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::StartSlipSfx from the recovered
  * Battlesport gameplay source file.
@@ -10742,6 +10770,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-stopslipsfx
  * @recoil-artifact defines .text recoil:function:0x429ef0: Player::StopSlipSfx.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::StopSlipSfx from the recovered
  * Battlesport gameplay source file.
@@ -11020,6 +11050,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-getsavestatelisthead
  * @recoil-artifact defines .text recoil:function:0x42aa40: Player::GetSaveStateListHead
+ * @recoil-match byte
+ *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: return the global head of the player save-state list.
  * Source owner: Player save-state/bootstrap record-global subsystem, not a
@@ -11663,6 +11695,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-stopbftbubblefxhandle
  * @recoil-artifact defines .text recoil:function:0x42b4a0: Player::StopBftBubbleFxHandle.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::StopBftBubbleFxHandle from the recovered
  * Battlesport gameplay source file.
@@ -12050,10 +12084,10 @@ void __fastcall RebuildMotionBasisFromSteerBasis(
 } // namespace Player
 namespace zClass_cls_di {
 /**
-     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
-     * behavior/global evidence; native smoke coverage exercises the owner slice.
-     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
-     */
+ * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+ * behavior/global evidence; native smoke coverage exercises the owner slice.
+ * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+ */
     int __fastcall SnapProbePointYToBestCandidate(zVec3 * point) {
         PlayerProbeSampleCandidateBuffer candidateBuffer;
         const int result = BuildPickCandidateListBelowPoint(
@@ -12283,6 +12317,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-setworldposeandrestartanchor
  * @recoil-artifact defines .text recoil:function:0x42be00: Player::SetWorldPoseAndRestartAnchor.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SetWorldPoseAndRestartAnchor from the recovered
  * Battlesport gameplay source file.

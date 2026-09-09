@@ -473,6 +473,8 @@ namespace zEffect {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setconditionalrefpos
  * @recoil-artifact defines .text recoil:function:0x458af0: zEffect::SetConditionalRefPos.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
  * Purpose: store the conditional reference position used by zEffect
  * conditional event tests.
@@ -1160,6 +1162,8 @@ int __fastcall HandleLightAnimEvent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlefogevent
  * @recoil-artifact defines .text recoil:function:0x459510: zEffect::HandleFogEvent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: copy selected fog state fields into the pending world fog settings.
  */
@@ -1704,6 +1708,8 @@ int __fastcall HandleRotationEvent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenodescaleevent
  * @recoil-artifact defines .text recoil:function:0x459cb0: zEffect::HandleNodeScaleEvent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: set a referenced node's object scale from serialized event values.
  */
@@ -1809,6 +1815,8 @@ int __fastcall HandlePositionEvent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleactivateevent
  * @recoil-artifact defines .text recoil:function:0x459e30: zEffect::HandleActivateEvent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: set the active state for a referenced node or the bound animation
  * node.
@@ -2898,6 +2906,8 @@ int __fastcall HandleAddChildEvent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleremovechildevent
  * @recoil-artifact defines .text recoil:function:0x45b410: zEffect::HandleRemoveChildEvent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: remove a child node from its serialized parent node reference.
  */
@@ -3642,6 +3652,8 @@ namespace zEffect {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenamedanimstopevent
  * @recoil-artifact defines .text recoil:function:0x45c100: zEffect::HandleNamedAnimStopEvent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: stop a named animation entry referenced by an emitter event.
  */
@@ -3672,6 +3684,8 @@ int __fastcall HandleNamedAnimStopEvent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleemitterplayevent
  * @recoil-artifact defines .text recoil:function:0x45c1a0: zEffect::HandleEmitterPlayEvent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: trigger node-action activation for a named emitter animation entry.
  */
@@ -3739,6 +3753,8 @@ int __fastcall HandleEmitterStopEvent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleemitterresetevent
  * @recoil-artifact defines .text recoil:function:0x45c2f0: zEffect::HandleEmitterResetEvent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: reset an emitter runtime sequence cursor, elapsed timers, and run
  * state.
@@ -4004,6 +4020,8 @@ int __fastcall SkipConditionalChainToEnd(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenoopmarkerevent
  * @recoil-artifact defines .text recoil:function:0x45c6e0: zEffect::HandleNoOpMarkerEvent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: consume a marker event that has no runtime side effects.
  */
@@ -4018,6 +4036,8 @@ int __fastcall HandleNoOpMarkerEvent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlecallbackevent
  * @recoil-artifact defines .text recoil:function:0x45c6f0: zEffect::HandleCallbackEvent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: dispatch an animation callback event to the entry callback when one
  * is registered.
@@ -4641,6 +4661,8 @@ namespace zEffect {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setanimdebugframetag
  * @recoil-artifact defines .text recoil:function:0x45d000: zEffect::SetAnimDebugFrameTag.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: record the next video frame tick as the current animation debug tag.
  */
@@ -5120,6 +5142,8 @@ namespace zEffect_Anim {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.nodeactioncallback
  * @recoil-artifact defines .text recoil:function:0x45d6b0: zEffect_Anim::NodeActionCallback.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: handle runtime node action callbacks by stopping and cleaning up the
  * owning animation entry.
@@ -5211,6 +5235,8 @@ int __fastcall RunStopDelayCallback(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.resetactivationprereqcount
  * @recoil-artifact defines .text recoil:function:0x45d7a0: zEffectAnim::ResetActivationPrereqCount.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: clear the activation prerequisite counter for an animation entry.
  */
@@ -5530,6 +5556,8 @@ int __fastcall CheckActivationPrereqs(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrotandvelocity-thunk
  * @recoil-artifact defines .text recoil:function:0x45dc70: zEffectAnim::SetTransformRotAndVelocity_Thunk.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward a saved transform, rotation, and velocity activation
  * command to SetTransformRotAndVelocity using the retail thunk ABI.
@@ -5649,6 +5677,8 @@ zEffectAnimEntry *__fastcall SetVelocity(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setvelocity-thunk
  * @recoil-artifact defines .text recoil:function:0x45dde0: zEffectAnim::SetVelocity_Thunk.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward the saved activation command to SetVelocity using the
  * retail stack-cleanup thunk ABI.
@@ -5781,6 +5811,8 @@ zEffectAnimEntry *__fastcall SetPositionRefAndVelocity(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setpositionrefandvelocity-thunk
  * @recoil-artifact defines .text recoil:function:0x45df70: zEffectAnim::SetPositionRefAndVelocity_Thunk.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward the saved activation command to SetPositionRefAndVelocity
  * using the retail stack-cleanup thunk ABI.
@@ -5917,6 +5949,8 @@ zEffectAnimEntry *__fastcall SetTransformRefs(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrefs-thunk
  * @recoil-artifact defines .text recoil:function:0x45e0b0: zEffectAnim::SetTransformRefs_Thunk.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: forward the saved activation command to SetTransformRefs using the
  * retail stack-cleanup thunk ABI.
@@ -5944,6 +5978,8 @@ zEffectAnimEntry *__fastcall SetTransformRefs_Thunk(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.zeffectanimentry-setonstatedonecallback
  * @recoil-artifact defines .text recoil:function:0x45e0d0: zEffectAnimEntry::SetOnStateDoneCallback (zeff_anim.c)
+ * @recoil-match byte
+ *
  * Purpose: Store the animation state-done callback and user context when an entry is available.
  */
 void __fastcall zEffectAnimEntry::SetOnStateDoneCallback(
@@ -5961,6 +5997,8 @@ namespace zEffect {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setconditionaleffectlevel
  * @recoil-artifact defines .text recoil:function:0x45e0f0: zEffect::SetConditionalEffectLevel.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
  * Purpose: store the active conditional effect level used by conditional chain
  * events.

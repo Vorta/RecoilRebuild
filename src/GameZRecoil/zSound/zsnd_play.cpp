@@ -561,6 +561,8 @@ int __stdcall zSnd::GainScaleToDirectSoundAttenuation(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playsimple
  * @recoil-artifact defines .text recoil:function:0x49fa00: zSndSample_PlaySimple.
+ * @recoil-match byte
+ *
  * Purpose: return the supplied gain scale through the x87 floating-point
  * return path unchanged.
  */
@@ -1099,6 +1101,8 @@ zSndPlayHandleSnapshot * zSndPlayHandleSnapshot::CreateFromActiveSamples() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandlesnapshotpayload-capturefromplayhandle
  * @recoil-artifact defines .text recoil:function:0x4a0300: zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle.
+ * @recoil-match byte
+ *
  * Purpose: Captures backend play-handle state into a snapshot payload.
  */
 void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(
@@ -1271,6 +1275,8 @@ void __fastcall zSndPlayHandle::PlayWithDelta_BackendDispatch(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandlesnapshot-stopallifplaying
  * @recoil-artifact defines .text recoil:function:0x4a0500: zSndPlayHandleSnapshot::StopAllIfPlaying.
+ * @recoil-match byte
+ *
  * Purpose: Stops every captured still-playing backend handle in this original
  * translation unit so VC5 retains its register and stack-allocation shape.
  */
@@ -1439,6 +1445,8 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-ismuted
  * @recoil-artifact defines .text recoil:function:0x4a07a0: zSnd::IsMuted.
+ * @recoil-match byte
+ *
  * Purpose: report active mute state after sound preinitialization.
  */
 int __cdecl zSnd::IsMuted() {
@@ -1452,8 +1460,9 @@ int __cdecl zSnd::IsMuted() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandlesnapshot-newnode
  * @recoil-artifact defines .text recoil:function:0x4a07c0: zSndPlayHandleSnapshot::NewNode.
- * Purpose: Allocates a snapshot list node and initializes its next/previous links.
+ * @recoil-match byte
  *
+ * Purpose: Allocates a snapshot list node and initializes its next/previous links.
  * Callers seed ECX with the owning snapshot, while the helper only uses its
  * two stack arguments and returns with ret 8.
  */
@@ -1520,6 +1529,8 @@ char g_zSndBankArchiveNameHigh[0x0c] = "soundsH.zbd";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-initbyname
  * @recoil-artifact defines .text recoil:function:0x4a0860: zSndSampleSet_InitByName.
+ * @recoil-match byte
+ *
  * Purpose: find a registered sample set by name and dispatch its
  * initialization routine.
  */
@@ -1532,6 +1543,8 @@ extern "C" int __fastcall zSndSampleSet_InitByName(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-destroybyname
  * @recoil-artifact defines .text recoil:function:0x4a0870: zSndSampleSet_DestroyByName.
+ * @recoil-match byte
+ *
  * Purpose: find a registered sample set by name and dispatch its destroy routine.
  */
 extern "C" int __fastcall zSndSampleSet_DestroyByName(
@@ -1663,6 +1676,8 @@ zSndSampleSet * zSndSampleSet::RegistryAddEntry(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-destroyowneddata
  * @recoil-artifact defines .text recoil:function:0x4a0c00: zSndSampleSet::DestroyOwnedData.
+ * @recoil-match byte
+ *
  * Purpose: release owned sample storage and reset the sample count.
  */
 void zSndSampleSet::DestroyOwnedData() {
@@ -1807,6 +1822,8 @@ int zSndSampleSet::Destroy() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-getsampleat
  * @recoil-artifact defines .text recoil:function:0x4a0e90: zSndSampleSet::GetSampleAt.
+ * @recoil-match byte
+ *
  * Purpose: Returns the indexed sample pointer when the signed upper-bound check passes.
  */
 zSndSample * zSndSampleSet::GetSampleAt(
@@ -1896,6 +1913,8 @@ int zSndSampleSet::LoadSamplesFromIndexArchive(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-setglobalvolumescale
  * @recoil-artifact defines .text recoil:function:0x4a1090: zSnd::SetGlobalVolumeScale.
+ * @recoil-match byte
+ *
  * Purpose: store and return the global sound-volume scale.
  */
 float __stdcall zSnd::SetGlobalVolumeScale(
@@ -1925,6 +1944,8 @@ float __stdcall zSnd::MulGlobalVolumeScaleAndGetPrev(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-setflag10playbackenabled
  * @recoil-artifact defines .text recoil:function:0x4a10d0: zSnd::SetFlag10PlaybackEnabled.
+ * @recoil-match byte
+ *
  * Purpose: set the zSound flag-gated playback enable value.
  */
 void __fastcall zSnd::SetFlag10PlaybackEnabled(

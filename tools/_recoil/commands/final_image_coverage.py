@@ -71,11 +71,12 @@ def _full_order_accepted(block: Mapping[str, Any]) -> bool:
 
 
 def _linked_byte_accepted(symbol: Mapping[str, Any]) -> bool:
+    from _recoil.lib.match_evidence import stage_match_current
     state = symbol.get("binary_state")
     facts = symbol.get("accepted_byte_facts")
     return (
         isinstance(state, Mapping)
-        and all(_accepted_state(state.get(dimension)) for dimension in EXACT_LINK_DIMENSIONS)
+        and stage_match_current(symbol, "linked", _accepted_state)
         and isinstance(facts, Mapping)
         and accepted_byte_mode(facts) == "linked"
         and facts.get("validation_mode") == "live"
@@ -410,6 +411,11 @@ def _text_entities(
                 "source_block_id": block_id,
                 "contribution_class": pipeline_class,
             }
+            from _recoil.lib.match_evidence import current_match_level
+            identity["match_level"] = current_match_level(symbol) or "byte"
+            if identity["match_level"] == "instruction":
+                identity["instruction_match_review"] = symbol.get("instruction_match_review")
+                identity["function_match"] = symbol.get("function_match")
             if "provider" in symbol:
                 identity["provider"] = symbol.get("provider")
             if symbol.get("kind") == "provider-function" and not isinstance(

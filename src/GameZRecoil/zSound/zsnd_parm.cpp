@@ -110,6 +110,7 @@ void zSndPlayHandle::SetEnableScale(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndsample-setplaybackeventhandler
  * @recoil-artifact defines .text recoil:function:0x4a1240: zSndSample::SetPlaybackEventHandler
+ * @recoil-match byte
  *
  * Purpose: install the playback event callback while the sample is not under
  * the creation guard.
@@ -125,6 +126,7 @@ void __fastcall zSndSample::SetPlaybackEventHandler(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-tryenablemanaged
  * @recoil-artifact defines .text recoil:function:0x4a1250: zSndPlayHandle_TryEnableManaged
+ * @recoil-match byte
  *
  * Purpose: mark a managed play handle active only when it exists and is not
  * already active.
@@ -143,6 +145,7 @@ extern "C" int __fastcall zSndPlayHandle_TryEnableManaged(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-trydisablemanaged
  * @recoil-artifact defines .text recoil:function:0x4a1270: zSndPlayHandle_TryDisableManaged.
+ * @recoil-match byte
  *
  * Purpose: clear a managed play handle's active flag only when it exists and
  * is currently active.

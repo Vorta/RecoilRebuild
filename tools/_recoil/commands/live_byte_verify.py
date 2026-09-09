@@ -51,6 +51,8 @@ from _recoil.lib.progress import (
 )
 from _recoil.lib.pe import parse_pe_headers, rva_to_offset
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
+from _recoil.lib.function_match import MATCH_VERSION, compare_instructions
+from _recoil.lib.match_evidence import source_context, review_current
 
 
 DEFAULT_TRACKER = DEFAULT_PROGRESS_PATH
@@ -1689,6 +1691,7 @@ def _compare_provider_row(
     paths: Any,
     reference: Path,
     parsed_map: Any,
+    data_body: bool = False,
 ) -> dict[str, Any]:
     address = normalize_address(row["address"])
     scope_id = str(row.get("symbol_id", ""))
@@ -1731,7 +1734,7 @@ def _compare_provider_row(
     matches = [
         item
         for item in parsed_map.symbols
-        if item.is_function and item.symbol == map_symbol and item.object == map_object
+        if item.is_function is not data_body and item.symbol == map_symbol and item.object == map_object
     ]
     if len(matches) != 1:
         return {
@@ -1759,12 +1762,24 @@ def _compare_provider_row(
     retail_end = address_value(str(row["end_exclusive"]))
     extent = retail_end - retail_start
     candidate_start = int(map_row.address)
-    retail_bytes = _pe_bytes(reference, retail_start, extent)
-    candidate_bytes = _pe_bytes(paths.exe_path, candidate_start, extent)
+    retail_bytes = _pe_bytes(reference, retail_start, extent, allow_zero_fill=data_body)
+    candidate_bytes = _pe_bytes(paths.exe_path, candidate_start, extent, allow_zero_fill=data_body)
     candidate_headers = parse_pe_headers(paths.exe_path.read_bytes(), source=str(paths.exe_path))
     retail_headers = parse_pe_headers(reference.read_bytes(), source=str(reference))
     operand_results: list[dict[str, Any]] = []
     operands_passed = True
+    if data_body:
+        from _recoil.lib.storage_proof import image_storage, pointer_fields
+        reference_image, candidate_image = reference.read_bytes(), paths.exe_path.read_bytes()
+        expected_fields = pointer_fields(reference_image, retail_start, extent)
+        observed_fields = pointer_fields(candidate_image, candidate_start, extent)
+        declared_fields = {item.get("offset") for item in operands if isinstance(item, Mapping)
+                           and item.get("kind") == "absolute32" and item.get("width") == 4}
+        # Every loader relocation needs a typed target in the accepted provider
+        # contract; identical raw pointer bytes alone are insufficient.
+        operands_passed = (expected_fields == observed_fields == declared_fields
+            and image_storage(reference_image, retail_start, extent)[1:] ==
+                image_storage(candidate_image, candidate_start, extent)[1:])
     seen_offsets: set[int] = set()
     for index, operand_row in enumerate(operands):
         if not isinstance(operand_row, Mapping):
@@ -2158,6 +2173,7 @@ def _compare_row(
     ] | None = None,
     physical_targets: dict[int, set[int]] | None = None,
     cleanup_physical_targets: set[int] | None = None,
+    allow_near_byte_review: bool = False,
 ) -> dict[str, Any]:
     address = normalize_address(row["address"])
     retail_start = address_value(address)
@@ -2236,13 +2252,24 @@ def _compare_row(
         ),
         "object_body_equal_outside_relocations": object_passed,
     }
+    instruction_proof = None
     if not object_passed:
         normalized_object = bytes(
             retail_bytes[index] if function_bytes.relocation_mask[index] else value
             for index, value in enumerate(function_bytes.data)
         )
         result["first_difference"] = _first_byte_difference(retail_bytes, normalized_object)
-        return result
+        instruction_proof = compare_instructions(retail_bytes, normalized_object,
+            relocations=list(relocation_catalog or ()), symbol=binding.function.symbol)
+        result["instruction_proof"] = instruction_proof
+        if (not instruction_proof["passed"] and not allow_near_byte_review) or mode == "object":
+            return result
+        scope = str(binding.scope_id or row.get("symbol_id", ""))
+        review = (target_rows or {}).get(scope, {}).get("instruction_match_review")
+        context = source_context(source_from, config)
+        result["instruction_review_current"] = (instruction_proof["passed"] and
+            review_current(review, context, instruction_proof["differences"]))
+        result["review_evidence_id"] = review.get("evidence_id") if isinstance(review, Mapping) else None
     if mode == "object":
         return result
     assert parsed_map is not None
@@ -2262,6 +2289,12 @@ def _compare_row(
         retail_bytes,
         function_bytes.relocation_mask,
     )
+    linked_instruction_proof = None
+    if not linked_body_passed and instruction_proof is not None:
+        normalized_linked = bytes(retail_bytes[i] if function_bytes.relocation_mask[i] else value
+                                  for i, value in enumerate(candidate_bytes))
+        linked_instruction_proof = compare_instructions(retail_bytes, normalized_linked,
+            relocations=list(relocation_catalog or ()), symbol=binding.function.symbol)
     relocation_rows: list[dict[str, Any]] = []
     relocations_passed = True
     if relocation_catalog is None:
@@ -2574,9 +2607,14 @@ def _compare_row(
         )
     exact_address = candidate_start == retail_start
     exact_bytes = candidate_bytes == retail_bytes
-    passed = linked_body_passed and relocations_passed
+    instruction_passed = (instruction_proof is not None and instruction_proof["passed"]
+                          and linked_instruction_proof is not None and linked_instruction_proof["passed"]
+                          and instruction_proof["differences"] == linked_instruction_proof["differences"]
+                          and result.get("instruction_review_current") is True)
+    body_passed = (object_passed and linked_body_passed) or instruction_passed
+    passed = body_passed and relocations_passed
     if mode == "linked":
-        passed = passed and exact_address and exact_bytes
+        passed = passed and exact_address and (exact_bytes or instruction_passed)
     result.update(
         passed=passed,
         stage="linked-body" if not passed else "complete",
@@ -2587,15 +2625,35 @@ def _compare_row(
         exact_linked_bytes=exact_bytes,
         relocations=relocation_rows,
         relocation_expectations_exact=relocations_passed,
+        match_level=("byte" if object_passed and linked_body_passed else "instruction") if passed else None,
+        instruction_equivalent=bool(instruction_proof and instruction_proof["passed"]),
+        linked_instruction_proof=linked_instruction_proof,
+        match_version=MATCH_VERSION,
+        retail_relocations=list(relocation_catalog),
+        # Advisory near-byte review may inspect code differences only after
+        # typed operands and the selected current object's linked body agree.
+        # This flag never changes `passed`, match levels, or stage acceptance.
+        structural_comparison_complete=(relocations_passed and _masked_equal(
+            function_bytes.data, candidate_bytes, function_bytes.relocation_mask)),
         # Compatibility projection for old report readers; expectations are now
         # derived live and are not a required stored tracker catalog.
     )
+    if not passed and relocations_passed and not object_passed and result.get("instruction_review_current") is not True:
+        result["stage"] = "instruction-review-required"
     if not exact_bytes:
         result["first_difference"] = _first_byte_difference(retail_bytes, candidate_bytes)
     return result
 
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
+    from _recoil.lib.match_evidence import dependency_states
+    # Fresh compilation is mandatory; these coordinates only reject edits that
+    # race this invocation. They are never acceptance evidence or build reuse.
+    input_paths = [str(path) for tree in (REPO_ROOT / "src", REPO_ROOT / "tools")
+                   for path in tree.rglob("*") if path.is_file()
+                   and path.suffix.lower() in {".h", ".cpp", ".c", ".rc", ".json", ".py", ".txt"}]
+    input_paths.append(str(args.reference))
+    inputs_before = dependency_states(input_paths)
     document = ProgressDocument.load(args.progress)
     rows = _rows(document, args.mode, args.at)
     if not rows:
@@ -2672,7 +2730,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     # Authored-byte validation is frequently invoked at the live cursor.  Resolve
     # its retail operand contract before paying for a whole-project link.  Later
     # groups are derived lazily from the same candidate-independent inputs.
-    if args.mode == "authored":
+    if args.mode == "authored" and not getattr(args, "classify_all", False):
         first_row = rows[0]
         selected_bindings = _select_bindings(bindings, first_row)
         failed_expectation: dict[str, Any] | None = None
@@ -2715,6 +2773,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     checked = 0
     matched_groups: list[dict[str, Any]] = []
     first_divergence: dict[str, Any] | None = None
+    classifications: list[dict[str, Any]] = []
     physical_targets: dict[int, set[int]] = {}
     cleanup_physical_targets: set[int] = set()
     for row in rows:
@@ -2732,50 +2791,64 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             authored_group = dict(row)
             authored_group["physical_rows"] = authored_rows
             authored_group["scope_ids"] = [str(item["symbol_id"]) for item in authored_rows]
-            selected_bindings = _select_bindings(bindings, authored_group)
+            try:
+                selected_bindings = _select_bindings(bindings, authored_group)
+            except LiveByteError as exc:
+                if not getattr(args, "classify_all", False):
+                    raise
+                selected_bindings = []
+                group_results.append({"passed": False, "stage": "binding", "scope_ids": list(row["scope_ids"]),
+                                      "address": row["address"], "message": str(exc)})
             for binding in selected_bindings:
-                relocation_catalog: Sequence[Mapping[str, Any]] | None = None
-                if args.mode != "object":
-                    expectation = expectation_for(authored_group, binding)
-                    if not expectation["passed"]:
-                        group_results.append(
-                            {
-                                "passed": False,
-                                "stage": "relocation-expectations",
-                                "address": normalize_address(authored_group["address"]),
-                                "end_exclusive": normalize_address(
-                                    authored_group["end_exclusive"]
-                                ),
-                                "scope_ids": list(authored_group["scope_ids"]),
-                                "message": (
-                                    "candidate-independent retail relocation expectations are "
-                                    "unresolved"
-                                ),
-                                "expectation_report": expectation,
-                            }
+                try:
+                    relocation_catalog: Sequence[Mapping[str, Any]] | None = None
+                    if args.mode != "object":
+                        expectation = expectation_for(authored_group, binding)
+                        if not expectation["passed"]:
+                            group_results.append(
+                                {
+                                    "passed": False,
+                                    "stage": "relocation-expectations",
+                                    "address": normalize_address(authored_group["address"]),
+                                    "end_exclusive": normalize_address(
+                                        authored_group["end_exclusive"]
+                                    ),
+                                    "scope_ids": list(authored_group["scope_ids"]),
+                                    "message": (
+                                        "candidate-independent retail relocation expectations are "
+                                        "unresolved"
+                                    ),
+                                    "expectation_report": expectation,
+                                }
+                            )
+                            break
+                        relocation_catalog = expectation["expectations"]
+                    group_results.append(
+                        _compare_row(
+                            mode=args.mode,
+                            row=authored_group,
+                            binding=binding,
+                            config=config,
+                            paths=paths,
+                            reference=args.reference,
+                            parsed_map=parsed_map,
+                            relocation_catalog=relocation_catalog,
+                            target_rows=document.collection("symbols"),
+                            physical_targets=physical_targets,
+                            cleanup_physical_targets=cleanup_physical_targets,
+                            retail_reader_universes=(
+                                retail_reader_universes_for(binding, relocation_catalog)
+                                if relocation_catalog is not None
+                                else None
+                            ),
                         )
-                        break
-                    relocation_catalog = expectation["expectations"]
-                group_results.append(
-                    _compare_row(
-                        mode=args.mode,
-                        row=authored_group,
-                        binding=binding,
-                        config=config,
-                        paths=paths,
-                        reference=args.reference,
-                        parsed_map=parsed_map,
-                        relocation_catalog=relocation_catalog,
-                        target_rows=document.collection("symbols"),
-                        physical_targets=physical_targets,
-                        cleanup_physical_targets=cleanup_physical_targets,
-                        retail_reader_universes=(
-                            retail_reader_universes_for(binding, relocation_catalog)
-                            if relocation_catalog is not None
-                            else None
-                        ),
                     )
-                )
+                except (LiveByteError, ValueError, OSError) as exc:
+                    if not getattr(args, "classify_all", False):
+                        raise
+                    group_results.append({"passed": False, "stage": "function-proof-unavailable",
+                        "scope_ids": list(authored_group["scope_ids"]), "address": row["address"],
+                        "message": str(exc), "error_type": type(exc).__name__})
         assert parsed_map is not None or not provider_rows
         group_results.extend(
             _compare_provider_row(
@@ -2797,10 +2870,22 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "identity_results": group_results,
         }
         checked += 1
+        if getattr(args, "classify_all", False) and (checked == 1 or checked % 100 == 0):
+            print(f"Function census: {checked}/{len(rows)} groups checked, {len(matched_groups)} matched", file=sys.stderr, flush=True)
+        classifications.append({"scope_ids": list(row["scope_ids"]), "address": row["address"],
+                               "passed": comparison["passed"], "identity_results": group_results})
         if not comparison["passed"]:
-            first_divergence = comparison
-            break
-        matched_groups.append(_matched_group_contract(row, bindings))
+            if first_divergence is None:
+                first_divergence = comparison
+            if not getattr(args, "classify_all", False):
+                break
+            continue
+        matched = _matched_group_contract(row, bindings)
+        matched["match_level"] = "instruction" if any(item.get("match_level") == "instruction" for item in group_results) else "byte"
+        matched["identity_results"] = group_results
+        matched_groups.append(matched)
+    if dependency_states(input_paths) != inputs_before:
+        raise LiveByteError("production source, proof tools or retail changed during the live function comparison")
     return {
         "report_version": 1,
         "kind": "live-byte-mode",
@@ -2811,6 +2896,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "checked_rows": checked,
         "selected_rows": len(rows),
         "matched_groups": matched_groups,
+        "classifications": classifications,
+        "match_counts": dict(Counter(item["match_level"] for item in matched_groups)),
         "build_root": root.as_posix(),
         "build_returncode": returncode,
         "build_performed": True,

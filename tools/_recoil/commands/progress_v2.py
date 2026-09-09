@@ -156,7 +156,20 @@ def accept_live_byte_groups(
             binary_state = symbol.setdefault("binary_state", {})
             if not isinstance(binary_state, dict):
                 raise ProgressError(f"symbol {symbol_id} binary_state must be an object")
-            for dimension in dimensions:
+            level = normalized_facts.get("match_levels", {}).get(symbol_id, "byte")
+            if level not in {"byte", "instruction"}:
+                raise ProgressError("live byte acceptance requires an explicit valid match level")
+            selected_dimensions = dimensions
+            if level == "instruction":
+                from _recoil.lib.match_evidence import current_match_level
+                if current_match_level(symbol) != "instruction":
+                    raise ProgressError("instruction stage acceptance requires a current complete Pro-reviewed function proof")
+                selected_dimensions = (("relocation_identity", "linked_presence", "linked_target_identity",
+                                        "object_instruction", "linked_body_instruction") if mode == "authored"
+                                       else ("linked_address", "linked_targets", "linked_instruction"))
+                for dimension in (("object_byte", "linked_body_byte") if mode == "authored" else ("linked_byte",)):
+                    binary_state[dimension] = state_record("failed", "observed", "current", [evidence_id], validation_mode="live")
+            for dimension in selected_dimensions:
                 binary_state[dimension] = state_record(
                     "passed",
                     "accepted",

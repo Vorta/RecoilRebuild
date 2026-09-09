@@ -122,6 +122,8 @@ void __fastcall GlobalStateDestructor(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-globalstateconstructor
  * @recoil-artifact defines .text recoil:function:0x471ab0: zInput_GlobalState::Constructor.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * BN assembly writes the overlay lifetime fields at data addresses
  * 0x565ea4..0x565eb8 through the 0x561cb0 static-object base; the rebuilt
@@ -144,10 +146,11 @@ void *__fastcall GlobalStateConstructor(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-onappdeactivate
  * @recoil-artifact defines .text recoil:function:0x471ae0: zInput::OnAppDeactivate.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: suspend active input devices during app deactivation, then mark the
  * mouse inactive and update DirectInput acquisition state.
- *
  * Evidence: BN assembly calls the joystick, mouse, and keyboard unsuspended
  * tests in that order, sets only the needed suspend bits, stores 0 to
  * g_zInput_MouseActive, and tail-jumps to Mouse_UpdateAcquireState.
@@ -265,6 +268,7 @@ int __cdecl Shutdown() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-resetalltransitionstate
  * @recoil-artifact defines .text recoil:function:0x471c50: zInput::ResetAllTransitionState.
+ * @recoil-match byte
  *
  * Purpose: reset keyboard, joystick, and mouse transition state as a single
  * zInput mode/focus transition operation.

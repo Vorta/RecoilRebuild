@@ -171,6 +171,7 @@ void zUtil_SaveGameState::FreeOwnedResources() {
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-zutil-savegamestatelist-allocappend
  * @recoil-artifact defines .text recoil:function:0x4384e0: zUtil_SaveGameStateList_AllocAppend.
+ * @recoil-match byte
  *
  * Purpose: allocate a zeroed save-state node and append it to the tracked
  * save-state list.

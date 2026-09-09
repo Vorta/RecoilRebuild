@@ -25,6 +25,7 @@ ANCHOR_RE = re.compile(r"^@recoil-anchor[ \t]+(\S+)[ \t]*$")
 ARTIFACT_RE = re.compile(
     r"^@recoil-artifact[ \t]+(\S+)[ \t]+(\S+)[ \t]+(\S+):[ \t]*(\S.*)$"
 )
+MATCH_RE = re.compile(r"^@recoil-match[ \t]+(byte|instruction)[ \t]*$")
 LEGACY_REIMPLEMENTS_RE = re.compile(
     r"^Reimplements[ \t]+(?:(data)[ \t]+)?(0x[0-9A-Fa-f]+):[ \t]*(\S.*)",
     re.IGNORECASE,
@@ -119,6 +120,14 @@ class SourceTraceLegacyAddress:
 
 
 @dataclass(frozen=True)
+class SourceTraceMatch:
+    level: str
+    line: int
+    anchor_id: str | None
+    artifact_ids: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class SourceTraceDocument:
     path: str
     anchors: tuple[SourceTraceAnchor, ...]
@@ -128,6 +137,7 @@ class SourceTraceDocument:
     encoding: str = "memory"
     newline: str = "none"
     unsupported_legacy_addresses: tuple[SourceTraceLegacyAddress, ...] = ()
+    matches: tuple[SourceTraceMatch, ...] = ()
 
     def direct_defining_function_at(self, offset: int) -> SourceTraceArtifact | None:
         """Return the sole direct `defines` function artifact enclosing offset.
@@ -625,11 +635,20 @@ def parse_source_trace_text(
     anchors: list[SourceTraceAnchor] = []
     artifacts: list[SourceTraceArtifact] = []
     findings: list[SourceTraceFinding] = []
+    matches: list[SourceTraceMatch] = []
 
     for comment in comments:
         anchor_rows: list[tuple[int, str]] = []
         artifact_rows: list[tuple[int, re.Match[str]]] = []
+        match_rows: list[tuple[int, str]] = []
         for line, value in _comment_lines(comment):
+            if value.startswith("@recoil-match"):
+                match = MATCH_RE.fullmatch(value)
+                match_rows.append((line, match[1] if match else ""))
+                if match is None:
+                    findings.append(SourceTraceFinding("malformed-match-directive", path, line,
+                        "expected '@recoil-match byte' or '@recoil-match instruction'"))
+                continue
             anchor_match = ANCHOR_RE.fullmatch(value)
             if anchor_match is not None:
                 anchor_rows.append((line, anchor_match.group(1)))
@@ -658,16 +677,28 @@ def parse_source_trace_text(
                     )
                 )
 
-        if not anchor_rows and not artifact_rows:
+        if not anchor_rows and not artifact_rows and not match_rows:
             continue
         construct, attachment_status = _attachment_after(text, masked, comment)
+        if match_rows:
+            function_ids = tuple(normalize_artifact_id(row[3]) for _, row in artifact_rows
+                                 if row[1] == "defines" and row[2] == ".text"
+                                 and artifact_entity_kind(normalize_artifact_id(row[3])) == "function")
+            if len(match_rows) != 1:
+                findings.append(SourceTraceFinding("duplicate-match-directive", path, match_rows[0][0],
+                    "a function definition may have only one @recoil-match directive"))
+            if construct is None or construct.kind != "function" or not function_ids or len(anchor_rows) != 1:
+                findings.append(SourceTraceFinding("unattached-match-directive", path, match_rows[0][0],
+                    "@recoil-match requires an anchored function definition with a defines .text function identity"))
+            elif len(match_rows) == 1 and match_rows[0][1]:
+                matches.append(SourceTraceMatch(match_rows[0][1], match_rows[0][0], anchor_rows[0][1], function_ids))
         if len(anchor_rows) != 1:
             code = "missing-anchor-directive" if not anchor_rows else "duplicate-anchor-directive"
             findings.append(
                 SourceTraceFinding(
                     code,
                     path,
-                    (artifact_rows[0][0] if artifact_rows else anchor_rows[0][0]),
+                    (artifact_rows[0][0] if artifact_rows else anchor_rows[0][0] if anchor_rows else match_rows[0][0]),
                     "a canonical trace comment must contain exactly one @recoil-anchor directive",
                 )
             )
@@ -682,7 +713,7 @@ def parse_source_trace_text(
                 SourceTraceFinding(
                     finding_code,
                     path,
-                    anchor_rows[0][0] if anchor_rows else artifact_rows[0][0],
+                    anchor_rows[0][0] if anchor_rows else artifact_rows[0][0] if artifact_rows else match_rows[0][0],
                     "canonical source-trace directives must be immediately attached to a "
                     f"supported function, data, or type definition; status={attachment_status}",
                     anchor_id=anchor_id,
@@ -691,9 +722,9 @@ def parse_source_trace_text(
         if comment.style != "doxygen":
             findings.append(
                 SourceTraceFinding(
-                    "invalid-comment-style",
+                    "invalid-match-directive-style" if match_rows else "invalid-comment-style",
                     path,
-                    anchor_rows[0][0] if anchor_rows else artifact_rows[0][0],
+                    anchor_rows[0][0] if anchor_rows else artifact_rows[0][0] if artifact_rows else match_rows[0][0],
                     "canonical source-trace directives must use an attached Doxygen /** ... */ block",
                     anchor_id=anchor_id,
                 )
@@ -837,6 +868,7 @@ def parse_source_trace_text(
             binary=binary,
         ),
         findings=tuple(findings),
+        matches=tuple(matches),
         encoding=encoding,
         newline=newline,
         unsupported_legacy_addresses=_unsupported_legacy_addresses(
@@ -886,6 +918,11 @@ def parse_source_trace_path(
 
 def load_artifact_rows(progress_path: Path) -> SourceArtifactIndex:
     data = ProgressStore(progress_path).load().data
+    return artifact_index_from_data(data, progress_path=progress_path)
+
+
+def artifact_index_from_data(data, *, progress_path="invocation-local document") -> SourceArtifactIndex:
+    """Index the already revision-guarded document without a second ledger read."""
     if not isinstance(data, Mapping):
         raise ValueError(f"{progress_path}: progress root must be an object")
     raw_symbols = data.get("symbols")

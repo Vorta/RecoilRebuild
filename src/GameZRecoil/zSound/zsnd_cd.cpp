@@ -284,6 +284,8 @@ int __cdecl Shutdown() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.playtrackwithmode
  * @recoil-artifact defines .text recoil:function:0x4a25e0: zSndCd::PlayTrackWithMode.
+ * @recoil-match byte
+ *
  * Purpose: Start a CD track and then apply the requested playback mode.
  */
 int __fastcall PlayTrackWithMode(

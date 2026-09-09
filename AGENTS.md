@@ -75,15 +75,19 @@ The six stages are strictly serial:
 3. **`authored-byte-match`** — require object body equality outside
    relocation fields plus exact relocation type/target/addend semantics, linked
    presence, target identity, and relocation-normalized linked body bytes.
+   Prioritize `byte`; the reviewed `instruction` alternative below may satisfy
+   body comparisons without asserting exact byte equality.
 4. **`full-function-order`** — begin only after every authored call contract,
    its fresh closeout, and every authored byte group are current. Require exact
    selected linked groups, identities, RVAs, order, providers, padding, and
    seams.
 5. **`linked-byte-match`** — require exact linked RVA, resolved operands,
-   targets, and raw linked-image bytes for every selected row.
+   targets, and raw linked-image bytes for every selected row, or the same
+   approved instruction proof for authored function register encodings only.
 6. **`final-validation`** — require complete live typed coverage of headers,
    sections, functions, variables, providers, resources, directories, padding,
-   zero-fill, relocations, and overlay.
+   zero-fill, relocations, and overlay. Freshly re-prove approved instruction
+   matches; report them separately from exact bytes. All other bytes stay exact.
 
 An unresolved row or unclassified selected extra blocks its stage. One stage
 never silently accepts or revokes an owner, model, provider, tier, storage
@@ -169,6 +173,42 @@ valid. Missing deterministic target identity uses dry-run-first
 `progress relocation-target bind`; genuine ambiguity alone uses
 `progress relocation-exception set`.
 
+### Function Match Levels
+
+An attached function-definition docblock may contain exactly one
+`@recoil-match byte` or `@recoil-match instruction`. No other values are valid.
+Functions without a complete current matching proof have no match annotation.
+The annotation mirrors per-function live evidence; it neither accepts a stage
+nor promotes an owner tier. Both levels require exact relocation semantics,
+linked presence/identity, and the corresponding normalized linked-body proof.
+Exact linked placement is a later, separate requirement.
+
+Always try `byte` first. `instruction` permits only proved general-purpose
+register reassignment with identical instruction operations, order, boundaries,
+lengths, widths, constants, addressing, control flow, and ABI behavior. Prove
+value flow through complete control-flow paths, aliases/subregisters, implicit
+operands, flags, calls, stack state and returns; do not merely erase register
+operands. Unknown effects block. Data, providers, padding, relocation targets,
+and image layout are not eligible for this relaxation.
+
+Before accepting `instruction`, consult ChatGPT Pro directly with current
+source/compiler context, exact differences, compiler evidence and credible
+failed source variants. Pro must explicitly confirm compiler register-allocation
+attribution and that no concrete credible source-faithful option remains untried
+under the governed constraints. This is engineering exhaustion, not a claim
+about every possible C++ program. Register the reviewed decision through
+`progress match review-instruction` (dry-run, review, apply). Pro grants only
+fallback eligibility; fresh machine comparison still proves acceptance.
+Ambiguous/negative answers and transport failures grant no fallback.
+
+`progress match refresh --all` (or `--at <address>`) with a fresh build root and
+expected revision performs complete live function classification and mirrors
+annotations without advancing the serial scheduler. Preserve source line counts
+when changing comments so `__LINE__` remains unchanged. Changed source/compiler
+context, identities, verifier semantics or register differences require renewed
+proof and, where relevant, renewed Pro review. Exact matches upgrade to `byte`
+without Pro. See the executable runbook for payload and command contracts.
+
 ## 3. Canonical Checkout And Build Roots
 
 Edit the canonical checkout directly. Preserve unrelated user changes and
@@ -241,6 +281,7 @@ Pro line directly when:
 - raw inline assembly is proposed after credible source-faithful VC5 C/C++
   variants fail;
 - the user explicitly requests an external critique.
+- an `instruction` fallback is proposed after credible byte-match attempts.
 
 Routine registered order execution, first-divergence interpretation,
 current-source rechecks, deterministic retail derivation, identity lookup, tool

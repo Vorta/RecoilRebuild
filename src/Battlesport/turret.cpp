@@ -647,6 +647,8 @@ void zTurret_Runtime::InitFromReaderNode(
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-shutdown
  * @recoil-artifact defines .text recoil:function:0x436e00: zTurret_Runtime::Shutdown.
+ * @recoil-match byte
+ *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Frees per-runtime trail state and clears the turret damage handler.
  */
@@ -661,6 +663,8 @@ int zTurret_Runtime::Shutdown() {
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-hasactivenode
  * @recoil-artifact defines .text recoil:function:0x436e20: zTurret_Runtime::HasActiveNode.
+ * @recoil-match byte
+ *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Reports whether the parsed turret has an active scene node.
  */
@@ -1218,6 +1222,8 @@ namespace zTurret_System {
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-resetiterationstate
  * @recoil-artifact defines .text recoil:function:0x437aa0: zTurret_System::ResetIterationState.
+ * @recoil-match byte
+ *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Clears turret runtime count and callback round-robin state.
  */
@@ -1230,6 +1236,8 @@ int __cdecl ResetIterationState() {
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-shutdown
  * @recoil-artifact defines .text recoil:function:0x437ab0: zTurret_System::Shutdown.
+ * @recoil-match byte
+ *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Shuts down the zTurret subsystem by freeing all loaded runtime state.
  */
@@ -1385,6 +1393,8 @@ void __cdecl TickAllRuntimesRoundRobin() {
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-disabletickcallback
  * @recoil-artifact defines .text recoil:function:0x437d40: zTurret_System::DisableTickCallback.
+ * @recoil-match byte
+ *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Disables the zTurret round-robin action callback node.
  */
@@ -1398,6 +1408,8 @@ int __cdecl DisableTickCallback() {
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-enabletickcallback
  * @recoil-artifact defines .text recoil:function:0x437d50: zTurret_System::EnableTickCallback.
+ * @recoil-match byte
+ *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Enables the zTurret round-robin action callback node.
  */
@@ -1475,6 +1487,8 @@ int __cdecl FreeAllRuntimes() {
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-fireweaponcallback
  * @recoil-artifact defines .text recoil:function:0x437e50: zTurret_Runtime::FireWeaponCallback.
+ * @recoil-match byte
+ *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Bridges the fire animation completion callback to the turret weapon firing path.
  */

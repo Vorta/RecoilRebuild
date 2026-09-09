@@ -622,6 +622,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_LoadGameStartAnimStateName) == 0x10);
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-init
  * @recoil-artifact defines .text recoil:function:0x415ab0: HudSensorMapNode::Init
+ * @recoil-match byte
+ *
  * Purpose: Apply map-node defaults and return this node.
  */
 HudSensorMapNode * HudSensorMapNode::Init() {
@@ -632,6 +634,8 @@ HudSensorMapNode * HudSensorMapNode::Init() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-freepointarray
  * @recoil-artifact defines .text recoil:function:0x415ac0: HudSensorMapNode::FreePointArray
+ * @recoil-match byte
+ *
  * Purpose: Release the dynamically loaded map point array when present.
  */
 void HudSensorMapNode::FreePointArray() {
@@ -643,6 +647,8 @@ void HudSensorMapNode::FreePointArray() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-setenabled
  * @recoil-artifact defines .text recoil:function:0x415ae0: HudSensorMapNode::SetEnabled
+ * @recoil-match byte
+ *
  * Purpose: Toggle marker visibility, refreshing color state and clearing point selection.
  */
 int HudSensorMapNode::SetEnabled(
@@ -661,6 +667,8 @@ int HudSensorMapNode::SetEnabled(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-selectpoint
  * @recoil-artifact defines .text recoil:function:0x415b10: HudSensorMapNode::SelectPoint
+ * @recoil-match byte
+ *
  * Purpose: Select an in-range path point or clear the active selection.
  */
 HudSensorMapPoint * HudSensorMapNode::SelectPoint(
@@ -729,6 +737,8 @@ int HudSensorMapNode::SetColorRgb(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-loadfromstream
  * @recoil-artifact defines .text recoil:function:0x415bd0: HudSensorMapNode::LoadFromStream
+ * @recoil-match byte
+ *
  * Purpose: Load color, points, and objective binding from a sensor-map stream.
  */
 int HudSensorMapNode::LoadFromStream(
@@ -1149,6 +1159,8 @@ int HudRectI::CalcOutcode(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-iscorneroutcode
  * @recoil-artifact defines .text recoil:function:0x416290: HudRectI::IsCornerOutcode
+ * @recoil-match byte
+ *
  * Purpose: Identify outside-code combinations that lie beyond a rectangle corner.
  */
 int __fastcall HudRectI::IsCornerOutcode(
@@ -1344,6 +1356,8 @@ int HudSensorMapNode::DrawProjectedPath(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-initnobounds
  * @recoil-artifact defines .text recoil:function:0x416650: HudSensorTracker::InitNoBounds
+ * @recoil-match byte
+ *
  * Purpose: Initialize tracker state without replacing the existing map bounds.
  */
 HudSensorTracker * HudSensorTracker::InitNoBounds() {
@@ -1354,6 +1368,8 @@ HudSensorTracker * HudSensorTracker::InitNoBounds() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-init
  * @recoil-artifact defines .text recoil:function:0x416660: HudSensorTracker::Init
+ * @recoil-match byte
+ *
  * Purpose: Initialize map bounds, save-state marker state, and map runtime defaults.
  */
 void HudSensorTracker::Init(
@@ -1419,6 +1435,8 @@ void HudSensorTracker::SetBounds(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapshutdownandresetthunk
  * @recoil-artifact defines .text recoil:function:0x416790: HudSensorTracker::MapShutdownAndResetThunk
+ * @recoil-match byte
+ *
  * Purpose: Tail-call the shared map shutdown and reset routine.
  */
 int HudSensorTracker::MapShutdownAndResetThunk() {
@@ -1428,6 +1446,8 @@ int HudSensorTracker::MapShutdownAndResetThunk() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapshutdownandreset
  * @recoil-artifact defines .text recoil:function:0x4167a0: HudSensorTracker::MapShutdownAndReset
+ * @recoil-match byte
+ *
  * Purpose: End the overlay, remove loaded map nodes, free the map path, and reset map state.
  */
 int HudSensorTracker::MapShutdownAndReset() {
@@ -1485,6 +1505,8 @@ int HudSensorTracker::MapRemoveNode(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapinsertnodeandgrowbounds
  * @recoil-artifact defines .text recoil:function:0x416840: HudSensorTracker::MapInsertNodeAndGrowBounds
+ * @recoil-match byte
+ *
  * Purpose: Insert a map node at the list head and grow the tracker bounds from its cached extent.
  */
 int HudSensorTracker::MapInsertNodeAndGrowBounds(
@@ -1659,6 +1681,8 @@ void HudSensorTracker::MapOverlayEndShow() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapoverlayreftoggle
  * @recoil-artifact defines .text recoil:function:0x416b30: HudSensorTracker::MapOverlayRefToggle
+ * @recoil-match byte
+ *
  * Purpose: Reference-count map overlay visibility requests and route transitions through begin/end show.
  */
 int HudSensorTracker::MapOverlayRefToggle(
@@ -1863,6 +1887,8 @@ float HudSensorTracker::GetSaveStateRelativeVectorLen(
  /**
   * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setsavestatemarkermaxdistance
   * @recoil-artifact defines .text recoil:function:0x416ef0: HudSensorTracker::SetSaveStateMarkerMaxDistance
+  * @recoil-match byte
+  *
   * Purpose: Store the squared maximum distance for drawing save-state markers.
   */
 int HudSensorTracker::SetSaveStateMarkerMaxDistance(
@@ -2020,6 +2046,8 @@ void HudSensorTracker::Update() {
  /**
   * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-settrackedsavestate
   * @recoil-artifact defines .text recoil:function:0x417220: HudSensorTracker::SetTrackedSaveState
+  * @recoil-match byte
+  *
   * Purpose: Select the save-state player pose used by the HUD map marker.
   */
 int HudSensorTracker::SetTrackedSaveState(
@@ -2066,6 +2094,8 @@ int HudSensorTracker::LoadMissionMapAndSfx(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setobjectivemarkerenabledandcolor
  * @recoil-artifact defines .text recoil:function:0x4172c0: HudSensorTracker::SetObjectiveMarkerEnabledAndColor
+ * @recoil-match byte
+ *
  * Purpose: Apply visibility and RGB color to every map node for the requested objective index.
  */
 int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(

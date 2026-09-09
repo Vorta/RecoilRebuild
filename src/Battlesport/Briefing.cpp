@@ -322,6 +322,8 @@ inline HudUiBriefingObjectivePicture::HudUiBriefingObjectivePicture()
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefingobjectivepicture-draw
  * @recoil-artifact defines .text recoil:function:0x4038a0: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay.
+ * @recoil-match byte
+ *
  * BN names this slot target DrawWithNoiseOverlay; the vtable slot is the
  * HudUiWidget::Draw override for the briefing objective picture.
  * Purpose: draw the objective picture and overlay transition noise while active.
@@ -350,6 +352,8 @@ void HudUiBriefingObjectivePicture::Draw() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefingruntime-huduibriefingruntime
  * @recoil-artifact defines .text recoil:function:0x403930: HudUiBriefingRuntime::HudUiBriefingRuntime.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: construct the briefing UI runtime, bind its ZRD widgets, and run the first frame.
  */
@@ -483,6 +487,8 @@ HudUiBriefingRuntime::HudUiBriefingRuntime(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefinglocatorpanel-huduibriefinglocatorpanel
  * @recoil-artifact defines .text recoil:function:0x403c10: HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: construct a briefing locator circle with the original red marker style.
  */
@@ -504,6 +510,8 @@ HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel()
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefinglocatorpanel-draw
  * @recoil-artifact defines .text recoil:function:0x403c80: HudUiBriefingLocatorPanel::Draw.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: draw the locator circle through the inherited circle implementation.
  */
@@ -514,6 +522,8 @@ void HudUiBriefingLocatorPanel::Draw() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefinglocatorpanel-drawbase
  * @recoil-artifact defines .text recoil:function:0x403c90: HudUiBriefingLocatorPanel::DrawBase.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: redraw the locator panel's clipped background region.
  */
@@ -532,6 +542,8 @@ void HudUiBriefingLocatorPanel::DrawBase() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefinglocatorpanel-update
  * @recoil-artifact defines .text recoil:function:0x403cb0: HudUiBriefingLocatorPanel::Update.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: animate the locator pulse radius and refresh the element state.
  */
@@ -576,6 +588,8 @@ void HudUiBriefingLocatorPanel::Update(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefingruntime-destructor-huduibriefingruntime
  * @recoil-artifact defines .text recoil:function:0x403ed0: HudUiBriefingRuntime::~HudUiBriefingRuntime.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: tear down briefing UI children, queued actions, and the background base.
  */
@@ -587,6 +601,8 @@ HudUiBriefingRuntime::~HudUiBriefingRuntime() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefingruntime-update
  * @recoil-artifact defines .text recoil:function:0x404070: HudUiBriefingRuntime::UpdateAll.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: tick queued briefing actions, invalidate briefing panels, and update the background UI.
  */
@@ -621,6 +637,8 @@ void HudUiBriefingRuntime::UpdateAll(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.zinput-waitforanykeypresswithtimeoutms
  * @recoil-artifact defines .text recoil:function:0x404140: zInput_WaitForAnyKeyPressWithTimeoutMs.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: poll keyboard input in 100 ms Sleep slices until a key arrives or
  * the caller's timeout budget expires.
@@ -650,6 +668,8 @@ namespace Briefing {
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.startformission
  * @recoil-artifact defines .text recoil:function:0x404180: Briefing::StartForMission.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: create the briefing runtime, load its sound set, and start the briefing thread.
  */
@@ -694,6 +714,8 @@ int __fastcall StartForMission(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.threadmain
  * @recoil-artifact defines .text recoil:function:0x404280: Briefing::ThreadMain.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: run the briefing input, audio, video, and UI update loop.
  */
@@ -762,6 +784,8 @@ void __cdecl ThreadMain(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefingruntime-buildobjectiveactionsfromindex
  * @recoil-artifact defines .text recoil:function:0x404400: Briefing::BuildObjectiveActionsFromIndex.
+ * @recoil-match byte
+ *
  * Purpose: build the queued per-objective briefing action sequence.
  */
 int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
@@ -856,6 +880,8 @@ int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefing-actionqueue-addhideelement
  * @recoil-artifact defines .text recoil:function:0x4045b0: Briefing_ActionQueue::AddHideElement.
+ * @recoil-match byte
+ *
  * Purpose: enqueue an action that hides one briefing UI element.
  */
 int Briefing_ActionQueue::AddHideElement(
@@ -869,6 +895,8 @@ int Briefing_ActionQueue::AddHideElement(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefingactionhideelement-tick
  * @recoil-artifact defines .text recoil:function:0x404620: BriefingAction_HideElement::Tick.
+ * @recoil-match byte
+ *
  * Purpose: hide a queued briefing UI element and complete the action.
  */
 int BriefingActionHideElement::Tick(
@@ -881,6 +909,8 @@ int BriefingActionHideElement::Tick(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefing-actionqueue-addshowelement
  * @recoil-artifact defines .text recoil:function:0x404640: Briefing_ActionQueue::AddShowElement.
+ * @recoil-match byte
+ *
  * Purpose: enqueue an action that shows one briefing UI element.
  */
 int Briefing_ActionQueue::AddShowElement(
@@ -894,6 +924,8 @@ int Briefing_ActionQueue::AddShowElement(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefingactionshowelement-tick
  * @recoil-artifact defines .text recoil:function:0x4046b0: BriefingAction_ShowElement::Tick.
+ * @recoil-match byte
+ *
  * Purpose: show and invalidate a queued briefing UI element.
  */
 int BriefingActionShowElement::Tick(
@@ -907,6 +939,8 @@ int BriefingActionShowElement::Tick(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefing-actionqueue-addfadeinelement
  * @recoil-artifact defines .text recoil:function:0x4046d0: Briefing_ActionQueue::AddFadeInElement.
+ * @recoil-match byte
+ *
  * Purpose: enqueue an objective picture fade-in action.
  */
 int Briefing_ActionQueue::AddFadeInElement(
@@ -920,6 +954,8 @@ int Briefing_ActionQueue::AddFadeInElement(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefingactionfadeinelement-tick
  * @recoil-artifact defines .text recoil:function:0x404740: BriefingAction_FadeInElement::Tick.
+ * @recoil-match byte
+ *
  * Purpose: advance the objective picture fade/noise effect until it completes.
  */
 int BriefingActionFadeInElement::Tick(
@@ -936,6 +972,8 @@ int BriefingActionFadeInElement::Tick(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefing-actionqueue-addsetpaneltext
  * @recoil-artifact defines .text recoil:function:0x404780: Briefing_ActionQueue::AddSetPanelText.
+ * @recoil-match byte
+ *
  * Purpose: enqueue text replacement for a briefing panel.
  */
 int Briefing_ActionQueue::AddSetPanelText(
@@ -951,6 +989,8 @@ int Briefing_ActionQueue::AddSetPanelText(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefingactionsetpaneltext-tick
  * @recoil-artifact defines .text recoil:function:0x404850: BriefingAction_SetPanelText::Tick.
+ * @recoil-match byte
+ *
  * Purpose: apply queued text to a briefing panel and make it visible.
  */
 int BriefingActionSetPanelText::Tick(
@@ -966,6 +1006,8 @@ int BriefingActionSetPanelText::Tick(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefing-actionqueue-addsetwidgetimagetimed
  * @recoil-artifact defines .text recoil:function:0x4048a0: Briefing_ActionQueue::AddSetWidgetImageTimed.
+ * @recoil-match byte
+ *
  * Purpose: enqueue image replacement for a briefing widget with a timed transition.
  */
 int Briefing_ActionQueue::AddSetWidgetImageTimed(
@@ -981,6 +1023,8 @@ int Briefing_ActionQueue::AddSetWidgetImageTimed(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefingactionsetwidgetimagetimed-tick
  * @recoil-artifact defines .text recoil:function:0x404960: BriefingAction_SetWidgetImageTimed::Tick.
+ * @recoil-match byte
+ *
  * Purpose: install an objective image and advance its timed noise transition.
  */
 int BriefingActionSetWidgetImageTimed::Tick(
@@ -1001,6 +1045,8 @@ int BriefingActionSetWidgetImageTimed::Tick(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefing-actionqueue-addplaysamplebyname
  * @recoil-artifact defines .text recoil:function:0x4049d0: Briefing_ActionQueue::AddPlaySampleByName.
+ * @recoil-match byte
+ *
  * Purpose: enqueue a briefing sample playback request.
  */
 int Briefing_ActionQueue::AddPlaySampleByName(
@@ -1060,6 +1106,8 @@ namespace Briefing {
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.sampleeventcallback
  * @recoil-artifact defines .text recoil:function:0x404b30: Briefing::SampleEventCallback.
+ * @recoil-match byte
+ *
  * Purpose: record the latest briefing sample progress event code.
  */
 void __fastcall SampleEventCallback(
@@ -1073,6 +1121,8 @@ void __fastcall SampleEventCallback(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefing-actionqueue-adddelayuntilprogress
  * @recoil-artifact defines .text recoil:function:0x404b40: Briefing_ActionQueue::AddDelayUntilProgress.
+ * @recoil-match byte
+ *
  * Purpose: enqueue a wait action tied to the briefing sample progress event.
  */
 int Briefing_ActionQueue::AddDelayUntilProgress(
@@ -1087,6 +1137,8 @@ int Briefing_ActionQueue::AddDelayUntilProgress(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefingactiondelayuntilprogress-tick
  * @recoil-artifact defines .text recoil:function:0x404bb0: BriefingAction_DelayUntilProgress::Tick.
+ * @recoil-match byte
+ *
  * Purpose: wait until sample progress reaches the queued briefing progress id.
  */
 int BriefingActionDelayUntilProgress::Tick(
@@ -1099,6 +1151,8 @@ namespace Briefing {
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.stopandshutdownthread
  * @recoil-artifact defines .text recoil:function:0x404bd0: Briefing::StopAndShutdownThread.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: stop the briefing thread and destroy the active briefing runtime.
  */
@@ -1144,6 +1198,8 @@ void __fastcall StopAndShutdownThread(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.setprogressandsleep
  * @recoil-artifact defines .text recoil:function:0x404c50: Briefing::SetProgressAndSleep.
+ * @recoil-match byte
+ *
  * Purpose: update the transport progress widget and sleep between progress frames.
  */
 void __stdcall SetProgressAndSleep(
@@ -1160,6 +1216,8 @@ void __stdcall SetProgressAndSleep(
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.buildobjectiveactionsglobal
  * @recoil-artifact defines .text recoil:function:0x404c80: Briefing::BuildObjectiveActionsGlobal.
+ * @recoil-match byte
+ *
  * Purpose: forward the global briefing action-build callback to the active runtime.
  */
 void __fastcall BuildObjectiveActionsGlobal(
