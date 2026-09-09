@@ -173,9 +173,18 @@ def derive_native_expectations(document, bindings, row, object_symbol, reference
             and binding["schema"] == SCHEMA and binding["reviewed"] is True
             and isinstance(binding["reason"], str) and binding["reason"].strip(), "invalid reviewed native EH binding")
     saved = binding["context"]
-    current = binding_context(document, bindings, saved["source"]["symbol_id"], object_symbol,
+    parent_symbol = saved["source"]["object_symbol"]
+    current = binding_context(document, bindings, saved["source"]["symbol_id"], parent_symbol,
                               saved["owner_id"], saved["evidence_ids"], reference)
     require(current == saved and row["address"] == current["source"]["address"], "reviewed native EH binding is stale")
+    if object_symbol != parent_symbol:
+        import re
+        from _recoil.commands.byte_symbol_selectors import PREFIX
+        from _recoil.commands.relocation_expectations import build_object_binding_snapshot
+        require(object_symbol.startswith(PREFIX) and re.fullmatch(object_symbol[len(PREFIX):], parent_symbol),
+                "reviewed native EH binding is stale: source selector does not contain the reviewed parent identity")
+        build_object_binding_snapshot(document, bindings, symbol_id=saved["source"]["symbol_id"],
+                                      object_symbol=object_symbol)
     facts = current["retail"]
     result = {}
     for offset, role, symbol, target in [(facts["handler_offset"], HANDLER, "@vc5-eh-handler:"+saved["source"]["symbol_id"], facts["handler"])] + [
@@ -184,7 +193,7 @@ def derive_native_expectations(document, bindings, row, object_symbol, reference
                 target_symbol=symbol, coff_addend=0, resolved_target_addend=0, retail_target=target,
                 derivation="reviewed-native-eh-role", native_eh_role=role,
                 target_symbol_id=current["target_id"] if role == HANDLER else "vc5:absolute:__except_list",
-                native_eh_max_state=facts["max_state"])
+                native_eh_max_state=facts["max_state"], native_eh_parent_symbol=parent_symbol)
     return result
 
 
@@ -201,6 +210,9 @@ def associated_section(obj, section_index, parent_index, name):
 
 def prove_object_handler(obj, body, relocation, expected):
     """Prove a generated role; no raw label spelling is part of expected truth."""
+    if "native_eh_parent_symbol" in expected:
+        require(body.symbol == expected["native_eh_parent_symbol"],
+                "native EH candidate is not the exact reviewed parent function")
     offset, _ = prologue_offsets(body.data)
     require(relocation.type == 6 and relocation.offset-body.start == offset == expected["offset"]
             and body.data[offset:offset+4] == bytes(4),

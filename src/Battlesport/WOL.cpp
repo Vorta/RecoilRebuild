@@ -343,7 +343,7 @@ const char kNetworkStatusConnectedText[] = "CHAT_S_CON_CONNECTED";
 const char kNetworkStatusDisconnectingText[] = "CHAT_S_CON_DISCONNECTING";
 const char kNetworkStatusDisconnectedText[] = "CHAT_S_CON_DISCONNECTED";
 const char kNetworkStatusUnknownText[] = "CHAT_S_CON_UNKNOWN";
-const char kSpaceDelimiter[] = " ";
+
 const char kBrowseSessionResolvedStatusCodeFmt[] = "%s %x";
 const int kBrowseRecordListRowTextBufferSize = 256;
 const unsigned int kBrowseRecordListOpenMessageId = 0x3027;
@@ -3245,7 +3245,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
         );
         strcat(
             statusText,
-            kSpaceDelimiter
+            " "
         );
 
         if (status == kBrowseSessionResolvedFailure6c) {

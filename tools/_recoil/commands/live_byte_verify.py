@@ -261,6 +261,73 @@ _VC5_TEMPORARY_DATA_SYMBOL = re.compile(r"^\$T[0-9]+$")
 _VC5_NAMED_STATIC_DATA_SYMBOL = re.compile(r"^(.+)\$S[0-9]+$")
 
 
+def _vc5_float_alignment_end(obj, target, section, extent, end):
+    """Recognize a four-byte native float before an eight-byte literal.
+
+    symbol_end is the next symbol, which may include alignment. Require zero
+    padding, complete direct floating-point readers of both native temporaries,
+    and no relocation into the gap. This proves no linked padding or layout.
+    """
+    if (extent != 4 or target.value % 8 != 0 or end != target.value + 8
+            or end > len(section.raw_data)
+            or section.raw_data[target.value + 4:end] != bytes(4)
+            or not _VC5_TEMPORARY_DATA_SYMBOL.fullmatch(target.name)):
+        return end
+    following = [s for s in obj.symbols if s.section_number == section.index
+                 and s.value == end and s.storage_class == 3 and s.type == 0
+                 and _VC5_TEMPORARY_DATA_SYMBOL.fullmatch(s.name)]
+    if len(following) != 1 or obj.symbol_end(following[0], section) - end != 8:
+        return end
+    if any(s.section_number == section.index and target.value <= s.value < end + 8
+           and s.index not in {target.index, following[0].index} and s.name != section.name
+           for s in obj.symbols):
+        return end
+    from capstone import Cs, CS_ARCH_X86, CS_MODE_32
+    from capstone.x86 import X86_OP_MEM
+    decoder = Cs(CS_ARCH_X86, CS_MODE_32)
+    decoder.detail = True
+    readers = {target.index: 0, following[0].index: 0}
+    for source_index, relocations in obj.relocations_by_section.items():
+        source = obj.section(source_index)
+        for rel in relocations:
+            dest = obj.symbols_by_index[rel.symbol_index]
+            if dest.section_number != section.index:
+                continue
+            if rel.type != 6 or not 0 <= rel.offset <= len(source.raw_data) - 4:
+                return end
+            addend = int.from_bytes(source.raw_data[rel.offset:rel.offset + 4], 'little')
+            if target.value + 4 <= dest.value + addend < end:
+                return end
+            if (target.value <= dest.value + addend < end + 8
+                    and (dest.index not in readers or addend)):
+                return end
+            if dest.index not in readers:
+                continue
+            if addend or not source.characteristics & 0x20:
+                return end
+            owners = [s for s in obj.symbols if s.section_number == source_index
+                      and s.type == 0x20 and s.value <= rel.offset < obj.symbol_end(s, source)]
+            if len(owners) != 1:
+                return end
+            start = owners[0].value
+            instructions = list(decoder.disasm(source.raw_data[start:rel.offset + 4], start))
+            if not instructions or sum(i.size for i in instructions) != rel.offset + 4 - start:
+                return end
+            instruction = instructions[-1]
+            width = 4 if dest.index == target.index else 8
+            if (instruction.address + instruction.disp_offset != rel.offset
+                    or instruction.disp_size != 4
+                    or instruction.mnemonic not in {'fld', 'fcom', 'fcomp', 'fadd', 'fsub', 'fsubr', 'fmul', 'fdiv', 'fdivr'}
+                    or len(instruction.operands) != 1
+                    or instruction.operands[0].type != X86_OP_MEM
+                    or instruction.operands[0].size != width
+                    or instruction.operands[0].mem.base or instruction.operands[0].mem.index
+                    or instruction.operands[0].mem.segment):
+                return end
+            readers[dest.index] += 1
+    return target.value + 4 if all(readers.values()) else end
+
+
 def _vc5_compiler_local_family(symbol_name: str) -> tuple[str, str] | None:
     if _VC5_TEMPORARY_DATA_SYMBOL.fullmatch(symbol_name):
         return ("temporary", "$T")
@@ -503,6 +570,7 @@ def _canonicalize_vc5_local_data_ordinals(
     target_rows: Mapping[str, Any] | None,
     reference: Path,
     retail_reader_universes: Mapping[str, Sequence[RetailObjectReader]] | None = None,
+    load_definition: Any = None,
 ) -> list[tuple[Any, CanonicalRelocationTarget]]:
     """Canonicalize proven VC5 compiler-local data ordinal drift.
 
@@ -576,6 +644,9 @@ def _canonicalize_vc5_local_data_ordinals(
 
     candidates = _canonicalize_native_relocation_roles(
         coff_object, function_bytes, candidates, relocation_catalog)
+    if load_definition is not None:
+        candidates = _canonicalize_registered_target_selectors(
+            function_bytes, candidates, relocation_catalog, load_definition)
 
     physical_candidate_storage_keys: set[tuple[int, int]] = set()
     physical_expected_storage_bases: set[int] = set()
@@ -765,6 +836,8 @@ def _canonicalize_vc5_local_data_ordinals(
             return reject("physical-witness-retail-target-contract-drift")
         try:
             candidate_end = coff_object.symbol_end(target, section)
+            candidate_end = _vc5_float_alignment_end(
+                coff_object, target, section, target_extent, candidate_end)
         except (TypeError, ValueError):
             return reject("physical-witness-candidate-extent-is-invalid")
         if (
@@ -1517,6 +1590,34 @@ def _is_provider_or_compiler_row(row: Mapping[str, Any]) -> bool:
     )
 
 
+def _retail_data_reader_bytes(reference: Path, row: Mapping[str, Any]) -> bytes:
+    """Overapproximate unknown data extents only for excluding DIR32 readers.
+
+    Absence in the entire remaining retail section implies absence in every
+    possible extent of this object. Presence stays unresolved, and this bound
+    never establishes the object's size, contents, ownership or source model.
+    """
+    start = address_value(str(row["address"]))
+    if row.get("end_exclusive") is not None:
+        end = address_value(str(row["end_exclusive"]))
+    else:
+        headers = parse_pe_headers(reference.read_bytes(), source=str(reference))
+        sections = [section for section in headers.sections
+                    if headers.image_base + section.virtual_address <= start
+                    < headers.image_base + section.virtual_address
+                    + max(section.virtual_size, section.raw_size)]
+        if (row.get("binary") != "recoil" or len(sections) != 1
+                or row.get("output_section_id") != "recoil:section:" + sections[0].name
+                or sections[0].characteristics & 0x20
+                or not sections[0].characteristics & (0x40 | 0x80)):
+            raise LiveByteError("registered data has no unique retail data-section bound")
+        section = sections[0]
+        end = headers.image_base + section.virtual_address + max(section.virtual_size, section.raw_size)
+    if end <= start:
+        raise LiveByteError("registered data extent is invalid")
+    return _pe_bytes(reference, start, end - start, allow_zero_fill=True)
+
+
 def _registered_retail_reader_universe(
     *,
     document: ProgressDocument,
@@ -1574,18 +1675,7 @@ def _registered_retail_reader_universe(
                 # Registered data definitions are not x86 instruction streams.
                 # An embedded target address still blocks this function-reader
                 # proof rather than silently dropping a possible data reader.
-                try:
-                    source_end = address_value(str(source_row.get("end_exclusive", "")))
-                except ValueError as exc:
-                    raise LiveByteError(
-                        f"{target_symbol_id}: registered data {source_symbol_id} has an unknown extent; "
-                        "its possible data-reader population is unresolved"
-                    ) from exc
-                if source_end <= source_address:
-                    raise LiveByteError(f"{source_symbol_id}: registered data extent is invalid")
-                data = _pe_bytes(
-                    reference, source_address, source_end - source_address, allow_zero_fill=True
-                )
+                data = _retail_data_reader_bytes(reference, source_row)
                 if retail_target.to_bytes(4, "little") in data:
                     raise LiveByteError(
                         f"{target_symbol_id}: registered data {source_symbol_id} contains "
@@ -2307,6 +2397,15 @@ def _compare_row(
             ),
         )
         return result
+    definitions = {source.resolve(): coff_object}
+    configured_sources = {item.resolve() for item in config.sources}
+    def load_definition(source_from):
+        definition_source = (REPO_ROOT / source_from).resolve()
+        if definition_source not in configured_sources:
+            raise ValueError("registered selector TU is absent from the canonical build")
+        if definition_source not in definitions:
+            definitions[definition_source] = CoffObject.from_path(object_path(config, paths, definition_source))
+        return definitions[definition_source]
     if mode == "authored":
         candidate_relocations = _canonicalize_vc5_local_data_ordinals(
             coff_object=coff_object,
@@ -2315,6 +2414,7 @@ def _compare_row(
             target_rows=target_rows,
             reference=reference,
             retail_reader_universes=retail_reader_universes,
+            load_definition=load_definition,
         )
     else:
         candidate_relocations = []
@@ -2340,17 +2440,9 @@ def _compare_row(
     if mode == "linked":
         candidate_relocations = _canonicalize_native_relocation_roles(
             coff_object, function_bytes, candidate_relocations, relocation_catalog)
-    definitions = {source.resolve(): coff_object}
-    configured_sources = {item.resolve() for item in config.sources}
-    def load_definition(source_from):
-        definition_source = (REPO_ROOT / source_from).resolve()
-        if definition_source not in configured_sources:
-            raise ValueError("registered selector TU is absent from the canonical build")
-        if definition_source not in definitions:
-            definitions[definition_source] = CoffObject.from_path(object_path(config, paths, definition_source))
-        return definitions[definition_source]
-    candidate_relocations = _canonicalize_registered_target_selectors(
-        function_bytes, candidate_relocations, relocation_catalog, load_definition)
+    if mode != "authored":
+        candidate_relocations = _canonicalize_registered_target_selectors(
+            function_bytes, candidate_relocations, relocation_catalog, load_definition)
     observed_keys = {
         (
             relocation.offset - function_bytes.start,

@@ -32,7 +32,7 @@
     },
     {
       "address": "0x4dad08",
-      "symbol_regex": "_kSpaceDelimiter\\$S[0-9]+",
+      "symbol": "??_C@_01FCOA@?5?$AA@",
       "name": "k_SpaceDelimiter",
       "bn_name": "k_SpaceDelimiter",
       "byte_length": 2

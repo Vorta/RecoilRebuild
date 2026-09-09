@@ -546,6 +546,10 @@ def _exercise_native_eh_role_witnesses(monkeypatch):
     parent_reloc = reloc(3, 6, handler)
     expected = dict(native_eh_max_state=1, offset=3)
     assert eh.prove_object_handler(obj, body, parent_reloc, expected) is handler
+    body.symbol = '_parent'
+    assert eh.prove_object_handler(obj, body, parent_reloc, {**expected, 'native_eh_parent_symbol':'_parent'}) is handler
+    with pytest.raises(ValueError, match='exact reviewed parent'):
+        eh.prove_object_handler(obj, body, parent_reloc, {**expected, 'native_eh_parent_symbol':'_other'})
     # Ordinal changes are immaterial, but class, association, role, and addend are not.
     for target, field, value in ((handler, "storage_class", 3), (handler, "type", 0x20),
             (handler, "value", 0), (definitions[0], "section_definition_association", 9),
@@ -638,6 +642,10 @@ def _exercise_native_eh_role_witnesses(monkeypatch):
             return eh.derive_native_expectations(document, {}, source, "_parent", None)
         assert set(derive()) == {(3, 6), (9, 6), (17, 6), (35, 6)}
         assert derive()[(9, 6)]["target_symbol"] == "__except_list"
+        alias = eh.derive_native_expectations(document, {}, source, '@vc5-symbol-regex:_parent.*', None)
+        assert alias[(3, 6)]['native_eh_parent_symbol'] == '_parent'
+        with pytest.raises(ValueError, match='stale'):
+            eh.derive_native_expectations(document, {}, source, '@vc5-symbol-regex:_other.*', None)
         with pytest.raises(ValueError, match="stale"):
             eh.derive_native_expectations(document, {}, source, "_different", None)
         for row, field, value in ((source[eh.FIELD], "reviewed", False),
@@ -846,6 +854,32 @@ def test_named_static_stem_requires_exact_storage_contents_and_all_readers(monke
     good = check()
     assert good.symbol_name == "_limit" and good.compiler_local_ordinal_canonicalized
     assert good.expected_target_bytes == struct.pack("<f", 5)
+    # Registered selectors must be resolved before the all-or-nothing local
+    # ordinal proof. Their presence cannot hide a bad selector or bad scalar.
+    literal = Row(name='_label123', index=2, value=0, section_number=3, storage_class=2, type=0)
+    sections[3] = Row(index=3, name='.data', characteristics=0x40, raw_data=b'text')
+    obj.symbols.append(literal); obj.symbols_by_index[2] = literal
+    extra = Row(offset=4, type=6, symbol_index=2, symbol_name=literal.name)
+    body.relocations.append(extra); obj.relocations_by_section[1].append(extra)
+    selector = dict(symbol_regex=r'_label[0-9]+', source_from='src/other.cpp', kind='data')
+    selected = dict(object_symbol='_entry', offset=4, type=6,
+                    target_symbol='@vc5-symbol-regex:_label[0-9]+', registered_target_selector=selector,
+                    coff_addend=0)
+    def mixed(loader):
+        return byte._canonicalize_vc5_local_data_ordinals(coff_object=obj, function_bytes=body,
+            relocation_catalog=[expected,selected], target_rows={target_id:target_row},
+            reference=Path('retail.exe'), retail_reader_universes={target_id:readers}, load_definition=loader)
+    assert not mixed(None)[0][1].compiler_local_ordinal_canonicalized
+    assert mixed(lambda source: obj)[0][1].compiler_local_ordinal_canonicalized
+    assert mixed(lambda source: obj)[1][1].canonicalized
+    literal.name='_other'
+    assert not mixed(lambda source: obj)[0][1].compiler_local_ordinal_canonicalized
+    literal.name='_label123'
+    sections[2].raw_data=struct.pack('<f',6)
+    assert not mixed(lambda source: obj)[0][1].compiler_local_ordinal_canonicalized
+    sections[2].raw_data=struct.pack('<f',5)
+    obj.symbols.pop(); del obj.symbols_by_index[2]; del sections[3]
+    body.relocations.pop(); obj.relocations_by_section[1].pop()
     for changes in ({"target_symbol": "_other"}, {"coff_addend": 1}, {"type": 20}):
         assert not check(catalog={**expected, **changes}).compiler_local_ordinal_canonicalized
     for changes in ({"size": 8}, {"ownership_state": "unresolved"},
@@ -962,6 +996,47 @@ def test_named_static_stem_requires_exact_storage_contents_and_all_readers(monke
     target_row["end_exclusive"] = target_row["address"]
     with pytest.raises(byte.LiveByteError, match="data extent is invalid"):
         universe()
+    # Unknown source extents need not become invented exact data facts just to
+    # exclude readers: scan a conservative suffix of the immutable PE section.
+    with monkeypatch.context() as bound_patch:
+        reference = tmp_path / "bounded-retail.exe"
+        reference.write_bytes(b"retail fixture")
+        section = Row(name=".rdata", virtual_address=0x1000, virtual_size=32,
+                      raw_size=16, characteristics=0x40)
+        headers = Row(image_base=0x500000, sections=[section])
+        bound_patch.setattr(byte, "parse_pe_headers", lambda *a, **kw: headers)
+        suffix = bytearray(28)
+        def read_bound(path, start, length, *, allow_zero_fill=False):
+            assert path == reference and start == 0x501004 and length == 28 and allow_zero_fill
+            return bytes(suffix)
+        bound_patch.setattr(byte, "_pe_bytes", read_bound)
+        unknown = dict(binary="recoil", kind="data", address="0x501004",
+                       extent_state="unknown", output_section_id="recoil:section:.rdata")
+        before = dict(unknown)
+        assert byte._retail_data_reader_bytes(reference, unknown) == bytes(28)
+        assert unknown == before and "end_exclusive" not in unknown
+        rows[target_id] = unknown
+        def bounded_universe():
+            return byte._registered_retail_reader_universe(document=document, bindings=bindings,
+                binding=binding, target_symbol_id=target_id, reference=reference)
+        assert len(bounded_universe()) == 1
+        # Include unaligned potential pointers at the very end of the bound.
+        suffix[-4:] = struct.pack("<I", 0x501004)
+        with pytest.raises(byte.LiveByteError, match="data-reader semantics are unresolved"):
+            bounded_universe()
+        for drift in ({"binary":"messages"}, {"output_section_id":"recoil:section:.data"},
+                      {"address":"0x501020"}):
+            with pytest.raises(byte.LiveByteError, match="data-section bound"):
+                byte._retail_data_reader_bytes(reference, {**unknown, **drift})
+        headers.sections.append(section)
+        with pytest.raises(byte.LiveByteError, match="data-section bound"):
+            byte._retail_data_reader_bytes(reference, unknown)
+        headers.sections.pop()
+        for flags in (0, 0x20, 0x60):
+            section.characteristics = flags
+            with pytest.raises(byte.LiveByteError, match="data-section bound"):
+                byte._retail_data_reader_bytes(reference, unknown)
+        rows[target_id] = target_row
     missing_object = tmp_path / "current.obj"
     missing_object.write_bytes(b"fixture")
 
@@ -975,6 +1050,55 @@ def test_named_static_stem_requires_exact_storage_contents_and_all_readers(monke
     assert not result["passed"] and result["stage"] == "object-symbol"
     assert result["symbol"] == "_entry" and "Symbol not found" in result["message"]
     _exercise_near_byte_review(tmp_path, monkeypatch)
+    _exercise_float_alignment_padding()
+
+
+def _exercise_float_alignment_padding():
+    from types import SimpleNamespace as Row
+    from _recoil.commands import live_byte_verify as byte
+    sections = {
+        1: Row(index=1, name='.text', characteristics=0x20, raw_data=bytes.fromhex('d90500000000c3')),
+        2: Row(index=2, name='.text', characteristics=0x20, raw_data=bytes.fromhex('dd0500000000c3')),
+        3: Row(index=3, name='.rdata', characteristics=0x40, raw_data=bytes(16)),
+    }
+    symbols = [Row(index=1,name='$T1',value=0,section_number=3,storage_class=3,type=0),
+               Row(index=2,name='$T2',value=8,section_number=3,storage_class=3,type=0),
+               Row(index=3,name='_float',value=0,section_number=1,storage_class=2,type=0x20),
+               Row(index=4,name='_double',value=0,section_number=2,storage_class=2,type=0x20)]
+    relocs = {1:[Row(offset=2,type=6,symbol_index=1)],2:[Row(offset=2,type=6,symbol_index=2)]}
+    obj = Row(symbols=symbols, symbols_by_index={s.index:s for s in symbols},
+              relocations_by_section=relocs, section=lambda i:sections[i],
+              symbol_end=lambda s,section: min([x.value for x in symbols
+                  if x.section_number==s.section_number and x.value>s.value]+[len(section.raw_data)]))
+    def check(): return byte._vc5_float_alignment_end(obj,symbols[0],sections[3],4,8)
+    assert check()==4
+    for value in (bytes(4)+b'\x01'+bytes(11),bytes(20)):
+        sections[3].raw_data=value
+        assert check()==8
+    sections[3].raw_data=bytes(16)
+    for code in ('dd0500000000c3','d90501000000c3','a10000000090c3','648b0500000000'):
+        sections[1].raw_data=bytes.fromhex(code)
+        assert check()==8
+    sections[1].raw_data=bytes.fromhex('d90500000000c3')
+    sections[2].raw_data=bytes.fromhex('d90500000000c3')
+    assert check()==8
+    sections[2].raw_data=bytes.fromhex('dd0500000000c3')
+    symbols[1].name='_named'
+    assert check()==8
+    symbols[1].name='$T2'
+    following=relocs.pop(2)
+    assert check()==8
+    relocs[2]=following
+    for value in (0,4,8):
+        symbols.append(Row(index=5,name='_alias',value=value,section_number=3,storage_class=2,type=0))
+        assert check()==8
+        symbols.pop()
+    relocs[3]=[Row(offset=0,type=6,symbol_index=1)]
+    sections[3].raw_data=b'\x04'+bytes(15)
+    assert check()==8
+    del relocs[3]
+    sections[3].raw_data=bytes(16)
+    assert check()==4
 
 
 def _exercise_near_byte_review(tmp_path, monkeypatch):

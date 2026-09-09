@@ -28,6 +28,12 @@
   ],
   "data_symbols": [
     {
+      "address": "0x4daf54",
+      "symbol": "??_C@_02JKAF@rb?$AA@",
+      "name": "g_FileOpenMode_ReadBinary",
+      "byte_length": 3
+    },
+    {
       "address": "0x4dd1c4",
       "symbol": "??_C@_01BJG@?6?$AA@",
       "name": "g_Str_Newline",
@@ -238,7 +244,7 @@
     },
     {
       "address": "0x4e4918",
-      "symbol_regex": "_k_zInterp_TokenDelimiters\\$S[0-9]+",
+      "symbol_regex": "\\?k_zInterp_TokenDelimiters@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
       "name": "k_zInterp_TokenDelimiters",
       "bn_name": "k_zInterp_TokenDelimiters",
       "byte_length": 5
