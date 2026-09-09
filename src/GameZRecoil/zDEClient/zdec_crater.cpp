@@ -88,6 +88,7 @@ namespace zDEClient_Crater {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-destroyfeature
  * @recoil-artifact defines .text recoil:function:0x456ad0: zDEClient_Crater::DestroyFeature
+ * @recoil-match byte
  *
  * Purpose: release a crater feature instance, including its generated point
  * buffer and clip-patch output.
@@ -208,6 +209,7 @@ int __fastcall InstanceEvent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-instanceeventmayberelay
  * @recoil-artifact defines .text recoil:function:0x456c50: zDEClient_Crater::InstanceEventMaybeRelay
+ * @recoil-match byte
  *
  * Purpose: let the registered crater relay callback veto remote crater
  * instancing before creating the crater locally.
@@ -875,6 +877,7 @@ namespace zDEClient {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-setcameranode
  * @recoil-artifact defines .text recoil:function:0x458aa0: zDEClient::SetCameraNode
+ * @recoil-match byte
  *
  * Purpose: record the active camera node and its class-data feature grid.
  */
@@ -890,6 +893,7 @@ void __fastcall SetCameraNode(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-getfeaturegridcell
  * @recoil-artifact defines .text recoil:function:0x458ac0: zDEClient::GetFeatureGridCell
+ * @recoil-match byte
  *
  * Purpose: return a feature-grid cell from the current camera node data.
  */
@@ -909,6 +913,7 @@ zDEClient_FeatureGridCell *__fastcall GetFeatureGridCell(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-getcameranode
  * @recoil-artifact defines .text recoil:function:0x458ae0: zDEClient::GetCameraNode
+ * @recoil-match byte
  *
  * Purpose: expose the active camera node used by terrain feature helpers.
  */

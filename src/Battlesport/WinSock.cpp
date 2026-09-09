@@ -60,6 +60,8 @@ namespace Net {
 /**
  * @recoil-anchor recoil:anchor:battlesport-winsock-net-formatipv4address
  * @recoil-artifact defines .text recoil:function:0x43cf40: Net::FormatIpv4Address
+ * @recoil-match byte
+ *
  * Physical host: provisional no-literal WinSock.cpp contribution; original
  * source provenance remains unresolved.
  * Purpose: Format a little-endian IPv4 address for session UI text.

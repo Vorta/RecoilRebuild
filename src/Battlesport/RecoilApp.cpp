@@ -1671,6 +1671,8 @@ zInput_FFEffectSet *__fastcall zInput_DI_InitForceFeedbackEffectSet(
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.zinput-di-is-force-feedback-enabled
  * @recoil-artifact defines .text recoil:function:0x42fa80: zInputDI::IsForceFeedbackEnabled.
+ * @recoil-match byte
+ *
  * Purpose: Reports whether joystick input and force feedback are both available.
  */
 extern "C" int __cdecl zInput_DI_IsForceFeedbackEnabled() {
@@ -6838,6 +6840,8 @@ int RecoilApp_MfcOleModule::InitInstance() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-takeskipwaitmessage
  * @recoil-artifact defines .text recoil:function:0x442a10: RecoilApp::TakeSkipWaitMessage.
+ * @recoil-match byte
+ *
  * Purpose: consumes and clears the app-shell skip-wait-message flag.
  */
 int RecoilApp::TakeSkipWaitMessage() {
@@ -6849,6 +6853,8 @@ int RecoilApp::TakeSkipWaitMessage() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-markskipwaitmessage
  * @recoil-artifact defines .text recoil:function:0x442a30: RecoilApp::MarkSkipWaitMessage.
+ * @recoil-match byte
+ *
  * Purpose: sets the app-shell skip-wait-message flag and returns its prior state.
  */
 int RecoilApp::MarkSkipWaitMessage() {
@@ -6967,6 +6973,8 @@ int __cdecl ShutdownGlobals();
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-shutdownsubsystems
  * @recoil-artifact defines .text recoil:function:0x442bc0: RecoilApp::ShutdownSubsystems.
+ * @recoil-match byte
+ *
  * Purpose: tear down input, rendering resources, catalogs, models, sound, and
  * mounted ZRDR state during app engine shutdown.
  */
@@ -6987,6 +6995,8 @@ void RecoilApp::ShutdownSubsystems() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-getmainwnd
  * @recoil-artifact defines .text recoil:function:0x442c00: RecoilApp::GetMainWnd.
+ * @recoil-match byte
+ *
  * Purpose: returns the main window pointer as the concrete Recoil frame type.
  */
 CZRecoilFrame * RecoilApp::GetMainWnd() const {
@@ -7431,6 +7441,8 @@ const AFX_MSGMAP *__stdcall RecoilApp::GetBaseMessageMapForMfc() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-getcurrentstate
  * @recoil-artifact defines .text recoil:function:0x443140: RecoilApp::GetCurrentState.
+ * @recoil-match byte
+ *
  * Purpose: returns the active app state when the state-stack index is valid.
  */
 RecoilApp_IState * RecoilApp::GetCurrentState() const {
@@ -7545,6 +7557,8 @@ int RecoilApp::OnIdleOrDispatch(
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-statequeue-growandcenterchunkbaselist
  * @recoil-artifact defines .text recoil:function:0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList.
+ * @recoil-match byte
+ *
  * Purpose: Grows the chunk-map and recenters the active chunk-slot range in the new map.
  */
 RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
@@ -7579,6 +7593,8 @@ RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-statequeueblock-initfromcursor
  * @recoil-artifact defines .text recoil:function:0x443700: RecoilApp_StateQueueBlock::InitFromCursor.
+ * @recoil-match byte
+ *
  * Purpose: Initializes one chunk cursor descriptor from a slot in the queue chunk map.
  */
 RecoilApp_StateQueueBlock * RecoilApp_StateQueueBlock::InitFromCursor(

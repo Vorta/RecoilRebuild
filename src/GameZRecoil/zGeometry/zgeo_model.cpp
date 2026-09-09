@@ -281,6 +281,8 @@ namespace zGeometry_ClipPolygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-createfrompointlist
  * @recoil-artifact defines .text recoil:function:0x46aa40: zGeometry_ClipPolygon::CreateFromPointList
+ * @recoil-match byte
+ *
  * Purpose: Allocate a clip polygon, rotate source points, and initialize bounds/state.
  */
 zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
@@ -350,6 +352,8 @@ int __fastcall CopyPointsOutRotatedBack(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-finalizeanddestroy
  * @recoil-artifact defines .text recoil:function:0x46ab10: zGeometry_ClipPolygon::FinalizeAndDestroy
+ * @recoil-match byte
+ *
  * Purpose: Release clip polygon point storage and associated Weiler state.
  */
 void __fastcall FinalizeAndDestroy(
@@ -561,6 +565,7 @@ zGeometry_ClipPatchOutputPartial *__cdecl Create() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-destroy
  * @recoil-artifact defines .text recoil:function:0x46af20: zGeometry_ClipPatchOutput::Destroy
+ * @recoil-match byte
  *
  * Purpose: free the partition buffer owned by a clip-patch output record and
  * release the record itself.
@@ -1378,6 +1383,8 @@ int __fastcall AddPointListPolygonToDi(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-addindexedpolygontodi
  * @recoil-artifact defines .text recoil:function:0x46bb30: zGeometry_Model::AddIndexedPolygonToDi
+ * @recoil-match byte
+ *
  * Purpose: expand an indexed model polygon into a temporary point list and
  * submit it to the DI polygon sink with its source material, UVs, and tag.
  */

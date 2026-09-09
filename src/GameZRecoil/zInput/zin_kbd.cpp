@@ -587,6 +587,8 @@ int __fastcall Keyboard_WaitForAnyKeyPress(
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_translatediktoascii
  * @recoil-artifact defines .text recoil:function:0x46fba0: zInput::Keyboard_TranslateDikToAscii.
+ * @recoil-match byte
+ *
  * Purpose: Translate a modifier-combined DIK scan code to an ASCII/control code.
  */
 int __fastcall Keyboard_TranslateDikToAscii(

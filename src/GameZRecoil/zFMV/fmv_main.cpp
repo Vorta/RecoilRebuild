@@ -228,6 +228,8 @@ void zFMV_Playback::StopAndClose() {
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-setdestrect
  * @recoil-artifact defines .text recoil:function:0x462540: zFMV_Playback::SetDestRect.
+ * @recoil-match byte
+ *
  * Purpose: copy the destination rectangle and mark it for the next MCI put command.
  */
 int zFMV_Playback::SetDestRect(

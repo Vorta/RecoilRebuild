@@ -13,6 +13,7 @@ namespace RecoilVersion {
 /**
  * @recoil-anchor recoil:anchor:battlesport-version-recoilversion-getstring
  * @recoil-artifact defines .text recoil:function:0x438980: RecoilVersion::GetString.
+ * @recoil-match byte
  *
  * Purpose: return the fixed retail version string used by the shell and about
  * dialog paths.

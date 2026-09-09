@@ -17,6 +17,7 @@ const unsigned int kCueChunkMagic = 0x20657563;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-zsndwavedata-zsndwavedata
  * @recoil-artifact defines .text recoil:function:0x4a53f0: zSndWaveData::zSndWaveData.
+ * @recoil-match byte
  *
  * Purpose: initialize a WAV data record from a path and optionally load and
  * parse it immediately.
@@ -43,6 +44,7 @@ zSndWaveData::zSndWaveData(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-zsndwavedata-destructor
  * @recoil-artifact defines .text recoil:function:0x4a5440: zSndWaveData::~zSndWaveData.
+ * @recoil-match byte
  *
  * Purpose: reset parsed WAV state and release the duplicated path string.
  */
@@ -56,6 +58,7 @@ zSndWaveData::~zSndWaveData() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-zsndwavedata-parseloadedwavefile
  * @recoil-artifact defines .text recoil:function:0x4a5460: zSndWaveData::ParseLoadedWaveFile.
+ * @recoil-match byte
  *
  * Purpose: scan a loaded RIFF/WAVE buffer and cache its fmt, data, and cue
  * chunk records.
@@ -162,6 +165,7 @@ int zSndWaveData::LoadAndParseIfNeeded() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-zsndwavedata-reset
  * @recoil-artifact defines .text recoil:function:0x4a55c0: zSndWaveData::Reset.
+ * @recoil-match byte
  *
  * Purpose: free loaded WAV file storage and clear cached parse fields.
  */

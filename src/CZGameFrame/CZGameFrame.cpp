@@ -109,6 +109,7 @@ CZGameFrame::~CZGameFrame() {
 /**
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-iswindowvalid
  * @recoil-artifact defines .text recoil:function:0x4438a0: CZGameFrame::IsWindowValid.
+ * @recoil-match byte
  *
  * Purpose: preserve the frame vtable callback shape for the MFC
  * window-validity rule.
@@ -315,6 +316,7 @@ void CZGameFrame::OnActivate(
 /**
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-onappidledispatchmessage
  * @recoil-artifact defines .text recoil:function:0x443b50: CZGameFrame::OnAppIdleDispatchMessage.
+ * @recoil-match byte
  *
  * Purpose: route frame idle/dispatch work into the current Recoil application
  * object.

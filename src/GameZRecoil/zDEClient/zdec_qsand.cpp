@@ -46,6 +46,7 @@ namespace zDEClient_QSand {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-destroyfeature
  * @recoil-artifact defines .text recoil:function:0x455ea0: zDEClient_QSand::DestroyFeature
+ * @recoil-match byte
  *
  * Purpose: release a quicksand feature instance, including its generated point
  * buffer and clip-patch output.

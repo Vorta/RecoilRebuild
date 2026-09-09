@@ -353,6 +353,8 @@ namespace zClass_Camera {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetactive
      * @recoil-artifact defines .text recoil:function:0x449d10: zClass_Camera::gwCameraSetActive.
+     * @recoil-match byte
+     *
      * Purpose: route the camera active-state update through the generic node helper.
      */
     int __fastcall gwCameraSetActive(
@@ -399,6 +401,8 @@ namespace zClass_Camera {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.settargetnode
      * @recoil-artifact defines .text recoil:function:0x449da0: zClass_Camera::SetTargetNode.
+     * @recoil-match byte
+     *
      * Purpose: store the current global camera target node and report success.
      */
     int __fastcall SetTargetNode(zClass_NodePartial * target) {
@@ -409,6 +413,8 @@ namespace zClass_Camera {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.setactivecamera
      * @recoil-artifact defines .text recoil:function:0x449db0: zClass_Camera::SetActiveCamera.
+     * @recoil-match byte
+     *
      * Purpose: store the current global camera node and return it.
      */
     zClass_NodePartial *__fastcall SetActiveCamera(
@@ -421,6 +427,8 @@ namespace zClass_Camera {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.setobjecthsetestenabled
      * @recoil-artifact defines .text recoil:function:0x449dc0: zClass_Camera::SetObjectHseTestEnabled.
+     * @recoil-match byte
+     *
      * Purpose: store the object HSE test enable flag and report success.
      */
     int __fastcall SetObjectHseTestEnabled(int enabled) {
@@ -506,6 +514,8 @@ namespace zClass_Camera {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetworld
      * @recoil-artifact defines .text recoil:function:0x449e80: zClass_Camera::gwCameraGetWorld.
+     * @recoil-match byte
+     *
      * Purpose: return the world node currently assigned to the camera.
      */
     zClass_NodePartial *__fastcall gwCameraGetWorld(
@@ -518,6 +528,8 @@ namespace zClass_Camera {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetwindow
      * @recoil-artifact defines .text recoil:function:0x449e90: zClass_Camera::gwCameraSetWindow.
+     * @recoil-match byte
+     *
      * Purpose: assign the window node used by the camera view context.
      */
     gwCameraSetWindow(
@@ -3415,6 +3427,8 @@ namespace zClass_Camera {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.renderoverlaynodes
      * @recoil-artifact defines .text recoil:function:0x44d200: zClass_Camera::RenderOverlayNodes.
+     * @recoil-match byte
+     *
      * Purpose: render overlay child nodes from the world node.
      */
     void __fastcall RenderOverlayNodes(zClass_NodePartial * world) {
@@ -3430,6 +3444,8 @@ namespace zClass_Camera {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.renderworld
      * @recoil-artifact defines .text recoil:function:0x44d240: zClass_Camera::RenderWorld.
+     * @recoil-match byte
+     *
      * Purpose: render frustum grid tiles and overlay nodes for the world.
      */
     void __fastcall RenderWorld(

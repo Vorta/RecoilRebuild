@@ -535,6 +535,8 @@ int __fastcall LoadConfigResources(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-zdeclient-loadorcreatematerialfromtexturepath
  * @recoil-artifact defines .text recoil:function:0x455dd0: zDEClient::LoadOrCreateMaterialFromTexturePath.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: resolve or create a material for a texture path and report whether
  * the texture directory entry still needs loading.

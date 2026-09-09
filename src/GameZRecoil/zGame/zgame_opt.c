@@ -581,6 +581,8 @@ namespace zSys {
  * @recoil-artifact defines .text recoil:function:0x4b2fe0: zSys::HasCpuidSupportRuntimeOptions.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgame.has-cpuid-support-runtime-options
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgame.has-cpuid-support-runtime-options
+ * @recoil-match byte
+ *
  * Purpose: repeats the EFLAGS ID-bit probe for runtime option setup callers;
  * VC5 C++ cannot express the required EFLAGS toggle and register-preservation
  * sequence, so this documented raw-assembly CPU-probe exception keeps that
@@ -622,6 +624,8 @@ namespace zCpu {
  * @recoil-artifact defines .text recoil:function:0x4b3020: zCpu::HasMmxSupport.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgame.has-mmx-support
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgame.has-mmx-support
+ * @recoil-match byte
+ *
  * Purpose: probe CPUID feature bit 23 for MMX support; VC5 C++ has no CPUID
  * intrinsic, so this documented raw-assembly CPU-probe exception emits the
  * opcode locally.
@@ -665,6 +669,8 @@ namespace zSys {
  * @recoil-artifact defines .text recoil:function:0x4b3050: zSys::CheckCpuSignatureMask.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgame.check-cpu-signature-mask
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgame.check-cpu-signature-mask
+ * @recoil-match byte
+ *
  * Purpose: read CPUID leaf 1 and test the optimized-path signature mask; VC5
  * C++ has no CPUID intrinsic, so this documented raw-assembly CPU-probe
  * exception emits the opcode while preserving the retail register shape.
@@ -827,6 +833,8 @@ namespace zSys {
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-getcpuclass
  * @recoil-artifact defines .text recoil:function:0x4b31b0: zSys::GetCpuClass.
+ * @recoil-match byte
+ *
  * Purpose: return the low-word CPU class from the recovered CPU detection packet.
  */
 int __cdecl GetCpuClass() {
@@ -855,6 +863,8 @@ namespace zSys {
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-returnzerostub
  * @recoil-artifact defines .text recoil:function:0x4b3210: zSys::ReturnZeroStub.
+ * @recoil-match byte
+ *
  * Purpose: return zero for callers that need a stable legacy system stub.
  */
 int __cdecl ReturnZeroStub() {
@@ -895,6 +905,8 @@ namespace zGame {
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_initregistrycontext
  * @recoil-artifact defines .text recoil:function:0x4b3260: zGame::Options_InitRegistryContext.
+ * @recoil-match byte
+ *
  * Purpose: initialize the registry-key context and reset the option-entry list.
  */
 void __fastcall Options_InitRegistryContext(
@@ -964,6 +976,8 @@ void __cdecl Options_ShutdownRegistryContext() {
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_findoption
  * @recoil-artifact defines .text recoil:function:0x4b3380: zGame::Options_FindOption.
+ * @recoil-match byte
+ *
  * Purpose: scan the registered option-entry list for an exact name match.
  */
 zOptionEntryPartial *__fastcall Options_FindOption(

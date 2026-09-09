@@ -427,6 +427,7 @@ zInterp_Context::~zInterp_Context() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-destroy
  * @recoil-artifact defines .text recoil:function:0x4c0f70: zInterp_Context::Destroy.
+ * @recoil-match byte
  *
  * Purpose: clear per-run parser tables, search paths, scroll callbacks, and
  * pointer-array state while leaving constructor-owned storage intact.
@@ -456,6 +457,7 @@ void zInterp_Context::Destroy() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-runstring
  * @recoil-artifact defines .text recoil:function:0x4c1020: zInterp_Context::RunString.
+ * @recoil-match byte
  *
  * Purpose: read script input lines or prepared token blobs and run each one.
  */
@@ -491,6 +493,7 @@ int zInterp_Context::RunString(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-runstream
  * @recoil-artifact defines .text recoil:function:0x4c1090: zInterp_Context::RunStream.
+ * @recoil-match byte
  *
  * Purpose: tokenize one command line, dispatch builtins/core hooks, and clear
  * temporary token storage.
@@ -546,6 +549,7 @@ int zInterp_Context::RunStream(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-readlineorpreparedtokens
  * @recoil-artifact defines .text recoil:function:0x4c1160: zInterp_Context::ReadLineOrPreparedTokens.
+ * @recoil-match byte
  *
  * Purpose: read either a text script line or a prepared token block.
  */
@@ -606,6 +610,7 @@ int zInterp_Context::ReadLineOrPreparedTokens(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-expandmacrorefs
  * @recoil-artifact defines .text recoil:function:0x4c1250: zInterp_Context::ExpandMacroRefs.
+ * @recoil-match byte
  *
  * Purpose: substitute percent-delimited macro references into a shared scratch
  * buffer before token parsing consumes the argument.
@@ -763,6 +768,7 @@ int zInterp_Context::TokenizeLine(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-runscriptfile
  * @recoil-artifact defines .text recoil:function:0x4c1500: zInterp_Context::RunScriptFile.
+ * @recoil-match byte
  *
  * Purpose: push nested script state, choose prepared or text input, and run it.
  */
@@ -826,6 +832,7 @@ int zInterp_Context::RunScriptFile(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-findmacrovalue
  * @recoil-artifact defines .text recoil:function:0x4c15f0: zInterp_Context::FindMacroValue.
+ * @recoil-match byte
  *
  * Purpose: locate a macro entry by name and optionally return its table slot.
  */
@@ -852,6 +859,7 @@ char * zInterp_Context::FindMacroValue(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-clearmacrotable
  * @recoil-artifact defines .text recoil:function:0x4c1670: zInterp_Context::ClearMacroTable.
+ * @recoil-match byte
  *
  * Purpose: free all macro names, values, and table storage for the context.
  */
@@ -872,6 +880,7 @@ void zInterp_Context::ClearMacroTable() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-clearvartable
  * @recoil-artifact defines .text recoil:function:0x4c16c0: zInterp_Context::ClearVarTable.
+ * @recoil-match byte
  *
  * Purpose: free variable table names and release the context's table storage.
  */
@@ -891,6 +900,7 @@ void zInterp_Context::ClearVarTable() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-ismacrotrue
  * @recoil-artifact defines .text recoil:function:0x4c1710: zInterp_Context::IsMacroTrue.
+ * @recoil-match byte
  *
  * Purpose: test whether a named macro currently holds the TRUE literal.
  */
@@ -913,6 +923,7 @@ int zInterp_Context::IsMacroTrue(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-setmacro
  * @recoil-artifact defines .text recoil:function:0x4c1780: zInterp_Context::SetMacro.
+ * @recoil-match byte
  *
  * Purpose: create or update one dynamically allocated macro table entry.
  */
@@ -952,6 +963,7 @@ int zInterp_Context::SetMacro(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-echotokens
  * @recoil-artifact defines .text recoil:function:0x4c1870: zInterp_Context::EchoTokens.
+ * @recoil-match byte
  *
  * Purpose: print each parsed token followed by a newline.
  */
@@ -969,6 +981,7 @@ int zInterp_Context::EchoTokens() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-pushfileframe
  * @recoil-artifact defines .text recoil:function:0x4c18c0: zInterp_Context::PushFileFrame.
+ * @recoil-match byte
  *
  * Purpose: append one saved script file position for nested source commands.
  */
@@ -994,6 +1007,7 @@ int zInterp_Context::PushFileFrame(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-popfileframe
  * @recoil-artifact defines .text recoil:function:0x4c1940: zInterp_Context::PopFileFrame.
+ * @recoil-match byte
  *
  * Purpose: pop the most recent nested-script file frame without freeing storage.
  */
@@ -1011,6 +1025,7 @@ zInterp_FileFrame * zInterp_Context::PopFileFrame() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-clearfileframestack
  * @recoil-artifact defines .text recoil:function:0x4c1960: zInterp_Context::ClearFileFrameStack.
+ * @recoil-match byte
  *
  * Purpose: free saved nested-script file frames and reset the frame count.
  */
@@ -1025,6 +1040,7 @@ void zInterp_Context::ClearFileFrameStack() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-nexttoken
  * @recoil-artifact defines .text recoil:function:0x4c1990: zInterp_Context::NextToken.
+ * @recoil-match byte
  *
  * Purpose: advance the token cursor and return the macro-expanded token text.
  */
@@ -1044,6 +1060,7 @@ char * zInterp_Context::NextToken() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-parsebooltoken
  * @recoil-artifact defines .text recoil:function:0x4c19c0: zInterp_Context::ParseBoolToken.
+ * @recoil-match byte
  *
  * Purpose: parse the next token as an on/true boolean value.
  */
@@ -1076,6 +1093,7 @@ float zInterp_Context::ParseFloatToken() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-parseinttoken
  * @recoil-artifact defines .text recoil:function:0x4c1a20: zInterp_Context::ParseIntToken.
+ * @recoil-match byte
  *
  * Purpose: parse the next token as an integer value.
  */
@@ -1091,6 +1109,7 @@ int zInterp_Context::ParseIntToken() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-findvarentry
  * @recoil-artifact defines .text recoil:function:0x4c1a40: zInterp_Context::FindVarEntry.
+ * @recoil-match byte
  *
  * Purpose: find a registered script variable entry by name.
  */
@@ -1113,6 +1132,7 @@ zInterp_VarEntry * zInterp_Context::FindVarEntry(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-dumpvarentry
  * @recoil-artifact defines .text recoil:function:0x4c1ab0: zInterp_Context::DumpVarEntry.
+ * @recoil-match byte
  *
  * Purpose: log one variable entry according to its stored scalar/string type.
  */
@@ -1138,6 +1158,7 @@ void zInterp_Context::DumpVarEntry(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-incerrorcount
  * @recoil-artifact defines .text recoil:function:0x4c1b20: zInterp_Context::IncErrorCount.
+ * @recoil-match byte
  *
  * Purpose: count one parser error for the current command line.
  */
@@ -1148,6 +1169,7 @@ void zInterp_Context::IncErrorCount() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-logf
  * @recoil-artifact defines .text recoil:function:0x4c1b30: zInterp_Context::Logf.
+ * @recoil-match byte
  *
  * Purpose: forward formatted parser logging to the context callback.
  */
@@ -1173,6 +1195,7 @@ void zInterp_Context::Logf(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-evalconditionexpr
  * @recoil-artifact defines .text recoil:function:0x4c1b50: zInterp_Context::EvalConditionExpr.
+ * @recoil-match byte
  *
  * Purpose: evaluate simple macro truth expressions used by ifdef/ifndef.
  */
@@ -1231,6 +1254,7 @@ int zInterp_Context::EvalConditionExpr() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-handlebuiltincommand
  * @recoil-artifact defines .text recoil:function:0x4c1c50: zInterp_Context::HandleBuiltinCommand.
+ * @recoil-match byte
  *
  * Purpose: handle parser builtins for conditions, macros, script inclusion,
  * and variable mutation before core command dispatch.
@@ -1428,6 +1452,7 @@ void zInterp_Context::PrintNodeTree(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-reportparseerror
  * @recoil-artifact defines .text recoil:function:0x4c2090: zInterp_Context::ReportParseError.
+ * @recoil-match byte
  *
  * Purpose: count an unhandled command parse error and report failure.
  */
@@ -3845,6 +3870,7 @@ int zInterp_Context::DispatchCoreCommand(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-commandequalsprefix
  * @recoil-artifact defines .text recoil:function:0x4c5480: zInterp_Context::CommandEqualsPrefix.
+ * @recoil-match byte
  *
  * Purpose: compare the current command token against a caller-supplied prefix.
  */
@@ -3864,6 +3890,7 @@ int zInterp_Context::CommandEqualsPrefix(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-commandequals
  * @recoil-artifact defines .text recoil:function:0x4c54b0: zInterp_Context::CommandEquals.
+ * @recoil-match byte
  *
  * Purpose: compare the current command token against a complete string.
  */
@@ -3881,6 +3908,7 @@ int zInterp_Context::CommandEquals(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-getcurrentcommand
  * @recoil-artifact defines .text recoil:function:0x4c5510: zInterp_Context::GetCurrentCommand.
+ * @recoil-match byte
  *
  * Purpose: return token zero for the current parsed command line.
  */
@@ -3895,6 +3923,7 @@ char * zInterp_Context::GetCurrentCommand() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-reporterrorf
  * @recoil-artifact defines .text recoil:function:0x4c5520: zInterp_Context::ReportErrorf.
+ * @recoil-match byte
  *
  * Purpose: mark the current line failed and forward formatted parser logging.
  */
@@ -4080,6 +4109,7 @@ FILE * zInterp_Context::OpenPreparedScriptStream(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-validateargsandnodetype
  * @recoil-artifact defines .text recoil:function:0x4c5820: zInterp_Context::ValidateArgsAndNodeType.
+ * @recoil-match byte
  *
  * Purpose: validate argument count and optional zClass node type for commands.
  */
@@ -4130,6 +4160,7 @@ bool zInterp_Context::ValidateArgsAndNodeType(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-defaultdispatchhook
  * @recoil-artifact defines .text recoil:function:0x4c58c0: zInterp_Context::DefaultDispatchHook.
+ * @recoil-match byte
  *
  * Both retail scroll-disable callers supply the context in ECX and the node
  * on the stack. There are no callback-storage references to this body.
@@ -4152,6 +4183,7 @@ bool zInterp_Context::DefaultDispatchHook(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-registerscrollalwaysnode
  * @recoil-artifact defines .text recoil:function:0x4c58e0: zInterp_Context::RegisterScrollAlwaysNode.
+ * @recoil-match byte
  *
  * Purpose: register a node for immediate or driver-driven texture scrolling.
  */
@@ -4201,6 +4233,7 @@ namespace zInterp_Object3D {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-object3d-defaultrenderaction
  * @recoil-artifact defines .text recoil:function:0x4c59e0: zInterp_Object3D::DefaultRenderAction.
+ * @recoil-match byte
  *
  * Purpose: update scrolling textures for a node's display-instance payload.
  */
@@ -4218,6 +4251,7 @@ int __fastcall DefaultRenderAction(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-object3d-scrollalwaystickaction
  * @recoil-artifact defines .text recoil:function:0x4c5a00: zInterp_Object3D::ScrollAlwaysTickAction.
+ * @recoil-match byte
  *
  * Purpose: walk the context-owned always-scroll list and run the texture
  * update action for each payload node.

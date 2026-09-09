@@ -147,6 +147,8 @@ char g_zSnd_NullToken[0x5] = "NULL";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndpendinglist-findbyname
  * @recoil-artifact defines .text recoil:function:0x4a44c0: zSndPendingList_FindByName.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp.
  * Purpose: search the pending stream group list for a group with the requested sample name.
  */
@@ -167,6 +169,8 @@ extern "C" zSndSample *__fastcall zSndPendingList_FindByName(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndpendinglist-matchnamepredicate
  * @recoil-artifact defines .text recoil:function:0x4a44e0: zSndPendingList_MatchNamePredicate.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp.
  * Purpose: compare a pending sound group name with the requested sample name.
  */
@@ -715,6 +719,8 @@ void zSndStreamRequest::StateWaitRepeatDelay() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-statewaitterminationdelay
  * @recoil-artifact defines .text recoil:function:0x4a5020: zSndStreamRequest::StateWaitTerminationDelay.
+ * @recoil-match byte
+ *
  * Purpose: wait for the termination delay before marking a stream request
  * finished.
  */
@@ -731,6 +737,8 @@ void zSndStreamRequest::StateWaitTerminationDelay() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-recyclefinishedrequest
  * @recoil-artifact defines .text recoil:function:0x4a5050: zSndStreamMgr::RecycleFinishedRequest.
+ * @recoil-match byte
+ *
  * Purpose: run active stream-request updates and recycle the first finished
  * request back to the free list.
  */
@@ -866,6 +874,8 @@ extern "C" int __fastcall zSndStreamRequest_StopIfActive(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-matchgrouppredicate
  * @recoil-artifact defines .text recoil:function:0x4a5220: zSndStreamRequest_MatchGroupPredicate.
+ * @recoil-match byte
+ *
  * Purpose: compare a queued stream request with a sound group while searching
  * active request lists.
  */
@@ -953,6 +963,8 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-ensureinit
  * @recoil-artifact defines .text recoil:function:0x4a5350: zSndStreamMgr_EnsureInit.
+ * @recoil-match byte
+ *
  * Purpose: lazily create the stream-manager root node and request lists.
  */
 extern "C" int __cdecl zSndStreamMgr_EnsureInit() {

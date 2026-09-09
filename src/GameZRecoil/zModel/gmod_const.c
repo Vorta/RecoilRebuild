@@ -1630,6 +1630,8 @@ namespace zModel_Const {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.getvertexmergeepsilon
      * @recoil-artifact defines .text recoil:function:0x481530: zModel_Const::GetVertexMergeEpsilon
+     * @recoil-match byte
+     *
      * Purpose: return the global vertex-merge epsilon.
      */
     float __cdecl GetVertexMergeEpsilon() {
@@ -1641,6 +1643,8 @@ namespace zModel_Const {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setvertexmergeepsilon
      * @recoil-artifact defines .text recoil:function:0x481540: zModel_Const::SetVertexMergeEpsilon
+     * @recoil-match byte
+     *
      * Purpose: set the global vertex-merge epsilon using the original bit-preserving copy.
      */
     void __stdcall SetVertexMergeEpsilon(float epsilon) {
@@ -1684,6 +1688,8 @@ namespace zDi {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ptrtoindexorminus1
  * @recoil-artifact defines .text recoil:function:0x481570: zDi::PtrToIndexOrMinus1
+ * @recoil-match byte
+ *
  * Purpose: convert a display-instance pool pointer to its pool index, or -1 for null.
  */
 int __fastcall PtrToIndexOrMinus1(
@@ -1701,6 +1707,8 @@ namespace zDi {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.indextoptrornull
  * @recoil-artifact defines .text recoil:function:0x4815a0: zDi::IndexToPtrOrNull
+ * @recoil-match byte
+ *
  * Purpose: convert a non-negative display-instance pool index to its entry pointer.
  */
 zDiPartial *__fastcall IndexToPtrOrNull(
@@ -2489,6 +2497,8 @@ namespace zModel_DiPool {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.freeifunreferenced
  * @recoil-artifact defines .text recoil:function:0x4820f0: zModel_DiPool::FreeIfUnreferenced
+ * @recoil-match byte
+ *
  * Purpose: release an unreferenced display-instance entry back to the pool free list.
  */
 int __fastcall FreeIfUnreferenced(
@@ -2766,6 +2776,8 @@ namespace zUtil {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.storeint32
  * @recoil-artifact defines .text recoil:function:0x4826a0: zUtil::StoreInt32.
+ * @recoil-match byte
+ *
  * Purpose: Stores the supplied 32-bit integer through the destination pointer.
  */
 void __fastcall StoreInt32(
@@ -2780,6 +2792,8 @@ namespace zDi {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setclonedflag
      * @recoil-artifact defines .text recoil:function:0x4826b0: zDi::SetClonedFlag
+     * @recoil-match byte
+     *
      * Purpose: update the display-instance cloned flag bit.
      */
     void __fastcall SetClonedFlag(
@@ -2796,6 +2810,8 @@ namespace zDi {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setflagbit0
      * @recoil-artifact defines .text recoil:function:0x4826d0: zDi::SetFlagBit0
+     * @recoil-match byte
+     *
      * Purpose: update display-instance flag bit 0 while preserving other flags.
      */
     void __fastcall SetFlagBit0(
@@ -2812,6 +2828,8 @@ namespace zDi {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addref
      * @recoil-artifact defines .text recoil:function:0x4826f0: zDi::AddRef
+     * @recoil-match byte
+     *
      * Purpose: increment a display-instance reference count.
      */
     int __fastcall AddRef(zDiPartial * self) {
@@ -2824,6 +2842,8 @@ namespace zDi {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.release
      * @recoil-artifact defines .text recoil:function:0x482700: zDi::Release
+     * @recoil-match byte
+     *
      * Purpose: decrement a display-instance reference count.
      */
     int __fastcall Release(zDiPartial * self) {
@@ -2836,6 +2856,8 @@ namespace zDi {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.getrefcount
      * @recoil-artifact defines .text recoil:function:0x482710: zDi::GetRefCount
+     * @recoil-match byte
+     *
      * Purpose: return a display-instance reference count.
      */
     int __fastcall GetRefCount(zDiPartial * self) {
@@ -3429,6 +3451,8 @@ namespace zDi {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygon
  * @recoil-artifact defines .text recoil:function:0x483610: zDi::AddPolygon
+ * @recoil-match byte
+ *
  * Purpose: add a polygon entry without explicit per-entry normals.
  */
 int __fastcall AddPolygon(
@@ -3992,6 +4016,8 @@ namespace zDi {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setentryvalueforallentries
  * @recoil-artifact defines .text recoil:function:0x484140: zDi::SetEntryValueForAllEntries
+ * @recoil-match byte
+ *
  * Purpose: set the draw-flags value for every display-instance polygon entry.
  */
 void __fastcall SetEntryValueForAllEntries(
@@ -4030,6 +4056,8 @@ namespace zDi {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setmaterialflagbit9forflagbit0entries
      * @recoil-artifact defines .text recoil:function:0x4841b0: zDi::SetMaterialFlagBit9ForFlagBit0Entries
+     * @recoil-match byte
+     *
      * Purpose: set material flag bit 9 for display-instance materials whose
      * flag bit 8 (0x0100) is set.
      */
@@ -4053,6 +4081,8 @@ namespace zDi {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.invalidateimagesforflagbit8materials
      * @recoil-artifact defines .text recoil:function:0x4841f0: zDi::InvalidateImagesForFlagBit8Materials
+     * @recoil-match byte
+     *
      * Purpose: invalidate eligible images for display-instance materials selected by flag bit 0.
      */
     void __fastcall InvalidateImagesForFlagBit8Materials(zDiPartial * self) {
@@ -4127,6 +4157,8 @@ namespace zDi {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariant
  * @recoil-artifact defines .text recoil:function:0x4842b0: zDi::SetCurrentVariant
+ * @recoil-match byte
+ *
  * Purpose: select the current texture-cycle variant frame.
  */
 void __fastcall SetCurrentVariant(
@@ -4155,6 +4187,8 @@ namespace zModel_Instance {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcycletextureloop
  * @recoil-artifact defines .text recoil:function:0x4842f0: zModel_Instance::SetCycleTextureLoop
+ * @recoil-match byte
+ *
  * Purpose: set the cycle loop flag on an instance's first material entry.
  */
 int __fastcall SetCycleTextureLoop(
@@ -4176,6 +4210,8 @@ namespace zDi {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariantcycletexturespeed
  * @recoil-artifact defines .text recoil:function:0x484310: zDi::SetCurrentVariantCycleTextureSpeed
+ * @recoil-match byte
+ *
  * Purpose: set the cycle speed for the current material variant.
  */
 int __fastcall SetCurrentVariantCycleTextureSpeed(
@@ -4197,6 +4233,8 @@ namespace zModel_Instance {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addcycletexture
  * @recoil-artifact defines .text recoil:function:0x484330: zModel_Instance::AddCycleTexture
+ * @recoil-match byte
+ *
  * Purpose: add a cycle texture to an instance's first material entry.
  */
 int __fastcall AddCycleTexture(

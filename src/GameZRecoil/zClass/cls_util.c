@@ -305,6 +305,8 @@ namespace zClass {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.shutdown
      * @recoil-artifact defines .text recoil:function:0x4518e0: zClass::Shutdown
+     * @recoil-match byte
+     *
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: run the core zClass shutdown sequence.
      */
@@ -316,6 +318,8 @@ namespace zClass {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.isinitialized
      * @recoil-artifact defines .text recoil:function:0x4518f0: zClass::IsInitialized.
+     * @recoil-match byte
+     *
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: return the current zClass initialization flag.
      */
@@ -378,6 +382,8 @@ namespace zClass {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.shutdowncore
      * @recoil-artifact defines .text recoil:function:0x451a00: zClass::ShutdownCore.
+     * @recoil-match byte
+     *
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: tear down zClass-owned nodes, type lists, node storage, and path state.
      */

@@ -128,6 +128,8 @@ namespace zEffect {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.setworldnode
  * @recoil-artifact defines .text recoil:function:0x45e200: zEffect::SetWorldNode.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff.c.
  * Purpose: store the world node used by zEffect runtime handlers.
  */
@@ -384,6 +386,8 @@ int __fastcall FindOrCreateLightRef(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.resolvenodebyname
  * @recoil-artifact defines .text recoil:function:0x45e5c0: zEffectAnim::ResolveNodeByName (zeff_anim.c)
+ * @recoil-match byte
+ *
  * Purpose: Resolve an animation node name through callback, bound, runtime-ref, then zClass lookup paths.
  */
 zClass_NodePartial *__fastcall ResolveNodeByName(
@@ -437,6 +441,8 @@ zClass_NodePartial *__fastcall ResolveNodeByName(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findnoderecursivebyname
  * @recoil-artifact defines .text recoil:function:0x45e650: zEffectAnim::FindNodeRecursiveByName (zeff_anim.c)
+ * @recoil-match byte
+ *
  * Purpose: Return the first node in the root-first child traversal whose name matches.
  */
 zClass_NodePartial *__fastcall FindNodeRecursiveByName(
@@ -1696,6 +1702,8 @@ int __cdecl Shutdown() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.shutdownifloaded
  * @recoil-artifact defines .text recoil:function:0x45fef0: zEffect_Anim::ShutdownIfLoaded.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: run animation shutdown only when entries are currently
  * instantiated.
@@ -1715,6 +1723,8 @@ namespace zEffectAnim {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findentrybyname
  * @recoil-artifact defines .text recoil:function:0x45ff10: zEffectAnim::FindEntryByName (zeff_anim.c)
+ * @recoil-match byte
+ *
  * Purpose: Return the first zEffect animation entry whose table name matches the requested name.
  */
 zEffectAnimEntry *__fastcall FindEntryByName(
@@ -1764,6 +1774,8 @@ zEffectAnimEntry *__fastcall FindNextAsyncEntry(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.getrootnodeornull
  * @recoil-artifact defines .text recoil:function:0x460010: zEffectAnim::GetRootNodeOrNull (zeff_anim.c)
+ * @recoil-match byte
+ *
  * Purpose: Return an animation entry's bound root node, or null for a missing entry.
  */
 zClass_NodePartial *__fastcall GetRootNodeOrNull(

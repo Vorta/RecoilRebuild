@@ -241,6 +241,8 @@ namespace zClass_TypeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.freelink
      * @recoil-artifact defines .text recoil:function:0x44e690: zClass_TypeList::FreeLink.
+     * @recoil-match byte
+     *
      * Purpose: return an unused type-list link to the global recycled-link
      * list and update live link accounting.
      */
@@ -264,6 +266,8 @@ namespace zClass_TypeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.freeall
      * @recoil-artifact defines .text recoil:function:0x44e6d0: zClass_TypeList::FreeAll.
+     * @recoil-match byte
+     *
      * Purpose: release every recycled type-list link owned by the global
      * free-list cache.
      */
@@ -421,6 +425,8 @@ namespace gwNode {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesubtree
      * @recoil-artifact defines .text recoil:function:0x44eb00: gwNode::UpdateSubtree.
+     * @recoil-match byte
+     *
      * Purpose: update a node subtree and mark each visited node for queued
      * tree-list removal.
      */
@@ -443,6 +449,8 @@ namespace gwNode {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatetree
      * @recoil-artifact defines .text recoil:function:0x44eb50: gwNode::UpdateTree.
+     * @recoil-match byte
+     *
      * Purpose: update a node tree upward through its non-world parents and
      * process deferred work when enabled.
      */
@@ -545,6 +553,8 @@ namespace zClass_Class {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodeupdateall
      * @recoil-artifact defines .text recoil:function:0x44ec80: zClass_Class::gwNodeUpdateAll.
+     * @recoil-match byte
+     *
      * Purpose: update sequence, animation, and queued-tree work in order.
      */
     int __cdecl gwNodeUpdateAll() {
@@ -572,6 +582,8 @@ namespace zClass_TypeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.printbucket
      * @recoil-artifact defines .text recoil:function:0x44ecb0: zClass_TypeList::PrintBucket.
+     * @recoil-match byte
+     *
      * Purpose: print each node name in one type-list bucket for diagnostics.
      */
     void __fastcall PrintBucket(int bucket) {
@@ -616,6 +628,8 @@ namespace zClass_TypeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.getbuckethead
      * @recoil-artifact defines .text recoil:function:0x44ed50: zClass_TypeList::GetBucketHead.
+     * @recoil-match byte
+     *
      * Purpose: return the head link for one type-list bucket.
      */
     zClass_TypeListLink *__fastcall GetBucketHead(int bucket) {
@@ -627,6 +641,8 @@ namespace zClass_NodeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insert-44ed60
      * @recoil-artifact defines .text recoil:function:0x44ed60: zClass_NodeList::Insert.
+     * @recoil-match byte
+     *
      * Purpose: queue a node for deferred free processing on the pending-free
      * node list.
      */
@@ -648,6 +664,8 @@ namespace zClass_TypeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insert-44ed90
      * @recoil-artifact defines .text recoil:function:0x44ed90: zClass_TypeList::Insert.
+     * @recoil-match byte
+     *
      * Purpose: insert a node at the head of a type-list bucket and queue
      * eligible child nodes.
      */
@@ -688,6 +706,8 @@ namespace zClass_TypeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insertchildnodes
      * @recoil-artifact defines .text recoil:function:0x44ee10: zClass_TypeList::InsertChildNodes.
+     * @recoil-match byte
+     *
      * Purpose: append a node to a type-list bucket and queue eligible child
      * nodes.
      */
@@ -732,6 +752,8 @@ namespace zClass_NodeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processpendingfrees
      * @recoil-artifact defines .text recoil:function:0x44eea0: zClass_NodeList::ProcessPendingFrees.
+     * @recoil-match byte
+     *
      * Purpose: drain pending node frees through the class free-list and
      * recycle their queue links.
      */
@@ -1232,6 +1254,8 @@ namespace zClass_List {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.iteratebucketfiltered
      * @recoil-artifact defines .text recoil:function:0x44f690: zClass_List::IterateBucketFiltered.
+     * @recoil-match byte
+     *
      * Purpose: initialize or continue filtered iteration over one type-list
      * bucket using a caller-supplied predicate.
      */
@@ -1264,6 +1288,8 @@ namespace zClass {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findnextbytypeprefix
      * @recoil-artifact defines .text recoil:function:0x44f6f0: zClass::FindNextByTypePrefix.
+     * @recoil-match byte
+     *
      * Purpose: initialize or continue prefix search over one type-list bucket.
      */
     zClass_NodePartial *__fastcall FindNextByTypePrefix(
@@ -1284,6 +1310,8 @@ namespace zClass {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findnextbytypeprefix-predicate
      * @recoil-artifact defines .text recoil:function:0x44f720: zClass::FindNextByTypePrefix_Predicate.
+     * @recoil-match byte
+     *
      * Purpose: test whether a node name matches the active prefix-search text.
      */
     int __fastcall FindNextByTypePrefix_Predicate(zClass_NodePartial * node) {
@@ -1311,6 +1339,8 @@ namespace zClass_Class {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodefindnextbyname
      * @recoil-artifact defines .text recoil:function:0x44f740: zClass_Class::gwNodeFindNextByName.
+     * @recoil-match byte
+     *
      * Purpose: initialize or continue exact-name search over one type-list
      * bucket.
      */
@@ -1328,6 +1358,8 @@ namespace zClass_Class {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodefindnextbyname-predicate
      * @recoil-artifact defines .text recoil:function:0x44f750: zClass_Class::gwNodeFindNextByName_Predicate.
+     * @recoil-match byte
+     *
      * Purpose: test whether a node name matches the active exact-name search
      * text.
      */

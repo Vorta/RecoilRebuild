@@ -2403,6 +2403,8 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4026d0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x4026d0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x4026d0
+ * @recoil-match byte
+ *
  * Pro review 2026-09-08T14-41-30-384Z: native component, grouped, and pointer
  * variants and mixed native dot/cross failed; use the five exact shared islands.
  * Canonical VC5 confirms all five kernel intervals. Pointer setup,
@@ -2479,6 +2481,8 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4028c0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x4028c0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x4028c0
+ * @recoil-match byte
+ *
  * Pro review 2026-09-08T14-41-30-384Z: native component, grouped, pointer,
  * and mixed native dot/cross variants failed. Canonical VC5 confirms the five
  * exact shared kernel intervals; scalar math and control remain C++.
@@ -2612,6 +2616,8 @@ void __fastcall AINet::TickAiMode2TimedPathSteering(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402be0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x402be0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x402be0
+ * @recoil-match byte
+ *
  * Original function evidence: retail 0x402be0 contains the shared subtraction and the
  * byte-sensitive XZ dot/cross expansions used by forward-node steering.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
@@ -2694,6 +2700,8 @@ void __fastcall AINet::AiSteerTowardPathNodeForward(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402d60
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x402d60
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x402d60
+ * @recoil-match byte
+ *
  * Original function evidence: retail 0x402d60 contains the shared subtraction and the
  * byte-sensitive XZ dot/cross expansions used by reverse-node steering.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.

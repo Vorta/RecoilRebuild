@@ -1428,6 +1428,8 @@ void __fastcall ApplyAltWeaponSwitch(
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-applyprimaryweaponswitch
  * @recoil-artifact defines .text recoil:function:0x439600: Player::ApplyPrimaryWeaponSwitch
+ * @recoil-match byte
+ *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: activate the selected primary weapon controller, toggle previous
  * and new mount nodes, and cache the selected bank/side display code.
@@ -1630,6 +1632,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-resetdamagestateandtimedhitstatus
  * @recoil-artifact defines .text recoil:function:0x439990: Player::ResetDamageStateAndTimedHitStatus
+ * @recoil-match byte
  *
  * Purpose: reload damage material state, clear damage flags, and clear any
  * attached timed-hit status light.
@@ -1766,6 +1769,8 @@ namespace HudLowMeterLoopSound {
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-hudlowmeterloopsound-setloopactive
  * @recoil-artifact defines .text recoil:function:0x439b20: HudLowMeterLoopSound::SetLoopActive.
+ * @recoil-match byte
+ *
  * Original source filename remains unresolved in the mixed later Player/combat shelf.
  * Purpose: Starts or stops the low-meter loop sample on active-state changes.
  */
@@ -1790,6 +1795,8 @@ void __fastcall SetLoopActive(
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-hudlowmeterloopsound-disable
  * @recoil-artifact defines .text recoil:function:0x439b70: HudLowMeterLoopSound::Disable.
+ * @recoil-match byte
+ *
  * Original source filename remains unresolved in the mixed later Player/combat shelf.
  * Purpose: Stops both low-meter warning samples and clears the loop-active flag.
  */
@@ -3234,6 +3241,8 @@ float __fastcall UpdateTimedHitStatusFromHitSource(
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-cleardestroyedrespawneffecthandlecallback
  * @recoil-artifact defines .text recoil:function:0x43b800: Player::ClearDestroyedRespawnEffectHandleCallback
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: clear the async destroyed-respawn effect handle when the effect
  * callback completes.
@@ -3478,6 +3487,8 @@ int __fastcall HitCallback_RecordContextAndTimedStatus(
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-enterlocalinactivedestroyedlifecycle
  * @recoil-artifact defines .text recoil:function:0x43bc40: Player::EnterLocalInactiveDestroyedLifecycle
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: put the local player into the inactive destroyed lifecycle and, for
  * network games, attach the destroyed reset callback to the respawn effect.
@@ -3909,6 +3920,8 @@ void __fastcall ProcessAltGunDispatchRequest(
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatecontinuousaltgunfirecontroller
  * @recoil-artifact defines .text recoil:function:0x43c2d0: Player::UpdateContinuousAltGunFireController
+ * @recoil-match byte
+ *
  * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
  * Purpose: tick continuous alternate-gun trail state for the active
  * controller.
@@ -4104,6 +4117,8 @@ int __fastcall AltGunFireSimpleProjectile(
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-isaltweaponallowedincurrentmastermode
  * @recoil-artifact defines .text recoil:function:0x43c630: Player::IsAltWeaponAllowedInCurrentMasterMode.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::IsAltWeaponAllowedInCurrentMasterMode from the recovered
  * Battlesport gameplay source file.

@@ -790,6 +790,8 @@ void __cdecl PickupTypeTable::FreeOptMeta() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-shutdown
  * @recoil-artifact defines .text recoil:function:0x41ccd0: Pickup::Shutdown (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: clear pickup spawn, network-copy, and respawn queue state.
  */
 void __cdecl Pickup::Shutdown() {
@@ -913,6 +915,8 @@ int __fastcall Pickup::Init(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.zclass-node-clearpickupflagsrecursive
  * @recoil-artifact defines .text recoil:function:0x41ceb0: zClass_Node::ClearPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: clear pickup interaction flags from a node and each child in its
  * secondary child list.
  */
@@ -931,6 +935,8 @@ int __fastcall zClass_Node::ClearPickupFlagsRecursive(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.zclass-node-setpickupflagsrecursive
  * @recoil-artifact defines .text recoil:function:0x41cef0: zClass_Node::SetPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: restore pickup active/raycast flags on a node and its secondary children.
  */
 int __fastcall zClass_Node::SetPickupFlagsRecursive(
@@ -948,6 +954,8 @@ int __fastcall zClass_Node::SetPickupFlagsRecursive(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-resolveownerfrombvolhit
  * @recoil-artifact defines .text recoil:function:0x41cf30: Pickup::ResolveOwnerFromBvolHit (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: resolve a pickup bvol hit node back to its owning pickup node.
  */
 int __fastcall Pickup::ResolveOwnerFromBvolHit(
@@ -1595,6 +1603,8 @@ PickupSpawnDef *__fastcall Pickup::CreateSpawnDefAndLink(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnat
  * @recoil-artifact defines .text recoil:function:0x41da20: Pickup::SpawnAt (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: create a pickup object at a supplied transform and link its spawn definition.
  */
 PickupSpawnDef *__fastcall Pickup::SpawnAt(
@@ -1768,6 +1778,8 @@ int __fastcall Pickup::AssignBvolGroupAndId(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnfromparsedzrdentry
  * @recoil-artifact defines .text recoil:function:0x41dc30: Pickup::SpawnFromParsedZrdEntry (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: create a pickup spawn from parsed ZRD pickup placement data.
  */
 PickupSpawnDef *__fastcall Pickup::SpawnFromParsedZrdEntry(
@@ -1847,6 +1859,8 @@ int __fastcall Pickup::SpawnWithAirdropChute(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-registerexistingobject
  * @recoil-artifact defines .text recoil:function:0x41dcf0: Pickup::RegisterExistingObject (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: activate an existing pickup object, preserve its world position, and link a spawn record.
  */
 void __fastcall Pickup::RegisterExistingObject(
@@ -1939,6 +1953,8 @@ const char *__fastcall Pickup::SelectPuppiesZrdByDifficulty(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.net-isoptentryactiveinanyslot
  * @recoil-artifact defines .text recoil:function:0x41de30: Net::IsOptEntryActiveInAnySlot (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: report whether any player weapon slot already owns an option entry.
  */
 int __fastcall Net::IsOptEntryActiveInAnySlot(
@@ -2114,6 +2130,8 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptypemeta-findbyname
  * @recoil-artifact defines .text recoil:function:0x41e1a0: PickupTypeMeta::FindByName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: resolve a pickup logical name to its pickup type record.
  */
 PickupType *__fastcall PickupTypeMeta::FindByName(
@@ -2130,6 +2148,8 @@ PickupType *__fastcall PickupTypeMeta::FindByName(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptype-getbyindex
  * @recoil-artifact defines .text recoil:function:0x41e1c0: PickupType::GetByIndex (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: return the pickup type record for an in-range pickup type index.
  */
 PickupType *__fastcall PickupType::GetByIndex(
@@ -2166,6 +2186,8 @@ int __fastcall PickupTypeKeyTable::FindIndex(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickupspawnlist-clear
  * @recoil-artifact defines .text recoil:function:0x41e240: PickupSpawnList::Clear (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: free every spawn in a pickup spawn list and reset primary ids when needed.
  */
 void PickupSpawnList::Clear() {
@@ -2690,6 +2712,8 @@ PickupSpawnDef *__fastcall Pickup::FindSpawnByPickupId(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-getspawndeffromnode
  * @recoil-artifact defines .text recoil:function:0x41e950: Pickup::GetSpawnDefFromNode (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: return the spawn definition stored in a pickup node callback context.
  */
 PickupSpawnDef *__fastcall Pickup::GetSpawnDefFromNode(
@@ -2701,6 +2725,8 @@ PickupSpawnDef *__fastcall Pickup::GetSpawnDefFromNode(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-setnextpickupid
  * @recoil-artifact defines .text recoil:function:0x41e960: Pickup::SetNextPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: update the next pickup id counter and return its previous value.
  */
 int __fastcall Pickup::SetNextPickupId(
@@ -2714,6 +2740,8 @@ int __fastcall Pickup::SetNextPickupId(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-getnextpickupid
  * @recoil-artifact defines .text recoil:function:0x41e970: Pickup::GetNextPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: return the next pickup id counter.
  */
 int __cdecl Pickup::GetNextPickupId() {
@@ -2766,6 +2794,8 @@ zVidImagePartial *__fastcall Pickup::FindOptMetaImageByOptEntry(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnatcarriernodebyname
  * @recoil-artifact defines .text recoil:function:0x41ea30: Pickup::SpawnAtCarrierNodeByName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: spawn a pickup at the world transform of a named carrier node.
  */
 void __fastcall Pickup::SpawnAtCarrierNodeByName(
@@ -2837,6 +2867,8 @@ PickupAirdropSpawnRef *PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-spawnpickuptypeandrelay
  * @recoil-artifact defines .text recoil:function:0x4389c0: PickupAirdropSpawnRef::SpawnPickupTypeAndRelay (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: spawn an airdrop pickup locally and relay it from network hosts.
  */
 int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(
@@ -2892,6 +2924,8 @@ int PickupAirdropSpawnRef::CanSpawnWithClearance(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-getworldpos
  * @recoil-artifact defines .text recoil:function:0x438a70: PickupAirdropSpawnRef::GetWorldPos (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: refresh and return the cached world position of the airdrop carrier.
  */
 zVec3 *PickupAirdropSpawnRef::GetWorldPos() {
@@ -3117,6 +3151,8 @@ void __fastcall SendPkt12_AirdropSpawnChuteRelay(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.handlepkt12-airdropspawnchuterelay
  * @recoil-artifact defines .text recoil:function:0x4340a0: Pickup::HandlePkt12_AirdropSpawnChuteRelay (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-match byte
+ *
  * Purpose: relay an airdrop chute spawn packet into the local pickup state.
  */
 int __fastcall HandlePkt12_AirdropSpawnChuteRelay(

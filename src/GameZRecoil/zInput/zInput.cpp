@@ -946,6 +946,8 @@ zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-freeallbuffers
  * @recoil-artifact defines .text recoil:function:0x4707a0: zInput_BindMapContext::FreeAllBuffers.
+ * @recoil-match byte
+ *
  * Purpose: release owned binding, callback, and label buffers from a bind-map context.
  */
 void zInput_BindMapContext::FreeAllBuffers() {
@@ -974,6 +976,8 @@ void zInput_BindMapContext::FreeAllBuffers() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-rebuildlookupindices
  * @recoil-artifact defines .text recoil:function:0x470820: zInput_BindMapContext::RebuildLookupIndices.
+ * @recoil-match byte
+ *
  * Purpose: rebuild keyboard, joystick, and mouse reverse lookup tables from packed bindings.
  */
 void zInput_BindMapContext::RebuildLookupIndices() {
@@ -1052,6 +1056,8 @@ void zInput_BindMapContext::InitCommandMap(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-freenonownedbuffers
  * @recoil-artifact defines .text recoil:function:0x470960: zInput_BindMapContext::FreeNonOwnedBuffers.
+ * @recoil-match byte
+ *
  * Purpose: Release lookup and callback buffers that are not owned by a copied bind-map template.
  */
 void zInput_BindMapContext::FreeNonOwnedBuffers() {
@@ -1076,6 +1082,8 @@ void zInput_BindMapContext::FreeNonOwnedBuffers() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-resetallbindings
  * @recoil-artifact defines .text recoil:function:0x4709d0: zInput_BindMapContext::ResetAllBindings.
+ * @recoil-match byte
+ *
  * Purpose: clear every command binding/callback and rebuild reverse lookup indices.
  */
 void zInput_BindMapContext::ResetAllBindings() {
@@ -1095,6 +1103,8 @@ void zInput_BindMapContext::ResetAllBindings() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmap-packbindingcode
  * @recoil-artifact defines .text recoil:function:0x470a10: zInput::BindMap_PackBindingCode.
+ * @recoil-match byte
+ *
  * Purpose: pack keyboard, joystick, and mouse binding slots into the bind-map record format.
  */
 int __fastcall zInput::BindMap_PackBindingCode(
@@ -1110,6 +1120,8 @@ int __fastcall zInput::BindMap_PackBindingCode(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getprimarykeyboardkey
  * @recoil-artifact defines .text recoil:function:0x470a40: zInput_BindMapContext::GetPrimaryKeyboardKey.
+ * @recoil-match byte
+ *
  * Purpose: return the primary DIK key packed for a command binding.
  */
 int zInput_BindMapContext::GetPrimaryKeyboardKey(
@@ -1121,6 +1133,8 @@ int zInput_BindMapContext::GetPrimaryKeyboardKey(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getsecondarykeyboardkey
  * @recoil-artifact defines .text recoil:function:0x470a60: zInput_BindMapContext::GetSecondaryKeyboardKey.
+ * @recoil-match byte
+ *
  * Purpose: return the secondary DIK key packed for a command binding.
  */
 int zInput_BindMapContext::GetSecondaryKeyboardKey(
@@ -1132,6 +1146,8 @@ int zInput_BindMapContext::GetSecondaryKeyboardKey(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getjoystickbuttonslot
  * @recoil-artifact defines .text recoil:function:0x470a80: zInput_BindMapContext::GetJoystickButtonSlot.
+ * @recoil-match byte
+ *
  * Purpose: return the joystick button slot packed for a command binding.
  */
 int zInput_BindMapContext::GetJoystickButtonSlot(
@@ -1143,6 +1159,8 @@ int zInput_BindMapContext::GetJoystickButtonSlot(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getmousebuttonslot
  * @recoil-artifact defines .text recoil:function:0x470aa0: zInput_BindMapContext::GetMouseButtonSlot.
+ * @recoil-match byte
+ *
  * Purpose: return the mouse button slot packed for a command binding.
  */
 int zInput_BindMapContext::GetMouseButtonSlot(
@@ -1154,6 +1172,8 @@ int zInput_BindMapContext::GetMouseButtonSlot(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbyprimarykey
  * @recoil-artifact defines .text recoil:function:0x470ac0: zInput_BindMapContext::GetCommandByPrimaryKey.
+ * @recoil-match byte
+ *
  * Purpose: Resolve a primary keyboard key to its command id.
  */
 int zInput_BindMapContext::GetCommandByPrimaryKey(
@@ -1165,6 +1185,8 @@ int zInput_BindMapContext::GetCommandByPrimaryKey(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbysecondarykey
  * @recoil-artifact defines .text recoil:function:0x470ad0: zInput_BindMapContext::GetCommandBySecondaryKey.
+ * @recoil-match byte
+ *
  * Purpose: Resolve a secondary keyboard key to its command id.
  */
 int zInput_BindMapContext::GetCommandBySecondaryKey(
@@ -1176,6 +1198,8 @@ int zInput_BindMapContext::GetCommandBySecondaryKey(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbyanykeyboardkey
  * @recoil-artifact defines .text recoil:function:0x470ae0: zInput_BindMapContext::GetCommandByAnyKeyboardKey.
+ * @recoil-match byte
+ *
  * Purpose: Resolve either keyboard binding slot to its command id.
  */
 int zInput_BindMapContext::GetCommandByAnyKeyboardKey(
@@ -1192,6 +1216,8 @@ int zInput_BindMapContext::GetCommandByAnyKeyboardKey(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbyjoystickslot
  * @recoil-artifact defines .text recoil:function:0x470b00: zInput_BindMapContext::GetCommandByJoystickSlot.
+ * @recoil-match byte
+ *
  * Purpose: Resolve a joystick button slot to its command id.
  */
 int zInput_BindMapContext::GetCommandByJoystickSlot(
@@ -1203,6 +1229,8 @@ int zInput_BindMapContext::GetCommandByJoystickSlot(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-getcommandbymouseslot
  * @recoil-artifact defines .text recoil:function:0x470b10: zInput_BindMapContext::GetCommandByMouseSlot.
+ * @recoil-match byte
+ *
  * Purpose: Return the command id stored for one bind-map mouse slot.
  */
 int zInput_BindMapContext::GetCommandByMouseSlot(
@@ -1214,6 +1242,8 @@ int zInput_BindMapContext::GetCommandByMouseSlot(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setprimarykeybinding
  * @recoil-artifact defines .text recoil:function:0x470b20: zInput_BindMapContext::SetPrimaryKeyBinding.
+ * @recoil-match byte
+ *
  * Purpose: Update a command's primary keyboard binding and reverse lookup slot.
  */
 void zInput_BindMapContext::SetPrimaryKeyBinding(
@@ -1236,6 +1266,8 @@ void zInput_BindMapContext::SetPrimaryKeyBinding(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setsecondarykeybinding
  * @recoil-artifact defines .text recoil:function:0x470b80: zInput_BindMapContext::SetSecondaryKeyBinding.
+ * @recoil-match byte
+ *
  * Purpose: Update a command's secondary keyboard binding and reverse lookup slot.
  */
 void zInput_BindMapContext::SetSecondaryKeyBinding(
@@ -1258,6 +1290,8 @@ void zInput_BindMapContext::SetSecondaryKeyBinding(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setjoystickbinding
  * @recoil-artifact defines .text recoil:function:0x470bf0: zInput_BindMapContext::SetJoystickBinding.
+ * @recoil-match byte
+ *
  * Purpose: Update a command's joystick button binding and reverse lookup slot.
  */
 void zInput_BindMapContext::SetJoystickBinding(
@@ -1280,6 +1314,8 @@ void zInput_BindMapContext::SetJoystickBinding(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setmousebinding
  * @recoil-artifact defines .text recoil:function:0x470c60: zInput_BindMapContext::SetMouseBinding.
+ * @recoil-match byte
+ *
  * Purpose: Update a command's mouse button binding and reverse lookup slot.
  */
 void zInput_BindMapContext::SetMouseBinding(
@@ -1302,6 +1338,8 @@ void zInput_BindMapContext::SetMouseBinding(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setbindingrecord
  * @recoil-artifact defines .text recoil:function:0x470cd0: zInput_BindMapContext::SetBindingRecord.
+ * @recoil-match byte
+ *
  * Purpose: Store one command label and all keyboard, joystick, and mouse binding slots.
  */
 void zInput_BindMapContext::SetBindingRecord(
@@ -1341,6 +1379,8 @@ void zInput_BindMapContext::SetBindingRecord(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-dispatchmousebuttoncallbacks
  * @recoil-artifact defines .text recoil:function:0x470d40: zInput_BindMapContext::DispatchMouseButtonCallbacks.
+ * @recoil-match byte
+ *
  * Purpose: Dispatches pressed mouse-button transitions through bind-map command callbacks.
  */
 void zInput_BindMapContext::DispatchMouseButtonCallbacks() {
@@ -1371,6 +1411,8 @@ void zInput_BindMapContext::DispatchMouseButtonCallbacks() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-dispatchjoystickbuttoncallbacks
  * @recoil-artifact defines .text recoil:function:0x470db0: zInput_BindMapContext::DispatchJoystickButtonCallbacks.
+ * @recoil-match byte
+ *
  * Purpose: Dispatches pressed joystick-button transitions through bind-map command callbacks.
  */
 void zInput_BindMapContext::DispatchJoystickButtonCallbacks() {

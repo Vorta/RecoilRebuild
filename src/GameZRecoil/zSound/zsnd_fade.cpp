@@ -198,6 +198,8 @@ void zSndFadeList::DeleteNodeAndAdvanceCursor(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadelistcursor-popfrontcursor
  * @recoil-artifact defines .text recoil:function:0x4a3e90: zSndFadeListCursor::PopFrontCursor.
+ * @recoil-match byte
+ *
  * Purpose: return the current cursor node and advance the cursor to the next
  * intrusive-list node.
  */

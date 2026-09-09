@@ -138,6 +138,8 @@ namespace zEffect_Anim {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.clearactivationrecords
  * @recoil-artifact defines .text recoil:function:0x4603d0: zEffect_Anim::ClearActivationRecords.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: release the queued activation-record table and reset the record count.
  */
@@ -153,6 +155,8 @@ void __cdecl ClearActivationRecords() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.hasactivationrecord
  * @recoil-artifact defines .text recoil:function:0x460400: zEffect_Anim::HasActivationRecord.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: report whether a queued activation record already targets the same
  * animation name and node token.
@@ -178,6 +182,8 @@ int __fastcall HasActivationRecord(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.getactivationrecordcount
  * @recoil-artifact defines .text recoil:function:0x460470: zEffect_Anim::GetActivationRecordCount.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: return the current number of queued activation records.
  */
@@ -188,6 +194,8 @@ int __cdecl GetActivationRecordCount() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.getactivationrecordat
  * @recoil-artifact defines .text recoil:function:0x460480: zEffect_Anim::GetActivationRecordAt.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: return the queued activation record at the requested table index.
  */
@@ -1309,6 +1317,8 @@ int __fastcall GetActivationRecordPackedSize(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.resetfromactivationrecord
  * @recoil-artifact defines .text recoil:function:0x461840: zEffect_Anim::ResetFromActivationRecord.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: restart the named animation against the node stored in an activation record.
  */
@@ -1485,6 +1495,8 @@ namespace zEffect_Anim {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.discardlastactivationrecord
  * @recoil-artifact defines .text recoil:function:0x461a90: zEffect_Anim::DiscardLastActivationRecord.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
  * Purpose: remove the most recently allocated activation record from the queue.
  */

@@ -188,8 +188,8 @@ struct HudUiElement {
     /**
      * Source model note: Source-faithful helper recovered from address-backed callers in this
      * source file.
- * Purpose: run the recovered HudUiElement::~HudUiElement teardown path.
- */
+     * Purpose: run the recovered HudUiElement::~HudUiElement teardown path.
+     */
 HudUiElement() {
     }
     HudUiElement(
@@ -1118,6 +1118,8 @@ struct HudUiPanel : HudUiTextLabel {
     /**
      * @recoil-anchor recoil:anchor:battlesport.hud.huduipanel-settextcolorsandmarkdirty
      * @recoil-artifact defines .text recoil:function:0x40e010: SetTextColorsAndMarkDirty.
+     * @recoil-match byte
+     *
      * Purpose: Stores the panel text color pair and marks cached text metrics dirty.
      */
     void SetTextColorsAndMarkDirty(
@@ -1132,6 +1134,8 @@ struct HudUiPanel : HudUiTextLabel {
     /**
      * @recoil-anchor recoil:anchor:battlesport.hud.huduipanel-setshadow
      * @recoil-artifact defines .text recoil:function:0x40e040: SetShadow.
+     * @recoil-match byte
+     *
      * Purpose: Stores panel text-shadow state and returns the previous shadow flag.
      */
     unsigned int SetShadow(
@@ -1205,10 +1209,10 @@ struct HudCmdBindingVector {
     HudCmdBindingEntry **limit;
 
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudCmdBindingVector.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudCmdBindingVector.
+     */
 HudCmdBindingVector() {
 #if defined(_MSC_VER) && _MSC_VER < 1200
         char allocatorValue;
@@ -1273,10 +1277,10 @@ struct HudCmdBindingEntry : HudCmdBinding {
      * Purpose: provide default construction for command-binding entry records.
      */
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudCmdBindingEntry.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudCmdBindingEntry.
+     */
 HudCmdBindingEntry() {
     }
 
@@ -1287,10 +1291,10 @@ HudCmdBindingEntry() {
      * Purpose: initialize one command-binding display entry.
      */
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudCmdBindingEntry.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudCmdBindingEntry.
+     */
     HudCmdBindingEntry(
         const char *text,
         int id
@@ -1480,7 +1484,7 @@ struct HudCmdCommandList : HudCmdBindButton {
      * command-list construction as HudCmdBindButtonBase construction followed
      * by compiler-generated table emission.
      * Purpose: construct the command-list bind-button subobject.
-    */
+     */
     HudCmdCommandList() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
@@ -1499,7 +1503,7 @@ struct HudCmdKeyAButton : HudCmdBindButton {
      * key-A button construction as HudCmdBindButtonBase construction followed
      * by compiler-generated table emission.
      * Purpose: construct the primary-key bind-button subobject.
-    */
+     */
     HudCmdKeyAButton() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
@@ -1520,7 +1524,7 @@ struct HudCmdKeyBButton : HudCmdBindButton {
      * key-B button construction as HudCmdBindButtonBase construction followed
      * by compiler-generated table emission.
      * Purpose: construct the secondary-key bind-button subobject.
-    */
+     */
     HudCmdKeyBButton() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
@@ -1541,7 +1545,7 @@ struct HudCmdJoyButton : HudCmdBindButton {
      * joystick button construction as HudCmdBindButtonBase construction
      * followed by compiler-generated table emission.
      * Purpose: construct the joystick bind-button subobject.
-    */
+     */
     HudCmdJoyButton() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
@@ -1562,7 +1566,7 @@ struct HudCmdMouseButton : HudCmdBindButton {
      * mouse button construction as HudCmdBindButtonBase construction followed
      * by compiler-generated table emission.
      * Purpose: construct the mouse bind-button subobject.
-    */
+     */
     HudCmdMouseButton() : HudCmdBindButton() {}
     /**
      * Purpose: preserve the natural implicit lifecycle while ordinary C++
@@ -1835,10 +1839,10 @@ struct HudUiTextInput {
     char keyActionMap[0x100];
 
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiTextInput.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiTextInput.
+     */
 HudUiTextInput() {
     }
     ~HudUiTextInput();
@@ -1871,17 +1875,17 @@ struct HudUiOwnedTextInput : HudUiTextInput {
     HudUiNumericTextInput *owner;
 
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOwnedTextInput.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOwnedTextInput.
+     */
 HudUiOwnedTextInput() {
     }
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOwnedTextInput.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOwnedTextInput.
+     */
 HudUiOwnedTextInput(int bufferSize) : HudUiTextInput(bufferSize),
         owner(0) {
     }
@@ -2545,10 +2549,10 @@ extern char g_HudUiOptionsPanel_SectionName[];
 
 struct HudUiOptionsPanelBackButton : HudUiZrdWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanelBackButton.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanelBackButton.
+     */
 HudUiOptionsPanelBackButton() {
     }
 
@@ -2557,10 +2561,10 @@ HudUiOptionsPanelBackButton() {
 
 struct HudUiOptionsPanel_Lighting : HudUiCheckToggleWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Lighting.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Lighting.
+     */
 HudUiOptionsPanel_Lighting() {
     }
 
@@ -2572,10 +2576,10 @@ HudUiOptionsPanel_Lighting() {
 
 struct HudUiOptionsPanel_Perspective : HudUiCheckToggleWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Perspective.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Perspective.
+     */
 HudUiOptionsPanel_Perspective() {
     }
 
@@ -2587,10 +2591,10 @@ HudUiOptionsPanel_Perspective() {
 
 struct HudUiOptionsPanel_FullHud : HudUiCheckToggleWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_FullHud.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_FullHud.
+     */
 HudUiOptionsPanel_FullHud() {
     }
 
@@ -2601,10 +2605,10 @@ HudUiOptionsPanel_FullHud() {
 
 struct HudUiOptionsPanel_ObjectDetail : HudUiCycleSelectorWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_ObjectDetail.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_ObjectDetail.
+     */
 HudUiOptionsPanel_ObjectDetail() {
     }
 
@@ -2616,10 +2620,10 @@ HudUiOptionsPanel_ObjectDetail() {
 
 struct HudUiOptionsPanel_TextureMemory : HudUiCycleSelectorWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_TextureMemory.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_TextureMemory.
+     */
 HudUiOptionsPanel_TextureMemory() {
     }
 
@@ -2631,10 +2635,10 @@ HudUiOptionsPanel_TextureMemory() {
 
 struct HudUiOptionsPanel_Effects : HudUiCycleSelectorWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Effects.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Effects.
+     */
 HudUiOptionsPanel_Effects() {
     }
 
@@ -2646,10 +2650,10 @@ HudUiOptionsPanel_Effects() {
 
 struct HudUiOptionsPanel_SoundActive : HudUiCheckToggleWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundActive.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundActive.
+     */
 HudUiOptionsPanel_SoundActive() {
     }
 
@@ -2661,10 +2665,10 @@ HudUiOptionsPanel_SoundActive() {
 
 struct HudUiOptionsPanel_SoundQuality : HudUiCycleSelectorWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundQuality.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundQuality.
+     */
 HudUiOptionsPanel_SoundQuality() {
     }
 
@@ -2676,10 +2680,10 @@ HudUiOptionsPanel_SoundQuality() {
 
 struct HudUiOptionsPanel_SoundVolume : HudUiFillBitmapSlider {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundVolume.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundVolume.
+     */
 HudUiOptionsPanel_SoundVolume() {
     }
 
@@ -2690,10 +2694,10 @@ HudUiOptionsPanel_SoundVolume() {
 
 struct HudUiOptionsPanel_MusicEnable : HudUiCheckToggleWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicEnable.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicEnable.
+     */
 HudUiOptionsPanel_MusicEnable() {
     }
 
@@ -2704,10 +2708,10 @@ HudUiOptionsPanel_MusicEnable() {
 
 struct HudUiOptionsPanel_MusicVolume : HudUiFillBitmapSlider {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicVolume.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicVolume.
+     */
 HudUiOptionsPanel_MusicVolume() {
     }
 
@@ -2718,10 +2722,10 @@ HudUiOptionsPanel_MusicVolume() {
 
 struct HudUiOptionsPanel_Resolution : HudUiCycleSelectorWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Resolution.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Resolution.
+     */
 HudUiOptionsPanel_Resolution() {
     }
 
@@ -2960,10 +2964,10 @@ struct HudUiPanelSpanVec {
     typedef const HudUiPanelSpan *const_iterator;
 
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: preserve the recovered HUD behavior for HudUiPanelSpanVec.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
+     * Purpose: preserve the recovered HUD behavior for HudUiPanelSpanVec.
+     */
     HudUiPanelSpanVec() {
 #if defined(_MSC_VER) && _MSC_VER < 1200
         char allocatorProxyValue;
@@ -3084,7 +3088,7 @@ struct HudUiCreditsPanel : HudUiBackground {
     /**
      * Purpose: let ordinary C++ lifetime rules tear down the credits widgets
      * and background base in reverse construction order.
-    */
+     */
     ~HudUiCreditsPanel();
     virtual void UpdateAll(float deltaSeconds);
 };

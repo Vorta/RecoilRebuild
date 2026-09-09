@@ -780,10 +780,10 @@ extern "C" const char kClampedIntTextInputAcceptedRawKeyChars[] = "0123456789\x1
 template <typename T> class FieldAt {
   public:
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
- * Purpose: preserve the recovered HUD behavior for FieldAt.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
+     * Purpose: preserve the recovered HUD behavior for FieldAt.
+     */
 FieldAt(
         void *base,
         size_t offset
@@ -791,10 +791,10 @@ FieldAt(
         : address((T *)((unsigned char *)(base) + offset)) {}
 
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
- * Purpose: preserve the recovered HUD behavior for FieldAt.
- */
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
+     * Purpose: preserve the recovered HUD behavior for FieldAt.
+     */
 FieldAt(
         const void *base,
         size_t offset
@@ -1943,6 +1943,8 @@ HudUiElement & HudUiElement::operator=(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduielement-invalidate
  * @recoil-artifact defines .text recoil:function:0x4b4180: HudUiElement::Invalidate.
+ * @recoil-match byte
+ *
  * Purpose: mark the element dirty by OR-ing the current HUD invalidation mask into its flags.
  */
 void HudUiElement::Invalidate() {
@@ -1952,6 +1954,8 @@ void HudUiElement::Invalidate() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduielement-setbltsourceandcliprect
  * @recoil-artifact defines .text recoil:function:0x4b4190: HudUiElement::SetBltSourceAndClipRect.
+ * @recoil-match byte
+ *
  * Purpose: apply the recovered HUD state change handled by HudUiElement::SetBltSourceAndClipRect.
  */
 void HudUiElement::SetBltSourceAndClipRect(
@@ -1965,6 +1969,8 @@ void HudUiElement::SetBltSourceAndClipRect(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduielement-setcliprect
  * @recoil-artifact defines .text recoil:function:0x4b41b0: HudUiElement::SetClipRect.
+ * @recoil-match byte
+ *
  * Purpose: replace the element clip rectangle when a source rectangle is supplied.
  * Binary Ninja: 0x4b41b0 returns immediately for a null argument; otherwise it
  * copies the four HudUiRect fields into the clipRect member at offset 0x20.
@@ -2051,6 +2057,8 @@ void HudUiElement::SetTimer(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduielement-gettextrect
  * @recoil-artifact defines .text recoil:function:0x4b42c0: HudUiElement::GetTextRect.
+ * @recoil-match byte
+ *
  * Purpose: fill a degenerate rectangle from the element position.
  * Binary Ninja: 0x4b42c0 dispatches the HudUiElement virtual GetCenterX and GetCenterY
  * methods from the base text-rectangle slot, then writes right/left and
@@ -3049,6 +3057,8 @@ void HudUiCheckToggleWidget::DestructorCore() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduichecktogglewidget-getboundsrectornull
  * @recoil-artifact defines .text recoil:function:0x4b70b0: HudUiCheckToggleWidget::GetBoundsRectOrNull.
+ * @recoil-match byte
+ *
  * Purpose: return the recovered HUD value exposed by HudUiCheckToggleWidget::GetBoundsRectOrNull.
  */
 HudUiRect * HudUiCheckToggleWidget::GetBoundsRectOrNull() {
@@ -3119,6 +3129,8 @@ void HudUiCheckToggleWidget::RefreshState() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduichecktogglewidget-showpreview
  * @recoil-artifact defines .text recoil:function:0x4b7210: HudUiCheckToggleWidget::ShowPreview.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::ShowPreview.
  */
 void HudUiCheckToggleWidget::ShowPreview() {
@@ -3136,6 +3148,8 @@ void HudUiCheckToggleWidget::ShowPreview() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduichecktogglewidget-hidepreview
  * @recoil-artifact defines .text recoil:function:0x4b7250: HudUiCheckToggleWidget::HidePreview.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::HidePreview.
  */
 void HudUiCheckToggleWidget::HidePreview() {
@@ -3452,6 +3466,8 @@ void HudUiCycleSelectorWidget::DestructorCore() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-update
  * @recoil-artifact defines .text recoil:function:0x4b7e60: HudUiCycleSelectorWidget::Update.
+ * @recoil-match byte
+ *
  * Purpose: advance the recovered HUD update path for HudUiCycleSelectorWidget::Update.
  */
 void HudUiCycleSelectorWidget::Update(
@@ -3505,6 +3521,7 @@ void HudUiCycleSelectorWidget::AdvanceSelectionAndActivate() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-setindexclamped
  * @recoil-artifact defines .text recoil:function:0x4b7f20: HudUiCycleSelectorWidget::SetIndexClamped.
+ * @recoil-match byte
  *
  * Purpose: clamp a requested cycle-selector index and return the previous
  * selected index.
@@ -3541,6 +3558,8 @@ int HudUiCycleSelectorWidget::SetIndexClamped(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-setvisiblerange
  * @recoil-artifact defines .text recoil:function:0x4b7f80: HudUiCycleSelectorWidget::SetVisibleRange.
+ * @recoil-match byte
+ *
  * Purpose: set the visible selector range and clamp the selected entry into it.
  */
 void HudUiCycleSelectorWidget::SetVisibleRange(
@@ -3613,6 +3632,7 @@ void HudUiCycleSelectorWidget::AddTextEntry(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-applyfontstyleforentry
  * @recoil-artifact defines .text recoil:function:0x4b8100: HudUiCycleSelectorWidget::ApplyFontStyleForEntry.
+ * @recoil-match byte
  *
  * Purpose: grow the selector entry range when needed, validate the owning
  * background font style, and copy that style onto the text-panel entry.
@@ -4071,6 +4091,8 @@ HudUiZrdWidgetEx17C_Item::~HudUiZrdWidgetEx17C_Item() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduizrdwidgetex17c-item-showpreviewifnotselected
  * @recoil-artifact defines .text recoil:function:0x4b87d0: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected.
  */
 void HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected() {
@@ -4224,6 +4246,8 @@ int HudUiZrdWidgetEx17C_Item::LoadFromZrd(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduizrdwidgetex17c-item-setselected
  * @recoil-artifact defines .text recoil:function:0x4b8a90: HudUiZrdWidgetEx17C_Item::SetSelected
+ * @recoil-match byte
+ *
  * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C_Item.cpp.
  * Purpose: Record the option-item selected state and refresh the displayed image pair when enabled.
  */
@@ -4249,6 +4273,8 @@ void HudUiZrdWidgetEx17C_Item::SetSelected(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduizrdwidgetex17c-item-getmouserectorbounds
  * @recoil-artifact defines .text recoil:function:0x4b8af0: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds.
+ * @recoil-match byte
+ *
  * Purpose: return the recovered HUD value exposed by HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds.
  */
 HudUiRect * HudUiZrdWidgetEx17C_Item::GetBoundsRectOrNull() {
@@ -4590,6 +4616,8 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-hudcmdbindbuttonbase-onselectedindexchanged
  * @recoil-artifact defines .text recoil:function:0x4b9320: HudCmdBindButtonBase::OnSelectedIndexChanged.
+ * @recoil-match byte
+ *
  * Purpose: handle the recovered HUD event path for HudCmdBindButtonBase::OnSelectedIndexChanged.
  */
 void HudCmdBindButtonBase::OnSelectionChangedRefresh(
@@ -4601,6 +4629,8 @@ void HudCmdBindButtonBase::OnSelectionChangedRefresh(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-hudcmdbindbuttonbase-setselectedentry
  * @recoil-artifact defines .text recoil:function:0x4b9330: HudCmdBindButtonBase::SetSelectedEntry.
+ * @recoil-match byte
+ *
  * Purpose: apply the recovered HUD state change handled by HudCmdBindButtonBase::SetSelectedEntry.
  */
 void HudCmdBindButtonBase::SetSelectedEntry(
@@ -4760,6 +4790,8 @@ HudUiBackground::~HudUiBackground() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduibackground-setenabled
  * @recoil-artifact defines .text recoil:function:0x4b9850: HudUiBackground::SetEnabled.
+ * @recoil-match byte
+ *
  * Purpose: start or stop configured background sounds and update background visibility state.
  */
 void HudUiBackground::SetEnabled(
@@ -4797,6 +4829,8 @@ void HudUiBackground::SetEnabled(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduibackground-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x4b98d0: HudUiBackground::LoadFromZrd.
+ * @recoil-match byte
+ *
  * Purpose: load the recovered HUD data handled by HudUiBackground::LoadFromZrd.
  */
 zReader::Node * HudUiBackground::LoadFromZrd(
@@ -5149,6 +5183,8 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduibackground-bindbuttonsnodetowidgetbyname
  * @recoil-artifact defines .text recoil:function:0x4ba070: HudUiBackground::BindButtonsNodeToWidgetByName.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiBackground::BindButtonsNodeToWidgetByName.
  */
 unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
@@ -5180,6 +5216,8 @@ unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduibackground-bindwidgetbyname
  * @recoil-artifact defines .text recoil:function:0x4ba0c0: HudUiBackground::BindWidgetByName.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiBackground::BindWidgetByName.
  */
 int HudUiBackground::BindWidgetByName(
@@ -5360,6 +5398,8 @@ int HudUiBackground::BindPrimitiveNodeToElement(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduibackground-freeloadedtreeroots
  * @recoil-artifact defines .text recoil:function:0x4ba350: HudUiBackground::FreeLoadedTreeRoots.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiBackground::FreeLoadedTreeRoots.
  */
 void HudUiBackground::FreeLoadedTreeRoots(
@@ -5377,6 +5417,8 @@ void HudUiBackground::FreeLoadedTreeRoots(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduidialogcontroller-blitownedsurfacetoprimary
  * @recoil-artifact defines .text recoil:function:0x4ba380: HudUiDialogController::BlitOwnedSurfaceToPrimary.
+ * @recoil-match byte
+ *
  * Purpose: blit the captured dialog image back to the active primary target.
  */
 void HudUiDialogController::BlitOwnedSurfaceToPrimary() {
@@ -5394,6 +5436,8 @@ void HudUiDialogController::BlitOwnedSurfaceToPrimary() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicontainer-invalidatechildren
  * @recoil-artifact defines .text recoil:function:0x4ba3a0: HudUiContainer::InvalidateChildren.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiContainer::InvalidateChildren.
  */
 void HudUiContainer::InvalidateChildren() {
@@ -5405,6 +5449,8 @@ void HudUiContainer::InvalidateChildren() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-setnormalizedvalue
  * @recoil-artifact defines .text recoil:function:0x4ba3c0: HudUiFillBitmap::SetNormalizedValue.
+ * @recoil-match byte
+ *
  * Purpose: apply the recovered HUD state change handled by HudUiFillBitmap::SetNormalizedValue.
  */
 void HudUiFillBitmap::SetNormalizedValueAndRebuild(
@@ -5437,6 +5483,8 @@ void HudUiOwnedTextInput::OnAccept() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-getwraprect
  * @recoil-artifact defines .text recoil:function:0x4ba400: HudUiPanel::GetWrapRect.
+ * @recoil-match byte
+ *
  * Purpose: Returns the panel word-wrap rectangle storage.
  */
 HudUiRect * HudUiPanel::GetBoundsRectOrNull() {
@@ -5465,6 +5513,8 @@ void HudUiListSelectorItem::Draw() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-hudfontstyle-hudfontstyle
  * @recoil-artifact defines .text recoil:function:0x4ba4a0: HudFontStyle::HudFontStyle.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudFontStyle::HudFontStyle.
  */
 HudFontStyle::HudFontStyle() {
@@ -6247,6 +6297,8 @@ void __cdecl HudUiPanel::SetTextFmtV(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-settext
  * @recoil-artifact defines .text recoil:function:0x4bb680: HudUiPanel::SetText.
+ * @recoil-match byte
+ *
  * Purpose: copy literal panel text and refresh cached panel text state when
  * the content changes.
  */
@@ -6293,6 +6345,8 @@ void HudUiPanel::SetText(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-querytextheight
  * @recoil-artifact defines .text recoil:function:0x4bb710: HudUiPanel::QueryTextHeight.
+ * @recoil-match byte
+ *
  * Purpose: return the panel text height without external leading after rebuilding dirty text metrics.
  */
 int HudUiPanel::QueryTextHeight() {
@@ -6306,6 +6360,8 @@ int HudUiPanel::QueryTextHeight() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-gettextrect
  * @recoil-artifact defines .text recoil:function:0x4bb740: HudUiPanel::GetTextRect.
+ * @recoil-match byte
+ *
  * Purpose: report the inherited element rectangle extended to the current rendered panel text dimensions.
  */
 void HudUiPanel::GetTextRect(
@@ -6376,6 +6432,8 @@ HudUiCompositePanel::HudUiCompositePanel(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-update
  * @recoil-artifact defines .text recoil:function:0x4bb980: HudUiCompositePanel::Update.
+ * @recoil-match byte
+ *
  * Purpose: tick flash state for each visible composite-panel entry.
  */
 void HudUiCompositePanel::Update(
@@ -6391,9 +6449,10 @@ void HudUiCompositePanel::Update(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-setpos
  * @recoil-artifact defines .text recoil:function:0x4bb9f0: HudUiCompositePanel::SetPos.
+ * @recoil-match byte
+ *
  * Purpose: position the composite panel and lay out each text entry below the
  * panel origin.
- *
  * Evidence: BN table g_HudUiCompositePanel_FTable stores 0x4bb9f0 in slot 3,
  * the inherited HudUiElement::SetPos slot; the body writes x/y, invalidates,
  * measures one entry height, and dispatches SetPos on each transition entry.
@@ -6421,6 +6480,8 @@ void HudUiCompositePanel::SetPos(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-settextfmt
  * @recoil-artifact defines .text recoil:function:0x4bbaa0: HudUiCompositePanel::SetTextFmt.
+ * @recoil-match byte
+ *
  * Purpose: format text into the next composite-panel history entry.
  */
 void __cdecl HudUiCompositePanel::SetTextFmt(
@@ -6442,6 +6503,8 @@ void __cdecl HudUiCompositePanel::SetTextFmt(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-settextfmtv
  * @recoil-artifact defines .text recoil:function:0x4bbac0: HudUiCompositePanel::SetTextFmtV.
+ * @recoil-match byte
+ *
  * Purpose: write formatted text into the active composite entry and scroll
  * history as needed.
  */
@@ -6461,6 +6524,8 @@ void __cdecl HudUiCompositePanel::SetTextFmtV(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-scrollhistory
  * @recoil-artifact defines .text recoil:function:0x4bbb20: HudUiCompositePanel::ScrollHistory.
+ * @recoil-match byte
+ *
  * Purpose: shift composite text history entries and keep the newest entry
  * active.
  */
@@ -6484,6 +6549,8 @@ void HudUiCompositePanel::ScrollHistory() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-setfont
  * @recoil-artifact defines .text recoil:function:0x4bbbe0: HudUiCompositePanel::SetFont.
+ * @recoil-match byte
+ *
  * Purpose: apply font parameters to all composite-panel entries and relayout
  * the panel.
  */
@@ -6560,6 +6627,8 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-reapplyentrycount
  * @recoil-artifact defines .text recoil:function:0x4bbe90: HudUiCompositePanel::ReapplyEntryCount.
+ * @recoil-match byte
+ *
  * Purpose: reapply the current composite-entry count after vector changes.
  */
 void HudUiCompositePanel::ReapplyEntryCount() {

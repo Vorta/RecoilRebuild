@@ -77,6 +77,8 @@ RECOIL_NO_GS int __cdecl GetCpuMhz() {
  * @recoil-artifact defines .text recoil:function:0x4b33f0: zSys::HasCpuidSupport.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.has-cpuid-support
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.has-cpuid-support
+ * @recoil-match byte
+ *
  * Purpose: reports whether the processor supports toggling the CPUID EFLAGS ID
  * bit; VC5 C++ cannot express the required flag mutation, so this documented
  * raw-assembly CPU-probe exception keeps the retail EFLAGS sequence local.
@@ -108,6 +110,8 @@ unsigned short __cdecl HasCpuidSupport() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-detectcpuclassandfeatures
  * @recoil-artifact defines .text recoil:function:0x4b3420: zSys::DetectCpuClassAndFeatures.
+ * @recoil-match byte
+ *
  * Purpose: classifies the CPU family and carries the non-Intel marker in bit 15.
  */
 int __cdecl DetectCpuClassAndFeatures() {
@@ -216,6 +220,8 @@ unsigned int __cdecl ReadCpuidFeatureFlags() {
  * @recoil-artifact defines .text recoil:function:0x4b3510: zSys::ProbeDivZeroFlagBehavior.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.probe-div-zero-flag-behavior
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.probe-div-zero-flag-behavior
+ * @recoil-match byte
+ *
  * Purpose: observe legacy DIV flag behavior; VC5 C++ cannot expose the needed
  * FLAGS result, so this documented raw-assembly CPU-probe exception keeps the
  * flag sequence local to the probe.
@@ -251,6 +257,8 @@ int __cdecl ProbeDivZeroFlagBehavior() {
  * @recoil-artifact defines .text recoil:function:0x4b3550: zSys::DetectIs8086ByEflagsHiBits.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.detect-is-8086-by-eflags-hi-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.detect-is-8086-by-eflags-hi-bits
+ * @recoil-match byte
+ *
  * Purpose: classify 8086-style FLAGS high-bit behavior; VC5 C++ cannot read and
  * restore those flags directly, so this documented raw-assembly CPU-probe
  * exception keeps the exact flag sequence local.
@@ -289,6 +297,8 @@ int __cdecl DetectIs8086ByEflagsHiBits() {
  * @recoil-artifact defines .text recoil:function:0x4b35a0: zSys::DetectIs80286ByEflagsHiBits.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.detect-is-80286-by-eflags-hi-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.detect-is-80286-by-eflags-hi-bits
+ * @recoil-match byte
+ *
  * Purpose: classify 80286-style FLAGS high-bit behavior; VC5 C++ cannot read
  * and restore those flags directly, so this documented raw-assembly CPU-probe
  * exception keeps the exact flag sequence local.
@@ -326,6 +336,8 @@ int __cdecl DetectIs80286ByEflagsHiBits() {
  * @recoil-artifact defines .text recoil:function:0x4b35f0: zSys::DetectIs80386ByAcFlag.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.detect-is-80386-by-ac-flag
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.detect-is-80386-by-ac-flag
+ * @recoil-match byte
+ *
  * Purpose: classify 80386-style AC-flag behavior; VC5 C++ cannot toggle and
  * restore EFLAGS directly, so this documented raw-assembly CPU-probe exception
  * keeps the exact flag and stack-alignment sequence local.
@@ -959,6 +971,8 @@ namespace zSys {
  * @recoil-artifact defines .text recoil:function:0x4b3b00: zSys::ReadCmosRtcSecondsBcd.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.read-cmos-rtc-seconds-bcd
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.read-cmos-rtc-seconds-bcd
+ * @recoil-match byte
+ *
  * Purpose: read the CMOS RTC seconds byte for CPU timing; VC5 C++ cannot issue
  * the required port I/O, so this documented raw-assembly CPU timing exception
  * keeps the address-scoped IN/OUT sequence local.
@@ -985,6 +999,8 @@ unsigned int __cdecl ReadCmosRtcSecondsBcd() {
  * @recoil-artifact defines .text recoil:function:0x4b3b20: zSys::ReadTsc64.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.read-tsc64
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.read-tsc64
+ * @recoil-match byte
+ *
  * Purpose: read the split 64-bit timestamp counter; VC5 C++ has no RDTSC
  * intrinsic, so this documented raw-assembly CPU timing exception emits the
  * opcode and stores the fixed-register result directly.
@@ -1189,6 +1205,8 @@ namespace zSys {
  * @recoil-artifact defines .text recoil:function:0x4b3ca0: zSys::Sub64.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.sub64
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.sub64
+ * @recoil-match byte
+ *
  * Purpose: subtract split 64-bit CPU timing values with the retail borrow and
  * register-store sequence; VC5 C++ did not preserve that byte shape, so this
  * documented raw-assembly CPU timing exception keeps the address-scoped

@@ -9,10 +9,11 @@
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-getbyindexordefault
  * @recoil-artifact defines .text recoil:function:0x46efc0: zImage_Font::GetByIndexOrDefault.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: return a requested font table slot, falling back to slot 0 when
  * the requested slot is empty.
- *
  * Evidence: BN performs one g_zImage_FontTable indexed load, tests it, and
  * loads g_zImage_FontTable[0] only on the null-slot path.
  */

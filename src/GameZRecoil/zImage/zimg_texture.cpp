@@ -206,11 +206,12 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdirentrytoindex
  * @recoil-artifact defines .text recoil:function:0x46d310: zImage::TexDirEntryToIndex.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
  * Purpose: convert a texture-directory entry pointer to its serialized table
  * index.
- *
  * Evidence: BN returns -1 for a null entry pointer and otherwise subtracts the
  * fixed g_zImage_TexDirEntries table base from the entry pointer.
  */
@@ -227,11 +228,12 @@ int __fastcall TexDirEntryToIndex(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texindextodirentry
  * @recoil-artifact defines .text recoil:function:0x46d340: zImage::TexIndexToDirEntry.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
  * Purpose: restore a serialized texture-directory index to a table entry
  * pointer.
- *
  * Evidence: BN maps -1 back to null and otherwise indexes the fixed
  * g_zImage_TexDirEntries table directly.
  */
@@ -360,11 +362,12 @@ int __fastcall ReadTextureDirectory(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-getdefaultimagerefptr
  * @recoil-artifact defines .text recoil:function:0x46d4c0: zImage::GetDefaultImageRefPtr.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
  * Purpose: expose the default image pointer through the texture-directory
  * entry reference shape expected by legacy callers.
- *
  * Evidence: BN returns the address of the initialized default texture-directory
  * record without touching additional state.
  */
@@ -553,6 +556,8 @@ namespace zVid_TexturePack {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-texturepack-shutdownbuiltinpacks
  * @recoil-artifact defines .text recoil:function:0x46d6b0: zVid_TexturePack::ShutdownBuiltinPacks.
+ * @recoil-match byte
+ *
  * Purpose: provide the recovered zVid_TexturePack::ShutdownBuiltinPacks behavior.
  */
 void __cdecl ShutdownBuiltinPacks() {
@@ -579,10 +584,11 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-shutdowntexturedirectoryruntime
  * @recoil-artifact defines .text recoil:function:0x46d730: zImage::ShutdownTextureDirectoryRuntime.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
  * Purpose: close open built-in texture-pack file handles and return the
  * current built-in texture-pack count.
- *
  * Evidence: BN reloads g_zVid_BuiltinTexturePackCount after each iteration,
  * walks g_zVid_BuiltinTexturePacks using the zVidTexturePackEntry stride,
  * calls fclose for non-null fileHandle values, clears each closed handle, and
@@ -607,6 +613,8 @@ namespace zVid_TexturePack {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-texturepack-shutdown
  * @recoil-artifact defines .text recoil:function:0x46d780: zVid_TexturePack::Shutdown.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Purpose: release the dynamically loaded texture-pack bank.
  */
@@ -732,6 +740,8 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdir-findorcreatebypath
  * @recoil-artifact defines .text recoil:function:0x46d900: zImage::TexDir_FindOrCreateByPath.
+ * @recoil-match byte
+ *
  * Purpose: load or reuse the texture-directory image for a path.
  * Evidence: BN calls the dynamic texture-pack lookup first, then the builtin
  * lookup, and clears zero-alpha pixels on a loaded image before returning it.
@@ -1238,10 +1248,11 @@ void __fastcall InvalidateLoadedVariantChain(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdirentrypartial-getvariantimageatindex
  * @recoil-artifact defines .text recoil:function:0x46e290: zImage_TexDirEntryPartial::GetVariantImageAtIndex.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
  * Purpose: return the requested image from a texture-directory variant chain.
- *
  * Evidence: BN treats this as a zImage_TexDirEntry member leaf: null self
  * returns g_zImage_DefaultImage, non-positive indexes return this->image,
  * and positive indexes walk nextVariant at offset 0x20 until the index or
@@ -1794,10 +1805,11 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-shutdownsubsystem
  * @recoil-artifact defines .text recoil:function:0x46eb90: zImage::ShutdownSubsystem.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Purpose: provide the subsystem shutdown entry point that delegates to
  * zImage::Shutdown and reports success.
- *
  * Evidence: BN assembly contains only the zImage::Shutdown call followed by
  * zero return value setup.
  */
@@ -1811,9 +1823,10 @@ namespace zImg {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimg-init
  * @recoil-artifact defines .text recoil:function:0x46eba0: zImg::Init.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Purpose: initialize the zImage texture-directory runtime and report success.
- *
  * Evidence: BN assembly is a single call to zImage::InitTextureDirectory
  * followed by return value 1; this is a namespace-level wrapper, not a class
  * method or table-dispatch shape.
@@ -1847,10 +1860,11 @@ int __cdecl Shutdown() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-initmissionresources
  * @recoil-artifact defines .text recoil:function:0x46ebd0: zImage_InitMissionResources.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Purpose: create the mission resource search-path list on first use and
  * append later paths to the existing list.
- *
  * Evidence: BN loads g_zImage_MissionSearchPathList, creates a new list when
  * it is null, otherwise passes the existing list and incoming path to
  * zUtil::ZRDR_AddSearchPaths, then returns 0.
@@ -1890,6 +1904,8 @@ zVidImagePartial *__cdecl Create() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-image-querybytesperpixel
  * @recoil-artifact defines .text recoil:function:0x46ec20: zVid_Image::QueryBytesPerPixel.
+ * @recoil-match byte
+ *
  * Purpose: provide the recovered zVid_Image::QueryBytesPerPixel behavior.
  */
 int __fastcall QueryBytesPerPixel(
@@ -1901,6 +1917,8 @@ int __fastcall QueryBytesPerPixel(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-image-setheaderflagsbyte
  * @recoil-artifact defines .text recoil:function:0x46ec30: zVid_Image::SetHeaderFlagsByte.
+ * @recoil-match byte
+ *
  * Purpose: provide the recovered zVid_Image::SetHeaderFlagsByte behavior.
  */
 int __fastcall SetHeaderFlagsByte(
@@ -1914,6 +1932,8 @@ int __fastcall SetHeaderFlagsByte(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-image-querypixeldatabytes
  * @recoil-artifact defines .text recoil:function:0x46ec40: zVid_Image::QueryPixelDataBytes.
+ * @recoil-match byte
+ *
  * Purpose: provide the recovered zVid_Image::QueryPixelDataBytes behavior.
  */
 int __fastcall QueryPixelDataBytes(
@@ -1929,6 +1949,8 @@ int __fastcall QueryPixelDataBytes(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-image-setformatcode
  * @recoil-artifact defines .text recoil:function:0x46ec60: zVid_Image::SetFormatCode.
+ * @recoil-match byte
+ *
  * Purpose: provide the recovered zVid_Image::SetFormatCode behavior.
  */
 int __fastcall SetFormatCode(
@@ -2181,6 +2203,8 @@ int __fastcall ReadData(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-image-readfromfile
  * @recoil-artifact defines .text recoil:function:0x46ef70: zVid_Image::ReadFromFile.
+ * @recoil-match byte
+ *
  * Purpose: provide the recovered zVid_Image::ReadFromFile behavior.
  */
 zVidImagePartial *__fastcall ReadFromFile(

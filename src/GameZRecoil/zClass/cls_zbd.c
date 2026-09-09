@@ -394,6 +394,8 @@ namespace GameZ_ZBD {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.nodeptrtoindex
      * @recoil-artifact defines .text recoil:function:0x454370: GameZ_ZBD::NodePtrToIndex
+     * @recoil-match byte
+     *
      * Purpose: convert a node pointer in the ZBD node table to its slot index.
      */
     int __fastcall NodePtrToIndex(zClass_NodePartial * node) {
@@ -409,6 +411,8 @@ namespace zClass {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.nodeptrtovalidatedindex
      * @recoil-artifact defines .text recoil:function:0x4543a0: zClass::NodePtrToValidatedIndex
+     * @recoil-match byte
+     *
      * Purpose: convert a node-array pointer to its index only when the slot is
      * marked live in the ZBD node table.
      */
@@ -426,6 +430,8 @@ namespace GameZ_ZBD {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.nodeindextoptr
      * @recoil-artifact defines .text recoil:function:0x4543d0: GameZ_ZBD::NodeIndexToPtr
+     * @recoil-match byte
+     *
      * Purpose: convert a non-negative ZBD node table index back to its node
      * pointer.
      */
@@ -1648,6 +1654,8 @@ namespace GameZ_ZBD {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.reloaddisplayinstancesfromcurrentpath-local
      * @recoil-artifact defines .text recoil:function:0x455730: GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local.
+     * @recoil-match byte
+     *
      * Evidence: BN name/source-file comment and caller shape open the current
      * ZBD path, then delegate display-instance replacement to 0x4557a0.
      * Purpose: reload display instances for a node subtree from the current ZBD.

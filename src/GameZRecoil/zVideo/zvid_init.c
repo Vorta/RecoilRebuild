@@ -662,6 +662,8 @@ namespace zVid {
 /**
  * @recoil-anchor recoil:anchor:zvid.accepted-hardware-renderer-count
  * @recoil-artifact defines .text recoil:function:0x4a7470: Public renderer-count accessor.
+ * @recoil-match byte
+ *
  * Purpose: expose the backend's accepted renderer count through the video API.
  * Retail callers use this entry, which tail-calls the distinct cached getter.
  * The descriptive spelling follows the existing API family; it is not recovered
