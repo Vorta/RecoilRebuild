@@ -382,7 +382,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         baseName
     );
 
-    zReader::Node *const root = zReader::LoadNodeFromPath(
+    zReader::Node *const root = zReader::Load(
         path,
         0,
         0
@@ -391,7 +391,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         return 0;
     }
 
-    zReader::Node *versionNode = zReader_GetNamedNode(
+    zReader::Node *versionNode = zRdrGetNode(
         root,
         g_AINet_VersionFieldName
     );
@@ -408,7 +408,7 @@ AINet *__fastcall AINet::LoadFromZrd(
     AINet *const aiNet = AINet::Alloc();
     aiNet->netId = netId;
 
-    zReader::Node *nameNode = zReader_GetNamedNode(
+    zReader::Node *nameNode = zRdrGetNode(
         root,
         g_AINet_NameFieldName
     );
@@ -425,7 +425,7 @@ AINet *__fastcall AINet::LoadFromZrd(
     }
 
     char token[0x18];
-    zReader::Node *typeNode = zReader_GetNamedNode(root, g_AINet_TypeFieldName);
+    zReader::Node *typeNode = zRdrGetNode(root, g_AINet_TypeFieldName);
     if (typeNode != 0) {
         strcpy(
             token,
@@ -462,7 +462,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->aiType = AINET_TYPE_ST;
     }
 
-    zReader::Node *pathWidthNode = zReader_GetNamedNode(
+    zReader::Node *pathWidthNode = zRdrGetNode(
         root,
         g_AINet_PathWidthFieldName
     );
@@ -472,7 +472,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->pathWidth = 10.0f;
     }
 
-    zReader::Node *activateRadiusNode = zReader_GetNamedNode(
+    zReader::Node *activateRadiusNode = zRdrGetNode(
         root,
         g_AINet_ActivateRadiusFieldName
     );
@@ -480,7 +480,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->activateRadius = activateRadiusNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *attackRadiusNode = zReader_GetNamedNode(
+    zReader::Node *attackRadiusNode = zRdrGetNode(
         root,
         g_AINet_AttackRadiusFieldName
     );
@@ -488,7 +488,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->attackRadius = attackRadiusNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *attackDwellNode = zReader_GetNamedNode(
+    zReader::Node *attackDwellNode = zRdrGetNode(
         root,
         g_AINet_AttackDwellFieldName
     );
@@ -496,12 +496,12 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->attackDwell = attackDwellNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *pursuitNode = zReader_GetNamedNode(
+    zReader::Node *pursuitNode = zRdrGetNode(
         root,
         g_AINet_PursuitParamsFieldName
     );
     if (pursuitNode == 0) {
-        pursuitNode = zReader_GetNamedNode(
+        pursuitNode = zRdrGetNode(
             root,
             g_AINet_PursuitRangeFieldName
         );
@@ -511,7 +511,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->pursuitParam1 = pursuitNode->value.nodes[2].value.f32;
     }
 
-    zReader::Node *notPursuitDwellNode = zReader_GetNamedNode(
+    zReader::Node *notPursuitDwellNode = zRdrGetNode(
         root,
         g_AINet_NotPursuitDwellFieldName
     );
@@ -519,7 +519,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->notPursuitDwell = notPursuitDwellNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *returnRangeNode = zReader_GetNamedNode(
+    zReader::Node *returnRangeNode = zRdrGetNode(
         root,
         g_AINet_ReturnRangeFieldName
     );
@@ -527,7 +527,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->returnRange = returnRangeNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node *hideTimesNode = zReader_GetNamedNode(
+    zReader::Node *hideTimesNode = zRdrGetNode(
         root,
         g_AINet_HideTimesFieldName
     );
@@ -539,7 +539,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->hideTime1 = 4.0f;
     }
 
-    zReader::Node *attackBuddyNode = zReader_GetNamedNode(
+    zReader::Node *attackBuddyNode = zRdrGetNode(
         root,
         g_AINet_AttackBuddyFieldName
     );
@@ -549,7 +549,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->attackBuddyNetId = 0;
     }
 
-    zReader::Node *activateBuddyNode = zReader_GetNamedNode(
+    zReader::Node *activateBuddyNode = zRdrGetNode(
         root,
         g_AINet_ActivateBuddyFieldName
     );
@@ -559,7 +559,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->attackBuddyNetId = 0;
     }
 
-    zReader::Node *attackStrategyNode = zReader_GetNamedNode(
+    zReader::Node *attackStrategyNode = zRdrGetNode(
         root,
         g_AINet_AttackStrategyFieldName
     );
@@ -618,7 +618,7 @@ AINet *__fastcall AINet::LoadFromZrd(
             nodeIndex
         );
 
-        zReader::Node *node = zReader_GetNamedNode(
+        zReader::Node *node = zRdrGetNode(
             root,
             nodeName
         );
@@ -654,7 +654,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         aiNet->nodeListHead,
         aiNet->pathWidth
     );
-    zReader::FreeLoadedTree(root);
+    zReader::Free(root);
     return aiNet;
 }
 

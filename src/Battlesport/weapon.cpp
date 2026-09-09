@@ -4420,7 +4420,7 @@ enum {
         ));
         entry->killVerbString = killVerbString;
 
-        zReader::Node *const killVerbNode = zReader_GetNamedNode(
+        zReader::Node *const killVerbNode = zRdrGetNode(
             entryNode,
             g_Player_KillVerbToken
         );

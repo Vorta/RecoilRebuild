@@ -3256,7 +3256,7 @@ int __fastcall SelectProfileValueForSystem(
         return defaultValue;
     }
 
-    zReader::Node *const profileRuleListNode = zReader_GetNamedNode(
+    zReader::Node *const profileRuleListNode = zRdrGetNode(
         parentNode,
         profileName
     );
@@ -3383,7 +3383,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
         sizeof(g_zGame_Options_PointerCache)
     );
 
-    zReader::Node *const detailRoot = zReader::LoadNodeFromPath(
+    zReader::Node *const detailRoot = zReader::Load(
         g_zOpt_DetailArchiveName,
         0,
         0
@@ -3804,7 +3804,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
         (*g_zGame_Options_PointerCache.windowSection)->target = 0;
     }
 
-    zReader::FreeLoadedTree(detailRoot);
+    zReader::Free(detailRoot);
     g_zOpt_HwMode = zVid::GetAccelerationOption();
     zSnd::SetAudioApiOption(zSnd::GetAudioApiOption());
     return 1;
@@ -5986,7 +5986,7 @@ int HudUiZrdScrollingText::LoadFromZrd(
         ownerDialog
     );
 
-    zReader::Node *const rectNode = zReader_GetNamedNode(
+    zReader::Node *const rectNode = zRdrGetNode(
         zrdSection,
         "RECT"
     );
@@ -6001,7 +6001,7 @@ int HudUiZrdScrollingText::LoadFromZrd(
             rectNode->value.nodes[2].value.nodes[2].value.i32 + originY;
     }
 
-    zReader::Node *const scrollRateNode = zReader_GetNamedNode(
+    zReader::Node *const scrollRateNode = zRdrGetNode(
         zrdSection,
         "SCROLL_RATE"
     );
@@ -6009,7 +6009,7 @@ int HudUiZrdScrollingText::LoadFromZrd(
         ((HudUiCreditsPanel *)(ownerDialog))->fadeStep = scrollRateNode->value.f32;
     }
 
-    zReader::Node *const scrollingTextNode = zReader_GetNamedNode(
+    zReader::Node *const scrollingTextNode = zRdrGetNode(
         zrdSection,
         "SCROLLING_TEXT"
     );
@@ -10815,7 +10815,7 @@ int __fastcall EnsureHudLoaded(
         return 1;
     }
 
-    zReader::Node *const root = zReader::LoadNodeFromPath(
+    zReader::Node *const root = zReader::Load(
         entryPath,
         0,
         0
@@ -10840,12 +10840,12 @@ int __fastcall EnsureHudLoaded(
     HudUiRect objectiveDescriptionFont = {0};
     HudUiRect ammoFont = {0};
 
-    zReader::Node *const fontsNode = zReader_GetNamedNode(
+    zReader::Node *const fontsNode = zRdrGetNode(
         root,
         g_HudCfgKey_Fonts
     );
     if (fontsNode != 0) {
-        if (zReader::Node *const node = zReader_GetNamedNode(
+        if (zReader::Node *const node = zRdrGetNode(
             fontsNode,
             g_HudCfgKey_ObjectiveSummary
         )) {
@@ -10854,7 +10854,7 @@ int __fastcall EnsureHudLoaded(
                 &objectiveSummaryFont
             );
         }
-        if (zReader::Node *const node = zReader_GetNamedNode(
+        if (zReader::Node *const node = zRdrGetNode(
             fontsNode,
             g_HudCfgKey_ObjectiveDescription
         )) {
@@ -10863,7 +10863,7 @@ int __fastcall EnsureHudLoaded(
                 &objectiveDescriptionFont
             );
         }
-        if (zReader::Node *const node = zReader_GetNamedNode(
+        if (zReader::Node *const node = zRdrGetNode(
             fontsNode,
             g_HudCfgKey_Strings
         )) {
@@ -10891,7 +10891,7 @@ int __fastcall EnsureHudLoaded(
                 }
             }
         }
-        if (zReader::Node *const node = zReader_GetNamedNode(
+        if (zReader::Node *const node = zRdrGetNode(
             fontsNode,
             "MESSAGES"
         )) {
@@ -10917,7 +10917,7 @@ int __fastcall EnsureHudLoaded(
                 );
             }
         }
-        if (zReader::Node *const node = zReader_GetNamedNode(
+        if (zReader::Node *const node = zRdrGetNode(
             fontsNode,
             g_HudCfgKey_Ammo
         )) {
@@ -10928,14 +10928,14 @@ int __fastcall EnsureHudLoaded(
         }
     }
 
-    if (zReader::Node *const naniteNode = zReader_GetNamedNode(
+    if (zReader::Node *const naniteNode = zRdrGetNode(
         root,
         g_HudCfgKey_Nanite
     )) {
         g_HudUiMgrNanitePanel.InitLayout(naniteNode);
     }
 
-    zReader::Node *const sensorNode = zReader_GetNamedNode(
+    zReader::Node *const sensorNode = zRdrGetNode(
         root,
         g_HudCfgKey_Sensor
     );
@@ -11037,7 +11037,7 @@ int __fastcall EnsureHudLoaded(
         g_HudUiMgr.AddChild((HudUiElement *)(&g_HudUiMgrSensorMeter));
     }
 
-    if (zReader::Node *const objectiveNode = zReader_GetNamedNode(
+    if (zReader::Node *const objectiveNode = zRdrGetNode(
         root,
         g_HudCfgKey_Objective
     )) {
@@ -11185,7 +11185,7 @@ int __fastcall EnsureHudLoaded(
         );
     }
 
-    if (zReader::Node *const reticleNode = zReader_GetNamedNode(
+    if (zReader::Node *const reticleNode = zRdrGetNode(
         root,
         g_HudCfgKey_Reticule
     )) {
@@ -11206,7 +11206,7 @@ int __fastcall EnsureHudLoaded(
         ((HudUiElement *)(&g_HudUiMgrReticleWidget))->SetVisible(0);
     }
 
-    if (zReader::Node *const statsNode = zReader_GetNamedNode(
+    if (zReader::Node *const statsNode = zRdrGetNode(
         root,
         g_HudCfgKey_Stats
     )) {
@@ -11316,14 +11316,14 @@ int __fastcall EnsureHudLoaded(
         triplet->RebuildDisplay();
     }
 
-    if (zReader::Node *const shieldNode = zReader_GetNamedNode(
+    if (zReader::Node *const shieldNode = zRdrGetNode(
         root,
         g_HudCfgKey_Shield
     )) {
         HudUiShieldMessageWidget::ApplyLayout(shieldNode);
     }
 
-    if (zReader::Node *const targetNode = zReader_GetNamedNode(
+    if (zReader::Node *const targetNode = zRdrGetNode(
         root,
         g_HudCfgKey_Target
     )) {
@@ -11367,7 +11367,7 @@ int __fastcall EnsureHudLoaded(
         g_HudUiMgrWeaponState = 0;
     }
 
-    zReader::Node *weaponNode = zReader_GetNamedNode(
+    zReader::Node *weaponNode = zRdrGetNode(
         root,
         g_HudCfgKey_Weapon
     );
@@ -11383,7 +11383,7 @@ int __fastcall EnsureHudLoaded(
         }
     }
 
-    zReader::Node *modesNode = zReader_GetNamedNode(
+    zReader::Node *modesNode = zRdrGetNode(
         root,
         g_HudCfgKey_Modes
     );
@@ -11400,7 +11400,7 @@ int __fastcall EnsureHudLoaded(
         0,
         2
     );
-    zReader::FreeLoadedTree(root);
+    zReader::Free(root);
     SetFloatTimerVisible(0);
     SetAuxOverlayVisible(0);
     g_HudUiMgrHudLoaded = 1;
@@ -12956,7 +12956,7 @@ void HudLayoutBase::Disable() {
 void HudLayoutBase::LoadTypeIFromZarRoot(
     zReader::Node *parentNode
 ) {
-    zReader::Node *const typeINode = zReader_GetNamedNode(
+    zReader::Node *const typeINode = zRdrGetNode(
         parentNode,
         g_HudLayout_TypeISectionName
     );
@@ -13157,7 +13157,7 @@ HudLayoutHW::HudLayoutHW()
 int HudLayoutHW::LoadTypeIIFromZarRoot(
     zReader::Node *parentNode
 ) {
-    zReader::Node *const typeIINode = zReader_GetNamedNode(
+    zReader::Node *const typeIINode = zRdrGetNode(
         parentNode,
         g_HudLayout_TypeIISectionName
     );

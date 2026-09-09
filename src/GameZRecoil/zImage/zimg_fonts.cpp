@@ -43,7 +43,7 @@ namespace zImage {
 int __fastcall FontsLoadFromPath(
     const char *path
 ) {
-    zReader::Node *tree = zReader::LoadNodeFromPath(
+    zReader::Node *tree = zReader::Load(
         path,
         0,
         0
@@ -60,7 +60,7 @@ int __fastcall FontsLoadFromPath(
     }
 
     zImage_InitMissionResources("..\\data\\common\\fonts");
-    zReader::Node *fontsNode = zReader_GetNamedNode(
+    zReader::Node *fontsNode = zRdrGetNode(
         tree,
         g_HudCfgKey_Fonts
     );
@@ -101,7 +101,7 @@ int __fastcall FontsLoadFromPath(
         }
     }
 
-    zReader::FreeLoadedTree(tree);
+    zReader::Free(tree);
     return 0;
 }
 } // namespace zImage

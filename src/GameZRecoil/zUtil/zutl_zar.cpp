@@ -143,7 +143,7 @@ int __fastcall ZRDR_GetFileSize(
 extern "C" zArchiveList *__fastcall zUtil_ZRDR_CreateSearchPathList(
     const char *pathText
 ) {
-    zArchiveList *list = zArchiveList_CreateEmpty();
+    zArchiveList *list = zArchiveList_New();
     zUtil::ZRDR_AddSearchPaths(
         list,
         pathText
@@ -163,7 +163,7 @@ extern "C" zArchiveList *__fastcall zUtil_ZRDR_FreeSearchPathList(
     zArchiveList *list
 ) {
     zUtil_ZRDR_FreePathList(list);
-    zArchiveList_Destroy(list);
+    zArchiveList_Free(list);
     return 0;
 }
 
@@ -192,12 +192,12 @@ void __fastcall ZRDR_AddSearchPaths(
             );
             while (token != 0) {
                 if (zReader_FileExists_Wrapper(token) != 0 &&
-                    zArchiveList_FindPayloadByPredicate_Thunk(
+                    zArchiveList_Find(
                         activeList,
                         zUtil_ZRDR_StrCmpPredicate,
                         token
                     ) == 0) {
-                    zArchiveList_PushFrontPayload(
+                    zArchiveList_AddHead(
                         activeList,
                         _strdup(token)
                     );
@@ -218,7 +218,7 @@ void __fastcall ZRDR_AddSearchPaths(
         }
 
         if (scratchList == 0) {
-            scratchList = zArchiveList_CreateEmpty();
+            scratchList = zArchiveList_New();
             g_zRdr_ScratchSearchPathList = scratchList;
         }
 
@@ -279,10 +279,10 @@ extern "C" int __fastcall zUtil_ZRDR_FreePathList(
         target = g_zRdr_ScratchSearchPathList;
     }
 
-    void *payload = zArchiveList_PopFrontPayload(target);
+    void *payload = zArchiveList_RemoveHead(target);
     while (payload != 0) {
         free(payload);
-        payload = zArchiveList_PopFrontPayload(target);
+        payload = zArchiveList_RemoveHead(target);
     }
 
     return 0;
@@ -318,7 +318,7 @@ extern "C" char *__fastcall zUtil_ZRDR_ResolvePathInSearchPathList(
             list = g_zRdr_ScratchSearchPathList;
         }
 
-        char *matchedDir = (char *)(zArchiveList_FindPayloadByPredicate(
+        char *matchedDir = (char *)(zArchiveList_FindCompare(
             list,
             zUtil_ZRDR_SearchPathContainsFilePredicate,
             g_zRdr_ResolvedPathBuf
@@ -540,30 +540,30 @@ extern "C" int __fastcall zReader_ReadString(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-reset
- * @recoil-artifact defines .text recoil:function:0x4a6190: zIndexArchive::Reset.
+ * @recoil-artifact defines .text recoil:function:0x4a6190: zIndexArchive::zIndexArchive.
  * @recoil-match byte
  *
  * Purpose: initialize archive fields to the closed empty state.
  */
-zIndexArchive * zIndexArchive::Reset() {
+zIndexArchive::zIndexArchive() {
     reservedFree = 0;
     hFile = INVALID_HANDLE_VALUE;
     recordCapacity = 0;
     recordCount = 0;
     records = 0;
     dirty = 0;
-    return this;
+
 }
 
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-destroy
- * @recoil-artifact defines .text recoil:function:0x4a61b0: zIndexArchive::Destroy.
+ * @recoil-artifact defines .text recoil:function:0x4a61b0: zIndexArchive::~zIndexArchive.
  * @recoil-match byte
  *
  * Purpose: close/free archive records and release the auxiliary reserved buffer.
  */
-void zIndexArchive::Destroy() {
+zIndexArchive::~zIndexArchive() {
     CloseAndFreeRecords();
     if (reservedFree != 0) {
         free(reservedFree);

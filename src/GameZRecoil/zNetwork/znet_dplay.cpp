@@ -376,7 +376,7 @@ int __fastcall InitSessionRuntime(
     }
 
     if (g_zNetwork_EnumeratedSessionList == 0) {
-        g_zNetwork_EnumeratedSessionList = zArchiveList_CreateEmpty();
+        g_zNetwork_EnumeratedSessionList = zArchiveList_New();
     }
 
     zNetworkPlayerRecordList *playerRecordList =
@@ -418,7 +418,7 @@ int __cdecl ShutdownSessionRuntime() {
     );
 
     ClearEnumeratedSessionList();
-    zArchiveList_Destroy(g_zNetwork_EnumeratedSessionList);
+    zArchiveList_Free(g_zNetwork_EnumeratedSessionList);
     g_zNetwork_EnumeratedSessionList = 0;
     g_zNetwork_CurrentSessionDescCache = 0;
 
@@ -464,7 +464,7 @@ int __cdecl ShutdownSessionRuntime() {
  * reserved-data buffers.
  */
 void __cdecl ClearEnumeratedSessionList() {
-    zNetworkDPlaySessionDesc *desc = (zNetworkDPlaySessionDesc *)(zArchiveList_PopFrontPayload(
+    zNetworkDPlaySessionDesc *desc = (zNetworkDPlaySessionDesc *)(zArchiveList_RemoveHead(
         g_zNetwork_EnumeratedSessionList
     ));
     while (desc != 0) {
@@ -472,7 +472,7 @@ void __cdecl ClearEnumeratedSessionList() {
             free((void *)(desc->dwReserved1));
         }
         free(desc);
-        desc = (zNetworkDPlaySessionDesc *)(zArchiveList_PopFrontPayload(
+        desc = (zNetworkDPlaySessionDesc *)(zArchiveList_RemoveHead(
             g_zNetwork_EnumeratedSessionList
         ));
     }
@@ -749,7 +749,7 @@ int __cdecl EnumSessions() {
         );
     }
 
-    return zArchiveList_GetCount(g_zNetwork_EnumeratedSessionList);
+    return zArchiveList_Count(g_zNetwork_EnumeratedSessionList);
 }
 
 } // namespace zNetwork_DPlay
@@ -766,7 +766,7 @@ char *__fastcall GetEnumeratedSessionNameByIndex(
     int entryIndex
 ) {
     zNetworkDPlaySessionDescCache *const entry = (zNetworkDPlaySessionDescCache
-            *)(zArchiveList_GetAt(
+            *)(zArchiveList_Get(
                 g_zNetwork_EnumeratedSessionList,
                 entryIndex
             ));
@@ -790,7 +790,7 @@ void __fastcall GetEnumeratedSessionPlayerCountsByIndex(
     int *maxPlayersOut
 ) {
     zNetworkDPlaySessionDescCache *const entry = (zNetworkDPlaySessionDescCache
-            *)(zArchiveList_GetAt(
+            *)(zArchiveList_Get(
                 g_zNetwork_EnumeratedSessionList,
                 entryIndex
             ));
@@ -958,7 +958,7 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(
     zNetworkSessionDescStatusFields *statusFields
 ) {
     zNetworkDPlaySessionDescCache *const sessionCache = (zNetworkDPlaySessionDescCache *)
-        zArchiveList_GetAt(
+        zArchiveList_Get(
             g_zNetwork_EnumeratedSessionList,
             statusFields->selectedSessionIndex
         );
@@ -1791,7 +1791,7 @@ int __stdcall EnumSessionCallback_AddSessionDescCache(
         sizeof(zNetworkDPlaySessionDesc)
     );
     cache->desc.lpszSessionNameA = _strdup(sessionDesc->lpszSessionNameA);
-    zArchiveList_PushBackPayload(
+    zArchiveList_AddTail(
         g_zNetwork_EnumeratedSessionList,
         cache
     );

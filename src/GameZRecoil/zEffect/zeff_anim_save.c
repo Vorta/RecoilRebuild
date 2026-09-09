@@ -1920,13 +1920,13 @@ zEffect_RuntimeEntry *__fastcall AcquireRuntimeEntryByIndex(
         return 0;
     }
 
-    zEffect_RuntimeEntry *const payload = (zEffect_RuntimeEntry *)(zArchiveList_FindPayloadByValue(
+    zEffect_RuntimeEntry *const payload = (zEffect_RuntimeEntry *)(zArchiveList_FindKey(
         g_zEffect_RuntimeManager.freeList,
         (unsigned int)(effectIndex)
     ));
     if (payload != 0) {
         ++g_zEffect_RuntimeManager.recycleCount;
-        zArchiveList_RemovePayload(
+        zArchiveList_Remove(
             g_zEffect_RuntimeManager.freeList,
             payload
         );
@@ -2022,7 +2022,7 @@ int __fastcall RuntimeNodeActionCallback(
     }
 
     node->callbackContext = 0;
-    zArchiveList_PushBackPayload(
+    zArchiveList_AddTail(
         g_zEffect_RuntimeManager.freeList,
         runtimeEntry
     );

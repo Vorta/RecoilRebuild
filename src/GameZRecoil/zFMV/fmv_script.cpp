@@ -306,7 +306,7 @@ int zFMV_Script::LoadActionsFromZrd(
     const char *zrdPath,
     const char *tagPrefix
 ) {
-    zReader::Node *root = zReader::LoadNodeFromPath(
+    zReader::Node *root = zReader::Load(
         zrdPath,
         0,
         0
@@ -321,16 +321,16 @@ int zFMV_Script::LoadActionsFromZrd(
         return -1;
     }
 
-    m_fmvPath = _strdup(zReader::ReadNamedString(
+    m_fmvPath = _strdup(zReader::GetString(
         root,
         g_zFMV_PathKey
     ));
-    zImage_InitMissionResources(zReader::ReadNamedString(
+    zImage_InitMissionResources(zReader::GetString(
         root,
         zHudCfgKey_IMAGE_PATH
     ));
 
-    zReader::Node *sequenceNode = zReader_GetNamedNode(
+    zReader::Node *sequenceNode = zRdrGetNode(
         root,
         tagPrefix
     );
@@ -472,7 +472,7 @@ int zFMV_Script::LoadActionsFromZrd(
         }
     }
 
-    zReader::FreeLoadedTree(root);
+    zReader::Free(root);
     return result;
 }
 

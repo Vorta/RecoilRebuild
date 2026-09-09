@@ -78,7 +78,7 @@ int __fastcall InitFromPath(
         return 0;
     }
 
-    zReader::Node *const rootNode = zReader::LoadNodeFromPath(
+    zReader::Node *const rootNode = zReader::Load(
         path,
         0,
         0
@@ -95,7 +95,7 @@ int __fastcall InitFromPath(
         return -1;
     }
 
-    zReader::Node *const effectsNode = zReader_GetNamedNode(
+    zReader::Node *const effectsNode = zRdrGetNode(
         rootNode,
         g_EffectsZrdNodeName
     );
@@ -111,7 +111,7 @@ int __fastcall InitFromPath(
     for (int i = 0; i < g_zEffect_RuntimeManager.templateCount; ++i) {
         zReader::Node *const effectNode =
             &effectsNode->value.nodes[i + 1];
-        zReader::Node *const mapsNode = zReader_GetNamedNode(
+        zReader::Node *const mapsNode = zRdrGetNode(
             effectNode,
             g_zEffect_TokenMaps
         );
@@ -119,7 +119,7 @@ int __fastcall InitFromPath(
         runtimeEntry->effectIndex = -1;
         runtimeEntry->modelNodeName =
             effectNode->value.nodes[1].value.str;
-        runtimeEntry->effectName = (char *)(zReader::ReadNamedString(
+        runtimeEntry->effectName = (char *)(zReader::GetString(
             effectNode,
             "NAME"
         ));
@@ -181,7 +181,7 @@ int __fastcall InitFromPath(
         );
 
         float textureSpeed = 0.0f;
-        zReader::ReadNamedFloat(
+        zReader::GetFloat(
             effectNode,
             g_zEffectAnim_TokenSpeed,
             &textureSpeed
@@ -191,7 +191,7 @@ int __fastcall InitFromPath(
             textureSpeed
         );
 
-        zReader::Node *const loopingNode = zReader_GetNamedNode(
+        zReader::Node *const loopingNode = zRdrGetNode(
             effectNode,
             g_zEffectAnim_TokenLooping
         );
@@ -222,7 +222,7 @@ int __fastcall InitFromPath(
     }
 
     zImage::TexDir_LoadPendingEntries();
-    g_zEffect_RuntimeManager.freeList = zArchiveList_CreateEmpty();
+    g_zEffect_RuntimeManager.freeList = zArchiveList_New();
     g_zEffect_RuntimeManager.recycleCount = 0;
     g_zEffect_RuntimeManager.initialized = 1;
     return 0;
@@ -237,7 +237,7 @@ int __fastcall InitFromPath(
  */
 int __cdecl Reset() {
     if (g_zEffect_RuntimeManager.loadedTemplateTree != 0) {
-        zReader::FreeLoadedTree((zReader::Node *)(g_zEffect_RuntimeManager.loadedTemplateTree));
+        zReader::Free((zReader::Node *)(g_zEffect_RuntimeManager.loadedTemplateTree));
         g_zEffect_RuntimeManager.loadedTemplateTree = 0;
     }
 
@@ -247,17 +247,17 @@ int __cdecl Reset() {
     zArchiveList *freeList = g_zEffect_RuntimeManager.freeList;
     if (freeList != 0) {
         zEffect_RuntimeEntry *entry =
-            (zEffect_RuntimeEntry *)(zArchiveList_PopFrontPayload(freeList));
+            (zEffect_RuntimeEntry *)(zArchiveList_RemoveHead(freeList));
         while (entry != 0) {
             if (entry->effectNode != 0) {
                 zClass_Util::DestroyNodeRecursive(entry->effectNode);
             }
 
             free(entry);
-            entry = (zEffect_RuntimeEntry *)(zArchiveList_PopFrontPayload(freeList));
+            entry = (zEffect_RuntimeEntry *)(zArchiveList_RemoveHead(freeList));
         }
 
-        zArchiveList_Destroy(freeList);
+        zArchiveList_Free(freeList);
         g_zEffect_RuntimeManager.freeList = 0;
     }
 
