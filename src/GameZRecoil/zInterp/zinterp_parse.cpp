@@ -44,7 +44,7 @@ const char kCommandNameWeaponSetMaxTetherAltitude[] = "WeaponSetMaxTetherAltitud
  *
  * Purpose: delimiter set used by zInterp_Context::TokenizeLine.
  */
-const char k_zInterp_TokenDelimiters[] = ", \t\n";
+char k_zInterp_TokenDelimiters[] = ", \t\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-printtokenwithspacefmt
  * @recoil-artifact defines .data recoil:data:0x4e4920: g_zInterp_PrintTokenWithSpaceFmt.
@@ -341,10 +341,10 @@ int zInterp_Context::DeferredDispatchHook(
 ) {
     return 0;
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-constructor
  * @recoil-artifact defines .text recoil:function:0x4c0d20: zInterp_Context::zInterp_Context.
+ * @recoil-match byte
  *
  * Purpose: initialize one parser context, including prepared-script index
  * state, macro/variable tables, runtime scratch storage, and scroll callbacks.
@@ -393,10 +393,10 @@ zInterp_Context::zInterp_Context(
     ptrArrayCount = 0;
 
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-destructor
  * @recoil-artifact defines .text recoil:function:0x4c0e50: zInterp_Context::~zInterp_Context.
+ * @recoil-match byte
  *
  * Purpose: tear down a context after Destroy has released active runtime state.
  */
@@ -692,13 +692,13 @@ char * zInterp_Context::ExpandMacroRefs(
 
     return g_zInterp_MacroExpansionScratch;
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-tokenizeline
  * @recoil-artifact defines .text recoil:function:0x4c13c0: zInterp_Context::TokenizeLine.
+ * @recoil-match byte
+ *
  * BN evidence: retail imports iswspace and sign-extends token bytes before
  * each whitespace classification call.
- *
  * Purpose: copy a text line, strip comments, and split command tokens.
  */
 int zInterp_Context::TokenizeLine(
@@ -1074,10 +1074,10 @@ int zInterp_Context::ParseBoolToken() {
 
     return 0;
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-parsefloattoken
  * @recoil-artifact defines .text recoil:function:0x4c1a00: zInterp_Context::ParseFloatToken.
+ * @recoil-match byte
  *
  * Purpose: parse the next token as a floating-point value.
  */
@@ -1431,10 +1431,10 @@ int zInterp_Context::HandleBuiltinCommand(
 
     return 1;
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-printnodetree
  * @recoil-artifact defines .text recoil:function:0x4c2030: zInterp_Context::PrintNodeTree.
+ * @recoil-match byte
  *
  * Purpose: recursively log a zClass node tree with two-space child indentation.
  */
@@ -1462,10 +1462,10 @@ int zInterp_Context::ReportParseError(
     IncErrorCount();
     return 1;
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-dispatchcorecommand
  * @recoil-artifact defines .text recoil:function:0x4c20a0: zInterp_Context::DispatchCoreCommand.
+ * @recoil-artifact emits .data recoil:data:0x4e2f9c: Native shared "NULL" diagnostic literal.
  * @recoil-artifact emits .data recoil:data:0x4e55c8: Native command literal "ClearScreenBuffer".
  * @recoil-artifact emits .data recoil:data:0x4e55bc: Native command literal "DeleteChild".
  * @recoil-artifact emits .data recoil:data:0x4e5590: Native command literal "interp: DeleteChild (%s, %s) --> NULL NODE".
@@ -1619,9 +1619,9 @@ int zInterp_Context::ReportParseError(
  * @recoil-artifact emits .data recoil:data:0x4e4a58: Native command literal "WorldSetVirtualPartition".
  * @recoil-artifact emits .data recoil:data:0x4e4a44: Native command literal "WriteTextureSetType".
  * @recoil-artifact emits .data recoil:data:0x4e4a30: Native command literal "WriteTextureSetMap".
+ * @recoil-match byte
  *
- * Purpose: dispatch engine-facing script commands across zClass, zVideo,
- * zEffect, zModel, zRndr, zWeapon, and support subsystems.
+ * Purpose: dispatch script commands to engine subsystems.
  */
 int zInterp_Context::DispatchCoreCommand(
     char *commandToken
@@ -3996,10 +3996,10 @@ inline int zInterp_Context::ReadPreparedScriptIndex(zInterp_PreparedScriptHeader
 
     return 1;
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-loadpreparedscriptindex
  * @recoil-artifact defines .text recoil:function:0x4c5550: zInterp_Context::LoadPreparedScriptIndex.
+ * @recoil-match instruction
  *
  * Purpose: open and validate the prepared script index and cache its entries.
  */
@@ -4073,11 +4073,11 @@ inline int zInterp_Context::FindPreparedScriptIndex(const char *commandName) {
     }
     return matchedIndex;
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-openpreparedscriptstream
  * @recoil-artifact defines .text recoil:function:0x4c5740: zInterp_Context::OpenPreparedScriptStream.
  * @recoil-artifact emits .rdata recoil:data:0x4d42d8: VC5 double-zero timestamp comparison literal.
+ * @recoil-match byte
  *
  * Purpose: locate a prepared script entry and seek the shared stream to it.
  */

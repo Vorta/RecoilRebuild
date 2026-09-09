@@ -135,13 +135,13 @@ char g_zSnd_SoundGroupDelayPlayLoadErrorFmt[0x2e] =
  * Purpose: provide the writable DELAY_PLAY parser key.
  */
 char g_zSnd_SoundGroupDelayPlayKey[0xb] = "DELAY_PLAY";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-g-zsnd-nulltoken
- * @recoil-artifact defines .data recoil:data:0x4e2f9c: g_zSnd_NullToken.
- * Data owner gate remains pending; this docblock records source provenance only.
- * Purpose: provide the writable stream-sample NULL token.
- */
-char g_zSnd_NullToken[0x5] = "NULL";
+
+
+
+
+
+
+
 }
 
 /**
@@ -631,9 +631,9 @@ zSndGroupConfigBlock * zSndGroup::SelectWeightedEntry() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-stateplaycurrententry
  * @recoil-artifact defines .text recoil:function:0x4a4ea0: zSndStreamRequest::StatePlayCurrentEntry.
- * Purpose: play due stream entries, advance child entries, and transition to
- * repeat or termination delay.
+ * @recoil-artifact emits .data recoil:data:0x4e2f9c: Native shared "NULL" comparison literal.
  *
+ * Purpose: play due stream entries and advance their state.
  * Uses signed play-count decrement so 0xffff remains the original infinite-play
  * sentinel.
  */
@@ -651,7 +651,7 @@ void zSndStreamRequest::StatePlayCurrentEntry() {
                 const char *sampleName = entry->streamName;
                 if (strcmp(
                         sampleName,
-                        g_zSnd_NullToken
+                        "NULL"
                     ) != 0) {
                     entry->cachedSample = zSnd::FindSampleByName(sampleName);
                 }
