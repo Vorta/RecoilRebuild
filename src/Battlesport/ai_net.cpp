@@ -119,186 +119,7 @@ volatile float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965900004f;
  * Purpose: Stores the retail sine scalar for offset-target rotation.
  */
 volatile float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.25879999995f;
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-nodenameformat
- * @recoil-artifact defines .data recoil:data:0x4da0ec: g_AINet_NodeNameFormat.
- * Purpose: Stores the writable node field-name format used while parsing AI path nodes.
- */
-char g_AINet_NodeNameFormat[] = "node_%02d";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackstrategytokensit
- * @recoil-artifact defines .data recoil:data:0x4da0f8: g_AINet_AttackStrategyTokenSit.
- * Purpose: Stores the writable attack strategy token for stationary behavior.
- */
-char g_AINet_AttackStrategyTokenSit[] = "SIT";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackstrategytokenzig
- * @recoil-artifact defines .data recoil:data:0x4da0fc: g_AINet_AttackStrategyTokenZig.
- * Purpose: Stores the writable attack strategy token for zig-zag behavior.
- */
-char g_AINet_AttackStrategyTokenZig[] = "ZIG";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackstrategytokenback
- * @recoil-artifact defines .data recoil:data:0x4da100: g_AINet_AttackStrategyTokenBack.
- * Purpose: Stores the writable attack strategy token for backing-away behavior.
- */
-char g_AINet_AttackStrategyTokenBack[] = "BAC";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackstrategytokenheadon
- * @recoil-artifact defines .data recoil:data:0x4da104: g_AINet_AttackStrategyTokenHeadOn.
- * Purpose: Stores the writable attack strategy token for head-on behavior.
- */
-char g_AINet_AttackStrategyTokenHeadOn[] = "HEA";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackstrategytokencircle
- * @recoil-artifact defines .data recoil:data:0x4da108: g_AINet_AttackStrategyTokenCircle.
- * Purpose: Stores the writable attack strategy token for circling behavior.
- */
-char g_AINet_AttackStrategyTokenCircle[] = "CIR";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackstrategytokenfollow
- * @recoil-artifact defines .data recoil:data:0x4da10c: g_AINet_AttackStrategyTokenFollow.
- * Purpose: Stores the writable attack strategy token for follow behavior.
- */
-char g_AINet_AttackStrategyTokenFollow[] = "FOL";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackstrategyfieldname
- * @recoil-artifact defines .data recoil:data:0x4da110: g_AINet_AttackStrategyFieldName.
- * Purpose: Stores the writable attack strategy field name used by the ZRD parser.
- */
-char g_AINet_AttackStrategyFieldName[] = "attack_strategy";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-activatebuddyfieldname
- * @recoil-artifact defines .data recoil:data:0x4da120: g_AINet_ActivateBuddyFieldName.
- * Purpose: Stores the writable activate-buddy field name used by the ZRD parser.
- */
-char g_AINet_ActivateBuddyFieldName[] = "activate_buddy";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackbuddyfieldname
- * @recoil-artifact defines .data recoil:data:0x4da130: g_AINet_AttackBuddyFieldName.
- * Purpose: Stores the writable attack-buddy field name used by the ZRD parser.
- */
-char g_AINet_AttackBuddyFieldName[] = "attack_buddy";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-hidetimesfieldname
- * @recoil-artifact defines .data recoil:data:0x4da140: g_AINet_HideTimesFieldName.
- * Purpose: Stores the writable hide-times field name used by the ZRD parser.
- */
-char g_AINet_HideTimesFieldName[] = "hide_times";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-returnrangefieldname
- * @recoil-artifact defines .data recoil:data:0x4da14c: g_AINet_ReturnRangeFieldName.
- * Purpose: Stores the writable return-range field name used by the ZRD parser.
- */
-char g_AINet_ReturnRangeFieldName[] = "return_range";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-notpursuitdwellfieldname
- * @recoil-artifact defines .data recoil:data:0x4da15c: g_AINet_NotPursuitDwellFieldName.
- * Purpose: Stores the writable non-pursuit dwell field name used by the ZRD parser.
- */
-char g_AINet_NotPursuitDwellFieldName[] = "not_pursuit_dwell";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-pursuitrangefieldname
- * @recoil-artifact defines .data recoil:data:0x4da170: g_AINet_PursuitRangeFieldName.
- * Purpose: Stores the writable pursuit range field name accepted by older ZRD data.
- */
-char g_AINet_PursuitRangeFieldName[] = "pursuit_range";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-pursuitparamsfieldname
- * @recoil-artifact defines .data recoil:data:0x4da180: g_AINet_PursuitParamsFieldName.
- * Purpose: Stores the writable pursuit parameters field name used by the ZRD parser.
- */
-char g_AINet_PursuitParamsFieldName[] = "pursuit_params";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackdwellfieldname
- * @recoil-artifact defines .data recoil:data:0x4da190: g_AINet_AttackDwellFieldName.
- * Purpose: Stores the writable attack dwell field name used by the ZRD parser.
- */
-char g_AINet_AttackDwellFieldName[] = "attack_dwell";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-attackradiusfieldname
- * @recoil-artifact defines .data recoil:data:0x4da1a0: g_AINet_AttackRadiusFieldName.
- * Purpose: Stores the writable attack radius field name used by the ZRD parser.
- */
-char g_AINet_AttackRadiusFieldName[] = "attack_rad";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-activateradiusfieldname
- * @recoil-artifact defines .data recoil:data:0x4da1ac: g_AINet_ActivateRadiusFieldName.
- * Purpose: Stores the writable activation radius field name used by the ZRD parser.
- */
-char g_AINet_ActivateRadiusFieldName[] = "activate_rad";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-pathwidthfieldname
- * @recoil-artifact defines .data recoil:data:0x4da1bc: g_AINet_PathWidthFieldName.
- * Purpose: Stores the writable path width field name used by the ZRD parser.
- */
-char g_AINet_PathWidthFieldName[] = "path_width";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-typetokende
- * @recoil-artifact defines .data recoil:data:0x4da1c8: g_AINet_TypeTokenDe.
- * Purpose: Stores the writable AI type token for defensive networks.
- */
-char g_AINet_TypeTokenDe[] = "DE";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-typetokenfi
- * @recoil-artifact defines .data recoil:data:0x4da1cc: g_AINet_TypeTokenFi.
- * Purpose: Stores the writable AI type token for fighter networks.
- */
-char g_AINet_TypeTokenFi[] = "FI";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-typetokenhi
- * @recoil-artifact defines .data recoil:data:0x4da1d0: g_AINet_TypeTokenHi.
- * Purpose: Stores the writable AI type token for hidden networks.
- */
-char g_AINet_TypeTokenHi[] = "HI";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-typetokenst
- * @recoil-artifact defines .data recoil:data:0x4da1d4: g_AINet_TypeTokenSt.
- * Purpose: Stores the writable AI type token for standard networks.
- */
-char g_AINet_TypeTokenSt[] = "ST";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-typefieldname
- * @recoil-artifact defines .data recoil:data:0x4da1d8: g_AINet_TypeFieldName.
- * Purpose: Stores the writable type field name used by the ZRD parser.
- */
-char g_AINet_TypeFieldName[] = "type";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-namefieldname
- * @recoil-artifact defines .data recoil:data:0x4da1e0: g_AINet_NameFieldName.
- * Purpose: Stores the writable name field used by the ZRD parser.
- */
-char g_AINet_NameFieldName[] = "name";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-sourcefilepath
- * @recoil-artifact defines .data recoil:data:0x4da1e8: g_AINet_SourceFilePath.
- * Purpose: Stores the writable original source path used for AI ZRD version errors.
- */
-char g_AINet_SourceFilePath[] = "D:\\Proj\\Battlesport\\ai_net.cpp";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-wrongversionmessage
- * @recoil-artifact defines .data recoil:data:0x4da208: g_AINet_WrongVersionMessage.
- * Purpose: Stores the writable diagnostic emitted when an AI paths ZRD has the wrong version.
- */
-char g_AINet_WrongVersionMessage[] = "Wrong ai_paths.zrd version number!";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-versionfieldname
- * @recoil-artifact defines .data recoil:data:0x4da22c: g_AINet_VersionFieldName.
- * Purpose: Stores the writable version field name used by the ZRD parser.
- */
-char g_AINet_VersionFieldName[] = "version";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-zrdnameformat
- * @recoil-artifact defines .data recoil:data:0x4da234: g_AINet_ZrdNameFormat.
- * Purpose: Stores the writable ZRD path format used for AI network files.
- */
-char g_AINet_ZrdNameFormat[] = "%s.zrd";
-/**
- * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-netnameformat
- * @recoil-artifact defines .data recoil:data:0x4da23c: g_AINet_NetNameFormat.
- * Purpose: Stores the writable numbered AI network base-name format.
- */
-char g_AINet_NetNameFormat[] = "net_%02d";
+
 }
 
 #include "Battlesport/game_net.h"
@@ -371,14 +192,14 @@ AINet *__fastcall AINet::LoadFromZrd(
     char nodeName[8];
     sprintf(
         baseName,
-        g_AINet_NetNameFormat,
+        "net_%02d",
         netId
     );
 
     char path[0x104];
     sprintf(
         path,
-        g_AINet_ZrdNameFormat,
+        "%s.zrd",
         baseName
     );
 
@@ -393,14 +214,14 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *versionNode = zRdrGetNode(
         root,
-        g_AINet_VersionFieldName
+        "version"
     );
     if (versionNode != 0 && versionNode->value.nodes[1].value.i32 != 105) {
         zError::ReportOld(
             0x200,
-            g_AINet_SourceFilePath,
+            "D:\\Proj\\Battlesport\\ai_net.cpp",
             0x8c,
-            g_AINet_WrongVersionMessage
+            "Wrong ai_paths.zrd version number!"
         );
         return 0;
     }
@@ -410,7 +231,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *nameNode = zRdrGetNode(
         root,
-        g_AINet_NameFieldName
+        "name"
     );
     if (nameNode != 0) {
         strcpy(
@@ -425,7 +246,7 @@ AINet *__fastcall AINet::LoadFromZrd(
     }
 
     char token[0x18];
-    zReader::Node *typeNode = zRdrGetNode(root, g_AINet_TypeFieldName);
+    zReader::Node *typeNode = zRdrGetNode(root, "type");
     if (typeNode != 0) {
         strcpy(
             token,
@@ -435,25 +256,25 @@ AINet *__fastcall AINet::LoadFromZrd(
 
         if (strncmp(
             token,
-            g_AINet_TypeTokenSt,
+            "ST",
             2
         ) == 0) {
             aiNet->aiType = AINET_TYPE_ST;
         } else if (strncmp(
             token,
-            g_AINet_TypeTokenHi,
+            "HI",
             2
         ) == 0) {
             aiNet->aiType = AINET_TYPE_HI;
         } else if (strncmp(
             token,
-            g_AINet_TypeTokenFi,
+            "FI",
             2
         ) == 0) {
             aiNet->aiType = AINET_TYPE_FI;
         } else if (strncmp(
             token,
-            g_AINet_TypeTokenDe,
+            "DE",
             2
         ) == 0) {
             aiNet->aiType = AINET_TYPE_DE;
@@ -464,7 +285,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *pathWidthNode = zRdrGetNode(
         root,
-        g_AINet_PathWidthFieldName
+        "path_width"
     );
     if (pathWidthNode != 0) {
         aiNet->pathWidth = pathWidthNode->value.nodes[1].value.f32;
@@ -474,7 +295,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *activateRadiusNode = zRdrGetNode(
         root,
-        g_AINet_ActivateRadiusFieldName
+        "activate_rad"
     );
     if (activateRadiusNode != 0) {
         aiNet->activateRadius = activateRadiusNode->value.nodes[1].value.f32;
@@ -482,7 +303,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *attackRadiusNode = zRdrGetNode(
         root,
-        g_AINet_AttackRadiusFieldName
+        "attack_rad"
     );
     if (attackRadiusNode != 0) {
         aiNet->attackRadius = attackRadiusNode->value.nodes[1].value.f32;
@@ -490,7 +311,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *attackDwellNode = zRdrGetNode(
         root,
-        g_AINet_AttackDwellFieldName
+        "attack_dwell"
     );
     if (attackDwellNode != 0) {
         aiNet->attackDwell = attackDwellNode->value.nodes[1].value.f32;
@@ -498,12 +319,12 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *pursuitNode = zRdrGetNode(
         root,
-        g_AINet_PursuitParamsFieldName
+        "pursuit_params"
     );
     if (pursuitNode == 0) {
         pursuitNode = zRdrGetNode(
             root,
-            g_AINet_PursuitRangeFieldName
+            "pursuit_range"
         );
     }
     if (pursuitNode != 0) {
@@ -513,7 +334,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *notPursuitDwellNode = zRdrGetNode(
         root,
-        g_AINet_NotPursuitDwellFieldName
+        "not_pursuit_dwell"
     );
     if (notPursuitDwellNode != 0) {
         aiNet->notPursuitDwell = notPursuitDwellNode->value.nodes[1].value.f32;
@@ -521,7 +342,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *returnRangeNode = zRdrGetNode(
         root,
-        g_AINet_ReturnRangeFieldName
+        "return_range"
     );
     if (returnRangeNode != 0) {
         aiNet->returnRange = returnRangeNode->value.nodes[1].value.f32;
@@ -529,7 +350,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *hideTimesNode = zRdrGetNode(
         root,
-        g_AINet_HideTimesFieldName
+        "hide_times"
     );
     if (hideTimesNode != 0) {
         aiNet->hideTime0 = hideTimesNode->value.nodes[1].value.f32;
@@ -541,7 +362,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *attackBuddyNode = zRdrGetNode(
         root,
-        g_AINet_AttackBuddyFieldName
+        "attack_buddy"
     );
     if (attackBuddyNode != 0) {
         aiNet->attackBuddyNetId = attackBuddyNode->value.nodes[1].value.i32;
@@ -551,7 +372,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *activateBuddyNode = zRdrGetNode(
         root,
-        g_AINet_ActivateBuddyFieldName
+        "activate_buddy"
     );
     if (activateBuddyNode != 0) {
         aiNet->activateBuddyNetId = activateBuddyNode->value.nodes[1].value.i32;
@@ -561,7 +382,7 @@ AINet *__fastcall AINet::LoadFromZrd(
 
     zReader::Node *attackStrategyNode = zRdrGetNode(
         root,
-        g_AINet_AttackStrategyFieldName
+        "attack_strategy"
     );
     if (attackStrategyNode != 0) {
         strcpy(
@@ -571,37 +392,37 @@ AINet *__fastcall AINet::LoadFromZrd(
         _strupr(token);
         if (strncmp(
             token,
-            g_AINet_AttackStrategyTokenFollow,
+            "FOL",
             3
         ) == 0) {
             aiNet->attackStrategy = AINET_STRAT_FOL;
         } else if (strncmp(
             token,
-            g_AINet_AttackStrategyTokenCircle,
+            "CIR",
             3
         ) == 0) {
             aiNet->attackStrategy = AINET_STRAT_CIR;
         } else if (strncmp(
             token,
-            g_AINet_AttackStrategyTokenHeadOn,
+            "HEA",
             3
         ) == 0) {
             aiNet->attackStrategy = AINET_STRAT_HEA;
         } else if (strncmp(
             token,
-            g_AINet_AttackStrategyTokenBack,
+            "BAC",
             3
         ) == 0) {
             aiNet->attackStrategy = AINET_STRAT_BAC;
         } else if (strncmp(
             token,
-            g_AINet_AttackStrategyTokenZig,
+            "ZIG",
             3
         ) == 0) {
             aiNet->attackStrategy = AINET_STRAT_ZIG;
         } else if (strncmp(
             token,
-            g_AINet_AttackStrategyTokenSit,
+            "SIT",
             3
         ) == 0) {
             aiNet->attackStrategy = AINET_STRAT_SIT;
@@ -614,7 +435,7 @@ AINet *__fastcall AINet::LoadFromZrd(
     for (int nodeIndex = 0; nodeIndex < 99; ++nodeIndex) {
         sprintf(
             nodeName,
-            g_AINet_NodeNameFormat,
+            "node_%02d",
             nodeIndex
         );
 

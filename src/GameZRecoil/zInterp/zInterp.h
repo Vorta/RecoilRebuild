@@ -85,7 +85,7 @@ struct zInterp_Context;
 extern int g_zInterp_EnablePreparedScripts;
 extern int g_zInterp_VerboseLevel;
 extern char g_zInterp_LineBuffer[1024];
-extern char g_zInterp_AssignToken_Equal;
+
 extern zDiPartial *g_zInterp_Object3DCommandDi;
 extern zDiPartial *g_zInterp_CurrentCycleTextureDi;
 extern unsigned int g_zInterp_NodeUserDataScratch;

@@ -73,15 +73,6 @@ RecoilStateCheatCodeStorage g_RecoilStateCheatCode = {0};
     (*(RecoilStateControls *)&g_RecoilStateControls)
 #define g_RecoilStateCheatCode \
     (*(RecoilStateCheatCode *)&g_RecoilStateCheatCode)
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.g-huduidialogsamplesetname
- * @recoil-artifact defines .data recoil:data:0x4da3d8: g_HudUiDialogSampleSetName.
- * Source owner: hud_ui.shared_dialog_sample_set_name.
- * Data owner gate remains pending; this docblock records source provenance only.
- * Purpose: names the shared dialog sample set loaded by HUD/menu dialog states.
- */
-char g_HudUiDialogSampleSetName[0x7] = "DIALOG";
-RECOIL_STATIC_ASSERT(sizeof(g_HudUiDialogSampleSetName) == 0x7);
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.g-huduicontrolsdialog-cameramodeselectornodename
@@ -2443,7 +2434,7 @@ int RecoilStateCheatCode::OnTryBecomeCurrent() {
     m_audioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
     audioSnapshot->StopAllIfPlaying();
 
-    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
+    zSndSampleSet_InitByName("DIALOG");
 
     HudUiCheatCodeDialog *const dialog = new HudUiCheatCodeDialog;
     m_dialog = dialog;
@@ -2479,7 +2470,7 @@ void RecoilStateCheatCode::OnDeactivate() {
         m_dialog = 0;
     }
 
-    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
+    zSndSampleSet_DestroyByName("DIALOG");
 
     zSndPlayHandleSnapshot *const audioSnapshot =
         (zSndPlayHandleSnapshot *)(unsigned int)m_audioSnapshot;
@@ -8881,27 +8872,7 @@ char g_HudUiCounterText_PlayerIndexFmt[] = "%s(%d)";
  * Purpose: provide the default shield percent text for the HUD shield message widget.
  */
 char g_HudUiShieldMessageWidget_DefaultPercentText[4] = "000";
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.g-huduitimerpanel-zerotimestring
- * @recoil-artifact defines .data recoil:data:0x4dacec: g_HudUiTimerPanel_ZeroTimeString.
- * Data owner gate remains pending; this docblock records source provenance only.
- * Purpose: provide the timer panel fallback display string for zero or invalid time.
- */
-char g_HudUiTimerPanel_ZeroTimeString[9] = "00:00:00";
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.g-huduitimerpanel-timefmt
- * @recoil-artifact defines .data recoil:data:0x4dacf8: g_HudUiTimerPanel_TimeFmt.
- * Data owner gate remains pending; this docblock records source provenance only.
- * Purpose: provide the timer panel hours/minutes/seconds text format.
- */
-char g_HudUiTimerPanel_TimeFmt[15] = "%02d:%02d:%02d";
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.g-huduitimerpanelfloat-drawformat
- * @recoil-artifact defines .data recoil:data:0x4dad0c: g_HudUiTimerPanelFloat_DrawFormat.
- * Data owner gate remains pending; this docblock records source provenance only.
- * Purpose: provide the floating timer panel decimal display format.
- */
-char g_HudUiTimerPanelFloat_DrawFormat[6] = "%2.1f";
+
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.g-huduitimerpanel-nodename
  * @recoil-artifact defines .data recoil:data:0x4dad14: g_HudUiTimerPanel_NodeName.
@@ -9934,13 +9905,13 @@ void HudUiTimerPanel::SetTimeSeconds(
 ) {
     if (hours >= 0 && minutes >= 0 && seconds >= 0) {
         SetTextFmt(
-            g_HudUiTimerPanel_TimeFmt,
+            "%02d:%02d:%02d",
             hours,
             minutes,
             seconds
         );
     } else {
-        SetTextFmt(g_HudUiTimerPanel_ZeroTimeString);
+        SetTextFmt("00:00:00");
     }
 
     UpdateTextBoundsFromContent();
@@ -9992,7 +9963,7 @@ HudUiTimerPanelFloat::HudUiTimerPanelFloat()
 void HudUiTimerPanelFloat::Draw() {
     Invalidate();
     SetTextFmt(
-        g_HudUiTimerPanelFloat_DrawFormat,
+        "%2.1f",
         (double)(displayValue)
     );
     HudUiPanel::Draw();
@@ -10748,7 +10719,7 @@ extern char g_Hud_SourceFile_HudCpp[28];
 extern char g_HudLayout_TypeISectionName[];
 extern char g_HudLayout_TypeIISectionName[];
 extern char g_HudUiBlankSpaces3[4];
-extern char g_HudUiTimerPanel_ZeroTimeString[9];
+
 extern char g_HudUiMessage_ClearSpecialToken165[4];
 union HudUiSensorWindowStorage {
     unsigned long align;
@@ -11259,7 +11230,7 @@ int __fastcall EnsureHudLoaded(
             0,
             &timerClip
         );
-        ((HudUiPanel *)(g_HudUiMgrTimerPanel))->SetTextFmt(g_HudUiTimerPanel_ZeroTimeString);
+        ((HudUiPanel *)(g_HudUiMgrTimerPanel))->SetTextFmt("00:00:00");
 
         HudUiTriplet *const triplet = g_HudUiMgrStatsList->triplet;
         HudUiLayoutNode::ReadInt3(
@@ -15559,8 +15530,6 @@ RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition() {
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
-extern char g_HudUiDialogSampleSetName[0x7];
-
 namespace zVideo {
 int __fastcall SetHalfResAdjustMode(int mode);
 }
@@ -15615,7 +15584,7 @@ RECOIL_NO_GS int RecoilStateMainMenuTransition::OnTryBecomeCurrent() {
     m_pausedAudioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
     audioSnapshot->StopAllIfPlaying();
 
-    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
+    zSndSampleSet_InitByName("DIALOG");
 
     HudUiMainMenuDialog *const dialog = new HudUiMainMenuDialog(m_entryRoute);
 
@@ -15704,8 +15673,6 @@ void RecoilStateMainMenuTransition::OnResume(
 #include "GameZRecoil/zGame/zgame.h"
 
 #include <windows.h>
-
-extern char g_HudUiDialogSampleSetName[0x7];
 
 namespace zVideo {
 int __fastcall SetHalfResAdjustMode(int mode);
@@ -15848,7 +15815,7 @@ void RecoilStateMainMenuTransition::OnDeactivate() {
 
     if (g_RecoilState_MainMenuSkipExitDelay == 0) {
         Sleep(0x3e8);
-        zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
+        zSndSampleSet_DestroyByName("DIALOG");
 
         zSndPlayHandleSnapshot *snapshot =
             (zSndPlayHandleSnapshot *)(unsigned int)m_pausedAudioSnapshot;

@@ -35,10 +35,7 @@ extern "C" char g_HudSensorTracker_ZarSectionName_MissionData[0x0c];
 extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4];
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4];
-extern "C" char g_HudSensorTracker_ZarHandlerName_MissionLate[0x0c];
-extern "C" char g_HudSensorTracker_ZarHandlerName_Mission[0x08];
-extern "C" char g_HudSensorTracker_LateMissionDataSectionName[0x10];
-extern "C" const char g_HudSensorTracker_StartAnimsZrdPath[0x0e];
+
 extern "C" char g_HudSensorTracker_DisplayNodeName[0x08];
 extern "C" char g_HudSensorTracker_WindowNodeName[0x08];
 extern "C" char g_HudSensorTracker_CameraNodeName[0x08];
@@ -197,27 +194,7 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarSectionName_MissionData) == 0x
  */
 char g_HudSensorTracker_ObjectivesZrdPath[0x0f] = "objectives.zrd";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivesZrdPath) == 0x0f);
-/**
- * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-zarhandlername-missionlate
- * @recoil-artifact defines .data recoil:data:0x4dafb8: g_HudSensorTracker_ZarHandlerName_MissionLate.
- * Purpose: names the late mission restore ZAR callback section.
- */
-char g_HudSensorTracker_ZarHandlerName_MissionLate[0x0c] = "MissionLate";
-RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarHandlerName_MissionLate) == 0x0c);
-/**
- * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-zarhandlername-mission
- * @recoil-artifact defines .data recoil:data:0x4dafc4: g_HudSensorTracker_ZarHandlerName_Mission.
- * Purpose: names the primary HUD mission save/restore ZAR callback section.
- */
-char g_HudSensorTracker_ZarHandlerName_Mission[0x08] = "Mission";
-RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarHandlerName_Mission) == 0x08);
-/**
- * @recoil-anchor recoil:anchor:battlesport.map.g-hudsensortracker-latemissiondatasectionname
- * @recoil-artifact defines .data recoil:data:0x4dafcc: g_HudSensorTracker_LateMissionDataSectionName.
- * Purpose: names the one-word marker payload written for late mission restore.
- */
-char g_HudSensorTracker_LateMissionDataSectionName[0x10] = "LateMissionData";
-RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_LateMissionDataSectionName) == 0x10);
+
 }
 
 namespace {
@@ -601,23 +578,6 @@ static inline bool IsPointStrictlyInsideRect(
 }
 
 } // namespace
-
-/**
- *
- * Purpose: names the start-animation ZRDR loaded during play-state startup
- * and late mission restore.
- */
-extern "C" const char g_HudSensorTracker_StartAnimsZrdPath[0x0e] = {
-    'S', 't', 'a', 'r', 't', 'A', 'n', 'i', 'm', 's', '.', 'z', 'r', 'd'
-};
-RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_StartAnimsZrdPath) == 0x0e);
-/**
- *
- * Purpose: selects the saved-game start-animation node during play-state
- * startup and late mission restore.
- */
-extern "C" const char g_RecoilApp_LoadGameStartAnimStateName[0x10] = "LOAD_GAME_START";
-RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_LoadGameStartAnimStateName) == 0x10);
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-init

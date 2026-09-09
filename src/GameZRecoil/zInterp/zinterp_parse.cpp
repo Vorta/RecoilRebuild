@@ -35,56 +35,7 @@ const int kPreparedScriptVersion = 7;
 const double kDegreesToRadians = 0.01745329251994;
 const char kGlobalContextSearchPath[] = ".;zbd";
 const char kCommandNameWeaponSetMaxTetherAltitude[] = "WeaponSetMaxTetherAltitude";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-k-zinterp-tokendelimiters
- * @recoil-artifact defines .data recoil:data:0x4e4918: k_zInterp_TokenDelimiters.
- * Data owner: zInterp_Context initialized globals.
- * BN evidence: char[0x5] ", \t\n"; TokenizeLine passes it to strpbrk
- * while splitting command tokens.
- *
- * Purpose: delimiter set used by zInterp_Context::TokenizeLine.
- */
-char k_zInterp_TokenDelimiters[] = ", \t\n";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-printtokenwithspacefmt
- * @recoil-artifact defines .data recoil:data:0x4e4920: g_zInterp_PrintTokenWithSpaceFmt.
- * Data owner: zInterp parser/runtime initialized format-string run.
- * BN evidence: writable char[0x4] "%s "; adjacent to the DumpVarEntry
- * format strings at 0x4e4924, 0x4e4934, and 0x4e4944.
- *
- * Purpose: printf format used by zInterp_Context::EchoTokens.
- */
-char g_zInterp_PrintTokenWithSpaceFmt[] = "%s ";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-k-zinterp-formatvarint
- * @recoil-artifact defines .data recoil:data:0x4e4924: k_zInterp_FormatVarInt.
- * Data owner: zInterp parser/runtime initialized format-string run.
- * BN evidence: writable char[0xe] "%s = (int) %d"; first DumpVarEntry
- * format string in the contiguous run that starts at 0x4e4920.
- *
- * Purpose: Logf format for integer script variable entries.
- */
-char k_zInterp_FormatVarInt[] = "%s = (int) %d";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-k-zinterp-formatvarfloat
- * @recoil-artifact defines .data recoil:data:0x4e4934: k_zInterp_FormatVarFloat.
- * Data owner: zInterp parser/runtime initialized format-string run.
- * BN evidence: writable char[0x10] "%s = (float) %f"; second DumpVarEntry
- * format string in the contiguous run that starts at 0x4e4920.
- *
- * Purpose: Logf format for floating-point script variable entries.
- */
-char k_zInterp_FormatVarFloat[] = "%s = (float) %f";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-k-zinterp-formatvarstring
- * @recoil-artifact defines .data recoil:data:0x4e4944: k_zInterp_FormatVarString.
- * Data owner: zInterp parser/runtime initialized format-string run.
- * BN evidence: writable char[0x11] "%s = (char*)\"%s\""; final DumpVarEntry
- * format string in the contiguous run that starts at 0x4e4920.
- *
- * Purpose: Logf format for character-pointer script variable entries.
- */
-char k_zInterp_FormatVarString[] = "%s = (char*)\"%s\"";
+
 } // namespace
 
 /**
@@ -112,17 +63,6 @@ char g_zInterp_MacroExpansionScratch[1024];
 extern char g_zInterp_PreparedIndexFileNameStr[];
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-printnodetree-offstring
- * @recoil-artifact defines .data recoil:data:0x4de4c0: g_zInterp_PrintNodeTree_OffString.
- * Data owner: zInterp_Context initialized globals.
- * BN evidence: writable char[0x4] "OFF"; DispatchCoreCommand references it
- * when reporting Object3DSetScroll with a missing current node.
- *
- * Purpose: shared OFF text for Object3D scroll command diagnostics.
- */
-char g_zInterp_PrintNodeTree_OffString[] = "OFF";
-
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-enablepreparedscripts
  * @recoil-artifact defines .data recoil:data:0x4e48f0: g_zInterp_EnablePreparedScripts.
  * Data owner: zInterp_Context initialized globals.
@@ -140,37 +80,6 @@ int g_zInterp_EnablePreparedScripts = 1;
  * Purpose: controls script parser logging verbosity.
  */
 int g_zInterp_VerboseLevel = 0;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-assigntoken-equal
- * @recoil-artifact defines .data recoil:data:0x4e4988: g_zInterp_AssignToken_Equal.
- * Data owner: zInterp_Context initialized globals.
- *
- * Purpose: single-character assignment token used by variable binding.
- */
-char g_zInterp_AssignToken_Equal = '=';
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-k-zinterp-printnodetreeformat
- * @recoil-artifact defines .data recoil:data:0x4e4a28: k_zInterp_PrintNodeTreeFormat.
- * Data owner: zInterp_Context initialized globals.
- * BN evidence: writable char[0x6] "%*s%s"; PrintNodeTree passes it to Logf
- * for indentation and node-name output.
- *
- * Purpose: printf format used by zInterp_Context::PrintNodeTree.
- */
-char k_zInterp_PrintNodeTreeFormat[] = "%*s%s";
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-scrollalwaysnodename
- * @recoil-artifact defines .data recoil:data:0x4e5af8: g_zInterp_ScrollAlwaysNodeName.
- * Data owner: zInterp parser/runtime initialized object command literals.
- * BN evidence: writable char[0xd] "ScrollAlways"; RegisterScrollAlwaysNode
- * passes this storage to gwNodeSetName for the driver callback node.
- *
- * Purpose: node name assigned to the texture-scroll driver object.
- */
-char g_zInterp_ScrollAlwaysNodeName[] = "ScrollAlways";
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-object3dcommandintscratch
@@ -234,15 +143,6 @@ char *g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameStr;
  * Purpose: backing storage for the default prepared script index path.
  */
 char g_zInterp_PreparedIndexFileNameStr[] = "interp.zbd";
-
-/**
- * Data owner: zInterp parser/runtime initialized file-mode literal.
- * BN evidence: writable char[0x2] "r"; RunScriptFile passes this exact
- * storage to fopen when prepared-script input is unavailable.
- *
- * Purpose: read-mode string used when opening plain script files.
- */
-extern "C" char g_zEffectAnim_FileModeRead[] = "r";
 
 /**
  * Candidate initialized-data preservation, not an accepted source owner.
@@ -735,7 +635,7 @@ int zInterp_Context::TokenizeLine(
 
     char *separator = strpbrk(
         cursor,
-        k_zInterp_TokenDelimiters
+        ", \t\n"
     );
     while (separator != 0) {
         tokenList[tokenCount++] = cursor;
@@ -753,7 +653,7 @@ int zInterp_Context::TokenizeLine(
 
         separator = strpbrk(
             cursor,
-            k_zInterp_TokenDelimiters
+            ", \t\n"
         );
     }
 
@@ -798,7 +698,7 @@ int zInterp_Context::RunScriptFile(
     if (scriptFile == 0) {
         scriptFile = fopen(
             filePath,
-            g_zEffectAnim_FileModeRead
+            "r"
         );
         ++includeDepth;
     }
@@ -970,7 +870,7 @@ int zInterp_Context::SetMacro(
 int zInterp_Context::EchoTokens() {
     for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
         printf(
-            g_zInterp_PrintTokenWithSpaceFmt,
+            "%s ",
             tokenIndex < tokenCount ? tokenList[tokenIndex] : 0
         );
     }
@@ -1142,14 +1042,14 @@ void zInterp_Context::DumpVarEntry(
     if (entry != 0) {
         switch (entry->type) {
         case 0:
-            Logf(this, k_zInterp_FormatVarInt, entry->name, *entry->valuePtr.intPtr);
+            Logf(this, "%s = (int) %d", entry->name, *entry->valuePtr.intPtr);
             break;
         case 1:
-            Logf(this, k_zInterp_FormatVarFloat, entry->name, *entry->valuePtr.floatPtr);
+            Logf(this, "%s = (float) %f", entry->name, *entry->valuePtr.floatPtr);
             break;
         case 2:
             // Retail sign-extends *charPtr before passing it to the %s format.
-            Logf(this, k_zInterp_FormatVarString, entry->name, *entry->valuePtr.charPtr);
+            Logf(this, "%s = (char*)\"%s\"", entry->name, *entry->valuePtr.charPtr);
             break;
         }
     }
@@ -1407,7 +1307,7 @@ int zInterp_Context::HandleBuiltinCommand(
             3
         ) != 0 && strncmp(
             op,
-            &g_zInterp_AssignToken_Equal,
+            "=",
             1
         ) != 0) {
             IncErrorCount();
@@ -1443,7 +1343,7 @@ void zInterp_Context::PrintNodeTree(
     int indent
 ) {
     if (node != 0) {
-        Logf(this, k_zInterp_PrintNodeTreeFormat, indent, " ", node->name);
+        Logf(this, "%*s%s", indent, " ", node->name);
         for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
             PrintNodeTree(node->listB[childIndex], indent + 2);
         }
@@ -3041,7 +2941,7 @@ int zInterp_Context::DispatchCoreCommand(
                     this,
                     "%s %s %.1f %.1f Failed: current_node is NULL",
                     commandToken,
-                    enabled != 0 ? "ON" : g_zInterp_PrintNodeTree_OffString,
+                    enabled != 0 ? "ON" : "OFF",
                     x,
                     y
                 );
@@ -4210,7 +4110,7 @@ bool zInterp_Context::RegisterScrollAlwaysNode(
                     );
                     zClass_Class::gwNodeSetName(
                         scrollAlwaysDriverNode,
-                        g_zInterp_ScrollAlwaysNodeName
+                        "ScrollAlways"
                     );
                     scrollAlwaysDriverNode->callbackContext =
                         (zClass_NodePartial *)(this);

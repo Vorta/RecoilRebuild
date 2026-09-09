@@ -80,10 +80,7 @@ extern "C" char g_HudSensorTracker_ZarSectionName_MissionData[0x0c];
 extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4];
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4];
-extern "C" char g_HudSensorTracker_ZarHandlerName_MissionLate[0x0c];
-extern "C" char g_HudSensorTracker_ZarHandlerName_Mission[0x08];
-extern "C" char g_HudSensorTracker_LateMissionDataSectionName[0x10];
-extern "C" const char g_HudSensorTracker_StartAnimsZrdPath[0x0e];
+
 extern "C" char g_HudSensorTracker_DisplayNodeName[0x08];
 extern "C" char g_HudSensorTracker_WindowNodeName[0x08];
 extern "C" char g_HudSensorTracker_CameraNodeName[0x08];
@@ -425,14 +422,14 @@ int HudSensorTracker::ApplyMissionDataAndReload(
  */
 void HudSensorTracker::RegisterMissionSectionHandlers() {
     zUtil_ZAR::RegisterSectionHandler(
-        g_HudSensorTracker_ZarHandlerName_Mission,
+        "Mission",
         (zZbdSectionCallback)(&HudSensorTracker::ZarMission_SaveCallback),
         (zZbdSectionCallback)(&HudSensorTracker::ZarMission_RestoreCallback),
         0,
         this
     );
     zUtil_ZAR::RegisterSectionHandler(
-        g_HudSensorTracker_ZarHandlerName_MissionLate,
+        "MissionLate",
         (zZbdSectionCallback)(&HudSensorTracker::ZarMissionLate_SaveCallback),
         (zZbdSectionCallback)(&HudSensorTracker::ZarMissionLate_RestoreCallback),
         0x7d0,
@@ -485,7 +482,7 @@ void __fastcall HudSensorTracker::ZarMissionLate_SaveCallback(
     unsigned int lateMissionData = 1;
     zUtil_ZAR::WriteSectionBlob(
         writer,
-        g_HudSensorTracker_LateMissionDataSectionName,
+        "LateMissionData",
         &lateMissionData,
         sizeof(lateMissionData)
     );
@@ -504,8 +501,8 @@ void __fastcall HudSensorTracker::ZarMissionLate_RestoreCallback(
     HudSensorTracker *self
 ) {
     self->RunStartAnimsFromZrd(
-        g_HudSensorTracker_StartAnimsZrdPath,
-        g_RecoilApp_LoadGameStartAnimStateName
+        "StartAnims.zrd",
+        "LOAD_GAME_START"
     );
 }
 
@@ -2294,7 +2291,7 @@ int RecoilApp_MpExitDialogState::OnTryBecomeCurrent() {
         zVideo::GetPrimarySurfacePitch()
     );
 
-    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
+    zSndSampleSet_InitByName("DIALOG");
     zInput::BindMapContext_Push(0);
     zInput::BindMapCurrent_ResetAllBindings();
 
@@ -2320,7 +2317,7 @@ void RecoilApp_MpExitDialogState::OnDeactivate() {
     g_HudUiMpExitDialog = 0;
     zInput::BindMapContext_Pop();
     Sleep(1000);
-    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
+    zSndSampleSet_DestroyByName("DIALOG");
     HudScoreboard::SetScaleAndRebuild(0.0f);
 }
 
@@ -3021,7 +3018,7 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
         pitchBytes
     );
 
-    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
+    zSndSampleSet_InitByName("DIALOG");
 
     HudUiNetGameSetupPanel *panel =
         (HudUiNetGameSetupPanel *) ::operator new(sizeof(HudUiNetGameSetupPanel));
@@ -3049,7 +3046,7 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
  */
 void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
     Sleep(1000);
-    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
+    zSndSampleSet_DestroyByName("DIALOG");
 
     HudUiNetGameSetupPanel *panel = (HudUiNetGameSetupPanel *)m_dialog;
     if (panel == 0) {

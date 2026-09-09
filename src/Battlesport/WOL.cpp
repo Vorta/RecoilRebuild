@@ -229,9 +229,6 @@ const DWORD kFailureDisplaySleepMs = 1000;
     } while (0)
 } // namespace
 
-
-
-
 #include "Battlesport/wol_api_event_sink.h"
 
 #include "Battlesport/game_net.h"
@@ -409,8 +406,6 @@ __inline HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::QueryInterface(
 
 #include "Battlesport/wol_ref_count_and_lock.h"
 
-
-
 #include "Battlesport/wol_config_dialog.h"
 
 #include "Battlesport/wol_api.h"
@@ -560,8 +555,6 @@ WestwoodOnlineUpgradeConfigDialog * WestwoodOnlineUpgradeConfigDialog::Construct
 void WestwoodOnlineUpgradeConfigDialog::Destructor() {
     this->WestwoodOnlineUpgradeConfigDialog::~WestwoodOnlineUpgradeConfigDialog();
 }
-
-
 
 #include "Battlesport/wol_dialog.h"
 
@@ -983,8 +976,6 @@ WestwoodOnlineUpgradeDialog * WestwoodOnlineUpgradeDialog::Constructor(
     return this;
 }
 
-
-
 #include "Battlesport/wol_dialog.h"
 
 #include "Battlesport/wol_download.h"
@@ -1065,8 +1056,6 @@ const zCom::InterfaceMapEntry g_WestwoodOnlineUpgradeDownloadEventSink_Interface
 };
 
 namespace {
-const char kDownloadFinishedStatusText[] = "Finished!";
-const char kDownloadErrorStatusText[] = "ERROR";
 const char kDownloadProgressStatusText[] = "Bytes read: %d / %d";
 const char kDownloadProgressWithTimeStatusText[] = "Bytes read: %d / %d.    Time left: %d seconds";
 const char kDownloadStateConnectingText[] = "Connecting...";
@@ -1087,9 +1076,6 @@ RECOIL_STATIC_ASSERT(
         m_refCountAndLock
     ) == 0x04
 );
-
-
-
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-updatesessionlistqueryfromcontrols
@@ -5093,7 +5079,7 @@ HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
  * Purpose: Marks the upgrade download dialog as finished and reports success to COM.
  */
 HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished() {
-    WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(kDownloadFinishedStatusText);
+    WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt("Finished!");
     g_WestwoodOnlineUpgradeDownloadDialogResult = 1;
     return S_OK;
 }
@@ -5108,7 +5094,7 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFini
 HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError(
     HRESULT
 ) {
-    WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(kDownloadErrorStatusText);
+    WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt("ERROR");
     Sleep(kDownloadErrorStatusSleepMs);
     g_WestwoodOnlineUpgradeDownloadDialogResult = -1;
     return S_OK;

@@ -89,7 +89,7 @@ extern int g_RecoilApp_WindowClassRegistered;
 extern "C" HINSTANCE g_RecoilApp_hInstance;
 extern "C" int g_RecoilApp_AttractFmvReloadMode;
 extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
-extern "C" const char g_HudUiMgr_HudArchiveName[0x07];
+
 extern "C" const char g_HudLoading_StopAllSoundsMsg[0x10];
 
 AFX_MODULE_STATE *__stdcall AfxGetModuleState();
@@ -1101,10 +1101,10 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
     }
     zOpt::SetEffectsLevelForCurrentHwMode(effectsLevel);
 
-    HudUiMgr::EnsureHudLoaded(g_HudUiMgr_HudArchiveName);
+    HudUiMgr::EnsureHudLoaded("hud.zrd");
     HudUiLoadingCheckpoint::InitTable();
-    HudUiLoadingCheckpoint::AdvanceAndLog(g_RecoilApp_LoadingCommonSoundsMsg);
-    zSndSampleSet_InitByName(g_RecoilApp_CommonSoundsSampleSetName);
+    HudUiLoadingCheckpoint::AdvanceAndLog("Loading common sounds");
+    zSndSampleSet_InitByName("COMMON");
 
     Briefing::StartForMission(g_HudSensorTracker.GetMissionId());
 
@@ -1160,13 +1160,13 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
         zUtil::ZAR_LoadFileGlobal(pendingLoadPath);
         free(pendingLoadPath);
         pPendingLoadGameStartPath = 0;
-        startAnimNodeName = g_RecoilApp_LoadGameStartAnimStateName;
+        startAnimNodeName = "LOAD_GAME_START";
     } else {
         startAnimNodeName = g_RecoilApp_NewGameStartAnimStateName;
     }
 
     g_HudSensorTracker.RunStartAnimsFromZrd(
-        g_HudSensorTracker_StartAnimsZrdPath,
+        "StartAnims.zrd",
         startAnimNodeName
     );
 
@@ -3102,8 +3102,6 @@ void CZRecoilFrame::OnUpdateVideoMode7CmdUI(
         m_videoModeCmdUiState[5]
     );
 }
-
-
 
 /**
  *
@@ -6024,49 +6022,6 @@ void GameNetPlayerRow::DestroyEmbeddedPanel() {
 
 namespace GameNet {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 } // namespace GameNet
 
 #if defined(_MSC_VER) && defined(_M_IX86)
@@ -6429,32 +6384,7 @@ const char g_RecoilApp_MissionFmvTagTemplate[0x04] = "M0";
  */
 extern "C" const char g_RecoilApp_NewGameStartAnimStateName[0x0f] = "NEW_GAME_START";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_NewGameStartAnimStateName) == 0x0f);
-/**
- *
- * Purpose: names the common sound sample set loaded at play-state startup.
- */
-extern "C" const char g_RecoilApp_CommonSoundsSampleSetName[0x06] = {
-    'C', 'O', 'M', 'M', 'O', 'N'
-};
-RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_CommonSoundsSampleSetName) == 0x06);
-/**
- *
- * Purpose: labels the loading checkpoint logged before the common sound set
- * is initialized.
- */
-extern "C" const char g_RecoilApp_LoadingCommonSoundsMsg[0x15] = {
-    'L', 'o', 'a', 'd', 'i', 'n', 'g', ' ', 'c', 'o', 'm',
-    'm', 'o', 'n', ' ', 's', 'o', 'u', 'n', 'd', 's'
-};
-RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_LoadingCommonSoundsMsg) == 0x15);
-/**
- *
- * Purpose: names the HUD archive loaded when play state becomes current.
- */
-extern "C" const char g_HudUiMgr_HudArchiveName[0x07] = {
-    'h', 'u', 'd', '.', 'z', 'r', 'd'
-};
-RECOIL_STATIC_ASSERT(sizeof(g_HudUiMgr_HudArchiveName) == 0x07);
+
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.g-zfmv-grandprizescriptname
  * @recoil-artifact defines .data recoil:data:0x4dccb0: g_zFMV_GrandPrizeScriptName.
@@ -6770,27 +6700,6 @@ int g_RecoilApp_WindowClassRegistered = 0;
  */
 int g_RecoilApp_AttractFmvReloadMode = 1;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-destructor-recoilapp-mfcolemodule
@@ -8421,7 +8330,7 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
         }
         action->End();
 
-        zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
+        zSndSampleSet_InitByName("DIALOG");
     }
 
     HudUiSaveLoadDialog *dialog = 0;
@@ -8539,7 +8448,7 @@ void RecoilStateSaveLoadTransition::OnDeactivate() {
         return;
     }
 
-    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
+    zSndSampleSet_DestroyByName("DIALOG");
 
     zSndPlayHandleSnapshot *const audioSnapshot =
         (zSndPlayHandleSnapshot *)((unsigned int)m_pausedAudioSnapshot);
@@ -8597,9 +8506,6 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
         0
     );
 }
-
-
-
 
 /**
  * Source model note: the ordinary empty RecoilApp_MainMenuPrepState::OnDeactivate

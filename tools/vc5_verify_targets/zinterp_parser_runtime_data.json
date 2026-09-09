@@ -1,31 +1,8 @@
 {
   "name": "zinterp_parser_runtime_data",
-  "description": "zInterp parser/runtime scratch and token data symbols.",
+  "description": "zInterp parser/runtime scratch and token data symbols. Native string literals use compiler-generated identities; source variable names are retained only as historical navigation labels.",
   "source_filename": "zinterp_parse.cpp",
   "source_from": "src/GameZRecoil/zInterp/zinterp_parse.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
-  "include_dirs": [
-    "src",
-    "tools/_recoil/compat/include",
-    "src/GameZRecoil/include",
-    "src/GameZRecoil/zClass",
-    "src/GameZRecoil/zEffect",
-    "src/GameZRecoil/zError",
-    "src/GameZRecoil/zInterp",
-    "src/GameZRecoil/zModel",
-    "src/GameZRecoil/zReader",
-    "src/GameZRecoil/zRender",
-    "src/GameZRecoil/zSound",
-    "src/GameZRecoil/zUtil",
-    "src/GameZRecoil/zVideo",
-    "src/GameZRecoil/zWeapon",
-    "src/Battlesport",
-    "support/sdk/DirectX6/include",
-    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
-  ],
-  "source_files": [
-    "src/GameZRecoil/zInterp/zinterp_parse.cpp"
-  ],
   "data_symbols": [
     {
       "address": "0x4daf54",
@@ -42,7 +19,7 @@
     },
     {
       "address": "0x4df81c",
-      "symbol": "_g_zEffectAnim_FileModeRead",
+      "symbol": "??_C@_01LHO@r?$AA@",
       "name": "g_zEffectAnim_FileModeRead",
       "bn_name": "g_zEffectAnim_FileModeRead",
       "byte_length": 2
@@ -90,10 +67,10 @@
     },
     {
       "address": "0x4e4988",
-      "symbol": "?g_zInterp_AssignToken_Equal@@3DA",
+      "symbol": "??_C@_01KPOD@?$DN?$AA@",
       "name": "g_zInterp_AssignToken_Equal",
       "bn_name": "g_zInterp_AssignToken_Equal",
-      "byte_length": 1
+      "byte_length": 2
     },
     {
       "address": "0x4e4958",
@@ -244,49 +221,49 @@
     },
     {
       "address": "0x4e4918",
-      "symbol_regex": "\\?k_zInterp_TokenDelimiters@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
       "name": "k_zInterp_TokenDelimiters",
       "bn_name": "k_zInterp_TokenDelimiters",
-      "byte_length": 5
+      "byte_length": 5,
+      "symbol": "??_C@_04PFCH@?0?5?7?6?$AA@"
     },
     {
       "address": "0x4e4920",
-      "symbol_regex": "\\?g_zInterp_PrintTokenWithSpaceFmt@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
       "name": "g_zInterp_PrintTokenWithSpaceFmt",
       "bn_name": "g_zInterp_PrintTokenWithSpaceFmt",
-      "byte_length": 4
+      "byte_length": 4,
+      "symbol": "??_C@_03CENI@?$CFs?5?$AA@"
     },
     {
       "address": "0x4e4924",
-      "symbol_regex": "\\?k_zInterp_FormatVarInt@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
       "name": "k_zInterp_FormatVarInt",
       "bn_name": "k_zInterp_FormatVarInt",
-      "byte_length": 14
+      "byte_length": 14,
+      "symbol": "??_C@_0O@INIA@?$CFs?5?$DN?5?$CIint?$CJ?5?$CFd?$AA@"
     },
     {
       "address": "0x4e4934",
-      "symbol_regex": "\\?k_zInterp_FormatVarFloat@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
       "name": "k_zInterp_FormatVarFloat",
       "bn_name": "k_zInterp_FormatVarFloat",
-      "byte_length": 16
+      "byte_length": 16,
+      "symbol": "??_C@_0BA@IBD@?$CFs?5?$DN?5?$CIfloat?$CJ?5?$CFf?$AA@"
     },
     {
       "address": "0x4e4944",
-      "symbol_regex": "\\?k_zInterp_FormatVarString@\\?%(?:.*[\\\\/])?zinterp_parse\\.cpp[0-9]+@@3PADA",
       "name": "k_zInterp_FormatVarString",
       "bn_name": "k_zInterp_FormatVarString",
-      "byte_length": 17
+      "byte_length": 17,
+      "symbol": "??_C@_0BB@MLJN@?$CFs?5?$DN?5?$CIchar?$CK?$CJ?$CC?$CFs?$CC?$AA@"
     },
     {
       "address": "0x4de4c0",
-      "symbol": "?g_zInterp_PrintNodeTree_OffString@@3PADA",
+      "symbol": "??_C@_03CMJG@OFF?$AA@",
       "name": "g_zInterp_PrintNodeTree_OffString",
       "bn_name": "g_zInterp_PrintNodeTree_OffString",
       "byte_length": 4
     },
     {
       "address": "0x4e4a28",
-      "symbol": "?k_zInterp_PrintNodeTreeFormat@@3PADA",
+      "symbol": "??_C@_05MGPJ@?$CF?$CKs?$CFs?$AA@",
       "name": "k_zInterp_PrintNodeTreeFormat",
       "bn_name": "k_zInterp_PrintNodeTreeFormat",
       "byte_length": 6
@@ -536,10 +513,11 @@
     },
     {
       "address": "0x4e5af8",
-      "symbol": "?g_zInterp_ScrollAlwaysNodeName@@3PADA",
+      "symbol": "??_C@_0N@MGGO@ScrollAlways?$AA@",
       "name": "g_zInterp_ScrollAlwaysNodeName",
       "bn_name": "g_zInterp_ScrollAlwaysNodeName",
       "byte_length": 13
     }
-  ]
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

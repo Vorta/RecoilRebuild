@@ -761,9 +761,7 @@ char g_Player_ConfigNode_Stealth[8] = "stealth";
  * Purpose: stores the plan-tracked g_Player_DisplayName_Stealth gameplay data symbol.
  */
 char g_Player_DisplayName_Stealth[8] = "Stealth";
-char g_Player_CopterSndName[11] = {
-    's', 'n', 'd', '_', 'c', 'h', 'o', 'p', 'p', 'e', 'r'
-};
+
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-lowshieldsndname
  * @recoil-artifact defines .data recoil:data:0x4dc3b0: g_Player_LowShieldSndName.
@@ -878,9 +876,7 @@ char g_Player_ConfigKey_CameraZone[12] = "camera_zone";
  * Purpose: stores the plan-tracked g_Player_ConfigArchiveName gameplay data symbol.
  */
 char g_Player_ConfigArchiveName[11] = "player.zrd";
-char g_Player_BftSplashAnimName[9] = {
-    'b', 'f', 't', 's', 'p', 'l', 'a', 's', 'h'
-};
+
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-nodename-horizon
  * @recoil-artifact defines .data recoil:data:0x4dc4cc: g_Player_NodeName_Horizon.
@@ -1075,18 +1071,7 @@ char g_Player_NodeName_LeftMorphs[12] = "left_morphs";
 char g_Player_NodeName_RightMorphs[13] = "right_morphs";
 char g_Player_MasterModalDataMissingFmt[38] =
     "Cannot find Master Modal Data for %s!";
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-player-collisionpointnodenamefmt
- * @recoil-artifact defines .data recoil:data:0x4dc6d0: g_Player_CollisionPointNodeNameFmt.
- * Purpose: stores the plan-tracked g_Player_CollisionPointNodeNameFmt gameplay data symbol.
- */
-char g_Player_CollisionPointNodeNameFmt[12] = "collide%02d";
-/**
- * @recoil-anchor recoil:anchor:battlesport-player-g-player-supportpointnodenamefmt
- * @recoil-artifact defines .data recoil:data:0x4dc6dc: g_Player_SupportPointNodeNameFmt.
- * Purpose: stores the plan-tracked g_Player_SupportPointNodeNameFmt gameplay data symbol.
- */
-char g_Player_SupportPointNodeNameFmt[12] = "support%02d";
+
 /**
  * Storage group: Player master ZRD record-loader writable literals.
  * BN types these as writable .data char arrays used by
@@ -1692,8 +1677,6 @@ RECOIL_STATIC_ASSERT(
 #define PlayerZrdArrayString(node, index) \
     (PlayerZrdArrayBase(node)[index].value.str)
 
-
-
 /**
  * Original-source helper evidence: no standalone retail function exists.
  * Observed in callers 0x41fe90 and 0x422170 as repeated integer fetches from
@@ -1998,23 +1981,6 @@ void PlayerRefreshPreviousWeaponControllerHud(
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 } // namespace
 
 /**
@@ -2269,9 +2235,6 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
     }
 }
 
-
-
-
 namespace zVehicle {
 
 
@@ -2279,67 +2242,17 @@ namespace zVehicle {
 
 namespace Player_TopMsgPanel1 {
 
-
-
 } // namespace Player_TopMsgPanel1
 
 namespace Player_TopMsgPanel2 {
-
-
 
 } // namespace Player_TopMsgPanel2
 
 namespace PlayerNodeFlagRestore {
 
-
-
-
-
 } // namespace PlayerNodeFlagRestore
 
 namespace Player {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 } // namespace Player
 
@@ -2354,15 +2267,6 @@ namespace Player {
 namespace Player {
 
 } // namespace Player
-
-
-
-
-
-
-
-
-
 
 #include "GameZRecoil/zCom/zCom.h"
 
@@ -2723,16 +2627,6 @@ zVec3 Vec3Cross(
  * original player.cpp address provenance for focused source guards.
  */
 
-
-
-
-
-
-
-
-
-
-
 } // namespace Player
 
 namespace PlayerPickupContact {
@@ -2741,132 +2635,6 @@ namespace PlayerPickupContact {
 } // namespace PlayerPickupContact
 
 namespace Player {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * Original-source static helper; no standalone retail function exists.
@@ -3944,7 +3712,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     g_Player_CameraZoneInvRange = 10.0f;
     g_Player_CopterSndNode1 = 0;
     g_Player_CopterSndNode2 = 0;
-    g_Player_BftSplashAnimEntry = zEffectAnim::FindEntryByName(g_Player_BftSplashAnimName);
+    g_Player_BftSplashAnimEntry = zEffectAnim::FindEntryByName("bftsplash");
 
     zReader::Node *playerRoot = zReader::Load(
         g_Player_ConfigArchiveName,
@@ -4209,7 +3977,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     
         g_PlayerStatusMeterRatio = 1.0f;
         g_Hud_LowMeterNextBeepTime = 0.0f;
-        g_Player_CopterSndSample = zSnd::FindSampleByName(g_Player_CopterSndName);
+        g_Player_CopterSndSample = zSnd::FindSampleByName("snd_chopper");
     }
     zReader::Free(playerRoot);
 
@@ -5606,7 +5374,7 @@ int __fastcall BuildCollisionPointsFromModel(
         char nodeName[0x50];
         sprintf(
             nodeName,
-            g_Player_CollisionPointNodeNameFmt,
+            "collide%02d",
             i
         );
         zClass_NodePartial *const collisionNode =
@@ -5668,7 +5436,7 @@ int __fastcall BuildSupportPointsFromModel(
         char nodeName[0x50];
         sprintf(
             nodeName,
-            g_Player_SupportPointNodeNameFmt,
+            "support%02d",
             i
         );
         zClass_NodePartial *const supportNode =
@@ -11881,7 +11649,7 @@ void __cdecl CacheDisableCopterSndNodesAndStopSample() {
             );
             g_Player_CopterSndNode1 = zClass_Class::FindSubNodeByName(
                 copterRoot,
-                g_Player_CopterSndName
+                "snd_chopper"
             );
         }
     }
@@ -11898,7 +11666,7 @@ void __cdecl CacheDisableCopterSndNodesAndStopSample() {
             );
             g_Player_CopterSndNode2 = zClass_Class::FindSubNodeByName(
                 copterRoot,
-                g_Player_CopterSndName
+                "snd_chopper"
             );
         }
     }

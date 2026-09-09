@@ -1,34 +1,22 @@
 {
   "name": "westwood_online_upgrade_download_status_literals_data",
-  "description": "Westwood Online upgrade download event-sink status and progress literal data.",
-  "source_filename": "upgrade_download.cpp",
-  "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
-  "include_dirs": [
-    "src",
-    "tools/_recoil/compat/include",
-    "src/Battlesport",
-    "src/GameZRecoil/include",
-    "support/sdk/DirectX6/include",
-    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
-  ],
-  "source_files": [
-    "src/Battlesport/WOL.cpp"
-  ],
+  "description": "Westwood Online upgrade download event-sink status and progress literal data. Native string literals use compiler-generated identities; source variable names are retained only as historical navigation labels.",
+  "source_filename": "WOL.cpp",
   "source_from": "src/Battlesport/WOL.cpp",
   "data_symbols": [
     {
       "address": "0x4dd48c",
-      "symbol_regex": "_kDownloadFinishedStatusText\\$S[0-9]+",
       "name": "g_WestwoodOnlineUpgradeProgressFinishedText",
       "bn_name": "g_WestwoodOnlineUpgradeProgressFinishedText",
-      "byte_length": 10
+      "byte_length": 10,
+      "symbol": "??_C@_09CDLM@Finished?$CB?$AA@"
     },
     {
       "address": "0x4dd498",
-      "symbol_regex": "_kDownloadErrorStatusText\\$S[0-9]+",
       "name": "g_WestwoodOnlineUpgradeProgressErrorText",
       "bn_name": "g_WestwoodOnlineUpgradeProgressErrorText",
-      "byte_length": 6
+      "byte_length": 6,
+      "symbol": "??_C@_05EFDD@ERROR?$AA@"
     },
     {
       "address": "0x4dd4a0",
@@ -65,5 +53,6 @@
       "bn_name": "g_WestwoodOnlineUpgradeProgressDownloadingPatchText",
       "byte_length": 21
     }
-  ]
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }
