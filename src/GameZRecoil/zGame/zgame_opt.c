@@ -239,59 +239,29 @@ const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x20;
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_loadfromregistry
- * @recoil-artifact defines .text recoil:function:0x4b2960: zGame::Options_LoadFromRegistry.
+ * @recoil-artifact defines .text recoil:function:0x4b2960: zGame::OptionsLoadFromRegistry.
  * Purpose: load registered option payloads from the configured registry keys.
  */
-RECOIL_NO_GS int __cdecl Options_LoadFromRegistry() {
+RECOIL_NO_GS int __cdecl OptionsLoadFromRegistry() {
     const size_t subKeyLength = strlen(g_zGame_Options_RegKeyVersionSegment) +
                                 strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
                                 strlen(g_zGame_Options_RegKeyGame) + 1;
     char *const subKey = (char *)(_alloca((subKeyLength + 3u) & ~(size_t)(3u)));
-    strcpy(
-        subKey,
-        g_zGame_Options_RegRootPrefix
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegKeyRoot
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegPathSeparator
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegKeyCurrentUser
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegPathSeparator
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegKeyGame
-    );
+    strcpy(subKey, g_zGame_Options_RegRootPrefix);
+    strcat(subKey, g_zGame_Options_RegKeyRoot);
+    strcat(subKey, g_zGame_Options_RegPathSeparator);
+    strcat(subKey, g_zGame_Options_RegKeyCurrentUser);
+    strcat(subKey, g_zGame_Options_RegPathSeparator);
+    strcat(subKey, g_zGame_Options_RegKeyGame);
 
     HKEY currentUserKey = 0;
-    if (RegOpenKeyExA(
-        HKEY_CURRENT_USER,
-        subKey,
-        0,
-        KEY_READ,
-        &currentUserKey
-    ) != ERROR_SUCCESS) {
+    if (RegOpenKeyExA(HKEY_CURRENT_USER, subKey, 0, KEY_READ, &currentUserKey) != ERROR_SUCCESS) {
         return 0;
     }
 
     HKEY localMachineKey = 0;
-    if (RegOpenKeyExA(
-        HKEY_LOCAL_MACHINE,
-        subKey,
-        0,
-        KEY_READ,
-        &localMachineKey
-    ) != ERROR_SUCCESS) {
+    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ, &localMachineKey) != ERROR_SUCCESS) {
         RegCloseKey(currentUserKey);
         return 0;
     }
@@ -340,14 +310,7 @@ RECOIL_NO_GS int __cdecl Options_LoadFromRegistry() {
         DWORD actualSize = 0;
         if (RegQueryValueExA(*key, entry->name, 0, &valueType, 0, &actualSize) == ERROR_SUCCESS &&
             actualSize == expectedSize) {
-            RegQueryValueExA(
-                *key,
-                entry->name,
-                0,
-                &valueType,
-                payload,
-                &expectedSize
-            );
+            RegQueryValueExA(*key, entry->name, 0, &valueType, payload, &expectedSize);
         }
     }
 
@@ -358,39 +321,21 @@ RECOIL_NO_GS int __cdecl Options_LoadFromRegistry() {
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_savetoregistry
- * @recoil-artifact defines .text recoil:function:0x4b2bf0: zGame::Options_SaveToRegistry.
+ * @recoil-artifact defines .text recoil:function:0x4b2bf0: zGame::OptionsSaveToRegistry.
  * Purpose: persist registered option payloads to the configured registry keys.
  */
-RECOIL_NO_GS int __cdecl Options_SaveToRegistry() {
+RECOIL_NO_GS int __cdecl OptionsSaveToRegistry() {
     const size_t subKeyLength = strlen(g_zGame_Options_RegKeyVersionSegment) +
                                 strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
                                 strlen(g_zGame_Options_RegKeyGame) + 1;
     char *const subKey = (char *)(_alloca((subKeyLength + 3u) & ~(size_t)(3u)));
-    strcpy(
-        subKey,
-        g_zGame_Options_RegRootPrefix
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegKeyRoot
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegPathSeparator
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegKeyCurrentUser
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegPathSeparator
-    );
-    strcat(
-        subKey,
-        g_zGame_Options_RegKeyGame
-    );
+    strcpy(subKey, g_zGame_Options_RegRootPrefix);
+    strcat(subKey, g_zGame_Options_RegKeyRoot);
+    strcat(subKey, g_zGame_Options_RegPathSeparator);
+    strcat(subKey, g_zGame_Options_RegKeyCurrentUser);
+    strcat(subKey, g_zGame_Options_RegPathSeparator);
+    strcat(subKey, g_zGame_Options_RegKeyGame);
 
     DWORD disposition = 0;
     HKEY currentUserKey = 0;
@@ -460,24 +405,21 @@ RECOIL_NO_GS int __cdecl Options_SaveToRegistry() {
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_getorcreateoption
- * @recoil-artifact defines .text recoil:function:0x4b2e80: zGame::Options_GetOrCreateOption.
+ * @recoil-artifact defines .text recoil:function:0x4b2e80: zGame::OptionsGetOrCreateOption.
  * Purpose: return an existing option entry or allocate and link a typed option record.
  */
-zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
+zOptionEntryPartial *__fastcall OptionsGetOrCreateOption(
     const char *name,
     int storageType,
     int dataSize,
     int registryScope
 ) {
-    zOptionEntryPartial *result = Options_FindOption(name);
+    zOptionEntryPartial *result = OptionsFindOption(name);
     if (result != 0) {
         return result;
     }
 
-    result = (zOptionEntryPartial *)(calloc(
-        1,
-        sizeof(zOptionEntryPartial)
-    ));
+    result = (zOptionEntryPartial *)(calloc(1, sizeof(zOptionEntryPartial)));
     result->name = _strdup(name);
     result->storageType = storageType;
     result->dataSize = dataSize;
@@ -502,10 +444,7 @@ zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
             free(result);
             return 0;
         }
-        result->payloadOrBuffer = (int)(calloc(
-            1,
-            dataSize
-        ));
+        result->payloadOrBuffer = (int)(calloc(1, dataSize));
         break;
 
     default:
@@ -538,11 +477,7 @@ LPDIRECTSOUND __fastcall AcquireCachedDirectSound(
         g_zSnd_CachedDirectSound = 0;
     }
 
-    if (DirectSoundCreate(
-        (LPGUID)(deviceGuid),
-        &g_zSnd_CachedDirectSound,
-        0
-    ) != DS_OK) {
+    if (DirectSoundCreate((LPGUID)(deviceGuid), &g_zSnd_CachedDirectSound, 0) != DS_OK) {
         return 0;
     }
 
@@ -565,7 +500,7 @@ void __cdecl ReleaseCachedDirectSound() {
  * Purpose: initialize the DirectSound caps structure size and query the cached
  * DirectSound device.
  */
-HRESULT __fastcall CachedDirectSound_GetCaps(
+HRESULT __fastcall CachedDirectSoundGetCaps(
     DSCAPS *caps
 ) {
     caps->dwSize = sizeof(DSCAPS);
@@ -652,10 +587,7 @@ int __cdecl HasMmxSupport() {
     return result != 0 ? 1 : 0;
 #else
     int cpuInfo[4] = {0};
-    __cpuid(
-        cpuInfo,
-        1
-    );
+    __cpuid(cpuInfo, 1);
     return (cpuInfo[3] & 0x800000) != 0 ? 1 : 0;
 #endif
 }
@@ -700,10 +632,7 @@ int __cdecl CheckCpuSignatureMask() {
     }
 #else
     int cpuInfo[4] = {0};
-    __cpuid(
-        cpuInfo,
-        1
-    );
+    __cpuid(cpuInfo, 1);
     return (cpuInfo[0] & 0x630) == 0x630 ? 1 : 0;
 #endif
 }
@@ -721,11 +650,7 @@ zGame_OptionsRuntimeConfig * zGame_OptionsRuntimeConfig::CopyDefault() {
         return &g_zGame_Options_RuntimeConfigDefaults;
     }
 
-    memcpy(
-        this,
-        &g_zGame_Options_RuntimeConfigDefaults,
-        sizeof(*this)
-    );
+    memcpy(this, &g_zGame_Options_RuntimeConfigDefaults, sizeof(*this));
     return this;
 }
 
@@ -761,7 +686,7 @@ RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem() {
     soundHardwareMemKb = 0;
     if (zSnd::AcquireCachedDirectSound(0) != 0) {
         DSCAPS caps;
-        zSnd::CachedDirectSound_GetCaps(&caps);
+        zSnd::CachedDirectSoundGetCaps(&caps);
         soundHardwareMemKb = caps.dwTotalHwMemBytes >> 10;
         zSnd::ReleaseCachedDirectSound();
     }
@@ -799,32 +724,13 @@ RECOIL_NO_GS void zGame_OptionsRuntimeConfig::LoadCpuVendorString() {
         mov dword ptr [edi + 00ch], edx
     }
 #else
-    __cpuid(
-        cpuInfo,
-        0
-    );
+    __cpuid(cpuInfo, 0);
 #endif
     char vendor[0x0c];
-    memcpy(
-        &vendor[0],
-        &cpuInfo[1],
-        4
-    );
-    memcpy(
-        &vendor[4],
-        &cpuInfo[3],
-        4
-    );
-    memcpy(
-        &vendor[8],
-        &cpuInfo[2],
-        4
-    );
-    strncpy(
-        cpuVendor,
-        vendor,
-        0x0c
-    );
+    memcpy(&vendor[0], &cpuInfo[1], 4);
+    memcpy(&vendor[4], &cpuInfo[3], 4);
+    memcpy(&vendor[8], &cpuInfo[2], 4);
+    strncpy(cpuVendor, vendor, 0x0c);
     cpuVendor[0x0c] = '\0';
 }
 
@@ -904,12 +810,12 @@ namespace zGame {
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_initregistrycontext
- * @recoil-artifact defines .text recoil:function:0x4b3260: zGame::Options_InitRegistryContext.
+ * @recoil-artifact defines .text recoil:function:0x4b3260: zGame::OptionsInitRegistryContext.
  * @recoil-match byte
  *
  * Purpose: initialize the registry-key context and reset the option-entry list.
  */
-void __fastcall Options_InitRegistryContext(
+void __fastcall OptionsInitRegistryContext(
     const char *regKeyRoot,
     const char *regKeyCurrentUser,
     const char *regKeyGame
@@ -926,10 +832,10 @@ void __fastcall Options_InitRegistryContext(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_shutdownregistrycontext
- * @recoil-artifact defines .text recoil:function:0x4b32c0: zGame::Options_ShutdownRegistryContext.
+ * @recoil-artifact defines .text recoil:function:0x4b32c0: zGame::OptionsShutdownRegistryContext.
  * Purpose: free the option-entry list and registry-key context globals.
  */
-void __cdecl Options_ShutdownRegistryContext() {
+void __cdecl OptionsShutdownRegistryContext() {
     if (g_zGame_Options_RegContextInitialized == 0) {
         return;
     }
@@ -975,20 +881,17 @@ void __cdecl Options_ShutdownRegistryContext() {
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_findoption
- * @recoil-artifact defines .text recoil:function:0x4b3380: zGame::Options_FindOption.
+ * @recoil-artifact defines .text recoil:function:0x4b3380: zGame::OptionsFindOption.
  * @recoil-match byte
  *
  * Purpose: scan the registered option-entry list for an exact name match.
  */
-zOptionEntryPartial *__fastcall Options_FindOption(
+zOptionEntryPartial *__fastcall OptionsFindOption(
     const char *name
 ) throw() {
     for (zOptionEntryPartial *entry = g_zGame_Options_OptionListHead; entry != 0;
         entry = entry->next) {
-        if (strcmp(
-            name,
-            entry->name
-        ) == 0) {
+        if (strcmp(name, entry->name) == 0) {
             return entry;
         }
     }

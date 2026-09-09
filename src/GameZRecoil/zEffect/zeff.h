@@ -2061,7 +2061,7 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
     float velocityY,
     float velocityZ
 );
-zEffectAnimEntry *__fastcall SetTransformRotAndVelocity_Thunk(
+zEffectAnimEntry *__fastcall SetTransformRotAndVelocityThunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float posX,
@@ -2081,7 +2081,7 @@ zEffectAnimEntry *__fastcall SetVelocity(
     float velocityY,
     float velocityZ
 );
-zEffectAnimEntry *__fastcall SetVelocity_Thunk(
+zEffectAnimEntry *__fastcall SetVelocityThunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float velocityX,
@@ -2095,7 +2095,7 @@ zEffectAnimEntry *__fastcall SetPositionRefAndVelocity(
     const zVec3 *refVec,
     const zVec3 *velocityVec
 );
-zEffectAnimEntry *__fastcall SetPositionRefAndVelocity_Thunk(
+zEffectAnimEntry *__fastcall SetPositionRefAndVelocityThunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNode,
@@ -2110,7 +2110,7 @@ zEffectAnimEntry *__fastcall SetTransformRefs(
     zClass_NodePartial *refNodeB,
     const zVec3 *refVecB
 );
-zEffectAnimEntry *__fastcall SetTransformRefs_Thunk(
+zEffectAnimEntry *__fastcall SetTransformRefsThunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNodeA,

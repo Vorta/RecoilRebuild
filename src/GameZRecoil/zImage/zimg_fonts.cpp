@@ -43,11 +43,7 @@ namespace zImage {
 int __fastcall FontsLoadFromPath(
     const char *path
 ) {
-    zReader::Node *tree = zReader::Load(
-        path,
-        0,
-        0
-    );
+    zReader::Node *tree = zReader::Load(path, 0, 0);
     if (tree == 0) {
         zError::ReportOld(
             0x200,
@@ -59,11 +55,8 @@ int __fastcall FontsLoadFromPath(
         return -1;
     }
 
-    zImage_InitMissionResources("..\\data\\common\\fonts");
-    zReader::Node *fontsNode = zRdrGetNode(
-        tree,
-        g_HudCfgKey_Fonts
-    );
+    zImageInitMissionResources("..\\data\\common\\fonts");
+    zReader::Node *fontsNode = zRdrGetNode(tree, g_HudCfgKey_Fonts);
     if (fontsNode == 0) {
         zError::ReportOld(
             0x800,
@@ -83,7 +76,7 @@ int __fastcall FontsLoadFromPath(
         zImage_Font **slot = &g_zImage_FontTable[i - 1];
         *slot = font;
         const char *fontImagePath = fontArray[i].value.str;
-        font->image = TexDir_FindOrCreateByPath(fontImagePath);
+        font->image = TexDirFindOrCreateByPath(fontImagePath);
         if (font->image != 0) {
             font->image->formatFlagsPacked |= 0x02;
             const int glyphCount = font->BuildGlyphRects();
@@ -129,37 +122,22 @@ int zImage_Font::BuildGlyphRects() {
         glyph->top = 0;
         glyph->bottom = image->height - 1;
 
-        if (IsImageColumnTransparent(
-            image,
-            x
-        ) != 0) {
+        if (IsImageColumnTransparent(image, x) != 0) {
             do {
                 ++x;
-            } while (IsImageColumnTransparent(
-                image,
-                x
-            ) != 0);
+            } while (IsImageColumnTransparent(image, x) != 0);
         }
 
         const int left = x;
-        while (IsImageColumnTransparent(
-            image,
-            x
-        ) == 0) {
+        while (IsImageColumnTransparent(image, x) == 0) {
             ++x;
         }
 
         const int right = x;
-        if (IsImageColumnTransparent(
-            image,
-            x
-        ) != 0) {
+        if (IsImageColumnTransparent(image, x) != 0) {
             do {
                 ++x;
-            } while (IsImageColumnTransparent(
-                image,
-                x
-            ) != 0);
+            } while (IsImageColumnTransparent(image, x) != 0);
         }
 
         x -= (x - right) / 2;

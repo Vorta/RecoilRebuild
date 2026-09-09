@@ -172,79 +172,79 @@ typedef int(__fastcall *zArchiveListCompare)(
     void *
 );
 
-zArchiveList *__cdecl zArchiveList_New();
-int __fastcall zArchiveList_Free(zArchiveList *list);
-void __fastcall zArchiveList_Link(
+zArchiveList *__cdecl zArchiveListNew();
+int __fastcall zArchiveListFree(zArchiveList *list);
+void __fastcall zArchiveListLink(
     zArchiveListNode *after,
     zArchiveListNode *newNode,
     zArchiveListNode *before
 );
-int __fastcall zArchiveList_AddHead(
+int __fastcall zArchiveListAddHead(
     zArchiveList *list,
     void *payload
 );
-int __fastcall zArchiveList_AddTail(
+int __fastcall zArchiveListAddTail(
     zArchiveList *list,
     void *payload
 );
-int __fastcall zArchiveList_Remove(
+int __fastcall zArchiveListRemove(
     zArchiveList *list,
     void *payload
 );
-void *__fastcall zArchiveList_FreeNode(zArchiveListNode *node);
-zArchiveListNode *__fastcall zArchiveList_FindNode(
+void *__fastcall zArchiveListFreeNode(zArchiveListNode *node);
+zArchiveListNode *__fastcall zArchiveListFindNode(
     zArchiveList *list,
     void *payload
 );
-void *__fastcall zArchiveList_RemoveHead(zArchiveList *list);
-zArchiveListNode *__fastcall zArchiveList_AllocNode(void *payload);
-int __fastcall zUtil_ZRDR_SetPath(const char *pathText);
-int __fastcall zUtil_ZRDR_AddPath(const char *pathText);
-int __fastcall zUtil_ZRDR_FreePathList(zArchiveList *list);
-zArchiveList *__fastcall zUtil_ZRDR_FreeSearchPathList(zArchiveList *list);
-void __cdecl zUtil_ZRDR_FreeScratchSearchPathList();
-int __cdecl zUtil_ZRDR_ShutdownWildcardPath();
-void __fastcall zUtil_ZRDR_Unmount(int destroyCurrentToo);
-int __cdecl zUtil_ZRDR_Exit();
-void __cdecl zUtil_ZRDR_FreeNodePool();
-void __cdecl zUtil_ZRDR_GrowNodePool();
-void __fastcall zUtil_ZRDR_FreeNode(zArchiveListNode *node);
+void *__fastcall zArchiveListRemoveHead(zArchiveList *list);
+zArchiveListNode *__fastcall zArchiveListAllocNode(void *payload);
+int __fastcall zRdrSetPath(const char *pathText);
+int __fastcall zRdrAddPath(const char *pathText);
+int __fastcall zRdrFreePathList(zArchiveList *list);
+zArchiveList *__fastcall zRdrFreeSearchPathList(zArchiveList *list);
+void __cdecl zRdrFreeScratchSearchPathList();
+int __cdecl zRdrShutdownWildcardPath();
+void __fastcall zRdrUnmount(int destroyCurrentToo);
+int __cdecl zRdrExit();
+void __cdecl zRdrFreeNodePool();
+void __cdecl zRdrGrowNodePool();
+void __fastcall zRdrFreeNode(zArchiveListNode *node);
 zArchiveListNode *__fastcall zUtil_ZRDR_AllocNode(int allowGrow);
-void *__fastcall zArchiveList_FindCompare(
+void *__fastcall zArchiveListFindCompare(
     zArchiveList *list,
     zArchiveListCompare predicate,
     void *userData
 );
-void *__fastcall zArchiveList_FindKey(
+void *__fastcall zArchiveListFindKey(
     zArchiveList *list,
     unsigned int value
 );
-void *__fastcall zArchiveList_Find(
+void *__fastcall zArchiveListFind(
     zArchiveList *list,
     zArchiveListCompare predicate,
     void *userData
 );
-int __fastcall zUtil_ZRDR_StrCmpPredicate(
+int __fastcall zRdrStrCmpPredicate(
     void *str1,
     void *str2
 );
-int __fastcall zUtil_ZRDR_SearchPathContainsFilePredicate(
+int __fastcall zRdrSearchPathContainsFilePredicate(
     void *searchDir,
     void *filename
 );
-char *__fastcall zUtil_ZRDR_ResolvePathInSearchPathList(
+char *__fastcall zRdrResolvePathInSearchPathList(
     zArchiveList *searchPathList,
     const char *filename
 );
-FILE *__fastcall zUtil_ZRDR_OpenFileResolved(
+FILE *__fastcall zRdrOpenFileResolved(
     zArchiveList *searchPathList,
     const char *filename,
     const char *mode
 );
-char *__fastcall zUtil_ZRDR_InitWildcardPath(char *pattern);
-char *__cdecl zUtil_ZRDR_NextWildcardPath();
-zArchiveList *__fastcall zUtil_ZRDR_CreateSearchPathList(const char *pathText);
-int __fastcall zReader_FileExists_Wrapper(const char *path);
+char *__fastcall zRdrInitWildcardPath(char *pattern);
+char *__cdecl zRdrNextWildcardPath();
+zArchiveList *__fastcall zRdrCreateSearchPathList(const char *pathText);
+int __fastcall zReaderFileExistsWrapper(const char *path);
 zReader::Node *__fastcall zRdrFindNode(
     zReader::Node *node,
     const char *searchName,
@@ -258,7 +258,7 @@ zReader::Node *__fastcall zRdrAllocNode(
     int headerWord,
     int fieldCount
 );
-int __fastcall zReader_ReadString(
+int __fastcall zReaderReadString(
     void *hFile,
     zReader::Value *outString
 );
@@ -268,18 +268,18 @@ int __fastcall zRdrRead(
 );
 void __fastcall zRdrFreeContents(zReader::Node *node);
 void *__fastcall zRdrOpenFile(const char *path);
-int __fastcall zArchiveList_Count(zArchiveList *list);
-void *__fastcall zArchiveList_Get(
+int __fastcall zArchiveListCount(zArchiveList *list);
+void *__fastcall zArchiveListGet(
     zArchiveList *list,
     int index
 );
 }
 
 namespace zUtil {
-void __fastcall ZRDR_InitNodePool(int count);
-int __fastcall ZRDR_Init(const char *pathText);
-int __fastcall ZRDR_GetFileSize(FILE *fileHandle);
-void __fastcall ZRDR_AddSearchPaths(
+void __fastcall zRdrInitNodePool(int count);
+int __fastcall zRdrInit(const char *pathText);
+int __fastcall zRdrGetFileSize(FILE *fileHandle);
+void __fastcall zRdrAddSearchPaths(
     zArchiveList *list,
     const char *pathText
 );

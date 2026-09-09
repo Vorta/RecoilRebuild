@@ -341,11 +341,7 @@ namespace zClass {
         const size_t nodeArrayBytes =
             (size_t)(g_zClass_NodeArraySize) * sizeof(zClass_NodeFreeListSlot);
         g_zClass_NodeArray = (zClass_NodeFreeListSlot *)(malloc(nodeArrayBytes));
-        memset(
-            g_zClass_NodeArray,
-            0,
-            nodeArrayBytes
-        );
+        memset(g_zClass_NodeArray, 0, nodeArrayBytes);
 
         g_zClass_ActiveNodeCount = 0;
         g_zClass_NodeFreeHeadIndex = 0;
@@ -419,12 +415,7 @@ namespace zClass_Util {
      */
     int __fastcall DestroyNodeRecursive(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_ClsUtilC,
-                0x2b6,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, g_zClass_SourceFile_ClsUtilC, 0x2b6, "Null node pointer.");
             return 1;
         }
 
@@ -435,10 +426,7 @@ namespace zClass_Util {
         if (node->listCountB > 0) {
             for (;;) {
                 zClass_NodePartial *child = node->listB[0];
-                const int removeResult = zClass_Class::RemoveChild(
-                    node,
-                    child
-                );
+                const int removeResult = zClass_Class::RemoveChild(node, child);
                 if (removeResult != 0) {
                     return removeResult;
                 }
@@ -458,10 +446,7 @@ namespace zClass_Util {
 
         zDiPartial *displayInstance = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (displayInstance != 0) {
-            const int setResult = zClass_Class::gwNodeSetDisplayInstance(
-                node,
-                0
-            );
+            const int setResult = zClass_Class::gwNodeSetDisplayInstance(node, 0);
             if (setResult != 0) {
                 return setResult;
             }
@@ -495,10 +480,7 @@ namespace zClass_cls_util {
 
         unsigned int displayInstanceValue = 0;
         if (g_zClass_CopyNodeCloneDiMode != 0) {
-            result = zClass_Class::gwNodeGetUserData(
-                source,
-                &displayInstanceValue
-            );
+            result = zClass_Class::gwNodeGetUserData(source, &displayInstanceValue);
             if (result != 0) {
                 return result;
             }
@@ -517,15 +499,9 @@ namespace zClass_cls_util {
                 }
             }
 
-            return zClass_Class::gwNodeSetDisplayInstance(
-                dest,
-                displayInstance
-            );
+            return zClass_Class::gwNodeSetDisplayInstance(dest, displayInstance);
         } else {
-            result = zClass_Class::gwNodeGetUserData(
-                source,
-                &displayInstanceValue
-            );
+            result = zClass_Class::gwNodeGetUserData(source, &displayInstanceValue);
             if (result == 0) {
                 return zClass_Class::gwNodeSetDisplayInstance(
                     dest,
@@ -545,10 +521,7 @@ namespace zClass_cls_util {
         zClass_NodePartial * source,
         zClass_NodePartial * dest
     ) {
-        int result = zClass_Class::gwNodeSetName(
-            dest,
-            source->name
-        );
+        int result = zClass_Class::gwNodeSetName(dest, source->name);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -561,10 +534,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetActive(
-            dest,
-            (source->flags >> 2) & 1
-        );
+        result = zClass_Class::gwNodeSetActive(dest, (source->flags >> 2) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -577,10 +547,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetCellPickable(
-            dest,
-            (source->flags >> 3) & 1
-        );
+        result = zClass_Class::gwNodeSetCellPickable(dest, (source->flags >> 3) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -593,10 +560,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetRaycastable(
-            dest,
-            (source->flags >> 4) & 1
-        );
+        result = zClass_Class::gwNodeSetRaycastable(dest, (source->flags >> 4) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -609,10 +573,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetPickable(
-            dest,
-            (source->flags >> 5) & 1
-        );
+        result = zClass_Class::gwNodeSetPickable(dest, (source->flags >> 5) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -625,10 +586,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetHasHitCallback(
-            dest,
-            (source->flags >> 6) & 1
-        );
+        result = zClass_Class::gwNodeSetHasHitCallback(dest, (source->flags >> 6) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -641,10 +599,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetBypassFarClip(
-            dest,
-            (source->flags >> 7) & 1
-        );
+        result = zClass_Class::gwNodeSetBypassFarClip(dest, (source->flags >> 7) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -657,10 +612,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetFlag16(
-            dest,
-            (source->flags >> 16) & 1
-        );
+        result = zClass_Class::gwNodeSetFlag16(dest, (source->flags >> 16) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -673,10 +625,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetFlag17(
-            dest,
-            (source->flags >> 17) & 1
-        );
+        result = zClass_Class::gwNodeSetFlag17(dest, (source->flags >> 17) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -689,10 +638,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeClearVariantGate(
-            dest,
-            (source->flags >> 24) & 1
-        );
+        result = zClass_Class::gwNodeClearVariantGate(dest, (source->flags >> 24) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -705,10 +651,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetVertexAlphaOverride(
-            dest,
-            (source->flags >> 23) & 1
-        );
+        result = zClass_Class::gwNodeSetVertexAlphaOverride(dest, (source->flags >> 23) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -724,10 +667,7 @@ namespace zClass_cls_util {
         dest->flags |= source->flags & 0x70000000;
         dest->auxFlags = source->auxFlags;
 
-        result = CopyNodeDisplayInstance(
-            source,
-            dest
-        );
+        result = CopyNodeDisplayInstance(source, dest);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -751,10 +691,7 @@ namespace zClass_cls_util {
         }
         dest->callbackContext = 0;
 
-        result = zClass_Class::gwNodeSetPriority(
-            dest,
-            source->callbackPriority
-        );
+        result = zClass_Class::gwNodeSetPriority(dest, source->callbackPriority);
         if (result != 0) {
             zError::ReportOld(
                 0x100,
@@ -767,10 +704,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetActionCallback(
-            dest,
-            source->actionCallback
-        );
+        result = zClass_Class::gwNodeSetActionCallback(dest, source->actionCallback);
         if (result != 0) {
             zError::ReportOld(
                 0x100,
@@ -783,10 +717,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetNodeType(
-            dest,
-            source->nodeType
-        );
+        result = zClass_Class::gwNodeSetNodeType(dest, source->nodeType);
         if (result != 0) {
             zError::ReportOld(
                 0x100,
@@ -815,10 +746,7 @@ namespace zClass_cls_util {
             return camera;
         }
 
-        if (CopyNodeBaseData(
-            source,
-            camera
-        ) != 0) {
+        if (CopyNodeBaseData(source, camera) != 0) {
             zError::ReportOld(
                 0x100,
                 g_zClass_SourceFile_ClsUtilC,
@@ -832,16 +760,10 @@ namespace zClass_cls_util {
         }
 
         zClass_CameraDataPartial *const data = (zClass_CameraDataPartial *)(source->classData);
-        if (zClass_Camera::gwCameraSetWorld(
-            camera,
-            data->worldNode
-        ) != 0) {
+        if (zClass_Camera::gwCameraSetWorld(camera, data->worldNode) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetWindow(
-            camera,
-            data->windowNode
-        ) != 0) {
+        if (zClass_Camera::gwCameraSetWindow(camera, data->windowNode) != 0) {
             return 0;
         }
         if (zClass_Camera::gwCameraSetTarget(
@@ -860,33 +782,19 @@ namespace zClass_cls_util {
             ) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetNearFarClip(
-            camera,
-            data->nearClip,
-            data->farClip
-        ) != 0) {
+        if (zClass_Camera::gwCameraSetNearFarClip(camera, data->nearClip, data->farClip) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetClipDistance(
-            camera,
-            data->clipDistance
-        ) != 0) {
+        if (zClass_Camera::gwCameraSetClipDistance(camera, data->clipDistance) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetFOV(
-            camera,
-            data->fovX,
-            data->fovY
-        ) != 0) {
+        if (zClass_Camera::gwCameraSetFOV(camera, data->fovX, data->fovY) != 0) {
             return 0;
         }
 
         for (int i = 0; i < source->listCountB; ++i) {
             zClass_NodePartial *const child = CopyNodeDispatch(source->listB[i]);
-            if (child == 0 || zClass_Camera::gwCameraAddChild(
-                camera,
-                child
-            ) != 0) {
+            if (child == 0 || zClass_Camera::gwCameraAddChild(camera, child) != 0) {
                 return 0;
             }
         }
@@ -896,10 +804,10 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copylightnode-unimplemented
-     * @recoil-artifact defines .text recoil:function:0x4520c0: zClass_cls_util::CopyLightNode_Unimplemented
+     * @recoil-artifact defines .text recoil:function:0x4520c0: zClass_cls_util::CopyLightNode
      * Purpose: preserve the retail unimplemented light-node copy path.
      */
-    zClass_NodePartial *__fastcall CopyLightNode_Unimplemented(
+    zClass_NodePartial *__fastcall CopyLightNode(
         zClass_NodePartial *
     ) {
         zError::ReportOld(
@@ -913,10 +821,10 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copysoundnode-unimplemented
-     * @recoil-artifact defines .text recoil:function:0x4520e0: zClass_cls_util::CopySoundNode_Unimplemented
+     * @recoil-artifact defines .text recoil:function:0x4520e0: zClass_cls_util::CopySoundNode
      * Purpose: preserve the retail unimplemented sound-node copy path.
      */
-    zClass_NodePartial *__fastcall CopySoundNode_Unimplemented(
+    zClass_NodePartial *__fastcall CopySoundNode(
         zClass_NodePartial *
     ) {
         zError::ReportOld(
@@ -941,10 +849,7 @@ namespace zClass_cls_util {
             return parent;
         }
 
-        if (CopyNodeBaseData(
-            source,
-            parent
-        ) != 0) {
+        if (CopyNodeBaseData(source, parent) != 0) {
             zError::ReportOld(
                 0x100,
                 g_zClass_SourceFile_ClsUtilC,
@@ -958,25 +863,16 @@ namespace zClass_cls_util {
         }
 
         zClass_Object3DDataPartial *const data = (zClass_Object3DDataPartial *)(source->classData);
-        if (zClass_Object3D::gwObject3DSetAlphaScale(
-            parent,
-            data->alphaScale
-        ) != 0) {
+        if (zClass_Object3D::gwObject3DSetAlphaScale(parent, data->alphaScale) != 0) {
             return 0;
         }
-        if (zClass_Object3D::gwObject3DSetLitFlag(
-            parent,
-            (data->flags >> 1) & 1
-        ) != 0) {
+        if (zClass_Object3D::gwObject3DSetLitFlag(parent, (data->flags >> 1) & 1) != 0) {
             return 0;
         }
 
         if ((data->flags & 0x08) == 0) {
             if ((data->flags & 0x10) != 0) {
-                if (zClass_Object3D::gwObject3DSetMatrix(
-                    parent,
-                    data->localMatrix
-                ) != 0) {
+                if (zClass_Object3D::gwObject3DSetMatrix(parent, data->localMatrix) != 0) {
                     return 0;
                 }
             } else {
@@ -1009,10 +905,7 @@ namespace zClass_cls_util {
 
         for (int i = 0; i < source->listCountB; ++i) {
             zClass_NodePartial *const child = CopyNodeDispatch(source->listB[i]);
-            if (child != 0 && zClass_Object3D::gwObject3DAddChild(
-                parent,
-                child
-            ) != 0) {
+            if (child != 0 && zClass_Object3D::gwObject3DAddChild(parent, child) != 0) {
                 return 0;
             }
         }
@@ -1022,10 +915,10 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copyanimatenode-unimplemented
-     * @recoil-artifact defines .text recoil:function:0x452230: zClass_cls_util::CopyAnimateNode_Unimplemented
+     * @recoil-artifact defines .text recoil:function:0x452230: zClass_cls_util::CopyAnimateNode
      * Purpose: preserve the retail unimplemented animate-node copy path.
      */
-    zClass_NodePartial *__fastcall CopyAnimateNode_Unimplemented(
+    zClass_NodePartial *__fastcall CopyAnimateNode(
         zClass_NodePartial *
     ) {
         zError::ReportOld(
@@ -1048,10 +941,7 @@ namespace zClass_cls_util {
             return parent;
         }
 
-        if (CopyNodeBaseData(
-            source,
-            parent
-        ) != 0) {
+        if (CopyNodeBaseData(source, parent) != 0) {
             zError::ReportOld(
                 0x100,
                 g_zClass_SourceFile_ClsUtilC,
@@ -1065,10 +955,7 @@ namespace zClass_cls_util {
         }
 
         zClass_LodDataPartial *const sourceData = (zClass_LodDataPartial *)(source->classData);
-        if (zClass_Lod::SetComputeOwnDistance(
-            parent,
-            sourceData->computeOwnDistance
-        ) != 0) {
+        if (zClass_Lod::SetComputeOwnDistance(parent, sourceData->computeOwnDistance) != 0) {
             return 0;
         }
 
@@ -1087,20 +974,13 @@ namespace zClass_cls_util {
 
         float range = 0.0f;
         ApproximateRangeFromRangeSq(range, sourceData->rangeSq);
-        if (zClass_Lod::SetTargetNodeAndRange(
-                parent,
-                sourceData->rangeNode,
-                range
-            ) != 0) {
+        if (zClass_Lod::SetTargetNodeAndRange(parent, sourceData->rangeNode, range) != 0) {
             return 0;
         }
 
         for (int i = 0; i < source->listCountB; ++i) {
             zClass_NodePartial *const child = CopyNodeDispatch(source->listB[i]);
-            if (child == 0 || zClass_Lod::gwLodAddChild(
-                parent,
-                child
-            ) != 0) {
+            if (child == 0 || zClass_Lod::gwLodAddChild(parent, child) != 0) {
                 return 0;
             }
         }
@@ -1110,10 +990,10 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copysequencenode-unimplemented
-     * @recoil-artifact defines .text recoil:function:0x4523c0: zClass_cls_util::CopySequenceNode_Unimplemented
+     * @recoil-artifact defines .text recoil:function:0x4523c0: zClass_cls_util::CopySequenceNode
      * Purpose: preserve the retail unimplemented sequence-node copy path.
      */
-    zClass_NodePartial *__fastcall CopySequenceNode_Unimplemented(
+    zClass_NodePartial *__fastcall CopySequenceNode(
         zClass_NodePartial *
     ) {
         zError::ReportOld(
@@ -1127,10 +1007,10 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copyswitchnode-stub
-     * @recoil-artifact defines .text recoil:function:0x4523e0: zClass_cls_util::CopySwitchNode_Stub
+     * @recoil-artifact defines .text recoil:function:0x4523e0: zClass_cls_util::CopySwitchNode
      * Purpose: preserve the retail switch-node copy stub behavior.
      */
-    zClass_NodePartial *__fastcall CopySwitchNode_Stub(zClass_NodePartial *) {
+    zClass_NodePartial *__fastcall CopySwitchNode(zClass_NodePartial *) {
         zError::ReportOld(
             0x100,
             g_zClass_SourceFile_ClsUtilC,
@@ -1149,12 +1029,7 @@ namespace zClass_cls_util {
         zClass_NodePartial * source
     ) {
         if (source == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_ClsUtilC,
-                0x5b8,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, g_zClass_SourceFile_ClsUtilC, 0x5b8, "Null node pointer.");
             return 0;
         }
 
@@ -1173,19 +1048,19 @@ namespace zClass_cls_util {
             result = CopyCameraNode(source);
             break;
         case 9:
-            CopyLightNode_Unimplemented(source);
+            CopyLightNode(source);
             break;
         case 10:
-            CopySoundNode_Unimplemented(source);
+            CopySoundNode(source);
             break;
         case 8:
-            CopyAnimateNode_Unimplemented(source);
+            CopyAnimateNode(source);
             break;
         case 7:
-            CopySequenceNode_Unimplemented(source);
+            CopySequenceNode(source);
             break;
         case 11:
-            CopySwitchNode_Stub(source);
+            CopySwitchNode(source);
             break;
         case 2:
             zError::ReportOld(
@@ -1219,12 +1094,7 @@ namespace zClass_cls_util {
         int diArg0
     ) {
         if (source == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_ClsUtilC,
-                0x60f,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, g_zClass_SourceFile_ClsUtilC, 0x60f, "Null node pointer.");
             return 0;
         }
 
@@ -1251,12 +1121,7 @@ namespace zClass_cls_util {
         int diArg1
     ) {
         if (source == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_ClsUtilC,
-                0x648,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, g_zClass_SourceFile_ClsUtilC, 0x648, "Null node pointer.");
             return 0;
         }
 
@@ -1294,10 +1159,7 @@ namespace BBox {
         outCenter->y = bbox->minY + halfY;
         outCenter->z = bbox->minZ + halfZ;
 
-        ApproximateRangeFromRangeSq(
-            *outRadius,
-            halfX * halfX + halfY * halfY + halfZ * halfZ
-        );
+        ApproximateRangeFromRangeSq(*outRadius, halfX * halfX + halfY * halfY + halfZ * halfZ);
         return outRadius;
     }
 
@@ -1344,10 +1206,7 @@ namespace BBox {
         outCenter->x = minX + halfX;
         outCenter->y = minY + halfY;
         outCenter->z = minZ + halfZ;
-        ApproximateRangeFromRangeSq(
-            *outRadius,
-            halfX * halfX + halfY * halfY + halfZ * halfZ
-        );
+        ApproximateRangeFromRangeSq(*outRadius, halfX * halfX + halfY * halfY + halfZ * halfZ);
     }
 }
 
@@ -1363,18 +1222,12 @@ namespace zClass_Class {
         if (root == 0) {
             return 0;
         }
-        if (strcmp(
-            name,
-            root->name
-        ) == 0) {
+        if (strcmp(name, root->name) == 0) {
             return root;
         }
 
         for (int i = root->listCountB - 1; i >= 0; --i) {
-            zClass_NodePartial *found = FindSubNodeByName(
-                root->listB[i],
-                name
-            );
+            zClass_NodePartial *found = FindSubNodeByName(root->listB[i], name);
             if (found != 0) {
                 return found;
             }
@@ -1417,10 +1270,7 @@ namespace zClass {
         }
 
         for (int i = root->listCountB - 1; i >= 0; --i) {
-            if (AnyNodeMatchesPredicateRecursive(
-                root->listB[i],
-                predicate
-            ) == 1) {
+            if (AnyNodeMatchesPredicateRecursive(root->listB[i], predicate) == 1) {
                 return 1;
             }
         }
@@ -1440,17 +1290,11 @@ namespace zClass_Node {
     ) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
-            zDi::SetMaterialFlagBit9ForFlagBit0Entries(
-                di,
-                enabled
-            );
+            zDi::SetMaterialFlagBit9ForFlagBit0Entries(di, enabled);
         }
 
         for (int i = 0; i < node->listCountB; ++i) {
-            SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
-                node->listB[i],
-                enabled
-            );
+            SetMaterialFlagBit9ForFlagBit0EntriesRecursive(node->listB[i], enabled);
         }
     }
 
@@ -1466,7 +1310,7 @@ namespace zClass_Node {
         }
 
         InvalidateFlagBit8MaterialImagesRecursive(node);
-        zImage::TexDir_LoadPendingEntries();
+        zImage::TexDirLoadPendingEntries();
     }
 
     /**
@@ -1496,17 +1340,11 @@ namespace zClass_Node {
     ) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
-            zDi::SetFlagBit0(
-                di,
-                value
-            );
+            zDi::SetFlagBit0(di, value);
         }
 
         for (int i = 0; i < node->listCountB; ++i) {
-            AssignInt32ToDiRecursive(
-                node->listB[i],
-                value
-            );
+            AssignInt32ToDiRecursive(node->listB[i], value);
         }
     }
 }

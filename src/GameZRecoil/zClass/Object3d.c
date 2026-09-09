@@ -89,11 +89,7 @@ namespace zClass_Object3D {
             --count;
         } while (count != 0);
 
-        memset(
-            data->localMatrix,
-            0,
-            sizeof(data->localMatrix)
-        );
+        memset(data->localMatrix, 0, sizeof(data->localMatrix));
         data->localMatrix[0] = 1.0f;
         data->localMatrix[4] = 1.0f;
         data->localMatrix[8] = 1.0f;
@@ -101,10 +97,7 @@ namespace zClass_Object3D {
 
         zClass_Node::PropagateTransformDirtyRecursive(node);
         if ((node->flags & 0x01) == 0) {
-            zClass_TypeList::Insert(
-                7,
-                node
-            );
+            zClass_TypeList::Insert(7, node);
             node->flags |= 0x01;
         }
         node->flags |= 0x02;
@@ -118,22 +111,14 @@ namespace zClass_Object3D {
      * initialize/queue its default transform state.
      */
     zClass_NodePartial *__cdecl gwObject3DInit() {
-        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                0x12f,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x12f, "Null node pointer.");
             return 0;
         }
 
         node->classId = kZClassNodeObject3D;
-        node->classData = calloc(
-            1,
-            sizeof(zClass_Object3DDataPartial)
-        );
+        node->classData = calloc(1, sizeof(zClass_Object3DDataPartial));
         return PropagateTransformDirty(node) == 0 ? node : 0;
     }
 
@@ -158,37 +143,19 @@ namespace zClass_Object3D {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                0x178,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x178, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                0x179,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x179, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                0x17a,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x17a, "Null class data pointer");
             return 5;
         }
 
-        return zClass_Class::AddChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::AddChildGeneric(parent, child);
     }
 
     int __fastcall
@@ -203,37 +170,19 @@ namespace zClass_Object3D {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                0x194,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x194, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                0x195,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x195, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                0x196,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x196, "Null class data pointer");
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
+        return zClass_Class::RemoveChildGeneric(parent, child);
     }
 
     int __fastcall
@@ -802,20 +751,13 @@ namespace zClass_Object3D {
         data = (zClass_Object3DDataPartial *)(node->classData);
 
         if (matrix != data->localMatrix) {
-            memcpy(
-                data->localMatrix,
-                matrix,
-                sizeof(data->localMatrix)
-            );
+            memcpy(data->localMatrix, matrix, sizeof(data->localMatrix));
         }
 
         data->flags = (data->flags & ~0x08) | 0x11;
         zClass_Node::PropagateTransformDirtyRecursive(node);
         if ((node->flags & 0x01) == 0) {
-            zClass_TypeList::Insert(
-                7,
-                node
-            );
+            zClass_TypeList::Insert(7, node);
             node->flags |= 0x01;
         }
         node->flags |= 0x02;
@@ -836,12 +778,7 @@ namespace zClass_Object3D {
             return 0;
         }
         if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kObject3DSourceFile,
-                0x4ff,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kObject3DSourceFile, 0x4ff, "Null class data pointer");
             return 0;
         }
         if (node->classId != kZClassNodeObject3D) {
@@ -898,11 +835,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
         float durationSec
     ) {
         zClass_Object3D_ModelRefLerpTask *task = new zClass_Object3D_ModelRefLerpTask;
-        memset(
-            task,
-            0,
-            sizeof(*task)
-        );
+        memset(task, 0, sizeof(*task));
 
         if (task != 0) {
             task->next = 0;
@@ -942,10 +875,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
             task->invertModelRef = 0;
         }
 
-        zClass_Object3D::gwObject3DSetLitFlag(
-            node,
-            1
-        );
+        zClass_Object3D::gwObject3DSetLitFlag(node, 1);
     }
 
     /**
@@ -999,10 +929,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
                 alphaScale = 1.0f - alphaScale;
             }
 
-            zClass_Object3D::gwObject3DSetAlphaScale(
-                task->node,
-                alphaScale
-            );
+            zClass_Object3D::gwObject3DSetAlphaScale(task->node, alphaScale);
 
             if (task->currentModelRef >= task->targetModelRef) {
                 union {
@@ -1015,10 +942,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
                 }
 
                 if (alphaScale == 1.0f) {
-                    zClass_Object3D::gwObject3DSetLitFlag(
-                        task->node,
-                        0
-                    );
+                    zClass_Object3D::gwObject3DSetLitFlag(task->node, 0);
                 }
 
                 zClass_Object3D_ModelRefLerpTask *const nextTask = task != 0

@@ -733,33 +733,33 @@ extern char g_zVideo_DDErrorName_NotInitialized[0x15];
 extern char g_zVideo_DDErrorName_Generic[0x0e];
 extern char g_zVideo_DDErrorName_Unsupported[0x12];
 
-unsigned int __fastcall zVid_PackColorRGB(
+unsigned int __fastcall zVidPackColorRGB(
     unsigned char red,
     unsigned char green,
     unsigned int blue
 );
-unsigned int __fastcall zVid_PackColor00RRGGBB(unsigned int color00RRGGBB);
-unsigned short __fastcall zVid_PackColorRgbFloats(zVideo_ColorRgbFloat *color);
-void __fastcall zVideo_SetClearColorPacked16(unsigned int packedColor16);
-void __fastcall zVideo_SetPendingFogTargetColorFromRgb01(
+unsigned int __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB);
+unsigned short __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat *color);
+void __fastcall zVideoSetClearColorPacked16(unsigned int packedColor16);
+void __fastcall zVideoSetPendingFogTargetColorFromRgb01(
     zVideo_ColorRgbFloat *color
 );
-void __cdecl zVideo_RestoreIconicFullscreenWindowIfNeeded();
+void __cdecl zVideoRestoreIconicFullscreenWindowIfNeeded();
 }
 
-void __fastcall zVideo_SetActiveViewContext(
+void __fastcall zVideoSetActiveViewContext(
     zClass_CameraDataPartial *viewContext
 );
-void __fastcall zVideo_UpdateProjectionStateFromCameraData(
+void __fastcall zVideoUpdateProjectionStateFromCameraData(
     zClass_CameraDataPartial *cameraData
 );
-int __fastcall zVideo_FrustumTestSphereClipMask(
+int __fastcall zVideoFrustumTestSphereClipMask(
     zVec3 *sphereCenter,
     int *clipMaskInOut,
     float radius
 );
 
-int __fastcall zVideo_sw_RenderFrame(
+int __fastcall zVideoswRenderFrame(
     zClass_NodePartial *camera,
     int updateFxPass3Local
 );
@@ -771,7 +771,7 @@ int GetAccelerationOption();
 int GetHwApiOption();
 int __cdecl GetAcceptedDirectDrawDeviceCount();
 int __cdecl GetAcceptedHardwareRendererCount();
-int __cdecl GetAcceptedHardwareRendererCount_Cached();
+int __cdecl GetAcceptedHardwareRendererCountCached();
 int __cdecl HasAcceptedHardwareRenderer();
 int __cdecl GetTexturePackLoadState();
 void __fastcall SetTexturePackLoadState(int texturePackLoadState);
@@ -806,8 +806,8 @@ char *__cdecl GetSelectedHwApiDescriptionOrDefault();
 char *__cdecl GetSelectedD3DDeviceNameOrDefault();
 char *__fastcall GetHwApiDescription(int index);
 char *__fastcall GetHwApiDriverName(int index);
-void __cdecl Noise_InitBuffers();
-void __cdecl Noise_ShutdownBuffers();
+void __cdecl NoiseInitBuffers();
+void __cdecl NoiseShutdownBuffers();
 void __fastcall DrawNoiseRect(
     zVidRect32 *rectOrNull,
     double intensity
@@ -862,7 +862,7 @@ void __fastcall SetFogColorFromRgb01(zVideo_ColorRgbFloat *color);
 void __fastcall SetFogTargetColorFromRgb01(zVideo_ColorRgbFloat *color);
 void __cdecl CommitFogColorIfChanged();
 void __cdecl CommitFogTargetColorIfChanged();
-void __fastcall PixelPack_SetupFromMasks(
+void __fastcall PixelPackSetupFromMasks(
     int redBits,
     int greenBits,
     int blueBits,
@@ -870,7 +870,7 @@ void __fastcall PixelPack_SetupFromMasks(
     unsigned int greenMask,
     unsigned int blueMask
 );
-void __fastcall TexturePixelPack_SetupFromMasks(
+void __fastcall TexturePixelPackSetupFromMasks(
     int redBits,
     int greenBits,
     int blueBits,
@@ -880,17 +880,17 @@ void __fastcall TexturePixelPack_SetupFromMasks(
     unsigned int blueMask,
     unsigned int alphaMask
 );
-void __fastcall PixelPack_GetRgbBits(
+void __fastcall PixelPackGetRgbBits(
     int *outRBits,
     int *outGBits,
     int *outBBits
 );
-void __fastcall PixelPack_GetRgbMasks(
+void __fastcall PixelPackGetRgbMasks(
     unsigned int *outRMask,
     unsigned int *outGMask,
     unsigned int *outBMask
 );
-void __fastcall PixelPack_GetPackingParams(
+void __fastcall PixelPackGetPackingParams(
     int *outPackedBase,
     int *outSumMinus8,
     int *outBShiftTo8
@@ -911,8 +911,8 @@ int __cdecl GetPrimarySurfacePitch();
 int __cdecl GetDisplayModeBpp();
 int __fastcall LoadPaletteFileAndApplyBrightness(const char *palettePath);
 int __fastcall ApplyBrightnessToPaletteEntries(PALETTEENTRY *paletteEntries);
-int __fastcall Init_ApplyModeIndex(int modeIndex);
-void __fastcall Init_SetSurfaceGeometryFromModeIndex(int modeIndex);
+int __fastcall InitApplyModeIndex(int modeIndex);
+void __fastcall InitSetSurfaceGeometryFromModeIndex(int modeIndex);
 int __fastcall SetVideoMode(int modeIndex);
 int __fastcall InitVideoSystem(
     HWND hWnd,
@@ -927,23 +927,23 @@ void __fastcall CallClearSwSurfaceAndZBuffer(
 void __fastcall CallClearPrimarySurfaceAndZBuffer(zVidRect32 *rect);
 int __fastcall ExchangeClearScreenBufferEnabled(int enable);
 int __cdecl GetClearScreenBufferEnabled();
-int __cdecl Dispatch_LockDisplayModeSurfaceState();
-int __cdecl Dispatch_UnlockDisplayModeSurfaceState();
-int __cdecl Dispatch_UnlockSwSurfaceState();
-int __cdecl Dispatch_UnlockPrimarySurfaceState();
-void __fastcall Fx_SetSurfaceState(
+int __cdecl DispatchLockDisplayModeSurfaceState();
+int __cdecl DispatchUnlockDisplayModeSurfaceState();
+int __cdecl DispatchUnlockSwSurfaceState();
+int __cdecl DispatchUnlockPrimarySurfaceState();
+void __fastcall FxSetSurfaceState(
     void *pixels,
     int width,
     int height,
     int pitchBytes
 );
-void __fastcall FxPass3_CopySurfacePixelToScratchClipped(
+void __fastcall FxPass3CopySurfacePixelToScratchClipped(
     int dstDx,
     int dstDy,
     int srcDx,
     int srcDy
 );
-void __fastcall FxPass3_ApplyToCurrentSurface(
+void __fastcall FxPass3ApplyToCurrentSurface(
     int centerX,
     int centerY,
     int currentRadius,
@@ -953,27 +953,27 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
     float sinPhase,
     zVidRect32 *clipRectOrNull
 );
-void __fastcall buff_BlurRegionCombined(
+void __fastcall buffBlurRegionCombined(
     zVidRect32 *rectOrNull,
     int mode
 );
-void __fastcall buff_BlurRegionVertical(
+void __fastcall buffBlurRegionVertical(
     zVidRect32 *rectOrNull,
     int mode
 );
-void __fastcall buff_BlurRegionHorizontal(
+void __fastcall buffBlurRegionHorizontal(
     zVidRect32 *rectOrNull,
     int mode
 );
-void __fastcall buff_BlurRegionByMode(
+void __fastcall buffBlurRegionByMode(
     zVidRect32 *rectOrNull,
     int mode
 );
-void __fastcall FxPass3_SetPrimaryElementParamsLocal(
+void __fastcall FxPass3SetPrimaryElementParamsLocal(
     unsigned short packedColor,
     double primaryAlpha
 );
-void __fastcall FxPass3_QueueElementLocal(
+void __fastcall FxPass3QueueElementLocal(
     int rectLeftPixels,
     int rectTopPixels,
     int currentRadiusPixels,
@@ -982,17 +982,17 @@ void __fastcall FxPass3_QueueElementLocal(
     float sinFreq,
     float sinPhase
 );
-void __fastcall FxPass3_QueuePrimitive(
+void __fastcall FxPass3QueuePrimitive(
     void *primitive,
     int width,
     int height,
     int pitchBytes
 );
-void __fastcall FxPass3_SetInputRectByIndex(
+void __fastcall FxPass3SetInputRectByIndex(
     int index,
     HudUiRect *rectOrNull
 );
-void __fastcall FxPass3_UpdateLocal(float deltaTime);
+void __fastcall FxPass3UpdateLocal(float deltaTime);
 void __cdecl RunPostprocessOnSwBuffer();
 int __cdecl RunPostprocessOnPrimaryBuffer();
 int __fastcall AdjustSurfacesIfEnabled(
@@ -1079,36 +1079,36 @@ void __fastcall ApplyRecipeToPaletteVariant(
 );
 } // namespace zVid_PaletteRemap
 
-extern "C" int __fastcall zVid_Image_SetPixels(
+extern "C" int __fastcall zVidImageSetPixels(
     zVidImagePartial *image,
     void *pixels,
     char *alphaMap
 );
 
-extern "C" zVidImagePartial *__fastcall zVideo_buff_CaptureSurfaceToImage(
+extern "C" zVidImagePartial *__fastcall zVideobuffCaptureSurfaceToImage(
     int sourceSelector
 );
 extern "C" unsigned short *__fastcall
-zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
+zVidPaletteRemapBuildAllRecipeVariantsForPalette(
     unsigned short *palette,
     int colorCount
 );
-extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
+extern "C" int __fastcall zVidPaletteRemapBuildPaletteVariant(
     zVidPaletteRemapRecipe *recipe
 );
-extern "C" int __fastcall zVid_PaletteRemap_FindRecipeIndexFromRgb(
+extern "C" int __fastcall zVidPaletteRemapFindRecipeIndexFromRgb(
     zColorRgb *rgb
 );
-extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
+extern "C" FILE *__fastcall zVidTexturePackEntryLoadFromFile(
     zVidTexturePackEntry *entry
 );
-extern "C" void __cdecl zVid_TexturePack_EnsureDefaultImagePackLoaded();
-extern "C" RECOIL_NO_GS void __cdecl zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
-extern "C" zVidImagePartial *__fastcall zVid_TexturePack_LoadImageByName(
+extern "C" void __cdecl zVidTexturePackEnsureDefaultImagePackLoaded();
+extern "C" RECOIL_NO_GS void __cdecl zVidTexturePackEnsureBuiltinTexturePacksLoaded();
+extern "C" zVidImagePartial *__fastcall zVidTexturePackLoadImageByName(
     const char *imageName
 );
 extern "C" zVidImagePartial *__fastcall
-zVid_TexturePack_LoadBuiltinImageByName(const char *imageName);
+zVidTexturePackLoadBuiltinImageByName(const char *imageName);
 
 namespace zVid_TexturePack {
 void __cdecl ShutdownBuiltinPacks();
@@ -1141,27 +1141,27 @@ int __fastcall LockDirectDrawSurface(
     DDSURFACEDESC *outLockedSurfaceDesc
 );
 int __fastcall UnlockDirectDrawSurface(IDirectDrawSurface3 *surface);
-int __fastcall LockSurface_WaitRestore(
+int __fastcall LockSurfaceWaitRestore(
     IDirectDrawSurface3 *surface,
     DDSURFACEDESC *lockedDescOut
 );
-int __fastcall UnlockSurface_WaitRestore(IDirectDrawSurface3 *surface);
+int __fastcall UnlockSurfaceWaitRestore(IDirectDrawSurface3 *surface);
 int __fastcall LockSurfaceState(zVideo_SurfaceStatePartial *surfaceState);
 int __fastcall UnlockSurfaceState(zVideo_SurfaceStatePartial *surfaceState);
-IDirectDrawSurface3 *__fastcall Image_LazyCreateBackingSurface(
+IDirectDrawSurface3 *__fastcall ImageLazyCreateBackingSurface(
     zVidImagePartial *image,
     unsigned int ddsCapsFlags
 );
-int __fastcall Image_PopulateSurfaceFromHeapPixels(zVidImagePartial *image);
-IDirectDrawSurface3 *__fastcall Image_LazyCreateVideoMemorySurface(
+int __fastcall ImagePopulateSurfaceFromHeapPixels(zVidImagePartial *image);
+IDirectDrawSurface3 *__fastcall ImageLazyCreateVideoMemorySurface(
     zVidImagePartial *image
 );
-void __fastcall Image_EnsureSurfaceForCurrentDevice(zVidImagePartial *image);
-int __fastcall Image_UploadPixelsToSurface(
+void __fastcall ImageEnsureSurfaceForCurrentDevice(zVidImagePartial *image);
+int __fastcall ImageUploadPixelsToSurface(
     zVidImagePartial *image,
     HDC *outHdc
 );
-int __fastcall Image_ReleaseSurface(
+int __fastcall ImageReleaseSurface(
     zVidImagePartial *image,
     HDC hdc
 );
@@ -1185,7 +1185,7 @@ void __fastcall BltSwToPrimaryRect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 );
-int __fastcall ZBuffer_DepthFillRect(zVidRect32 *dstRect);
+int __fastcall ZBufferDepthFillRect(zVidRect32 *dstRect);
 int __fastcall ClearScreenAndZBufferRect(
     zVidRect32 *dstRect,
     zVideo_SurfaceStatePartial *colorSurfaceState
@@ -1337,8 +1337,8 @@ void __cdecl FlushSortedPolys();
 void __cdecl FlushQuadBatch();
 void __cdecl FlushOverwritePolys();
 int __fastcall FloorPowerOfTwo(int value);
-zVideo_TextureRecordPartial *__cdecl TextureRecord_Create();
-int __fastcall TextureRecord_LockUploadSurface(
+zVideo_TextureRecordPartial *__cdecl TextureRecordCreate();
+int __fastcall TextureRecordLockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord,
     void **outPixels,
     int *outPitchBytes
@@ -1354,18 +1354,18 @@ int __fastcall UploadImageToSurface(
     zVidImagePartial *image,
     int useAlpha
 );
-int __fastcall TextureRecord_UnlockUploadSurface(
+int __fastcall TextureRecordUnlockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord
 );
-void __fastcall TextureRecord_ReleaseUploadSurfaceRef(
+void __fastcall TextureRecordReleaseUploadSurfaceRef(
     zVideo_TextureRecordPartial *textureRecord
 );
-void __fastcall TextureRecord_FinalizeUpload(
+void __fastcall TextureRecordFinalizeUpload(
     zVideo_TextureRecordPartial *textureRecord,
     void *reserved,
     zVidImagePartial *image
 );
-void __fastcall TextureRecord_Destroy(
+void __fastcall TextureRecordDestroy(
     zVideo_TextureRecordPartial *textureRecord
 );
 } // namespace zVideo_dd3d

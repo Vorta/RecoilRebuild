@@ -82,15 +82,8 @@ BOOL WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(
     ...
 ) {
     va_list args;
-    va_start(
-        args,
-        format
-    );
-    vsprintf(
-        g_WestwoodOnlineUpgradeProgressStatusTextBuffer,
-        format,
-        args
-    );
+    va_start(args, format);
+    vsprintf(g_WestwoodOnlineUpgradeProgressStatusTextBuffer, format, args);
     va_end(args);
 
     return ::SetDlgItemTextA(

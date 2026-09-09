@@ -137,25 +137,14 @@ int zSndWaveData::LoadAndParseIfNeeded() {
         return 0;
     }
 
-    FILE *const file = fopen(
-        nameOrPath,
-        "rb"
-    );
+    FILE *const file = fopen(nameOrPath, "rb");
     if (file == 0) {
         return 0;
     }
 
-    fileSize = zUtil::ZRDR_GetFileSize(file);
-    fileData = calloc(
-        fileSize,
-        1
-    );
-    fread(
-        fileData,
-        fileSize,
-        1,
-        file
-    );
+    fileSize = zUtil::zRdrGetFileSize(file);
+    fileData = calloc(fileSize, 1);
+    fread(fileData, fileSize, 1, file);
     fclose(file);
 
     parsedOk = ParseLoadedWaveFile();
@@ -203,23 +192,12 @@ int zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(
     }
 
     unsigned int archiveFileSize = 0;
-    archive->ReadFileByName(
-        nameOrPath,
-        0,
-        &archiveFileSize
-    );
+    archive->ReadFileByName(nameOrPath, 0, &archiveFileSize);
     unsigned int *const fileSizeOut = (unsigned int *)(&fileSize);
     *fileSizeOut = archiveFileSize;
     if (archiveFileSize > 0) {
-        fileData = calloc(
-            archiveFileSize,
-            1
-        );
-        archive->ReadFileByName(
-            nameOrPath,
-            fileData,
-            fileSizeOut
-        );
+        fileData = calloc(archiveFileSize, 1);
+        archive->ReadFileByName(nameOrPath, fileData, fileSizeOut);
         parsedOk = ParseLoadedWaveFile();
     }
 

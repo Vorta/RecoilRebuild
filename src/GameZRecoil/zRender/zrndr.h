@@ -100,7 +100,7 @@ void __fastcall LoadDynamicEntriesFromPath(char *path);
 } // namespace zRndr_GlobalStringTable
 
 namespace zRndr {
-void GlobalStringTable_ReleaseDynamicEntries();
+void GlobalStringTableReleaseDynamicEntries();
 
 struct ActiveRegionRectPartial {
     int x;
@@ -230,7 +230,7 @@ typedef void(__fastcall *SpanBuildProc)(
     int columnIndex,
     int *spanCount
 );
-// Software overlay row callback selected by zRndr_OverlayRect_FlushSw. BN
+// Software overlay row callback selected by zRndrOverlayRectFlushSw. BN
 // ties this callback type to the shared premul/destination-scale globals and
 // the four 555/565 scalar/MMX row leaves from zRndr_Overlay.cpp.
 typedef void(__fastcall *OverlayBlendRowProc)(
@@ -468,25 +468,25 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
 );
 void __cdecl SpanOcclusionResetFrame();
 int __cdecl SpanOcclusionShutdown();
-void __fastcall OverlayBlendRow555_Scalar(
+void __fastcall OverlayBlendRow555Scalar(
     unsigned short *rowPixels16,
     int rightDelta
 );
-void __fastcall OverlayBlendRow565_Scalar(
+void __fastcall OverlayBlendRow565Scalar(
     unsigned short *rowPixels16,
     int rightDelta
 );
-void __fastcall OverlayBlendRow555_Mmx(
+void __fastcall OverlayBlendRow555Mmx(
     unsigned short *rowPixels16,
     int pixelCount
 );
-void __fastcall OverlayBlendRow565_Mmx(
+void __fastcall OverlayBlendRow565Mmx(
     unsigned short *rowPixels16,
     int pixelCount
 );
 void __fastcall SpanMmxSetPixelFormatMasks(int greenBits);
 void __cdecl SelectSpanRoutines();
-void __fastcall FogTarget565_SetPackedColorAndRamp(
+void __fastcall FogTarget565SetPackedColorAndRamp(
     FogParamsPartial *params,
     int packedRed,
     int packedGreen,
@@ -673,7 +673,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     int pixelCount,
     int texVShift
 );
-void __fastcall FogColor_SetRgb01Clamped(zColorRgb *color);
+void __fastcall FogColorSetRgb01Clamped(zColorRgb *color);
 void __fastcall SetFogTargetColorRgb01Clamped(zColorRgb *color);
 void __cdecl CommitDirectFogParamsIfChanged();
 void __cdecl CommitFogColorParamsIfChanged();
@@ -682,13 +682,13 @@ void __fastcall BlendPackedColor565WithFogInPlace(
     int *ioPackedColor,
     int blend255
 );
-void __cdecl LensFlare_ResetSampleQueue();
-void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
+void __cdecl LensFlareResetSampleQueue();
+void __fastcall LensFlareDrawQueuedSample16ClippedFramebuffer(
     LensFlareSamplePartial *sample,
     int yOffsetPixels,
     float screenScale
 );
-void __fastcall LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
+void __fastcall LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(
     int yOffsetPixels,
     float screenScale
 );
@@ -700,44 +700,44 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
     int *spanCount
 );
 
-void __fastcall zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
+void __fastcall zRndrSpanOcclusionInsertSpanNodeNoDepthTest(
     zRndr::SpanNodePartial **spanList,
     int columnIndex,
     int *spanCount
 );
 
-void __fastcall zRndr_SpanOcclusion_BuildSpanList(
+void __fastcall zRndrSpanOcclusionBuildSpanList(
     zRndr::SpanNodePartial **spanList,
     int columnIndex,
     int *spanCount
 );
 
-void __fastcall zRndr_SpanOcclusion_BuildSpanListFast(
+void __fastcall zRndrSpanOcclusionBuildSpanListFast(
     zRndr::SpanNodePartial **spanList,
     int columnIndex,
     int *spanCount
 );
 
-void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
+void __fastcall zRndrSpanOcclusionTestColumnVisibility(
     int columnIndex,
     int *isVisible
 );
 
-int __fastcall zRndr_SpanOcclusion_TestPointVisibility(zVec3 *samplePoint);
+int __fastcall zRndrSpanOcclusionTestPointVisibility(zVec3 *samplePoint);
 
-void __fastcall zRndr_SpanOcclusion_TestSample(
+void __fastcall zRndrSpanOcclusionTestSample(
     int x,
     int y,
     int color16
 );
 
-void __fastcall zRndr_DrawCircleOctants16_Framebuffer(
+void __fastcall zRndrDrawCircleOctants16Framebuffer(
     int y,
     int x,
     int packedColor
 );
 
-void __fastcall zRndr_DrawCircleOutline16_Framebuffer(
+void __fastcall zRndrDrawCircleOutline16Framebuffer(
     int centerX,
     int centerY,
     int radius,
@@ -745,14 +745,14 @@ void __fastcall zRndr_DrawCircleOutline16_Framebuffer(
     int auxArg
 );
 
-void __fastcall zRndr_PlotPixel16(
+void __fastcall zRndrPlotPixel16(
     unsigned short *dstPixels,
     int y,
     int x,
     int color16
 );
 
-void __fastcall zRndr_DrawLine16(
+void __fastcall zRndrDrawLine16(
     unsigned short *dstPixels,
     int x0,
     int y0,
@@ -761,7 +761,7 @@ void __fastcall zRndr_DrawLine16(
     int color16
 );
 
-void __fastcall zRndr_DrawLine16_Segmented(
+void __fastcall zRndrDrawLine16Segmented(
     unsigned short *dstPixels,
     int x0,
     int y0,
@@ -771,7 +771,7 @@ void __fastcall zRndr_DrawLine16_Segmented(
     int segmentCount
 );
 
-void __fastcall zRndr_DrawLine16_Clipped(
+void __fastcall zRndrDrawLine16Clipped(
     unsigned short *dstPixels,
     const zRndr_LineClipRect2I *clipRect,
     int x0,
@@ -781,42 +781,42 @@ void __fastcall zRndr_DrawLine16_Clipped(
     int color16
 );
 
-void __fastcall zRndr_FillSpan16Opaque(
+void __fastcall zRndrFillSpan16Opaque(
     int packedColor16,
     int pixelCount
 );
 
-void __fastcall zRndr_FillSpan555Solid(
-    int packedColor16,
-    int blendAlpha,
-    int pixelCount
-);
-
-void __fastcall zRndr_FillSpan565Solid(
+void __fastcall zRndrFillSpan555Solid(
     int packedColor16,
     int blendAlpha,
     int pixelCount
 );
 
-int __fastcall zRndr_SpanOcclusion_TestSpanDepthOrderPair(
+void __fastcall zRndrFillSpan565Solid(
+    int packedColor16,
+    int blendAlpha,
+    int pixelCount
+);
+
+int __fastcall zRndrSpanOcclusionTestSpanDepthOrderPair(
     zRndr::SpanNodePartial *lhs,
     zRndr::SpanNodePartial *rhs
 );
 
-void __fastcall zRndr_RasterizePolyWithSpanList(
+void __fastcall zRndrRasterizePolyWithSpanList(
     zVec3 *vertices,
     zVec3 *planeVerts,
     int vertCount,
     int spanOpContext
 );
 
-void __fastcall zRndr_RasterizePoly(
+void __fastcall zRndrRasterizePoly(
     zVec3 *vertices,
     int vertCount,
     int spanOpContext
 );
 
-void __fastcall zRndr_DrawFlatImmediate(
+void __fastcall zRndrDrawFlatImmediate(
     zVec3 *vertices,
     zVec3 *planeVertices,
     int vertCount,
@@ -824,7 +824,7 @@ void __fastcall zRndr_DrawFlatImmediate(
     int flatSpanOpEcxArg
 );
 
-void __fastcall zRndr_SubmitPolyWithSpanList(
+void __fastcall zRndrSubmitPolyWithSpanList(
     zVec3 *entryVertices,
     zVec3 *entryPlaneVertices,
     int spanOpContext,
@@ -833,7 +833,7 @@ void __fastcall zRndr_SubmitPolyWithSpanList(
     int queueOverwrite
 );
 
-zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
+zVidImagePartial *__fastcall zRndrTextureMipSelectVariantImage(
     zImage_TexDirEntryPartial *entry,
     const zVec3 *triVerts,
     int vertCount,
@@ -843,7 +843,7 @@ zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
     const zVec2 *mipParamsC
 );
 
-void __fastcall zRndr_DrawFlatQueued(
+void __fastcall zRndrDrawFlatQueued(
     zImage_TexDirEntryPartial *entry,
     zVec3 *polyVerts,
     zVec3 *triVerts,
@@ -852,7 +852,7 @@ void __fastcall zRndr_DrawFlatQueued(
     int paletteIndex
 );
 
-void __fastcall zRndr_DrawTexturedQueuedAlpha(
+void __fastcall zRndrDrawTexturedQueuedAlpha(
     zImage_TexDirEntryPartial *entry,
     zVec3 *projectedVerts,
     zVec3 *clippedTriVerts,
@@ -862,7 +862,7 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
     int variantIndex
 );
 
-void __fastcall zRndr_DrawTexturedQueued(
+void __fastcall zRndrDrawTexturedQueued(
     zImage_TexDirEntryPartial *entry,
     zVec3 *projectedVerts,
     zVec3 *clippedTriVerts,
@@ -874,7 +874,7 @@ void __fastcall zRndr_DrawTexturedQueued(
     int texKey
 );
 
-void __fastcall Renderer_DrawPolyTLV(
+void __fastcall RendererDrawPolyTLV(
     zImage_TexDirEntryPartial *entry,
     zVec3 *polyVerts,
     zVec3 *triVerts,
@@ -884,7 +884,7 @@ void __fastcall Renderer_DrawPolyTLV(
     int texKey
 );
 
-void __fastcall zRndr_DrawTexturedFanTri(
+void __fastcall zRndrDrawTexturedFanTri(
     zImage_TexDirEntryPartial *entry,
     zVec3 *projectedVerts,
     zVec3 *clippedTriVerts,
@@ -895,7 +895,7 @@ void __fastcall zRndr_DrawTexturedFanTri(
     int variantIndex
 );
 
-void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
+void __fastcall zRndrSubmitTexturedPolyUniformAlphaOrShade(
     zVec3 *projectedPolyVerts,
     zVec3 *clippedTriVerts,
     zVec3 *triData9f,
@@ -906,7 +906,7 @@ void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
     int queueOverwrite
 );
 
-void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
+void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
     zVec3 *projectedPolyVerts,
     zVec3 *clippedTriVerts,
     zVec3 *triData9f,
@@ -919,16 +919,16 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
     int queueOverwrite
 );
 
-void __cdecl zRndr_FlushTransparentQueue();
-void __cdecl zRndr_FlushOverwriteQueue();
-void __fastcall zRndr_OverlayRect_Submit(
+void __cdecl zRndrFlushTransparentQueue();
+void __cdecl zRndrFlushOverwriteQueue();
+void __fastcall zRndrOverlayRectSubmit(
     unsigned int packedColor16,
     zVidRect32 *rectOrNull,
     double alpha
 );
-void __cdecl zRndr_OverlayRect_FlushSw();
+void __cdecl zRndrOverlayRectFlushSw();
 
-void __fastcall zRndr_DrawImmediateLine(
+void __fastcall zRndrDrawImmediateLine(
     int x0,
     int y0,
     int x1,
@@ -936,65 +936,65 @@ void __fastcall zRndr_DrawImmediateLine(
     int color16
 );
 
-void __fastcall zRndr_DrawClippedImmediateLineStrip(
+void __fastcall zRndrDrawClippedImmediateLineStrip(
     const zRndr_LinePoint2I *points,
     int segmentCount,
     const void *clipRect,
     int color16
 );
 
-void __fastcall zRndr_LensFlare_QueueProjectedSample(
+void __fastcall zRndrLensFlareQueueProjectedSample(
     zProjectedPoint *projectedPoint,
     int packedColor16,
     int lensFlareSource
 );
 
-int __cdecl zRndr_LensFlare_GetQueuedSampleCount();
+int __cdecl zRndrLensFlareGetQueuedSampleCount();
 
-void __fastcall zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
+void __fastcall zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList(
     int startIndex
 );
 
-int __fastcall zRndr_LensFlare_BuildVisibleSampleListFromQueue(int startIndex);
+int __fastcall zRndrLensFlareBuildVisibleSampleListFromQueue(int startIndex);
 
-void __fastcall zRndr_LensFlare_SetVisibleSampleStage(
+void __fastcall zRndrLensFlareSetVisibleSampleStage(
     int stageIndex,
     zImage_TexDirEntryPartial *stageTexDirEntry
 );
 
-void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
+void __fastcall zRndrLensFlareDrawSampleStageClipped(
     const zVec2 *sampleCenter,
     zImage_TexDirEntryPartial *stageTexDirEntry,
     float sampleRadius,
     const zRndr_LineClipRect2I *clipRect
 );
 
-void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
+void __fastcall zRndrLensFlareDrawVisibleSampleStages(
     zRndr_LensFlareVisibleSampleDef *visibleSampleDef,
     float visibilityAlpha
 );
 
-void __fastcall zRndr_LensFlare_DrawVisibleSample(int sampleIndex);
+void __fastcall zRndrLensFlareDrawVisibleSample(int sampleIndex);
 
-void __cdecl zRndr_LensFlare_DrawVisibleSamples();
+void __cdecl zRndrLensFlareDrawVisibleSamples();
 
-void __fastcall zRndr_SpanOcclusion_FilterSampleList(
+void __fastcall zRndrSpanOcclusionFilterSampleList(
     int visibleSampleIndex,
     zVec3 *outPoint
 );
 
-void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(zColorRgb *color);
+void __fastcall zRndrFogTargetColorStagedSetRgb01Clamped(zColorRgb *color);
 
-void __fastcall zRndr_SetPaletteRemapKey(
+void __fastcall zRndrSetPaletteRemapKey(
     zVidPaletteRemapRecipe *recipe,
     float shadeLevel
 );
 
-void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
+void __fastcall zRndrSetPaletteRemapKeyFromRgb01(
     zColorRgb *rgb01,
     float shadeLevel
 );
 
-void __fastcall zRndr_SetPaletteShadeRecipeIndex(
+void __fastcall zRndrSetPaletteShadeRecipeIndex(
     zVidPaletteRemapRecipe *recipe
 );

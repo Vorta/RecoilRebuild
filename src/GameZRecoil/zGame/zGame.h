@@ -117,23 +117,23 @@ enum zOptHudTypeOption {
 
 namespace zGame {
 void __cdecl ReturnOnlyStub();
-zOptionEntryPartial *__fastcall Options_FindOption(const char *name) throw();
-zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
+zOptionEntryPartial *__fastcall OptionsFindOption(const char *name) throw();
+zOptionEntryPartial *__fastcall OptionsGetOrCreateOption(
     const char *name,
     int storageType,
     int dataSize,
     int registryScope
 );
-void __fastcall Options_InitRegistryContext(
+void __fastcall OptionsInitRegistryContext(
     const char *regKeyRoot,
     const char *regKeyCurrentUser,
     const char *regKeyGame
 );
-RECOIL_NO_GS int Options_LoadGameOptions();
-RECOIL_NO_GS int __cdecl Options_LoadFromRegistry();
-RECOIL_NO_GS int __cdecl Options_SaveToRegistry();
-int Options_SaveGameOptions();
-void __cdecl Options_ShutdownRegistryContext();
+RECOIL_NO_GS int OptionsLoadGameOptions();
+RECOIL_NO_GS int __cdecl OptionsLoadFromRegistry();
+RECOIL_NO_GS int __cdecl OptionsSaveToRegistry();
+int OptionsSaveGameOptions();
+void __cdecl OptionsShutdownRegistryContext();
 } // namespace zGame
 
 namespace zOpt {
@@ -166,51 +166,51 @@ int ToggleHudTypeForCurrentHwMode();
 void __fastcall SetReplicateMode(int replicateMode);
 int GetReplicateMode();
 int GetNetworkEnabled();
-void __fastcall ViewRectSection_SetPosition(
+void __fastcall ViewRectSectionSetPosition(
     zOpt_ViewRectSection *section,
     int x,
     int y
 );
-void __fastcall ViewRectSection_SetSize(
+void __fastcall ViewRectSectionSetSize(
     zOpt_ViewRectSection *section,
     int width,
     int height
 );
-void __fastcall ViewRectSection_ClampPointToInclusiveBounds(
+void __fastcall ViewRectSectionClampPointToInclusiveBounds(
     zOpt_ViewRectSection *section,
     float *pointXY
 );
-void __fastcall RenderSection_SetPosition(
+void __fastcall RenderSectionSetPosition(
     int x,
     int y
 );
-void __fastcall RenderSection_SetSize(
+void __fastcall RenderSectionSetSize(
     int width,
     int height
 );
-void __fastcall RenderSection_SetTargetWindow(zClass_NodePartial *windowNode);
+void __fastcall RenderSectionSetTargetWindow(zClass_NodePartial *windowNode);
 zOpt_ViewRectSection *GetRenderSection();
-void __fastcall DisplaySection_SetPosition(
+void __fastcall DisplaySectionSetPosition(
     int x,
     int y
 );
-void __fastcall DisplaySection_SetSize(
+void __fastcall DisplaySectionSetSize(
     int width,
     int height
 );
-void __fastcall DisplaySection_SetTargetDisplay(
+void __fastcall DisplaySectionSetTargetDisplay(
     zClass_NodePartial *displayNode
 );
-void __fastcall DisplaySection_SetBitsPerPixel(int bitsPerPixel);
-void __fastcall WindowSection_SetPosition(
+void __fastcall DisplaySectionSetBitsPerPixel(int bitsPerPixel);
+void __fastcall WindowSectionSetPosition(
     int x,
     int y
 );
-void __fastcall WindowSection_SetSize(
+void __fastcall WindowSectionSetSize(
     int width,
     int height
 );
-void __fastcall CameraSection_SetActiveCamera(zClass_NodePartial *camera);
+void __fastcall CameraSectionSetActiveCamera(zClass_NodePartial *camera);
 void __fastcall SetGameControlOptions(zOptGameControlFlags value);
 void __fastcall SetThrottleMode(int enable);
 int GetThrottleMode();
@@ -245,8 +245,8 @@ int GetNetworkModemEnabled();
 void __fastcall SetWolPasswordFlag(int value);
 } // namespace zOpt
 
-zClass_NodePartial *zOpt_CameraSection_GetActiveCamera();
-char *zOpt_GetPlayerName();
-int zOpt_GetWolPasswordFlagValue();
-int zOpt_DisplaySection_GetWidth();
-int zOpt_DisplaySection_GetHeight();
+zClass_NodePartial *zOptCameraSectionGetActiveCamera();
+char *zOptGetPlayerName();
+int zOptGetWolPasswordFlagValue();
+int zOptDisplaySectionGetWidth();
+int zOptDisplaySectionGetHeight();

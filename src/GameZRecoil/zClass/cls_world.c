@@ -93,18 +93,10 @@ namespace {
      */
     float ApproximateSqrtFromRangeSq(float rangeSq) {
         int bits = 0;
-        memcpy(
-            &bits,
-            &rangeSq,
-            sizeof(bits)
-        );
+        memcpy(&bits, &rangeSq, sizeof(bits));
         bits = (bits >> 1) + 0x1fc00000;
         float range = 0.0f;
-        memcpy(
-            &range,
-            &bits,
-            sizeof(range)
-        );
+        memcpy(&range, &bits, sizeof(range));
         return range;
     }
 
@@ -169,10 +161,7 @@ namespace zClass_World {
         area->areaFlags |= 0x01;
 
         if ((world->flags & 0x01) == 0) {
-            if (zClass_TypeList::InsertChildNodes(
-                7,
-                world
-            ) == 0) {
+            if (zClass_TypeList::InsertChildNodes(7, world) == 0) {
                 world->flags |= 0x01;
             }
         }
@@ -206,10 +195,7 @@ namespace zClass_World {
             }
 
             area->areaFlags |= 0x100;
-            zClass_Class::gwNodeGetWorldBBoxCorners(
-                child,
-                &corners
-            );
+            zClass_Class::gwNodeGetWorldBBoxCorners(child, &corners);
             area->bbox[1] = corners.values[1];
             area->bbox[4] = corners.values[1];
             for (int i = 1; i < 8; ++i) {
@@ -234,10 +220,7 @@ namespace zClass_World {
                 continue;
             }
 
-            zClass_Class::gwNodeGetWorldBBoxCorners(
-                child,
-                &corners
-            );
+            zClass_Class::gwNodeGetWorldBBoxCorners(child, &corners);
             for (int i = 0; i < 8; ++i) {
                 const float y = corners.values[i * 3 + 1];
                 if (y < area->bbox[1]) {
@@ -264,14 +247,11 @@ namespace zClass_World {
      * insert it into the world type list.
      */
     zClass_NodePartial *__cdecl gwWorldNew() {
-        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        zClass_NodePartial *node = zClass_Class::gwNodeNew();
         node->classId = 2;
 
         zClass_WorldDataPartial *data =
-            (zClass_WorldDataPartial *)(calloc(
-                1,
-                sizeof(zClass_WorldDataPartial)
-            ));
+            (zClass_WorldDataPartial *)(calloc(1, sizeof(zClass_WorldDataPartial)));
         node->classData = data;
         data->fogState = 0;
         data->lightCount = 0;
@@ -286,10 +266,7 @@ namespace zClass_World {
         data->clampQueriesToBounds = 0;
         data->flags = 1;
         data->partitionMaxDecFeatureCount = 16;
-        zClass_TypeList::Insert(
-            13,
-            node
-        );
+        zClass_TypeList::Insert(13, node);
         return node;
     }
 
@@ -353,26 +330,14 @@ namespace zClass_World {
             zWorldAreaPartial *area = &data->areaGridRows[0][col];
             if (area->childCount > 0) {
                 zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
-                zClass_Class::gwNodeSetName(
-                    statics,
-                    g_zClass_VapStaticsNodeName
-                );
+                zClass_Class::gwNodeSetName(statics, g_zClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
                     zClass_NodePartial *child = area->childList[0];
-                    zClass_Object3D::gwObject3DAddChild(
-                        statics,
-                        child
-                    );
-                    zClass_World::RemoveChildAtGrid(
-                        world,
-                        child
-                    );
+                    zClass_Object3D::gwObject3DAddChild(statics, child);
+                    zClass_World::RemoveChildAtGrid(world, child);
                 }
                 zClass_TypeList::UpdateQueuedTrees();
-                zClass_World::AddChildAtGrid(
-                    world,
-                    statics
-                );
+                zClass_World::AddChildAtGrid(world, statics);
             }
         }
 
@@ -381,26 +346,14 @@ namespace zClass_World {
             zWorldAreaPartial *area = &lastRow[lastCol];
             if (area->childCount > 0) {
                 zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
-                zClass_Class::gwNodeSetName(
-                    statics,
-                    g_zClass_VapStaticsNodeName
-                );
+                zClass_Class::gwNodeSetName(statics, g_zClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
                     zClass_NodePartial *child = area->childList[0];
-                    zClass_Object3D::gwObject3DAddChild(
-                        statics,
-                        child
-                    );
-                    zClass_World::RemoveChildAtGrid(
-                        world,
-                        child
-                    );
+                    zClass_Object3D::gwObject3DAddChild(statics, child);
+                    zClass_World::RemoveChildAtGrid(world, child);
                 }
                 zClass_TypeList::UpdateQueuedTrees();
-                zClass_World::AddChildAtGrid(
-                    world,
-                    statics
-                );
+                zClass_World::AddChildAtGrid(world, statics);
             }
         }
 
@@ -408,26 +361,14 @@ namespace zClass_World {
             zWorldAreaPartial *area = &data->areaGridRows[firstEdgeRow][0];
             if (area->childCount > 0) {
                 zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
-                zClass_Class::gwNodeSetName(
-                    statics,
-                    g_zClass_VapStaticsNodeName
-                );
+                zClass_Class::gwNodeSetName(statics, g_zClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
                     zClass_NodePartial *child = area->childList[0];
-                    zClass_Object3D::gwObject3DAddChild(
-                        statics,
-                        child
-                    );
-                    zClass_World::RemoveChildAtGrid(
-                        world,
-                        child
-                    );
+                    zClass_Object3D::gwObject3DAddChild(statics, child);
+                    zClass_World::RemoveChildAtGrid(world, child);
                 }
                 zClass_TypeList::UpdateQueuedTrees();
-                zClass_World::AddChildAtGrid(
-                    world,
-                    statics
-                );
+                zClass_World::AddChildAtGrid(world, statics);
             }
         }
 
@@ -436,26 +377,14 @@ namespace zClass_World {
                 &data->areaGridRows[lastEdgeRow][data->areaGridColCount - 1];
             if (area->childCount > 0) {
                 zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
-                zClass_Class::gwNodeSetName(
-                    statics,
-                    g_zClass_VapStaticsNodeName
-                );
+                zClass_Class::gwNodeSetName(statics, g_zClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
                     zClass_NodePartial *child = area->childList[0];
-                    zClass_Object3D::gwObject3DAddChild(
-                        statics,
-                        child
-                    );
-                    zClass_World::RemoveChildAtGrid(
-                        world,
-                        child
-                    );
+                    zClass_Object3D::gwObject3DAddChild(statics, child);
+                    zClass_World::RemoveChildAtGrid(world, child);
                 }
                 zClass_TypeList::UpdateQueuedTrees();
-                zClass_World::AddChildAtGrid(
-                    world,
-                    statics
-                );
+                zClass_World::AddChildAtGrid(world, statics);
             }
         }
 
@@ -506,52 +435,49 @@ namespace zClass_World {
         if ((pendingFlags & 0x01) != 0) {
             fogChanged = 1;
             if (data->fogState == 0) {
-                zModel_Fog_SetEnabled(0);
-                zModel_Fog_SetLinearModeEnabled(0);
-                zModel_Fog_SetDensity(0.0f);
+                zModelFogSetEnabled(0);
+                zModelFogSetLinearModeEnabled(0);
+                zModelFogSetDensity(0.0f);
             } else {
-                zModel_Fog_SetEnabled(1);
-                zModel_Fog_SetEnabled(data->fogState == 1 ? 1 : 0);
-                zModel_Fog_SetLinearModeEnabled(data->fogState == 1 ? 1 : 0);
+                zModelFogSetEnabled(1);
+                zModelFogSetEnabled(data->fogState == 1 ? 1 : 0);
+                zModelFogSetLinearModeEnabled(data->fogState == 1 ? 1 : 0);
             }
         }
 
         if ((data->flags & 0x02) != 0) {
             fogChanged = 1;
-            zRndr::FogColor_SetRgb01Clamped(&data->ambientColor);
-            zModel_Fog_SetColorRgb01(&data->ambientColor);
+            zRndr::FogColorSetRgb01Clamped(&data->ambientColor);
+            zModelFogSetColorRgb01(&data->ambientColor);
         }
 
         if ((data->flags & 0x04) != 0) {
             fogChanged = 1;
-            zModel_Fog_SetDistanceStart(data->fogDistanceStart);
-            zModel_Fog_SetDistanceEnd(data->fogDistanceEnd);
+            zModelFogSetDistanceStart(data->fogDistanceStart);
+            zModelFogSetDistanceEnd(data->fogDistanceEnd);
         }
 
         if ((data->flags & 0x20) != 0) {
             fogChanged = 1;
-            zModel_Fog_SetHeightHigh(data->fogHeightHigh);
-            zModel_Fog_SetHeightLow(data->fogHeightLow);
+            zModelFogSetHeightHigh(data->fogHeightHigh);
+            zModelFogSetHeightLow(data->fogHeightLow);
         }
 
         if ((data->flags & 0x08) != 0) {
             fogChanged = 1;
-            zModel_Fog_SetDensity(data->fogDensity);
+            zModelFogSetDensity(data->fogDensity);
         }
 
         if (fogChanged != 0) {
             zGame::ReturnOnlyStub();
-            zModel_Fog_ApplyCurrentColor();
+            zModelFogApplyCurrentColor();
         }
 
         if (data->pendingAreaUpdateCount > 0) {
             zWorldAreaPartial **pendingAreaUpdates = data->pendingAreaUpdates;
             do {
                 zWorldAreaPartial *area = *pendingAreaUpdates;
-                RebuildAreaBounds(
-                    data,
-                    area
-                );
+                RebuildAreaBounds(data, area);
                 ++pendingAreaUpdates;
                 area->areaFlags &= ~0x01;
                 --data->pendingAreaUpdateCount;
@@ -733,23 +659,13 @@ namespace zClass_World {
         int gridRow
     ) {
         if (world == 0) {
-            zError::ReportOld(
-                0x400,
-                kWorldSourceFile,
-                0x6d4,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kWorldSourceFile, 0x6d4, "Null node pointer.");
             return 0;
         }
 
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kWorldSourceFile,
-                0x6d5,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kWorldSourceFile, 0x6d5, "Null class data pointer");
             return 0;
         }
 
@@ -769,33 +685,19 @@ namespace zClass_World {
         int gridRow
     ) {
         if (world == 0) {
-            zError::ReportOld(
-                0x400,
-                kWorldSourceFile,
-                0x6f5,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kWorldSourceFile, 0x6f5, "Null node pointer.");
             return 5;
         }
 
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data == 0) {
-            zError::ReportOld(
-                0x400,
-                kWorldSourceFile,
-                0x6f6,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kWorldSourceFile, 0x6f6, "Null class data pointer");
             return 5;
         }
 
         zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
         if ((area->areaFlags & 0x01) == 0) {
-            return QueueAreaUpdate(
-                world,
-                data,
-                area
-            );
+            return QueueAreaUpdate(world, data, area);
         }
 
         return 0;
@@ -1088,16 +990,10 @@ namespace zClass_World {
         }
 
         data->areaGridRows =
-            (zWorldAreaPartial **)(calloc(
-                data->areaGridRowCount,
-                sizeof(zWorldAreaPartial *)
-            ));
+            (zWorldAreaPartial **)(calloc(data->areaGridRowCount, sizeof(zWorldAreaPartial *)));
         for (int row = 0; row < data->areaGridRowCount; ++row) {
             data->areaGridRows[row] =
-                (zWorldAreaPartial *)(calloc(
-                    data->areaGridColCount,
-                    sizeof(zWorldAreaPartial)
-                ));
+                (zWorldAreaPartial *)(calloc(data->areaGridColCount, sizeof(zWorldAreaPartial)));
         }
 
         for (int initRow = 0; initRow < data->areaGridRowCount; ++initRow) {
@@ -1255,36 +1151,24 @@ namespace zClass_World {
         if (gridCol < 0 || gridRow < 0) {
             int listCount = world->listCountB + 1;
             int listBytes = listCount * sizeof(zClass_NodePartial *);
-            world->listB = (zClass_NodePartial **)(realloc(
-                world->listB,
-                listBytes
-            ));
+            world->listB = (zClass_NodePartial **)(realloc(world->listB, listBytes));
             world->listB[listCount - 1] = child;
             ++world->listCountB;
             child->gridCol = -1;
             child->gridRow = -1;
             int parentCount = child->listCountA + 1;
             int parentBytes = parentCount * sizeof(zClass_NodePartial *);
-            child->listA = (zClass_NodePartial **)(realloc(
-                child->listA,
-                parentBytes
-            ));
+            child->listA = (zClass_NodePartial **)(realloc(child->listA, parentBytes));
             child->listA[parentCount - 1] = world;
             ++child->listCountA;
             if (child->listCountA > 1) {
-                zClass_Class::SetSingleParentFlagRecursive(
-                    child,
-                    0
-                );
+                zClass_Class::SetSingleParentFlagRecursive(child, 0);
             }
         } else {
             zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
             int areaCount = (int)(area->childCount) + 1;
             int areaBytes = areaCount * sizeof(zClass_NodePartial *);
-            area->childList = (zClass_NodePartial **)(realloc(
-                area->childList,
-                areaBytes
-            ));
+            area->childList = (zClass_NodePartial **)(realloc(area->childList, areaBytes));
             area->childList[areaCount - 1] = child;
             ++area->childCount;
 
@@ -1292,25 +1176,15 @@ namespace zClass_World {
             child->gridRow = gridRow;
             int parentCount = child->listCountA + 1;
             int parentBytes = parentCount * sizeof(zClass_NodePartial *);
-            child->listA = (zClass_NodePartial **)(realloc(
-                child->listA,
-                parentBytes
-            ));
+            child->listA = (zClass_NodePartial **)(realloc(child->listA, parentBytes));
             child->listA[parentCount - 1] = world;
             ++child->listCountA;
             if (child->listCountA > 1) {
-                zClass_Class::SetSingleParentFlagRecursive(
-                    child,
-                    0
-                );
+                zClass_Class::SetSingleParentFlagRecursive(child, 0);
             }
 
             if ((area->areaFlags & 0x01) == 0) {
-                result = QueueAreaUpdate(
-                    world,
-                    data,
-                    area
-                );
+                result = QueueAreaUpdate(world, data, area);
             } else {
                 result = 0;
             }
@@ -1341,10 +1215,7 @@ namespace zClass_World {
 
             if ((child->flags & 0x100) != 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetWorldBBoxCorners(
-                    child,
-                    &corners
-                );
+                zClass_Class::gwNodeGetWorldBBoxCorners(child, &corners);
                 minX = corners.values[0];
                 maxX = corners.values[0];
                 minZ = corners.values[2];
@@ -1373,23 +1244,10 @@ namespace zClass_World {
                 maxZ = data->originZ + data->worldSizeZ;
             }
 
-            WorldRectToGridIndex(
-                world,
-                &gridCol,
-                minX,
-                maxX,
-                minZ,
-                maxZ,
-                &gridRow
-            );
+            WorldRectToGridIndex(world, &gridCol, minX, maxX, minZ, maxZ, &gridRow);
         }
 
-        return AddChildToGridCell(
-            world,
-            child,
-            gridCol,
-            gridRow
-        );
+        return AddChildToGridCell(world, child, gridCol, gridRow);
     }
 
     /**
@@ -1408,10 +1266,7 @@ namespace zClass_World {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         if (gridCol == -1 && gridRow == -1) {
-            return zClass_Class::RemoveChildGeneric(
-                world,
-                child
-            );
+            return zClass_Class::RemoveChildGeneric(world, child);
         }
 
         zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
@@ -1458,11 +1313,7 @@ namespace zClass_World {
         }
 
         if ((area->areaFlags & 0x01) == 0) {
-            return QueueAreaUpdate(
-                world,
-                data,
-                area
-            );
+            return QueueAreaUpdate(world, data, area);
         }
 
         return 0;
@@ -1484,17 +1335,11 @@ namespace zClass_World {
         zClass_LightDataPartial *lightData = (zClass_LightDataPartial *)(light->classData);
 
         const int lightListBytes = (data->lightCount + 1) * sizeof(zClass_NodePartial *);
-        data->lightNodes = (zClass_NodePartial **)(realloc(
-            data->lightNodes,
-            lightListBytes
-        ));
+        data->lightNodes = (zClass_NodePartial **)(realloc(data->lightNodes, lightListBytes));
         data->lightNodes[data->lightCount] = light;
 
         data->lightDataList =
-            (zClass_LightDataPartial **)(realloc(
-                data->lightDataList,
-                lightListBytes
-            ));
+            (zClass_LightDataPartial **)(realloc(data->lightDataList, lightListBytes));
         data->lightDataList[data->lightCount] = lightData;
         ++data->lightCount;
 
@@ -1583,11 +1428,11 @@ namespace zClass_World {
      * @recoil-artifact defines .text recoil:function:0x451540: zClass_World::InitLightPointInPolygonXZ.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: forward the world's light data/node lists and count into
-     * zModel_Light_PointInPolygonInitXZ.
+     * zModelLightPointInPolygonInitXZ.
      */
     int __fastcall InitLightPointInPolygonXZ(zClass_NodePartial * world) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
-        zModel_Light_PointInPolygonInitXZ(
+        zModelLightPointInPolygonInitXZ(
             data->lightDataList,
             (zModel_LightStatePartial **)(data->lightNodes),
             data->lightCount
@@ -1630,17 +1475,11 @@ namespace zClass_World {
         zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(sound->classData);
 
         const int soundListBytes = (data->soundCount + 1) * sizeof(zClass_NodePartial *);
-        data->soundNodes = (zClass_NodePartial **)(realloc(
-            data->soundNodes,
-            soundListBytes
-        ));
+        data->soundNodes = (zClass_NodePartial **)(realloc(data->soundNodes, soundListBytes));
         data->soundNodes[data->soundCount] = sound;
 
         data->soundDataList =
-            (zClass_SoundDataPartial **)(realloc(
-                data->soundDataList,
-                soundListBytes
-            ));
+            (zClass_SoundDataPartial **)(realloc(data->soundDataList, soundListBytes));
         data->soundDataList[data->soundCount] = soundData;
         ++data->soundCount;
 
@@ -1761,41 +1600,19 @@ namespace zClass_World {
         while (link != 0 && result != 0) {
             zClass_NodePartial *world = link->node;
             zClass_WorldSettingsSectionRecord settings;
-            GetPendingFogDensity(
-                world,
-                &settings.fogDensity
-            );
-            GetPendingFogState(
-                world,
-                &settings.fogState
-            );
+            GetPendingFogDensity(world, &settings.fogDensity);
+            GetPendingFogState(world, &settings.fogState);
             GetPendingFogColorRgb01(
                 world,
                 &settings.fogColorRgb01.red,
                 &settings.fogColorRgb01.green,
                 &settings.fogColorRgb01.blue
             );
-            GetPendingFogRange(
-                world,
-                &settings.fogRangeNear,
-                &settings.fogRangeFar
-            );
-            GetPendingFogAltitudeRange(
-                world,
-                &settings.fogAltitudeLow,
-                &settings.fogAltitudeHigh
-            );
-            GetPendingFogDensity(
-                world,
-                &settings.fogDensity
-            );
+            GetPendingFogRange(world, &settings.fogRangeNear, &settings.fogRangeFar);
+            GetPendingFogAltitudeRange(world, &settings.fogAltitudeLow, &settings.fogAltitudeHigh);
+            GetPendingFogDensity(world, &settings.fogDensity);
             result =
-                zUtil_ZAR::WriteSectionBlob(
-                    callbackCtx,
-                    world->name,
-                    &settings,
-                    sizeof(settings)
-                );
+                zUtil_ZAR::WriteSectionBlob(callbackCtx, world->name, &settings, sizeof(settings));
             link = link->next;
         }
 
@@ -1822,42 +1639,22 @@ namespace zClass_World {
         (void)size;
         (void)userData;
 
-        zClass_NodePartial *world = zClass::FindByTypeAndName(
-            13,
-            worldName
-        );
+        zClass_NodePartial *world = zClass::FindByTypeAndName(13, worldName);
         if (world == 0) {
             return;
         }
 
-        SetPendingFogDensity(
-            world,
-            settings->fogDensity
-        );
-        SetPendingFogState(
-            world,
-            settings->fogState
-        );
+        SetPendingFogDensity(world, settings->fogDensity);
+        SetPendingFogState(world, settings->fogState);
         SetPendingFogColorRgb01(
             world,
             settings->fogColorRgb01.red,
             settings->fogColorRgb01.green,
             settings->fogColorRgb01.blue
         );
-        SetPendingFogRange(
-            world,
-            settings->fogRangeNear,
-            settings->fogRangeFar
-        );
-        SetPendingFogAltitudeRange(
-            world,
-            settings->fogAltitudeLow,
-            settings->fogAltitudeHigh
-        );
-        SetPendingFogDensity(
-            world,
-            settings->fogDensity
-        );
+        SetPendingFogRange(world, settings->fogRangeNear, settings->fogRangeFar);
+        SetPendingFogAltitudeRange(world, settings->fogAltitudeLow, settings->fogAltitudeHigh);
+        SetPendingFogDensity(world, settings->fogDensity);
     }
 
 }

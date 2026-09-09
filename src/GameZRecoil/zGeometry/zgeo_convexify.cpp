@@ -156,30 +156,10 @@ inline float PolygonArea2D(
     float area = 0.0f;
     for (int i = 0; i < pointCount; ++i) {
         const int next = (i + 1) % pointCount;
-        area += OffsetX(
-            pointDwords,
-            pointDwordOffsets,
-            i,
-            stride
-        ) *
-                    OffsetY(
-                        pointDwords,
-                        pointDwordOffsets,
-                        next,
-                        stride
-                    ) -
-                OffsetY(
-                    pointDwords,
-                    pointDwordOffsets,
-                    i,
-                    stride
-                ) *
-                    OffsetX(
-                        pointDwords,
-                        pointDwordOffsets,
-                        next,
-                        stride
-                    );
+        area += OffsetX(pointDwords, pointDwordOffsets, i, stride) *
+                    OffsetY(pointDwords, pointDwordOffsets, next, stride) -
+                OffsetY(pointDwords, pointDwordOffsets, i, stride) *
+                    OffsetX(pointDwords, pointDwordOffsets, next, stride);
     }
 
     return area;
@@ -201,30 +181,9 @@ bool PointInTriangle2D(
     float cy,
     bool ccw
 ) {
-    const float cross0 = Cross2D(
-        ax,
-        ay,
-        bx,
-        by,
-        px,
-        py
-    );
-    const float cross1 = Cross2D(
-        bx,
-        by,
-        cx,
-        cy,
-        px,
-        py
-    );
-    const float cross2 = Cross2D(
-        cx,
-        cy,
-        ax,
-        ay,
-        px,
-        py
-    );
+    const float cross0 = Cross2D(ax, ay, bx, by, px, py);
+    const float cross1 = Cross2D(bx, by, cx, cy, px, py);
+    const float cross2 = Cross2D(cx, cy, ax, ay, px, py);
 
     if (ccw) {
         return cross0 >= 0.0f && cross1 >= 0.0f && cross2 >= 0.0f;
@@ -243,11 +202,7 @@ void CopyOffsetVertex(
     const int *source,
     int stride
 ) {
-    memcpy(
-        dest,
-        source,
-        (size_t)(stride) * sizeof(int)
-    );
+    memcpy(dest, source, (size_t)(stride) * sizeof(int));
 }
 
 /**
@@ -277,11 +232,7 @@ zVec3 *CopySpanPoints(
     polygon->pointCount = pointCount;
     polygon->pointDwordOffset = result->totalPointCount * 3;
 
-    memcpy(
-        outputPointWriteCursor,
-        sourcePointDwords,
-        (size_t)(pointCount) * sizeof(zVec3)
-    );
+    memcpy(outputPointWriteCursor, sourcePointDwords, (size_t)(pointCount) * sizeof(zVec3));
 
     ++result->polygonCount;
     result->totalPointCount += pointCount;
@@ -301,14 +252,7 @@ bool IsConvexQuadXY(
         const zVec3 &a = points[i];
         const zVec3 &b = points[(i + 1) & 3];
         const zVec3 &c = points[(i + 2) & 3];
-        const float cross = Cross2D(
-            a.x,
-            a.y,
-            b.x,
-            b.y,
-            c.x,
-            c.y
-        );
+        const float cross = Cross2D(a.x, a.y, b.x, b.y, c.x, c.y);
         if (cross == 0.0f) {
             continue;
         }
@@ -335,10 +279,7 @@ zVec3 *AppendTriangulatedSpan(
     const zGeometry_PolygonPointSpanPartial *inputPolygon,
     const zVec3 *allPoints
 ) {
-    const float *sourcePointDwords = PointDwordBase(
-        allPoints,
-        inputPolygon->pointDwordOffset
-    );
+    const float *sourcePointDwords = PointDwordBase(allPoints, inputPolygon->pointDwordOffset);
     zGeometry_TriangleDwordOffsetList *triangles =
         zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive(
             inputPolygon->pointCount,
@@ -402,21 +343,9 @@ void AppendTriangleOffsets(
     int stride
 ) {
     int *out = &TrianglePayload(list)[triangleIndex * stride * 3];
-    CopyOffsetVertex(
-        out,
-        &polygonOffsets[index0 * stride],
-        stride
-    );
-    CopyOffsetVertex(
-        out + stride,
-        &polygonOffsets[index1 * stride],
-        stride
-    );
-    CopyOffsetVertex(
-        out + stride * 2,
-        &polygonOffsets[index2 * stride],
-        stride
-    );
+    CopyOffsetVertex(out, &polygonOffsets[index0 * stride], stride);
+    CopyOffsetVertex(out + stride, &polygonOffsets[index1 * stride], stride);
+    CopyOffsetVertex(out + stride * 2, &polygonOffsets[index2 * stride], stride);
 }
 
 /**
@@ -434,50 +363,13 @@ bool IsEar(
     int next,
     bool ccw
 ) {
-    const float ax = OffsetX(
-        pointDwords,
-        pointDwordOffsets,
-        prev,
-        stride
-    );
-    const float ay = OffsetY(
-        pointDwords,
-        pointDwordOffsets,
-        prev,
-        stride
-    );
-    const float bx = OffsetX(
-        pointDwords,
-        pointDwordOffsets,
-        curr,
-        stride
-    );
-    const float by = OffsetY(
-        pointDwords,
-        pointDwordOffsets,
-        curr,
-        stride
-    );
-    const float cx = OffsetX(
-        pointDwords,
-        pointDwordOffsets,
-        next,
-        stride
-    );
-    const float cy = OffsetY(
-        pointDwords,
-        pointDwordOffsets,
-        next,
-        stride
-    );
-    const float cross = Cross2D(
-        ax,
-        ay,
-        bx,
-        by,
-        cx,
-        cy
-    );
+    const float ax = OffsetX(pointDwords, pointDwordOffsets, prev, stride);
+    const float ay = OffsetY(pointDwords, pointDwordOffsets, prev, stride);
+    const float bx = OffsetX(pointDwords, pointDwordOffsets, curr, stride);
+    const float by = OffsetY(pointDwords, pointDwordOffsets, curr, stride);
+    const float cx = OffsetX(pointDwords, pointDwordOffsets, next, stride);
+    const float cy = OffsetY(pointDwords, pointDwordOffsets, next, stride);
+    const float cross = Cross2D(ax, ay, bx, by, cx, cy);
 
     if (ccw) {
         if (cross <= 0.0f) {
@@ -493,18 +385,8 @@ bool IsEar(
         }
 
         if (PointInTriangle2D(
-                OffsetX(
-                    pointDwords,
-                    pointDwordOffsets,
-                    i,
-                    stride
-                ),
-                OffsetY(
-                    pointDwords,
-                    pointDwordOffsets,
-                    i,
-                    stride
-                ),
+                OffsetX(pointDwords, pointDwordOffsets, i, stride),
+                OffsetY(pointDwords, pointDwordOffsets, i, stride),
                 ax,
                 ay,
                 bx,
@@ -713,12 +595,7 @@ void __fastcall TryEmitTriangleFromEdgePair(
     }
 
     zGeometry_TriangulateHole_EdgeState *const closingEdge =
-        FindActiveEdgeState(
-            vertexIndex0,
-            vertexIndex1,
-            edgeCount,
-            edgeStates
-        );
+        FindActiveEdgeState(vertexIndex0, vertexIndex1, edgeCount, edgeStates);
     if (closingEdge == 0) {
         return;
     }
@@ -773,10 +650,7 @@ zGeometry_TriangleSoup *__fastcall TriangulatePolygonWithHole(
         (size_t)(innerPointCount) * sizeof(zVec3)
     );
 
-    zGeometry_TriangulateHole::CacheCombinedPlane(
-        outerPointCount,
-        outerPoints
-    );
+    zGeometry_TriangulateHole::CacheCombinedPlane(outerPointCount, outerPoints);
     zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane(
         innerPointCount,
         &g_zGeometry_TriangulateHole_CombinedPoints[outerPointCount]
@@ -1034,10 +908,7 @@ int __fastcall EnsurePositiveCrossZ(
             return 0;
         }
 
-        ReversePoints(
-            pointCount,
-            points
-        );
+        ReversePoints(pointCount, points);
     }
 
     return 1;
@@ -1074,20 +945,17 @@ void __fastcall Destroy(
 namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-convexify
- * @recoil-artifact defines .text recoil:function:0x46c760: zGeometry_Polygon::Convexify
+ * @recoil-artifact defines .text recoil:function:0x46c760: zGeometry_Polygon::convexify
  * Purpose: Convert polygon spans into convex polygon output, copying already
  * convex spans and triangulating non-convex spans through the polygon splitter.
  */
-zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
+zGeometry_ConvexPolygonSetPartial *__fastcall convexify(
     zGeometry_PolygonSpanArrayPartial *polygonSet,
     int inputPointCount,
     zVec3 *points
 ) {
     if (inputPointCount <= 0 || points == 0) {
-        fprintf(
-            stderr,
-            g_zGeometry_ConvexifyNullInputsMsg
-        );
+        fprintf(stderr, g_zGeometry_ConvexifyNullInputsMsg);
         return 0;
     }
 
@@ -1207,11 +1075,7 @@ zGeometry_TriangleDwordOffsetList *__fastcall TriangulatePointDwordOffsetsRecurs
     int pointDwordStrideMode
 ) {
     if (pointCount < 3) {
-        fprintf(
-            stderr,
-            g_zGeometry_TriangulateOnlyVertsReceivedFmt,
-            pointCount
-        );
+        fprintf(stderr, g_zGeometry_TriangulateOnlyVertsReceivedFmt, pointCount);
         return 0;
     }
 
@@ -1373,11 +1237,7 @@ zGeometry_TriangleDwordOffsetList *__fastcall TriangulatePointDwordOffsetsRecurs
     }
 
     int *outTriangleOffsets = result->triangleDwordOffsets;
-    memcpy(
-        outTriangleOffsets,
-        workingOffsets,
-        (size_t)(pointDwordStride) * sizeof(int)
-    );
+    memcpy(outTriangleOffsets, workingOffsets, (size_t)(pointDwordStride) * sizeof(int));
     memcpy(
         outTriangleOffsets + pointDwordStride,
         workingOffsets + pointDwordStride,

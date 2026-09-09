@@ -533,35 +533,35 @@ int __cdecl ReassignPlayerColorsAndRefreshRows(
     int senderPlayerId,
     zNetworkPacketHeader *packet
 );
-int __fastcall HandlePkt03_RemoveRemotePlayer(
+int __fastcall HandlePkt03RemoveRemotePlayer(
     int senderPlayerId,
     zNetworkPacketHeader *packet
 );
 void __fastcall RefreshPlayerListMenu(GameNetPlayerRow *playerRow);
-int __fastcall HandlePkt0C_HudTimerStatusBits(
+int __fastcall HandlePkt0CHudTimerStatusBits(
     int senderPlayerId,
     NetPkt0C_HudTimerStatusBits *packet
 );
-int __fastcall HandlePkt0B_ChatMessage(
+int __fastcall HandlePkt0BChatMessage(
     int senderPlayerId,
     NetPkt0B_ChatMessage *packet
 );
-void __fastcall SendPkt0B_ChatMessage(const char *message);
-int __fastcall HandlePkt0D_HudTimerPanelState(
+void __fastcall SendPkt0BChatMessage(const char *message);
+int __fastcall HandlePkt0DHudTimerPanelState(
     int senderPlayerId,
     NetPkt0D_HudTimerPanelState *packet
 );
-int __fastcall HandlePkt08_PlayerKillEvent(
+int __fastcall HandlePkt08PlayerKillEvent(
     int localPlayerKey,
     NetPkt08_PlayerKillEvent *packet
 );
-void __fastcall SendPkt08_PlayerKillEvent(
+void __fastcall SendPkt08PlayerKillEvent(
     zUtil_SaveGameState *saveState,
     short killMethodOrOptCatalogEntryId
 );
-void __cdecl SendPkt09_PlayerScoreboardSnapshot();
-void __fastcall SendPkt0E_PlayerLapProgress(zUtil_SaveGameState *saveState);
-int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
+void __cdecl SendPkt09PlayerScoreboardSnapshot();
+void __fastcall SendPkt0EPlayerLapProgress(zUtil_SaveGameState *saveState);
+int __fastcall HandlePkt09PlayerScoreboardSnapshot(
     int senderPlayerId,
     NetPkt09_PlayerScoreboardSnapshot *packet
 );
@@ -572,15 +572,15 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
 int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
     zUtil_SaveGameState *saveState
 );
-int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
+int __fastcall ApplyPkt06PlayerStateSnapshotToRow(
     GameNetPlayerRow *row,
     NetPkt06_PlayerStateSnapshot *packet
 );
-int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
+int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(
     int senderPlayerId,
     NetPkt06_PlayerStateSnapshot *packet
 );
-int __fastcall HandlePkt06_PlayerStateSnapshot(
+int __fastcall HandlePkt06PlayerStateSnapshot(
     int senderPlayerId,
     NetPkt06_PlayerStateSnapshot *packet
 );
@@ -596,36 +596,36 @@ int __fastcall AltGunDispatchNoOpCallback(
     OptCatalogEntryDef *entry,
     void **saveStateSlot
 );
-int __fastcall HostSendPkt10_QSandFeature(
+int __fastcall HostSendPkt10QSandFeature(
     zDEClient_QSandEventTemplate *eventTemplate
 );
-int __fastcall SendPkt10_QSandEvent(
+int __fastcall SendPkt10QSandEvent(
     zDEClient_QSandEventTemplate *eventTemplate
 );
-int __fastcall HostSendPkt0F_CraterFeature(
+int __fastcall HostSendPkt0FCraterFeature(
     zDEClient_CraterEventTemplate *eventTemplate
 );
-void __fastcall SendPkt0D_HudTimerPanelState(
+void __fastcall SendPkt0DHudTimerPanelState(
     HudTimerPanelNetState *timerState
 );
-int __fastcall SendPkt0C_HudTimerStatusBits(HudTimerPanelNetState *timerState);
-int __fastcall HandlePkt0E_PlayerLapProgress(
+int __fastcall SendPkt0CHudTimerStatusBits(HudTimerPanelNetState *timerState);
+int __fastcall HandlePkt0EPlayerLapProgress(
     int senderPlayerId,
     NetPkt0E_PlayerLapProgress *packet
 );
-int __fastcall HandlePkt13_EffectAnimActivationRecord(
+int __fastcall HandlePkt13EffectAnimActivationRecord(
     int senderPlayerId,
     zNetworkPacketHeader *packet
 );
-void __fastcall SendPkt13_EffectAnimActivationRecord(
+void __fastcall SendPkt13EffectAnimActivationRecord(
     zEffectAnimActivationRecord *record
 );
-void __cdecl SendAllPkt13_EffectAnimActivationRecords();
-int __fastcall HandlePkt14_HudTimerAndFlagsSync(
+void __cdecl SendAllPkt13EffectAnimActivationRecords();
+int __fastcall HandlePkt14HudTimerAndFlagsSync(
     int senderPlayerId,
     NetPkt14_HudTimerAndFlagsSync *packet
 );
-int __fastcall SendPkt14_HudTimerAndFlagsSync(
+int __fastcall SendPkt14HudTimerAndFlagsSync(
     int eventCode,
     unsigned int statusFlags,
     int valueOrTime,

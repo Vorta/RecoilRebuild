@@ -62,7 +62,7 @@ int g_Player_LocalControlEnabled = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-runtimeinputflags
  * @recoil-artifact defines .data recoil:data:0x4f36a0: g_Player_RuntimeInputFlags.
- * BN types this as a zero-filled .data int reset by ZAR_RegisterSections and
+ * BN types this as a zero-filled .data int reset by zZarRegisterSections and
  * read by local gameplay input/runtime-control paths.
  * Purpose: Stores player runtime input mode flags for the current mission.
  */
@@ -260,7 +260,7 @@ RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_ModeGoalNode) == 0x26);
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-mastertypename-unknown
  * @recoil-artifact defines .data recoil:data:0x4dca40: g_Player_MasterTypeName_Unknown.
  * BN types this as a writable .data char[0x08] shared by
- * Player::UpdateDebugOverlayHud, zNetwork_DPlay_ReportError, and zSnd error
+ * Player::UpdateDebugOverlayHud, zNetworkDPlayReportError, and zSnd error
  * reporters for fallback "UNKNOWN" diagnostics.
  * Purpose: Names the shared fallback diagnostic/master-type token.
  */
@@ -692,7 +692,7 @@ int g_Player_MissionInitFirstRunFlag = 1;
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-sourcefile-playercpp
  * @recoil-artifact defines .data recoil:data:0x4dc26c: g_Player_SourceFile_PlayerCpp.
  * BN types this as a writable player.cpp diagnostic source-file literal
- * referenced by ApplyMissionSaveData and ZAR_ReadVehicleListSection.
+ * referenced by ApplyMissionSaveData and zZarReadVehicleListSection.
  * Purpose: Stores the Player source-file path used by save/ZAR diagnostics.
  */
 char g_Player_SourceFile_PlayerCpp[31] = "D:\\Proj\\Battlesport\\player.cpp";
@@ -709,7 +709,7 @@ char g_Player_SaveDataModifiedMsg[72] =
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-savevehiclelistsectionname
  * @recoil-artifact defines .data recoil:data:0x4dc2d4: g_Player_SaveVehicleListSectionName.
  * BN types this as a writable ZAR section-name literal referenced by
- * ZAR_RegisterSections for the VehicleList callbacks.
+ * zZarRegisterSections for the VehicleList callbacks.
  * Purpose: Names the Player VehicleList ZAR section.
  */
 char g_Player_SaveVehicleListSectionName[12] = "VehicleList";
@@ -717,7 +717,7 @@ char g_Player_SaveVehicleListSectionName[12] = "VehicleList";
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-vehiclesavedatamodifiedmsg
  * @recoil-artifact defines .data recoil:data:0x4dc2e0: g_Player_VehicleSaveDataModifiedMsg.
  * BN types this as a writable diagnostic literal referenced by
- * ZAR_ReadVehicleListSection when a VehicleList payload has an unexpected size.
+ * zZarReadVehicleListSection when a VehicleList payload has an unexpected size.
  * Purpose: Reports incompatible VehicleList save data.
  */
 char g_Player_VehicleSaveDataModifiedMsg[73] =
@@ -1484,7 +1484,7 @@ float PlayerClamp01(
     } while (0)
 /**
  * Original inline helper; no standalone retail function exists.
- * Observed in address-backed callers 0x425a20 Player::TickLocalPlayerControls, 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHover_FromModalProbe.
+ * Observed in address-backed callers 0x425a20 Player::TickLocalPlayerControls, 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHoverFromModalProbe.
  * Purpose: clamp a caller-owned scalar without emitting an out-of-line helper
  * under the retail translation unit's /Ob0 compile mode.
  */
@@ -1499,7 +1499,7 @@ float PlayerClamp01(
 /**
  * Original inline helper; no standalone retail function exists.
  * Observed expanded inline at 0x426770 Player::UpdateMasterTypeTrack,
- * 0x427440 Player::UpdateMasterTypeHover_FromModalProbe, and
+ * 0x427440 Player::UpdateMasterTypeHoverFromModalProbe, and
  * 0x43a600 Player::UpdateAltGunAimDirection.
  * Purpose: transform a world-space vector into master-local space without
  * emitting an out-of-line helper under the retail translation unit's /Ob0
@@ -1514,7 +1514,7 @@ float PlayerClamp01(
 
 /**
  * Original inline helper; no standalone retail function exists.
- * Observed in address-backed callers 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHover_FromModalProbe, 0x427140 Player::UpdateMasterTypeHover.
+ * Observed in address-backed callers 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHoverFromModalProbe, 0x427140 Player::UpdateMasterTypeHover.
  * Purpose: transform a local vector without emitting an out-of-line helper
  * under the retail translation unit's /Ob0 compile mode.
  */
@@ -1860,7 +1860,7 @@ RECOIL_STATIC_ASSERT(
         for (int playerFxIndex = 0; playerFxIndex < 2; ++playerFxIndex) { \
             zEffectAnimEntry *const playerFxEntry = (entries)[playerFxIndex]; \
             if (playerFxEntry != 0 && (flags) == 0) { \
-                zEffectAnim::SetVelocity_Thunk( \
+                zEffectAnim::SetVelocityThunk( \
                     playerFxEntry, \
                     (rootNode), \
                     0.0f, \
@@ -1942,10 +1942,7 @@ void PlayerRefreshSavedWeaponBankHud(
     PlayerAltWeaponBank *bank
 ) {
     PlayerGunFireController *const selectedController =
-        PlayerSavedWeaponController(
-            bank,
-            bank->selectedSide
-        );
+        PlayerSavedWeaponController(bank, bank->selectedSide);
 
     HudUiMessage::SetValueIfOwnerMatches(
         bankIndex,
@@ -1953,10 +1950,7 @@ void PlayerRefreshSavedWeaponBankHud(
         selectedController->ammoOrCharge
     );
     if ((selectedController->flags & kPlayerGunControllerAvailableFlag) != 0) {
-        HudUiMessage::SelectVariantDisplay(
-            bankIndex,
-            bank->selectedSide
-        );
+        HudUiMessage::SelectVariantDisplay(bankIndex, bank->selectedSide);
     } else {
         HudUiMessage::ClearDisplay(bankIndex);
     }
@@ -2025,11 +2019,7 @@ zSndPlayHandle * zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zVec3 *const worldPos = modeIndex != 3 ? &playerState->worldPos : 0;
     zSndSample *const sample = playerState->masterCommonData->sfxWeaponUp[modeIndex];
-    zSndPlayHandle *const handle = sample->PlayA3D(
-        worldPos,
-        sfxVolume,
-        0
-    );
+    zSndPlayHandle *const handle = sample->PlayA3D(worldPos, sfxVolume, 0);
     playerState->modeLoopSfxHandle[modeIndex] = handle;
     return handle;
 }
@@ -2048,11 +2038,7 @@ void zUtil_SaveGameState::StartModalLoopSfxHandle(
     zUtil_SaveGameState *const saveState = this;
     PlayerModalState *const modalState = saveState->primaryModalState;
     zSndSample *const sample = modalState->masterModalData->sfxEngine[modalSfxIndex];
-    zSndPlayHandle *const handle = sample->PlayA3D(
-        &saveState->playerState->worldPos,
-        sfxVolume,
-        0
-    );
+    zSndPlayHandle *const handle = sample->PlayA3D(&saveState->playerState->worldPos, sfxVolume, 0);
     saveState->primaryModalState->modalSfxHandle[modalSfxIndex] = handle;
 }
 
@@ -2071,10 +2057,7 @@ void zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     if (playerState->modeLoopSfxHandle[modeIndex] == 0 &&
         playerState->masterCommonData->sfxWeaponUp[modeIndex] != 0) {
-        saveState->StartMasterTypeLoopSfxHandle(
-            modeIndex,
-            sfxVolume
-        );
+        saveState->StartMasterTypeLoopSfxHandle(modeIndex, sfxVolume);
     }
 }
 
@@ -2134,22 +2117,13 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
     PlayerModalState *primaryModalState = saveState->primaryModalState;
     if (primaryModalState->modalSfxHandle[0] == 0) {
         if (primaryModalState->masterModalData->sfxEngine[0] != 0) {
-            saveState->StartModalLoopSfxHandle(
-                0,
-                0.0f
-            );
+            saveState->StartModalLoopSfxHandle(0, 0.0f);
         }
         if (saveState->primaryModalState->masterModalData->sfxEngine[1] != 0) {
-            saveState->StartModalLoopSfxHandle(
-                1,
-                0.0f
-            );
+            saveState->StartModalLoopSfxHandle(1, 0.0f);
         }
         if (saveState->primaryModalState->masterModalData->sfxEngine[2] != 0) {
-            saveState->StartModalLoopSfxHandle(
-                2,
-                0.0f
-            );
+            saveState->StartModalLoopSfxHandle(2, 0.0f);
         }
         return;
     }
@@ -2159,11 +2133,7 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
         playerState->damageProtectionActive != 0) {
         const int smoothingBits = (int)(g_FrameDeltaTimeSec * -2.5f * 12102200.0f) + 0x3f800000;
         float smoothingFactor = 0.0f;
-        memcpy(
-            &smoothingFactor,
-            &smoothingBits,
-            sizeof(smoothingFactor)
-        );
+        memcpy(&smoothingFactor, &smoothingBits, sizeof(smoothingFactor));
         float throttleMagnitude = playerState->throttleInputCopy;
         if (throttleMagnitude < 0.0f) {
             throttleMagnitude = -throttleMagnitude;
@@ -2195,11 +2165,7 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
             1.0f - saveState->modeLoopBlend
         );
         saveState->primaryModalState->modalSfxHandle[2]
-            ->Update3DDispatch(
-                &saveState->playerState->worldPos,
-                0,
-                0
-            );
+            ->Update3DDispatch(&saveState->playerState->worldPos, 0, 0);
     }
 
     primaryModalState = saveState->primaryModalState;
@@ -2217,21 +2183,13 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
     );
     saveState->primaryModalState->modalSfxHandle[0]->SetEnableScale(engineEnableScale);
     saveState->primaryModalState->modalSfxHandle[0]
-        ->Update3DDispatch(
-            &saveState->playerState->worldPos,
-            0,
-            0
-        );
+        ->Update3DDispatch(&saveState->playerState->worldPos, 0, 0);
 
     handle = saveState->primaryModalState->modalSfxHandle[1];
     if (handle != 0) {
         handle->SetEnableScale(saveState->modeLoopBlend);
         saveState->primaryModalState->modalSfxHandle[1]
-            ->Update3DDispatch(
-                &saveState->playerState->worldPos,
-                0,
-                0
-            );
+            ->Update3DDispatch(&saveState->playerState->worldPos, 0, 0);
     }
 }
 
@@ -2768,14 +2726,14 @@ CPlayerMasterModalDataList g_PlayerMasterModalDataList;
  * Purpose: Own the underwater HUD effect for the process lifetime, with native
  * C++ initialization and destruction. CRT emission is under live investigation.
  */
-Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
+CPlayerUnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-underwaterfxpass3ui-constructor
- * @recoil-artifact defines .text recoil:function:0x41eb30: Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui.
+ * @recoil-artifact defines .text recoil:function:0x41eb30: CPlayerUnderwaterFxPass3Ui::CPlayerUnderwaterFxPass3Ui.
  * Purpose: construct the underwater pass-3 HUD overlay singleton storage and
  * return the initialized object.
  */
-Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui()
+CPlayerUnderwaterFxPass3Ui::CPlayerUnderwaterFxPass3Ui()
     : zVideoFxPass3Element(0, 0) {
 }
 /**
@@ -2787,14 +2745,14 @@ Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui()
  * @recoil-artifact emits .text recoil:function:0x41eb80: Native global lifecycle contribution 4.
  * Purpose: Own the projectile-camera overlay for the process lifetime.
  */
-Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
+CPlayerProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-projectilecamerafxpass3ui-constructor
- * @recoil-artifact defines .text recoil:function:0x41eb90: Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui.
+ * @recoil-artifact defines .text recoil:function:0x41eb90: CPlayerProjectileCameraFxPass3Ui::CPlayerProjectileCameraFxPass3Ui.
  * Purpose: construct the projectile-camera pass-3 HUD overlay singleton storage
  * and return the initialized object.
  */
-Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui()
+CPlayerProjectileCameraFxPass3Ui::CPlayerProjectileCameraFxPass3Ui()
     : zVideoFxPass3Element(0, 0) {
 }
 /**
@@ -2850,18 +2808,9 @@ void __fastcall RecordNodeFlagsForRestore(
 ) {
     PlayerNodeFlagRestoreEntry value;
     value.node = node;
-    zClass_Class::gwNodeGetCellPickable(
-        node,
-        &value.wasCellPickable
-    );
-    zClass_Class::gwNodeGetRaycastable(
-        node,
-        &value.wasRaycastable
-    );
-    zClass_Class::gwNodeGetPickable(
-        node,
-        &value.wasPickable
-    );
+    zClass_Class::gwNodeGetCellPickable(node, &value.wasCellPickable);
+    zClass_Class::gwNodeGetRaycastable(node, &value.wasRaycastable);
+    zClass_Class::gwNodeGetPickable(node, &value.wasPickable);
 
     g_PlayerNodeFlagRestoreEntries.push_back(value);
 }
@@ -2885,22 +2834,13 @@ void __cdecl RestoreRecordedNodeFlags() {
         const PlayerNodeFlagRestoreEntry value = *entry;
         zClass_NodePartial *const node = value.node;
         if (value.wasCellPickable != 0) {
-            zClass_Class::gwNodeSetCellPickable(
-                node,
-                1
-            );
+            zClass_Class::gwNodeSetCellPickable(node, 1);
         }
         if (value.wasRaycastable != 0) {
-            zClass_Class::gwNodeSetRaycastable(
-                node,
-                1
-            );
+            zClass_Class::gwNodeSetRaycastable(node, 1);
         }
         if (value.wasPickable != 0) {
-            zClass_Class::gwNodeSetPickable(
-                node,
-                1
-            );
+            zClass_Class::gwNodeSetPickable(node, 1);
         }
         ++entry;
     }
@@ -2968,11 +2908,7 @@ void __fastcall BuildMissionSaveData(
         &outData->cameraPosition.z
     );
 
-    memcpy(
-        &outData->timedHitStatus,
-        &playerState->timedHitStatus,
-        sizeof(outData->timedHitStatus)
-    );
+    memcpy(&outData->timedHitStatus, &playerState->timedHitStatus, sizeof(outData->timedHitStatus));
 
     if ((playerState->timedHitStatus.runtimeFlags & 1) != 0) {
         outData->timedHitStatus.lightNode = 0;
@@ -2993,12 +2929,7 @@ void __fastcall ApplyMissionSaveData(
 ) {
     if (saveData->size != sizeof(PlayerMissionSaveData) &&
         saveData->size != kPlayerMissionSaveLegacySize) {
-        zError::ReportOld(
-            0x200,
-            g_Player_SourceFile_PlayerCpp,
-            0xd1,
-            g_Player_SaveDataModifiedMsg
-        );
+        zError::ReportOld(0x200, g_Player_SourceFile_PlayerCpp, 0xd1, g_Player_SaveDataModifiedMsg);
         return;
     }
 
@@ -3034,10 +2965,7 @@ void __fastcall ApplyMissionSaveData(
             selectedController->ammoOrCharge
         );
         if ((selectedController->flags & kPlayerGunControllerAvailableFlag) != 0) {
-            HudUiMessage::SelectVariantDisplay(
-                bankIndex,
-                bank->selectedSide
-            );
+            HudUiMessage::SelectVariantDisplay(bankIndex, bank->selectedSide);
         } else {
             HudUiMessage::ClearDisplay(bankIndex);
         }
@@ -3048,11 +2976,7 @@ void __fastcall ApplyMissionSaveData(
         saveData->altWeaponSideIndex == 0 ? &altBank->controllerA : &altBank->controllerB;
     playerState->activeAltGunController = newAltController;
     if (oldAltController != newAltController) {
-        ApplyAltWeaponSwitch(
-            saveState,
-            oldAltController,
-            newAltController
-        );
+        ApplyAltWeaponSwitch(saveState, oldAltController, newAltController);
         if ((oldAltController->flags & kPlayerGunControllerAvailableFlag) != 0) {
             HudUiMessage::SelectVariantDisplay(
                 oldAltController->weaponBankIndex,
@@ -3062,11 +2986,7 @@ void __fastcall ApplyMissionSaveData(
             HudUiMessage::ClearDisplay(oldAltController->weaponBankIndex);
         }
     } else {
-        ApplyAltWeaponSwitch(
-            saveState,
-            0,
-            newAltController
-        );
+        ApplyAltWeaponSwitch(saveState, 0, newAltController);
     }
     HudUiMessage::UpdateSelectedWeaponDisplay(
         newAltController->weaponBankIndex,
@@ -3119,11 +3039,7 @@ void __fastcall ApplyMissionSaveData(
     playerState->bankInput = saveData->bankInput;
 
     HudUiMgrObjective::RefreshCounterText(g_Player_HudCounterValue);
-    ApplyMasterTypeTransition(
-        saveState,
-        saveData->playerMasterType,
-        1
-    );
+    ApplyMasterTypeTransition(saveState, saveData->playerMasterType, 1);
     playerState->primaryGunGateUntilTime = 0.0f;
 
     zClass_Camera::gwCameraSetTarget(
@@ -3155,11 +3071,7 @@ void __fastcall ApplyMissionSaveData(
             OptCatalogEntryDef *const hitSource =
                 OptCatalog::FindEntryById(saveData->timedHitStatus.savedHitSourceEntryId);
             playerState->timedHitStatus.hitSource = hitSource;
-            HitSource::UpdateTimedStatus(
-                hitSource,
-                &playerState->timedHitStatus,
-                0.0f
-            );
+            HitSource::UpdateTimedStatus(hitSource, &playerState->timedHitStatus, 0.0f);
             playerState->timedHitStatus.nextUpdateTime += g_Time_AccumulatedTimeSec;
         }
     }
@@ -3168,25 +3080,25 @@ void __fastcall ApplyMissionSaveData(
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-registersections
- * @recoil-artifact defines .text recoil:function:0x41f5b0: Player::ZAR_RegisterSections
+ * @recoil-artifact defines .text recoil:function:0x41f5b0: Player::zZarRegisterSections
  * BN evidence: resets g_Player_RuntimeInputFlags and registers VehicleList and
  * Player callbacks through zUtil_ZAR::RegisterSectionHandler with sort orders 100
  * and 200.
  * Purpose: install Player-owned ZAR section callbacks for save/load.
  */
-void __cdecl ZAR_RegisterSections() {
+void __cdecl zZarRegisterSections() {
     g_Player_RuntimeInputFlags = 0;
     zUtil_ZAR::RegisterSectionHandler(
         g_Player_SaveVehicleListSectionName,
-        (zZbdSectionCallback)(&ZAR_WriteVehicleListSection),
-        (zZbdSectionCallback)(&ZAR_ReadVehicleListSection),
+        (zZbdSectionCallback)(&zZarWriteVehicleListSection),
+        (zZbdSectionCallback)(&zZarReadVehicleListSection),
         100,
         0
     );
     zUtil_ZAR::RegisterSectionHandler(
         g_HudUiCounterText_PlayerLabel,
-        (zZbdSectionCallback)(&ZAR_WriteMissionSaveDataSection),
-        (zZbdSectionCallback)(&ZAR_ReadMissionSaveDataSection),
+        (zZbdSectionCallback)(&zZarWriteMissionSaveDataSection),
+        (zZbdSectionCallback)(&zZarReadMissionSaveDataSection),
         200,
         0
     );
@@ -3195,7 +3107,7 @@ void __cdecl ZAR_RegisterSections() {
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-writemissionsavedatasection
- * @recoil-artifact defines .text recoil:function:0x41f5f0: Player::ZAR_WriteMissionSaveDataSection
+ * @recoil-artifact defines .text recoil:function:0x41f5f0: Player::zZarWriteMissionSaveDataSection
  * @recoil-match byte
  *
  * BN evidence: __fastcall ZAR pre-load callback; builds PlayerMissionSaveData,
@@ -3203,7 +3115,7 @@ namespace Player {
  * a 0x140-byte blob under the local player's root-node name.
  * Purpose: serialize local-player mission state into the Player ZAR section.
  */
-int __fastcall ZAR_WriteMissionSaveDataSection(
+int __fastcall zZarWriteMissionSaveDataSection(
     zZbdSectionCallbackCtx *writer,
     void *
 ) {
@@ -3223,7 +3135,7 @@ int __fastcall ZAR_WriteMissionSaveDataSection(
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-readmissionsavedatasection
- * @recoil-artifact defines .text recoil:function:0x41f640: Player::ZAR_ReadMissionSaveDataSection
+ * @recoil-artifact defines .text recoil:function:0x41f640: Player::zZarReadMissionSaveDataSection
  * @recoil-match byte
  *
  * BN evidence: __fastcall ZAR data-ready callback; applies PlayerMissionSaveData,
@@ -3231,7 +3143,7 @@ namespace Player {
  * HUD/layout state, and restores recorded node flags.
  * Purpose: restore local-player mission state from the Player ZAR section.
  */
-void __fastcall ZAR_ReadMissionSaveDataSection(
+void __fastcall zZarReadMissionSaveDataSection(
     zZbdSectionCallbackCtx *,
     const char *,
     PlayerMissionSaveData *saveData,
@@ -3258,7 +3170,7 @@ void __fastcall ZAR_ReadMissionSaveDataSection(
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-writevehiclelistsection
- * @recoil-artifact defines .text recoil:function:0x41f6a0: Player::ZAR_WriteVehicleListSection
+ * @recoil-artifact defines .text recoil:function:0x41f6a0: Player::zZarWriteVehicleListSection
  * @recoil-match byte
  *
  * BN evidence: __fastcall ZAR pre-load callback; walks g_PlayerSaveStateList.head,
@@ -3266,7 +3178,7 @@ namespace Player {
  * and writes each blob under the player's root-node name.
  * Purpose: serialize all active player vehicle records into the VehicleList ZAR section.
  */
-int __fastcall ZAR_WriteVehicleListSection(
+int __fastcall zZarWriteVehicleListSection(
     zZbdSectionCallbackCtx *writer,
     void *
 ) {
@@ -3318,13 +3230,13 @@ int __fastcall ZAR_WriteVehicleListSection(
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-readvehiclelistsection
- * @recoil-artifact defines .text recoil:function:0x41f850: Player::ZAR_ReadVehicleListSection
+ * @recoil-artifact defines .text recoil:function:0x41f850: Player::zZarReadVehicleListSection
  * BN evidence: __fastcall ZAR data-ready callback; validates the 0x80-byte
  * VehicleList record, finds the save state by root-node token, restores pose,
  * AI, status, visual, and lifecycle fields, and refreshes node state.
  * Purpose: restore one player vehicle record from the VehicleList ZAR section.
  */
-void __fastcall ZAR_ReadVehicleListSection(
+void __fastcall zZarReadVehicleListSection(
     zZbdSectionCallbackCtx *,
     const char *sectionToken,
     PlayerVehicleListSaveEntry *saveData,
@@ -3344,10 +3256,7 @@ void __fastcall ZAR_ReadVehicleListSection(
     zUtil_SaveGameState *saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-        if (strcmp(
-            playerState->rootNode->name,
-            sectionToken
-        ) == 0) {
+        if (strcmp(playerState->rootNode->name, sectionToken) == 0) {
             break;
         }
         saveState = saveState->next;
@@ -3405,11 +3314,7 @@ void __fastcall ZAR_ReadVehicleListSection(
     playerState->statusMeterValue = saveData->statusMeterValue;
     playerState->nanitePanelLevel = saveData->nanitePanelLevel;
 
-    SetWorldPoseAndRestartAnchor(
-        saveState,
-        &playerState->worldPos,
-        playerState->restartYawRad
-    );
+    SetWorldPoseAndRestartAnchor(saveState, &playerState->worldPos, playerState->restartYawRad);
 
     if (saveState != (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         TickMasterTypeAndForceFeedback(saveState);
@@ -3426,25 +3331,12 @@ void __fastcall ZAR_ReadVehicleListSection(
                 g_Player_HealthySubNodeName
             );
         if (healthyNode != 0) {
-            zClass_Object3D::gwObject3DSetPosition(
-                healthyNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-            zClass_Object3D::gwObject3DSetRotation(
-                healthyNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Object3D::gwObject3DSetPosition(healthyNode, 0.0f, 0.0f, 0.0f);
+            zClass_Object3D::gwObject3DSetRotation(healthyNode, 0.0f, 0.0f, 0.0f);
         }
 
         if (playerState->destroyedRespawnAsyncHandle != 0) {
-            zEffect_Anim::NodeActionCallback(
-                playerState->destroyedRespawnAsyncHandle,
-                0
-            );
+            zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnAsyncHandle, 0);
         } else {
             zEffect_Anim::NodeActionCallback(
                 playerState->destroyedRespawnFxEntry,
@@ -3459,10 +3351,7 @@ void __fastcall ZAR_ReadVehicleListSection(
     );
     zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack(playerState->rootNode);
     zTag4::Clear(&playerState->variantTag);
-    zClass_Class::gwNodeSetNodeType(
-        playerState->rootNode,
-        playerState->variantTag.tags[0]
-    );
+    zClass_Class::gwNodeSetNodeType(playerState->rootNode, playerState->variantTag.tags[0]);
 }
 } // namespace Player
 namespace Player {
@@ -3603,10 +3492,7 @@ const char *__fastcall SelectZrdByDifficulty(
         filename = g_Player_VehicleArchiveName_Hard;
     }
 
-    if (zReader::FindFile(
-        filename,
-        extraSearchPath
-    ) == 0) {
+    if (zReader::FindFile(filename, extraSearchPath) == 0) {
         filename = g_Player_VehicleArchiveName_Default;
     }
 
@@ -3667,38 +3553,15 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
 
     float fovX = 0.0f;
     float fovY = 0.0f;
-    zClass_Camera::gwCameraGetFOV(
-        g_MainCamera,
-        &fovX,
-        &fovY
-    );
-    zClass_Camera::gwCameraSetPosition(
-        g_MainCamera,
-        0.0f,
-        0.0f,
-        0.0f
-    );
-    zClass_Camera::gwCameraSetTarget(
-        g_MainCamera,
-        0.0f,
-        0.0f,
-        0.0f
-    );
+    zClass_Camera::gwCameraGetFOV(g_MainCamera, &fovX, &fovY);
+    zClass_Camera::gwCameraSetPosition(g_MainCamera, 0.0f, 0.0f, 0.0f);
+    zClass_Camera::gwCameraSetTarget(g_MainCamera, 0.0f, 0.0f, 0.0f);
     if (g_Player_HorizonNode != 0) {
         g_Player_HorizonNodeFollowCameraEnabled = 1;
-        zClass_Object3D::gwObject3DSetPosition(
-            g_Player_HorizonNode,
-            0.0f,
-            0.0f,
-            0.0f
-        );
+        zClass_Object3D::gwObject3DSetPosition(g_Player_HorizonNode, 0.0f, 0.0f, 0.0f);
     }
 
-    memset(
-        &g_VariantTag_Current,
-        0,
-        sizeof(g_VariantTag_Current)
-    );
+    memset(&g_VariantTag_Current, 0, sizeof(g_VariantTag_Current));
     zTag4::Clear(&g_VariantTag_Current);
     g_Variant_CurrentTag = g_VariantTag_Current;
 
@@ -3714,128 +3577,57 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     g_Player_CopterSndNode2 = 0;
     g_Player_BftSplashAnimEntry = zEffectAnim::FindEntryByName("bftsplash");
 
-    zReader::Node *playerRoot = zReader::Load(
-        g_Player_ConfigArchiveName,
-        0,
-        0
-    );
+    zReader::Node *playerRoot = zReader::Load(g_Player_ConfigArchiveName, 0, 0);
     {
         zReader::Node *const root = playerRoot;
-        zReader::Node *node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_CameraZone
-        );
+        zReader::Node *node = zRdrGetNode(root, g_Player_ConfigKey_CameraZone);
         if (node != 0) {
-            const float cameraZone = PlayerZrdArrayFloat(
-                node,
-                1
-            );
+            const float cameraZone = PlayerZrdArrayFloat(node, 1);
             if (cameraZone > 0.0f && cameraZone < 1.0f) {
                 g_Player_CameraZone = cameraZone;
                 g_Player_CameraZoneInvRange = 1.0f / (1.0f - cameraZone);
             }
         }
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_MaxCamYawRate
-        );
-        g_Player_MaxCamYawRate = node != 0 ? PlayerZrdArrayFloat(
-            node,
-            1
-        ) : 2.0f;
+        node = zRdrGetNode(root, g_Player_ConfigKey_MaxCamYawRate);
+        g_Player_MaxCamYawRate = node != 0 ? PlayerZrdArrayFloat(node, 1) : 2.0f;
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_MousePush
-        );
+        node = zRdrGetNode(root, g_Player_ConfigKey_MousePush);
         if (node != 0) {
-            g_Player_MousePushX = PlayerZrdArrayFloat(
-                node,
-                1
-            );
-            g_Player_MousePushY = PlayerZrdArrayFloat(
-                node,
-                2
-            );
+            g_Player_MousePushX = PlayerZrdArrayFloat(node, 1);
+            g_Player_MousePushY = PlayerZrdArrayFloat(node, 2);
         } else {
             g_Player_MousePushX = 0.00200000009f;
             g_Player_MousePushY = 0.00999999978f;
         }
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_FirstPersonCamElevationRate
-        );
-        g_Player_FpCamElevationRate = node != 0 ? PlayerZrdArrayFloat(
-            node,
-            1
-        ) : 5.0f;
+        node = zRdrGetNode(root, g_Player_ConfigKey_FirstPersonCamElevationRate);
+        g_Player_FpCamElevationRate = node != 0 ? PlayerZrdArrayFloat(node, 1) : 5.0f;
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_FirstPersonCamElevationLimit
-        );
+        node = zRdrGetNode(root, g_Player_ConfigKey_FirstPersonCamElevationLimit);
         if (node != 0) {
-            g_Player_FpCamElevationMin = PlayerZrdArrayFloat(
-                node,
-                1
-            );
-            g_Player_FpCamElevationMax = PlayerZrdArrayFloat(
-                node,
-                2
-            );
+            g_Player_FpCamElevationMin = PlayerZrdArrayFloat(node, 1);
+            g_Player_FpCamElevationMax = PlayerZrdArrayFloat(node, 2);
         } else {
             g_Player_FpCamElevationMin = -0.75f;
             g_Player_FpCamElevationMax = 1.0f;
         }
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_UnderwaterCam
-        );
+        node = zRdrGetNode(root, g_Player_ConfigKey_UnderwaterCam);
         if (node != 0) {
             int rBits = 0;
             int gBits = 0;
             int bBits = 0;
-            g_Player_UnderwaterCamDistance = PlayerZrdArrayFloat(
-                node,
-                1
-            );
-            g_Player_UnderwaterCamHeight = PlayerZrdArrayFloat(
-                node,
-                2
-            );
-            g_Player_UnderwaterCamStepCount = PlayerZrdArrayInt(
-                node,
-                3
-            );
-            g_Player_UnderwaterCamFar = PlayerZrdArrayFloat(
-                node,
-                4
-            );
-            zVideo::PixelPack_GetRgbBits(
-                &rBits,
-                &gBits,
-                &bBits
-            );
+            g_Player_UnderwaterCamDistance = PlayerZrdArrayFloat(node, 1);
+            g_Player_UnderwaterCamHeight = PlayerZrdArrayFloat(node, 2);
+            g_Player_UnderwaterCamStepCount = PlayerZrdArrayInt(node, 3);
+            g_Player_UnderwaterCamFar = PlayerZrdArrayFloat(node, 4);
+            zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
             g_Player_UnderwaterCamPackedColor =
-                (PlayerZrdArrayInt(
-                    node,
-                    5
-                ) >> (8 - rBits) << (bBits + gBits)) +
-                (PlayerZrdArrayInt(
-                    node,
-                    6
-                ) >> (8 - gBits) << bBits) +
-                (PlayerZrdArrayInt(
-                    node,
-                    7
-                ) >> (8 - bBits));
-            g_Player_UnderwaterCamAlpha = PlayerZrdArrayFloat(
-                node,
-                8
-            );
+                (PlayerZrdArrayInt(node, 5) >> (8 - rBits) << (bBits + gBits)) +
+                (PlayerZrdArrayInt(node, 6) >> (8 - gBits) << bBits) +
+                (PlayerZrdArrayInt(node, 7) >> (8 - bBits));
+            g_Player_UnderwaterCamAlpha = PlayerZrdArrayFloat(node, 8);
         } else {
             g_Player_UnderwaterCamDistance = 5.0f;
             g_Player_UnderwaterCamHeight = 4.0f;
@@ -3845,110 +3637,47 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             g_Player_UnderwaterCamAlpha = 0.5f;
         }
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_CameraElastic
-        );
+        node = zRdrGetNode(root, g_Player_ConfigKey_CameraElastic);
         if (node != 0) {
-            g_Player_CameraElastic = PlayerZrdArrayFloat(
-                node,
-                1
-            );
+            g_Player_CameraElastic = PlayerZrdArrayFloat(node, 1);
         }
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_MaxCamTetherAngle
-        );
+        node = zRdrGetNode(root, g_Player_ConfigKey_MaxCamTetherAngle);
         if (node != 0) {
-            g_Player_MaxCamTetherAngleRad = PlayerZrdArrayFloat(
-                node,
-                1
-            ) * 0.01745329251994f;
+            g_Player_MaxCamTetherAngleRad = PlayerZrdArrayFloat(node, 1) * 0.01745329251994f;
         }
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_NormalGravity
-        );
-        g_Player_NominalGravity = node != 0 ? PlayerZrdArrayFloat(
-            node,
-            1
-        ) : 28.0f;
+        node = zRdrGetNode(root, g_Player_ConfigKey_NormalGravity);
+        g_Player_NominalGravity = node != 0 ? PlayerZrdArrayFloat(node, 1) : 28.0f;
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_WaterGravity
-        );
+        node = zRdrGetNode(root, g_Player_ConfigKey_WaterGravity);
         g_Player_WaterGravity =
-            node != 0 ? PlayerZrdArrayFloat(
-                node,
-                1
-            ) : g_Player_NominalGravity * 0.333333343f;
+            node != 0 ? PlayerZrdArrayFloat(node, 1) : g_Player_NominalGravity * 0.333333343f;
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_QuicksandGravity
-        );
+        node = zRdrGetNode(root, g_Player_ConfigKey_QuicksandGravity);
         g_Player_QuicksandGravity =
-            node != 0 ? PlayerZrdArrayFloat(
-                node,
-                1
-            ) : g_Player_NominalGravity * 0.166666672f;
+            node != 0 ? PlayerZrdArrayFloat(node, 1) : g_Player_NominalGravity * 0.166666672f;
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_QuicksandSink
-        );
-        g_Player_QuicksandSinkRate = node != 0 ? PlayerZrdArrayFloat(
-            node,
-            1
-        ) : 0.899999976f;
+        node = zRdrGetNode(root, g_Player_ConfigKey_QuicksandSink);
+        g_Player_QuicksandSinkRate = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.899999976f;
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_LavaSink
-        );
-        g_Player_LavaSinkRate = node != 0 ? PlayerZrdArrayFloat(
-            node,
-            1
-        ) : 0.600000024f;
+        node = zRdrGetNode(root, g_Player_ConfigKey_LavaSink);
+        g_Player_LavaSinkRate = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.600000024f;
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_MaxSlope
-        );
-        g_Player_MaxSlope = node != 0 ? PlayerZrdArrayFloat(
-            node,
-            1
-        ) : 0.707000017f;
+        node = zRdrGetNode(root, g_Player_ConfigKey_MaxSlope);
+        g_Player_MaxSlope = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.707000017f;
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_MakeHot
-        );
+        node = zRdrGetNode(root, g_Player_ConfigKey_MakeHot);
         if (node != 0) {
-            g_Player_MakeHotOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(
-                node,
-                1
-            ));
+            g_Player_MakeHotOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString( node, 1 ));
         }
     
-        node = zRdrGetNode(
-            root,
-            g_Player_ConfigKey_MakeCold
-        );
+        node = zRdrGetNode(root, g_Player_ConfigKey_MakeCold);
         if (node != 0) {
-            g_Player_MakeColdOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(
-                node,
-                1
-            ));
+            g_Player_MakeColdOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(node, 1));
         }
     
-        node = zRdrGetNode(
-            root,
-            g_Player_BurningAnimName
-        );
+        node = zRdrGetNode(root, g_Player_BurningAnimName);
         if (node != 0) {
             g_PlayerRecentHitFxAnimEntry = zEffectAnim::FindEntryByName(PlayerZrdArrayString(
                 node,
@@ -3956,23 +3685,11 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             ));
         }
     
-        node = zRdrGetNode(
-            root,
-            g_Player_LowShieldSndName
-        );
+        node = zRdrGetNode(root, g_Player_LowShieldSndName);
         if (node != 0) {
-            g_Hud_LowMeterBeepSample = zSnd::FindSampleByName(PlayerZrdArrayString(
-                node,
-                1
-            ));
-            g_Hud_LowMeterBeepInterval = PlayerZrdArrayFloat(
-                node,
-                2
-            );
-            g_Hud_LowMeterLoopSample = zSnd::FindSampleByName(PlayerZrdArrayString(
-                node,
-                3
-            ));
+            g_Hud_LowMeterBeepSample = zSnd::FindSampleByName(PlayerZrdArrayString( node, 1 ));
+            g_Hud_LowMeterBeepInterval = PlayerZrdArrayFloat(node, 2);
+            g_Hud_LowMeterLoopSample = zSnd::FindSampleByName(PlayerZrdArrayString( node, 3 ));
         }
     
         g_PlayerStatusMeterRatio = 1.0f;
@@ -3984,36 +3701,21 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     g_Player_RuntimeInputFlags = 3;
     zEffectAnimEntry *asyncEntry = zEffectAnim::FindNextAsyncEntry(0);
     while (asyncEntry != 0) {
-        zEffectAnimEntry::SetOnStateDoneCallback(
-            asyncEntry,
-            (void *)(&AsyncCommandCallback),
-            0
-        );
+        zEffectAnimEntry::SetOnStateDoneCallback(asyncEntry, (void *)(&AsyncCommandCallback), 0);
         asyncEntry = zEffectAnim::FindNextAsyncEntry(asyncEntry);
     }
 
     zReader::Node *vehicleRoot =
-        zReader::Load(
-            zVehicle::SelectZrdByDifficulty(0),
-            0,
-            0
-        );
+        zReader::Load(zVehicle::SelectZrdByDifficulty(0), 0, 0);
     zReader::Node *const vehicleList = PlayerZrdArrayNode(vehicleRoot, 1);
     const int vehicleCount = (PlayerZrdArrayCount(vehicleList) - 1) / 2;
     for (int vehicleIndex = 0; vehicleIndex < vehicleCount; ++vehicleIndex) {
         char vehicleName[0x14];
-        strcpy(
-            vehicleName,
-            PlayerZrdArrayString(vehicleList, vehicleIndex * 2 + 1)
-        );
+        strcpy(vehicleName, PlayerZrdArrayString(vehicleList, vehicleIndex * 2 + 1));
 
         PlayerMasterCommonData *const commonData =
             (PlayerMasterCommonData *)(::operator new(sizeof(PlayerMasterCommonData)));
-        memset(
-            commonData,
-            0,
-            sizeof(PlayerMasterCommonData)
-        );
+        memset(commonData, 0, sizeof(PlayerMasterCommonData));
         commonData->next = 0;
         if (g_PlayerMasterCommonDataList.count == 0) {
             g_PlayerMasterCommonDataList.head = commonData;
@@ -4022,24 +3724,13 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         }
         g_PlayerMasterCommonDataList.tail = commonData;
         ++g_PlayerMasterCommonDataList.count;
-        zReader::Node *const vehicleNode = zRdrGetNode(
-            vehicleRoot,
-            vehicleName
-        );
-        LoadMasterCommonDataFromNode(
-            commonData,
-            vehicleNode,
-            vehicleName
-        );
+        zReader::Node *const vehicleNode = zRdrGetNode(vehicleRoot, vehicleName);
+        LoadMasterCommonDataFromNode(commonData, vehicleNode, vehicleName);
 
         for (int modalIndex = 0; modalIndex < commonData->modalCount; ++modalIndex) {
             PlayerMasterModalData *const modalData =
                 (PlayerMasterModalData *)(::operator new(sizeof(PlayerMasterModalData)));
-            memset(
-                modalData,
-                0,
-                sizeof(PlayerMasterModalData)
-            );
+            memset(modalData, 0, sizeof(PlayerMasterModalData));
             modalData->next = 0;
             if (g_PlayerMasterModalDataList.count == 0) {
                 g_PlayerMasterModalDataList.head = modalData;
@@ -4048,25 +3739,15 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             }
             g_PlayerMasterModalDataList.tail = modalData;
             ++g_PlayerMasterModalDataList.count;
-            zReader::Node *const modalNode = PlayerZrdArrayNode(
-                vehicleNode,
-                modalIndex * 2 + 4
-            );
-            LoadMasterModalDataFromNode(
-                modalData,
-                modalNode,
-                vehicleName
-            );
-            strcpy(
-                commonData->modalNames[modalIndex],
-                modalData->modeName
-            );
+            zReader::Node *const modalNode = PlayerZrdArrayNode(vehicleNode, modalIndex * 2 + 4);
+            LoadMasterModalDataFromNode(modalData, modalNode, vehicleName);
+            strcpy(commonData->modalNames[modalIndex], modalData->modeName);
         }
     }
 
     zUtil_SaveGameState *stealthSaveState =
         (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
-    stealthSaveState = zUtil_SaveGameStateList_Init(stealthSaveState);
+    stealthSaveState = zUtilSaveGameStateListInit(stealthSaveState);
     stealthSaveState->next = 0;
     if (g_PlayerSaveStateList.count == 0) {
         g_PlayerSaveStateList.head = stealthSaveState;
@@ -4076,48 +3757,19 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     g_PlayerSaveStateList.tail = stealthSaveState;
     ++g_PlayerSaveStateList.count;
     zUtil_PlayerStateStorage *const stealthPlayerState = stealthSaveState->playerState;
-    memset(
-        stealthPlayerState,
-        0,
-        sizeof(*stealthPlayerState)
-    );
+    memset(stealthPlayerState, 0, sizeof(*stealthPlayerState));
     PlayerModalState *const stealthModalState =
-        (PlayerModalState *)zUtil_SaveGameStateList_AllocAppend(stealthSaveState);
+        (PlayerModalState *)zUtilSaveGameStateListAllocAppend(stealthSaveState);
     g_Player2SaveState = stealthSaveState;
     stealthPlayerState->rootNode = zClass_Object3D::gwObject3DInit();
-    zClass_Class::gwNodeSetName(
-        stealthPlayerState->rootNode,
-        g_Player_DisplayName_Stealth
-    );
-    zClass_Object3D::gwObject3DSetPosition(
-        stealthPlayerState->rootNode,
-        500.0f,
-        50.0f,
-        500.0f
-    );
-    zClass_Object3D::gwObject3DSetRotation(
-        stealthPlayerState->rootNode,
-        0.0f,
-        0.0f,
-        0.0f
-    );
-    zClass_Class::gwNodeSetPriority(
-        stealthPlayerState->rootNode,
-        1
-    );
-    zClass_Class::gwNodeSetRaycastable(
-        stealthPlayerState->rootNode,
-        0
-    );
-    zClass_Class::gwNodeSetCellPickable(
-        stealthPlayerState->rootNode,
-        0
-    );
+    zClass_Class::gwNodeSetName(stealthPlayerState->rootNode, g_Player_DisplayName_Stealth);
+    zClass_Object3D::gwObject3DSetPosition(stealthPlayerState->rootNode, 500.0f, 50.0f, 500.0f);
+    zClass_Object3D::gwObject3DSetRotation(stealthPlayerState->rootNode, 0.0f, 0.0f, 0.0f);
+    zClass_Class::gwNodeSetPriority(stealthPlayerState->rootNode, 1);
+    zClass_Class::gwNodeSetRaycastable(stealthPlayerState->rootNode, 0);
+    zClass_Class::gwNodeSetCellPickable(stealthPlayerState->rootNode, 0);
     zRdrGetNode(
-        zRdrGetNode(
-            vehicleRoot,
-            g_Player_ConfigNode_Stealth
-        ),
+        zRdrGetNode(vehicleRoot, g_Player_ConfigNode_Stealth),
         g_Player_ConfigNode_CommonMode
     );
     InitStateFromNameAndMasterCommonData(
@@ -4135,11 +3787,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     stealthSaveState->firstSaveState->playerState->projectileSpawnVel.x = 0.0f;
     stealthPlayerState->cameraState = zOpt::GetCameraModePlayerState();
 
-    zReader::Node *aivRoot = zReader::Load(
-        GetAivZrdPath(),
-        0,
-        0
-    );
+    zReader::Node *aivRoot = zReader::Load(GetAivZrdPath(), 0, 0);
     if (aivRoot == 0) {
         zError::ReportOld(
             0x800,
@@ -4150,10 +3798,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         return;
     }
 
-    zReader::BuildResolvedParentDir(
-        GetAivZrdPath(),
-        g_Player_AivParentDir
-    );
+    zReader::BuildResolvedParentDir(GetAivZrdPath(), g_Player_AivParentDir);
     zReader::Node *const aivList = PlayerZrdArrayNode(aivRoot, 1);
     int aivCount = (PlayerZrdArrayCount(aivList) - 1) / 2;
     if (zOpt::GetNetworkEnabled() != 0) {
@@ -4163,51 +3808,21 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     for (int aivIndex = 0; aivIndex < aivCount; ++aivIndex) {
         char aivName[0x1c];
         char vehicleName[0x14];
-        strcpy(
-            aivName,
-            PlayerZrdArrayString(aivList, aivIndex * 2 + 1)
-        );
-        ExtractVehicleNameFromAivName(
-            aivName,
-            vehicleName
-        );
+        strcpy(aivName, PlayerZrdArrayString(aivList, aivIndex * 2 + 1));
+        ExtractVehicleNameFromAivName(aivName, vehicleName);
 
-        if (zRdrGetNode(
-            vehicleRoot,
-            vehicleName
-        ) != 0) {
-            zReader::Node *const aivNode = zRdrGetNode(
-                aivRoot,
-                aivName
-            );
+        if (zRdrGetNode(vehicleRoot, vehicleName) != 0) {
+            zReader::Node *const aivNode = zRdrGetNode(aivRoot, aivName);
             if (aivNode != 0) {
-                zReader::Node *const spawnNode = PlayerZrdArrayNode(
-                    aivNode,
-                    2
-                );
+                zReader::Node *const spawnNode = PlayerZrdArrayNode(aivNode, 2);
                 zVec3 spawnPos;
-                spawnPos.x = PlayerZrdArrayFloat(
-                    spawnNode,
-                    1
-                );
-                spawnPos.y = PlayerZrdArrayFloat(
-                    spawnNode,
-                    2
-                );
-                spawnPos.z = PlayerZrdArrayFloat(
-                    spawnNode,
-                    3
-                );
+                spawnPos.x = PlayerZrdArrayFloat(spawnNode, 1);
+                spawnPos.y = PlayerZrdArrayFloat(spawnNode, 2);
+                spawnPos.z = PlayerZrdArrayFloat(spawnNode, 3);
                 CreateFromNamesAtPose(
                     &spawnPos,
-                    PlayerZrdArrayInt(
-                        aivNode,
-                        1
-                    ),
-                    PlayerZrdArrayFloat(
-                        aivNode,
-                        3
-                    ),
+                    PlayerZrdArrayInt(aivNode, 1),
+                    PlayerZrdArrayFloat(aivNode, 3),
                     vehicleName,
                     aivName
                 );
@@ -4263,47 +3878,44 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     );
 
     AINet::BuildAiPeerRingsByAiNetId();
-    zInput::BindMap_Current_SetCommandCallback(
+    zInput::BindMapCurrentSetCommandCallback(
         15,
         (zInputCommandCallbackFn)(HandlePrimaryWeaponVariantToggleInput)
     );
-    zInput::BindMap_Current_SetCommandCallback(
+    zInput::BindMapCurrentSetCommandCallback(
         16,
         (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
     );
-    zInput::BindMap_Current_SetCommandCallback(
+    zInput::BindMapCurrentSetCommandCallback(
         17,
         (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
     );
-    zInput::BindMap_Current_SetCommandCallback(
+    zInput::BindMapCurrentSetCommandCallback(
         18,
         (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
     );
-    zInput::BindMap_Current_SetCommandCallback(
+    zInput::BindMapCurrentSetCommandCallback(
         19,
         (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
     );
-    zInput::BindMap_Current_SetCommandCallback(
+    zInput::BindMapCurrentSetCommandCallback(
         20,
         (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
     );
-    zInput::BindMap_Current_SetCommandCallback(
+    zInput::BindMapCurrentSetCommandCallback(
         21,
         (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
     );
-    zInput::BindMap_Current_SetCommandCallback(
+    zInput::BindMapCurrentSetCommandCallback(
         22,
         (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
     );
-    zInput::BindMap_Current_SetCommandCallback(
+    zInput::BindMapCurrentSetCommandCallback(
         23,
         (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
     );
     RegisterGameplayCommandCallbacksAndCreateFfEffects();
-    zClass_Node::MaskExtraFlagsRecursive(
-        g_Player_RuntimeDiScene,
-        0
-    );
+    zClass_Node::MaskExtraFlagsRecursive(g_Player_RuntimeDiScene, 0);
     zReader::LoadMoversFromZrd();
     if (g_HudSensorTracker.raceCheckpointMode != 0) {
         Checkpoint::InstantiateNamedObjects();
@@ -4315,11 +3927,7 @@ namespace zReader {
  * Purpose: load mover definitions from the current ZRD tree.
  */
 void __cdecl LoadMoversFromZrd() {
-    Node *const treeRoot = Load(
-        "movers.zrd",
-        0,
-        0
-    );
+    Node *const treeRoot = Load("movers.zrd", 0, 0);
     if (treeRoot == 0) {
         return;
     }
@@ -4328,20 +3936,10 @@ void __cdecl LoadMoversFromZrd() {
     Node *const moverArray = rootArray[1].value.nodes;
     const int moverCount = moverArray[0].value.i32 - 1;
     for (int i = 0; i < moverCount; ++i) {
-        zClass_NodePartial *const mover = zClass::FindByTypeAndName(
-            6,
-            moverArray[i + 1].value.str
-        );
+        zClass_NodePartial *const mover = zClass::FindByTypeAndName(6, moverArray[i + 1].value.str);
         if (mover != 0) {
-            zClass_Node::PropagateExtraFlagsRecursive(
-                mover,
-                1
-            );
-            zClass_Node::SetContextRecursive(
-                mover,
-                mover,
-                0x200000
-            );
+            zClass_Node::PropagateExtraFlagsRecursive(mover, 1);
+            zClass_Node::SetContextRecursive(mover, mover, 0x200000);
             g_Mover_LastLoadedNode = mover;
         }
     }
@@ -4361,24 +3959,15 @@ void __cdecl InstantiateNamedObjects() {
     const int checkpointCount = g_HudSensorTracker.checkpointCount;
 
     for (int checkpointNumber = 1; checkpointNumber <= checkpointCount; ++checkpointNumber) {
-        searchName.Format(
-            g_Checkpoint_NodeNameFmt,
-            checkpointNumber
-        );
+        searchName.Format(g_Checkpoint_NodeNameFmt, checkpointNumber);
         zClass_NodePartial *const checkpointNode =
-            zClass::FindByTypeAndName(
-                6,
-                (const char *)searchName
-            );
+            zClass::FindByTypeAndName(6, (const char *)searchName);
         if (checkpointNode != 0) {
             zClass_Node::PropagateExtraFlagsRecursive(
                 checkpointNode,
                 kCheckpointNodeAuxFlagTracked
             );
-            zClass_Node::PropagateFlagsRecursive(
-                checkpointNode,
-                kCheckpointNodePickableFlag
-            );
+            zClass_Node::PropagateFlagsRecursive(checkpointNode, kCheckpointNodePickableFlag);
             zClass_Node::SetContextRecursive(
                 checkpointNode,
                 checkpointNode,
@@ -4411,10 +4000,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterCommonData *commonData = g_PlayerMasterCommonDataList.head;
     while (commonData != 0) {
-        if (strcmp(
-            commonData->vehicleName,
-            masterCommonDataName
-        ) == 0) {
+        if (strcmp(commonData->vehicleName, masterCommonDataName) == 0) {
             playerState->masterCommonData = commonData;
             break;
         }
@@ -4423,17 +4009,8 @@ void __fastcall InitStateFromNameAndMasterCommonData(
 
     if (playerState->masterCommonData == 0) {
         char errorText[0x80];
-        sprintf(
-            errorText,
-            g_Player_MasterCommonDataMissingFmt,
-            objectName
-        );
-        zError::ReportOld(
-            0x800,
-            "D:\\Proj\\Battlesport\\player.cpp",
-            0x46d,
-            errorText
-        );
+        sprintf(errorText, g_Player_MasterCommonDataMissingFmt, objectName);
+        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x46d, errorText);
     }
 
     playerState->playerOrdinal = g_Player_NextOrdinal;
@@ -4479,10 +4056,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->steerBasisRef.z = playerState->motionBasis.yz;
     playerState->steerBasisNorm = playerState->steerBasisRaw;
     playerState->steerBasisNorm.y = 0.0f;
-    zMath::Vec3NormalizeXZ(
-        &playerState->steerBasisNorm,
-        &playerState->steerBasisNorm
-    );
+    zMath::Vec3NormalizeXZ(&playerState->steerBasisNorm, &playerState->steerBasisNorm);
     playerState->cameraDirFlat = playerState->steerBasisNorm;
 
     AINet *aiNet = 0;
@@ -4511,22 +4085,13 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         playerState->aiHideTime0 = aiNet->hideTime0;
         playerState->aiHideTime1 = aiNet->hideTime1;
         playerState->aiCurrentPathNode =
-            AINet::FindNearestNode(
-                &playerState->worldPos,
-                aiNet->nodeListHead
-            );
+            AINet::FindNearestNode(&playerState->worldPos, aiNet->nodeListHead);
         playerState->aiHomePathNode = playerState->aiCurrentPathNode;
 
         zClass_NodePartial *const healthyNode =
-            zClass_Class::FindSubNodeByName(
-                playerState->rootNode,
-                g_Player_HealthySubNodeName
-            );
+            zClass_Class::FindSubNodeByName(playerState->rootNode, g_Player_HealthySubNodeName);
         if (healthyNode != 0) {
-            zClass_Class::gwNodeSetCellPickable(
-                healthyNode,
-                0
-            );
+            zClass_Class::gwNodeSetCellPickable(healthyNode, 0);
         }
 
         if (aiNet->activateRadius != 0.0f) {
@@ -4575,21 +4140,12 @@ void __fastcall InitStateFromNameAndMasterCommonData(
 
     playerState->destroyedRespawnFxEntry =
         zEffectAnim::FindEntryByName(
-            strstr(
-                objectName,
-                "net"
-            ) != 0
+            strstr(objectName, "net") != 0
                 ? g_Player_NodeName_Bft00
                 : objectName
         );
-    if (strstr(
-            objectName,
-            "net"
-        ) != 0 || strstr(
-        objectName,
-        g_Player_NodeName_Bft
-    ) != 0) {
-        playerState->masterTypeTransitionToTrackLightHandle = zEffectAnim::SetVelocity_Thunk(
+    if (strstr(objectName, "net") != 0 || strstr(objectName, g_Player_NodeName_Bft) != 0) {
+        playerState->masterTypeTransitionToTrackLightHandle = zEffectAnim::SetVelocityThunk(
             playerState->masterTypeTransitionToTrackNodeAction,
             playerState->rootNode,
             0.0f,
@@ -4597,7 +4153,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
             0.0f
         );
     }
-    zEffectAnim::SetVelocity_Thunk(
+    zEffectAnim::SetVelocityThunk(
         zEffectAnim::FindEntryByName(commonData->startAnimsName),
         playerState->rootNode,
         0.0f,
@@ -4633,10 +4189,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->cameraTransitionBlend = 1.0f;
 
     zClass_NodePartial *const targetNode =
-        zClass_Class::FindSubNodeByName(
-            playerState->rootNode,
-            g_Player_NodeName_Target
-        );
+        zClass_Class::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_Target);
     if (targetNode != 0) {
         zClass_Object3D::gwObject3DGetPosition(
             targetNode,
@@ -4644,10 +4197,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
             &playerState->fxOffsetLocal.y,
             &playerState->fxOffsetLocal.z
         );
-        zClass_Class::gwNodeSetActive(
-            targetNode,
-            0
-        );
+        zClass_Class::gwNodeSetActive(targetNode, 0);
     } else {
         playerState->fxOffsetLocal.x = 0.0f;
         playerState->fxOffsetLocal.y = 0.0f;
@@ -4670,19 +4220,13 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         g_Player_NodeName_DoorLeft
     );
     playerState->doorRightNode =
-        zClass_Class::FindSubNodeByName(
-            playerState->rootNode,
-            g_Player_NodeName_DoorRight
-        );
+        zClass_Class::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_DoorRight);
     playerState->modeVariantNode = zClass_Class::FindSubNodeByName(
         playerState->rootNode,
         g_Player_NodeName_Shadow
     );
 
-    CacheGunHardpointsAndDetachDisplays(
-        saveState,
-        1
-    );
+    CacheGunHardpointsAndDetachDisplays(saveState, 1);
 
     playerState->statusMeterValue = commonData->maxHealth;
     playerState->statusMeterScaled = 1.0f;
@@ -4694,10 +4238,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
 
     if (playerState != localPlayerState) {
         HudUiMgrSensorTrackNode *const context =
-            HudUiMgrSensor::TrackList_Add(
-                HUD_SENSOR_TRACK_KIND_PLAYER,
-                saveState
-            );
+            HudUiMgrSensor::TrackListAdd(HUD_SENSOR_TRACK_KIND_PLAYER, saveState);
         zClass_Node::SetContextRecursive(
             playerState->rootNode,
             (zClass_NodePartial *)context,
@@ -4731,10 +4272,7 @@ void __fastcall BindModalStateFromMasterModalData(
     PlayerMasterModalData *masterModalData = g_PlayerMasterModalDataList.head;
     while (masterModalData != 0) {
         if (strcmp(masterModalData->modalName, playerState->masterCommonData->vehicleName) == 0 &&
-            strcmp(
-                modalName,
-                masterModalData->modeName
-            ) == 0) {
+            strcmp(modalName, masterModalData->modeName) == 0) {
             modalState->masterModalData = masterModalData;
             break;
         }
@@ -4743,17 +4281,8 @@ void __fastcall BindModalStateFromMasterModalData(
 
     if (modalState->masterModalData == 0) {
         char errorText[0x100];
-        sprintf(
-            errorText,
-            g_Player_MasterModalDataMissingFmt,
-            objectName
-        );
-        zError::ReportOld(
-            0x800,
-            "D:\\Proj\\Battlesport\\player.cpp",
-            0x5c3,
-            errorText
-        );
+        sprintf(errorText, g_Player_MasterModalDataMissingFmt, objectName);
+        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x5c3, errorText);
     }
 
     zClass_NodePartial *const rootNode = playerState->rootNode;
@@ -4765,10 +4294,7 @@ void __fastcall BindModalStateFromMasterModalData(
         rootNode,
         g_Player_NodeName_LeftMorphs
     );
-    modalState->modalNode = zClass_Class::FindSubNodeByName(
-        rootNode,
-        g_Player_NodeName_Chassis
-    );
+    modalState->modalNode = zClass_Class::FindSubNodeByName(rootNode, g_Player_NodeName_Chassis);
     modalState->nodeRTracks = zClass_Class::FindSubNodeByName(
         rootNode,
         g_Player_NodeName_RightTracks
@@ -4777,18 +4303,12 @@ void __fastcall BindModalStateFromMasterModalData(
         rootNode,
         g_Player_NodeName_LeftTracks
     );
-    modalState->nodeProps = zClass_Class::FindSubNodeByName(
-        rootNode,
-        g_Player_NodeName_Props
-    );
+    modalState->nodeProps = zClass_Class::FindSubNodeByName(rootNode, g_Player_NodeName_Props);
     modalState->nodeCaustic1 = zClass_Class::FindSubNodeByName(
         rootNode,
         g_Player_EffectNodeName_Caustic1
     );
-    modalState->nodeWake = zClass_Class::FindSubNodeByName(
-        rootNode,
-        g_Player_EffectNodeName_Wake
-    );
+    modalState->nodeWake = zClass_Class::FindSubNodeByName(rootNode, g_Player_EffectNodeName_Wake);
     modalState->nodeSplashL = zClass_Class::FindSubNodeByName(
         rootNode,
         g_Player_EffectNodeName_SplashLeft
@@ -4813,36 +4333,15 @@ void __fastcall BindModalStateFromMasterModalData(
     if (BuildSupportPointsFromModel(saveState, rootNode) == 0 &&
         masterModalData->platformPointCount == 0) {
         char errorText[0x100];
-        sprintf(
-            errorText,
-            g_Player_SupportPointsMissingFmt,
-            objectName
-        );
-        zError::ReportOld(
-            0x800,
-            "D:\\Proj\\Battlesport\\player.cpp",
-            0x5df,
-            errorText
-        );
+        sprintf(errorText, g_Player_SupportPointsMissingFmt, objectName);
+        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x5df, errorText);
     }
 
     if (masterModalData->probePointCount == 0 &&
-        BuildCollisionPointsFromModel(
-            saveState,
-            rootNode
-        ) == 0) {
+        BuildCollisionPointsFromModel(saveState, rootNode) == 0) {
         char errorText[0x100];
-        sprintf(
-            errorText,
-            g_Player_CollisionPointsMissingFmt,
-            objectName
-        );
-        zError::ReportOld(
-            0x800,
-            "D:\\Proj\\Battlesport\\player.cpp",
-            0x5e6,
-            errorText
-        );
+        sprintf(errorText, g_Player_CollisionPointsMissingFmt, objectName);
+        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x5e6, errorText);
     }
 }
 } // namespace Player
@@ -4880,10 +4379,7 @@ void __fastcall InitSpawnStateFromPrimaryModalData(
             masterModalData->probePoints[i].z + playerState->worldPos.z;
     }
 
-    SampleGroundAndAlignRootToSurface(
-        saveState,
-        1
-    );
+    SampleGroundAndAlignRootToSurface(saveState, 1);
 }
 } // namespace Player
 namespace Player {
@@ -4904,14 +4400,8 @@ void __fastcall SampleGroundAndAlignRootToSurface(
 
     zTag4::Clear(&playerState->variantTag);
     g_Variant_CurrentTag = playerState->variantTag;
-    zClass_Class::gwNodeSetNodeType(
-        playerState->rootNode,
-        playerState->variantTag.tags[0]
-    );
-    zClass_Class::gwNodeSetCellPickable(
-        playerState->rootNode,
-        0
-    );
+    zClass_Class::gwNodeSetNodeType(playerState->rootNode, playerState->variantTag.tags[0]);
+    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
 
     PlayerProbeSampleCandidateBuffer candidateBuffer = {0};
     zClass_cls_di::BuildPickCandidateListBelowPoint(
@@ -4935,10 +4425,7 @@ void __fastcall SampleGroundAndAlignRootToSurface(
         &taggedHeight
     );
 
-    zClass_Class::gwNodeSetCellPickable(
-        playerState->rootNode,
-        1
-    );
+    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 1);
 
     if (candidateBuffer.candidateCount > 0) {
         zClassDiPickCandidateEntry *const selectedCandidate =
@@ -4949,10 +4436,7 @@ void __fastcall SampleGroundAndAlignRootToSurface(
             zClass_Class::gwNodeGetWorldChild(selectedCandidate->node);
         const int nodeType =
             worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
-        zClass_Class::gwNodeSetNodeType(
-            playerState->rootNode,
-            nodeType
-        );
+        zClass_Class::gwNodeSetNodeType(playerState->rootNode, nodeType);
 
         if (updateRotation == 0) {
             return;
@@ -4985,10 +4469,7 @@ void __fastcall SampleGroundAndAlignRootToSurface(
             rollAngleRad
         );
     } else {
-        zClass_Class::gwNodeSetNodeType(
-            playerState->rootNode,
-            0xff
-        );
+        zClass_Class::gwNodeSetNodeType(playerState->rootNode, 0xff);
     }
 }
 } // namespace Player
@@ -5010,43 +4491,27 @@ zClass_NodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
     const char *templateName,
     const char *newName
 ) {
-    zClass_NodePartial *const source = zClass::FindByTypeAndName(
-        6,
-        templateName
-    );
+    zClass_NodePartial *const source = zClass::FindByTypeAndName(6, templateName);
     if (source == 0) {
         return 0;
     }
 
     const int cloneDiMode = zOpt::GetNetworkEnabled() != 0 ? 1 : 0;
     zClass_NodePartial *const child =
-        zClass_cls_util::CopyNodeWithCloneOptions(
-            source,
-            cloneDiMode,
-            cloneDiMode
-        );
+        zClass_cls_util::CopyNodeWithCloneOptions(source, cloneDiMode, cloneDiMode);
     if (child == 0) {
         return 0;
     }
 
-    if (zClass_World::AddChildAtGrid(
-        g_Player_RuntimeDiScene,
-        child
-    ) != 0) {
+    if (zClass_World::AddChildAtGrid(g_Player_RuntimeDiScene, child) != 0) {
         return 0;
     }
 
-    if (zClass_Class::gwNodeSetName(
-        child,
-        newName
-    ) != 0) {
+    if (zClass_Class::gwNodeSetName(child, newName) != 0) {
         return 0;
     }
 
-    zClass_Class::gwNodeSetActive(
-        child,
-        1
-    );
+    zClass_Class::gwNodeSetActive(child, 1);
     return child;
 }
 } // namespace Player
@@ -5073,47 +4538,28 @@ int __fastcall CreateFromNamesAtPose(
     const char *templateName,
     const char *objectName
 ) {
-    const int objectIsBft00 = strcmp(
-        objectName,
-        g_Player_NodeName_Bft00
-    ) == 0;
+    const int objectIsBft00 = strcmp(objectName, g_Player_NodeName_Bft00) == 0;
     zClass_NodePartial *rootNode = 0;
 
     if (zOpt::GetNetworkEnabled() != 0 && objectIsBft00 != 0) {
-        rootNode = zClass::FindByTypeAndName(
-            6,
-            g_Player_NodeName_Bft00
-        );
+        rootNode = zClass::FindByTypeAndName(6, g_Player_NodeName_Bft00);
         if (rootNode == 0) {
             return 0;
         }
 
         zClass_NodePartial *const networkClone =
-            zClass_cls_util::CopyNodeWithCloneOptions(
-                rootNode,
-                1,
-                1
-            );
+            zClass_cls_util::CopyNodeWithCloneOptions(rootNode, 1, 1);
         if (networkClone != 0) {
-            zClass_Class::gwNodeSetName(
-                networkClone,
-                "bft_99"
-            );
+            zClass_Class::gwNodeSetName(networkClone, "bft_99");
         }
 
         rootNode->flags |= kPlayerNodeFlagNetworkBftCloneSource;
     }
 
     if (rootNode == 0) {
-        rootNode = zClass::FindByTypeAndName(
-            6,
-            objectName
-        );
+        rootNode = zClass::FindByTypeAndName(6, objectName);
         if (rootNode == 0) {
-            rootNode = CloneType6NodeFromTemplateAndRename(
-                templateName,
-                objectName
-            );
+            rootNode = CloneType6NodeFromTemplateAndRename(templateName, objectName);
         }
         if (rootNode == 0) {
             return 0;
@@ -5122,7 +4568,7 @@ int __fastcall CreateFromNamesAtPose(
 
     zUtil_SaveGameState *saveState =
         (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
-    saveState = zUtil_SaveGameStateList_Init(saveState);
+    saveState = zUtilSaveGameStateListInit(saveState);
     saveState->next = 0;
     if (g_PlayerSaveStateList.count == 0) {
         g_PlayerSaveStateList.head = saveState;
@@ -5135,12 +4581,7 @@ int __fastcall CreateFromNamesAtPose(
 
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     if (spawnPos != 0) {
-        zClass_Object3D::gwObject3DSetPosition(
-            rootNode,
-            spawnPos->x,
-            spawnPos->y,
-            spawnPos->z
-        );
+        zClass_Object3D::gwObject3DSetPosition(rootNode, spawnPos->x, spawnPos->y, spawnPos->z);
         zClass_Object3D::gwObject3DSetRotation(
             rootNode,
             0.0f,
@@ -5151,18 +4592,11 @@ int __fastcall CreateFromNamesAtPose(
     }
 
     if (rootNode->listCountA == 0) {
-        zClass_Class::AddChild(
-            g_Player_RuntimeDiScene,
-            rootNode
-        );
+        zClass_Class::AddChild(g_Player_RuntimeDiScene, rootNode);
     }
 
     playerState->rootNode = rootNode;
-    InitStateFromNameAndMasterCommonData(
-        saveState,
-        objectName,
-        templateName
-    );
+    InitStateFromNameAndMasterCommonData(saveState, objectName, templateName);
 
     if (objectIsBft00 != 0) {
         zClass_Node::SetDamageHitCallback(
@@ -5174,31 +4608,21 @@ int __fastcall CreateFromNamesAtPose(
         g_Player_LocalFxOffsetWorldPtr = &playerState->fxOffsetWorld;
         zClass_Camera::SetTargetNode(playerState->rootNode);
         g_HudSensorTracker.SetTrackedSaveState(saveState);
-        if (zOpt::GetNetworkEnabled() == 0 && OptCatalog_IsDamageMaskEnabled() != 0) {
-            zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
-                playerState->rootNode,
-                1
-            );
+        if (zOpt::GetNetworkEnabled() == 0 && OptCatalogIsDamageMaskEnabled() != 0) {
+            zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive(playerState->rootNode, 1);
         }
     } else {
-        void *callback = (void *)(&HitCallback_RecordContextAndTimedStatus);
-        if (strstr(
-            objectName,
-            "net"
-        ) != 0) {
-            callback = (void *)(&HitCallback_RecordNetContextAndTimedStatus);
+        void *callback = (void *)(&HitCallbackRecordContextAndTimedStatus);
+        if (strstr(objectName, "net") != 0) {
+            callback = (void *)(&HitCallbackRecordNetContextAndTimedStatus);
         }
-        zClass_Node::SetDamageHitCallback(
-            saveState,
-            playerState->rootNode,
-            callback
-        );
+        zClass_Node::SetDamageHitCallback(saveState, playerState->rootNode, callback);
     }
 
     PlayerMasterCommonData *const commonData = playerState->masterCommonData;
     for (int i = 0; i < commonData->modalCount; ++i) {
         PlayerModalState *const modalState =
-            (PlayerModalState *)zUtil_SaveGameStateList_AllocAppend(saveState);
+            (PlayerModalState *)zUtilSaveGameStateListAllocAppend(saveState);
         BindModalStateFromMasterModalData(
             saveState,
             modalState,
@@ -5233,10 +4657,7 @@ namespace zClass_Node {
         self->auxFlags &= mask;
 
         for (int i = 0; i < self->listCountB; ++i) {
-            MaskExtraFlagsRecursive(
-                self->listB[i],
-                mask
-            );
+            MaskExtraFlagsRecursive(self->listB[i], mask);
         }
     }
 } // namespace zClass_Node
@@ -5254,10 +4675,7 @@ namespace zClass_Node {
         self->auxFlags |= flags;
 
         for (int i = 0; i < self->listCountB; ++i) {
-            PropagateExtraFlagsRecursive(
-                self->listB[i],
-                flags
-            );
+            PropagateExtraFlagsRecursive(self->listB[i], flags);
         }
     }
 } // namespace zClass_Node
@@ -5275,10 +4693,7 @@ namespace zClass_Node {
         self->flags |= flags;
 
         for (int i = 0; i < self->listCountB; ++i) {
-            PropagateFlagsRecursive(
-                self->listB[i],
-                flags
-            );
+            PropagateFlagsRecursive(self->listB[i], flags);
         }
     }
 } // namespace zClass_Node
@@ -5291,33 +4706,15 @@ int __fastcall BuildResolvedParentDir(
     char *outParentDir
 ) {
     char fullPath[0x104] = {0};
-    _fullpath(
-        fullPath,
-        FindFile(
-            filename,
-            0
-        ),
-        sizeof(fullPath)
-    );
+    _fullpath(fullPath, FindFile( filename, 0 ), sizeof(fullPath));
 
     char drive[3] = {0};
     char dir[0x100] = {0};
     char baseName[0x100] = {0};
     char ext[0x100] = {0};
-    _splitpath(
-        fullPath,
-        drive,
-        dir,
-        baseName,
-        ext
-    );
+    _splitpath(fullPath, drive, dir, baseName, ext);
 
-    return sprintf(
-        outParentDir,
-        "%s%s",
-        drive,
-        dir
-    );
+    return sprintf(outParentDir, "%s%s", drive, dir);
 }
 } // namespace zReader
 namespace Player {
@@ -5338,13 +4735,7 @@ zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
     float yawDeg,
     const char *objectName
 ) {
-    if (CreateFromNamesAtPose(
-        spawnPos,
-        0,
-        yawDeg,
-        templateName,
-        objectName
-    ) == 0) {
+    if (CreateFromNamesAtPose(spawnPos, 0, yawDeg, templateName, objectName) == 0) {
         return 0;
     }
 
@@ -5372,16 +4763,9 @@ int __fastcall BuildCollisionPointsFromModel(
 
     for (int i = 0; i < 12; ++i) {
         char nodeName[0x50];
-        sprintf(
-            nodeName,
-            "collide%02d",
-            i
-        );
+        sprintf(nodeName, "collide%02d", i);
         zClass_NodePartial *const collisionNode =
-            zClass_Class::FindSubNodeByName(
-                modelNode,
-                nodeName
-            );
+            zClass_Class::FindSubNodeByName(modelNode, nodeName);
         if (collisionNode == 0) {
             return 0;
         }
@@ -5392,10 +4776,7 @@ int __fastcall BuildCollisionPointsFromModel(
             &collisionPoints[i].y,
             &collisionPoints[i].z
         );
-        zClass_Class::gwNodeSetActive(
-            collisionNode,
-            0
-        );
+        zClass_Class::gwNodeSetActive(collisionNode, 0);
     }
 
     masterModalData->probePoints[0] = collisionPoints[0];
@@ -5434,16 +4815,9 @@ int __fastcall BuildSupportPointsFromModel(
 
     for (int i = 0; i < 4; ++i) {
         char nodeName[0x50];
-        sprintf(
-            nodeName,
-            "support%02d",
-            i
-        );
+        sprintf(nodeName, "support%02d", i);
         zClass_NodePartial *const supportNode =
-            zClass_Class::FindSubNodeByName(
-                modelNode,
-                nodeName
-            );
+            zClass_Class::FindSubNodeByName(modelNode, nodeName);
         if (supportNode == 0) {
             return 0;
         }
@@ -5455,10 +4829,7 @@ int __fastcall BuildSupportPointsFromModel(
             &supportPoint->y,
             &supportPoint->z
         );
-        zClass_Class::gwNodeSetActive(
-            supportNode,
-            0
-        );
+        zClass_Class::gwNodeSetActive(supportNode, 0);
     }
 
     return 1;
@@ -5481,112 +4852,58 @@ void __fastcall LoadMasterCommonDataFromNode(
     zReader::Node *vehicleNode,
     const char *vehicleName
 ) {
-    strcpy(
-        commonData->vehicleName,
-        vehicleName
-    );
+    strcpy(commonData->vehicleName, vehicleName);
 
     commonData->modalCount = ((PlayerZrdArrayCount(vehicleNode) - 1) / 2) - 1;
 
-    zReader::Node *const commonModeNode = zRdrGetNode(
-        vehicleNode,
-        g_Player_ConfigNode_CommonMode
-    );
-    zReader::Node *node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_Nanite
-    );
+    zReader::Node *const commonModeNode = zRdrGetNode(vehicleNode, g_Player_ConfigNode_CommonMode);
+    zReader::Node *node = zRdrGetNode(commonModeNode, g_Player_NodeName_Nanite);
     if (node != 0) {
-        commonData->naniteBuildRate = PlayerZrdArrayInt(
-            node,
-            1
-        );
-        commonData->naniteMaxLevel = PlayerZrdArrayInt(
-            node,
-            2
-        );
+        commonData->naniteBuildRate = PlayerZrdArrayInt(node, 1);
+        commonData->naniteMaxLevel = PlayerZrdArrayInt(node, 2);
     } else {
         commonData->naniteBuildRate = 0;
         commonData->naniteMaxLevel = 0;
     }
 
-    zReader::Node *const soundsNode = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_Sounds
-    );
+    zReader::Node *const soundsNode = zRdrGetNode(commonModeNode, g_Player_NodeName_Sounds);
     if (soundsNode != 0) {
-        PlayerLoadSoundSample(
-            soundsNode,
-            g_Player_NodeName_WeaponUp,
-            &commonData->sfxWeaponUp[0]
-        );
+        PlayerLoadSoundSample(soundsNode, g_Player_NodeName_WeaponUp, &commonData->sfxWeaponUp[0]);
         PlayerLoadSoundSample(
             soundsNode,
             g_Player_NodeName_WeaponSelect,
             &commonData->sfxWeaponUp[2]
         );
-        PlayerLoadSoundSample(
-            soundsNode,
-            g_Player_NodeName_Pinging,
-            &commonData->sfxWeaponUp[3]
-        );
+        PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Pinging, &commonData->sfxWeaponUp[3]);
     }
 
-    node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_Activation
-    );
+    node = zRdrGetNode(commonModeNode, g_Player_NodeName_Activation);
     if (node != 0) {
-        const float activationRange = PlayerZrdArrayFloat(
-            node,
-            1
-        );
+        const float activationRange = PlayerZrdArrayFloat(node, 1);
         commonData->activationRangeSq = activationRange * activationRange;
     } else {
         commonData->activationRangeSq =
             kPlayerDefaultActivationRange * kPlayerDefaultActivationRange;
     }
 
-    node = zRdrGetNode(
-        commonModeNode,
-        "not_pursuit_dwell"
-    );
+    node = zRdrGetNode(commonModeNode, "not_pursuit_dwell");
     commonData->notPursuitDwellTime =
-        node != 0 ? PlayerZrdArrayFloat(
-            node,
-            1
-        ) : kPlayerDefaultNotPursuitDwellTime;
+        node != 0 ? PlayerZrdArrayFloat(node, 1) : kPlayerDefaultNotPursuitDwellTime;
 
-    node = zRdrGetNode(
-        commonModeNode,
-        "return_range"
-    );
+    node = zRdrGetNode(commonModeNode, "return_range");
     if (node != 0) {
-        const float returnRange = PlayerZrdArrayFloat(
-            node,
-            1
-        );
+        const float returnRange = PlayerZrdArrayFloat(node, 1);
         commonData->returnRangeSq = returnRange * returnRange;
     } else {
         commonData->returnRangeSq = kPlayerDefaultReturnRange * kPlayerDefaultReturnRange;
     }
 
-    node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_StartAnims
-    );
+    node = zRdrGetNode(commonModeNode, g_Player_NodeName_StartAnims);
     if (node != 0) {
-        PlayerCopyZrdArrayString(
-            commonData->startAnimsName,
-            node,
-            1
-        );
+        PlayerCopyZrdArrayString(commonData->startAnimsName, node, 1);
     }
 
-    node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_CamBack
-    );
+    node = zRdrGetNode(commonModeNode, g_Player_NodeName_CamBack);
     if (node != 0) {
         zReader::Node *const first = PlayerZrdArrayBase(node)[1].value.nodes;
         zReader::Node *const second = PlayerZrdArrayBase(node)[2].value.nodes;
@@ -5612,45 +4929,21 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->cambackDist2 = 2.25f;
     }
 
-    node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_AimY
-    );
+    node = zRdrGetNode(commonModeNode, g_Player_NodeName_AimY);
     if (node != 0) {
-        commonData->aimYawRate = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        commonData->aimYawMax = PlayerZrdArrayFloat(
-            node,
-            2
-        );
+        commonData->aimYawRate = PlayerZrdArrayFloat(node, 1);
+        commonData->aimYawMax = PlayerZrdArrayFloat(node, 2);
     } else {
         commonData->aimYawRate = 3.0f;
         commonData->aimYawMax = 2.0f;
     }
 
-    node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_CameraUdSwing
-    );
+    node = zRdrGetNode(commonModeNode, g_Player_NodeName_CameraUdSwing);
     if (node != 0) {
-        commonData->cameraUdSwing[0] = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        commonData->cameraUdSwing[1] = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-        commonData->cameraUdSwing[2] = PlayerZrdArrayFloat(
-            node,
-            3
-        );
-        commonData->cameraUdSwing[3] = PlayerZrdArrayFloat(
-            node,
-            4
-        );
+        commonData->cameraUdSwing[0] = PlayerZrdArrayFloat(node, 1);
+        commonData->cameraUdSwing[1] = PlayerZrdArrayFloat(node, 2);
+        commonData->cameraUdSwing[2] = PlayerZrdArrayFloat(node, 3);
+        commonData->cameraUdSwing[3] = PlayerZrdArrayFloat(node, 4);
     } else {
         commonData->cameraUdSwing[0] = 5.5f;
         commonData->cameraUdSwing[1] = 2.5f;
@@ -5658,69 +4951,36 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->cameraUdSwing[3] = 0.0f;
     }
 
-    node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_TrackSwitch
-    );
+    node = zRdrGetNode(commonModeNode, g_Player_NodeName_TrackSwitch);
     if (node != 0) {
-        commonData->trackSwitchDist0 = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        commonData->trackSwitchDist1 = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-        commonData->trackSwitchDist2 = PlayerZrdArrayFloat(
-            node,
-            3
-        );
+        commonData->trackSwitchDist0 = PlayerZrdArrayFloat(node, 1);
+        commonData->trackSwitchDist1 = PlayerZrdArrayFloat(node, 2);
+        commonData->trackSwitchDist2 = PlayerZrdArrayFloat(node, 3);
     } else {
         commonData->trackSwitchDist0 = 10000.0f;
         commonData->trackSwitchDist1 = 10000.0f;
         commonData->trackSwitchDist2 = 10000.0f;
     }
 
-    node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_Health
-    );
+    node = zRdrGetNode(commonModeNode, g_Player_NodeName_Health);
     if (node != 0) {
         commonData->maxHealth = zOpt::GetNetworkEnabled() != 0 ? PlayerZrdArrayFloat(node, 2)
-                                                               : PlayerZrdArrayFloat(
-                                                                   node,
-                                                                   1
-                                                               );
+                                                               : PlayerZrdArrayFloat(node, 1);
     } else {
         commonData->maxHealth = kPlayerDefaultMaxHealth;
     }
     commonData->invMaxHealth = 1.0f / commonData->maxHealth;
 
-    node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_Pickups
-    );
+    node = zRdrGetNode(commonModeNode, g_Player_NodeName_Pickups);
     if (node != 0) {
-        PickupType::FindByLogicalName(
-            PlayerZrdArrayString(
-                node,
-                1
-            ),
-            &commonData->pickupType
-        );
-        commonData->pickupCapacity = PlayerZrdArrayInt(
-            node,
-            2
-        );
+        PickupType::FindByLogicalName(PlayerZrdArrayString( node, 1 ), &commonData->pickupType);
+        commonData->pickupCapacity = PlayerZrdArrayInt(node, 2);
     } else {
         commonData->pickupType = 0;
         commonData->pickupCapacity = 0;
     }
 
-    node = zRdrGetNode(
-        commonModeNode,
-        g_Player_NodeName_Weapons
-    );
+    node = zRdrGetNode(commonModeNode, g_Player_NodeName_Weapons);
     if (node == 0) {
         return;
     }
@@ -5733,11 +4993,7 @@ void __fastcall LoadMasterCommonDataFromNode(
     for (int index = 0; index < commonData->weaponNodeCount; ++index) {
         PlayerMasterWeaponSpec *const weaponSpec =
             (PlayerMasterWeaponSpec *)(::operator new(sizeof(PlayerMasterWeaponSpec)));
-        memset(
-            weaponSpec,
-            0,
-            sizeof(PlayerMasterWeaponSpec)
-        );
+        memset(weaponSpec, 0, sizeof(PlayerMasterWeaponSpec));
         if (commonData->weaponSpecCount == 0) {
             commonData->weaponSpecHead = weaponSpec;
         } else {
@@ -5748,10 +5004,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         ++commonData->weaponSpecCount;
 
         zReader::Node *const weaponFields = PlayerZrdArrayBase(node)[index + 1].value.nodes;
-        strcpy(
-            weaponSpec->optCatalogName,
-            weaponFields[1].value.str
-        );
+        strcpy(weaponSpec->optCatalogName, weaponFields[1].value.str);
         weaponSpec->missionRequirementOrGateId = weaponFields[2].value.i32;
         weaponSpec->mountLayoutFlags = weaponFields[3].value.i32;
         weaponSpec->startAmmoOrCharge = (float)(weaponFields[4].value.i32);
@@ -5780,119 +5033,55 @@ void __fastcall LoadMasterModalDataFromNode(
     zReader::Node *modalNode,
     const char *modalName
 ) {
-    strcpy(
-        modalData->modalName,
-        modalName
-    );
+    strcpy(modalData->modalName, modalName);
 
-    zReader::Node *node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigNode_Mode
-    );
+    zReader::Node *node = zRdrGetNode(modalNode, g_Player_ConfigNode_Mode);
     if (node != 0) {
-        PlayerCopyZrdArrayString(
-            modalData->modeName,
-            node,
-            1
-        );
+        PlayerCopyZrdArrayString(modalData->modeName, node, 1);
     } else {
-        strcpy(
-            modalData->modeName,
-            g_Player_ConfigValue_MasterTypeUnknown
-        );
+        strcpy(modalData->modeName, g_Player_ConfigValue_MasterTypeUnknown);
     }
 
     modalData->masterType = 0;
-    if (strncmp(
-        modalData->modeName,
-        g_Player_ConfigNode_Basic,
-        2
-    ) == 0) {
+    if (strncmp(modalData->modeName, g_Player_ConfigNode_Basic, 2) == 0) {
         modalData->masterType = 0;
-    } else if (strncmp(
-        modalData->modeName,
-        g_Player_ConfigValue_MasterTypeTrack,
-        2
-    ) == 0) {
+    } else if (strncmp(modalData->modeName, g_Player_ConfigValue_MasterTypeTrack, 2) == 0) {
         modalData->masterType = 3;
-    } else if (strncmp(
-        modalData->modeName,
-        g_Player_ConfigValue_MasterTypeHover,
-        2
-    ) == 0) {
+    } else if (strncmp(modalData->modeName, g_Player_ConfigValue_MasterTypeHover, 2) == 0) {
         modalData->masterType = 4;
-    } else if (strncmp(
-        modalData->modeName,
-        g_Player_ConfigValue_MasterTypeAmphib,
-        2
-    ) == 0) {
+    } else if (strncmp(modalData->modeName, g_Player_ConfigValue_MasterTypeAmphib, 2) == 0) {
         modalData->masterType = 5;
-    } else if (strncmp(
-        modalData->modeName,
-        g_Player_ConfigValue_MasterTypeSub,
-        2
-    ) == 0) {
+    } else if (strncmp(modalData->modeName, g_Player_ConfigValue_MasterTypeSub, 2) == 0) {
         modalData->masterType = 2;
-    } else if (strncmp(
-        modalData->modeName,
-        g_Player_ConfigValue_MasterTypeFly,
-        2
-    ) == 0) {
+    } else if (strncmp(modalData->modeName, g_Player_ConfigValue_MasterTypeFly, 2) == 0) {
         modalData->masterType = 1;
     }
 
     PlayerLoadModalPointList(
-        zRdrGetNode(
-            modalNode,
-            g_Player_ConfigKey_Platform
-        ),
+        zRdrGetNode(modalNode, g_Player_ConfigKey_Platform),
         &modalData->probePoints[15],
         &modalData->platformPointCount
     );
     PlayerLoadModalPointList(
-        zRdrGetNode(
-            modalNode,
-            g_Player_ConfigKey_Collision
-        ),
+        zRdrGetNode(modalNode, g_Player_ConfigKey_Collision),
         modalData->probePoints,
         &modalData->probePointCount
     );
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_Rates
-    );
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Rates);
     if (node != 0) {
-        modalData->accelRate = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        modalData->maxSpeed = PlayerZrdArrayFloat(
-            node,
-            2
-        );
+        modalData->accelRate = PlayerZrdArrayFloat(node, 1);
+        modalData->maxSpeed = PlayerZrdArrayFloat(node, 2);
     } else {
         modalData->accelRate = 10.0f;
         modalData->maxSpeed = 30.0f;
     }
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_Friction
-    );
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Friction);
     if (node != 0) {
-        modalData->frictionStatic = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        modalData->frictionDynamic = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-        modalData->frictionSlide = PlayerZrdArrayFloat(
-            node,
-            3
-        );
+        modalData->frictionStatic = PlayerZrdArrayFloat(node, 1);
+        modalData->frictionDynamic = PlayerZrdArrayFloat(node, 2);
+        modalData->frictionSlide = PlayerZrdArrayFloat(node, 3);
     } else {
         modalData->frictionStatic = 10000.0f;
         modalData->frictionDynamic = 10.0f;
@@ -5902,196 +5091,85 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->frictionDynamic = modalData->frictionStatic * 0.899999976f;
     }
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_Stopping
-    );
-    modalData->stoppingForce = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 8.0f;
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Stopping);
+    modalData->stoppingForce = node != 0 ? PlayerZrdArrayFloat(node, 1) : 8.0f;
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_QuicksandSlowdown
-    );
-    modalData->quicksandSlowdown = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 0.899999976f;
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_QuicksandSlowdown);
+    modalData->quicksandSlowdown = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.899999976f;
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_LavaSlowdown
-    );
-    modalData->lavaSlowdown = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 0.800000012f;
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_LavaSlowdown);
+    modalData->lavaSlowdown = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.800000012f;
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_Turns
-    );
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Turns);
     if (node != 0) {
-        modalData->yawAccel = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        modalData->yawRateMax = PlayerZrdArrayFloat(
-            node,
-            2
-        );
+        modalData->yawAccel = PlayerZrdArrayFloat(node, 1);
+        modalData->yawRateMax = PlayerZrdArrayFloat(node, 2);
     } else {
         modalData->yawAccel = 0.600000024f;
         modalData->yawRateMax = 2.0f;
     }
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_TurnDamping
-    );
-    modalData->yawDamping = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 30.0f;
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_TurnDamping);
+    modalData->yawDamping = node != 0 ? PlayerZrdArrayFloat(node, 1) : 30.0f;
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_RateDamping
-    );
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_RateDamping);
     if (node != 0) {
-        modalData->rateDampingAccel = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        modalData->rateDampingDecel = PlayerZrdArrayFloat(
-            node,
-            2
-        );
+        modalData->rateDampingAccel = PlayerZrdArrayFloat(node, 1);
+        modalData->rateDampingDecel = PlayerZrdArrayFloat(node, 2);
     } else {
         modalData->rateDampingAccel = 30.0f;
         modalData->rateDampingDecel = 30.0f;
     }
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_AccelDamping
-    );
-    modalData->aDamping = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 8.0f;
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_AccelDamping);
+    modalData->aDamping = node != 0 ? PlayerZrdArrayFloat(node, 1) : 8.0f;
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_AltControl
-    );
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_AltControl);
     if (node != 0) {
-        modalData->hoverLiftDampingRate = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        modalData->hoverLiftScale = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-        modalData->hoverNormalLerpRate = PlayerZrdArrayFloat(
-            node,
-            3
-        );
+        modalData->hoverLiftDampingRate = PlayerZrdArrayFloat(node, 1);
+        modalData->hoverLiftScale = PlayerZrdArrayFloat(node, 2);
+        modalData->hoverNormalLerpRate = PlayerZrdArrayFloat(node, 3);
     } else {
         modalData->hoverLiftDampingRate = -10.0f;
         modalData->hoverLiftScale = 0.800000012f;
         modalData->hoverNormalLerpRate = -3.0f;
     }
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_Mass
-    );
-    modalData->mass = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 1.0f;
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Mass);
+    modalData->mass = node != 0 ? PlayerZrdArrayFloat(node, 1) : 1.0f;
     modalData->invMass = 1.0f / modalData->mass;
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_ConfigKey_GunPitch
-    );
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_GunPitch);
     if (node != 0) {
-        modalData->gunPitchMin = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        modalData->gunPitchRate = PlayerZrdArrayFloat(
-            node,
-            2
-        );
+        modalData->gunPitchMin = PlayerZrdArrayFloat(node, 1);
+        modalData->gunPitchRate = PlayerZrdArrayFloat(node, 2);
     } else {
         modalData->gunPitchMin = -0.2588f;
         modalData->gunPitchRate = 0.5f;
     }
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_NodeName_ModeAlt
-    );
-    modalData->modeAltTransitionTime = node != 0 ? PlayerZrdArrayFloat(
-        node,
-        1
-    ) : 2.0f;
+    node = zRdrGetNode(modalNode, g_Player_NodeName_ModeAlt);
+    modalData->modeAltTransitionTime = node != 0 ? PlayerZrdArrayFloat(node, 1) : 2.0f;
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_NodeName_ChassisSmooth
-    );
-    modalData->chassisSmoothFactor = node != 0 ? (float)(fabs(PlayerZrdArrayFloat(
-        node,
-        1
-    ))) : 0.0f;
+    node = zRdrGetNode(modalNode, g_Player_NodeName_ChassisSmooth);
+    modalData->chassisSmoothFactor = node != 0 ? (float)(fabs(PlayerZrdArrayFloat(node, 1))) : 0.0f;
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_NodeName_ChassisPitch
-    );
+    node = zRdrGetNode(modalNode, g_Player_NodeName_ChassisPitch);
     if (node != 0) {
-        modalData->chassisPitchRate = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        modalData->chassisPitchMax = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-        modalData->chassisPitchDamping = (float)(fabs(PlayerZrdArrayFloat(
-            node,
-            3
-        )));
+        modalData->chassisPitchRate = PlayerZrdArrayFloat(node, 1);
+        modalData->chassisPitchMax = PlayerZrdArrayFloat(node, 2);
+        modalData->chassisPitchDamping = (float)(fabs(PlayerZrdArrayFloat( node, 3 )));
     } else {
         modalData->chassisPitchRate = 0.0f;
         modalData->chassisPitchMax = 0.0f;
         modalData->chassisPitchDamping = 0.0f;
     }
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_NodeName_ChassisRoll
-    );
+    node = zRdrGetNode(modalNode, g_Player_NodeName_ChassisRoll);
     if (node != 0) {
-        modalData->chassisRollRate = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        modalData->chassisRollMax = PlayerZrdArrayFloat(
-            node,
-            2
-        );
-        modalData->chassisRollDamping = (float)(fabs(PlayerZrdArrayFloat(
-            node,
-            3
-        )));
+        modalData->chassisRollRate = PlayerZrdArrayFloat(node, 1);
+        modalData->chassisRollMax = PlayerZrdArrayFloat(node, 2);
+        modalData->chassisRollDamping = (float)(fabs(PlayerZrdArrayFloat( node, 3 )));
     } else {
         // Retail code clears the pitch slots here when chas_roll is absent.
         modalData->chassisPitchRate = 0.0f;
@@ -6099,35 +5177,14 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->chassisPitchDamping = 0.0f;
     }
 
-    PlayerLoadModalWaveParams(
-        modalData,
-        modalNode,
-        g_Player_ConfigKey_AmphibWave
-    );
-    PlayerLoadModalWaveParams(
-        modalData,
-        modalNode,
-        g_Player_ConfigKey_HoverWave
-    );
-    PlayerLoadModalWaveParams(
-        modalData,
-        modalNode,
-        g_Player_ConfigKey_SubWave
-    );
+    PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_AmphibWave);
+    PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_HoverWave);
+    PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_SubWave);
 
-    node = zRdrGetNode(
-        modalNode,
-        g_Player_NodeName_CollisionDamage
-    );
+    node = zRdrGetNode(modalNode, g_Player_NodeName_CollisionDamage);
     if (node != 0) {
-        modalData->collisionDampingA = PlayerZrdArrayFloat(
-            node,
-            1
-        );
-        modalData->collisionDampingB = PlayerZrdArrayFloat(
-            node,
-            2
-        );
+        modalData->collisionDampingA = PlayerZrdArrayFloat(node, 1);
+        modalData->collisionDampingB = PlayerZrdArrayFloat(node, 2);
     } else {
         modalData->collisionDampingA = 0.5f;
         modalData->collisionDampingB = 0.150000006f;
@@ -6153,16 +5210,8 @@ void __fastcall LoadMasterModalDataFromNode(
         g_Player_NodeName_H2TAnims,
         modalData->fxList_fromHoverToTrack
     );
-    PlayerLoadModalFxList(
-        modalNode,
-        g_Player_NodeName_S2AAnims,
-        modalData->fxList_fromSubToAmphib
-    );
-    PlayerLoadModalFxList(
-        modalNode,
-        g_Player_NodeName_A2SAnims,
-        modalData->fxList_fromAmphibToSub
-    );
+    PlayerLoadModalFxList(modalNode, g_Player_NodeName_S2AAnims, modalData->fxList_fromSubToAmphib);
+    PlayerLoadModalFxList(modalNode, g_Player_NodeName_A2SAnims, modalData->fxList_fromAmphibToSub);
     PlayerLoadModalFxList(
         modalNode,
         g_Player_NodeName_H2AAnims,
@@ -6174,65 +5223,26 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->fxList_fromAmphibToHover
     );
 
-    zReader::Node *const soundsNode = zRdrGetNode(
-        modalNode,
-        g_Player_NodeName_Sounds
-    );
+    zReader::Node *const soundsNode = zRdrGetNode(modalNode, g_Player_NodeName_Sounds);
     if (soundsNode == 0) {
         return;
     }
 
-    PlayerLoadSoundSample(
-        soundsNode,
-        g_Player_NodeName_Engine,
-        &modalData->sfxEngine[0]
-    );
-    PlayerLoadSoundSample(
-        soundsNode,
-        g_Player_NodeName_External,
-        &modalData->sfxEngine[1]
-    );
-    PlayerLoadSoundSample(
-        soundsNode,
-        g_Player_NodeName_Idle,
-        &modalData->sfxEngine[2]
-    );
-    PlayerLoadSoundSample(
-        soundsNode,
-        g_Player_NodeName_Skid,
-        &modalData->sfxEngine[3]
-    );
-    PlayerLoadSoundSample(
-        soundsNode,
-        g_Player_NodeName_Collide,
-        &modalData->sfxCollide
-    );
-    PlayerLoadSoundSample(
-        soundsNode,
-        g_Player_NodeName_Land,
-        &modalData->sfxLand
-    );
+    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Engine, &modalData->sfxEngine[0]);
+    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_External, &modalData->sfxEngine[1]);
+    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Idle, &modalData->sfxEngine[2]);
+    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Skid, &modalData->sfxEngine[3]);
+    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Collide, &modalData->sfxCollide);
+    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Land, &modalData->sfxLand);
 
-    node = zRdrGetNode(
-        soundsNode,
-        g_Player_NodeName_PitchScale
-    );
+    node = zRdrGetNode(soundsNode, g_Player_NodeName_PitchScale);
     if (node != 0) {
-        modalData->sfxPitchScale = PlayerZrdArrayFloat(
-            node,
-            1
-        );
+        modalData->sfxPitchScale = PlayerZrdArrayFloat(node, 1);
     }
 
-    node = zRdrGetNode(
-        soundsNode,
-        g_Player_NodeName_VolumeScale
-    );
+    node = zRdrGetNode(soundsNode, g_Player_NodeName_VolumeScale);
     if (node != 0) {
-        modalData->sfxVolumeScale = PlayerZrdArrayFloat(
-            node,
-            1
-        );
+        modalData->sfxVolumeScale = PlayerZrdArrayFloat(node, 1);
     }
 }
 } // namespace Player
@@ -6293,72 +5303,33 @@ void __fastcall RefreshHudFromState(
 
         if (leftEnabled != 0) {
             if (left.ammoOrCharge != 0.0f) {
-                HudUiMessage::SelectVariantDisplay(
-                    bankIndex,
-                    0
-                );
-                HudUiMessage::SetValueIfOwnerMatches(
-                    bankIndex,
-                    0,
-                    left.ammoOrCharge
-                );
+                HudUiMessage::SelectVariantDisplay(bankIndex, 0);
+                HudUiMessage::SetValueIfOwnerMatches(bankIndex, 0, left.ammoOrCharge);
                 bank.selectedSide = 0;
                 if (rightEnabled != 0) {
-                    HudUiMessage::ApplySideImageSwap(
-                        bankIndex,
-                        1
-                    );
+                    HudUiMessage::ApplySideImageSwap(bankIndex, 1);
                 }
             } else if (rightEnabled != 0 && right.ammoOrCharge != 0.0f) {
-                HudUiMessage::SelectVariantDisplay(
-                    bankIndex,
-                    1
-                );
-                HudUiMessage::SetValueIfOwnerMatches(
-                    bankIndex,
-                    1,
-                    right.ammoOrCharge
-                );
+                HudUiMessage::SelectVariantDisplay(bankIndex, 1);
+                HudUiMessage::SetValueIfOwnerMatches(bankIndex, 1, right.ammoOrCharge);
                 bank.selectedSide = 1;
-                HudUiMessage::ApplySideImageSwap(
-                    bankIndex,
-                    0
-                );
+                HudUiMessage::ApplySideImageSwap(bankIndex, 0);
             }
         } else if (rightEnabled != 0) {
-            HudUiMessage::SelectVariantDisplay(
-                bankIndex,
-                1
-            );
-            HudUiMessage::SetValueIfOwnerMatches(
-                bankIndex,
-                1,
-                right.ammoOrCharge
-            );
+            HudUiMessage::SelectVariantDisplay(bankIndex, 1);
+            HudUiMessage::SetValueIfOwnerMatches(bankIndex, 1, right.ammoOrCharge);
             bank.selectedSide = 1;
         } else {
             HudUiMessage::ClearDisplay(bankIndex);
             if (left.ammoOrCharge != 0.0f) {
-                HudUiMessage::SetValueIfOwnerMatches(
-                    bankIndex,
-                    0,
-                    left.ammoOrCharge
-                );
+                HudUiMessage::SetValueIfOwnerMatches(bankIndex, 0, left.ammoOrCharge);
             } else if (right.ammoOrCharge != 0.0f) {
-                HudUiMessage::SetValueIfOwnerMatches(
-                    bankIndex,
-                    0,
-                    right.ammoOrCharge
-                );
+                HudUiMessage::SetValueIfOwnerMatches(bankIndex, 0, right.ammoOrCharge);
             }
         }
     }
 
-    HudUiMessage::UpdateSelectedWeaponDisplay(
-        0,
-        0,
-        0.0f
-    );
+    HudUiMessage::UpdateSelectedWeaponDisplay(0, 0, 0.0f);
 
     PlayerGunFireController *const activeAltGunController = playerState->activeAltGunController;
     HudUiMessage::UpdateSelectedWeaponDisplay(
@@ -6375,18 +5346,9 @@ void __fastcall RefreshHudFromState(
         activePrimaryGunController->ammoOrCharge
     );
 
-    HudUiMgr::SetModeCounterState(
-        1,
-        playerState->amphibUnlocked != 0 ? 1 : 0
-    );
-    HudUiMgr::SetModeCounterState(
-        2,
-        playerState->hoverUnlocked != 0 ? 1 : 0
-    );
-    HudUiMgr::SetModeCounterState(
-        3,
-        playerState->subUnlocked != 0 ? 1 : 0
-    );
+    HudUiMgr::SetModeCounterState(1, playerState->amphibUnlocked != 0 ? 1 : 0);
+    HudUiMgr::SetModeCounterState(2, playerState->hoverUnlocked != 0 ? 1 : 0);
+    HudUiMgr::SetModeCounterState(3, playerState->subUnlocked != 0 ? 1 : 0);
 }
 } // namespace Player
 namespace Player {
@@ -6411,14 +5373,14 @@ int __fastcall IsMissionProbeType1EnabledById(
  * Purpose: applies the underwater blue-tint pass to the active pass-3 input
  * rectangle through the recovered ApplyPass3 virtual slot.
  */
-void Player_UnderwaterFxPass3Ui::ApplyPass3() {
+void CPlayerUnderwaterFxPass3Ui::ApplyPass3() {
     zVideo_FxSurface::ApplyBlueTintRect((zVidRect32 *)(clipRectOrNull));
 }
 /**
  * Purpose: applies the projectile-camera green-mask pass to the active pass-3
  * input rectangle through the recovered ApplyPass3 virtual slot.
  */
-void Player_ProjectileCameraFxPass3Ui::ApplyPass3() {
+void CPlayerProjectileCameraFxPass3Ui::ApplyPass3() {
     zVideo_FxSurface::ApplyGreenMaskRect((zVidRect32 *)(clipRectOrNull));
 }
 namespace Player {
@@ -6447,10 +5409,7 @@ void __fastcall ProcessPendingContactQueues(
     }
 
     if (playerState->checkpointQueue.count != 0) {
-        Checkpoint::UpdatePlayerLapProgressAndNotifyNet(
-            saveState,
-            g_PlayerPendingCheckpointNumber
-        );
+        Checkpoint::UpdatePlayerLapProgressAndNotifyNet(saveState, g_PlayerPendingCheckpointNumber);
         playerState->checkpointLapProgressNotified = 1;
     }
 
@@ -6519,151 +5478,57 @@ void __fastcall BuildPendingContactQueues(
                                    playerState->localVel.y * playerState->localVel.y +
                                    playerState->localVel.z * playerState->localVel.z;
     playerState->noPendingContactsQueued = 1;
-    memset(
-        enabledSegmentFlags,
-        0,
-        sizeof(enabledSegmentFlags)
-    );
+    memset(enabledSegmentFlags, 0, sizeof(enabledSegmentFlags));
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         if (fabs(playerState->angVelYaw) > 0.0f) {
-            EnableContactSegment(
-                enabledSegmentFlags,
-                0
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                1
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                2
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                3
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                4
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                5
-            );
+            EnableContactSegment(enabledSegmentFlags, 0);
+            EnableContactSegment(enabledSegmentFlags, 1);
+            EnableContactSegment(enabledSegmentFlags, 2);
+            EnableContactSegment(enabledSegmentFlags, 3);
+            EnableContactSegment(enabledSegmentFlags, 4);
+            EnableContactSegment(enabledSegmentFlags, 5);
         }
     } else if (fabs(playerState->localVel.z) < fabs(playerState->angVelYaw * 3.29999995f)) {
-        EnableContactSegment(
-            enabledSegmentFlags,
-            0
-        );
-        EnableContactSegment(
-            enabledSegmentFlags,
-            1
-        );
-        EnableContactSegment(
-            enabledSegmentFlags,
-            2
-        );
-        EnableContactSegment(
-            enabledSegmentFlags,
-            3
-        );
-        EnableContactSegment(
-            enabledSegmentFlags,
-            4
-        );
-        EnableContactSegment(
-            enabledSegmentFlags,
-            5
-        );
+        EnableContactSegment(enabledSegmentFlags, 0);
+        EnableContactSegment(enabledSegmentFlags, 1);
+        EnableContactSegment(enabledSegmentFlags, 2);
+        EnableContactSegment(enabledSegmentFlags, 3);
+        EnableContactSegment(enabledSegmentFlags, 4);
+        EnableContactSegment(enabledSegmentFlags, 5);
     }
 
     if (localVelLengthSq > 0.0000001f) {
         if (playerState->localVel.z < 0.0f) {
-            EnableContactSegment(
-                enabledSegmentFlags,
-                0
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                1
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                2
-            );
+            EnableContactSegment(enabledSegmentFlags, 0);
+            EnableContactSegment(enabledSegmentFlags, 1);
+            EnableContactSegment(enabledSegmentFlags, 2);
         } else {
-            EnableContactSegment(
-                enabledSegmentFlags,
-                3
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                5
-            );
+            EnableContactSegment(enabledSegmentFlags, 3);
+            EnableContactSegment(enabledSegmentFlags, 5);
         }
 
         if (masterModalData->masterType == kPlayerMasterTypeSub &&
             playerState->localVel.y > 0.001f) {
-            EnableContactSegment(
-                enabledSegmentFlags,
-                0
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                1
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                2
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                3
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                5
-            );
+            EnableContactSegment(enabledSegmentFlags, 0);
+            EnableContactSegment(enabledSegmentFlags, 1);
+            EnableContactSegment(enabledSegmentFlags, 2);
+            EnableContactSegment(enabledSegmentFlags, 3);
+            EnableContactSegment(enabledSegmentFlags, 5);
         }
 
         if (playerState->localVel.x > 0.001f) {
-            EnableContactSegment(
-                enabledSegmentFlags,
-                6
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                7
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                8
-            );
-            EnableContactSegment(
-                enabledSegmentFlags,
-                4
-            );
+            EnableContactSegment(enabledSegmentFlags, 6);
+            EnableContactSegment(enabledSegmentFlags, 7);
+            EnableContactSegment(enabledSegmentFlags, 8);
+            EnableContactSegment(enabledSegmentFlags, 4);
         } else {
             if (playerState->localVel.x < -0.001f) {
-                EnableContactSegment(
-                    enabledSegmentFlags,
-                    9
-                );
-                EnableContactSegment(
-                    enabledSegmentFlags,
-                    10
-                );
-                EnableContactSegment(
-                    enabledSegmentFlags,
-                    11
-                );
+                EnableContactSegment(enabledSegmentFlags, 9);
+                EnableContactSegment(enabledSegmentFlags, 10);
+                EnableContactSegment(enabledSegmentFlags, 11);
             }
-            EnableContactSegment(
-                enabledSegmentFlags,
-                4
-            );
+            EnableContactSegment(enabledSegmentFlags, 4);
         }
     }
 
@@ -6693,10 +5558,7 @@ void __fastcall BuildPendingContactQueues(
         segmentTags[segmentCount] = i;
         zVec3 *const modalPoint = &playerState->modalProbeWorldByIndex[i];
         zVec3 *const rootPoint = &playerState->rootProbeWorldByIndex[i];
-        ConstrainToUnitDistanceFrom(
-            rootPoint,
-            modalPoint
-        );
+        ConstrainToUnitDistanceFrom(rootPoint, modalPoint);
         segmentPairs[segmentCount].start = *rootPoint;
         segmentPairs[segmentCount].end = *modalPoint;
         segmentPairs[segmentCount].end.y += probeYAdvance;
@@ -6755,10 +5617,7 @@ int __fastcall CollectPendingContactsForSegments(
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
-    zClass_Class::gwNodeSetRaycastable(
-        playerState->rootNode,
-        0
-    );
+    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
     g_Variant_CurrentTag = playerState->variantTag;
 
     PlayerProbeSampleCandidateBuffer hitBatches[24] = {0};
@@ -6770,10 +5629,7 @@ int __fastcall CollectPendingContactsForSegments(
     );
 
     g_Variant_CurrentTag = g_VariantTag_Current;
-    zClass_Class::gwNodeSetRaycastable(
-        playerState->rootNode,
-        1
-    );
+    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1);
 
     for (int endpointIndex = 0; endpointIndex < endpointCount; endpointIndex += 2) {
         const int segmentIndex = endpointIndex >> 1;
@@ -6822,10 +5678,7 @@ void __fastcall ClassifyPendingContactsForSegment(
                 HudSensorTracker::ParseCheckpointNumberFromNode(candidate->node);
             g_PlayerPendingCheckpointNumber = checkpointNumber;
             if (checkpointNumber != 0) {
-                PLAYER_APPEND_PENDING_CONTACT(
-                    &playerState->checkpointQueue,
-                    queuedContact
-                );
+                PLAYER_APPEND_PENDING_CONTACT(&playerState->checkpointQueue, queuedContact);
                 CopyPendingContactPayload(
                     queuedContact,
                     candidate,
@@ -6842,10 +5695,7 @@ void __fastcall ClassifyPendingContactsForSegment(
         }
 
         if (Pickup::ResolveOwnerFromBvolHit(&candidate->node) != 0) {
-            PLAYER_APPEND_PENDING_CONTACT(
-                &playerState->pickupQueue,
-                queuedContact
-            );
+            PLAYER_APPEND_PENDING_CONTACT(&playerState->pickupQueue, queuedContact);
         } else {
             node = candidate->node;
             if ((node->flags & 0x100000) != 0 && node->callbackContext != 0) {
@@ -6860,15 +5710,9 @@ void __fastcall ClassifyPendingContactsForSegment(
                 OptCatalogDamageHandlerPartial *const damageHandler = GetNodeDamageHandler(node);
                 if (damageHandler != 0 && damageHandler != (OptCatalogDamageHandlerPartial *)(1) &&
                     damageHandler->timerContext != 0) {
-                    PLAYER_APPEND_PENDING_CONTACT(
-                        &playerState->transferQueue,
-                        queuedContact
-                    );
+                    PLAYER_APPEND_PENDING_CONTACT(&playerState->transferQueue, queuedContact);
                 } else if (candidate->surfaceNormal.y < -0.9f) {
-                    PLAYER_APPEND_PENDING_CONTACT(
-                        &playerState->worldCollisionQueue,
-                        queuedContact
-                    );
+                    PLAYER_APPEND_PENDING_CONTACT(&playerState->worldCollisionQueue, queuedContact);
                 } else if (candidate->surfaceNormal.y < 0.71f) {
                     PLAYER_APPEND_PENDING_CONTACT(
                         &playerState->preferredCollisionQueue,
@@ -6916,10 +5760,7 @@ void __fastcall SelectAndResolvePreferredPendingCollisionContact(
         contact = contact->next;
     }
 
-    ResolvePendingCollisionContact(
-        saveState,
-        selectedContact
-    );
+    ResolvePendingCollisionContact(saveState, selectedContact);
     playerState->preferredCollisionResolved = 1;
 }
 } // namespace Player
@@ -6958,20 +5799,11 @@ void __fastcall ResolvePendingWorldCollisionContact(
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerPendingContact *const contact = playerState->worldCollisionQueue.head;
-    PreparePendingWorldCollisionResponse(
-        saveState,
-        contact
-    );
+    PreparePendingWorldCollisionResponse(saveState, contact);
     if (playerState->lifecycleState == kPlayerLifecycleLocal) {
-        saveState->StartModalLoopSfxHandle(
-            4,
-            1.0f
-        );
+        saveState->StartModalLoopSfxHandle(4, 1.0f);
     }
-    ResolvePendingCollisionContact(
-        saveState,
-        playerState->worldCollisionQueue.head
-    );
+    ResolvePendingCollisionContact(saveState, playerState->worldCollisionQueue.head);
 }
 } // namespace Player
 namespace PlayerPickupContact {
@@ -6992,10 +5824,7 @@ int __fastcall PassesCollectionTest(
     zClass_NodePartial *const pickupNode = contact->hit.node;
 
     g_Variant_CurrentTag = playerState->variantTag;
-    zClass_Class::gwNodeSetRaycastable(
-        pickupNode,
-        0
-    );
+    zClass_Class::gwNodeSetRaycastable(pickupNode, 0);
     zClass_cls_di::SetBreakOnFirstCandidate(1);
     zClass_cls_di::SetStopAfterFirstHit(0x40000);
 
@@ -7023,10 +5852,7 @@ int __fastcall PassesCollectionTest(
     );
 
     zClass_cls_di::SetBreakOnFirstCandidate(0);
-    zClass_Class::gwNodeSetRaycastable(
-        pickupNode,
-        1
-    );
+    zClass_Class::gwNodeSetRaycastable(pickupNode, 1);
 
     return raycastResult == 0 && rayData.candidateCount != 0 ? 0 : 1;
 }
@@ -7055,14 +5881,8 @@ void __fastcall ProcessPendingPickupContacts(
 
     PlayerPendingContact *contact = playerState->pickupQueue.head;
     while (contact != 0) {
-        if (PlayerPickupContact::PassesCollectionTest(
-            saveState,
-            contact
-        ) != 0) {
-            Pickup::OnCollected(
-                contact->hit.node,
-                saveState
-            );
+        if (PlayerPickupContact::PassesCollectionTest(saveState, contact) != 0) {
+            Pickup::OnCollected(contact->hit.node, saveState);
         }
 
         contact = contact != 0 ? contact->next : 0;
@@ -7093,10 +5913,7 @@ void __fastcall ResolvePendingCollisionContact(
     const zVec3 contactToSweepStart = {sweepStart.x - contactPoint.x,
         sweepStart.y - contactPoint.y,
         sweepStart.z - contactPoint.z};
-    if (Vec3Dot(
-        contactToSweepStart,
-        contactNormal
-    ) < 0.0f) {
+    if (Vec3Dot(contactToSweepStart, contactNormal) < 0.0f) {
         contactNormal.x *= -1.0f;
         contactNormal.y *= -1.0f;
         contactNormal.z *= -1.0f;
@@ -7120,24 +5937,17 @@ void __fastcall ResolvePendingCollisionContact(
     zVec3 contactToSweepEnd = {sweepEnd.x - contactPoint.x,
         sweepEnd.y - contactPoint.y,
         sweepEnd.z - contactPoint.z};
-    zMath::Vec3NormalizeXZ(
-        &contactNormal,
-        &contactNormal
-    );
+    zMath::Vec3NormalizeXZ(&contactNormal, &contactNormal);
 
     zVec3 reflectedSweepDir;
-    zMath::Vec3Reflect(
-        &contactNormal,
-        &contactToSweepEnd,
-        &reflectedSweepDir
-    );
+    zMath::Vec3Reflect(&contactNormal, &contactToSweepEnd, &reflectedSweepDir);
     const zVec3 reflectedContactPoint = {contactPoint.x + reflectedSweepDir.x,
         contactPoint.y + reflectedSweepDir.y,
         contactPoint.z + reflectedSweepDir.z};
     zVec3 worldPosCorrection = {reflectedContactPoint.x - sweepEnd.x,
         reflectedContactPoint.y - sweepEnd.y,
         reflectedContactPoint.z - sweepEnd.z};
-    Vec3_FastNormalize(&worldPosCorrection);
+    Vec3FastNormalize(&worldPosCorrection);
 
     playerState->worldPos.x += worldPosCorrection.x;
     playerState->worldPos.y += worldPosCorrection.y;
@@ -7156,10 +5966,7 @@ void __fastcall ResolvePendingCollisionContact(
     if (probeResolved == 0) {
         const float collisionDampingA = masterModalData->collisionDampingA;
         float projectileVelY = playerState->projectileSpawnVel.y;
-        zMath::Vec3NormalizeXZ(
-            &reflectedSweepDir,
-            &reflectedSweepDir
-        );
+        zMath::Vec3NormalizeXZ(&reflectedSweepDir, &reflectedSweepDir);
 
         zVec3 surfaceTangent;
         surfaceTangent.x =
@@ -7200,16 +6007,10 @@ void __fastcall ResolvePendingCollisionContact(
                 if (projectileVelY < 0.0f) {
                     projectileVelY *= -0.5f;
                 }
-                zClass_Class::gwNodeSetCellPickable(
-                    hitNode,
-                    1
-                );
+                zClass_Class::gwNodeSetCellPickable(hitNode, 1);
             }
 
-            if (Vec3Dot(
-                playerState->projectileSpawnVel,
-                playerState->projectileSpawnVel
-            ) < 1.0f) {
+            if (Vec3Dot(playerState->projectileSpawnVel, playerState->projectileSpawnVel) < 1.0f) {
                 playerState->projectileSpawnVel.x = contactNormal.x * 10.0f;
                 playerState->projectileSpawnVel.y = contactNormal.y * 10.0f;
                 playerState->projectileSpawnVel.z = contactNormal.z * 10.0f;
@@ -7238,15 +6039,9 @@ void __fastcall ResolvePendingCollisionContact(
     if (impactGain > 1.0f) {
         impactGain = 1.0f;
     }
-    saveState->StartModalLoopSfxHandle(
-        4,
-        impactGain
-    );
-    if (zInput_DI_IsForceFeedbackEnabled() != 0 && g_zInputFfEffectSet != 0) {
-        g_zInputFfEffectSet->PlayCollisionImpactEffect(
-            &contactNormal,
-            impactGain
-        );
+    saveState->StartModalLoopSfxHandle(4, impactGain);
+    if (zInputDIIsForceFeedbackEnabled() != 0 && g_zInputFfEffectSet != 0) {
+        g_zInputFfEffectSet->PlayCollisionImpactEffect(&contactNormal, impactGain);
     }
 }
 } // namespace Player
@@ -7355,22 +6150,14 @@ void __fastcall ResolvePendingPlayerCollisionContact(
     targetPlayerState->localVel.y += transferredLocalVel.y;
     targetPlayerState->localVel.z += transferredLocalVel.z;
 
-    ResolvePendingCollisionContact(
-        saveState,
-        playerState->playerCollisionQueue.head
-    );
+    ResolvePendingCollisionContact(saveState, playerState->playerCollisionQueue.head);
 
     if (targetPlayerState->lifecycleState == kPlayerLifecycleAi) {
         const float damage = massScale * 1.10000002f;
         const float remainingFraction =
             (targetPlayerState->statusMeterValue - damage) * targetCommonData->invMaxHealth;
         if (remainingFraction > 0.200000003f) {
-            HitCallback_RecordContextAndTimedStatus(
-                targetSaveState,
-                0,
-                0,
-                damage
-            );
+            HitCallbackRecordContextAndTimedStatus(targetSaveState, 0, 0, damage);
         }
     }
 }
@@ -7378,7 +6165,7 @@ void __fastcall ResolvePendingPlayerCollisionContact(
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-vec3-fastnormalize
- * @recoil-artifact defines .text recoil:function:0x424bf0: Player::Vec3_FastNormalize
+ * @recoil-artifact defines .text recoil:function:0x424bf0: Player::Vec3FastNormalize
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: scale short nonzero contact deltas with the fast approximate
  * square-root normalizer used by collision contact resolution.
@@ -7388,7 +6175,7 @@ namespace Player {
  * g_Player_CollisionContactResolveScale, uses the integer half-exponent
  * approximation, and returns whether the vector was rescaled.
  */
-int __fastcall Vec3_FastNormalize(
+int __fastcall Vec3FastNormalize(
     zVec3 *vec
 ) {
     const float lengthSq = vec->x * vec->x + vec->y * vec->y + vec->z * vec->z;
@@ -7397,19 +6184,11 @@ int __fastcall Vec3_FastNormalize(
     }
 
     int lengthSqBits = 0;
-    memcpy(
-        &lengthSqBits,
-        &lengthSq,
-        sizeof(lengthSqBits)
-    );
+    memcpy(&lengthSqBits, &lengthSq, sizeof(lengthSqBits));
     lengthSqBits = (lengthSqBits >> 1) + 532676608;
 
     float approxLength = 0.0f;
-    memcpy(
-        &approxLength,
-        &lengthSqBits,
-        sizeof(approxLength)
-    );
+    memcpy(&approxLength, &lengthSqBits, sizeof(approxLength));
     const float scale = g_Player_CollisionContactResolveScale / (approxLength + 0.00000001f);
 
     vec->x *= scale;
@@ -7428,7 +6207,7 @@ namespace Player {
  * Source owner: player contact unit-distance helper subsystem, not
  * player_camera_control_state_bridge or the broader Player C++ class.
  * Evidence: retail body forms a stack zVec3 delta, calls
- * Player::Vec3_FastNormalize, and writes back center plus normalized delta
+ * Player::Vec3FastNormalize, and writes back center plus normalized delta
  * only when the helper reports a short nonzero contact vector.
  */
 void __fastcall ConstrainToUnitDistanceFrom(
@@ -7436,7 +6215,7 @@ void __fastcall ConstrainToUnitDistanceFrom(
     const zVec3 *center
 ) {
     zVec3 delta = {pos->x - center->x, pos->y - center->y, pos->z - center->z};
-    if (Vec3_FastNormalize(&delta) == 0) {
+    if (Vec3FastNormalize(&delta) == 0) {
         return;
     }
 
@@ -7473,25 +6252,13 @@ void __fastcall ProcessTransferContactQueue(
             transferDamage
         );
         if (callbackResult > 0.0f) {
-            PLAYER_REMOVE_EXISTING_PENDING_CONTACT(
-                &playerState->transferQueue,
-                contact
-            );
-            PLAYER_APPEND_EXISTING_PENDING_CONTACT(
-                &playerState->preferredCollisionQueue,
-                contact
-            );
+            PLAYER_REMOVE_EXISTING_PENDING_CONTACT(&playerState->transferQueue, contact);
+            PLAYER_APPEND_EXISTING_PENDING_CONTACT(&playerState->preferredCollisionQueue, contact);
         } else {
             zClass_NodePartial *const hitNode = contact->hit.node;
             RecordNodeFlagsForRestore(hitNode);
-            zClass_Class::gwNodeSetCellPickable(
-                hitNode,
-                0
-            );
-            zClass_Class::gwNodeSetRaycastable(
-                hitNode,
-                0
-            );
+            zClass_Class::gwNodeSetCellPickable(hitNode, 0);
+            zClass_Class::gwNodeSetRaycastable(hitNode, 0);
         }
         contact = next;
     }
@@ -7527,12 +6294,7 @@ int __fastcall TryResolvePendingCollisionProbeSweep(
         segmentTags[i] = i;
     }
 
-    CollectPendingContactsForSegments(
-        saveState,
-        segmentPairs,
-        12,
-        segmentTags
-    );
+    CollectPendingContactsForSegments(saveState, segmentPairs, 12, segmentTags);
     PLAYER_MOVE_TRANSFER_CONTACTS_TO_PREFERRED_COLLISION(playerState);
 
     if (playerState->preferredCollisionQueue.count == 0 &&
@@ -7622,7 +6384,7 @@ void __fastcall UpdatePlayerLapProgressAndNotifyNet(
     playerProgress->lapTimestampSec = g_Time_AccumulatedTimeSec;
     playerProgress->lapCompletionCount += 1;
     playerProgress->lapTimeSec = g_Time_AccumulatedTimeSec - playerProgress->checkpointTimestampSec;
-    GameNet::SendPkt0E_PlayerLapProgress(saveState);
+    GameNet::SendPkt0EPlayerLapProgress(saveState);
 }
 } // namespace Checkpoint
 namespace Player {
@@ -7759,54 +6521,27 @@ void __cdecl RegisterGameplayCommandCallbacksAndCreateFfEffects() {
     // zInput's keyboard bridge tail-jumps to these handlers with commandId in ECX.
     zInputCommandCallbackFn hudHotkeyCallback =
         (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand);
-    zInput::BindMap_Current_SetCommandCallback(
-        30,
-        hudHotkeyCallback
-    );
-    zInput::BindMap_Current_SetCommandCallback(
-        9,
-        hudHotkeyCallback
-    );
-    zInput::BindMap_Current_SetCommandCallback(
-        32,
-        hudHotkeyCallback
-    );
-    zInput::BindMap_Current_SetCommandCallback(
-        33,
-        hudHotkeyCallback
-    );
+    zInput::BindMapCurrentSetCommandCallback(30, hudHotkeyCallback);
+    zInput::BindMapCurrentSetCommandCallback(9, hudHotkeyCallback);
+    zInput::BindMapCurrentSetCommandCallback(32, hudHotkeyCallback);
+    zInput::BindMapCurrentSetCommandCallback(33, hudHotkeyCallback);
 
     if (zVid::GetAccelerationOption() == 0) {
-        zInput::BindMap_Current_SetCommandCallback(
+        zInput::BindMapCurrentSetCommandCallback(
             34,
             (zInputCommandCallbackFn)(zVideo::HandleSoftwareModeHotkeyCommand)
         );
     }
 
-    zInput::BindMap_Current_SetCommandCallback(
-        35,
-        hudHotkeyCallback
-    );
-    zInput::BindMap_Current_SetCommandCallback(
-        42,
-        hudHotkeyCallback
-    );
-    zInput::BindMap_Current_SetCommandCallback(
-        43,
-        hudHotkeyCallback
-    );
-    zInput::BindMap_Current_SetCommandCallback(
-        44,
-        hudHotkeyCallback
-    );
-    zInput::BindMap_Current_SetCommandCallback(
-        45,
-        hudHotkeyCallback
-    );
+    zInput::BindMapCurrentSetCommandCallback(35, hudHotkeyCallback);
+    zInput::BindMapCurrentSetCommandCallback(42, hudHotkeyCallback);
+    zInput::BindMapCurrentSetCommandCallback(43, hudHotkeyCallback);
+    zInput::BindMapCurrentSetCommandCallback(44, hudHotkeyCallback);
+    zInput::BindMapCurrentSetCommandCallback(45, hudHotkeyCallback);
 
     zInput_FFEffectSet *const effectSet = new zInput_FFEffectSet;
     if (effectSet != 0) {
-        g_zInputFfEffectSet = zInput_DI_InitForceFeedbackEffectSet(effectSet);
+        g_zInputFfEffectSet = zInputDIInitForceFeedbackEffectSet(effectSet);
     } else {
         g_zInputFfEffectSet = 0;
     }
@@ -7833,7 +6568,7 @@ void __fastcall TickLocalPlayerControls(
 
     zInput::MouseStateSnapshot mouseState = {0};
     if (zInp::GetJoystickOption() != 0) {
-        DIJOYSTATE2 *const joyState = zInput::DI_GetCurrentState();
+        DIJOYSTATE2 *const joyState = zInput::DIGetCurrentState();
         if (playerState->cameraState == kPlayerCameraStateProjectileAttached) {
             playerState->cursorDeltaX = 0.0f;
             playerState->cursorDeltaY = 0.0f;
@@ -7858,20 +6593,20 @@ void __fastcall TickLocalPlayerControls(
                 (float)(joyState->lRz) * g_zInput_JoystickAxisConfig_Gameplay.axes[3].normScale;
         }
     } else if ((g_Player_RuntimeInputFlags & 2) != 0) {
-        zInput::Mouse_GetStateSnapshot(&mouseState);
+        zInput::MouseGetStateSnapshot(&mouseState);
         playerState->cursorDeltaX = mouseState.cursorNormX - playerState->cursorNormX;
         playerState->cursorDeltaY = mouseState.cursorNormY - playerState->cursorNormY;
         playerState->cursorNormX = mouseState.cursorNormX;
         playerState->cursorNormY = mouseState.cursorNormY;
     }
 
-    if ((zInput::BindMap_Current_ReadCommandInputState(4) & 3) != 0) {
+    if ((zInput::BindMapCurrentReadCommandInputState(4) & 3) != 0) {
         if (zOpt::GetThrottleMode() != 0) {
             playerState->throttleInput += g_FrameDeltaTimeSec;
         } else {
             playerState->throttleInput = 1.0f;
         }
-    } else if ((zInput::BindMap_Current_ReadCommandInputState(1) & 3) != 0) {
+    } else if ((zInput::BindMapCurrentReadCommandInputState(1) & 3) != 0) {
         if (zOpt::GetThrottleMode() != 0) {
             playerState->throttleInput -= g_FrameDeltaTimeSec;
         } else {
@@ -7881,9 +6616,9 @@ void __fastcall TickLocalPlayerControls(
         playerState->throttleInput = 0.0f;
     }
 
-    if ((zInput::BindMap_Current_ReadCommandInputState(2) & 3) != 0) {
+    if ((zInput::BindMapCurrentReadCommandInputState(2) & 3) != 0) {
         playerState->steeringInput = 1.0f;
-    } else if ((zInput::BindMap_Current_ReadCommandInputState(3) & 3) != 0) {
+    } else if ((zInput::BindMapCurrentReadCommandInputState(3) & 3) != 0) {
         playerState->steeringInput = -1.0f;
     } else if (zInp::GetJoystickOption() == 0) {
         playerState->steeringInput = 0.0f;
@@ -7905,9 +6640,9 @@ void __fastcall TickLocalPlayerControls(
         }
     }
 
-    if ((zInput::BindMap_Current_ReadCommandInputState(5) & 3) != 0) {
+    if ((zInput::BindMapCurrentReadCommandInputState(5) & 3) != 0) {
         playerState->subVerticalInput = 1.0f;
-    } else if ((zInput::BindMap_Current_ReadCommandInputState(6) & 3) != 0) {
+    } else if ((zInput::BindMapCurrentReadCommandInputState(6) & 3) != 0) {
         playerState->subVerticalInput = -1.0f;
     } else {
         playerState->subVerticalInput = 0.0f;
@@ -7941,7 +6676,7 @@ void __fastcall TickLocalPlayerControls(
         playerState->cursorNormY
     );
 
-    const int altFireState = zInput::BindMap_Current_ReadCommandInputState(12);
+    const int altFireState = zInput::BindMapCurrentReadCommandInputState(12);
     if ((altFireState & 3) != 0) {
         PlayerGunFireController *const activeAltGun = playerState->activeAltGunController;
         if ((activeAltGun->optCatalogEntry->flags & 2u) != 0) {
@@ -7966,7 +6701,7 @@ void __fastcall TickLocalPlayerControls(
     }
 
     playerState->usePresetGunFireDir = 0;
-    if ((zInput::BindMap_Current_ReadCommandInputState(11) & 3) != 0) {
+    if ((zInput::BindMapCurrentReadCommandInputState(11) & 3) != 0) {
         PlayerGunFireController *const activePrimaryGun = playerState->activePrimaryGunController;
         if ((playerState->altGunTransitionState & 0x180) != 0) {
             playerState->usePresetGunFireDir = 1;
@@ -7981,7 +6716,7 @@ void __fastcall TickLocalPlayerControls(
         playerState->primaryGunDispatchRequested = 0;
     }
 
-    if (zInput::BindMap_Current_ReadCommandInputState(13) == 1) {
+    if (zInput::BindMapCurrentReadCommandInputState(13) == 1) {
         playerState->altGunTriggerProcessFlag = 1;
         if (zOpt::GetNetworkEnabled() != 0 && g_HudSensorTracker.raceCheckpointMode != 0) {
             g_HudTimerPanelNetState.tenSecondWarningsEnabled = 1;
@@ -7990,54 +6725,38 @@ void __fastcall TickLocalPlayerControls(
         playerState->altGunTriggerProcessFlag = 0;
     }
 
-    if (zInput::BindMap_Current_ReadCommandInputState(7) == 1) {
+    if (zInput::BindMapCurrentReadCommandInputState(7) == 1) {
         ResetMouseControlStateAndRecenterCursor(saveState);
     }
 
-    if ((zInput::BindMap_Current_ReadCommandInputState(37) & 3) != 0 &&
+    if ((zInput::BindMapCurrentReadCommandInputState(37) & 3) != 0 &&
         masterModalData->masterType == kPlayerMasterTypeHover && playerState->autoTurnSign == 0) {
-        TransitionToMasterTypeTrack(
-            g_LocalPlayerSaveState,
-            0
-        );
+        TransitionToMasterTypeTrack(g_LocalPlayerSaveState, 0);
     }
 
-    if ((zInput::BindMap_Current_ReadCommandInputState(38) & 3) != 0 &&
+    if ((zInput::BindMapCurrentReadCommandInputState(38) & 3) != 0 &&
         masterModalData->masterType == kPlayerMasterTypeHover &&
         playerState->nextModeSwitchAllowedTime != 0.0f) {
-        TransitionToMasterTypeAmphib(
-            g_LocalPlayerSaveState,
-            1,
-            0
-        );
+        TransitionToMasterTypeAmphib(g_LocalPlayerSaveState, 1, 0);
     }
 
-    if ((zInput::BindMap_Current_ReadCommandInputState(39) & 3) != 0 &&
+    if ((zInput::BindMapCurrentReadCommandInputState(39) & 3) != 0 &&
         (masterModalData->masterType == kPlayerMasterTypeTrack ||
             masterModalData->masterType == kPlayerMasterTypeAmphib)) {
-        TransitionToMasterTypeHover(
-            g_LocalPlayerSaveState,
-            0
-        );
+        TransitionToMasterTypeHover(g_LocalPlayerSaveState, 0);
     }
 
-    if ((zInput::BindMap_Current_ReadCommandInputState(40) & 3) != 0 &&
+    if ((zInput::BindMapCurrentReadCommandInputState(40) & 3) != 0 &&
         masterModalData->masterType == kPlayerMasterTypeAmphib) {
-        TransitionToMasterTypeSub(
-            g_LocalPlayerSaveState,
-            0
-        );
+        TransitionToMasterTypeSub(g_LocalPlayerSaveState, 0);
     }
 
-    if (zInput::BindMap_Current_ReadCommandInputState(8) != 1) {
+    if (zInput::BindMapCurrentReadCommandInputState(8) != 1) {
         return;
     }
 
     playerState->autoTurnTargetWorldPos = playerState->storedTargetPos;
-    SetAutoTurnTargetDirFromWorldPoint(
-        saveState,
-        &playerState->autoTurnTargetWorldPos
-    );
+    SetAutoTurnTargetDirFromWorldPoint(saveState, &playerState->autoTurnTargetWorldPos);
 
     zVec3 cameraTarget = {0};
     zClass_Camera::gwCameraGetTarget(
@@ -8080,7 +6799,7 @@ void __fastcall HandleHotkeyCommand(
         if (zOpt::GetNetworkEnabled() == 0) {
             HudUiCallback::QueueCheatCodeState();
         }
-        zInput::Keyboard_ResetTransitionState();
+        zInput::KeyboardResetTransitionState();
         return;
     case 33:
         zOpt::ToggleHudTypeForCurrentHwMode();
@@ -8093,16 +6812,10 @@ void __fastcall HandleHotkeyCommand(
         return;
     case 43:
         if (zOpt::GetThrottleMode() == 0) {
-            HudUi::ShowTopMessageLine(
-                zLoc::GetMessageString(0x24c),
-                5.0f
-            );
+            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x24c), 5.0f);
             zOpt::SetThrottleMode(1);
         } else {
-            HudUi::ShowTopMessageLine(
-                zLoc::GetMessageString(0x24d),
-                5.0f
-            );
+            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x24d), 5.0f);
             zOpt::SetThrottleMode(0);
         }
         return;
@@ -8119,42 +6832,22 @@ void __fastcall HandleHotkeyCommand(
         return;
     case 44:
         if (zOpt::GetNetworkEnabled() != 0) {
-            HudUiMgrObjective::Show(
-                0,
-                g_HudUiMessage_NodeName,
-                zLoc::GetMessageString(0x86),
-                2.0f
-            );
+            HudUiMgrObjective::Show(0, g_HudUiMessage_NodeName, zLoc::GetMessageString(0x86), 2.0f);
         } else if (HudUiMainMenuDialog::CanLoadGame() != 0) {
             RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_QUICKLOAD);
         } else {
-            HudUiMgrObjective::Show(
-                0,
-                g_HudUiMessage_NodeName,
-                zLoc::GetMessageString(0x87),
-                2.0f
-            );
+            HudUiMgrObjective::Show(0, g_HudUiMessage_NodeName, zLoc::GetMessageString(0x87), 2.0f);
         }
         return;
     case 45:
         if (zOpt::GetNetworkEnabled() != 0) {
-            HudUiMgrObjective::Show(
-                0,
-                g_HudUiMessage_NodeName,
-                zLoc::GetMessageString(0x85),
-                2.0f
-            );
+            HudUiMgrObjective::Show(0, g_HudUiMessage_NodeName, zLoc::GetMessageString(0x85), 2.0f);
         } else if (HudUiMainMenuDialog::CanSaveGame() != 0) {
             RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
                 RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED
             );
         } else {
-            HudUiMgrObjective::Show(
-                0,
-                g_HudUiMessage_NodeName,
-                zLoc::GetMessageString(0x82),
-                2.0f
-            );
+            HudUiMgrObjective::Show(0, g_HudUiMessage_NodeName, zLoc::GetMessageString(0x82), 2.0f);
         }
         return;
     default:
@@ -8181,7 +6874,7 @@ void __fastcall ResetMouseControlStateAndRecenterCursor(
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     playerState->thirdPersonYawOffset = 0.0f;
     playerState->cameraElevationOffset = 0.0f;
-    zInput::Mouse_RecenterCursor();
+    zInput::MouseRecenterCursor();
 }
 } // namespace Player
 namespace Player {
@@ -8247,10 +6940,7 @@ void __cdecl TickAllPlayers() {
             if (zOpt::GetNetworkEnabled() != 0 &&
                 saveState != (zUtil_SaveGameState *)g_GameStateOrMapTable &&
                 saveState != g_Player2SaveState) {
-                zClass_Class::gwNodeSetActive(
-                    playerState->rootNode,
-                    0
-                );
+                zClass_Class::gwNodeSetActive(playerState->rootNode, 0);
             }
         } else if (lifecycleState == kPlayerLifecycleRemote) {
             TickRemoteNetworkPlayer(saveState);
@@ -8259,17 +6949,11 @@ void __cdecl TickAllPlayers() {
                 TickLocalPlayerControls(saveState);
             } else if (lifecycleState == kPlayerLifecycleAi) {
                 ++totalMode2Count;
-                if (VariantTag::TagsOverlap(
-                    &playerState->variantTag,
-                    &g_VariantTag_Current
-                ) != 0) {
+                if (VariantTag::TagsOverlap(&playerState->variantTag, &g_VariantTag_Current) != 0) {
                     zUtil_PlayerStateStorage *const localPlayerState =
                         ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
                     const float targetDistanceSq =
-                        zMath::Vec3DistSqXZ(
-                            &playerState->worldPos,
-                            &localPlayerState->worldPos
-                        );
+                        zMath::Vec3DistSqXZ(&playerState->worldPos, &localPlayerState->worldPos);
                     playerState->targetDistanceSq = targetDistanceSq;
 
                     if ((targetDistanceSq <= playerState->aiActivationRadiusSq ||
@@ -8309,10 +6993,7 @@ void __cdecl TickAllPlayers() {
 
             const int postTickLifecycleState = playerState->lifecycleState;
             if (postTickLifecycleState == kPlayerLifecycleLocal || postTickLifecycleState == 0 ||
-                VariantTag::TagsOverlap(
-                    &playerState->variantTag,
-                    &g_VariantTag_Current
-                ) != 0) {
+                VariantTag::TagsOverlap(&playerState->variantTag, &g_VariantTag_Current) != 0) {
                 TickMasterTypeAndForceFeedback(saveState);
 
                 if (playerState->masterType != kPlayerMasterTypeAmphib) {
@@ -8365,11 +7046,7 @@ void __cdecl TickAllPlayers() {
         );
     }
 
-    UpdateDebugOverlayHud(
-        g_CurrentPlayerSaveState,
-        activeMode2Count,
-        totalMode2Count
-    );
+    UpdateDebugOverlayHud(g_CurrentPlayerSaveState, activeMode2Count, totalMode2Count);
 }
 } // namespace Player
 namespace Player {
@@ -8422,8 +7099,8 @@ void __fastcall TickMasterTypeAndForceFeedback(
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         zEffect::SetConditionalRefPos(&playerState->worldPos);
-        if (zInput_DI_IsForceFeedbackEnabled() != 0) {
-            zInput_DI_UpdateSteerAndPitchForceEffects(g_zInputFfEffectSet);
+        if (zInputDIIsForceFeedbackEnabled() != 0) {
+            zInputDIUpdateSteerAndPitchForceEffects(g_zInputFfEffectSet);
         }
     }
 }
@@ -8459,10 +7136,7 @@ void __fastcall UpdateMasterTypeTrack(
         PLAYER_WRAP_SIGNED_TWO_PI(playerState->yawPoseCache);
         zMath::MatStackPushPtr((float *)&playerState->environmentAttachmentMatrix);
         zMath::MatLoadIdentity();
-        gwNode::BuildNodeToAncestorMatrix(
-            playerState->environmentAttachmentNode,
-            3
-        );
+        gwNode::gwNodeBuildNodeToAncestorMatrix(playerState->environmentAttachmentNode, 3);
         zMath::MatStackPopPtr();
         playerState->restartYawRad =
             (float)(atan2(
@@ -8558,7 +7232,7 @@ void __fastcall UpdateMasterTypeTrack(
         }
     }
     if (masterType == 0 || masterType == kPlayerMasterTypeTrack) {
-        UpdateMasterTypeBasicOrTrack_FromModalProbe(saveState);
+        UpdateMasterTypeBasicOrTrackFromModalProbe(saveState);
         if (masterType == 0) {
             playerState->airborneFlag = 0;
         }
@@ -8567,10 +7241,7 @@ void __fastcall UpdateMasterTypeTrack(
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         ProcessPendingContactQueues(saveState);
-        if (CollectPendingCollisionContactsForQuadProbe(
-            saveState,
-            0.0f
-        ) != 0) {
+        if (CollectPendingCollisionContactsForQuadProbe(saveState, 0.0f) != 0) {
             ApplyPendingCollisionProbeVelocity(saveState);
             playerState->collisionProbeResolved = 1;
         } else {
@@ -8646,11 +7317,7 @@ void __fastcall UpdateMasterTypeTrack(
         zClass_Class::gwNodeUpdate(primaryModalState->modalNode);
     }
     float *const rootMatrix = zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode);
-    memcpy(
-        &playerState->previousTransform,
-        rootMatrix,
-        sizeof(playerState->previousTransform)
-    );
+    memcpy(&playerState->previousTransform, rootMatrix, sizeof(playerState->previousTransform));
     playerState->bankBasis = playerState->steerBasisNorm;
     playerState->cachedVehicleRotationAngles = playerState->vehicleRotationAngles;
 
@@ -8667,58 +7334,36 @@ void __fastcall UpdateMasterTypeTrack(
         }
 
         unsigned int displayInstanceValue = 0;
-        zClass_Class::gwNodeGetUserData(
-            primaryModalState->nodeRTracks,
-            &displayInstanceValue
-        );
-        zDi::SetCurrentVariant(
-            (zDiPartial *)displayInstanceValue,
-            variantIndex
-        );
-        zClass_Class::gwNodeGetUserData(
-            primaryModalState->nodeRTracks,
-            &displayInstanceValue
-        );
+        zClass_Class::gwNodeGetUserData(primaryModalState->nodeRTracks, &displayInstanceValue);
+        zDi::SetCurrentVariant((zDiPartial *)displayInstanceValue, variantIndex);
+        zClass_Class::gwNodeGetUserData(primaryModalState->nodeRTracks, &displayInstanceValue);
         zModel::SetDiTextureWorldPerMeter(
             (zDiPartial *)displayInstanceValue,
             1,
             rightTrackSpeed * 1.72000003f,
             0
         );
-        zModel_Instance_UpdateScrollingTexturesIfNeeded(
+        zModelInstanceUpdateScrollingTexturesIfNeeded(
             (zModel_InstancePartial *)displayInstanceValue
         );
 
         const float leftTrackSpeed = -playerState->localVel.z - playerState->angVelYaw * 2.25f;
-        zClass_Class::gwNodeGetUserData(
-            primaryModalState->nodeLTracks,
-            &displayInstanceValue
-        );
+        zClass_Class::gwNodeGetUserData(primaryModalState->nodeLTracks, &displayInstanceValue);
         zModel::SetDiTextureWorldPerMeter(
             (zDiPartial *)displayInstanceValue,
             1,
             leftTrackSpeed * 1.72000003f,
             0
         );
-        zModel_Instance_UpdateScrollingTexturesIfNeeded(
+        zModelInstanceUpdateScrollingTexturesIfNeeded(
             (zModel_InstancePartial *)displayInstanceValue
         );
     }
 
     if (primaryModalState->nodeDustL != 0 && primaryModalState->nodeDustR != 0) {
         if (playerState->airborneFlag != 0) {
-            zClass_Object3D::gwObject3DSetScale(
-                primaryModalState->nodeDustL,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-            zClass_Object3D::gwObject3DSetScale(
-                primaryModalState->nodeDustR,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Object3D::gwObject3DSetScale(primaryModalState->nodeDustL, 0.0f, 0.0f, 0.0f);
+            zClass_Object3D::gwObject3DSetScale(primaryModalState->nodeDustR, 0.0f, 0.0f, 0.0f);
         } else {
             const float dustScale =
                 (float)(fabs(playerState->localVel.z)) / playerState->axisClampRuntime;
@@ -8795,14 +7440,11 @@ void __fastcall UpdateMasterTypeHover(
         StopSlipSfx(saveState);
     }
 
-    UpdateMasterTypeHover_FromModalProbe(saveState);
+    UpdateMasterTypeHoverFromModalProbe(saveState);
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         ProcessPendingContactQueues(saveState);
-        if (CollectPendingCollisionContactsForQuadProbe(
-            saveState,
-            0.0f
-        ) != 0) {
+        if (CollectPendingCollisionContactsForQuadProbe(saveState, 0.0f) != 0) {
             ApplyPendingCollisionProbeVelocity(saveState);
             playerState->collisionProbeResolved = 1;
         } else {
@@ -8843,12 +7485,12 @@ void __fastcall UpdateMasterTypeHover(
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypehover-frommodalprobe
- * @recoil-artifact defines .text recoil:function:0x427440: Player::UpdateMasterTypeHover_FromModalProbe.
+ * @recoil-artifact defines .text recoil:function:0x427440: Player::UpdateMasterTypeHoverFromModalProbe.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement Player::UpdateMasterTypeHover_FromModalProbe from the recovered
+ * Purpose: reimplement Player::UpdateMasterTypeHoverFromModalProbe from the recovered
  * Battlesport gameplay source file.
  */
-void __fastcall UpdateMasterTypeHover_FromModalProbe(
+void __fastcall UpdateMasterTypeHoverFromModalProbe(
     zUtil_SaveGameState *saveState
 ) {
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
@@ -8902,12 +7544,7 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
     supportPoint2.y = probeHeightByPoint[supportPointIndex[2]];
 
     zVec3 probePlaneNormal = {0};
-    zMath_Vec3_TriangleNormal(
-        &supportPoint0,
-        &supportPoint1,
-        &supportPoint2,
-        &probePlaneNormal
-    );
+    zMathVec3TriangleNormal(&supportPoint0, &supportPoint1, &supportPoint2, &probePlaneNormal);
 
     float gravityScale = playerState->gravityAccel;
     if (probePlaneNormal.y < g_Player_MaxSlope) {
@@ -8959,10 +7596,7 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
 
     const float hoverLiftError = minHoverClearance - masterModalData->modeAltTransitionTime;
     if (playerState->modeVariantNode != 0) {
-        zClass_Class::gwNodeSetActive(
-            playerState->modeVariantNode,
-            hoverLiftError <= 2.0f ? 1 : 0
-        );
+        zClass_Class::gwNodeSetActive(playerState->modeVariantNode, hoverLiftError <= 2.0f ? 1 : 0);
     }
 
     if (hoverLiftError >= 2.0f && playerState->localVel.y >= 0.0f) {
@@ -9043,10 +7677,7 @@ void __fastcall UpdateMasterTypeAmphib(
         PLAYER_WRAP_SIGNED_TWO_PI(playerState->yawPoseCache);
         zMath::MatStackPushPtr((float *)&playerState->environmentAttachmentMatrix);
         zMath::MatLoadIdentity();
-        gwNode::BuildNodeToAncestorMatrix(
-            playerState->environmentAttachmentNode,
-            3
-        );
+        gwNode::gwNodeBuildNodeToAncestorMatrix(playerState->environmentAttachmentNode, 3);
         zMath::MatStackPopPtr();
         playerState->restartYawRad =
             (float)(atan2(
@@ -9117,14 +7748,11 @@ void __fastcall UpdateMasterTypeAmphib(
         ProcessPendingContactQueues(saveState);
     }
 
-    UpdateMasterTypeAmphib_FromModalProbe(saveState);
+    UpdateMasterTypeAmphibFromModalProbe(saveState);
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         ProcessPendingContactQueues(saveState);
-        if (CollectPendingCollisionContactsForQuadProbe(
-            saveState,
-            0.0f
-        ) != 0) {
+        if (CollectPendingCollisionContactsForQuadProbe(saveState, 0.0f) != 0) {
             ApplyPendingCollisionProbeVelocity(saveState);
             playerState->collisionProbeResolved = 1;
         } else {
@@ -9151,11 +7779,7 @@ void __fastcall UpdateMasterTypeAmphib(
     zClass_Class::gwNodeUpdate(playerState->rootNode);
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
     float *const rootMatrix = zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode);
-    memcpy(
-        &playerState->previousTransform,
-        rootMatrix,
-        sizeof(playerState->previousTransform)
-    );
+    memcpy(&playerState->previousTransform, rootMatrix, sizeof(playerState->previousTransform));
     playerState->bankBasis = playerState->steerBasisNorm;
     playerState->cachedVehicleRotationAngles = playerState->vehicleRotationAngles;
 
@@ -9186,12 +7810,12 @@ void __fastcall UpdateMasterTypeAmphib(
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
- * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphib_FromModalProbe.
+ * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement Player::UpdateMasterTypeAmphib_FromModalProbe from the recovered
+ * Purpose: reimplement Player::UpdateMasterTypeAmphibFromModalProbe from the recovered
  * Battlesport gameplay source file.
  */
-void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
+void __fastcall UpdateMasterTypeAmphibFromModalProbe(
     zUtil_SaveGameState *saveState
 ) {
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
@@ -9219,10 +7843,7 @@ void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
         playerState->amphibProbeCoverageFailed = 0;
     } else if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         playerState->amphibProbeCoverageFailed = 1;
-        TransitionToMasterTypeTrack(
-            saveState,
-            0
-        );
+        TransitionToMasterTypeTrack(saveState, 0);
     } else {
         playerState->projectileSpawnVel.x = 0.0f;
         playerState->projectileSpawnVel.z = 0.0f;
@@ -9246,11 +7867,7 @@ void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
     playerState->projectileSpawnVel.y = verticalVelocity;
 
     zVec3 amphibUpVector = g_Player_AmphibBasisUpRef;
-    ApplyAmphibSpeedOscillation(
-        saveState,
-        &amphibUpVector,
-        1
-    );
+    ApplyAmphibSpeedOscillation(saveState, &amphibUpVector, 1);
 
     const int steerLerpBits =
         (int)(-(g_FrameDeltaTimeSec * g_Player_AmphibSteerBasisLerpRate) * 12102200.0f) +
@@ -9272,11 +7889,7 @@ void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
     playerState->steerBasisRaw = rawBasis;
     RebuildMotionBasisFromSteerBasis(saveState);
 
-    zMath::Vec3RotateY(
-        -playerState->restartYawRad,
-        &amphibUpVector,
-        &playerState->steerBasisRef
-    );
+    zMath::Vec3RotateY(-playerState->restartYawRad, &amphibUpVector, &playerState->steerBasisRef);
     playerState->vehiclePitchRad = (float)(asin(amphibUpVector.z));
     playerState->vehicleRollRad = (float)(asin(-amphibUpVector.x));
     PLAYER_CLAMP_SIGNED(playerState->vehiclePitchRad, 0.523599982f);
@@ -9337,7 +7950,7 @@ void __fastcall UpdateMasterTypeBasic(
     playerState->worldPos.z += worldVelZ * g_Player_DeltaTime;
     playerState->motionBasis.posZ = playerState->worldPos.z;
 
-    UpdateMasterTypeBasicOrTrack_FromModalProbe(saveState);
+    UpdateMasterTypeBasicOrTrackFromModalProbe(saveState);
 
     zClass_Object3D::gwObject3DSetRotation(
         playerState->rootNode,
@@ -9372,12 +7985,12 @@ void __fastcall UpdateMasterTypeBasic(
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasicortrack-frommodalprobe
- * @recoil-artifact defines .text recoil:function:0x428350: Player::UpdateMasterTypeBasicOrTrack_FromModalProbe.
+ * @recoil-artifact defines .text recoil:function:0x428350: Player::UpdateMasterTypeBasicOrTrackFromModalProbe.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement Player::UpdateMasterTypeBasicOrTrack_FromModalProbe from the recovered
+ * Purpose: reimplement Player::UpdateMasterTypeBasicOrTrackFromModalProbe from the recovered
  * Battlesport gameplay source file.
  */
-void __fastcall UpdateMasterTypeBasicOrTrack_FromModalProbe(
+void __fastcall UpdateMasterTypeBasicOrTrackFromModalProbe(
     zUtil_SaveGameState *saveState
 ) {
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
@@ -9462,10 +8075,7 @@ void __fastcall IntegrateYawAndWrapFromYawVelocity(
 
     if (playerState->autoTurnActive != 0) {
         playerState->restartYawRad =
-            (float)(atan2(
-                -playerState->autoTurnTargetDir.z,
-                -playerState->autoTurnTargetDir.x
-            ));
+            (float)(atan2(-playerState->autoTurnTargetDir.z, -playerState->autoTurnTargetDir.x));
         playerState->steeringInput = 0.0f;
         playerState->angVelYaw = 0.0f;
         playerState->autoTurnActive = 0;
@@ -9558,10 +8168,7 @@ void __fastcall UpdateMasterTypeSub(
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         ProcessPendingContactQueues(saveState);
         if (CollectPendingCollisionContactsForQuadProbe(saveState, 0.0f) != 0 ||
-            CollectPendingCollisionContactsForQuadProbe(
-                saveState,
-                1.25f
-            ) != 0) {
+            CollectPendingCollisionContactsForQuadProbe(saveState, 1.25f) != 0) {
             ApplyPendingCollisionProbeVelocity(saveState);
             playerState->collisionProbeResolved = 1;
         } else {
@@ -9587,11 +8194,7 @@ void __fastcall UpdateMasterTypeSub(
     zClass_Class::gwNodeUpdate(playerState->rootNode);
 
     float *const rootMatrix = zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode);
-    memcpy(
-        &playerState->previousTransform,
-        rootMatrix,
-        sizeof(playerState->previousTransform)
-    );
+    memcpy(&playerState->previousTransform, rootMatrix, sizeof(playerState->previousTransform));
     playerState->bankBasis = playerState->steerBasisNorm;
     playerState->cachedPitchRad = playerState->vehiclePitchRad;
     playerState->cachedYawRad = playerState->restartYawRad;
@@ -9601,14 +8204,8 @@ void __fastcall UpdateMasterTypeSub(
     if (nodeProps != 0) {
         const float cycleSpeed = 6.0f - playerState->localVel.z * 0.5f;
         unsigned int displayInstanceValue = 0;
-        zClass_Class::gwNodeGetUserData(
-            nodeProps,
-            &displayInstanceValue
-        );
-        zDi::SetCurrentVariantCycleTextureSpeed(
-            (zDiPartial *)displayInstanceValue,
-            cycleSpeed
-        );
+        zClass_Class::gwNodeGetUserData(nodeProps, &displayInstanceValue);
+        zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, cycleSpeed);
     }
 }
 } // namespace Player
@@ -9701,24 +8298,14 @@ void __fastcall UpdateSubModeWaterProbeState(
         zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
         if (nodeCaustic1 != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(
-                nodeCaustic1,
-                &displayInstanceValue
-            );
-            zDi::SetCurrentVariantCycleTextureSpeed(
-                (zDiPartial *)displayInstanceValue,
-                12.0f
-            );
+            zClass_Class::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
+            zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, 12.0f);
         }
     }
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable &&
         playerState->worldPos.y + 2.20000005f >= outBestHeight) {
-        TransitionToMasterTypeAmphib(
-            saveState,
-            0,
-            0
-        );
+        TransitionToMasterTypeAmphib(saveState, 0, 0);
     }
 }
 } // namespace Player
@@ -9762,11 +8349,7 @@ void __fastcall UpdateSubVerticalDamping(
         const int dampingFloatBits = dampingBits + 0x3f800000;
 
         float dampingFactor = 0.0f;
-        memcpy(
-            &dampingFactor,
-            &dampingFloatBits,
-            sizeof(dampingFactor)
-        );
+        memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
         playerState->localVel.y *= dampingFactor;
     }
 }
@@ -9798,19 +8381,9 @@ void __fastcall ProbeModalSampleHeights(
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
     PlayerMasterModalData *const masterModalData = primaryModalState->masterModalData;
 
-    memset(
-        outTypeHistogram,
-        0,
-        sizeof(*outTypeHistogram)
-    );
-    zClass_Class::gwNodeSetCellPickable(
-        playerState->rootNode,
-        0
-    );
-    zClass_Class::gwNodeSetCellPickable(
-        globalPlayerState->rootNode,
-        0
-    );
+    memset(outTypeHistogram, 0, sizeof(*outTypeHistogram));
+    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
+    zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
 
     const float probeYAdvance = playerState->projectileSpawnVel.y * g_Player_DeltaTime;
     const int probePointCount = primaryModalState->modalStateCode;
@@ -9832,14 +8405,8 @@ void __fastcall ProbeModalSampleHeights(
         maxRiseWindow = 4.0f;
     }
 
-    zClass_Class::gwNodeSetCellPickable(
-        playerState->rootNode,
-        0
-    );
-    zClass_Class::gwNodeSetCellPickable(
-        globalPlayerState->rootNode,
-        0
-    );
+    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
+    zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
     g_Variant_CurrentTag = playerState->variantTag;
 
     PlayerProbeSampleCandidateBuffer candidateBuffers[PLAYER_MAX_MODAL_PROBE_POINTS] = {0};
@@ -9852,14 +8419,8 @@ void __fastcall ProbeModalSampleHeights(
     );
 
     g_Variant_CurrentTag = g_VariantTag_Current;
-    zClass_Class::gwNodeSetCellPickable(
-        playerState->rootNode,
-        1
-    );
-    zClass_Class::gwNodeSetCellPickable(
-        globalPlayerState->rootNode,
-        1
-    );
+    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 1);
+    zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 1);
 
     *outBestHeight = -300.0f;
     *outAttachmentCandidateCount = 0;
@@ -9900,10 +8461,7 @@ void __fastcall ProbeModalSampleHeights(
                 zClass_NodePartial *const worldChild =
                     zClass_Class::gwNodeGetWorldChild(selectedCandidate->node);
                 if (worldChild != 0) {
-                    zClass_Class::gwNodeSetNodeType(
-                        playerState->rootNode,
-                        worldChild->nodeType
-                    );
+                    zClass_Class::gwNodeSetNodeType(playerState->rootNode, worldChild->nodeType);
                 } else {
                     zClass_Class::gwNodeSetNodeType(
                         playerState->rootNode,
@@ -9911,10 +8469,7 @@ void __fastcall ProbeModalSampleHeights(
                     );
                 }
             } else {
-                zClass_Class::gwNodeSetNodeType(
-                    playerState->rootNode,
-                    0xff
-                );
+                zClass_Class::gwNodeSetNodeType(playerState->rootNode, 0xff);
             }
         }
 
@@ -10091,10 +8646,7 @@ void __fastcall ApplyPitchRollVelocityImpulseFromDirection(
     zMath::MatLoadRotationFrom3x3(
         (const zMat4x3 *)(zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode))
     );
-    zMath::Vec3ArrayTransformDirection(
-        &localDirection,
-        1
-    );
+    zMath::Vec3ArrayTransformDirection(&localDirection, 1);
     zMath::MatStackPopPtr();
 
     playerState->vehiclePitchRad -= localDirection.z * angleScale;
@@ -10128,10 +8680,7 @@ void __fastcall RebuildSteerBasisFromMotionBasis(
 
     playerState->steerBasisNorm = playerState->steerBasisRaw;
     playerState->steerBasisNorm.y = 0.0f;
-    zMath::Vec3NormalizeXZ(
-        &playerState->steerBasisNorm,
-        &playerState->steerBasisNorm
-    );
+    zMath::Vec3NormalizeXZ(&playerState->steerBasisNorm, &playerState->steerBasisNorm);
 }
 } // namespace Player
 namespace Player {
@@ -10182,25 +8731,14 @@ void __fastcall RebuildSteerBasisFromMotionAxes(
             );
             playerState->autoTurnCursorNormX = normalizedCursor.x;
             playerState->autoTurnCursorNormY = normalizedCursor.y;
-            zInput::Mouse_SetNormalizedCursorPos(
-                normalizedCursor.x,
-                normalizedCursor.y
-            );
+            zInput::MouseSetNormalizedCursorPos(normalizedCursor.x, normalizedCursor.y);
 
             float autoTurnCursorLerpStep = g_FrameDeltaTimeSec * -2.0f;
             int lerpBits = (int)(autoTurnCursorLerpStep * 12102200.0f);
             lerpBits += 0x3f800000;
             float lerpFactor = 0.0f;
-            memcpy(
-                &lerpFactor,
-                &lerpBits,
-                sizeof(lerpFactor)
-            );
-            zMath::Vec3Lerp(
-                &playerState->cameraLerpStart,
-                &playerState->cameraLerpEnd,
-                lerpFactor
-            );
+            memcpy(&lerpFactor, &lerpBits, sizeof(lerpFactor));
+            zMath::Vec3Lerp(&playerState->cameraLerpStart, &playerState->cameraLerpEnd, lerpFactor);
         }
         return;
     }
@@ -10208,22 +8746,16 @@ void __fastcall RebuildSteerBasisFromMotionAxes(
     playerState->thirdPersonYawOffset = 0.0f;
     playerState->cameraDirFlat = playerState->cameraDir;
     playerState->cameraDirFlat.y = 0.0f;
-    zMath::Vec3NormalizeXZ(
-        &playerState->cameraDirFlat,
-        &playerState->cameraDirFlat
-    );
+    zMath::Vec3NormalizeXZ(&playerState->cameraDirFlat, &playerState->cameraDirFlat);
 
     if (saveState == (zUtil_SaveGameState *)(g_GameStateOrMapTable) &&
         saveState == g_LocalPlayerSaveState) {
         ApplyCameraState(playerState->previousCameraState);
-        zInput::Mouse_RecenterCursorX();
+        zInput::MouseRecenterCursorX();
     }
 
     playerState->restartYawRad =
-        (float)(atan2(
-            -playerState->autoTurnTargetDir.z,
-            -playerState->autoTurnTargetDir.x
-        ));
+        (float)(atan2(-playerState->autoTurnTargetDir.z, -playerState->autoTurnTargetDir.x));
     playerState->autoTurnActive = 0;
     playerState->steeringInputCopy = 0.0f;
     playerState->angVelYaw = 0.0f;
@@ -10255,11 +8787,7 @@ void __fastcall UpdateAutoTurnAndSteerFromTarget(
         const int dampingFloatBits = dampingBits + 0x3f800000;
 
         float dampingFactor = 0.0f;
-        memcpy(
-            &dampingFactor,
-            &dampingFloatBits,
-            sizeof(dampingFactor)
-        );
+        memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
         playerState->angVelYaw *= dampingFactor;
         return;
     }
@@ -10315,11 +8843,7 @@ void __fastcall UpdateYawVelocityFromSteerInput(
         const int dampingFloatBits = dampingBits + 0x3f800000;
 
         float dampingFactor = 0.0f;
-        memcpy(
-            &dampingFactor,
-            &dampingFloatBits,
-            sizeof(dampingFactor)
-        );
+        memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
         playerState->localVel.z *= dampingFactor;
     } else {
         if (playerState->throttleInputCopy > 0.0f &&
@@ -10330,11 +8854,7 @@ void __fastcall UpdateYawVelocityFromSteerInput(
             const int dampingFloatBits = dampingBits + 0x3f800000;
 
             float dampingFactor = 0.0f;
-            memcpy(
-                &dampingFactor,
-                &dampingFloatBits,
-                sizeof(dampingFactor)
-            );
+            memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
             playerState->localVel.z *= dampingFactor;
         } else if (playerState->throttleInputCopy < 0.0f &&
                    playerState->localVel.z < 0.0f) {
@@ -10344,11 +8864,7 @@ void __fastcall UpdateYawVelocityFromSteerInput(
             const int dampingFloatBits = dampingBits + 0x3f800000;
 
             float dampingFactor = 0.0f;
-            memcpy(
-                &dampingFactor,
-                &dampingFloatBits,
-                sizeof(dampingFactor)
-            );
+            memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
             playerState->localVel.z *= dampingFactor;
         }
 
@@ -10398,11 +8914,7 @@ void __fastcall UpdateYawVelocityFromSteerInput(
         const int dampingFloatBits = dampingBits + 0x3f800000;
 
         float dampingFactor = 0.0f;
-        memcpy(
-            &dampingFactor,
-            &dampingFloatBits,
-            sizeof(dampingFactor)
-        );
+        memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
         playerState->localVel.x *= dampingFactor;
     }
 }
@@ -10528,10 +9040,7 @@ void __fastcall StartSlipSfx(
     zUtil_SaveGameState *saveState
 ) {
     saveState->playerState->slipSfxActive = 1;
-    saveState->StartModalLoopSfxHandle(
-        3,
-        1.0f
-    );
+    saveState->StartModalLoopSfxHandle(3, 1.0f);
 }
 } // namespace Player
 namespace Player {
@@ -10555,13 +9064,13 @@ namespace zInput {
 /**
  * Purpose: Destroys active bind-group records and resets the vector end pointer.
  */
-void __cdecl BindGroupList_Clear() {
+void __cdecl BindGroupListClear() {
     zInput_BindGroupInfoList::iterator groupIt =
         g_zInput_BindGroupInfoList.begin();
     while (groupIt != g_zInput_BindGroupInfoList.end()) {
-        zInput_BindGroupInfo *const group = *groupIt;
+        CZInputBindGroupInfo *const group = *groupIt;
         if (group != 0) {
-            group->~zInput_BindGroupInfo();
+            group->~CZInputBindGroupInfo();
             ::operator delete(group);
         }
         *groupIt = 0;
@@ -10579,18 +9088,18 @@ void __cdecl BindGroupList_Clear() {
  * deletes commandIds storage, clears the vector triplet, then destroys title.
  * Purpose: Releases a bind-group record's CString title and command-id vector.
  */
-zInput_BindGroupInfo::~zInput_BindGroupInfo() {
+CZInputBindGroupInfo::~CZInputBindGroupInfo() {
     title.Empty();
 }
 namespace zInput {
 /**
  * Purpose: Allocates a bind-group record and appends it to the global vector.
  */
-int __fastcall BindGroupList_AddGroup(
+int __fastcall BindGroupListAddGroup(
     const char *title
 ) {
     const int groupIndex = (int)g_zInput_BindGroupInfoList.size();
-    zInput_BindGroupInfo *group = new zInput_BindGroupInfo(title);
+    CZInputBindGroupInfo *group = new CZInputBindGroupInfo(title);
     g_zInput_BindGroupInfoList.push_back(group);
     return groupIndex;
 }
@@ -10603,7 +9112,7 @@ namespace zInput {
  * not a raw offset or copied template scaffold.
  * Purpose: Appends a command id to the selected bind group's command-id vector.
  */
-void __fastcall BindGroupList_AddCommandToGroup(
+void __fastcall BindGroupListAddCommandToGroup(
     int groupIndex,
     int commandId
 ) {
@@ -10617,7 +9126,7 @@ namespace zInput {
  * returns zero when begin is null.
  * Purpose: Returns the number of active bind groups in the global vector.
  */
-int __cdecl BindGroupList_GetCount() {
+int __cdecl BindGroupListGetCount() {
     return (int)g_zInput_BindGroupInfoList.size();
 }
 } // namespace zInput
@@ -10628,10 +9137,10 @@ namespace zInput {
  * buffer pointer from the selected group title.
  * Purpose: Returns the CString buffer for the selected bind-group title.
  */
-char *__fastcall BindGroupList_GetGroupTitle(
+char *__fastcall BindGroupListGetGroupTitle(
     int groupIndex
 ) {
-    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
+    CZInputBindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
     return (char *)(LPCTSTR)(group->title);
 }
 } // namespace zInput
@@ -10642,10 +9151,10 @@ namespace zInput {
  * embedded commandIds vector, and returns zero for a null command begin.
  * Purpose: Returns the number of command ids stored in a bind group.
  */
-int __fastcall BindGroupList_GetGroupCommandCount(
+int __fastcall BindGroupListGetGroupCommandCount(
     int groupIndex
 ) {
-    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
+    CZInputBindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
     return (int)group->commandIds.size();
 }
 } // namespace zInput
@@ -10656,11 +9165,11 @@ namespace zInput {
  * the selected record's embedded commandIds begin pointer.
  * Purpose: Returns one command id from a bind group's command-id vector.
  */
-int __fastcall BindGroupList_GetGroupCommandId(
+int __fastcall BindGroupListGetGroupCommandId(
     int groupIndex,
     int commandIndex
 ) {
-    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
+    CZInputBindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
     return group->commandIds[commandIndex];
 }
 } // namespace zInput
@@ -10671,7 +9180,7 @@ namespace zInput {
  * zLoc::GetMessageString for the command's localized label.
  * Purpose: Resolve a bind-map command id to its localized display label.
  */
-char *__fastcall BindMap_GetCommandLabel(
+char *__fastcall BindMapGetCommandLabel(
     int commandId
 ) {
     return zLoc::GetMessageString(g_zInput_CommandLocIdTable[commandId]);
@@ -10685,7 +9194,7 @@ namespace zInput {
  * the command hint.
  * Purpose: Resolve a bind-map command id to its localized hint text.
  */
-char *__fastcall BindMap_GetCommandHint(
+char *__fastcall BindMapGetCommandHint(
     int commandId
 ) {
     return zLoc::GetMessageString(g_zInput_CommandLocIdTable[commandId] + 1);
@@ -10695,7 +9204,7 @@ namespace zInput {
 /**
  * Purpose: Add one localized default command binding to the active bind map and bind-group list.
  */
-void __fastcall BindMap_AddDefaultBinding(
+void __fastcall BindMapAddDefaultBinding(
     int commandId,
     int messageId,
     int primaryKey,
@@ -10703,7 +9212,7 @@ void __fastcall BindMap_AddDefaultBinding(
     int joystickSlot,
     int mouseSlot
 ) {
-    const int boundCommandId = BindMap_Current_SetBindingRecord(
+    const int boundCommandId = BindMapCurrentSetBindingRecord(
         commandId,
         zLoc::GetMessageString(messageId),
         primaryKey,
@@ -10711,10 +9220,7 @@ void __fastcall BindMap_AddDefaultBinding(
         joystickSlot,
         mouseSlot
     );
-    BindGroupList_AddCommandToGroup(
-        g_zInput_CurrentBindGroupIndex,
-        boundCommandId
-    );
+    BindGroupListAddCommandToGroup(g_zInput_CurrentBindGroupIndex, boundCommandId);
     g_zInput_CommandLocIdTable[commandId] = messageId;
 }
 } // namespace zInput
@@ -10722,75 +9228,61 @@ namespace zInput {
 /**
  * Purpose: Clear the bind-group list and seed the retail default command bindings.
  */
-int __cdecl BindMap_InitDefaultBindings() {
-    BindGroupList_Clear();
-    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x750));
-    BindMap_AddDefaultBinding(0x04, 0x806, 0x0c8, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x01, 0x800, 0x0d0, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x02, 0x802, 0x0cb, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x03, 0x804, 0x0cd, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x2b, 0x8c6, 0x01f, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x25, 0x874, 0x03b, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x26, 0x876, 0x03c, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x27, 0x878, 0x03d, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x28, 0x87a, 0x03e, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x05, 0x80e, 0x01e, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x06, 0x810, 0x02c, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x07, 0x82a, 0x02e, 0, 6, 0);
-    BindMap_AddDefaultBinding(0x08, 0x82c, 0x02b, 0, 5, 0);
-    BindMap_AddDefaultBinding(0x09, 0x872, 0x030, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x0a, 0x8c2, 0x230, 0, 0, 0);
+int __cdecl BindMapInitDefaultBindings() {
+    BindGroupListClear();
+    g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x750));
+    BindMapAddDefaultBinding(0x04, 0x806, 0x0c8, 0, 0, 0);
+    BindMapAddDefaultBinding(0x01, 0x800, 0x0d0, 0, 0, 0);
+    BindMapAddDefaultBinding(0x02, 0x802, 0x0cb, 0, 0, 0);
+    BindMapAddDefaultBinding(0x03, 0x804, 0x0cd, 0, 0, 0);
+    BindMapAddDefaultBinding(0x2b, 0x8c6, 0x01f, 0, 0, 0);
+    BindMapAddDefaultBinding(0x25, 0x874, 0x03b, 0, 0, 0);
+    BindMapAddDefaultBinding(0x26, 0x876, 0x03c, 0, 0, 0);
+    BindMapAddDefaultBinding(0x27, 0x878, 0x03d, 0, 0, 0);
+    BindMapAddDefaultBinding(0x28, 0x87a, 0x03e, 0, 0, 0);
+    BindMapAddDefaultBinding(0x05, 0x80e, 0x01e, 0, 0, 0);
+    BindMapAddDefaultBinding(0x06, 0x810, 0x02c, 0, 0, 0);
+    BindMapAddDefaultBinding(0x07, 0x82a, 0x02e, 0, 6, 0);
+    BindMapAddDefaultBinding(0x08, 0x82c, 0x02b, 0, 5, 0);
+    BindMapAddDefaultBinding(0x09, 0x872, 0x030, 0, 0, 0);
+    BindMapAddDefaultBinding(0x0a, 0x8c2, 0x230, 0, 0, 0);
 
-    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x751));
-    BindMap_AddDefaultBinding(0x0b, 0x88c, 0, 0, 1, 1);
-    BindMap_AddDefaultBinding(0x0c, 0x88e, 0, 0, 2, 2);
-    BindMap_AddDefaultBinding(0x0d, 0x8b8, 0x039, 0, 3, 0);
-    BindMap_AddDefaultBinding(0x0f, 0x812, 0x002, 0x04f, 0, 0);
-    BindMap_AddDefaultBinding(0x10, 0x814, 0x003, 0x050, 0, 0);
-    BindMap_AddDefaultBinding(0x11, 0x816, 0x004, 0x051, 0, 0);
-    BindMap_AddDefaultBinding(0x12, 0x818, 0x005, 0x04b, 0, 0);
-    BindMap_AddDefaultBinding(0x13, 0x81a, 0x006, 0x04c, 0, 0);
-    BindMap_AddDefaultBinding(0x14, 0x81c, 0x007, 0x04d, 0, 0);
-    BindMap_AddDefaultBinding(0x15, 0x81e, 0x008, 0x047, 0, 0);
-    BindMap_AddDefaultBinding(0x16, 0x820, 0x009, 0x048, 0, 0);
-    BindMap_AddDefaultBinding(0x17, 0x822, 0x00a, 0x049, 0, 0);
+    g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x751));
+    BindMapAddDefaultBinding(0x0b, 0x88c, 0, 0, 1, 1);
+    BindMapAddDefaultBinding(0x0c, 0x88e, 0, 0, 2, 2);
+    BindMapAddDefaultBinding(0x0d, 0x8b8, 0x039, 0, 3, 0);
+    BindMapAddDefaultBinding(0x0f, 0x812, 0x002, 0x04f, 0, 0);
+    BindMapAddDefaultBinding(0x10, 0x814, 0x003, 0x050, 0, 0);
+    BindMapAddDefaultBinding(0x11, 0x816, 0x004, 0x051, 0, 0);
+    BindMapAddDefaultBinding(0x12, 0x818, 0x005, 0x04b, 0, 0);
+    BindMapAddDefaultBinding(0x13, 0x81a, 0x006, 0x04c, 0, 0);
+    BindMapAddDefaultBinding(0x14, 0x81c, 0x007, 0x04d, 0, 0);
+    BindMapAddDefaultBinding(0x15, 0x81e, 0x008, 0x047, 0, 0);
+    BindMapAddDefaultBinding(0x16, 0x820, 0x009, 0x048, 0, 0);
+    BindMapAddDefaultBinding(0x17, 0x822, 0x00a, 0x049, 0, 0);
 
-    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x752));
-    BindMap_AddDefaultBinding(0x1e, 0x84e, 0x02f, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x20, 0x888, 0x03f, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x21, 0x8a6, 0x040, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x22, 0x8a8, 0x041, 0, 0, 0);
+    g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x752));
+    BindMapAddDefaultBinding(0x1e, 0x84e, 0x02f, 0, 0, 0);
+    BindMapAddDefaultBinding(0x20, 0x888, 0x03f, 0, 0, 0);
+    BindMapAddDefaultBinding(0x21, 0x8a6, 0x040, 0, 0, 0);
+    BindMapAddDefaultBinding(0x22, 0x8a8, 0x041, 0, 0, 0);
 
-    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x753));
-    BindMap_AddDefaultBinding(0x19, 0x8a4, 0x013, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x18, 0x826, 0x018, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x1a, 0x8c4, 0x011, 0, 0, 0);
+    g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x753));
+    BindMapAddDefaultBinding(0x19, 0x8a4, 0x013, 0, 0, 0);
+    BindMapAddDefaultBinding(0x18, 0x826, 0x018, 0, 0, 0);
+    BindMapAddDefaultBinding(0x1a, 0x8c4, 0x011, 0, 0, 0);
 
-    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x754));
-    BindMap_AddDefaultBinding(0x2d, 0x8b6, 0x042, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x2c, 0x8b4, 0x043, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x2a, 0x8bc, 0x014, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x1b, 0x864, 0x032, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x1c, 0x866, 0x034, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x1d, 0x868, 0x033, 0, 0, 0);
-    BindMap_AddDefaultBinding(0x23, 0x88a, 0x22d, 0, 0, 0);
+    g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x754));
+    BindMapAddDefaultBinding(0x2d, 0x8b6, 0x042, 0, 0, 0);
+    BindMapAddDefaultBinding(0x2c, 0x8b4, 0x043, 0, 0, 0);
+    BindMapAddDefaultBinding(0x2a, 0x8bc, 0x014, 0, 0, 0);
+    BindMapAddDefaultBinding(0x1b, 0x864, 0x032, 0, 0, 0);
+    BindMapAddDefaultBinding(0x1c, 0x866, 0x034, 0, 0, 0);
+    BindMapAddDefaultBinding(0x1d, 0x868, 0x033, 0, 0, 0);
+    BindMapAddDefaultBinding(0x23, 0x88a, 0x22d, 0, 0, 0);
 
-    BindMap_Current_SetBindingRecord(
-        0x24,
-        zLoc::GetMessageString(0x83c),
-        0x418,
-        0,
-        0,
-        0
-    );
-    BindMap_Current_SetBindingRecord(
-        0x1f,
-        zLoc::GetMessageString(0x850),
-        0x22,
-        0,
-        0,
-        0
-    );
+    BindMapCurrentSetBindingRecord(0x24, zLoc::GetMessageString(0x83c), 0x418, 0, 0, 0);
+    BindMapCurrentSetBindingRecord(0x1f, zLoc::GetMessageString(0x850), 0x22, 0, 0, 0);
     return 1;
 }
 } // namespace zInput
@@ -10900,10 +9392,7 @@ void __fastcall UpdateDebugOverlayHud(
         break;
     }
     char masterTypeName[12];
-    strcpy(
-        masterTypeName,
-        masterTypeNameSource
-    );
+    strcpy(masterTypeName, masterTypeNameSource);
 
     char debugLine[256];
     const char *const rootName = playerState->rootNode->name;
@@ -10916,42 +9405,19 @@ void __fastcall UpdateDebugOverlayHud(
             playerState->aiCurrentPathNode->nodeIndex
         );
     } else if (playerState->lifecycleState == kPlayerLifecycleInactive) {
-        sprintf(
-            debugLine,
-            g_Player_HudReadoutFmt_Dead,
-            rootName
-        );
+        sprintf(debugLine, g_Player_HudReadoutFmt_Dead, rootName);
     } else if (playerState->lifecycleState == kPlayerLifecycleLocal ||
                playerState->lifecycleState == 0) {
         if (playerState->airborneFlag != 0) {
-            sprintf(
-                debugLine,
-                g_Player_HudReadoutFmt_DynamicsA,
-                rootName,
-                masterTypeName
-            );
+            sprintf(debugLine, g_Player_HudReadoutFmt_DynamicsA, rootName, masterTypeName);
         } else if (playerState->slipSfxActive != 0) {
-            sprintf(
-                debugLine,
-                g_Player_HudReadoutFmt_DynamicsS,
-                rootName,
-                masterTypeName
-            );
+            sprintf(debugLine, g_Player_HudReadoutFmt_DynamicsS, rootName, masterTypeName);
         } else {
-            sprintf(
-                debugLine,
-                g_Player_HudReadoutFmt_Dynamics,
-                rootName,
-                masterTypeName
-            );
+            sprintf(debugLine, g_Player_HudReadoutFmt_Dynamics, rootName, masterTypeName);
         }
     }
 
-    HudUiAuxOverlay::UpdateTextLine(
-        2,
-        1,
-        debugLine
-    );
+    HudUiAuxOverlay::UpdateTextLine(2, 1, debugLine);
 
     sprintf(
         debugLine,
@@ -10961,11 +9427,7 @@ void __fastcall UpdateDebugOverlayHud(
         (int)(playerState->worldPos.z),
         (int)((double)(playerState->restartYawRad) * kPlayerRadiansToDegrees)
     );
-    HudUiAuxOverlay::UpdateTextLine(
-        2,
-        2,
-        debugLine
-    );
+    HudUiAuxOverlay::UpdateTextLine(2, 2, debugLine);
 }
 } // namespace Player
 namespace Player {
@@ -11048,14 +9510,8 @@ int __fastcall TransitionToMasterTypeTrack(
         zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
         if (nodeCaustic1 != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(
-                nodeCaustic1,
-                &displayInstanceValue
-            );
-            zDi::SetCurrentVariantCycleTextureSpeed(
-                (zDiPartial *)displayInstanceValue,
-                0.0f
-            );
+            zClass_Class::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
+            zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, 0.0f);
         }
 
         playerState->damageVisualFlag = 1;
@@ -11065,20 +9521,11 @@ int __fastcall TransitionToMasterTypeTrack(
     saveState->SelectModalStateByMasterType(kPlayerMasterTypeTrack);
     playerState->masterTypeTransitionCooldownUntilTime =
         g_Time_AccumulatedTimeSec + kPlayerMasterTypeTrackCooldownSec;
-    zClass_Class::gwNodeSetActive(
-        playerState->modeVariantNode,
-        1
-    );
+    zClass_Class::gwNodeSetActive(playerState->modeVariantNode, 1);
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-        HudUi::ShowTopMessageLine(
-            zLoc::GetMessageString(0x238),
-            5.0f
-        );
-        HudUiMgr::SetModeCounterState(
-            0,
-            2
-        );
+        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x238), 5.0f);
+        HudUiMgr::SetModeCounterState(0, 2);
     }
 
     zEffectAnimEntry *const toAmphibLightHandle =
@@ -11092,7 +9539,7 @@ int __fastcall TransitionToMasterTypeTrack(
         playerState->masterTypeTransitionToTrackNodeAction,
         playerState->rootNode
     );
-    playerState->masterTypeTransitionToTrackLightHandle = zEffectAnim::SetVelocity_Thunk(
+    playerState->masterTypeTransitionToTrackLightHandle = zEffectAnim::SetVelocityThunk(
         playerState->masterTypeTransitionToTrackNodeAction,
         playerState->rootNode,
         0.0f,
@@ -11142,17 +9589,9 @@ int __fastcall TransitionToMasterTypeAmphib(
         playerState->airborneFlag = 0;
         zClass_NodePartial *const modalNode = primaryModalState->modalNode;
         if (modalNode != 0) {
-            zClass_Object3D::gwObject3DSetRotation(
-                modalNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Object3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
         }
-        zClass_Class::gwNodeSetActive(
-            playerState->modeVariantNode,
-            1
-        );
+        zClass_Class::gwNodeSetActive(playerState->modeVariantNode, 1);
         PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
             masterModalData->fxList_fromTrackToAmphib,
             playerState->rootNode,
@@ -11171,14 +9610,8 @@ int __fastcall TransitionToMasterTypeAmphib(
         zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
         if (nodeCaustic1 != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(
-                nodeCaustic1,
-                &displayInstanceValue
-            );
-            zDi::SetCurrentVariantCycleTextureSpeed(
-                (zDiPartial *)displayInstanceValue,
-                0.0f
-            );
+            zClass_Class::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
+            zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, 0.0f);
         }
 
         StopBftBubbleFxHandle(saveState);
@@ -11196,14 +9629,8 @@ int __fastcall TransitionToMasterTypeAmphib(
         g_Time_AccumulatedTimeSec + kPlayerMasterTypeTrackCooldownSec;
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-        HudUi::ShowTopMessageLine(
-            zLoc::GetMessageString(0x239),
-            5.0f
-        );
-        HudUiMgr::SetModeCounterState(
-            1,
-            2
-        );
+        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x239), 5.0f);
+        HudUiMgr::SetModeCounterState(1, 2);
     }
 
     playerState->vehicleRollRad = 0.0f;
@@ -11220,7 +9647,7 @@ int __fastcall TransitionToMasterTypeAmphib(
         playerState->masterTypeTransitionToAmphibNodeAction,
         playerState->rootNode
     );
-    playerState->masterTypeTransitionToAmphibLightHandle = zEffectAnim::SetVelocity_Thunk(
+    playerState->masterTypeTransitionToAmphibLightHandle = zEffectAnim::SetVelocityThunk(
         playerState->masterTypeTransitionToAmphibNodeAction,
         playerState->rootNode,
         0.0f,
@@ -11269,17 +9696,9 @@ int __fastcall TransitionToMasterTypeHover(
         playerState->airborneFlag = 0;
         zClass_NodePartial *const modalNode = primaryModalState->modalNode;
         if (modalNode != 0) {
-            zClass_Object3D::gwObject3DSetRotation(
-                modalNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Object3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
         }
-        zClass_Class::gwNodeSetActive(
-            playerState->modeVariantNode,
-            1
-        );
+        zClass_Class::gwNodeSetActive(playerState->modeVariantNode, 1);
         PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
             masterModalData->fxList_fromTrackToHover,
             playerState->rootNode,
@@ -11298,14 +9717,8 @@ int __fastcall TransitionToMasterTypeHover(
         zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
         if (nodeCaustic1 != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(
-                nodeCaustic1,
-                &displayInstanceValue
-            );
-            zDi::SetCurrentVariantCycleTextureSpeed(
-                (zDiPartial *)displayInstanceValue,
-                0.0f
-            );
+            zClass_Class::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
+            zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, 0.0f);
         }
 
         playerState->damageVisualFlag = 1;
@@ -11317,14 +9730,8 @@ int __fastcall TransitionToMasterTypeHover(
         g_Time_AccumulatedTimeSec + kPlayerMasterTypeTrackCooldownSec;
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-        HudUi::ShowTopMessageLine(
-            zLoc::GetMessageString(0x23a),
-            5.0f
-        );
-        HudUiMgr::SetModeCounterState(
-            2,
-            2
-        );
+        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x23a), 5.0f);
+        HudUiMgr::SetModeCounterState(2, 2);
     }
 
     return 1;
@@ -11372,12 +9779,7 @@ int __fastcall TransitionToMasterTypeSub(
         playerState->airborneFlag = 0;
         zClass_NodePartial *const modalNode = primaryModalState->modalNode;
         if (modalNode != 0) {
-            zClass_Object3D::gwObject3DSetRotation(
-                modalNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
+            zClass_Object3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
         }
 
         playerState->localVel.y = -3.0f;
@@ -11416,18 +9818,9 @@ int __fastcall TransitionToMasterTypeSub(
         g_Time_AccumulatedTimeSec + kPlayerMasterTypeTrackCooldownSec;
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-        HudUi::ShowTopMessageLine(
-            zLoc::GetMessageString(0x23b),
-            5.0f
-        );
-        HudUiMgr::SetModeCounterState(
-            3,
-            2
-        );
-        saveState->EnsureMasterTypeLoopSfxHandle(
-            kPlayerMasterTypeTrack,
-            0.5f
-        );
+        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x23b), 5.0f);
+        HudUiMgr::SetModeCounterState(3, 2);
+        saveState->EnsureMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack, 0.5f);
         CacheDisableCopterSndNodesAndStopSample();
     }
 
@@ -11449,7 +9842,7 @@ int __fastcall TransitionToMasterTypeSub(
         playerState->masterTypeTransitionToSubNodeAction,
         playerState->rootNode
     );
-    playerState->masterTypeTransitionToSubLightHandle = zEffectAnim::SetVelocity_Thunk(
+    playerState->masterTypeTransitionToSubLightHandle = zEffectAnim::SetVelocityThunk(
         playerState->masterTypeTransitionToSubNodeAction,
         playerState->rootNode,
         0.0f,
@@ -11540,31 +9933,15 @@ int __fastcall ApplyMasterTypeTransition(
 
     switch (masterType) {
     case kPlayerMasterTypeTrack:
-        return TransitionToMasterTypeTrack(
-            saveState,
-            flags
-        );
+        return TransitionToMasterTypeTrack(saveState, flags);
     case kPlayerMasterTypeAmphib:
-        return TransitionToMasterTypeAmphib(
-            saveState,
-            0,
-            flags
-        );
+        return TransitionToMasterTypeAmphib(saveState, 0, flags);
     case kPlayerMasterTypeHover:
-        return TransitionToMasterTypeHover(
-            saveState,
-            flags
-        );
+        return TransitionToMasterTypeHover(saveState, flags);
     case kPlayerMasterTypeSub:
-        return TransitionToMasterTypeSub(
-            saveState,
-            flags
-        );
+        return TransitionToMasterTypeSub(saveState, flags);
     case kPlayerMasterTypeFly:
-        return TransitionToMasterTypeFly(
-            saveState,
-            flags
-        );
+        return TransitionToMasterTypeFly(saveState, flags);
     default:
         return masterType - 1;
     }
@@ -11582,17 +9959,14 @@ void __cdecl ReactivateCopterSndNodesIfHealthy() {
     if (healthyNode1 != 0 && (healthyNode1->flags & 0x04) != 0) {
         zClass_NodePartial *const sndNode1 = g_Player_CopterSndNode1;
         if (sndNode1 != 0) {
-            zClass_Class::gwNodeSetActive(
-                sndNode1,
-                1
-            );
+            zClass_Class::gwNodeSetActive(sndNode1, 1);
 
             zClass_SoundDataPartial *const soundData =
                 (zClass_SoundDataPartial *)(sndNode1->classData);
             if (soundData != 0) {
                 zSndPlayHandle *const playHandle = soundData->playHandle;
                 if (playHandle != 0) {
-                    zSndPlayHandle::PlayWithDelta_BackendDispatch(
+                    zSndPlayHandle::PlayWithDeltaBackendDispatch(
                         g_Player_CopterSndSample,
                         playHandle,
                         0,
@@ -11607,17 +9981,14 @@ void __cdecl ReactivateCopterSndNodesIfHealthy() {
     if (healthyNode2 != 0 && (healthyNode2->flags & 0x04) != 0) {
         zClass_NodePartial *const sndNode2 = g_Player_CopterSndNode2;
         if (sndNode2 != 0) {
-            zClass_Class::gwNodeSetActive(
-                sndNode2,
-                1
-            );
+            zClass_Class::gwNodeSetActive(sndNode2, 1);
 
             zClass_SoundDataPartial *const soundData =
                 (zClass_SoundDataPartial *)(sndNode2->classData);
             if (soundData != 0) {
                 zSndPlayHandle *const playHandle = soundData->playHandle;
                 if (playHandle != 0) {
-                    zSndPlayHandle::PlayWithDelta_BackendDispatch(
+                    zSndPlayHandle::PlayWithDeltaBackendDispatch(
                         g_Player_CopterSndSample,
                         playHandle,
                         0,
@@ -11647,10 +10018,7 @@ void __cdecl CacheDisableCopterSndNodesAndStopSample() {
                 copterRoot,
                 g_Player_HealthySubNodeName
             );
-            g_Player_CopterSndNode1 = zClass_Class::FindSubNodeByName(
-                copterRoot,
-                "snd_chopper"
-            );
+            g_Player_CopterSndNode1 = zClass_Class::FindSubNodeByName(copterRoot, "snd_chopper");
         }
     }
 
@@ -11664,24 +10032,15 @@ void __cdecl CacheDisableCopterSndNodesAndStopSample() {
                 copterRoot,
                 g_Player_HealthySubNodeName
             );
-            g_Player_CopterSndNode2 = zClass_Class::FindSubNodeByName(
-                copterRoot,
-                "snd_chopper"
-            );
+            g_Player_CopterSndNode2 = zClass_Class::FindSubNodeByName(copterRoot, "snd_chopper");
         }
     }
 
     if (g_Player_CopterSndNode1 != 0) {
-        zClass_Class::gwNodeSetActive(
-            g_Player_CopterSndNode1,
-            0
-        );
+        zClass_Class::gwNodeSetActive(g_Player_CopterSndNode1, 0);
     }
     if (g_Player_CopterSndNode2 != 0) {
-        zClass_Class::gwNodeSetActive(
-            g_Player_CopterSndNode2,
-            0
-        );
+        zClass_Class::gwNodeSetActive(g_Player_CopterSndNode2, 0);
     }
 
     g_Player_CopterSndSample->StopActiveVoicesIfPlaying();
@@ -11732,10 +10091,7 @@ int __fastcall FindNearestThirdPersonCameraProbePoint(
         for (int hitIndex = 0; hitIndex < batch->candidateCount; ++hitIndex) {
             zClassDiPickCandidateEntry *const candidate = &batch->entries[hitIndex];
             if (candidate->node != 0) {
-                const float distSq = zMath::Vec3DeltaLengthSq(
-                    &candidate->hitPos,
-                    referencePos
-                );
+                const float distSq = zMath::Vec3DeltaLengthSq(&candidate->hitPos, referencePos);
                 if (distSq < bestDistSq) {
                     bestDistSq = distSq;
                     bestEntryIndex = hitIndex;
@@ -11901,10 +10257,7 @@ void __fastcall SetAutoTurnTargetDirFromWorldPoint(
     targetDir.y = 0.0f;
 
     zVec3 normalizedTargetDir = {0};
-    zMath::Vec3NormalizeXZ(
-        &targetDir,
-        &normalizedTargetDir
-    );
+    zMath::Vec3NormalizeXZ(&targetDir, &normalizedTargetDir);
     playerState->autoTurnTargetDir = normalizedTargetDir;
     playerState->autoTurnActive = 1;
 }
@@ -11938,12 +10291,7 @@ void __fastcall AsyncCommandCallback(
     case 2:
         UnbindCurrentSaveStateIfSinglePlayer();
         HudUiMgr::DisableHud();
-        HudUiMgr::UpdateTargetReticleFromCursor(
-            0,
-            0,
-            0.0f,
-            0.0f
-        );
+        HudUiMgr::UpdateTargetReticleFromCursor(0, 0, 0.0f, 0.0f);
         HudUiMgr::DisableTopAndChatStacks();
         return;
 
@@ -11963,12 +10311,7 @@ void __fastcall AsyncCommandCallback(
         if (zOpt::GetNetworkEnabled() == 0) {
             g_Player_LocalControlEnabled = 0;
             HudUiMgr::DisableHud();
-            HudUiMgr::UpdateTargetReticleFromCursor(
-                0,
-                0,
-                0.0f,
-                0.0f
-            );
+            HudUiMgr::UpdateTargetReticleFromCursor(0, 0, 0.0f, 0.0f);
             HudUiTimerPanel::SetRunning(0);
             HudUiMgr::TriggerCurrentLayoutOnActivated();
         }
@@ -11982,12 +10325,7 @@ void __fastcall AsyncCommandCallback(
                 HudUiMgr::ApplyHudModeSwitch(zOpt::GetHudTypeForCurrentHwMode());
                 HudUiMgr::EnableHud();
             }
-            HudUiMgr::UpdateTargetReticleFromCursor(
-                1,
-                0,
-                0.5f,
-                0.5f
-            );
+            HudUiMgr::UpdateTargetReticleFromCursor(1, 0, 0.5f, 0.5f);
             HudUi::ShowTopMessageLine(
                 localSaveState->playerState->activeAltGunController->optCatalogEntry->description,
                 5.0f
@@ -12036,12 +10374,7 @@ void __fastcall AsyncCommandCallback(
         return;
 
     case 27:
-        EnterDestroyedState(
-            localSaveState,
-            0,
-            0,
-            10.0f
-        );
+        EnterDestroyedState(localSaveState, 0, 0, 10.0f);
         return;
 
     case 99:
@@ -12053,27 +10386,15 @@ void __fastcall AsyncCommandCallback(
         return;
 
     case 912:
-        Pickup::SpawnAtCarrierNodeByName(
-            g_PickupOptKey_Vwbus,
-            32,
-            1
-        );
+        Pickup::SpawnAtCarrierNodeByName(g_PickupOptKey_Vwbus, 32, 1);
         return;
 
     case 913:
-        Pickup::SpawnAtCarrierNodeByName(
-            g_PickupOptKey_Crbox,
-            36,
-            1
-        );
+        Pickup::SpawnAtCarrierNodeByName(g_PickupOptKey_Crbox, 36, 1);
         return;
 
     case 914:
-        Pickup::SpawnAtCarrierNodeByName(
-            g_PickupOptKey_Drop,
-            30,
-            1
-        );
+        Pickup::SpawnAtCarrierNodeByName(g_PickupOptKey_Drop, 30, 1);
         return;
 
     default:
@@ -12137,18 +10458,9 @@ void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
     float pitchRad;
     float yawRad;
     float rollRad;
-    zClass_Object3D::gwObject3DGetRotation(
-        playerState->rootNode,
-        &pitchRad,
-        &yawRad,
-        &rollRad
-    );
+    zClass_Object3D::gwObject3DGetRotation(playerState->rootNode, &pitchRad, &yawRad, &rollRad);
 
-    SetWorldPoseAndRestartAnchor(
-        saveState,
-        &worldPos,
-        yawRad
-    );
+    SetWorldPoseAndRestartAnchor(saveState, &worldPos, yawRad);
 }
 } // namespace Player
 namespace Player {
@@ -12217,11 +10529,7 @@ void __fastcall UpdatePostMoveEnvironment(
     g_PlayerEnvProbeSampleCount = probeSampleCount;
 
     PlayerEnvProbeResult probeResult;
-    memset(
-        &probeResult,
-        0,
-        sizeof(probeResult)
-    );
+    memset(&probeResult, 0, sizeof(probeResult));
     probeResult.minProbeDepth = 4.0f;
     probeResult.preferAttachmentSlot1 = playerState->amphibUnlocked == 0 ? 1 : 0;
 
@@ -12248,33 +10556,18 @@ void __fastcall UpdatePostMoveEnvironment(
     playerState->worldPos.y = advancedWorldPosY;
     playerState->motionBasis.posY = advancedWorldPosY;
 
-    BuildEnvironmentProbeResult(
-        saveState,
-        &probeResult
-    );
-    if (ApplyEnvironmentProbeResult(
-        saveState,
-        &probeResult
-    ) == 0) {
+    BuildEnvironmentProbeResult(saveState, &probeResult);
+    if (ApplyEnvironmentProbeResult(saveState, &probeResult) == 0) {
         return;
     }
 
-    ProcessEnvProbeResults(
-        saveState,
-        &probeResult
-    );
+    ProcessEnvProbeResults(saveState, &probeResult);
     RebuildOrientationFromNormal(saveState);
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable &&
         playerState->airborneFlag == 0) {
-        FindThirdProbeAndComputeNormal(
-            saveState,
-            &probeResult
-        );
+        FindThirdProbeAndComputeNormal(saveState, &probeResult);
     }
-    UpdateVerticalVelocityAndTransform(
-        saveState,
-        &probeResult
-    );
+    UpdateVerticalVelocityAndTransform(saveState, &probeResult);
 }
 } // namespace Player
 namespace Player {
@@ -12335,19 +10628,13 @@ void __fastcall ProcessEnvProbeResults(
     }
 
     if (aboveGroundSampleCount == 1) {
-        ComputeSurfaceFrom1Probe(
-            saveState,
-            probeResult
-        );
+        ComputeSurfaceFrom1Probe(saveState, probeResult);
         playerState->airborneFlag = 0;
         return;
     }
 
     if (aboveGroundSampleCount == 2) {
-        ComputeSurfaceFrom2Probes(
-            saveState,
-            probeResult
-        );
+        ComputeSurfaceFrom2Probes(saveState, probeResult);
         playerState->airborneFlag = 0;
         return;
     }
@@ -12359,24 +10646,15 @@ void __fastcall ProcessEnvProbeResults(
         );
 
     if (sampleMaskOverlap != 0) {
-        ComputeSurfaceFrom2Probes(
-            saveState,
-            probeResult
-        );
+        ComputeSurfaceFrom2Probes(saveState, probeResult);
     }
 
     if (aboveGroundSampleCount != 3) {
-        SelectBestProbesByDotProduct(
-            &playerState->steerBasisRef,
-            probeResult
-        );
+        SelectBestProbesByDotProduct(&playerState->steerBasisRef, probeResult);
     }
 
     if (sampleMaskOverlap == 0) {
-        ComputeSurfaceFrom3Probes(
-            saveState,
-            probeResult
-        );
+        ComputeSurfaceFrom3Probes(saveState, probeResult);
     }
     playerState->airborneFlag = 0;
 }
@@ -12408,10 +10686,7 @@ void __fastcall UpdateVerticalVelocityAndTransform(
             (1.0f - previousVerticalVelocityBlendWeight) * measuredFrameDeltaY;
     }
 
-    AccumulateSlopeForces(
-        saveState,
-        probeResult
-    );
+    AccumulateSlopeForces(saveState, probeResult);
     if (playerState->projectileSpawnVel.y > 55.0f) {
         playerState->projectileSpawnVel.y = 0.0f;
     }
@@ -12487,10 +10762,7 @@ void __fastcall ComputeSurfaceFrom1Probe(
     const float supportPlaneDot = playerState->steerBasisRef.x * samplePoint.x +
                                   playerState->steerBasisRef.y * samplePoint.y +
                                   playerState->steerBasisRef.z * samplePoint.z;
-    playerState->worldPos.y = SolveHeightOnSurface(
-        saveState,
-        supportPlaneDot
-    );
+    playerState->worldPos.y = SolveHeightOnSurface(saveState, supportPlaneDot);
 
     const zVec3 sampleOffsetFromPlayer = {
         samplePoint.x - playerState->worldPos.x,
@@ -12505,11 +10777,7 @@ void __fastcall ComputeSurfaceFrom1Probe(
         sampleOffsetFromPlayer.x * playerState->steerBasisRef.y -
             sampleOffsetFromPlayer.y * playerState->steerBasisRef.x,
     };
-    ApplyTerrainTilt(
-        saveState,
-        &tiltVector,
-        1.0f
-    );
+    ApplyTerrainTilt(saveState, &tiltVector, 1.0f);
 }
 } // namespace Player
 namespace Player {
@@ -12535,10 +10803,7 @@ void __fastcall ComputeSurfaceFrom2Probes(
     const float pointASupportDot = playerState->steerBasisRef.x * pointA.x +
                                    playerState->steerBasisRef.y * pointA.y +
                                    playerState->steerBasisRef.z * pointA.z;
-    pointB.y = SolveHeightOnSurface(
-        saveState,
-        pointASupportDot
-    );
+    pointB.y = SolveHeightOnSurface(saveState, pointASupportDot);
 
     zVec3 supportEdge = {
         pointB.x - pointA.x,
@@ -12557,20 +10822,12 @@ void __fastcall ComputeSurfaceFrom2Probes(
     };
 
     pointB.y = probeResult->candidateScoreBySample[sampleIndexB];
-    ComputeTriangleNormal(
-        saveState,
-        &pointA,
-        &pointB,
-        &pointC
-    );
+    ComputeTriangleNormal(saveState, &pointA, &pointB, &pointC);
 
     const float surfaceDot = playerState->steerBasisRef.x * pointA.x +
                              playerState->steerBasisRef.y * pointA.y +
                              playerState->steerBasisRef.z * pointA.z;
-    playerState->worldPos.y = SolveHeightOnSurface(
-        saveState,
-        surfaceDot
-    );
+    playerState->worldPos.y = SolveHeightOnSurface(saveState, surfaceDot);
 
     zMath::Vec3Normalize(&supportEdge);
     const zVec3 pointOffsetFromPlayer = {
@@ -12586,11 +10843,7 @@ void __fastcall ComputeSurfaceFrom2Probes(
     const float tiltScale = pointOffsetFromPlayer.x * tiltPerp.x +
                             pointOffsetFromPlayer.y * tiltPerp.y +
                             pointOffsetFromPlayer.z * tiltPerp.z;
-    ApplyTerrainTilt(
-        saveState,
-        &supportEdge,
-        tiltScale
-    );
+    ApplyTerrainTilt(saveState, &supportEdge, tiltScale);
 }
 } // namespace Player
 namespace Player {
@@ -12613,11 +10866,7 @@ void __fastcall ApplyTerrainTilt(
         tiltVector->y * tiltFactor,
         tiltVector->z * tiltFactor,
     };
-    zMath::Vec3RotateY(
-        -playerState->restartYawRad,
-        &rotatedTilt,
-        &rotatedTilt
-    );
+    zMath::Vec3RotateY(-playerState->restartYawRad, &rotatedTilt, &rotatedTilt);
 
     if (playerState->airborneFlag != 0) {
         ResetTerrainContactImpulsesAndPlayImpactSfx(saveState);
@@ -12674,19 +10923,11 @@ void __fastcall ComputeSurfaceFrom3Probes(
     pointB.y = probeResult->candidateScoreBySample[sampleIndexB];
     pointC.y = probeResult->candidateScoreBySample[sampleIndexC];
 
-    ComputeTriangleNormal(
-        saveState,
-        &pointA,
-        &pointB,
-        &pointC
-    );
+    ComputeTriangleNormal(saveState, &pointA, &pointB, &pointC);
     const float surfaceDot = playerState->steerBasisRef.x * pointA.x +
                              playerState->steerBasisRef.y * pointA.y +
                              playerState->steerBasisRef.z * pointA.z;
-    playerState->worldPos.y = SolveHeightOnSurface(
-        saveState,
-        surfaceDot
-    );
+    playerState->worldPos.y = SolveHeightOnSurface(saveState, surfaceDot);
     playerState->angVelPitch = 0.0f;
     playerState->angVelRoll = 0.0f;
 }
@@ -12716,10 +10957,7 @@ void __fastcall ResetTerrainContactImpulsesAndPlayImpactSfx(
     } else if (sfxVolume < 0.0f) {
         sfxVolume = 0.0f;
     }
-    saveState->StartModalLoopSfxHandle(
-        5,
-        sfxVolume
-    );
+    saveState->StartModalLoopSfxHandle(5, sfxVolume);
 }
 } // namespace Player
 namespace Player {
@@ -12813,11 +11051,7 @@ void __fastcall SelectBestProbesByDotProduct(
         }
     }
 
-    if (CheckProbeSampleMaskOverlap(
-        sampleIndexA,
-        sampleIndexB,
-        sampleIndexC
-    ) == 0) {
+    if (CheckProbeSampleMaskOverlap(sampleIndexA, sampleIndexB, sampleIndexC) == 0) {
         g_PlayerEnvProbe_AboveGroundFlags[sampleIndexD] = 0;
     } else {
         g_PlayerEnvProbe_AboveGroundFlags[sampleIndexC] = 0;
@@ -12952,14 +11186,8 @@ void __fastcall BuildEnvironmentProbeResult(
 
     zUtil_PlayerStateStorage *const globalPlayerState =
         (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
-    zClass_Class::gwNodeSetCellPickable(
-        playerState->rootNode,
-        0
-    );
-    zClass_Class::gwNodeSetCellPickable(
-        globalPlayerState->rootNode,
-        0
-    );
+    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
+    zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
 
     g_Variant_CurrentTag = playerState->variantTag;
     zClass_cls_di::BuildPickCandidatesForPointBatch(
@@ -13017,15 +11245,9 @@ void __fastcall BuildEnvironmentProbeResult(
                     zClass_Class::gwNodeGetWorldChild(selectedCandidate->node);
                 const int nodeType =
                     worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
-                zClass_Class::gwNodeSetNodeType(
-                    playerState->rootNode,
-                    nodeType
-                );
+                zClass_Class::gwNodeSetNodeType(playerState->rootNode, nodeType);
             } else {
-                zClass_Class::gwNodeSetNodeType(
-                    playerState->rootNode,
-                    0xff
-                );
+                zClass_Class::gwNodeSetNodeType(playerState->rootNode, 0xff);
             }
         }
 
@@ -13119,10 +11341,7 @@ void __fastcall FindThirdProbeAndComputeNormal(
     const float surfaceDot = playerState->steerBasisRef.x * firstSynthSupportPoint.x +
                              playerState->steerBasisRef.y * firstSynthSupportPoint.y +
                              playerState->steerBasisRef.z * firstSynthSupportPoint.z;
-    playerState->worldPos.y = SolveHeightOnSurface(
-        saveState,
-        surfaceDot
-    );
+    playerState->worldPos.y = SolveHeightOnSurface(saveState, surfaceDot);
     RebuildOrientationFromNormal(saveState);
 }
 } // namespace Player
@@ -13208,14 +11427,10 @@ int __fastcall ApplyEnvironmentProbeResult(
     }
 
     if (playerState->amphibUnlocked != 0 && envProbe->hitHistogram.countByImpactSlot[1] > 1 &&
-        TransitionToMasterTypeAmphib(
-            saveState,
-            0,
-            0
-        ) != 0) {
+        TransitionToMasterTypeAmphib(saveState, 0, 0) != 0) {
         playerState->currentMasterType = masterModalData->masterType;
         if (playerState->projectileSpawnVel.y < -10.0f) {
-            zEffectAnim::SetTransformRotAndVelocity_Thunk(
+            zEffectAnim::SetTransformRotAndVelocityThunk(
                 g_Player_BftSplashAnimEntry,
                 0,
                 playerState->worldPos.x,
@@ -13243,34 +11458,21 @@ int __fastcall ApplyEnvironmentProbeResult(
         if (wasUnderwater == 0) {
             playerState->underwaterStatusActive = 1;
             if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-                HudUi::ShowTopMessageLine(
-                    zLoc::GetMessageString(0x909),
-                    5.0f
-                );
+                HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x909), 5.0f);
                 HudLowMeterLoopSound::SetLoopActive(1);
             }
         }
 
         const float damage = g_Player_DeltaTime * 8.0f;
         if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-            EnterDestroyedState(
-                saveState,
-                0,
-                0,
-                damage
-            );
+            EnterDestroyedState(saveState, 0, 0, damage);
             if (playerState->cameraTarget.y < envProbe->highestSelectedHitY) {
                 ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(1);
             } else {
                 ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(0);
             }
         } else {
-            HitCallback_RecordContextAndTimedStatus(
-                saveState,
-                0,
-                0,
-                damage
-            );
+            HitCallbackRecordContextAndTimedStatus(saveState, 0, 0, damage);
         }
     } else {
         if (playerState->underwaterStatusActive != 0) {
@@ -13292,10 +11494,7 @@ int __fastcall ApplyEnvironmentProbeResult(
     }
 
     if (envProbe->hitHistogram.countByImpactSlot[4] > 1) {
-        if (playerState->hoverUnlocked != 0 && TransitionToMasterTypeHover(
-            saveState,
-            0
-        ) != 0) {
+        if (playerState->hoverUnlocked != 0 && TransitionToMasterTypeHover(saveState, 0) != 0) {
             return 0;
         }
 
@@ -13303,10 +11502,7 @@ int __fastcall ApplyEnvironmentProbeResult(
             playerState->motionInput = 1;
         }
         if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-            HudUi::ShowTopMessageLine(
-                zLoc::GetMessageString(0x910),
-                5.0f
-            );
+            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x910), 5.0f);
             HudLowMeterLoopSound::SetLoopActive(1);
         }
 
@@ -13315,19 +11511,9 @@ int __fastcall ApplyEnvironmentProbeResult(
         const float damage =
             (float)(envProbe->hitHistogram.countByImpactSlot[4]) * g_Player_DeltaTime * 12.0f;
         if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
-            EnterDestroyedState(
-                saveState,
-                g_Player_MakeHotOptEntry,
-                0,
-                damage
-            );
+            EnterDestroyedState(saveState, g_Player_MakeHotOptEntry, 0, damage);
         } else {
-            HitCallback_RecordContextAndTimedStatus(
-                saveState,
-                g_Player_MakeHotOptEntry,
-                0,
-                damage
-            );
+            HitCallbackRecordContextAndTimedStatus(saveState, g_Player_MakeHotOptEntry, 0, damage);
         }
         return 1;
     }
@@ -13435,12 +11621,7 @@ HRESULT WINAPI zCom::QueryInterfaceFromInterfaceMap(
 
             QueryInterfaceResolver resolver = (QueryInterfaceResolver)(resolverRaw);
             const HRESULT result =
-                resolver(
-                    objectBase,
-                    requestedIid,
-                    outInterface,
-                    currentEntry->interfaceOffset
-                );
+                resolver(objectBase, requestedIid, outInterface, currentEntry->interfaceOffset);
             if (result == S_OK || (!blindEntry && result < 0)) {
                 return result;
             }
@@ -13458,7 +11639,7 @@ HRESULT WINAPI zCom::QueryInterfaceFromInterfaceMap(
  * Purpose: query a source for IConnectionPointContainer, find the requested
  * connection point, and advise the sink while releasing temporary interfaces.
  */
-HRESULT WINAPI zCom::ConnectionPointContainer_Advise(
+HRESULT WINAPI zCom::ConnectionPointContainerAdvise(
     IUnknown *source,
     IUnknown *sink,
     REFIID connectionPointIid,
@@ -13487,7 +11668,7 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Advise(
  * Purpose: query a source for IConnectionPointContainer, find the requested
  * connection point, and unadvise the cookie while releasing temporary interfaces.
  */
-HRESULT WINAPI zCom::ConnectionPointContainer_Unadvise(
+HRESULT WINAPI zCom::ConnectionPointContainerUnadvise(
     IUnknown *source,
     REFIID connectionPointIid,
     DWORD cookie

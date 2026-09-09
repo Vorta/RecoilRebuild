@@ -8,7 +8,7 @@ extern "C" {
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-data-x27
  * @recoil-artifact defines .data recoil:data:0x4e08cc: g_zInput_SourceFile_ZinKbdCpp.
  * BN types this writable char[0x27] as the zin_kbd.cpp source-path literal
- * passed to DI_ReportError by keyboard DirectInput failure paths.
+ * passed to DIReportError by keyboard DirectInput failure paths.
  * Purpose: Supplies the original keyboard source-file path for diagnostics.
  */
 char g_zInput_SourceFile_ZinKbdCpp[0x27] =
@@ -67,24 +67,15 @@ inline int ApplyKeyboardPollEvent(
     switch (event.dwOfs) {
     case 0x38:
     case 0xb8:
-        UpdateKeyboardModifierState(
-            0x100,
-            (event.dwData & 0x80) != 0
-        );
+        UpdateKeyboardModifierState(0x100, (event.dwData & 0x80) != 0);
         break;
     case 0x1d:
     case 0x9d:
-        UpdateKeyboardModifierState(
-            0x200,
-            (event.dwData & 0x80) != 0
-        );
+        UpdateKeyboardModifierState(0x200, (event.dwData & 0x80) != 0);
         break;
     case 0x2a:
     case 0x36:
-        UpdateKeyboardModifierState(
-            0x400,
-            (event.dwData & 0x80) != 0
-        );
+        UpdateKeyboardModifierState(0x400, (event.dwData & 0x80) != 0);
         break;
     default:
         if (g_zInput_KbdModifierState != 0 && g_zInputKbdKeyDispatchTable[event.dwOfs].state != 0) {
@@ -110,7 +101,7 @@ inline int ApplyKeyboardPollEvent(
             KeyboardRawEventCallbackFn callback =
                 (KeyboardRawEventCallbackFn)(g_zInput_KbdRawEventCallback);
             callback(
-                Keyboard_TranslateDikToAscii((int)(dispatchIndex)),
+                KeyboardTranslateDikToAscii((int)(dispatchIndex)),
                 g_zInput_KbdRawEventCallbackCtx
             );
         }
@@ -147,7 +138,7 @@ inline int KeyboardEventDispatchIndex(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_initdevice
- * @recoil-artifact defines .text recoil:function:0x46f300: zInput::Keyboard_InitDevice.
+ * @recoil-artifact defines .text recoil:function:0x46f300: zInput::KeyboardInitDevice.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: Create and configure the DirectInput keyboard device, allocate the
  * buffered event storage, and clear transition/callback state.
@@ -156,7 +147,7 @@ inline int KeyboardEventDispatchIndex(
  * configures cooperative level 10, DIPROP_BUFFERSIZE 128, c_dfDIKeyboard, and
  * Acquire, reporting zin_kbd.cpp line numbers on each provider failure.
  */
-int __cdecl Keyboard_InitDevice() {
+int __cdecl KeyboardInitDevice() {
     DipropDwordInit bufferSizeProp =
         {0x14, 0x10, 0, 0, kZInputKeyboardEventBufferCount};
     g_zInput_KbdSystemReady = 0;
@@ -172,60 +163,32 @@ int __cdecl Keyboard_InitDevice() {
         0
     );
     if (hr != 0) {
-        DI_ReportError(
-            hr,
-            g_zInput_SourceFile_ZinKbdCpp,
-            0x95
-        );
+        DIReportError(hr, g_zInput_SourceFile_ZinKbdCpp, 0x95);
         return 1;
     }
 
     hr =
-        g_zInput_KbdDevice->SetCooperativeLevel(
-            g_zInput_hWnd,
-            0xa
-        );
+        g_zInput_KbdDevice->SetCooperativeLevel(g_zInput_hWnd, 0xa);
     if (hr != 0) {
-        DI_ReportError(
-            hr,
-            g_zInput_SourceFile_ZinKbdCpp,
-            0x9d
-        );
+        DIReportError(hr, g_zInput_SourceFile_ZinKbdCpp, 0x9d);
         return 1;
     }
 
-    hr = g_zInput_KbdDevice->SetProperty(
-        DIPROP_BUFFERSIZE,
-        (LPCDIPROPHEADER)(&bufferSizeProp)
-    );
+    hr = g_zInput_KbdDevice->SetProperty(DIPROP_BUFFERSIZE, (LPCDIPROPHEADER)(&bufferSizeProp));
     if (hr != 0) {
-        DI_ReportError(
-            hr,
-            g_zInput_SourceFile_ZinKbdCpp,
-            0xa5
-        );
+        DIReportError(hr, g_zInput_SourceFile_ZinKbdCpp, 0xa5);
         return 1;
     }
 
-    hr = g_zInput_KbdDevice->SetDataFormat(
-        &c_dfDIKeyboard
-    );
+    hr = g_zInput_KbdDevice->SetDataFormat(&c_dfDIKeyboard);
     if (hr != 0) {
-        DI_ReportError(
-            hr,
-            g_zInput_SourceFile_ZinKbdCpp,
-            0xad
-        );
+        DIReportError(hr, g_zInput_SourceFile_ZinKbdCpp, 0xad);
         return 1;
     }
 
     hr = g_zInput_KbdDevice->Acquire();
     if (hr != 0) {
-        DI_ReportError(
-            hr,
-            g_zInput_SourceFile_ZinKbdCpp,
-            0xb6
-        );
+        DIReportError(hr, g_zInput_SourceFile_ZinKbdCpp, 0xb6);
         return 1;
     }
 
@@ -234,14 +197,14 @@ int __cdecl Keyboard_InitDevice() {
         sizeof(DIDeviceObjectData)
     ));
     g_zInput_KbdSystemReady = 1;
-    Keyboard_ResetTransitionState();
-    Keyboard_ClearKeyCallbackTable();
+    KeyboardResetTransitionState();
+    KeyboardClearKeyCallbackTable();
     return 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_shutdowndevice
- * @recoil-artifact defines .text recoil:function:0x46f420: zInput::Keyboard_ShutdownDevice.
+ * @recoil-artifact defines .text recoil:function:0x46f420: zInput::KeyboardShutdownDevice.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: unacquire and release the keyboard DirectInput device, then free
  * the buffered keyboard event storage.
@@ -249,7 +212,7 @@ int __cdecl Keyboard_InitDevice() {
  * Evidence: BN HLIL guards g_zInput_KbdDevice before Unacquire and Release,
  * then frees g_zInput_KbdEventBuffer when present and returns 0.
  */
-int __cdecl Keyboard_ShutdownDevice() {
+int __cdecl KeyboardShutdownDevice() {
     DIDevice *const keyboard = g_zInput_KbdDevice;
     if (keyboard != 0) {
         keyboard->Unacquire();
@@ -265,7 +228,7 @@ int __cdecl Keyboard_ShutdownDevice() {
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_resettransitionstate
- * @recoil-artifact defines .text recoil:function:0x46f450: zInput::Keyboard_ResetTransitionState.
+ * @recoil-artifact defines .text recoil:function:0x46f450: zInput::KeyboardResetTransitionState.
  *
  * Purpose: drain pending keyboard events, update transient modifier state, then
  * clear every key-dispatch transition state for the next input frame.
@@ -275,7 +238,7 @@ int __cdecl Keyboard_ShutdownDevice() {
  * the same modifier fix-up as keyboard polling, clears the 0x7de-entry
  * g_zInputKbdKeyDispatchTable state column, and resets g_zInput_KbdModifierState.
  */
-void __cdecl Keyboard_ResetTransitionState() {
+void __cdecl KeyboardResetTransitionState() {
     if (g_zInput_KbdSystemReady == 0) {
         return;
     }
@@ -291,11 +254,7 @@ void __cdecl Keyboard_ResetTransitionState() {
         if (hresult == kDiInputLost) {
             g_zInput_KbdDevice->Acquire();
         } else {
-            DI_ReportError(
-                hresult,
-                g_zInput_SourceFile_ZinKbdCpp,
-                257
-            );
+            DIReportError(hresult, g_zInput_SourceFile_ZinKbdCpp, 257);
             return;
         }
     }
@@ -366,13 +325,13 @@ void __cdecl Keyboard_ResetTransitionState() {
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_pollstate
- * @recoil-artifact defines .text recoil:function:0x46f690: zInput::Keyboard_PollState.
+ * @recoil-artifact defines .text recoil:function:0x46f690: zInput::KeyboardPollState.
  * BN zin_kbd.cpp evidence shows a 0x80-event DirectInput GetDeviceData pump,
  * DIERR_INPUTLOST reacquire handling, modifier-aware transition updates, raw
  * ASCII callback dispatch, and an optional second pass for combo callbacks.
  * Purpose: Poll keyboard events for one frame and update or dispatch key state.
  */
-void __fastcall Keyboard_PollState(
+void __fastcall KeyboardPollState(
     unsigned char dispatchCallbacks
 ) {
     DWORD inOutCount = kZInputKeyboardEventBufferCount;
@@ -386,11 +345,7 @@ void __fastcall Keyboard_PollState(
         if (hresult == kDiInputLost) {
             g_zInput_KbdDevice->Acquire();
         } else {
-            DI_ReportError(
-                hresult,
-                g_zInput_SourceFile_ZinKbdCpp,
-                0x170
-            );
+            DIReportError(hresult, g_zInput_SourceFile_ZinKbdCpp, 0x170);
             return;
         }
     }
@@ -416,10 +371,10 @@ void __fastcall Keyboard_PollState(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_setraweventcallback
- * @recoil-artifact defines .text recoil:function:0x46f970: zInput::Keyboard_SetRawEventCallback.
+ * @recoil-artifact defines .text recoil:function:0x46f970: zInput::KeyboardSetRawEventCallback.
  * Purpose: install the raw keyboard event callback and caller context.
  */
-void __fastcall Keyboard_SetRawEventCallback(
+void __fastcall KeyboardSetRawEventCallback(
     void *callback,
     void *context
 ) {
@@ -429,12 +384,12 @@ void __fastcall Keyboard_SetRawEventCallback(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_getkeytransitionstate
- * @recoil-artifact defines .text recoil:function:0x46f980: zInput::Keyboard_GetKeyTransitionState.
+ * @recoil-artifact defines .text recoil:function:0x46f980: zInput::KeyboardGetKeyTransitionState.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: Return and advance the transition state for one modifier-aware
  * keyboard dispatch slot.
  */
-int __fastcall Keyboard_GetKeyTransitionState(
+int __fastcall KeyboardGetKeyTransitionState(
     int keyIndex
 ) {
     const int state = g_zInputKbdKeyDispatchTable[keyIndex].state;
@@ -451,10 +406,10 @@ int __fastcall Keyboard_GetKeyTransitionState(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_registerkeycallback
- * @recoil-artifact defines .text recoil:function:0x46f9b0: zInput::Keyboard_RegisterKeyCallback.
+ * @recoil-artifact defines .text recoil:function:0x46f9b0: zInput::KeyboardRegisterKeyCallback.
  * Purpose: install a keyboard dispatch callback for an unused modifier-aware key slot.
  */
-int __fastcall Keyboard_RegisterKeyCallback(
+int __fastcall KeyboardRegisterKeyCallback(
     int comboIdx,
     void *callback,
     const char * /*unusedLabel*/
@@ -469,10 +424,10 @@ int __fastcall Keyboard_RegisterKeyCallback(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_unregisterkeycallback
- * @recoil-artifact defines .text recoil:function:0x46f9d0: zInput::Keyboard_UnregisterKeyCallback.
+ * @recoil-artifact defines .text recoil:function:0x46f9d0: zInput::KeyboardUnregisterKeyCallback.
  * Purpose: clear a keyboard dispatch callback slot while preserving its key state.
  */
-void __fastcall Keyboard_UnregisterKeyCallback(
+void __fastcall KeyboardUnregisterKeyCallback(
     int comboIdx
 ) {
     if (g_zInputKbdKeyDispatchTable[comboIdx].callback != 0) {
@@ -482,10 +437,10 @@ void __fastcall Keyboard_UnregisterKeyCallback(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_clearkeycallbacktable
- * @recoil-artifact defines .text recoil:function:0x46f9f0: zInput::Keyboard_ClearKeyCallbackTable.
+ * @recoil-artifact defines .text recoil:function:0x46f9f0: zInput::KeyboardClearKeyCallbackTable.
  * Purpose: clear all keyboard dispatch callback slots while preserving key states.
  */
-void __cdecl Keyboard_ClearKeyCallbackTable() {
+void __cdecl KeyboardClearKeyCallbackTable() {
     int entryIndex3;
     for (entryIndex3 = 0; entryIndex3 < (int)(sizeof(g_zInputKbdKeyDispatchTable) /
                                               sizeof(g_zInputKbdKeyDispatchTable[0]));
@@ -497,12 +452,12 @@ void __cdecl Keyboard_ClearKeyCallbackTable() {
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_waitforanykeypress
- * @recoil-artifact defines .text recoil:function:0x46fa10: zInput::Keyboard_WaitForAnyKeyPress.
+ * @recoil-artifact defines .text recoil:function:0x46fa10: zInput::KeyboardWaitForAnyKeyPress.
  * BN zin_kbd.cpp evidence shows a one-event DirectInput GetDeviceData loop,
  * DIERR_INPUTLOST reacquire handling, and inline keyboard transition updates.
  * Purpose: Wait for or poll one keyboard press and return its modifier-combined key index.
  */
-int __fastcall Keyboard_WaitForAnyKeyPress(
+int __fastcall KeyboardWaitForAnyKeyPress(
     int keepWaiting
 ) {
     DWORD inOutCount = 1;
@@ -516,11 +471,7 @@ int __fastcall Keyboard_WaitForAnyKeyPress(
         );
         if (hresult != kDiOk) {
             if (hresult != kDiInputLost) {
-                DI_ReportError(
-                    hresult,
-                    g_zInput_SourceFile_ZinKbdCpp,
-                    0x291
-                );
+                DIReportError(hresult, g_zInput_SourceFile_ZinKbdCpp, 0x291);
                 return 0;
             }
 
@@ -586,16 +537,16 @@ int __fastcall Keyboard_WaitForAnyKeyPress(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_translatediktoascii
- * @recoil-artifact defines .text recoil:function:0x46fba0: zInput::Keyboard_TranslateDikToAscii.
+ * @recoil-artifact defines .text recoil:function:0x46fba0: zInput::KeyboardTranslateDikToAscii.
  * @recoil-match byte
  *
  * Purpose: Translate a modifier-combined DIK scan code to an ASCII/control code.
  */
-int __fastcall Keyboard_TranslateDikToAscii(
+int __fastcall KeyboardTranslateDikToAscii(
     int comboIdx
 ) {
     if (g_zInput_KbdDikToAsciiTableReady == 0) {
-        Keyboard_InitDikToAsciiTable();
+        KeyboardInitDikToAsciiTable();
         g_zInput_KbdDikToAsciiTableReady = 1;
     }
 
@@ -659,15 +610,11 @@ int __fastcall Keyboard_TranslateDikToAscii(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_initdiktoasciitable
- * @recoil-artifact defines .text recoil:function:0x46fd20: zInput::Keyboard_InitDikToAsciiTable.
+ * @recoil-artifact defines .text recoil:function:0x46fd20: zInput::KeyboardInitDikToAsciiTable.
  * Purpose: Initialize the DIK scan-code to ASCII/control-code lookup table.
  */
-void __cdecl Keyboard_InitDikToAsciiTable() {
-    memset(
-        g_zInput_KbdDikToAsciiTable,
-        0,
-        sizeof(g_zInput_KbdDikToAsciiTable)
-    );
+void __cdecl KeyboardInitDikToAsciiTable() {
+    memset(g_zInput_KbdDikToAsciiTable, 0, sizeof(g_zInput_KbdDikToAsciiTable));
 
     g_zInput_KbdDikToAsciiTable[0x02] = '1';
     g_zInput_KbdDikToAsciiTable[0x03] = '2';

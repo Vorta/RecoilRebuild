@@ -163,10 +163,7 @@ namespace {
         const zVec3 *normal,
         int axis
     ) {
-        const int componentIsNegative = DominantAxisComponent(
-            normal,
-            axis
-        ) < 0.0f ? 1 : 0;
+        const int componentIsNegative = DominantAxisComponent(normal, axis) < 0.0f ? 1 : 0;
         if (axis == 1) {
             return componentIsNegative != 0 ? 1 : -1;
         }
@@ -185,22 +182,14 @@ namespace {
         const zVec3 *normal
     ) {
         const int axis = DominantAxis(normal);
-        const int windingSign = ProjectedWindingSign(
-            normal,
-            axis
-        );
+        const int windingSign = ProjectedWindingSign(normal, axis);
 
         {
             for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
                 const zVec3 *edgeStart = &polygonVertices[edgeIndex];
                 const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
                 const double edgeValue =
-                    (double)(windingSign)*ProjectedEdgeCross(
-                        edgeStart,
-                        edgeEnd,
-                        point,
-                        axis
-                    );
+                    (double)(windingSign)*ProjectedEdgeCross(edgeStart, edgeEnd, point, axis);
                 if (edgeValue <= kPickEdgeInsideEpsilon) {
                     return false;
                 }
@@ -224,42 +213,27 @@ namespace {
         int cullBackface,
         int *outDominantAxis
     ) {
-        zMath_Vec3_TriangleNormal(
+        zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
             &polygonVertices[2],
             &candidate->surfaceNormal
         );
 
-        const zVec3 endDelta = Delta3(
-            segmentEnd,
-            &polygonVertices[0]
-        );
-        const float endSide = Dot3(
-            &endDelta,
-            &candidate->surfaceNormal
-        );
+        const zVec3 endDelta = Delta3(segmentEnd, &polygonVertices[0]);
+        const float endSide = Dot3(&endDelta, &candidate->surfaceNormal);
         if (cullBackface == 0 && endSide >= 0.0f) {
             return false;
         }
 
-        const zVec3 startDelta = Delta3(
-            segmentStart,
-            &polygonVertices[0]
-        );
-        const float startSide = Dot3(
-            &startDelta,
-            &candidate->surfaceNormal
-        );
+        const zVec3 startDelta = Delta3(segmentStart, &polygonVertices[0]);
+        const float startSide = Dot3(&startDelta, &candidate->surfaceNormal);
         if (((FloatBits(startSide) ^ FloatBits(endSide)) & 0x80000000u) == 0) {
             return false;
         }
 
         const float t = startSide / (startSide - endSide);
-        const zVec3 segmentDelta = Delta3(
-            segmentEnd,
-            segmentStart
-        );
+        const zVec3 segmentDelta = Delta3(segmentEnd, segmentStart);
         candidate->hitPos.x = segmentStart->x + t * segmentDelta.x;
         candidate->hitPos.y = segmentStart->y + t * segmentDelta.y;
         candidate->hitPos.z = segmentStart->z + t * segmentDelta.z;
@@ -289,35 +263,20 @@ namespace {
         const zVec3 *normal,
         int cullBackface
     ) {
-        const zVec3 endDelta = Delta3(
-            &segment->end,
-            &polygonVertices[0]
-        );
-        const float endSide = Dot3(
-            &endDelta,
-            normal
-        );
+        const zVec3 endDelta = Delta3(&segment->end, &polygonVertices[0]);
+        const float endSide = Dot3(&endDelta, normal);
         if (cullBackface == 0 && endSide >= 0.0f) {
             return false;
         }
 
-        const zVec3 startDelta = Delta3(
-            &segment->start,
-            &polygonVertices[0]
-        );
-        const float startSide = Dot3(
-            &startDelta,
-            normal
-        );
+        const zVec3 startDelta = Delta3(&segment->start, &polygonVertices[0]);
+        const float startSide = Dot3(&startDelta, normal);
         if (((FloatBits(startSide) ^ FloatBits(endSide)) & 0x80000000u) == 0) {
             return false;
         }
 
         const float t = startSide / (startSide - endSide);
-        const zVec3 segmentDelta = Delta3(
-            &segment->end,
-            &segment->start
-        );
+        const zVec3 segmentDelta = Delta3(&segment->end, &segment->start);
         candidate->hitPos.x = segment->start.x + t * segmentDelta.x;
         candidate->hitPos.y = segment->start.y + t * segmentDelta.y;
         candidate->hitPos.z = segment->start.z + t * segmentDelta.z;
@@ -364,7 +323,7 @@ namespace {
         float vGrad1;
 
         if (dominantAxis == 0) {
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &uGrad0,
                 &uGrad1,
                 polygonVertices[0].y,
@@ -377,7 +336,7 @@ namespace {
                 faceUvData->uvs[1].x,
                 faceUvData->uvs[2].x
             );
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &vGrad0,
                 &vGrad1,
                 polygonVertices[0].y,
@@ -399,7 +358,7 @@ namespace {
         }
 
         if (dominantAxis == 1) {
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &uGrad0,
                 &uGrad1,
                 polygonVertices[0].x,
@@ -412,7 +371,7 @@ namespace {
                 faceUvData->uvs[1].x,
                 faceUvData->uvs[2].x
             );
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &vGrad0,
                 &vGrad1,
                 polygonVertices[0].x,
@@ -433,7 +392,7 @@ namespace {
             return;
         }
 
-        zMath_SolveLinearGradient2D(
+        zMathSolveLinearGradient2D(
             &uGrad0,
             &uGrad1,
             polygonVertices[0].x,
@@ -446,7 +405,7 @@ namespace {
             faceUvData->uvs[1].x,
             faceUvData->uvs[2].x
         );
-        zMath_SolveLinearGradient2D(
+        zMathSolveLinearGradient2D(
             &vGrad0,
             &vGrad1,
             polygonVertices[0].x,
@@ -655,11 +614,7 @@ namespace {
             return 1;
         }
 
-        return strncmp(
-            node->name,
-            prefix,
-            strlen(prefix)
-        ) == 0 ? 1 : 0;
+        return strncmp(node->name, prefix, strlen(prefix)) == 0 ? 1 : 0;
     }
 
     /**
@@ -676,10 +631,7 @@ namespace {
         }
 
         float clearance =
-            zMath::Vec3DeltaLength(
-                g_zClass_cls_di_FilterRegions_Center,
-                boundsCenter
-            ) -
+            zMath::Vec3DeltaLength(g_zClass_cls_di_FilterRegions_Center, boundsCenter) -
             boundsRadius;
         if (clearance < 0.0f) {
             return 0.0f;
@@ -705,10 +657,7 @@ namespace {
         PlayerProbeSampleCandidateBuffer rayData = {0};
         zClass_cls_di::SetBreakOnFirstCandidate(1);
         zClass_cls_di::SetStopAfterFirstHit(0x40000);
-        zClass_Class::gwNodeSetRaycastable(
-            node,
-            0
-        );
+        zClass_Class::gwNodeSetRaycastable(node, 0);
         zVec3 *center = g_zClass_cls_di_FilterRegions_Center;
         const int result = zClass_cls_di::RaycastFindClosest(
             world,
@@ -720,10 +669,7 @@ namespace {
             boundsCenter->y,
             boundsCenter->z
         );
-        zClass_Class::gwNodeSetRaycastable(
-            node,
-            1
-        );
+        zClass_Class::gwNodeSetRaycastable(node, 1);
         zClass_cls_di::SetBreakOnFirstCandidate(0);
 
         return result == 0 && rayData.candidateCount != 0 ? 1 : 0;
@@ -829,10 +775,7 @@ namespace {
             zClass_NodePartial *node = area->childList[i];
             const int flags = node->flags;
             if ((flags & kNodeFlagEnabledForPick) != 0 && (flags & kNodeFlagRaycastable) != 0) {
-                zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(
-                    node,
-                    nodeCountHint
-                );
+                zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(node, nodeCountHint);
             }
 
             if (BreakOnFirstCandidateHit()) {
@@ -943,26 +886,10 @@ namespace {
         int corner3,
         const zBBoxCorners *bboxCorners
     ) {
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner0,
-            0
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner1,
-            1
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner2,
-            2
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner3,
-            3
-        );
+        CopyBBoxCornerToScratch(bboxCorners, corner0, 0);
+        CopyBBoxCornerToScratch(bboxCorners, corner1, 1);
+        CopyBBoxCornerToScratch(bboxCorners, corner2, 2);
+        CopyBBoxCornerToScratch(bboxCorners, corner3, 3);
         return zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(
                    candidate,
                    segmentStart,
@@ -991,26 +918,10 @@ namespace {
         int corner2,
         int corner3
     ) {
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner0,
-            0
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner1,
-            1
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner2,
-            2
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner3,
-            3
-        );
+        CopyBBoxCornerToScratch(bboxCorners, corner0, 0);
+        CopyBBoxCornerToScratch(bboxCorners, corner1, 1);
+        CopyBBoxCornerToScratch(bboxCorners, corner2, 2);
+        CopyBBoxCornerToScratch(bboxCorners, corner3, 3);
         return zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon(
             candidateOwner,
             outCandidateBuffersBySegment,
@@ -1060,11 +971,7 @@ namespace {
         int *dst,
         const int *src
     ) {
-        memcpy(
-            dst,
-            src,
-            (size_t)(g_DiPickPointCount) * sizeof(int)
-        );
+        memcpy(dst, src, (size_t)(g_DiPickPointCount) * sizeof(int));
     }
 
     /**
@@ -1275,11 +1182,7 @@ namespace {
 
         PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
         zClassDiPickCandidateEntry *outCandidate = &buffer->entries[buffer->candidateCount];
-        if (zDi::BuildPickCandidateForQueryPoint(
-            di,
-            outCandidate,
-            &g_DiPickQueryPoint
-        ) != 0) {
+        if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
             AppendCurrentCandidateNode(node);
         }
     }
@@ -1297,10 +1200,7 @@ namespace {
         for (int i = 0; i < node->listCountB; ++i) {
             zClass_NodePartial *child = node->listB[i];
             if (!requireQueryFlags || NodePassesQueryFlags(child)) {
-                zClass_cls_di::BuildPickCandidateList(
-                    child,
-                    cullCount
-                );
+                zClass_cls_di::BuildPickCandidateList(child, cullCount);
             }
         }
     }
@@ -1319,11 +1219,7 @@ namespace {
         for (int i = 0; i < node->listCountB; ++i) {
             zClass_NodePartial *child = node->listB[i];
             if (!requireQueryFlags || NodePassesQueryFlags(child)) {
-                zClass_cls_di::BuildPickCandidatesForPoints(
-                    child,
-                    depth,
-                    hitFlags
-                );
+                zClass_cls_di::BuildPickCandidatesForPoints(child, depth, hitFlags);
             }
         }
     }
@@ -1338,11 +1234,7 @@ namespace {
         int vertexCount
     ) {
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            memcpy(
-                g_zModel_SharedVec3ScratchB,
-                vertices,
-                (size_t)(vertexCount) * sizeof(zVec3)
-            );
+            memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(vertexCount) * sizeof(zVec3));
             return;
         }
 
@@ -1494,10 +1386,7 @@ namespace zClass_cls_di {
                     (node->flags & 0x08) != 0 &&
                     ((node->flags & 0x01000000) == 0 ||
                         VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
-                    BuildPickCandidateList(
-                        node,
-                        area->childCount + 1
-                    );
+                    BuildPickCandidateList(node, area->childCount + 1);
                 }
             }
 
@@ -1513,10 +1402,7 @@ namespace zClass_cls_di {
                 (node->flags & 0x08) != 0 &&
                 ((node->flags & 0x01000000) == 0 ||
                     VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
-                BuildPickCandidateList(
-                    node,
-                    world->listCountB + 1
-                );
+                BuildPickCandidateList(node, world->listCountB + 1);
             }
         }
 
@@ -1571,18 +1457,12 @@ namespace zClass_cls_di {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(objectData->localMatrix),
-                        1
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
                     zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(objectData->localMatrix),
-                        1
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
                     }
@@ -1702,16 +1582,10 @@ namespace zClass_cls_di {
         }
 
         case kNodeClassAnimate:
-            return BuildPickCandidatesRecursive(
-                node,
-                cullCount
-            );
+            return BuildPickCandidatesRecursive(node, cullCount);
 
         case kNodeClassLight:
-            return BuildPickCandidatesForLight(
-                node,
-                cullCount
-            );
+            return BuildPickCandidatesForLight(node, cullCount);
 
         case kNodeClassSound:
             return 1;
@@ -1745,11 +1619,7 @@ namespace zClass_cls_di {
             PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
             zClassDiPickCandidateEntry *outCandidate =
                 &buffer->entries[buffer->candidateCount];
-            if (zDi::BuildPickCandidateForQueryPoint(
-                    di,
-                    outCandidate,
-                    &g_DiPickQueryPoint
-                ) != 0) {
+            if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
                 g_DiPickCandidateCursor->node = node;
                 ++g_DiPickCandidateCursor;
                 ++g_DiPickCandidateBuffer->candidateCount;
@@ -1761,10 +1631,7 @@ namespace zClass_cls_di {
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply(
-                (const zMat4x3 *)(animateData->animatedTransform),
-                1
-            );
+            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
         }
 
         if (cullCount > 1) {
@@ -1822,11 +1689,7 @@ namespace zClass_cls_di {
             PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
             zClassDiPickCandidateEntry *outCandidate =
                 &buffer->entries[buffer->candidateCount];
-            if (zDi::BuildPickCandidateForQueryPoint(
-                    di,
-                    outCandidate,
-                    &g_DiPickQueryPoint
-                ) != 0) {
+            if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
                 g_DiPickCandidateCursor->node = node;
                 ++g_DiPickCandidateCursor;
                 ++g_DiPickCandidateBuffer->candidateCount;
@@ -1834,10 +1697,7 @@ namespace zClass_cls_di {
         }
 
         for (unsigned int i = 0; i < node->listCountB; ++i) {
-            BuildPickCandidateList(
-                node->listB[i],
-                node->listCountB
-            );
+            BuildPickCandidateList(node->listB[i], node->listCountB);
         }
 
         zMath::MatStackPopPtr();
@@ -1967,11 +1827,7 @@ namespace zClass_cls_di {
                 const int nodeFlags = node->flags;
                 if ((nodeFlags & kNodeFlagEnabledForPick) != 0 &&
                     (nodeFlags & 0x08) != 0) {
-                    BuildPickCandidatesForPoints(
-                        node,
-                        cell->childCount + 1,
-                        hitFlags
-                    );
+                    BuildPickCandidatesForPoints(node, cell->childCount + 1, hitFlags);
                 }
             }
         }
@@ -1990,11 +1846,7 @@ namespace zClass_cls_di {
                 (nodeFlags & 0x08) != 0 &&
                 ((nodeFlags & 0x01000000) == 0 ||
                  VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
-                BuildPickCandidatesForPoints(
-                    node,
-                    world->listCountB + 1,
-                    pointActive
-                );
+                BuildPickCandidatesForPoints(node, world->listCountB + 1, pointActive);
             }
         }
 
@@ -2032,16 +1884,9 @@ namespace zClass_cls_di {
         int sampleMask[24];
         switch (classId) {
         case kNodeClassObject3D: {
-            memcpy(
-                sampleMask,
-                hitFlags,
-                (size_t)(g_DiPickPointCount) * sizeof(int)
-            );
+            memcpy(sampleMask, hitFlags, (size_t)(g_DiPickPointCount) * sizeof(int));
             if (depth > 1) {
-                const int bboxResult = PickTestBBox2D(
-                    node,
-                    sampleMask
-                );
+                const int bboxResult = PickTestBBox2D(node, sampleMask);
                 if (bboxResult != 0) {
                     return bboxResult;
                 }
@@ -2054,18 +1899,12 @@ namespace zClass_cls_di {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(objectData->localMatrix),
-                        1
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
                     zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(objectData->localMatrix),
-                        1
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
                     }
@@ -2091,11 +1930,7 @@ namespace zClass_cls_di {
                 const int childFlags = child->flags;
                 if ((childFlags & kNodeFlagEnabledForPick) != 0 &&
                     (childFlags & 0x08) != 0) {
-                    BuildPickCandidatesForPoints(
-                        child,
-                        node->listCountB,
-                        sampleMask
-                    );
+                    BuildPickCandidatesForPoints(child, node->listCountB, sampleMask);
                 }
             }
 
@@ -2106,11 +1941,7 @@ namespace zClass_cls_di {
         }
 
         case kNodeClassCamera: {
-            memcpy(
-                sampleMask,
-                hitFlags,
-                (size_t)(g_DiPickPointCount) * sizeof(int)
-            );
+            memcpy(sampleMask, hitFlags, (size_t)(g_DiPickPointCount) * sizeof(int));
 
             zVec3 unitScale = {1.0f, 1.0f, 1.0f};
             zClass_CameraDataPartial *cameraData = (zClass_CameraDataPartial *)(node->classData);
@@ -2145,11 +1976,7 @@ namespace zClass_cls_di {
                 const int childFlags = child->flags;
                 if ((childFlags & kNodeFlagEnabledForPick) != 0 &&
                     (childFlags & 0x08) != 0) {
-                    BuildPickCandidatesForPoints(
-                        child,
-                        node->listCountB,
-                        sampleMask
-                    );
+                    BuildPickCandidatesForPoints(child, node->listCountB, sampleMask);
                 }
             }
 
@@ -2165,27 +1992,16 @@ namespace zClass_cls_di {
                 return 1;
             }
 
-            memcpy(
-                sampleMask,
-                hitFlags,
-                (size_t)(g_DiPickPointCount) * sizeof(int)
-            );
+            memcpy(sampleMask, hitFlags, (size_t)(g_DiPickPointCount) * sizeof(int));
             if (depth > 1) {
-                const int bboxResult = PickTestBBox2D(
-                    node,
-                    sampleMask
-                );
+                const int bboxResult = PickTestBBox2D(node, sampleMask);
                 if (bboxResult != 0) {
                     return bboxResult;
                 }
             }
 
             for (int i = 0; i < node->listCountB; ++i) {
-                BuildPickCandidatesForPoints(
-                    node->listB[i],
-                    node->listCountB,
-                    sampleMask
-                );
+                BuildPickCandidatesForPoints(node->listB[i], node->listCountB, sampleMask);
             }
             return 0;
         }
@@ -2197,16 +2013,9 @@ namespace zClass_cls_di {
                 return 1;
             }
 
-            memcpy(
-                sampleMask,
-                hitFlags,
-                (size_t)(g_DiPickPointCount) * sizeof(int)
-            );
+            memcpy(sampleMask, hitFlags, (size_t)(g_DiPickPointCount) * sizeof(int));
             if (depth > 1) {
-                const int bboxResult = PickTestBBox2D(
-                    node,
-                    sampleMask
-                );
+                const int bboxResult = PickTestBBox2D(node, sampleMask);
                 if (bboxResult != 0) {
                     return bboxResult;
                 }
@@ -2220,18 +2029,10 @@ namespace zClass_cls_di {
         }
 
         case kNodeClassAnimate:
-            return BuildPickCandidatesForPointsRecursive(
-                node,
-                depth,
-                hitFlags
-            );
+            return BuildPickCandidatesForPointsRecursive(node, depth, hitFlags);
 
         case kNodeClassLight:
-            return BuildPickCandidatesForPointsForLight(
-                node,
-                depth,
-                hitFlags
-            );
+            return BuildPickCandidatesForPointsForLight(node, depth, hitFlags);
 
         case kNodeClassSound:
             return 1;
@@ -2262,17 +2063,10 @@ namespace zClass_cls_di {
         int *hitFlags
     ) {
         int sampleMask[24];
-        memcpy(
-            sampleMask,
-            hitFlags,
-            (size_t)(g_DiPickPointCount) * sizeof(int)
-        );
+        memcpy(sampleMask, hitFlags, (size_t)(g_DiPickPointCount) * sizeof(int));
 
         if (depth > 1) {
-            const int bboxResult = PickTestBBox2D(
-                node,
-                sampleMask
-            );
+            const int bboxResult = PickTestBBox2D(node, sampleMask);
             if (bboxResult != 0) {
                 return bboxResult;
             }
@@ -2283,10 +2077,7 @@ namespace zClass_cls_di {
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply(
-                (const zMat4x3 *)(animateData->animatedTransform),
-                1
-            );
+            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
         }
 
         zModel_PickFaceData *faceData =
@@ -2304,11 +2095,7 @@ namespace zClass_cls_di {
         }
 
         for (int i = 0; i < node->listCountB; ++i) {
-            BuildPickCandidatesForPoints(
-                node->listB[i],
-                node->listCountB,
-                sampleMask
-            );
+            BuildPickCandidatesForPoints(node->listB[i], node->listCountB, sampleMask);
         }
 
         if (pushedMatrix != 0) {
@@ -2331,17 +2118,10 @@ namespace zClass_cls_di {
         int *hitFlags
     ) {
         int sampleMask[24];
-        memcpy(
-            sampleMask,
-            hitFlags,
-            (size_t)(g_DiPickPointCount) * sizeof(int)
-        );
+        memcpy(sampleMask, hitFlags, (size_t)(g_DiPickPointCount) * sizeof(int));
 
         if (depth > 1) {
-            const int bboxResult = PickTestBBox2D(
-                node,
-                sampleMask
-            );
+            const int bboxResult = PickTestBBox2D(node, sampleMask);
             if (bboxResult != 0) {
                 return bboxResult;
             }
@@ -2373,11 +2153,7 @@ namespace zClass_cls_di {
         }
 
         for (int i = 0; i < node->listCountB; ++i) {
-            BuildPickCandidatesForPoints(
-                node->listB[i],
-                node->listCountB,
-                sampleMask
-            );
+            BuildPickCandidatesForPoints(node->listB[i], node->listCountB, sampleMask);
         }
 
         zMath::MatStackPopPtr();
@@ -2416,10 +2192,7 @@ namespace zClass_cls_di {
         }
 
         const zClassDiPickCandidateEntry *candidate = &rayData->entries[0];
-        float closestDistance = zMath::Vec3DeltaLengthSq(
-            startPoint,
-            &candidate->hitPos
-        );
+        float closestDistance = zMath::Vec3DeltaLengthSq(startPoint, &candidate->hitPos);
         int bestCandidateIndex = 0;
         int candidateIndex = 0;
 
@@ -2429,10 +2202,7 @@ namespace zClass_cls_di {
             ++candidateIndex;
 
             const float candidateDistance =
-                zMath::Vec3DeltaLengthSq(
-                    startPoint,
-                    &candidate->hitPos
-                );
+                zMath::Vec3DeltaLengthSq(startPoint, &candidate->hitPos);
             if (!(candidateDistance >= closestDistance)) {
                 closestDistance = candidateDistance;
                 bestCandidateIndex = candidateIndex;
@@ -2469,22 +2239,12 @@ namespace zClass_cls_di {
         rayData->candidateCount = 0;
 
         if (world == 0) {
-            zError::ReportOld(
-                0x400,
-                kClsDiSourceFile,
-                0x7d1,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClsDiSourceFile, 0x7d1, "Null node pointer.");
             return 5;
         }
 
         if (world->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kClsDiSourceFile,
-                0x7d2,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kClsDiSourceFile, 0x7d2, "Null class data pointer");
             return 5;
         }
 
@@ -2577,10 +2337,7 @@ namespace zClass_cls_di {
                         const int flags = node->flags;
                         if ((flags & kNodeFlagEnabledForPick) != 0 &&
                             (flags & kNodeFlagRaycastable) != 0) {
-                            BuildPickCandidatesForSegmentChildFallback(
-                                node,
-                                area->childCount + 1
-                            );
+                            BuildPickCandidatesForSegmentChildFallback(node, area->childCount + 1);
                         }
 
                         if (g_cls_di_BreakOnFirstCandidate != 0 &&
@@ -2670,10 +2427,7 @@ namespace zClass_cls_di {
                 if ((childFlags & kNodeFlagEnabledForPick) != 0 &&
                     (childFlags & kNodeFlagRaycastable) != 0 &&
                     VariantTag::CurrentAllowsId(child->nodeType) != 0) {
-                    BuildPickCandidatesForSegmentChildFallback(
-                        child,
-                        self->listCountB + 1
-                    );
+                    BuildPickCandidatesForSegmentChildFallback(child, self->listCountB + 1);
                     result = g_cls_di_BreakOnFirstCandidate;
                     if (result != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                         break;
@@ -2731,10 +2485,7 @@ namespace zClass_cls_di {
         switch (node->classId) {
         case kNodeClassObject3D: {
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
-                const int result = FilterPointsBBox(
-                    node,
-                    (void *)((unsigned int)(nodeFlags))
-                );
+                const int result = FilterPointsBBox(node, (void *)((unsigned int)(nodeFlags)));
                 if (result != 0) {
                     return result;
                 }
@@ -2754,18 +2505,12 @@ namespace zClass_cls_di {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(objectData->localMatrix),
-                        3
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 3);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
                     zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(objectData->localMatrix),
-                        1
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
                     }
@@ -2790,10 +2535,7 @@ namespace zClass_cls_di {
                     zClass_NodePartial *child = node->listB[childIndex];
                     if ((child->flags & kNodeFlagEnabledForPick) != 0 &&
                         (child->flags & kNodeFlagRaycastable) != 0) {
-                        BuildPickCandidatesForSegmentChildFallback(
-                            child,
-                            node->listCountB
-                        );
+                        BuildPickCandidatesForSegmentChildFallback(child, node->listCountB);
                     }
 
                     if (g_cls_di_BreakOnFirstCandidate != 0 &&
@@ -2817,10 +2559,7 @@ namespace zClass_cls_di {
             }
 
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
-                const int result = FilterPointsBBox(
-                    node,
-                    (void *)((unsigned int)(nodeFlags))
-                );
+                const int result = FilterPointsBBox(node, (void *)((unsigned int)(nodeFlags)));
                 if (result != 0) {
                     return result;
                 }
@@ -2855,10 +2594,7 @@ namespace zClass_cls_di {
             }
 
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
-                const int result = FilterPointsBBox(
-                    node,
-                    (void *)((unsigned int)(nodeFlags))
-                );
+                const int result = FilterPointsBBox(node, (void *)((unsigned int)(nodeFlags)));
                 if (result != 0) {
                     return result;
                 }
@@ -2879,22 +2615,13 @@ namespace zClass_cls_di {
         }
 
         case kNodeClassAnimate:
-            return BuildPickCandidatesForSegmentRecursive(
-                node,
-                nodeCountHint
-            );
+            return BuildPickCandidatesForSegmentRecursive(node, nodeCountHint);
 
         case kNodeClassCamera:
-            return BuildPickCandidatesForSegmentForCamera(
-                node,
-                nodeCountHint
-            );
+            return BuildPickCandidatesForSegmentForCamera(node, nodeCountHint);
 
         case kNodeClassLight:
-            return BuildPickCandidatesForSegmentForLight(
-                node,
-                nodeCountHint
-            );
+            return BuildPickCandidatesForSegmentForLight(node, nodeCountHint);
 
         case kNodeClassSound:
             return (int)((unsigned int)(node));
@@ -2924,10 +2651,7 @@ namespace zClass_cls_di {
         int depth
     ) {
         if (depth > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
-            const int result = FilterPointsBBox(
-                node,
-                (void *)((unsigned int)(depth))
-            );
+            const int result = FilterPointsBBox(node, (void *)((unsigned int)(depth)));
             if (result != 0) {
                 return result;
             }
@@ -2945,10 +2669,7 @@ namespace zClass_cls_di {
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply(
-                (const zMat4x3 *)(animateData->animatedTransform),
-                1
-            );
+            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
         }
 
         zModel_PickFaceData *faceData =
@@ -2999,11 +2720,7 @@ namespace zClass_cls_di {
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
-            zMath::MatApplyLocalTRS(
-                &cameraData->posOffset,
-                &cameraData->targetOrEuler,
-                &unitScale
-            );
+            zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
         }
 
         zModel_PickFaceData *faceData =
@@ -3053,10 +2770,7 @@ namespace zClass_cls_di {
         zClass_LightDataPartial *lightData = (zClass_LightDataPartial *)(node->classData);
 
         if (depth > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
-            const int result = FilterPointsBBox(
-                node,
-                (void *)((unsigned int)(depth))
-            );
+            const int result = FilterPointsBBox(node, (void *)((unsigned int)(depth)));
             if (result != 0) {
                 return result;
             }
@@ -3175,10 +2889,7 @@ namespace zClass_cls_di {
             g_DiPickPointArray = &segmentEndpoints[0].start;
             g_DiPickPointCount = segmentCount;
 
-            BuildPickCandidatesForSegmentsInGridWindow(
-                world,
-                segmentActive
-            );
+            BuildPickCandidatesForSegmentsInGridWindow(world, segmentActive);
             for (int worldNodeIndex = 0; worldNodeIndex < world->listCountB; ++worldNodeIndex) {
                 zClass_NodePartial *node = world->listB[worldNodeIndex];
                 if ((node->flags & kNodeFlagEnabledForPick) != 0 &&
@@ -3385,10 +3096,7 @@ namespace zClass_cls_di {
                 localActive[activeIndex] = activeMask[activeIndex];
             }
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
-                const int result = FrustumTestAndPick(
-                    node,
-                    localActive
-                );
+                const int result = FrustumTestAndPick(node, localActive);
                 if (result != 0) {
                     return result;
                 }
@@ -3404,18 +3112,12 @@ namespace zClass_cls_di {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(objectData->localMatrix),
-                        3
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 3);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
                     zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(objectData->localMatrix),
-                        1
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
                     }
@@ -3469,10 +3171,7 @@ namespace zClass_cls_di {
                 localActive[activeIndex] = activeMask[activeIndex];
             }
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
-                const int result = FrustumTestAndPick(
-                    node,
-                    localActive
-                );
+                const int result = FrustumTestAndPick(node, localActive);
                 if (result != 0) {
                     return result;
                 }
@@ -3507,10 +3206,7 @@ namespace zClass_cls_di {
                 localActive[activeIndex] = activeMask[activeIndex];
             }
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
-                const int result = FrustumTestAndPick(
-                    node,
-                    localActive
-                );
+                const int result = FrustumTestAndPick(node, localActive);
                 if (result != 0) {
                     return result;
                 }
@@ -3527,11 +3223,7 @@ namespace zClass_cls_di {
         }
 
         case kNodeClassAnimate:
-            return BuildPickCandidatesForSegmentsForAnimate(
-                node,
-                nodeCountHint,
-                activeMask
-            );
+            return BuildPickCandidatesForSegmentsForAnimate(node, nodeCountHint, activeMask);
 
         case kNodeClassCamera: {
             zVec3 unitScale = {1.0f, 1.0f, 1.0f};
@@ -3580,11 +3272,7 @@ namespace zClass_cls_di {
         }
 
         case kNodeClassLight:
-            return BuildPickCandidatesForSegmentsForLight(
-                node,
-                nodeCountHint,
-                activeMask
-            );
+            return BuildPickCandidatesForSegmentsForLight(node, nodeCountHint, activeMask);
 
         case kNodeClassSound:
             return (int)((unsigned int)(activeMask));
@@ -3620,10 +3308,7 @@ namespace zClass_cls_di {
         }
 
         if (nodeCountHint > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
-            const int result = FrustumTestAndPick(
-                node,
-                localActive
-            );
+            const int result = FrustumTestAndPick(node, localActive);
             if (result != 0) {
                 return result;
             }
@@ -3637,10 +3322,7 @@ namespace zClass_cls_di {
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply(
-                (const zMat4x3 *)(animateData->animatedTransform),
-                1
-            );
+            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
         }
 
         zModel_PickFaceData *faceData =
@@ -3694,10 +3376,7 @@ namespace zClass_cls_di {
         }
 
         if (nodeCountHint > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
-            const int result = FrustumTestAndPick(
-                node,
-                localActive
-            );
+            const int result = FrustumTestAndPick(node, localActive);
             if (result != 0) {
                 return result;
             }
@@ -3735,11 +3414,7 @@ namespace zClass_cls_di {
                 zClass_NodePartial *child = node->listB[childIndex];
                 if ((child->flags & kNodeFlagEnabledForPick) != 0 &&
                     (child->flags & kNodeFlagRaycastable) != 0) {
-                    BuildPickCandidatesForSegmentsRecursive(
-                        child,
-                        node->listCountB,
-                        localActive
-                    );
+                    BuildPickCandidatesForSegmentsRecursive(child, node->listCountB, localActive);
                 }
                 if (g_cls_di_BreakOnFirstCandidate != 0 &&
                     g_DiPickCandidateBuffer->candidateCount > 0) {
@@ -3769,22 +3444,12 @@ namespace zClass_cls_di {
         OptCatalogRaycastHitList *outHitList
     ) {
         if (world == 0) {
-            zError::ReportOld(
-                0x400,
-                kClsDiSourceFile,
-                0xf8a,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClsDiSourceFile, 0xf8a, "Null node pointer.");
             return 5;
         }
 
         if (world->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kClsDiSourceFile,
-                0xf8b,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kClsDiSourceFile, 0xf8b, "Null class data pointer");
             return 5;
         }
 
@@ -3857,7 +3522,7 @@ namespace zClass_cls_di {
                     nodeFlags = node->flags;
                     if ((nodeFlags & kNodeFlagFilterRegionCandidate) == 0) {
                         for (int nestedIndex = 0; nestedIndex < node->listCountB; ++nestedIndex) {
-                            FilterRegions_TryAppendNode(node->listB[nestedIndex]);
+                            FilterRegionsTryAppendNode(node->listB[nestedIndex]);
                         }
                         continue;
                     }
@@ -3873,7 +3538,7 @@ namespace zClass_cls_di {
                     zMat4x3 slotBuffer = {0};
                     zMath::MatStackPushPtr((float *)(&slotBuffer));
                     zMath::MatLoadIdentity();
-                    if (gwNode::BuildNodeToAncestorMatrix(node, 1) != 0) {
+                    if (gwNode::gwNodeBuildNodeToAncestorMatrix(node, 1) != 0) {
                         zMath::MatStackPopPtr();
                         continue;
                     }
@@ -3936,7 +3601,7 @@ namespace zClass_cls_di {
         }
 
         for (int childIndex = 0; childIndex < world->listCountB; ++childIndex) {
-            FilterRegions_TryAppendNode(world->listB[childIndex]);
+            FilterRegionsTryAppendNode(world->listB[childIndex]);
         }
 
         return outHitList->hitCount <= 0 ? 1 : 0;
@@ -3988,12 +3653,12 @@ namespace BBox {
 namespace zClass_cls_di {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterregions-tryappendnode
-     * @recoil-artifact defines .text recoil:function:0x446f60: zClass_cls_di::FilterRegions_TryAppendNode.
+     * @recoil-artifact defines .text recoil:function:0x446f60: zClass_cls_di::FilterRegionsTryAppendNode.
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall FilterRegions_TryAppendNode(zClass_NodePartial * node) {
+    int __fastcall FilterRegionsTryAppendNode(zClass_NodePartial * node) {
         if (g_zClass_cls_di_FilterRegions_OutHitList->hitCount >= kMaxPickCandidates) {
             zError::ReportOld(
                 0x200,
@@ -4019,7 +3684,7 @@ namespace zClass_cls_di {
         if ((nodeFlags & kNodeFlagFilterRegionCandidate) == 0) {
             int result = 1;
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                if (FilterRegions_TryAppendNode(node->listB[childIndex]) == 0) {
+                if (FilterRegionsTryAppendNode(node->listB[childIndex]) == 0) {
                     result = 0;
                 }
             }
@@ -4031,10 +3696,7 @@ namespace zClass_cls_di {
         }
 
         zBBox3f bbox;
-        zClass_Class::gwNodeGetBBox(
-            node,
-            &bbox
-        );
+        zClass_Class::gwNodeGetBBox(node, &bbox);
 
         zBBoxCorners corners;
         float *values = corners.values;
@@ -4066,28 +3728,18 @@ namespace zClass_cls_di {
         zMat4x3 slotBuffer = {0};
         zMath::MatStackPushPtr((float *)(&slotBuffer));
         zMath::MatLoadIdentity();
-        const int matrixResult = gwNode::BuildNodeToAncestorMatrix(
-            node,
-            1
-        );
+        const int matrixResult = gwNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
         if (matrixResult != 0) {
             zMath::MatStackPopPtr();
             return matrixResult;
         }
 
-        zMath::MatTransformPointBatchInPlace(
-            (zVec3 *)(corners.values),
-            8
-        );
+        zMath::MatTransformPointBatchInPlace((zVec3 *)(corners.values), 8);
         zMath::MatStackPopPtr();
 
         zVec3 boundsCenter;
         float boundsRadius = 0.0f;
-        BBox::CornersToBoundingSphere(
-            &corners,
-            &boundsCenter,
-            &boundsRadius
-        );
+        BBox::CornersToBoundingSphere(&corners, &boundsCenter, &boundsRadius);
 
         float distanceSq = 0.0f;
         if (g_zClass_cls_di_FilterRegions_EnableClearanceCheck != 0) {
@@ -4154,10 +3806,7 @@ namespace zClass_cls_di {
         }
 
         zBBoxCorners corners = {0};
-        zClass_Class::gwNodeGetViewBBoxCorners(
-            node,
-            &corners
-        );
+        zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
 
         float minX;
         float maxX;
@@ -4210,10 +3859,7 @@ namespace zClass_cls_di {
         }
 
         zBBoxCorners corners = {0};
-        zClass_Class::gwNodeGetViewBBoxCorners(
-            node,
-            &corners
-        );
+        zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
 
         float minX;
         float maxX;
@@ -4272,10 +3918,7 @@ namespace zClass_cls_di {
         }
 
         zBBoxCorners corners = {0};
-        zClass_Class::gwNodeGetViewBBoxCorners(
-            node,
-            &corners
-        );
+        zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
 
         float minX;
         float maxX;
@@ -4339,10 +3982,7 @@ namespace zClass_cls_di {
         }
 
         zBBoxCorners corners = {0};
-        zClass_Class::gwNodeGetViewBBoxCorners(
-            node,
-            &corners
-        );
+        zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
 
         float minX;
         float maxX;

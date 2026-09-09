@@ -232,10 +232,7 @@ namespace zClass_TypeList {
             return link;
         }
 
-        return (zClass_TypeListLink *)(calloc(
-            1,
-            sizeof(zClass_TypeListLink)
-        ));
+        return (zClass_TypeListLink *)(calloc(1, sizeof(zClass_TypeListLink)));
     }
 
     /**
@@ -439,10 +436,7 @@ namespace gwNode {
         }
 
         zClass_Class::gwNodeUpdate(node);
-        zClass_TypeList::MarkPendingRemoval(
-            kQueuedTreeBucket,
-            node
-        );
+        zClass_TypeList::MarkPendingRemoval(kQueuedTreeBucket, node);
         return 0;
     }
 
@@ -590,11 +584,7 @@ namespace zClass_TypeList {
         int index = 0;
         for (zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[bucket]; link != 0;
             link = link->next) {
-            printf(
-                "Node %d desc: %s\n",
-                index,
-                link->node->name
-            );
+            printf("Node %d desc: %s\n", index, link->node->name);
             ++index;
         }
     }
@@ -612,10 +602,7 @@ namespace zClass {
     ) {
         for (zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[bucket]; link != 0;
             link = link->next) {
-            if (strcmp(
-                link->node->name,
-                name
-            ) == 0) {
+            if (strcmp(link->node->name, name) == 0) {
                 return link->node;
             }
         }
@@ -692,10 +679,7 @@ namespace zClass_TypeList {
                 zClass_NodePartial *child = node->listA[i];
                 if ((child->flags & kTypeListInsertedFlag) == 0 &&
                     child->classId != kZClassNodeWorld) {
-                    InsertChildNodes(
-                        kQueuedTreeBucket,
-                        child
-                    );
+                    InsertChildNodes(kQueuedTreeBucket, child);
                 }
             }
         }
@@ -736,10 +720,7 @@ namespace zClass_TypeList {
                 zClass_NodePartial *child = node->listA[i];
                 if ((child->flags & kTypeListInsertedFlag) == 0 &&
                     child->classId != kZClassNodeWorld) {
-                    InsertChildNodes(
-                        kQueuedTreeBucket,
-                        child
-                    );
+                    InsertChildNodes(kQueuedTreeBucket, child);
                 }
             }
         }
@@ -810,52 +791,28 @@ namespace zClass_List {
     int __fastcall DeleteNodeFromLists(zClass_NodePartial * node) {
         switch (node->classId) {
         case 1:
-            zClass_TypeList::MarkPendingRemoval(
-                8,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(8, node);
             break;
         case 2:
-            zClass_TypeList::MarkPendingRemoval(
-                13,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(13, node);
             break;
         case 3:
-            zClass_TypeList::MarkPendingRemoval(
-                14,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(14, node);
             break;
         case 4:
-            zClass_TypeList::MarkPendingRemoval(
-                15,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(15, node);
             break;
         case 7:
-            zClass_TypeList::MarkPendingRemoval(
-                11,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(11, node);
             break;
         case 8:
-            zClass_TypeList::MarkPendingRemoval(
-                12,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(12, node);
             break;
         case 9:
-            zClass_TypeList::MarkPendingRemoval(
-                9,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(9, node);
             break;
         case 10:
-            zClass_TypeList::MarkPendingRemoval(
-                10,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(10, node);
             break;
         default:
             if ((unsigned int)(node->classId) > 11) {
@@ -871,24 +828,15 @@ namespace zClass_List {
         }
 
         if ((node->flags & kTypeListInsertedFlag) != 0) {
-            zClass_TypeList::MarkPendingRemoval(
-                kQueuedTreeBucket,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(kQueuedTreeBucket, node);
         }
 
         if (node->actionCallback != 0 && node->callbackPriority >= 0 &&
             node->callbackPriority < 6) {
-            zClass_TypeList::MarkPendingRemoval(
-                node->callbackPriority,
-                node
-            );
+            zClass_TypeList::MarkPendingRemoval(node->callbackPriority, node);
         }
 
-        zClass_TypeList::MarkPendingRemoval(
-            6,
-            node
-        );
+        zClass_TypeList::MarkPendingRemoval(6, node);
         return 0;
     }
 
@@ -907,7 +855,7 @@ namespace zClass_List {
             deletedInLastPass = 0;
             while (link != 0 && deletedInLastPass == 0) {
                 zClass_NodePartial *node = link->node;
-                if (gwListDeleteANode(node) == 0) {
+                if (_gwListDeleteANode(node) == 0) {
                     deletedInLastPass = 1;
                 } else {
                     link = link->next;
@@ -945,25 +893,19 @@ namespace zClass_List {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwlistdeleteanode
-     * @recoil-artifact defines .text recoil:function:0x44f1d0: zClass_List::gwListDeleteANode.
+     * @recoil-artifact defines .text recoil:function:0x44f1d0: zClass_List::_gwListDeleteANode.
      * Purpose: delete one node according to its class-specific child,
      * ownership, and object-data cleanup rules.
      */
-    int __fastcall gwListDeleteANode(zClass_NodePartial * node) {
+    int __fastcall _gwListDeleteANode(zClass_NodePartial * node) {
         unsigned int displayInstanceWord;
-        int result = zClass_Class::gwNodeGetUserData(
-            node,
-            &displayInstanceWord
-        );
+        int result = zClass_Class::gwNodeGetUserData(node, &displayInstanceWord);
         if (result != 0) {
             return result;
         }
 
         if (displayInstanceWord != 0) {
-            zClass_Class::gwNodeSetDisplayInstance(
-                node,
-                0
-            );
+            zClass_Class::gwNodeSetDisplayInstance(node, 0);
             if (zDi::GetRefCount((zDiPartial *)(unsigned int)displayInstanceWord) == 0) {
                 result = zModel_DiPool::FreeIfUnreferenced(
                     (zDiPartial *)(unsigned int)displayInstanceWord
@@ -1113,10 +1055,7 @@ namespace zClass_List {
                     (zClass_WorldDataPartial *)(node->classData);
 
                 while (worldData->lightCount > 0) {
-                    result = zClass_World::RemoveLight(
-                        node,
-                        worldData->lightNodes[0]
-                    );
+                    result = zClass_World::RemoveLight(node, worldData->lightNodes[0]);
                     if (result != 0) {
                         return result;
                     }
@@ -1133,10 +1072,7 @@ namespace zClass_List {
                 (zClass_WorldDataPartial *)(node->classData);
 
             while (worldData->soundCount > 0) {
-                result = zClass_World::RemoveSound(
-                    node,
-                    worldData->soundNodes[0]
-                );
+                result = zClass_World::RemoveSound(node, worldData->soundNodes[0]);
                 if (result != 0) {
                     return result;
                 }
@@ -1166,10 +1102,7 @@ namespace zClass_List {
                             do {
                                 while (area->childCount > 0) {
                                     result =
-                                        zClass_World::RemoveChildAtGrid(
-                                            node,
-                                            area->childList[0]
-                                        );
+                                        zClass_World::RemoveChildAtGrid(node, area->childList[0]);
                                     if (result != 0) {
                                         return result;
                                     }
@@ -1218,10 +1151,7 @@ namespace zClass_List {
     int __cdecl RenderActiveCameras() {
         zClass_TypeListLink *link = zClass_TypeList::GetBucketHead(8);
         if (link == 0) {
-            fprintf(
-                stderr,
-                "ERROR: No camera on camera list.\n"
-            );
+            fprintf(stderr, "ERROR: No camera on camera list.\n");
             return 1;
         }
 
@@ -1231,15 +1161,9 @@ namespace zClass_List {
 
             if ((camera->flags & 4) != 0) {
                 if (g_zVideo_ActiveRendererPath != 0) {
-                    zVideo_sw_RenderFrame(
-                        camera,
-                        0
-                    );
+                    zVideoswRenderFrame(camera, 0);
                 } else {
-                    zClass_Camera::RenderScene(
-                        camera,
-                        0
-                    );
+                    zClass_Camera::RenderScene(camera, 0);
                 }
             }
 
@@ -1303,18 +1227,18 @@ namespace zClass {
         return zClass_List::IterateBucketFiltered(
             prefixText,
             bucket,
-            FindNextByTypePrefix_Predicate
+            FindNextByTypePrefixPredicate
         );
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findnextbytypeprefix-predicate
-     * @recoil-artifact defines .text recoil:function:0x44f720: zClass::FindNextByTypePrefix_Predicate.
+     * @recoil-artifact defines .text recoil:function:0x44f720: zClass::FindNextByTypePrefixPredicate.
      * @recoil-match byte
      *
      * Purpose: test whether a node name matches the active prefix-search text.
      */
-    int __fastcall FindNextByTypePrefix_Predicate(zClass_NodePartial * node) {
+    int __fastcall FindNextByTypePrefixPredicate(zClass_NodePartial * node) {
         return strncmp(
                    node->name,
                    g_zClass_FilterIterText,
@@ -1348,26 +1272,19 @@ namespace zClass_Class {
         const char *name,
         int bucket
     ) {
-        return zClass_List::IterateBucketFiltered(
-            name,
-            bucket,
-            gwNodeFindNextByName_Predicate
-        );
+        return zClass_List::IterateBucketFiltered(name, bucket, gwNodeFindNextByNamePredicate);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodefindnextbyname-predicate
-     * @recoil-artifact defines .text recoil:function:0x44f750: zClass_Class::gwNodeFindNextByName_Predicate.
+     * @recoil-artifact defines .text recoil:function:0x44f750: zClass_Class::gwNodeFindNextByNamePredicate.
      * @recoil-match byte
      *
      * Purpose: test whether a node name matches the active exact-name search
      * text.
      */
-    int __fastcall gwNodeFindNextByName_Predicate(zClass_NodePartial * node) {
-        return strcmp(
-            node->name,
-            g_zClass_FilterIterText
-        ) == 0;
+    int __fastcall gwNodeFindNextByNamePredicate(zClass_NodePartial * node) {
+        return strcmp(node->name, g_zClass_FilterIterText) == 0;
     }
 
 }

@@ -18,54 +18,42 @@ struct DipropDwordInit {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-applyclientcursorpostoos
- * @recoil-artifact defines .text recoil:function:0x470020: zInput::Mouse_ApplyClientCursorPosToOS.
+ * @recoil-artifact defines .text recoil:function:0x470020: zInput::MouseApplyClientCursorPosToOS.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Convert the cached client mouse point to screen coordinates and
  * apply it through the Win32 cursor provider.
  */
-void __cdecl Mouse_ApplyClientCursorPosToOS() {
+void __cdecl MouseApplyClientCursorPosToOS() {
     POINT point;
     point.x = g_zInput_MouseStateSnapshot.cursorClientX;
     point.y = g_zInput_MouseStateSnapshot.cursorClientY;
-    ClientToScreen(
-        g_zInput_hWnd,
-        &point
-    );
-    SetCursorPos(
-        point.x,
-        point.y
-    );
+    ClientToScreen(g_zInput_hWnd, &point);
+    SetCursorPos(point.x, point.y);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-updateclientrectandcenter
- * @recoil-artifact defines .text recoil:function:0x470060: zInput::Mouse_UpdateClientRectAndCenter.
+ * @recoil-artifact defines .text recoil:function:0x470060: zInput::MouseUpdateClientRectAndCenter.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Refresh mouse client dimensions, center coordinates, and inverse
  * scaling factors from the current input window client rectangle.
  */
-void __cdecl Mouse_UpdateClientRectAndCenter() {
+void __cdecl MouseUpdateClientRectAndCenter() {
     RECT rect;
-    GetClientRect(
-        g_zInput_hWnd,
-        &rect
-    );
+    GetClientRect(g_zInput_hWnd, &rect);
     g_zInput_MouseClientWidth = rect.right;
     g_zInput_MouseClientHeight = rect.bottom;
-    Mouse_SetClientSizeAndCenter(
-        rect.right,
-        rect.bottom
-    );
+    MouseSetClientSizeAndCenter(rect.right, rect.bottom);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-setnormalizedcursorpos
- * @recoil-artifact defines .text recoil:function:0x4700a0: zInput::Mouse_SetNormalizedCursorPos.
+ * @recoil-artifact defines .text recoil:function:0x4700a0: zInput::MouseSetNormalizedCursorPos.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Clamp normalized cursor coordinates, convert them to cached client
  * coordinates, and apply the cursor position to the OS.
  */
-void __stdcall Mouse_SetNormalizedCursorPos(
+void __stdcall MouseSetNormalizedCursorPos(
     float normX,
     float normY
 ) {
@@ -88,56 +76,56 @@ void __stdcall Mouse_SetNormalizedCursorPos(
         g_zInput_MouseClientCenterX + (int)(g_zInput_MouseClientCenterX * normX);
     g_zInput_MouseStateSnapshot.cursorClientY =
         g_zInput_MouseClientCenterY + (int)(g_zInput_MouseClientCenterY * normY);
-    Mouse_ApplyClientCursorPosToOS();
+    MouseApplyClientCursorPosToOS();
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-recentercursor
- * @recoil-artifact defines .text recoil:function:0x470150: zInput::Mouse_RecenterCursor.
+ * @recoil-artifact defines .text recoil:function:0x470150: zInput::MouseRecenterCursor.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Move the cached mouse cursor position to the client center and
  * apply the position to the OS cursor.
  */
-void __cdecl Mouse_RecenterCursor() {
+void __cdecl MouseRecenterCursor() {
     g_zInput_MouseStateSnapshot.cursorClientX = g_zInput_MouseClientCenterX;
     g_zInput_MouseStateSnapshot.cursorClientY = g_zInput_MouseClientCenterY;
     g_zInput_MouseStateSnapshot.cursorNormX = 0.0f;
     g_zInput_MouseStateSnapshot.cursorNormY = 0.0f;
-    Mouse_ApplyClientCursorPosToOS();
+    MouseApplyClientCursorPosToOS();
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-recentercursorx
- * @recoil-artifact defines .text recoil:function:0x470180: zInput::Mouse_RecenterCursorX.
+ * @recoil-artifact defines .text recoil:function:0x470180: zInput::MouseRecenterCursorX.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Recenter only the cached mouse client X coordinate before applying
  * the position to the OS cursor.
  */
-void __cdecl Mouse_RecenterCursorX() {
+void __cdecl MouseRecenterCursorX() {
     g_zInput_MouseStateSnapshot.cursorClientX = g_zInput_MouseClientCenterX;
-    Mouse_ApplyClientCursorPosToOS();
+    MouseApplyClientCursorPosToOS();
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-isinitialized
- * @recoil-artifact defines .text recoil:function:0x470190: zInput::Mouse_IsInitialized.
+ * @recoil-artifact defines .text recoil:function:0x470190: zInput::MouseIsInitialized.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Return whether the DirectInput mouse device has been initialized.
  */
-int __cdecl Mouse_IsInitialized() {
+int __cdecl MouseIsInitialized() {
     return g_zInput_MouseInitialized;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-setclientsizeandcenter
- * @recoil-artifact defines .text recoil:function:0x4701a0: zInput::Mouse_SetClientSizeAndCenter.
+ * @recoil-artifact defines .text recoil:function:0x4701a0: zInput::MouseSetClientSizeAndCenter.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Store explicit mouse client dimensions, signed center coordinates,
  * and inverse center scale factors.
  */
-void __fastcall Mouse_SetClientSizeAndCenter(
+void __fastcall MouseSetClientSizeAndCenter(
     int width,
     int height
 ) {
@@ -151,7 +139,7 @@ void __fastcall Mouse_SetClientSizeAndCenter(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-initdevice
- * @recoil-artifact defines .text recoil:function:0x4701f0: zInput::Mouse_InitDevice.
+ * @recoil-artifact defines .text recoil:function:0x4701f0: zInput::MouseInitDevice.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Create and configure the DirectInput mouse device, initialize the
  * shared mouse snapshot, acquire the device, and center the cursor state.
@@ -161,50 +149,38 @@ void __fastcall Mouse_SetClientSizeAndCenter(
  * g_zInput_MouseCoopLevelFlags, sets a 16-event buffer, marks mouse active and
  * initialized, and returns 1.
  */
-int __cdecl Mouse_InitDevice() {
+int __cdecl MouseInitDevice() {
     DIDevice *baseDevice = 0;
-    g_zInput_GlobalState->CreateDevice(
-        GUID_SysMouse,
-        (LPDIRECTINPUTDEVICEA *)(&baseDevice),
-        0
-    );
-    baseDevice->QueryInterface(
-        IID_IDirectInputDevice2A,
-        (void **)(&g_zInput_MouseDevice)
-    );
+    g_zInput_GlobalState->CreateDevice(GUID_SysMouse, (LPDIRECTINPUTDEVICEA *)(&baseDevice), 0);
+    baseDevice->QueryInterface(IID_IDirectInputDevice2A, (void **)(&g_zInput_MouseDevice));
     baseDevice->Release();
 
-    g_zInput_MouseDevice->SetDataFormat(
-        &c_dfDIMouse
-    );
+    g_zInput_MouseDevice->SetDataFormat(&c_dfDIMouse);
     g_zInput_MouseDevice->SetCooperativeLevel(
         g_zInput_hWnd,
         (unsigned int)(g_zInput_MouseCoopLevelFlags)
     );
 
     DipropDwordInit bufferSizeProp = {0x14, 0x10, 0, 0, 0x10};
-    g_zInput_MouseDevice->SetProperty(
-        DIPROP_BUFFERSIZE,
-        (LPCDIPROPHEADER)(&bufferSizeProp)
-    );
+    g_zInput_MouseDevice->SetProperty(DIPROP_BUFFERSIZE, (LPCDIPROPHEADER)(&bufferSizeProp));
 
     g_zInput_MouseStateSnapshot.button1Transition = 0;
     g_zInput_MouseStateSnapshot.button2Transition = 0;
     g_zInput_MouseStateSnapshot.button3Transition = 0;
     g_zInput_MouseInitialized = 1;
     g_zInput_MouseActive = 1;
-    Mouse_UpdateAcquireState();
+    MouseUpdateAcquireState();
     if (g_zInput_MouseClientWidth <= 0) {
-        Mouse_UpdateClientRectAndCenter();
+        MouseUpdateClientRectAndCenter();
     }
-    Mouse_RecenterCursor();
+    MouseRecenterCursor();
     g_zInput_MouseInitialized = 1;
     return 1;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-getbuttontransitionstate
- * @recoil-artifact defines .text recoil:function:0x4702e0: zInput::Mouse_GetButtonTransitionState.
+ * @recoil-artifact defines .text recoil:function:0x4702e0: zInput::MouseGetButtonTransitionState.
  *
  * Purpose: compare the current and previous mouse button byte and return the
  * transition mask for a 1-based mouse button number.
@@ -214,7 +190,7 @@ int __cdecl Mouse_InitDevice() {
  * treats button numbers as 1-based, returns 1 or 2 for down transitions and
  * held buttons, and uses the release-path neg/sbb idiom for result 4.
  */
-int __fastcall Mouse_GetButtonTransitionState(
+int __fastcall MouseGetButtonTransitionState(
     int buttonNumber
 ) {
     const unsigned char *currentButtons =
@@ -236,7 +212,7 @@ int __fastcall Mouse_GetButtonTransitionState(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-updateacquirestate
- * @recoil-artifact defines .text recoil:function:0x470310: zInput::Mouse_UpdateAcquireState.
+ * @recoil-artifact defines .text recoil:function:0x470310: zInput::MouseUpdateAcquireState.
  * Purpose: Applies the current mouse-active flag to the DirectInput device
  * acquisition state and flips the flag only on real provider failures.
  *
@@ -244,7 +220,7 @@ int __fastcall Mouse_GetButtonTransitionState(
  * calls DirectInput device vtable slot 0x1c for Acquire or slot 0x20 for
  * Unacquire, and treats DI_OK and DI_FALSE as non-failures.
  */
-void __cdecl Mouse_UpdateAcquireState() {
+void __cdecl MouseUpdateAcquireState() {
     if (g_zInput_MouseActive != 0) {
         DIDevice *device = g_zInput_MouseDevice;
         if (device != 0) {
@@ -266,18 +242,18 @@ void __cdecl Mouse_UpdateAcquireState() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-shutdowndevice
- * @recoil-artifact defines .text recoil:function:0x470360: zInput::Mouse_ShutdownDevice.
+ * @recoil-artifact defines .text recoil:function:0x470360: zInput::MouseShutdownDevice.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: deactivate mouse acquisition, release the mouse DirectInput device,
  * and clear mouse device lifetime state.
  *
  * Evidence: BN HLIL clears g_zInput_MouseActive, calls
- * Mouse_UpdateAcquireState, conditionally releases g_zInput_MouseDevice, then
+ * MouseUpdateAcquireState, conditionally releases g_zInput_MouseDevice, then
  * clears g_zInput_MouseDevice and g_zInput_MouseInitialized before returning 1.
  */
-int __cdecl Mouse_ShutdownDevice() {
+int __cdecl MouseShutdownDevice() {
     g_zInput_MouseActive = 0;
-    Mouse_UpdateAcquireState();
+    MouseUpdateAcquireState();
 
     DIDevice *device = g_zInput_MouseDevice;
     if (device != 0) {
@@ -291,34 +267,34 @@ int __cdecl Mouse_ShutdownDevice() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-getstatesnapshotptr
- * @recoil-artifact defines .text recoil:function:0x4703a0: zInput::Mouse_GetStateSnapshotPtr.
+ * @recoil-artifact defines .text recoil:function:0x4703a0: zInput::MouseGetStateSnapshotPtr.
  * @recoil-match byte
  *
  * Purpose: Return the shared mouse state snapshot used by input consumers.
  */
-MouseStateSnapshot *__cdecl Mouse_GetStateSnapshotPtr() {
+MouseStateSnapshot *__cdecl MouseGetStateSnapshotPtr() {
     return &g_zInput_MouseStateSnapshot;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-pollandstorestate
- * @recoil-artifact defines .text recoil:function:0x4703b0: zInput::Mouse_PollAndStoreState.
+ * @recoil-artifact defines .text recoil:function:0x4703b0: zInput::MousePollAndStoreState.
  * @recoil-match byte
  *
  * Purpose: Poll the mouse and store the latest DirectInput-style result code.
  */
-void __fastcall Mouse_PollAndStoreState(
+void __fastcall MousePollAndStoreState(
     unsigned char dispatchCallbacks
 ) {
-    g_zInputMouseLastPollResult = Mouse_PollState(dispatchCallbacks);
+    g_zInputMouseLastPollResult = MousePollState(dispatchCallbacks);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-pollstate
- * @recoil-artifact defines .text recoil:function:0x4703c0: zInput::Mouse_PollState.
+ * @recoil-artifact defines .text recoil:function:0x4703c0: zInput::MousePollState.
  * Purpose: Poll the DirectInput mouse state and update the zInput mouse snapshots.
  */
-int __fastcall Mouse_PollState(
+int __fastcall MousePollState(
     unsigned char dispatchCallbacks
 ) {
     g_zInput_MouseStateSnapshot.deltaX = 0;
@@ -326,7 +302,7 @@ int __fastcall Mouse_PollState(
 
     if (g_zInput_MouseActive == 0) {
         g_zInput_MouseActive = 1;
-        Mouse_UpdateAcquireState();
+        MouseUpdateAcquireState();
         if (g_zInput_MouseActive == 0) {
             return kDiInputLost;
         }
@@ -334,12 +310,9 @@ int __fastcall Mouse_PollState(
 
     DIDevice *device = g_zInput_MouseDevice;
     device->Poll();
-    int result = device->GetDeviceState(
-        sizeof(MouseDeviceState),
-        &g_zInput_MouseRawDIState
-    );
+    int result = device->GetDeviceState(sizeof(MouseDeviceState), &g_zInput_MouseRawDIState);
     if (result == kDiInputLost) {
-        Mouse_UpdateAcquireState();
+        MouseUpdateAcquireState();
         return result;
     }
 
@@ -348,10 +321,10 @@ int __fastcall Mouse_PollState(
         g_zInput_MouseCurrentState = g_zInput_MouseRawDIState;
         g_zInput_MouseStateSnapshot.deltaX = g_zInput_MouseCurrentState.lX;
         g_zInput_MouseStateSnapshot.deltaY = g_zInput_MouseCurrentState.lY;
-        Mouse_ApplyAccumulatedDelta();
-        g_zInput_MouseStateSnapshot.button1Transition = Mouse_GetButtonTransitionState(1);
-        g_zInput_MouseStateSnapshot.button2Transition = Mouse_GetButtonTransitionState(2);
-        g_zInput_MouseStateSnapshot.button3Transition = Mouse_GetButtonTransitionState(3);
+        MouseApplyAccumulatedDelta();
+        g_zInput_MouseStateSnapshot.button1Transition = MouseGetButtonTransitionState(1);
+        g_zInput_MouseStateSnapshot.button2Transition = MouseGetButtonTransitionState(2);
+        g_zInput_MouseStateSnapshot.button3Transition = MouseGetButtonTransitionState(3);
 
         if (g_zInput_BindMap_Current != 0 && dispatchCallbacks != 0) {
             g_zInput_BindMap_Current->DispatchMouseButtonCallbacks();
@@ -363,7 +336,7 @@ int __fastcall Mouse_PollState(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-applyaccumulateddelta
- * @recoil-artifact defines .text recoil:function:0x4704f0: zInput::Mouse_ApplyAccumulatedDelta.
+ * @recoil-artifact defines .text recoil:function:0x4704f0: zInput::MouseApplyAccumulatedDelta.
  *
  * Purpose: apply mouse sensitivity to accumulated deltas, update the client
  * cursor snapshot, clamp non-wrapping movement, and refresh normalized fields.
@@ -374,7 +347,7 @@ int __fastcall Mouse_PollState(
  * when g_zInput_Mouse_WrapModeFlag is clear, then writes cursor/delta normals
  * from the center and inverse-center globals.
  */
-void __cdecl Mouse_ApplyAccumulatedDelta() {
+void __cdecl MouseApplyAccumulatedDelta() {
     g_zInput_MouseStateSnapshot.deltaX =
         (int)((float)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
     g_zInput_MouseStateSnapshot.deltaY =
@@ -416,22 +389,18 @@ void __cdecl Mouse_ApplyAccumulatedDelta() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-getstatesnapshot
- * @recoil-artifact defines .text recoil:function:0x4705f0: zInput::Mouse_GetStateSnapshot.
+ * @recoil-artifact defines .text recoil:function:0x4705f0: zInput::MouseGetStateSnapshot.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Copy the current derived mouse snapshot to the caller and return
  * the last DirectInput mouse poll result.
  */
-int __fastcall Mouse_GetStateSnapshot(
+int __fastcall MouseGetStateSnapshot(
     MouseStateSnapshot *outState
 ) {
     if (outState != 0) {
-        memcpy(
-            outState,
-            &g_zInput_MouseStateSnapshot,
-            0x2c
-        );
+        memcpy(outState, &g_zInput_MouseStateSnapshot, 0x2c);
     }
 
     return g_zInputMouseLastPollResult;
@@ -439,7 +408,7 @@ int __fastcall Mouse_GetStateSnapshot(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-resettransitionstate
- * @recoil-artifact defines .text recoil:function:0x470610: zInput::Mouse_ResetTransitionState.
+ * @recoil-artifact defines .text recoil:function:0x470610: zInput::MouseResetTransitionState.
  *
  * Purpose: copy current mouse state into previous state, clear transition deltas,
  * and refresh the derived mouse snapshot when mouse input is initialized.
@@ -447,9 +416,9 @@ int __fastcall Mouse_GetStateSnapshot(
  * Evidence: BN assembly at 0x470610 guards on g_zInput_MouseInitialized, copies
  * zInput_DIMouseState fields at 0x565e7c/0x565e8c, clears snapshot fields at
  * 0x561c90/0x561c94/0x561ca0/0x561ca4/0x561ca8, and tail-calls
- * Mouse_ApplyAccumulatedDelta.
+ * MouseApplyAccumulatedDelta.
  */
-void __cdecl Mouse_ResetTransitionState() {
+void __cdecl MouseResetTransitionState() {
     if (g_zInput_MouseInitialized != 1) {
         return;
     }
@@ -463,19 +432,19 @@ void __cdecl Mouse_ResetTransitionState() {
     g_zInput_MousePreviousState.lX = g_zInput_MouseCurrentState.lX;
     g_zInput_MousePreviousState.lZ = g_zInput_MouseCurrentState.lZ;
     g_zInput_MousePreviousState.rgbButtons = g_zInput_MouseCurrentState.rgbButtons;
-    Mouse_ApplyAccumulatedDelta();
+    MouseApplyAccumulatedDelta();
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-setcooperativelevelflags
- * @recoil-artifact defines .text recoil:function:0x470670: zInput::Mouse_SetCooperativeLevelFlags.
+ * @recoil-artifact defines .text recoil:function:0x470670: zInput::MouseSetCooperativeLevelFlags.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Replace the stored mouse DirectInput cooperative-level flags and
  * return the previous value.
  */
-int __fastcall Mouse_SetCooperativeLevelFlags(
+int __fastcall MouseSetCooperativeLevelFlags(
     int flags
 ) {
     const int previousFlags = g_zInput_MouseCoopLevelFlags;
@@ -485,29 +454,29 @@ int __fastcall Mouse_SetCooperativeLevelFlags(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-waitforbuttonpress
- * @recoil-artifact defines .text recoil:function:0x470680: zInput::Mouse_WaitForButtonPress.
+ * @recoil-artifact defines .text recoil:function:0x470680: zInput::MouseWaitForButtonPress.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Poll mouse input until a newly pressed button is found or the
  * caller requests a single scan.
  */
-int __fastcall Mouse_WaitForButtonPress(
+int __fastcall MouseWaitForButtonPress(
     int pollUntilFound
 ) {
     int result = 0;
     do {
-        Mouse_PollState(1);
+        MousePollState(1);
         {
             for (int button = 1; button < 4; ++button) {
-                if (Mouse_GetButtonTransitionState(button) == 2) {
+                if (MouseGetButtonTransitionState(button) == 2) {
                     result = button;
                     break;
                 }
             }
         }
 
-        Mouse_ResetTransitionState();
+        MouseResetTransitionState();
     } while (result == 0 && pollUntilFound != 0);
 
     return result;

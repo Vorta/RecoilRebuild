@@ -25,7 +25,7 @@ extern char g_zVid_TextureArchiveStem[0x08];
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-g-zimage-nextfontslotindex
  * @recoil-artifact defines .data recoil:data:0x53d790: g_zImage_NextFontSlotIndex.
- * Purpose: hold the next font-slot cursor value initialized by zImage_Init.
+ * Purpose: hold the next font-slot cursor value initialized by zImageInit.
  *
  * Evidence: BN xrefs show only zImage::Init writing the value 2 before it
  * clears the 20-entry font table. No current retail code reads this slot.
@@ -86,7 +86,7 @@ zImage_Font *g_zImage_FontTable[20] = {0};
  * runtime option record is registered.
  *
  * Evidence: BN zImage::Init zeroes this slot and stores its address into the
- * texture-memory option pointer when zGame::Options_FindOption returns null.
+ * texture-memory option pointer when zGame::OptionsFindOption returns null.
  */
 int g_zImage_TextureMemoryDefault = 0;
 /**
@@ -96,7 +96,7 @@ int g_zImage_TextureMemoryDefault = 0;
  * storage, or at the local default when no renderer option is registered.
  *
  * Evidence: BN zImage::Init selects the TextureMemory_HW or TextureMemory_SW
- * option name from g_zVideo_ActiveRendererPath, calls zGame::Options_FindOption,
+ * option name from g_zVideo_ActiveRendererPath, calls zGame::OptionsFindOption,
  * and stores either the option payload address or
  * g_zImage_TextureMemoryDefault.
  */
@@ -119,7 +119,7 @@ int g_zImage_FontTransparentColor = 0;
  * load cannot resolve an image pack entry.
  *
  * Retail 0x53d788: optional fastcall fallback-image callback used only by
- * TexDir_LoadPendingEntries when normal texture-pack lookup returns null.
+ * TexDirLoadPendingEntries when normal texture-pack lookup returns null.
  */
 zImage_CreateFallbackImageProc g_zImage_pfnCreateFallbackImage = 0;
 /**
@@ -270,11 +270,7 @@ int __fastcall WriteTextureDirectory(
 
     const int byteCount = count * (int)(sizeof(zImage_TexDirEntryPartial));
     zImage_TexDirEntryPartial *serializedEntries = (zImage_TexDirEntryPartial *)(malloc(byteCount));
-    memcpy(
-        serializedEntries,
-        g_zImage_TexDirEntries,
-        byteCount
-    );
+    memcpy(serializedEntries, g_zImage_TexDirEntries, byteCount);
 
     for (int i = 0; i < count; ++i) {
         serializedEntries[i].nextVariant = (zImage_TexDirEntryPartial *)((int)(TexDirEntryToIndex(
@@ -282,12 +278,7 @@ int __fastcall WriteTextureDirectory(
         )));
     }
 
-    if (fwrite(
-        serializedEntries,
-        byteCount,
-        1,
-        (FILE *)(stream)
-    ) != 1) {
+    if (fwrite(serializedEntries, byteCount, 1, (FILE *)(stream)) != 1) {
         zError::ReportOld(
             0x200,
             g_zImage_SourceFile_ZimgTextureCpp,
@@ -335,12 +326,7 @@ int __fastcall ReadTextureDirectory(
     }
 
     const int byteCount = count * (int)(sizeof(zImage_TexDirEntryPartial));
-    if (fread(
-        g_zImage_TexDirEntries,
-        byteCount,
-        1,
-        (FILE *)(stream)
-    ) != 1) {
+    if (fread(g_zImage_TexDirEntries, byteCount, 1, (FILE *)(stream)) != 1) {
         zError::ReportOld(
             0x200,
             g_zImage_SourceFile_ZimgTextureCpp,
@@ -391,10 +377,7 @@ zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
 ) {
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zImage_TexDirEntryPartial *const entry = &g_zImage_TexDirEntries[i];
-        if (entry->loadState != 0 && strcmp(
-            entry->baseName,
-            baseName
-        ) == 0) {
+        if (entry->loadState != 0 && strcmp(entry->baseName, baseName) == 0) {
             return entry;
         }
     }
@@ -416,11 +399,7 @@ zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
  */
 int __cdecl InitTextureDirectory() {
     g_zImage_TexDirEntryCount = 0;
-    memset(
-        g_zImage_TexDirEntries,
-        0,
-        sizeof(g_zImage_TexDirEntries)
-    );
+    memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
 
     if (g_zVideo_ActiveRendererPath != 0) {
         g_zImage_DefaultTexDirEntry.texture = g_zVideo_pfnCreateTextureRecord(
@@ -643,7 +622,7 @@ void __cdecl Shutdown() {
 namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdir-findorappendbypath
- * @recoil-artifact defines .text recoil:function:0x46d810: zImage::TexDir_FindOrAppendByPath.
+ * @recoil-artifact defines .text recoil:function:0x46d810: zImage::TexDirFindOrAppendByPath.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Source owner: engine.zimage.texture_directory_state.
  * Purpose: find a texture-directory entry for a path or append a pending
@@ -653,13 +632,10 @@ namespace zImage {
  * text before returning, and appends a new g_zImage_TexDirEntries record with
  * loadState 2 when no existing basename entry is present.
  */
-zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(
+zImage_TexDirEntryPartial *__fastcall TexDirFindOrAppendByPath(
     char *path
 ) {
-    char *const extension = strrchr(
-        path,
-        '.'
-    );
+    char *const extension = strrchr(path, '.');
     if (extension != 0) {
         *extension = '\0';
     }
@@ -676,10 +652,7 @@ zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(
     const int entryIndex = g_zImage_TexDirEntryCount;
     ++g_zImage_TexDirEntryCount;
     entry = &g_zImage_TexDirEntries[entryIndex];
-    TexDirSetBaseNameFromPath(
-        path,
-        entry->baseName
-    );
+    TexDirSetBaseNameFromPath(path, entry->baseName);
     entry->loadState = 2;
     return entry;
 }
@@ -739,19 +712,19 @@ void __fastcall ClearZeroAlphaPixelsInPlace(
 namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdir-findorcreatebypath
- * @recoil-artifact defines .text recoil:function:0x46d900: zImage::TexDir_FindOrCreateByPath.
+ * @recoil-artifact defines .text recoil:function:0x46d900: zImage::TexDirFindOrCreateByPath.
  * @recoil-match byte
  *
  * Purpose: load or reuse the texture-directory image for a path.
  * Evidence: BN calls the dynamic texture-pack lookup first, then the builtin
  * lookup, and clears zero-alpha pixels on a loaded image before returning it.
  */
-zVidImagePartial *__fastcall TexDir_FindOrCreateByPath(
+zVidImagePartial *__fastcall TexDirFindOrCreateByPath(
     const char *path
 ) {
-    zVidImagePartial *image = zVid_TexturePack_LoadBuiltinImageByName(path);
+    zVidImagePartial *image = zVidTexturePackLoadBuiltinImageByName(path);
     if (image == 0) {
-        image = zVid_TexturePack_LoadImageByName(path);
+        image = zVidTexturePackLoadImageByName(path);
     }
 
     if (image != 0 && (image->formatFlagsPacked & 0x02) != 0 && image->alphaMap != 0) {
@@ -765,14 +738,14 @@ zVidImagePartial *__fastcall TexDir_FindOrCreateByPath(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-texturepack-loadimagebyname
- * @recoil-artifact defines .text recoil:function:0x46d940: zVid_TexturePack_LoadImageByName.
- * Purpose: provide the recovered zVid_TexturePack_LoadImageByName behavior.
+ * @recoil-artifact defines .text recoil:function:0x46d940: zVidTexturePackLoadImageByName.
+ * Purpose: provide the recovered zVidTexturePackLoadImageByName behavior.
  */
-extern "C" zVidImagePartial *__fastcall zVid_TexturePack_LoadImageByName(
+extern "C" zVidImagePartial *__fastcall zVidTexturePackLoadImageByName(
     const char *imageName
 ) {
     if (g_zVid_TexturePackCount == 0) {
-        zVid_TexturePack_EnsureDefaultImagePackLoaded();
+        zVidTexturePackEnsureDefaultImagePackLoaded();
     }
 
     zVidImagePartial *result = 0;
@@ -805,10 +778,10 @@ extern "C" zVidImagePartial *__fastcall zVid_TexturePack_LoadImageByName(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-texturepack-ensuredefaultimagepackloaded
- * @recoil-artifact defines .text recoil:function:0x46da40: zVid_TexturePack_EnsureDefaultImagePackLoaded.
+ * @recoil-artifact defines .text recoil:function:0x46da40: zVidTexturePackEnsureDefaultImagePackLoaded.
  * Purpose: allocate and load the default image texture pack, with retail fallback path.
  */
-extern "C" void __cdecl zVid_TexturePack_EnsureDefaultImagePackLoaded() {
+extern "C" void __cdecl zVidTexturePackEnsureDefaultImagePackLoaded() {
     if (g_zVid_TexturePackCount > 0) {
         return;
     }
@@ -818,23 +791,16 @@ extern "C" void __cdecl zVid_TexturePack_EnsureDefaultImagePackLoaded() {
         (size_t)(g_zVid_TexturePackCount + 1) * sizeof(zVidTexturePackEntry)
     ));
     zVidTexturePackEntry *entry = &g_zVid_TexturePacks[g_zVid_TexturePackCount];
-    memset(
-        entry,
-        0,
-        sizeof(*entry)
-    );
-    strcpy(
-        entry->filePath,
-        g_zVid_DefaultImageTexturePackName
-    );
+    memset(entry, 0, sizeof(*entry));
+    strcpy(entry->filePath, g_zVid_DefaultImageTexturePackName);
 
-    if (zVid_TexturePackEntry_LoadFromFile(entry) == 0) {
+    if (zVidTexturePackEntryLoadFromFile(entry) == 0) {
         sprintf(
             entry->filePath,
             g_zVid_DefaultImageTexturePackReadonlyNameFmt,
             g_zVid_DefaultImageTexturePackName
         );
-        if (zVid_TexturePackEntry_LoadFromFile(entry) == 0) {
+        if (zVidTexturePackEntryLoadFromFile(entry) == 0) {
             return;
         }
     }
@@ -844,21 +810,17 @@ extern "C" void __cdecl zVid_TexturePack_EnsureDefaultImagePackLoaded() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-texturepackentry-loadfromfile
- * @recoil-artifact defines .text recoil:function:0x46dae0: zVid_TexturePackEntry_LoadFromFile.
+ * @recoil-artifact defines .text recoil:function:0x46dae0: zVidTexturePackEntryLoadFromFile.
  * Purpose: load one texture-pack ZBD entry table and any palette-remap variant tables.
  */
-extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
+extern "C" FILE *__fastcall zVidTexturePackEntryLoadFromFile(
     zVidTexturePackEntry *entry
 ) {
     if (g_zVid_TexturePackLoadState == 0) {
         return 0;
     }
 
-    entry->fileHandle = zUtil_ZRDR_OpenFileResolved(
-        0,
-        entry->filePath,
-        "rb"
-    );
+    entry->fileHandle = zRdrOpenFileResolved(0, entry->filePath, "rb");
     if (entry->fileHandle == 0) {
         return 0;
     }
@@ -895,11 +857,7 @@ extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
         int rBits = 0;
         int gBits = 0;
         int bBits = 0;
-        zVideo::PixelPack_GetRgbBits(
-            &rBits,
-            &gBits,
-            &bBits
-        );
+        zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
 
         g_zVid_PaletteRemapVariantTableCount += entry->header.paletteTableCount;
         g_zVid_PaletteRemapVariantTables = (unsigned short **)(realloc(
@@ -936,10 +894,7 @@ extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
             }
 
             g_zVid_PaletteRemapVariantTables[tableIndex] =
-                zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
-                    table,
-                    kZVidPaletteColorCount
-                );
+                zVidPaletteRemapBuildAllRecipeVariantsForPalette(table, kZVidPaletteColorCount);
             ++tableIndex;
         }
 
@@ -955,9 +910,9 @@ extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
 
 extern "C" zVidImagePartial *__fastcall
 /**
- * Purpose: provide the recovered zVid_TexturePack_LoadBuiltinImageByName behavior.
+ * Purpose: provide the recovered zVidTexturePackLoadBuiltinImageByName behavior.
  */
-zVid_TexturePack_LoadBuiltinImageByName(
+zVidTexturePackLoadBuiltinImageByName(
     const char *imageName
 ) {
     zVidImagePartial *result = 0;
@@ -997,7 +952,7 @@ zVid_TexturePack_LoadBuiltinImageByName(
 namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdir-loadpendingentries
- * @recoil-artifact defines .text recoil:function:0x46de50: zImage::TexDir_LoadPendingEntries.
+ * @recoil-artifact defines .text recoil:function:0x46de50: zImage::TexDirLoadPendingEntries.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Source owner: engine.zimage.texture_directory_state.
  * Purpose: resolve pending texture-directory entries, create renderer texture
@@ -1010,8 +965,8 @@ namespace zImage {
  * image scratch fields or creates/finalizes texture records before setting
  * loadState to 1 and calling ShutdownTextureDirectoryRuntime.
  */
-int __cdecl TexDir_LoadPendingEntries() {
-    zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
+int __cdecl TexDirLoadPendingEntries() {
+    zVidTexturePackEnsureBuiltinTexturePacksLoaded();
 
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zImage_TexDirEntryPartial *const entry = &g_zImage_TexDirEntries[i];
@@ -1019,7 +974,7 @@ int __cdecl TexDir_LoadPendingEntries() {
             continue;
         }
 
-        zVidImagePartial *image = TexDir_FindOrCreateByPath(entry->baseName);
+        zVidImagePartial *image = TexDirFindOrCreateByPath(entry->baseName);
         entry->nextVariant = 0;
         entry->image = image;
         if (image == 0 && g_zImage_pfnCreateFallbackImage != 0) {
@@ -1033,14 +988,10 @@ int __cdecl TexDir_LoadPendingEntries() {
         entry->BuildMipChain();
 
         if (g_zVideo_ActiveRendererPath == 0 ||
-            OptCatalog_IsDamageMaskSlotPtrRegistered(entry) != 0) {
+            OptCatalogIsDamageMaskSlotPtrRegistered(entry) != 0) {
             zVid_Image::CalcPow2ScratchFields(entry->image);
         } else if (entry->loadState == 3) {
-            g_zVideo_pfnTextureRecordFinalizeUpload(
-                entry->texture,
-                0,
-                entry->image
-            );
+            g_zVideo_pfnTextureRecordFinalizeUpload(entry->texture, 0, entry->image);
         } else if (entry->texture == 0) {
             image = entry->image;
             const unsigned short textureAddressFlags =
@@ -1067,16 +1018,16 @@ int __cdecl TexDir_LoadPendingEntries() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-texturepack-ensurebuiltintexturepacksloaded
- * @recoil-artifact defines .text recoil:function:0x46df50: zVid_TexturePack_EnsureBuiltinTexturePacksLoaded.
+ * @recoil-artifact defines .text recoil:function:0x46df50: zVidTexturePackEnsureBuiltinTexturePacksLoaded.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
- * Purpose: provide the recovered zVid_TexturePack_EnsureBuiltinTexturePacksLoaded behavior.
+ * Purpose: provide the recovered zVidTexturePackEnsureBuiltinTexturePacksLoaded behavior.
  */
-extern "C" RECOIL_NO_GS void __cdecl zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() {
+extern "C" RECOIL_NO_GS void __cdecl zVidTexturePackEnsureBuiltinTexturePacksLoaded() {
     if (g_zVid_BuiltinTexturePackCount > 0) {
         for (int i = 0; i < g_zVid_BuiltinTexturePackCount; ++i) {
             zVidTexturePackEntry *const entry = &g_zVid_BuiltinTexturePacks[i];
             if (entry->fileHandle == 0) {
-                entry->fileHandle = zUtil_ZRDR_OpenFileResolved(
+                entry->fileHandle = zRdrOpenFileResolved(
                     g_zImage_MissionSearchPathList,
                     entry->filePath,
                     "rb"
@@ -1143,11 +1094,7 @@ extern "C" RECOIL_NO_GS void __cdecl zVid_TexturePack_EnsureBuiltinTexturePacksL
             candidateSize = 2;
             break;
         default:
-            sprintf(
-                filePath,
-                "%s",
-                g_zVid_TextureArchiveMaxName
-            );
+            sprintf(filePath, "%s", g_zVid_TextureArchiveMaxName);
             candidateSize = 8;
             break;
         }
@@ -1158,17 +1105,10 @@ extern "C" RECOIL_NO_GS void __cdecl zVid_TexturePack_EnsureBuiltinTexturePacksL
         (size_t)(g_zVid_BuiltinTexturePackCount + 1) * sizeof(zVidTexturePackEntry)
     ));
     zVidTexturePackEntry *const entry = &g_zVid_BuiltinTexturePacks[g_zVid_BuiltinTexturePackCount];
-    memset(
-        entry,
-        0,
-        sizeof(*entry)
-    );
-    strcpy(
-        entry->filePath,
-        filePath
-    );
+    memset(entry, 0, sizeof(*entry));
+    strcpy(entry->filePath, filePath);
 
-    if (zVid_TexturePackEntry_LoadFromFile(entry) == 0) {
+    if (zVidTexturePackEntryLoadFromFile(entry) == 0) {
         {
             for (int size = candidateSize; size >= -1; --size) {
                 if (size > 0) {
@@ -1190,11 +1130,7 @@ extern "C" RECOIL_NO_GS void __cdecl zVid_TexturePack_EnsureBuiltinTexturePacksL
                         );
                     }
                 } else if (size == 0) {
-                    sprintf(
-                        filePath,
-                        "%s",
-                        g_zVid_TextureArchiveMaxName
-                    );
+                    sprintf(filePath, "%s", g_zVid_TextureArchiveMaxName);
                 } else {
                     sprintf(
                         filePath,
@@ -1204,11 +1140,8 @@ extern "C" RECOIL_NO_GS void __cdecl zVid_TexturePack_EnsureBuiltinTexturePacksL
                     );
                 }
 
-                strcpy(
-                    entry->filePath,
-                    filePath
-                );
-                if (zVid_TexturePackEntry_LoadFromFile(entry) != 0) {
+                strcpy(entry->filePath, filePath);
+                if (zVidTexturePackEntryLoadFromFile(entry) != 0) {
                     break;
                 }
             }
@@ -1293,48 +1226,30 @@ void __fastcall SetPathExtension(
     char *path,
     const char *extension
 ) {
-    char *basePathStart = strchr(
-        path,
-        '\\'
-    );
+    char *basePathStart = strchr(path, '\\');
     if (basePathStart == 0) {
-        basePathStart = strchr(
-            path,
-            '/'
-        );
+        basePathStart = strchr(path, '/');
         if (basePathStart == 0) {
             basePathStart = path;
         }
     }
 
-    char *const dot = strchr(
-        basePathStart,
-        '.'
-    );
+    char *const dot = strchr(basePathStart, '.');
     if (dot != 0) {
         if (extension == 0) {
             *dot = '\0';
             return;
         }
 
-        strcpy(
-            dot + 1,
-            extension
-        );
+        strcpy(dot + 1, extension);
         return;
     }
 
     if (extension != 0) {
         /* Retail literal 0x4e084c is the compiler-emitted "." used when
            appending a missing extension separator. */
-        strcat(
-            path,
-            "."
-        );
-        strcat(
-            path,
-            extension
-        );
+        strcat(path, ".");
+        strcat(path, extension);
     }
 }
 
@@ -1354,28 +1269,16 @@ void __fastcall TexDirSetBaseNameFromPath(
     const char *sourcePath,
     char *destBaseName
 ) {
-    const char *baseName = strrchr(
-        sourcePath,
-        '\\'
-    );
+    const char *baseName = strrchr(sourcePath, '\\');
     if (baseName == 0) {
-        baseName = strrchr(
-            sourcePath,
-            '/'
-        );
+        baseName = strrchr(sourcePath, '/');
         if (baseName == 0) {
             baseName = sourcePath;
         }
     }
 
-    strcpy(
-        destBaseName,
-        baseName
-    );
-    SetPathExtension(
-        destBaseName,
-        0
-    );
+    strcpy(destBaseName, baseName);
+    SetPathExtension(destBaseName, 0);
 }
 } // namespace zImage
 
@@ -1398,16 +1301,10 @@ void __fastcall TexDirSetBaseNameFromPath(
  */
 RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain() {
     char variantPath[0x40];
-    strcpy(
-        variantPath,
-        baseName
-    );
+    strcpy(variantPath, baseName);
 
     zImage_TexDirEntryPartial *const baseEntry = this;
-    char *const suffix = strstr(
-        variantPath,
-        g_zImage_FontVariantSuffix
-    );
+    char *const suffix = strstr(variantPath, g_zImage_FontVariantSuffix);
     if (suffix == 0 || suffix[2] != '\0') {
         return;
     }
@@ -1420,7 +1317,7 @@ RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain() {
         zImage_TexDirEntryPartial *variantEntry = zImage::FindTexDirEntryByName(variantPath);
         zVidImagePartial *variantImage = variantEntry != 0 ? variantEntry->image : 0;
         if (variantEntry == 0 || variantEntry->loadState == 2) {
-            variantImage = zImage::TexDir_FindOrCreateByPath(variantPath);
+            variantImage = zImage::TexDirFindOrCreateByPath(variantPath);
             if (variantImage == 0) {
                 break;
             }
@@ -1428,10 +1325,7 @@ RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain() {
             if (variantEntry == 0) {
                 const int entryIndex = g_zImage_TexDirEntryCount++;
                 variantEntry = &g_zImage_TexDirEntries[entryIndex];
-                zImage::TexDirSetBaseNameFromPath(
-                    variantPath,
-                    variantEntry->baseName
-                );
+                zImage::TexDirSetBaseNameFromPath(variantPath, variantEntry->baseName);
             }
 
             variantEntry->loadState = 1;
@@ -1462,11 +1356,7 @@ void __fastcall ApplyRecipeToPaletteVariant(
     int rBits;
     int gBits;
     int bBits;
-    zVideo::PixelPack_GetRgbBits(
-        &rBits,
-        &gBits,
-        &bBits
-    );
+    zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
 
     const float variantWeight = (float)(variantIndex) * 0.0322580636f;
     const float inverseVariantWeight = 1.0f - variantWeight;
@@ -1503,7 +1393,7 @@ void __fastcall ApplyRecipeToPaletteVariant(
                       (recipe->color0B - b) * inverseVariantWeight * recipe->color0Strength + b) *
                   255.0f;
 
-        *destColors = zVid_PackColorRgbFloats(&color);
+        *destColors = zVidPackColorRgbFloats(&color);
         ++sourceColors;
         ++destColors;
         --colorCount;
@@ -1540,12 +1430,12 @@ int __fastcall FindRecipeIndex(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-paletteremap-buildpalettevariant
- * @recoil-artifact defines .text recoil:function:0x46e720: zVid_PaletteRemap_BuildPaletteVariant.
+ * @recoil-artifact defines .text recoil:function:0x46e720: zVidPaletteRemapBuildPaletteVariant.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Source file evidence: Binary Ninja function source comment.
  * Purpose: Add a palette-remap recipe and rebuild existing palette variant tables.
  */
-extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
+extern "C" int __fastcall zVidPaletteRemapBuildPaletteVariant(
     zVidPaletteRemapRecipe *recipe
 ) {
     const int existingIndex = zVid_PaletteRemap::FindRecipeIndex(recipe);
@@ -1637,10 +1527,10 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-paletteremap-buildallrecipevariantsforpalette
- * @recoil-artifact defines .text recoil:function:0x46e8d0: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette.
+ * @recoil-artifact defines .text recoil:function:0x46e8d0: zVidPaletteRemapBuildAllRecipeVariantsForPalette.
  * Purpose: expand a palette with all variants for every active palette-remap recipe.
  */
-extern "C" unsigned short *__fastcall zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
+extern "C" unsigned short *__fastcall zVidPaletteRemapBuildAllRecipeVariantsForPalette(
     unsigned short *palette,
     int colorCount
 ) {
@@ -1681,14 +1571,14 @@ extern "C" unsigned short *__fastcall zVid_PaletteRemap_BuildAllRecipeVariantsFo
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-paletteremap-findrecipeindexfromrgb
- * @recoil-artifact defines .text recoil:function:0x46e960: zVid_PaletteRemap_FindRecipeIndexFromRgb.
+ * @recoil-artifact defines .text recoil:function:0x46e960: zVidPaletteRemapFindRecipeIndexFromRgb.
  * Purpose: Build the black-to-RGB palette-remap recipe used by renderer shade lookups and find its existing recipe index.
  *
  * Evidence: BN constructs a stack zVidPaletteRemapRecipe with zero color0
  * endpoint fields, RGB color1 fields copied from the input, color0Strength
  * zero, and color1Strength 1.0f before delegating to FindRecipeIndex.
  */
-extern "C" int __fastcall zVid_PaletteRemap_FindRecipeIndexFromRgb(
+extern "C" int __fastcall zVidPaletteRemapFindRecipeIndexFromRgb(
     zColorRgb *rgb
 ) {
     zVidPaletteRemapRecipe recipe;
@@ -1767,7 +1657,7 @@ void __fastcall ResampleSquare(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-init
- * @recoil-artifact defines .text recoil:function:0x46eb20: zImage_Init.
+ * @recoil-artifact defines .text recoil:function:0x46eb20: zImageInit.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: reset font-table state, optionally load fonts, and bind the
  * texture-memory option value used by image loading.
@@ -1777,16 +1667,12 @@ void __fastcall ResampleSquare(
  * table, optionally loads fonts, and binds the texture-memory option pointer
  * to the active renderer's option or the local default.
  */
-extern "C" int __fastcall zImage_Init(
+extern "C" int __fastcall zImageInit(
     const char *fontsPath
 ) {
     g_zImage_NextFontSlotIndex = 2;
     g_zImage_FontTransparentColor = 0;
-    memset(
-        g_zImage_FontTable,
-        0,
-        sizeof(g_zImage_FontTable)
-    );
+    memset(g_zImage_FontTable, 0, sizeof(g_zImage_FontTable));
 
     if (fontsPath != 0) {
         zImage::FontsLoadFromPath(fontsPath);
@@ -1795,7 +1681,7 @@ extern "C" int __fastcall zImage_Init(
     g_zImage_TextureMemoryDefault = 0;
     const char *optionName =
         g_zVideo_ActiveRendererPath != 0 ? "TextureMemory_HW" : "TextureMemory_SW";
-    zOptionEntryPartial *option = zGame::Options_FindOption(optionName);
+    zOptionEntryPartial *option = zGame::OptionsFindOption(optionName);
     g_zImage_TextureMemoryOption =
         option != 0 ? &option->payloadOrBuffer : &g_zImage_TextureMemoryDefault;
     return 0;
@@ -1851,7 +1737,7 @@ namespace zImage {
  */
 int __cdecl Shutdown() {
     zVid_TexDir::Shutdown();
-    zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
+    zRdrFreeSearchPathList(g_zImage_MissionSearchPathList);
     g_zImage_MissionSearchPathList = 0;
     return 1;
 }
@@ -1859,7 +1745,7 @@ int __cdecl Shutdown() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-initmissionresources
- * @recoil-artifact defines .text recoil:function:0x46ebd0: zImage_InitMissionResources.
+ * @recoil-artifact defines .text recoil:function:0x46ebd0: zImageInitMissionResources.
  * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
@@ -1867,20 +1753,17 @@ int __cdecl Shutdown() {
  * append later paths to the existing list.
  * Evidence: BN loads g_zImage_MissionSearchPathList, creates a new list when
  * it is null, otherwise passes the existing list and incoming path to
- * zUtil::ZRDR_AddSearchPaths, then returns 0.
+ * zUtil::zRdrAddSearchPaths, then returns 0.
  */
-extern "C" int __fastcall zImage_InitMissionResources(
+extern "C" int __fastcall zImageInitMissionResources(
     const char *pathText
 ) {
     if (g_zImage_MissionSearchPathList == 0) {
-        g_zImage_MissionSearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
+        g_zImage_MissionSearchPathList = zRdrCreateSearchPathList(pathText);
         return 0;
     }
 
-    zUtil::ZRDR_AddSearchPaths(
-        g_zImage_MissionSearchPathList,
-        pathText
-    );
+    zUtil::zRdrAddSearchPaths(g_zImage_MissionSearchPathList, pathText);
     return 0;
 }
 
@@ -1893,11 +1776,7 @@ namespace zVid_Image {
  */
 zVidImagePartial *__cdecl Create() {
     zVidImagePartial *image = (zVidImagePartial *)(malloc(sizeof(zVidImagePartial)));
-    memset(
-        image,
-        0,
-        sizeof(zVidImagePartial)
-    );
+    memset(image, 0, sizeof(zVidImagePartial));
     return image;
 }
 
@@ -1963,10 +1842,10 @@ int __fastcall SetFormatCode(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-image-setpixels
- * @recoil-artifact defines .text recoil:function:0x46ec70: zVid_Image_SetPixels.
- * Purpose: provide the recovered zVid_Image_SetPixels behavior.
+ * @recoil-artifact defines .text recoil:function:0x46ec70: zVidImageSetPixels.
+ * Purpose: provide the recovered zVidImageSetPixels behavior.
  */
-extern "C" int __fastcall zVid_Image_SetPixels(
+extern "C" int __fastcall zVidImageSetPixels(
     zVidImagePartial *image,
     void *pixels,
     char *alphaMap
@@ -2082,25 +1961,10 @@ int __fastcall ReadHeader(
     }
 
     zVidImageFileHeader header = {0};
-    fread(
-        &header,
-        0x10,
-        1,
-        file
-    );
-    SetSize(
-        image,
-        header.width,
-        header.height
-    );
-    SetFormatCode(
-        image,
-        header.formatCode
-    );
-    SetHeaderFlagsByte(
-        image,
-        header.headerFlags
-    );
+    fread(&header, 0x10, 1, file);
+    SetSize(image, header.width, header.height);
+    SetFormatCode(image, header.formatCode);
+    SetHeaderFlagsByte(image, header.headerFlags);
     image->paletteMetaPacked = header.paletteMeta;
     image->textureAddressFlagsPacked = header.textureAddressFlagsPacked;
     return 0;
@@ -2122,23 +1986,13 @@ int __fastcall ReadData(
 
     if (bytesPerPixel == QueryBytesPerPixel(image)) {
         const int pixelBytes = QueryPixelDataBytes(image);
-    if (fread(
-        image->pixels,
-        1,
-        pixelBytes,
-        file
-    ) != (size_t)(pixelBytes)) {
+    if (fread(image->pixels, 1, pixelBytes, file) != (size_t)(pixelBytes)) {
         return -1;
     }
 
     if ((image->formatFlagsPacked & 0x08) != 0) {
         image->alphaMap = (char *)(malloc((size_t)(image->pixelCount)));
-        if (fread(
-            image->alphaMap,
-            1,
-            image->pixelCount,
-            file
-        ) != (size_t)(image->pixelCount)) {
+        if (fread(image->alphaMap, 1, image->pixelCount, file) != (size_t)(image->pixelCount)) {
             image->formatFlagsPacked |= 0x40;
             return -1;
         }
@@ -2148,12 +2002,7 @@ int __fastcall ReadData(
     if ((image->formatFlagsPacked & 0x10) == 0 && image->paletteMetaPacked != 0) {
         const int paletteBytes = bytesPerPixel * image->paletteMetaPacked;
         image->palette = malloc((size_t)(paletteBytes));
-        if (fread(
-            image->palette,
-            1,
-            paletteBytes,
-            file
-        ) != (size_t)(paletteBytes)) {
+        if (fread(image->palette, 1, paletteBytes, file) != (size_t)(paletteBytes)) {
             image->formatFlagsPacked |= 0x80;
             return -1;
         }
@@ -2164,11 +2013,7 @@ int __fastcall ReadData(
         int rBits = 0;
         int gBits = 0;
         int bBits = 0;
-        zVideo::PixelPack_GetRgbBits(
-            &rBits,
-            &gBits,
-            &bBits
-        );
+        zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
         if (gBits == 5) {
             unsigned short *colors = image->paletteMetaPacked == 0
                                          ? (unsigned short *)(image->pixels)
@@ -2185,7 +2030,7 @@ int __fastcall ReadData(
     }
 
         if (image->paletteMetaPacked != 0) {
-            image->palette = zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
+            image->palette = zVidPaletteRemapBuildAllRecipeVariantsForPalette(
                 (unsigned short *)(image->palette),
                 image->paletteMetaPacked
             );
@@ -2211,19 +2056,12 @@ zVidImagePartial *__fastcall ReadFromFile(
     FILE *file
 ) {
     zVidImagePartial *image = Create();
-    if (ReadHeader(
-        file,
-        image
-    ) != 0) {
+    if (ReadHeader(file, image) != 0) {
         return 0;
     }
 
     image->pixels = malloc(QueryPixelDataBytes(image));
-    ReadData(
-        file,
-        image,
-        0
-    );
+    ReadData(file, image, 0);
     image->formatFlagsPacked |= 0x20;
     return image;
 }

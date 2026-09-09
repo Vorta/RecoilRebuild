@@ -437,10 +437,7 @@ namespace {
         const zVec3 *normal,
         int axis
     ) {
-        const int componentIsNegative = DominantAxisComponent(
-            normal,
-            axis
-        ) < 0.0f ? 1 : 0;
+        const int componentIsNegative = DominantAxisComponent(normal, axis) < 0.0f ? 1 : 0;
         if (axis == 1) {
             return componentIsNegative != 0 ? 1 : -1;
         }
@@ -459,22 +456,14 @@ namespace {
         const zVec3 *normal
     ) {
         const int axis = DominantAxis(normal);
-        const int windingSign = ProjectedWindingSign(
-            normal,
-            axis
-        );
+        const int windingSign = ProjectedWindingSign(normal, axis);
 
         {
             for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
                 const zVec3 *edgeStart = &polygonVertices[edgeIndex];
                 const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
                 const double edgeValue =
-                    (double)(windingSign)*ProjectedEdgeCross(
-                        edgeStart,
-                        edgeEnd,
-                        point,
-                        axis
-                    );
+                    (double)(windingSign)*ProjectedEdgeCross(edgeStart, edgeEnd, point, axis);
                 if (edgeValue <= kPickEdgeInsideEpsilon) {
                     return false;
                 }
@@ -498,42 +487,27 @@ namespace {
         int cullBackface,
         int *outDominantAxis
     ) {
-        zMath_Vec3_TriangleNormal(
+        zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
             &polygonVertices[2],
             &candidate->surfaceNormal
         );
 
-        const zVec3 endDelta = Delta3(
-            segmentEnd,
-            &polygonVertices[0]
-        );
-        const float endSide = Dot3(
-            &endDelta,
-            &candidate->surfaceNormal
-        );
+        const zVec3 endDelta = Delta3(segmentEnd, &polygonVertices[0]);
+        const float endSide = Dot3(&endDelta, &candidate->surfaceNormal);
         if (cullBackface == 0 && endSide >= 0.0f) {
             return false;
         }
 
-        const zVec3 startDelta = Delta3(
-            segmentStart,
-            &polygonVertices[0]
-        );
-        const float startSide = Dot3(
-            &startDelta,
-            &candidate->surfaceNormal
-        );
+        const zVec3 startDelta = Delta3(segmentStart, &polygonVertices[0]);
+        const float startSide = Dot3(&startDelta, &candidate->surfaceNormal);
         if (((FloatBits(startSide) ^ FloatBits(endSide)) & 0x80000000u) == 0) {
             return false;
         }
 
         const float t = startSide / (startSide - endSide);
-        const zVec3 segmentDelta = Delta3(
-            segmentEnd,
-            segmentStart
-        );
+        const zVec3 segmentDelta = Delta3(segmentEnd, segmentStart);
         candidate->hitPos.x = segmentStart->x + t * segmentDelta.x;
         candidate->hitPos.y = segmentStart->y + t * segmentDelta.y;
         candidate->hitPos.z = segmentStart->z + t * segmentDelta.z;
@@ -563,35 +537,20 @@ namespace {
         const zVec3 *normal,
         int cullBackface
     ) {
-        const zVec3 endDelta = Delta3(
-            &segment->end,
-            &polygonVertices[0]
-        );
-        const float endSide = Dot3(
-            &endDelta,
-            normal
-        );
+        const zVec3 endDelta = Delta3(&segment->end, &polygonVertices[0]);
+        const float endSide = Dot3(&endDelta, normal);
         if (cullBackface == 0 && endSide >= 0.0f) {
             return false;
         }
 
-        const zVec3 startDelta = Delta3(
-            &segment->start,
-            &polygonVertices[0]
-        );
-        const float startSide = Dot3(
-            &startDelta,
-            normal
-        );
+        const zVec3 startDelta = Delta3(&segment->start, &polygonVertices[0]);
+        const float startSide = Dot3(&startDelta, normal);
         if (((FloatBits(startSide) ^ FloatBits(endSide)) & 0x80000000u) == 0) {
             return false;
         }
 
         const float t = startSide / (startSide - endSide);
-        const zVec3 segmentDelta = Delta3(
-            &segment->end,
-            &segment->start
-        );
+        const zVec3 segmentDelta = Delta3(&segment->end, &segment->start);
         candidate->hitPos.x = segment->start.x + t * segmentDelta.x;
         candidate->hitPos.y = segment->start.y + t * segmentDelta.y;
         candidate->hitPos.z = segment->start.z + t * segmentDelta.z;
@@ -638,7 +597,7 @@ namespace {
         float vGrad1;
 
         if (dominantAxis == 0) {
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &uGrad0,
                 &uGrad1,
                 polygonVertices[0].y,
@@ -651,7 +610,7 @@ namespace {
                 faceUvData->uvs[1].x,
                 faceUvData->uvs[2].x
             );
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &vGrad0,
                 &vGrad1,
                 polygonVertices[0].y,
@@ -673,7 +632,7 @@ namespace {
         }
 
         if (dominantAxis == 1) {
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &uGrad0,
                 &uGrad1,
                 polygonVertices[0].x,
@@ -686,7 +645,7 @@ namespace {
                 faceUvData->uvs[1].x,
                 faceUvData->uvs[2].x
             );
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &vGrad0,
                 &vGrad1,
                 polygonVertices[0].x,
@@ -707,7 +666,7 @@ namespace {
             return;
         }
 
-        zMath_SolveLinearGradient2D(
+        zMathSolveLinearGradient2D(
             &uGrad0,
             &uGrad1,
             polygonVertices[0].x,
@@ -720,7 +679,7 @@ namespace {
             faceUvData->uvs[1].x,
             faceUvData->uvs[2].x
         );
-        zMath_SolveLinearGradient2D(
+        zMathSolveLinearGradient2D(
             &vGrad0,
             &vGrad1,
             polygonVertices[0].x,
@@ -929,11 +888,7 @@ namespace {
             return 1;
         }
 
-        return strncmp(
-            node->name,
-            prefix,
-            strlen(prefix)
-        ) == 0 ? 1 : 0;
+        return strncmp(node->name, prefix, strlen(prefix)) == 0 ? 1 : 0;
     }
 
     /**
@@ -950,10 +905,7 @@ namespace {
         }
 
         float clearance =
-            zMath::Vec3DeltaLength(
-                g_zClass_cls_di_FilterRegions_Center,
-                boundsCenter
-            ) -
+            zMath::Vec3DeltaLength(g_zClass_cls_di_FilterRegions_Center, boundsCenter) -
             boundsRadius;
         if (clearance < 0.0f) {
             return 0.0f;
@@ -979,10 +931,7 @@ namespace {
         PlayerProbeSampleCandidateBuffer rayData = {0};
         zClass_cls_di::SetBreakOnFirstCandidate(1);
         zClass_cls_di::SetStopAfterFirstHit(0x40000);
-        zClass_Class::gwNodeSetRaycastable(
-            node,
-            0
-        );
+        zClass_Class::gwNodeSetRaycastable(node, 0);
         zVec3 *center = g_zClass_cls_di_FilterRegions_Center;
         const int result = zClass_cls_di::RaycastFindClosest(
             world,
@@ -994,10 +943,7 @@ namespace {
             boundsCenter->y,
             boundsCenter->z
         );
-        zClass_Class::gwNodeSetRaycastable(
-            node,
-            1
-        );
+        zClass_Class::gwNodeSetRaycastable(node, 1);
         zClass_cls_di::SetBreakOnFirstCandidate(0);
 
         return result == 0 && rayData.candidateCount != 0 ? 1 : 0;
@@ -1103,10 +1049,7 @@ namespace {
             zClass_NodePartial *node = area->childList[i];
             const int flags = node->flags;
             if ((flags & kNodeFlagEnabledForPick) != 0 && (flags & kNodeFlagRaycastable) != 0) {
-                zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(
-                    node,
-                    nodeCountHint
-                );
+                zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(node, nodeCountHint);
             }
 
             if (BreakOnFirstCandidateHit()) {
@@ -1217,26 +1160,10 @@ namespace {
         int corner3,
         const zBBoxCorners *bboxCorners
     ) {
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner0,
-            0
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner1,
-            1
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner2,
-            2
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner3,
-            3
-        );
+        CopyBBoxCornerToScratch(bboxCorners, corner0, 0);
+        CopyBBoxCornerToScratch(bboxCorners, corner1, 1);
+        CopyBBoxCornerToScratch(bboxCorners, corner2, 2);
+        CopyBBoxCornerToScratch(bboxCorners, corner3, 3);
         return zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(
                    candidate,
                    segmentStart,
@@ -1265,26 +1192,10 @@ namespace {
         int corner2,
         int corner3
     ) {
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner0,
-            0
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner1,
-            1
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner2,
-            2
-        );
-        CopyBBoxCornerToScratch(
-            bboxCorners,
-            corner3,
-            3
-        );
+        CopyBBoxCornerToScratch(bboxCorners, corner0, 0);
+        CopyBBoxCornerToScratch(bboxCorners, corner1, 1);
+        CopyBBoxCornerToScratch(bboxCorners, corner2, 2);
+        CopyBBoxCornerToScratch(bboxCorners, corner3, 3);
         return zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon(
             candidateOwner,
             outCandidateBuffersBySegment,
@@ -1334,11 +1245,7 @@ namespace {
         int *dst,
         const int *src
     ) {
-        memcpy(
-            dst,
-            src,
-            (size_t)(g_DiPickPointCount) * sizeof(int)
-        );
+        memcpy(dst, src, (size_t)(g_DiPickPointCount) * sizeof(int));
     }
 
     /**
@@ -1548,11 +1455,7 @@ namespace {
 
         PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
         zClassDiPickCandidateEntry *outCandidate = &buffer->entries[buffer->candidateCount];
-        if (zDi::BuildPickCandidateForQueryPoint(
-            di,
-            outCandidate,
-            &g_DiPickQueryPoint
-        ) != 0) {
+        if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
             AppendCurrentCandidateNode(node);
         }
     }
@@ -1570,10 +1473,7 @@ namespace {
         for (int i = 0; i < node->listCountB; ++i) {
             zClass_NodePartial *child = node->listB[i];
             if (!requireQueryFlags || NodePassesQueryFlags(child)) {
-                zClass_cls_di::BuildPickCandidateList(
-                    child,
-                    cullCount
-                );
+                zClass_cls_di::BuildPickCandidateList(child, cullCount);
             }
         }
     }
@@ -1592,11 +1492,7 @@ namespace {
         for (int i = 0; i < node->listCountB; ++i) {
             zClass_NodePartial *child = node->listB[i];
             if (!requireQueryFlags || NodePassesQueryFlags(child)) {
-                zClass_cls_di::BuildPickCandidatesForPoints(
-                    child,
-                    depth,
-                    hitFlags
-                );
+                zClass_cls_di::BuildPickCandidatesForPoints(child, depth, hitFlags);
             }
         }
     }
@@ -1611,11 +1507,7 @@ namespace {
         int vertexCount
     ) {
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            memcpy(
-                g_zModel_SharedVec3ScratchB,
-                vertices,
-                (size_t)(vertexCount) * sizeof(zVec3)
-            );
+            memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(vertexCount) * sizeof(zVec3));
             return;
         }
 
@@ -1649,16 +1541,8 @@ namespace zModel_Const {
      */
     void __stdcall SetVertexMergeEpsilon(float epsilon) {
         unsigned int bits;
-        memcpy(
-            &bits,
-            &epsilon,
-            sizeof(bits)
-        );
-        memcpy(
-            &g_zModel_ConstVertexMergeEpsilon,
-            &bits,
-            sizeof(bits)
-        );
+        memcpy(&bits, &epsilon, sizeof(bits));
+        memcpy(&g_zModel_ConstVertexMergeEpsilon, &bits, sizeof(bits));
     }
 } // namespace zModel_Const
 
@@ -1731,12 +1615,7 @@ namespace zModel_DiPool {
     int __fastcall WriteToStream(void *stream) {
         FILE *const file = (FILE *)(stream);
 
-        if (fwrite(
-            &g_zModel_DiPoolCapacity,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fwrite(&g_zModel_DiPoolCapacity, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -1744,12 +1623,7 @@ namespace zModel_DiPool {
                 g_zModel_WriteModel3dBufferErrorMsg
             );
         }
-        if (fwrite(
-            &g_zModel_DiPoolInUseCount,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fwrite(&g_zModel_DiPoolInUseCount, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -1757,12 +1631,7 @@ namespace zModel_DiPool {
                 g_zModel_WriteModel3dBufferErrorMsg
             );
         }
-        if (fwrite(
-            &g_zModel_DiPoolFreeHeadIndex,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fwrite(&g_zModel_DiPoolFreeHeadIndex, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -1779,12 +1648,7 @@ namespace zModel_DiPool {
         int result = capacity;
         const long tableOffset = ftell(file);
         const int tableBytes = capacity * (int)(sizeof(zDiPartial));
-        if (fwrite(
-            g_zModel_DiPoolBase,
-            tableBytes,
-            1,
-            file
-        ) != 1) {
+        if (fwrite(g_zModel_DiPoolBase, tableBytes, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -1802,12 +1666,7 @@ namespace zModel_DiPool {
 
                 if (di->vertCount > 0) {
                     wroteDynamicData = true;
-                    if (fwrite(
-                        di->verts,
-                        0x0c,
-                        di->vertCount,
-                        file
-                    ) != (size_t)(di->vertCount)) {
+                    if (fwrite(di->verts, 0x0c, di->vertCount, file) != (size_t)(di->vertCount)) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
@@ -1893,11 +1752,7 @@ namespace zModel_DiPool {
                     wroteDynamicData = true;
                     const int entryBytes = di->entryCount * (int)(sizeof(zDiEntryPartial));
                     zDiEntryPartial *serializedEntries = (zDiEntryPartial *)(malloc(entryBytes));
-                    memcpy(
-                        serializedEntries,
-                        di->entries,
-                        entryBytes
-                    );
+                    memcpy(serializedEntries, di->entries, entryBytes);
 
                     {
                         for (int entryIndex = 0; entryIndex < di->entryCount; ++entryIndex) {
@@ -1909,12 +1764,7 @@ namespace zModel_DiPool {
                         }
                     }
 
-                    if (fwrite(
-                        serializedEntries,
-                        entryBytes,
-                        1,
-                        file
-                    ) != 1) {
+                    if (fwrite(serializedEntries, entryBytes, 1, file) != 1) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
@@ -1932,12 +1782,7 @@ namespace zModel_DiPool {
                             const unsigned int indexCount = entry->flagsAndIndexCount & 0xff;
 
                             if (indexCount != 0 &&
-                                fwrite(
-                                    entry->vertexIndices,
-                                    4,
-                                    indexCount,
-                                    file
-                                ) != indexCount) {
+                                fwrite(entry->vertexIndices, 4, indexCount, file) != indexCount) {
                                 zError::ReportOld(
                                     0x200,
                                     g_zModel_SourceFile_GmodConstC,
@@ -1951,12 +1796,7 @@ namespace zModel_DiPool {
 
                             if ((entry->flagsAndIndexCount & 0x0200) != 0 &&
                                 entry->normalIndices != 0 &&
-                                fwrite(
-                                    entry->normalIndices,
-                                    4,
-                                    indexCount,
-                                    file
-                                ) != indexCount) {
+                                fwrite(entry->normalIndices, 4, indexCount, file) != indexCount) {
                                 zError::ReportOld(
                                     0x200,
                                     g_zModel_SourceFile_GmodConstC,
@@ -1970,12 +1810,7 @@ namespace zModel_DiPool {
 
                             const zDiEntryPartial *const liveEntry = &di->entries[entryIndex];
                             if ((liveEntry->material->flags & 0x0100) != 0 &&
-                                fwrite(
-                                    entry->uvPairs,
-                                    8,
-                                    indexCount,
-                                    file
-                                ) != indexCount) {
+                                fwrite(entry->uvPairs, 8, indexCount, file) != indexCount) {
                                 zError::ReportOld(
                                     0x200,
                                     g_zModel_SourceFile_GmodConstC,
@@ -2003,17 +1838,8 @@ namespace zModel_DiPool {
         }
 
         const long endOffset = ftell(file);
-        fseek(
-            file,
-            tableOffset,
-            SEEK_SET
-        );
-        if (fwrite(
-            g_zModel_DiPoolBase,
-            tableBytes,
-            1,
-            file
-        ) != 1) {
+        fseek(file, tableOffset, SEEK_SET);
+        if (fwrite(g_zModel_DiPoolBase, tableBytes, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -2022,11 +1848,7 @@ namespace zModel_DiPool {
             );
             result = 0;
         }
-        fseek(
-            file,
-            endOffset,
-            SEEK_SET
-        );
+        fseek(file, endOffset, SEEK_SET);
         return result;
     }
 } // namespace zModel_DiPool
@@ -2069,19 +1891,10 @@ namespace zModel_DiPool {
             return 0;
         }
 
-        fseek(
-            file,
-            index * (int)(sizeof(zDiPartial)),
-            SEEK_CUR
-        );
+        fseek(file, index * (int)(sizeof(zDiPartial)), SEEK_CUR);
 
         zDiPartial serializedEntry;
-        if (fread(
-            &serializedEntry,
-            sizeof(zDiPartial),
-            1,
-            file
-        ) != 1) {
+        if (fread(&serializedEntry, sizeof(zDiPartial), 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -2096,20 +1909,9 @@ namespace zModel_DiPool {
             return 0;
         }
 
-        memcpy(
-            entry,
-            &serializedEntry,
-            offsetof(zDiPartial, nextFreeIndex)
-        );
-        fseek(
-            file,
-            serializedEntry.nextFreeIndex,
-            SEEK_SET
-        );
-        if (ReadEntryDynamicDataFromStream(
-            file,
-            entry
-        ) != 0) {
+        memcpy(entry, &serializedEntry, offsetof(zDiPartial, nextFreeIndex));
+        fseek(file, serializedEntry.nextFreeIndex, SEEK_SET);
+        if (ReadEntryDynamicDataFromStream(file, entry) != 0) {
             FreeIfUnreferenced(entry);
             return 0;
         }
@@ -2132,12 +1934,7 @@ namespace zModel_DiPool {
     ) {
         FILE *const file = (FILE *)(stream);
 
-        if (fread(
-            outCapacity,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fread(outCapacity, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -2146,12 +1943,7 @@ namespace zModel_DiPool {
             );
             return -1;
         }
-        if (fread(
-            outInUseCount,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fread(outInUseCount, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -2160,12 +1952,7 @@ namespace zModel_DiPool {
             );
             return -1;
         }
-        if (fread(
-            outFreeHeadIndex,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fread(outFreeHeadIndex, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -2194,12 +1981,7 @@ namespace zModel_DiPool {
         if (entry->vertCount > 0) {
             const int byteCount = entry->vertCount * (int)(sizeof(zVec3));
             entry->verts = (zVec3 *)(malloc(byteCount));
-            if (fread(
-                entry->verts,
-                byteCount,
-                1,
-                file
-            ) != 1) {
+            if (fread(entry->verts, byteCount, 1, file) != 1) {
                 zError::ReportOld(
                     0x200,
                     g_zModel_SourceFile_GmodConstC,
@@ -2213,12 +1995,7 @@ namespace zModel_DiPool {
         if (entry->normalCount > 0) {
             const int byteCount = entry->normalCount * (int)(sizeof(zVec3));
             entry->normals = (zVec3 *)(malloc(byteCount));
-            if (fread(
-                entry->normals,
-                byteCount,
-                1,
-                file
-            ) != 1) {
+            if (fread(entry->normals, byteCount, 1, file) != 1) {
                 zError::ReportOld(
                     0x200,
                     g_zModel_SourceFile_GmodConstC,
@@ -2232,12 +2009,7 @@ namespace zModel_DiPool {
         if (entry->blendVertCount > 0) {
             const int byteCount = entry->blendVertCount * (int)(sizeof(zVec3));
             entry->blendVerts = (zVec3 *)(malloc(byteCount));
-            if (fread(
-                entry->blendVerts,
-                byteCount,
-                1,
-                file
-            ) != 1) {
+            if (fread(entry->blendVerts, byteCount, 1, file) != 1) {
                 zError::ReportOld(
                     0x200,
                     g_zModel_SourceFile_GmodConstC,
@@ -2251,12 +2023,7 @@ namespace zModel_DiPool {
         if (entry->pointCount > 0) {
             const int byteCount = entry->pointCount * (int)(sizeof(zModel_PointEntryPartial));
             entry->pointEntries = (zModel_PointEntryPartial *)(malloc(byteCount));
-            if (fread(
-                entry->pointEntries,
-                byteCount,
-                1,
-                file
-            ) != 1) {
+            if (fread(entry->pointEntries, byteCount, 1, file) != 1) {
                 zError::ReportOld(
                     0x200,
                     g_zModel_SourceFile_GmodConstC,
@@ -2269,7 +2036,7 @@ namespace zModel_DiPool {
             {
                 for (int pointIndex = 0; pointIndex < entry->pointCount; ++pointIndex) {
                     zModel_PointEntryPartial *const point = &entry->pointEntries[pointIndex];
-                    const unsigned short packedColor = (unsigned short)(zVid_PackColorRGB(
+                    const unsigned short packedColor = (unsigned short)(zVidPackColorRGB(
                         (unsigned char)((int)(point->colorB + 0.5f)),
                         (unsigned char)((int)(point->colorG + 0.5f)),
                         (unsigned char)((int)(point->colorR + 0.5f))
@@ -2279,12 +2046,7 @@ namespace zModel_DiPool {
                     if (point->pointCamCount > 0) {
                         const int pointCamBytes = point->pointCamCount * (int)(sizeof(zVec3));
                         point->pointCamList = (zVec3 *)(malloc(pointCamBytes));
-                        if (fread(
-                            point->pointCamList,
-                            pointCamBytes,
-                            1,
-                            file
-                        ) != 1) {
+                        if (fread(point->pointCamList, pointCamBytes, 1, file) != 1) {
                             zError::ReportOld(
                                 0x200,
                                 g_zModel_SourceFile_GmodConstC,
@@ -2304,12 +2066,7 @@ namespace zModel_DiPool {
 
         const int entryBytes = entry->entryCount * (int)(sizeof(zDiEntryPartial));
         entry->entries = (zDiEntryPartial *)(malloc(entryBytes));
-        if (fread(
-            entry->entries,
-            entryBytes,
-            1,
-            file
-        ) != 1) {
+        if (fread(entry->entries, entryBytes, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -2335,12 +2092,7 @@ namespace zModel_DiPool {
                 if (indexCount != 0) {
                     const unsigned int indexBytes = indexCount * 4;
                     diEntry->vertexIndices = malloc(indexBytes);
-                    if (fread(
-                        diEntry->vertexIndices,
-                        indexBytes,
-                        1,
-                        file
-                    ) != 1) {
+                    if (fread(diEntry->vertexIndices, indexBytes, 1, file) != 1) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
@@ -2354,12 +2106,7 @@ namespace zModel_DiPool {
                 if ((diEntry->flagsAndIndexCount & 0x0200) != 0) {
                     const unsigned int indexBytes = indexCount * 4;
                     diEntry->normalIndices = malloc(indexBytes);
-                    if (fread(
-                        diEntry->normalIndices,
-                        indexBytes,
-                        1,
-                        file
-                    ) != 1) {
+                    if (fread(diEntry->normalIndices, indexBytes, 1, file) != 1) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
@@ -2373,12 +2120,7 @@ namespace zModel_DiPool {
                 if ((diEntry->material->flags & 0x0100) != 0) {
                     const unsigned int uvBytes = indexCount * (unsigned int)(sizeof(zModel_Uv));
                     diEntry->uvPairs = malloc(uvBytes);
-                    if (fread(
-                        diEntry->uvPairs,
-                        uvBytes,
-                        1,
-                        file
-                    ) != 1) {
+                    if (fread(diEntry->uvPairs, uvBytes, 1, file) != 1) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
@@ -2428,18 +2170,10 @@ namespace zModel_DiPool {
         if (g_zModel_DiPoolBase == 0) {
             g_zModel_DiPoolBase = (zDiPartial *)(malloc(poolBytes));
         } else if (g_zModel_DiPoolCapacity > oldCapacity) {
-            g_zModel_DiPoolBase = (zDiPartial *)(realloc(
-                g_zModel_DiPoolBase,
-                poolBytes
-            ));
+            g_zModel_DiPoolBase = (zDiPartial *)(realloc(g_zModel_DiPoolBase, poolBytes));
         }
 
-        if (fread(
-            g_zModel_DiPoolBase,
-            poolBytes,
-            1,
-            file
-        ) != 1) {
+        if (fread(g_zModel_DiPoolBase, poolBytes, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_SourceFile_GmodConstC,
@@ -2451,10 +2185,7 @@ namespace zModel_DiPool {
 
         {
             for (int poolIndex = 0; poolIndex < g_zModel_DiPoolCapacity; ++poolIndex) {
-                ReadEntryDynamicDataFromStream(
-                    file,
-                    &g_zModel_DiPoolBase[poolIndex]
-                );
+                ReadEntryDynamicDataFromStream(file, &g_zModel_DiPoolBase[poolIndex]);
             }
         }
 
@@ -2483,11 +2214,7 @@ zDiPartial *__cdecl AllocFromFreeList() {
     zDiPartial *const entry = &g_zModel_DiPoolBase[slotIndex];
     g_zModel_DiPoolFreeHeadIndex = entry->nextFreeIndex;
     g_zModel_DiPoolInUseCount += 1;
-    memset(
-        entry,
-        0,
-        offsetof(zDiPartial, nextFreeIndex)
-    );
+    memset(entry, 0, offsetof(zDiPartial, nextFreeIndex));
     entry->flags = (entry->flags & 0xffffffdf) | 0x03;
     return entry;
 }
@@ -2513,11 +2240,7 @@ int __fastcall FreeIfUnreferenced(
     }
 
     zDi::FreeContents(di);
-    memset(
-        di,
-        0,
-        offsetof(zDiPartial, nextFreeIndex)
-    );
+    memset(di, 0, offsetof(zDiPartial, nextFreeIndex));
 
     const ptrdiff_t slotIndex = di - g_zModel_DiPoolBase;
     g_zModel_DiPoolBase[slotIndex].nextFreeIndex = g_zModel_DiPoolFreeHeadIndex;
@@ -2609,14 +2332,8 @@ namespace zDi {
 
         clone->mode = self->mode;
         clone->refCount = 0;
-        SetFlagBit0(
-            clone,
-            self->flags & 1
-        );
-        SetClonedFlag(
-            clone,
-            (self->flags >> 1) & 1
-        );
+        SetFlagBit0(clone, self->flags & 1);
+        SetClonedFlag(clone, (self->flags >> 1) & 1);
         clone->flags = (clone->flags & ~0x04) | (self->flags & 0x04);
         clone->flags = (clone->flags & ~0x08) | (self->flags & 0x08);
         clone->flags = (clone->flags & ~0x10) | (self->flags & 0x10);
@@ -2652,22 +2369,14 @@ namespace zDi {
             const size_t blendVertBytes =
                 (size_t)(self->blendVertCount) * sizeof(zVec3);
             clone->blendVerts = (zVec3 *)(malloc(blendVertBytes));
-            memcpy(
-                clone->blendVerts,
-                self->blendVerts,
-                blendVertBytes
-            );
+            memcpy(clone->blendVerts, self->blendVerts, blendVertBytes);
         }
 
         clone->vertCount = self->vertCount;
         if (self->vertCount > 0) {
             const size_t vertBytes = (size_t)(self->vertCount) * sizeof(zVec3);
             clone->verts = (zVec3 *)(malloc(vertBytes));
-            memcpy(
-                clone->verts,
-                self->verts,
-                vertBytes
-            );
+            memcpy(clone->verts, self->verts, vertBytes);
         }
 
         clone->normalCount = self->normalCount;
@@ -2675,20 +2384,13 @@ namespace zDi {
             const size_t normalBytes =
                 (size_t)(self->normalCount) * sizeof(zVec3);
             clone->normals = (zVec3 *)(malloc(normalBytes));
-            memcpy(
-                clone->normals,
-                self->normals,
-                normalBytes
-            );
+            memcpy(clone->normals, self->normals, normalBytes);
         }
 
         clone->entryCount = self->entryCount;
         if (self->entryCount > 0) {
             clone->entries =
-                (zDiEntryPartial *)(calloc(
-                    (size_t)(self->entryCount),
-                    sizeof(zDiEntryPartial)
-                ));
+                (zDiEntryPartial *)(calloc((size_t)(self->entryCount), sizeof(zDiEntryPartial)));
         }
 
         MaterialClonePair *materialPairs = 0;
@@ -2699,11 +2401,7 @@ namespace zDi {
 
             destEntry.drawFlags = sourceEntry.drawFlags;
             destEntry.flagsAndIndexCount = sourceEntry.flagsAndIndexCount & 0x00000300;
-            memcpy(
-                &destEntry.variantTagInitialized,
-                &sourceEntry.variantTagInitialized,
-                4
-            );
+            memcpy(&destEntry.variantTagInitialized, &sourceEntry.variantTagInitialized, 4);
 
             zModel_MaterialPartial *material = sourceEntry.material;
             if (cloneMaterials != 0) {
@@ -2736,31 +2434,19 @@ namespace zDi {
             const size_t indexBytes = (size_t)(indexCount) * sizeof(unsigned int);
             if (indexBytes != 0) {
                 destEntry.vertexIndices = malloc(indexBytes);
-                memcpy(
-                    destEntry.vertexIndices,
-                    sourceEntry.vertexIndices,
-                    indexBytes
-                );
+                memcpy(destEntry.vertexIndices, sourceEntry.vertexIndices, indexBytes);
             }
             if ((sourceEntry.flagsAndIndexCount & 0x00000200) != 0 &&
                 sourceEntry.normalIndices != 0) {
                 destEntry.normalIndices = malloc(indexBytes);
-                memcpy(
-                    destEntry.normalIndices,
-                    sourceEntry.normalIndices,
-                    indexBytes
-                );
+                memcpy(destEntry.normalIndices, sourceEntry.normalIndices, indexBytes);
             }
 
             destEntry.flagsAndIndexCount = (destEntry.flagsAndIndexCount & ~0xffu) | indexCount;
             if ((destEntry.material->flags & 0x0100) != 0) {
                 const size_t uvBytes = (size_t)(indexCount) * 8u;
                 destEntry.uvPairs = malloc(uvBytes);
-                memcpy(
-                    destEntry.uvPairs,
-                    sourceEntry.uvPairs,
-                    uvBytes
-                );
+                memcpy(destEntry.uvPairs, sourceEntry.uvPairs, uvBytes);
             }
         }
 
@@ -2903,10 +2589,7 @@ int __fastcall AddOrMergeVertex(
 
     const int appendedVertexIndex = self->vertCount;
     self->verts =
-        (zVec3 *)(realloc(
-            self->verts,
-            (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)
-        ));
+        (zVec3 *)(realloc(self->verts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
     self->verts[appendedVertexIndex] = *point;
     self->vertCount = appendedVertexIndex + 1;
     return appendedVertexIndex;
@@ -2941,17 +2624,11 @@ int __fastcall AddOrMergeVertexAndNormal(
 
     const int appendedVertexIndex = self->vertCount;
     self->verts =
-        (zVec3 *)(realloc(
-            self->verts,
-            (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)
-        ));
+        (zVec3 *)(realloc(self->verts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
     self->verts[appendedVertexIndex] = *point;
 
     self->blendVerts =
-        (zVec3 *)(realloc(
-            self->blendVerts,
-            (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)
-        ));
+        (zVec3 *)(realloc(self->blendVerts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
     self->blendVerts[appendedVertexIndex] = blendNormalDelta;
 
     self->vertCount = appendedVertexIndex + 1;
@@ -2998,10 +2675,7 @@ int __fastcall FindOrAppendNormalIndex(
 
     const int appendedNormalIndex = self->normalCount;
     self->normals =
-        (zVec3 *)(realloc(
-            self->normals,
-            (size_t)(appendedNormalIndex + 1) * sizeof(zVec3)
-        ));
+        (zVec3 *)(realloc(self->normals, (size_t)(appendedNormalIndex + 1) * sizeof(zVec3)));
     self->normals[appendedNormalIndex] = *normal;
     self->normalCount = appendedNormalIndex + 1;
     if ((double)(self->normalCount) > g_zModel_ConstVertexWarnThreshold) {
@@ -3028,10 +2702,10 @@ int __fastcall FindOrAppendNormalIndex(
 namespace zModel_Const {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.removecolinearverticesinplace
- * @recoil-artifact defines .text recoil:function:0x482b40: zModel_Const::RemoveColinearVerticesInPlace
+ * @recoil-artifact defines .text recoil:function:0x482b40: zModel_Const::check_colinearity
  * Purpose: remove colinear vertices from a polygon point array in place.
  */
-int __fastcall RemoveColinearVerticesInPlace(
+int __fastcall check_colinearity(
     int *vertexCount,
     zVec3 *points,
     zClipUV *,
@@ -3142,11 +2816,7 @@ int __fastcall IsPolygonCoplanar(
     zVec3 *vertices
 ) {
     zGeometry_PlaneEquationPartial plane;
-    ComputePolygonPlaneEquation(
-        vertexCount,
-        vertices,
-        &plane
-    );
+    ComputePolygonPlaneEquation(vertexCount, vertices, &plane);
 
     if (vertexCount <= 0) {
         return 1;
@@ -3529,7 +3199,7 @@ int __fastcall AddPolygonEx(
     }
 
     const int originalVertexCount = vertexCount;
-    if (zModel_Const::RemoveColinearVerticesInPlace(
+    if (zModel_Const::check_colinearity(
             &vertexCount,
             points,
             uvPairsA,
@@ -3548,10 +3218,7 @@ int __fastcall AddPolygonEx(
         return 1;
     }
 
-    if (vertexCount > 3 && zModel_Const::IsPolygonCoplanar(
-        vertexCount,
-        points
-    ) == 0) {
+    if (vertexCount > 3 && zModel_Const::IsPolygonCoplanar(vertexCount, points) == 0) {
         zError::ReportOld(
             0x100,
             "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
@@ -3602,11 +3269,7 @@ int __fastcall AddPolygonEx(
     self->entries = entries;
 
     zDiEntryPartial *const entry = &entries[self->entryCount];
-    memset(
-        entry,
-        0,
-        sizeof(zDiEntryPartial)
-    );
+    memset(entry, 0, sizeof(zDiEntryPartial));
     entry->flagsAndIndexCount =
         (unsigned int)(vertexCount & 0xff) | ((unsigned int)(flagBit8 & 1) << 8);
     if (entryNormals != 0) {
@@ -3626,27 +3289,17 @@ int __fastcall AddPolygonEx(
     for (int i = 0; i < vertexCount; ++i) {
         if (normalsA != 0) {
             vertexIndices[i] =
-                zModel_Const::AddOrMergeVertexAndNormal(
-                    self,
-                    pointCursor,
-                    normalBCursor
-                );
+                zModel_Const::AddOrMergeVertexAndNormal(self, pointCursor, normalBCursor);
             ++normalBCursor;
         } else {
-            vertexIndices[i] = zModel_Const::AddOrMergeVertex(
-                self,
-                pointCursor
-            );
+            vertexIndices[i] = zModel_Const::AddOrMergeVertex(self, pointCursor);
         }
         if (vertexIndices[i] < 0) {
             return 1;
         }
 
         if (entryNormals != 0) {
-            normalIndices[i] = zModel_Const::FindOrAppendNormalIndex(
-                self,
-                entryNormalCursor
-            );
+            normalIndices[i] = zModel_Const::FindOrAppendNormalIndex(self, entryNormalCursor);
             ++entryNormalCursor;
         }
         ++pointCursor;
@@ -3654,11 +3307,7 @@ int __fastcall AddPolygonEx(
 
     if ((material->flags & 0x0100) != 0) {
         entry->uvPairs = malloc((size_t)(vertexCount) * sizeof(zClipUV));
-        memcpy(
-            entry->uvPairs,
-            uvPairsA,
-            (size_t)(vertexCount) * sizeof(zClipUV)
-        );
+        memcpy(entry->uvPairs, uvPairsA, (size_t)(vertexCount) * sizeof(zClipUV));
         zClipUV *const entryUvPairs = (zClipUV *)(entry->uvPairs);
         float minU = entryUvPairs[0].u;
         float minV = entryUvPairs[0].v;
@@ -3680,21 +3329,11 @@ int __fastcall AddPolygonEx(
     }
 
     entry->material = material;
-    RebuildGeneratedUvPairsForEntry(
-        self,
-        self->entryCount
-    );
+    RebuildGeneratedUvPairsForEntry(self, self->entryCount);
     if ((material->flags & 0x0100) != 0) {
-        zModel_Const::QuantizeAndNormalizeUvPairs(
-            vertexCount,
-            (zClipUV *)(entry->uvPairs)
-        );
+        zModel_Const::QuantizeAndNormalizeUvPairs(vertexCount, (zClipUV *)(entry->uvPairs));
     }
-    memcpy(
-        &entry->variantTagInitialized,
-        userTag,
-        sizeof(*userTag)
-    );
+    memcpy(&entry->variantTagInitialized, userTag, sizeof(*userTag));
 
     ++self->entryCount;
     return 0;
@@ -3741,15 +3380,9 @@ namespace zDi {
         }
 
         if (self->mode == 0) {
-            BuildAabb(
-                self,
-                outBoundsMinMax
-            );
+            BuildAabb(self, outBoundsMinMax);
         } else if (self->mode == 1) {
-            BuildOriginSymmetricAabb(
-                self,
-                outBoundsMinMax
-            );
+            BuildOriginSymmetricAabb(self, outBoundsMinMax);
         }
 
         const float halfX = (outBoundsMinMax->max.x - outBoundsMinMax->min.x) * 0.5f;
@@ -3837,7 +3470,7 @@ namespace zDi {
         }
 
         if (self->blendVertCount > 0) {
-            zMath_Vec3Array_AddScaled(
+            zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 self->verts,
                 self->blendVerts,
@@ -3879,10 +3512,7 @@ namespace zDi {
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
     ) {
-        BuildAabb(
-            self,
-            outBoundsMinMax
-        );
+        BuildAabb(self, outBoundsMinMax);
 
         float extentX = (float)fabs(outBoundsMinMax->min.x);
         if (extentX < outBoundsMinMax->max.x) {
@@ -3947,10 +3577,7 @@ void __fastcall BuildBlendVertsFromConnectivity(
     int minSharedVertexCount
 ) {
     const int vertCount = self->vertCount;
-    self->blendVerts = (zVec3 *)(realloc(
-        self->blendVerts,
-        (size_t)(vertCount) * sizeof(zVec3)
-    ));
+    self->blendVerts = (zVec3 *)(realloc(self->blendVerts, (size_t)(vertCount) * sizeof(zVec3)));
 
     int *const blendDisabledMask = (int *)(malloc((size_t)(vertCount) * sizeof(int)));
     int *const vertexReferenceCounts = (int *)(malloc((size_t)(vertCount) * sizeof(int)));
@@ -4068,10 +3695,7 @@ namespace zDi {
         for (int i = 0; i < self->entryCount; ++i) {
             zModel_MaterialPartial *material = self->entries[i].material;
             if ((material->flags & 0x0100) != 0) {
-                zModel_Material::SetFlagBit9(
-                    material,
-                    enabled
-                );
+                zModel_Material::SetFlagBit9(material, enabled);
             }
         }
     }
@@ -4130,19 +3754,13 @@ int __fastcall SetCurrentVariantCycleTextureCount(
             "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
             0xf3f
         );
-        fprintf(
-            stderr,
-            g_zError_DebugMsgBuffer
-        );
+        fprintf(stderr, g_zError_DebugMsgBuffer);
         return -1;
     }
 
     zModel_MaterialPartial *const material = self->entries->material;
     if (material != 0) {
-        zModel_Material::SetCycleTextureCount(
-            material,
-            textureCount
-        );
+        zModel_Material::SetCycleTextureCount(material, textureCount);
         return 0;
     }
 
@@ -4199,10 +3817,7 @@ int __fastcall SetCycleTextureLoop(
         return 0;
     }
 
-    return zModel_Material::SetCycleTextureLoop(
-        instance->entries->material,
-        loopEnabled
-    );
+    return zModel_Material::SetCycleTextureLoop(instance->entries->material, loopEnabled);
 }
 } // namespace zModel_Instance
 
@@ -4222,10 +3837,7 @@ int __fastcall SetCurrentVariantCycleTextureSpeed(
         return 0;
     }
 
-    return zModel_Material::SetCycleTextureSpeed(
-        self->entries->material,
-        cycleSpeed
-    );
+    return zModel_Material::SetCycleTextureSpeed(self->entries->material, cycleSpeed);
 }
 } // namespace zDi
 
@@ -4245,10 +3857,7 @@ int __fastcall AddCycleTexture(
         return 0;
     }
 
-    return zModel_Material::AddCycleTexture(
-        instance->entries->material,
-        textureDirectoryEntry
-    );
+    return zModel_Material::AddCycleTexture(instance->entries->material, textureDirectoryEntry);
 }
 } // namespace zModel_Instance
 
@@ -4302,12 +3911,7 @@ void __fastcall RebuildGeneratedUvPairsForEntry(
     const zVec3 *const vertex2 = &self->verts[vertexIndices[2]];
 
     zVec3 triangleNormal;
-    zMath_Vec3_TriangleNormal(
-        vertex0,
-        vertex1,
-        vertex2,
-        &triangleNormal
-    );
+    zMathVec3TriangleNormal(vertex0, vertex1, vertex2, &triangleNormal);
     zMath::Vec3Normalize(&triangleNormal);
 
     const float absX = (float)(fabs(triangleNormal.x));
@@ -4473,7 +4077,7 @@ namespace zDi {
 
         const zVec3 *vertices = self->verts;
         if ((self->flags & 0x08) != 0 && self->blendScale != 0.0f && self->blendVertCount != 0) {
-            zMath_Vec3Array_AddScaled(
+            zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 self->verts,
                 self->blendVerts,
@@ -4559,7 +4163,7 @@ namespace zModelConst {
         const zModel_PickFaceEntry *faceEntry
     ) {
         zVec3 normal;
-        zMath_Vec3_TriangleNormal(
+        zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
             &polygonVertices[2],
@@ -4649,7 +4253,7 @@ namespace zClass_cls_di {
         const zVec3 *vertices = faceData->baseVertices;
         if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f &&
             faceData->morphVertexCount != 0) {
-            zMath_Vec3Array_AddScaled(
+            zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 faceData->baseVertices,
                 faceData->morphVertices,
@@ -4725,7 +4329,7 @@ namespace zClass_cls_di {
         const zVec3 *vertices = faceData->baseVertices;
         if ((faceData->flags & 8) != 0 && faceData->morphWeight != 0.0f &&
             faceData->morphVertexCount != 0) {
-            zMath_Vec3Array_AddScaled(
+            zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 faceData->baseVertices,
                 faceData->morphVertices,
@@ -4964,7 +4568,7 @@ namespace zClass_cls_di {
             }
         }
 
-        zMath_Vec3_TriangleNormal(
+        zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
             &polygonVertices[2],
@@ -5000,7 +4604,7 @@ namespace zClass_cls_di {
         int vertexCount,
         int cullBackface
     ) {
-        zMath_Vec3_TriangleNormal(
+        zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
             &polygonVertices[2],
@@ -5123,7 +4727,7 @@ namespace zClass_cls_di {
         int vertexCount,
         int cullBackface
     ) {
-        zMath_Vec3_TriangleNormal(
+        zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
             &polygonVertices[2],
@@ -5229,7 +4833,7 @@ namespace zClass_cls_di {
         float vGrad0;
         float vGrad1;
         if (dominantAxis == 0) {
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &uGrad0,
                 &uGrad1,
                 polygonVertices[0].y,
@@ -5242,7 +4846,7 @@ namespace zClass_cls_di {
                 faceUvData->uvs[1].x,
                 faceUvData->uvs[2].x
             );
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &vGrad0,
                 &vGrad1,
                 polygonVertices[0].y,
@@ -5260,7 +4864,7 @@ namespace zClass_cls_di {
             outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad0 +
                        (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
         } else if (dominantAxis == 1) {
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &uGrad0,
                 &uGrad1,
                 polygonVertices[0].x,
@@ -5273,7 +4877,7 @@ namespace zClass_cls_di {
                 faceUvData->uvs[1].x,
                 faceUvData->uvs[2].x
             );
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &vGrad0,
                 &vGrad1,
                 polygonVertices[0].x,
@@ -5291,7 +4895,7 @@ namespace zClass_cls_di {
             outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 +
                        (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
         } else {
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &uGrad0,
                 &uGrad1,
                 polygonVertices[0].x,
@@ -5304,7 +4908,7 @@ namespace zClass_cls_di {
                 faceUvData->uvs[1].x,
                 faceUvData->uvs[2].x
             );
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &vGrad0,
                 &vGrad1,
                 polygonVertices[0].x,
@@ -5323,10 +4927,7 @@ namespace zClass_cls_di {
                        (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
         }
 
-        OptCatalog_SetDamageMaskUv(
-            outUv->x,
-            outUv->y
-        );
+        OptCatalogSetDamageMaskUv(outUv->x, outUv->y);
         return 1;
     }
 } // namespace zClass_cls_di
@@ -5354,7 +4955,7 @@ namespace zClass_cls_di {
         }
 
         zVec3 normal;
-        zMath_Vec3_TriangleNormal(
+        zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
             &polygonVertices[2],
@@ -5515,7 +5116,7 @@ namespace zClass_cls_di {
         }
 
         zVec3 normal;
-        zMath_Vec3_TriangleNormal(
+        zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
             &polygonVertices[2],
@@ -5635,15 +5236,15 @@ namespace zClass_cls_di {
         float vGrad1;
 
         if (dominantAxis == 2) {
-            if (OptCatalog_IsDamageMaskEnabled() != 0) {
-                zMath_SolveLinearGradient2D(
+            if (OptCatalogIsDamageMaskEnabled() != 0) {
+                zMathSolveLinearGradient2D(
                     &uGrad0, &uGrad1,
                     polygonVertices[0].x, polygonVertices[0].y,
                     polygonVertices[1].x, polygonVertices[1].y,
                     polygonVertices[2].x, polygonVertices[2].y,
                     faceUvData->uvs[0].x, faceUvData->uvs[1].x, faceUvData->uvs[2].x
                 );
-                zMath_SolveLinearGradient2D(
+                zMathSolveLinearGradient2D(
                     &vGrad0, &vGrad1,
                     polygonVertices[0].x, polygonVertices[0].y,
                     polygonVertices[1].x, polygonVertices[1].y,
@@ -5662,14 +5263,14 @@ namespace zClass_cls_di {
                     continue;
                 }
                 zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-                if (OptCatalog_IsDamageMaskEnabled() != 0) {
+                if (OptCatalogIsDamageMaskEnabled() != 0) {
                     scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad1 +
                                    (entry->hitPos.x - polygonVertices[0].x) * uGrad0 +
                                    faceUvData->uvs[0].x;
                     scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad1 +
                                    (entry->hitPos.x - polygonVertices[0].x) * vGrad0 +
                                    faceUvData->uvs[0].y;
-                    OptCatalog_SetDamageMaskUv(scratchUv->x, scratchUv->y);
+                    OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
                 }
                 entry->surfaceNormal = normal;
                 entry->node = candidateOwner;
@@ -5681,15 +5282,15 @@ namespace zClass_cls_di {
         }
 
         if (dominantAxis == 1) {
-            if (OptCatalog_IsDamageMaskEnabled() != 0) {
-                zMath_SolveLinearGradient2D(
+            if (OptCatalogIsDamageMaskEnabled() != 0) {
+                zMathSolveLinearGradient2D(
                     &uGrad0, &uGrad1,
                     polygonVertices[0].x, polygonVertices[0].z,
                     polygonVertices[1].x, polygonVertices[1].z,
                     polygonVertices[2].x, polygonVertices[2].z,
                     faceUvData->uvs[0].x, faceUvData->uvs[1].x, faceUvData->uvs[2].x
                 );
-                zMath_SolveLinearGradient2D(
+                zMathSolveLinearGradient2D(
                     &vGrad0, &vGrad1,
                     polygonVertices[0].x, polygonVertices[0].z,
                     polygonVertices[1].x, polygonVertices[1].z,
@@ -5710,14 +5311,14 @@ namespace zClass_cls_di {
                     continue;
                 }
                 zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-                if (OptCatalog_IsDamageMaskEnabled() != 0) {
+                if (OptCatalogIsDamageMaskEnabled() != 0) {
                     scratchUv->x = (entry->hitPos.z - polygonVertices[0].z) * uGrad1 +
                                    (entry->hitPos.x - polygonVertices[0].x) * uGrad0 +
                                    faceUvData->uvs[0].x;
                     scratchUv->y = (entry->hitPos.z - polygonVertices[0].z) * vGrad1 +
                                    (entry->hitPos.x - polygonVertices[0].x) * vGrad0 +
                                    faceUvData->uvs[0].y;
-                    OptCatalog_SetDamageMaskUv(scratchUv->x, scratchUv->y);
+                    OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
                 }
                 entry->surfaceNormal = normal;
                 entry->node = candidateOwner;
@@ -5728,15 +5329,15 @@ namespace zClass_cls_di {
             return anyActive;
         }
 
-        if (OptCatalog_IsDamageMaskEnabled() != 0) {
-            zMath_SolveLinearGradient2D(
+        if (OptCatalogIsDamageMaskEnabled() != 0) {
+            zMathSolveLinearGradient2D(
                 &uGrad0, &uGrad1,
                 polygonVertices[0].y, polygonVertices[0].z,
                 polygonVertices[1].y, polygonVertices[1].z,
                 polygonVertices[2].y, polygonVertices[2].z,
                 faceUvData->uvs[0].x, faceUvData->uvs[1].x, faceUvData->uvs[2].x
             );
-            zMath_SolveLinearGradient2D(
+            zMathSolveLinearGradient2D(
                 &vGrad0, &vGrad1,
                 polygonVertices[0].y, polygonVertices[0].z,
                 polygonVertices[1].y, polygonVertices[1].z,
@@ -5757,14 +5358,14 @@ namespace zClass_cls_di {
                 continue;
             }
             zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-            if (OptCatalog_IsDamageMaskEnabled() != 0) {
+            if (OptCatalogIsDamageMaskEnabled() != 0) {
                 scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad0 +
                                (entry->hitPos.z - polygonVertices[0].z) * uGrad1 +
                                faceUvData->uvs[0].x;
                 scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad0 +
                                (entry->hitPos.z - polygonVertices[0].z) * vGrad1 +
                                faceUvData->uvs[0].y;
-                OptCatalog_SetDamageMaskUv(scratchUv->x, scratchUv->y);
+                OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
             }
             entry->surfaceNormal = normal;
             entry->node = candidateOwner;
@@ -5799,7 +5400,7 @@ namespace zClass_cls_di {
         const zVec3 *vertices = faceData->baseVertices;
         if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f &&
             faceData->morphVertexCount != 0) {
-            zMath_Vec3Array_AddScaled(
+            zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 faceData->baseVertices,
                 faceData->morphVertices,
@@ -5889,11 +5490,7 @@ namespace zClass_cls_di {
         const zBBoxCorners *bboxCorners
     ) {
         zModel_PickFaceEntry faceEntry;
-        memset(
-            &faceEntry,
-            0,
-            sizeof(faceEntry)
-        );
+        memset(&faceEntry, 0, sizeof(faceEntry));
         faceEntry.flagsAndVertexCount = 4;
 
         int result = 0;

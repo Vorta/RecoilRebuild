@@ -218,19 +218,11 @@ namespace {
      */
     float ApproximateSqrtFromBits(float value) {
         int bits = 0;
-        memcpy(
-            &bits,
-            &value,
-            sizeof(bits)
-        );
+        memcpy(&bits, &value, sizeof(bits));
         bits = (bits >> 1) + 0x1fc00000;
 
         float result = 0.0f;
-        memcpy(
-            &result,
-            &bits,
-            sizeof(result)
-        );
+        memcpy(&result, &bits, sizeof(result));
         return result;
     }
 
@@ -245,11 +237,7 @@ namespace {
         float radius
     ) {
         float projectedY = 0.0f;
-        zMath::Vec3ArrayProjectToCachedY(
-            point,
-            &projectedY,
-            1
-        );
+        zMath::Vec3ArrayProjectToCachedY(point, &projectedY, 1);
 
         const float bottom = projectedY - radius;
         if (bottom >= gModel_FogHeightHigh) {
@@ -359,11 +347,11 @@ namespace {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-pointinpolygoninitxz
- * @recoil-artifact defines .text recoil:function:0x487a30: zModel_Light_PointInPolygonInitXZ
+ * @recoil-artifact defines .text recoil:function:0x487a30: zModelLightPointInPolygonInitXZ
  * Purpose: seed active light inputs, filter enabled light states, track the
  * active point-light index, and initialize software-path ambient/remap state.
  */
-void __fastcall zModel_Light_PointInPolygonInitXZ(
+void __fastcall zModelLightPointInPolygonInitXZ(
     zClass_LightDataPartial **lightDataList,
     zModel_LightStatePartial **lightNodeStates,
     int lightCount
@@ -535,10 +523,7 @@ namespace zModel_Light {
             }
 
             float weight =
-                entry.useFullWeight != 0 ? 1.0f : EvalDistanceWeight(
-                    light,
-                    lightDistances[i_647]
-                );
+                entry.useFullWeight != 0 ? 1.0f : EvalDistanceWeight(light, lightDistances[i_647]);
             const float cap = light->falloff + light->intensityScale;
             if (cap < weight) {
                 weight = cap;
@@ -615,7 +600,7 @@ namespace zModel_Light {
                     if (vertex.z < light->range2) {
                         lightToVertex[lightIndex][vertexIndex] = vertex;
                         if (vertex.z != 0.0f) {
-                            zMath_Vec3_DivScalar(
+                            zMathVec3DivScalar(
                                 &lightToVertex[lightIndex][vertexIndex],
                                 &lightToVertex[lightIndex][vertexIndex],
                                 vertex.z
@@ -643,24 +628,12 @@ namespace zModel_Light {
 
                 if (distanceSq != 0.0f) {
                     int distanceBits = 0;
-                    memcpy(
-                        &distanceBits,
-                        &distanceSq,
-                        sizeof(distanceBits)
-                    );
+                    memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
                     distanceBits = (distanceBits >> 1) + 0x1fc00000;
                     float distance = 0.0f;
-                    memcpy(
-                        &distance,
-                        &distanceBits,
-                        sizeof(distance)
-                    );
+                    memcpy(&distance, &distanceBits, sizeof(distance));
                     distances[lightIndex][vertexIndex] = distance;
-                    zMath_Vec3_DivScalar(
-                        &delta,
-                        &delta,
-                        distance
-                    );
+                    zMathVec3DivScalar(&delta, &delta, distance);
                 }
 
                 lightToVertex[lightIndex][vertexIndex] = delta;
@@ -677,17 +650,9 @@ namespace zModel_Light {
         zMath::Vec3Normalize(surfaceNormal);
 
         float fogWeights[0x40] = {0};
-        memset(
-            g_Clip_PolyAttr1,
-            0,
-            (size_t)(vertexCount) * sizeof(float)
-        );
+        memset(g_Clip_PolyAttr1, 0, (size_t)(vertexCount) * sizeof(float));
         if (g_zVideo_ActiveRendererPath != 0 && (*lightFlags & 1) == 0) {
-            memset(
-                g_Clip_PolyAttr2,
-                0,
-                (size_t)(vertexCount) * sizeof(float)
-            );
+            memset(g_Clip_PolyAttr2, 0, (size_t)(vertexCount) * sizeof(float));
         }
 
         int fogContributorCount = 0;
@@ -793,10 +758,7 @@ namespace zModel_Light {
                         pointSum += weight;
                     } else {
                         if (entry.useFullWeight == 0) {
-                            weight *= EvalDistanceWeight(
-                                light,
-                                distances[lightIndex][vertexIndex]
-                            );
+                            weight *= EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
                         }
                         fogWeights[vertexIndex] += weight;
                         fogSum += weight;
@@ -817,10 +779,7 @@ namespace zModel_Light {
                     pointSum += weight;
                 } else {
                     if (entry.useFullWeight == 0) {
-                        weight *= EvalDistanceWeight(
-                            light,
-                            distances[lightIndex][vertexIndex]
-                        );
+                        weight *= EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
                     }
                     if (light->lightParam != 0) {
                         g_Clip_PolyAttr2[vertexIndex] += weight;
@@ -892,26 +851,21 @@ namespace zModel_Light {
                     for (int i = 0; i < vertexCount; ++i) {
                         g_Clip_PolyAttr0[i] = g_Clip_PolyAttr1[i] * scale255;
                     }
-                    zRndr_SetPaletteShadeRecipeIndex(
-                        &gModel_SpecialLightPaletteRemapRecipe
-                    );
+                    zRndrSetPaletteShadeRecipeIndex(&gModel_SpecialLightPaletteRemapRecipe);
                     *lightingMode |= 1;
                     return 1;
                 }
 
                 if (pointAttrsVisible != 0) {
                     g_Clip_PolyAttr1[0] *= scale255;
-                    zRndr_SetPaletteRemapKey(
+                    zRndrSetPaletteRemapKey(
                         &gModel_SpecialLightPaletteRemapRecipe,
                         g_Clip_PolyAttr1[0]
                     );
                 }
                 if (pointAttrsVisible == 0 &&
                     g_zModel_FogTargetColorOverride.weight > kVisibleWeight) {
-                    zRndr_SetPaletteRemapKeyFromRgb01(
-                        0,
-                        0.0f
-                    );
+                    zRndrSetPaletteRemapKeyFromRgb01(0, 0.0f);
                 }
             } else if (pointAttrsVisible != 0) {
                 *lightingMode |= 1;
@@ -942,9 +896,7 @@ namespace zModel_Light {
                     zColorRgb *color = selectedFogLightIndex < 0
                         ? &g_zModel_FogTargetColorOverride.colorRgb01
                         : &gModel_ActiveLights[selectedFogLightIndex].light->specularColor;
-                    zRndr_FogTargetColorStaged_SetRgb01Clamped(
-                        color
-                    );
+                    zRndrFogTargetColorStagedSetRgb01Clamped(color);
                     zRndr::CommitStagedFogParamsIfChanged();
                 }
             }
@@ -980,7 +932,7 @@ namespace zModel_Light {
                     ? &g_zModel_FogTargetColorOverride.colorRgb01
                     : &gModel_ActiveLights[selectedFogLightIndex].light->specularColor;
                 if ((previousFlags & 1) != 0) {
-                    zVideo_SetPendingFogTargetColorFromRgb01((zVideo_ColorRgbFloat *)(color));
+                    zVideoSetPendingFogTargetColorFromRgb01((zVideo_ColorRgbFloat *)(color));
                     zVideo::CommitFogTargetColorIfChanged();
                 } else {
                     zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat *)(color));
@@ -991,7 +943,7 @@ namespace zModel_Light {
 
         if (selectedFogLightIndex >= 0 && resultFlags != 0) {
             *lightFlags |= 4;
-            zVideo_SetPendingFogTargetColorFromRgb01((zVideo_ColorRgbFloat
+            zVideoSetPendingFogTargetColorFromRgb01((zVideo_ColorRgbFloat
                     *)(&gModel_ActiveLights[selectedFogLightIndex].light->specularColor));
         }
 
@@ -1005,7 +957,7 @@ namespace zModel_Light {
  * Purpose: build software-path per-vertex light weights, choose and commit fog
  * target state, blend the packed fog color, and report whether lighting applied.
  */
-int __fastcall zModel_Light_BuildLightWeights(
+int __fastcall zModelLightBuildLightWeights(
     zVec3 *surfaceNormal,
     int vertexCount,
     int *outPackedFogColor,
@@ -1055,23 +1007,11 @@ int __fastcall zModel_Light_BuildLightWeights(
 
                     if (distanceSq != 0.0f) {
                         int distanceBits = 0;
-                        memcpy(
-                            &distanceBits,
-                            &distanceSq,
-                            sizeof(distanceBits)
-                        );
+                        memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
                         distanceBits = (distanceBits >> 1) + 0x1fc00000;
                         float distance = 0.0f;
-                        memcpy(
-                            &distance,
-                            &distanceBits,
-                            sizeof(distance)
-                        );
-                        zMath_Vec3_DivScalar(
-                            &delta,
-                            &delta,
-                            distance
-                        );
+                        memcpy(&distance, &distanceBits, sizeof(distance));
+                        zMathVec3DivScalar(&delta, &delta, distance);
                         gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] = distance;
                     }
 
@@ -1241,7 +1181,7 @@ int __fastcall zModel_Light_BuildLightWeights(
         zColorRgb *color = singleLightIndex >= 0
                                ? &gModel_ActiveLights[singleLightIndex].light->specularColor
                                : &g_zModel_FogTargetColorOverride.colorRgb01;
-        zRndr_FogTargetColorStaged_SetRgb01Clamped(color);
+        zRndrFogTargetColorStagedSetRgb01Clamped(color);
         zRndr::CommitStagedFogParamsIfChanged();
     }
 
@@ -1253,10 +1193,7 @@ int __fastcall zModel_Light_BuildLightWeights(
     float scale = 0.0f;
     zFloat::Set255f(&scale);
     scale -= 1.0f;
-    zRndr::BlendPackedColor565WithFogInPlace(
-        outPackedFogColor,
-        (int)(maxVertexWeight * scale)
-    );
+    zRndr::BlendPackedColor565WithFogInPlace(outPackedFogColor, (int)(maxVertexWeight * scale));
     return 1;
 }
 
@@ -1295,18 +1232,10 @@ namespace zModel_Light {
     ) {
         const float distSqXZ = point->x * point->x + point->z * point->z;
         int distanceBits = 0;
-        memcpy(
-            &distanceBits,
-            &distSqXZ,
-            sizeof(distanceBits)
-        );
+        memcpy(&distanceBits, &distSqXZ, sizeof(distanceBits));
         distanceBits = (distanceBits >> 1) + 0x1fc00000;
         float distanceXZ = 0.0f;
-        memcpy(
-            &distanceXZ,
-            &distanceBits,
-            sizeof(distanceXZ)
-        );
+        memcpy(&distanceXZ, &distanceBits, sizeof(distanceXZ));
         const float farEdge = distanceXZ + radius;
         if (farEdge <= gModel_FogDistanceStart) {
             return 0.0f;
@@ -1320,22 +1249,14 @@ namespace zModel_Light {
         }
 
         float projectedBottom = 0.0f;
-        zMath::Vec3ArrayProjectToCachedY(
-            point,
-            &projectedBottom,
-            1
-        );
+        zMath::Vec3ArrayProjectToCachedY(point, &projectedBottom, 1);
         projectedBottom -= radius;
         if (projectedBottom >= gModel_FogHeightHigh) {
             return 0.0f;
         }
 
         float projectedTop = 0.0f;
-        zMath::Vec3ArrayProjectToCachedY(
-            point,
-            &projectedTop,
-            1
-        );
+        zMath::Vec3ArrayProjectToCachedY(point, &projectedTop, 1);
         projectedTop += radius;
         if (projectedTop <= gModel_FogHeightLow) {
             return 1.0f;
@@ -1375,17 +1296,9 @@ namespace zModel_Light {
             const zClipVert &vert = g_Clip_PolyVertsScratch[i];
             const float distanceSq = vert.x * vert.x + vert.z * vert.z;
             int distanceBits = 0;
-            memcpy(
-                &distanceBits,
-                &distanceSq,
-                sizeof(distanceBits)
-            );
+            memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
             distanceBits = (distanceBits >> 1) + 0x1fc00000;
-            memcpy(
-                &radialDistance[i],
-                &distanceBits,
-                sizeof(radialDistance[i])
-            );
+            memcpy(&radialDistance[i], &distanceBits, sizeof(radialDistance[i]));
         }
 
         float attrFade[0x40] = {0};
@@ -1477,18 +1390,10 @@ namespace zModel_Light {
         const zClipVert &vert = g_Clip_PolyVertsScratch[0];
         const float distanceSq = vert.x * vert.x + vert.z * vert.z;
         int distanceBits = 0;
-        memcpy(
-            &distanceBits,
-            &distanceSq,
-            sizeof(distanceBits)
-        );
+        memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
         distanceBits = (distanceBits >> 1) + 0x1fc00000;
         float distance = 0.0f;
-        memcpy(
-            &distance,
-            &distanceBits,
-            sizeof(distance)
-        );
+        memcpy(&distance, &distanceBits, sizeof(distance));
         if (distance <= gModel_FogDistanceStart) {
             return 0;
         }

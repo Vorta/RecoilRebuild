@@ -291,30 +291,15 @@ zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
 ) {
     zGeometry_ClipPolygonPartial *result =
         (zGeometry_ClipPolygonPartial *)(malloc(sizeof(zGeometry_ClipPolygonPartial)));
-    memset(
-        result,
-        0,
-        sizeof(zGeometry_ClipPolygonPartial)
-    );
+    memset(result, 0, sizeof(zGeometry_ClipPolygonPartial));
 
     const size_t pointBytes = (size_t)(pointCount) * sizeof(zVec3);
     result->points = (zVec3 *)(malloc(pointBytes));
-    memcpy(
-        result->points,
-        points,
-        pointBytes
-    );
+    memcpy(result->points, points, pointBytes);
 
-    zGeometry_Vec3Array::RotatePos90AroundX(
-        pointCount,
-        result->points
-    );
+    zGeometry_Vec3Array::RotatePos90AroundX(pointCount, result->points);
     result->pointCount = pointCount;
-    zGeometry_Vec3Array::ComputeBoundsXY(
-        &result->bounds,
-        result->points,
-        pointCount
-    );
+    zGeometry_Vec3Array::ComputeBoundsXY(&result->bounds, result->points, pointCount);
 
     return result;
 }
@@ -332,20 +317,10 @@ int __fastcall CopyPointsOutRotatedBack(
     *outPointCount = clipPolygon->pointCount;
 
     const size_t pointBytes = (size_t)(clipPolygon->pointCount) * sizeof(zVec3);
-    *outPoints = (zVec3 *)(realloc(
-        *outPoints,
-        pointBytes
-    ));
-    memcpy(
-        *outPoints,
-        clipPolygon->points,
-        pointBytes
-    );
+    *outPoints = (zVec3 *)(realloc(*outPoints, pointBytes));
+    memcpy(*outPoints, clipPolygon->points, pointBytes);
 
-    zGeometry_Vec3Array::RotateNeg90AroundX(
-        *outPointCount,
-        *outPoints
-    );
+    zGeometry_Vec3Array::RotateNeg90AroundX(*outPointCount, *outPoints);
     return 0;
 }
 
@@ -377,11 +352,7 @@ int __fastcall FindPointIndexXY(
     zVec3 *point
 ) {
     for (int i = 0; i < clipPolygon->pointCount; ++i) {
-        if (zGeometry_Vec3::IsNearEqualXY(
-            &clipPolygon->points[i],
-            point,
-            0.00999999978f
-        )) {
+        if (zGeometry_Vec3::IsNearEqualXY(&clipPolygon->points[i], point, 0.00999999978f)) {
             return i;
         }
     }
@@ -407,19 +378,13 @@ int __fastcall UpsertPointListXY(
     zVec3 *point = points;
     {
         for (int remaining = pointCount; remaining != 0; --remaining) {
-            const int existingIndex = zGeometry_ClipPolygon::FindPointIndexXY(
-                clipPolygon,
-                point
-            );
+            const int existingIndex = zGeometry_ClipPolygon::FindPointIndexXY(clipPolygon, point);
             if (existingIndex != -1) {
                 clipPolygon->points[existingIndex] = *point;
                 result = 1;
             } else {
                 const int edgeIndex =
-                    zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(
-                        clipPolygon,
-                        point
-                    );
+                    zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(clipPolygon, point);
                 if (edgeIndex != -1) {
                     const int oldPointCount = clipPolygon->pointCount;
                     clipPolygon->points = (zVec3 *)(realloc(
@@ -516,14 +481,8 @@ int __fastcall ApplyNodeDiPairs(
                 zGeometry_ClipPatchNodeDiPair *const pair = &partition->nodeDiPairs[i];
 
                 unsigned int oldDisplayInstanceValue = 0;
-                zClass_Class::gwNodeGetUserData(
-                    pair->node,
-                    &oldDisplayInstanceValue
-                );
-                zClass_Class::gwNodeSetDisplayInstance(
-                    pair->node,
-                    pair->di
-                );
+                zClass_Class::gwNodeGetUserData(pair->node, &oldDisplayInstanceValue);
+                zClass_Class::gwNodeSetDisplayInstance(pair->node, pair->di);
 
                 if (oldDisplayInstanceValue != 0) {
                     zModel_DiPool::FreeIfUnreferenced(
@@ -612,10 +571,7 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
         *outNode = child;
     }
 
-    zClass_Class::gwNodeSetNodeType(
-        child,
-        0xff
-    );
+    zClass_Class::gwNodeSetNodeType(child, 0xff);
 
     for (int i = 0; i < partitionOutput->nodeDiPairCount; ++i) {
         zGeometry_ClipPatchNodeView *const node = partitionOutput->nodeDiPairs[i].node;
@@ -624,23 +580,14 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
         }
 
         int nodeType;
-        zClass_Class::gwNodeGetNodeType(
-            node,
-            &nodeType
-        );
+        zClass_Class::gwNodeGetNodeType(node, &nodeType);
         if (nodeType != 0xff) {
-            zClass_Class::gwNodeSetNodeType(
-                child,
-                nodeType
-            );
+            zClass_Class::gwNodeSetNodeType(child, nodeType);
             break;
         }
     }
 
-    zClass_Class::gwNodeSetFlag17(
-        child,
-        1
-    );
+    zClass_Class::gwNodeSetFlag17(child, 1);
 
     zDiPartial *const displayInstance = zModel_DiPool::AllocFromFreeList();
     if (displayInstance == 0) {
@@ -652,14 +599,8 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
         return 0;
     }
 
-    zClass_Class::AddChild(
-        parentNode,
-        child
-    );
-    zClass_Class::gwNodeSetDisplayInstance(
-        child,
-        displayInstance
-    );
+    zClass_Class::AddChild(parentNode, child);
+    zClass_Class::gwNodeSetDisplayInstance(child, displayInstance);
     return displayInstance;
 }
 
@@ -722,11 +663,7 @@ int __fastcall SnapPointsNearNodeModelXY(
             );
         } else {
             linearPoints =
-                zGeometry_Model::GetLinearBufferOfPolygonVertices(
-                    polygonSet,
-                    face,
-                    linearPoints
-                );
+                zGeometry_Model::GetLinearBufferOfPolygonVertices(polygonSet, face, linearPoints);
             if (linearPoints == 0) {
                 zError::ReportOld(
                     0x400,
@@ -735,22 +672,12 @@ int __fastcall SnapPointsNearNodeModelXY(
                     g_zGeometry_PolygonVertexBufferErrorMsg
                 );
             } else {
-                zGeometry_Vec3Array::RotatePos90AroundX(
-                    vertexCount,
-                    linearPoints
-                );
+                zGeometry_Vec3Array::RotatePos90AroundX(vertexCount, linearPoints);
 
                 zGeometry_BoundsXY bounds;
-                zGeometry_Vec3Array::ComputeBoundsXY(
-                    &bounds,
-                    linearPoints,
-                    vertexCount
-                );
+                zGeometry_Vec3Array::ComputeBoundsXY(&bounds, linearPoints, vertexCount);
 
-                if (zGeometry_Bounds2D::OverlapsWithUnitMargin(
-                    &bounds,
-                    &clipPolygon->bounds
-                )) {
+                if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds)) {
                     if (zGeometry_Polygon::SnapPointsXYIfNear(
                             linearPoints,
                             vertexCount,
@@ -802,10 +729,7 @@ int __fastcall ClipPatch(
     }
 
     zGeometry_ClipPolygonPartial *const clipPolygon =
-        zGeometry_ClipPolygon::CreateFromPointList(
-            pointCount,
-            points
-        );
+        zGeometry_ClipPolygon::CreateFromPointList(pointCount, points);
     if (clipPolygon == 0) {
         return -1;
     }
@@ -894,11 +818,7 @@ int __fastcall ClipPatch(
     }
 
     clipPolygon->weilerState =
-        zGeometry_Weiler::Init(
-            clipPolygon->points,
-            clipPolygon->pointCount,
-            0
-        );
+        zGeometry_Weiler::Init(clipPolygon->points, clipPolygon->pointCount, 0);
 
     int result = 1;
     zGeometry_ClipPatchNodeDiPair *nodeDiPairWriteCursor = partitionOutput->nodeDiPairs;
@@ -1023,18 +943,11 @@ int __fastcall ProcessNodePolygonSetXY(
 
     if ((flags & 0x20000) != 0) {
         *outDi = 0;
-        return zGeometry_Model::IsFullyInsideClipPolygonXY(
-            clipPolygon,
-            model
-        );
+        return zGeometry_Model::IsFullyInsideClipPolygonXY(clipPolygon, model);
     }
 
     if ((flags & 0x10000) != 0) {
-        return zGeometry_Model::ProcessClipPatchNode(
-            clipPolygon,
-            model,
-            outDi
-        );
+        return zGeometry_Model::ProcessClipPatchNode(clipPolygon, model, outDi);
     }
 
     return 1;
@@ -1054,10 +967,7 @@ zVec3 *__fastcall GetLinearBufferOfPolygonVertices(
     zVec3 *points
 ) {
     const unsigned int vertexCount = polygon->vertexCountAndFlags & 0xff;
-    zVec3 *result = (zVec3 *)(realloc(
-        points,
-        vertexCount * sizeof(zVec3)
-    ));
+    zVec3 *result = (zVec3 *)(realloc(points, vertexCount * sizeof(zVec3)));
 
     for (unsigned int i = 0; i < vertexCount; ++i) {
         const int vertexIndex = polygon->vertexIndices[i];
@@ -1087,15 +997,8 @@ int __fastcall ProcessClipPatchNode(
     }
 
     zGeometry_WeilerClipOutputPartial clipOutput;
-    memset(
-        &clipOutput,
-        0,
-        sizeof(clipOutput)
-    );
-    zUtil::StoreInt32(
-        &di->mode,
-        0
-    );
+    memset(&clipOutput, 0, sizeof(clipOutput));
+    zUtil::StoreInt32(&di->mode, 0);
 
     zModel_PolygonPartial *polygon = model->faceList;
     zVec3 *polygonPointsBuffer = 0;
@@ -1116,11 +1019,7 @@ int __fastcall ProcessClipPatchNode(
         }
 
         polygonPointsBuffer =
-            zGeometry_Model::GetLinearBufferOfPolygonVertices(
-                model,
-                polygon,
-                polygonPointsBuffer
-            );
+            zGeometry_Model::GetLinearBufferOfPolygonVertices(model, polygon, polygonPointsBuffer);
         if (polygonPointsBuffer == 0) {
             zError::ReportOld(
                 0x400,
@@ -1131,23 +1030,13 @@ int __fastcall ProcessClipPatchNode(
             continue;
         }
 
-        zGeometry_Vec3Array::RotatePos90AroundX(
-            pointCount,
-            polygonPointsBuffer
-        );
+        zGeometry_Vec3Array::RotatePos90AroundX(pointCount, polygonPointsBuffer);
 
         zGeometry_BoundsXY bounds;
-        zGeometry_Vec3Array::ComputeBoundsXY(
-            &bounds,
-            polygonPointsBuffer,
-            pointCount
-        );
+        zGeometry_Vec3Array::ComputeBoundsXY(&bounds, polygonPointsBuffer, pointCount);
 
         int clipResult = 1;
-        if (zGeometry_Bounds2D::OverlapsWithUnitMargin(
-            &bounds,
-            &clipPolygon->bounds
-        ) != 0) {
+        if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds) != 0) {
             if (clipPolygonDirty != 0) {
                 zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints(
                     clipPolygon,
@@ -1187,7 +1076,7 @@ int __fastcall ProcessClipPatchNode(
                 clipPolygonDirty = 1;
             }
 
-            zGeometry_ConvexPolygonSetPartial *const convexSet = zGeometry_Polygon::Convexify(
+            zGeometry_ConvexPolygonSetPartial *const convexSet = zGeometry_Polygon::convexify(
                 &clipOutput.polygonSetB,
                 clipOutput.pointList.pointCount,
                 clipOutput.pointList.points
@@ -1270,22 +1159,9 @@ int __fastcall ProcessClipPatchNode(
             zVec3 *trianglePoints = triangleSoup->triangleVerts;
             for (int triangleIndex = 0; triangleIndex < triangleSoup->triangleCount;
                 ++triangleIndex) {
-                zGeometry_Vec3Array::EnsurePositiveCrossZ(
-                    3,
-                    trianglePoints,
-                    1
-                );
-                zGeometry_Vec3Array::RotateNeg90AroundX(
-                    3,
-                    trianglePoints
-                );
-                zGeometry_Model::AddPointListPolygonToDi(
-                    di,
-                    3,
-                    trianglePoints,
-                    model,
-                    polygon
-                );
+                zGeometry_Vec3Array::EnsurePositiveCrossZ(3, trianglePoints, 1);
+                zGeometry_Vec3Array::RotateNeg90AroundX(3, trianglePoints);
+                zGeometry_Model::AddPointListPolygonToDi(di, 3, trianglePoints, model, polygon);
                 trianglePoints += 3;
             }
 
@@ -1293,11 +1169,7 @@ int __fastcall ProcessClipPatchNode(
         } break;
 
         case 1:
-            zGeometry_Model::AddIndexedPolygonToDi(
-                di,
-                model,
-                polygon
-            );
+            zGeometry_Model::AddIndexedPolygonToDi(di, model, polygon);
             break;
 
         default:
@@ -1348,12 +1220,7 @@ int __fastcall AddPointListPolygonToDi(
     zClipUV *uvPairs = 0;
     zModel_MaterialPartial *material = 0;
     if (polygon->uvBasis != 0) {
-        uvPairs = BuildPolygonUvList(
-            pointCount,
-            points,
-            model,
-            polygon
-        );
+        uvPairs = BuildPolygonUvList(pointCount, points, model, polygon);
         material = polygon->material;
     } else {
         material = FindOrCreateRandomDebugMaterial();
@@ -1393,11 +1260,7 @@ int __fastcall AddIndexedPolygonToDi(
     zModel_DrawBatchBasePartial *model,
     zModel_PolygonPartial *polygon
 ) {
-    zVec3 *polygonPointsBuffer = GetLinearBufferOfPolygonVertices(
-        model,
-        polygon,
-        0
-    );
+    zVec3 *polygonPointsBuffer = GetLinearBufferOfPolygonVertices(model, polygon, 0);
     const unsigned int vertexCountAndFlags = polygon->vertexCountAndFlags;
     const int result = zDi::AddPolygon(
         di,
@@ -1436,11 +1299,7 @@ int __fastcall IsFullyInsideClipPolygonXY(
     }
 
     zGeometry_WeilerClipOutputPartial clipOutput;
-    memset(
-        &clipOutput,
-        0,
-        sizeof(clipOutput)
-    );
+    memset(&clipOutput, 0, sizeof(clipOutput));
 
     zModel_PolygonPartial *face = model->faceList;
     {
@@ -1458,11 +1317,7 @@ int __fastcall IsFullyInsideClipPolygonXY(
             }
 
             polygonPointsBuffer =
-                zGeometry_Model::GetLinearBufferOfPolygonVertices(
-                    model,
-                    face,
-                    polygonPointsBuffer
-                );
+                zGeometry_Model::GetLinearBufferOfPolygonVertices(model, face, polygonPointsBuffer);
             if (polygonPointsBuffer == 0) {
                 zError::ReportOld(
                     0x400,
@@ -1473,23 +1328,13 @@ int __fastcall IsFullyInsideClipPolygonXY(
                 continue;
             }
 
-            zGeometry_Vec3Array::RotatePos90AroundX(
-                pointCount,
-                polygonPointsBuffer
-            );
+            zGeometry_Vec3Array::RotatePos90AroundX(pointCount, polygonPointsBuffer);
 
             zGeometry_BoundsXY bounds;
-            zGeometry_Vec3Array::ComputeBoundsXY(
-                &bounds,
-                polygonPointsBuffer,
-                pointCount
-            );
+            zGeometry_Vec3Array::ComputeBoundsXY(&bounds, polygonPointsBuffer, pointCount);
 
             int clipResult = 1;
-            if (zGeometry_Bounds2D::OverlapsWithUnitMargin(
-                &bounds,
-                &clipPolygon->bounds
-            ) != 0) {
+            if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds) != 0) {
                 clipResult = zGeometry_Weiler::ClipPointList(
                     clipPolygon->weilerState,
                     4,

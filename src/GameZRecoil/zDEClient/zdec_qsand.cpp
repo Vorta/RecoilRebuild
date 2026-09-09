@@ -144,10 +144,7 @@ int __fastcall InstanceEventMaybeRelay(
         return -1;
     }
 
-    zDEClient::AppendFeatureEntry(
-        3,
-        eventTemplate
-    );
+    zDEClient::AppendFeatureEntry(3, eventTemplate);
     zDEClient::SubmitFeatureGeometry(featureInstance->clipPatchOutput);
     zGeometry_ClipPatchOutput::ApplyNodeDiPairs(featureInstance->clipPatchOutput);
 
@@ -186,10 +183,7 @@ zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
         &gridRow
     );
 
-    zDEClient_FeatureGridCell *featureGridCell = zDEClient::GetFeatureGridCell(
-        gridCol,
-        gridRow
-    );
+    zDEClient_FeatureGridCell *featureGridCell = zDEClient::GetFeatureGridCell(gridCol, gridRow);
     featureInstance->featureGridCell = featureGridCell;
     if (featureGridCell == 0) {
         DestroyFeature(featureInstance);
@@ -272,10 +266,7 @@ zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
             zGeometry_ClipPatchNodeView **nodeCursor = featureGridCell->nodes;
             for (int i = 0; i < nodeCount; ++i) {
                 zGeometry_ClipPatchNodeView *node = *nodeCursor;
-                if (strcmp(
-                    node->name,
-                    g_zDEClient_FeatureNodeName
-                ) == 0) {
+                if (strcmp(node->name, g_zDEClient_FeatureNodeName) == 0) {
                     zDEClient_FeatureContextOverlapView *context =
                         (zDEClient_FeatureContextOverlapView *)(node->callbackContext);
                     if (context != 0) {
@@ -321,18 +312,10 @@ zDEClient_QSandFeature *__fastcall CreateFeatureStructFromEventTemplate(
 ) {
     zDEClient_QSandFeature *result =
         (zDEClient_QSandFeature *)(malloc(sizeof(zDEClient_QSandFeature)));
-    memset(
-        result,
-        0,
-        sizeof(zDEClient_QSandFeature)
-    );
+    memset(result, 0, sizeof(zDEClient_QSandFeature));
 
     result->featureType = 3;
-    memcpy(
-        &result->eventTemplate,
-        eventTemplate,
-        sizeof(result->eventTemplate)
-    );
+    memcpy(&result->eventTemplate, eventTemplate, sizeof(result->eventTemplate));
     result->points = (zVec3 *)(malloc(result->eventTemplate.pointCount * sizeof(zVec3)));
     result->clipPatchOutput = zGeometry_ClipPatchOutput::Create();
 
@@ -410,10 +393,7 @@ int __fastcall CreateFeature(
         return -1;
     }
 
-    zClass_Class::gwNodeSetName(
-        node,
-        g_zDEClient_FeatureNodeName
-    );
+    zClass_Class::gwNodeSetName(node, g_zDEClient_FeatureNodeName);
     node->callbackContext = (zClass_NodePartial *)(featureInstance);
 
     zVec3 *const points = featureInstance->points;
@@ -488,13 +468,7 @@ int __fastcall CreateFeature(
             material = featureInstance->eventTemplate.materialCycle;
         }
 
-        zGeometry_Model::AddPolygonToDi(
-            displayInstance,
-            4,
-            polygonPoints,
-            material,
-            uvList
-        );
+        zGeometry_Model::AddPolygonToDi(displayInstance, 4, polygonPoints, material, uvList);
     }
 
     for (int i_860 = 0; i_860 < pointCount; ++i_860) {
@@ -517,13 +491,7 @@ int __fastcall CreateFeature(
             material = featureInstance->eventTemplate.materialCycle;
         }
 
-        zGeometry_Model::AddPolygonToDi(
-            displayInstance,
-            3,
-            polygonPoints,
-            material,
-            uvList
-        );
+        zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, material, uvList);
     }
 
     zClass_NodePartial *capNode = 0;
@@ -544,10 +512,7 @@ int __fastcall CreateFeature(
         return -1;
     }
 
-    zClass_Class::gwNodeSetName(
-        capNode,
-        g_zDEClient_FeatureNodeName
-    );
+    zClass_Class::gwNodeSetName(capNode, g_zDEClient_FeatureNodeName);
     capNode->callbackContext = (zClass_NodePartial *)(featureInstance);
 
     for (int i_901 = 0; i_901 < pointCount; ++i_901) {
@@ -570,13 +535,7 @@ int __fastcall CreateFeature(
             material = sideMaterial;
         }
 
-        zGeometry_Model::AddPolygonToDi(
-            capDisplayInstance,
-            3,
-            polygonPoints,
-            material,
-            uvList
-        );
+        zGeometry_Model::AddPolygonToDi(capDisplayInstance, 3, polygonPoints, material, uvList);
     }
 
     free(midPoints);

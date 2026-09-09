@@ -78,7 +78,7 @@ struct OptCatalogDamageHandlerPartial {
  * 0x4535c0 in D:\Proj\GameZRecoil\zClass\Light.c.
  * Purpose: construct a zVec3 value from explicit x, y, and z components.
  */
-inline zVec3 zVec3_Make(
+inline zVec3 zVec3Make(
     float x,
     float y,
     float z
@@ -1973,7 +1973,7 @@ extern zClass_LodDistanceState g_zClass_LodDistanceStateStack[4];
  * Purpose: view a scene node as the enclosing free-list slot record that owns
  * the cached primary and secondary bounds.
  */
-inline zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
+inline zClass_NodeFreeListSlot *zClassNodeSlotFromNode(
     zClass_NodePartial *node
 ) {
     return (zClass_NodeFreeListSlot *)node;
@@ -1986,7 +1986,7 @@ inline zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
  * Purpose: view a const scene node as the enclosing free-list slot record that
  * owns the cached primary and secondary bounds.
  */
-inline const zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
+inline const zClass_NodeFreeListSlot *zClassNodeSlotFromNode(
     const zClass_NodePartial *node
 ) {
     return (const zClass_NodeFreeListSlot *)node;
@@ -1999,10 +1999,10 @@ inline const zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
  * Purpose: return the primary bounds center field used as the node view-sphere
  * center.
  */
-inline zVec3 *zClass_NodeViewSphereCenter(
+inline zVec3 *zClassNodeViewSphereCenter(
     zClass_NodePartial *node
 ) {
-    return (zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
+    return (zVec3 *)(&zClassNodeSlotFromNode(node)->primaryBounds.minX);
 }
 
 /**
@@ -2013,10 +2013,10 @@ inline zVec3 *zClass_NodeViewSphereCenter(
  * Purpose: return the const primary bounds center field used as the node
  * view-sphere center.
  */
-inline const zVec3 *zClass_NodeViewSphereCenter(
+inline const zVec3 *zClassNodeViewSphereCenter(
     const zClass_NodePartial *node
 ) {
-    return (const zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
+    return (const zVec3 *)(&zClassNodeSlotFromNode(node)->primaryBounds.minX);
 }
 
 /**
@@ -2026,10 +2026,10 @@ inline const zVec3 *zClass_NodeViewSphereCenter(
  * Purpose: return the primary bounds radius field used as the node view-sphere
  * radius.
  */
-inline float *zClass_NodeViewSphereRadius(
+inline float *zClassNodeViewSphereRadius(
     zClass_NodePartial *node
 ) {
-    return &zClass_NodeSlotFromNode(node)->primaryBounds.maxX;
+    return &zClassNodeSlotFromNode(node)->primaryBounds.maxX;
 }
 
 /**
@@ -2040,10 +2040,10 @@ inline float *zClass_NodeViewSphereRadius(
  * Purpose: return the const primary bounds radius field used as the node
  * view-sphere radius.
  */
-inline const float *zClass_NodeViewSphereRadius(
+inline const float *zClassNodeViewSphereRadius(
     const zClass_NodePartial *node
 ) {
-    return &zClass_NodeSlotFromNode(node)->primaryBounds.maxX;
+    return &zClassNodeSlotFromNode(node)->primaryBounds.maxX;
 }
 
 namespace BBox {
@@ -2837,7 +2837,7 @@ int __cdecl UpdateAnimations();
 } // namespace zClass_TypeList
 
 namespace gwNode {
-int __fastcall BuildNodeToAncestorMatrix(
+int __fastcall gwNodeBuildNodeToAncestorMatrix(
     zClass_NodePartial *node,
     int matMode
 );
@@ -2865,7 +2865,7 @@ void __cdecl ProcessPendingFrees();
 
 namespace zClass_List {
 int __fastcall DeleteNodeFromLists(zClass_NodePartial *node);
-int __fastcall gwListDeleteANode(zClass_NodePartial *node);
+int __fastcall _gwListDeleteANode(zClass_NodePartial *node);
 int __fastcall DeleteAllOfType(int bucket);
 int __cdecl RenderActiveCameras();
 zClass_NodePartial *__fastcall IterateBucketFiltered(
@@ -2888,7 +2888,7 @@ zClass_NodePartial *__fastcall FindByTypeAndName(
     int bucket,
     const char *name
 );
-int __fastcall FindNextByTypePrefix_Predicate(zClass_NodePartial *node);
+int __fastcall FindNextByTypePrefixPredicate(zClass_NodePartial *node);
 zClass_NodePartial *__fastcall FindNextByTypePrefix(
     const char *prefixText,
     int bucket
@@ -2904,7 +2904,7 @@ int __fastcall RemoveChildChecked(
 } // namespace zClass
 
 namespace zClass_Class {
-zClass_NodePartial *__cdecl AllocNodeFromFreeList();
+zClass_NodePartial *__cdecl gwNodeNew();
 int __fastcall DeleteNodeByType(zClass_NodePartial *node);
 int __fastcall gwNodeUpdate(zClass_NodePartial *node);
 int __cdecl gwNodeUpdateAll();
@@ -3010,7 +3010,7 @@ int __fastcall gwNodeSetVertexAlphaOverride(
 );
 zClass_NodePartial *__fastcall gwNodeGetRoot(zClass_NodePartial *node);
 zClass_NodePartial *__fastcall gwNodeGetWorldChild(zClass_NodePartial *node);
-int __fastcall gwNodeFindNextByName_Predicate(zClass_NodePartial *node);
+int __fastcall gwNodeFindNextByNamePredicate(zClass_NodePartial *node);
 zClass_NodePartial *__fastcall gwNodeFindNextByName(
     const char *name,
     int bucket
@@ -3101,22 +3101,22 @@ int __fastcall CopyNodeBaseData(
     zClass_NodePartial *source,
     zClass_NodePartial *dest
 );
-zClass_NodePartial *__fastcall CopyLightNode_Unimplemented(
+zClass_NodePartial *__fastcall CopyLightNode(
     zClass_NodePartial *source
 );
-zClass_NodePartial *__fastcall CopySoundNode_Unimplemented(
+zClass_NodePartial *__fastcall CopySoundNode(
     zClass_NodePartial *source
 );
 zClass_NodePartial *__fastcall CopyCameraNode(zClass_NodePartial *source);
 zClass_NodePartial *__fastcall CopyObject3DNode(zClass_NodePartial *source);
-zClass_NodePartial *__fastcall CopyAnimateNode_Unimplemented(
+zClass_NodePartial *__fastcall CopyAnimateNode(
     zClass_NodePartial *source
 );
 zClass_NodePartial *__fastcall CopyLodNode(zClass_NodePartial *source);
-zClass_NodePartial *__fastcall CopySequenceNode_Unimplemented(
+zClass_NodePartial *__fastcall CopySequenceNode(
     zClass_NodePartial *source
 );
-zClass_NodePartial *__fastcall CopySwitchNode_Stub(zClass_NodePartial *source);
+zClass_NodePartial *__fastcall CopySwitchNode(zClass_NodePartial *source);
 zClass_NodePartial *__fastcall CopyNodeDispatch(zClass_NodePartial *source);
 zClass_NodePartial *__fastcall CopyNodeWithCloneOptions(
     zClass_NodePartial *source,

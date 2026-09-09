@@ -41,7 +41,7 @@ const char kCommandNameWeaponSetMaxTetherAltitude[] = "WeaponSetMaxTetherAltitud
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-linebuffer
  * @recoil-artifact defines .data recoil:data:0x56bf78: g_zInterp_LineBuffer.
- * Data owner: zInterp_Context initialized globals.
+ * Data owner: CZInterp initialized globals.
  *
  * Purpose: shared line buffer used while reading and running script input.
  */
@@ -51,7 +51,7 @@ namespace {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-macroexpansionscratch
  * @recoil-artifact defines .data recoil:data:0x56c378: g_zInterp_MacroExpansionScratch.
- * Data owner: zInterp_Context initialized globals.
+ * Data owner: CZInterp initialized globals.
  * BN evidence: 0x56c378 is char[0x400] BSS; larger storage would overlap
  * distinct globals at 0x56c780, 0x56c784, and 0x56c788.
  *
@@ -65,7 +65,7 @@ extern char g_zInterp_PreparedIndexFileNameStr[];
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-enablepreparedscripts
  * @recoil-artifact defines .data recoil:data:0x4e48f0: g_zInterp_EnablePreparedScripts.
- * Data owner: zInterp_Context initialized globals.
+ * Data owner: CZInterp initialized globals.
  * BN evidence: 0x4e48f0 contains 01 00 00 00.
  *
  * Purpose: enables loading prepared script streams when the index is present.
@@ -75,7 +75,7 @@ int g_zInterp_EnablePreparedScripts = 1;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-verboselevel
  * @recoil-artifact defines .data recoil:data:0x575ddc: g_zInterp_VerboseLevel.
- * Data owner: zInterp_Context initialized globals.
+ * Data owner: CZInterp initialized globals.
  *
  * Purpose: controls script parser logging verbosity.
  */
@@ -84,7 +84,7 @@ int g_zInterp_VerboseLevel = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-object3dcommandintscratch
  * @recoil-artifact defines .data recoil:data:0x56c780: g_zInterp_Object3DCommandDi.
- * Data owner: zInterp_Context initialized globals.
+ * Data owner: CZInterp initialized globals.
  * Retail evidence: the color, priority, and show-backface command handlers
  * store node user data here as a display-instance pointer. The latter two
  * reload it after parsing their integer argument. The descriptive name is
@@ -97,7 +97,7 @@ zDiPartial *g_zInterp_Object3DCommandDi = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-currentcycletexturedi
  * @recoil-artifact defines .data recoil:data:0x56c784: g_zInterp_CurrentCycleTextureDi.
- * Data owner: zInterp_Context initialized globals.
+ * Data owner: CZInterp initialized globals.
  *
  * Purpose: holds the current display-instance cursor for texture commands.
  */
@@ -106,7 +106,7 @@ zDiPartial *g_zInterp_CurrentCycleTextureDi = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-nodeuserdatascratch
  * @recoil-artifact defines .data recoil:data:0x56c788: g_zInterp_NodeUserDataScratch.
- * Data owner: zInterp_Context initialized globals.
+ * Data owner: CZInterp initialized globals.
  *
  * Purpose: temporary user-data transfer slot for zClass node callbacks.
  */
@@ -115,18 +115,18 @@ unsigned int g_zInterp_NodeUserDataScratch = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-globalcontext
  * @recoil-artifact defines .data recoil:data:0x4edb78: g_zInterp_GlobalContext.
- * Data owner: zInterp_GlobalContext initialized instance. The ordinary
+ * Data owner: CRecoilInterp initialized instance. The ordinary
  * file-scope object lets VC5 emit its natural CRT construction and teardown
  * roots, which retain the derived constructor and virtual dispatch table.
  *
  * Purpose: process-wide script interpreter context constructed at startup.
  */
-zInterp_GlobalContext g_zInterp_GlobalContext;
+CRecoilInterp g_zInterp_GlobalContext;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-preparedindexfilename
  * @recoil-artifact defines .data recoil:data:0x4e48f4: g_zInterp_PreparedIndexFileName.
- * Data owner: zInterp_Context initialized globals.
+ * Data owner: CZInterp initialized globals.
  * BN evidence: pointer storage follows g_zInterp_EnablePreparedScripts and
  * points at the mutable prepared-index filename storage immediately after it.
  *
@@ -137,7 +137,7 @@ char *g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameStr;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-preparedindexfilenamestr
  * @recoil-artifact defines .data recoil:data:0x4e48f8: g_zInterp_PreparedIndexFileNameStr.
- * Data owner: zInterp_Context initialized globals.
+ * Data owner: CZInterp initialized globals.
  * BN evidence: mutable "interp.zbd" storage follows the prepared-index pointer.
  *
  * Purpose: backing storage for the default prepared script index path.
@@ -180,7 +180,7 @@ extern "C" float g_zInterp_UnresolvedFloatDefaults[63] = {
 namespace {
 /**
  * Original inline helper evidence: no standalone retail function observed;
- * recovered from repeated zInterp_Context::DispatchCoreCommand comparisons.
+ * recovered from repeated CZInterp::DispatchCoreCommand comparisons.
  *
  * Purpose: compare the current command token against a literal prefix length.
  */
@@ -189,7 +189,7 @@ namespace {
 
 /**
  * Original inline helper evidence: no standalone retail function observed;
- * recovered from exact zInterp_Context::DispatchCoreCommand comparisons.
+ * recovered from exact CZInterp::DispatchCoreCommand comparisons.
  *
  * Purpose: compare the current command token against a full literal string.
  */
@@ -198,7 +198,7 @@ namespace {
 
 /**
  * Original inline helper evidence: no standalone retail function observed;
- * recovered from prefix zInterp_Context::DispatchCoreCommand comparisons.
+ * recovered from prefix CZInterp::DispatchCoreCommand comparisons.
  *
  * Purpose: compare the current command token against a named prefix.
  */
@@ -207,60 +207,56 @@ namespace {
 } // namespace
 
 /**
- * Original helper evidence: zInterp_Context default virtual dispatch hook.
+ * Original helper evidence: CZInterp default virtual dispatch hook.
  *
  * Purpose: report an unhandled command token through the parser error path.
  */
-int zInterp_Context::DispatchHook(
+int CZInterp::DispatchHook(
     char *commandToken
 ) {
     return ReportParseError(commandToken);
 }
 
 /**
- * Original helper evidence: zInterp_Context default virtual post-dispatch hook.
+ * Original helper evidence: CZInterp default virtual post-dispatch hook.
  *
  * Purpose: report an unhandled command token after core dispatch.
  */
-int zInterp_Context::PostDispatchHook(
+int CZInterp::PostDispatchHook(
     char *commandToken
 ) {
     return ReportParseError(commandToken);
 }
 
 /**
- * Original helper evidence: zInterp_Context deferred virtual hook slot.
+ * Original helper evidence: CZInterp deferred virtual hook slot.
  * BN evidence: zInterp vtable slot 2 points at shared local no-op 0x414b50;
  * the same code is also referenced by non-zInterp data, so this declaration
  * documents the zInterp slot contract without claiming exclusive ownership.
  *
  * Purpose: provide a default deferred-command hook that accepts the command.
  */
-int zInterp_Context::DeferredDispatchHook(
+int CZInterp::DeferredDispatchHook(
     char *
 ) {
     return 0;
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-constructor
- * @recoil-artifact defines .text recoil:function:0x4c0d20: zInterp_Context::zInterp_Context.
+ * @recoil-artifact defines .text recoil:function:0x4c0d20: CZInterp::CZInterp.
  * @recoil-match byte
  *
  * Purpose: initialize one parser context, including prepared-script index
  * state, macro/variable tables, runtime scratch storage, and scroll callbacks.
  */
-zInterp_Context::zInterp_Context(
+CZInterp::CZInterp(
     const char *preparedIndexPath,
     const char *searchPathText
 ) {
     includeDepth = 0;
 
-    runtimeBlob = (zInterp_RuntimeBlob *)(malloc(sizeof(zInterp_RuntimeBlob)));
-    memset(
-        runtimeBlob,
-        0,
-        sizeof(*runtimeBlob)
-    );
+    runtimeBlob = (zInterpPolygonState *)(malloc(sizeof(zInterpPolygonState)));
+    memset(runtimeBlob, 0, sizeof(*runtimeBlob));
 
     currentNode = 0;
     conditionalDepth = 0;
@@ -295,12 +291,12 @@ zInterp_Context::zInterp_Context(
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-destructor
- * @recoil-artifact defines .text recoil:function:0x4c0e50: zInterp_Context::~zInterp_Context.
+ * @recoil-artifact defines .text recoil:function:0x4c0e50: CZInterp::~CZInterp.
  * @recoil-match byte
  *
  * Purpose: tear down a context after Destroy has released active runtime state.
  */
-zInterp_Context::~zInterp_Context() {
+CZInterp::~CZInterp() {
     Destroy();
 
     if (tempAlloc != 0) {
@@ -326,19 +322,19 @@ zInterp_Context::~zInterp_Context() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-destroy
- * @recoil-artifact defines .text recoil:function:0x4c0f70: zInterp_Context::Destroy.
+ * @recoil-artifact defines .text recoil:function:0x4c0f70: CZInterp::Destroy.
  * @recoil-match byte
  *
  * Purpose: clear per-run parser tables, search paths, scroll callbacks, and
  * pointer-array state while leaving constructor-owned storage intact.
  */
-void zInterp_Context::Destroy() {
+void CZInterp::Destroy() {
     ClearMacroTable();
     ClearVarTable();
     ClearFileFrameStack();
 
     if (archiveSearchList != 0) {
-        zUtil_ZRDR_FreeSearchPathList(archiveSearchList);
+        zRdrFreeSearchPathList(archiveSearchList);
         archiveSearchList = 0;
     }
 
@@ -356,12 +352,12 @@ void zInterp_Context::Destroy() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-runstring
- * @recoil-artifact defines .text recoil:function:0x4c1020: zInterp_Context::RunString.
+ * @recoil-artifact defines .text recoil:function:0x4c1020: CZInterp::RunStream.
  * @recoil-match byte
  *
  * Purpose: read script input lines or prepared token blobs and run each one.
  */
-int zInterp_Context::RunString(
+int CZInterp::RunStream(
     FILE *scriptFile,
     int preparedInput
 ) {
@@ -374,16 +370,9 @@ int zInterp_Context::RunString(
 
     int readOk = 0;
     do {
-        memset(
-            g_zInterp_LineBuffer,
-            0,
-            sizeof(g_zInterp_LineBuffer)
-        );
-        readOk = ReadLineOrPreparedTokens(
-            currentScriptFile,
-            g_zInterp_LineBuffer
-        );
-        readOk &= RunStream(g_zInterp_LineBuffer);
+        memset(g_zInterp_LineBuffer, 0, sizeof(g_zInterp_LineBuffer));
+        readOk = ReadLineOrPreparedTokens(currentScriptFile, g_zInterp_LineBuffer);
+        readOk &= RunLine(g_zInterp_LineBuffer);
     } while (readOk != 0);
 
     hasPreparedInput = 0;
@@ -392,13 +381,13 @@ int zInterp_Context::RunString(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-runstream
- * @recoil-artifact defines .text recoil:function:0x4c1090: zInterp_Context::RunStream.
+ * @recoil-artifact defines .text recoil:function:0x4c1090: CZInterp::RunLine.
  * @recoil-match byte
  *
  * Purpose: tokenize one command line, dispatch builtins/core hooks, and clear
  * temporary token storage.
  */
-int zInterp_Context::RunStream(
+int CZInterp::RunLine(
     char *lineBuffer
 ) {
     if (lineBuffer == 0) {
@@ -424,12 +413,7 @@ int zInterp_Context::RunStream(
                 tokenReadIndex = 1;
                 PostDispatchHook(commandToken);
                 if (errorCount == 3) {
-                    Logf(
-                        this,
-                        "BadCommand (%s): %s",
-                        commandToken,
-                        lineBuffer
-                    );
+                    Logf(this, "BadCommand (%s): %s", commandToken, lineBuffer);
                 }
             }
         }
@@ -448,12 +432,12 @@ int zInterp_Context::RunStream(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-readlineorpreparedtokens
- * @recoil-artifact defines .text recoil:function:0x4c1160: zInterp_Context::ReadLineOrPreparedTokens.
+ * @recoil-artifact defines .text recoil:function:0x4c1160: CZInterp::ReadLineOrPreparedTokens.
  * @recoil-match byte
  *
  * Purpose: read either a text script line or a prepared token block.
  */
-int zInterp_Context::ReadLineOrPreparedTokens(
+int CZInterp::ReadLineOrPreparedTokens(
     FILE *scriptFile,
     char *lineBuffer
 ) {
@@ -472,31 +456,16 @@ int zInterp_Context::ReadLineOrPreparedTokens(
 
     unsigned int tokenBlobSize;
     tokenReadIndex = 1;
-    fread(
-        &tokenBlobSize,
-        4,
-        1,
-        scriptFile
-    );
+    fread(&tokenBlobSize, 4, 1, scriptFile);
     if (tokenBlobSize == 0) {
         tokenCount = 0;
         tempAlloc = 0;
         return 0;
     }
 
-    fread(
-        &tokenCount,
-        4,
-        1,
-        scriptFile
-    );
+    fread(&tokenCount, 4, 1, scriptFile);
     tempAlloc = (char *)(malloc(tokenBlobSize));
-    fread(
-        tempAlloc,
-        tokenBlobSize,
-        1,
-        scriptFile
-    );
+    fread(tempAlloc, tokenBlobSize, 1, scriptFile);
 
     char *tokenText = tempAlloc;
     for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
@@ -509,27 +478,21 @@ int zInterp_Context::ReadLineOrPreparedTokens(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-expandmacrorefs
- * @recoil-artifact defines .text recoil:function:0x4c1250: zInterp_Context::ExpandMacroRefs.
+ * @recoil-artifact defines .text recoil:function:0x4c1250: CZInterp::ExpandMacroRefs.
  * @recoil-match byte
  *
  * Purpose: substitute percent-delimited macro references into a shared scratch
  * buffer before token parsing consumes the argument.
  */
-char * zInterp_Context::ExpandMacroRefs(
+char * CZInterp::ExpandMacroRefs(
     char *lineBuf
 ) {
     if (lineBuf == 0) {
         return 0;
     }
 
-    char *open = strchr(
-        lineBuf,
-        '%'
-    );
-    char *close = open != 0 ? strchr(
-        open + 1,
-        '%'
-    ) : 0;
+    char *open = strchr(lineBuf, '%');
+    char *close = open != 0 ? strchr(open + 1, '%') : 0;
     if (open == 0) {
         return lineBuf;
     }
@@ -544,41 +507,21 @@ char * zInterp_Context::ExpandMacroRefs(
     do {
         const int literalLength = (int)(open - segmentStart);
         if (literalLength != 0) {
-            strncat(
-                g_zInterp_MacroExpansionScratch,
-                segmentStart,
-                literalLength
-            );
+            strncat(g_zInterp_MacroExpansionScratch, segmentStart, literalLength);
         }
 
         const int macroSpanLength = (int)(close - open);
-        strncpy(
-            macroName,
-            open + 1,
-            macroSpanLength
-        );
+        strncpy(macroName, open + 1, macroSpanLength);
         macroName[macroSpanLength - 1] = '\0';
 
-        char *const value = FindMacroValue(
-            macroName,
-            0
-        );
+        char *const value = FindMacroValue(macroName, 0);
         if (value != 0) {
-            strcat(
-                g_zInterp_MacroExpansionScratch,
-                value
-            );
+            strcat(g_zInterp_MacroExpansionScratch, value);
         }
 
         segmentStart = close + 1;
-        open = strchr(
-            segmentStart,
-            '%'
-        );
-        close = open != 0 ? strchr(
-            open + 1,
-            '%'
-        ) : 0;
+        open = strchr(segmentStart, '%');
+        close = open != 0 ? strchr(open + 1, '%') : 0;
     } while (open != 0 && close != 0);
 
     if (segmentStart != 0 && *segmentStart != '\0') {
@@ -594,14 +537,14 @@ char * zInterp_Context::ExpandMacroRefs(
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-tokenizeline
- * @recoil-artifact defines .text recoil:function:0x4c13c0: zInterp_Context::TokenizeLine.
+ * @recoil-artifact defines .text recoil:function:0x4c13c0: CZInterp::TokenizeLine.
  * @recoil-match byte
  *
  * BN evidence: retail imports iswspace and sign-extends token bytes before
  * each whitespace classification call.
  * Purpose: copy a text line, strip comments, and split command tokens.
  */
-int zInterp_Context::TokenizeLine(
+int CZInterp::TokenizeLine(
     const char *line
 ) {
     if (hasPreparedInput != 0) {
@@ -611,20 +554,13 @@ int zInterp_Context::TokenizeLine(
     tokenCount = 0;
     tokenReadIndex = 1;
 
-    const char *const comment = strchr(
-        line,
-        '#'
-    );
+    const char *const comment = strchr(line, '#');
     if (comment == 0) {
         tempAlloc = _strdup(line);
     } else {
         const size_t prefixSize = strlen(line) - strlen(comment) + 1;
         tempAlloc = (char *)(malloc(prefixSize));
-        memcpy(
-            tempAlloc,
-            line,
-            prefixSize
-        );
+        memcpy(tempAlloc, line, prefixSize);
         tempAlloc[prefixSize - 1] = '\0';
     }
 
@@ -633,10 +569,7 @@ int zInterp_Context::TokenizeLine(
         ++cursor;
     }
 
-    char *separator = strpbrk(
-        cursor,
-        ", \t\n"
-    );
+    char *separator = strpbrk(cursor, ", \t\n");
     while (separator != 0) {
         tokenList[tokenCount++] = cursor;
 
@@ -651,10 +584,7 @@ int zInterp_Context::TokenizeLine(
             ++cursor;
         }
 
-        separator = strpbrk(
-            cursor,
-            ", \t\n"
-        );
+        separator = strpbrk(cursor, ", \t\n");
     }
 
     if (strlen(cursor) != 0) {
@@ -667,12 +597,12 @@ int zInterp_Context::TokenizeLine(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-runscriptfile
- * @recoil-artifact defines .text recoil:function:0x4c1500: zInterp_Context::RunScriptFile.
+ * @recoil-artifact defines .text recoil:function:0x4c1500: CZInterp::RunScriptFile.
  * @recoil-match byte
  *
  * Purpose: push nested script state, choose prepared or text input, and run it.
  */
-int zInterp_Context::RunScriptFile(
+int CZInterp::RunScriptFile(
     const char *filePath
 ) {
     FILE *scriptFile = 0;
@@ -680,11 +610,7 @@ int zInterp_Context::RunScriptFile(
 
     if (currentScriptFile != 0) {
         const long filePos = ftell(currentScriptFile);
-        PushFileFrame(
-            currentScriptFile,
-            filePos,
-            hasPreparedInput
-        );
+        PushFileFrame(currentScriptFile, filePos, hasPreparedInput);
     }
 
     if (g_zInterp_EnablePreparedScripts != 0 &&
@@ -696,32 +622,22 @@ int zInterp_Context::RunScriptFile(
     }
 
     if (scriptFile == 0) {
-        scriptFile = fopen(
-            filePath,
-            "r"
-        );
+        scriptFile = fopen(filePath, "r");
         ++includeDepth;
     }
 
     int result = 0;
     if (scriptFile != 0) {
-        result = RunString(
-            scriptFile,
-            hasPrepared
-        );
+        result = RunStream(scriptFile, hasPrepared);
         if (hasPrepared == 0) {
             fclose(scriptFile);
         }
     }
 
-    zInterp_FileFrame *const frame = PopFileFrame();
+    zInterpFileFrame *const frame = PopFileFrame();
     if (frame != 0) {
         currentScriptFile = frame->file;
-        fseek(
-            currentScriptFile,
-            frame->filePos,
-            0
-        );
+        fseek(currentScriptFile, frame->filePos, 0);
         hasPreparedInput = frame->hasPreparedInput;
     } else {
         currentScriptFile = 0;
@@ -731,21 +647,18 @@ int zInterp_Context::RunScriptFile(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-findmacrovalue
- * @recoil-artifact defines .text recoil:function:0x4c15f0: zInterp_Context::FindMacroValue.
+ * @recoil-artifact defines .text recoil:function:0x4c15f0: CZInterp::FindMacroValue.
  * @recoil-match byte
  *
  * Purpose: locate a macro entry by name and optionally return its table slot.
  */
-char * zInterp_Context::FindMacroValue(
+char * CZInterp::FindMacroValue(
     const char *name,
-    zInterp_MacroEntry **outEntry
+    zInterpMacroEntry **outEntry
 ) {
-    zInterp_MacroEntry *entry = macroTable;
+    zInterpMacroEntry *entry = macroTable;
     for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex, ++entry) {
-        if (strcmp(
-            name,
-            entry->name
-        ) == 0) {
+        if (strcmp(name, entry->name) == 0) {
             if (outEntry != 0) {
                 *outEntry = entry;
             }
@@ -758,13 +671,13 @@ char * zInterp_Context::FindMacroValue(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-clearmacrotable
- * @recoil-artifact defines .text recoil:function:0x4c1670: zInterp_Context::ClearMacroTable.
+ * @recoil-artifact defines .text recoil:function:0x4c1670: CZInterp::ClearMacroTable.
  * @recoil-match byte
  *
  * Purpose: free all macro names, values, and table storage for the context.
  */
-void zInterp_Context::ClearMacroTable() {
-    zInterp_MacroEntry *entry = macroTable;
+void CZInterp::ClearMacroTable() {
+    zInterpMacroEntry *entry = macroTable;
     for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex, ++entry) {
         free(entry->name);
         free(entry->value);
@@ -779,13 +692,13 @@ void zInterp_Context::ClearMacroTable() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-clearvartable
- * @recoil-artifact defines .text recoil:function:0x4c16c0: zInterp_Context::ClearVarTable.
+ * @recoil-artifact defines .text recoil:function:0x4c16c0: CZInterp::ClearVarTable.
  * @recoil-match byte
  *
  * Purpose: free variable table names and release the context's table storage.
  */
-void zInterp_Context::ClearVarTable() {
-    zInterp_VarEntry *entry = varTable;
+void CZInterp::ClearVarTable() {
+    zInterpVarEntry *entry = varTable;
     for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex, ++entry) {
         free(entry->name);
     }
@@ -799,57 +712,45 @@ void zInterp_Context::ClearVarTable() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-ismacrotrue
- * @recoil-artifact defines .text recoil:function:0x4c1710: zInterp_Context::IsMacroTrue.
+ * @recoil-artifact defines .text recoil:function:0x4c1710: CZInterp::IsMacroTrue.
  * @recoil-match byte
  *
  * Purpose: test whether a named macro currently holds the TRUE literal.
  */
-int zInterp_Context::IsMacroTrue(
+int CZInterp::IsMacroTrue(
     const char *name
 ) {
-    const char *const value = FindMacroValue(
-        name,
-        0
-    );
+    const char *const value = FindMacroValue(name, 0);
     if (value == 0) {
         return 0;
     }
-    return strcmp(
-        value,
-        "TRUE"
-    ) == 0;
+    return strcmp(value, "TRUE") == 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-setmacro
- * @recoil-artifact defines .text recoil:function:0x4c1780: zInterp_Context::SetMacro.
+ * @recoil-artifact defines .text recoil:function:0x4c1780: CZInterp::SetMacro.
  * @recoil-match byte
  *
  * Purpose: create or update one dynamically allocated macro table entry.
  */
-int zInterp_Context::SetMacro(
+int CZInterp::SetMacro(
     const char *name,
     const char *value
 ) {
-    zInterp_MacroEntry *entry = 0;
+    zInterpMacroEntry *entry = 0;
     if (name != 0 && value != 0) {
-        if (FindMacroValue(
-            name,
-            &entry
-        ) != 0) {
+        if (FindMacroValue(name, &entry) != 0) {
             const size_t valueSize = strlen(value) + 1;
-            entry->value = (char *)(realloc(
-                entry->value,
-                valueSize
-            ));
+            entry->value = (char *)(realloc(entry->value, valueSize));
             strcpy(entry->value, value);
             return 1;
         }
 
         macroTable =
-            (zInterp_MacroEntry *)(realloc(
+            (zInterpMacroEntry *)(realloc(
                 macroTable,
-                (macroCount + 1) * sizeof(zInterp_MacroEntry)
+                (macroCount + 1) * sizeof(zInterpMacroEntry)
             ));
         entry = &macroTable[macroCount];
         entry->name = _strdup(name);
@@ -862,17 +763,14 @@ int zInterp_Context::SetMacro(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-echotokens
- * @recoil-artifact defines .text recoil:function:0x4c1870: zInterp_Context::EchoTokens.
+ * @recoil-artifact defines .text recoil:function:0x4c1870: CZInterp::EchoTokens.
  * @recoil-match byte
  *
  * Purpose: print each parsed token followed by a newline.
  */
-int zInterp_Context::EchoTokens() {
+int CZInterp::EchoTokens() {
     for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
-        printf(
-            "%s ",
-            tokenIndex < tokenCount ? tokenList[tokenIndex] : 0
-        );
+        printf("%s ", tokenIndex < tokenCount ? tokenList[tokenIndex] : 0);
     }
 
     return printf("\n");
@@ -880,19 +778,19 @@ int zInterp_Context::EchoTokens() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-pushfileframe
- * @recoil-artifact defines .text recoil:function:0x4c18c0: zInterp_Context::PushFileFrame.
+ * @recoil-artifact defines .text recoil:function:0x4c18c0: CZInterp::PushFileFrame.
  * @recoil-match byte
  *
  * Purpose: append one saved script file position for nested source commands.
  */
-int zInterp_Context::PushFileFrame(
+int CZInterp::PushFileFrame(
     FILE *file,
     long filePos,
     int hasPreparedInput
 ) {
-    zInterp_FileFrame *const frames = (zInterp_FileFrame *)(realloc(
+    zInterpFileFrame *const frames = (zInterpFileFrame *)(realloc(
         fileFrameStack,
-        (fileFrameCount + 1) * sizeof(zInterp_FileFrame)
+        (fileFrameCount + 1) * sizeof(zInterpFileFrame)
     ));
     const int frameIndex = fileFrameCount;
     fileFrameStack = frames;
@@ -906,12 +804,12 @@ int zInterp_Context::PushFileFrame(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-popfileframe
- * @recoil-artifact defines .text recoil:function:0x4c1940: zInterp_Context::PopFileFrame.
+ * @recoil-artifact defines .text recoil:function:0x4c1940: CZInterp::PopFileFrame.
  * @recoil-match byte
  *
  * Purpose: pop the most recent nested-script file frame without freeing storage.
  */
-zInterp_FileFrame * zInterp_Context::PopFileFrame() {
+zInterpFileFrame * CZInterp::PopFileFrame() {
     int count = fileFrameCount;
     if (count == 0) {
         return 0;
@@ -924,12 +822,12 @@ zInterp_FileFrame * zInterp_Context::PopFileFrame() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-clearfileframestack
- * @recoil-artifact defines .text recoil:function:0x4c1960: zInterp_Context::ClearFileFrameStack.
+ * @recoil-artifact defines .text recoil:function:0x4c1960: CZInterp::ClearFileFrameStack.
  * @recoil-match byte
  *
  * Purpose: free saved nested-script file frames and reset the frame count.
  */
-void zInterp_Context::ClearFileFrameStack() {
+void CZInterp::ClearFileFrameStack() {
     if (fileFrameStack != 0) {
         free(fileFrameStack);
         fileFrameStack = 0;
@@ -939,12 +837,12 @@ void zInterp_Context::ClearFileFrameStack() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-nexttoken
- * @recoil-artifact defines .text recoil:function:0x4c1990: zInterp_Context::NextToken.
+ * @recoil-artifact defines .text recoil:function:0x4c1990: CZInterp::NextToken.
  * @recoil-match byte
  *
  * Purpose: advance the token cursor and return the macro-expanded token text.
  */
-char * zInterp_Context::NextToken() {
+char * CZInterp::NextToken() {
     const unsigned int tokenIndex = (unsigned int)(tokenReadIndex);
     tokenReadIndex = (int)(tokenIndex + 1);
 
@@ -959,12 +857,12 @@ char * zInterp_Context::NextToken() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-parsebooltoken
- * @recoil-artifact defines .text recoil:function:0x4c19c0: zInterp_Context::ParseBoolToken.
+ * @recoil-artifact defines .text recoil:function:0x4c19c0: CZInterp::ParseBoolToken.
  * @recoil-match byte
  *
  * Purpose: parse the next token as an on/true boolean value.
  */
-int zInterp_Context::ParseBoolToken() {
+int CZInterp::ParseBoolToken() {
     char *const token = NextToken();
     if (token != 0) {
         if (_stricmp(token, "on") == 0 || _stricmp(token, "true") == 0) {
@@ -976,12 +874,12 @@ int zInterp_Context::ParseBoolToken() {
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-parsefloattoken
- * @recoil-artifact defines .text recoil:function:0x4c1a00: zInterp_Context::ParseFloatToken.
+ * @recoil-artifact defines .text recoil:function:0x4c1a00: CZInterp::ParseFloatToken.
  * @recoil-match byte
  *
  * Purpose: parse the next token as a floating-point value.
  */
-float zInterp_Context::ParseFloatToken() {
+float CZInterp::ParseFloatToken() {
     char *const token = NextToken();
     if (token != 0) {
         return (float)(atof(token));
@@ -992,12 +890,12 @@ float zInterp_Context::ParseFloatToken() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-parseinttoken
- * @recoil-artifact defines .text recoil:function:0x4c1a20: zInterp_Context::ParseIntToken.
+ * @recoil-artifact defines .text recoil:function:0x4c1a20: CZInterp::ParseIntToken.
  * @recoil-match byte
  *
  * Purpose: parse the next token as an integer value.
  */
-int zInterp_Context::ParseIntToken() {
+int CZInterp::ParseIntToken() {
     char *const token = NextToken();
     if (token != 0) {
         return atoi(token);
@@ -1008,20 +906,17 @@ int zInterp_Context::ParseIntToken() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-findvarentry
- * @recoil-artifact defines .text recoil:function:0x4c1a40: zInterp_Context::FindVarEntry.
+ * @recoil-artifact defines .text recoil:function:0x4c1a40: CZInterp::FindVarEntry.
  * @recoil-match byte
  *
  * Purpose: find a registered script variable entry by name.
  */
-zInterp_VarEntry * zInterp_Context::FindVarEntry(
+zInterpVarEntry * CZInterp::FindVarEntry(
     const char *name
 ) {
-    zInterp_VarEntry *entry = varTable;
+    zInterpVarEntry *entry = varTable;
     for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex, ++entry) {
-        if (strcmp(
-            name,
-            entry->name
-        ) == 0) {
+        if (strcmp(name, entry->name) == 0) {
             return entry;
         }
     }
@@ -1031,13 +926,13 @@ zInterp_VarEntry * zInterp_Context::FindVarEntry(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-dumpvarentry
- * @recoil-artifact defines .text recoil:function:0x4c1ab0: zInterp_Context::DumpVarEntry.
+ * @recoil-artifact defines .text recoil:function:0x4c1ab0: CZInterp::DumpVarEntry.
  * @recoil-match byte
  *
  * Purpose: log one variable entry according to its stored scalar/string type.
  */
-void zInterp_Context::DumpVarEntry(
-    zInterp_VarEntry *entry
+void CZInterp::DumpVarEntry(
+    zInterpVarEntry *entry
 ) {
     if (entry != 0) {
         switch (entry->type) {
@@ -1057,49 +952,43 @@ void zInterp_Context::DumpVarEntry(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-incerrorcount
- * @recoil-artifact defines .text recoil:function:0x4c1b20: zInterp_Context::IncErrorCount.
+ * @recoil-artifact defines .text recoil:function:0x4c1b20: CZInterp::IncErrorCount.
  * @recoil-match byte
  *
  * Purpose: count one parser error for the current command line.
  */
-void zInterp_Context::IncErrorCount() {
+void CZInterp::IncErrorCount() {
     ++errorCount;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-logf
- * @recoil-artifact defines .text recoil:function:0x4c1b30: zInterp_Context::Logf.
+ * @recoil-artifact defines .text recoil:function:0x4c1b30: CZInterp::Logf.
  * @recoil-match byte
  *
  * Purpose: forward formatted parser logging to the context callback.
  */
-void zInterp_Context::Logf(
-    zInterp_Context *ctx,
+void CZInterp::Logf(
+    CZInterp *ctx,
     const char *fmt,
     ...
 ) {
     if (ctx->logFn != 0) {
         va_list args;
-        va_start(
-            args,
-            fmt
-        );
-        ctx->logFn(
-            fmt,
-            (char *)args
-        );
+        va_start(args, fmt);
+        ctx->logFn(fmt, (char *)args);
         va_end(args);
     }
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-evalconditionexpr
- * @recoil-artifact defines .text recoil:function:0x4c1b50: zInterp_Context::EvalConditionExpr.
+ * @recoil-artifact defines .text recoil:function:0x4c1b50: CZInterp::EvalConditionExpr.
  * @recoil-match byte
  *
  * Purpose: evaluate simple macro truth expressions used by ifdef/ifndef.
  */
-int zInterp_Context::EvalConditionExpr() {
+int CZInterp::EvalConditionExpr() {
     if (tokenCount == 1) {
         return 0;
     }
@@ -1130,17 +1019,9 @@ int zInterp_Context::EvalConditionExpr() {
         if (tokenIndex < tokenCount) {
             const unsigned int opIndex = tokenIndex++;
             const char *const opText = opIndex < tokenCount ? tokenList[opIndex] : 0;
-            if (strncmp(
-                opText,
-                "||",
-                2
-            ) == 0) {
+            if (strncmp(opText, "||", 2) == 0) {
                 op = 1;
-            } else if (strncmp(
-                opText,
-                "&&",
-                2
-            ) == 0) {
+            } else if (strncmp(opText, "&&", 2) == 0) {
                 op = 2;
             } else {
                 break;
@@ -1153,20 +1034,16 @@ int zInterp_Context::EvalConditionExpr() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-handlebuiltincommand
- * @recoil-artifact defines .text recoil:function:0x4c1c50: zInterp_Context::HandleBuiltinCommand.
+ * @recoil-artifact defines .text recoil:function:0x4c1c50: CZInterp::HandleBuiltinCommand.
  * @recoil-match byte
  *
  * Purpose: handle parser builtins for conditions, macros, script inclusion,
  * and variable mutation before core command dispatch.
  */
-int zInterp_Context::HandleBuiltinCommand(
+int CZInterp::HandleBuiltinCommand(
     char *commandToken
 ) {
-    if (strncmp(
-        tokenCount > 0 ? tokenList[0] : 0,
-        "endif",
-        5
-    ) == 0) {
+    if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "endif", 5) == 0) {
         if (conditionalDepth != 0) {
             --conditionalDepth;
         }
@@ -1175,73 +1052,41 @@ int zInterp_Context::HandleBuiltinCommand(
         return 0;
     }
 
-    if (strncmp(
-        tokenCount > 0 ? tokenList[0] : 0,
-        "ifdef",
-        5
-    ) == 0) {
+    if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "ifdef", 5) == 0) {
         if (EvalConditionExpr() == 0) {
             ++conditionalDepth;
         }
         return 0;
     }
 
-    if (strncmp(
-        tokenCount > 0 ? tokenList[0] : 0,
-        "ifndef",
-        6
-    ) == 0) {
+    if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "ifndef", 6) == 0) {
         if (EvalConditionExpr() != 0) {
             ++conditionalDepth;
         }
         return 0;
     }
 
-    if (strncmp(
-        tokenCount > 0 ? tokenList[0] : 0,
-        "mkdir",
-        5
-    ) == 0) {
+    if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "mkdir", 5) == 0) {
         char *const path = NextToken();
         if (_mkdir(path) != 0 && errno != EEXIST) {
-            ReportErrorf(
-                this,
-                "%s %s FAILED (errno == %d)",
-                commandToken,
-                path,
-                errno
-            );
+            ReportErrorf(this, "%s %s FAILED (errno == %d)", commandToken, path, errno);
         }
         return 0;
     }
 
-    if (strcmp(
-        tokenCount > 0 ? tokenList[0] : 0,
-        "Quit"
-    ) == 0) {
+    if (strcmp(tokenCount > 0 ? tokenList[0] : 0, "Quit") == 0) {
         parseResult = 1;
         return 0;
     }
 
-    if (strncmp(
-        tokenCount > 0 ? tokenList[0] : 0,
-        "set",
-        3
-    ) == 0) {
+    if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "set", 3) == 0) {
         char *const name = NextToken();
         char *const value = NextToken();
-        SetMacro(
-            name,
-            value
-        );
+        SetMacro(name, value);
         return 0;
     }
 
-    if (strncmp(
-        tokenCount > 0 ? tokenList[0] : 0,
-        "source",
-        6
-    ) == 0) {
+    if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "source", 6) == 0) {
         char *const sourcePath = NextToken();
         if (sourcePath != 0) {
             char *const filePath = _strdup(sourcePath);
@@ -1254,62 +1099,29 @@ int zInterp_Context::HandleBuiltinCommand(
         return 0;
     }
 
-    if (strncmp(
-        tokenCount > 0 ? tokenList[0] : 0,
-        "who",
-        3
-    ) == 0) {
-        Logf(
-            this,
-            "%d Macros",
-            macroCount
-        );
+    if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "who", 3) == 0) {
+        Logf(this, "%d Macros", macroCount);
         for (unsigned int i = 0; i < macroCount; ++i) {
-            Logf(
-                this,
-                "%12s: %s",
-                macroTable[i].name,
-                macroTable[i].value
-            );
+            Logf(this, "%12s: %s", macroTable[i].name, macroTable[i].value);
         }
-        Logf(
-            this,
-            "%d Variables",
-            varCount
-        );
-        zInterp_VarEntry *entry = varTable;
+        Logf(this, "%d Variables", varCount);
+        zInterpVarEntry *entry = varTable;
         for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex, ++entry) {
             DumpVarEntry(entry);
         }
         return 0;
     }
 
-    if (strncmp(
-        tokenCount > 0 ? tokenList[0] : 0,
-        "var",
-        3
-    ) == 0) {
+    if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "var", 3) == 0) {
         char *const name = NextToken();
-        zInterp_VarEntry *const entry = FindVarEntry(name);
+        zInterpVarEntry *const entry = FindVarEntry(name);
         if (entry == 0) {
-            Logf(
-                this,
-                "Can't find variable ( %s )",
-                name
-            );
+            Logf(this, "Can't find variable ( %s )", name);
             return 0;
         }
 
         char *const op = NextToken();
-        if (strncmp(
-            op,
-            "set",
-            3
-        ) != 0 && strncmp(
-            op,
-            "=",
-            1
-        ) != 0) {
+        if (strncmp(op, "set", 3) != 0 && strncmp(op, "=", 1) != 0) {
             IncErrorCount();
             return 0;
         }
@@ -1333,12 +1145,12 @@ int zInterp_Context::HandleBuiltinCommand(
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-printnodetree
- * @recoil-artifact defines .text recoil:function:0x4c2030: zInterp_Context::PrintNodeTree.
+ * @recoil-artifact defines .text recoil:function:0x4c2030: CZInterp::PrintNodeTree.
  * @recoil-match byte
  *
  * Purpose: recursively log a zClass node tree with two-space child indentation.
  */
-void zInterp_Context::PrintNodeTree(
+void CZInterp::PrintNodeTree(
     zClass_NodePartial *node,
     int indent
 ) {
@@ -1351,12 +1163,12 @@ void zInterp_Context::PrintNodeTree(
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-reportparseerror
- * @recoil-artifact defines .text recoil:function:0x4c2090: zInterp_Context::ReportParseError.
+ * @recoil-artifact defines .text recoil:function:0x4c2090: CZInterp::ReportParseError.
  * @recoil-match byte
  *
  * Purpose: count an unhandled command parse error and report failure.
  */
-int zInterp_Context::ReportParseError(
+int CZInterp::ReportParseError(
     char *
 ) {
     IncErrorCount();
@@ -1364,7 +1176,7 @@ int zInterp_Context::ReportParseError(
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-dispatchcorecommand
- * @recoil-artifact defines .text recoil:function:0x4c20a0: zInterp_Context::DispatchCoreCommand.
+ * @recoil-artifact defines .text recoil:function:0x4c20a0: CZInterp::DispatchCoreCommand.
  * @recoil-artifact emits .data recoil:data:0x4e2f9c: Native shared "NULL" diagnostic literal.
  * @recoil-artifact emits .data recoil:data:0x4e55c8: Native command literal "ClearScreenBuffer".
  * @recoil-artifact emits .data recoil:data:0x4e55bc: Native command literal "DeleteChild".
@@ -1523,7 +1335,7 @@ int zInterp_Context::ReportParseError(
  *
  * Purpose: dispatch script commands to engine subsystems.
  */
-int zInterp_Context::DispatchCoreCommand(
+int CZInterp::DispatchCoreCommand(
     char *commandToken
 ) {
     float y;
@@ -1536,15 +1348,9 @@ int zInterp_Context::DispatchCoreCommand(
 
     switch (commandToken[0]) {
     case 'A':
-        if (CommandIs(
-            this,
-            "AddChild"
-        ) != 0) {
+        if (CommandIs(this, "AddChild") != 0) {
             char *const searchName = NextToken();
-            zClass_NodePartial *const child = zClass::FindByTypeAndName(
-                6,
-                searchName
-            );
+            zClass_NodePartial *const child = zClass::FindByTypeAndName(6, searchName);
             zClass_NodePartial *const parent = (zClass_NodePartial *)(currentNode);
             if (parent == 0) {
                 ReportErrorf(
@@ -1565,33 +1371,21 @@ int zInterp_Context::DispatchCoreCommand(
                 );
                 return 1;
             }
-            zClass_Class::AddChild(
-                parent,
-                child
-            );
+            zClass_Class::AddChild(parent, child);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "AddEnhancerImage"
-        ) != 0) {
-            zImage::TexDir_FindOrAppendByPath(NextToken());
+        if (CommandIs(this, "AddEnhancerImage") != 0) {
+            zImage::TexDirFindOrAppendByPath(NextToken());
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "AnimSetZBDFile"
-        ) != 0) {
+        if (CommandHasPrefix(this, "AnimSetZBDFile") != 0) {
             zEffect_Anim::SetZbdFilename(NextToken());
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "AnimSetDebugFrame"
-        ) != 0) {
+        if (CommandHasPrefix(this, "AnimSetDebugFrame") != 0) {
             zEffect::SetAnimDebugFrameTag();
             return 1;
         } else {
@@ -1599,36 +1393,20 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
     case 'C':
-        if (CommandIs(
-            this,
-            "CameraRotate"
-        ) != 0) {
+        if (CommandIs(this, "CameraRotate") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Camera::gwCameraSetPosition(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y,
-                z
-            );
+            zClass_Camera::gwCameraSetPosition((zClass_NodePartial *)(currentNode), x, y, z);
             return 1;
         }
 
-        if (CommandIsExact(
-            this,
-            "CameraGetTranslate"
-        ) != 0) {
+        if (CommandIsExact(this, "CameraGetTranslate") != 0) {
             if (currentNode == 0) {
                 return 1;
             }
 
-            zClass_Camera::gwCameraGetTarget(
-                (zClass_NodePartial *)(currentNode),
-                &x,
-                &y,
-                &z
-            );
+            zClass_Camera::gwCameraGetTarget((zClass_NodePartial *)(currentNode), &x, &y, &z);
             Logf(
                 this,
                 "%s --> ( %.2f %.2f %.2f )",
@@ -1640,33 +1418,18 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "CameraSetActive"
-        ) != 0) {
-            zClass_Camera::gwCameraSetActive(
-                (zClass_NodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+        if (CommandIs(this, "CameraSetActive") != 0) {
+            zClass_Camera::gwCameraSetActive((zClass_NodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "CameraSetDynamicLOD"
-        ) != 0) {
+        if (CommandHasPrefix(this, "CameraSetDynamicLOD") != 0) {
             x = ParseFloatToken();
-            zClass_Camera::SetViewDistance(
-                1,
-                x
-            );
+            zClass_Camera::SetViewDistance(1, x);
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "CameraSetFOV"
-        ) != 0) {
+        if (CommandHasPrefix(this, "CameraSetFOV") != 0) {
             float horizontalFov = ParseFloatToken();
             float verticalFov = ParseFloatToken();
             horizontalFov = (float)(horizontalFov * kDegreesToRadians);
@@ -1679,40 +1442,19 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "CameraSetHorizonXZ"
-        ) != 0) {
-            zClass_NodePartial *const horizon = zClass::FindByTypeAndName(
-                6,
-                NextToken()
-            );
-            zClass_Camera::gwCameraSetHorizonXZ(
-                (zClass_NodePartial *)(currentNode),
-                horizon
-            );
+        if (CommandIs(this, "CameraSetHorizonXZ") != 0) {
+            zClass_NodePartial *const horizon = zClass::FindByTypeAndName(6, NextToken());
+            zClass_Camera::gwCameraSetHorizonXZ((zClass_NodePartial *)(currentNode), horizon);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "CameraSetHorizon"
-        ) != 0) {
-            zClass_NodePartial *const horizon = zClass::FindByTypeAndName(
-                6,
-                NextToken()
-            );
-            zClass_Camera::gwCameraSetHorizon(
-                (zClass_NodePartial *)(currentNode),
-                horizon
-            );
+        if (CommandIs(this, "CameraSetHorizon") != 0) {
+            zClass_NodePartial *const horizon = zClass::FindByTypeAndName(6, NextToken());
+            zClass_Camera::gwCameraSetHorizon((zClass_NodePartial *)(currentNode), horizon);
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "CameraSetLODMultiplier"
-        ) != 0) {
+        if (CommandHasPrefix(this, "CameraSetLODMultiplier") != 0) {
             const float clipDistance = ParseFloatToken();
             zClass_Camera::gwCameraSetClipDistance(
                 (zClass_NodePartial *)(currentNode),
@@ -1721,10 +1463,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "CameraSetNearFarClip"
-        ) != 0) {
+        if (CommandIs(this, "CameraSetNearFarClip") != 0) {
             const float nearClip = ParseFloatToken();
             const float farClip = ParseFloatToken();
             zClass_Camera::gwCameraSetNearFarClip(
@@ -1735,10 +1474,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIsExact(
-            this,
-            "CameraSetNearClip"
-        ) != 0) {
+        if (CommandIsExact(this, "CameraSetNearClip") != 0) {
             float nearClip;
             float farClip;
             zClass_Camera::gwCameraGetNearFarClip(
@@ -1755,10 +1491,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIsExact(
-            this,
-            "CameraSetFarClip"
-        ) != 0) {
+        if (CommandIsExact(this, "CameraSetFarClip") != 0) {
             float nearClip;
             float farClip;
             zClass_Camera::gwCameraGetNearFarClip(
@@ -1775,111 +1508,54 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "CameraSetObjectHSETest"
-        ) != 0) {
+        if (CommandHasPrefix(this, "CameraSetObjectHSETest") != 0) {
             zClass_Camera::SetObjectHseTestEnabled(ParseBoolToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "CameraSetWindow"
-        ) != 0) {
-            zClass_NodePartial *const window = zClass::FindByTypeAndName(
-                14,
-                NextToken()
-            );
-            zClass_Camera::gwCameraSetWindow(
-                (zClass_NodePartial *)(currentNode),
-                window
-            );
+        if (CommandIs(this, "CameraSetWindow") != 0) {
+            zClass_NodePartial *const window = zClass::FindByTypeAndName(14, NextToken());
+            zClass_Camera::gwCameraSetWindow((zClass_NodePartial *)(currentNode), window);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "CameraSetWorld"
-        ) != 0) {
-            zClass_NodePartial *const world = zClass::FindByTypeAndName(
-                13,
-                NextToken()
-            );
-            zClass_Camera::gwCameraSetWorld(
-                (zClass_NodePartial *)(currentNode),
-                world
-            );
+        if (CommandIs(this, "CameraSetWorld") != 0) {
+            zClass_NodePartial *const world = zClass::FindByTypeAndName(13, NextToken());
+            zClass_Camera::gwCameraSetWorld((zClass_NodePartial *)(currentNode), world);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "CameraTranslate"
-        ) != 0) {
+        if (CommandIs(this, "CameraTranslate") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Camera::gwCameraSetTarget(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y,
-                z
-            );
+            zClass_Camera::gwCameraSetTarget((zClass_NodePartial *)(currentNode), x, y, z);
             return 1;
         }
 
-        if (strncmp(
-            tokenCount > 0 ? tokenList[0] : 0,
-            "CountCameraNodes",
-            14
-        ) == 0) {
-            printf(
-                "# of nodes in camera list = %d\n",
-                zClass_TypeList::CountNodes(8)
-            );
+        if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "CountCameraNodes", 14) == 0) {
+            printf("# of nodes in camera list = %d\n", zClass_TypeList::CountNodes(8));
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "CountUsedNodes"
-        ) != 0) {
-            printf(
-                "# of nodes in used list = %d\n",
-                zClass_TypeList::CountNodes(6)
-            );
+        if (CommandIs(this, "CountUsedNodes") != 0) {
+            printf("# of nodes in used list = %d\n", zClass_TypeList::CountNodes(6));
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "CycleTextureSetLooping"
-        ) != 0) {
-            zModel_Instance::SetCycleTextureLoop(
-                g_zInterp_CurrentCycleTextureDi,
-                ParseBoolToken()
-            );
+        if (CommandHasPrefix(this, "CycleTextureSetLooping") != 0) {
+            zModel_Instance::SetCycleTextureLoop(g_zInterp_CurrentCycleTextureDi, ParseBoolToken());
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "CycleTextureSetMap"
-        ) != 0) {
+        if (CommandHasPrefix(this, "CycleTextureSetMap") != 0) {
             zImage_TexDirEntryPartial *const texDirEntry =
-                zImage::TexDir_FindOrAppendByPath(NextToken());
-            zModel_Instance::AddCycleTexture(
-                g_zInterp_CurrentCycleTextureDi,
-                texDirEntry
-            );
+                zImage::TexDirFindOrAppendByPath(NextToken());
+            zModel_Instance::AddCycleTexture(g_zInterp_CurrentCycleTextureDi, texDirEntry);
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "CycleTextureSetOn"
-        ) != 0) {
+        if (CommandHasPrefix(this, "CycleTextureSetOn") != 0) {
             const int textureCount = ParseIntToken();
             if (currentNode == 0) {
                 zError::ReportOld(
@@ -1922,42 +1598,27 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "CycleTextureSetSpeed"
-        ) != 0) {
+        if (CommandHasPrefix(this, "CycleTextureSetSpeed") != 0) {
             x = ParseFloatToken();
-            zDi::SetCurrentVariantCycleTextureSpeed(
-                g_zInterp_CurrentCycleTextureDi,
-                x
-            );
+            zDi::SetCurrentVariantCycleTextureSpeed(g_zInterp_CurrentCycleTextureDi, x);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "ClearScreenBuffer"
-        ) == 0) {
+        if (CommandIs(this, "ClearScreenBuffer") == 0) {
             IncErrorCount();
             return 1;
         }
         zVideo::ExchangeClearScreenBufferEnabled(ParseBoolToken());
         return 1;
     case 'D':
-        if (CommandIs(
-            this,
-            "DeleteChild"
-        ) != 0) {
+        if (CommandIs(this, "DeleteChild") != 0) {
             char *const name = NextToken();
             zClass_NodePartial *const child = zClass_Class::FindSubNodeByName(
                 (zClass_NodePartial *)(currentNode),
                 name
             );
             if (currentNode != 0 && child != 0) {
-                zClass_Class::RemoveChild(
-                    (zClass_NodePartial *)(currentNode),
-                    child
-                );
+                zClass_Class::RemoveChild((zClass_NodePartial *)(currentNode), child);
             } else {
                 zError::ReportOld(
                     0x200,
@@ -1971,23 +1632,14 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "DeleteFile"
-        ) != 0) {
+        if (CommandIs(this, "DeleteFile") != 0) {
             DeleteFileA(NextToken());
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "DeleteTree"
-        ) != 0) {
+        if (CommandHasPrefix(this, "DeleteTree") != 0) {
             char *const searchName = NextToken();
-            zClass_NodePartial *const node = zClass::FindByTypeAndName(
-                6,
-                searchName
-            );
+            zClass_NodePartial *const node = zClass::FindByTypeAndName(6, searchName);
             if (node == 0) {
                 zError::ReportOld(
                     0x200,
@@ -2002,38 +1654,21 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "DisplayOrigin"
-        ) != 0) {
+        if (CommandIs(this, "DisplayOrigin") != 0) {
             const int x = ParseIntToken();
             const int y = ParseIntToken();
-            zClass_Display::gwDisplaySetPosition(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y
-            );
+            zClass_Display::gwDisplaySetPosition((zClass_NodePartial *)(currentNode), x, y);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "DisplayResolution"
-        ) != 0) {
+        if (CommandIs(this, "DisplayResolution") != 0) {
             const int width = ParseIntToken();
             const int height = ParseIntToken();
-            zClass_Display::gwDisplaySetSize(
-                (zClass_NodePartial *)(currentNode),
-                width,
-                height
-            );
+            zClass_Display::gwDisplaySetSize((zClass_NodePartial *)(currentNode), width, height);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "DisplaySetClearColor"
-        ) != 0) {
+        if (CommandIs(this, "DisplaySetClearColor") != 0) {
             red = ParseFloatToken();
             green = ParseFloatToken();
             blue = ParseFloatToken();
@@ -2049,10 +1684,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
     case 'e':
-        if (CommandIs(
-            this,
-            "echo"
-        ) != 0) {
+        if (CommandIs(this, "echo") != 0) {
             EchoTokens();
             return 1;
         } else {
@@ -2060,10 +1692,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
     case 'E':
-        if (CommandIs(
-            this,
-            "Echo"
-        ) != 0) {
+        if (CommandIs(this, "Echo") != 0) {
             EchoTokens();
             return 1;
         } else {
@@ -2071,53 +1700,30 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
     case 'F':
-        if (CommandIs(
-            this,
-            "FindNode"
-        ) != 0) {
+        if (CommandIs(this, "FindNode") != 0) {
             char *const searchName = NextToken();
-            currentNode = zClass::FindByTypeAndName(
-                6,
-                searchName
-            );
+            currentNode = zClass::FindByTypeAndName(6, searchName);
             if (currentNode == 0) {
-                ReportErrorf(
-                    this,
-                    "FindNode %s: FAILED",
-                    searchName
-                );
+                ReportErrorf(this, "FindNode %s: FAILED", searchName);
             }
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "FindSubNode"
-        ) != 0) {
+        if (CommandIs(this, "FindSubNode") != 0) {
             char *const name = NextToken();
             currentNode = zClass_Class::FindSubNodeByName(
                 (zClass_NodePartial *)(currentNode),
                 name
             );
             if (currentNode == 0) {
-                ReportErrorf(
-                    this,
-                    "FindSubNode %s: FAILED",
-                    name
-                );
+                ReportErrorf(this, "FindSubNode %s: FAILED", name);
             }
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "FreeNode"
-        ) != 0) {
+        if (CommandIs(this, "FreeNode") != 0) {
             char *const searchName = NextToken();
-            zClass_NodePartial *const node = zClass::FindByTypeAndName(
-                6,
-                searchName
-            );
+            zClass_NodePartial *const node = zClass::FindByTypeAndName(6, searchName);
             int result;
             switch (node->classId) {
                 case 1:
@@ -2133,18 +1739,12 @@ int zInterp_Context::DispatchCoreCommand(
                     result = zClass_Object3D::DeleteNode(node);
                     break;
                 default:
-                    printf(
-                        "Unrecognized node class = %d\n",
-                        node->classId
-                    );
+                    printf("Unrecognized node class = %d\n", node->classId);
                     result = 1;
                     break;
             }
             if (result != 0) {
-                printf(
-                    "   Error freeing node %s\n",
-                    searchName
-                );
+                printf("   Error freeing node %s\n", searchName);
             }
             return 1;
         } else {
@@ -2152,26 +1752,15 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
     case 'G':
-        if (CommandIs(
-            this,
-            "GameZReadZBDFile"
-        ) != 0) {
+        if (CommandIs(this, "GameZReadZBDFile") != 0) {
             char *const filename = NextToken();
             if (GameZ::ReadZBDFile(filename) != 0) {
-                ReportErrorf(
-                    this,
-                    "%s %s FAILED",
-                    commandToken,
-                    filename
-                );
+                ReportErrorf(this, "%s %s FAILED", commandToken, filename);
             }
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "GameZWriteZBDFile"
-        ) != 0) {
+        if (CommandIs(this, "GameZWriteZBDFile") != 0) {
             char *const filename = NextToken();
             zClass_Class::gwNodeUpdateAll();
             zClass::ProcessDeferredWork();
@@ -2179,15 +1768,8 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "GetBFETolerance"
-        ) != 0) {
-            Logf(
-                this,
-                "BFE Tolerance: %.7f",
-                zModel::GetBackfaceEliminationToleranceScalar()
-            );
+        if (CommandIs(this, "GetBFETolerance") != 0) {
+            Logf(this, "BFE Tolerance: %.7f", zModel::GetBackfaceEliminationToleranceScalar());
             return 1;
         } else {
             IncErrorCount();
@@ -2196,59 +1778,32 @@ int zInterp_Context::DispatchCoreCommand(
     case 'I':
         return 1;
     case 'L':
-        if (CommandIs(
-            this,
-            "LensFlareTexture"
-        ) != 0) {
+        if (CommandIs(this, "LensFlareTexture") != 0) {
             const int stageIndex = ParseIntToken();
             zImage_TexDirEntryPartial *const texDirEntry =
-                zImage::TexDir_FindOrAppendByPath(NextToken());
-            zRndr_LensFlare_SetVisibleSampleStage(
-                stageIndex,
-                texDirEntry
-            );
+                zImage::TexDirFindOrAppendByPath(NextToken());
+            zRndrLensFlareSetVisibleSampleStage(stageIndex, texDirEntry);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightNew"
-        ) != 0) {
+        if (CommandIs(this, "LightNew") != 0) {
             currentNode = zClass_Light::gwLightNew();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetActive"
-        ) != 0) {
-            zClass_Class::gwNodeSetActive(
-                (zClass_NodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+        if (CommandIs(this, "LightSetActive") != 0) {
+            zClass_Class::gwNodeSetActive((zClass_NodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetAmbient"
-        ) != 0) {
+        if (CommandIs(this, "LightSetAmbient") != 0) {
             x = ParseFloatToken();
-            zClass_Light::gwLightSetIntensity(
-                (zClass_NodePartial *)(currentNode),
-                x
-            );
+            zClass_Light::gwLightSetIntensity((zClass_NodePartial *)(currentNode), x);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetColor"
-        ) != 0) {
+        if (CommandIs(this, "LightSetColor") != 0) {
             red = ParseFloatToken();
             green = ParseFloatToken();
             blue = ParseFloatToken();
@@ -2261,30 +1816,18 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetDiffuse"
-        ) != 0) {
+        if (CommandIs(this, "LightSetDiffuse") != 0) {
             x = ParseFloatToken();
-            zClass_Light::gwLightSetFalloff(
-                (zClass_NodePartial *)(currentNode),
-                x
-            );
+            zClass_Light::gwLightSetFalloff((zClass_NodePartial *)(currentNode), x);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetDirectedSource"
-        ) != 0) {
+        if (CommandIs(this, "LightSetDirectedSource") != 0) {
             zClass_Light::gwLightSetPointMode((zClass_NodePartial *)(currentNode));
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetDirectional"
-        ) != 0) {
+        if (CommandIs(this, "LightSetDirectional") != 0) {
             zClass_Light::gwLightSetConeAngle(
                 (zClass_NodePartial *)(currentNode),
                 (unsigned int)(ParseBoolToken())
@@ -2292,10 +1835,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetOrientation"
-        ) != 0) {
+        if (CommandIs(this, "LightSetOrientation") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
@@ -2308,91 +1848,48 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetPointSource"
-        ) != 0) {
+        if (CommandIs(this, "LightSetPointSource") != 0) {
             zClass_Light::gwLightSetDirectionalMode((zClass_NodePartial *)(currentNode));
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetRanges"
-        ) != 0) {
+        if (CommandIs(this, "LightSetRanges") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_Light::gwLightSetRange(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y
-            );
+            zClass_Light::gwLightSetRange((zClass_NodePartial *)(currentNode), x, y);
             return 1;
         }
 
-        if (strncmp(
-            tokenCount > 0 ? tokenList[0] : 0,
-            "LightSetSaturated",
-            19
-        ) == 0) {
+        if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "LightSetSaturated", 19) == 0) {
             if (currentNode == 0) {
-                ReportErrorf(
-                    this,
-                    "%s Failed: no current node"
-                );
+                ReportErrorf(this, "%s Failed: no current node");
                 return 1;
             }
 
-            zClass_Light::gwLightSetParam(
-                (zClass_NodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            zClass_Light::gwLightSetParam((zClass_NodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LightSetTranslate"
-        ) != 0) {
+        if (CommandIs(this, "LightSetTranslate") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Light::gwLightSetPosition(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y,
-                z
-            );
+            zClass_Light::gwLightSetPosition((zClass_NodePartial *)(currentNode), x, y, z);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LoadSoils"
-        ) != 0) {
+        if (CommandIs(this, "LoadSoils") != 0) {
             zRndr_GlobalStringTable::LoadDynamicEntriesFromPath(NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LODAddChild"
-        ) != 0) {
-            zClass_NodePartial *const child = zClass::FindByTypeAndName(
-                6,
-                NextToken()
-            );
-            zClass_Lod::gwLodAddChild(
-                (zClass_NodePartial *)(currentNode),
-                child
-            );
+        if (CommandIs(this, "LODAddChild") != 0) {
+            zClass_NodePartial *const child = zClass::FindByTypeAndName(6, NextToken());
+            zClass_Lod::gwLodAddChild((zClass_NodePartial *)(currentNode), child);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "LODSetRange"
-        ) != 0) {
+        if (CommandIs(this, "LODSetRange") != 0) {
             float nearRange = ParseFloatToken();
             float farRange = ParseFloatToken();
             ((zClass_LodDataPartial *)(((zClass_NodePartial *)(currentNode))->classData))->nearRangeSq = nearRange * nearRange;
@@ -2403,30 +1900,21 @@ int zInterp_Context::DispatchCoreCommand(
         return 1;
     case 'm':
     case 'M':
-        if (CommandIs(
-            this,
-            "MatlFaceColor"
-        ) != 0) {
+        if (CommandIs(this, "MatlFaceColor") != 0) {
             runtimeBlob->material.colorRgb.red = ParseFloatToken();
             runtimeBlob->material.colorRgb.green = ParseFloatToken();
             runtimeBlob->material.colorRgb.blue = ParseFloatToken();
             runtimeBlob->material.packedColor =
-                zVid_PackColorRgbFloats((zVideo_ColorRgbFloat *)(&runtimeBlob->material.colorRgb));
+                zVidPackColorRgbFloats((zVideo_ColorRgbFloat *)(&runtimeBlob->material.colorRgb));
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "MatlNew"
-        ) != 0) {
+        if (CommandIs(this, "MatlNew") != 0) {
             zModel_Material::ResetDefaults(&runtimeBlob->material);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "MatlTexture"
-        ) != 0) {
+        if (CommandIs(this, "MatlTexture") != 0) {
             runtimeBlob->material.currentTextureDirectoryEntry =
                 zImage::FindTexDirEntryByName(NextToken());
             if (runtimeBlob->material.currentTextureDirectoryEntry == 0) {
@@ -2437,53 +1925,31 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "ModelNew"
-        ) != 0) {
+        if (CommandIs(this, "ModelNew") != 0) {
             currentNode = zClass_Object3D::gwObject3DInit();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             runtimeBlob->displayInstance = zModel_DiPool::AllocFromFreeList();
             zClass_Class::gwNodeSetDisplayInstance(
                 (zClass_NodePartial *)(currentNode),
                 runtimeBlob->displayInstance
             );
             const char *const modelType = NextToken();
-            if (strncmp(
-                modelType,
-                "Facade",
-                6
-            ) == 0) {
-                zUtil::StoreInt32(
-                    (int *)runtimeBlob->displayInstance,
-                    1
-                );
+            if (strncmp(modelType, "Facade", 6) == 0) {
+                zUtil::StoreInt32((int *)runtimeBlob->displayInstance, 1);
             } else {
-                zUtil::StoreInt32(
-                    (int *)runtimeBlob->displayInstance,
-                    0
-                );
+                zUtil::StoreInt32((int *)runtimeBlob->displayInstance, 0);
             }
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "ModelPolygonBegin"
-        ) != 0) {
+        if (CommandIs(this, "ModelPolygonBegin") != 0) {
             runtimeBlob->pointCount = 0;
             runtimeBlob->uvCount = 0;
             runtimeBlob->normalsA = 0;
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "ModelPolygonEnd"
-        ) != 0) {
+        if (CommandIs(this, "ModelPolygonEnd") != 0) {
             runtimeBlob->polygonMaterial = zModel_Material::FindOrClone(&runtimeBlob->material);
             zTag4::Clear(&runtimeBlob->variantTag);
             zDi::AddPolygon(
@@ -2502,10 +1968,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "ModelPolygonUV"
-        ) != 0) {
+        if (CommandIs(this, "ModelPolygonUV") != 0) {
             const int uvIndex = runtimeBlob->uvCount;
             runtimeBlob->uvPairs[uvIndex].u = ParseFloatToken();
             runtimeBlob->uvPairs[uvIndex].v = ParseFloatToken();
@@ -2513,10 +1976,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "ModelPolygonVertex"
-        ) != 0) {
+        if (CommandIs(this, "ModelPolygonVertex") != 0) {
             const int pointIndex = runtimeBlob->pointCount;
             runtimeBlob->polygonPoints[pointIndex].x = ParseFloatToken();
             runtimeBlob->polygonPoints[pointIndex].y = ParseFloatToken();
@@ -2528,139 +1988,70 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
     case 'N':
-        if (CommandIs(
-            this,
-            "NewCamera"
-        ) != 0) {
+        if (CommandIs(this, "NewCamera") != 0) {
             currentNode = zClass_Camera::gwCameraNew();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NewDisplay"
-        ) != 0) {
+        if (CommandIs(this, "NewDisplay") != 0) {
             currentNode = zClass_Display::gwDisplayInit();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NewLOD"
-        ) != 0) {
+        if (CommandIs(this, "NewLOD") != 0) {
             currentNode = zClass_Lod::gwLodNew();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NewNode"
-        ) != 0) {
-            currentNode = zClass_Class::AllocNodeFromFreeList();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+        if (CommandIs(this, "NewNode") != 0) {
+            currentNode = zClass_Class::gwNodeNew();
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NewObject3D"
-        ) != 0) {
+        if (CommandIs(this, "NewObject3D") != 0) {
             currentNode = zClass_Object3D::gwObject3DInit();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NewSEQ"
-        ) != 0) {
+        if (CommandIs(this, "NewSEQ") != 0) {
             currentNode = zClass_Sequence::gwSequenceNew();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NewWindow"
-        ) != 0) {
+        if (CommandIs(this, "NewWindow") != 0) {
             currentNode = zClass_Window::gwWindowNew();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NewWorld"
-        ) != 0) {
+        if (CommandIs(this, "NewWorld") != 0) {
             currentNode = zClass_World::gwWorldNew();
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NodeSetActive"
-        ) != 0) {
-            zClass_Class::gwNodeSetActive(
-                (zClass_NodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+        if (CommandIs(this, "NodeSetActive") != 0) {
+            zClass_Class::gwNodeSetActive((zClass_NodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NodeSetDescription"
-        ) != 0) {
-            zClass_Class::gwNodeSetName(
-                (zClass_NodePartial *)(currentNode),
-                NextToken()
-            );
+        if (CommandIs(this, "NodeSetDescription") != 0) {
+            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NodeSetCanModify"
-        ) != 0) {
-            zClass_Class::gwNodeSetFlag16(
-                (zClass_NodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+        if (CommandIs(this, "NodeSetCanModify") != 0) {
+            zClass_Class::gwNodeSetFlag16((zClass_NodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NodeSetLighting"
-        ) != 0) {
+        if (CommandIs(this, "NodeSetLighting") != 0) {
             zClass_Node::AssignInt32ToDiRecursive(
                 (zClass_NodePartial *)(currentNode),
                 ParseBoolToken()
@@ -2668,10 +2059,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "NodeSetOverwrite"
-        ) != 0) {
+        if (CommandIs(this, "NodeSetOverwrite") != 0) {
             zClass_Class::gwNodeSetVertexAlphaOverride(
                 (zClass_NodePartial *)(currentNode),
                 ParseBoolToken()
@@ -2682,21 +2070,12 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
     case 'O':
-        if (CommandIs(
-            this,
-            "Object3DAddChild"
-        ) != 0) {
+        if (CommandIs(this, "Object3DAddChild") != 0) {
             char *const searchName = NextToken();
-            zClass_NodePartial *const child = zClass::FindByTypeAndName(
-                6,
-                searchName
-            );
+            zClass_NodePartial *const child = zClass::FindByTypeAndName(6, searchName);
             zClass_NodePartial *const parent = (zClass_NodePartial *)(currentNode);
             if (parent != 0 && child != 0) {
-                zClass_Object3D::gwObject3DAddChild(
-                    parent,
-                    child
-                );
+                zClass_Object3D::gwObject3DAddChild(parent, child);
             } else {
                 zError::ReportOld(
                     0x200,
@@ -2710,19 +2089,11 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIsExact(
-            this,
-            "Object3DGetTranslate"
-        ) != 0) {
+        if (CommandIsExact(this, "Object3DGetTranslate") != 0) {
             if (currentNode == 0) {
                 return 1;
             }
-            zClass_Object3D::gwObject3DGetPosition(
-                (zClass_NodePartial *)(currentNode),
-                &x,
-                &y,
-                &z
-            );
+            zClass_Object3D::gwObject3DGetPosition((zClass_NodePartial *)(currentNode), &x, &y, &z);
             Logf(
                 this,
                 "%s --> ( %.2f %.2f %.2f )",
@@ -2734,10 +2105,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DRegisterTexturesToWorld"
-        ) != 0) {
+        if (CommandIs(this, "Object3DRegisterTexturesToWorld") != 0) {
             const int registerTextures = ParseBoolToken();
             if (registerTextures != 0) {
                 zClass_Class::gwNodeGetUserData(
@@ -2757,10 +2125,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DRotate"
-        ) != 0) {
+        if (CommandIs(this, "Object3DRotate") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
@@ -2773,81 +2138,46 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DScale"
-        ) != 0) {
+        if (CommandIs(this, "Object3DScale") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Object3D::gwObject3DSetScale(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y,
-                z
-            );
+            zClass_Object3D::gwObject3DSetScale((zClass_NodePartial *)(currentNode), x, y, z);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetActionPriority"
-        ) != 0) {
-            zClass_Class::gwNodeSetPriority(
-                (zClass_NodePartial *)(currentNode),
-                ParseIntToken()
-            );
+        if (CommandIs(this, "Object3DSetActionPriority") != 0) {
+            zClass_Class::gwNodeSetPriority((zClass_NodePartial *)(currentNode), ParseIntToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetActive"
-        ) != 0) {
-            zClass_Class::gwNodeSetActive(
-                (zClass_NodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+        if (CommandIs(this, "Object3DSetActive") != 0) {
+            zClass_Class::gwNodeSetActive((zClass_NodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetColor"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetColor") != 0) {
             const int colorMode = ParseIntToken();
             zClass_Class::gwNodeGetUserData(
                 (zClass_NodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_Object3DCommandDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
-            zDi::SetObject3DColorModeForMaterials(
-                g_zInterp_Object3DCommandDi,
-                colorMode
-            );
+            zDi::SetObject3DColorModeForMaterials(g_zInterp_Object3DCommandDi, colorMode);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetFacade"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetFacade") != 0) {
             zClass_Class::gwNodeGetUserData(
                 (zClass_NodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
-            zUtil::StoreInt32(
-                (int *)g_zInterp_CurrentCycleTextureDi,
-                1
-            );
+            zUtil::StoreInt32((int *)g_zInterp_CurrentCycleTextureDi, 1);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetOpacityIsSet"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetOpacityIsSet") != 0) {
             zClass_Object3D::gwObject3DSetLitFlag(
                 (zClass_NodePartial *)(currentNode),
                 ParseIntToken()
@@ -2855,38 +2185,23 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetOpacity"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetOpacity") != 0) {
             const float opacity = ParseFloatToken();
-            zClass_Object3D::gwObject3DSetAlphaScale(
-                (zClass_NodePartial *)(currentNode),
-                opacity
-            );
+            zClass_Object3D::gwObject3DSetAlphaScale((zClass_NodePartial *)(currentNode), opacity);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetPoints"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetPoints") != 0) {
             zClass_Class::gwNodeGetUserData(
                 (zClass_NodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
-            zUtil::StoreInt32(
-                (int *)g_zInterp_CurrentCycleTextureDi,
-                2
-            );
+            zUtil::StoreInt32((int *)g_zInterp_CurrentCycleTextureDi, 2);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetPriority"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetPriority") != 0) {
             zClass_Class::gwNodeGetUserData(
                 (zClass_NodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
@@ -2899,20 +2214,12 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetScrollAlways"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetScrollAlways") != 0) {
             const int enabled = ParseBoolToken();
             x = ParseFloatToken();
             y = ParseFloatToken();
             if (enabled != 0) {
-                if (RegisterScrollAlwaysNode(
-                        (zClass_NodePartial *)(currentNode),
-                        x,
-                        y,
-                        1
-                    ) == 0) {
+                if (RegisterScrollAlwaysNode((zClass_NodePartial *)(currentNode), x, y, 1) == 0) {
                     zError::ReportOld(
                         0x200,
                         "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
@@ -2924,14 +2231,11 @@ int zInterp_Context::DispatchCoreCommand(
                 }
                 return 1;
             }
-            DefaultDispatchHook((zClass_NodePartial *)(currentNode));
+            HandleScrollDisable((zClass_NodePartial *)(currentNode));
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetScroll"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetScroll") != 0) {
             const int enabled = ParseBoolToken();
             x = ParseFloatToken();
             y = ParseFloatToken();
@@ -2949,44 +2253,27 @@ int zInterp_Context::DispatchCoreCommand(
             }
 
             if (enabled != 0) {
-                RegisterScrollAlwaysNode(
-                    node,
-                    x,
-                    y,
-                    0
-                );
+                RegisterScrollAlwaysNode(node, x, y, 0);
             } else {
-                DefaultDispatchHook(node);
+                HandleScrollDisable(node);
             }
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetShowBackFace"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetShowBackFace") != 0) {
             zClass_Class::gwNodeGetUserData(
                 (zClass_NodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_Object3DCommandDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
-            zDi::SetShowBackFaceForAllEntries(
-                g_zInterp_Object3DCommandDi,
-                ParseBoolToken()
-            );
+            zDi::SetShowBackFaceForAllEntries(g_zInterp_Object3DCommandDi, ParseBoolToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetTextureWorldBaseCoordinates"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetTextureWorldBaseCoordinates") != 0) {
             x = ParseFloatToken();
             z = ParseFloatToken();
-            zModel::SetTextureWorldBase(
-                x,
-                z
-            );
+            zModel::SetTextureWorldBase(x, z);
             return 1;
         }
 
@@ -2997,17 +2284,11 @@ int zInterp_Context::DispatchCoreCommand(
         ) == 0) {
             x = ParseFloatToken();
             z = ParseFloatToken();
-            zModel::SetTextureWorldPerMeter(
-                x,
-                z
-            );
+            zModel::SetTextureWorldPerMeter(x, z);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "Object3DSetMorphVertex"
-        ) != 0) {
+        if (CommandIs(this, "Object3DSetMorphVertex") != 0) {
             y = ParseFloatToken();
             zClass_Class::gwNodeGetUserData(
                 (zClass_NodePartial *)(currentNode),
@@ -3015,90 +2296,45 @@ int zInterp_Context::DispatchCoreCommand(
             );
             zDiPartial *const di = (zDiPartial *)g_zInterp_NodeUserDataScratch;
             g_zInterp_CurrentCycleTextureDi = di;
-            zDi::BuildBlendVertsFromConnectivity(
-                di,
-                y,
-                excludedVertexIndices,
-                0,
-                6
-            );
+            zDi::BuildBlendVertsFromConnectivity(di, y, excludedVertexIndices, 0, 6);
             g_zInterp_CurrentCycleTextureDi->blendScale = 1.0f;
-        } else if (CommandIs(
-            this,
-            "Object3DTranslate"
-        ) != 0) {
+        } else if (CommandIs(this, "Object3DTranslate") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Object3D::gwObject3DSetPosition(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y,
-                z
-            );
+            zClass_Object3D::gwObject3DSetPosition((zClass_NodePartial *)(currentNode), x, y, z);
         } else {
             IncErrorCount();
         }
         break;
     case 'P':
-        if (CommandIs(
-            this,
-            "PerspectiveTexture"
-        ) != 0) {
+        if (CommandIs(this, "PerspectiveTexture") != 0) {
             zRndr::g_perspectiveTextureEnabled = ParseBoolToken();
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "PrintNodeCount"
-        ) != 0) {
+        if (CommandIs(this, "PrintNodeCount") != 0) {
             char *const prefixText = NextToken();
-            zClass::FindNextByTypePrefix(
-                prefixText,
-                6
-            );
+            zClass::FindNextByTypePrefix(prefixText, 6);
             int count = 0;
-            zClass_NodePartial *node = zClass::FindNextByTypePrefix(
-                0,
-                0
-            );
+            zClass_NodePartial *node = zClass::FindNextByTypePrefix(0, 0);
             while (node != 0) {
                 ++count;
-                node = zClass::FindNextByTypePrefix(
-                    0,
-                    0
-                );
+                node = zClass::FindNextByTypePrefix(0, 0);
             }
-            printf(
-                "Node count for %s = %d\n",
-                prefixText,
-                count
-            );
+            printf("Node count for %s = %d\n", prefixText, count);
             return 1;
         }
 
-        if (CommandIsExact(
-            this,
-            "PrintTree"
-        ) != 0) {
+        if (CommandIsExact(this, "PrintTree") != 0) {
             if (currentNode == 0) {
-                ReportErrorf(
-                    this,
-                    "No current node"
-                );
+                ReportErrorf(this, "No current node");
             }
-            PrintNodeTree(
-                (zClass_NodePartial *)(currentNode),
-                2
-            );
+            PrintNodeTree((zClass_NodePartial *)(currentNode), 2);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "PrintUsedNodes"
-        ) != 0) {
+        if (CommandIs(this, "PrintUsedNodes") != 0) {
             zClass_TypeList::PrintBucket(6);
             return 1;
         } else {
@@ -3106,40 +2342,25 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
     case 'R':
-        if (CommandIs(
-            this,
-            "RdrAddPath"
-        ) != 0) {
-            zUtil_ZRDR_AddPath(NextToken());
+        if (CommandIs(this, "RdrAddPath") != 0) {
+            zRdrAddPath(NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "RdrSetPath"
-        ) != 0) {
-            zUtil_ZRDR_SetPath(NextToken());
+        if (CommandIs(this, "RdrSetPath") != 0) {
+            zRdrSetPath(NextToken());
             return 1;
         } else {
             IncErrorCount();
             return 1;
         }
     case 'S': {
-        if (CommandHasPrefix(
-            this,
-            "SEQ"
-        ) != 0) {
-            if (CommandHasPrefix(
-                this,
-                "SEQAddChild"
-            ) != 0) {
+        if (CommandHasPrefix(this, "SEQ") != 0) {
+            if (CommandHasPrefix(this, "SEQAddChild") != 0) {
                 char *const searchName = NextToken();
                 const int insertIndex = ParseIntToken();
                 const float delay = ParseFloatToken();
-                zClass_NodePartial *const child = zClass::FindByTypeAndName(
-                    6,
-                    searchName
-                );
+                zClass_NodePartial *const child = zClass::FindByTypeAndName(6, searchName);
                 zClass_Sequence::gwSequenceAddChild(
                     (zClass_NodePartial *)(currentNode),
                     child,
@@ -3149,68 +2370,34 @@ int zInterp_Context::DispatchCoreCommand(
                 return 1;
             }
 
-            if (CommandHasPrefix(
-                this,
-                "SEQNew"
-            ) != 0) {
+            if (CommandHasPrefix(this, "SEQNew") != 0) {
                 currentNode = zClass_Sequence::gwSequenceNew();
-                zClass_Class::gwNodeSetName(
-                    (zClass_NodePartial *)(currentNode),
-                    NextToken()
-                );
+                zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
                 return 1;
             }
 
-            if (CommandHasPrefix(
-                this,
-                "SEQSetActive"
-            ) != 0) {
-                zClass_Sequence::SetActive(
-                    (zClass_NodePartial *)(currentNode),
-                    ParseIntToken()
-                );
+            if (CommandHasPrefix(this, "SEQSetActive") != 0) {
+                zClass_Sequence::SetActive((zClass_NodePartial *)(currentNode), ParseIntToken());
                 return 1;
             }
 
-            if (CommandHasPrefix(
-                this,
-                "SEQSetLoop"
-            ) != 0) {
-                zClass_Sequence::SetLoop(
-                    (zClass_NodePartial *)(currentNode),
-                    ParseIntToken()
-                );
+            if (CommandHasPrefix(this, "SEQSetLoop") != 0) {
+                zClass_Sequence::SetLoop((zClass_NodePartial *)(currentNode), ParseIntToken());
                 return 1;
             }
 
-            if (strncmp(
-                tokenCount > 0 ? tokenList[0] : 0,
-                "SEQSetPause",
-                12
-            ) == 0) {
-                zClass_Sequence::SetPause(
-                    (zClass_NodePartial *)(currentNode),
-                    ParseIntToken()
-                );
+            if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "SEQSetPause", 12) == 0) {
+                zClass_Sequence::SetPause((zClass_NodePartial *)(currentNode), ParseIntToken());
                 return 1;
             }
 
-            if (CommandHasPrefix(
-                this,
-                "SEQSetRepeat"
-            ) != 0) {
-                zClass_Sequence::SetRepeat(
-                    (zClass_NodePartial *)(currentNode),
-                    ParseIntToken()
-                );
+            if (CommandHasPrefix(this, "SEQSetRepeat") != 0) {
+                zClass_Sequence::SetRepeat((zClass_NodePartial *)(currentNode), ParseIntToken());
             }
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "SetAltitudeSurface"
-        ) != 0) {
+        if (CommandHasPrefix(this, "SetAltitudeSurface") != 0) {
             zClass_Class::gwNodeSetCellPickable(
                 (zClass_NodePartial *)(currentNode),
                 ParseBoolToken()
@@ -3218,78 +2405,47 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetBFETolerance"
-        ) != 0) {
-            if (ValidateArgsAndNodeType(
-                1,
-                0,
-                0
-            ) != 0) {
+        if (CommandIs(this, "SetBFETolerance") != 0) {
+            if (ValidateArgsAndNodeType(1, 0, 0) != 0) {
                 const float tolerance = ParseFloatToken();
                 zModel::SetBackfaceEliminationToleranceScalar(tolerance);
             }
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetCoplanarTolerance"
-        ) != 0) {
+        if (CommandIs(this, "SetCoplanarTolerance") != 0) {
             const float tolerance = ParseFloatToken();
             zModel_Const::SetCoplanarTolerance(tolerance);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetColinearTolerance"
-        ) != 0) {
+        if (CommandIs(this, "SetColinearTolerance") != 0) {
             const float tolerance = ParseFloatToken();
             zModel_Const::SetColinearTolerance(tolerance);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetGameZNodeArraySize"
-        ) != 0) {
+        if (CommandIs(this, "SetGameZNodeArraySize") != 0) {
             zClass::SetNodeArraySize(ParseIntToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetMaterialArraySize"
-        ) != 0) {
+        if (CommandIs(this, "SetMaterialArraySize") != 0) {
             zModel_MatlBuffer::SetArraySize(ParseIntToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetModel3DArraySize"
-        ) != 0) {
+        if (CommandIs(this, "SetModel3DArraySize") != 0) {
             zModel::SetDisplayInstancePoolCapacity(ParseIntToken());
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "SetIntersectBBOX"
-        ) != 0) {
-            zClass_Class::gwNodeSetPickable(
-                (zClass_NodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+        if (CommandHasPrefix(this, "SetIntersectBBOX") != 0) {
+            zClass_Class::gwNodeSetPickable((zClass_NodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "SetIntersectSurface"
-        ) != 0) {
+        if (CommandHasPrefix(this, "SetIntersectSurface") != 0) {
             zClass_Class::gwNodeSetRaycastable(
                 (zClass_NodePartial *)(currentNode),
                 ParseBoolToken()
@@ -3297,10 +2453,7 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "SetLandmark"
-        ) != 0) {
+        if (CommandHasPrefix(this, "SetLandmark") != 0) {
             zClass_Class::gwNodeSetBypassFarClip(
                 (zClass_NodePartial *)(currentNode),
                 ParseBoolToken()
@@ -3308,49 +2461,30 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetPaletteName"
-        ) != 0) {
+        if (CommandIs(this, "SetPaletteName") != 0) {
             zVideo::LoadPaletteFileAndApplyBrightness(NextToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetPaletteShading"
-        ) != 0) {
+        if (CommandIs(this, "SetPaletteShading") != 0) {
             zModel::SetSoftwarePathActive(ParseBoolToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetPerspectiveAdaptiveCorrection"
-        ) != 0) {
+        if (CommandIs(this, "SetPerspectiveAdaptiveCorrection") != 0) {
             const int minSpan = ParseIntToken();
             const int maxSpan = ParseIntToken();
             const float scale = ParseFloatToken();
-            zRndr::SetPerspectiveAdaptiveSpanParams(
-                minSpan,
-                maxSpan,
-                scale
-            );
+            zRndr::SetPerspectiveAdaptiveSpanParams(minSpan, maxSpan, scale);
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetPerspectiveTextureDeltaX"
-        ) != 0) {
+        if (CommandIs(this, "SetPerspectiveTextureDeltaX") != 0) {
             zRndr::SetPerspectiveTextureDeltaX(ParseIntToken());
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetInverseZTolerance"
-        ) != 0) {
+        if (CommandIs(this, "SetInverseZTolerance") != 0) {
             const float tolerance = ParseFloatToken();
             zRndr::SetInverseZTolerance(tolerance);
             return 1;
@@ -3366,19 +2500,13 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandIs(
-            this,
-            "SetPerspectiveTextureFarZ"
-        ) != 0) {
+        if (CommandIs(this, "SetPerspectiveTextureFarZ") != 0) {
             const float farZ = ParseFloatToken();
             zRndr::SetPerspectiveTextureFarZ(farZ);
             return 1;
         }
 
-        if (CommandHasPrefix(
-            this,
-            "SetProximity"
-        ) != 0) {
+        if (CommandHasPrefix(this, "SetProximity") != 0) {
             zClass_Class::gwNodeSetHasHitCallback(
                 (zClass_NodePartial *)(currentNode),
                 ParseBoolToken()
@@ -3397,18 +2525,12 @@ int zInterp_Context::DispatchCoreCommand(
             return 1;
         }
 
-        if (CommandEqualsPrefix(
-            "SetTextureDirectory",
-            0x13
-        ) != 0) {
-            zImage_InitMissionResources(NextToken());
+        if (CommandEqualsPrefix("SetTextureDirectory", 0x13) != 0) {
+            zImageInitMissionResources(NextToken());
             return 1;
         }
 
-        if (CommandEqualsPrefix(
-            "SetVertexShading",
-            0x10
-        ) != 0) {
+        if (CommandEqualsPrefix("SetVertexShading", 0x10) != 0) {
             zModel::SetVertexShadingEnabled(ParseBoolToken());
             return 1;
         }
@@ -3418,7 +2540,7 @@ int zInterp_Context::DispatchCoreCommand(
     }
     case 'T':
         if (CommandEqualsPrefix("TextureAdd", 0xa) != 0) {
-            zImage::TexDir_FindOrAppendByPath(NextToken());
+            zImage::TexDirFindOrAppendByPath(NextToken());
             return 1;
         } else {
             IncErrorCount();
@@ -3444,11 +2566,7 @@ int zInterp_Context::DispatchCoreCommand(
         }
     case 'W':
         if (CommandEqualsPrefix("WindowAddClearPolygonVertex", 0x1b) != 0) {
-            if (ValidateArgsAndNodeType(
-                3,
-                3,
-                (zClass_NodePartial *)(currentNode)
-            ) != 0) {
+            if (ValidateArgsAndNodeType(3, 3, (zClass_NodePartial *)(currentNode)) != 0) {
                 zVec3 point;
                 point.x = ParseFloatToken();
                 point.y = ParseFloatToken();
@@ -3462,11 +2580,7 @@ int zInterp_Context::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WindowBuffer", 0xf) != 0) {
-            if (ValidateArgsAndNodeType(
-                1,
-                3,
-                (zClass_NodePartial *)(currentNode)
-            ) != 0) {
+            if (ValidateArgsAndNodeType(1, 3, (zClass_NodePartial *)(currentNode)) != 0) {
                 zClass_Window::gwWindowSetBuffer(
                     (zClass_NodePartial *)(currentNode),
                     ParseIntToken()
@@ -3483,11 +2597,7 @@ int zInterp_Context::DispatchCoreCommand(
         if (CommandEqualsPrefix("WindowOrigin", 0xc) != 0) {
             const int width = ParseIntToken();
             const int height = ParseIntToken();
-            zClass_Window::gwWindowSetSize(
-                (zClass_NodePartial *)(currentNode),
-                width,
-                height
-            );
+            zClass_Window::gwWindowSetSize((zClass_NodePartial *)(currentNode), width, height);
             return 1;
         }
 
@@ -3511,36 +2621,22 @@ int zInterp_Context::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WorldAddLight", 0xd) != 0) {
-            zClass_NodePartial *const light = zClass::FindByTypeAndName(
-                9,
-                NextToken()
-            );
-            zClass_World::AddLight(
-                (zClass_NodePartial *)(currentNode),
-                light
-            );
+            zClass_NodePartial *const light = zClass::FindByTypeAndName(9, NextToken());
+            zClass_World::AddLight((zClass_NodePartial *)(currentNode), light);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldExtents", 0xc) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_World::gwWorldSetSize(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y
-            );
+            zClass_World::gwWorldSetSize((zClass_NodePartial *)(currentNode), x, y);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldOrigin", 0xb) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_World::gwWorldSetOrigin(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y
-            );
+            zClass_World::gwWorldSetOrigin((zClass_NodePartial *)(currentNode), x, y);
             return 1;
         }
 
@@ -3566,22 +2662,14 @@ int zInterp_Context::DispatchCoreCommand(
         if (CommandEqualsPrefix("WorldPartition", 0xe) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_World::gwWorldSetVirtualAreaPartition(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y
-            );
+            zClass_World::gwWorldSetVirtualAreaPartition((zClass_NodePartial *)(currentNode), x, y);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldSetFogAltitude", 0x13) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_World::SetPendingFogAltitudeRange(
-                (zClass_NodePartial *)(currentNode),
-                x,
-                y
-            );
+            zClass_World::SetPendingFogAltitudeRange((zClass_NodePartial *)(currentNode), x, y);
             return 1;
         }
 
@@ -3600,19 +2688,12 @@ int zInterp_Context::DispatchCoreCommand(
 
         if (CommandEqualsPrefix("WorldSetFogDensity", 0x12) != 0) {
             const float density = ParseFloatToken();
-            zClass_World::SetPendingFogDensity(
-                (zClass_NodePartial *)(currentNode),
-                density
-            );
+            zClass_World::SetPendingFogDensity((zClass_NodePartial *)(currentNode), density);
             return 1;
         }
 
         if (CommandEquals("WorldSetFogRange") != 0) {
-            if (ValidateArgsAndNodeType(
-                2,
-                2,
-                (zClass_NodePartial *)(currentNode)
-            ) != 0) {
+            if (ValidateArgsAndNodeType(2, 2, (zClass_NodePartial *)(currentNode)) != 0) {
                 const float nearRange = ParseFloatToken();
                 const float farRange = ParseFloatToken();
                 zClass_World::SetPendingFogRange(
@@ -3625,11 +2706,7 @@ int zInterp_Context::DispatchCoreCommand(
         }
 
         if (CommandEquals("WorldSetFogRangeNear") != 0) {
-            if (ValidateArgsAndNodeType(
-                1,
-                2,
-                (zClass_NodePartial *)(currentNode)
-            ) != 0) {
+            if (ValidateArgsAndNodeType(1, 2, (zClass_NodePartial *)(currentNode)) != 0) {
                 float nearRange;
                 float farRange;
                 zClass_World::GetPendingFogRange(
@@ -3648,11 +2725,7 @@ int zInterp_Context::DispatchCoreCommand(
         }
 
         if (CommandEquals("WorldSetFogRangeFar") != 0) {
-            if (ValidateArgsAndNodeType(
-                1,
-                2,
-                (zClass_NodePartial *)(currentNode)
-            ) != 0) {
+            if (ValidateArgsAndNodeType(1, 2, (zClass_NodePartial *)(currentNode)) != 0) {
                 float nearRange;
                 float farRange;
                 zClass_World::GetPendingFogRange(
@@ -3671,11 +2744,7 @@ int zInterp_Context::DispatchCoreCommand(
         }
 
         if (CommandEquals("WorldGetFogRange") != 0) {
-            if (ValidateArgsAndNodeType(
-                0,
-                2,
-                (zClass_NodePartial *)(currentNode)
-            ) != 0) {
+            if (ValidateArgsAndNodeType(0, 2, (zClass_NodePartial *)(currentNode)) != 0) {
                 float nearRange;
                 float farRange;
                 zClass_World::GetPendingFogRange(
@@ -3695,47 +2764,19 @@ int zInterp_Context::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WorldSetFogState", 0x10) != 0) {
-            if (ValidateArgsAndNodeType(
-                1,
-                2,
-                (zClass_NodePartial *)(currentNode)
-            ) == 0) {
+            if (ValidateArgsAndNodeType(1, 2, (zClass_NodePartial *)(currentNode)) == 0) {
                 return 1;
             }
 
             char *const state = NextToken();
-            if (strncmp(
-                state,
-                "linear",
-                6
-            ) == 0) {
-                zClass_World::SetPendingFogState(
-                    (zClass_NodePartial *)(currentNode),
-                    1
-                );
-            } else if (strncmp(
-                state,
-                "exponential",
-                11
-            ) == 0) {
-                zClass_World::SetPendingFogState(
-                    (zClass_NodePartial *)(currentNode),
-                    2
-                );
-            } else if (strncmp(
-                state,
-                "off",
-                3
-            ) == 0) {
-                zClass_World::SetPendingFogState(
-                    (zClass_NodePartial *)(currentNode),
-                    0
-                );
+            if (strncmp(state, "linear", 6) == 0) {
+                zClass_World::SetPendingFogState((zClass_NodePartial *)(currentNode), 1);
+            } else if (strncmp(state, "exponential", 11) == 0) {
+                zClass_World::SetPendingFogState((zClass_NodePartial *)(currentNode), 2);
+            } else if (strncmp(state, "off", 3) == 0) {
+                zClass_World::SetPendingFogState((zClass_NodePartial *)(currentNode), 0);
             } else {
-                printf(
-                    "Did not understand: %s\n",
-                    state
-                );
+                printf("Did not understand: %s\n", state);
             }
             return 1;
         }
@@ -3754,7 +2795,7 @@ int zInterp_Context::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WriteTextureSetMap", 0x12) != 0) {
-            OptCatalog::RegisterDamageMaskSlotPtr(zImage::TexDir_FindOrAppendByPath(NextToken()));
+            OptCatalog::RegisterDamageMaskSlotPtr(zImage::TexDirFindOrAppendByPath(NextToken()));
             return 1;
         } else {
             IncErrorCount();
@@ -3769,50 +2810,43 @@ int zInterp_Context::DispatchCoreCommand(
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-commandequalsprefix
- * @recoil-artifact defines .text recoil:function:0x4c5480: zInterp_Context::CommandEqualsPrefix.
+ * @recoil-artifact defines .text recoil:function:0x4c5480: CZInterp::CommandEqualsPrefix.
  * @recoil-match byte
  *
  * Purpose: compare the current command token against a caller-supplied prefix.
  */
-int zInterp_Context::CommandEqualsPrefix(
+int CZInterp::CommandEqualsPrefix(
     const char *prefix,
     unsigned int prefixLen
 ) {
     char *command = tokenCount > 0 ? tokenList[0] : 0;
 
-    return strncmp(
-        command,
-        prefix,
-        prefixLen
-    ) == 0;
+    return strncmp(command, prefix, prefixLen) == 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-commandequals
- * @recoil-artifact defines .text recoil:function:0x4c54b0: zInterp_Context::CommandEquals.
+ * @recoil-artifact defines .text recoil:function:0x4c54b0: CZInterp::CommandEquals.
  * @recoil-match byte
  *
  * Purpose: compare the current command token against a complete string.
  */
-int zInterp_Context::CommandEquals(
+int CZInterp::CommandEquals(
     const char *other
 ) {
     char *command = tokenCount > 0 ? tokenList[0] : 0;
 
-    return strcmp(
-        command,
-        other
-    ) == 0;
+    return strcmp(command, other) == 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-getcurrentcommand
- * @recoil-artifact defines .text recoil:function:0x4c5510: zInterp_Context::GetCurrentCommand.
+ * @recoil-artifact defines .text recoil:function:0x4c5510: CZInterp::GetCurrentCommand.
  * @recoil-match byte
  *
  * Purpose: return token zero for the current parsed command line.
  */
-char * zInterp_Context::GetCurrentCommand() {
+char * CZInterp::GetCurrentCommand() {
     if (tokenCount > 0) {
         return tokenList[0];
     }
@@ -3822,27 +2856,21 @@ char * zInterp_Context::GetCurrentCommand() {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-reporterrorf
- * @recoil-artifact defines .text recoil:function:0x4c5520: zInterp_Context::ReportErrorf.
+ * @recoil-artifact defines .text recoil:function:0x4c5520: CZInterp::ReportErrorf.
  * @recoil-match byte
  *
  * Purpose: mark the current line failed and forward formatted parser logging.
  */
-void zInterp_Context::ReportErrorf(
-    zInterp_Context *ctx,
+void CZInterp::ReportErrorf(
+    CZInterp *ctx,
     const char *fmt,
     ...
 ) {
     ctx->lineHadError = 1;
     if (ctx->logFn != 0) {
         va_list args;
-        va_start(
-            args,
-            fmt
-        );
-        ctx->logFn(
-            fmt,
-            (char *)args
-        );
+        va_start(args, fmt);
+        ctx->logFn(fmt, (char *)args);
         va_end(args);
     }
 }
@@ -3854,7 +2882,7 @@ void zInterp_Context::ReportErrorf(
  * Purpose: read the entry count for the supported prepared-script format,
  * closing and clearing the stream if validation or the count read fails.
  */
-inline int zInterp_Context::ReadPreparedScriptTableCount(const zInterp_PreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue) {
+inline int CZInterp::ReadPreparedScriptTableCount(const zInterpPreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue) {
         if (preparedHeader.version != kPreparedScriptVersion ||
             fread(&preparedEntryCountValue, 4, 1, preparedIndexStream) != 1) {
             fclose(preparedIndexStream);
@@ -3871,7 +2899,7 @@ inline int zInterp_Context::ReadPreparedScriptTableCount(const zInterp_PreparedS
  * Purpose: decode the prepared-script index, invalidating its stream on error.
  * A short table read leaves its allocation unreleased, as in retail.
  */
-inline int zInterp_Context::ReadPreparedScriptIndex(zInterp_PreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue, zInterp_PreparedScriptEntry *&entries) {
+inline int CZInterp::ReadPreparedScriptIndex(zInterpPreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue, zInterpPreparedScriptEntry *&entries) {
     if (fread(&preparedHeader, sizeof(preparedHeader), 1, preparedIndexStream) != 1) {
         fclose(preparedIndexStream);
         preparedIndexStream = 0;
@@ -3881,8 +2909,8 @@ inline int zInterp_Context::ReadPreparedScriptIndex(zInterp_PreparedScriptHeader
     switch (preparedHeader.magic) {
     case kPreparedScriptMagic:
         if (!ReadPreparedScriptTableCount(preparedHeader, preparedEntryCountValue)) return 0;
-        entries = (zInterp_PreparedScriptEntry *)realloc(
-            0, (preparedEntryCountValue + 1) * sizeof(zInterp_PreparedScriptEntry)
+        entries = (zInterpPreparedScriptEntry *)realloc(
+            0, (preparedEntryCountValue + 1) * sizeof(zInterpPreparedScriptEntry)
         );
         if (entries != 0 && fread(entries, sizeof(*entries), preparedEntryCountValue,
                 preparedIndexStream) == preparedEntryCountValue) {
@@ -3898,15 +2926,15 @@ inline int zInterp_Context::ReadPreparedScriptIndex(zInterp_PreparedScriptHeader
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-loadpreparedscriptindex
- * @recoil-artifact defines .text recoil:function:0x4c5550: zInterp_Context::LoadPreparedScriptIndex.
+ * @recoil-artifact defines .text recoil:function:0x4c5550: CZInterp::LoadPreparedScriptIndex.
  * @recoil-match instruction
  *
  * Purpose: open and validate the prepared script index and cache its entries.
  */
-int zInterp_Context::LoadPreparedScriptIndex(
+int CZInterp::LoadPreparedScriptIndex(
     const char *zrdrPath
 ) {
-    zInterp_PreparedScriptHeader preparedHeader;
+    zInterpPreparedScriptHeader preparedHeader;
     memset(&preparedHeader, 0, sizeof(preparedHeader));
     unsigned int preparedEntryCountValue = 0;
 
@@ -3915,19 +2943,15 @@ int zInterp_Context::LoadPreparedScriptIndex(
     }
 
     if (archiveSearchList == 0) {
-        archiveSearchList = zUtil_ZRDR_CreateSearchPathList(searchPathSpec);
+        archiveSearchList = zRdrCreateSearchPathList(searchPathSpec);
     }
 
-    preparedIndexStream = zUtil_ZRDR_OpenFileResolved(
-        archiveSearchList,
-        zrdrPath,
-        "rb"
-    );
+    preparedIndexStream = zRdrOpenFileResolved(archiveSearchList, zrdrPath, "rb");
     if (preparedIndexStream == 0) {
         return 0;
     }
 
-    zInterp_PreparedScriptEntry *entries;
+    zInterpPreparedScriptEntry *entries;
     if (!ReadPreparedScriptIndex(preparedHeader, preparedEntryCountValue, entries)) return 0;
     int entriesFresh = 1;
     for (int entryIndex = 0;
@@ -3960,13 +2984,10 @@ int zInterp_Context::LoadPreparedScriptIndex(
  * The helper name is descriptive; no original spelling is known.
  * Purpose: search the prepared script table for a named command.
  */
-inline int zInterp_Context::FindPreparedScriptIndex(const char *commandName) {
+inline int CZInterp::FindPreparedScriptIndex(const char *commandName) {
     int matchedIndex = -1;
     for (int entryIndex = 0; entryIndex < *preparedEntryCount; ++entryIndex) {
-        if (_stricmp(
-            preparedEntryTable[entryIndex].path,
-            commandName
-        ) == 0) {
+        if (_stricmp(preparedEntryTable[entryIndex].path, commandName) == 0) {
             matchedIndex = entryIndex;
             break;
         }
@@ -3975,19 +2996,19 @@ inline int zInterp_Context::FindPreparedScriptIndex(const char *commandName) {
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-openpreparedscriptstream
- * @recoil-artifact defines .text recoil:function:0x4c5740: zInterp_Context::OpenPreparedScriptStream.
+ * @recoil-artifact defines .text recoil:function:0x4c5740: CZInterp::OpenPreparedScriptStream.
  * @recoil-artifact emits .rdata recoil:data:0x4d42d8: VC5 double-zero timestamp comparison literal.
  * @recoil-match byte
  *
  * Purpose: locate a prepared script entry and seek the shared stream to it.
  */
-FILE * zInterp_Context::OpenPreparedScriptStream(
+FILE * CZInterp::OpenPreparedScriptStream(
     const char *commandName
 ) {
     if (preparedIndexStream != 0) {
         int matchedIndex = FindPreparedScriptIndex(commandName);
         if (matchedIndex != -1) {
-            zInterp_PreparedScriptEntry *const matchedEntry = &preparedEntryTable[matchedIndex];
+            zInterpPreparedScriptEntry *const matchedEntry = &preparedEntryTable[matchedIndex];
             int usePreparedStream = 1;
             struct _stat sourceStat;
             if (_stat(commandName, &sourceStat) == 0 &&
@@ -4008,12 +3029,12 @@ FILE * zInterp_Context::OpenPreparedScriptStream(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-validateargsandnodetype
- * @recoil-artifact defines .text recoil:function:0x4c5820: zInterp_Context::ValidateArgsAndNodeType.
+ * @recoil-artifact defines .text recoil:function:0x4c5820: CZInterp::ValidateArgsAndNodeType.
  * @recoil-match byte
  *
  * Purpose: validate argument count and optional zClass node type for commands.
  */
-bool zInterp_Context::ValidateArgsAndNodeType(
+bool CZInterp::ValidateArgsAndNodeType(
     int expectedArgCount,
     int expectedClassType,
     zClass_NodePartial *node
@@ -4021,11 +3042,7 @@ bool zInterp_Context::ValidateArgsAndNodeType(
     if (expectedClassType != 0) {
         if (node == 0) {
             char *commandToken = tokenCount > 0 ? tokenList[0] : 0;
-            ReportErrorf(
-                this,
-                "Interp: keyword [%s] has NULL node to work with",
-                commandToken
-            );
+            ReportErrorf(this, "Interp: keyword [%s] has NULL node to work with", commandToken);
             return 0;
         }
 
@@ -4059,7 +3076,7 @@ bool zInterp_Context::ValidateArgsAndNodeType(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-defaultdispatchhook
- * @recoil-artifact defines .text recoil:function:0x4c58c0: zInterp_Context::DefaultDispatchHook.
+ * @recoil-artifact defines .text recoil:function:0x4c58c0: CZInterp::HandleScrollDisable.
  * @recoil-match byte
  *
  * Both retail scroll-disable callers supply the context in ECX and the node
@@ -4067,14 +3084,11 @@ bool zInterp_Context::ValidateArgsAndNodeType(
  * Purpose: process a scroll-disable request by touching the node user-data
  * provider entry and returning false.
  */
-bool zInterp_Context::DefaultDispatchHook(
+bool CZInterp::HandleScrollDisable(
     zClass_NodePartial *node
 ) {
     if (node != 0) {
-        zClass_Class::gwNodeGetUserData(
-            node,
-            0
-        );
+        zClass_Class::gwNodeGetUserData(node, 0);
     }
 
     return 0;
@@ -4082,12 +3096,12 @@ bool zInterp_Context::DefaultDispatchHook(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-registerscrollalwaysnode
- * @recoil-artifact defines .text recoil:function:0x4c58e0: zInterp_Context::RegisterScrollAlwaysNode.
+ * @recoil-artifact defines .text recoil:function:0x4c58e0: CZInterp::RegisterScrollAlwaysNode.
  * @recoil-match byte
  *
  * Purpose: register a node for immediate or driver-driven texture scrolling.
  */
-bool zInterp_Context::RegisterScrollAlwaysNode(
+bool CZInterp::RegisterScrollAlwaysNode(
     zClass_NodePartial *node,
     float scrollRateU,
     float scrollRateV,
@@ -4098,9 +3112,7 @@ bool zInterp_Context::RegisterScrollAlwaysNode(
         zClass_Class::gwNodeGetUserData(node, &diValue);
         zDiPartial *const di = (zDiPartial *)(diValue);
         if (di != 0) {
-            zModel::SetDiTextureWorldPerMeter(
-                di, 1, scrollRateU, scrollRateV
-            );
+            zModel::SetDiTextureWorldPerMeter(di, 1, scrollRateU, scrollRateV);
             if (installDriverCallback != 0) {
                 if (scrollAlwaysDriverNode == 0) {
                     scrollAlwaysDriverNode = zClass_Object3D::gwObject3DInit();
@@ -4108,10 +3120,7 @@ bool zInterp_Context::RegisterScrollAlwaysNode(
                         scrollAlwaysDriverNode,
                         (void *)(&zInterp_Object3D::ScrollAlwaysTickAction)
                     );
-                    zClass_Class::gwNodeSetName(
-                        scrollAlwaysDriverNode,
-                        "ScrollAlways"
-                    );
+                    zClass_Class::gwNodeSetName(scrollAlwaysDriverNode, "ScrollAlways");
                     scrollAlwaysDriverNode->callbackContext =
                         (zClass_NodePartial *)(this);
                 }
@@ -4141,11 +3150,8 @@ int __fastcall DefaultRenderAction(
     zClass_NodePartial *node
 ) {
     unsigned int userData;
-    zClass_Class::gwNodeGetUserData(
-        node,
-        &userData
-    );
-    return zModel_Instance_UpdateScrollingTexturesIfNeeded((zModel_InstancePartial *)(userData));
+    zClass_Class::gwNodeGetUserData(node, &userData);
+    return zModelInstanceUpdateScrollingTexturesIfNeeded((zModel_InstancePartial *)(userData));
 }
 
 /**
@@ -4163,8 +3169,8 @@ void __fastcall ScrollAlwaysTickAction(
         return;
     }
 
-    zInterp_Context *const context = (zInterp_Context *)(wrapperNode->callbackContext);
-    zInterp_ScrollAlwaysList::iterator entry = context->scrollAlwaysList.begin();
+    CZInterp *const context = (CZInterp *)(wrapperNode->callbackContext);
+    zInterpScrollList::iterator entry = context->scrollAlwaysList.begin();
     while (entry != context->scrollAlwaysList.end()) {
         DefaultRenderAction(*entry);
         ++entry;

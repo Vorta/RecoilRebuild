@@ -230,8 +230,8 @@ struct PickupSpawnList {
     PickupSpawnDef *tail;
     int count;
 
-    static void __cdecl Primary_Init();
-    static void __cdecl NetCopy_Init();
+    static void __cdecl PrimaryInit();
+    static void __cdecl NetCopyInit();
     static void __fastcall RemoveAndFreeNode(
         PickupSpawnDef *node,
         PickupSpawnList *list
@@ -270,7 +270,7 @@ struct PickupType {
     OptCatalogEntryDef *optEntry;
     int weaponPresenceCount;
 
-    static PickupType *__fastcall GetByIndex_Pure(int pickupTypeIndex);
+    static PickupType *__fastcall GetByIndexPure(int pickupTypeIndex);
     static PickupType *__fastcall GetByIndex(int pickupTypeIndex);
     static int __fastcall FindByLogicalName(
         const char *logicalName,
@@ -358,18 +358,18 @@ void __fastcall RemoveOtherSpawnsWithSameOptEntry(
     OptCatalogEntryDef *optEntry,
     zClass_NodePartial *keepPickupObj
 );
-int __fastcall SendPkt11_Flag2Delta(PickupSpawnDef *spawn);
-int __fastcall SendPkt11_Flag8Delta(PickupSpawnDef *spawn);
-void __fastcall SendPkt11_CreateDelta(PickupSpawnDef *spawn);
-int __fastcall HandlePkt11_SpawnDelta(
+int __fastcall SendPkt11Flag2Delta(PickupSpawnDef *spawn);
+int __fastcall SendPkt11Flag8Delta(PickupSpawnDef *spawn);
+void __fastcall SendPkt11CreateDelta(PickupSpawnDef *spawn);
+int __fastcall HandlePkt11SpawnDelta(
     int senderPlayerId,
     PickupPkt11CreateDelta *packet
 );
-int __fastcall HandlePkt12_AirdropSpawnChuteRelay(
+int __fastcall HandlePkt12AirdropSpawnChuteRelay(
     int senderPlayerId,
     PickupPkt12AirdropSpawnChuteRelay *packet
 );
-void __fastcall SendPkt12_AirdropSpawnChuteRelay(
+void __fastcall SendPkt12AirdropSpawnChuteRelay(
     int pickupTypeIndex,
     zVec3 *spawnPos,
     int nextPickupId

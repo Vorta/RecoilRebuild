@@ -178,17 +178,14 @@ int __fastcall InstanceEvent(
         return -1;
     }
 
-    zDEClient::AppendFeatureEntry(
-        1,
-        eventTemplate
-    );
+    zDEClient::AppendFeatureEntry(1, eventTemplate);
     zDEClient::SubmitFeatureGeometry(featureInstance->clipPatchOutput);
     zGeometry_ClipPatchOutput::ApplyNodeDiPairs(featureInstance->clipPatchOutput);
     zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
 
     if (playEffectAnim != 0 && featureInstance->displaySourceEntry != 0 &&
         featureInstance->displaySourceEntry->effectAnimEntry != 0) {
-        zEffectAnim::SetTransformRotAndVelocity_Thunk(
+        zEffectAnim::SetTransformRotAndVelocityThunk(
             featureInstance->displaySourceEntry->effectAnimEntry,
             0,
             featureInstance->eventTemplate.center.x,
@@ -222,10 +219,7 @@ int __fastcall InstanceEventMaybeRelay(
         return -1;
     }
 
-    return InstanceEvent(
-        eventTemplate,
-        1
-    );
+    return InstanceEvent(eventTemplate, 1);
 }
 } // namespace zDEClient_Crater
 
@@ -259,10 +253,7 @@ zDEClient_CraterFeature *__fastcall InitFeatureFromEventTemplate(
         &gridRow
     );
 
-    zDEClient_FeatureGridCell *featureGridCell = zDEClient::GetFeatureGridCell(
-        gridCol,
-        gridRow
-    );
+    zDEClient_FeatureGridCell *featureGridCell = zDEClient::GetFeatureGridCell(gridCol, gridRow);
     featureInstance->featureGridCell = featureGridCell;
     if (featureGridCell == 0) {
         DestroyFeature(featureInstance);
@@ -345,10 +336,7 @@ zDEClient_CraterFeature *__fastcall InitFeatureFromEventTemplate(
             zGeometry_ClipPatchNodeView **nodeCursor = featureGridCell->nodes;
             for (int i = 0; i < nodeCount; ++i) {
                 zGeometry_ClipPatchNodeView *node = *nodeCursor;
-                if (strcmp(
-                    node->name,
-                    g_zDEClient_FeatureNodeName
-                ) == 0) {
+                if (strcmp(node->name, g_zDEClient_FeatureNodeName) == 0) {
                     zDEClient_FeatureContextOverlapView *context =
                         (zDEClient_FeatureContextOverlapView *)(node->callbackContext);
                     if (context != 0) {
@@ -394,18 +382,10 @@ zDEClient_CraterFeature *__fastcall CreateFeatureStructFromEventTemplate(
 ) {
     zDEClient_CraterFeature *result =
         (zDEClient_CraterFeature *)(malloc(sizeof(zDEClient_CraterFeature)));
-    memset(
-        result,
-        0,
-        sizeof(zDEClient_CraterFeature)
-    );
+    memset(result, 0, sizeof(zDEClient_CraterFeature));
 
     result->featureType = 1;
-    memcpy(
-        &result->eventTemplate,
-        eventTemplate,
-        sizeof(result->eventTemplate)
-    );
+    memcpy(&result->eventTemplate, eventTemplate, sizeof(result->eventTemplate));
     result->points = (zVec3 *)(malloc((size_t)(result->eventTemplate.pointCount) * sizeof(zVec3)));
     result->clipPatchOutput = zGeometry_ClipPatchOutput::Create();
 
@@ -478,10 +458,7 @@ int __fastcall CreateFeature(
         &node
     );
     if (node != 0) {
-        zClass_Class::gwNodeSetName(
-            node,
-            g_zDEClient_FeatureNodeName
-        );
+        zClass_Class::gwNodeSetName(node, g_zDEClient_FeatureNodeName);
         node->callbackContext = (zClass_NodePartial *)(featureInstance);
     }
 
@@ -562,13 +539,7 @@ int __fastcall CreateFeature(
             polygonMaterial = material;
         }
 
-        zGeometry_Model::AddPolygonToDi(
-            displayInstance,
-            4,
-            polygonPoints,
-            polygonMaterial,
-            uvList
-        );
+        zGeometry_Model::AddPolygonToDi(displayInstance, 4, polygonPoints, polygonMaterial, uvList);
     }
 
     for (int i_463 = 0; i_463 < pointCount; ++i_463) {
@@ -591,13 +562,7 @@ int __fastcall CreateFeature(
             polygonMaterial = material;
         }
 
-        zGeometry_Model::AddPolygonToDi(
-            displayInstance,
-            3,
-            polygonPoints,
-            polygonMaterial,
-            uvList
-        );
+        zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, polygonMaterial, uvList);
     }
 
     free(midPoints);
@@ -605,10 +570,7 @@ int __fastcall CreateFeature(
         free(uvPairs);
     }
 
-    zClass_Class::gwNodeSetDisplayInstance(
-        node,
-        displayInstance
-    );
+    zClass_Class::gwNodeSetDisplayInstance(node, displayInstance);
     return 0;
 }
 } /* namespace zDEClient_Crater */ namespace zDEClient {
@@ -628,9 +590,7 @@ void __fastcall SubmitFeatureGeometry(
             &clipPatchOutput->partitions[partitionIndex];
         {
             for (int pairIndex = 0; pairIndex < partition->nodeDiPairCount; ++pairIndex) {
-                g_zDEClient_FeatureMapTree.insert(
-                    partition->nodeDiPairs[pairIndex].node
-                );
+                g_zDEClient_FeatureMapTree.insert(partition->nodeDiPairs[pairIndex].node);
             }
         }
     }
@@ -652,20 +612,13 @@ void __cdecl ClearFeatureDisplayNodes() {
         ++entry) {
         zGeometry_ClipPatchNodeView *key = *entry;
         if (key != 0) {
-            GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local(
-                key,
-                1
-            );
+            GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local(key, 1);
 
             const int gridCol = key->gridCol;
             const int gridRow = key->gridRow;
             if (gridCol >= 0 && gridRow >= 0) {
                 zWorldAreaPartial *area =
-                    zClass_World::GetAreaPartitionAtGrid(
-                        key->listA[0],
-                        gridCol,
-                        gridRow
-                    );
+                    zClass_World::GetAreaPartitionAtGrid(key->listA[0], gridCol, gridRow);
                 if (area != 0) {
                     area->displayRefreshQueued = 0;
                 }
@@ -673,37 +626,22 @@ void __cdecl ClearFeatureDisplayNodes() {
         }
     }
 
-    zClass_NodePartial *child = zClass::FindByTypeAndName(
-        6,
-        g_zDEClient_FeatureNodeName
-    );
+    zClass_NodePartial *child = zClass::FindByTypeAndName(6, g_zDEClient_FeatureNodeName);
     while (child != 0) {
         while (child->listCountA > 0) {
-            zClass_Class::RemoveChild(
-                child->listA[0],
-                child
-            );
+            zClass_Class::RemoveChild(child->listA[0], child);
         }
 
         unsigned int displayInstanceValue = 0;
-        zClass_Class::gwNodeGetUserData(
-            child,
-            &displayInstanceValue
-        );
+        zClass_Class::gwNodeGetUserData(child, &displayInstanceValue);
         if (displayInstanceValue != 0) {
             zDiPartial *displayInstance = (zDiPartial *)((unsigned int)(displayInstanceValue));
-            zClass_Class::gwNodeSetDisplayInstance(
-                child,
-                0
-            );
+            zClass_Class::gwNodeSetDisplayInstance(child, 0);
             zModel_DiPool::FreeIfUnreferenced(displayInstance);
         }
 
         zClass_Class::DeleteNodeByType(child);
-        child = zClass::FindByTypeAndName(
-            6,
-            g_zDEClient_FeatureNodeName
-        );
+        child = zClass::FindByTypeAndName(6, g_zDEClient_FeatureNodeName);
     }
 }
 
@@ -729,16 +667,8 @@ int __fastcall AppendFeatureEntry(
 
     zDEClient_FeatureEntry featureEntry;
     featureEntry.featureType = featureType;
-    memset(
-        &featureEntry.eventData,
-        0,
-        sizeof(featureEntry.eventData)
-    );
-    memcpy(
-        &featureEntry.eventData,
-        featureEventData,
-        eventDataBytes
-    );
+    memset(&featureEntry.eventData, 0, sizeof(featureEntry.eventData));
+    memcpy(&featureEntry.eventData, featureEventData, eventDataBytes);
     featureEntry.reloadFlag = 0;
 
     g_zDEClient_FeatureList.push_back(featureEntry);
@@ -774,12 +704,7 @@ int __fastcall WriteFeatureSectionsToZAR(
     featureEntry.reloadFlag = 1;
 
     int result =
-        zUtil_ZAR::WriteSectionBlob(
-            callbackCtx,
-            "Dummy",
-            &featureEntry,
-            sizeof(featureEntry)
-        );
+        zUtil_ZAR::WriteSectionBlob(callbackCtx, "Dummy", &featureEntry, sizeof(featureEntry));
 
     for (std::vector<zDEClient_FeatureEntry>::iterator entry =
             g_zDEClient_FeatureList.begin();
@@ -837,10 +762,7 @@ void __stdcall ApplyFeatureEntry(
     if (container->featureType == 3) {
         zDEClient_QSand::InstanceEventMaybeRelay(&container->eventData.quickSand);
     } else if (container->featureType == 1) {
-        zDEClient_Crater::InstanceEvent(
-            &container->eventData.crater,
-            0
-        );
+        zDEClient_Crater::InstanceEvent(&container->eventData.crater, 0);
     }
 }
 

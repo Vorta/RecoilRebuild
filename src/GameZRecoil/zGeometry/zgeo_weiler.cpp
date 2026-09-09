@@ -249,44 +249,22 @@ zGeometry_WeilerStatePartial *__fastcall Init(
     }
 
     const int dedupedPointCount =
-        zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY(
-            points,
-            pointCount
-        );
+        zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY(points, pointCount);
 
     zGeometry_WeilerStatePartial *const result =
-        (zGeometry_WeilerStatePartial *)(calloc(
-            1,
-            sizeof(zGeometry_WeilerStatePartial)
-        ));
+        (zGeometry_WeilerStatePartial *)(calloc(1, sizeof(zGeometry_WeilerStatePartial)));
 
     zGeometry_WeilerBuffer::Init(
         &result->segmentBuffer,
         0x80,
         sizeof(zGeometry_WeilerContourSegmentPartial)
     );
-    zGeometry_WeilerBuffer::Init(
-        &result->contourBuffer,
-        0x80,
-        0x0c
-    );
-    zGeometry_WeilerBuffer::Init(
-        &result->xingBuffer,
-        0x80,
-        0x30
-    );
-    zGeometry_WeilerBuffer::Init(
-        &result->inputContourABuffer,
-        dedupedPointCount,
-        sizeof(zVec3)
-    );
+    zGeometry_WeilerBuffer::Init(&result->contourBuffer, 0x80, 0x0c);
+    zGeometry_WeilerBuffer::Init(&result->xingBuffer, 0x80, 0x30);
+    zGeometry_WeilerBuffer::Init(&result->inputContourABuffer, dedupedPointCount, sizeof(zVec3));
 
     const size_t pointBytes = (size_t)(dedupedPointCount) * sizeof(zVec3);
-    memcpy(
-        result->inputContourABuffer.base,
-        points,
-        pointBytes
-    );
+    memcpy(result->inputContourABuffer.base, points, pointBytes);
     result->inputContourABuffer.count = dedupedPointCount;
     result->inputContourBBuffer.count = 0;
     result->inputContourBBuffer.base = 0;
@@ -298,12 +276,7 @@ zGeometry_WeilerStatePartial *__fastcall Init(
     result->contourSource = contourSource;
     zGeometry_Weiler::RecenterPointSetsIfOutOfRange(result);
 
-    if (zGeometry_Weiler::InitInputContourPair(
-        result,
-        points,
-        dedupedPointCount,
-        1
-    ) == 0) {
+    if (zGeometry_Weiler::InitInputContourPair(result, points, dedupedPointCount, 1) == 0) {
         zError::ReportOld(
             0x200,
             g_zGeometry_SourceFile_ZgeoWeilerCpp,
@@ -336,11 +309,7 @@ int __fastcall ResetWeilerStateFromContourPoints(
 
     zGeometry_WeilerStatePartial *const oldState = clipPolygon->weilerState;
     zGeometry_WeilerStatePartial *const newState =
-        zGeometry_Weiler::Init(
-            points,
-            pointCount,
-            oldState->contourSource
-        );
+        zGeometry_Weiler::Init(points, pointCount, oldState->contourSource);
     zGeometry_Weiler::DestroyState(oldState);
     clipPolygon->weilerState = newState;
     return 1;
@@ -420,11 +389,7 @@ int __fastcall ClipPointList(
         0x80,
         sizeof(zGeometry_PolygonPointSpanPartial)
     );
-    zGeometry_WeilerBuffer::Init(
-        &self->pointListBuffer,
-        0x80,
-        sizeof(zVec3)
-    );
+    zGeometry_WeilerBuffer::Init(&self->pointListBuffer, 0x80, sizeof(zVec3));
 
     self->outClip = outClip;
     outClip->polygonSetA.polygonCount = 0;
@@ -445,10 +410,7 @@ int __fastcall ClipPointList(
     }
 
     if (preclassifiedMode == 4) {
-        if (zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA(
-            self,
-            3
-        ) != 0) {
+        if (zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA(self, 3) != 0) {
             if (self->pointsRecentered) {
                 zGeometry_Weiler::RestorePointTranslation(self);
             }
@@ -574,10 +536,7 @@ int __fastcall ClipPointList(
     int outputMode = 1;
     if (preclassifiedMode == 2) {
         if (zGeometry_Weiler::GenerateOutsideResults(self) == 0 ||
-            zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA(
-                self,
-                4
-            ) == 0) {
+            zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA(self, 4) == 0) {
             zGeometry_WeilerClipOutput::Destroy(outClip);
             if (self->pointsRecentered) {
                 zGeometry_Weiler::RestorePointTranslation(self);
@@ -678,11 +637,7 @@ int __fastcall InitInputContourPair(
     int contourType
 ) {
     zGeometry_WeilerContourSegmentPartial *segments = (zGeometry_WeilerContourSegmentPartial
-            *)(zGeometry_WeilerBuffer::GetAppendSpace(
-                &self->segmentBuffer,
-                pointCount * 2,
-                0
-            ));
+            *)(zGeometry_WeilerBuffer::GetAppendSpace(&self->segmentBuffer, pointCount * 2, 0));
     if (segments == 0) {
         fprintf(
             stderr,
@@ -700,10 +655,7 @@ int __fastcall InitInputContourPair(
         contourType
     );
     segments->contourOutput = 0;
-    if (zGeometry_Weiler::EnsureContourOutput(
-        self,
-        segments
-    ) == 0) {
+    if (zGeometry_Weiler::EnsureContourOutput(self, segments) == 0) {
         fprintf(
             stderr,
             g_zGeometry_WeilerInitNewContourFailedFmt,
@@ -713,23 +665,12 @@ int __fastcall InitInputContourPair(
         return 0;
     }
 
-    zGeometry_WeilerContourSegmentArray::UpdateBounds(
-        segments,
-        pointCount
-    );
+    zGeometry_WeilerContourSegmentArray::UpdateBounds(segments, pointCount);
 
     zGeometry_WeilerContourSegmentPartial *const reverseSegments = &segments[pointCount];
-    zGeometry_WeilerContourSegmentArray::InitFromPointList(
-        reverseSegments,
-        points,
-        pointCount,
-        4
-    );
+    zGeometry_WeilerContourSegmentArray::InitFromPointList(reverseSegments, points, pointCount, 4);
     reverseSegments->contourOutput = 0;
-    if (zGeometry_Weiler::EnsureContourOutput(
-        self,
-        reverseSegments
-    ) == 0) {
+    if (zGeometry_Weiler::EnsureContourOutput(self, reverseSegments) == 0) {
         fprintf(
             stderr,
             g_zGeometry_WeilerInitNewContourFailedFmt,
@@ -1029,11 +970,9 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 2:
-                            if (!(fabs((double)(contourAEnd->x) -
-                                       (double)(contourCEnd->x)) <=
+                            if (!(fabs((double)(contourAEnd->x) - (double)(contourCEnd->x)) <=
                                       0.0010000000474974513 &&
-                                  fabs((double)(contourAEnd->y) -
-                                       (double)(contourCEnd->y)) <=
+                                  fabs((double)(contourAEnd->y) - (double)(contourCEnd->y)) <=
                                       0.0010000000474974513)) {
                                 zVec3 *const oldContourAEnd = contourAEnd;
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
@@ -1065,11 +1004,9 @@ int __fastcall PreclassifyInputContourPair(
 
                         case 3:
 
-                            if (!(fabs((double)(contourAEnd->x) -
-                                       (double)(contourCStart->x)) <=
+                            if (!(fabs((double)(contourAEnd->x) - (double)(contourCStart->x)) <=
                                       0.0010000000474974513 &&
-                                  fabs((double)(contourAEnd->y) -
-                                       (double)(contourCStart->y)) <=
+                                  fabs((double)(contourAEnd->y) - (double)(contourCStart->y)) <=
                                       0.0010000000474974513)) {
                                 zVec3 *const oldContourAEnd = contourAEnd;
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
@@ -1125,11 +1062,9 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 6:
-                            if (!(fabs((double)(contourAStart->x) -
-                                       (double)(contourCEnd->x)) <=
+                            if (!(fabs((double)(contourAStart->x) - (double)(contourCEnd->x)) <=
                                       0.0010000000474974513 &&
-                                  fabs((double)(contourAStart->y) -
-                                       (double)(contourCEnd->y)) <=
+                                  fabs((double)(contourAStart->y) - (double)(contourCEnd->y)) <=
                                       0.0010000000474974513)) {
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
                                         self,
@@ -1161,11 +1096,9 @@ int __fastcall PreclassifyInputContourPair(
                             break;
 
                         case 7:
-                            if (!(fabs((double)(contourAStart->x) -
-                                       (double)(contourCStart->x)) <=
+                            if (!(fabs((double)(contourAStart->x) - (double)(contourCStart->x)) <=
                                       0.0010000000474974513 &&
-                                  fabs((double)(contourAStart->y) -
-                                       (double)(contourCStart->y)) <=
+                                  fabs((double)(contourAStart->y) - (double)(contourCStart->y)) <=
                                       0.0010000000474974513)) {
                                 if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
                                         self,
@@ -1922,10 +1855,7 @@ void __fastcall Init(
     int initialCapacity,
     int elementSize
 ) {
-    void *const base = calloc(
-        initialCapacity,
-        elementSize
-    );
+    void *const base = calloc(initialCapacity, elementSize);
     self->capacity = initialCapacity;
     self->base = base;
     self->elementSize = elementSize;
@@ -1966,10 +1896,7 @@ void *__fastcall GetAppendSpace(
     const int newCount = self->count + appendCount;
     if ((unsigned int)(newCount) >= (unsigned int)(self->capacity)) {
         self->capacity += appendCount + 0x10;
-        void *const base = realloc(
-            self->base,
-            self->capacity * self->elementSize
-        );
+        void *const base = realloc(self->base, self->capacity * self->elementSize);
         self->base = base;
         self->appendPtr = (void *)((unsigned int)(base) + self->elementSize * self->count);
 
@@ -1999,11 +1926,7 @@ int __fastcall EnsureContourOutput(
     if (segment->contourOutput == 0) {
         zGeometry_WeilerContourOutputPartial *const contourOutput =
             (zGeometry_WeilerContourOutputPartial
-                    *)(zGeometry_WeilerBuffer::GetAppendSpace(
-                        &self->contourBuffer,
-                        1,
-                        0
-                    ));
+                    *)(zGeometry_WeilerBuffer::GetAppendSpace(&self->contourBuffer, 1, 0));
 
         if (contourOutput == 0) {
             zError::ReportOld(
@@ -2033,11 +1956,7 @@ int __fastcall MergeContours(
 ) {
     zGeometry_WeilerXingPartial *const xingBase =
         (zGeometry_WeilerXingPartial *)(self->xingBuffer.base);
-    if (zGeometry_Weiler::ValidateXings(
-        self->xingBuffer.count,
-        xingBase,
-        0
-    ) == 0) {
+    if (zGeometry_Weiler::ValidateXings(self->xingBuffer.count, xingBase, 0) == 0) {
         zError::ReportOld(
             0x100,
             g_zGeometry_SourceFile_ZgeoWeilerCpp,
@@ -2748,19 +2667,11 @@ int __fastcall DivideContourSegmentAtPoint(
     zGeometry_WeilerContourSegmentPartial *nextSegment;
 
 
-    if (zGeometry_Vec3::IsNearEqualXY(
-        segment->endPoint,
-        xing,
-        0.00100000005f
-    ) != 0) {
+    if (zGeometry_Vec3::IsNearEqualXY(segment->endPoint, xing, 0.00100000005f) != 0) {
         nextSegment = segment->next;
     } else {
         nextSegment = (zGeometry_WeilerContourSegmentPartial
-                *)(zGeometry_WeilerBuffer::GetAppendSpace(
-                    &self->segmentBuffer,
-                    1,
-                    0
-                ));
+                *)(zGeometry_WeilerBuffer::GetAppendSpace(&self->segmentBuffer, 1, 0));
         if (nextSegment == 0) {
             fprintf(
                 stderr,
@@ -2818,11 +2729,7 @@ int __fastcall CreateForwardSegmentPairAtPoint(
     for (int i = 0; i < 2; ++i) {
         zGeometry_WeilerContourSegmentPartial *const newSegment =
             (zGeometry_WeilerContourSegmentPartial
-                    *)(zGeometry_WeilerBuffer::GetAppendSpace(
-                        &self->segmentBuffer,
-                        1,
-                        0
-                    ));
+                    *)(zGeometry_WeilerBuffer::GetAppendSpace(&self->segmentBuffer, 1, 0));
         if (newSegment == 0) {
             zError::ReportOld(
                 0x200,
@@ -2889,11 +2796,7 @@ int __fastcall OutputSelectedInputContourToPolygonSetA(
     outClip->polygonSetA.polygons->pointDwordOffset = oldPointCount * 3;
 
     const size_t pointBytes = (size_t)(selectedPointCount) * sizeof(zVec3);
-    memcpy(
-        &outClip->pointList.points[oldPointCount],
-        selectedInputContour->base,
-        pointBytes
-    );
+    memcpy(&outClip->pointList.points[oldPointCount], selectedInputContour->base, pointBytes);
 
     outClip->pointList.pointCount = oldPointCount + selectedPointCount;
     return 1;
@@ -3092,13 +2995,7 @@ int __fastcall Intersect2d(
     zVec3 edge1End
 ) {
     int xingType =
-        zGeometry_Weiler::ClassifyIntersect2d(
-            &edge0Start,
-            &edge0End,
-            &edge1Start,
-            &edge1End,
-            self
-        );
+        zGeometry_Weiler::ClassifyIntersect2d(&edge0Start, &edge0End, &edge1Start, &edge1End, self);
 
     zGeometry_WeilerXingPartial *createdXing = 0;
     if ((unsigned int)(xingType) <= 0x17) {
@@ -3615,61 +3512,24 @@ void __fastcall PreclassifyInputContourAAdjacentEdgePairs(
         (zGeometry_WeilerContourOutputPartial *)(self->contourBuffer.base);
     zVec3 *const points = (zVec3 *)(self->inputContourABuffer.base);
 
-    zGeometry_WeilerBuffer::SetCountAndAppendPtr(
-        &self->segmentBuffer,
-        pointCount << 1
-    );
-    zGeometry_WeilerBuffer::SetCountAndAppendPtr(
-        &self->contourBuffer,
-        2
-    );
-    zGeometry_WeilerBuffer::SetCountAndAppendPtr(
-        &self->xingBuffer,
-        0
-    );
-    zGeometry_WeilerBuffer::SetCountAndAppendPtr(
-        &self->polygonSetABuffer,
-        0
-    );
-    zGeometry_WeilerBuffer::SetCountAndAppendPtr(
-        &self->polygonSetBBuffer,
-        0
-    );
-    zGeometry_WeilerBuffer::SetCountAndAppendPtr(
-        &self->polygonSetCBuffer,
-        0
-    );
-    zGeometry_WeilerBuffer::SetCountAndAppendPtr(
-        &self->pointListBuffer,
-        0
-    );
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->segmentBuffer, pointCount << 1);
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->contourBuffer, 2);
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->xingBuffer, 0);
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->polygonSetABuffer, 0);
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->polygonSetBBuffer, 0);
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->polygonSetCBuffer, 0);
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->pointListBuffer, 0);
 
-    zGeometry_WeilerContourSegmentArray::InitFromPointList(
-        segmentBase,
-        points,
-        pointCount,
-        1
-    );
+    zGeometry_WeilerContourSegmentArray::InitFromPointList(segmentBase, points, pointCount, 1);
     segmentBase->contourOutput = contourBase;
     contourBase[0].firstSegment = segmentBase;
-    zGeometry_WeilerContourSegmentArray::UpdateBounds(
-        segmentBase,
-        pointCount
-    );
+    zGeometry_WeilerContourSegmentArray::UpdateBounds(segmentBase, pointCount);
 
     zGeometry_WeilerContourSegmentPartial *const reverseSegments = &segmentBase[pointCount];
-    zGeometry_WeilerContourSegmentArray::InitFromPointList(
-        reverseSegments,
-        points,
-        pointCount,
-        4
-    );
+    zGeometry_WeilerContourSegmentArray::InitFromPointList(reverseSegments, points, pointCount, 4);
     reverseSegments->contourOutput = &contourBase[1];
     contourBase[1].firstSegment = reverseSegments;
-    zGeometry_WeilerContourSegmentArray::UpdateBounds(
-        reverseSegments,
-        pointCount
-    );
+    zGeometry_WeilerContourSegmentArray::UpdateBounds(reverseSegments, pointCount);
 }
 
 } // namespace zGeometry_Weiler
@@ -3940,21 +3800,13 @@ int __fastcall RemoveAdjacentDuplicatePointsXY(
     zVec3 *current = vertices;
 
     while ((unsigned int)(index) < (unsigned int)(result)) {
-        if (zGeometry_Vec3::IsNearEqualXY(
-            current,
-            &vertices[nextIndex % result],
-            0.00999999978f
-        )) {
+        if (zGeometry_Vec3::IsNearEqualXY(current, &vertices[nextIndex % result], 0.00999999978f)) {
             const int lastIndex = result - 1;
             if (index == lastIndex) {
                 result = lastIndex;
             } else {
                 const int bytesToMove = (result - index - 1) * (int)(sizeof(zVec3));
-                memcpy(
-                    current,
-                    current + 1,
-                    bytesToMove
-                );
+                memcpy(current, current + 1, bytesToMove);
                 --index;
                 --nextIndex;
                 --current;
@@ -3996,11 +3848,7 @@ int __fastcall SnapPointsXYIfNear(
         zVec3 *target = targetVerts;
         zVec3 *const polygonVertex = &polygon[i];
         for (int j = 0; j < targetCount; ++j) {
-            if (zGeometry_Vec3::IsNearEqualXY(
-                polygonVertex,
-                target,
-                vertexTolerance
-            )) {
+            if (zGeometry_Vec3::IsNearEqualXY(polygonVertex, target, vertexTolerance)) {
                 result = 1;
                 target->x = polygonVertex->x;
                 target->y = polygonVertex->y;

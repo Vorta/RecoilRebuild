@@ -550,7 +550,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_NameInput) == 0x374);
 /**
  * BN 0x41c313 installs the panel-owned option selector table after the shared base constructor.
  */
-struct HudUiNewGamePanel_Intensity : HudUiZrdWidgetEx17C {};
+struct HudUiNewGamePanel_Intensity : CHudRadioGroupWidget {};
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_Intensity) == 0x17c);
 
 struct HudUiNewGamePanel : HudUiBackground {
@@ -595,7 +595,7 @@ RECOIL_STATIC_ASSERT(
         intensity
     ) +
         offsetof(
-            HudUiZrdWidgetEx17C,
+            CHudRadioGroupWidget,
             selectedIndex
         ) ==
     0xb0d0
@@ -698,24 +698,24 @@ extern RecoilStateControlsStorage g_RecoilStateControls;
 #define g_RecoilStateControls \
     (*(RecoilStateControls *)&g_RecoilStateControls)
 
-struct HudUiControlsDialog_ResumeWidget : HudUiZrdWidget {
+struct CHudUiControlsDialogResumeWidget : HudUiZrdWidget {
     /**
      * Original inline constructor evidence: BN 0x408a30 constructs this
      * concrete resume widget through HudUiZrdWidget and then installs the
-     * HudUiControlsDialog_ResumeWidget vptr.
+     * CHudUiControlsDialogResumeWidget vptr.
      * Purpose: construct the controls-dialog resume widget subobject.
      */
-    HudUiControlsDialog_ResumeWidget() : HudUiZrdWidget() {}
+    CHudUiControlsDialogResumeWidget() : HudUiZrdWidget() {}
     virtual void OnActivate();
 };
-RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_ResumeWidget) == 0x14c);
+RECOIL_STATIC_ASSERT(sizeof(CHudUiControlsDialogResumeWidget) == 0x14c);
 
 struct HudUiControlsDialog_CommandsWidget : HudUiZrdWidget {
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_CommandsWidget) == 0x14c);
 
-struct HudUiControlsDialog_OptionSelector : HudUiZrdWidgetEx17C {
+struct HudUiControlsDialog_OptionSelector : CHudRadioGroupWidget {
     void DestructorCoreThunk();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_OptionSelector) == 0x17c);
@@ -727,7 +727,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_OptionSelector) == 0x17c);
  * VC5 to emit the deleting-destructor contribution.
  */
 struct HudUiControlsDialog : HudUiBackground {
-    HudUiControlsDialog_ResumeWidget resumeWidget;
+    CHudUiControlsDialogResumeWidget resumeWidget;
     HudUiControlsDialog_CommandsWidget commandsWidget;
     HudUiControlsDialog_OptionSelector mouseOrJoystickSelector;
     HudUiControlsDialog_OptionSelector throttleModeSelector;

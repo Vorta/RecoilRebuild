@@ -45,9 +45,7 @@ int zSndPlayHandle::SetFreqScaled(
             return -1;
         }
 
-        source->SetPitch(
-            playbackRate / sample->sampleRate
-        );
+        source->SetPitch(playbackRate / sample->sampleRate);
     } else if (g_zSnd_ActiveBackend == 0) {
         LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(backendBuffer);
         if (buffer == 0) {
@@ -56,11 +54,7 @@ int zSndPlayHandle::SetFreqScaled(
 
         const int error = buffer->SetFrequency((int)(playbackRate));
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(
-                error,
-                kZSndParmSourceFile,
-                218
-            );
+            return zSnd::ReportDirectSoundError(error, kZSndParmSourceFile, 218);
         }
         return 1;
     }
@@ -87,23 +81,11 @@ void zSndPlayHandle::SetEnableScale(
     if (g_zSnd_ActiveBackend == 1) {
         // BN stores the x87 product directly into this int-backed gain field
         // for A3D, preserving the raw float bits for later replay.
-        memcpy(
-            &gainScaled,
-            &scaledGain,
-            sizeof(gainScaled)
-        );
-        Update3DDispatch(
-            0,
-            0,
-            0
-        );
+        memcpy(&gainScaled, &scaledGain, sizeof(gainScaled));
+        Update3DDispatch(0, 0, 0);
     } else if (g_zSnd_ActiveBackend == 0) {
         gainScaled = zSnd::GainScaleToDirectSoundAttenuation(scaledGain);
-        Update3DDispatch(
-            0,
-            0,
-            0
-        );
+        Update3DDispatch(0, 0, 0);
     }
 }
 
@@ -125,13 +107,13 @@ void __fastcall zSndSample::SetPlaybackEventHandler(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-tryenablemanaged
- * @recoil-artifact defines .text recoil:function:0x4a1250: zSndPlayHandle_TryEnableManaged
+ * @recoil-artifact defines .text recoil:function:0x4a1250: zSndPlayHandleTryEnableManaged
  * @recoil-match byte
  *
  * Purpose: mark a managed play handle active only when it exists and is not
  * already active.
  */
-extern "C" int __fastcall zSndPlayHandle_TryEnableManaged(
+extern "C" int __fastcall zSndPlayHandleTryEnableManaged(
     zSndPlayHandle *handle
 ) {
     if (handle == 0 || handle->isActive != 0) {
@@ -144,13 +126,13 @@ extern "C" int __fastcall zSndPlayHandle_TryEnableManaged(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-trydisablemanaged
- * @recoil-artifact defines .text recoil:function:0x4a1270: zSndPlayHandle_TryDisableManaged.
+ * @recoil-artifact defines .text recoil:function:0x4a1270: zSndPlayHandleTryDisableManaged.
  * @recoil-match byte
  *
  * Purpose: clear a managed play handle's active flag only when it exists and
  * is currently active.
  */
-extern "C" int __fastcall zSndPlayHandle_TryDisableManaged(
+extern "C" int __fastcall zSndPlayHandleTryDisableManaged(
     zSndPlayHandle *handle
 ) {
     if (handle == 0 || handle->isActive == 0) {

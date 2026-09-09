@@ -96,8 +96,8 @@ extern RecoilStateMainMenuTransitionStorage g_RecoilState_MainMenuTransition;
 #define g_RecoilState_MainMenuTransition \
     (*(RecoilStateMainMenuTransition *)&g_RecoilState_MainMenuTransition)
 
-struct HudUiMainMenuDialog_CreditsButton : HudUiZrdWidget {
-    HudUiMainMenuDialog_CreditsButton();
+struct CHudUiMainMenuDialogCreditsButton : HudUiZrdWidget {
+    CHudUiMainMenuDialogCreditsButton();
     void OnActivate();
 };
 
@@ -115,33 +115,33 @@ struct HudUiMenuBackButton : HudUiZrdWidget {
     void OnActivate();
 };
 
-struct HudUiMainMenuDialog_SaveButton : HudUiZrdWidget {
-    HudUiMainMenuDialog_SaveButton();
+struct CHudUiMainMenuDialogSaveButton : HudUiZrdWidget {
+    CHudUiMainMenuDialogSaveButton();
     void OnActivate();
 };
 
-struct HudUiMainMenuDialog_LoadButton : HudUiZrdWidget {
-    HudUiMainMenuDialog_LoadButton();
+struct CHudUiMainMenuDialogLoadButton : HudUiZrdWidget {
+    CHudUiMainMenuDialogLoadButton();
     void OnActivate();
 };
 
-struct HudUiMainMenuDialog_NewGameButton : HudUiZrdWidget {
-    HudUiMainMenuDialog_NewGameButton();
+struct CHudUiMainMenuDialogNewGameButton : HudUiZrdWidget {
+    CHudUiMainMenuDialogNewGameButton();
     void OnActivate();
 };
 
-struct HudUiMainMenuDialog_OptionsButton : HudUiZrdWidget {
-    HudUiMainMenuDialog_OptionsButton();
+struct CHudUiMainMenuDialogOptionsButton : HudUiZrdWidget {
+    CHudUiMainMenuDialogOptionsButton();
     void OnActivate();
 };
 
-struct HudUiMainMenuDialog_QuitButton : HudUiZrdWidget {
-    HudUiMainMenuDialog_QuitButton();
+struct CHudUiMainMenuDialogQuitButton : HudUiZrdWidget {
+    CHudUiMainMenuDialogQuitButton();
     void OnActivate();
 };
 
-struct HudUiMainMenuDialog_ControlsButton : HudUiZrdWidget {
-    HudUiMainMenuDialog_ControlsButton();
+struct CHudUiMainMenuDialogControlsButton : HudUiZrdWidget {
+    CHudUiMainMenuDialogControlsButton();
     void OnActivate();
 };
 
@@ -154,14 +154,14 @@ struct HudUiMainMenuDialog_ControlsButton : HudUiZrdWidget {
  */
 class HudUiMainMenuDialog : public HudUiBackground {
   public:
-    HudUiMainMenuDialog_CreditsButton creditsButton;
+    CHudUiMainMenuDialogCreditsButton creditsButton;
     HudUiMenuBackButton backButton;
-    HudUiMainMenuDialog_SaveButton saveGameButton;
-    HudUiMainMenuDialog_LoadButton loadGameButton;
-    HudUiMainMenuDialog_NewGameButton newGameButton;
-    HudUiMainMenuDialog_OptionsButton optionsButton;
-    HudUiMainMenuDialog_QuitButton quitButton;
-    HudUiMainMenuDialog_ControlsButton controlsButton;
+    CHudUiMainMenuDialogSaveButton saveGameButton;
+    CHudUiMainMenuDialogLoadButton loadGameButton;
+    CHudUiMainMenuDialogNewGameButton newGameButton;
+    CHudUiMainMenuDialogOptionsButton optionsButton;
+    CHudUiMainMenuDialogQuitButton quitButton;
+    CHudUiMainMenuDialogControlsButton controlsButton;
 
     HudUiMainMenuDialog(RecoilMainMenuEntryRoute route);
 

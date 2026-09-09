@@ -323,8 +323,8 @@ float g_OptCatalogNextSpawnScale = 0.0f;
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogprocessruntimerelayenabled
  * @recoil-artifact defines .data recoil:data:0x4dcf7c: g_OptCatalogProcessRuntimeRelayEnabled.
  * BN initial bytes are 01 00 00 00. BN xrefs:
- * OptCatalog::SendPkt0A_RemoveRuntimeRelay reads the gate and
- * OptCatalog::HandlePkt0A_RemoveRuntimeRelay clears/restores it around local
+ * OptCatalog::SendPkt0ARemoveRuntimeRelay reads the gate and
+ * OptCatalog::HandlePkt0ARemoveRuntimeRelay clears/restores it around local
  * relay processing.
  * Purpose: suppresses recursive runtime-removal relay while a network packet
  * is being handled.
@@ -495,17 +495,9 @@ namespace {
      */
     float FastSqrtApprox(float value) {
         unsigned int bits = 0;
-        memcpy(
-            &bits,
-            &value,
-            sizeof(bits)
-        );
+        memcpy(&bits, &value, sizeof(bits));
         bits = (bits >> 1) + kOptCatalogFastSqrtBias;
-        memcpy(
-            &value,
-            &bits,
-            sizeof(value)
-        );
+        memcpy(&value, &bits, sizeof(value));
         return value;
     }
 
@@ -520,16 +512,9 @@ namespace {
         OptCatalogEntryDef *entry,
         unsigned int flag
     ) {
-        zReader::Node *const node = zRdrGetNode(
-            entryNode,
-            name
-        );
+        zReader::Node *const node = zRdrGetNode(entryNode, name);
         if (node != 0 && node->type == zReader::ZRDR_NODE_ARRAY && zReaderArrayCount(node) > 1) {
-            SetFlagFromBool(
-                entry->flags,
-                flag,
-                zReaderArrayInt(node, 1)
-            );
+            SetFlagFromBool(entry->flags, flag, zReaderArrayInt(node, 1));
         }
     }
 
@@ -543,21 +528,12 @@ namespace {
         OptCatalogEntryDef * entry
     ) {
         const int count = zReaderArrayCount(node);
-        if (count > 1 && zReaderArrayInt(
-            node,
-            1
-        ) != 0) {
+        if (count > 1 && zReaderArrayInt(node, 1) != 0) {
             entry->flags |= kOptCatalogFlagCraterImpact;
             if (count > 2) {
-                const int minRadius = (int)(zReaderArrayFloat(
-                    node,
-                    1
-                ));
+                const int minRadius = (int)(zReaderArrayFloat(node, 1));
                 entry->craterRadiusBase = minRadius;
-                entry->craterRadiusRandomRange = (int)(zReaderArrayFloat(
-                    node,
-                    2
-                )) - minRadius;
+                entry->craterRadiusRandomRange = (int)(zReaderArrayFloat(node, 2)) - minRadius;
             }
         }
     }
@@ -576,30 +552,12 @@ namespace {
             return;
         }
 
-        entry->timedStatusLightRangeMin = zReaderArrayFloat(
-            node,
-            1
-        );
-        entry->timedStatusLightRangeMax = zReaderArrayFloat(
-            node,
-            2
-        );
-        entry->timedStatusUpdateDelay = zReaderArrayFloat(
-            node,
-            3
-        );
-        entry->timedStatusLightSpecularColor.red = zReaderArrayFloat(
-            node,
-            4
-        );
-        entry->timedStatusLightSpecularColor.green = zReaderArrayFloat(
-            node,
-            5
-        );
-        entry->timedStatusLightSpecularColor.blue = zReaderArrayFloat(
-            node,
-            6
-        );
+        entry->timedStatusLightRangeMin = zReaderArrayFloat(node, 1);
+        entry->timedStatusLightRangeMax = zReaderArrayFloat(node, 2);
+        entry->timedStatusUpdateDelay = zReaderArrayFloat(node, 3);
+        entry->timedStatusLightSpecularColor.red = zReaderArrayFloat(node, 4);
+        entry->timedStatusLightSpecularColor.green = zReaderArrayFloat(node, 5);
+        entry->timedStatusLightSpecularColor.blue = zReaderArrayFloat(node, 6);
         entry->flags |= kOptCatalogFlagAppliesTimedHitStatus;
     }
 
@@ -617,31 +575,13 @@ namespace {
             return;
         }
 
-        entry->timedStatusLightRangeMin = zReaderArrayFloat(
-            node,
-            1
-        );
-        entry->timedStatusLightRangeMax = zReaderArrayFloat(
-            node,
-            2
-        );
+        entry->timedStatusLightRangeMin = zReaderArrayFloat(node, 1);
+        entry->timedStatusLightRangeMax = zReaderArrayFloat(node, 2);
         entry->timedStatusUpdateDelay = 0.0f;
-        entry->timedStatusLightSpecularColor.red = zReaderArrayFloat(
-            node,
-            3
-        );
-        entry->timedStatusLightSpecularColor.green = zReaderArrayFloat(
-            node,
-            4
-        );
-        entry->timedStatusLightSpecularColor.blue = zReaderArrayFloat(
-            node,
-            5
-        );
-        entry->detonationDistSq = zReaderArrayFloat(
-            node,
-            6
-        );
+        entry->timedStatusLightSpecularColor.red = zReaderArrayFloat(node, 3);
+        entry->timedStatusLightSpecularColor.green = zReaderArrayFloat(node, 4);
+        entry->timedStatusLightSpecularColor.blue = zReaderArrayFloat(node, 5);
+        entry->detonationDistSq = zReaderArrayFloat(node, 6);
         entry->flags &= ~(kOptCatalogFlagAppliesTimedHitStatus | kOptCatalogFlagHeatTimedStatus);
         entry->flags |= kOptCatalogFlagRemoteDetonate;
     }
@@ -663,14 +603,9 @@ namespace {
             if (variantNode->type == zReader::ZRDR_NODE_ARRAY &&
                 zReaderArrayCount(variantNode) > 2) {
                 entry->damageFeedbackVariants[i].minFeedbackScale =
-                    zReaderArrayFloat(
-                        variantNode,
-                        1
-                    );
+                    zReaderArrayFloat(variantNode, 1);
                 entry->damageFeedbackVariants[i].effect =
-                    zEffectAnim::FindEntryByName(
-                        variantNode->value.nodes[2].value.str
-                    );
+                    zEffectAnim::FindEntryByName(variantNode->value.nodes[2].value.str);
             }
         }
     }
@@ -695,10 +630,7 @@ namespace {
             g_zRndr_GlobalStringTable[0]
         );
         for (int i = 1; i < g_zRndr_GlobalStringCount; ++i) {
-            if (zRdrGetNode(
-                impactNode,
-                g_zRndr_GlobalStringTable[i]
-            ) != 0) {
+            if (zRdrGetNode(impactNode, g_zRndr_GlobalStringTable[i]) != 0) {
                 OptCatalog::LoadFxSpecFromReaderNode(
                     impactNode,
                     &entry->impactFxTable[i],
@@ -710,10 +642,7 @@ namespace {
         }
 
         zReader::Node *const animationAlwaysNode =
-            zRdrGetNode(
-                impactNode,
-                "ANIMATION_ALWAYS"
-            );
+            zRdrGetNode(impactNode, "ANIMATION_ALWAYS");
         if (animationAlwaysNode != 0) {
             entry->flags |= kOptCatalogFlagAlwaysPlayImpactFx;
         }
@@ -744,27 +673,11 @@ namespace {
             runtime->projectileNode = zClass_Object3D::gwObject3DInit();
             if (runtime->projectileNode != 0) {
                 char name[40];
-                sprintf(
-                    name,
-                    "Projectile_%d",
-                    i
-                );
-                zClass_Class::gwNodeSetName(
-                    runtime->projectileNode,
-                    name
-                );
-                zClass_Class::gwNodeSetRaycastable(
-                    runtime->projectileNode,
-                    0
-                );
-                zClass_Class::gwNodeSetCellPickable(
-                    runtime->projectileNode,
-                    0
-                );
-                zClass_Class::gwNodeSetPickable(
-                    runtime->projectileNode,
-                    1
-                );
+                sprintf(name, "Projectile_%d", i);
+                zClass_Class::gwNodeSetName(runtime->projectileNode, name);
+                zClass_Class::gwNodeSetRaycastable(runtime->projectileNode, 0);
+                zClass_Class::gwNodeSetCellPickable(runtime->projectileNode, 0);
+                zClass_Class::gwNodeSetPickable(runtime->projectileNode, 1);
             }
 
             runtime->flyoutAnimPrimary = 0;
@@ -829,11 +742,11 @@ namespace OptCatalog {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-sendpkt0a-removeruntimerelay
-     * @recoil-artifact defines .text recoil:function:0x434240: OptCatalog::SendPkt0A_RemoveRuntimeRelay
+     * @recoil-artifact defines .text recoil:function:0x434240: OptCatalog::SendPkt0ARemoveRuntimeRelay
      * Purpose: send pkt0A removal relay packets for authored runtime
      * instances when recursive relay processing is enabled.
      */
-    void __fastcall SendPkt0A_RemoveRuntimeRelay(
+    void __fastcall SendPkt0ARemoveRuntimeRelay(
         OptCatalogEntryDef * self,
         zVec3 * pointOrVec3,
         zClass_NodePartial * ownerNode
@@ -851,7 +764,7 @@ namespace OptCatalog {
         zUtil_SaveGameState *const ownerSaveState =
             (zUtil_SaveGameState *)(ownerTrackContext->payload);
         g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header.payloadDword0 =
-            zNetwork_GetLocalPlayerKey();
+            zNetworkGetLocalPlayerKey();
         g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.optCatalogEntryId =
             (short)(self->ordinalIndex);
         if (pointOrVec3 != 0) {
@@ -863,16 +776,16 @@ namespace OptCatalog {
         }
         g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.ownerPlayerKey =
             ownerSaveState->netPlayerRow->playerKey;
-        zNetwork_SendPacketReliable(&g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header);
+        zNetworkSendPacketReliable(&g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handlepkt0a-removeruntimerelay
-     * @recoil-artifact defines .text recoil:function:0x4342d0: OptCatalog::HandlePkt0A_RemoveRuntimeRelay
+     * @recoil-artifact defines .text recoil:function:0x4342d0: OptCatalog::HandlePkt0ARemoveRuntimeRelay
      * Purpose: handle pkt0A removal relay packets by resolving the
      * OptCatalog entry and player row while suppressing echo relay sends.
      */
-    int __fastcall HandlePkt0A_RemoveRuntimeRelay(
+    int __fastcall HandlePkt0ARemoveRuntimeRelay(
         int,
         NetPkt0A_RemoveRuntimeRelay *packet
     ) {
@@ -1026,10 +939,7 @@ namespace OptCatalog {
     OptCatalogEntryDef *__fastcall FindEntryByName(const char *name) {
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
             OptCatalogEntryDef &entry = g_OptCatalog_EntryTable[i];
-            if (entry.keyName != 0 && strcmp(
-                name,
-                entry.keyName
-            ) == 0) {
+            if (entry.keyName != 0 && strcmp(name, entry.keyName) == 0) {
                 return &g_OptCatalog_EntryTable[i];
             }
         }
@@ -1092,11 +1002,7 @@ namespace OptCatalog {
             return clone;
         }
 
-        return zClass_cls_util::CopyNodeWithCloneOptions(
-            self->attachCloneTemplateNode,
-            0,
-            1
-        );
+        return zClass_cls_util::CopyNodeWithCloneOptions(self->attachCloneTemplateNode, 0, 1);
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -1114,10 +1020,7 @@ namespace OptCatalog {
     ) {
         zEffectAnimEntry *const asyncFxHandle = runtimeInstance->asyncFxHandle;
         if (asyncFxHandle != 0) {
-            zEffect_Anim::NodeActionCallback(
-                asyncFxHandle,
-                0
-            );
+            zEffect_Anim::NodeActionCallback(asyncFxHandle, 0);
         }
 
         zClass_Object3D::RemoveChild(
@@ -1175,10 +1078,7 @@ namespace OptCatalog {
                 attachChildNode = clonedAttachChildNode;
             }
 
-            zClass_Object3D::gwObject3DAddChild(
-                runtimeInstance->projectileNode,
-                attachChildNode
-            );
+            zClass_Object3D::gwObject3DAddChild(runtimeInstance->projectileNode, attachChildNode);
         }
 
         runtimeInstance->lifetime = 0.0f;
@@ -1203,54 +1103,27 @@ namespace OptCatalog {
 
         zClass_NodePartial *const projectileNode = runtimeInstance->projectileNode;
         while (projectileNode->listCountA != 0) {
-            zClass_Class::RemoveChild(
-                projectileNode->listA[0],
-                projectileNode
-            );
+            zClass_Class::RemoveChild(projectileNode->listA[0], projectileNode);
         }
 
         zClass_NodePartial *const attachCloneTemplateNode = self->attachCloneTemplateNode;
         if (attachCloneTemplateNode != 0) {
-            zClass_Class::RemoveChild(
-                projectileNode,
-                attachCloneTemplateNode
-            );
+            zClass_Class::RemoveChild(projectileNode, attachCloneTemplateNode);
         }
 
         if (runtimeInstance->attachCloneChild != 0) {
-            RecycleAttachNodeClone(
-                self,
-                runtimeInstance
-            );
+            RecycleAttachNodeClone(self, runtimeInstance);
         }
 
         while (projectileNode->listCountB != 0) {
-            zClass_Class::RemoveChild(
-                projectileNode,
-                projectileNode->listB[0]
-            );
+            zClass_Class::RemoveChild(projectileNode, projectileNode->listB[0]);
         }
 
         runtimeInstance->next = g_OptCatalogFreeRuntimeInstanceList;
         g_OptCatalogFreeRuntimeInstanceList = runtimeInstance;
-        zClass_Object3D::gwObject3DSetScale(
-            projectileNode,
-            1.0f,
-            1.0f,
-            1.0f
-        );
-        zClass_Object3D::gwObject3DSetRotation(
-            projectileNode,
-            0.0f,
-            0.0f,
-            0.0f
-        );
-        zClass_Object3D::gwObject3DSetPosition(
-            projectileNode,
-            0.0f,
-            0.0f,
-            0.0f
-        );
+        zClass_Object3D::gwObject3DSetScale(projectileNode, 1.0f, 1.0f, 1.0f);
+        zClass_Object3D::gwObject3DSetRotation(projectileNode, 0.0f, 0.0f, 0.0f);
+        zClass_Object3D::gwObject3DSetPosition(projectileNode, 0.0f, 0.0f, 0.0f);
         ((zClass_NodeFreeListSlot *)(projectileNode))->damageHandler = 0;
     }
 } // namespace OptCatalog
@@ -1272,10 +1145,7 @@ namespace OptCatalog {
         OptCatalogRuntimeInstanceStorage *runtimeInstanceOrNull
     ) {
         if (g_OptCatalogNetworkOptionState != 0 && g_OptCatalog_AllocRuntimeGateCallback != 0 &&
-            g_OptCatalog_AllocRuntimeGateCallback(
-                self,
-                &saveState
-            ) == 0) {
+            g_OptCatalog_AllocRuntimeGateCallback(self, &saveState) == 0) {
             return 0;
         }
 
@@ -1289,10 +1159,7 @@ namespace OptCatalog {
 
         runtimeInstance->next = self->activeRuntimeListHead;
         self->activeRuntimeListHead = runtimeInstance;
-        zClass_Class::AddChild(
-            g_OptCatalogRuntimeWorld,
-            runtimeInstance->projectileNode
-        );
+        zClass_Class::AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
 
         runtimeInstance->origin = *spawnPos;
         runtimeInstance->pos = *spawnPos;
@@ -1340,18 +1207,11 @@ namespace OptCatalog {
 
         if (self->fireFxSelectedSoundIndex != -1) {
             self->fireFxSoundSamples[self->fireFxSelectedSoundIndex]
-                ->PlayA3D(
-                    &runtimeInstance->pos,
-                    1.0f,
-                    0
-                );
+                ->PlayA3D(&runtimeInstance->pos, 1.0f, 0);
         }
 
         if (self->fireFxEffectTemplateIndex != 0) {
-            zEffect::SpawnRuntimeInstanceAt(
-                self->fireFxEffectTemplateIndex,
-                &runtimeInstance->pos
-            );
+            zEffect::SpawnRuntimeInstanceAt(self->fireFxEffectTemplateIndex, &runtimeInstance->pos);
         } else if (self->fireFxSelectedEffectIndex != -1) {
             zEffectAnimEntry *const fireAnim =
                 self->fireFxAnimationEntries[self->fireFxSelectedEffectIndex];
@@ -1362,17 +1222,14 @@ namespace OptCatalog {
                         (((float)(rand()) * 0.0000305185094f) - 0.5f) * (float)(kOptCatalogPi);
                 }
 
-                zEffectAnim::SetTransformRotAndVelocity_Thunk(
+                zEffectAnim::SetTransformRotAndVelocityThunk(
                     fireAnim,
                     0,
                     runtimeInstance->pos.x,
                     runtimeInstance->pos.y,
                     runtimeInstance->pos.z,
                     (float)asin((double)spawnDir->y),
-                    (float)(atan2(
-                        -spawnDir->z,
-                        -spawnDir->x
-                    )),
+                    (float)(atan2(-spawnDir->z, -spawnDir->x)),
                     randomRoll,
                     0.0f,
                     0.0f,
@@ -1388,10 +1245,7 @@ namespace OptCatalog {
             zClass_Object3D::gwObject3DSetRotation(
                 runtimeInstance->projectileNode,
                 (float)asin((double)spawnDir->y),
-                (float)(atan2(
-                    -spawnDir->z,
-                    -spawnDir->x
-                )),
+                (float)(atan2(-spawnDir->z, -spawnDir->x)),
                 0.0f
             );
         }
@@ -1405,7 +1259,7 @@ namespace OptCatalog {
 
         if (self->flyoutSelectedEffectIndex != -1) {
             if (self->flyoutAnimationEntry != 0) {
-                runtimeInstance->flyoutAnimPrimary = zEffectAnim::SetTransformRefs_Thunk(
+                runtimeInstance->flyoutAnimPrimary = zEffectAnim::SetTransformRefsThunk(
                     self->flyoutAnimationEntry,
                     0,
                     runtimeInstance->projectileNode,
@@ -1415,7 +1269,7 @@ namespace OptCatalog {
                 );
             }
             if (self->flyoutAttachedAnimationEntry != 0) {
-                runtimeInstance->flyoutAnimSecondary = zEffectAnim::SetPositionRefAndVelocity_Thunk(
+                runtimeInstance->flyoutAnimSecondary = zEffectAnim::SetPositionRefAndVelocityThunk(
                     self->flyoutAttachedAnimationEntry,
                     0,
                     runtimeInstance->projectileNode,
@@ -1424,7 +1278,7 @@ namespace OptCatalog {
                 );
             }
             if (self->flyoutModelAnimationEntry != 0) {
-                zEffectAnimEntry *const asyncFxHandle = zEffectAnim::SetVelocity_Thunk(
+                zEffectAnimEntry *const asyncFxHandle = zEffectAnim::SetVelocityThunk(
                     self->flyoutModelAnimationEntry,
                     runtimeInstance->attachCloneChild,
                     0.0f,
@@ -1458,10 +1312,7 @@ namespace OptCatalog {
         }
 
         if ((self->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
-            zClass_Class::gwNodeSetRaycastable(
-                runtimeInstance->projectileNode,
-                1
-            );
+            zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
             runtimeInstance->projectileNode->flags |= 0x08000000;
             ((zClass_NodeFreeListSlot *)(runtimeInstance->projectileNode))->damageHandler =
                 (void *)(1);
@@ -1469,10 +1320,7 @@ namespace OptCatalog {
                 (zClass_NodePartial *)(runtimeInstance);
             runtimeInstance->projectileScale = self->flyoutHealth;
         } else {
-            zClass_Class::gwNodeSetRaycastable(
-                runtimeInstance->projectileNode,
-                0
-            );
+            zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
             runtimeInstance->projectileNode->flags &= ~0x08000000u;
         }
 
@@ -1506,10 +1354,7 @@ namespace OptCatalog {
         runtimeInstance->spawnScale = g_OptCatalogNextSpawnScale;
         g_OptCatalogNextSpawnScale = 1.0f;
 
-        zClass_Class::gwNodeSetRaycastable(
-            runtimeInstance->projectileNode,
-            1
-        );
+        zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
         runtimeInstance->projectileNode->flags |= 0x08000000;
         ((zClass_NodeFreeListSlot *)(runtimeInstance->projectileNode))->damageHandler = (void *)(1);
         runtimeInstance->projectileNode->callbackContext = (zClass_NodePartial *)(runtimeInstance);
@@ -1521,10 +1366,7 @@ namespace OptCatalog {
             spawnPos->y,
             spawnPos->z
         );
-        zClass_Class::AddChild(
-            g_OptCatalogRuntimeWorld,
-            runtimeInstance->projectileNode
-        );
+        zClass_Class::AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
         return runtimeInstance;
     }
 } // namespace OptCatalog
@@ -1545,37 +1387,22 @@ namespace OptCatalog {
 
         zEffectAnimEntry *const flyoutAnimPrimary = runtimeInstance->flyoutAnimPrimary;
         if (flyoutAnimPrimary != 0) {
-            zEffect_Anim::NodeActionCallback(
-                flyoutAnimPrimary,
-                0
-            );
+            zEffect_Anim::NodeActionCallback(flyoutAnimPrimary, 0);
             runtimeInstance->flyoutAnimPrimary = 0;
         }
 
         zEffectAnimEntry *const flyoutAnimSecondary = runtimeInstance->flyoutAnimSecondary;
         if (flyoutAnimSecondary != 0) {
-            zEffect_Anim::NodeActionCallback(
-                flyoutAnimSecondary,
-                0
-            );
+            zEffect_Anim::NodeActionCallback(flyoutAnimSecondary, 0);
             runtimeInstance->flyoutAnimSecondary = 0;
         }
 
         if (runtimeInstance->attachCloneChild != 0) {
-            RecycleAttachNodeClone(
-                self,
-                runtimeInstance
-            );
+            RecycleAttachNodeClone(self, runtimeInstance);
         }
 
-        zClass_Class::RemoveChild(
-            g_OptCatalogRuntimeWorld,
-            runtimeInstance->projectileNode
-        );
-        RecycleRuntimeInstanceStorage(
-            self,
-            runtimeInstance
-        );
+        zClass_Class::RemoveChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
+        RecycleRuntimeInstanceStorage(self, runtimeInstance);
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -1590,10 +1417,7 @@ namespace OptCatalog {
         self->activeRuntimeListHead = 0;
         while (runtimeInstance != 0) {
             OptCatalogRuntimeInstanceStorage *const next = runtimeInstance->next;
-            RecycleRuntimeInstance(
-                self,
-                runtimeInstance
-            );
+            RecycleRuntimeInstance(self, runtimeInstance);
             runtimeInstance = next;
         }
     }
@@ -1621,14 +1445,8 @@ namespace OptCatalog {
                     (runtimeInstance->lifetime == 0.0f &&
                         (ownerNode == 0 || runtimeInstance->ownerNode == ownerNode))) {
                     *link = next;
-                    result += ProcessRuntimeInstance(
-                        self,
-                        runtimeInstance
-                    );
-                    RecycleRuntimeInstance(
-                        self,
-                        runtimeInstance
-                    );
+                    result += ProcessRuntimeInstance(self, runtimeInstance);
+                    RecycleRuntimeInstance(self, runtimeInstance);
                 } else {
                     link = &runtimeInstance->next;
                 }
@@ -1640,18 +1458,11 @@ namespace OptCatalog {
             runtimeInstance.ownerNode = ownerNode;
             runtimeInstance.pos = *pointOrVec3;
             runtimeInstance.spawnScale = 1.0f;
-            result = ProcessRuntimeInstance(
-                self,
-                &runtimeInstance
-            );
+            result = ProcessRuntimeInstance(self, &runtimeInstance);
         }
 
         if (result != 0 && g_OptCatalog_RemoveRuntimeRelayCallback != 0) {
-            g_OptCatalog_RemoveRuntimeRelayCallback(
-                self,
-                pointOrVec3,
-                ownerNode
-            );
+            g_OptCatalog_RemoveRuntimeRelayCallback(self, pointOrVec3, ownerNode);
         }
 
         return result;
@@ -1684,10 +1495,7 @@ namespace OptCatalog {
         int restoreProjectileActive = 0;
         if (projectileNode != 0 && (projectileNode->flags & 0x04) != 0) {
             restoreProjectileActive = 1;
-            zClass_Class::gwNodeSetActive(
-                projectileNode,
-                0
-            );
+            zClass_Class::gwNodeSetActive(projectileNode, 0);
         }
 
         PlayerProbeSampleCandidateBuffer rayData = {0};
@@ -1699,36 +1507,19 @@ namespace OptCatalog {
             ) == 0) {
             OptCatalogHitEventPartial *const hitEvent =
                 (OptCatalogHitEventPartial *)(void *)(&rayData.entries[rayData.candidateCount]);
-            HandleImpactEvent(
-                self,
-                hitEvent,
-                runtimeInstance
-            );
+            HandleImpactEvent(self, hitEvent, runtimeInstance);
             result = 1;
         }
 
         if (restoreProjectileActive != 0) {
-            zClass_Class::gwNodeSetActive(
-                projectileNode,
-                1
-            );
+            zClass_Class::gwNodeSetActive(projectileNode, 1);
         }
 
         if (g_OptCatalog_FallbackImpactProbeEnabled != 0 && self->impactProximity > 0.0f) {
             OptCatalogRaycastHitList fallbackHits = {0};
-            if (BuildImpactHitList(
-                self,
-                runtimeInstance,
-                1,
-                &fallbackHits
-            ) != 0) {
+            if (BuildImpactHitList(self, runtimeInstance, 1, &fallbackHits) != 0) {
                 runtimeInstance->pos = startPoint;
-                HandleImpactFromRuntimeProbe(
-                    self,
-                    runtimeInstance,
-                    &fallbackHits,
-                    0
-                );
+                HandleImpactFromRuntimeProbe(self, runtimeInstance, &fallbackHits, 0);
             }
         }
 
@@ -1776,17 +1567,14 @@ namespace OptCatalog {
                 randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * (float)(kOptCatalogPi);
             }
 
-            ownerEntry->trailEffectAnim = zEffectAnim::SetTransformRotAndVelocity_Thunk(
+            ownerEntry->trailEffectAnim = zEffectAnim::SetTransformRotAndVelocityThunk(
                 ownerEntry->fireFxAnimationEntries[0],
                 0,
                 trailRuntimeState->spawnPos->x,
                 trailRuntimeState->spawnPos->y,
                 trailRuntimeState->spawnPos->z,
                 (float)asin((double)trailRuntimeState->spawnDir->y),
-                (float)(atan2(
-                    -trailRuntimeState->spawnDir->z,
-                    -trailRuntimeState->spawnDir->x
-                )),
+                (float)(atan2(-trailRuntimeState->spawnDir->z, -trailRuntimeState->spawnDir->x)),
                 randomRoll,
                 0.0f,
                 0.0f,
@@ -1819,10 +1607,7 @@ namespace OptCatalog {
                 ownerEntry->timedStatusLightRangeMin,
                 ownerEntry->timedStatusLightRangeMax
             );
-            zClass_Class::gwNodeSetActive(
-                light,
-                0
-            );
+            zClass_Class::gwNodeSetActive(light, 0);
         }
 
         OptCatalogTrailRuntimeState *const activeRuntime = ownerEntry->activeTrailRuntime;
@@ -1888,10 +1673,7 @@ namespace OptCatalog {
         for (int i = 0; i < trailRuntimeState->activeNodeSlotCount; ++i) {
             zClass_NodePartial *const node = trailRuntimeState->activeNodeSlots[i].node;
             if (node != 0) {
-                zClass_Class::gwNodeSetActive(
-                    node,
-                    0
-                );
+                zClass_Class::gwNodeSetActive(node, 0);
             }
         }
 
@@ -1915,11 +1697,7 @@ namespace OptCatalog {
  */
     void __cdecl ProcessRuntimeInstances() {
         unsigned int savedPackedVariantTag = 0;
-        memcpy(
-            &savedPackedVariantTag,
-            &g_Variant_CurrentTag,
-            sizeof(savedPackedVariantTag)
-        );
+        memcpy(&savedPackedVariantTag, &g_Variant_CurrentTag, sizeof(savedPackedVariantTag));
         float nearestLockOnDistance = (float)(_HUGE);
 
         g_OptCatalogRuntimeDeltaTime = g_Time_UnscaledDeltaTimeSec;
@@ -1975,10 +1753,7 @@ namespace OptCatalog {
 
                 if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0 &&
                     runtimeInstance->projectileScale <= 0.0f) {
-                    HandleImpactEventFromRuntimeState(
-                        entry,
-                        runtimeInstance
-                    );
+                    HandleImpactEventFromRuntimeState(entry, runtimeInstance);
                     updateState = 0;
                 } else {
                     if (runtimeInstance->lifetime != 0.0f) {
@@ -2109,10 +1884,7 @@ namespace OptCatalog {
                             zClass_Object3D::gwObject3DSetRotation(
                                 runtimeInstance->projectileNode,
                                 (float)(asin(runtimeInstance->dir.y)),
-                                (float)(atan2(
-                                    -runtimeInstance->dir.x,
-                                    -runtimeInstance->dir.z
-                                )),
+                                (float)(atan2(-runtimeInstance->dir.x, -runtimeInstance->dir.z)),
                                 0.0f
                             );
                             if (targetDistance < nearestLockOnDistance) {
@@ -2195,12 +1967,7 @@ namespace OptCatalog {
                         foundMineImpact = 1;
                     }
                     if (foundMineImpact != 0) {
-                        HandleImpactFromRuntimeProbe(
-                            entry,
-                            runtimeInstance,
-                            &mineHits,
-                            0
-                        );
+                        HandleImpactFromRuntimeProbe(entry, runtimeInstance, &mineHits, 0);
                         updateState = 0;
                         g_OptCatalog_FallbackImpactProbeEnabled = 0;
                         ProcessRuntimeInstance(entry, runtimeInstance);
@@ -2223,10 +1990,7 @@ namespace OptCatalog {
                     SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
                     zClass_Class::gwNodeSetRaycastable(runtimeInstance->ownerNode, 0);
                     if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
-                        zClass_Class::gwNodeSetRaycastable(
-                            runtimeInstance->projectileNode,
-                            0
-                        );
+                        zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
                     }
                     zClass_cls_di::SetStopAfterFirstHit(0x40000);
                     PlayerProbeSampleCandidateBuffer segmentHits;
@@ -2359,10 +2123,7 @@ namespace OptCatalog {
                         }
                     }
                     if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
-                        zClass_Class::gwNodeSetRaycastable(
-                            runtimeInstance->projectileNode,
-                            1
-                        );
+                        zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
                     }
                     zClass_Class::gwNodeSetRaycastable(runtimeInstance->ownerNode, 1);
                 }
@@ -2420,17 +2181,11 @@ namespace OptCatalog {
                     *link = nextRuntime;
                     runtimeInstance->lifetime = 0.0f;
                     if (runtimeInstance->flyoutAnimPrimary != 0) {
-                        zEffect_Anim::NodeActionCallback(
-                            runtimeInstance->flyoutAnimPrimary,
-                            0
-                        );
+                        zEffect_Anim::NodeActionCallback(runtimeInstance->flyoutAnimPrimary, 0);
                         runtimeInstance->flyoutAnimPrimary = 0;
                     }
                     if (runtimeInstance->flyoutAnimSecondary != 0) {
-                        zEffect_Anim::NodeActionCallback(
-                            runtimeInstance->flyoutAnimSecondary,
-                            0
-                        );
+                        zEffect_Anim::NodeActionCallback(runtimeInstance->flyoutAnimSecondary, 0);
                         runtimeInstance->flyoutAnimSecondary = 0;
                     }
                     zClass_Class::RemoveChild(
@@ -2829,10 +2584,7 @@ namespace OptCatalog {
                                 } else if ((entry->flags & 0x800u) != 0) {
                                     trailRuntime->volumeFadeTimer = 0.0f;
                                     trailRuntime->stopSoundHandle->SetFreqScaled(0.0f);
-                                    zClass_Class::gwNodeSetActive(
-                                        trailRuntime->lightNode,
-                                        0
-                                    );
+                                    zClass_Class::gwNodeSetActive(trailRuntime->lightNode, 0);
                                 }
 
                                 zClass_Object3D::gwObject3DSetScale(
@@ -2871,11 +2623,7 @@ namespace OptCatalog {
             g_OptCatalogLockOnWarningGateTimeSec = g_OptCatalogRuntimeNowSec + 5.0f;
         }
 
-        memcpy(
-            &g_Variant_CurrentTag,
-            &savedPackedVariantTag,
-            sizeof(g_Variant_CurrentTag)
-        );
+        memcpy(&g_Variant_CurrentTag, &savedPackedVariantTag, sizeof(g_Variant_CurrentTag));
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -2900,19 +2648,11 @@ namespace OptCatalog {
 
         const float distanceSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
         int distanceBits;
-        memcpy(
-            &distanceBits,
-            &distanceSq,
-            sizeof(distanceBits)
-        );
+        memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
         distanceBits = (distanceBits >> 1) + (int)(kOptCatalogFastSqrtBias);
 
         float distanceApprox;
-        memcpy(
-            &distanceApprox,
-            &distanceBits,
-            sizeof(distanceApprox)
-        );
+        memcpy(&distanceApprox, &distanceBits, sizeof(distanceApprox));
         *distanceApproxOut = distanceApprox;
 
         if (self->gravity == 0.0f) {
@@ -3083,11 +2823,7 @@ namespace OptCatalog {
         }
 
         if (self->impactCallback != 0) {
-            self->impactCallback(
-                self,
-                hitEvent,
-                runtimeInstance
-            );
+            self->impactCallback(self, hitEvent, runtimeInstance);
         }
 
         const float damageAmount = runtimeInstance->spawnScale * self->damage;
@@ -3122,12 +2858,7 @@ namespace OptCatalog {
                 contextOwnerNode = hitEvent->surfaceRef->impactOwnerNode;
             }
 
-            EmitQSandImpactEvent(
-                self,
-                hitEvent,
-                contextOwnerNode,
-                runtimeInstance->ownerNode
-            );
+            EmitQSandImpactEvent(self, hitEvent, contextOwnerNode, runtimeInstance->ownerNode);
         }
 
         if (g_OptCatalog_DamageContextKind != 0 &&
@@ -3138,12 +2869,7 @@ namespace OptCatalog {
                 contextHitEvent != 0 && contextHitEvent->surfaceRef != 0
                     ? contextHitEvent->surfaceRef->impactOwnerNode
                     : 0;
-            EmitCraterImpactEvent(
-                self,
-                hitEvent,
-                contextOwnerNode,
-                runtimeInstance->ownerNode
-            );
+            EmitCraterImpactEvent(self, hitEvent, contextOwnerNode, runtimeInstance->ownerNode);
         }
 
         if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0 &&
@@ -3154,26 +2880,16 @@ namespace OptCatalog {
                 contextHitEvent->surfaceRef != 0
                     ? contextHitEvent->surfaceRef->impactOwnerNode
                     : 0;
-            EmitQSandImpactEvent(
-                self,
-                hitEvent,
-                contextOwnerNode,
-                runtimeInstance->ownerNode
-            );
+            EmitQSandImpactEvent(self, hitEvent, contextOwnerNode, runtimeInstance->ownerNode);
             return;
         }
 
-        PlayImpactSound(
-            self,
-            hitEvent,
-            impactSlot,
-            1.0f
-        );
+        PlayImpactSound(self, hitEvent, impactSlot, 1.0f);
         if (suppressFallbackFx == 0 && damageHandled == 0) {
             OptCatalogFxSpec *const impactSpec = &self->impactFxTable[impactSlot];
             zEffectAnimEntry *const animationEntry = impactSpec->animationEntry;
             if (animationEntry != 0) {
-                zEffectAnim::SetTransformRotAndVelocity_Thunk(
+                zEffectAnim::SetTransformRotAndVelocityThunk(
                     animationEntry,
                     0,
                     hitEvent->hitPos.x,
@@ -3189,10 +2905,7 @@ namespace OptCatalog {
             }
 
             if (impactSpec->effectTemplateIndex != 0) {
-                zEffect::SpawnRuntimeInstanceAt(
-                    impactSpec->effectTemplateIndex,
-                    &hitEvent->hitPos
-                );
+                zEffect::SpawnRuntimeInstanceAt(impactSpec->effectTemplateIndex, &hitEvent->hitPos);
             }
         }
     }
@@ -3222,11 +2935,7 @@ namespace OptCatalog {
         hitEvent.surfaceRef = &surfaceRef;
         hitEvent.hitNode = runtimeInstance->projectileNode;
 
-        HandleImpactEvent(
-            self,
-            &hitEvent,
-            runtimeInstance
-        );
+        HandleImpactEvent(self, &hitEvent, runtimeInstance);
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -3252,10 +2961,7 @@ namespace OptCatalog {
         int restoreRaycastable = 0;
         if (projectileNode != 0 && (projectileNode->flags & 0x10) != 0) {
             restoreRaycastable = 1;
-            zClass_Class::gwNodeSetRaycastable(
-                projectileNode,
-                0
-            );
+            zClass_Class::gwNodeSetRaycastable(projectileNode, 0);
         }
 
         int result = zClass_cls_di::FilterRegionsAgainstSphere(
@@ -3269,10 +2975,7 @@ namespace OptCatalog {
         );
 
         if (restoreRaycastable != 0) {
-            zClass_Class::gwNodeSetRaycastable(
-                projectileNode,
-                1
-            );
+            zClass_Class::gwNodeSetRaycastable(projectileNode, 1);
         }
 
         if (allowOwnerOnlyHit == 0 && outHitList->hitCount == 1 &&
@@ -3359,10 +3062,7 @@ namespace OptCatalog {
         float *reflectedLengthOut,
         zVec3 *reflectedDirOut
     ) {
-        const float rayLength = zMath::Vec3DeltaLength(
-            &hit->pos,
-            rayStart
-        );
+        const float rayLength = zMath::Vec3DeltaLength(&hit->pos, rayStart);
         *rayLengthOut = rayLength;
         if (rayLength == 0.0f) {
             return 2;
@@ -3389,11 +3089,7 @@ namespace OptCatalog {
         incident.x = rayEnd->x - rayStart->x;
         incident.y = rayEnd->y - rayStart->y;
         incident.z = rayEnd->z - rayStart->z;
-        zMath::Vec3Reflect(
-            (zVec3 *)(void *)(hit),
-            &incident,
-            reflectedDirOut
-        );
+        zMath::Vec3Reflect((zVec3 *)(void *)(hit), &incident, reflectedDirOut);
         *reflectedLengthOut = zMath::Vec3Normalize(reflectedDirOut);
         return 1;
     }
@@ -3416,21 +3112,14 @@ namespace OptCatalog {
         for (int projectionIndex = 0; projectionIndex < *runtime->pendingSpawnTargetCountPtr;
             ++projectionIndex) {
             zVec3 *const targetPos = runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos;
-            const float distance = zMath::Vec3DeltaLength(
-                runtime->spawnPos,
-                targetPos
-            );
+            const float distance = zMath::Vec3DeltaLength(runtime->spawnPos, targetPos);
             if (distance > farthestDistance) {
                 farthestDistance = distance;
                 farthestTarget = targetPos;
             }
         }
 
-        zMath::Vec3DirectionTo(
-            runtime->spawnPos,
-            farthestTarget,
-            directionOut
-        );
+        zMath::Vec3DirectionTo(runtime->spawnPos, farthestTarget, directionOut);
 
         for (int targetProjectionIndex = 0;
             targetProjectionIndex < *runtime->pendingSpawnTargetCountPtr;
@@ -3482,10 +3171,7 @@ namespace OptCatalog {
     ) {
         SetDamageMaskSlotIndex(self->damageMaskSlotIndex);
         zClass_cls_di::SetStopAfterFirstHit(0x40000);
-        zClass_Class::gwNodeSetRaycastable(
-            trailRuntime->projectileNode,
-            0
-        );
+        zClass_Class::gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
 
         PlayerProbeSampleCandidateBuffer rayData = {0};
         const int raycastResult = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
@@ -3495,10 +3181,7 @@ namespace OptCatalog {
             &rayData
         );
 
-        zClass_Class::gwNodeSetRaycastable(
-            trailRuntime->projectileNode,
-            1
-        );
+        zClass_Class::gwNodeSetRaycastable(trailRuntime->projectileNode, 1);
 
         if (raycastResult == 0) {
             zClassDiPickCandidateEntry *const selectedHit =
@@ -3531,25 +3214,14 @@ namespace OptCatalog {
                 if (hitEvent->surfaceRef != 0) {
                     impactSlot = hitEvent->surfaceRef->impactSlot;
                 }
-                PlayImpactSound(
-                    self,
-                    hitEvent,
-                    impactSlot,
-                    1.0f
-                );
+                PlayImpactSound(self, hitEvent, impactSlot, 1.0f);
             }
 
-            segment->scale = zMath::Vec3DeltaLength(
-                &segment->pos,
-                &selectedHit->hitPos
-            );
+            segment->scale = zMath::Vec3DeltaLength(&segment->pos, &selectedHit->hitPos);
             return 1;
         }
 
-        segment->scale = zMath::Vec3DeltaLength(
-            &segment->pos,
-            targetPos
-        );
+        segment->scale = zMath::Vec3DeltaLength(&segment->pos, targetPos);
         return 0;
     }
 } // namespace OptCatalog
@@ -3564,10 +3236,7 @@ namespace OptCatalog {
     void __fastcall UpdateTrailSegmentVisual(
         OptCatalogTrailNodeSlot * segment
     ) {
-        zClass_Class::gwNodeSetActive(
-            segment->node,
-            1
-        );
+        zClass_Class::gwNodeSetActive(segment->node, 1);
         zClass_Object3D::gwObject3DSetPosition(
             segment->node,
             segment->pos.x,
@@ -3575,23 +3244,10 @@ namespace OptCatalog {
             segment->pos.z
         );
 
-        const float yaw = (float)(atan2(
-            -segment->dir.x,
-            -segment->dir.z
-        ));
+        const float yaw = (float)(atan2(-segment->dir.x, -segment->dir.z));
         const float pitch = (float)(asin(segment->dir.y));
-        zClass_Object3D::gwObject3DSetRotation(
-            segment->node,
-            pitch,
-            yaw,
-            0.0f
-        );
-        zClass_Object3D::gwObject3DSetScale(
-            segment->node,
-            1.0f,
-            1.0f,
-            segment->scale
-        );
+        zClass_Object3D::gwObject3DSetRotation(segment->node, pitch, yaw, 0.0f);
+        zClass_Object3D::gwObject3DSetScale(segment->node, 1.0f, 1.0f, segment->scale);
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -3614,11 +3270,7 @@ namespace OptCatalog {
 
         const int soundIndex = (rand() * soundCount) >> 15;
         zSndSample *const sample = impactSpec->soundSamples[soundIndex];
-        sample->PlayA3D(
-            &hitEvent->hitPos,
-            gainScale,
-            0
-        );
+        sample->PlayA3D(&hitEvent->hitPos, gainScale, 0);
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -3641,11 +3293,7 @@ namespace OptCatalog {
 
         const int soundIndex = (rand() * soundCount) >> 15;
         zSndSample *const sample = impactSpec->bounceSoundSamples[soundIndex];
-        sample->PlayA3D(
-            &hitEvent->pos,
-            gainScale,
-            0
-        );
+        sample->PlayA3D(&hitEvent->pos, gainScale, 0);
     }
 } // namespace OptCatalog
 /**
@@ -3762,11 +3410,7 @@ namespace zWeapon {
         g_OptCatalogRuntimeWorld = worldNode;
         Light::InitThermalGlowPool();
 
-        zReader::Node *const rootNode = zReader::Load(
-            path,
-            0,
-            0
-        );
+        zReader::Node *const rootNode = zReader::Load(path, 0, 0);
         g_OptCatalogLoadedTreeRoot = rootNode;
         if (rootNode == 0) {
             zError::ReportOld(
@@ -3779,10 +3423,7 @@ namespace zWeapon {
             return -1;
         }
 
-        zReader::Node *const versionNode = zRdrGetNode(
-            rootNode,
-            "VERSION"
-        );
+        zReader::Node *const versionNode = zRdrGetNode(rootNode, "VERSION");
         if (versionNode != 0) {
         const int version = versionNode->value.nodes[1].value.i32;
         if (version != kOptCatalogRequiredVersion) {
@@ -3797,10 +3438,7 @@ namespace zWeapon {
             return -1;
         }
 
-        zReader::Node *warningSoundNode = zRdrGetNode(
-            rootNode,
-            "LOCK_ON_WARNING"
-        );
+        zReader::Node *warningSoundNode = zRdrGetNode(rootNode, "LOCK_ON_WARNING");
         if (warningSoundNode != 0 &&
             warningSoundNode->type == zReader::ZRDR_NODE_ARRAY &&
             warningSoundNode->value.nodes[0].value.i32 > 1) {
@@ -3809,10 +3447,7 @@ namespace zWeapon {
             );
         }
 
-        warningSoundNode = zRdrGetNode(
-            rootNode,
-            "NO_AMMO_WARNING"
-        );
+        warningSoundNode = zRdrGetNode(rootNode, "NO_AMMO_WARNING");
         if (warningSoundNode != 0 &&
             warningSoundNode->type == zReader::ZRDR_NODE_ARRAY &&
             warningSoundNode->value.nodes[0].value.i32 > 1) {
@@ -3821,10 +3456,7 @@ namespace zWeapon {
             );
         }
 
-        warningSoundNode = zRdrGetNode(
-            rootNode,
-            "TRIGGER_INACTIVE"
-        );
+        warningSoundNode = zRdrGetNode(rootNode, "TRIGGER_INACTIVE");
         if (warningSoundNode != 0 &&
             warningSoundNode->type == zReader::ZRDR_NODE_ARRAY &&
             warningSoundNode->value.nodes[0].value.i32 > 1) {
@@ -3833,10 +3465,7 @@ namespace zWeapon {
             );
         }
 
-        warningSoundNode = zRdrGetNode(
-            rootNode,
-            "WEAPON_INACTIVE"
-        );
+        warningSoundNode = zRdrGetNode(rootNode, "WEAPON_INACTIVE");
         if (warningSoundNode != 0 &&
             warningSoundNode->type == zReader::ZRDR_NODE_ARRAY &&
             warningSoundNode->value.nodes[0].value.i32 > 1) {
@@ -3844,27 +3473,18 @@ namespace zWeapon {
                 warningSoundNode->value.nodes[1].value.str
             );
         }
-        zReader::Node *const maxCraterRadiusNode = zRdrGetNode(
-            rootNode,
-            "MAX_CRATER_RADIUS"
-        );
+        zReader::Node *const maxCraterRadiusNode = zRdrGetNode(rootNode, "MAX_CRATER_RADIUS");
         if (maxCraterRadiusNode != 0) {
             g_OptCatalogMaxCraterRadius =
                 maxCraterRadiusNode->value.nodes[1].value.f32;
         }
 
-        zReader::Node *const ballisticsNode = zRdrGetNode(
-            rootNode,
-            "BALLISTICS"
-        );
+        zReader::Node *const ballisticsNode = zRdrGetNode(rootNode, "BALLISTICS");
         if (ballisticsNode != 0 && ballisticsNode->type == zReader::ZRDR_NODE_ARRAY) {
             const int ballisticsCount = ballisticsNode->value.nodes[0].value.i32;
             g_OptCatalog_EntryCount = (ballisticsCount - 1) / 2;
             g_OptCatalog_EntryTable =
-                (OptCatalogEntryDef *)(calloc(
-                    g_OptCatalog_EntryCount,
-                    sizeof(OptCatalogEntryDef)
-                ));
+                (OptCatalogEntryDef *)(calloc(g_OptCatalog_EntryCount, sizeof(OptCatalogEntryDef)));
 
             for (int itemIndex = 1, entryIndex = 0; itemIndex < ballisticsCount;
                 itemIndex += 2, ++entryIndex) {
@@ -3883,17 +3503,11 @@ namespace zWeapon {
                     sizeof(OptCatalogFxSpec)
                 ));
 
-                zReader::Node *const entryNode = zRdrGetNode(
-                    rootNode,
-                    keyName
-                );
+                zReader::Node *const entryNode = zRdrGetNode(rootNode, keyName);
                 if (entryNode != 0) {
                     entry->keyName = (char *)(keyName);
 
-                    zReader::Node *fieldNode = zRdrGetNode(
-                        entryNode,
-                        "NAME"
-                    );
+                    zReader::Node *fieldNode = zRdrGetNode(entryNode, "NAME");
                     if (fieldNode != 0) {
                         entry->displayName =
                             (char *)(fieldNode->value.nodes[1].value.str);
@@ -3902,10 +3516,7 @@ namespace zWeapon {
                     }
 
                     const char *description = entry->keyName;
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "DESC"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "DESC");
                     if (fieldNode != 0) {
                         description = zLoc::ResolveMessageKeyOrFallback(
                             fieldNode->value.nodes[1].value.str
@@ -3914,10 +3525,7 @@ namespace zWeapon {
                     entry->description = _strdup(description);
 
                     const char *militaryName = entry->keyName;
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "MILITARY_NAME"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "MILITARY_NAME");
                     if (fieldNode != 0) {
                         militaryName = zLoc::ResolveMessageKeyOrFallback(
                             fieldNode->value.nodes[1].value.str
@@ -3925,27 +3533,18 @@ namespace zWeapon {
                     }
                     entry->militaryName = _strdup(militaryName);
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "ACCELERATION"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "ACCELERATION");
                     if (fieldNode != 0) {
                         entry->acceleration = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "AMMO_LIMIT"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "AMMO_LIMIT");
                     if (fieldNode != 0) {
                         entry->ammoOrChargeMax =
                             (float)(fieldNode->value.nodes[1].value.i32);
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "BEAM"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "BEAM");
                     if (fieldNode != 0 && fieldNode->type == zReader::ZRDR_NODE_ARRAY) {
                         entry->flags |= kOptCatalogFlagTrailRuntime;
                         if (fieldNode->value.nodes[0].value.i32 > 1) {
@@ -3962,20 +3561,14 @@ namespace zWeapon {
                         }
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "CATCHES_FIRE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "CATCHES_FIRE");
                     if (fieldNode != 0) {
                         entry->flags =
                             (entry->flags & ~kOptCatalogFlagImmediateProbeImpact) |
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 12);
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "CRATER"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "CRATER");
                     if (fieldNode != 0) {
                         if (fieldNode->value.nodes[1].value.i32 != 0) {
                             entry->flags |= kOptCatalogFlagCraterImpact;
@@ -3991,109 +3584,73 @@ namespace zWeapon {
                         }
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "DAMAGE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "DAMAGE");
                     if (fieldNode != 0) {
                         entry->damage = fieldNode->value.nodes[1].value.f32;
                     }
                     float floatValue = 0.0f;
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "DETONATION_DISTANCE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "DETONATION_DISTANCE");
                     if (fieldNode != 0) {
                         floatValue = fieldNode->value.nodes[1].value.f32;
                         entry->detonationDistSq = floatValue * floatValue;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "EXPIRES"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "EXPIRES");
                     if (fieldNode != 0) {
                         entry->flags =
                             (entry->flags & ~kOptCatalogFlagExpires) |
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 6);
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "FIRE_RATE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "FIRE_RATE");
                     if (fieldNode != 0) {
                         entry->fireRateInterval =
                             1.0f / fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "FIXED_ROTATE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "FIXED_ROTATE");
                     if (fieldNode != 0) {
                         entry->flags =
                             (entry->flags & ~kOptCatalogFlagFixedRotate) |
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 7);
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "GRAVITY"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "GRAVITY");
                     if (fieldNode != 0 && (entry->flags & kOptCatalogFlagLockOn) == 0) {
                         entry->gravity = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "IMPACT_PROXIMITY"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "IMPACT_PROXIMITY");
                     if (fieldNode != 0) {
                         floatValue = fieldNode->value.nodes[1].value.f32;
                         entry->impactProximity = floatValue;
                         entry->damageFalloffRange = floatValue * floatValue;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "IMPACT_TYPE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "IMPACT_TYPE");
                     if (fieldNode != 0) {
                         entry->damageMaskSlotIndex = fieldNode->value.nodes[1].value.i32;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "INSTANT"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "INSTANT");
                     if (fieldNode != 0) {
                         entry->flags =
                             (entry->flags & ~kOptCatalogFlagInstant) |
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 10);
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "LOCK_ON"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "LOCK_ON");
                     if (fieldNode != 0) {
                         entry->lockOnTime = fieldNode->value.nodes[1].value.f32;
                         entry->flags |= kOptCatalogFlagLockOn;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "LOCK_ON_LEAD"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "LOCK_ON_LEAD");
                     if (fieldNode != 0) {
                         entry->flags |= kOptCatalogFlagLockOnLead;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "MINE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "MINE");
                     if (fieldNode != 0) {
                         entry->flags =
                             (entry->flags & ~kOptCatalogFlagFullProbeDamage) |
@@ -4101,20 +3658,14 @@ namespace zWeapon {
                             1u;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "MULTI_TARGET"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "MULTI_TARGET");
                     if (fieldNode != 0) {
                         entry->flags =
                             (entry->flags & ~kOptCatalogFlagMultiTarget) |
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 16);
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "QUICKSAND"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "QUICKSAND");
                     if (fieldNode != 0) {
                         if (fieldNode->value.nodes[1].value.i32 != 0) {
                             entry->flags |= kOptCatalogFlagQuickSandImpact;
@@ -4130,83 +3681,56 @@ namespace zWeapon {
                         }
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        g_zEffectAnim_TokenRange
-                    );
+                    fieldNode = zRdrGetNode(entryNode, g_zEffectAnim_TokenRange);
                     if (fieldNode != 0) {
                         entry->range = fieldNode->value.nodes[1].value.f32;
                         entry->rangeSq = entry->range * entry->range;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "RELATIVE_SPEED"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "RELATIVE_SPEED");
                     if (fieldNode != 0) {
                         entry->flags =
                             (entry->flags & ~kOptCatalogFlagRelativeSpeed) |
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 23);
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "REMOTE_DETONATE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "REMOTE_DETONATE");
                     if (fieldNode != 0) {
                         entry->flags =
                             (entry->flags & ~kOptCatalogFlagRemoteDetonate) |
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 19);
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "TETHER_GUIDED"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "TETHER_GUIDED");
                     if (fieldNode != 0) {
                         entry->flags |= kOptCatalogFlagTetherGuided;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "TURN_RATE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "TURN_RATE");
                     if (fieldNode == 0) {
                         entry->turnRate = 0.159999996f;
                     } else {
                         entry->turnRate = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "TURN_SUSPEND_TIME"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "TURN_SUSPEND_TIME");
                     if (fieldNode != 0) {
                         entry->turnSuspendTime = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "PITCH_RATE"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "PITCH_RATE");
                     if (fieldNode == 0) {
                         entry->pitchRate = 0.159999996f;
                     } else {
                         entry->pitchRate = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "VELOCITY"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "VELOCITY");
                     if (fieldNode != 0 && (entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
                         entry->velocity = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "RELOAD"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "RELOAD");
                     if (fieldNode != 0) {
                         entry->flags =
                             (entry->flags & ~kOptCatalogFlagReload) |
@@ -4215,43 +3739,23 @@ namespace zWeapon {
                     entry->killVerbString = 0;
 
                     if (entryCallback != 0) {
-                        entryCallback(
-                            entryNode,
-                            entry
-                        );
+                        entryCallback(entryNode, entry);
                     }
 
-                    OptCatalog::LoadFxSpecFromReaderNode(
-                        entryNode,
-                        &entry->fireFxSpec,
-                        "FIRE"
-                    );
-                    OptCatalog::LoadFxSpecFromReaderNode(
-                        entryNode,
-                        &entry->flyoutFxSpec,
-                        "FLYOUT"
-                    );
+                    OptCatalog::LoadFxSpecFromReaderNode(entryNode, &entry->fireFxSpec, "FIRE");
+                    OptCatalog::LoadFxSpecFromReaderNode(entryNode, &entry->flyoutFxSpec, "FLYOUT");
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "FLYOUT_HEALTH"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "FLYOUT_HEALTH");
                     if (fieldNode != 0) {
                         entry->flags |= kOptCatalogFlagImpactWhenScaleExpired;
                         entry->flyoutHealth =
                             (float)(fieldNode->value.nodes[1].value.i32);
                         if (entry->attachCloneTemplateNode != 0) {
-                            zClass_Class::gwNodeSetRaycastable(
-                                entry->attachCloneTemplateNode,
-                                0
-                            );
+                            zClass_Class::gwNodeSetRaycastable(entry->attachCloneTemplateNode, 0);
                         }
                     }
 
-                    fieldNode = zRdrGetNode(
-                        entryNode,
-                        "IMPACT"
-                    );
+                    fieldNode = zRdrGetNode(entryNode, "IMPACT");
                     if (fieldNode != 0) {
                         zReader::Node *const impactNode = fieldNode;
                         OptCatalog::LoadFxSpecFromReaderNode(
@@ -4277,17 +3781,11 @@ namespace zWeapon {
                             }
                         }
 
-                        if (zRdrGetNode(
-                                impactNode,
-                                "ANIMATION_ALWAYS"
-                            ) != 0) {
+                        if (zRdrGetNode(impactNode, "ANIMATION_ALWAYS") != 0) {
                             entry->flags |= kOptCatalogFlagAlwaysPlayImpactFx;
                         }
 
-                        fieldNode = zRdrGetNode(
-                            impactNode,
-                            "FREEZE"
-                        );
+                        fieldNode = zRdrGetNode(impactNode, "FREEZE");
                         if (fieldNode != 0 &&
                             fieldNode->value.nodes[0].value.i32 > 6) {
                             entry->timedStatusLightRangeMin =
@@ -4307,10 +3805,7 @@ namespace zWeapon {
                                 kOptCatalogFlagAppliesTimedHitStatus;
                         }
 
-                        fieldNode = zRdrGetNode(
-                            impactNode,
-                            "HEAT"
-                        );
+                        fieldNode = zRdrGetNode(impactNode, "HEAT");
                         if (fieldNode != 0 &&
                             fieldNode->value.nodes[0].value.i32 > 6) {
                             entry->timedStatusLightRangeMin =
@@ -4330,10 +3825,7 @@ namespace zWeapon {
                                 kOptCatalogFlagHeatTimedStatus;
                         }
 
-                        fieldNode = zRdrGetNode(
-                            impactNode,
-                            "DESIGNATE"
-                        );
+                        fieldNode = zRdrGetNode(impactNode, "DESIGNATE");
                         if (fieldNode != 0 &&
                             fieldNode->value.nodes[0].value.i32 > 6) {
                             entry->timedStatusLightRangeMin =
@@ -4355,35 +3847,22 @@ namespace zWeapon {
                                 fieldNode->value.nodes[6].value.f32;
                         }
 
-                        fieldNode = zRdrGetNode(
-                            impactNode,
-                            "KILL_ANIMATION"
-                        );
+                        fieldNode = zRdrGetNode(impactNode, "KILL_ANIMATION");
                         if (fieldNode != 0) {
                             entry->damageContextEffect =
-                                zEffectAnim::FindEntryByName(
-                                    fieldNode->value.nodes[1].value.str
-                                );
+                                zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
                         }
 
-                        fieldNode = zRdrGetNode(
-                            impactNode,
-                            "DAMAGE_ANIMATION"
-                        );
+                        fieldNode = zRdrGetNode(impactNode, "DAMAGE_ANIMATION");
                         if (fieldNode != 0) {
                             entry->damageFeedbackVariantCount = 1;
                             entry->damageFeedbackVariants[0].minFeedbackScale = 1.0f;
                             entry->damageFeedbackVariants[0].effect =
-                                zEffectAnim::FindEntryByName(
-                                    fieldNode->value.nodes[1].value.str
-                                );
+                                zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
                         }
 
                         if (g_zVideo_ActiveRendererPath != 0) {
-                            fieldNode = zRdrGetNode(
-                                impactNode,
-                                "DAMAGE_ANIM_ON_HEALTH"
-                            );
+                            fieldNode = zRdrGetNode(impactNode, "DAMAGE_ANIM_ON_HEALTH");
                             if (fieldNode != 0) {
                                 entry->damageFeedbackVariantCount =
                                     fieldNode->value.nodes[0].value.i32 - 1;
@@ -4410,24 +3889,13 @@ namespace zWeapon {
                         (entry->velocity * entry->velocity) / (entry->gravity * 2.0f);
                     float velocityProduct = entry->gravity * entry->range * 2.0f;
                     unsigned int velocityBits = 0;
-                    memcpy(
-                        &velocityBits,
-                        &velocityProduct,
-                        sizeof(velocityBits)
-                    );
+                    memcpy(&velocityBits, &velocityProduct, sizeof(velocityBits));
                     velocityBits = (velocityBits >> 1) + kOptCatalogFastSqrtBias;
-                    memcpy(
-                        &entry->velocity,
-                        &velocityBits,
-                        sizeof(entry->velocity)
-                    );
+                    memcpy(&entry->velocity, &velocityBits, sizeof(entry->velocity));
                 }
 
                 if (entry->attachCloneTemplateNode != 0) {
-                    zClass_Class::gwNodeSetActive(
-                        entry->attachCloneTemplateNode,
-                        1
-                    );
+                    zClass_Class::gwNodeSetActive(entry->attachCloneTemplateNode, 1);
                     if (zClass::AnyNodeMatchesPredicateRecursive(
                             entry->attachCloneTemplateNode,
                             zClass_Node::HasRenderableDiPredicate
@@ -4461,15 +3929,8 @@ namespace zWeapon {
             runtime->projectileNode = zClass_Object3D::gwObject3DInit();
 
             char projectileName[40];
-            sprintf(
-                projectileName,
-                "Projectile_%d",
-                runtimeIndex
-            );
-            zClass_Class::gwNodeSetName(
-                runtime->projectileNode,
-                projectileName
-            );
+            sprintf(projectileName, "Projectile_%d", runtimeIndex);
+            zClass_Class::gwNodeSetName(runtime->projectileNode, projectileName);
 
             runtime->flyoutAnimPrimary = 0;
             runtime->flyoutAnimSecondary = 0;
@@ -4477,18 +3938,9 @@ namespace zWeapon {
             runtime->next = g_OptCatalogFreeRuntimeInstanceList;
             g_OptCatalogFreeRuntimeInstanceList = runtime;
 
-            zClass_Class::gwNodeSetRaycastable(
-                runtime->projectileNode,
-                0
-            );
-            zClass_Class::gwNodeSetCellPickable(
-                runtime->projectileNode,
-                0
-            );
-            zClass_Class::gwNodeSetPickable(
-                runtime->projectileNode,
-                1
-            );
+            zClass_Class::gwNodeSetRaycastable(runtime->projectileNode, 0);
+            zClass_Class::gwNodeSetCellPickable(runtime->projectileNode, 0);
+            zClass_Class::gwNodeSetPickable(runtime->projectileNode, 1);
         }
 
         zClass_NodePartial *const callbackNode = zClass_Object3D::gwObject3DInit();
@@ -4503,10 +3955,7 @@ namespace zWeapon {
             return 0;
         }
 
-        zClass_Class::gwNodeSetPriority(
-            callbackNode,
-            3
-        );
+        zClass_Class::gwNodeSetPriority(callbackNode, 3);
         zClass_Class::gwNodeSetActionCallback(
             callbackNode,
             (void *)(&OptCatalog::ProcessRuntimeInstances)
@@ -4621,10 +4070,7 @@ namespace OptCatalog {
         (void)reserved;
 
         OptCatalogTrailRuntimeState *const runtime =
-            (OptCatalogTrailRuntimeState *)(calloc(
-                1,
-                sizeof(OptCatalogTrailRuntimeState)
-            ));
+            (OptCatalogTrailRuntimeState *)(calloc(1, sizeof(OptCatalogTrailRuntimeState)));
         runtime->ownerEntry = entry;
         runtime->projectileNode = projectileNode;
         runtime->variantTagPtr = variantTagPtr;
@@ -4645,29 +4091,13 @@ namespace OptCatalog {
             runtime->activeNodeSlots[i].node = node;
 
             char nodeName[40];
-            sprintf(
-                nodeName,
-                g_zWeapon_BeamReflectNameFmt,
-                i
-            );
-            zClass_Class::gwNodeSetName(
-                node,
-                nodeName
-            );
-            zClass_Class::gwNodeSetActive(
-                node,
-                0
-            );
+            sprintf(nodeName, g_zWeapon_BeamReflectNameFmt, i);
+            zClass_Class::gwNodeSetName(node, nodeName);
+            zClass_Class::gwNodeSetActive(node, 0);
             if ((entry->flags & kOptCatalogFlagSkipTrailSegmentLighting) == 0) {
-                zClass_Object3D::gwObject3DSetLitFlag(
-                    node,
-                    1
-                );
+                zClass_Object3D::gwObject3DSetLitFlag(node, 1);
             }
-            zClass_Class::AddChild(
-                g_OptCatalogRuntimeWorld,
-                node
-            );
+            zClass_Class::AddChild(g_OptCatalogRuntimeWorld, node);
         }
 
         return runtime;
@@ -4696,110 +4126,70 @@ namespace OptCatalog {
         OptCatalogFxSpec * spec,
         const char *childName
     ) {
-        zReader::Node *const specNode = zRdrGetNode(
-            parentNode,
-            childName
-        );
+        zReader::Node *const specNode = zRdrGetNode(parentNode, childName);
         if (specNode == 0) {
             return;
         }
 
-        zReader::Node *fieldNode = zRdrGetNode(
-            specNode,
-            "EFFECT"
-        );
+        zReader::Node *fieldNode = zRdrGetNode(specNode, "EFFECT");
         if (fieldNode != 0) {
             if (fieldNode->value.nodes[0].value.i32 > 1) {
                 spec->effectTemplateIndex =
-                    zEffect::FindTemplateIndexByName(
-                        fieldNode->value.nodes[1].value.str
-                    );
+                    zEffect::FindTemplateIndexByName(fieldNode->value.nodes[1].value.str);
             }
         } else {
-            fieldNode = zRdrGetNode(
-                specNode,
-                "MODEL"
-            );
+            fieldNode = zRdrGetNode(specNode, "MODEL");
             if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
-                spec->modelNode = zClass::FindByTypeAndName(
-                    6,
-                    fieldNode->value.nodes[1].value.str
-                );
+                spec->modelNode = zClass::FindByTypeAndName(6, fieldNode->value.nodes[1].value.str);
             }
         }
 
-        fieldNode = zRdrGetNode(
-            specNode,
-            "ANIMATION_ATTACHED"
-        );
+        fieldNode = zRdrGetNode(specNode, "ANIMATION_ATTACHED");
         if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
             spec->attachedAnimationEntry =
-                zEffectAnim::FindEntryByName(
-                    fieldNode->value.nodes[1].value.str
-                );
+                zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
         }
 
-        fieldNode = zRdrGetNode(
-            specNode,
-            "MODEL_ANIMATION"
-        );
+        fieldNode = zRdrGetNode(specNode, "MODEL_ANIMATION");
         if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
             spec->modelAnimationEntry =
-                zEffectAnim::FindEntryByName(
-                    fieldNode->value.nodes[1].value.str
-                );
+                zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
         }
 
-        fieldNode = zRdrGetNode(
-            specNode,
-            "ANIMATION"
-        );
+        fieldNode = zRdrGetNode(specNode, "ANIMATION");
         if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
             spec->animationEntry = zEffectAnim::FindEntryByName(
                 fieldNode->value.nodes[1].value.str
             );
         }
 
-        fieldNode = zRdrGetNode(
-            specNode,
-            "RANDOM_ROTATE"
-        );
+        fieldNode = zRdrGetNode(specNode, "RANDOM_ROTATE");
         if (fieldNode != 0) {
             spec->flags =
                 (((unsigned int)(fieldNode->value.nodes[1].value.i32) ^
                     spec->flags) & 1) ^ spec->flags;
         }
 
-        fieldNode = zRdrGetNode(
-            specNode,
-            g_HudZrd_Key_Sound
-        );
+        fieldNode = zRdrGetNode(specNode, g_HudZrd_Key_Sound);
         if (fieldNode != 0) {
             const int count = fieldNode->value.nodes[0].value.i32;
             spec->soundCount = count - 1;
             if (count > 1) {
                 zSndSample **sample = spec->soundSamples;
                 for (int i = 1; i < count; ++i, ++sample) {
-                    *sample = zSnd::FindSampleByName(
-                        fieldNode->value.nodes[i].value.str
-                    );
+                    *sample = zSnd::FindSampleByName(fieldNode->value.nodes[i].value.str);
                 }
             }
         }
 
-        fieldNode = zRdrGetNode(
-            specNode,
-            g_zEffectAnim_TokenBounceSound
-        );
+        fieldNode = zRdrGetNode(specNode, g_zEffectAnim_TokenBounceSound);
         if (fieldNode != 0) {
             const int count = fieldNode->value.nodes[0].value.i32;
             spec->bounceSoundCount = count - 1;
             if (count > 1) {
                 zSndSample **sample = spec->bounceSoundSamples;
                 for (int i = 1; i < count; ++i, ++sample) {
-                    *sample = zSnd::FindSampleByName(
-                        fieldNode->value.nodes[i].value.str
-                    );
+                    *sample = zSnd::FindSampleByName(fieldNode->value.nodes[i].value.str);
                 }
             }
         }
@@ -4818,15 +4208,9 @@ namespace OptCatalog {
         zClass_NodePartial * templateNode
     ) {
         zClass_NodePartial *const parent = zClass_Object3D::gwObject3DInit();
-        zClass_Class::gwNodeSetActive(
-            parent,
-            1
-        );
+        zClass_Class::gwNodeSetActive(parent, 1);
         if (templateNode != 0) {
-            zClass_Object3D::gwObject3DAddChild(
-                parent,
-                templateNode
-            );
+            zClass_Object3D::gwObject3DAddChild(parent, templateNode);
         }
 
         return parent;
@@ -4842,21 +4226,9 @@ namespace Light {
     int __cdecl InitThermalGlowPool() {
         for (int i = 0; i < 8; ++i) {
             zClass_NodePartial *const light = zClass_Light::gwLightNew();
-            zClass_Class::gwNodeSetName(
-                light,
-                g_zWeapon_ThermalGlowLabel
-            );
-            zClass_Light::gwLightSetPosition(
-                light,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-            zClass_Light::gwLightSetRange(
-                light,
-                0.1f,
-                0.2f
-            );
+            zClass_Class::gwNodeSetName(light, g_zWeapon_ThermalGlowLabel);
+            zClass_Light::gwLightSetPosition(light, 0.0f, 0.0f, 0.0f);
+            zClass_Light::gwLightSetRange(light, 0.1f, 0.2f);
             light->callbackContext = g_OptCatalogThermalGlowFreeList;
             g_OptCatalogThermalGlowFreeList = light;
         }
@@ -4933,10 +4305,7 @@ int __fastcall UpdateTimedStatus(
             Light::AllocFromFreeListAndAttach(&self->timedStatusLightSpecularColor);
         status->lightNode = light;
         if (light != 0) {
-            zClass_Class::AddChild(
-                status->lightParentNode,
-                light
-            );
+            zClass_Class::AddChild(status->lightParentNode, light);
         }
     }
 
@@ -4959,10 +4328,7 @@ int __fastcall UpdateTimedStatus(
  */
 void PlayerTimedHitStatus::ClearLightAndReset() {
     if (lightNode != 0) {
-        zClass_Class::RemoveChild(
-            lightParentNode,
-            lightNode
-        );
+        zClass_Class::RemoveChild(lightParentNode, lightNode);
         Light::ReturnToFreeList(lightNode);
         ResetFields();
     }
@@ -5064,21 +4430,14 @@ namespace Light {
         }
 
         g_OptCatalogThermalGlowFreeList = light->callbackContext;
-        zClass_Light::gwLightSetRange(
-            light,
-            0.1f,
-            0.2f
-        );
+        zClass_Light::gwLightSetRange(light, 0.1f, 0.2f);
         zClass_Light::gwLightSetSpecularColor(
             light,
             specularColor->red,
             specularColor->green,
             specularColor->blue
         );
-        zClass_World::AddLight(
-            g_OptCatalogRuntimeWorld,
-            light
-        );
+        zClass_World::AddLight(g_OptCatalogRuntimeWorld, light);
         return light;
     }
 } // namespace Light
@@ -5090,15 +4449,8 @@ namespace Light {
  * world, and push it back onto the thermal glow free list.
  */
     void __fastcall ReturnToFreeList(zClass_NodePartial * lightNode) {
-        zClass_Light::gwLightSetRange(
-            lightNode,
-            0.1f,
-            0.2f
-        );
-        zClass_World::RemoveLight(
-            g_OptCatalogRuntimeWorld,
-            lightNode
-        );
+        zClass_Light::gwLightSetRange(lightNode, 0.1f, 0.2f);
+        zClass_World::RemoveLight(g_OptCatalogRuntimeWorld, lightNode);
         lightNode->callbackContext = g_OptCatalogThermalGlowFreeList;
         g_OptCatalogThermalGlowFreeList = lightNode;
     }
@@ -5129,14 +4481,8 @@ namespace zClass_Node {
 
         handler->hitCallback = context;
         handler->hitContext = callback;
-        AssignDamageHandlerRecursiveIfMissing(
-            node,
-            handler
-        );
-        zClass_Class::gwNodeSetHasHitCallback(
-            node,
-            1
-        );
+        AssignDamageHandlerRecursiveIfMissing(node, handler);
+        zClass_Class::gwNodeSetHasHitCallback(node, 1);
         return 0;
     }
 } // namespace zClass_Node
@@ -5159,10 +4505,7 @@ namespace zClass_Node {
 
         if (node->listCountB != 0) {
             for (int i = 0; i < node->listCountB; ++i) {
-                AssignDamageHandlerRecursiveIfMissing(
-                    node->listB[i],
-                    handler
-                );
+                AssignDamageHandlerRecursiveIfMissing(node->listB[i], handler);
             }
         }
 
@@ -5186,15 +4529,9 @@ namespace zClass_Node {
             (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
                 ->damageHandler);
         if (handler != 0) {
-            ClearDamageHandlerRecursive(
-                node,
-                handler
-            );
+            ClearDamageHandlerRecursive(node, handler);
             if (handler->hitContext != 0) {
-                zClass_Class::gwNodeSetHasHitCallback(
-                    node,
-                    0
-                );
+                zClass_Class::gwNodeSetHasHitCallback(node, 0);
             }
             free(handler);
         }
@@ -5216,10 +4553,7 @@ namespace zClass_Node {
     ) {
         if (node->listCountB != 0) {
             for (int i = 0; i < node->listCountB; ++i) {
-                ClearDamageHandlerRecursive(
-                    node->listB[i],
-                    handler
-                );
+                ClearDamageHandlerRecursive(node->listB[i], handler);
             }
         }
 
@@ -5252,10 +4586,7 @@ namespace zClass_Node {
 
         handler->timerContext = context;
         handler->timerCallback = callback;
-        AssignDamageHandlerRecursiveIfMissing(
-            node,
-            handler
-        );
+        AssignDamageHandlerRecursiveIfMissing(node, handler);
         return 0;
     }
 } // namespace zClass_Node
@@ -5306,24 +4637,15 @@ namespace OptCatalog {
             OptCatalogDamageFeedbackCallback feedbackCallback =
                 (OptCatalogDamageFeedbackCallback)(g_OptCatalogDamageFeedbackCallback);
             if (feedbackCallback != 0) {
-                feedbackCallback(
-                    handler,
-                    hitEvent->hitNode,
-                    damageAmount
-                );
+                feedbackCallback(handler, hitEvent->hitNode, damageAmount);
             }
 
             OptCatalogHitCallback hitCallback = (OptCatalogHitCallback)(handler->hitContext);
-            result = hitCallback(
-                handler->hitCallback,
-                self,
-                hitEvent,
-                damageAmount
-            );
+            result = hitCallback(handler->hitCallback, self, hitEvent, damageAmount);
 
             if (g_OptCatalog_DamageContextKind != 0) {
                 if (self->damageContextEffect != 0) {
-                    zEffectAnim::SetTransformRotAndVelocity_Thunk(
+                    zEffectAnim::SetTransformRotAndVelocityThunk(
                         self->damageContextEffect,
                         0,
                         hitEvent->hitPos.x,
@@ -5341,7 +4663,7 @@ namespace OptCatalog {
                 for (int i = 0; i < self->damageFeedbackVariantCount; ++i) {
                     if (g_OptCatalogDamageFeedbackIntensityScalar <=
                         self->damageFeedbackVariants[i].minFeedbackScale) {
-                        zEffectAnim::SetTransformRotAndVelocity_Thunk(
+                        zEffectAnim::SetTransformRotAndVelocityThunk(
                             self->damageFeedbackVariants[i].effect,
                             0,
                             hitEvent->hitPos.x,
@@ -5392,10 +4714,7 @@ namespace OptCatalog {
 
         OptCatalogDamageTimerCallback callback =
             (OptCatalogDamageTimerCallback)(handler->timerCallback);
-        return callback(
-            handler->timerContext,
-            damageAmount
-        );
+        return callback(handler->timerContext, damageAmount);
     }
 } // namespace OptCatalog
 namespace OptCatalog {

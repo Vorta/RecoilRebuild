@@ -701,7 +701,7 @@ TriangulatePointDwordOffsetsRecursive(
     int *pointDwordOffsets,
     int pointDwordStrideMode
 );
-zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
+zGeometry_ConvexPolygonSetPartial *__fastcall convexify(
     zGeometry_PolygonSpanArrayPartial *polygonSet,
     int inputPointCount,
     zVec3 *points

@@ -35,32 +35,32 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_WorldSelector) == 0x208);
  * 0x419b0c installs the game-name control's separate table at 0x4cf8d0.
  * Purpose: Specialize the panel's fixed-capacity game-name input.
  */
-struct HudUiNetGameSetupPanel_GameNameInput : HudUiNetGameSetupTextInput {
-    HudUiNetGameSetupPanel_GameNameInput() : HudUiNetGameSetupTextInput(21) {
+struct CHudUiNetGameSetupPanelGameNameInput : HudUiNetGameSetupTextInput {
+    CHudUiNetGameSetupPanelGameNameInput() : HudUiNetGameSetupTextInput(21) {
     }
 };
-RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_GameNameInput) == 0x374);
+RECOIL_STATIC_ASSERT(sizeof(CHudUiNetGameSetupPanelGameNameInput) == 0x374);
 
-struct HudUiNetGameSetupPanel_TimeLimitInput : HudUiClampedIntTextInput {
-    HudUiNetGameSetupPanel_TimeLimitInput()
+struct CHudUiNetGameSetupPanelTimeLimitInput : HudUiClampedIntTextInput {
+    CHudUiNetGameSetupPanelTimeLimitInput()
         : HudUiClampedIntTextInput() {
     }
 };
-RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_TimeLimitInput) == 0x37c);
+RECOIL_STATIC_ASSERT(sizeof(CHudUiNetGameSetupPanelTimeLimitInput) == 0x37c);
 
-struct HudUiNetGameSetupPanel_KillsInput : HudUiClampedIntTextInput {
-    HudUiNetGameSetupPanel_KillsInput()
+struct CHudUiNetGameSetupPanelKillsInput : HudUiClampedIntTextInput {
+    CHudUiNetGameSetupPanelKillsInput()
         : HudUiClampedIntTextInput(2) {
     }
 };
-RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_KillsInput) == 0x37c);
+RECOIL_STATIC_ASSERT(sizeof(CHudUiNetGameSetupPanelKillsInput) == 0x37c);
 
-struct HudUiNetGameSetupPanel_MaxPlayersInput : HudUiClampedIntTextInput {
-    HudUiNetGameSetupPanel_MaxPlayersInput()
+struct CHudUiNetGameSetupPanelMaxPlayersInput : HudUiClampedIntTextInput {
+    CHudUiNetGameSetupPanelMaxPlayersInput()
         : HudUiClampedIntTextInput(2) {
     }
 };
-RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_MaxPlayersInput) == 0x37c);
+RECOIL_STATIC_ASSERT(sizeof(CHudUiNetGameSetupPanelMaxPlayersInput) == 0x37c);
 
 struct HudUiNetGameSetupPanel_IncTimeLimitButton : HudUiClampedIntStepButton {
 };
@@ -98,17 +98,17 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
     HudUiNumericTextInput *currentFocusWidget;
     HudUiNetGameSetupPanel_LaunchButton playButton;
     HudUiNetGameSetupPanel_CancelButton cancelButton;
-    HudUiNetGameSetupPanel_GameNameInput gameNameInput;
+    CHudUiNetGameSetupPanelGameNameInput gameNameInput;
     HudUiNetGameSetupPanel_WorldSelector worldSelector;
     HudUiNetGameSetupPanel_NextWorldButton nextWorldButton;
     HudUiNetGameSetupPanel_PrevWorldButton prevWorldButton;
-    HudUiNetGameSetupPanel_TimeLimitInput timeLimitInput;
+    CHudUiNetGameSetupPanelTimeLimitInput timeLimitInput;
     HudUiNetGameSetupPanel_IncTimeLimitButton incTimeLimitButton;
     HudUiNetGameSetupPanel_DecTimeLimitButton decTimeLimitButton;
-    HudUiNetGameSetupPanel_KillsInput killsInput;
+    CHudUiNetGameSetupPanelKillsInput killsInput;
     HudUiNetGameSetupPanel_IncKillsButton incKillsButton;
     HudUiNetGameSetupPanel_DecKillsButton decKillsButton;
-    HudUiNetGameSetupPanel_MaxPlayersInput maxPlayersInput;
+    CHudUiNetGameSetupPanelMaxPlayersInput maxPlayersInput;
     HudUiNetGameSetupPanel_IncMaxPlayersButton incMaxPlayersButton;
     HudUiNetGameSetupPanel_DecMaxPlayersButton decMaxPlayersButton;
     HudUiNetGameSetupPanel_AllowMapsToggle allowMapsToggle;

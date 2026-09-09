@@ -2042,9 +2042,9 @@ RECOIL_STATIC_ASSERT(
     ) == 0x24
 );
 
-zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_Init(
+zUtil_SaveGameState *__fastcall zUtilSaveGameStateListInit(
     zUtil_SaveGameState *self
 );
-zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_AllocAppend(
+zUtil_SaveGameState *__fastcall zUtilSaveGameStateListAllocAppend(
     zUtil_SaveGameState *self
 );

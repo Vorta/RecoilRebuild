@@ -12,7 +12,7 @@ extern "C" {
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-data-g_zfmv_mpegvideostring
  * @recoil-artifact defines .data recoil:data:0x4dfb1c: g_zFMV_MpegVideoString.
- * BN xrefs: zFMV_Playback::OpenAndPlay opens the MCI MPEGVideo device type.
+ * BN xrefs: CZFMVPlayback::OpenAndPlay opens the MCI MPEGVideo device type.
  * Purpose: first literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
  */
 char g_zFMV_MpegVideoString[] = "MPEGVideo";
@@ -20,7 +20,7 @@ char g_zFMV_MpegVideoString[] = "MPEGVideo";
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-data-g_zfmv_sourcefile_fmvmaincpp
  * @recoil-artifact defines .data recoil:data:0x4dfb28: g_zFMV_SourceFile_FmvMainCpp.
- * BN xrefs: zFMV_Playback::ReportMciError passes the retail source path to zError.
+ * BN xrefs: CZFMVPlayback::ReportMciError passes the retail source path to zError.
  * Purpose: second literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
  */
 char g_zFMV_SourceFile_FmvMainCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_main.cpp";
@@ -28,7 +28,7 @@ char g_zFMV_SourceFile_FmvMainCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_main.cpp
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-data-g_zfmv_unknownerroridmsg
  * @recoil-artifact defines .data recoil:data:0x4dfb50: g_zFMV_UnknownErrorIdMsg.
- * BN xrefs: zFMV_Playback::ReportMciError uses this fallback MCI error text.
+ * BN xrefs: CZFMVPlayback::ReportMciError uses this fallback MCI error text.
  * Purpose: final literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
  */
 char g_zFMV_UnknownErrorIdMsg[] = "Unknown Error ID";
@@ -68,7 +68,7 @@ struct zFMV_MciPlayParams {
 /**
  * Purpose: initialize an MCI playback object with a duplicated media path and window handle.
  */
-zFMV_Playback::zFMV_Playback(
+CZFMVPlayback::CZFMVPlayback(
     const char *mediaPath,
     HWND hwnd
 ) {
@@ -80,16 +80,16 @@ zFMV_Playback::zFMV_Playback(
 /**
  * Purpose: release the duplicated MCI media path.
  */
-zFMV_Playback::~zFMV_Playback() {
+CZFMVPlayback::~CZFMVPlayback() {
     free(mediaPathDup);
 }
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-openandplay
- * @recoil-artifact defines .text recoil:function:0x462370: zFMV_Playback::OpenAndPlay.
+ * @recoil-artifact defines .text recoil:function:0x462370: CZFMVPlayback::OpenAndPlay.
  * Purpose: open an MCI MPEG device, configure its window/rect/time format, and start playback.
  */
-void zFMV_Playback::OpenAndPlay(
+void CZFMVPlayback::OpenAndPlay(
     unsigned int startMs,
     int endMs,
     int notifyFlag
@@ -105,12 +105,7 @@ void zFMV_Playback::OpenAndPlay(
 
     openParams.lpstrDeviceType = (LPSTR)(g_zFMV_MpegVideoString);
     openParams.lpstrElementName = mediaPathDup;
-    DWORD mciError = mciSendCommandA(
-        0,
-        0x803,
-        0x2202,
-        (DWORD)(&openParams)
-    );
+    DWORD mciError = mciSendCommandA(0, 0x803, 0x2202, (DWORD)(&openParams));
     if (mciError != 0) {
         ReportMciError(mciError);
     }
@@ -118,12 +113,7 @@ void zFMV_Playback::OpenAndPlay(
     mciDeviceId = (unsigned short)(openParams.wDeviceID);
 
     windowParams.hwnd = notifyHwnd;
-    mciError = mciSendCommandA(
-        mciDeviceId,
-        0x841,
-        0x10002,
-        (DWORD)(&windowParams)
-    );
+    mciError = mciSendCommandA(mciDeviceId, 0x841, 0x10002, (DWORD)(&windowParams));
     if (mciError != 0) {
         ReportMciError(mciError);
         return;
@@ -134,12 +124,7 @@ void zFMV_Playback::OpenAndPlay(
         rectParams.width = destinationRect.right - destinationRect.left;
         rectParams.top = destinationRect.top;
         rectParams.height = destinationRect.bottom - destinationRect.top;
-        mciError = mciSendCommandA(
-            mciDeviceId,
-            0x842,
-            0x50002,
-            (DWORD)(&rectParams)
-        );
+        mciError = mciSendCommandA(mciDeviceId, 0x842, 0x50002, (DWORD)(&rectParams));
         if (mciError != 0) {
             ReportMciError(mciError);
             return;
@@ -151,12 +136,7 @@ void zFMV_Playback::OpenAndPlay(
         rectParams.width = sourceRect.right - sourceRect.left;
         rectParams.top = sourceRect.top;
         rectParams.height = sourceRect.bottom - sourceRect.top;
-        mciError = mciSendCommandA(
-            mciDeviceId,
-            0x842,
-            0x30002,
-            (DWORD)(&rectParams)
-        );
+        mciError = mciSendCommandA(mciDeviceId, 0x842, 0x30002, (DWORD)(&rectParams));
         if (mciError != 0) {
             ReportMciError(mciError);
             return;
@@ -165,12 +145,7 @@ void zFMV_Playback::OpenAndPlay(
 
     setParams.timeFormat = 0x1b;
     setParams.audio = (DWORD)((unsigned int)(notifyHwnd));
-    mciError = mciSendCommandA(
-        mciDeviceId,
-        0x811,
-        0x302,
-        (DWORD)(&setParams)
-    );
+    mciError = mciSendCommandA(mciDeviceId, 0x811, 0x302, (DWORD)(&setParams));
     if (mciError != 0) {
         ReportMciError(mciError);
         return;
@@ -187,12 +162,7 @@ void zFMV_Playback::OpenAndPlay(
         playFlags |= 0x10000;
     }
 
-    mciError = mciSendCommandA(
-        mciDeviceId,
-        0x806,
-        playFlags,
-        (DWORD)(&playParams)
-    );
+    mciError = mciSendCommandA(mciDeviceId, 0x806, playFlags, (DWORD)(&playParams));
     if (mciError != 0) {
         ReportMciError(mciError);
     }
@@ -200,24 +170,14 @@ void zFMV_Playback::OpenAndPlay(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-stopandclose
- * @recoil-artifact defines .text recoil:function:0x4624f0: zFMV_Playback::StopAndClose.
+ * @recoil-artifact defines .text recoil:function:0x4624f0: CZFMVPlayback::StopAndClose.
  * Purpose: stop and close the active MCI device, reporting any failure.
  */
-void zFMV_Playback::StopAndClose() {
-    DWORD mciError = mciSendCommandA(
-        mciDeviceId,
-        0x808,
-        0x2,
-        0
-    );
+void CZFMVPlayback::StopAndClose() {
+    DWORD mciError = mciSendCommandA(mciDeviceId, 0x808, 0x2, 0);
     if (mciError == 0) {
         MCI_GENERIC_PARMS closeParams;
-        mciError = mciSendCommandA(
-            mciDeviceId,
-            0x804,
-            0x2,
-            (DWORD)(&closeParams)
-        );
+        mciError = mciSendCommandA(mciDeviceId, 0x804, 0x2, (DWORD)(&closeParams));
     }
 
     if (mciError != 0) {
@@ -227,12 +187,12 @@ void zFMV_Playback::StopAndClose() {
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-setdestrect
- * @recoil-artifact defines .text recoil:function:0x462540: zFMV_Playback::SetDestRect.
+ * @recoil-artifact defines .text recoil:function:0x462540: CZFMVPlayback::SetDestRect.
  * @recoil-match byte
  *
  * Purpose: copy the destination rectangle and mark it for the next MCI put command.
  */
-int zFMV_Playback::SetDestRect(
+int CZFMVPlayback::SetDestRect(
     const zFMV_Rect *rect
 ) {
     destinationRect = *rect;
@@ -243,29 +203,17 @@ int zFMV_Playback::SetDestRect(
 
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-reportmcierror
- * @recoil-artifact defines .text recoil:function:0x462570: zFMV_Playback::ReportMciError.
+ * @recoil-artifact defines .text recoil:function:0x462570: CZFMVPlayback::ReportMciError.
  * Purpose: translate an MCI error code and report it through the old zError path.
  */
-int zFMV_Playback::ReportMciError(
+int CZFMVPlayback::ReportMciError(
     unsigned int mciError
 ) {
     char errorText[0x80];
-    if (mciGetErrorStringA(
-        mciError,
-        errorText,
-        sizeof(errorText)
-    ) == 0) {
-        strcpy(
-            errorText,
-            g_zFMV_UnknownErrorIdMsg
-        );
+    if (mciGetErrorStringA(mciError, errorText, sizeof(errorText)) == 0) {
+        strcpy(errorText, g_zFMV_UnknownErrorIdMsg);
     }
 
-    zError::ReportOld(
-        0x200,
-        g_zFMV_SourceFile_FmvMainCpp,
-        0xc4,
-        errorText
-    );
+    zError::ReportOld(0x200, g_zFMV_SourceFile_FmvMainCpp, 0xc4, errorText);
     return 0;
 }

@@ -132,11 +132,11 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
         int reserved0,
         int reserved1
     );
-    virtual int STDMETHODCALLTYPE AppendBrowseRecordStatus3022_3025(
+    virtual int STDMETHODCALLTYPE AppendBrowseRecordStatus3022To3025(
         int status,
         WestwoodOnlineUpgradeBrowseRecord *browseRecord
     );
-    virtual int STDMETHODCALLTYPE AppendConnectStatus301E_3021(
+    virtual int STDMETHODCALLTYPE AppendConnectStatus301ETo3021(
         int connectionStatusCode
     );
     virtual int STDMETHODCALLTYPE AppendSessionRequestStatus301D(
@@ -154,7 +154,7 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
         int flags,
         int reserved
     );
-    virtual int STDMETHODCALLTYPE AppendValueStatus302B_302C(
+    virtual int STDMETHODCALLTYPE AppendValueStatus302BTo302C(
         int reserved,
         int value,
         int usePrimaryMessage
@@ -292,7 +292,7 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
         int status,
         long unixTime
     );
-    static int __stdcall AppendValueStatus302B_302C(
+    static int __stdcall AppendValueStatus302BTo302C(
         void *callbackContext,
         int reserved,
         int value,
@@ -311,11 +311,11 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
         WestwoodOnlineUpgradeSessionRequest *sessionRequest,
         const char *statusText
     );
-    static int __stdcall AppendConnectStatus301E_3021(
+    static int __stdcall AppendConnectStatus301ETo3021(
         void *callbackContext,
         int connectionStatusCode
     );
-    static int __stdcall AppendBrowseRecordStatus3022_3025(
+    static int __stdcall AppendBrowseRecordStatus3022To3025(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeBrowseRecord *browseRecord

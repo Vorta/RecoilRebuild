@@ -220,10 +220,7 @@ void zTurret_Runtime::InitFromReaderNode(
         defaultDestroyAnim = namedDestroyAnim;
     }
 
-    zReader::Node *node = zRdrGetNode(
-        readerNode,
-        "PARTS"
-    );
+    zReader::Node *node = zRdrGetNode(readerNode, "PARTS");
     if (node != 0) {
         healthyNode = zClass_Class::FindNodeRecursiveByName(
             turretWorldNode,
@@ -279,16 +276,10 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "DEACTIVATE"
-    );
+    node = zRdrGetNode(readerNode, "DEACTIVATE");
     if (node != 0) {
         deactivateNode =
-            zClass::FindByTypeAndName(
-                kZClassNodeObject3D,
-                node->value.nodes[1].value.str
-            );
+            zClass::FindByTypeAndName(kZClassNodeObject3D, node->value.nodes[1].value.str);
         for (int i = 2; i < node->value.nodes[0].value.i32; ++i) {
             deactivateNode = zClass_Class::FindNodeRecursiveByName(
                 deactivateNode,
@@ -297,10 +288,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "EFFECT"
-    );
+    node = zRdrGetNode(readerNode, "EFFECT");
     if (node != 0) {
         fireEffectNode = zClass_Class::FindNodeRecursiveByName(
             turretWorldNode,
@@ -319,10 +307,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "ACTIVATE_ON_HIT"
-    );
+    node = zRdrGetNode(readerNode, "ACTIVATE_ON_HIT");
     if (node != 0) {
         activateOnHitTimeout = 0.0f;
         activateOnHitDamage = node->value.nodes[1].type == zReader::ZRDR_NODE_INT
@@ -330,18 +315,12 @@ void zTurret_Runtime::InitFromReaderNode(
                                   : node->value.nodes[1].value.f32;
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "ALWAYS_LOOK_AT"
-    );
+    node = zRdrGetNode(readerNode, "ALWAYS_LOOK_AT");
     if (node != 0) {
         alwaysLookAtTarget = node->value.nodes[1].value.i32;
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "DAMAGE_PART"
-    );
+    node = zRdrGetNode(readerNode, "DAMAGE_PART");
     if (node != 0) {
         damagePartNode = zClass_Class::FindNodeRecursiveByName(
             turretWorldNode,
@@ -349,26 +328,17 @@ void zTurret_Runtime::InitFromReaderNode(
         );
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "DESTROY_ANIM"
-    );
+    node = zRdrGetNode(readerNode, "DESTROY_ANIM");
     if (node != 0) {
         destroyAnimEntry = zEffectAnim::FindEntryByName(node->value.nodes[1].value.str);
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "FIRE_ANIM"
-    );
+    node = zRdrGetNode(readerNode, "FIRE_ANIM");
     if (node != 0) {
         fireAnimEntry = zEffectAnim::FindEntryByName(node->value.nodes[1].value.str);
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "HEALTH"
-    );
+    node = zRdrGetNode(readerNode, "HEALTH");
     if (node != 0) {
         healthCurrent = node->value.nodes[1].type == zReader::ZRDR_NODE_INT
                             ? (float)(node->value.nodes[1].value.i32)
@@ -376,116 +346,71 @@ void zTurret_Runtime::InitFromReaderNode(
         healthMax = healthCurrent;
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "INTERSECT_BVOL"
-    );
+    node = zRdrGetNode(readerNode, "INTERSECT_BVOL");
     if (node != 0) {
         intersectBvolEnabled = node->value.nodes[1].value.i32;
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "LOS"
-    );
+    node = zRdrGetNode(readerNode, "LOS");
     if (node != 0) {
         enableLosCheck = node->value.nodes[1].value.i32;
     }
 
-    zReader::Node *parentNode = zRdrGetNode(
-        readerNode,
-        "SOUNDS"
-    );
+    zReader::Node *parentNode = zRdrGetNode(readerNode, "SOUNDS");
     if (parentNode != 0) {
-        node = zRdrGetNode(
-            parentNode,
-            "ON"
-        );
+        node = zRdrGetNode(parentNode, "ON");
         if (node != 0) {
             zSnd::FindSampleByName(node->value.nodes[1].value.str);
         }
-        node = zRdrGetNode(
-            parentNode,
-            "START"
-        );
+        node = zRdrGetNode(parentNode, "START");
         if (node != 0) {
             zSnd::FindSampleByName(node->value.nodes[1].value.str);
         }
-        node = zRdrGetNode(
-            parentNode,
-            "STOP"
-        );
+        node = zRdrGetNode(parentNode, "STOP");
         if (node != 0) {
             zSnd::FindSampleByName(node->value.nodes[1].value.str);
         }
     }
 
-    parentNode = zRdrGetNode(
-        readerNode,
-        g_HudCfgKey_Weapon
-    );
+    parentNode = zRdrGetNode(readerNode, g_HudCfgKey_Weapon);
     if (parentNode != 0) {
-        node = zRdrGetNode(
-            parentNode,
-            "NAME"
-        );
+        node = zRdrGetNode(parentNode, "NAME");
         if (node != 0) {
             weaponCatalogEntry = OptCatalog::FindEntryByName(node->value.nodes[1].value.str);
         }
-        node = zRdrGetNode(
-            parentNode,
-            g_HudCfgKey_Ammo
-        );
+        node = zRdrGetNode(parentNode, g_HudCfgKey_Ammo);
         if (node != 0) {
             weaponAmmo = node->value.nodes[1].value.i32;
         }
-        node = zRdrGetNode(
-            parentNode,
-            "BASE_MOVES"
-        );
+        node = zRdrGetNode(parentNode, "BASE_MOVES");
         if (node != 0) {
             weaponBaseMoves = node->value.nodes[1].value.i32;
         }
-        node = zRdrGetNode(
-            parentNode,
-            "DAMAGE_MODIFIER"
-        );
+        node = zRdrGetNode(parentNode, "DAMAGE_MODIFIER");
         if (node != 0) {
             damageModifier = node->value.nodes[1].type == zReader::ZRDR_NODE_INT
                                  ? (float)(node->value.nodes[1].value.i32)
                                  : node->value.nodes[1].value.f32;
         }
-        node = zRdrGetNode(
-            parentNode,
-            "DETECTION_RANGE"
-        );
+        node = zRdrGetNode(parentNode, "DETECTION_RANGE");
         if (node != 0) {
             detectionRange = node->value.nodes[1].type == zReader::ZRDR_NODE_INT
                                  ? (float)(node->value.nodes[1].value.i32)
                                  : node->value.nodes[1].value.f32;
         }
-        node = zRdrGetNode(
-            parentNode,
-            "FIRE_DWELL"
-        );
+        node = zRdrGetNode(parentNode, "FIRE_DWELL");
         if (node != 0) {
             fireDwellTime = node->value.nodes[1].type == zReader::ZRDR_NODE_INT
                                 ? (float)(node->value.nodes[1].value.i32)
                                 : node->value.nodes[1].value.f32;
         }
-        node = zRdrGetNode(
-            parentNode,
-            "FIRE_RATE"
-        );
+        node = zRdrGetNode(parentNode, "FIRE_RATE");
         if (node != 0) {
             fireRateSeconds = node->value.nodes[1].type == zReader::ZRDR_NODE_INT
                                   ? (float)(node->value.nodes[1].value.i32)
                                   : node->value.nodes[1].value.f32;
         }
-        node = zRdrGetNode(
-            parentNode,
-            "FIRE_LIMITS"
-        );
+        node = zRdrGetNode(parentNode, "FIRE_LIMITS");
         if (node != 0) {
             fireBurstDuration = node->value.nodes[1].type == zReader::ZRDR_NODE_INT
                                     ? (float)(node->value.nodes[1].value.i32)
@@ -496,41 +421,21 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zRdrGetNode(
-        readerNode,
-        "TARGETS"
-    );
+    node = zRdrGetNode(readerNode, "TARGETS");
     if (node != 0) {
         for (int i = 1; i < node->value.nodes[0].value.i32; ++i) {
             targetTypes[i - 1] =
-                zClass::FindByTypeAndName(
-                    kZClassNodeObject3D,
-                    node->value.nodes[i].value.str
-                );
+                zClass::FindByTypeAndName(kZClassNodeObject3D, node->value.nodes[i].value.str);
         }
     }
 
-    if (zRdrGetNode(
-        readerNode,
-        "MSL_LOCK"
-    ) != 0) {
+    if (zRdrGetNode(readerNode, "MSL_LOCK") != 0) {
         hasMissileLock = 1;
-        HudUiMgrSensor::TrackList_Add(
-            HUD_SENSOR_TRACK_KIND_TURRET,
-            this
-        );
+        HudUiMgrSensor::TrackListAdd(HUD_SENSOR_TRACK_KIND_TURRET, this);
     }
 
-    gwNode::GetWorldPosition(
-        turretNode,
-        &worldPos
-    );
-    zClass_Object3D::gwObject3DGetRotation(
-        turretNode,
-        &forward.x,
-        &forward.y,
-        &forward.z
-    );
+    gwNode::GetWorldPosition(turretNode, &worldPos);
+    zClass_Object3D::gwObject3DGetRotation(turretNode, &forward.x, &forward.y, &forward.z);
     zMath::Vec3Normalize(&forward);
     firePos = worldPos;
 
@@ -551,10 +456,7 @@ void zTurret_Runtime::InitFromReaderNode(
             &firePointLocal[0].y,
             &firePointLocal[0].z
         );
-        zClass_Class::RemoveChild(
-            partBarrelNode,
-            firePointNode0
-        );
+        zClass_Class::RemoveChild(partBarrelNode, firePointNode0);
         zClass_Util::DestroyNodeRecursive(firePointNode0);
         firePointNode0 = 0;
         firePos.y += firePointLocal[0].y;
@@ -567,31 +469,19 @@ void zTurret_Runtime::InitFromReaderNode(
             &firePointLocal[1].y,
             &firePointLocal[1].z
         );
-        zClass_Class::RemoveChild(
-            partBarrelNode,
-            firePointNode1
-        );
+        zClass_Class::RemoveChild(partBarrelNode, firePointNode1);
         zClass_Util::DestroyNodeRecursive(firePointNode1);
         firePointNode1 = 0;
         firePos.y += (firePointLocal[1].y - firePointLocal[0].y) * 0.5f;
     }
 
     if (fireEffectNode != 0) {
-        zClass_Class::gwNodeSetActive(
-            fireEffectNode,
-            0
-        );
+        zClass_Class::gwNodeSetActive(fireEffectNode, 0);
     }
 
-    zClass_Class::gwNodeSetCellPickable(
-        turretNode,
-        0
-    );
+    zClass_Class::gwNodeSetCellPickable(turretNode, 0);
     if (damagePartNode == 0 && intersectBvolEnabled != 0) {
-        zClass_Class::gwNodeSetPickable(
-            healthyNode,
-            1
-        );
+        zClass_Class::gwNodeSetPickable(healthyNode, 1);
     }
 
     if ((weaponCatalogEntry->flags & kOptCatalogFlagCreateTrail) != 0) {
@@ -612,36 +502,19 @@ void zTurret_Runtime::InitFromReaderNode(
     }
 
     if (destroyAnimEntry != 0) {
-        zEffect_Anim::NodeActionCallback(
-            destroyAnimEntry,
-            turretNode
-        );
+        zEffect_Anim::NodeActionCallback(destroyAnimEntry, turretNode);
         if (healthCurrent > 0.0f) {
-            zClass_Node::SetDamageHitCallback(
-                this,
-                healthyNode,
-                (void *)zTurret_Runtime::OnDamage
-            );
+            zClass_Node::SetDamageHitCallback(this, healthyNode, (void *)zTurret_Runtime::OnDamage);
         }
     }
 
     zClass_NodePartial *const destroyedNode =
-        zClass_Class::FindNodeRecursiveByName(
-            turretNode,
-            "destroyed"
-        );
+        zClass_Class::FindNodeRecursiveByName(turretNode, "destroyed");
     if (destroyedNode != 0) {
-        zClass_Class::gwNodeSetRaycastable(
-            destroyedNode,
-            0
-        );
+        zClass_Class::gwNodeSetRaycastable(destroyedNode, 0);
     }
 
-    strncmp(
-        turretNode->name,
-        "hel_",
-        4
-    );
+    strncmp(turretNode->name, "hel_", 4);
 }
 
 /**
@@ -690,10 +563,7 @@ void zTurret_Runtime::Tick(
         (deactivateNode != 0 && (deactivateNode->flags & kZClassNodeActiveFlag) == 0)) {
         if (fireEffectNode != 0 &&
             (fireEffectNode->flags & kZClassNodeActiveFlag) == 0) {
-            zClass_Class::gwNodeSetActive(
-                fireEffectNode,
-                0
-            );
+            zClass_Class::gwNodeSetActive(fireEffectNode, 0);
         }
         if (runtimeInstanceActive != 0) {
             runtimeInstanceActive = 0;
@@ -712,10 +582,7 @@ void zTurret_Runtime::Tick(
         (weaponCatalogEntry->flags & kOptCatalogFlagRemoveRuntimeOnTurretFire) != 0;
 
     if (removeRuntimeOnFire != 0 && weaponBaseMoves != 0) {
-        gwNode::GetWorldPosition(
-            turretNode,
-            &worldPos
-        );
+        gwNode::GetWorldPosition(turretNode, &worldPos);
     }
 
     const zVec3 *const playerTarget = playerFxOffsetWorld != 0
@@ -793,18 +660,8 @@ void zTurret_Runtime::Tick(
         }
 
         if (removeRuntimeOnFire != 0 && isFiring != 0) {
-            zEffectAnim::SetVelocity_Thunk(
-                destroyAnimEntry,
-                turretNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-            OptCatalog::RemoveRuntimeInstance(
-                weaponCatalogEntry,
-                &worldPos,
-                0
-            );
+            zEffectAnim::SetVelocityThunk(destroyAnimEntry, turretNode, 0.0f, 0.0f, 0.0f);
+            OptCatalog::RemoveRuntimeInstance(weaponCatalogEntry, &worldPos, 0);
             return;
         }
     }
@@ -812,16 +669,13 @@ void zTurret_Runtime::Tick(
     if (removeRuntimeOnFire == 0 && fireEffectNode != 0 &&
         (fireEffectNode->flags & kZClassNodeActiveFlag) != 0 &&
         g_Time_AccumulatedTimeSec < nextFireTime) {
-        zModel_Instance_UpdateScrollingTexturesIfNeeded(
+        zModelInstanceUpdateScrollingTexturesIfNeeded(
             (zModel_InstancePartial *)(fireEffectNode->userDataOrDiRef)
         );
     }
 
     if (removeRuntimeOnFire == 0 && weaponBaseMoves != 0) {
-        gwNode::GetWorldPosition(
-            turretNode,
-            &worldPos
-        );
+        gwNode::GetWorldPosition(turretNode, &worldPos);
     }
 
     if (partBarrelNode != 0) {
@@ -843,18 +697,12 @@ void zTurret_Runtime::Tick(
         if (isFiring != 0 && g_Time_AccumulatedTimeSec >= nextFireTime) {
             if (fireEffectNode != 0) {
                 if ((fireEffectNode->flags & kZClassNodeActiveFlag) == 0) {
-                    zClass_Class::gwNodeSetActive(
-                        fireEffectNode,
-                        1
-                    );
+                    zClass_Class::gwNodeSetActive(fireEffectNode, 1);
                     nextFireTime = g_Time_AccumulatedTimeSec + fireEffectDurationSec;
                     return;
                 }
 
-                zClass_Class::gwNodeSetActive(
-                    fireEffectNode,
-                    0
-                );
+                zClass_Class::gwNodeSetActive(fireEffectNode, 0);
             }
 
             SelectFirePointAndAimAtTarget(targetPos);
@@ -866,13 +714,7 @@ void zTurret_Runtime::Tick(
                     (void *)zTurret_Runtime::FireWeaponCallback,
                     this
                 );
-                zEffectAnim::SetVelocity_Thunk(
-                    fireAnimEntry,
-                    turretNode,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
+                zEffectAnim::SetVelocityThunk(fireAnimEntry, turretNode, 0.0f, 0.0f, 0.0f);
             }
         }
     }
@@ -945,23 +787,14 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(
     zMat4x3 slotBuffer = {0};
     zMath::MatStackPushPtr((float *)(&slotBuffer));
     zMath::MatLoadIdentity();
-    gwNode::BuildNodeToAncestorMatrix(
-        turretNode,
-        3
-    );
-    zMath::MatTransformPointBatchInPlace(
-        &localAimDir,
-        1
-    );
+    gwNode::gwNodeBuildNodeToAncestorMatrix(turretNode, 3);
+    zMath::MatTransformPointBatchInPlace(&localAimDir, 1);
 
     localAimDir.x = targetPos->x - localAimDir.x;
     localAimDir.y = targetPos->y - localAimDir.y;
     localAimDir.z = targetPos->z - localAimDir.z;
     zMath::Vec3Normalize(&localAimDir);
-    zMath::Vec3ArrayTransformDirection(
-        &localAimDir,
-        1
-    );
+    zMath::Vec3ArrayTransformDirection(&localAimDir, 1);
     zMath::MatStackPopPtr();
 
     if (alwaysLookAtTarget == 0) {
@@ -1000,19 +833,13 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(
         partBaseMatrix->xz = -yawX;
         partBaseMatrix->zx = yawX;
         partBaseMatrix->zz = yawZ;
-        zClass_Object3D::gwObject3DSetMatrix(
-            partBaseNode,
-            (float *)partBaseMatrix
-        );
+        zClass_Object3D::gwObject3DSetMatrix(partBaseNode, (float *)partBaseMatrix);
 
         partBarrelMatrix->yy = horizontalLen;
         partBarrelMatrix->yz = localAimDir.y;
         partBarrelMatrix->zy = -localAimDir.y;
         partBarrelMatrix->zz = horizontalLen;
-        zClass_Object3D::gwObject3DSetMatrix(
-            partBarrelNode,
-            (float *)partBarrelMatrix
-        );
+        zClass_Object3D::gwObject3DSetMatrix(partBarrelNode, (float *)partBarrelMatrix);
         return;
     }
 
@@ -1024,10 +851,7 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(
     partBarrelMatrix->zx = yawX * horizontalLen;
     partBarrelMatrix->zy = -localAimDir.y;
     partBarrelMatrix->zz = yawZ * horizontalLen;
-    zClass_Object3D::gwObject3DSetMatrix(
-        partBarrelNode,
-        (float *)partBarrelMatrix
-    );
+    zClass_Object3D::gwObject3DSetMatrix(partBarrelNode, (float *)partBarrelMatrix);
 }
 
 /**
@@ -1052,14 +876,8 @@ void zTurret_Runtime::SelectFirePointAndAimAtTarget(
     zMat4x3 slotBuffer = {0};
     zMath::MatStackPushPtr((float *)(&slotBuffer));
     zMath::MatLoadIdentity();
-    gwNode::BuildNodeToAncestorMatrix(
-        partBarrelNode,
-        3
-    );
-    zMath::MatTransformPointBatchInPlace(
-        &spawnPos,
-        1
-    );
+    gwNode::gwNodeBuildNodeToAncestorMatrix(partBarrelNode, 3);
+    zMath::MatTransformPointBatchInPlace(&spawnPos, 1);
 
     fireDir.x = targetPos->x - spawnPos.x;
     fireDir.y = targetPos->y - spawnPos.y;
@@ -1085,22 +903,13 @@ void zTurret_Runtime::FireWeapon() {
                 &nearestTargetScore
             );
             if (pitch != -1.0f) {
-                Player::ApplyAimPitchToDirection(
-                    &fireDir,
-                    pitch
-                );
+                Player::ApplyAimPitchToDirection(&fireDir, pitch);
             }
         }
 
-        OptCatalog::SetPendingSpawnTargetOverrides(
-            &runtimeAimPending,
-            &runtimeAimTarget
-        );
+        OptCatalog::SetPendingSpawnTargetOverrides(&runtimeAimPending, &runtimeAimTarget);
         if (weaponBaseMoves != 0) {
-            zClass_Class::gwNodeSetRaycastable(
-                turretNode->listA[0],
-                0
-            );
+            zClass_Class::gwNodeSetRaycastable(turretNode->listA[0], 0);
         }
 
         zUtil_PlayerStateStorage *const playerState =
@@ -1118,16 +927,10 @@ void zTurret_Runtime::FireWeapon() {
         );
 
         if (weaponBaseMoves != 0) {
-            zClass_Class::gwNodeSetRaycastable(
-                turretNode->listA[0],
-                1
-            );
+            zClass_Class::gwNodeSetRaycastable(turretNode->listA[0], 1);
         }
 
-        OptCatalog::SetPendingSpawnTargetOverrides(
-            0,
-            0
-        );
+        OptCatalog::SetPendingSpawnTargetOverrides(0, 0);
         nextFireTime = g_Time_AccumulatedTimeSec + fireRateSeconds;
         UpdateFireBurstTimer(fireRateSeconds);
         return;
@@ -1135,18 +938,9 @@ void zTurret_Runtime::FireWeapon() {
 
     if (runtimeInstanceActive == 0) {
         runtimeInstanceActive = 1;
-        OptCatalog::SetPendingSpawnTargetOverrides(
-            &runtimeAimPending,
-            &runtimeAimTarget
-        );
-        OptCatalog::ActivateTrailRuntimeState(
-            trailRuntimeState,
-            0
-        );
-        OptCatalog::SetPendingSpawnTargetOverrides(
-            0,
-            0
-        );
+        OptCatalog::SetPendingSpawnTargetOverrides(&runtimeAimPending, &runtimeAimTarget);
+        OptCatalog::ActivateTrailRuntimeState(trailRuntimeState, 0);
+        OptCatalog::SetPendingSpawnTargetOverrides(0, 0);
         nextFireTime = g_Time_AccumulatedTimeSec + fireBurstDuration + postBurstCooldown;
     }
 }
@@ -1198,13 +992,7 @@ int zTurret_Runtime::ApplyDamageAndHandleDestruction(
             destroyAnim = destroyAnimEntry;
         }
 
-        zEffectAnim::SetVelocity_Thunk(
-            destroyAnim,
-            turretNode,
-            0.0f,
-            0.0f,
-            0.0f
-        );
+        zEffectAnim::SetVelocityThunk(destroyAnim, turretNode, 0.0f, 0.0f, 0.0f);
 
         if (runtimeInstanceActive != 0) {
             OptCatalogTrailRuntimeState *const trailState = trailRuntimeState;
@@ -1260,11 +1048,7 @@ int __fastcall LoadDefinitionsFromPath(
         return -1;
     }
 
-    zReader::Node *const rootNode = zReader::Load(
-        path,
-        0,
-        0
-    );
+    zReader::Node *const rootNode = zReader::Load(path, 0, 0);
     if (rootNode == 0) {
         zError::ReportOld(
             0x200,
@@ -1279,10 +1063,7 @@ int __fastcall LoadDefinitionsFromPath(
     g_zTurret_LoadedDefRoot = rootNode;
 
     zEffectAnimEntry *defaultDestroyAnim = 0;
-    zReader::Node *destroyAnimNode = zRdrGetNode(
-        rootNode,
-        "DESTROY_ANIM"
-    );
+    zReader::Node *destroyAnimNode = zRdrGetNode(rootNode, "DESTROY_ANIM");
     if (destroyAnimNode != 0) {
         defaultDestroyAnim = zEffectAnim::FindEntryByName(
             destroyAnimNode->value.nodes[1].value.str
@@ -1292,27 +1073,18 @@ int __fastcall LoadDefinitionsFromPath(
     zEffectAnimEntry *const napalmDestroyAnim = zEffectAnim::FindEntryByName(
         g_Player_NapalmVehicleEffectName
     );
-    zReader::Node *const turretListNode = zRdrGetNode(
-        rootNode,
-        "TURRET"
-    );
+    zReader::Node *const turretListNode = zRdrGetNode(rootNode, "TURRET");
     if (turretListNode != 0) {
         int index = 1;
         while (index < turretListNode->value.nodes[0].value.i32) {
             char *const turretName = turretListNode->value.nodes[index].value.str;
             zReader::Node *const readerNode =
-                turretName != 0 ? zRdrGetNode(
-                    turretListNode,
-                    turretName
-                ) : 0;
+                turretName != 0 ? zRdrGetNode(turretListNode, turretName) : 0;
             if (readerNode != 0) {
-                char *searchName = zUtil_ZRDR_InitWildcardPath(turretName);
+                char *searchName = zRdrInitWildcardPath(turretName);
                 while (searchName != 0) {
                     zClass_NodePartial *const turretWorldNode =
-                        zClass::FindByTypeAndName(
-                            kZClassNodeObject3D,
-                            searchName
-                        );
+                        zClass::FindByTypeAndName(kZClassNodeObject3D, searchName);
                     if (turretWorldNode != 0) {
                         zTurret_Runtime *runtime =
                             (zTurret_Runtime *)(::operator new(sizeof(zTurret_Runtime)));
@@ -1331,7 +1103,7 @@ int __fastcall LoadDefinitionsFromPath(
                         ++g_zTurret_RuntimeCount;
                     }
 
-                    searchName = zUtil_ZRDR_NextWildcardPath();
+                    searchName = zRdrNextWildcardPath();
                 }
             }
 
@@ -1399,10 +1171,7 @@ void __cdecl TickAllRuntimesRoundRobin() {
  * Purpose: Disables the zTurret round-robin action callback node.
  */
 int __cdecl DisableTickCallback() {
-    return zClass_Class::gwNodeSetActionCallback(
-        g_zTurret_CallbackNode,
-        0
-    );
+    return zClass_Class::gwNodeSetActionCallback(g_zTurret_CallbackNode, 0);
 }
 
 /**
@@ -1433,15 +1202,8 @@ int __fastcall zTurret_Runtime::OnDamage(
     OptCatalogHitEventPartial *hitEvent,
     float damageAmount
 ) {
-    if (self->ApplyDamageAndHandleDestruction(
-        damageAmount,
-        entry,
-        hitEvent
-    ) != 0) {
-        OptCatalog::SetDamageContext(
-            1,
-            0
-        );
+    if (self->ApplyDamageAndHandleDestruction(damageAmount, entry, hitEvent) != 0) {
+        OptCatalog::SetDamageContext(1, 0);
         Player::AddScaledHudCounterValue(self->healthMax);
     } else {
         DamageFeedback::SetIntensityScalar(self->healthCurrent / self->healthMax);
@@ -1472,10 +1234,7 @@ int __cdecl FreeAllRuntimes() {
     }
 
     if (g_zTurret_CallbackNode != 0) {
-        zClass_Class::gwNodeSetActionCallback(
-            g_zTurret_CallbackNode,
-            0
-        );
+        zClass_Class::gwNodeSetActionCallback(g_zTurret_CallbackNode, 0);
         zClass_Object3D::DeleteNode(g_zTurret_CallbackNode);
         g_zTurret_CallbackNode = 0;
     }

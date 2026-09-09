@@ -272,9 +272,9 @@ struct HudSensorTracker {
     int SetObjectiveReviewVisible(int visible);
     void AdvanceObjectiveState();
     void ResetHudForMissionStart();
-    void Command_ToggleObjectivePanel();
+    void CommandToggleObjectivePanel();
     void SetObjectivePanelVisible(int visible);
-    void Command_ShowObjectivePickupInfo();
+    void CommandShowObjectivePickupInfo();
     void ShowObjectivePickupInfo(
         int visible,
         int startAutoAdvance,
@@ -282,22 +282,22 @@ struct HudSensorTracker {
     );
     int UpdateObjectiveFlow();
 
-    static int __fastcall ZarMission_SaveCallback(
+    static int __fastcall ZarMissionSaveCallback(
         zZbdSectionCallbackCtx *writer,
         HudSensorTracker *self
     );
-    static int __fastcall ZarMission_RestoreCallback(
+    static int __fastcall ZarMissionRestoreCallback(
         void *reader,
         const char *token,
         const void *missionData,
         unsigned int dataSize,
         HudSensorTracker *self
     );
-    static void __fastcall ZarMissionLate_SaveCallback(
+    static void __fastcall ZarMissionLateSaveCallback(
         zZbdSectionCallbackCtx *writer,
         HudSensorTracker *self
     );
-    static void __fastcall ZarMissionLate_RestoreCallback(
+    static void __fastcall ZarMissionLateRestoreCallback(
         void *reader,
         const char *token,
         const void *lateMissionData,

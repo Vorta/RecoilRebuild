@@ -21,8 +21,8 @@ struct zSndPlayHandle;
 struct zSndSample;
 struct OptCatalogEntryDef;
 struct OptCatalogHitEventPartial;
-struct Player_ProjectileCameraFxPass3Ui;
-struct Player_UnderwaterFxPass3Ui;
+struct CPlayerProjectileCameraFxPass3Ui;
+struct CPlayerUnderwaterFxPass3Ui;
 namespace zReader {
 struct Node;
 }
@@ -97,23 +97,23 @@ extern zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry;
  * BN names the retail storage at 0x4f3778 PlayerScreenFxPass3Ui: a
  * zVideoFxPass3Element-compatible HUD element with pass-3 clip state.
  */
-struct Player_UnderwaterFxPass3Ui : zVideoFxPass3Element {
+struct CPlayerUnderwaterFxPass3Ui : zVideoFxPass3Element {
 
-    Player_UnderwaterFxPass3Ui();
+    CPlayerUnderwaterFxPass3Ui();
     void ApplyPass3();
 };
-RECOIL_STATIC_ASSERT(sizeof(Player_UnderwaterFxPass3Ui) == 0x38);
+RECOIL_STATIC_ASSERT(sizeof(CPlayerUnderwaterFxPass3Ui) == 0x38);
 
-struct Player_ProjectileCameraFxPass3Ui : zVideoFxPass3Element {
+struct CPlayerProjectileCameraFxPass3Ui : zVideoFxPass3Element {
 
-    Player_ProjectileCameraFxPass3Ui();
+    CPlayerProjectileCameraFxPass3Ui();
     void ApplyPass3();
 };
-RECOIL_STATIC_ASSERT(sizeof(Player_ProjectileCameraFxPass3Ui) == 0x38);
+RECOIL_STATIC_ASSERT(sizeof(CPlayerProjectileCameraFxPass3Ui) == 0x38);
 
 extern "C" {
-extern Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
-extern Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
+extern CPlayerUnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
+extern CPlayerProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
 extern HudUiPanel g_Player_TopMsgPanel1;
 extern HudUiPanel g_Player_TopMsgPanel2;
 }
@@ -622,7 +622,7 @@ float __fastcall UpdateTimedHitStatusFromHitSource(
     OptCatalogEntryDef *hitSource,
     float damage
 );
-int __fastcall HitCallback_RecordNetContextAndTimedStatus(
+int __fastcall HitCallbackRecordNetContextAndTimedStatus(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     void *hitRenderPointEntry,
@@ -661,7 +661,7 @@ int __fastcall EnterDestroyedState(
 );
 int __fastcall ApplyDamageLocal(zUtil_SaveGameState *saveState);
 void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState *saveState);
-int __fastcall HitCallback_RecordContextAndTimedStatus(
+int __fastcall HitCallbackRecordContextAndTimedStatus(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     void *hitRenderPointEntry,
@@ -671,30 +671,30 @@ void __fastcall RecordNodeFlagsForRestore(zClass_NodePartial *node);
 void __fastcall BuildMissionSaveData(PlayerMissionSaveData *outData);
 void __fastcall ApplyMissionSaveData(PlayerMissionSaveData *saveData);
 void __cdecl RestoreRecordedNodeFlags();
-void __fastcall ZAR_ReadMissionSaveDataSection(
+void __fastcall zZarReadMissionSaveDataSection(
     zZbdSectionCallbackCtx *reader,
     const char *sectionToken,
     PlayerMissionSaveData *saveData,
     unsigned int byteCount,
     void *userData
 );
-void __cdecl ZAR_RegisterSections();
-int __fastcall ZAR_WriteMissionSaveDataSection(
+void __cdecl zZarRegisterSections();
+int __fastcall zZarWriteMissionSaveDataSection(
     zZbdSectionCallbackCtx *writer,
     void *userData
 );
-void __fastcall ZAR_ReadVehicleListSection(
+void __fastcall zZarReadVehicleListSection(
     zZbdSectionCallbackCtx *reader,
     const char *sectionToken,
     PlayerVehicleListSaveEntry *saveData,
     unsigned int byteCount,
     void *userData
 );
-int __fastcall ZAR_WriteVehicleListSection(
+int __fastcall zZarWriteVehicleListSection(
     zZbdSectionCallbackCtx *writer,
     void *userData
 );
-void __fastcall Mines_ZAR_ReadEntryOrReset(
+void __fastcall MinesZARReadEntryOrReset(
     zZbdSectionCallbackCtx *reader,
     const char *sectionToken,
     PlayerMineSaveEntry *mineData,
@@ -802,7 +802,7 @@ int __fastcall ApplyMasterTypeTransition(
     int flags
 );
 float __fastcall UpdateBankAndTurnDynamics(zUtil_SaveGameState *saveState);
-int __fastcall Vec3_FastNormalize(zVec3 *vec);
+int __fastcall Vec3FastNormalize(zVec3 *vec);
 void __fastcall ConstrainToUnitDistanceFrom(
     zVec3 *pos,
     const zVec3 *center
@@ -960,14 +960,14 @@ void __fastcall UpdateVerticalVelocityAndTransform(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 );
-void __fastcall UpdateMasterTypeBasicOrTrack_FromModalProbe(
+void __fastcall UpdateMasterTypeBasicOrTrackFromModalProbe(
     zUtil_SaveGameState *saveState
 );
-void __fastcall UpdateMasterTypeHover_FromModalProbe(
+void __fastcall UpdateMasterTypeHoverFromModalProbe(
     zUtil_SaveGameState *saveState
 );
 void __fastcall UpdateMasterTypeHover(zUtil_SaveGameState *saveState);
-void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
+void __fastcall UpdateMasterTypeAmphibFromModalProbe(
     zUtil_SaveGameState *saveState
 );
 void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState *saveState);

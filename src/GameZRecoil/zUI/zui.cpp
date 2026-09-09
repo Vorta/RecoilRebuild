@@ -114,13 +114,7 @@ HudUiCircle::HudUiCircle(
  */
 void HudUiCircle::Draw() {
     DrawBase();
-    zRndr_DrawCircleOutline16_Framebuffer(
-        x,
-        y,
-        radius,
-        color565,
-        0
-    );
+    zRndrDrawCircleOutline16Framebuffer(x, y, radius, color565, 0);
 }
 
 /**
@@ -203,23 +197,13 @@ void HudUiBackgroundContainer::UpdateAll(
 
     HudUiBackground *const background = (HudUiBackground *)this;
 
-    memcpy(
-        &mouseState,
-        zInput::Mouse_GetStateSnapshotPtr(),
-        sizeof(mouseState)
-    );
+    memcpy(&mouseState, zInput::MouseGetStateSnapshotPtr(), sizeof(mouseState));
 
     for (HudUiElement *widget = childHead; widget != 0; widget = widget->next) {
-        const int hit = widget->HitTest(
-            mouseState.cursorClientX,
-            mouseState.cursorClientY
-        );
+        const int hit = widget->HitTest(mouseState.cursorClientX, mouseState.cursorClientY);
         const int hovered = hit == 1 ? 1 : 0;
 
-        if (widget->ShouldHandleInput(
-            background,
-            hovered
-        ) != 0) {
+        if (widget->ShouldHandleInput(background, hovered) != 0) {
             if ((mouseState.button2Transition & 4) != 0 && (widget->state & 2) == 2) {
                 widget->state = (unsigned short)(widget->state & 0xfffd);
                 widget->OnEndCapture();
@@ -278,10 +262,7 @@ void HudUiBackgroundContainer::UpdateAll(
             }
         }
 
-        widget->AfterInputUpdate(
-            background,
-            hovered
-        );
+        widget->AfterInputUpdate(background, hovered);
     }
 
     HudUiElement *const focusBeforeUpdate = inputFocusElement;
@@ -293,10 +274,7 @@ void HudUiBackgroundContainer::UpdateAll(
 
     HudUiElement *const focusAfterUpdate = inputFocusElement;
     if (focusAfterUpdate != 0) {
-        focusAfterUpdate->SetPos(
-            mouseState.cursorClientX,
-            mouseState.cursorClientY
-        );
+        focusAfterUpdate->SetPos(mouseState.cursorClientX, mouseState.cursorClientY);
         focusAfterUpdate->Update(deltaSeconds);
     }
 }
@@ -401,10 +379,7 @@ int HudUiContainer::RemoveChild(
     HudUiElement *child
 ) {
     HudUiElement *previous = child;
-    if (FindChildWithPrev(
-        child,
-        &previous
-    ) == 0) {
+    if (FindChildWithPrev(child, &previous) == 0) {
         return 0;
     }
 
@@ -486,11 +461,7 @@ void HudUiTransitionTextPanel::ResetFlashState(
     }
 
     flashDirectionSign = 1;
-    memcpy(
-        &flashCountdown,
-        &flashResetValue,
-        sizeof(flashCountdown)
-    );
+    memcpy(&flashCountdown, &flashResetValue, sizeof(flashCountdown));
 }
 
 /**
@@ -643,12 +614,7 @@ HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
     int initY,
     int flags
 ) {
-    new (this) HudUiTextLabel(
-        text,
-        initX,
-        initY,
-        flags
-    );
+    new (this) HudUiTextLabel(text, initX, initY, flags);
     return this;
 }
 
@@ -660,11 +626,7 @@ HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
 HudUiTextLabel::HudUiTextLabel(
     const HudUiTextLabel &source
 ) : HudUiElement(source) {
-    strncpy(
-        textBuffer,
-        source.textBuffer,
-        sizeof(textBuffer)
-    );
+    strncpy(textBuffer, source.textBuffer, sizeof(textBuffer));
     fontHandle = source.fontHandle;
     centerText = source.centerText;
     centerBoundsLeft = source.centerBoundsLeft;
@@ -703,24 +665,13 @@ void __cdecl HudUiTextLabel::SetTextFmt(
     ...
 ) {
     if (format == 0) {
-        memset(
-            textBuffer,
-            0,
-            sizeof(textBuffer)
-        );
+        memset(textBuffer, 0, sizeof(textBuffer));
         return;
     }
 
     va_list args;
-    va_start(
-        args,
-        format
-    );
-    vsprintf(
-        textBuffer,
-        format,
-        args
-    );
+    va_start(args, format);
+    vsprintf(textBuffer, format, args);
     va_end(args);
 
     if (centerText != 0) {
@@ -758,12 +709,7 @@ void HudUiTextLabel::SetBltSourceAndClipRect(
 void HudUiTextLabel::RebuildTextBounds() {
     int widthPx;
     int lineAdvance;
-    zImage_Font::MeasureString(
-        textBuffer,
-        fontHandle,
-        &widthPx,
-        &lineAdvance
-    );
+    zImage_Font::MeasureString(textBuffer, fontHandle, &widthPx, &lineAdvance);
     clipRect.right = clipRect.left + widthPx;
     clipRect.bottom = clipRect.top + lineAdvance;
 }
@@ -776,12 +722,7 @@ void HudUiTextLabel::RebuildTextBounds() {
 int HudUiTextLabel::MeasureTextWidth() {
     int widthPx;
     int lineAdvance;
-    zImage_Font::MeasureString(
-        textBuffer,
-        fontHandle,
-        &widthPx,
-        &lineAdvance
-    );
+    zImage_Font::MeasureString(textBuffer, fontHandle, &widthPx, &lineAdvance);
     return widthPx;
 }
 
@@ -821,22 +762,12 @@ void HudUiTextLabel::Draw() {
         }
 
         x -= xOffset;
-        zImage_Font::BlitStringToActiveTarget(
-            textBuffer,
-            x,
-            y,
-            fontHandle
-        );
+        zImage_Font::BlitStringToActiveTarget(textBuffer, x, y, fontHandle);
         x += xOffset;
         return;
     }
 
-    zImage_Font::BlitStringToActiveTarget(
-        textBuffer,
-        x,
-        y,
-        fontHandle
-    );
+    zImage_Font::BlitStringToActiveTarget(textBuffer, x, y, fontHandle);
 }
 
 /**
@@ -855,12 +786,7 @@ int HudUiTextLabel::HitTest(
 
     int textWidth = 0;
     int lineAdvance = 0;
-    zImage_Font::MeasureString(
-        textBuffer,
-        fontHandle,
-        &textWidth,
-        &lineAdvance
-    );
+    zImage_Font::MeasureString(textBuffer, fontHandle, &textWidth, &lineAdvance);
 
     if (px > x + textWidth) {
         return 0;
@@ -879,11 +805,7 @@ HudUiBar::HudUiBar() : HudUiElement(
     0
 ) {
     drawVertexCount = 0;
-    memset(
-        points,
-        0,
-        sizeof(points)
-    );
+    memset(points, 0, sizeof(points));
     Invalidate();
 }
 
@@ -909,10 +831,7 @@ void HudUiBar::SetPointXY(
         }
 
         if (pointIndex == 0) {
-            SetPos(
-                (int)(x),
-                (int)(y)
-            );
+            SetPos((int)(x), (int)(y));
         }
     }
 
@@ -930,11 +849,7 @@ void HudUiBar::SetPointXY(
 void HudUiBar::Draw() {
     DrawBase();
     if (drawVertexCount != 0) {
-        zRndr_RasterizePoly(
-            (zVec3 *)(points),
-            drawVertexCount,
-            drawParam
-        );
+        zRndrRasterizePoly((zVec3 *)(points), drawVertexCount, drawParam);
     }
 }
 
@@ -973,15 +888,7 @@ void HudUiTextStack4::SetFontAll(
 ) {
     for (int index = 3; index >= 0; --index) {
         HudUiPanel *const panel = &lines[index];
-        panel->SetFont(
-            faceName,
-            height,
-            weight,
-            width,
-            0,
-            0,
-            2
-        );
+        panel->SetFont(faceName, height, weight, width, 0, 0, 2);
     }
 }
 
@@ -997,19 +904,14 @@ HudUiPanel * HudUiTextStack4::PushLine(
     SetEnabled(1);
 
     if (((~((HudUiElement *)(&lines[0]))->flags) & 0x10u) != 0 &&
-        strcmp(
-            message,
-            lines[0].GetLastTextPtr()
-        ) != 0) {
+        strcmp(message, lines[0].GetLastTextPtr()) != 0) {
         for (HudUiPanel *source = &lines[2]; source >= &lines[0]; --source) {
             HudUiPanel *const dest = source + 1;
             HudUiElement *const sourceElement = (HudUiElement *)(source);
 
             if (((~sourceElement->flags) & 0x10u) != 0) {
                 source->SetVisible(0);
-                ((HudUiElement *)(dest))->SetTimer(
-                    ((HudUiElement *)(source))->timer
-                );
+                ((HudUiElement *)(dest))->SetTimer(((HudUiElement *)(source))->timer);
                 dest->SetTextFmt(source->GetLastTextPtr());
                 dest->textColor0 = source->textColor0;
                 dest->textColor1 = source->textColor1;
@@ -1020,10 +922,7 @@ HudUiPanel * HudUiTextStack4::PushLine(
     }
 
     ((HudUiElement *)(&lines[0]))->SetTimer(duration);
-    lines[0].SetTextFmt(
-        "%s",
-        message
-    );
+    lines[0].SetTextFmt("%s", message);
     ((HudUiElement *)(&lines[0]))->SetVisible(1);
     return &lines[0];
 }
@@ -1038,10 +937,7 @@ void __fastcall PushTopMessageLine(
     const char *message,
     float duration
 ) {
-    g_HudUiTopMessageStack->PushLine(
-        message,
-        duration
-    );
+    g_HudUiTopMessageStack->PushLine(message, duration);
 }
 } // namespace HudUi
 
@@ -1210,21 +1106,11 @@ void zTimedTask::RunImmediateAction() {
         break;
 
     case 3:
-        zRndr_RasterizePoly(
-            (zVec3 *)(&actionArg0),
-            rasterVertexCount,
-            rasterDrawParam
-        );
+        zRndrRasterizePoly((zVec3 *)(&actionArg0), rasterVertexCount, rasterDrawParam);
         break;
 
     case 2:
-        zRndr_DrawImmediateLine(
-            actionArg0,
-            actionArg1,
-            actionArg2,
-            actionArg3,
-            actionArg4
-        );
+        zRndrDrawImmediateLine(actionArg0, actionArg1, actionArg2, actionArg3, actionArg4);
         break;
 
     case 7: {
@@ -1243,7 +1129,7 @@ void zTimedTask::RunImmediateAction() {
                 &point0Clipped,
                 &point1Clipped
             ) != 0) {
-            zRndr_DrawImmediateLine(
+            zRndrDrawImmediateLine(
                 (int)(point0.x),
                 (int)(point0.y),
                 (int)(point1.x),
@@ -1255,15 +1141,11 @@ void zTimedTask::RunImmediateAction() {
     }
 
     case 6:
-        zRndr_SpanOcclusion_TestSample(
-            actionArg0,
-            actionArg1,
-            actionArg2
-        );
+        zRndrSpanOcclusionTestSample(actionArg0, actionArg1, actionArg2);
         break;
 
     case 8:
-        zRndr_DrawClippedImmediateLineStrip(
+        zRndrDrawClippedImmediateLineStrip(
             (const zRndr_LinePoint2I *)(&actionArg0),
             alphaPointCount - 1,
             (void *)(alpha255),
@@ -1343,33 +1225,17 @@ int __fastcall ClipLineSegmentToZRange(
     }
 
     if (pointA->z < g_zMath_ClipZLowerBound) {
-        ClipLineSegmentPointToZ(
-            pointA,
-            pointB,
-            g_zMath_ClipZLowerBound
-        );
+        ClipLineSegmentPointToZ(pointA, pointB, g_zMath_ClipZLowerBound);
     }
     if (pointB->z < g_zMath_ClipZLowerBound) {
-        ClipLineSegmentPointToZ(
-            pointB,
-            pointA,
-            g_zMath_ClipZLowerBound
-        );
+        ClipLineSegmentPointToZ(pointB, pointA, g_zMath_ClipZLowerBound);
     }
 
     if (pointB->z > g_zMath_ClipZUpperBound) {
-        ClipLineSegmentPointToZ(
-            pointB,
-            pointA,
-            g_zMath_ClipZUpperBound
-        );
+        ClipLineSegmentPointToZ(pointB, pointA, g_zMath_ClipZUpperBound);
     }
     if (pointA->z > g_zMath_ClipZUpperBound) {
-        ClipLineSegmentPointToZ(
-            pointA,
-            pointB,
-            g_zMath_ClipZUpperBound
-        );
+        ClipLineSegmentPointToZ(pointA, pointB, g_zMath_ClipZUpperBound);
     }
 
     return 1;
@@ -1407,22 +1273,12 @@ int __fastcall HudLineClip::ClipSegmentToCurrentBounds(
     int *point0Clipped,
     int *point1Clipped
 ) {
-    const int result = ClipSegmentToCurrentXBounds(
-        point0,
-        point1,
-        point0Clipped,
-        point1Clipped
-    );
+    const int result = ClipSegmentToCurrentXBounds(point0, point1, point0Clipped, point1Clipped);
     if (result == 0) {
         return 0;
     }
 
-    return ClipSegmentToCurrentYBounds(
-        point0,
-        point1,
-        point0Clipped,
-        point1Clipped
-    );
+    return ClipSegmentToCurrentYBounds(point0, point1, point0Clipped, point1Clipped);
 }
 
 /**
@@ -1448,34 +1304,18 @@ int __fastcall HudLineClip::ClipSegmentToCurrentXBounds(
     }
 
     if (point0->x < g_HudLineClip_CurrentLeft) {
-        ClipEndpointToX(
-            point0,
-            point1,
-            g_HudLineClip_CurrentLeft
-        );
+        ClipEndpointToX(point0, point1, g_HudLineClip_CurrentLeft);
         *point0Clipped = 1;
     } else if (point0->x > g_HudLineClip_CurrentRight) {
-        ClipEndpointToX(
-            point0,
-            point1,
-            g_HudLineClip_CurrentRight
-        );
+        ClipEndpointToX(point0, point1, g_HudLineClip_CurrentRight);
         *point0Clipped = 1;
     }
 
     if (point1->x < g_HudLineClip_CurrentLeft) {
-        ClipEndpointToX(
-            point1,
-            point0,
-            g_HudLineClip_CurrentLeft
-        );
+        ClipEndpointToX(point1, point0, g_HudLineClip_CurrentLeft);
         *point1Clipped = 1;
     } else if (point1->x > g_HudLineClip_CurrentRight) {
-        ClipEndpointToX(
-            point1,
-            point0,
-            g_HudLineClip_CurrentRight
-        );
+        ClipEndpointToX(point1, point0, g_HudLineClip_CurrentRight);
         *point1Clipped = 1;
     }
 
@@ -1520,34 +1360,18 @@ int __fastcall HudLineClip::ClipSegmentToCurrentYBounds(
     }
 
     if (point0->y < g_HudLineClip_CurrentTop) {
-        ClipEndpointToY(
-            point0,
-            point1,
-            g_HudLineClip_CurrentTop
-        );
+        ClipEndpointToY(point0, point1, g_HudLineClip_CurrentTop);
         *point0Clipped = 1;
     } else if (point0->y > g_HudLineClip_CurrentBottom) {
-        ClipEndpointToY(
-            point0,
-            point1,
-            g_HudLineClip_CurrentBottom
-        );
+        ClipEndpointToY(point0, point1, g_HudLineClip_CurrentBottom);
         *point0Clipped = 1;
     }
 
     if (point1->y < g_HudLineClip_CurrentTop) {
-        ClipEndpointToY(
-            point1,
-            point0,
-            g_HudLineClip_CurrentTop
-        );
+        ClipEndpointToY(point1, point0, g_HudLineClip_CurrentTop);
         *point1Clipped = 1;
     } else if (point1->y > g_HudLineClip_CurrentBottom) {
-        ClipEndpointToY(
-            point1,
-            point0,
-            g_HudLineClip_CurrentBottom
-        );
+        ClipEndpointToY(point1, point0, g_HudLineClip_CurrentBottom);
         *point1Clipped = 1;
     }
 
@@ -1582,7 +1406,7 @@ void zVideoFxPass3Element::Draw() {
 
     if (parentConfig != 0) {
         if (parentConfig->surfacePixels != 0) {
-            zVideo::Fx_SetSurfaceState(
+            zVideo::FxSetSurfaceState(
                 parentConfig->surfacePixels,
                 parentConfig->surfaceWidth,
                 parentConfig->surfaceHeight,
@@ -1613,11 +1437,7 @@ void zVideoFxPass3Element::Draw() {
  * Purpose: provide the recovered zVideoFxPass3RootElement::ApplyPass3 behavior.
  */
 void zVideoFxPass3RootElement::ApplyPass3() {
-    zRndr_OverlayRect_Submit(
-        (unsigned int)(packedColor16),
-        (zVidRect32 *)(clipRectOrNull),
-        alpha
-    );
+    zRndrOverlayRectSubmit((unsigned int)(packedColor16), (zVidRect32 *)(clipRectOrNull), alpha);
 }
 
 /**
@@ -1646,10 +1466,7 @@ void zVideoFxPass3Slot::SetRectAndPayload(
     float sinFreqValue,
     float sinPhaseValue
 ) {
-    SetPos(
-        rectLeftPixels,
-        rectTopPixels
-    );
+    SetPos(rectLeftPixels, rectTopPixels);
 
     currentRadius = currentRadiusPixels;
     maxRadius = maxRadiusPixels;
@@ -1666,7 +1483,7 @@ void zVideoFxPass3Slot::SetRectAndPayload(
  * Purpose: provide the recovered zVideoFxPass3Slot::ApplyPass3 behavior.
  */
 void zVideoFxPass3Slot::ApplyPass3() {
-    zVideo::FxPass3_ApplyToCurrentSurface(
+    zVideo::FxPass3ApplyToCurrentSurface(
         x,
         y,
         currentRadius,
@@ -1770,10 +1587,7 @@ float g_HudWeatherFxRain_TimeAccumulator = 0.0f;
 HudWeatherFx::HudWeatherFx(
     int newParticleCount
 ) {
-    HudUiElement::Constructor(
-        0,
-        0
-    );
+    HudUiElement::Constructor(0, 0);
     clipRectOrNull = 0;
     maxParticles = newParticleCount;
     particleCount = newParticleCount;
@@ -1801,10 +1615,7 @@ HudWeatherFx::HudWeatherFx(
     particlePositions[destBufferIndex] = (zVec3 *)(::operator new(positionBytes));
 
     for (int resetIndex = 0; resetIndex < newParticleCount; ++resetIndex) {
-        ResetParticleSlot(
-            resetIndex,
-            1
-        );
+        ResetParticleSlot(resetIndex, 1);
     }
 
     basisVector.x = 0.0f;
@@ -1820,19 +1631,12 @@ HudWeatherFx::HudWeatherFx(
     if (g_zVideo_ActiveRendererPath != 0) {
         textureName = "SnowFX";
         softwareImage = zVid_Image::Create();
-        zVid_Image::SetFormatCode(
-            softwareImage,
-            0x0b
-        );
+        zVid_Image::SetFormatCode(softwareImage, 0x0b);
         char *const alphaMap =
             (char *)(malloc(kHudWeatherFxSnowTextureTexels));
         void *const surfacePixels =
             malloc(kHudWeatherFxSnowTextureTexels * sizeof(unsigned short));
-        zVid_Image_SetPixels(
-            softwareImage,
-            surfacePixels,
-            alphaMap
-        );
+        zVidImageSetPixels(softwareImage, surfacePixels, alphaMap);
         softwareImage->formatFlagsPacked |= 0x20;
         zVid_Image::SetSize(
             softwareImage,
@@ -1919,7 +1723,7 @@ void HudWeatherFx::ApplyPass3() {
     if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
     const int swSurfaceWasLocked = zVideo::GetSwSurfaceLockedFlag();
     if (swSurfaceWasLocked != 0) {
-        zVideo::Dispatch_UnlockSwSurfaceState();
+        zVideo::DispatchUnlockSwSurfaceState();
     }
 
     unsigned short *surfacePixels = (unsigned short *)(softwareImage->pixels);
@@ -1935,11 +1739,7 @@ void HudWeatherFx::ApplyPass3() {
         }
     }
 
-    g_zVideo_pfnTextureRecordFinalizeUpload(
-        textureRecord,
-        0,
-        softwareImage
-    );
+    g_zVideo_pfnTextureRecordFinalizeUpload(textureRecord, 0, softwareImage);
     zVideoD3D::SceneEnter();
 
     for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
@@ -1980,10 +1780,7 @@ void HudWeatherFx::ApplyPass3() {
         texCoords[3].v = 0.0f;
 
         if (((HudWeatherFxPointBatch *)(clipVerts))
-                ->ArePointBatchInsideRect(
-                    4,
-                    clipRectOrNull
-                ) != 0) {
+                ->ArePointBatchInsideRect(4, clipRectOrNull) != 0) {
             g_zVideo_pfnSubmitPolyRenderClass(
                 clipVerts,
                 texCoords,
@@ -2094,20 +1891,10 @@ void HudWeatherFxSnow::Update(
     const float viewportHeightF = (float)(viewportHeight);
 
     zVec3 cameraTarget;
-    zClass_Camera::gwCameraGetTarget(
-        camera,
-        &cameraTarget.x,
-        &cameraTarget.y,
-        &cameraTarget.z
-    );
+    zClass_Camera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
 
     zVec3 cameraAngles;
-    zClass_Camera::gwCameraGetPosition(
-        camera,
-        &cameraAngles.x,
-        &cameraAngles.y,
-        &cameraAngles.z
-    );
+    zClass_Camera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
     cameraTargetDrift.x =
@@ -2125,10 +1912,7 @@ void HudWeatherFxSnow::Update(
     zMath::MatLoadIdentity();
     zMath::MatRotateX(-cameraAngles.x);
     zMath::MatRotateY(-cameraAngles.y);
-    zMath::MatTransformPointBatchInPlace(
-        &cameraTargetDrift,
-        1
-    );
+    zMath::MatTransformPointBatchInPlace(&cameraTargetDrift, 1);
     zMath::MatStackPopPtr();
 
     zMath::MatStackPushPtr((float *)(&slotBuffer));
@@ -2142,20 +1926,14 @@ void HudWeatherFxSnow::Update(
     gravityOffset.x = basisVector.x * gravityScale;
     gravityOffset.y = basisVector.y * gravityScale;
     gravityOffset.z = basisVector.z * gravityScale;
-    zMath::MatTransformPointBatchInPlace(
-        &gravityOffset,
-        1
-    );
+    zMath::MatTransformPointBatchInPlace(&gravityOffset, 1);
 
     zVec3 windOffset;
     const float windScale = (float)(windVelocity * 0.1);
     windOffset.x = (float)(sin(windDirection)) * windScale;
     windOffset.y = 0.0f;
     windOffset.z = (float)(cos(windDirection)) * windScale;
-    zMath::MatTransformPointBatchInPlace(
-        &windOffset,
-        1
-    );
+    zMath::MatTransformPointBatchInPlace(&windOffset, 1);
     zMath::MatStackPopPtr();
 
     zVec3 particleVelocity;
@@ -2210,10 +1988,7 @@ void HudWeatherFxSnow::Update(
                                           3.5);
 
         if (HudWeatherFxSnowNeedsReset(destPosition) != 0) {
-            ResetParticleSlot(
-                particleIndex,
-                0
-            );
+            ResetParticleSlot(particleIndex, 0);
         }
     }
 
@@ -2276,20 +2051,10 @@ void HudWeatherFxRain::Update(
     const float viewportHeightF = (float)(viewportHeight);
 
     zVec3 cameraTarget;
-    zClass_Camera::gwCameraGetTarget(
-        camera,
-        &cameraTarget.x,
-        &cameraTarget.y,
-        &cameraTarget.z
-    );
+    zClass_Camera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
 
     zVec3 cameraAngles;
-    zClass_Camera::gwCameraGetPosition(
-        camera,
-        &cameraAngles.x,
-        &cameraAngles.y,
-        &cameraAngles.z
-    );
+    zClass_Camera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
     cameraTargetDrift.x =
@@ -2307,10 +2072,7 @@ void HudWeatherFxRain::Update(
     zMath::MatLoadIdentity();
     zMath::MatRotateX(-cameraAngles.x);
     zMath::MatRotateY(-cameraAngles.y);
-    zMath::MatTransformPointBatchInPlace(
-        &cameraTargetDrift,
-        1
-    );
+    zMath::MatTransformPointBatchInPlace(&cameraTargetDrift, 1);
     zMath::MatStackPopPtr();
 
     zMath::MatStackPushPtr((float *)(&slotBuffer));
@@ -2324,20 +2086,14 @@ void HudWeatherFxRain::Update(
     gravityOffset.x = basisVector.x * gravityScale;
     gravityOffset.y = basisVector.y * gravityScale;
     gravityOffset.z = basisVector.z * gravityScale;
-    zMath::MatTransformPointBatchInPlace(
-        &gravityOffset,
-        1
-    );
+    zMath::MatTransformPointBatchInPlace(&gravityOffset, 1);
 
     zVec3 windOffset;
     const float windScale = (float)(windVelocity * 0.1);
     windOffset.x = (float)(sin(windDirection)) * windScale;
     windOffset.y = 0.0f;
     windOffset.z = (float)(cos(windDirection)) * windScale;
-    zMath::MatTransformPointBatchInPlace(
-        &windOffset,
-        1
-    );
+    zMath::MatTransformPointBatchInPlace(&windOffset, 1);
     zMath::MatStackPopPtr();
 
     zVec3 particleVelocity;
@@ -2390,10 +2146,7 @@ void HudWeatherFxRain::Update(
         particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
         particleQuad->slantOffset = kHudWeatherFxRainSlantDelta;
 
-        ResetParticleSlot(
-            particleIndex,
-            0
-        );
+        ResetParticleSlot(particleIndex, 0);
     }
 
     HudUiElement::Update(deltaSeconds);
@@ -2506,21 +2259,18 @@ namespace zVideo {
  * Purpose: relay provisional local pass-3 primary-element state while retail
  * source placement remains unresolved.
  */
-void __fastcall FxPass3_SetPrimaryElementParamsLocal(
+void __fastcall FxPass3SetPrimaryElementParamsLocal(
     unsigned short packedColor,
     double primaryAlpha
 ) {
-    g_zVideo_FxPass3ConfigLocal.SetPrimaryElementParamsLocal(
-        packedColor,
-        primaryAlpha
-    );
+    g_zVideo_FxPass3ConfigLocal.SetPrimaryElementParamsLocal(packedColor, primaryAlpha);
 }
 
 /**
  * Purpose: relay provisional local pass-3 queue state while retail source
  * placement remains unresolved.
  */
-void __fastcall FxPass3_QueueElementLocal(
+void __fastcall FxPass3QueueElementLocal(
     int rectLeftPixels,
     int rectTopPixels,
     int currentRadiusPixels,
@@ -2544,44 +2294,34 @@ void __fastcall FxPass3_QueueElementLocal(
  * Purpose: relay a provisional local pass-3 input rectangle while retail
  * source placement remains unresolved.
  */
-void __fastcall FxPass3_SetInputRectByIndex(
+void __fastcall FxPass3SetInputRectByIndex(
     int index,
     HudUiRect *rectOrNull
 ) {
-    g_zVideo_FxPass3ConfigLocal.SetInputRectByIndex(
-        index,
-        rectOrNull
-    );
+    g_zVideo_FxPass3ConfigLocal.SetInputRectByIndex(index, rectOrNull);
 }
 
 /**
  * Purpose: relay provisional raw pass-3 surface input while retail source
  * placement remains unresolved.
  */
-void __fastcall FxPass3_QueuePrimitive(
+void __fastcall FxPass3QueuePrimitive(
     void *primitive,
     int width,
     int height,
     int pitchBytes
 ) {
-    g_zVideo_FxPass3ConfigLocal.QueuePrimitiveRaw(
-        primitive,
-        width,
-        height,
-        pitchBytes
-    );
+    g_zVideo_FxPass3ConfigLocal.QueuePrimitiveRaw(primitive, width, height, pitchBytes);
 }
 
 /**
  * Purpose: relay the provisional local pass-3 update while retail source
  * placement remains unresolved.
  */
-void __fastcall FxPass3_UpdateLocal(
+void __fastcall FxPass3UpdateLocal(
     float deltaTime
 ) {
-    g_zVideo_FxPass3ConfigLocal.UpdateLocal(
-        deltaTime
-    );
+    g_zVideo_FxPass3ConfigLocal.UpdateLocal(deltaTime);
 }
 
 } // namespace zVideo
@@ -2642,22 +2382,11 @@ static inline zVidImagePartial *HudUiMessageBoxCreateSolidImage(
     unsigned short color565
 ) {
     zVidImagePartial *const image = zVid_Image::Create();
-    zVid_Image::SetFormatCode(
-        image,
-        1
-    );
-    zVid_Image::SetSize(
-        image,
-        (short)(width),
-        (short)(height)
-    );
+    zVid_Image::SetFormatCode(image, 1);
+    zVid_Image::SetSize(image, (short)(width), (short)(height));
 
     void *const pixels = malloc(zVid_Image::QueryBytesPerPixel(image) * width * height);
-    zVid_Image_SetPixels(
-        image,
-        pixels,
-        0
-    );
+    zVidImageSetPixels(image, pixels, 0);
 
     unsigned short *const pixelWords = (unsigned short *)(pixels);
     for (int index = 0; index < image->pixelCount; ++index) {
@@ -2694,32 +2423,12 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(
         okButtonNormalImage = 0;
         okButtonPressedImage = 0;
 
-        zReader::Node *const loadedSection = LoadFromZrd(
-            zrdPath,
-            sectionName,
-            0
-        );
+        zReader::Node *const loadedSection = LoadFromZrd(zrdPath, sectionName, 0);
         if (loadedSection != 0) {
-            BindWidgetByName(
-                loadedSection,
-                &okButton,
-                k_msgBoxWidgetName_OK
-            );
-            BindWidgetByName(
-                loadedSection,
-                &cancelButton,
-                k_msgBoxWidgetName_Cancel
-            );
-            BindPrimitiveNodeToElement(
-                loadedSection,
-                &titlePanel,
-                k_msgBoxWidgetName_Title
-            );
-            BindPrimitiveNodeToElement(
-                loadedSection,
-                &messagePanel,
-                k_msgBoxWidgetName_Message
-            );
+            BindWidgetByName(loadedSection, &okButton, k_msgBoxWidgetName_OK);
+            BindWidgetByName(loadedSection, &cancelButton, k_msgBoxWidgetName_Cancel);
+            BindPrimitiveNodeToElement(loadedSection, &titlePanel, k_msgBoxWidgetName_Title);
+            BindPrimitiveNodeToElement(loadedSection, &messagePanel, k_msgBoxWidgetName_Message);
             FreeLoadedTreeRoots((int)loadedSection);
         }
 
@@ -2728,89 +2437,44 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(
         return;
     }
 
-    const int centerX = HudUiDialogSignedDivPow2(
-        blitRect.right,
-        1
-    );
-    const int centerY = HudUiDialogSignedDivPow2(
-        blitRect.bottom,
-        1
-    );
+    const int centerX = HudUiDialogSignedDivPow2(blitRect.right, 1);
+    const int centerY = HudUiDialogSignedDivPow2(blitRect.bottom, 1);
     fallbackWidth = 300;
     fallbackHeight = 200;
 
     backgroundImage = HudUiMessageBoxCreateSolidImage(
         fallbackWidth,
         fallbackHeight,
-        (unsigned short)(zVid_PackColorRGB(
-            128,
-            128,
-            128
-        ))
+        (unsigned short)(zVidPackColorRGB(128, 128, 128))
     );
 
-    const int buttonWidth = HudUiDialogSignedDivPow2(
-        fallbackWidth,
-        2
-    );
-    const int buttonHeight = HudUiDialogSignedDivPow2(
-        fallbackHeight,
-        2
-    );
+    const int buttonWidth = HudUiDialogSignedDivPow2(fallbackWidth, 2);
+    const int buttonHeight = HudUiDialogSignedDivPow2(fallbackHeight, 2);
     okButtonNormalImage = HudUiMessageBoxCreateSolidImage(
         buttonWidth,
         buttonHeight,
-        (unsigned short)(zVid_PackColorRGB(
-            192,
-            192,
-            192
-        ))
+        (unsigned short)(zVidPackColorRGB(192, 192, 192))
     );
     okButtonPressedImage = HudUiMessageBoxCreateSolidImage(
         buttonWidth,
         buttonHeight,
-        (unsigned short)(zVid_PackColorRGB(
-            160,
-            192,
-            160
-        ))
+        (unsigned short)(zVidPackColorRGB(160, 192, 160))
     );
 
     backdropWidget.SetImageBorrowedAndInvalidate(backgroundImage);
     messagePanel.SetTextFmt("");
     titlePanel.SetTextFmt("");
-    okButton.LoadFromZrd(
-        0,
-        this
-    );
+    okButton.LoadFromZrd(0, this);
     okButton.defaultImage = okButton.SetImageBorrowedAndInvalidate(okButtonNormalImage);
     okButton.rolloverImage = okButtonPressedImage;
 
-    backdropWidget.SetPos(
-        centerX - 150,
-        centerY - 100
-    );
-    titlePanel.SetPos(
-        centerX - 140,
-        centerY - 90
-    );
-    messagePanel.SetPos(
-        centerX - 140,
-        centerY - 70
-    );
+    backdropWidget.SetPos(centerX - 150, centerY - 100);
+    titlePanel.SetPos(centerX - 140, centerY - 90);
+    messagePanel.SetPos(centerX - 140, centerY - 70);
     okButton.SetPos(
-        centerX - 150 + HudUiDialogSignedDivPow2(
-            fallbackWidth,
-            1
-        ) -
-            HudUiDialogSignedDivPow2(
-                fallbackWidth,
-                3
-            ),
-        centerY - 100 - HudUiDialogSignedDivPow2(
-            fallbackHeight,
-            2
-        ) + fallbackHeight - 10
+        centerX - 150 + HudUiDialogSignedDivPow2(fallbackWidth, 1) -
+            HudUiDialogSignedDivPow2(fallbackWidth, 3),
+        centerY - 100 - HudUiDialogSignedDivPow2(fallbackHeight, 2) + fallbackHeight - 10
     );
 
     AddChild(&backdropWidget);
@@ -2865,10 +2529,7 @@ int HudUiMessageBoxDialog::RunModal(
     (void)timeoutSeconds;
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        g_zVideo_pfnBltSwToPrimaryRectDirect(
-            0,
-            0
-        );
+        g_zVideo_pfnBltSwToPrimaryRectDirect(0, 0);
     }
 
     const int previousHalfResMode = zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
@@ -2918,13 +2579,8 @@ int HudUiMessageBoxDialog::RunModal(
         Time::Tick();
         zVideo::RunPostprocessOnPrimaryBuffer();
         UpdateAll(g_FrameDeltaTimeSec);
-        zVideo::Dispatch_UnlockPrimarySurfaceState();
-        zVideo::AdjustSurfacesIfEnabled(
-            &blitRect,
-            &blitRect,
-            1,
-            1
-        );
+        zVideo::DispatchUnlockPrimarySurfaceState();
+        zVideo::AdjustSurfacesIfEnabled(&blitRect, &blitRect, 1, 1);
         framesRemaining = modalFrameCountdown;
         modalFrameCountdown = framesRemaining - 1;
     }
@@ -3011,11 +2667,7 @@ HudUiPolyline::HudUiPolyline()
           0
       ) {
     pointCount = 0;
-    memset(
-        points,
-        0,
-        sizeof(points)
-    );
+    memset(points, 0, sizeof(points));
     Invalidate();
     clipRect = 0;
 }
@@ -3038,10 +2690,7 @@ void HudUiPolyline::SetPoint(
     }
 
     if (index == 0) {
-        SetPos(
-            pointX,
-            pointY
-        );
+        SetPos(pointX, pointY);
     }
 
     Invalidate();
@@ -3059,7 +2708,7 @@ void HudUiPolyline::Draw() {
     }
 
     if (clipRect != 0) {
-        zRndr_DrawClippedImmediateLineStrip(
+        zRndrDrawClippedImmediateLineStrip(
             (const zRndr_LinePoint2I *)(points),
             currentPointCount - 1,
             clipRect,
@@ -3072,13 +2721,7 @@ void HudUiPolyline::Draw() {
         for (int index = 0; index < currentPointCount - 1; ++index) {
             const HudUiPolylinePoint &point = points[index];
             const HudUiPolylinePoint &nextPoint = points[index + 1];
-            zRndr_DrawImmediateLine(
-                point.x,
-                point.y,
-                nextPoint.x,
-                nextPoint.y,
-                color565
-            );
+            zRndrDrawImmediateLine(point.x, point.y, nextPoint.x, nextPoint.y, color565);
         }
     }
 }
@@ -3152,10 +2795,7 @@ void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
     if (newCaptureEnabled == 0 && capturedImage != 0) {
         zVid_Image::Destroy(capturedImage);
         capturedImage = 0;
-        SetBltSourceAndClipRect(
-            0,
-            0
-        );
+        SetBltSourceAndClipRect(0, 0);
         return;
     }
 
@@ -3183,25 +2823,14 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
         return;
     }
 
-    zVid_Image::SetSize(
-        capturedImage,
-        image->width,
-        image->height
-    );
+    zVid_Image::SetSize(capturedImage, image->width, image->height);
     void *const pixels = malloc((size_t)(capturedImage->pixelCount) * sizeof(unsigned short));
-    zVid_Image_SetPixels(
-        capturedImage,
-        pixels,
-        0
-    );
+    zVidImageSetPixels(capturedImage, pixels, 0);
     capturedImage->formatFlagsPacked = (unsigned char)(capturedImage->formatFlagsPacked | 0x20u);
 
     const int y = GetCenterY();
     const int x = GetCenterX();
-    RebuildCapturedImage(
-        x,
-        y
-    );
+    RebuildCapturedImage(x, y);
 }
 
 /**
@@ -3213,14 +2842,8 @@ void HudUiBackgroundCursorWidget::SetPos(
     int newX,
     int newY
 ) {
-    HudUiWidget::SetPos(
-        newX,
-        newY
-    );
-    RebuildCapturedImage(
-        x,
-        y
-    );
+    HudUiWidget::SetPos(newX, newY);
+    RebuildCapturedImage(x, y);
 }
 
 /**
@@ -3248,17 +2871,11 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(
             sourceRect.top - originY,
             sourceRect.right - originX,
             sourceRect.bottom - originY};
-        SetBltSourceAndClipRect(
-            capturedImage,
-            &clipRect
-        );
+        SetBltSourceAndClipRect(capturedImage, &clipRect);
         return;
     }
 
-    SetBltSourceAndClipRect(
-        0,
-        0
-    );
+    SetBltSourceAndClipRect(0, 0);
 }
 
 /**
@@ -3330,35 +2947,17 @@ void HudUiBackgroundVideoWidget::Destructor() {
 void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
     const char *path
 ) {
-    strncpy(
-        mediaPath,
-        path,
-        0x104
-    );
+    strncpy(mediaPath, path, 0x104);
 
     struct _stat statBuffer;
-    if (_stat(
-        mediaPath,
-        &statBuffer
-    ) == -1) {
-        char *const resolvedPath = zSys::FindFileOnDriveType(
-            5,
-            mediaPath,
-            0
-        );
+    if (_stat(mediaPath, &statBuffer) == -1) {
+        char *const resolvedPath = zSys::FindFileOnDriveType(5, mediaPath, 0);
         if (resolvedPath != 0) {
-            strncpy(
-                mediaPath,
-                resolvedPath,
-                0x104
-            );
+            strncpy(mediaPath, resolvedPath, 0x104);
         }
     }
 
-    if (_stat(
-        mediaPath,
-        &statBuffer
-    ) == -1) {
+    if (_stat(mediaPath, &statBuffer) == -1) {
         stream = 0;
         return;
     }
@@ -3366,10 +2965,7 @@ void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
     zFMV_Stream *const newStream = (zFMV_Stream *)(::operator new(sizeof(zFMV_Stream)));
     zFMV_Stream *initializedStream = 0;
     if (newStream != 0) {
-        initializedStream = newStream->Init(
-            mediaPath,
-            0
-        );
+        initializedStream = newStream->Init(mediaPath, 0);
     }
     stream = initializedStream;
 
@@ -3421,13 +3017,7 @@ void HudUiBackgroundVideoWidget::Draw() {
     DrawBase();
 
     if (stream != 0) {
-        zVid_Image::BlitToActiveTarget(
-            (zVidImagePartial *)(stream),
-            x,
-            y,
-            colorKey565,
-            0
-        );
+        zVid_Image::BlitToActiveTarget((zVidImagePartial *)(stream), x, y, colorKey565, 0);
     }
 }
 
@@ -3441,13 +3031,7 @@ void HudUiBackgroundVideoWidget::DrawBase() {
     if (bltSource != 0) {
         const int dstX = x > 0 ? x : 0;
         const int dstY = y > 0 ? y : 0;
-        zVid_Image::BlitToActiveTarget(
-            bltSource,
-            dstX,
-            dstY,
-            0,
-            (zVidRect32 *)(&clipRect)
-        );
+        zVid_Image::BlitToActiveTarget(bltSource, dstX, dstY, 0, (zVidRect32 *)(&clipRect));
     }
 }
 
@@ -3491,10 +3075,7 @@ void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
     int newEndX,
     int newEndY
 ) {
-    SetPos(
-        startX,
-        startY
-    );
+    SetPos(startX, startY);
     endX = newEndX;
     endY = newEndY;
 }
@@ -3606,10 +3187,7 @@ int HudUiElement::HitTest(
     int px,
     int py
 ) {
-    return HitTestTrue(
-        px,
-        py
-    );
+    return HitTestTrue(px, py);
 }
 
 /**
@@ -3755,10 +3333,7 @@ HudCmdBindingEntry **HudCmdBindingVector::erase(
             *write++ = *read++;
         } while (read != oldEnd);
     }
-    ((StdPtrVector *)(this))->ClearNoOpDestroy(
-        (int *)(write),
-        (int *)(oldEnd)
-    );
+    ((StdPtrVector *)(this))->ClearNoOpDestroy((int *)(write), (int *)(oldEnd));
     last = write;
     return eraseFirst;
 }
@@ -4068,11 +3643,7 @@ int HudUiNumericTextInput::CommitAndGetValue() {
  * Purpose: preserve the recovered HUD behavior for HudUiPanel::ConstructorDefaultThunk.
  */
 HudUiPanel * HudUiPanel::ConstructorDefaultThunk() {
-    return ConstructorDefault(
-        0,
-        0,
-        0
-    );
+    return ConstructorDefault(0, 0, 0);
 }
 
 namespace HudScoreboard {

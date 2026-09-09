@@ -18,7 +18,7 @@ struct zDiPartial;
  * ModelPolygonEnd stores its resolved material pointer at +0x1c4.
  * Purpose: Hold the material and indexed geometry while building a polygon.
  */
-struct zInterp_RuntimeBlob {
+struct zInterpPolygonState {
     zModel_MaterialPartial material;
     int pointCount;
     zVec3 polygonPoints[10];
@@ -37,13 +37,13 @@ struct zInterp_RuntimeBlob {
     zDiPartial *displayInstance;
 };
 
-struct zInterp_FileFrame {
+struct zInterpFileFrame {
     FILE *file;
     long filePos;
     int hasPreparedInput;
 };
 
-struct zInterp_PreparedScriptEntry {
+struct zInterpPreparedScriptEntry {
     char path[0x78];
     long fileTime;
     long fileOffset;
@@ -54,33 +54,33 @@ struct zInterp_PreparedScriptEntry {
  * and reads the same record from the prepared-index stream.
  * Purpose: Describe the prepared script index's magic and format version.
  */
-struct zInterp_PreparedScriptHeader {
+struct zInterpPreparedScriptHeader {
     int magic;
     int version;
 };
-RECOIL_STATIC_ASSERT(sizeof(zInterp_PreparedScriptHeader) == 8);
+RECOIL_STATIC_ASSERT(sizeof(zInterpPreparedScriptHeader) == 8);
 
-struct zInterp_MacroEntry {
+struct zInterpMacroEntry {
     char *name;
     char *value;
 };
 
-union zInterp_VarValuePtr {
+union zInterpVarValuePtr {
     int *intPtr;
     float *floatPtr;
     char *charPtr;
 };
 
-struct zInterp_VarEntry {
+struct zInterpVarEntry {
     char *name;
     int type;
-    zInterp_VarValuePtr valuePtr;
+    zInterpVarValuePtr valuePtr;
 };
 
-typedef std::list<zClass_NodePartial *> zInterp_ScrollAlwaysList;
-RECOIL_STATIC_ASSERT(sizeof(zInterp_ScrollAlwaysList) == 0x0c);
+typedef std::list<zClass_NodePartial *> zInterpScrollList;
+RECOIL_STATIC_ASSERT(sizeof(zInterpScrollList) == 0x0c);
 
-struct zInterp_Context;
+struct CZInterp;
 
 extern int g_zInterp_EnablePreparedScripts;
 extern int g_zInterp_VerboseLevel;
@@ -96,7 +96,7 @@ typedef void (__cdecl *zInterp_LogFn)(
     char *args
 );
 
-struct zInterp_Context {
+struct CZInterp {
     virtual int DispatchHook(char *commandToken);
     virtual int PostDispatchHook(char *commandToken);
     virtual int DeferredDispatchHook(char *commandToken);
@@ -109,23 +109,23 @@ struct zInterp_Context {
     int parseResult;
     char *tempAlloc;
     char *tokenList[16];
-    zInterp_MacroEntry *macroTable;
+    zInterpMacroEntry *macroTable;
     unsigned int macroCount;
-    zInterp_VarEntry *varTable;
+    zInterpVarEntry *varTable;
     unsigned int varCount;
     zInterp_LogFn logFn;
     char *searchPathSpec;
     char *preparedIndexFileName;
     zArchiveList *archiveSearchList;
     FILE *preparedIndexStream;
-    zInterp_PreparedScriptHeader preparedIndexHeader;
+    zInterpPreparedScriptHeader preparedIndexHeader;
     int *preparedEntryCount;
-    zInterp_PreparedScriptEntry *preparedEntryTable;
+    zInterpPreparedScriptEntry *preparedEntryTable;
     int hasPreparedInput;
     FILE *currentScriptFile;
-    zInterp_FileFrame *fileFrameStack;
+    zInterpFileFrame *fileFrameStack;
     int fileFrameCount;
-    zInterp_RuntimeBlob *runtimeBlob;
+    zInterpPolygonState *runtimeBlob;
     void **ptrArrayHead;
     int ptrArrayCount;
     /**
@@ -134,19 +134,19 @@ struct zInterp_Context {
      * storage, not a character read from the search path.
      * Purpose: Own the nodes whose textures scroll on every driver tick.
      */
-    zInterp_ScrollAlwaysList scrollAlwaysList;
+    zInterpScrollList scrollAlwaysList;
     zClass_NodePartial *scrollAlwaysDriverNode;
     int includeDepth;
     int conditionalDepth;
     void *currentNode;
 
     static void __cdecl Logf(
-        zInterp_Context *ctx,
+        CZInterp *ctx,
         const char *fmt,
         ...
     );
     static void __cdecl ReportErrorf(
-        zInterp_Context *ctx,
+        CZInterp *ctx,
         const char *fmt,
         ...
     );
@@ -154,7 +154,7 @@ struct zInterp_Context {
     int ReportParseError(char *commandToken);
     char * FindMacroValue(
         const char *name,
-        zInterp_MacroEntry **outEntry
+        zInterpMacroEntry **outEntry
     );
     int IsMacroTrue(const char *name);
     int SetMacro(
@@ -163,20 +163,20 @@ struct zInterp_Context {
     );
     void ClearMacroTable();
     void ClearVarTable();
-    zInterp_Context(
+    CZInterp(
         const char *preparedIndexPath,
         const char *searchPathText
     );
     void Destroy();
-    ~zInterp_Context();
+    ~CZInterp();
     int EvalConditionExpr();
     char * ExpandMacroRefs(char *lineBuf);
     char * NextToken();
     int ParseBoolToken();
     float ParseFloatToken();
     int ParseIntToken();
-    zInterp_VarEntry * FindVarEntry(const char *name);
-    void DumpVarEntry(zInterp_VarEntry *entry);
+    zInterpVarEntry * FindVarEntry(const char *name);
+    void DumpVarEntry(zInterpVarEntry *entry);
     int CommandEqualsPrefix(
         const char *prefix,
         unsigned int prefixLen
@@ -188,17 +188,17 @@ struct zInterp_Context {
         int expectedClassType,
         zClass_NodePartial *node
     );
-    int ReadPreparedScriptTableCount(const zInterp_PreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue);
-    int ReadPreparedScriptIndex(zInterp_PreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue, zInterp_PreparedScriptEntry *&entries);
+    int ReadPreparedScriptTableCount(const zInterpPreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue);
+    int ReadPreparedScriptIndex(zInterpPreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue, zInterpPreparedScriptEntry *&entries);
     int LoadPreparedScriptIndex(const char *zrdrPath);
     int FindPreparedScriptIndex(const char *commandName);
     FILE * OpenPreparedScriptStream(const char *commandName);
     int RunScriptFile(const char *filePath);
-    int RunString(
+    int RunStream(
         FILE *scriptFile,
         int hasPreparedInput
     );
-    int RunStream(char *lineBuffer);
+    int RunLine(char *lineBuffer);
     int ReadLineOrPreparedTokens(
         FILE *scriptFile,
         char *lineBuffer
@@ -208,7 +208,7 @@ struct zInterp_Context {
     int DispatchCoreCommand(char *commandToken);
     int EchoTokens();
     void ClearFileFrameStack();
-    zInterp_FileFrame * PopFileFrame();
+    zInterpFileFrame * PopFileFrame();
     int PushFileFrame(
         FILE *file,
         long filePos,
@@ -218,7 +218,7 @@ struct zInterp_Context {
         zClass_NodePartial *node,
         int indent
     );
-    bool DefaultDispatchHook(zClass_NodePartial *node);
+    bool HandleScrollDisable(zClass_NodePartial *node);
     bool RegisterScrollAlwaysNode(
         zClass_NodePartial *node,
         float scrollRateU,
@@ -227,369 +227,369 @@ struct zInterp_Context {
     );
 };
 
-struct zInterp_GlobalContext : zInterp_Context {
-    zInterp_GlobalContext();
+struct CRecoilInterp : CZInterp {
+    CRecoilInterp();
 
     /**
      * Original helper evidence: no standalone authored retail function; the
      * VC5 ordinary-global probe emits this inline destructor only as the
-     * generated CRT teardown call to zInterp_Context::~zInterp_Context.
+     * generated CRT teardown call to CZInterp::~CZInterp.
      * Purpose: release the process-wide interpreter during ordinary C++ shutdown.
      */
-    ~zInterp_GlobalContext() {
+    ~CRecoilInterp() {
     }
 
     virtual int DispatchHook(char *commandToken);
 
     static int StaticInitAndRegisterAtExit();
-    static zInterp_Context *StaticInit();
+    static CZInterp *StaticInit();
     static int RegisterAtExit();
     static void __cdecl AtExitDestructor();
 };
 
-RECOIL_STATIC_ASSERT(sizeof(zInterp_GlobalContext) == 0xcc);
+RECOIL_STATIC_ASSERT(sizeof(CRecoilInterp) == 0xcc);
 
-extern zInterp_GlobalContext g_zInterp_GlobalContext;
+extern CRecoilInterp g_zInterp_GlobalContext;
 
 namespace zInterp_Object3D {
 int __fastcall DefaultRenderAction(zClass_NodePartial *node);
 void __fastcall ScrollAlwaysTickAction(zClass_NodePartial *wrapperNode);
 } // namespace zInterp_Object3D
 
-RECOIL_STATIC_ASSERT(sizeof(zInterp_FileFrame) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(zInterpFileFrame) == 0x0c);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_FileFrame,
+        zInterpFileFrame,
         file
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_FileFrame,
+        zInterpFileFrame,
         filePos
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_FileFrame,
+        zInterpFileFrame,
         hasPreparedInput
     ) == 0x08
 );
-RECOIL_STATIC_ASSERT(sizeof(zInterp_PreparedScriptEntry) == 0x80);
+RECOIL_STATIC_ASSERT(sizeof(zInterpPreparedScriptEntry) == 0x80);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_PreparedScriptEntry,
+        zInterpPreparedScriptEntry,
         path
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_PreparedScriptEntry,
+        zInterpPreparedScriptEntry,
         fileTime
     ) == 0x78
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_PreparedScriptEntry,
+        zInterpPreparedScriptEntry,
         fileOffset
     ) == 0x7c
 );
-RECOIL_STATIC_ASSERT(sizeof(zInterp_MacroEntry) == 0x08);
+RECOIL_STATIC_ASSERT(sizeof(zInterpMacroEntry) == 0x08);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_MacroEntry,
+        zInterpMacroEntry,
         name
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_MacroEntry,
+        zInterpMacroEntry,
         value
     ) == 0x04
 );
-RECOIL_STATIC_ASSERT(sizeof(zInterp_VarValuePtr) == 0x04);
-RECOIL_STATIC_ASSERT(sizeof(zInterp_VarEntry) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(zInterpVarValuePtr) == 0x04);
+RECOIL_STATIC_ASSERT(sizeof(zInterpVarEntry) == 0x0c);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_VarEntry,
+        zInterpVarEntry,
         name
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_VarEntry,
+        zInterpVarEntry,
         type
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_VarEntry,
+        zInterpVarEntry,
         valuePtr
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         material
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         pointCount
     ) == 0x28
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         polygonPoints
     ) == 0x2c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         uvCount
     ) == 0xa4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         uvPairs
     ) == 0xa8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         normalsA
     ) == 0xf8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         normalsB
     ) == 0xfc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         secondaryUvPairs
     ) == 0x174
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         polygonMaterial
     ) == 0x1c4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         drawFlags
     ) == 0x1c8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         flagBit8
     ) == 0x1cc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         variantTag
     ) == 0x1d0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_RuntimeBlob,
+        zInterpPolygonState,
         displayInstance
     ) == 0x1d4
 );
-RECOIL_STATIC_ASSERT(sizeof(zInterp_RuntimeBlob) == 0x1d8);
+RECOIL_STATIC_ASSERT(sizeof(zInterpPolygonState) == 0x1d8);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         tokenCount
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         tokenReadIndex
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         lineHadError
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         errorCount
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         parseResult
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         tempAlloc
     ) == 0x1c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         tokenList
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         macroTable
     ) == 0x60
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         macroCount
     ) == 0x64
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         varTable
     ) == 0x68
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         varCount
     ) == 0x6c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         logFn
     ) == 0x70
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         searchPathSpec
     ) == 0x74
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         preparedIndexFileName
     ) == 0x78
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         archiveSearchList
     ) == 0x7c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         preparedIndexStream
     ) == 0x80
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         preparedIndexHeader
     ) == 0x84
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         preparedEntryCount
     ) == 0x8c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         preparedEntryTable
     ) == 0x90
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         hasPreparedInput
     ) == 0x94
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         currentScriptFile
     ) == 0x98
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         fileFrameStack
     ) == 0x9c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         fileFrameCount
     ) == 0xa0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         runtimeBlob
     ) == 0xa4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         ptrArrayHead
     ) == 0xa8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         ptrArrayCount
     ) == 0xac
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         scrollAlwaysList
     ) == 0xb0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         scrollAlwaysDriverNode
     ) == 0xbc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         includeDepth
     ) == 0xc0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         conditionalDepth
     ) == 0xc4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInterp_Context,
+        CZInterp,
         currentNode
     ) == 0xc8
 );
-RECOIL_STATIC_ASSERT(sizeof(zInterp_Context) == 0xcc);
+RECOIL_STATIC_ASSERT(sizeof(CZInterp) == 0xcc);

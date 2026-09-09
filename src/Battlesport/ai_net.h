@@ -991,36 +991,21 @@ void __fastcall AINet::TickAiMode2PathFollow(
             playerState->worldPos
         );
         autoTurnTargetDelta.y = 0.0f;
-        zMath::Vec3NormalizeXZ(
-            &autoTurnTargetDelta,
-            &playerState->autoTurnTargetDir
-        );
+        zMath::Vec3NormalizeXZ(&autoTurnTargetDelta, &playerState->autoTurnTargetDir);
         playerState->throttleInput = 0.0f;
         playerState->throttleInputCopy = 0.0f;
         playerState->steeringInput = 0.0f;
         return;
     }
 
-    AINET_PATH_COMPUTE_PATH_TARGET_DELTA(
-        targetDelta,
-        targetPathNode,
-        playerState->worldPos
-    );
+    AINET_PATH_COMPUTE_PATH_TARGET_DELTA(targetDelta, targetPathNode, playerState->worldPos);
     targetDelta.y = 0.0f;
     targetDistance = zMath::Vec3Normalize(&targetDelta);
 
     steerBasis = playerState->steerBasisNorm;
-    AINET_PATH_DOT_XZ(
-        steerDotXZ,
-        steerBasis,
-        targetDelta
-    );
+    AINET_PATH_DOT_XZ(steerDotXZ, steerBasis, targetDelta);
     float steerCrossXZ;
-    AINET_PATH_CROSS_XZ(
-        steerCrossXZ,
-        steerBasis,
-        targetDelta
-    );
+    AINET_PATH_CROSS_XZ(steerCrossXZ, steerBasis, targetDelta);
 
     if (steerDotXZ < 0.0f) {
         if (playerState->aiPathCursorAdvanceRequested != 0) {
@@ -1098,10 +1083,7 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
     forwardDir = playerState->projectileSpawnVel;
 
     const float forwardProbeOffset =
-        AINET_MAX(
-            zMath::Vec3Normalize(&forwardDir),
-            1.0f
-        ) * kPlayerAiForwardProbeLengthHalfScale -
+        AINET_MAX(zMath::Vec3Normalize(&forwardDir), 1.0f) * kPlayerAiForwardProbeLengthHalfScale -
         masterModalData->probePoints[1].z;
     segmentPairs[0].end.x = forwardProbeOffset * forwardDir.x;
     segmentPairs[0].end.y = forwardProbeOffset * forwardDir.y;
@@ -1114,12 +1096,7 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
 
     segmentTags[0] = -1;
     segmentTags[1] = -1;
-    Player::CollectPendingContactsForSegments(
-        saveState,
-        segmentPairs,
-        2,
-        segmentTags
-    );
+    Player::CollectPendingContactsForSegments(saveState, segmentPairs, 2, segmentTags);
 
     int result;
     if (playerState->preferredCollisionQueue.count != 0 ||
@@ -1165,12 +1142,7 @@ void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
         if ((*nodeInOut)->nodeIndex < 0) {
             playerState->aiCurrentPathNeighborIndex = 0;
         } else {
-            AINet::AiChooseNextPathBranchIndex(
-                saveState,
-                nodeInOut,
-                &chosenBranchIndex,
-                -1
-            );
+            AINet::AiChooseNextPathBranchIndex(saveState, nodeInOut, &chosenBranchIndex, -1);
             playerState->aiCurrentPathNeighborIndex = chosenBranchIndex;
             if (playerState->aiNet->aiType == AINET_TYPE_HI) {
                 playerState->aiTopLevelState = kPlayerAiTopTurnTowardTarget;
@@ -1273,10 +1245,7 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
 
     if (g_Player_TotalTimeSecScaled >= playerState->aiNextPathRebuildTime &&
         playerState->aiCurrentSteeringSubstate != kPlayerAiMode2SteerPathFollow) {
-        AiRebuildSyntheticPathToNodeIfFar(
-            saveState,
-            playerState->aiCurrentPathNode
-        );
+        AiRebuildSyntheticPathToNodeIfFar(saveState, playerState->aiCurrentPathNode);
     }
 
     zVec3 targetDelta;
@@ -1307,29 +1276,14 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
 
     switch (playerState->aiCurrentSteeringSubstate) {
     case kPlayerAiMode2SteerDirectTarget:
-        UpdateAiMode2MoveAndTurnTowardTarget(
-            saveState,
-            forwardDot,
-            lateralDot,
-            targetDistance
-        );
+        UpdateAiMode2MoveAndTurnTowardTarget(saveState, forwardDot, lateralDot, targetDistance);
         break;
     case kPlayerAiMode2SteerOffsetTarget:
-        TickAiMode2OffsetTargetSteering(
-            saveState,
-            forwardDot,
-            lateralDot,
-            targetDistance
-        );
+        TickAiMode2OffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance);
         forwardDot = 1.0f;
         break;
     case kPlayerAiMode2SteerDynamicOffsetTarget:
-        TickAiMode2DynamicOffsetTargetSteering(
-            saveState,
-            forwardDot,
-            lateralDot,
-            targetDistance
-        );
+        TickAiMode2DynamicOffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance);
         forwardDot = 1.0f;
         break;
     case kPlayerAiMode2SteerAutoTurn:
@@ -1364,19 +1318,12 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
         playerState->subVerticalInputCopy = verticalInput;
     }
 
-    TickAiMode2AltGunAttackWindow(
-        saveState,
-        targetDistance,
-        forwardDot
-    );
+    TickAiMode2AltGunAttackWindow(saveState, targetDistance, forwardDot);
 
     zUtil_PlayerStateStorage *targetPlayerState =
         (zUtil_PlayerStateStorage *)g_GameStateOrMapTable->playerState;
     if (targetPlayerState->lifecycleState == kPlayerLifecycleInactive ||
-        zMath::Vec3DeltaLengthSq(
-            &playerState->worldPos,
-            &playerState->aiRestoreTarget
-        ) >
+        zMath::Vec3DeltaLengthSq(&playerState->worldPos, &playerState->aiRestoreTarget) >
             playerState->aiRestoreDistanceSq) {
         AiRestoreSavedTopLevelState(saveState);
         playerState->aiStateUntilTime =
@@ -1498,10 +1445,7 @@ int __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(
             zUtil_PlayerStateStorage *const localPlayerState =
                 ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
             const float targetDistSq =
-                zMath::Vec3DeltaLengthSq(
-                    &localPlayerState->fxOffsetWorld,
-                    &aiState->fxOffsetWorld
-                );
+                zMath::Vec3DeltaLengthSq(&localPlayerState->fxOffsetWorld, &aiState->fxOffsetWorld);
             if (targetDistSq < aiState->aiAttackRadiusSq) {
                 zVec3 lineOfSightPoint = aiState->fxOffsetWorld;
                 lineOfSightPoint.y -= kPlayerAiAttackLosTargetYOffset;
@@ -1975,14 +1919,8 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(
     );
 
     g_Variant_CurrentTag = playerState->variantTag;
-    zClass_Class::gwNodeSetRaycastable(
-        node,
-        0
-    );
-    zClass_Class::gwNodeSetRaycastable(
-        playerState->rootNode,
-        0
-    );
+    zClass_Class::gwNodeSetRaycastable(node, 0);
+    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
     zClass_cls_di::SetBreakOnFirstCandidate(1);
     zClass_cls_di::SetStopAfterFirstHit(0x40000);
 
@@ -2013,14 +1951,8 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(
     }
 
     zClass_cls_di::SetBreakOnFirstCandidate(0);
-    zClass_Class::gwNodeSetRaycastable(
-        playerState->rootNode,
-        1
-    );
-    zClass_Class::gwNodeSetRaycastable(
-        node,
-        1
-    );
+    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1);
+    zClass_Class::gwNodeSetRaycastable(node, 1);
 
     return raycastResult == 0 && rayData.candidateCount != 0 ? 0 : 1;
 }
@@ -2044,22 +1976,14 @@ void __fastcall AINet::AiRebuildSyntheticPathToNodeIfFar(
     }
 
     AINetNode *const syntheticNode = (AINetNode *)(malloc(sizeof(AINetNode)));
-    memset(
-        syntheticNode,
-        0,
-        sizeof(*syntheticNode)
-    );
+    memset(syntheticNode, 0, sizeof(*syntheticNode));
     syntheticNode->neighborNodes[0] = targetNode;
     syntheticNode->position = playerState->worldPos;
     syntheticNode->nodeIndex = -1;
 
     AINetPathProbeFan *const fan = (AINetPathProbeFan *)(malloc(sizeof(AINetPathProbeFan)));
     syntheticNode->probeFans[0] = fan;
-    memset(
-        fan,
-        0,
-        sizeof(*fan)
-    );
+    memset(fan, 0, sizeof(*fan));
     syntheticNode->probeFans[0]->InitFromSegment(
         syntheticNode->position,
         playerState->aiCurrentPathNode->position,
@@ -2244,10 +2168,7 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
                 &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
             playerState->progressTargetSlots[0].targetVelocity =
                 &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->projectileSpawnVel;
-            HudUi::ShowTopMessageLine(
-                zLoc::GetMessageString(0x908),
-                5.0f
-            );
+            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x908), 5.0f);
             return;
         }
 
@@ -2335,8 +2256,7 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
     leadVectors[1].z = leadCoefficient.inverseProjectileVelocity * leadVectors[0].z;
 
     float leadScale;
-    AINET_VECTOR_DOT_XYZ(
-        quadraticA, leadVectors[1], leadVectors[1]);
+    AINET_VECTOR_DOT_XYZ(quadraticA, leadVectors[1], leadVectors[1]);
 
     quadraticA = 1.0f - quadraticA;
     if (quadraticA <= 0.0f) {
@@ -2344,15 +2264,13 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
         return;
     }
 
-    AINET_VECTOR_DOT_XYZ(
-        leadCoefficient.quadraticB, leadVectors[1], leadVectors[2]);
+    AINET_VECTOR_DOT_XYZ(leadCoefficient.quadraticB, leadVectors[1], leadVectors[2]);
 
     {
         float fastSqrtEstimate;
         {
             float dotProduct;
-            AINET_VECTOR_DOT_XYZ(
-                dotProduct, leadVectors[2], leadVectors[2]);
+            AINET_VECTOR_DOT_XYZ(dotProduct, leadVectors[2], leadVectors[2]);
             /**
              * Pro reviews 2026-09-08T13-20-12-880Z and
              * 2026-09-08T13-53-30-754Z scope the six-instruction arithmetic
@@ -2389,8 +2307,7 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
         leadVectors[1].y = leadScale * leadVectors[0].y;
         leadVectors[1].z = leadScale * leadVectors[0].z;
 
-        AINET_VECTOR_ADD(
-            outTargetPos, targetPlayerState->fxOffsetWorld, leadVectors[1]);
+        AINET_VECTOR_ADD(outTargetPos, targetPlayerState->fxOffsetWorld, leadVectors[1]);
     }
 
     outTargetPos->y -= ((float)(rand()) * 3.05185094e-05f - 0.5f) * -2.0f;
@@ -2639,11 +2556,7 @@ void __fastcall AINet::AiSteerTowardPathNodeForward(
 
     zVec3 targetDir;
     zVec3 forwardNodePosition = playerState->aiCurrentPathNode->neighborNodes[0]->position;
-    AINET_PATH_COMPUTE_FORWARD_NODE_DIR(
-        targetDir,
-        forwardNodePosition,
-        playerState->worldPos
-    );
+    AINET_PATH_COMPUTE_FORWARD_NODE_DIR(targetDir, forwardNodePosition, playerState->worldPos);
     targetDir.y = 0.0f;
     const float targetDistance = zMath::Vec3Normalize(&targetDir);
 
@@ -2658,17 +2571,9 @@ void __fastcall AINet::AiSteerTowardPathNodeForward(
     }
 
     float forwardDot;
-    AINET_PATH_DOT_XZ(
-        forwardDot,
-        playerState->steerBasisNorm,
-        targetDir
-    );
+    AINET_PATH_DOT_XZ(forwardDot, playerState->steerBasisNorm, targetDir);
     float turnCross;
-    AINET_PATH_CROSS_XZ(
-        turnCross,
-        playerState->steerBasisNorm,
-        targetDir
-    );
+    AINET_PATH_CROSS_XZ(turnCross, playerState->steerBasisNorm, targetDir);
 
     if (forwardDot < 0.0f) {
         const float turnCrossForSign = turnCross;
@@ -2723,11 +2628,7 @@ void __fastcall AINet::AiSteerTowardPathNodeReverse(
 
     zVec3 targetDir;
     zVec3 forwardNodePosition = playerState->aiCurrentPathNode->neighborNodes[0]->position;
-    AINET_PATH_COMPUTE_FORWARD_NODE_DIR(
-        targetDir,
-        forwardNodePosition,
-        playerState->worldPos
-    );
+    AINET_PATH_COMPUTE_FORWARD_NODE_DIR(targetDir, forwardNodePosition, playerState->worldPos);
     targetDir.y = 0.0f;
     const float targetDistance = zMath::Vec3Normalize(&targetDir);
 
@@ -2745,17 +2646,9 @@ void __fastcall AINet::AiSteerTowardPathNodeReverse(
     reverseSteerBasis.x = -reverseSteerBasis.x;
     reverseSteerBasis.z = -reverseSteerBasis.z;
     float forwardDot;
-    AINET_PATH_DOT_XZ(
-        forwardDot,
-        reverseSteerBasis,
-        targetDir
-    );
+    AINET_PATH_DOT_XZ(forwardDot, reverseSteerBasis, targetDir);
     float turnCross;
-    AINET_PATH_CROSS_XZ(
-        turnCross,
-        reverseSteerBasis,
-        targetDir
-    );
+    AINET_PATH_CROSS_XZ(turnCross, reverseSteerBasis, targetDir);
 
     if (forwardDot < 0.0f) {
         const float turnCrossForSign = turnCross;

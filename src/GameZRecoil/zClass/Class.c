@@ -310,11 +310,7 @@ namespace {
         zClass_NodePartial * node,
         const zBBox3f *bbox
     ) {
-        memcpy(
-            node->cachedBounds,
-            bbox,
-            sizeof(*bbox)
-        );
+        memcpy(node->cachedBounds, bbox, sizeof(*bbox));
     }
 
 }
@@ -324,43 +320,32 @@ namespace zClass_Class {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.allocnodefromfreelist
-     * @recoil-artifact defines .text recoil:function:0x4478c0: zClass_Class::AllocNodeFromFreeList.
+     * @recoil-artifact defines .text recoil:function:0x4478c0: zClass_Class::gwNodeNew.
      * Purpose: pop a node from the global free list, clear it, and install
      * default active-node state.
      */
-    zClass_NodePartial *__cdecl AllocNodeFromFreeList() {
+    zClass_NodePartial *__cdecl gwNodeNew() {
         const int index = g_zClass_NodeFreeHeadIndex;
         if (index != -1) {
             zClass_NodeFreeListSlot *slot = &g_zClass_NodeArray[index];
             zClass_NodePartial *node = &slot->node;
             g_zClass_NodeFreeHeadIndex = (int)(slot->freeTag << 8) >> 8;
 
-            memset(
-                node,
-                0,
-                offsetof(zClass_NodeFreeListSlot, freeTag)
-            );
+            memset(node, 0, offsetof(zClass_NodeFreeListSlot, freeTag));
             /**
-             * BN evidence: AllocNodeFromFreeList increments this global after
+             * BN evidence: gwNodeNew increments this global after
              * clearing a popped node slot from g_zClass_NodeArray.
              * Purpose: account for the newly active node before type-list use.
              */
             ++g_zClass_ActiveNodeCount;
-            zClass_TypeList::Insert(
-                6,
-                node
-            );
+            zClass_TypeList::Insert(6, node);
 
             node->flags = 0x0108001c;
             node->callbackPriority = 1;
             node->gridCol = -1;
             node->gridRow = -1;
             node->nodeType = 0xff;
-            sprintf(
-                node->name,
-                "%s",
-                "Default_node_name"
-            );
+            sprintf(node->name, "%s", "Default_node_name");
             slot->damageHandler = 0;
             return node;
         }
@@ -382,12 +367,7 @@ namespace zClass_Class {
      */
     int __fastcall DeleteNodeByType(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x231,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x231, "Null node pointer.");
             return 5;
         }
 
@@ -441,12 +421,7 @@ namespace zClass_Class {
      */
     int __fastcall FreeNodeToFreeList(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x28e,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x28e, "Null node pointer.");
             return 5;
         }
         if (node->listCountB > 0) {
@@ -491,12 +466,7 @@ namespace zClass_Class {
      */
     int __fastcall TryFreeNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x2f0,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x2f0, "Null node pointer.");
             return 5;
         }
 
@@ -525,27 +495,16 @@ namespace zClass_Class {
         const char *name
     ) {
         if (root == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x33a,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x33a, "Null node pointer.");
             return 0;
         }
 
-        if (strcmp(
-            root->name,
-            name
-        ) == 0) {
+        if (strcmp(root->name, name) == 0) {
             return root;
         }
 
         for (int i = 0; i < root->listCountB; ++i) {
-            zClass_NodePartial *const childMatch = FindNodeRecursiveByName(
-                root->listB[i],
-                name
-            );
+            zClass_NodePartial *const childMatch = FindNodeRecursiveByName(root->listB[i], name);
             if (childMatch != 0) {
                 return childMatch;
             }
@@ -566,12 +525,7 @@ namespace zClass_Class {
         int active
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x38d,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x38d, "Null node pointer.");
             return 5;
         }
 
@@ -590,10 +544,7 @@ namespace zClass_Class {
             return 0;
         }
         if (node->classId == 10) {
-            zClass_Sound::gwSoundSetActive(
-                node,
-                active
-            );
+            zClass_Sound::gwSoundSetActive(node, active);
             return 0;
         }
 
@@ -618,12 +569,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x3b7,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x3b7, "Null node pointer.");
             return 5;
         }
 
@@ -646,12 +592,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x3c6,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x3c6, "Null node pointer.");
             return 5;
         }
 
@@ -675,28 +616,15 @@ namespace zClass_Class {
         const char *name
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x3df,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x3df, "Null node pointer.");
             return 5;
         }
 
         if (strlen(name) >= sizeof(node->name)) {
-            strncpy(
-                node->name,
-                name,
-                0x22
-            );
+            strncpy(node->name, name, 0x22);
             node->name[0x23] = '\0';
         } else {
-            sprintf(
-                node->name,
-                "%s",
-                name
-            );
+            sprintf(node->name, "%s", name);
         }
 
         return 0;
@@ -709,12 +637,7 @@ namespace zClass_Class {
      */
     char *__fastcall gwNodeGetName(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x40d,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x40d, "Null node pointer.");
             return 0;
         }
 
@@ -760,10 +683,7 @@ namespace zClass_Class {
 
         node->boundsFlags |= 0x01;
         if ((node->flags & kTypeListInsertedFlag) == 0) {
-            zClass_TypeList::Insert(
-                kQueuedTreeBucket,
-                node
-            );
+            zClass_TypeList::Insert(kQueuedTreeBucket, node);
             node->flags |= kTypeListInsertedFlag;
         }
         node->flags |= kTransformQueuedFlag;
@@ -805,12 +725,7 @@ namespace zClass_Class {
         void *actionCallback
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x47e,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x47e, "Null node pointer.");
             return 5;
         }
 
@@ -818,10 +733,7 @@ namespace zClass_Class {
         if (callbackPriority >= 0 && callbackPriority < 6) {
             if (node->actionCallback == 0) {
                 if (actionCallback != 0) {
-                    if (zClass_TypeList::Insert(
-                        callbackPriority,
-                        node
-                    ) != 0) {
+                    if (zClass_TypeList::Insert(callbackPriority, node) != 0) {
                         if ((node->flags & 0x800) == 0) {
                             free(node);
                         }
@@ -829,10 +741,7 @@ namespace zClass_Class {
                     }
                 }
             } else if (actionCallback == 0) {
-                zClass_TypeList::MarkPendingRemoval(
-                    callbackPriority,
-                    node
-                );
+                zClass_TypeList::MarkPendingRemoval(callbackPriority, node);
             }
 
             node->actionCallback = actionCallback;
@@ -860,12 +769,7 @@ namespace zClass_Class {
         void *actionCallback
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x4c3,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x4c3, "Null node pointer.");
             return 5;
         }
 
@@ -873,10 +777,7 @@ namespace zClass_Class {
         if (callbackPriority >= 0 && callbackPriority < 6) {
             if (node->actionCallback == 0) {
                 if (actionCallback != 0) {
-                    if (zClass_TypeList::InsertChildNodes(
-                        callbackPriority,
-                        node
-                    ) != 0) {
+                    if (zClass_TypeList::InsertChildNodes(callbackPriority, node) != 0) {
                         if ((node->flags & 0x800) == 0) {
                             free(node);
                         }
@@ -884,10 +785,7 @@ namespace zClass_Class {
                     }
                 }
             } else if (actionCallback == 0) {
-                zClass_TypeList::MarkPendingRemoval(
-                    callbackPriority,
-                    node
-                );
+                zClass_TypeList::MarkPendingRemoval(callbackPriority, node);
             }
 
             node->actionCallback = actionCallback;
@@ -915,27 +813,16 @@ namespace zClass_Class {
         int priority
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x4fc,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x4fc, "Null node pointer.");
             return 5;
         }
 
         if (node->actionCallback != 0) {
             if (node->callbackPriority >= 0 && node->callbackPriority < 6) {
-                zClass_TypeList::MarkPendingRemoval(
-                    node->callbackPriority,
-                    node
-                );
+                zClass_TypeList::MarkPendingRemoval(node->callbackPriority, node);
             }
             if (priority >= 0 && priority < 6) {
-                zClass_TypeList::Insert(
-                    priority,
-                    node
-                );
+                zClass_TypeList::Insert(priority, node);
             }
         }
 
@@ -953,12 +840,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x529,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x529, "Null node pointer.");
             return 5;
         }
 
@@ -981,12 +863,7 @@ namespace zClass_Class {
         int *outValue
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x542,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x542, "Null node pointer.");
             return 5;
         }
 
@@ -1004,12 +881,7 @@ namespace zClass_Class {
         int *outValue
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x556,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x556, "Null node pointer.");
             return 5;
         }
 
@@ -1027,12 +899,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x56c,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x56c, "Null node pointer.");
             return 5;
         }
 
@@ -1055,12 +922,7 @@ namespace zClass_Class {
         int *outValue
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x584,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x584, "Null node pointer.");
             return 5;
         }
 
@@ -1078,12 +940,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x59a,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x59a, "Null node pointer.");
             return 5;
         }
 
@@ -1106,12 +963,7 @@ namespace zClass_Class {
         int *outValue
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x5b2,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x5b2, "Null node pointer.");
             return 5;
         }
 
@@ -1130,12 +982,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x5c7,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x5c7, "Null node pointer.");
             return 5;
         }
 
@@ -1158,12 +1005,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x5e1,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x5e1, "Null node pointer.");
             return 5;
         }
 
@@ -1211,12 +1053,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x60f,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x60f, "Null node pointer.");
             return 5;
         }
 
@@ -1237,12 +1074,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x62d,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x62d, "Null node pointer.");
             return 5;
         }
 
@@ -1267,70 +1099,39 @@ namespace zClass_Class {
         zClass_NodePartial * child
     ) {
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x666,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x666, "Null node pointer.");
             return 5;
         }
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x667,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x667, "Null node pointer.");
             return 5;
         }
 
         int result;
         switch (parent->classId) {
         case 2:
-            result = zClass_World::AddChildAtGrid(
-                parent,
-                child
-            );
+            result = zClass_World::AddChildAtGrid(parent, child);
             break;
         case 5:
-            result = zClass_Object3D::gwObject3DAddChild(
-                parent,
-                child
-            );
+            result = zClass_Object3D::gwObject3DAddChild(parent, child);
             break;
         case 1:
-            result = zClass_Camera::gwCameraAddChild(
-                parent,
-                child
-            );
+            result = zClass_Camera::gwCameraAddChild(parent, child);
             break;
         case 6:
-            result = zClass_Lod::gwLodAddChild(
-                parent,
-                child
-            );
+            result = zClass_Lod::gwLodAddChild(parent, child);
             break;
         case 8:
-            result = zClass_Animate::AddChild(
-                parent,
-                child
-            );
+            result = zClass_Animate::AddChild(parent, child);
             break;
         case 3:
         case 4:
         case 9:
         case 10:
-            result = zClass_Class::AddChildGeneric(
-                parent,
-                child
-            );
+            result = zClass_Class::AddChildGeneric(parent, child);
             break;
         case 11:
-            result = zClass_Class::AddChildValidated(
-                parent,
-                child
-            );
+            result = zClass_Class::AddChildValidated(parent, child);
             break;
         case 7:
             sprintf(
@@ -1387,18 +1188,12 @@ namespace zClass_Class {
         child->listA[child->listCountA] = parent;
         child->listCountA = newParentCount;
         if (newParentCount > 1) {
-            SetSingleParentFlagRecursive(
-                child,
-                0
-            );
+            SetSingleParentFlagRecursive(child, 0);
         }
 
         parent->boundsFlags |= kBoundsDirtyFlag;
         if ((parent->flags & kTypeListInsertedFlag) == 0) {
-            zClass_TypeList::Insert(
-                kQueuedTreeBucket,
-                parent
-            );
+            zClass_TypeList::Insert(kQueuedTreeBucket, parent);
             parent->flags |= kTypeListInsertedFlag;
         }
         parent->flags |= kTransformQueuedFlag;
@@ -1418,91 +1213,48 @@ namespace zClass_Class {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x713,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x713, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x714,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x714, "Null node pointer.");
             return 5;
         }
 
         int result;
         switch (parent->classId) {
         case 2:
-            result = zClass_World::RemoveChildAtGrid(
-                parent,
-                child
-            );
+            result = zClass_World::RemoveChildAtGrid(parent, child);
             break;
         case 5:
-            result = zClass_Object3D::RemoveChild(
-                parent,
-                child
-            );
+            result = zClass_Object3D::RemoveChild(parent, child);
             break;
         case 9:
-            result = zClass_Light::RemoveChild(
-                parent,
-                child
-            );
+            result = zClass_Light::RemoveChild(parent, child);
             break;
         case 10:
-            result = zClass_Sound::RemoveChild(
-                parent,
-                child
-            );
+            result = zClass_Sound::RemoveChild(parent, child);
             break;
         case 1:
-            result = zClass_Camera::gwCameraRemoveChild(
-                parent,
-                child
-            );
+            result = zClass_Camera::gwCameraRemoveChild(parent, child);
             break;
         case 3:
-            result = zClass::RemoveChildChecked(
-                parent,
-                child
-            );
+            result = zClass::RemoveChildChecked(parent, child);
             break;
         case 4:
-            result = zClass_Display::RemoveChild(
-                parent,
-                child
-            );
+            result = zClass_Display::RemoveChild(parent, child);
             break;
         case 6:
-            result = zClass_Lod::RemoveChild(
-                parent,
-                child
-            );
+            result = zClass_Lod::RemoveChild(parent, child);
             break;
         case 7:
-            result = zClass_Sequence::RemoveChild(
-                parent,
-                child
-            );
+            result = zClass_Sequence::RemoveChild(parent, child);
             break;
         case 8:
-            result = zClass_Animate::RemoveChild(
-                parent,
-                child
-            );
+            result = zClass_Animate::RemoveChild(parent, child);
             break;
         case 11:
-            result = zClass_Class::RemoveChildValidated(
-                parent,
-                child
-            );
+            result = zClass_Class::RemoveChildValidated(parent, child);
             break;
         default:
             sprintf(
@@ -1570,19 +1322,13 @@ namespace zClass_Class {
             }
             --child->listCountA;
             if (child->listCountA == 1 && (parent->flags & kSingleParentFlag) != 0) {
-                SetSingleParentFlagRecursive(
-                    child,
-                    1
-                );
+                SetSingleParentFlagRecursive(child, 1);
             }
         }
 
         parent->boundsFlags |= kBoundsDirtyFlag;
         if ((parent->flags & kTypeListInsertedFlag) == 0) {
-            zClass_TypeList::Insert(
-                kQueuedTreeBucket,
-                parent
-            );
+            zClass_TypeList::Insert(kQueuedTreeBucket, parent);
             parent->flags |= kTypeListInsertedFlag;
         }
         parent->flags |= kTransformQueuedFlag;
@@ -1600,32 +1346,18 @@ namespace zClass_Class {
         zBBox3f * outBBox
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x7f9,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x7f9, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x7fa,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x7fa, "Null class data pointer");
             return 5;
         }
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
 
-        memcpy(
-            outBBox,
-            (const zBBox3f *)(node->cachedBounds),
-            sizeof(*outBBox)
-        );
+        memcpy(outBBox, (const zBBox3f *)(node->cachedBounds), sizeof(*outBBox));
         return 0;
     }
 
@@ -1640,21 +1372,11 @@ namespace zClass_Class {
         zBBoxCorners * outCorners
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x81b,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x81b, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x81c,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x81c, "Null class data pointer");
             return 5;
         }
         if ((node->flags & 0x100) == 0) {
@@ -1666,7 +1388,7 @@ namespace zClass_Class {
             const zClass_Object3DDataPartial *objectData =
                 (const zClass_Object3DDataPartial *)(node->classData);
             if ((objectData->flags & 0x08) == 0) {
-                zMath_Mat_TransformBBoxToCorners(
+                zMathMatTransformBBoxToCorners(
                     (const zMat4x3 *)(objectData->localMatrix),
                     bbox,
                     outCorners
@@ -1676,7 +1398,7 @@ namespace zClass_Class {
         } else if (node->classId == 1) {
             const zClass_CameraDataPartial *cameraData =
                 (const zClass_CameraDataPartial *)(node->classData);
-            zMath_Mat_TransformBBoxToCorners(
+            zMathMatTransformBBoxToCorners(
                 &((const zClass_CameraBBoxQueryDataPartial *)(cameraData))
                     ->viewOverlay.cachedViewMatrix,
                 bbox,
@@ -1687,7 +1409,7 @@ namespace zClass_Class {
             const zClass_AnimateDataPartial *animateData =
                 (const zClass_AnimateDataPartial *)(node->classData);
             if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
-                zMath_Mat_TransformBBoxToCorners(
+                zMathMatTransformBBoxToCorners(
                     (const zMat4x3 *)(animateData->animatedTransform),
                     bbox,
                     outCorners
@@ -1719,21 +1441,11 @@ namespace zClass_Class {
         zBBoxCorners * outCorners
     ) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x85f,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x85f, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x860,
-                "Null class data pointer"
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x860, "Null class data pointer");
             return 5;
         }
         if ((node->flags & 0x100) == 0) {
@@ -1741,8 +1453,8 @@ namespace zClass_Class {
         }
 
         int returnCode = 0;
-        int currentIsIdentity = zMath_Mat_IsCurrentIdentity();
-        zMat4x3 *currentMatrix = zMath_Mat_GetCurrent();
+        int currentIsIdentity = zMathMatIsCurrentIdentity();
+        zMat4x3 *currentMatrix = zMathMatGetCurrent();
         int skipTransform = 0;
         const zMat4x3 *nodeMatrix = 0;
 
@@ -1824,11 +1536,7 @@ namespace zClass_Class {
             combinedMatrix.posZ = currentMatrix->xz * nodeMatrix->posX + currentMatrix->yz * nodeMatrix->posY + currentMatrix->zz * nodeMatrix->posZ + currentMatrix->posZ;
         }
 
-        zMath_Mat_TransformBBoxToCorners(
-            &combinedMatrix,
-            bbox,
-            outCorners
-        );
+        zMathMatTransformBBoxToCorners(&combinedMatrix, bbox, outCorners);
         return returnCode;
     }
 
@@ -1891,11 +1599,7 @@ namespace zClass_Class {
                     };
                     zMath::MatStackPushPtr(objectData->localMatrix);
                     zMath::MatLoadIdentity();
-                    zMath::MatApplyLocalTRS(
-                        &objectData->rotation,
-                        &position,
-                        &objectData->scale
-                    );
+                    zMath::MatApplyLocalTRS(&objectData->rotation, &position, &objectData->scale);
                     zMath::MatStackPopPtr();
                 }
                 gwNodeRecalcBBox(node);
@@ -1958,12 +1662,7 @@ namespace zClass_Class {
      */
     int __fastcall gwNodeRecalcBBox(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x9d0,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0x9d0, "Null node pointer.");
             return 5;
         }
         if (node->classId == 2) {
@@ -2008,10 +1707,7 @@ namespace zClass_Class {
             if (parent->classId == 2) {
                 if (!worldRectComputed) {
                     zBBoxCorners corners = {0};
-                    gwNodeGetWorldBBoxCorners(
-                    node,
-                        &corners
-                    );
+                    gwNodeGetWorldBBoxCorners(node, &corners);
                     minX = maxX = corners.values[0];
                     minZ = maxZ = corners.values[2];
                     for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
@@ -2047,24 +1743,13 @@ namespace zClass_Class {
                     );
                     }
                 } else {
-                    zClass_World::RemoveChildAtGrid(
-                        parent,
-                        node
-                    );
-                    zClass_World::AddChildToGridCell(
-                        parent,
-                        node,
-                        gridCol,
-                        gridRow
-                    );
+                    zClass_World::RemoveChildAtGrid(parent, node);
+                    zClass_World::AddChildToGridCell(parent, node, gridCol, gridRow);
                 }
             } else {
                 parent->boundsFlags |= 0x02;
                 if ((parent->flags & 0x01) == 0) {
-                    zClass_TypeList::InsertChildNodes(
-                        kQueuedTreeBucket,
-                        parent
-                    );
+                    zClass_TypeList::InsertChildNodes(kQueuedTreeBucket, parent);
                     parent->flags |= 0x01;
                 }
                 parent->flags |= 0x02;
@@ -2082,12 +1767,7 @@ namespace zClass_Class {
      */
     int __fastcall gwNodeComputeChildBBox(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0xaa3,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0xaa3, "Null node pointer.");
             return 5;
         }
 
@@ -2104,10 +1784,7 @@ namespace zClass_Class {
                 continue;
             }
 
-            gwNodeGetWorldBBoxCorners(
-                child,
-                &corners
-            );
+            gwNodeGetWorldBBoxCorners(child, &corners);
             zBBox3f *childBBox = &((zClass_NodeFreeListSlot *)(node))->secondaryBounds;
             childBBox->minX = corners.values[0];
             childBBox->minY = corners.values[1];
@@ -2149,10 +1826,7 @@ namespace zClass_Class {
                 continue;
             }
 
-            gwNodeGetWorldBBoxCorners(
-                child,
-                &corners
-            );
+            gwNodeGetWorldBBoxCorners(child, &corners);
             zBBox3f *childBBox = &((zClass_NodeFreeListSlot *)(node))->secondaryBounds;
             for (int cornerIndex = 0; cornerIndex < 8; ++cornerIndex) {
                 const float *corner = &corners.values[cornerIndex * 3];
@@ -2185,12 +1859,7 @@ namespace zClass_Class {
      */
     int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0xb31,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0xb31, "Null node pointer.");
             return 5;
         }
 
@@ -2226,10 +1895,10 @@ namespace zClass_Class {
 namespace gwNode {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.buildnodetoancestormatrix
-     * @recoil-artifact defines .text recoil:function:0x449480: gwNode::BuildNodeToAncestorMatrix
+     * @recoil-artifact defines .text recoil:function:0x449480: gwNode::gwNodeBuildNodeToAncestorMatrix
      * Purpose: apply a node's parent-chain transforms into the current matrix.
      */
-    int __fastcall BuildNodeToAncestorMatrix(
+    int __fastcall gwNodeBuildNodeToAncestorMatrix(
         zClass_NodePartial * node,
         int matMode
     ) {
@@ -2237,12 +1906,7 @@ namespace gwNode {
         zVec3 zeroAngles = {0};
 
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0xb66,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, kClassSourceFile, 0xb66, "Null node pointer.");
             return 5;
         }
 
@@ -2302,10 +1966,7 @@ namespace gwNode {
                 if ((objectFlags & 0x08) == 0) {
                     if ((ancestorFlags & kSingleParentFlag) != 0) {
                         if ((objectFlags & 0x20) != 0) {
-                            zMath::MatMultiply(
-                                (const zMat4x3 *)(objectData->localMatrix),
-                                matMode
-                            );
+                            zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), matMode);
                             zMat4x3 currentMatrix;
                             zMath::MatCopyCurrentTo(&currentMatrix);
                             memcpy(
@@ -2320,19 +1981,12 @@ namespace gwNode {
                             );
                         }
                     } else {
-                        zMath::MatMultiply(
-                            (const zMat4x3 *)(objectData->localMatrix),
-                            matMode
-                        );
+                        zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), matMode);
                     }
                 } else if ((ancestorFlags & kSingleParentFlag) != 0 && (objectFlags & 0x20) != 0) {
                     zMat4x3 currentMatrix;
                     zMath::MatCopyCurrentTo(&currentMatrix);
-                    memcpy(
-                        objectData->cachedWorldMatrix,
-                        &currentMatrix,
-                        sizeof(currentMatrix)
-                    );
+                    memcpy(objectData->cachedWorldMatrix, &currentMatrix, sizeof(currentMatrix));
                     objectData->flags &= ~0x20;
                 }
                 break;
@@ -2353,11 +2007,7 @@ namespace gwNode {
             case 10: {
                 zClass_SoundDataPartial *soundData =
                     (zClass_SoundDataPartial *)(ancestor->classData);
-                zMath::MatApplyLocalTRS(
-                    &zeroAngles,
-                    &soundData->localPosition,
-                    &unitScale
-                );
+                zMath::MatApplyLocalTRS(&zeroAngles, &soundData->localPosition, &unitScale);
                 break;
             }
             case 1: {
@@ -2383,10 +2033,7 @@ namespace gwNode {
                     (zClass_AnimateDataPartial *)(ancestor->classData);
                 if ((ancestorFlags & 0x04) != 0 &&
                     (animateData->statusFlags & 0x04) != 0) {
-                    zMath::MatMultiply(
-                        (const zMat4x3 *)(animateData->animatedTransform),
-                        matMode
-                    );
+                    zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), matMode);
                 }
                 break;
             }
@@ -2443,10 +2090,7 @@ namespace gwNode {
         float matrix[12];
         zMath::MatStackPushPtr(matrix);
         zMath::MatLoadIdentity();
-        BuildNodeToAncestorMatrix(
-            node,
-            1
-        );
+        gwNodeBuildNodeToAncestorMatrix(node, 1);
         outPosition->x = matrix[9];
         outPosition->y = matrix[10];
         outPosition->z = matrix[11];
@@ -2468,24 +2112,15 @@ namespace gwNode {
         }
 
         if (point->x == 0.0f && point->y == 0.0f && point->z == 0.0f) {
-            GetWorldPosition(
-                node,
-                point
-            );
+            GetWorldPosition(node, point);
             return 0;
         }
 
         zMat4x3 matrix = {0};
         zMath::MatStackPushPtr((float *)(&matrix));
         zMath::MatLoadIdentity();
-        BuildNodeToAncestorMatrix(
-            node,
-            1
-        );
-        zMath::MatTransformPointBatchInPlace(
-            point,
-            1
-        );
+        gwNodeBuildNodeToAncestorMatrix(node, 1);
+        zMath::MatTransformPointBatchInPlace(point, 1);
         zMath::MatStackPopPtr();
         return 0;
     }
@@ -2510,29 +2145,19 @@ namespace gwNode {
         zMat4x3 matrix = {0};
         zMath::MatStackPushPtr((float *)(&matrix));
         zMath::MatLoadIdentity();
-        BuildNodeToAncestorMatrix(
-            node,
-            1
-        );
+        gwNodeBuildNodeToAncestorMatrix(node, 1);
 
         if (inOutPosition->x == 0.0f && inOutPosition->y == 0.0f && inOutPosition->z == 0.0f) {
             inOutPosition->x = matrix.posX;
             inOutPosition->y = matrix.posY;
             inOutPosition->z = matrix.posZ;
         } else {
-            zMath::MatTransformPointBatchInPlace(
-                inOutPosition,
-                1
-            );
+            zMath::MatTransformPointBatchInPlace(inOutPosition, 1);
         }
 
         zVec3 worldPosition = {matrix.posX, matrix.posY, matrix.posZ};
         zVec3 worldOrientationBasis[2];
-        memcpy(
-            worldOrientationBasis,
-            localOrientationBasis,
-            sizeof(worldOrientationBasis)
-        );
+        memcpy(worldOrientationBasis, localOrientationBasis, sizeof(worldOrientationBasis));
         if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
             const zMat4x3 *currentMatrix =
                 (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
@@ -2567,10 +2192,7 @@ namespace gwNode {
         outOrientation->y = directionAngles.y;
         outOrientation->z = directionAngles.z;
         outOrientation->z =
-            zMath_Vec3_ElevationAngleBetweenPoints(
-                &worldPosition,
-                &worldOrientationBasis[1]
-            );
+            zMathVec3ElevationAngleBetweenPoints(&worldPosition, &worldOrientationBasis[1]);
 
         zMath::MatStackPopPtr();
         return 0;
@@ -2673,10 +2295,7 @@ namespace zClass_Class {
         }
 
         for (int i = 0; i < node->listCountB; ++i) {
-            SetSingleParentFlagRecursive(
-                node->listB[i],
-                setFlag
-            );
+            SetSingleParentFlagRecursive(node->listB[i], setFlag);
         }
 
         return 0;
@@ -2708,11 +2327,7 @@ namespace zClass_Node {
         self->flags |= flagMask;
 
         for (int i = 0; i < self->listCountB; ++i) {
-            SetContextRecursive(
-                self->listB[i],
-                context,
-                flagMask
-            );
+            SetContextRecursive(self->listB[i], context, flagMask);
         }
     }
 
@@ -2733,23 +2348,14 @@ namespace zClass_Node {
         int enabled
     ) {
         unsigned int userData;
-        zClass_Class::gwNodeGetUserData(
-            node,
-            &userData
-        );
+        zClass_Class::gwNodeGetUserData(node, &userData);
         zDiPartial *di = (zDiPartial *)(userData);
         if (di != 0) {
-            zDi::SetFlagBit0(
-                di,
-                enabled
-            );
+            zDi::SetFlagBit0(di, enabled);
         }
 
         for (int i = 0; i < node->listCountB; ++i) {
-            SetDiFlagBit0Recursive(
-                node->listB[i],
-                enabled
-            );
+            SetDiFlagBit0Recursive(node->listB[i], enabled);
         }
     }
 

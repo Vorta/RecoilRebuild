@@ -54,14 +54,14 @@ HRESULT WINAPI QueryInterfaceFromInterfaceMap(
     void **outInterface
 );
 
-HRESULT WINAPI ConnectionPointContainer_Advise(
+HRESULT WINAPI ConnectionPointContainerAdvise(
     IUnknown *source,
     IUnknown *sink,
     REFIID connectionPointIid,
     DWORD *cookie
 );
 
-HRESULT WINAPI ConnectionPointContainer_Unadvise(
+HRESULT WINAPI ConnectionPointContainerUnadvise(
     IUnknown *source,
     REFIID connectionPointIid,
     DWORD cookie

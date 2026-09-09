@@ -157,10 +157,7 @@ void CZGameFrame::OnPaint() {
     if (zVid::QueryCachedClientRectUpdateMaskIf3dfx() == 0) {
         PAINTSTRUCT paintStruct = paintDc.m_ps;
         HDC compatibleDc = CreateCompatibleDC(paintDc.GetSafeHdc());
-        SelectObject(
-            compatibleDc,
-            m_gameBitmap.GetSafeHandle()
-        );
+        SelectObject(compatibleDc, m_gameBitmap.GetSafeHandle());
 
         if (paintStruct.rcPaint.bottom - paintStruct.rcPaint.top > 480) {
             StretchBlt(
@@ -206,11 +203,7 @@ void CZGameFrame::OnSize(
     int cx,
     int cy
 ) {
-    CFrameWnd::OnSize(
-        nType,
-        cx,
-        cy
-    );
+    CFrameWnd::OnSize(nType, cx, cy);
     zVid::UpdateCachedClientRectIfUpdateMaskEnabled();
 }
 
@@ -260,7 +253,7 @@ int CZGameFrame::OnCreate(
             MAKEINTRESOURCEA(2)
         ), g_CZGameFrame_GameBmpResourceName)
     );
-    zInput::Mouse_ShutdownDevice();
+    zInput::MouseShutdownDevice();
     return 0;
 }
 
@@ -272,7 +265,7 @@ int CZGameFrame::OnCreate(
  * handler and bitmap cleanup run.
  */
 void CZGameFrame::OnDestroy() {
-    zNetwork_DPlay_DestroyCachedLocalPlayer();
+    zNetworkDPlayDestroyCachedLocalPlayer();
     zVideo::ShutdownVideoSystem();
     zSndCd::Stop();
     CFrameWnd::OnDestroy();
@@ -291,11 +284,7 @@ void CZGameFrame::OnActivate(
     CWnd *pWndOther,
     BOOL bMinimized
 ) {
-    CFrameWnd::OnActivate(
-        nState,
-        pWndOther,
-        bMinimized
-    );
+    CFrameWnd::OnActivate(nState, pWndOther, bMinimized);
 
     RecoilApp_IState *const currentState = m_app->GetCurrentState();
     if (currentState != 0) {
@@ -309,7 +298,7 @@ void CZGameFrame::OnActivate(
     } else {
         m_app->OnAppActivate();
         zInput::OnAppActivate();
-        zVideo_RestoreIconicFullscreenWindowIfNeeded();
+        zVideoRestoreIconicFullscreenWindowIfNeeded();
     }
 }
 
@@ -325,8 +314,5 @@ int CZGameFrame::OnAppIdleDispatchMessage(
     unsigned int wParam,
     unsigned int lParam
 ) {
-    return m_app->OnIdleOrDispatch(
-        wParam,
-        lParam
-    );
+    return m_app->OnIdleOrDispatch(wParam, lParam);
 }

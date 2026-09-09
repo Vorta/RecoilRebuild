@@ -25,12 +25,7 @@ extern "C" int WINAPI WinMain(
     LPSTR lpCmdLine,
     int nCmdShow
 ) {
-    return AfxWinMain(
-        hInstance,
-        hPrevInstance,
-        lpCmdLine,
-        nCmdShow
-    );
+    return AfxWinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 }
 #if defined(_MSC_VER)
 #pragma optimize("", on)

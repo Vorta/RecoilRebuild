@@ -260,67 +260,23 @@ namespace zModel_MatlBuffer {
         zImage_TexDirEntryPartial **frameBuffer = 0;
         FILE *const file = (FILE *)(stream);
 
-        if (fwrite(
-            &g_zModel_MatlPoolCapacity,
-            4,
-            1,
-            file
-        ) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_GModMatl_FILE,
-                0x1e9,
-                g_zModel_Matl_ErrWriteBuffer
-            );
+        if (fwrite(&g_zModel_MatlPoolCapacity, 4, 1, file) != 1) {
+            zError::ReportOld(0x200, g_zModel_GModMatl_FILE, 0x1e9, g_zModel_Matl_ErrWriteBuffer);
         }
-        if (fwrite(
-            &g_zModel_MatlPoolInUseCount,
-            4,
-            1,
-            file
-        ) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_GModMatl_FILE,
-                0x1f6,
-                g_zModel_Matl_ErrWriteBuffer
-            );
+        if (fwrite(&g_zModel_MatlPoolInUseCount, 4, 1, file) != 1) {
+            zError::ReportOld(0x200, g_zModel_GModMatl_FILE, 0x1f6, g_zModel_Matl_ErrWriteBuffer);
         }
-        if (fwrite(
-            &g_zModel_MatlFreeHeadIndex,
-            4,
-            1,
-            file
-        ) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_GModMatl_FILE,
-                0x203,
-                g_zModel_Matl_ErrWriteBuffer
-            );
+        if (fwrite(&g_zModel_MatlFreeHeadIndex, 4, 1, file) != 1) {
+            zError::ReportOld(0x200, g_zModel_GModMatl_FILE, 0x203, g_zModel_Matl_ErrWriteBuffer);
         }
-        if (fwrite(
-            &g_zModel_MatlActiveHeadIndex,
-            4,
-            1,
-            file
-        ) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_GModMatl_FILE,
-                0x210,
-                g_zModel_Matl_ErrWriteBuffer
-            );
+        if (fwrite(&g_zModel_MatlActiveHeadIndex, 4, 1, file) != 1) {
+            zError::ReportOld(0x200, g_zModel_GModMatl_FILE, 0x210, g_zModel_Matl_ErrWriteBuffer);
         }
 
         int result = g_zModel_MatlPoolCapacity;
         const int poolBytes = g_zModel_MatlPoolCapacity * (int)(sizeof(zModel_MaterialSlot));
         zModel_MaterialSlot *poolCopy = (zModel_MaterialSlot *)(malloc(poolBytes));
-        memcpy(
-            poolCopy,
-            g_zModel_MatlPool,
-            poolBytes
-        );
+        memcpy(poolCopy, g_zModel_MatlPool, poolBytes);
 
         {
             for (int activeIndex = g_zModel_MatlActiveHeadIndex; activeIndex >= 0;) {
@@ -335,18 +291,8 @@ namespace zModel_MatlBuffer {
             }
         }
 
-        if (fwrite(
-            poolCopy,
-            poolBytes,
-            1,
-            file
-        ) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_GModMatl_FILE,
-                0x234,
-                g_zModel_Matl_ErrWriteBuffer
-            );
+        if (fwrite(poolCopy, poolBytes, 1, file) != 1) {
+            zError::ReportOld(0x200, g_zModel_GModMatl_FILE, 0x234, g_zModel_Matl_ErrWriteBuffer);
             result = 0;
         }
 
@@ -355,12 +301,7 @@ namespace zModel_MatlBuffer {
                 zModel_MaterialSlot *const slot = &poolCopy[activeIndex];
                 if ((slot->material.flags & 0x0400) != 0) {
                     zModel_MaterialCyclePartial *const cycle = slot->material.cycle;
-                    if (fwrite(
-                        cycle,
-                        0x1c,
-                        1,
-                        file
-                    ) != 1) {
+                    if (fwrite(cycle, 0x1c, 1, file) != 1) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_GModMatl_FILE,
@@ -373,15 +314,8 @@ namespace zModel_MatlBuffer {
 
                     const unsigned int frameBytes =
                         (unsigned int)(cycle->frameCount) * sizeof(zImage_TexDirEntryPartial *);
-                    frameBuffer = (zImage_TexDirEntryPartial **)(realloc(
-                        frameBuffer,
-                        frameBytes
-                    ));
-                    memcpy(
-                        frameBuffer,
-                        cycle->frameTable,
-                        frameBytes
-                    );
+                    frameBuffer = (zImage_TexDirEntryPartial **)(realloc(frameBuffer, frameBytes));
+                    memcpy(frameBuffer, cycle->frameTable, frameBytes);
                     for (int i = 0; i < cycle->frameCount; ++i) {
                         frameBuffer[i] =
                             (zImage_TexDirEntryPartial *)((int)(zImage::TexDirEntryToIndex(
@@ -389,12 +323,7 @@ namespace zModel_MatlBuffer {
                             )));
                     }
 
-                    if (fwrite(
-                        frameBuffer,
-                        frameBytes,
-                        1,
-                        file
-                    ) != 1) {
+                    if (fwrite(frameBuffer, frameBytes, 1, file) != 1) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_GModMatl_FILE,
@@ -429,12 +358,7 @@ namespace zModel_MatlBuffer {
         const int oldCapacity = g_zModel_MatlPoolCapacity;
         int poolBytes = 0;
 
-        if (fread(
-            &g_zModel_MatlPoolCapacity,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fread(&g_zModel_MatlPoolCapacity, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_GModMatl_FILE,
@@ -443,12 +367,7 @@ namespace zModel_MatlBuffer {
             );
             return -1;
         }
-        if (fread(
-            &g_zModel_MatlPoolInUseCount,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fread(&g_zModel_MatlPoolInUseCount, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_GModMatl_FILE,
@@ -457,12 +376,7 @@ namespace zModel_MatlBuffer {
             );
             return -1;
         }
-        if (fread(
-            &g_zModel_MatlFreeHeadIndex,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fread(&g_zModel_MatlFreeHeadIndex, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_GModMatl_FILE,
@@ -471,12 +385,7 @@ namespace zModel_MatlBuffer {
             );
             return -1;
         }
-        if (fread(
-            &g_zModel_MatlActiveHeadIndex,
-            4,
-            1,
-            file
-        ) != 1) {
+        if (fread(&g_zModel_MatlActiveHeadIndex, 4, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_GModMatl_FILE,
@@ -494,18 +403,10 @@ namespace zModel_MatlBuffer {
         if (g_zModel_MatlPool == 0) {
             g_zModel_MatlPool = (zModel_MaterialSlot *)(malloc(poolBytes));
         } else if (g_zModel_MatlPoolCapacity > oldCapacity) {
-            g_zModel_MatlPool = (zModel_MaterialSlot *)(realloc(
-                g_zModel_MatlPool,
-                poolBytes
-            ));
+            g_zModel_MatlPool = (zModel_MaterialSlot *)(realloc(g_zModel_MatlPool, poolBytes));
         }
 
-        if (fread(
-            g_zModel_MatlPool,
-            poolBytes,
-            1,
-            file
-        ) != 1) {
+        if (fread(g_zModel_MatlPool, poolBytes, 1, file) != 1) {
             zError::ReportOld(
                 0x200,
                 g_zModel_GModMatl_FILE,
@@ -526,19 +427,14 @@ namespace zModel_MatlBuffer {
                     );
                 } else {
                     material->packedColor =
-                        zVid_PackColorRgbFloats((zVideo_ColorRgbFloat *)(&material->colorRgb));
+                        zVidPackColorRgbFloats((zVideo_ColorRgbFloat *)(&material->colorRgb));
                 }
 
                 if ((material->flags & 0x0400) != 0) {
                     material->cycle = (zModel_MaterialCyclePartial *)(malloc(
                         sizeof(zModel_MaterialCyclePartial)
                     ));
-                    if (fread(
-                        material->cycle,
-                        sizeof(zModel_MaterialCyclePartial),
-                        1,
-                        file
-                    ) != 1) {
+                    if (fread(material->cycle, sizeof(zModel_MaterialCyclePartial), 1, file) != 1) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_GModMatl_FILE,
@@ -553,12 +449,7 @@ namespace zModel_MatlBuffer {
                         sizeof(zImage_TexDirEntryPartial *);
                     material->cycle->frameTable =
                         (zImage_TexDirEntryPartial **)(malloc(frameTableBytes));
-                    if (fread(
-                        material->cycle->frameTable,
-                        frameTableBytes,
-                        1,
-                        file
-                    ) != 1) {
+                    if (fread(material->cycle->frameTable, frameTableBytes, 1, file) != 1) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_GModMatl_FILE,
@@ -596,11 +487,7 @@ int __cdecl InitGlobals() {
 
     const size_t poolBytes = (size_t)(g_zModel_MatlPoolCapacity) * sizeof(zModel_MaterialSlot);
     g_zModel_MatlPool = (zModel_MaterialSlot *)(malloc(poolBytes));
-    memset(
-        g_zModel_MatlPool,
-        0,
-        poolBytes
-    );
+    memset(g_zModel_MatlPool, 0, poolBytes);
 
     g_zModel_MatlFreeHeadIndex = 0;
     if (g_zModel_MatlPoolCapacity > 0) {
@@ -700,10 +587,7 @@ namespace zModel_Material {
         zModel_MaterialPartial * material
     ) {
         zModel_MaterialPartial *reuseCache = g_zModel_MatlReuseCache;
-        if (reuseCache != 0 && CompareForReuse(
-            reuseCache,
-            material
-        ) == 0) {
+        if (reuseCache != 0 && CompareForReuse(reuseCache, material) == 0) {
             return g_zModel_MatlReuseCache;
         }
 
@@ -711,10 +595,7 @@ namespace zModel_Material {
         while (slotIndex >= 0) {
             zModel_MaterialSlot *const slot = &g_zModel_MatlPool[slotIndex];
             zModel_MaterialPartial *const candidate = &slot->material;
-            if (CompareForReuse(
-                candidate,
-                material
-            ) == 0) {
+            if (CompareForReuse(candidate, material) == 0) {
                 return candidate;
             }
             slotIndex = slot->nextPoolIndex;
@@ -738,11 +619,7 @@ namespace zModel_Material {
             return 1;
         }
 
-        const int compare = memcmp(
-            lhs,
-            rhs,
-            offsetof(zModel_MaterialPartial, userTag)
-        );
+        const int compare = memcmp(lhs, rhs, offsetof(zModel_MaterialPartial, userTag));
         if (compare != 0) {
             return compare < 0 ? -1 : 1;
         }
@@ -815,11 +692,7 @@ void __fastcall Release(
         slot->material.cycle = 0;
     }
 
-    memset(
-        &slot->material,
-        0,
-        sizeof(slot->material)
-    );
+    memset(&slot->material, 0, sizeof(slot->material));
 
     const int slotIndex = zModel_MatlSlot::IndexFromPtrOrMinus1(slot);
     const short prevIndex = slot->prevPoolIndex;
@@ -849,10 +722,10 @@ void __fastcall Release(
 namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-globalstringtable-releasedynamicentries
- * @recoil-artifact defines .text recoil:function:0x480ec0: zRndr::GlobalStringTable_ReleaseDynamicEntries
+ * @recoil-artifact defines .text recoil:function:0x480ec0: zRndr::GlobalStringTableReleaseDynamicEntries
  * Purpose: release dynamically loaded renderer global-string entries and restore the fixed prefix count.
  */
-void __cdecl GlobalStringTable_ReleaseDynamicEntries() {
+void __cdecl GlobalStringTableReleaseDynamicEntries() {
     for (int i = 6; i < g_zRndr_GlobalStringCount; ++i) {
         free(g_zRndr_GlobalStringTable[i]);
         g_zRndr_GlobalStringTable[i] = 0;
@@ -879,7 +752,7 @@ int __cdecl Shutdown() {
     g_zModel_MatlPoolInUseCount = 0;
     g_zModel_MatlFreeHeadIndex = -1;
     g_zModel_MatlActiveHeadIndex = -1;
-    zRndr::GlobalStringTable_ReleaseDynamicEntries();
+    zRndr::GlobalStringTableReleaseDynamicEntries();
     g_zModel_MatlReuseCache = 0;
     return 0;
 }
@@ -1003,10 +876,7 @@ namespace zModel_Material {
         }
 
         cycle =
-            (zModel_MaterialCyclePartial *)(realloc(
-                cycle,
-                sizeof(zModel_MaterialCyclePartial)
-            ));
+            (zModel_MaterialCyclePartial *)(realloc(cycle, sizeof(zModel_MaterialCyclePartial)));
         material->cycle = cycle;
         cycle->loopEnabled = 0;
         cycle->currentFrame = 0.0f;
@@ -1141,11 +1011,7 @@ namespace zModel_Material {
             if ((material->flags & 0x0400) != 0) {
                 zModel_MaterialCyclePartial *const cycle = material->cycle;
                 if (cycle != 0) {
-                    memcpy(
-                        &cycle->framesPerSecond,
-                        &cycleSpeed,
-                        sizeof(cycle->framesPerSecond)
-                    );
+                    memcpy(&cycle->framesPerSecond, &cycleSpeed, sizeof(cycle->framesPerSecond));
                     return 1;
                 }
             }
@@ -1218,11 +1084,7 @@ namespace zModel_MatlBuffer {
         g_zModel_MatlActiveHeadIndex = slotIndex;
         ++g_zModel_MatlPoolInUseCount;
 
-        memcpy(
-            &slot->material,
-            material,
-            offsetof(zModel_MaterialPartial, cycle)
-        );
+        memcpy(&slot->material, material, offsetof(zModel_MaterialPartial, cycle));
         if ((material->flags & 0x0400) == 0) {
             slot->material.cycle = 0;
             return &slot->material;
@@ -1230,11 +1092,7 @@ namespace zModel_MatlBuffer {
 
         slot->material.cycle =
             (zModel_MaterialCyclePartial *)(malloc(sizeof(zModel_MaterialCyclePartial)));
-        memcpy(
-            slot->material.cycle,
-            material->cycle,
-            sizeof(zModel_MaterialCyclePartial)
-        );
+        memcpy(slot->material.cycle, material->cycle, sizeof(zModel_MaterialCyclePartial));
         slot->material.cycle->frameTable = (zImage_TexDirEntryPartial **)(calloc(
             (size_t)(slot->material.cycle->frameCount),
             sizeof(slot->material.cycle->frameTable[0])
@@ -1292,11 +1150,7 @@ void __fastcall LoadDynamicEntriesFromPath(
         return;
     }
 
-    zReader::Node *const root = zReader::Load(
-        path,
-        0,
-        0
-    );
+    zReader::Node *const root = zReader::Load(path, 0, 0);
     if (root == 0) {
         return;
     }
@@ -1322,11 +1176,7 @@ void __fastcall LoadDynamicEntriesFromPath(
         g_zRndr_GlobalStringTable[g_zRndr_GlobalStringCount] = copy;
         if (copy != 0) {
             ++g_zRndr_GlobalStringCount;
-            memcpy(
-                copy,
-                entry,
-                byteCount
-            );
+            memcpy(copy, entry, byteCount);
         }
     }
 

@@ -78,27 +78,14 @@ int __fastcall InitFromPath(
         return 0;
     }
 
-    zReader::Node *const rootNode = zReader::Load(
-        path,
-        0,
-        0
-    );
+    zReader::Node *const rootNode = zReader::Load(path, 0, 0);
     g_zEffect_RuntimeManager.loadedTemplateTree = (zClass_NodePartial *)(rootNode);
     if (rootNode == 0) {
-        fprintf(
-            stderr,
-            g_zEffect_ReadFieldFailedFmt,
-            kZeffInitSourceFile,
-            0xd8,
-            path
-        );
+        fprintf(stderr, g_zEffect_ReadFieldFailedFmt, kZeffInitSourceFile, 0xd8, path);
         return -1;
     }
 
-    zReader::Node *const effectsNode = zRdrGetNode(
-        rootNode,
-        g_EffectsZrdNodeName
-    );
+    zReader::Node *const effectsNode = zRdrGetNode(rootNode, g_EffectsZrdNodeName);
     g_zEffect_RuntimeManager.templateCount =
         effectsNode->value.nodes->value.i32 - 1;
     g_zEffect_RuntimeManager.templates = (zEffect_RuntimeEntry *)(calloc(
@@ -111,24 +98,15 @@ int __fastcall InitFromPath(
     for (int i = 0; i < g_zEffect_RuntimeManager.templateCount; ++i) {
         zReader::Node *const effectNode =
             &effectsNode->value.nodes[i + 1];
-        zReader::Node *const mapsNode = zRdrGetNode(
-            effectNode,
-            g_zEffect_TokenMaps
-        );
+        zReader::Node *const mapsNode = zRdrGetNode(effectNode, g_zEffect_TokenMaps);
         zEffect_RuntimeEntry *const runtimeEntry = &g_zEffect_RuntimeManager.templates[i];
         runtimeEntry->effectIndex = -1;
         runtimeEntry->modelNodeName =
             effectNode->value.nodes[1].value.str;
-        runtimeEntry->effectName = (char *)(zReader::GetString(
-            effectNode,
-            "NAME"
-        ));
+        runtimeEntry->effectName = (char *)(zReader::GetString(effectNode, "NAME"));
 
         zClass_NodePartial *const templateNode =
-            zClass::FindByTypeAndName(
-                6,
-                runtimeEntry->modelNodeName
-            );
+            zClass::FindByTypeAndName(6, runtimeEntry->modelNodeName);
         runtimeEntry->effectNode = templateNode;
         if (templateNode == 0) {
             fprintf(
@@ -154,47 +132,22 @@ int __fastcall InitFromPath(
             continue;
         }
 
-        zClass_Class::gwNodeSetCellPickable(
-            runtimeEntry->effectNode,
-            0
-        );
-        zClass_Class::gwNodeSetRaycastable(
-            runtimeEntry->effectNode,
-            0
-        );
-        zClass_Class::gwNodeSetActive(
-            runtimeEntry->effectNode,
-            0
-        );
+        zClass_Class::gwNodeSetCellPickable(runtimeEntry->effectNode, 0);
+        zClass_Class::gwNodeSetRaycastable(runtimeEntry->effectNode, 0);
+        zClass_Class::gwNodeSetActive(runtimeEntry->effectNode, 0);
         runtimeEntry->effectIndex = i;
         runtimeEntry->effectGfxData = gfxData;
-        zUtil::StoreInt32(
-            (int *)(gfxData),
-            1
-        );
+        zUtil::StoreInt32((int *)(gfxData), 1);
 
         zDiPartial *const displayInstance = (zDiPartial *)(gfxData);
         const int textureCount = mapsNode->value.nodes->value.i32 - 1;
-        zDi::SetCurrentVariantCycleTextureCount(
-            displayInstance,
-            textureCount
-        );
+        zDi::SetCurrentVariantCycleTextureCount(displayInstance, textureCount);
 
         float textureSpeed = 0.0f;
-        zReader::GetFloat(
-            effectNode,
-            g_zEffectAnim_TokenSpeed,
-            &textureSpeed
-        );
-        zDi::SetCurrentVariantCycleTextureSpeed(
-            displayInstance,
-            textureSpeed
-        );
+        zReader::GetFloat(effectNode, g_zEffectAnim_TokenSpeed, &textureSpeed);
+        zDi::SetCurrentVariantCycleTextureSpeed(displayInstance, textureSpeed);
 
-        zReader::Node *const loopingNode = zRdrGetNode(
-            effectNode,
-            g_zEffectAnim_TokenLooping
-        );
+        zReader::Node *const loopingNode = zRdrGetNode(effectNode, g_zEffectAnim_TokenLooping);
         if (loopingNode != 0) {
             const char *const loopingText =
                 loopingNode->type == zReader::ZRDR_NODE_ARRAY
@@ -202,10 +155,7 @@ int __fastcall InitFromPath(
                     : loopingNode->value.str;
             zModel_Instance::SetCycleTextureLoop(
                 displayInstance,
-                strcmp(
-                    loopingText,
-                    "ON"
-                ) == 0 ? 1 : 0
+                strcmp(loopingText, "ON") == 0 ? 1 : 0
             );
         }
 
@@ -213,16 +163,14 @@ int __fastcall InitFromPath(
             for (int textureIndex = 1; textureIndex <= textureCount; ++textureIndex) {
                 zModel_Instance::AddCycleTexture(
                     displayInstance,
-                    zImage::TexDir_FindOrAppendByPath(
-                        mapsNode->value.nodes[textureIndex].value.str
-                    )
+                    zImage::TexDirFindOrAppendByPath(mapsNode->value.nodes[textureIndex].value.str)
                 );
             }
         }
     }
 
-    zImage::TexDir_LoadPendingEntries();
-    g_zEffect_RuntimeManager.freeList = zArchiveList_New();
+    zImage::TexDirLoadPendingEntries();
+    g_zEffect_RuntimeManager.freeList = zArchiveListNew();
     g_zEffect_RuntimeManager.recycleCount = 0;
     g_zEffect_RuntimeManager.initialized = 1;
     return 0;
@@ -247,17 +195,17 @@ int __cdecl Reset() {
     zArchiveList *freeList = g_zEffect_RuntimeManager.freeList;
     if (freeList != 0) {
         zEffect_RuntimeEntry *entry =
-            (zEffect_RuntimeEntry *)(zArchiveList_RemoveHead(freeList));
+            (zEffect_RuntimeEntry *)(zArchiveListRemoveHead(freeList));
         while (entry != 0) {
             if (entry->effectNode != 0) {
                 zClass_Util::DestroyNodeRecursive(entry->effectNode);
             }
 
             free(entry);
-            entry = (zEffect_RuntimeEntry *)(zArchiveList_RemoveHead(freeList));
+            entry = (zEffect_RuntimeEntry *)(zArchiveListRemoveHead(freeList));
         }
 
-        zArchiveList_Free(freeList);
+        zArchiveListFree(freeList);
         g_zEffect_RuntimeManager.freeList = 0;
     }
 

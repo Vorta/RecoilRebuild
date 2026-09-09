@@ -72,27 +72,19 @@ int __fastcall ShowMessageBox(
     const char *titleText,
     void *modalContext
 ) {
-    HudUiMessageBoxDialog dialog(
-        "dialog.zrd",
-        g_HudUiMessageBoxDialog_SectionName
-    );
-    return dialog.RunModal(
-        messageText,
-        titleText,
-        modalContext,
-        -1.0f
-    );
+    HudUiMessageBoxDialog dialog("dialog.zrd", g_HudUiMessageBoxDialog_SectionName);
+    return dialog.RunModal(messageText, titleText, modalContext, -1.0f);
 }
 } // namespace HudUi
 
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-zutil-savegamestatelist-init
- * @recoil-artifact defines .text recoil:function:0x4383e0: zUtil_SaveGameStateList_Init.
+ * @recoil-artifact defines .text recoil:function:0x4383e0: zUtilSaveGameStateListInit.
  *
  * Purpose: initialize a save-state list sentinel and allocate zeroed player
  * state storage for the owning save-game state.
  */
-zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_Init(
+zUtil_SaveGameState *__fastcall zUtilSaveGameStateListInit(
     zUtil_SaveGameState *self
 ) {
     self->unknown_10 = 0;
@@ -103,11 +95,7 @@ zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_Init(
     self->firstSaveState = 0;
 
     self->playerState = (zUtil_PlayerStateStorage *)(malloc(sizeof(zUtil_PlayerStateStorage)));
-    memset(
-        self->playerState,
-        0,
-        sizeof(zUtil_PlayerStateStorage)
-    );
+    memset(self->playerState, 0, sizeof(zUtil_PlayerStateStorage));
 
     self->unknown_0c = 0;
     self->unknown_24 = 0;
@@ -170,22 +158,18 @@ void zUtil_SaveGameState::FreeOwnedResources() {
 
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-zutil-savegamestatelist-allocappend
- * @recoil-artifact defines .text recoil:function:0x4384e0: zUtil_SaveGameStateList_AllocAppend.
+ * @recoil-artifact defines .text recoil:function:0x4384e0: zUtilSaveGameStateListAllocAppend.
  * @recoil-match byte
  *
  * Purpose: allocate a zeroed save-state node and append it to the tracked
  * save-state list.
  */
-zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_AllocAppend(
+zUtil_SaveGameState *__fastcall zUtilSaveGameStateListAllocAppend(
     zUtil_SaveGameState *self
 ) {
     zUtil_SaveGameState *const saveState =
         (zUtil_SaveGameState *)(malloc(sizeof(zUtil_SaveGameState)));
-    memset(
-        saveState,
-        0,
-        sizeof(zUtil_SaveGameState)
-    );
+    memset(saveState, 0, sizeof(zUtil_SaveGameState));
 
     if (self->firstSaveState == 0) {
         self->firstSaveState = saveState;
