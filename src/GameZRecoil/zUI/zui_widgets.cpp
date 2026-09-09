@@ -607,14 +607,7 @@ RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_TEXT) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_VIDEOS) == 0x12);
 RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_IMAGES) == 0x12);
 RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_SHARED_IMAGE_PATH) == 0x12);
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-x8-0x4e4838
- * @recoil-artifact defines .data recoil:data:0x4e4838: g_HudUiZrdToken_Buttons.
- * Data owner: hud_ui.hud_ui_background_buttons_zrd_key_literal.
- * Purpose: name the BUTTONS child table consumed by
- */
-char g_HudUiZrdToken_Buttons[0x8] = "BUTTONS";
-RECOIL_STATIC_ASSERT(sizeof(g_HudUiZrdToken_Buttons) == 0x8);
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-x9-0x4e4840
  * @recoil-artifact defines .data recoil:data:0x4e4840: g_HudUiZrdToken_EndPointAbsolute.
@@ -725,9 +718,6 @@ char g_HudUiMessage_NodeName[8] = "Message";
  * Purpose: separate the local player name from chat text when composing HUD messages.
  */
 char g_HudUiMessage_SeparatorColon[2] = ":";
-
-
-
 
 #if defined(_MSC_VER) && defined(_M_IX86)
 typedef void (__cdecl *HudUiSensorWindowCrtInitializerFn)();
@@ -5195,7 +5185,7 @@ unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
     if (parentNode != 0) {
         zReader::Node *const buttonsNode = zRdrGetNode(
             parentNode,
-            g_HudUiZrdToken_Buttons
+            "BUTTONS"
         );
         zReader::Node *const widgetNode = zRdrGetNode(
             buttonsNode,

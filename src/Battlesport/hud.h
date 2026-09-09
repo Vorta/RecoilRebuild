@@ -50,8 +50,6 @@ struct zClass_NodePartial;
  */
 class CString;
 
-extern char g_HudUiDialogSampleSetName[0x7];
-
 struct HudWeatherFxPointBatch {
     float x;
     float y;

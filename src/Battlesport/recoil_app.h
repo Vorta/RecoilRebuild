@@ -17,11 +17,11 @@ typedef recoil::Ptr32 RecoilPtr32;
 struct RecoilStateBase;
 
 extern "C" {
-extern const char g_HudSensorTracker_StartAnimsZrdPath[0x0e];
-extern const char g_RecoilApp_LoadGameStartAnimStateName[0x10];
+
+
 extern const char g_RecoilApp_NewGameStartAnimStateName[0x0f];
-extern const char g_RecoilApp_CommonSoundsSampleSetName[0x06];
-extern const char g_RecoilApp_LoadingCommonSoundsMsg[0x15];
+
+
 }
 
 /**
