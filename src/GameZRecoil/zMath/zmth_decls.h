@@ -286,9 +286,9 @@ void __fastcall Vec3ArrayProjectToCachedY(
     int count
 );
 void __fastcall Vec3RotateY(
+    float yawAngle,
     zVec3 *outVec,
-    const zVec3 *inVec,
-    float yawAngle
+    const zVec3 *inVec
 );
 void __fastcall Vec3ArrayTransformDirection(
     zVec3 *vectors,

@@ -98,17 +98,27 @@ float g_Player_AiMode2_TuningScalar10 = 10.0f;
  * @recoil-artifact defines .data recoil:data:0x4da0e4: g_Player_AiMode2_OffsetTargetRotateCos15Deg.
  * BN types this as an initialized .data float used by the Mode2 AI offset
  * target steering rotation.
+ * Inferred declaration qualifier: consistent volatile float declarations
+ * reproduce both retail coefficient reads under canonical VC5SP3. The
+ * original cv-qualification and its purpose remain unresolved; no external
+ * writer or synchronization contract is inferred. Pro review:
+ * 2026-09-08T16-25-03-957Z. Qualifier controls affect only this scalar's reads.
  * Purpose: Stores the retail cosine scalar for offset-target rotation.
  */
-float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965900004f;
+volatile float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965900004f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-offsettargetrotatesin15deg
  * @recoil-artifact defines .data recoil:data:0x4da0e8: g_Player_AiMode2_OffsetTargetRotateSin15Deg.
  * BN types this as an initialized .data float used by the Mode2 AI offset
  * target steering rotation.
+ * Inferred declaration qualifier: consistent volatile float declarations
+ * reproduce both retail coefficient reads under canonical VC5SP3. The
+ * original cv-qualification and its purpose remain unresolved; no external
+ * writer or synchronization contract is inferred. Pro review:
+ * 2026-09-08T16-25-03-957Z. Qualifier controls affect only this scalar's reads.
  * Purpose: Stores the retail sine scalar for offset-target rotation.
  */
-float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.25879999995f;
+volatile float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.25879999995f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-nodenameformat
  * @recoil-artifact defines .data recoil:data:0x4da0ec: g_AINet_NodeNameFormat.
@@ -792,14 +802,14 @@ void AINetPathProbeFan::InitFromSegment(
         perpendicularPtr
     );
     zMath::Vec3RotateY(
+        45.0f,
         &probeDirPlus45,
-        perpendicularPtr,
-        45.0f
+        perpendicularPtr
     );
     zMath::Vec3RotateY(
+        -45.0f,
         &probeDirMinus45,
-        perpendicularPtr,
-        -45.0f
+        perpendicularPtr
     );
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
     /**
@@ -825,6 +835,16 @@ AINetNode *__fastcall AINet::FindNearestNode(
     const zVec3 *position,
     AINetNode *nodeListHead
 ) {
+    /**
+     * @recoil-anchor recoil:anchor:battlesport.ai-net.nearest-node-minimum-distance-sq
+     * @recoil-artifact defines .rdata recoil:data:0x4cc858: Nearest-node zero comparison scalar.
+     * Purpose: Supplies the separate read-only zero boundary used to recognize
+     * the negative distance sentinel. Retail 0x40371e reads the four-byte
+     * positive-zero range at 0x4cc858, distinct from the header-body zero.
+     * This auxiliary constant represents that storage dependency; the original
+     * identifier, lexical scope, and containing-object extent remain unresolved.
+     */
+    static const float minimumDistanceSq = 0.0f;
     AINetNode *nearest = 0;
     float bestDistanceSq = -1.0f;
 
@@ -833,7 +853,7 @@ AINetNode *__fastcall AINet::FindNearestNode(
             position,
             &nodeListHead->position
         );
-        if (distanceSq < bestDistanceSq || bestDistanceSq < 0.0f) {
+        if (distanceSq < bestDistanceSq || bestDistanceSq < minimumDistanceSq) {
             bestDistanceSq = distanceSq;
             nearest = nodeListHead;
         }

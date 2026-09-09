@@ -1644,9 +1644,10 @@ namespace zClass_cls_di {
             if ((nodeFlags & kNodeFlagEnabledForPick) != 0) {
                 pushedMatrix = 1;
                 zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
+                // Retail 0x4441c1 passes camera data +0x20 in ECX and +0x14 in EDX.
                 zMath::MatApplyLocalTRS(
-                    &cameraData->targetOrEuler,
                     &cameraData->posOffset,
+                    &cameraData->targetOrEuler,
                     &unitScale
                 );
             }
@@ -2117,9 +2118,10 @@ namespace zClass_cls_di {
             if ((nodeFlags & kNodeFlagEnabledForPick) != 0) {
                 pushedMatrix = 1;
                 zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
+                // Retail 0x444a52 uses the same camera transform as rendering.
                 zMath::MatApplyLocalTRS(
-                    &cameraData->targetOrEuler,
                     &cameraData->posOffset,
+                    &cameraData->targetOrEuler,
                     &unitScale
                 );
             }

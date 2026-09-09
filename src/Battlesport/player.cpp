@@ -5180,9 +5180,9 @@ void __fastcall SampleGroundAndAlignRootToSurface(
         zVec3 yawRelativeNormal = selectedCandidate->surfaceNormal;
         RebuildSteerBasisRawFromRef(saveState);
         zMath::Vec3RotateY(
+            -playerState->restartYawRad,
             &yawRelativeNormal,
-            &playerState->steerBasisRef,
-            -playerState->restartYawRad
+            &playerState->steerBasisRef
         );
 
         const float pitchAngleRad = (float)(asin(yawRelativeNormal.z));
@@ -7428,9 +7428,9 @@ void __fastcall ResolvePendingCollisionContact(
 
         playerState->projectileSpawnVel.y = projectileVelY;
         zMath::Vec3RotateY(
+            -playerState->restartYawRad,
             &playerState->localVel,
-            &playerState->projectileSpawnVel,
-            -playerState->restartYawRad
+            &playerState->projectileSpawnVel
         );
     }
 
@@ -7555,9 +7555,9 @@ void __fastcall ResolvePendingPlayerCollisionContact(
     transferredLocalVel.y *= massScale;
     transferredLocalVel.z *= massScale;
     zMath::Vec3RotateY(
+        -targetPlayerState->restartYawRad,
         &transferredLocalVel,
-        &transferredLocalVel,
-        -targetPlayerState->restartYawRad
+        &transferredLocalVel
     );
     transferredLocalVel.y = 0.0f;
 
@@ -8699,9 +8699,9 @@ void __fastcall UpdateMasterTypeTrack(
 
     if (playerState->environmentAttachmentActive != 0) {
         zMath::Vec3RotateY(
+            playerState->yawPoseCache,
             &playerState->yawRotatedLocalVel,
-            &playerState->localVel,
-            playerState->yawPoseCache
+            &playerState->localVel
         );
         playerState->fxOffsetLocal.x += g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
         playerState->fxOffsetLocal.z += g_Player_DeltaTime * playerState->yawRotatedLocalVel.z;
@@ -9204,9 +9204,9 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
 
     zVec3 yawRelativeNormal = {0};
     zMath::Vec3RotateY(
+        -playerState->restartYawRad,
         &yawRelativeNormal,
-        &playerState->steerBasisRef,
-        -playerState->restartYawRad
+        &playerState->steerBasisRef
     );
     playerState->vehiclePitchRad = (float)(asin(yawRelativeNormal.z));
     playerState->vehicleRollRad = (float)(asin(-yawRelativeNormal.x));
@@ -9283,9 +9283,9 @@ void __fastcall UpdateMasterTypeAmphib(
 
     if (playerState->environmentAttachmentActive != 0) {
         zMath::Vec3RotateY(
+            playerState->yawPoseCache,
             &playerState->yawRotatedLocalVel,
-            &playerState->localVel,
-            playerState->yawPoseCache
+            &playerState->localVel
         );
         playerState->fxOffsetLocal.x += playerState->yawRotatedLocalVel.x * g_Player_DeltaTime;
         playerState->fxOffsetLocal.z += playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
@@ -9481,9 +9481,9 @@ void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
     RebuildMotionBasisFromSteerBasis(saveState);
 
     zMath::Vec3RotateY(
+        -playerState->restartYawRad,
         &amphibUpVector,
-        &playerState->steerBasisRef,
-        -playerState->restartYawRad
+        &playerState->steerBasisRef
     );
     playerState->vehiclePitchRad = (float)(asin(amphibUpVector.z));
     playerState->vehicleRollRad = (float)(asin(-amphibUpVector.x));
@@ -12810,9 +12810,9 @@ void __fastcall ApplyTerrainTilt(
         tiltVector->z * tiltFactor,
     };
     zMath::Vec3RotateY(
+        -playerState->restartYawRad,
         &rotatedTilt,
-        &rotatedTilt,
-        -playerState->restartYawRad
+        &rotatedTilt
     );
 
     if (playerState->airborneFlag != 0) {
@@ -13566,9 +13566,9 @@ void __fastcall RebuildOrientationFromNormal(
 
     zVec3 yawRelativeNormal = {0};
     zMath::Vec3RotateY(
+        -playerState->restartYawRad,
         &yawRelativeNormal,
-        &playerState->steerBasisRef,
-        -playerState->restartYawRad
+        &playerState->steerBasisRef
     );
     playerState->vehiclePitchRad = (float)(asin(yawRelativeNormal.z));
     playerState->vehicleRollRad = (float)(asin(-yawRelativeNormal.x));

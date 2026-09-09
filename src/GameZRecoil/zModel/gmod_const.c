@@ -3909,12 +3909,16 @@ namespace zDi {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildblendvertsfromconnectivity
  * @recoil-artifact defines .text recoil:function:0x483f80: zDi::BuildBlendVertsFromConnectivity
+ * Retail 0x4c4228..0x4c4241 passes self in ECX, exclusions in EDX,
+ * and blendY on the stack. VC5 skips floating-point fastcall arguments when
+ * assigning registers: the source order is self, blendY, exclusions. This
+ * order reproduces the complete caller while leaving this callee unchanged.
  * Purpose: build blend-vertex offsets from connectivity and exclusion rules.
  */
 void __fastcall BuildBlendVertsFromConnectivity(
     zDiPartial *self,
-    int *excludedVertexIndices,
     float blendY,
+    int *excludedVertexIndices,
     int excludedVertexCount,
     int minSharedVertexCount
 ) {

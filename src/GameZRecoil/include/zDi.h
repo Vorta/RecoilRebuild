@@ -291,8 +291,8 @@ void __fastcall RebuildGeneratedUvPairsForEntry(
 );
 void __fastcall BuildBlendVertsFromConnectivity(
     zDiPartial *self,
-    int *excludedVertexIndices,
     float blendY,
+    int *excludedVertexIndices,
     int excludedVertexCount,
     int minSharedVertexCount
 );
