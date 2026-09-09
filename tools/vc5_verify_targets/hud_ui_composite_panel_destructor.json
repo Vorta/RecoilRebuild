@@ -21,8 +21,12 @@
   "functions": [
     {
       "address": "0x403e20",
-      "symbol": "?Destructor@HudUiCompositePanel@@QAEXXZ",
-      "name": "HudUiCompositePanel::Destructor"
+      "symbol": "??1HudUiCompositePanel@@UAE@XZ",
+      "name": "HudUiCompositePanel::~HudUiCompositePanel",
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-implicit-cleanup",
+      "required_presence": true,
+      "full_order_gate": true
     }
   ]
 }

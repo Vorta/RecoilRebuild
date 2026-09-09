@@ -528,7 +528,7 @@
     },
     {
       "address": "0x474f40",
-      "symbol": "?Vec3RotateY@zMath@@YIXPAUzVec3@@PBU2@M@Z",
+      "symbol": "?Vec3RotateY@zMath@@YIXMPAUzVec3@@PBU2@@Z",
       "name": "zMath::Vec3RotateY",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

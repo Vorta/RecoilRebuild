@@ -186,6 +186,7 @@ def test_data_assembly_scan_reports_incomplete_reads(failure: object) -> None:
 
 
 def test_data_assembly_scan_distinguishes_complete_empty_and_failed_scans() -> None:
+    _exercise_indexed_data_xrefs()
     class Bridge:
         fail = False
 
@@ -204,6 +205,43 @@ def test_data_assembly_scan_distinguishes_complete_empty_and_failed_scans() -> N
     bridge.fail = True
     scan = scan_assembly_text(bridge, **args)
     assert scan["status"] == "unsupported" and scan["functions_failed"] == 1
+
+
+def _exercise_indexed_data_xrefs():
+    from _recoil.commands.bn_data_evidence import fetch_direct_xrefs, normalize_xref_item
+
+    hit = normalize_xref_item("0x402000", 0x402000,
+        dict(source="get_code_refs", address="0x401023", function_address="0x401000"))
+    assert hit.source_address == "0x401023"
+    assert normalize_xref_item("0x402000", 0x402000,
+        dict(source=dict(address="0x401024"))).source_address == "0x401024"
+
+    class Bridge:
+        def __init__(self):
+            self.requests = []
+            self.partial = False
+            self.state = "AnalysisState.IdleState"
+        def get_json(self, endpoint, **kwargs):
+            self.requests.append(kwargs)
+            return dict(code_references=[dict(source="get_code_refs", address="0x401023")],
+                data_references=[dict(source="get_data_refs", address="0x403000")],
+                total=2, has_more=False, partial=self.partial, truncated=False,
+                coverage=dict(complete=True, analysis_state=self.state, errors=[]))
+    bridge = Bridge()
+    def scan(limit=-1):
+        return fetch_direct_xrefs(bridge, ("0x402000", "0x402004"), base=0x402000, limit=limit)
+    result = scan()
+    assert result["indexed_complete"] and not result["truncated"] and len(result["hits"]) == 4
+    assert [r["limit"] for r in bridge.requests] == [-1, -1]
+    assert result["hits"][2]["query_offset"] == 4
+    assert scan(2)["truncated"] and not scan(2)["indexed_complete"]
+    bridge.partial = True
+    assert not scan()["indexed_complete"]
+    bridge.partial = False
+    bridge.state = "AnalysisState.AnalyzeState"
+    assert not scan()["indexed_complete"]
+    for limit in (0, -2):
+        with pytest.raises(ValueError): scan(limit)
 
 
 def test_binja_status_requires_exact_database_platform_and_architecture() -> None:

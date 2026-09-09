@@ -40,7 +40,7 @@
     {"address": "0x4da1d8", "symbol": "_g_AINet_TypeFieldName", "name": "g_AINet_TypeFieldName", "bn_name": "g_AINet_TypeFieldName", "byte_length": 5},
     {"address": "0x4da1e0", "symbol": "_g_AINet_NameFieldName", "name": "g_AINet_NameFieldName", "bn_name": "g_AINet_NameFieldName", "byte_length": 5},
     {"address": "0x4da1e8", "symbol": "_g_AINet_SourceFilePath", "name": "g_AINet_SourceFilePath", "bn_name": "g_AINet_SourceFilePath", "byte_length": 31},
-    {"address": "0x4da208", "symbol": "_g_AINet_WrongVersionMessage", "name": "g_AINet_WrongVersionMessage", "bn_name": "g_AINet_WrongVersionMessage", "byte_length": 36},
+    {"address": "0x4da208", "symbol": "_g_AINet_WrongVersionMessage", "name": "g_AINet_WrongVersionMessage", "bn_name": "g_AINet_WrongVersionMessage", "byte_length": 35},
     {"address": "0x4da22c", "symbol": "_g_AINet_VersionFieldName", "name": "g_AINet_VersionFieldName", "bn_name": "g_AINet_VersionFieldName", "byte_length": 8},
     {"address": "0x4da234", "symbol": "_g_AINet_ZrdNameFormat", "name": "g_AINet_ZrdNameFormat", "bn_name": "g_AINet_ZrdNameFormat", "byte_length": 7},
     {"address": "0x4da23c", "symbol": "_g_AINet_NetNameFormat", "name": "g_AINet_NetNameFormat", "bn_name": "g_AINet_NetNameFormat", "byte_length": 9}

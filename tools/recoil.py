@@ -340,8 +340,13 @@ _BASE_COMMAND_SPECS: tuple[CommandSpec, ...] = (
 )
 
 _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
+    spec("progress relocation-target repair-created-owner", "relocation_target_repair", summary="Repair one pending data creation's duplicate owner by restoring its exact pre-existing owner relationship and preserving storage, tiers, and gates.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
     spec("progress relocation-exception set", "relocation_expectation_mutation", prepend=("set",), summary="Revision-guard one reviewed retail-relocation ambiguity exception against exact current source and target context.", category="progress", examples=("python tools/recoil.py progress relocation-exception set --source-symbol-id <physical-symbol-id> --source-address 0xNNNNNN --payload-json '<json-object>' --expected-revision <revision> --dry-run --json",), mutates=True),
+    spec("progress relocation-exception remove", "relocation_expectation_mutation", prepend=("remove",), summary="Retract one complete exact-match reviewed exception without changing target or owner facts; dry-run first.", category="progress", mutates=True),
     spec("progress relocation-target bind", "relocation_target_mutation", prepend=("bind",), summary="Bind one immutable-retail relocation operand to reviewed existing or exact known-extent target identity.", category="progress", examples=("python tools/recoil.py progress relocation-target bind --source-symbol-id <physical-symbol-id> --source-address 0xNNNNNN --payload-json '<reviewed-binding>' --expected-revision <revision> --dry-run --json",), mutates=True),
+    spec("progress relocation-target bind-native-eh", "native_eh_relocations", summary="Bind one reviewed native VC5 EH parent to its existing provider handler and canonical absolute exception-list symbol.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
+    spec("progress relocation-target bind-native-array-cleanup", "native_array_cleanup", summary="Bind one reviewed native array cleanup reference to its existing generated lifecycle target without promoting an original alias or source-owner model.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
+    spec("progress relocation-target bind-native-import", "native_import_relocations", summary="Bind one reviewed authored reference to an unowned non-authored import thunk using immutable retail and the canonical VC5 import member, without owner or provider-byte acceptance.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
     spec(
         "progress provider-target register",
         "provider_target_mutation",
@@ -576,6 +581,13 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
             "python tools/recoil.py progress symbol set-logical-alias-group --payload-file build/diagnostic/<recoil-logical-alias-group-v4.json> --expected-revision <revision> --dry-run --json",
         ),
         mutates=True,
+    ),
+    spec(
+        "progress symbol separate-tail-padding",
+        "function_tail_padding",
+        summary="Separate one reviewed retail/BN-proven INT3 alignment tail from a real function; accept no bytes, padding, owner or tier facts.",
+        category="progress", mutates=True, needs_binja=True, required_revision_domains=("global",),
+        mutation_scope="function-extent", acceptance_effects=(),
     ),
     spec(
         "progress symbol replace-padding",

@@ -1,0 +1,36 @@
+{
+  "name": "briefing_runtime_class_tables_data",
+  "description": "Native Briefing runtime and member class tables emitted by VC5 from Briefing.cpp. Registration identifies the existing retail tables without accepting their final placement or complete data bytes.",
+  "source_filename": "Briefing.cpp",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "include_dirs": [
+    "src", "tools/_recoil/compat/include", "src/Battlesport",
+    "src/GameZRecoil/zHud", "src/GameZRecoil/zInput", "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include", "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": ["src/Battlesport/Briefing.cpp"],
+  "data_symbols": [
+    {
+      "address": "0x4cc888", "symbol": "??_7HudUiBriefingRuntime@@6B@",
+      "name": "HudUiBriefingRuntime vftable", "bn_name": "g_HudUiBriefingRuntime_Vtbl",
+      "byte_length": 12
+    },
+    {
+      "address": "0x4cc898", "symbol": "??_7HudUiBriefingObjectivePicture@@6B@",
+      "name": "HudUiBriefingObjectivePicture vftable", "bn_name": "g_HudUiBriefingObjectivePicture_Vtbl",
+      "byte_length": 120
+    },
+    {
+      "address": "0x4cc910", "symbol": "??_7HudUiBriefingTransportProgress@@6B@",
+      "name": "HudUiBriefingTransportProgress vftable", "bn_name": "g_HudUiBriefingTransportProgress_Vtbl",
+      "byte_length": 136
+    },
+    {
+      "address": "0x4cc998", "symbol": "??_7HudUiBriefingLocatorPanel@@6B@",
+      "name": "HudUiBriefingLocatorPanel vftable", "bn_name": "g_HudUiBriefingLocatorPanel_FTable",
+      "byte_length": 116
+    }
+  ]
+}

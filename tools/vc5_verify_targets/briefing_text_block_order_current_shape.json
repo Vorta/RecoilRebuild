@@ -89,7 +89,10 @@
       "address": "0x403e20",
       "symbol": "??1HudUiCompositePanel@@UAE@XZ",
       "name": "HudUiCompositePanel::~HudUiCompositePanel",
-      "pipeline_class": "authored-lifecycle"
+      "pipeline_class": "authored-lifecycle",
+      "authored_order_role": "compiler-generated-implicit-cleanup",
+      "required_presence": true,
+      "full_order_gate": true
     },
     {
       "address": "0x403eb0",

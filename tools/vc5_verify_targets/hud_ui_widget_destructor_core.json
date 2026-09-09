@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x4b3d50",
-      "symbol": "??1HudUiWidget@@QAE@XZ",
+      "symbol": "??1HudUiWidget@@UAE@XZ",
       "name": "HudUiWidget::~HudUiWidget"
     }
   ],

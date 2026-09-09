@@ -69,6 +69,13 @@
       "byte_length": 20
     },
     {
+      "address": "0x4da2ac",
+      "symbol": "??_C@_08CLNL@MESSAGES?$AA@",
+      "name": "g_HudUiBriefingMessagesNodeName",
+      "bn_name": "g_HudUiBriefingMessagesNodeName",
+      "byte_length": 9
+    },
+    {
       "address": "0x4da2b8",
       "symbol": "??_C@_0P@GFIL@OBJECTIVE_PICT?$AA@",
       "name": "g_HudUiBriefingObjectivePictureNodeName",

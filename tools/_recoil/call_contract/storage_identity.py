@@ -26,6 +26,33 @@ from _recoil.lib.progress import (
 from _recoil.lib.tooling import REPO_ROOT
 
 
+def _reviewed_storage_registration_agrees(indexes, *, address, identity, object_symbols):
+    """A scoped retail proof may coexist with matching indexed storage.
+
+    Absence leaves the scoped proof responsible for identity. An indexed empty
+    value is a collision, and differently cased candidate names remain distinct.
+    This check itself supplies neither an extent nor a callable target.
+    """
+    names = set(object_symbols)
+    folded = {name.casefold() for name in names}
+    return (
+        indexes.storage_by_address.get(address) in {None, identity}
+        and all(name in names and value == identity
+                for name, value in indexes.storage_by_name.items()
+                if name.casefold() in folded)
+    )
+
+
+def _reviewed_registered_or_provisional_storage(
+    indexes, *, address, registered_identity, provisional_identity, object_symbols,
+):
+    """Retain a scoped provisional role only until its exact typed row exists."""
+    identity = registered_identity if address in indexes.storage_by_address else provisional_identity
+    return identity if _reviewed_storage_registration_agrees(
+        indexes, address=address, identity=identity, object_symbols=object_symbols,
+    ) else ""
+
+
 def _registered_data_supplier(
     document: ProgressDocument,
     *,

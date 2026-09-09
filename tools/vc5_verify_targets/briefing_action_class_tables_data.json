@@ -1,0 +1,65 @@
+{
+  "name": "briefing_action_class_tables_data",
+  "description": "Native one-slot vftables of the existing private Briefing action classes. Stable class/TU selectors retain compiler namespace spelling as a fresh witness; catalog registration accepts no owner, final data bytes or placement.",
+  "source_filename": "Briefing.cpp",
+  "source_from": "src/Battlesport/Briefing.cpp",
+  "compiler_profile": "vc5_o2_ob1_md_gx_fastcall_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/Battlesport",
+    "src/GameZRecoil/zHud",
+    "src/GameZRecoil/zInput",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/include",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/Briefing.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4cca84",
+      "name": "BriefingActionHideElement vftable",
+      "byte_length": 4,
+      "symbol_regex": "\\?\\?_7BriefingActionHideElement@\\?%[^@]*Briefing\\.cpp[0-9]+@@6B@"
+    },
+    {
+      "address": "0x4cca88",
+      "name": "BriefingActionShowElement vftable",
+      "byte_length": 4,
+      "symbol_regex": "\\?\\?_7BriefingActionShowElement@\\?%[^@]*Briefing\\.cpp[0-9]+@@6B@"
+    },
+    {
+      "address": "0x4cca8c",
+      "name": "BriefingActionFadeInElement vftable",
+      "byte_length": 4,
+      "symbol_regex": "\\?\\?_7BriefingActionFadeInElement@\\?%[^@]*Briefing\\.cpp[0-9]+@@6B@"
+    },
+    {
+      "address": "0x4cca90",
+      "name": "BriefingActionSetPanelText vftable",
+      "byte_length": 4,
+      "symbol_regex": "\\?\\?_7BriefingActionSetPanelText@\\?%[^@]*Briefing\\.cpp[0-9]+@@6B@"
+    },
+    {
+      "address": "0x4cca94",
+      "name": "BriefingActionSetWidgetImageTimed vftable",
+      "byte_length": 4,
+      "symbol_regex": "\\?\\?_7BriefingActionSetWidgetImageTimed@\\?%[^@]*Briefing\\.cpp[0-9]+@@6B@"
+    },
+    {
+      "address": "0x4cca98",
+      "name": "BriefingActionPlaySample vftable",
+      "byte_length": 4,
+      "symbol_regex": "\\?\\?_7BriefingActionPlaySample@\\?%[^@]*Briefing\\.cpp[0-9]+@@6B@"
+    },
+    {
+      "address": "0x4cca9c",
+      "name": "BriefingActionDelayUntilProgress vftable",
+      "byte_length": 4,
+      "symbol_regex": "\\?\\?_7BriefingActionDelayUntilProgress@\\?%[^@]*Briefing\\.cpp[0-9]+@@6B@"
+    }
+  ]
+}

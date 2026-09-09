@@ -347,7 +347,7 @@
     },
     {
       "address": "0x483f80",
-      "symbol": "?BuildBlendVertsFromConnectivity@zDi@@YIXPAUzDiPartial@@PAHMHH@Z",
+      "symbol": "?BuildBlendVertsFromConnectivity@zDi@@YIXPAUzDiPartial@@MPAHHH@Z",
       "name": "zDi::BuildBlendVertsFromConnectivity",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

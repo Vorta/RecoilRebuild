@@ -1,6 +1,6 @@
 {
   "name": "zinterp_4c0d20_4c5a50_authored_order",
-  "description": "Authored-order target for the complete literal-backed zInterp parser physical block [0x4c0d20,0x4c5a50). It checks all 42 authored bodies in retail relative order through the zinterp_parse.cpp compile host. This target accepts no owner, tier, byte, provider ABI, data, exact linked RVA/seam, or final-image fact.",
+  "description": "Authored-order target for the complete literal-backed zInterp parser physical block [0x4c0d20,0x4c5a50). It checks all 42 authored bodies in retail relative order through the zinterp_parse.cpp compile host. The core dispatcher byte diagnostic includes its retail code, alignment, switch targets at 0x4c53ec and byte map at 0x4c543c through the next function at 0x4c5480 (13280 bytes). This target accepts no owner, tier, byte, provider ABI, data, exact linked RVA/seam, or final-image fact.",
   "target_binary": "recoil",
   "retail_start": "0x4c0d20",
   "retail_end_exclusive": "0x4c5a50",
@@ -43,7 +43,7 @@
     {"address":"0x4c1c50","symbol":"?HandleBuiltinCommand@zInterp_Context@@QAEHPAD@Z","name":"zInterp_Context::HandleBuiltinCommand","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c2030","symbol":"?PrintNodeTree@zInterp_Context@@QAEXPAUzClass_NodePartial@@H@Z","name":"zInterp_Context::PrintNodeTree","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c2090","symbol":"?ReportParseError@zInterp_Context@@QAEHPAD@Z","name":"zInterp_Context::ReportParseError","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x4c20a0","symbol":"?DispatchCoreCommand@zInterp_Context@@QAEHPAD@Z","name":"zInterp_Context::DispatchCoreCommand","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x4c20a0","symbol":"?DispatchCoreCommand@zInterp_Context@@QAEHPAD@Z","name":"zInterp_Context::DispatchCoreCommand","bn_byte_length":13280,"pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c5480","symbol":"?CommandEqualsPrefix@zInterp_Context@@QAEHPBDI@Z","name":"zInterp_Context::CommandEqualsPrefix","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c54b0","symbol":"?CommandEquals@zInterp_Context@@QAEHPBD@Z","name":"zInterp_Context::CommandEquals","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4c5510","symbol":"?GetCurrentCommand@zInterp_Context@@QAEPADXZ","name":"zInterp_Context::GetCurrentCommand","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},

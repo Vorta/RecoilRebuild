@@ -57,6 +57,7 @@ class TargetIdentity:
     end_exclusive: int | None
     object_symbols: tuple[str, ...]
     source: str
+    registered_selector: tuple[str, str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,14 @@ class InlineSwitchTable:
     entry_targets: tuple[int, ...]
     bound_instruction_offset: int
     branch_instruction_offset: int
+    default_target_offset: int
+    map_offset: int | None = None
+    map_end: int | None = None
+    map_operand_offset: int | None = None
+
+    @property
+    def data_end(self) -> int:
+        return self.map_end if self.map_end is not None else self.table_end
 
 
 _EXCEPTION_BASE_FIELDS = {
@@ -450,7 +459,10 @@ def _decode_one(data: bytes, offset: int) -> DecodedInstruction:
                 OperandSite(
                     absolute_disp,
                     IMAGE_REL_I386_DIR32,
-                    "absolute32",
+                    # LEA also represents arithmetic such as index*8+8. Its
+                    # displacement requires the same image-range screening as
+                    # an immediate; a real image base still requires identity.
+                    "potential-absolute32" if opcode == 0x8D else "absolute32",
                     start,
                     opcode_text,
                 )
@@ -557,10 +569,53 @@ def _unsigned_above_target(data: bytes, instruction: DecodedInstruction) -> int 
     return None
 
 
-def _flags_preserved_between(instructions: Sequence[DecodedInstruction]) -> bool:
-    # This deliberately small whitelist covers register/memory moves, LEA, and
-    # NOP without treating an unknown instruction as proof that CMP flags reach JA.
-    return all(instruction.opcode in {"89", "8b", "8d", "90"} for instruction in instructions)
+def _bound_preserved_between(
+    data: bytes, instructions: Sequence[DecodedInstruction], register: int
+) -> bool:
+    """Prove that both CMP flags and the bounded index survive these moves."""
+    for instruction in instructions:
+        start = instruction.offset
+        opcode = data[start]
+        if opcode == 0x90 and instruction.size == 1:
+            continue
+        if opcode not in {0x89, 0x8B, 0x8D, 0xC7} or instruction.size < 2:
+            return False
+        modrm = data[start + 1]
+        if opcode == 0xC7 and (modrm >> 3) & 7 != 0:
+            return False
+        destination = (
+            (modrm >> 3) & 7 if opcode in {0x8B, 0x8D}
+            else modrm & 7 if modrm >> 6 == 3 else None
+        )
+        if destination == register:
+            return False
+    return True
+
+
+def _byte_remapped_switch_index(
+    data: bytes, prior: Sequence[DecodedInstruction], index_register: int,
+    dispatch_offset: int,
+) -> tuple[int, int, int] | None:
+    """Recognize only `xor r,r; mov low8(r),[index+disp32]; jmp [r*4+table]`."""
+    if len(prior) < 2 or index_register > 3:
+        return None
+    clear, lookup = prior[-2:]
+    if clear.offset + clear.size != lookup.offset or lookup.offset + lookup.size != dispatch_offset:
+        return None
+    if clear.size != 2 or data[clear.offset] not in {0x31, 0x33}:
+        return None
+    if data[clear.offset + 1] != 0xC0 + index_register * 9:
+        return None
+    start = lookup.offset
+    if lookup.size != 6 or data[start] != 0x8A:
+        return None
+    modrm = data[start + 1]
+    source_register = modrm & 7
+    if modrm >> 6 != 2 or (modrm >> 3) & 7 != index_register:
+        return None
+    if source_register in {4, index_register}:
+        return None
+    return source_register, struct.unpack_from("<I", data, start + 2)[0], clear.offset
 
 
 def _is_vc5_same_register_lea_nop(data: bytes, instruction: DecodedInstruction) -> bool:
@@ -611,30 +666,49 @@ def _proven_trailing_inline_switch_table(
     if table_offset < 0 or table_offset >= len(data):
         return None, None
 
+    remap = _byte_remapped_switch_index(
+        data, prior_instructions, index_register, dispatch.offset
+    )
+    bound_register = remap[0] if remap is not None else index_register
+    guarded_offset = remap[2] if remap is not None else dispatch.offset
     candidates: list[InlineSwitchTable] = []
     for branch_index, branch in enumerate(prior_instructions):
         branch_target = _unsigned_above_target(data, branch)
-        if branch_target is None or branch.offset + branch.size != dispatch.offset:
+        if branch_target is None or branch.offset + branch.size != guarded_offset:
             continue
         for compare_index, compare in enumerate(prior_instructions[:branch_index]):
             register_bound = _register_bound_compare(data, compare)
-            if register_bound is None or register_bound[0] != index_register:
+            if register_bound is None or register_bound[0] != bound_register:
                 continue
             if dispatch.offset - compare.offset > 0x20:
                 continue
-            if not _flags_preserved_between(
-                prior_instructions[compare_index + 1 : branch_index]
+            if not _bound_preserved_between(
+                data, prior_instructions[compare_index + 1 : branch_index], bound_register
             ):
                 continue
-            entry_count = register_bound[1] + 1
+            bounded_count = register_bound[1] + 1
+            if not (1 <= bounded_count <= 0x100):
+                continue
+            map_offset = map_end = None
+            entry_count = bounded_count
+            if remap is not None:
+                map_offset = remap[1] - function_address
+                map_end = map_offset + bounded_count
+                if not (table_offset < map_offset < map_end <= len(data)):
+                    continue
+                if (map_offset - table_offset) % 4:
+                    continue
+                entry_count = (map_offset - table_offset) // 4
+                # Both absolute table addresses establish the pointer-table
+                # extent. Every entry must be selected by the bounded byte map.
+                if not (1 <= entry_count <= 0x100) or set(data[map_offset:map_end]) != set(range(entry_count)):
+                    continue
             table_end = table_offset + entry_count * 4
             if not (1 <= entry_count <= 0x100):
                 continue
             if table_address & 3 or table_offset <= dispatch.offset + dispatch.size:
                 continue
-            # The only source shape proven here is a trailing inline table.  A
-            # non-trailing extent needs independent boundary evidence.
-            if table_end != len(data):
+            if table_end > len(data):
                 continue
             if not (dispatch.offset + dispatch.size <= branch_target < table_offset):
                 continue
@@ -644,7 +718,7 @@ def _proven_trailing_inline_switch_table(
             )
             target_offsets = tuple(target - function_address for target in entry_targets)
             if not all(
-                dispatch.offset + dispatch.size <= target_offset <= branch_target
+                dispatch.offset + dispatch.size <= target_offset < table_offset
                 for target_offset in target_offsets
             ):
                 continue
@@ -656,6 +730,10 @@ def _proven_trailing_inline_switch_table(
                     entry_targets=entry_targets,
                     bound_instruction_offset=compare.offset,
                     branch_instruction_offset=branch.offset,
+                    default_target_offset=branch_target,
+                    map_offset=map_offset,
+                    map_end=map_end,
+                    map_operand_offset=prior_instructions[-1].offset + 2 if remap is not None else None,
                 )
             )
 
@@ -671,7 +749,7 @@ def _proven_trailing_inline_switch_table(
         "table_address": f"0x{table_address:x}",
         "message": (
             "an indexed jump addresses the current function extent, but one exact "
-            "same-register CMP/JA bound and trailing table extent were not proven"
+            "CMP/JA bound, preserved index or bounded byte remap, and table extents were not proven"
         ),
     }
 
@@ -691,13 +769,13 @@ def decode_x86_operand_sites(
         switch_table = switch_tables.get(offset)
         if switch_table is not None:
             skipped_switch_tables.add(offset)
-            offset = switch_table.table_end
+            offset = switch_table.data_end
             continue
         overlapping = next(
             (
                 table
                 for table in switch_tables.values()
-                if table.table_offset < offset < table.table_end
+                if table.table_offset < offset < table.data_end
             ),
             None,
         )
@@ -748,13 +826,17 @@ def decode_x86_operand_sites(
                 unresolved.append(table_unresolved)
                 break
             if table is not None:
-                if table.table_offset in switch_tables:
+                if any(
+                    table.table_offset < existing.data_end
+                    and existing.table_offset < table.data_end
+                    for existing in switch_tables.values()
+                ):
                     unresolved.append(
                         {
                             "kind": "ambiguous-inline-switch-table-boundary",
                             "offset": instruction.offset,
                             "table_offset": table.table_offset,
-                            "message": "multiple dispatches claim one inline switch-table boundary",
+                            "message": "multiple dispatches claim overlapping inline switch-table extents",
                         }
                     )
                     break
@@ -762,6 +844,37 @@ def decode_x86_operand_sites(
         offset += instruction.size
 
     instruction_offsets = {instruction.offset for instruction in instructions}
+    ordered_tables = sorted(switch_tables.values(), key=lambda table: table.table_offset)
+    first_table_offset = ordered_tables[0].table_offset if ordered_tables else len(data)
+    return_boundaries = [
+        instruction.offset + instruction.size
+        for instruction in instructions
+        if instruction.opcode in {"c2", "c3", "ca", "cb"}
+        and instruction.offset + instruction.size <= first_table_offset
+        and _is_proven_switch_table_padding(
+            data, instructions, start=instruction.offset + instruction.size, end=first_table_offset
+        )
+    ]
+    # All independently bounded tables must form one trailing data island.
+    # Only decoded VC5 alignment is allowed between tables or after the last.
+    trailing_island_proven = all(
+        table.data_end == next_start
+        or _is_proven_switch_table_padding(
+            data, instructions, start=table.data_end, end=next_start
+        )
+        for table, next_start in zip(
+            ordered_tables,
+            [table.table_offset for table in ordered_tables[1:]] + [len(data)],
+        )
+    )
+    direct_targets: list[tuple[int, int]] = []
+    for instruction in instructions:
+        if instruction.relative8_offset is not None:
+            field = instruction.relative8_offset
+            direct_targets.append((instruction.offset, field + 1 + struct.unpack_from("<b", data, field)[0]))
+        for site in instruction.operand_sites:
+            if site.relocation_type == IMAGE_REL_I386_REL32:
+                direct_targets.append((instruction.offset, site.offset + 4 + struct.unpack_from("<i", data, site.offset)[0]))
     for table in switch_tables.values():
         if table.table_offset not in skipped_switch_tables:
             unresolved.append(
@@ -775,22 +888,20 @@ def decode_x86_operand_sites(
         target_offsets = tuple(target - int(function_address) for target in table.entry_targets)
         missing_boundaries = sorted(
             target_offset
-            for target_offset in target_offsets
+            for target_offset in (*target_offsets, table.default_target_offset)
             if target_offset not in instruction_offsets
+            or target_offset >= (return_boundaries[0] if len(return_boundaries) == 1 else first_table_offset)
         )
-        return_boundaries = [
-            instruction.offset + instruction.size
-            for instruction in instructions
-            if instruction.opcode in {"c2", "c3", "ca", "cb"}
-            and instruction.offset + instruction.size <= table.table_offset
-            and _is_proven_switch_table_padding(
-                data,
-                instructions,
-                start=instruction.offset + instruction.size,
-                end=table.table_offset,
-            )
-        ]
-        if missing_boundaries or len(return_boundaries) != 1:
+        guard_end = table.dispatch_offset + 7
+        bypassed_bound = any(
+            table.bound_instruction_offset < target < guard_end
+            and not table.bound_instruction_offset <= source < guard_end
+            for source, target in direct_targets
+        ) or any(
+            table.bound_instruction_offset < target - int(function_address) < guard_end
+            for other_table in ordered_tables for target in other_table.entry_targets
+        )
+        if missing_boundaries or len(return_boundaries) != 1 or not trailing_island_proven or bypassed_bound:
             unresolved.append(
                 {
                     "kind": "ambiguous-inline-switch-table-boundary",
@@ -798,9 +909,11 @@ def decode_x86_operand_sites(
                     "dispatch_offset": table.dispatch_offset,
                     "missing_target_instruction_offsets": missing_boundaries,
                     "return_padding_boundary_count": len(return_boundaries),
+                    "trailing_data_island_proven": trailing_island_proven,
+                    "bound_bypassed": bypassed_bound,
                     "message": (
                         "inline switch-table entries must target decoded instruction boundaries, "
-                        "and the trailing table must follow one RET plus NOP-only padding"
+                        "preserve the dispatch bound, and form one trailing island after RET and VC5 alignment"
                     ),
                 }
             )
@@ -815,6 +928,13 @@ def decode_x86_operand_sites(
             )
             for index in range(len(table.entry_targets))
         )
+        if table.map_operand_offset is not None:
+            sites.append(
+                OperandSite(
+                    table.map_operand_offset, IMAGE_REL_I386_DIR32, "absolute32",
+                    table.map_operand_offset - 2, "8a",
+                )
+            )
     sites.sort(key=lambda site: (site.offset, site.relocation_type, site.kind))
     unresolved.sort(key=lambda item: (int(item.get("offset", -1)), str(item.get("kind", ""))))
     return tuple(sites), tuple(unresolved)
@@ -1001,9 +1121,13 @@ def _normalize_physical_target_snapshot(value: Any) -> dict[str, Any]:
             )
         result[name] = expected
     ownership_state = value.get("ownership_state")
-    if not isinstance(ownership_state, str) or not ownership_state:
+    # Catalog-only data intentionally has no owner field. Preserve that absence
+    # in the exact snapshot; a later owner assignment must still cause drift.
+    if ownership_state is not None and (
+        not isinstance(ownership_state, str) or not ownership_state
+    ):
         raise RelocationExpectationError(
-            f"{field}.ownership_state must be non-empty"
+            f"{field}.ownership_state must be null or a non-empty string"
         )
     result["ownership_state"] = ownership_state
     try:
@@ -1376,7 +1500,8 @@ def build_object_binding_snapshot(
 
     for binding in bindings.get(symbol_id, ()):
         function = getattr(binding, "function", None)
-        if getattr(function, "symbol", None) != object_symbol:
+        from _recoil.commands.byte_symbol_selectors import object_selector
+        if function is None or object_selector(function) != object_symbol:
             continue
         target = getattr(binding, "target", None)
         target_name = str(getattr(target, "name", ""))
@@ -2703,6 +2828,7 @@ def build_target_identity_state(
     reference: Path = DEFAULT_REFERENCE,
 ) -> tuple[tuple[TargetIdentity, ...], list[dict[str, Any]]]:
     """Build usable target identities and typed blockers for stale governed bindings."""
+    from _recoil.commands.byte_symbol_selectors import PREFIX, registered_target_selector
     identities: list[TargetIdentity] = []
     blockers: list[dict[str, Any]] = []
     for symbol_id, row in document.collection("symbols").items():
@@ -2812,6 +2938,18 @@ def build_target_identity_state(
                 continue
             object_symbols.add(str(normalized["object_symbol"]))
             source_parts.append("reviewed-relocation-target-binding")
+        registered = bindings.get(str(symbol_id), ())
+        selector = registered_target_selector(registered, object_symbols)
+        selector_context = None
+        if selector is not None:
+            object_symbols = {PREFIX + selector["symbol_regex"]}
+            selector_context = (selector["symbol_regex"], selector["source_from"],
+                                "data" if row.get("kind") in {"data", "data-symbol", "provider-data"} else "function")
+            source_parts.append("registered-vc5-symbol-selector")
+        else:
+            # Never discard a competing pattern and silently prefer a diagnostic literal.
+            object_symbols.update(PREFIX + item.function.symbol_regex for item in registered
+                                  if getattr(item.function, "symbol_regex", None))
         if object_symbols:
             identities.append(
                 TargetIdentity(
@@ -2820,6 +2958,7 @@ def build_target_identity_state(
                     end_exclusive=end_exclusive,
                     object_symbols=tuple(sorted(object_symbols)),
                     source="+".join(sorted(set(source_parts))),
+                    registered_selector=selector_context,
                 )
             )
     return tuple(identities), blockers
@@ -2851,7 +2990,7 @@ def _resolve_identity(
     if not candidates:
         return None, 0, projections
     unique = {
-        (identity.object_symbols, addend)
+        (identity.object_symbols, identity.registered_selector, addend)
         for identity, addend in candidates
     }
     if len(unique) != 1 or len(candidates[0][0].object_symbols) != 1:
@@ -2964,6 +3103,57 @@ def _exception_by_site(
     return result, unresolved
 
 
+def _authored_call_target_selectors(
+    document: ProgressDocument, *, source_start: int, source_end: int
+) -> dict[int, TargetIdentity]:
+    """Select source-site identities from the tracker's proven authored ICF aliases."""
+    selected: dict[int, TargetIdentity] = {}
+    for symbol_id, row in document.collection("symbols").items():
+        if not isinstance(row, Mapping) or row.get("binary") != "recoil":
+            continue
+        aliases = row.get("logical_aliases")
+        if not isinstance(aliases, Mapping):
+            continue
+        for alias_id, alias in aliases.items():
+            if not isinstance(alias, Mapping):
+                continue
+            selectors = alias.get("retail_target_selectors")
+            if not isinstance(selectors, Mapping):
+                continue
+            call_sites = [address_value(str(value)) for value in selectors.get("direct_call_sites", ())]
+            relevant = [value for value in call_sites if source_start <= value < source_end]
+            if not relevant:
+                continue
+            group = row.get("icf_address_group")
+            object_symbol = alias.get("object_symbol")
+            if (
+                row.get("kind") != "function"
+                or not isinstance(group, Mapping)
+                or group.get("model") != "authored-linker-coalesced-v1"
+                or group.get("physical_gate_symbol_id") != symbol_id
+                or alias.get("fold_status") != "proven-fold-alias"
+                or alias.get("pipeline_class") != "authored"
+                or not alias.get("evidence_ids")
+                or not isinstance(object_symbol, str)
+                or not object_symbol
+                or len(call_sites) != len(set(call_sites))
+            ):
+                raise RelocationExpectationError(f"invalid authored ICF call selector for {alias_id!r}")
+            target_start = address_value(str(row["address"]))
+            target_end = address_value(str(row["end_exclusive"]))
+            if target_end <= target_start:
+                raise RelocationExpectationError(f"invalid authored ICF target extent for {symbol_id!r}")
+            identity = TargetIdentity(
+                symbol_id=str(symbol_id), address=target_start, end_exclusive=target_end,
+                object_symbols=(object_symbol,), source=f"reviewed-authored-icf-call-selector:{alias_id}",
+            )
+            for call_site in relevant:
+                if call_site in selected:
+                    raise RelocationExpectationError(f"conflicting authored ICF call selector at 0x{call_site:x}")
+                selected[call_site] = identity
+    return selected
+
+
 def derive_relocation_expectations(
     *,
     document: ProgressDocument,
@@ -2971,6 +3161,7 @@ def derive_relocation_expectations(
     object_symbol: str,
     bindings: Mapping[str, Sequence[Any]],
     reference: Path = DEFAULT_REFERENCE,
+    target_identity_state: tuple[tuple[TargetIdentity, ...], list[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     address = address_value(str(row["address"]))
     end_exclusive = address_value(str(row["end_exclusive"]))
@@ -2987,11 +3178,14 @@ def derive_relocation_expectations(
     if not current_scope_ids and isinstance(row.get("symbol_id"), str):
         current_scope_ids.add(str(row["symbol_id"]))
     current_symbol_id = "|".join(sorted(current_scope_ids)) or "current-retail-function"
-    target_identities, target_binding_blockers = build_target_identity_state(
-        document,
-        bindings,
-        reference=reference,
+    # A whole-program verifier may supply the state it derived from this same
+    # invocation's document, bindings and immutable retail. This has no file or
+    # CLI representation and never carries an acceptance result between runs.
+    target_identities, target_binding_blockers = (
+        build_target_identity_state(document, bindings, reference=reference)
+        if target_identity_state is None else target_identity_state
     )
+    native_identity_state = (target_identities, target_binding_blockers)
     target_binding_blockers = [
         blocker
         for blocker in target_binding_blockers
@@ -3005,6 +3199,8 @@ def derive_relocation_expectations(
             end_exclusive=end_exclusive,
             object_symbols=(object_symbol,),
             source="current-registered-object-symbol",
+            registered_selector=next((item.registered_selector for item in target_identities
+                if item.address == address and item.object_symbols == (object_symbol,)), None),
         )
     )
     exceptions = _reviewed_exceptions(row, object_symbol)
@@ -3020,6 +3216,27 @@ def derive_relocation_expectations(
     )
     expected: list[dict[str, Any]] = []
     used_exceptions: set[tuple[int, int]] = set()
+    call_target_selectors = _authored_call_target_selectors(
+        document, source_start=address, source_end=end_exclusive
+    )
+    from _recoil.commands.native_eh_relocations import derive_native_expectations
+    from _recoil.commands.native_array_cleanup import derive_cleanup_expectations
+    from _recoil.commands.native_import_relocations import derive_import_expectations
+    try:
+        native_roles = derive_native_expectations(document, bindings, row, object_symbol, reference)
+        native_cleanup = derive_cleanup_expectations(document, bindings, row, object_symbol, reference,
+                                                     native_identity_state)
+        if set(native_cleanup) & set(native_roles):
+            raise ValueError("native relocation role bindings overlap")
+        native_roles.update(native_cleanup)
+        native_imports = derive_import_expectations(document, bindings, row, object_symbol, reference)
+        if set(native_imports) & set(native_roles):
+            raise ValueError("native import relocation bindings overlap")
+        native_roles.update(native_imports)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        native_roles = {}
+        unresolved.append(dict(kind="invalid-native-relocation-binding", message=str(exc)))
+    used_native_roles: set[tuple[int, int]] = set()
     image_end = headers.image_base + headers.size_of_image
     for site in sites:
         operand = retail_bytes[site.offset : site.offset + 4]
@@ -3080,6 +3297,14 @@ def derive_relocation_expectations(
             ):
                 continue
         key = (site.offset, site.relocation_type)
+        if key in native_roles:
+            native = native_roles[key]
+            if key in exception_map or native["retail_target"] != retail_target:
+                unresolved.append(dict(kind="native-relocation-site-conflict", offset=site.offset))
+            else:
+                expected.append(dict(native, instruction_offset=site.instruction_offset, opcode=site.opcode))
+                used_native_roles.add(key)
+            continue
         reviewed = exception_map.get(key)
         if reviewed is not None:
             used_exceptions.add(key)
@@ -3154,7 +3379,23 @@ def derive_relocation_expectations(
                 )
             expected.append(expected_row)
             continue
-        identity, target_addend, candidates = _resolve_identity(retail_target, identities)
+        selected_identity = call_target_selectors.get(address + site.instruction_offset)
+        if selected_identity is not None:
+            if (
+                site.relocation_type != IMAGE_REL_I386_REL32
+                or site.opcode not in {"e8", "e9"}
+                or retail_target != selected_identity.address
+            ):
+                unresolved.append({
+                    "kind": "authored-icf-call-selector-retail-drift",
+                    "offset": site.offset,
+                    "type": site.relocation_type,
+                    "message": "reviewed logical call selector disagrees with the decoded retail target or dispatch form",
+                })
+                continue
+            identity, target_addend, candidates = selected_identity, 0, []
+        else:
+            identity, target_addend, candidates = _resolve_identity(retail_target, identities)
         if identity is None:
             unresolved.append(
                 {
@@ -3208,8 +3449,13 @@ def derive_relocation_expectations(
                 "derivation": identity.source,
                 "instruction_offset": site.instruction_offset,
                 "opcode": site.opcode,
+                **({"registered_target_selector": dict(zip(
+                    ("symbol_regex", "source_from", "kind"), identity.registered_selector))}
+                   if identity.registered_selector is not None else {}),
             }
         )
+    if used_native_roles != set(native_roles):
+        unresolved.append(dict(kind="native-relocation-site-population-drift"))
     for key, item in exception_map.items():
         if key not in used_exceptions:
             unresolved.append(
@@ -3270,7 +3516,8 @@ def audit_at(
         except RuntimeError as exc:
             raise RelocationExpectationError(str(exc)) from exc
         for binding in selected_bindings:
-            key = (normalize_address(row["address"]), str(binding.function.symbol))
+            from _recoil.commands.byte_symbol_selectors import object_selector
+            key = (normalize_address(row["address"]), object_selector(binding.function))
             if key in seen:
                 continue
             seen.add(key)
@@ -3278,7 +3525,7 @@ def audit_at(
                 derive_relocation_expectations(
                     document=document,
                     row=row,
-                    object_symbol=str(binding.function.symbol),
+                    object_symbol=object_selector(binding.function),
                     bindings=bindings,
                     reference=reference,
                 )

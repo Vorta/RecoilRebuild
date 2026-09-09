@@ -33,6 +33,136 @@ from _recoil.lib.progress_sqlite import (  # noqa: E402
 )
 
 
+def test_function_tail_separation_requires_exact_snapshot_and_live_boundary_proof(tmp_path, monkeypatch):
+    from copy import deepcopy
+    from types import SimpleNamespace as Row
+    from _recoil.commands import function_tail_padding as tail
+
+    symbol_id = "recoil:function:0x401000"
+    evidence_id = "recoil:evidence:boundary"
+    function = dict(binary="recoil", kind="function", pipeline_class="authored", extent_state="known",
+        output_section_id="recoil:section:.text", address="0x401000", end_exclusive="0x401010", size=16,
+        physical_block_id="recoil:block:unit", evidence_ids=[evidence_id],
+        binary_state={"call_contract": {"disposition": "accepted", "result": "passed"}})
+    data = dict(symbols={symbol_id: function}, evidence={evidence_id: {}}, owners={"owner": {"preserved": True}},
+        physical_blocks={"recoil:block:unit": dict(start="0x401000", end_exclusive="0x401010",
+                                                 contribution_ids=[symbol_id])})
+    document = Row(data=data, collection=lambda name: data[name])
+    payload = dict(schema="recoil-function-tail-padding-v1", reviewed=True, reason="reviewed retail boundary",
+                   symbol_id=symbol_id, current_symbol=deepcopy(function), body_end_exclusive="0x401002",
+                   evidence_ids=[evidence_id])
+    original = deepcopy(data)
+    proposed, interval = tail.plan_separation(document, payload)
+    assert data == original
+    assert proposed["symbols"][symbol_id]["size"] == 2
+    assert proposed["symbols"][symbol_id]["binary_state"] == function["binary_state"]
+    assert proposed["physical_blocks"] == data["physical_blocks"] and proposed["owners"] == data["owners"]
+    assert proposed["symbols"][symbol_id]["tail_padding_separation"]["acceptance"] == "unaccepted"
+    for changes in ({"reviewed": 1}, {"reason": " "}, {"evidence_ids": []},
+                    {"body_end_exclusive": "0x401010"}, {"body_end_exclusive": "0x401000"},
+                    {"current_symbol": {**function, "size": 15}}):
+        with pytest.raises(tail.ProgressError):
+            tail.plan_separation(document, {**payload, **changes})
+    for changes in ({"logical_aliases": {"alias": {}}}, {"storage_contribution_ids": ["storage"]},
+                    {"accepted_byte_facts": {"accepted": True}},
+                    {"binary_state": {"object_byte": {"disposition": "accepted"}}}):
+        function.update(changes)
+        with pytest.raises(tail.ProgressError):
+            tail.plan_separation(document, {**payload, "current_symbol": deepcopy(function)})
+        function.clear()
+        function.update(deepcopy(original["symbols"][symbol_id]))
+    data["symbols"]["other"] = dict(binary="recoil", address="0x401004", end_exclusive="0x401008")
+    with pytest.raises(tail.ProgressError, match="overlaps"):
+        tail.plan_separation(document, payload)
+    del data["symbols"]["other"]
+    retail = b"\x90\xc3" + b"\xcc" * 14
+    assembly = "00401000  90               nop\n00401001  c3               retn"
+    tail.prove_tail(retail, *interval, assembly)
+    # A long opcode fills BN's byte column, leaving one space before the mnemonic.
+    tail.prove_tail(bytes.fromhex("f7 45 fc ff ff ff 7f c3") + b"\xcc" * 8,
+        0x401000, 0x401008, 0x401010,
+        "00401000  f7 45 fc ff ff ff 7f test dword [ebp-4], 0x7fffffff\n00401007  c3 ret")
+    for image, listing in ((retail[:-1]+b"\x90", assembly), (retail, assembly.splitlines()[0]),
+                           (retail, assembly+"\n00401002  cc               int3"),
+                           (b"\x90\x90"+retail[2:], assembly)):
+        with pytest.raises(tail.ProgressError):
+            tail.prove_tail(image, *interval, listing)
+    reference = tmp_path / "retail.exe"
+    reference.write_bytes(retail)
+    monkeypatch.setattr(tail, "parse_pe_headers", lambda *a, **kw: Row(image_base=0x400000,
+        sections=[Row(virtual_address=0x1000, raw_size=16, name=".text")]))
+    monkeypatch.setattr(tail, "rva_to_offset", lambda rva, sections: rva-0x1000)
+    controls = {}
+    statuses = []
+
+    def request(endpoint, **params):
+        if endpoint == "status":
+            statuses.append(1)
+            return dict(loaded=True, filename=tail.reference_image("recoil").bndb_path,
+                platform="windows-x86", arch="x86", analysis={"state": "AnalysisState.IdleState"},
+                view_identity="view", session_id="session",
+                view_revision=len(statuses) if controls.get("drift") else 1)
+        if endpoint == "functionAt":
+            return dict(address=params["address"], functions=[{}] if controls.get("function") else [])
+        return dict(address=params["address"], code_references=[], data_references=[],
+                    coverage={"complete": not controls.get("partial"), "errors": []},
+                    total=1 if controls.get("reference") else 0, has_more=False, truncated=False, partial=False)
+
+    bridge = Row(get_json=request, assembly=lambda name: assembly)
+    assert tail.prove_live(reference, interval, bridge)["tail_size"] == 14
+    for flag in ("drift", "function", "partial", "reference"):
+        controls[flag] = True
+        with pytest.raises(tail.ProgressError):
+            tail.prove_live(reference, interval, bridge)
+        controls.clear()
+
+
+def test_exception_removal_requires_complete_typed_match_and_preserves_other_facts(monkeypatch):
+    from copy import deepcopy
+    from types import SimpleNamespace as Row
+    from _recoil.commands import relocation_expectation_mutation as mutation
+
+    source_id = "recoil:function:0x401000"
+    exception = {"reviewed": True, "offsets": [1], "type": 6, "target_symbol_id": "recoil:data:unit",
+                 "reason": "reviewed ambiguity", "source_binding": {"object_symbol": "_entry"}}
+    other = {**exception, "offsets": [5]}
+    data = ProgressDocument.empty().data
+    data["symbols"][source_id] = {"binary": "recoil", "kind": "function", "address": "0x401000",
+                                  "end_exclusive": "0x401010", "relocation_expectation_exceptions": [exception, other]}
+    data["symbols"]["recoil:data:unit"] = {"retained": "target facts"}
+    original = deepcopy(data)
+    commits = []
+
+    def commit(proposed, *, expected_revision, apply):
+        assert expected_revision == 0
+        commits.append(deepcopy(proposed))
+        if apply:
+            data.clear()
+            data.update(deepcopy(proposed))
+        return Row(to_dict=lambda: {"applied": apply})
+
+    monkeypatch.setattr(mutation, "ProgressStore", lambda path: Row(load=lambda: ProgressDocument(data), commit=commit))
+    args = dict(progress=Path("unit.sqlite3"), source_symbol_id=source_id, source_address="0x401000",
+                payload=exception, reason="replace superseded exception with reviewed named identity",
+                expected_revision=0, apply=False)
+    result = mutation.remove_reviewed_exception(**args)
+    assert result["operation"] == "remove" and not result["commit"]["applied"]
+    assert data == original
+    expected = deepcopy(original)
+    expected["symbols"][source_id]["relocation_expectation_exceptions"] = [other]
+    assert commits == [expected]
+    for changes in ({"expected_revision": 1}, {"source_address": "0x401004"}, {"reason": " "},
+                    {"payload": {"reviewed": True, "offsets": [1]}},
+                    {"payload": {**exception, "offsets": [True]}}):
+        with pytest.raises(mutation.RelocationExceptionMutationError):
+            mutation.remove_reviewed_exception(**{**args, **changes})
+    assert len(commits) == 1
+    mutation.remove_reviewed_exception(**{**args, "apply": True})
+    assert data == expected
+    with pytest.raises(mutation.RelocationExceptionMutationError, match="exactly one"):
+        mutation.remove_reviewed_exception(**args)
+
+
 def make_store(path: Path) -> ProgressSQLiteStore:
     document = ProgressDocument.empty().data
     document["evidence"] = {
@@ -41,6 +171,211 @@ def make_store(path: Path) -> ProgressSQLiteStore:
     return ProgressSQLiteStore.create_from_mapping(
         path, document, cutover_pair_id="proof-kernel"
     )
+
+
+def test_repair_created_data_preserves_legacy_owner_and_refuses_acquired_state(monkeypatch):
+    from copy import deepcopy
+    from types import SimpleNamespace
+    from _recoil.commands.relocation_target_mutation import _pending_data_symbol
+    from _recoil.commands import relocation_target_repair as repair
+    from _recoil.lib.progress import ProgressError
+
+    target_id, owner_id = "recoil:data:0x501000", "recoil:owner:new"
+    relation = dict(kind="primary-data", address="0x501000", symbol_id=target_id, name="token")
+    target = _pending_data_symbol(address=0x501000, end_exclusive=0x501003,
+        name="token", output_section_id="recoil:section:.data", evidence_ids=["recoil:evidence:token"])
+    target["relocation_target_binding"] = dict(object_symbol="_token", binding_context=dict(creation_mode="created-data-symbol",
+        owner=dict(owner_id=owner_id), relationship=relation))
+    owner = dict(relationships=[relation], gates={"source": "accepted"},
+        reimplementation=dict(entries={target_id: dict(kind="data", tier="X", evidence_ids=[])}))
+    legacy = dict(kind="data-owner", provider_state="pending", lifecycle_state="discovered",
+        relationships=[relation], reimplementation=dict(entries={target_id: dict(kind="data", tier="C", evidence_ids=["old"])}))
+    data = dict(symbols={target_id: target}, owners={owner_id: owner, "recoil:owner:legacy": legacy})
+    monkeypatch.setattr(repair, "_validate_owner_evidence", lambda *args, **kw: legacy)
+    monkeypatch.setattr(repair, "normalize_relocation_target_binding", lambda binding: binding)
+
+    def check(current):
+        document = SimpleNamespace(data=current, collection=lambda name: current.get(name, {}))
+        payload = dict(schema="recoil-repair-created-relocation-owner-v1", reviewed=True,
+            reason="Repair an unreviewed duplicate creation", target_symbol_id=target_id,
+            current_target=deepcopy(current["symbols"][target_id]), current_owner=deepcopy(current["owners"][owner_id]),
+            retained_owner_id="recoil:owner:legacy", current_retained_owner=deepcopy(current["owners"]["recoil:owner:legacy"]),
+            evidence_ids=["recoil:evidence:token"])
+        return repair.repair_pending_owner(document, payload)
+
+    before = deepcopy(data)
+    result, detail = check(data)
+    assert data == before and result["owners"]["recoil:owner:legacy"] == legacy
+    assert result["symbols"][target_id]["size"] == target["size"]
+    assert result["owners"][owner_id]["relationships"] == []
+    assert result["owners"][owner_id]["gates"] == owner["gates"]
+    assert detail["other_owner_facts_preserved"]
+    for mutation in (
+        lambda d: d["symbols"][target_id].update(size=9),
+        lambda d: d["symbols"][target_id].update(relocation_target_bindings=[]),
+        lambda d: d["owners"][owner_id]["reimplementation"]["entries"][target_id].update(tier="C"),
+        lambda d: d["owners"].update({"third": {"relationships": [relation]}}),
+        lambda d: d["owners"][owner_id]["relationships"].append(deepcopy(relation)),
+    ):
+        changed = deepcopy(data)
+        mutation(changed)
+        with pytest.raises(ProgressError):
+            check(changed)
+
+
+def test_missing_typed_data_preserves_exact_owner_facts_and_rejects_conflicts(monkeypatch):
+    from copy import deepcopy
+    from types import SimpleNamespace
+    from _recoil.commands import relocation_target_mutation as mutation
+
+    owner_id, evidence_id = "recoil:owner:unit.reader", "recoil:evidence:unit.reader"
+    target_id = "recoil:data:0x501000"
+    relationship = {"kind": "primary-data", "address": "0x501000",
+                    "symbol_id": target_id, "name": "Reader::token"}
+    data = ProgressDocument.empty().data
+    data["owners"][owner_id] = {
+        "binary": "recoil", "kind": "source-file", "provider_state": "unresolved",
+        "lifecycle_state": "active", "evidence_ids": [evidence_id],
+        "relationships": [deepcopy(relationship)],
+        "reimplementation": {"entries": {target_id: {
+            "kind": "data", "tier": "B", "evidence_ids": [evidence_id]}}},
+    }
+    data["evidence"][evidence_id] = {"scope_ids": [owner_id]}
+    original_owner = deepcopy(data["owners"][owner_id])
+    commits = []
+
+    def commit(proposed, **kwargs):
+        commits.append(deepcopy(proposed))
+        return SimpleNamespace(to_dict=lambda: {"applied": kwargs["apply"]})
+
+    monkeypatch.setattr(mutation, "ProgressStore", lambda _: SimpleNamespace(
+        load=lambda: ProgressDocument(deepcopy(data)), commit=commit))
+    monkeypatch.setattr(mutation, "_source_row", lambda *a, **k: {})
+    monkeypatch.setattr(mutation, "build_object_binding_snapshot", lambda *a, **k: {})
+    monkeypatch.setattr(mutation, "decode_retail_relocation_at_offset", lambda **k: {
+        "offset": 1, "type": 6, "type_name": "DIR32", "retail_target": 0x501000,
+        "instruction_offset": 0, "opcode": "68"})
+    monkeypatch.setattr(mutation, "_retail_section", lambda *a, **k: "recoil:section:.data")
+    monkeypatch.setattr(mutation, "normalize_relocation_target_binding", lambda value: value)
+    monkeypatch.setattr(mutation, "relocation_target_binding_staleness", lambda value, **k: (value, []))
+
+    def bind():
+        return mutation.bind_relocation_target(
+            progress=Path("unused.sqlite3"), reference=Path("retail.exe"), manifest_dir=Path("."),
+            source_symbol_id="recoil:function:0x401000", source_address="0x401000",
+            expected_revision=0, apply=False, bindings={}, payload={
+                "reviewed": True, "source_object_symbol": "_read", "offset": 1,
+                "target_object_symbol": "_token", "target_owner_id": owner_id,
+                "reason": "complete retail literal and owner evidence", "evidence_ids": [evidence_id],
+                "create_missing_data": True, "target_end_exclusive": "0x501004",
+                "target_name": "Reader::token"})
+
+    assert bind()["target_created"] is True
+    assert commits[-1]["owners"][owner_id] == original_owner
+    row = commits[-1]["symbols"][target_id]
+    assert row["accepted_byte_facts"] is None and row["accepted_order_facts"] is None
+    assert all(state["result"] == "pending" for state in row["binary_state"].values())
+    assert target_id not in data["symbols"]
+
+    for changed in ({"name": "different"}, {"symbol_id": "recoil:data:other"},
+                    {"address": "0x501001"}, {"kind": "primary-function"}):
+        data["owners"][owner_id]["relationships"] = [{**relationship, **changed}]
+        with pytest.raises(mutation.RelocationTargetMutationError, match="relationship conflicts"):
+            bind()
+    data["owners"][owner_id]["relationships"] = [relationship, deepcopy(relationship)]
+    with pytest.raises(mutation.RelocationTargetMutationError, match="duplicated"):
+        bind()
+    data["owners"][owner_id]["relationships"] = [relationship]
+    for conflicting_entry in ({"kind": "function", "tier": "B"}, "invalid"):
+        data["owners"][owner_id]["reimplementation"]["entries"][target_id] = conflicting_entry
+        with pytest.raises(mutation.RelocationTargetMutationError, match="tier entry conflicts"):
+            bind()
+    data["owners"][owner_id] = deepcopy(original_owner)
+    data["owners"]["recoil:owner:existing"] = {"relationships": [deepcopy(relationship)]}
+    with pytest.raises(mutation.RelocationTargetMutationError, match="already has a primary relationship"):
+        bind()
+    del data["owners"]["recoil:owner:existing"]
+    data["symbols"][target_id] = dict(binary="recoil", kind="data", address="0x501000", extent_state="unknown")
+    with pytest.raises(mutation.RelocationTargetMutationError, match="already exists"):
+        bind()
+    assert len(commits) == 1
+
+
+def test_temporary_scalar_creation_preserves_extent_and_pending_acceptance(monkeypatch):
+    from copy import deepcopy
+    from _recoil.commands import relocation_expectation_mutation as mutation
+    from _recoil.commands import relocation_expectations as expectations
+
+    # The independent catalog route deliberately creates no owner relationship
+    # or ownership field. Physical scalar snapshots must preserve that state.
+    snapshot = dict(symbol_id="recoil:data:0x501000", binary="recoil", kind="data",
+                    extent_state="known", output_section_id="recoil:section:.rdata",
+                    address="0x501000", end_exclusive="0x501008", size=8,
+                    retail_content_hex="00" * 8)
+    unowned = expectations._normalize_physical_target_snapshot(snapshot)
+    assert unowned["ownership_state"] is None
+    assert expectations._normalize_physical_target_snapshot(unowned) == unowned
+    owned = expectations._normalize_physical_target_snapshot(
+        {**snapshot, "ownership_state": "primary-owned"})
+    assert owned != unowned and owned["ownership_state"] == "primary-owned"
+    for invalid in ("", False, 0, []):
+        with pytest.raises(expectations.RelocationExpectationError, match="ownership_state"):
+            expectations._normalize_physical_target_snapshot({**snapshot, "ownership_state": invalid})
+
+    owner_id = "recoil:owner:unit.reader"
+    evidence_id = "recoil:evidence:unit.reader"
+    target = 0x501000
+    target_id = f"recoil:data:0x{target:x}"
+    data = ProgressDocument.empty().data
+    data["owners"][owner_id] = {
+        "binary": "recoil", "kind": "source-file", "provider_state": "unresolved",
+        "lifecycle_state": "active", "evidence_ids": [evidence_id], "relationships": [],
+    }
+    data["evidence"][evidence_id] = {"scope_ids": [owner_id]}
+    section_requests = []
+
+    def retail_section(document, *, reference, start, end_exclusive):
+        section_requests.append((start, end_exclusive))
+        return "recoil:section:.rdata"
+
+    monkeypatch.setattr(mutation, "_retail_section", retail_section)
+
+    def stage(size, current=data):
+        proposed = deepcopy(current)
+        result = mutation._stage_missing_physical_target(
+            document=ProgressDocument(current), proposed=proposed, reference=Path("retail.exe"),
+            normalized_request={
+                "retail_target": target, "target_symbol_id": target_id,
+                "evidence_ids": [evidence_id],
+                "create_missing_data": {
+                    "target_owner_id": owner_id, "target_end_exclusive": hex(target + size),
+                    "target_name": "Reader::constant",
+                },
+            },
+        )
+        return result, proposed
+
+    for size in (4, 8):
+        result, proposed = stage(size)
+        row = proposed["symbols"][target_id]
+        assert section_requests[-1] == (target, target + size)
+        assert result["target_end_exclusive"] == hex(target + size)
+        assert row["size"] == size and row["accepted_byte_facts"] is None
+        assert row["accepted_order_facts"] is None
+        assert all(value["result"] == "pending" for value in row["binary_state"].values())
+        assert target_id not in data["symbols"]
+
+    for size in (0, 3, 5, 16):
+        with pytest.raises(mutation.RelocationExceptionMutationError, match="four or eight"):
+            stage(size)
+    assert len(section_requests) == 2
+
+    occupied = deepcopy(data)
+    occupied["symbols"]["recoil:data:unit.neighbor"] = {
+        "binary": "recoil", "address": hex(target + 4), "end_exclusive": hex(target + 8),
+    }
+    with pytest.raises(mutation.RelocationExceptionMutationError, match="overlaps"):
+        stage(8, occupied)
 
 
 @pytest.mark.parametrize("phase", ["authored-function-order", "full-function-order"])

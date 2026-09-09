@@ -1883,11 +1883,17 @@ namespace zClass_Class {
                 (zClass_Object3DDataPartial *)(node->classData);
             if (objectData != 0 && (objectData->flags & 0x01) != 0) {
                 if ((objectData->flags & 0x10) == 0) {
+                    // Preserve translation before MatLoadIdentity overwrites its storage.
+                    const zVec3 position = {
+                        objectData->localMatrix[9],
+                        objectData->localMatrix[10],
+                        objectData->localMatrix[11]
+                    };
                     zMath::MatStackPushPtr(objectData->localMatrix);
                     zMath::MatLoadIdentity();
                     zMath::MatApplyLocalTRS(
                         &objectData->rotation,
-                        (zVec3 *)(&objectData->localMatrix[9]),
+                        &position,
                         &objectData->scale
                     );
                     zMath::MatStackPopPtr();

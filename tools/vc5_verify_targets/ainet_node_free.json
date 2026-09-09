@@ -2,7 +2,7 @@
   "name": "ainet_node_free",
   "description": "AINetNode probe-fan and node deallocation.",
   "source_filename": "ai_net.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "compiler_profile": "vc5_o2_ob0_md_fastcall_facs",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -21,7 +21,7 @@
     },
     {
       "address": "0x402ff0",
-      "symbol": "?Alloc@AINet@@SAPAU1@XZ",
+      "symbol": "?Alloc@AINet@@SIPAU1@XZ",
       "name": "AINet::Alloc"
     },
     {

@@ -269,6 +269,75 @@ def test_local_cdecl_import_bridge_requires_exact_call_site_and_coff_population(
                     {"relocation_mask": (False,) * 6}):
         with pytest.raises(ValueError):
             prove(expected, replace(candidate, caller_definition=replace(caller, **changes)), **kwargs)
+    _exercise_complete_iat_candidate_composition()
+    _exercise_reviewed_storage_registration()
+
+
+def _exercise_reviewed_storage_registration():
+    from types import SimpleNamespace as Row
+    from _recoil.call_contract.storage_identity import _reviewed_storage_registration_agrees as agrees
+    kwargs = dict(address="0x401000", identity="storage:table", object_symbols=("?table",))
+    def prove(addresses, names):
+        return agrees(Row(storage_by_address=addresses, storage_by_name=names), **kwargs)
+    assert prove({}, {})
+    assert prove({"0x401000": "storage:table"}, {})
+    assert prove({"0x401000": "storage:table"}, {"?table": "storage:table"})
+    assert prove({}, {"?table": "storage:table"})
+    for wrong in ("", "storage:other"):
+        assert not prove({"0x401000": wrong}, {})
+        assert not prove({}, {"?table": wrong})
+    assert not prove({}, {"?Table": "storage:table"})
+    assert not prove({}, {"?table": "storage:table", "?TABLE": "storage:table"})
+    from _recoil.call_contract.storage_identity import _reviewed_registered_or_provisional_storage as select
+    def selected(addresses, names):
+        return select(Row(storage_by_address=addresses, storage_by_name=names),
+            address="0x401000", registered_identity="storage:table",
+            provisional_identity="constructor-table:0x401000", object_symbols=("?table",))
+    assert selected({}, {}) == "constructor-table:0x401000"
+    assert selected({"0x401000": "storage:table"}, {}) == "storage:table"
+    assert selected({"0x401000": "storage:table"}, {"?table": "storage:table"}) == "storage:table"
+    for wrong in ("", "storage:other", "constructor-table:0x401000"):
+        assert selected({"0x401000": wrong}, {}) == ""
+    assert selected({}, {"?table": "storage:table"}) == ""
+    assert selected({"0x401000": "storage:table"}, {"?table": "constructor-table:0x401000"}) == ""
+
+
+def _exercise_complete_iat_candidate_composition():
+    from copy import deepcopy
+    from dataclasses import replace
+    from _recoil.call_contract.identity import _publish_current_iat_candidate_names as publish
+    from _recoil.call_contract.records import CurrentIatStoragePackage
+    package = CurrentIatStoragePackage(address="0x401000", import_dll="CRT.dll", import_name="convert",
+        import_ordinal=None, object_symbol="__imp__convert", identity="iat:convert")
+    provider = "provider:recoil:function:0x401000"
+    original = dict(by_address={package.address:provider}, by_candidate_name={package.object_symbol:provider, "_convert":"provider:thunk"},
+        provider_ids={provider, "provider:thunk"}, storage_by_address={package.address:package.identity},
+        storage_by_name={package.object_symbol:package.identity, package.import_name:package.identity})
+    indexes = deepcopy(original)
+    publish((package,), **indexes)
+    assert indexes["by_candidate_name"] == {package.object_symbol:package.identity, "_convert":"provider:thunk"}
+    assert indexes["by_address"] == original["by_address"]
+    assert indexes["provider_ids"] == original["provider_ids"]
+    publish((package,), **indexes)
+    assert indexes["by_candidate_name"][package.object_symbol] == package.identity
+    for key, replacement in (
+        ("by_address", {}), ("by_address", {package.address:"provider:other"}), ("provider_ids", set()),
+        ("by_candidate_name", {package.object_symbol:"provider:other"}),
+        ("by_candidate_name", {package.object_symbol:""}), ("by_candidate_name", {}),
+        ("by_candidate_name", {package.object_symbol:provider, package.object_symbol.upper():provider}),
+        ("storage_by_address", {package.address:"storage:other"}),
+        ("storage_by_name", {package.object_symbol:package.identity}),
+        ("storage_by_name", {package.object_symbol:"iat:other", package.import_name:package.identity}),
+    ):
+        indexes = deepcopy(original); indexes[key] = replacement
+        before = deepcopy(indexes)
+        publish((package,), **indexes)
+        assert indexes == before, key
+    for packages in ((), (package, package), (package, replace(package, address="0x402000")),
+                     (package, replace(package, object_symbol="__imp__other"))):
+        indexes = deepcopy(original)
+        publish(packages, **indexes)
+        assert indexes == original
 
 
 def test_private_proof_owners_import_independently():

@@ -1661,9 +1661,9 @@ void __fastcall zMath_Vec3_DirFromYaw(
 
     const zVec3 forward = {0.0f, 0.0f, -1.0f};
     zMath::Vec3RotateY(
+        yawAngle,
         outDir,
-        &forward,
-        yawAngle
+        &forward
     );
 }
 
@@ -2054,9 +2054,9 @@ void __fastcall zMath_Mat_ExtractEulerAngles(
 
     zVec3 rowX = {0};
     zMath::Vec3RotateY(
+        -yaw,
         &rowX,
-        (const zVec3 *)(matrix),
-        -yaw
+        (const zVec3 *)(matrix)
     );
 
     zVec3 flattenedRowX = {0};
@@ -2102,12 +2102,19 @@ namespace zMath {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3rotatey-gamezrecoil-zmath-zmath-vec-cpp
  * @recoil-artifact defines .text recoil:function:0x474f40: zMath::Vec3RotateY (GameZRecoil/zMath/zmath_vec.cpp).
+ * The angle-first parameter model preserves outVec in ECX, inVec in EDX,
+ * and the stack float with four-byte callee cleanup. Under canonical VC5,
+ * this native order reproduces both retail argument sequences at 0x4036bd
+ * and 0x4036cc; the angle-last and angle-middle models do not. All thirteen
+ * indexed callers use this declaration. The original source parameter order
+ * and declaration spelling remain unrecovered; this model is provisional
+ * and does not accept the callee's body.
  * Purpose: Rotates an input vector around the Y axis and copies the original Y component to the output.
  */
 void __fastcall Vec3RotateY(
+    float yawAngle,
     zVec3 *outVec,
-    const zVec3 *inVec,
-    float yawAngle
+    const zVec3 *inVec
 ) {
     const float sinAngle = sin(yawAngle);
     const float cosAngle = cos(yawAngle);

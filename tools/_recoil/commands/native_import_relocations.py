@@ -1,0 +1,207 @@
+"""Bind an authored reference to a retail and canonical VC5 import thunk.
+
+The source-site proof preserves the existing non-authored target and its unknown
+ownership/extent tail. It accepts no provider body, padding, storage, or owner.
+"""
+from __future__ import annotations
+
+import argparse
+from copy import deepcopy
+import json
+from pathlib import Path
+import struct
+import sys
+
+from _recoil.commands.asm_verify import CoffObject
+from _recoil.commands.native_eh_relocations import require
+from _recoil.lib.progress import DEFAULT_PROGRESS_PATH, ProgressError, ProgressStore, address_value
+from _recoil.lib.tooling import DEFAULT_VC5_ROOT, configure_stdio
+
+FIELD = "native_import_bindings"
+SCHEMA = "recoil-native-import-reference-v1"
+
+
+def import_at(image, address):
+    from _recoil.commands.live_byte_verify import _pe_bytes
+    from _recoil.commands.provider_target_mutation import _retail_import_targets
+    body = _pe_bytes(image, address, 6)
+    require(body[:2] == b"\xff\x25", "target is not an exact absolute IAT jump")
+    iat = struct.unpack_from("<I", body, 2)[0]
+    imports, _ = _retail_import_targets(image)
+    matches = [i for i in imports if address_value(i.address) == iat]
+    require(len(matches) == 1, "thunk IAT identity is missing or ambiguous")
+    item = matches[0]
+    return dict(dll=item.dll, name=item.import_name, ordinal=item.import_ordinal), iat
+
+
+def prove_import_member(obj, object_symbol, import_name):
+    """Prove the long-format VC5 named import member, including its name table."""
+    def symbol(name):
+        found = [s for s in obj.symbols if s.name == name]
+        require(len(found) == 1, "import member symbol is missing or ambiguous: " + name)
+        return found[0]
+    entry = symbol(object_symbol)
+    require(entry.storage_class == 2 and entry.type == 0x20 and entry.section_number > 0
+            and entry.value == 0 and entry.aux_count == 0, "invalid import thunk definition")
+    code = obj.section(entry.section_number)
+    require(code.name == ".text" and code.raw_data == b"\xff\x25" + bytes(4)
+            and code.characteristics & 0x20001020 == 0x20001020,
+            "canonical import thunk code/COMDAT drift")
+    iat_symbol = symbol("__imp_" + object_symbol)
+    require(iat_symbol.storage_class == 2 and iat_symbol.type == 0 and iat_symbol.value == 0
+            and iat_symbol.section_number > 0 and iat_symbol.aux_count == 0,
+            "invalid canonical imported-address definition")
+    relocs = obj.relocations_by_section.get(code.index, ())
+    require(len(relocs) == 1 and (relocs[0].offset, relocs[0].type, relocs[0].symbol_index)
+            == (2, 6, iat_symbol.index), "canonical thunk has the wrong IAT relocation")
+    iat = obj.section(iat_symbol.section_number)
+    require(iat.name == ".idata$5" and iat.raw_data == bytes(4), "canonical IAT extent/addend drift")
+    names = [s for s in obj.sections if s.name == ".idata$6"]
+    lookup = [s for s in obj.sections if s.name == ".idata$4"]
+    require(len(names) == len(lookup) == 1, "canonical import tables are ambiguous")
+    name = names[0]
+    require(name.raw_data[2:] == import_name.encode("ascii") + b"\0"
+            and not obj.relocations_by_section.get(name.index), "canonical import name drift")
+    for section in (iat, lookup[0]):
+        refs = obj.relocations_by_section.get(section.index, ())
+        require(section.raw_data == bytes(4) and len(refs) == 1
+                and refs[0].offset == 0 and refs[0].type == 7, "canonical import lookup relocation drift")
+        target = obj.symbols_by_index[refs[0].symbol_index]
+        require(target.section_number == name.index and target.value == 0
+                and target.storage_class == 3 and target.type == 0,
+                "canonical import lookup does not target the exact name table")
+    descriptor = symbol("__IMPORT_DESCRIPTOR_MSVCRT")
+    require(descriptor.storage_class == 2 and descriptor.type == 0 and descriptor.value == 0
+            and descriptor.section_number == 0, "canonical runtime descriptor dependency drift")
+    return dict(symbol=object_symbol, iat_symbol=iat_symbol.name, code_size=6,
+                relocation=dict(offset=2, type=6, addend=0), import_name=import_name)
+
+
+def canonical_import_proof(object_symbol, identity):
+    from _recoil.commands.provider_function_mutation import parse_archive_members
+    require(identity["dll"].casefold() == "msvcrt.dll" and identity["ordinal"] is None,
+            "native import proof currently requires a named canonical MSVCRT import")
+    library = "VC/LIB/MSVCRT.LIB"
+    matches = []
+    for member in parse_archive_members((DEFAULT_VC5_ROOT / library).read_bytes()):
+        if object_symbol.encode("ascii") not in member.data:
+            continue
+        obj = CoffObject.from_bytes(member.data)
+        if any(s.name == object_symbol and s.section_number > 0 for s in obj.symbols):
+            require(member.name == "MSVCRT.dll", "canonical import member DLL differs")
+            matches.append(prove_import_member(obj, object_symbol, identity["name"]))
+    require(len(matches) == 1, "canonical import definition is missing or ambiguous")
+    return dict(library=library, member="MSVCRT.dll", **matches[0])
+
+
+def binding_context(document, bindings, source_id, object_symbol, offset, target_symbol, evidence_ids, reference):
+    from _recoil.commands.live_byte_verify import _pe_bytes
+    from _recoil.commands.relocation_expectations import build_object_binding_snapshot, decode_x86_operand_sites
+    row = document.collection("symbols").get(source_id, {})
+    require(row.get("binary") == "recoil" and row.get("kind") == "function"
+            and row.get("pipeline_class") in {"authored", "authored-lifecycle"}, "import source is not authored")
+    require(type(offset) is int and offset >= 1, "import offset must be an integer relocation-field offset")
+    start = address_value(row["address"])
+    body = _pe_bytes(reference, start, address_value(row["end_exclusive"])-start)
+    sites, unresolved = decode_x86_operand_sites(body, function_address=start)
+    found = [s for s in sites if s.offset == offset and s.relocation_type == 20 and s.opcode in {"e8", "e9"}]
+    require(not unresolved and len(found) == 1, "import site is not one decoded direct call/tail relocation")
+    target = start + offset + 4 + struct.unpack_from("<i", body, offset)[0]
+    target_id = f"recoil:function:0x{target:x}"
+    target_row = document.collection("symbols").get(target_id, {})
+    require(target_row.get("binary") == "recoil" and target_row.get("kind") == "function"
+            and target_row.get("pipeline_class") == "non-authored"
+            and target_row.get("extent_state") == "known" and target_row.get("output_section_id") == "recoil:section:.text"
+            and address_value(target_row["address"]) == target
+            and target_row.get("size") == address_value(target_row["end_exclusive"])-target >= 6,
+            "target is not an existing known non-authored thunk inventory row")
+    # This route deliberately preserves an unowned inventory row. Existing
+    # provider packages continue through the ordinary relocation-target route.
+    require(target_row.get("ownership_state") in {None, "unresolved"}
+            and not any(target_row.get(k) for k in ("object_symbol", "logical_aliases", "relocation_target_binding", "provider_object_identity")),
+            "native import target already has ownership or a typed identity")
+    require(not any(r.get("kind") == "primary-function" and
+            (r.get("symbol_id") == target_id or r.get("address") == target_row["address"])
+            for o in document.collection("owners").values() for r in o.get("relationships", [])),
+            "native import target already has a primary owner")
+    require(isinstance(evidence_ids, list) and evidence_ids and len(set(evidence_ids)) == len(evidence_ids)
+            and set(evidence_ids) <= set(row.get("evidence_ids", []))
+            and all(e in document.collection("evidence") for e in evidence_ids), "import evidence is not current source evidence")
+    identity, iat = import_at(reference, target)
+    proof = canonical_import_proof(target_symbol, identity)
+    return dict(source_binding=build_object_binding_snapshot(document, bindings, symbol_id=source_id,
+                object_symbol=object_symbol), offset=offset, opcode=found[0].opcode, target=target,
+                target_id=target_id, target_context={k: target_row.get(k) for k in
+                    ("address", "end_exclusive", "size", "kind", "pipeline_class", "ownership_state", "output_section_id")},
+                identity=identity, iat=iat, canonical=proof, evidence_ids=evidence_ids)
+
+
+def derive_import_expectations(document, bindings, row, object_symbol, reference):
+    result = {}
+    for source_id in row.get("scope_ids", (row.get("symbol_id"),)):
+        for binding in document.collection("symbols").get(source_id, {}).get(FIELD, []):
+            require(binding.get("schema") == SCHEMA and binding.get("reviewed") is True, "invalid native import binding")
+            old = binding["context"]
+            if old["source_binding"]["object_symbol"] != object_symbol:
+                continue
+            context = binding_context(document, bindings, source_id, object_symbol, old["offset"],
+                                      old["canonical"]["symbol"], old["evidence_ids"], reference)
+            require(context == old, "native import binding is stale")
+            key = (old["offset"], 20)
+            require(key not in result, "duplicate native import selector")
+            result[key] = dict(object_symbol=object_symbol, offset=key[0], type=20, type_name="REL32",
+                target_symbol=old["canonical"]["symbol"], target_symbol_id=old["target_id"], coff_addend=0,
+                resolved_target_addend=0, retail_target=old["target"], derivation=SCHEMA, native_import=context)
+    return result
+
+
+def prove_candidate_import(obj, body, relocation, expected, parsed_map, image, candidate_target):
+    symbol = obj.symbols_by_index[relocation.symbol_index]
+    require(relocation.type == 20 and relocation.offset-body.start == expected["offset"]
+            and symbol.name == relocation.symbol_name == expected["target_symbol"]
+            and symbol.storage_class == 2 and symbol.type == 0x20 and symbol.section_number == 0
+            and symbol.value == 0 and symbol.aux_count == 0
+            and body.data[expected["offset"]:expected["offset"]+4] == bytes(4), "native import COFF reference drift")
+    maps = [m for m in parsed_map.symbols if m.symbol == symbol.name]
+    require(len(maps) == 1 and int(maps[0].address) == candidate_target, "native import MAP target is missing or ambiguous")
+    identity, _ = import_at(image, candidate_target)
+    require(identity == expected["native_import"]["identity"], "linked thunk resolves to a different DLL/import")
+
+
+def main(argv=None):
+    configure_stdio()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--payload-file", type=Path, required=True)
+    parser.add_argument("--expected-revision", type=int, required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--dry-run", action="store_true")
+    mode.add_argument("--apply", action="store_true")
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args(argv)
+    try:
+        from _recoil.commands.live_byte_verify import _bindings, DEFAULT_MANIFEST_DIR, DEFAULT_REFERENCE
+        payload = json.loads(args.payload_file.read_text(encoding="utf-8-sig"))
+        require(set(payload) == {"reviewed", "source_symbol_id", "object_symbol", "offset", "target_symbol", "evidence_ids", "reason"}
+                and payload["reviewed"] is True and isinstance(payload["reason"], str) and payload["reason"].strip(),
+                "native import requires the exact reviewed source-site payload")
+        store = ProgressStore(DEFAULT_PROGRESS_PATH)
+        document = store.load()
+        require(document.revision == args.expected_revision, "tracker revision changed")
+        context = binding_context(document, _bindings(document, DEFAULT_MANIFEST_DIR), payload["source_symbol_id"],
+            payload["object_symbol"], payload["offset"], payload["target_symbol"], payload["evidence_ids"], DEFAULT_REFERENCE)
+        proposed = deepcopy(document.data)
+        entries = proposed["symbols"][payload["source_symbol_id"]].setdefault(FIELD, [])
+        require(not any(b["context"]["offset"] == payload["offset"] for b in entries), "import site already has a binding")
+        binding = dict(schema=SCHEMA, reviewed=True, reason=payload["reason"], context=context)
+        entries.append(binding)
+        commit = store.commit(proposed, expected_revision=args.expected_revision, apply=args.apply)
+        print(json.dumps(dict(kind="native-import-binding", binding=binding, accepted_owner=False,
+                              accepted_provider_bytes=False, commit=commit.to_dict()), indent=2))
+        return 0
+    except (OSError, ValueError, KeyError, TypeError, ProgressError) as exc:
+        print(f"native import binding error: {exc}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

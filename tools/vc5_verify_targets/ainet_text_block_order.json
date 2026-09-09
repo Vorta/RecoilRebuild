@@ -8,6 +8,14 @@
     "pipeline_class": "authored"
   },
   "source_filename": "ai_net.cpp",
+  "data_symbols": [
+    {
+      "address": "0x4cc844",
+      "symbol": "_kPlayerAiForwardPathAdvanceDistance",
+      "name": "kPlayerAiForwardPathAdvanceDistance",
+      "byte_length": 4
+    }
+  ],
   "compiler_profile": "vc5_o2_ob0_md_fastcall_facs",
   "profile_guard": {
     "scope": "src/Battlesport/ai_net.cpp",

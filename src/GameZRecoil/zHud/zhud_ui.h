@@ -2257,6 +2257,12 @@ typedef HudUiTransitionTextPanel HudUiCompositePanelEntry;
  */
 typedef std::vector<HudUiCompositePanelEntry> HudUiCompositePanelVector;
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.briefing.huduicompositepanel-destructor-huduicompositepanel
+ * @recoil-artifact emits .text recoil:function:0x403e20: Native implicit HudUiCompositePanel destructor.
+ * Physical emission: src/Battlesport/Briefing.cpp.
+ * Purpose: let native member destruction release the entry vector before the panel base.
+ */
 struct HudUiCompositePanel : HudUiPanel {
     int activeEntryCount;
     HudUiCompositePanelVector entryVector;
@@ -2282,7 +2288,6 @@ struct HudUiCompositePanel : HudUiPanel {
      * constructor instead of a default construction plus later body call.
      */
     HudUiCompositePanel(int entryCount);
-    ~HudUiCompositePanel();
     virtual void SetPos(
         int x,
         int y

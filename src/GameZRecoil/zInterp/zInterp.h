@@ -188,7 +188,10 @@ struct zInterp_Context {
         int expectedClassType,
         zClass_NodePartial *node
     );
+    int ReadPreparedScriptTableCount(const zInterp_PreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue);
+    int ReadPreparedScriptIndex(zInterp_PreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue, zInterp_PreparedScriptEntry *&entries);
     int LoadPreparedScriptIndex(const char *zrdrPath);
+    int FindPreparedScriptIndex(const char *commandName);
     FILE * OpenPreparedScriptStream(const char *commandName);
     int RunScriptFile(const char *filePath);
     int RunString(

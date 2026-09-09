@@ -10,6 +10,7 @@ from _recoil.call_contract import identity as _cc_identity
 from _recoil.call_contract import instructions as _cc_instructions
 from _recoil.call_contract import listing as _cc_listing
 from _recoil.call_contract import recoil_hud_layout as _cc_recoil_hud_layout
+from _recoil.call_contract import storage_identity as _cc_storage_identity
 from _recoil.call_contract import targets as _cc_targets
 
 if TYPE_CHECKING:
@@ -1937,9 +1938,16 @@ def _reviewed_r3994_retail_register_storage_bridges(
             if candidate_identity == "iat:printf"
         )
         if (
-            supplied_printf_identity not in {"", "iat:printf"}
+            not _cc_storage_identity._reviewed_storage_registration_agrees(
+                indexes, address="0x4cc4dc", identity="iat:printf",
+                object_symbols=("printf", "__imp__printf"),
+            )
             or printf_containers
-            or printf_named_aliases
+            or set(printf_named_aliases) not in (set(), {"printf", "__imp__printf"})
+            or (printf_named_aliases and (
+                supplied_printf_identity != "iat:printf"
+                or indexes.by_candidate_name.get("__imp__printf") != "iat:printf"
+            ))
         ):
             raise ValueError(
                 "reviewed zInterp printf storage representation is conflicting"

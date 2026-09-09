@@ -1144,6 +1144,32 @@ def _publish_collected_identity(
     index[key] = identity if prior in {None, identity} else ""
 
 
+def _publish_current_iat_candidate_names(
+    packages, *, by_address, by_candidate_name, provider_ids,
+    storage_by_address, storage_by_name,
+):
+    """Give a proven __imp_ symbol its storage role without merging providers.
+
+    A complete tracker IAT package has both a callable provider view and a
+    four-byte storage view. The decorated imported-address symbol denotes the
+    latter. A different provider, stale package, or competing name remains a
+    collision; this never converts an ordinary function/thunk symbol to an IAT.
+    """
+    for package in packages:
+        provider = f"provider:recoil:function:{package.address}"
+        matching = [(name, value) for name, value in by_candidate_name.items()
+                    if name.casefold() == package.object_symbol.casefold()]
+        if (sum(p.address == package.address for p in packages) != 1
+                or sum(p.object_symbol.casefold() == package.object_symbol.casefold() for p in packages) != 1
+                or by_address.get(package.address) != provider or provider not in provider_ids
+                or storage_by_address.get(package.address) != package.identity
+                or storage_by_name.get(package.import_name) != package.identity
+                or storage_by_name.get(package.object_symbol) != package.identity
+                or matching not in ([(package.object_symbol, provider)], [(package.object_symbol, package.identity)])):
+            continue
+        by_candidate_name[package.object_symbol] = package.identity
+
+
 def build_identity_indexes(
     document: ProgressDocument,
     *,
@@ -1968,6 +1994,11 @@ def build_identity_indexes(
                 f"a conflicting storage identity ({symbol_id})"
             )
         storage_by_name[object_symbol] = expected_identity
+    _publish_current_iat_candidate_names(
+        packages, by_address=by_address, by_candidate_name=by_candidate_name,
+        provider_ids=provider_ids, storage_by_address=storage_by_address,
+        storage_by_name=storage_by_name,
+    )
     return IdentityIndexes(
         by_address=by_address,
         by_candidate_name=by_candidate_name,

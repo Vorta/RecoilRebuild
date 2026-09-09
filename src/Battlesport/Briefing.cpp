@@ -574,15 +574,6 @@ void HudUiBriefingLocatorPanel::Update(
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.briefing.huduicompositepanel-destructor-huduicompositepanel
- * @recoil-artifact defines .text recoil:function:0x403e20: HudUiCompositePanel::~HudUiCompositePanel.
- * Physical source block: D:\Proj\Battlesport\Briefing.cpp.
- * Purpose: destroy the entry vector before the inherited panel base.
- */
-inline HudUiCompositePanel::~HudUiCompositePanel() {
-}
-
-/**
  * @recoil-anchor recoil:anchor:battlesport.briefing.huduibriefingruntime-destructor-huduibriefingruntime
  * @recoil-artifact defines .text recoil:function:0x403ed0: HudUiBriefingRuntime::~HudUiBriefingRuntime.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
@@ -934,13 +925,12 @@ int Briefing_ActionQueue::AddFadeInElement(
 int BriefingActionFadeInElement::Tick(
     float
 ) {
-    const float nextAlpha = alpha + 0.5f;
-    alpha = nextAlpha;
     HudUiBriefingObjectivePicture *const widget = (HudUiBriefingObjectivePicture *)(target);
-    widget->SetNoiseAlpha(nextAlpha);
+    alpha += 0.5f;
+    widget->SetNoiseAlpha(alpha);
     widget->Invalidate();
 
-    return nextAlpha >= 1.0 ? 1 : 0;
+    return alpha >= 1.0 ? 1 : 0;
 }
 
 /**

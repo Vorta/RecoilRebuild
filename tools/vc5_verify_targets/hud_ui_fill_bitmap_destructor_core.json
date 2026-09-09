@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x4b84d0",
-      "symbol": "??1HudUiFillBitmap@@QAE@XZ",
+      "symbol": "??1HudUiFillBitmap@@UAE@XZ",
       "name": "HudUiFillBitmap::~HudUiFillBitmap"
     }
   ]

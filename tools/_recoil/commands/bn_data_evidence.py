@@ -196,6 +196,10 @@ def _first_address_text(item: dict[str, Any], *keys: str) -> object:
             if nested is not None and nested != "":
                 return nested
             continue
+        try:
+            normalize_address_text(value)
+        except (TypeError, ValueError):
+            continue
         return value
     return ""
 
@@ -272,6 +276,8 @@ def fetch_direct_xrefs(
     base: int,
     limit: int,
 ) -> dict[str, object]:
+    if limit != -1 and limit < 1:
+        raise ValueError("xref limit must be -1 or positive")
     if not targets:
         return {"status": "not_requested", "hits": []}
 
@@ -300,30 +306,54 @@ def fetch_direct_xrefs(
             "hits": [],
         }
 
-    hits = [normalize_xref_item(targets[0], base, item).as_dict() for item in first_items]
+    hits = []
+    queried = []
+    coverage_rows = []
+    def append_query(target, response, items):
+        remaining = len(items) if limit == -1 else max(0, limit-len(hits))
+        selected = items[:remaining]
+        queried.append(target)
+        metadata = response if isinstance(response, dict) else {}
+        coverage = metadata.get("coverage", {})
+        coverage_rows.append(dict(address=target, returned=len(selected), total=metadata.get("total"),
+            coverage=coverage, has_more=metadata.get("has_more"),
+            partial=metadata.get("partial"), truncated=metadata.get("truncated"),
+            locally_truncated=len(selected) < len(items)))
+        hits.extend(normalize_xref_item(target, base, item).as_dict() for item in selected)
+    append_query(targets[0], payload, first_items)
     for target in targets[1:]:
-        if len(hits) >= limit:
+        if limit != -1 and len(hits) >= limit:
             break
         try:
-            payload = bridge.get_json(selected_endpoint, address=target, limit=limit)
+            payload = bridge.get_json(selected_endpoint, address=target,
+                                      limit=-1 if limit == -1 else limit-len(hits))
         except BridgeError as exc:
             return {
                 "status": "partial",
                 "endpoint": selected_endpoint,
                 "reason": str(exc),
                 "hits": hits,
+                "queried_addresses": queried,
+                "indexed_coverage": coverage_rows,
+                "indexed_complete": False,
             }
-        for item in _xref_items_from_payload(payload):
-            if len(hits) >= limit:
-                break
-            hits.append(normalize_xref_item(target, base, item).as_dict())
+        append_query(target, payload, _xref_items_from_payload(payload))
 
     return {
         "status": "supported",
         "endpoint": selected_endpoint,
-        "queried_addresses": list(targets),
+        "queried_addresses": queried,
         "hits": hits,
-        "truncated": len(hits) >= limit,
+        "truncated": len(queried) != len(targets) or any(
+            r["locally_truncated"] or r["truncated"] or r["has_more"] for r in coverage_rows),
+        "indexed_coverage": coverage_rows,
+        "indexed_complete": len(queried) == len(targets) and all(
+            isinstance(r["coverage"], dict) and r["coverage"].get("complete") is True
+            and not r["coverage"].get("errors")
+            and str(r["coverage"].get("analysis_state", "")).endswith("IdleState")
+            and r["total"] == r["returned"] and not r["has_more"]
+            and not r["partial"] and not r["truncated"] and not r["locally_truncated"]
+            for r in coverage_rows),
     }
 
 
@@ -683,7 +713,7 @@ def main(argv: list[str] | None = None) -> int:
             size=args.size,
             nearby=args.nearby,
             constants=args.constants,
-            xref_limit=max(1, args.xrefs_limit),
+            xref_limit=args.xrefs_limit,
             constant_limit=max(1, args.constant_limit),
             max_assembly_functions=max(1, args.max_assembly_functions),
             assembly_hit_limit=max(1, args.assembly_hit_limit),

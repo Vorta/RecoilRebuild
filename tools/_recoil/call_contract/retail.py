@@ -2406,6 +2406,13 @@ def _hud_ui_element_constructor_absolute_table_candidate_storage_bridges(
             "to its exact reviewed caller"
         )
 
+    storage_identity = _cc_storage_identity._reviewed_registered_or_provisional_storage(
+        indexes,
+        address=_cc_catalog.HUD_ELEMENT_VFTABLE_RETAIL_ADDRESS,
+        registered_identity="storage:recoil:data:" + _cc_catalog.HUD_ELEMENT_VFTABLE_RETAIL_ADDRESS,
+        provisional_identity=_cc_catalog.HUD_ELEMENT_VFTABLE_STORAGE_IDENTITY,
+        object_symbols=(_cc_catalog.HUD_ELEMENT_VFTABLE_SYMBOL,),
+    )
     required_expected = [
         {
             "ordinal": 0,
@@ -2413,7 +2420,7 @@ def _hud_ui_element_constructor_absolute_table_candidate_storage_bridges(
             "dispatch": "indirect",
             "identity_kind": "callback",
             "target_identity": "",
-            "storage_identity": _cc_catalog.HUD_ELEMENT_VFTABLE_STORAGE_IDENTITY,
+            "storage_identity": storage_identity,
             "slot_displacement": _cc_catalog.HUD_ELEMENT_INVALIDATE_SLOT_DISPLACEMENT,
             "cleanup_bytes": None,
         },
@@ -2437,17 +2444,13 @@ def _hud_ui_element_constructor_absolute_table_candidate_storage_bridges(
     ]
     if (
         list(expected) != required_expected
-        or indexes.storage_by_address.get(
-            _cc_catalog.HUD_ELEMENT_VFTABLE_RETAIL_ADDRESS,
-            "",
-        )
-        or _cc_catalog.HUD_ELEMENT_VFTABLE_SYMBOL in indexes.storage_by_name
+        or not storage_identity
         or exact_containers
         != [
             StorageContainer(
                 start=storage_start,
                 end_exclusive=storage_start + _cc_catalog.HUD_ELEMENT_VFTABLE_SIZE,
-                identity=_cc_catalog.HUD_ELEMENT_VFTABLE_STORAGE_IDENTITY,
+                identity=storage_identity,
             )
         ]
     ):
@@ -2667,7 +2670,7 @@ def _hud_ui_element_constructor_absolute_table_candidate_storage_bridges(
             "collision"
         )
     return {
-        _cc_catalog.HUD_ELEMENT_VFTABLE_SYMBOL: _cc_catalog.HUD_ELEMENT_VFTABLE_STORAGE_IDENTITY,
+        _cc_catalog.HUD_ELEMENT_VFTABLE_SYMBOL: storage_identity,
     }
 
 

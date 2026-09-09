@@ -21,7 +21,7 @@
   "functions": [
     {
       "address": "0x403ed0",
-      "symbol": "??1HudUiBriefingRuntime@@QAE@XZ",
+      "symbol": "??1HudUiBriefingRuntime@@UAE@XZ",
       "name": "HudUiBriefingRuntime::~HudUiBriefingRuntime"
     }
   ]

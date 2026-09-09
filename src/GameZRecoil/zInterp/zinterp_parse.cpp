@@ -27,6 +27,11 @@
 namespace {
 const int kPreparedScriptMagic = 0x08971119;
 const int kPreparedScriptVersion = 7;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-degrees-to-radians
+ * @recoil-artifact defines .rdata recoil:data:0x4d42d0: Internal double conversion factor.
+ * Purpose: convert the parser's FOV and Euler-angle arguments to radians.
+ */
 const double kDegreesToRadians = 0.01745329251994;
 const char kGlobalContextSearchPath[] = ".;zbd";
 const char kCommandNameWeaponSetMaxTetherAltitude[] = "WeaponSetMaxTetherAltitude";
@@ -1436,6 +1441,159 @@ int zInterp_Context::ReportParseError(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-dispatchcorecommand
  * @recoil-artifact defines .text recoil:function:0x4c20a0: zInterp_Context::DispatchCoreCommand.
+ * @recoil-artifact emits .data recoil:data:0x4e55c8: Native command literal "ClearScreenBuffer".
+ * @recoil-artifact emits .data recoil:data:0x4e55bc: Native command literal "DeleteChild".
+ * @recoil-artifact emits .data recoil:data:0x4e5590: Native command literal "interp: DeleteChild (%s, %s) --> NULL NODE".
+ * @recoil-artifact emits .data recoil:data:0x4e5584: Native command literal "DeleteFile".
+ * @recoil-artifact emits .data recoil:data:0x4e5578: Native command literal "DeleteTree".
+ * @recoil-artifact emits .data recoil:data:0x4e5550: Native command literal "interp: DeleteTree (%s) --> NULL NODE".
+ * @recoil-artifact emits .data recoil:data:0x4e5540: Native command literal "DisplayOrigin".
+ * @recoil-artifact emits .data recoil:data:0x4e552c: Native command literal "DisplayResolution".
+ * @recoil-artifact emits .data recoil:data:0x4e5514: Native command literal "DisplaySetClearColor".
+ * @recoil-artifact emits .data recoil:data:0x4e550c: Native command literal "echo".
+ * @recoil-artifact emits .data recoil:data:0x4e5504: Native command literal "Echo".
+ * @recoil-artifact emits .data recoil:data:0x4e54f8: Native command literal "FindNode".
+ * @recoil-artifact emits .data recoil:data:0x4e54e4: Native command literal "FindNode %s: FAILED".
+ * @recoil-artifact emits .data recoil:data:0x4e54d8: Native command literal "FindSubNode".
+ * @recoil-artifact emits .data recoil:data:0x4e54c0: Native command literal "FindSubNode %s: FAILED".
+ * @recoil-artifact emits .data recoil:data:0x4e54b4: Native command literal "FreeNode".
+ * @recoil-artifact emits .data recoil:data:0x4e5494: Native command literal "Unrecognized node class = %d\n".
+ * @recoil-artifact emits .data recoil:data:0x4e5478: Native command literal "   Error freeing node %s\n".
+ * @recoil-artifact emits .data recoil:data:0x4e5464: Native command literal "GameZReadZBDFile".
+ * @recoil-artifact emits .data recoil:data:0x4e5454: Native command literal "%s %s FAILED".
+ * @recoil-artifact emits .data recoil:data:0x4e5440: Native command literal "GameZWriteZBDFile".
+ * @recoil-artifact emits .data recoil:data:0x4e5430: Native command literal "GetBFETolerance".
+ * @recoil-artifact emits .data recoil:data:0x4e541c: Native command literal "BFE Tolerance: %.7f".
+ * @recoil-artifact emits .data recoil:data:0x4e5408: Native command literal "LensFlareTexture".
+ * @recoil-artifact emits .data recoil:data:0x4e53fc: Native command literal "LightNew".
+ * @recoil-artifact emits .data recoil:data:0x4e53ec: Native command literal "LightSetActive".
+ * @recoil-artifact emits .data recoil:data:0x4e53dc: Native command literal "LightSetAmbient".
+ * @recoil-artifact emits .data recoil:data:0x4e53cc: Native command literal "LightSetColor".
+ * @recoil-artifact emits .data recoil:data:0x4e53bc: Native command literal "LightSetDiffuse".
+ * @recoil-artifact emits .data recoil:data:0x4e53a4: Native command literal "LightSetDirectedSource".
+ * @recoil-artifact emits .data recoil:data:0x4e5390: Native command literal "LightSetDirectional".
+ * @recoil-artifact emits .data recoil:data:0x4e537c: Native command literal "LightSetOrientation".
+ * @recoil-artifact emits .data recoil:data:0x4e5368: Native command literal "LightSetPointSource".
+ * @recoil-artifact emits .data recoil:data:0x4e5358: Native command literal "LightSetRanges".
+ * @recoil-artifact emits .data recoil:data:0x4e5344: Native command literal "LightSetSaturated".
+ * @recoil-artifact emits .data recoil:data:0x4e5328: Native command literal "%s Failed: no current node".
+ * @recoil-artifact emits .data recoil:data:0x4e5314: Native command literal "LightSetTranslate".
+ * @recoil-artifact emits .data recoil:data:0x4e5308: Native command literal "LoadSoils".
+ * @recoil-artifact emits .data recoil:data:0x4e52fc: Native command literal "LODAddChild".
+ * @recoil-artifact emits .data recoil:data:0x4e52f0: Native command literal "LODSetRange".
+ * @recoil-artifact emits .data recoil:data:0x4e52e0: Native command literal "MatlFaceColor".
+ * @recoil-artifact emits .data recoil:data:0x4e52d8: Native command literal "MatlNew".
+ * @recoil-artifact emits .data recoil:data:0x4e52cc: Native command literal "MatlTexture".
+ * @recoil-artifact emits .data recoil:data:0x4e52c0: Native command literal "ModelNew".
+ * @recoil-artifact emits .data recoil:data:0x4e52b8: Native command literal "Facade".
+ * @recoil-artifact emits .data recoil:data:0x4e52a4: Native command literal "ModelPolygonBegin".
+ * @recoil-artifact emits .data recoil:data:0x4e5294: Native command literal "ModelPolygonEnd".
+ * @recoil-artifact emits .data recoil:data:0x4e5284: Native command literal "ModelPolygonUV".
+ * @recoil-artifact emits .data recoil:data:0x4e5270: Native command literal "ModelPolygonVertex".
+ * @recoil-artifact emits .data recoil:data:0x4e5264: Native command literal "NewCamera".
+ * @recoil-artifact emits .data recoil:data:0x4e5258: Native command literal "NewDisplay".
+ * @recoil-artifact emits .data recoil:data:0x4e5250: Native command literal "NewLOD".
+ * @recoil-artifact emits .data recoil:data:0x4e5248: Native command literal "NewNode".
+ * @recoil-artifact emits .data recoil:data:0x4e523c: Native command literal "NewObject3D".
+ * @recoil-artifact emits .data recoil:data:0x4e5234: Native command literal "NewSEQ".
+ * @recoil-artifact emits .data recoil:data:0x4e5228: Native command literal "NewWindow".
+ * @recoil-artifact emits .data recoil:data:0x4e521c: Native command literal "NewWorld".
+ * @recoil-artifact emits .data recoil:data:0x4e520c: Native command literal "NodeSetActive".
+ * @recoil-artifact emits .data recoil:data:0x4e51f8: Native command literal "NodeSetDescription".
+ * @recoil-artifact emits .data recoil:data:0x4e51e4: Native command literal "NodeSetCanModify".
+ * @recoil-artifact emits .data recoil:data:0x4e51d4: Native command literal "NodeSetLighting".
+ * @recoil-artifact emits .data recoil:data:0x4e51c0: Native command literal "NodeSetOverwrite".
+ * @recoil-artifact emits .data recoil:data:0x4e51ac: Native command literal "Object3DAddChild".
+ * @recoil-artifact emits .data recoil:data:0x4e517c: Native command literal "interp: Object3DAddChild (%s, %s) --> NULL NODE".
+ * @recoil-artifact emits .data recoil:data:0x4e5164: Native command literal "Object3DGetTranslate".
+ * @recoil-artifact emits .data recoil:data:0x4e5144: Native command literal "Object3DRegisterTexturesToWorld".
+ * @recoil-artifact emits .data recoil:data:0x4e5134: Native command literal "Object3DRotate".
+ * @recoil-artifact emits .data recoil:data:0x4e5124: Native command literal "Object3DScale".
+ * @recoil-artifact emits .data recoil:data:0x4e5108: Native command literal "Object3DSetActionPriority".
+ * @recoil-artifact emits .data recoil:data:0x4e50f4: Native command literal "Object3DSetActive".
+ * @recoil-artifact emits .data recoil:data:0x4e50e0: Native command literal "Object3DSetColor".
+ * @recoil-artifact emits .data recoil:data:0x4e50cc: Native command literal "Object3DSetFacade".
+ * @recoil-artifact emits .data recoil:data:0x4e50b4: Native command literal "Object3DSetOpacityIsSet".
+ * @recoil-artifact emits .data recoil:data:0x4e50a0: Native command literal "Object3DSetOpacity".
+ * @recoil-artifact emits .data recoil:data:0x4e508c: Native command literal "Object3DSetPoints".
+ * @recoil-artifact emits .data recoil:data:0x4e5078: Native command literal "Object3DSetPriority".
+ * @recoil-artifact emits .data recoil:data:0x4e5060: Native command literal "Object3DSetScrollAlways".
+ * @recoil-artifact emits .data recoil:data:0x4e5020: Native command literal "Object3DSetScrollAlways on: FAILED  (node=0x%08x) (gfx=0x%08x)".
+ * @recoil-artifact emits .data recoil:data:0x4e500c: Native command literal "Object3DSetScroll".
+ * @recoil-artifact emits .data recoil:data:0x4dd108: Shared pooled token "ON".
+ * @recoil-artifact emits .data recoil:data:0x4e4fdc: Native command literal "%s %s %.1f %.1f Failed: current_node is NULL".
+ * @recoil-artifact emits .data recoil:data:0x4e4fc4: Native command literal "Object3DSetShowBackFace".
+ * @recoil-artifact emits .data recoil:data:0x4e4f9c: Native command literal "Object3DSetTextureWorldBaseCoordinates".
+ * @recoil-artifact emits .data recoil:data:0x4e4f74: Native command literal "Object3DSetTextureWorldTexturesPerMeter".
+ * @recoil-artifact emits .data recoil:data:0x4e4f5c: Native command literal "Object3DSetMorphVertex".
+ * @recoil-artifact emits .data recoil:data:0x4e4f48: Native command literal "Object3DTranslate".
+ * @recoil-artifact emits .data recoil:data:0x4e4f34: Native command literal "PerspectiveTexture".
+ * @recoil-artifact emits .data recoil:data:0x4e4f24: Native command literal "PrintNodeCount".
+ * @recoil-artifact emits .data recoil:data:0x4e4f0c: Native command literal "Node count for %s = %d\n".
+ * @recoil-artifact emits .data recoil:data:0x4e4f00: Native command literal "PrintTree".
+ * @recoil-artifact emits .data recoil:data:0x4e4ef0: Native command literal "No current node".
+ * @recoil-artifact emits .data recoil:data:0x4e4ee0: Native command literal "PrintUsedNodes".
+ * @recoil-artifact emits .data recoil:data:0x4e4ed4: Native command literal "RdrAddPath".
+ * @recoil-artifact emits .data recoil:data:0x4e4ec8: Native command literal "RdrSetPath".
+ * @recoil-artifact emits .data recoil:data:0x4e4ec4: Native command literal "SEQ".
+ * @recoil-artifact emits .data recoil:data:0x4e4eb8: Native command literal "SEQAddChild".
+ * @recoil-artifact emits .data recoil:data:0x4e4eb0: Native command literal "SEQNew".
+ * @recoil-artifact emits .data recoil:data:0x4e4ea0: Native command literal "SEQSetActive".
+ * @recoil-artifact emits .data recoil:data:0x4e4e94: Native command literal "SEQSetLoop".
+ * @recoil-artifact emits .data recoil:data:0x4e4e88: Native command literal "SEQSetPause".
+ * @recoil-artifact emits .data recoil:data:0x4e4e78: Native command literal "SEQSetRepeat".
+ * @recoil-artifact emits .data recoil:data:0x4e4e64: Native command literal "SetAltitudeSurface".
+ * @recoil-artifact emits .data recoil:data:0x4e4e54: Native command literal "SetBFETolerance".
+ * @recoil-artifact emits .data recoil:data:0x4e4e3c: Native command literal "SetCoplanarTolerance".
+ * @recoil-artifact emits .data recoil:data:0x4e4e24: Native command literal "SetColinearTolerance".
+ * @recoil-artifact emits .data recoil:data:0x4e4e0c: Native command literal "SetGameZNodeArraySize".
+ * @recoil-artifact emits .data recoil:data:0x4e4df4: Native command literal "SetMaterialArraySize".
+ * @recoil-artifact emits .data recoil:data:0x4e4de0: Native command literal "SetModel3DArraySize".
+ * @recoil-artifact emits .data recoil:data:0x4e4dcc: Native command literal "SetIntersectBBOX".
+ * @recoil-artifact emits .data recoil:data:0x4e4db8: Native command literal "SetIntersectSurface".
+ * @recoil-artifact emits .data recoil:data:0x4e4dac: Native command literal "SetLandmark".
+ * @recoil-artifact emits .data recoil:data:0x4e4d9c: Native command literal "SetPaletteName".
+ * @recoil-artifact emits .data recoil:data:0x4e4d88: Native command literal "SetPaletteShading".
+ * @recoil-artifact emits .data recoil:data:0x4e4d64: Native command literal "SetPerspectiveAdaptiveCorrection".
+ * @recoil-artifact emits .data recoil:data:0x4e4d48: Native command literal "SetPerspectiveTextureDeltaX".
+ * @recoil-artifact emits .data recoil:data:0x4e4d30: Native command literal "SetInverseZTolerance".
+ * @recoil-artifact emits .data recoil:data:0x4e4d10: Native command literal "SetPerspectiveInverseZTolerance".
+ * @recoil-artifact emits .data recoil:data:0x4e4cf4: Native command literal "SetPerspectiveTextureFarZ".
+ * @recoil-artifact emits .data recoil:data:0x4e4ce4: Native command literal "SetProximity".
+ * @recoil-artifact emits .data recoil:data:0x4e4cc8: Native command literal "SetSmallPolygonRejectArea".
+ * @recoil-artifact emits .data recoil:data:0x4e4cb4: Native command literal "SetTextureDirectory".
+ * @recoil-artifact emits .data recoil:data:0x4e4ca0: Native command literal "SetVertexShading".
+ * @recoil-artifact emits .data recoil:data:0x4e4c94: Native command literal "TextureAdd".
+ * @recoil-artifact emits .data recoil:data:0x4e4c8c: Native command literal "Verbose".
+ * @recoil-artifact emits .data recoil:data:0x4e4c7c: Native command literal "VideoSetDither".
+ * @recoil-artifact emits .data recoil:data:0x4e4c68: Native command literal "VideoSetWireFrame".
+ * @recoil-artifact emits .data recoil:data:0x4e4c4c: Native command literal "WindowAddClearPolygonVertex".
+ * @recoil-artifact emits .data recoil:data:0x4e4c3c: Native command literal "WindowBuffer".
+ * @recoil-artifact emits .data recoil:data:0x4e4c24: Native command literal "WindowCloseClearPolygon".
+ * @recoil-artifact emits .data recoil:data:0x4e4c14: Native command literal "WindowOrigin".
+ * @recoil-artifact emits .data recoil:data:0x4e4c00: Native command literal "WindowResolution".
+ * @recoil-artifact emits .data recoil:data:0x4e4be8: Native command literal "WindowSetClearPolygon".
+ * @recoil-artifact emits .data recoil:data:0x4e4bd8: Native command literal "WorldAddLight".
+ * @recoil-artifact emits .data recoil:data:0x4e4bc8: Native command literal "WorldExtents".
+ * @recoil-artifact emits .data recoil:data:0x4e4bbc: Native command literal "WorldOrigin".
+ * @recoil-artifact emits .data recoil:data:0x4e4b98: Native command literal "WorldPartitionInclusionTolerance".
+ * @recoil-artifact emits .data recoil:data:0x4e4b74: Native command literal "WorldPartitionMaxDECFeatureCount".
+ * @recoil-artifact emits .data recoil:data:0x4e4b64: Native command literal "WorldPartition".
+ * @recoil-artifact emits .data recoil:data:0x4e4b50: Native command literal "WorldSetFogAltitude".
+ * @recoil-artifact emits .data recoil:data:0x4e4b3c: Native command literal "WorldSetFogColor".
+ * @recoil-artifact emits .data recoil:data:0x4e4b28: Native command literal "WorldSetFogDensity".
+ * @recoil-artifact emits .data recoil:data:0x4e4b14: Native command literal "WorldSetFogRange".
+ * @recoil-artifact emits .data recoil:data:0x4e4afc: Native command literal "WorldSetFogRangeNear".
+ * @recoil-artifact emits .data recoil:data:0x4e4ae8: Native command literal "WorldSetFogRangeFar".
+ * @recoil-artifact emits .data recoil:data:0x4e4ad4: Native command literal "WorldGetFogRange".
+ * @recoil-artifact emits .data recoil:data:0x4e4ab4: Native command literal "Fog Range: [%s] [ %.2f, %.2f ]".
+ * @recoil-artifact emits .data recoil:data:0x4e4aa0: Native command literal "WorldSetFogState".
+ * @recoil-artifact emits .data recoil:data:0x4e4a98: Native command literal "linear".
+ * @recoil-artifact emits .data recoil:data:0x4e4a8c: Native command literal "exponential".
+ * @recoil-artifact emits .data recoil:data:0x4e4a74: Native command literal "Did not understand: %s\n".
+ * @recoil-artifact emits .data recoil:data:0x4e4a58: Native command literal "WorldSetVirtualPartition".
+ * @recoil-artifact emits .data recoil:data:0x4e4a44: Native command literal "WriteTextureSetType".
+ * @recoil-artifact emits .data recoil:data:0x4e4a30: Native command literal "WriteTextureSetMap".
  *
  * Purpose: dispatch engine-facing script commands across zClass, zVideo,
  * zEffect, zModel, zRndr, zWeapon, and support subsystems.
@@ -1880,7 +2038,7 @@ int zInterp_Context::DispatchCoreCommand(
                     0x200,
                     "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
                     0x1c6,
-                    "interp: DeleteChild(%s, %s) --> NULL NODE",
+                    "interp: DeleteChild (%s, %s) --> NULL NODE",
                     currentNode != 0 ? ((zClass_NodePartial *)(currentNode))->name : "NULL",
                     name
                 );
@@ -2619,7 +2777,7 @@ int zInterp_Context::DispatchCoreCommand(
                     0x200,
                     "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
                     0x3f3,
-                    "interp: Object3DAddChild(%s, %s) --> NULL NODE",
+                    "interp: Object3DAddChild (%s, %s) --> NULL NODE",
                     parent != 0 ? parent->name : "NULL",
                     searchName
                 );
@@ -2934,8 +3092,8 @@ int zInterp_Context::DispatchCoreCommand(
             g_zInterp_CurrentCycleTextureDi = di;
             zDi::BuildBlendVertsFromConnectivity(
                 di,
-                excludedVertexIndices,
                 y,
+                excludedVertexIndices,
                 0,
                 6
             );
@@ -3761,6 +3919,56 @@ void zInterp_Context::ReportErrorf(
 }
 
 /**
+ * Retail 0x4c55f7..0x4c563a validates the format version and table count.
+ * This inline member preserves that operation's separate failure continuation.
+ * The helper name is descriptive; no original spelling is known.
+ * Purpose: read the entry count for the supported prepared-script format,
+ * closing and clearing the stream if validation or the count read fails.
+ */
+inline int zInterp_Context::ReadPreparedScriptTableCount(const zInterp_PreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue) {
+        if (preparedHeader.version != kPreparedScriptVersion ||
+            fread(&preparedEntryCountValue, 4, 1, preparedIndexStream) != 1) {
+            fclose(preparedIndexStream);
+            preparedIndexStream = 0;
+            return 0;
+        }
+    return 1;
+}
+
+/**
+ * Retail 0x4c55b1..0x4c5698 reads the serialized header and entry records.
+ * Keep decoding separate from the caller's freshness checks and publication.
+ * The helper name is descriptive; no original spelling is known.
+ * Purpose: decode the prepared-script index, invalidating its stream on error.
+ * A short table read leaves its allocation unreleased, as in retail.
+ */
+inline int zInterp_Context::ReadPreparedScriptIndex(zInterp_PreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue, zInterp_PreparedScriptEntry *&entries) {
+    if (fread(&preparedHeader, sizeof(preparedHeader), 1, preparedIndexStream) != 1) {
+        fclose(preparedIndexStream);
+        preparedIndexStream = 0;
+        return 0;
+    }
+
+    switch (preparedHeader.magic) {
+    case kPreparedScriptMagic:
+        if (!ReadPreparedScriptTableCount(preparedHeader, preparedEntryCountValue)) return 0;
+        entries = (zInterp_PreparedScriptEntry *)realloc(
+            0, (preparedEntryCountValue + 1) * sizeof(zInterp_PreparedScriptEntry)
+        );
+        if (entries != 0 && fread(entries, sizeof(*entries), preparedEntryCountValue,
+                preparedIndexStream) == preparedEntryCountValue) {
+            break;
+        }
+    default:
+        fclose(preparedIndexStream);
+        preparedIndexStream = 0;
+        return 0;
+    }
+
+    return 1;
+}
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-loadpreparedscriptindex
  * @recoil-artifact defines .text recoil:function:0x4c5550: zInterp_Context::LoadPreparedScriptIndex.
  *
@@ -3790,57 +3998,8 @@ int zInterp_Context::LoadPreparedScriptIndex(
         return 0;
     }
 
-    int headerRead = fread(
-        &preparedHeader,
-        sizeof(preparedHeader),
-        1,
-        preparedIndexStream
-    ) == 1;
-    if (!headerRead) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-    }
-    if (!headerRead) {
-        return 0;
-    }
-
-    zInterp_PreparedScriptEntry *entries = 0;
-    int tableRead = 0;
-    if (preparedHeader.magic == kPreparedScriptMagic) {
-        int countRead = preparedHeader.version == kPreparedScriptVersion && fread(
-            &preparedEntryCountValue,
-            4,
-            1,
-            preparedIndexStream
-        ) == 1;
-        if (!countRead) {
-            fclose(preparedIndexStream);
-            preparedIndexStream = 0;
-        }
-        if (!countRead) {
-            return 0;
-        }
-
-        entries = (zInterp_PreparedScriptEntry *)realloc(
-            0,
-            (preparedEntryCountValue + 1) *
-                sizeof(zInterp_PreparedScriptEntry)
-        );
-        tableRead = entries != 0 && fread(
-            entries,
-            sizeof(zInterp_PreparedScriptEntry),
-            preparedEntryCountValue,
-            preparedIndexStream
-        ) == preparedEntryCountValue;
-    }
-    if (!tableRead) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-    }
-    if (!tableRead) {
-        return 0;
-    }
-
+    zInterp_PreparedScriptEntry *entries;
+    if (!ReadPreparedScriptIndex(preparedHeader, preparedEntryCountValue, entries)) return 0;
     int entriesFresh = 1;
     for (int entryIndex = 0;
         entryIndex < (int)(preparedEntryCountValue) && entriesFresh != 0;
@@ -3866,8 +4025,30 @@ int zInterp_Context::LoadPreparedScriptIndex(
 }
 
 /**
+ * Retail 0x4c5757..0x4c5799 is the lookup within OpenPreparedScriptStream.
+ * Keeping the matched-index join in an inline member reproduces the caller's
+ * VC5 register allocation; expanding this same loop into the caller does not.
+ * The helper name is descriptive; no original spelling is known.
+ * Purpose: search the prepared script table for a named command.
+ */
+inline int zInterp_Context::FindPreparedScriptIndex(const char *commandName) {
+    int matchedIndex = -1;
+    for (int entryIndex = 0; entryIndex < *preparedEntryCount; ++entryIndex) {
+        if (_stricmp(
+            preparedEntryTable[entryIndex].path,
+            commandName
+        ) == 0) {
+            matchedIndex = entryIndex;
+            break;
+        }
+    }
+    return matchedIndex;
+}
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-openpreparedscriptstream
  * @recoil-artifact defines .text recoil:function:0x4c5740: zInterp_Context::OpenPreparedScriptStream.
+ * @recoil-artifact emits .rdata recoil:data:0x4d42d8: VC5 double-zero timestamp comparison literal.
  *
  * Purpose: locate a prepared script entry and seek the shared stream to it.
  */
@@ -3875,16 +4056,7 @@ FILE * zInterp_Context::OpenPreparedScriptStream(
     const char *commandName
 ) {
     if (preparedIndexStream != 0) {
-        int matchedIndex = -1;
-        for (int entryIndex = 0; entryIndex < *preparedEntryCount; ++entryIndex) {
-            if (_stricmp(
-                preparedEntryTable[entryIndex].path,
-                commandName
-            ) == 0) {
-                matchedIndex = entryIndex;
-                break;
-            }
-        }
+        int matchedIndex = FindPreparedScriptIndex(commandName);
         if (matchedIndex != -1) {
             zInterp_PreparedScriptEntry *const matchedEntry = &preparedEntryTable[matchedIndex];
             int usePreparedStream = 1;

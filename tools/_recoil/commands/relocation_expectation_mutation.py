@@ -304,9 +304,9 @@ def _stage_missing_physical_target(
             f"physical id {expected_symbol_id!r}"
         )
     end_exclusive = address_value(str(creation["target_end_exclusive"]))
-    if end_exclusive != retail_target + 4:
+    if end_exclusive - retail_target not in {4, 8}:
         raise RelocationExceptionMutationError(
-            "create_missing_data target extent must be exactly four bytes"
+            "create_missing_data target extent must be exactly four or eight bytes"
         )
     owner_id = str(creation["target_owner_id"])
     evidence_ids = list(normalized_request["evidence_ids"])
@@ -518,27 +518,74 @@ def set_reviewed_exception(
     }
 
 
+def remove_reviewed_exception(
+    *, progress: Path, source_symbol_id: str, source_address: str,
+    payload: Mapping[str, Any], reason: str, expected_revision: int, apply: bool,
+) -> dict[str, Any]:
+    """Retract exactly one stored exception without changing its target or owner."""
+    if not reason.strip() or payload.get("reviewed") is not True:
+        raise RelocationExceptionMutationError("removal requires a reason and reviewed exact exception")
+    store = ProgressStore(progress)
+    try:
+        document = store.load()
+        if document.revision != expected_revision:
+            raise RelocationExceptionMutationError(
+                f"revision changed: expected {expected_revision}, found {document.revision}"
+            )
+        source = _source_row(document, source_symbol_id=source_symbol_id, source_address=source_address)
+        current = source.get("relocation_expectation_exceptions", [])
+        if not isinstance(current, list):
+            raise RelocationExceptionMutationError("stored relocation exceptions must be a list")
+        exact_payload = json.dumps(dict(payload), sort_keys=True, separators=(",", ":"))
+        matches = [index for index, item in enumerate(current)
+                   if json.dumps(item, sort_keys=True, separators=(",", ":")) == exact_payload]
+        if len(matches) != 1:
+            raise RelocationExceptionMutationError("removal requires exactly one complete stored exception match")
+        proposed = deepcopy(document.data)
+        del proposed["symbols"][source_symbol_id]["relocation_expectation_exceptions"][matches[0]]
+        commit = store.commit(proposed, expected_revision=expected_revision, apply=apply)
+    except (ConcurrentProgressUpdate, ProgressError) as exc:
+        raise RelocationExceptionMutationError(str(exc)) from exc
+    return {
+        "report_version": 1, "kind": "relocation-exception-mutation", "operation": "remove",
+        "validation_mode": "exact-current-tracker-exception", "candidate_independent": True,
+        "source_symbol_id": source_symbol_id, "source_address": normalize_address(source_address),
+        "reason": reason.strip(), "exception": dict(payload), "target_created": False,
+        "commit": commit.to_dict(),
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Set one reviewed candidate-independent relocation ambiguity exception."
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
-    child = subparsers.add_parser("set")
-    child.add_argument("--source-symbol-id", required=True)
-    child.add_argument("--source-address", required=True)
-    child.add_argument("--payload-json", required=True)
-    child.add_argument("--progress", type=Path, default=DEFAULT_TRACKER)
-    child.add_argument("--reference", type=Path, default=DEFAULT_REFERENCE)
-    child.add_argument("--manifest-dir", type=Path, default=DEFAULT_MANIFEST_DIR)
-    child.add_argument("--expected-revision", type=int, required=True)
-    mode = child.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--dry-run", action="store_true")
-    mode.add_argument("--apply", action="store_true")
-    child.add_argument("--json", action="store_true")
+    for operation in ("set", "remove"):
+        child = subparsers.add_parser(operation)
+        child.add_argument("--source-symbol-id", required=True)
+        child.add_argument("--source-address", required=True)
+        child.add_argument("--payload-json", required=True)
+        child.add_argument("--progress", type=Path, default=DEFAULT_TRACKER)
+        if operation == "set":
+            child.add_argument("--reference", type=Path, default=DEFAULT_REFERENCE)
+            child.add_argument("--manifest-dir", type=Path, default=DEFAULT_MANIFEST_DIR)
+        child.add_argument("--expected-revision", type=int, required=True)
+        if operation == "remove":
+            child.add_argument("--reason", required=True)
+        mode = child.add_mutually_exclusive_group(required=True)
+        mode.add_argument("--dry-run", action="store_true")
+        mode.add_argument("--apply", action="store_true")
+        child.add_argument("--json", action="store_true")
     return parser
 
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
+    if args.command == "remove":
+        return remove_reviewed_exception(
+            progress=args.progress, source_symbol_id=args.source_symbol_id,
+            source_address=args.source_address, payload=_payload(args.payload_json),
+            reason=args.reason, expected_revision=args.expected_revision, apply=bool(args.apply),
+        )
     if args.command != "set":
         raise RelocationExceptionMutationError(f"unsupported operation {args.command!r}")
     return set_reviewed_exception(

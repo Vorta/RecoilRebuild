@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x4b9760",
-      "symbol": "??1HudUiBackground@@QAE@XZ",
+      "symbol": "??1HudUiBackground@@UAE@XZ",
       "name": "HudUiBackground::~HudUiBackground"
     }
   ]

@@ -1266,6 +1266,20 @@ def bind_relocation_target(
                     f"created data extent overlaps current symbol {other_id!r}"
                 )
         target_symbol_id = f"recoil:data:0x{retail_target:x}"
+        if target_symbol_id in document.collection("symbols"):
+            raise RelocationTargetMutationError(
+                "created data symbol already exists, possibly with an unknown extent; register its extent instead"
+            )
+        for other_owner_id, other_owner in document.collection("owners").items():
+            if other_owner_id == owner_id or not isinstance(other_owner, Mapping):
+                continue
+            if any(isinstance(item, Mapping) and item.get("kind") == "primary-data" and
+                   (item.get("symbol_id") == target_symbol_id or
+                    item.get("address") == normalize_address(retail_target))
+                   for item in other_owner.get("relationships", ())):
+                raise RelocationTargetMutationError(
+                    f"created data already has a primary relationship under {other_owner_id!r}"
+                )
         target_name = str(request["target_name"])
         proposed_symbols[target_symbol_id] = _pending_data_symbol(
             address=retail_target,
@@ -1282,8 +1296,9 @@ def bind_relocation_target(
         }
         owner_copy = proposed_owners[owner_id]
         relationships = owner_copy.setdefault("relationships", [])
-        if any(
-            isinstance(item, Mapping)
+        existing_relationships = [
+            item for item in relationships
+            if isinstance(item, Mapping)
             and (
                 item.get("symbol_id") == target_symbol_id
                 or (
@@ -1291,17 +1306,23 @@ def bind_relocation_target(
                     and normalize_address(item.get("address")) == relationship["address"]
                 )
             )
-            for item in relationships
-        ):
+        ]
+        if existing_relationships and existing_relationships != [relationship]:
             raise RelocationTargetMutationError(
-                "created data owner relationship already exists or conflicts"
+                "created data owner relationship conflicts or is duplicated"
             )
-        relationships.append(relationship)
+        if not existing_relationships:
+            relationships.append(relationship)
         reimplementation = owner_copy.setdefault("reimplementation", {})
         entries = reimplementation.setdefault("entries", {})
         if target_symbol_id in entries:
-            raise RelocationTargetMutationError("created data tier entry already exists")
-        entries[target_symbol_id] = {"kind": "data", "tier": "X", "evidence_ids": []}
+            entry = entries[target_symbol_id]
+            if not existing_relationships or not isinstance(entry, Mapping) or entry.get("kind") != "data":
+                raise RelocationTargetMutationError("created data tier entry conflicts")
+            # Materialize the missing typed symbol without changing previously
+            # recorded owner evidence or accepting any new owner gate/tier.
+        else:
+            entries[target_symbol_id] = {"kind": "data", "tier": "X", "evidence_ids": []}
         creation_mode = "created-data-symbol"
     else:
         if selected_candidate is None:

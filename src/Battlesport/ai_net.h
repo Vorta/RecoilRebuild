@@ -416,7 +416,13 @@ const int kPlayerAiTopAutoTurn = 5;
 const int kPlayerMasterTypeSub = 2;
 const int kPlayerLifecycleInactive = 4;
 const float kPlayerAiPathFollowMinThrottle = 0.25f;
-const float kPlayerAiPathFollowAdvanceDistance = 10.0f;
+/**
+ * @recoil-anchor recoil:anchor:battlesport.ai-net.path-node-advance-distance
+ * @recoil-artifact defines .rdata recoil:data:0x4cc844: Shared five-unit path-node advance distance.
+ * Purpose: Supplies the threshold read by forward and reverse node steering.
+ * This is the current named native C++ constant; its original spelling and
+ * lexical scope remain unresolved. The compiler ordinal is not its identity.
+ */
 const float kPlayerAiForwardPathAdvanceDistance = 5.0f;
 const float kPlayerAiForwardProbeMinLength = 1.0f;
 const float kPlayerAiForwardProbeLengthHalfScale = 0.5f;
@@ -424,7 +430,6 @@ const float kPlayerAiSyntheticPathRebuildDistanceSq = 400.0f;
 const float kPlayerAiSyntheticPathWidth = 10.0f;
 const float kPlayerAiSyntheticPathRebuildDelaySec = -1.0f;
 const float kPlayerAiAttackLosTargetYOffset = -1.5f;
-const float kPlayerAiDynamicOffsetBackUpDistance = 10.0f;
 const unsigned int kOptCatalogFlagLockOnTargetRef = 0x4000;
 const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 
@@ -754,13 +759,6 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm fstp dword ptr [out]                \
     } while (0)
 
-#define AINET_VECTOR_DOT_XYZ_TO(destination, source, factor) \
-    do {                                                       \
-        float dotProduct;                                     \
-        AINET_VECTOR_DOT_XYZ(dotProduct, source, factor);     \
-        (destination) = dotProduct;                           \
-    } while (0)
-
 /**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.fast-sqrt-estimate
  * Raw-assembly evidence: retail function offsets [+0x195,+0x1a2)
@@ -1062,7 +1060,7 @@ void __fastcall AINet::TickAiMode2PathFollow(
         playerState->subPitchInputCopy = pitchInput;
     }
 
-    if (targetDistance < kPlayerAiPathFollowAdvanceDistance) {
+    if (targetDistance < 10.0f) {
         AiAdvancePathCursorAndComputeTargetVec(
             saveState,
             &currentNode,
@@ -2284,12 +2282,15 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-dot-xyz recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.fast-sqrt-estimate recoil:function:0x4024a0
+ * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.discriminant
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.discriminant recoil:function:0x4024a0
  * Original function evidence: retail 0x4024a0 contains two shared fixed-register
  * grouped-x87 subtraction islands, three full-XYZ dot islands, and one
- * vector-add island. The fast square-root bit transform is the named-local
- * four-instruction island documented at its macro definition. The pointer
- * binds, surrounding scalar math, fallback, rand tail, control flow, and the
- * ordinary fastcall shell remain compiler-generated.
+ * vector-add island. Raw assembly also evaluates the discriminant in the
+ * separately reviewed balanced six-instruction island [0x402624,0x402635).
+ * The fast square-root bit transform remains the named-local four-instruction
+ * island documented at its macro definition. Pointer binds, numerator/division,
+ * fallback, rand tail, control flow, and the fastcall shell are compiler-generated.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::SolveAltGunLeadTargetPoint from the recovered
  * Battlesport ai_net.cpp source-file contribution.
@@ -2307,10 +2308,7 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
         float inverseProjectileVelocity;
         float quadraticB;
     } leadCoefficient;
-    union {
-        float relativeSpeedSq;
-        volatile float quadraticA;
-    } leadSpeed;
+    float quadraticA;
 
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zUtil_PlayerStateStorage *const targetPlayerState = targetSaveState->playerState;
@@ -2338,10 +2336,10 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
 
     float leadScale;
     AINET_VECTOR_DOT_XYZ(
-        leadSpeed.relativeSpeedSq, leadVectors[1], leadVectors[1]);
+        quadraticA, leadVectors[1], leadVectors[1]);
 
-    leadSpeed.quadraticA = 1.0f - leadSpeed.relativeSpeedSq;
-    if (leadSpeed.quadraticA <= 0.0f) {
+    quadraticA = 1.0f - quadraticA;
+    if (quadraticA <= 0.0f) {
         *outTargetPos = targetPlayerState->worldPos;
         return;
     }
@@ -2350,38 +2348,65 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
         leadCoefficient.quadraticB, leadVectors[1], leadVectors[2]);
 
     {
-        float discriminant;
-        AINET_VECTOR_DOT_XYZ_TO(
-            discriminant, leadVectors[2], leadVectors[2]);
-
-        float quadraticAValue = leadSpeed.quadraticA;
-        discriminant =
-            discriminant * quadraticAValue +
-            leadCoefficient.quadraticB * leadCoefficient.quadraticB;
-
         float fastSqrtEstimate;
-        AINET_FAST_SQRT_ESTIMATE(fastSqrtEstimate, discriminant);
+        {
+            float dotProduct;
+            AINET_VECTOR_DOT_XYZ(
+                dotProduct, leadVectors[2], leadVectors[2]);
+            /**
+             * Pro reviews 2026-09-08T13-20-12-880Z and
+             * 2026-09-08T13-53-30-754Z scope the six-instruction arithmetic
+             * island to [0x402624,0x402635). The sibling scopes distinguish
+             * the squared-distance input from the completed discriminant.
+             * Purpose: Evaluate the intercept discriminant with retail x87
+             * operand order and one final rounding boundary. The following
+             * fstp completes this same contiguous, balanced island.
+             */
+            __asm {
+                fld dword ptr [quadraticA]
+                fmul dword ptr [dotProduct]
+                fld dword ptr [leadCoefficient.quadraticB]
+                fmul dword ptr [leadCoefficient.quadraticB]
+                faddp ST(1), ST(0)
+            }
+        }
+        {
+            float discriminant;
+            /**
+             * Purpose: Complete the preceding five raw-assembly instructions
+             * with their single final float store. No generated instruction
+             * may intervene across these sibling local lifetimes.
+             */
+            __asm fstp dword ptr [discriminant]
+            AINET_FAST_SQRT_ESTIMATE(fastSqrtEstimate, discriminant);
+        }
         const float leadScaleNumerator =
             fastSqrtEstimate + leadCoefficient.quadraticB;
 
-        zVec3 *leadAddSource;
-        zVec3 *leadAddend;
-        leadAddend = &leadVectors[1];
-        leadAddSource = &targetPlayerState->fxOffsetWorld;
-        leadScale = leadScaleNumerator / leadSpeed.quadraticA;
+        leadScale = leadScaleNumerator / quadraticA;
 
         leadVectors[1].x = leadScale * leadVectors[0].x;
         leadVectors[1].y = leadScale * leadVectors[0].y;
         leadVectors[1].z = leadScale * leadVectors[0].z;
 
-        AINET_VECTOR_ADD_BOUND(
-            outTargetPos, leadAddSource, leadAddend);
+        AINET_VECTOR_ADD(
+            outTargetPos, targetPlayerState->fxOffsetWorld, leadVectors[1]);
     }
 
     outTargetPos->y -= ((float)(rand()) * 3.05185094e-05f - 0.5f) * -2.0f;
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.ai-net.update-ai-mode2-move-and-turn-toward-offset-target
+ * @recoil-artifact defines .text recoil:function:0x4026d0: Primary authored AINet steering body.
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x4026d0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4026d0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x4026d0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x4026d0
+ * Pro review 2026-09-08T14-41-30-384Z: native component, grouped, and pointer
+ * variants and mixed native dot/cross failed; use the five exact shared islands.
+ * Canonical VC5 confirms all five kernel intervals. Pointer setup,
+ * rotation, scaling, control flow, and conversions remain compiler-owned.
  * Purpose: Rotates the target-to-AI vector by accepted tuning globals and steers to the offset point. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
@@ -2391,46 +2416,50 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zUtil_PlayerStateStorage *const targetPlayerState = targetState->playerState;
     const float offsetDistance = playerState->aiNet->pursuitParam0;
+    zVec3 targetDir;
+    zVec3 targetToPlayerDir;
+    zVec3 offsetTarget;
 
-    zVec3 targetToPlayerDir = {
-        playerState->worldPos.x - targetPlayerState->worldPos.x,
-        playerState->worldPos.y - targetPlayerState->worldPos.y,
-        playerState->worldPos.z - targetPlayerState->worldPos.z,
-    };
+    {
+        zVec3 *v0 = &targetToPlayerDir;
+        zVec3 *v1 = &targetPlayerState->worldPos;
+        zVec3 *v2 = &playerState->worldPos;
+        AINET_VECTOR_SUBTRACT(v0, v2, v1);
+    }
     targetToPlayerDir.y = 0.0f;
     zMath::Vec3Normalize(&targetToPlayerDir);
 
-    zVec3 steerOffsetDir = {0};
-    steerOffsetDir.y = 0.0f;
-    steerOffsetDir.x =
-        offsetDistance * (g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.x -
-                             g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.z);
-    steerOffsetDir.z =
-        offsetDistance * (g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.z +
-                             g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.x);
+    targetDir.y = 0.0f;
+    targetDir.x = g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.x -
+        g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.z;
+    targetDir.z = g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.z +
+        g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.x;
+    targetDir.x = offsetDistance * targetDir.x;
+    targetDir.z = offsetDistance * targetDir.z;
 
-    zVec3 offsetTarget = {
-        targetPlayerState->worldPos.x + steerOffsetDir.x,
-        targetPlayerState->worldPos.y + steerOffsetDir.y,
-        targetPlayerState->worldPos.z + steerOffsetDir.z,
-    };
-
-    zVec3 targetDir = {
-        offsetTarget.x - playerState->worldPos.x,
-        offsetTarget.y - playerState->worldPos.y,
-        offsetTarget.z - playerState->worldPos.z,
-    };
+    {
+        zVec3 *destination = &offsetTarget;
+        AINET_VECTOR_ADD(destination, targetPlayerState->worldPos, targetDir);
+    }
+    {
+        zVec3 *v0 = &targetDir;
+        zVec3 *v1 = &playerState->worldPos;
+        zVec3 *v2 = &offsetTarget;
+        AINET_VECTOR_SUBTRACT(v0, v2, v1);
+    }
     targetDir.y = 0.0f;
     zMath::Vec3Normalize(&targetDir);
 
-    const float forwardDot =
-        playerState->steerBasisNorm.x * targetDir.x + playerState->steerBasisNorm.z * targetDir.z;
-    const float turnCross =
-        playerState->steerBasisNorm.z * targetDir.x - playerState->steerBasisNorm.x * targetDir.z;
-
+    float forwardDot;
+    AINET_PATH_DOT_XZ(forwardDot, playerState->steerBasisNorm, targetDir);
+    float turnCross;
+    {
+        zVec3 *v2;
+        AINET_PATH_CROSS_XZ(turnCross, playerState->steerBasisNorm, targetDir);
+    }
     if (forwardDot < 0.0f) {
         playerState->throttleInput = 0.0f;
-        playerState->steeringInput = turnCross < 0.0f ? -1.0f : 1.0f;
+        playerState->steeringInput = turnCross < 0.0f ? -1 : 1;
     } else {
         float throttle = 1.0f - (float)(fabs(turnCross));
         if (throttle <= kPlayerAiPathFollowMinThrottle) {
@@ -2439,12 +2468,20 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
         playerState->throttleInput = throttle;
         playerState->steeringInput = turnCross;
     }
-
     playerState->throttleInputCopy = playerState->throttleInput;
     playerState->steeringInputCopy = playerState->steeringInput;
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.ai-net.update-ai-mode2-move-and-turn-toward-dynamic-offset-target
+ * @recoil-artifact defines .text recoil:function:0x4028c0: Primary authored AINet steering body.
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x4028c0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4028c0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x4028c0
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x4028c0
+ * Pro review 2026-09-08T14-41-30-384Z: native component, grouped, pointer,
+ * and mixed native dot/cross variants failed. Canonical VC5 confirms the five
+ * exact shared kernel intervals; scalar math and control remain C++.
  * Purpose: Blends dynamic pursuit and side-offset steering based on distance to the local player. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
@@ -2454,68 +2491,76 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zUtil_PlayerStateStorage *const targetPlayerState = targetState->playerState;
-    AINet *const aiNet = playerState->aiNet;
-    const float pursuitDistance = aiNet->pursuitParam0;
-    const float sideOffsetScale = aiNet->pursuitParam1;
-    const float doublePursuitDistance = pursuitDistance + pursuitDistance;
+    zVec3 steerBasis;
+    zVec3 targetDir;
+    zVec3 targetPoint;
+    int reverseSideOffset;
+    {
+        AINet *const aiNet = playerState->aiNet;
+        const float pursuitDistance = aiNet->pursuitParam0;
+        const float sideOffsetScale = aiNet->pursuitParam1;
+        const float doublePursuitDistance = pursuitDistance + pursuitDistance;
+        steerBasis = playerState->aiDynamicOffsetDir;
+        targetPoint.x = pursuitDistance * steerBasis.x;
+        targetPoint.y = pursuitDistance * steerBasis.y;
+        targetPoint.z = pursuitDistance * steerBasis.z;
+        {
+            zVec3 *destination = &targetPoint;
+            AINET_VECTOR_ADD(destination, targetPlayerState->worldPos, targetPoint);
+        }
 
-    zVec3 dynamicOffsetDir = playerState->aiDynamicOffsetDir;
-    zVec3 targetPoint = {
-        targetPlayerState->worldPos.x + pursuitDistance * dynamicOffsetDir.x,
-        targetPlayerState->worldPos.y + pursuitDistance * dynamicOffsetDir.y,
-        targetPlayerState->worldPos.z + pursuitDistance * dynamicOffsetDir.z,
-    };
-
-    float blend = (doublePursuitDistance - targetDistance) / pursuitDistance;
-    if (blend > 1.0f) {
-        blend = 1.0f;
-    } else if (blend < 0.0f) {
-        blend = 0.0f;
+        const float negativeOffsetX = -steerBasis.x;
+        float blend = (doublePursuitDistance - targetDistance) / pursuitDistance;
+        if (blend > 1.0f) {
+            blend = 1.0f;
+        } else if (blend < 0.0f) {
+            blend = 0.0f;
+        }
+        // Preserve the observed extended scale calculation after the float clamp.
+        // The original local spelling and conversion syntax remain unresolved.
+        const double offsetBlend = blend;
+        if (playerState->localVel.z > 0.0f && targetDistance < doublePursuitDistance) {
+            targetDir.x = steerBasis.z * (-(offsetBlend * sideOffsetScale));
+            targetDir.y = targetPoint.y * (-(offsetBlend * sideOffsetScale));
+            targetDir.z = negativeOffsetX * (-(offsetBlend * sideOffsetScale));
+            reverseSideOffset = 1;
+        } else {
+            targetDir.x = steerBasis.z * (offsetBlend * sideOffsetScale);
+            targetDir.y = targetPoint.y * (offsetBlend * sideOffsetScale);
+            targetDir.z = negativeOffsetX * (offsetBlend * sideOffsetScale);
+            reverseSideOffset = 0;
+        }
+    }
+    {
+        zVec3 *destination = &targetPoint;
+        AINET_VECTOR_ADD(destination, targetPoint, targetDir);
     }
 
-    int reverseSideOffset = 0;
-    float signedSideScale = blend * sideOffsetScale;
-    if (playerState->localVel.z > 0.0f && targetDistance < doublePursuitDistance) {
-        reverseSideOffset = 1;
-        signedSideScale = -signedSideScale;
-        zVec3 sideOffset = {
-            dynamicOffsetDir.z * signedSideScale,
-            targetPoint.y * signedSideScale,
-            -dynamicOffsetDir.x * signedSideScale,
-        };
-        targetPoint.x += sideOffset.x;
-        targetPoint.y += sideOffset.y;
-        targetPoint.z += sideOffset.z;
-    } else {
-        zVec3 sideOffset = {
-            dynamicOffsetDir.z * signedSideScale,
-            targetPoint.y * signedSideScale,
-            -dynamicOffsetDir.x * signedSideScale,
-        };
-        targetPoint.x += sideOffset.x;
-        targetPoint.y += sideOffset.y;
-        targetPoint.z += sideOffset.z;
+    {
+        zVec3 *v0;
+        zVec3 *v1;
+        zVec3 *v2;
+        v0 = &targetDir;
+        v1 = &playerState->worldPos;
+        v2 = &targetPoint;
+        AINET_VECTOR_SUBTRACT(v0, v2, v1);
     }
-
-    zVec3 targetDir = {
-        targetPoint.x - playerState->worldPos.x,
-        targetPoint.y - playerState->worldPos.y,
-        targetPoint.z - playerState->worldPos.z,
-    };
     targetDir.y = 0.0f;
-    float targetDirDistance;
-    targetDirDistance = zMath::Vec3Normalize(&targetDir);
+    const float targetDirDistance = zMath::Vec3Normalize(&targetDir);
 
-    zVec3 steerBasis = playerState->steerBasisNorm;
+    steerBasis = playerState->steerBasisNorm;
     if (reverseSideOffset != 0) {
         steerBasis.x = -steerBasis.x;
         steerBasis.z = -steerBasis.z;
     }
-
-    const float forwardDot = steerBasis.x * targetDir.x + steerBasis.z * targetDir.z;
-    const float turnCross = steerBasis.z * targetDir.x - steerBasis.x * targetDir.z;
-
-    if (forwardDot < 0.0f && targetDirDistance < kPlayerAiDynamicOffsetBackUpDistance) {
+    float forwardDot;
+    AINET_PATH_DOT_XZ(forwardDot, steerBasis, targetDir);
+    float turnCross;
+    {
+        zVec3 *v2;
+        AINET_PATH_CROSS_XZ(turnCross, steerBasis, targetDir);
+    }
+    if (forwardDot < 0.0f && targetDirDistance < 10.0f) {
         playerState->throttleInput = -1.0f;
         playerState->steeringInput = 0.0f;
     } else {
@@ -2526,11 +2571,12 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
         playerState->throttleInput = throttle;
         playerState->steeringInput = turnCross;
     }
-
     if (reverseSideOffset != 0) {
         playerState->throttleInput = -playerState->throttleInput;
+        playerState->throttleInputCopy = playerState->throttleInput;
+    } else {
+        playerState->throttleInputCopy = playerState->throttleInput;
     }
-    playerState->throttleInputCopy = playerState->throttleInput;
     playerState->steeringInputCopy = playerState->steeringInput;
 }
 
@@ -2560,12 +2606,18 @@ void __fastcall AINet::TickAiMode2TimedPathSteering(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.ai-net.steer-toward-path-node-forward
+ * @recoil-artifact defines .text recoil:function:0x402be0: Primary authored AINet steering body.
+ * @recoil-artifact emits .rdata recoil:data:0x4cc848: VC5 negative operand for the four-second delay addition.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402be0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x402be0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x402be0
  * Original function evidence: retail 0x402be0 contains the shared subtraction and the
  * byte-sensitive XZ dot/cross expansions used by forward-node steering.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
+ * The auxiliary scalar ranges have exact retail readers and widths; original
+ * identifiers, literal-versus-named provenance, and containing source extent
+ * remain unresolved. These relationships do not accept the owner data gate.
  * Purpose: reimplement AINet::AiSteerTowardPathNodeForward from the recovered
  * Battlesport ai_net.cpp source-file contribution.
  */
@@ -2636,12 +2688,18 @@ void __fastcall AINet::AiSteerTowardPathNodeForward(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.ai-net.steer-toward-path-node-reverse
+ * @recoil-artifact defines .text recoil:function:0x402d60: Primary authored AINet steering body.
+ * @recoil-artifact emits .rdata recoil:data:0x4cc84c: VC5 negative operand for the fourteen-second delay addition.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402d60
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x402d60
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x402d60
  * Original function evidence: retail 0x402d60 contains the shared subtraction and the
  * byte-sensitive XZ dot/cross expansions used by reverse-node steering.
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
+ * The delay operand has one exact four-byte retail reader. Its original
+ * identifier, literal-versus-named provenance, and containing source extent
+ * remain unresolved; this relationship does not accept the owner data gate.
  * Purpose: reimplement AINet::AiSteerTowardPathNodeReverse from the recovered
  * Battlesport ai_net.cpp source-file contribution.
  */

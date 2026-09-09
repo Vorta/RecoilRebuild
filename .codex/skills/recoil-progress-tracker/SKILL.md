@@ -86,6 +86,71 @@ the first divergent current slice or another focused one-slice diagnosis.
 
 For manual semantic mutations—owner topology, provider/classification decisions, catalog exceptions, target bindings, positive gates, or tiers—run the command with `--dry-run`, review the complete diff, then repeat unchanged with `--apply` and the expected revision. Conservative downgrades use the governed downgrade route.
 
+Named internal read-only data may use its stable object-name stem in a reviewed
+relocation-target binding. The byte verifier proves the compiler's suffixed
+static symbol against exact retail storage and the complete registered reader
+population; do not invent a compiler ordinal for the expected identity.
+
+For a native VC5 unwind-only EH parent, use
+`progress relocation-target bind-native-eh --payload-file <reviewed-json> --expected-revision <revision> --dry-run --json`,
+review its derived source/provider/retail/runtime context, then repeat with
+`--apply`. The exact payload fields are `reviewed: true`, `source_symbol_id`,
+`object_symbol`, `provider_owner_id`, `evidence_ids`, and `reason`. The handler
+must retain its existing non-authored classification. If it has a primary owner,
+that provider must be accepted and exclusive. A discovered packet lifecycle is
+eligible when its provider boundary gate is accepted; retain that pending
+lifecycle in the binding and require renewed review if it changes. This
+dependency binding does not accept the packet owner's lifecycle. For an already classified generated
+EH helper with unresolved ownership and no primary-owner relationship, use
+`provider_owner_id: null` with existing parent-function evidence; ownership stays
+unresolved and adding an owner later makes the binding stale. The command binds the native
+handler role and the canonical runtime's absolute `__except_list` symbol;
+it accepts no provider bytes, image storage, owner gates, or tiers. Fresh byte
+verification requires the parent-associated COFF sections and the complete
+linked packet relocation graph. Keep FS:[0] relocations; never invent a data
+extent at address zero or use a generated label ordinal as expected identity.
+
+For a compiler-generated implicit cleanup selected by native member-array
+construction or destruction, use `progress relocation-target bind-native-array-cleanup` with
+`--payload-file`, `--expected-revision`, and `--dry-run --json`, review, then
+repeat with `--apply`. Its exact payload fields are `reviewed: true`,
+`source_symbol_id`, `object_symbol`, `offset` (the relocation field), `owner_id`,
+`evidence_ids`, and `reason`. Retail derives the cleanup/element/helper targets,
+array count, stride, member offset, and helper callback ABI. Destruction also
+requires one current reviewed construction dependency of the same parent class
+and member array to derive its element identity; stale or ambiguous pairs block.
+Current source must
+retain the native array and implicit destructor hierarchy. Fresh verification
+checks the cleanup's executable fragment, nested table relocation, linked symbol
+resolution, and consistent physical mapping across checked references. This
+binds a dependency to an existing generated lifecycle target; it does not create
+an authored ICF group or accept an original alias census, source model, owner
+gate, or tier. The original folded winner remains unresolved when unproved.
+
+For a direct authored reference to an existing unowned non-authored MSVCRT import thunk, use
+`progress relocation-target bind-native-import --payload-file <reviewed-json>
+--expected-revision <revision> --dry-run --json`, review, then repeat with
+`--apply`. The exact payload fields are `reviewed: true`, `source_symbol_id`,
+`object_symbol`, `offset`, `target_symbol`, `evidence_ids`, and `reason`. The
+proof derives the exact retail IAT/DLL/name, requires one matching canonical VC5
+long import member and its code/name-table relocations, then checks the current
+COFF reference and linked thunk/import. Unresolved ownership and the inventory
+extent remain unchanged; no provider body, padding, storage, or gate is accepted.
+
+To retract a superseded relocation exception, use
+`progress relocation-exception remove` with the source id/address, the complete
+stored exception as `--payload-json`, a `--reason`, and the expected revision.
+Dry-run and review first. Removal changes only that exact exception; it retains
+target/owner facts and accepts no replacement evidence. Bind the replacement
+identity separately and require fresh live byte acceptance.
+
+For a real function whose typed extent includes an unreferenced INT3 alignment
+tail, use `progress symbol separate-tail-padding --payload-file ...` with an
+exact `recoil-function-tail-padding-v1` snapshot, dry-run first. The route checks
+current retail and BN instructions/references and preserves the function's
+identity, block, owner and call sites. It accepts neither body bytes nor padding;
+resume fresh serial byte acceptance after reviewing and applying the correction.
+
 For a reviewed current implementation-path move, edit the repository paths,
 synchronize every affected verification target first, then use the exact-match
 relocation route rather than composing owner/block/source-trace mutations:
