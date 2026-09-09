@@ -17,8 +17,8 @@
   "functions": [
     {
       "address": "0x48cca0",
-      "symbol": "@zUtil_ZRDR_SetSearchPath@4",
-      "name": "zUtil_ZRDR::SetSearchPath"
+      "symbol": "@zUtil_ZRDR_SetPath@4",
+      "name": "zUtil_ZRDR::SetPath"
     },
     {
       "address": "0x48cc70",

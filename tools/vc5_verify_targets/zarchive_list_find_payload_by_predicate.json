@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x48cbd0",
-      "symbol": "@zArchiveList_FindPayloadByPredicate@12",
-      "name": "zArchiveList::FindPayloadByPredicate"
+      "symbol": "@zArchiveList_FindCompare@12",
+      "name": "zArchiveList::FindCompare"
     }
   ]
 }

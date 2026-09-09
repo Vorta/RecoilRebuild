@@ -1706,10 +1706,10 @@ int zSndSampleSet::Init() {
     int archiveBankIndex = 0;
     int archiveInitialized = 0;
     zIndexArchive archive;
-    archive.Reset();
+
 
     if (this == 0 || resourcesLoaded != 0) {
-        archive.Destroy();
+
         return 0;
     }
 
@@ -1798,7 +1798,7 @@ int zSndSampleSet::Init() {
     }
 
     resourcesLoaded = 1;
-    archive.Destroy();
+
     return 1;
 }
 

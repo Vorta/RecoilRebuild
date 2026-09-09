@@ -1292,7 +1292,7 @@ void __fastcall LoadDynamicEntriesFromPath(
         return;
     }
 
-    zReader::Node *const root = zReader::LoadNodeFromPath(
+    zReader::Node *const root = zReader::Load(
         path,
         0,
         0
@@ -1330,6 +1330,6 @@ void __fastcall LoadDynamicEntriesFromPath(
         }
     }
 
-    zReader::FreeLoadedTree(root);
+    zReader::Free(root);
 }
 } // namespace zRndr_GlobalStringTable

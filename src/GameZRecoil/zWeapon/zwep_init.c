@@ -220,7 +220,7 @@ extern "C" {
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogloadedtreeroot
  * @recoil-artifact defines .data recoil:data:0x779a70: g_OptCatalogLoadedTreeRoot.
  * BN xrefs: zWeapon::LoadOptCatalogFromPath stores the loaded root;
- * OptCatalog::ShutdownCore frees it through zReader::FreeLoadedTree and
+ * OptCatalog::ShutdownCore frees it through zReader::Free and
  * clears the pointer.
  * Purpose: owning pointer for the currently loaded OptCatalog zReader tree.
  */
@@ -520,7 +520,7 @@ namespace {
         OptCatalogEntryDef *entry,
         unsigned int flag
     ) {
-        zReader::Node *const node = zReader_GetNamedNode(
+        zReader::Node *const node = zRdrGetNode(
             entryNode,
             name
         );
@@ -695,7 +695,7 @@ namespace {
             g_zRndr_GlobalStringTable[0]
         );
         for (int i = 1; i < g_zRndr_GlobalStringCount; ++i) {
-            if (zReader_GetNamedNode(
+            if (zRdrGetNode(
                 impactNode,
                 g_zRndr_GlobalStringTable[i]
             ) != 0) {
@@ -710,7 +710,7 @@ namespace {
         }
 
         zReader::Node *const animationAlwaysNode =
-            zReader_GetNamedNode(
+            zRdrGetNode(
                 impactNode,
                 "ANIMATION_ALWAYS"
             );
@@ -3762,7 +3762,7 @@ namespace zWeapon {
         g_OptCatalogRuntimeWorld = worldNode;
         Light::InitThermalGlowPool();
 
-        zReader::Node *const rootNode = zReader::LoadNodeFromPath(
+        zReader::Node *const rootNode = zReader::Load(
             path,
             0,
             0
@@ -3779,7 +3779,7 @@ namespace zWeapon {
             return -1;
         }
 
-        zReader::Node *const versionNode = zReader_GetNamedNode(
+        zReader::Node *const versionNode = zRdrGetNode(
             rootNode,
             "VERSION"
         );
@@ -3797,7 +3797,7 @@ namespace zWeapon {
             return -1;
         }
 
-        zReader::Node *warningSoundNode = zReader_GetNamedNode(
+        zReader::Node *warningSoundNode = zRdrGetNode(
             rootNode,
             "LOCK_ON_WARNING"
         );
@@ -3809,7 +3809,7 @@ namespace zWeapon {
             );
         }
 
-        warningSoundNode = zReader_GetNamedNode(
+        warningSoundNode = zRdrGetNode(
             rootNode,
             "NO_AMMO_WARNING"
         );
@@ -3821,7 +3821,7 @@ namespace zWeapon {
             );
         }
 
-        warningSoundNode = zReader_GetNamedNode(
+        warningSoundNode = zRdrGetNode(
             rootNode,
             "TRIGGER_INACTIVE"
         );
@@ -3833,7 +3833,7 @@ namespace zWeapon {
             );
         }
 
-        warningSoundNode = zReader_GetNamedNode(
+        warningSoundNode = zRdrGetNode(
             rootNode,
             "WEAPON_INACTIVE"
         );
@@ -3844,7 +3844,7 @@ namespace zWeapon {
                 warningSoundNode->value.nodes[1].value.str
             );
         }
-        zReader::Node *const maxCraterRadiusNode = zReader_GetNamedNode(
+        zReader::Node *const maxCraterRadiusNode = zRdrGetNode(
             rootNode,
             "MAX_CRATER_RADIUS"
         );
@@ -3853,7 +3853,7 @@ namespace zWeapon {
                 maxCraterRadiusNode->value.nodes[1].value.f32;
         }
 
-        zReader::Node *const ballisticsNode = zReader_GetNamedNode(
+        zReader::Node *const ballisticsNode = zRdrGetNode(
             rootNode,
             "BALLISTICS"
         );
@@ -3883,14 +3883,14 @@ namespace zWeapon {
                     sizeof(OptCatalogFxSpec)
                 ));
 
-                zReader::Node *const entryNode = zReader_GetNamedNode(
+                zReader::Node *const entryNode = zRdrGetNode(
                     rootNode,
                     keyName
                 );
                 if (entryNode != 0) {
                     entry->keyName = (char *)(keyName);
 
-                    zReader::Node *fieldNode = zReader_GetNamedNode(
+                    zReader::Node *fieldNode = zRdrGetNode(
                         entryNode,
                         "NAME"
                     );
@@ -3902,7 +3902,7 @@ namespace zWeapon {
                     }
 
                     const char *description = entry->keyName;
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "DESC"
                     );
@@ -3914,7 +3914,7 @@ namespace zWeapon {
                     entry->description = _strdup(description);
 
                     const char *militaryName = entry->keyName;
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "MILITARY_NAME"
                     );
@@ -3925,7 +3925,7 @@ namespace zWeapon {
                     }
                     entry->militaryName = _strdup(militaryName);
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "ACCELERATION"
                     );
@@ -3933,7 +3933,7 @@ namespace zWeapon {
                         entry->acceleration = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "AMMO_LIMIT"
                     );
@@ -3942,7 +3942,7 @@ namespace zWeapon {
                             (float)(fieldNode->value.nodes[1].value.i32);
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "BEAM"
                     );
@@ -3962,7 +3962,7 @@ namespace zWeapon {
                         }
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "CATCHES_FIRE"
                     );
@@ -3972,7 +3972,7 @@ namespace zWeapon {
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 12);
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "CRATER"
                     );
@@ -3991,7 +3991,7 @@ namespace zWeapon {
                         }
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "DAMAGE"
                     );
@@ -3999,7 +3999,7 @@ namespace zWeapon {
                         entry->damage = fieldNode->value.nodes[1].value.f32;
                     }
                     float floatValue = 0.0f;
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "DETONATION_DISTANCE"
                     );
@@ -4008,7 +4008,7 @@ namespace zWeapon {
                         entry->detonationDistSq = floatValue * floatValue;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "EXPIRES"
                     );
@@ -4018,7 +4018,7 @@ namespace zWeapon {
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 6);
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "FIRE_RATE"
                     );
@@ -4027,7 +4027,7 @@ namespace zWeapon {
                             1.0f / fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "FIXED_ROTATE"
                     );
@@ -4037,7 +4037,7 @@ namespace zWeapon {
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 7);
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "GRAVITY"
                     );
@@ -4045,7 +4045,7 @@ namespace zWeapon {
                         entry->gravity = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "IMPACT_PROXIMITY"
                     );
@@ -4055,7 +4055,7 @@ namespace zWeapon {
                         entry->damageFalloffRange = floatValue * floatValue;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "IMPACT_TYPE"
                     );
@@ -4063,7 +4063,7 @@ namespace zWeapon {
                         entry->damageMaskSlotIndex = fieldNode->value.nodes[1].value.i32;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "INSTANT"
                     );
@@ -4073,7 +4073,7 @@ namespace zWeapon {
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 10);
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "LOCK_ON"
                     );
@@ -4082,7 +4082,7 @@ namespace zWeapon {
                         entry->flags |= kOptCatalogFlagLockOn;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "LOCK_ON_LEAD"
                     );
@@ -4090,7 +4090,7 @@ namespace zWeapon {
                         entry->flags |= kOptCatalogFlagLockOnLead;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "MINE"
                     );
@@ -4101,7 +4101,7 @@ namespace zWeapon {
                             1u;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "MULTI_TARGET"
                     );
@@ -4111,7 +4111,7 @@ namespace zWeapon {
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 16);
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "QUICKSAND"
                     );
@@ -4130,7 +4130,7 @@ namespace zWeapon {
                         }
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         g_zEffectAnim_TokenRange
                     );
@@ -4139,7 +4139,7 @@ namespace zWeapon {
                         entry->rangeSq = entry->range * entry->range;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "RELATIVE_SPEED"
                     );
@@ -4149,7 +4149,7 @@ namespace zWeapon {
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 23);
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "REMOTE_DETONATE"
                     );
@@ -4159,7 +4159,7 @@ namespace zWeapon {
                             ((fieldNode->value.nodes[1].value.i32 & 1) << 19);
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "TETHER_GUIDED"
                     );
@@ -4167,7 +4167,7 @@ namespace zWeapon {
                         entry->flags |= kOptCatalogFlagTetherGuided;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "TURN_RATE"
                     );
@@ -4177,7 +4177,7 @@ namespace zWeapon {
                         entry->turnRate = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "TURN_SUSPEND_TIME"
                     );
@@ -4185,7 +4185,7 @@ namespace zWeapon {
                         entry->turnSuspendTime = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "PITCH_RATE"
                     );
@@ -4195,7 +4195,7 @@ namespace zWeapon {
                         entry->pitchRate = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "VELOCITY"
                     );
@@ -4203,7 +4203,7 @@ namespace zWeapon {
                         entry->velocity = fieldNode->value.nodes[1].value.f32;
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "RELOAD"
                     );
@@ -4232,7 +4232,7 @@ namespace zWeapon {
                         "FLYOUT"
                     );
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "FLYOUT_HEALTH"
                     );
@@ -4248,7 +4248,7 @@ namespace zWeapon {
                         }
                     }
 
-                    fieldNode = zReader_GetNamedNode(
+                    fieldNode = zRdrGetNode(
                         entryNode,
                         "IMPACT"
                     );
@@ -4262,7 +4262,7 @@ namespace zWeapon {
                         for (int materialIndex = 1;
                              materialIndex < g_zRndr_GlobalStringCount;
                              ++materialIndex) {
-                            if (zReader_GetNamedNode(
+                            if (zRdrGetNode(
                                     impactNode,
                                     g_zRndr_GlobalStringTable[materialIndex]
                                 ) != 0) {
@@ -4277,14 +4277,14 @@ namespace zWeapon {
                             }
                         }
 
-                        if (zReader_GetNamedNode(
+                        if (zRdrGetNode(
                                 impactNode,
                                 "ANIMATION_ALWAYS"
                             ) != 0) {
                             entry->flags |= kOptCatalogFlagAlwaysPlayImpactFx;
                         }
 
-                        fieldNode = zReader_GetNamedNode(
+                        fieldNode = zRdrGetNode(
                             impactNode,
                             "FREEZE"
                         );
@@ -4307,7 +4307,7 @@ namespace zWeapon {
                                 kOptCatalogFlagAppliesTimedHitStatus;
                         }
 
-                        fieldNode = zReader_GetNamedNode(
+                        fieldNode = zRdrGetNode(
                             impactNode,
                             "HEAT"
                         );
@@ -4330,7 +4330,7 @@ namespace zWeapon {
                                 kOptCatalogFlagHeatTimedStatus;
                         }
 
-                        fieldNode = zReader_GetNamedNode(
+                        fieldNode = zRdrGetNode(
                             impactNode,
                             "DESIGNATE"
                         );
@@ -4355,7 +4355,7 @@ namespace zWeapon {
                                 fieldNode->value.nodes[6].value.f32;
                         }
 
-                        fieldNode = zReader_GetNamedNode(
+                        fieldNode = zRdrGetNode(
                             impactNode,
                             "KILL_ANIMATION"
                         );
@@ -4366,7 +4366,7 @@ namespace zWeapon {
                                 );
                         }
 
-                        fieldNode = zReader_GetNamedNode(
+                        fieldNode = zRdrGetNode(
                             impactNode,
                             "DAMAGE_ANIMATION"
                         );
@@ -4380,7 +4380,7 @@ namespace zWeapon {
                         }
 
                         if (g_zVideo_ActiveRendererPath != 0) {
-                            fieldNode = zReader_GetNamedNode(
+                            fieldNode = zRdrGetNode(
                                 impactNode,
                                 "DAMAGE_ANIM_ON_HEALTH"
                             );
@@ -4584,7 +4584,7 @@ namespace OptCatalog {
         }
         Light::DestroyThermalGlowPool();
         g_OptCatalogRuntimeWorld = 0;
-        zReader::FreeLoadedTree(g_OptCatalogLoadedTreeRoot);
+        zReader::Free(g_OptCatalogLoadedTreeRoot);
         g_OptCatalogLoadedTreeRoot = 0;
 
         g_OptCatalog_EntryCount = 0;
@@ -4696,7 +4696,7 @@ namespace OptCatalog {
         OptCatalogFxSpec * spec,
         const char *childName
     ) {
-        zReader::Node *const specNode = zReader_GetNamedNode(
+        zReader::Node *const specNode = zRdrGetNode(
             parentNode,
             childName
         );
@@ -4704,7 +4704,7 @@ namespace OptCatalog {
             return;
         }
 
-        zReader::Node *fieldNode = zReader_GetNamedNode(
+        zReader::Node *fieldNode = zRdrGetNode(
             specNode,
             "EFFECT"
         );
@@ -4716,7 +4716,7 @@ namespace OptCatalog {
                     );
             }
         } else {
-            fieldNode = zReader_GetNamedNode(
+            fieldNode = zRdrGetNode(
                 specNode,
                 "MODEL"
             );
@@ -4728,7 +4728,7 @@ namespace OptCatalog {
             }
         }
 
-        fieldNode = zReader_GetNamedNode(
+        fieldNode = zRdrGetNode(
             specNode,
             "ANIMATION_ATTACHED"
         );
@@ -4739,7 +4739,7 @@ namespace OptCatalog {
                 );
         }
 
-        fieldNode = zReader_GetNamedNode(
+        fieldNode = zRdrGetNode(
             specNode,
             "MODEL_ANIMATION"
         );
@@ -4750,7 +4750,7 @@ namespace OptCatalog {
                 );
         }
 
-        fieldNode = zReader_GetNamedNode(
+        fieldNode = zRdrGetNode(
             specNode,
             "ANIMATION"
         );
@@ -4760,7 +4760,7 @@ namespace OptCatalog {
             );
         }
 
-        fieldNode = zReader_GetNamedNode(
+        fieldNode = zRdrGetNode(
             specNode,
             "RANDOM_ROTATE"
         );
@@ -4770,7 +4770,7 @@ namespace OptCatalog {
                     spec->flags) & 1) ^ spec->flags;
         }
 
-        fieldNode = zReader_GetNamedNode(
+        fieldNode = zRdrGetNode(
             specNode,
             g_HudZrd_Key_Sound
         );
@@ -4787,7 +4787,7 @@ namespace OptCatalog {
             }
         }
 
-        fieldNode = zReader_GetNamedNode(
+        fieldNode = zRdrGetNode(
             specNode,
             g_zEffectAnim_TokenBounceSound
         );

@@ -3210,7 +3210,7 @@ int zInterp_Context::DispatchCoreCommand(
             this,
             "RdrAddPath"
         ) != 0) {
-            zUtil_ZRDR_AppendSearchPath(NextToken());
+            zUtil_ZRDR_AddPath(NextToken());
             return 1;
         }
 
@@ -3218,7 +3218,7 @@ int zInterp_Context::DispatchCoreCommand(
             this,
             "RdrSetPath"
         ) != 0) {
-            zUtil_ZRDR_SetSearchPath(NextToken());
+            zUtil_ZRDR_SetPath(NextToken());
             return 1;
         } else {
             IncErrorCount();

@@ -473,7 +473,7 @@ void RecoilApp::ShutdownEngine() {
  */
 int RecoilApp::LoadZbdAndStartEngine() {
     if (g_HudSensorTracker.missionFlags != 0) {
-        zArchive::MountIndexArchive(
+        zArchive::Mount(
             g_RecoilApp_StartupArchivePath,
             1
         );
@@ -649,7 +649,7 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
 
     zGame::ReturnOnlyStub();
     zUtil::ZBD_Init();
-    zUtil::ZRDR_PreallocNodePool(0x200);
+    zUtil::ZRDR_InitNodePool(0x200);
     zUtil::ZRDR_AddSearchPaths(
         0,
         g_zUtil_ZbdSearchPathLeaf
@@ -674,7 +674,7 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
     zInput::BindMapSystem_Init(0x2f);
 
     if (zGame::Options_LoadGameOptions() == 0) {
-        zArchive::MountIndexArchive(
+        zArchive::Mount(
             g_RecoilApp_StartupArchivePath,
             1
         );
@@ -714,7 +714,7 @@ int RecoilApp::ExitInstance() {
         zGame::Options_SaveGameOptions();
         zGame::ReturnOnlyStub();
         zGame::Options_ShutdownRegistryContext();
-        zUtil_ZRDR_Shutdown();
+        zUtil_ZRDR_Exit();
         zUtil_ZRDR_FreeNodePool();
         zUtil::ZBD_DestroyGlobalManager();
         zLoc::UnloadMessagesDll();
@@ -954,7 +954,7 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(
         missionId,
         missionId
     );
-    zUtil_ZRDR_SetSearchPath(pathText);
+    zUtil_ZRDR_SetPath(pathText);
 
     if (g_HudSensorTracker.missionFlags == 0) {
         return 0;
@@ -965,7 +965,7 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(
         g_zUtil_MissionZrdrArchivePathFmt,
         missionId
     );
-    return zArchive::MountIndexArchive(
+    return zArchive::Mount(
         pathText,
         0
     );
@@ -1616,7 +1616,7 @@ void RecoilApp_PlayState::OnDeactivate() {
         g_HudSensorTracker.ShutdownMissionGameplaySystems();
     }
 
-    zUtil_ZRDR_UnloadMountedArchives(0);
+    zUtil_ZRDR_Unmount(0);
     fmvScript.Cleanup();
 }
 
@@ -3705,7 +3705,7 @@ void __cdecl InitFromZrd() {
     }
 
     zTurret_System::DisableTickCallback();
-    zReader::Node *const treeRoot = zReader::LoadNodeFromPath(
+    zReader::Node *const treeRoot = zReader::Load(
         "net.zrd",
         0,
         0
@@ -3739,7 +3739,7 @@ void __cdecl InitFromZrd() {
             spawnPoint->position.z = spawnValueArray->nodes[2].value.f32;
             spawnPoint->yawDegrees = spawnValueArray->nodes[3].value.f32;
         }
-        zReader::FreeLoadedTree(treeRoot);
+        zReader::Free(treeRoot);
     }
 
     zUtil_SaveGameState *const localSaveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
@@ -6910,7 +6910,7 @@ inline void PrintEngineInitNonzeroStatus(
 int RecoilApp::EngineInit(
     HWND hwnd
 ) {
-    zUtil::ZRDR_PreallocNodePool(0);
+    zUtil::ZRDR_InitNodePool(0);
     zUtil::ZRDR_Init(0);
 
     PrintEngineInitZeroStatus(
@@ -6988,7 +6988,7 @@ void RecoilApp::ShutdownSubsystems() {
     zClass::Shutdown();
     zModel_Display::ShutdownThunk();
     zSndSystem::Shutdown();
-    zUtil_ZRDR_Shutdown();
+    zUtil_ZRDR_Exit();
     zUtil_ZRDR_FreeNodePool();
 }
 

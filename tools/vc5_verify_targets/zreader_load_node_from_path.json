@@ -19,24 +19,24 @@
   "functions": [
     {
       "address": "0x48cda0",
-      "symbol": "@zReader_AllocateNode@8",
-      "name": "zReader_AllocateNode"
+      "symbol": "@zRdrAllocNode@8",
+      "name": "zRdrAllocNode"
     },
     {
       "address": "0x48cdc0",
-      "symbol": "?LoadNodeFromPath@zReader@@YIPAUNode@1@PBD0H@Z",
-      "name": "zReader::LoadNodeFromPath"
+      "symbol": "?Load@zReader@@YIPAUNode@1@PBD0H@Z",
+      "name": "zReader::Load"
     },
     {
       "address": "0x48d080",
-      "symbol": "@zReader_ReadNode@8",
-      "name": "zReader_ReadNode",
+      "symbol": "@zRdrRead@8",
+      "name": "zRdrRead",
       "bn_byte_length": 320
     },
     {
       "address": "0x48d1c0",
-      "symbol": "@zReader_OpenFileFromMountedArchives@4",
-      "name": "zReader_OpenFileFromMountedArchives"
+      "symbol": "@zRdrOpenFile@4",
+      "name": "zRdrOpenFile"
     }
   ],
   "data_symbols": [

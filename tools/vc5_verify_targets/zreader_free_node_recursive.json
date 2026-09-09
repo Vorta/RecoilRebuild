@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x48ce60",
-      "symbol": "@zReader_FreeNodeRecursive@4",
-      "name": "zReader_FreeNodeRecursive"
+      "symbol": "@zRdrFreeContents@4",
+      "name": "zRdrFreeContents"
     }
   ]
 }

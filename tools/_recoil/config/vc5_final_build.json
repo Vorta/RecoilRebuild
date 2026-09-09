@@ -80,6 +80,7 @@
     "src/GameZRecoil/zInput/zin_kbd.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zInterp/zinterp_parse.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zNetwork/znet_dplay.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zReader/zreader.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zSound/zsnd_play.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zUI/zui.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zUI/zui_widgets.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",

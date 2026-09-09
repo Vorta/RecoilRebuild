@@ -228,7 +228,7 @@ namespace zUtil {
 int __cdecl ZBD_Init() {
     zZbdManager *manager = new zZbdManager;
     if (manager != 0) {
-        manager->indexArchive.Reset();
+
         manager->tempBufferSize = 0;
         manager->tempBuffer = 0;
         manager->unknown_2c = 0;
@@ -269,7 +269,7 @@ void zZbdManager::Destroy() {
         tempBuffer = 0;
     }
 
-    indexArchive.Destroy();
+    indexArchive.~zIndexArchive();
     sectionHandlers.~zZbdSectionHandlerList();
 }
 

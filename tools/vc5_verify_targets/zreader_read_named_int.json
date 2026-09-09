@@ -18,8 +18,8 @@
   "functions": [
     {
       "address": "0x48d030",
-      "symbol": "?ReadNamedInt@zReader@@YIHPAUNode@1@PBDPAH@Z",
-      "name": "zReader::ReadNamedInt"
+      "symbol": "?GetInt@zReader@@YIHPAUNode@1@PBDPAH@Z",
+      "name": "zReader::GetInt"
     }
   ]
 }

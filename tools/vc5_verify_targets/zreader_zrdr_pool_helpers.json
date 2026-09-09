@@ -17,23 +17,23 @@
   "functions": [
     {
       "address": "0x48c950",
-      "symbol": "_zArchiveList_CreateEmpty",
-      "name": "zArchiveList::CreateEmpty"
+      "symbol": "_zArchiveList_New",
+      "name": "zArchiveList::New"
     },
     {
       "address": "0x48c970",
-      "symbol": "@zArchiveList_Destroy@4",
-      "name": "zArchiveList::Destroy"
+      "symbol": "@zArchiveList_Free@4",
+      "name": "zArchiveList::Free"
     },
     {
       "address": "0x48c800",
-      "symbol": "_zUtil_ZRDR_GrowFreePool",
-      "name": "zUtil_ZRDR::GrowFreePool"
+      "symbol": "_zUtil_ZRDR_GrowNodePool",
+      "name": "zUtil_ZRDR::GrowNodePool"
     },
     {
       "address": "0x48cd10",
-      "symbol": "_zUtil_ZRDR_Shutdown",
-      "name": "zUtil_ZRDR::Shutdown"
+      "symbol": "_zUtil_ZRDR_Exit",
+      "name": "zUtil_ZRDR::Exit"
     },
     {
       "address": "0x48c890",
@@ -42,33 +42,33 @@
     },
     {
       "address": "0x48c7d0",
-      "symbol": "?ZRDR_PreallocNodePool@zUtil@@YIXH@Z",
-      "name": "zUtil::ZRDR_PreallocNodePool"
+      "symbol": "?ZRDR_InitNodePool@zUtil@@YIXH@Z",
+      "name": "zUtil::ZRDR_InitNodePool"
     },
     {
       "address": "0x48c8e0",
-      "symbol": "@zUtil_ZRDR_PopFreeNode@4",
-      "name": "zUtil_ZRDR::PopFreeNode"
+      "symbol": "@zUtil_ZRDR_AllocNode@4",
+      "name": "zUtil_ZRDR::AllocNode"
     },
     {
       "address": "0x48c9a0",
-      "symbol": "@zArchiveList_LinkNodeBetween@12",
-      "name": "zArchiveList::LinkNodeBetween"
+      "symbol": "@zArchiveList_Link@12",
+      "name": "zArchiveList::Link"
     },
     {
       "address": "0x48ca10",
-      "symbol": "@zUtil_ZRDR_AllocNodeWithPayload@4",
-      "name": "zUtil_ZRDR::AllocNodeWithPayload"
+      "symbol": "@zArchiveList_AllocNode@4",
+      "name": "zArchiveList_AllocNode"
     },
     {
       "address": "0x48ca30",
-      "symbol": "@zArchiveList_PushBackPayload@8",
-      "name": "zArchiveList::PushBackPayload"
+      "symbol": "@zArchiveList_AddTail@8",
+      "name": "zArchiveList::AddTail"
     },
     {
       "address": "0x48d210",
-      "symbol": "?MountIndexArchive@zArchive@@YIHPBDH@Z",
-      "name": "zArchive::MountIndexArchive"
+      "symbol": "?Mount@zArchive@@YIHPBDH@Z",
+      "name": "zArchive::Mount"
     }
   ],
   "source_from": "src/GameZRecoil/zReader/zreader.cpp"

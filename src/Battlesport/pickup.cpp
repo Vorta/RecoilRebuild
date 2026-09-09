@@ -838,7 +838,7 @@ int __fastcall Pickup::Init(
         }
     }
 
-    zReader::Node *const rootNode = zReader::LoadNodeFromPath(
+    zReader::Node *const rootNode = zReader::Load(
         pickupsCfgPath,
         0,
         0
@@ -854,7 +854,7 @@ int __fastcall Pickup::Init(
         return 0;
     }
 
-    zReader::Node *const pickupDataNode = zReader_GetNamedNode(
+    zReader::Node *const pickupDataNode = zRdrGetNode(
         rootNode,
         kPickupConfigDataNodeName
     );
@@ -872,15 +872,15 @@ int __fastcall Pickup::Init(
             }
 
             PickupType &pickupType = g_PickupTypes[pickupTypeIndex];
-            zReader::Node *const entryNode = zReader_GetNamedNode(
+            zReader::Node *const entryNode = zRdrGetNode(
                 pickupDataNode,
                 logicalName
             );
-            zReader::Node *const soundNode = zReader_GetNamedNode(
+            zReader::Node *const soundNode = zRdrGetNode(
                 entryNode,
                 g_HudZrd_Key_Sound
             );
-            zReader::Node *const imageNode = zReader_GetNamedNode(
+            zReader::Node *const imageNode = zRdrGetNode(
                 entryNode,
                 kPickupConfigImageKey
             );
@@ -901,7 +901,7 @@ int __fastcall Pickup::Init(
         }
     }
 
-    zReader::FreeLoadedTree(rootNode);
+    zReader::Free(rootNode);
     zUtil_ZAR::RegisterSectionHandler(
         kPickupArchiveSectionName,
         (zZbdSectionCallback)(&ArchiveWriteAll),
@@ -1940,7 +1940,7 @@ const char *__fastcall Pickup::SelectPuppiesZrdByDifficulty(
         filename = kPickupPuppiesHardZrd;
     }
 
-    if (zReader::TryResolvePath(
+    if (zReader::FindFile(
         filename,
         extraSearchPath
     ) == 0) {
@@ -2027,7 +2027,7 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
     }
 
     zReader::Node *const treeRoot =
-        zReader::LoadNodeFromPath(
+        zReader::Load(
             SelectPuppiesZrdByDifficulty(0),
             0,
             0
@@ -2091,7 +2091,7 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
         }
     }
 
-    zReader::FreeLoadedTree(treeRoot);
+    zReader::Free(treeRoot);
 
     if (zOpt::GetNetworkEnabled() != 0) {
         g_PickupSpawnList_NetworkCopy.Clear();

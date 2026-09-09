@@ -159,8 +159,8 @@
     },
     {
       "address": "0x4a6190",
-      "symbol": "?Reset@zIndexArchive@@QAEPAU1@XZ",
-      "name": "zIndexArchive::Reset",
+      "symbol": "??0zIndexArchive@@QAE@XZ",
+      "name": "zIndexArchive::zIndexArchive",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -168,8 +168,8 @@
     },
     {
       "address": "0x4a61b0",
-      "symbol": "?Destroy@zIndexArchive@@QAEXXZ",
-      "name": "zIndexArchive::Destroy",
+      "symbol": "??1zIndexArchive@@QAE@XZ",
+      "name": "zIndexArchive::~zIndexArchive",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,

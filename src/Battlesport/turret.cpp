@@ -220,7 +220,7 @@ void zTurret_Runtime::InitFromReaderNode(
         defaultDestroyAnim = namedDestroyAnim;
     }
 
-    zReader::Node *node = zReader_GetNamedNode(
+    zReader::Node *node = zRdrGetNode(
         readerNode,
         "PARTS"
     );
@@ -279,7 +279,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "DEACTIVATE"
     );
@@ -297,7 +297,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "EFFECT"
     );
@@ -319,7 +319,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "ACTIVATE_ON_HIT"
     );
@@ -330,7 +330,7 @@ void zTurret_Runtime::InitFromReaderNode(
                                   : node->value.nodes[1].value.f32;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "ALWAYS_LOOK_AT"
     );
@@ -338,7 +338,7 @@ void zTurret_Runtime::InitFromReaderNode(
         alwaysLookAtTarget = node->value.nodes[1].value.i32;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "DAMAGE_PART"
     );
@@ -349,7 +349,7 @@ void zTurret_Runtime::InitFromReaderNode(
         );
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "DESTROY_ANIM"
     );
@@ -357,7 +357,7 @@ void zTurret_Runtime::InitFromReaderNode(
         destroyAnimEntry = zEffectAnim::FindEntryByName(node->value.nodes[1].value.str);
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "FIRE_ANIM"
     );
@@ -365,7 +365,7 @@ void zTurret_Runtime::InitFromReaderNode(
         fireAnimEntry = zEffectAnim::FindEntryByName(node->value.nodes[1].value.str);
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "HEALTH"
     );
@@ -376,7 +376,7 @@ void zTurret_Runtime::InitFromReaderNode(
         healthMax = healthCurrent;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "INTERSECT_BVOL"
     );
@@ -384,7 +384,7 @@ void zTurret_Runtime::InitFromReaderNode(
         intersectBvolEnabled = node->value.nodes[1].value.i32;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "LOS"
     );
@@ -392,26 +392,26 @@ void zTurret_Runtime::InitFromReaderNode(
         enableLosCheck = node->value.nodes[1].value.i32;
     }
 
-    zReader::Node *parentNode = zReader_GetNamedNode(
+    zReader::Node *parentNode = zRdrGetNode(
         readerNode,
         "SOUNDS"
     );
     if (parentNode != 0) {
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "ON"
         );
         if (node != 0) {
             zSnd::FindSampleByName(node->value.nodes[1].value.str);
         }
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "START"
         );
         if (node != 0) {
             zSnd::FindSampleByName(node->value.nodes[1].value.str);
         }
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "STOP"
         );
@@ -420,33 +420,33 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    parentNode = zReader_GetNamedNode(
+    parentNode = zRdrGetNode(
         readerNode,
         g_HudCfgKey_Weapon
     );
     if (parentNode != 0) {
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "NAME"
         );
         if (node != 0) {
             weaponCatalogEntry = OptCatalog::FindEntryByName(node->value.nodes[1].value.str);
         }
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             g_HudCfgKey_Ammo
         );
         if (node != 0) {
             weaponAmmo = node->value.nodes[1].value.i32;
         }
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "BASE_MOVES"
         );
         if (node != 0) {
             weaponBaseMoves = node->value.nodes[1].value.i32;
         }
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "DAMAGE_MODIFIER"
         );
@@ -455,7 +455,7 @@ void zTurret_Runtime::InitFromReaderNode(
                                  ? (float)(node->value.nodes[1].value.i32)
                                  : node->value.nodes[1].value.f32;
         }
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "DETECTION_RANGE"
         );
@@ -464,7 +464,7 @@ void zTurret_Runtime::InitFromReaderNode(
                                  ? (float)(node->value.nodes[1].value.i32)
                                  : node->value.nodes[1].value.f32;
         }
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "FIRE_DWELL"
         );
@@ -473,7 +473,7 @@ void zTurret_Runtime::InitFromReaderNode(
                                 ? (float)(node->value.nodes[1].value.i32)
                                 : node->value.nodes[1].value.f32;
         }
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "FIRE_RATE"
         );
@@ -482,7 +482,7 @@ void zTurret_Runtime::InitFromReaderNode(
                                   ? (float)(node->value.nodes[1].value.i32)
                                   : node->value.nodes[1].value.f32;
         }
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             parentNode,
             "FIRE_LIMITS"
         );
@@ -496,7 +496,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         readerNode,
         "TARGETS"
     );
@@ -510,7 +510,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    if (zReader_GetNamedNode(
+    if (zRdrGetNode(
         readerNode,
         "MSL_LOCK"
     ) != 0) {
@@ -1260,7 +1260,7 @@ int __fastcall LoadDefinitionsFromPath(
         return -1;
     }
 
-    zReader::Node *const rootNode = zReader::LoadNodeFromPath(
+    zReader::Node *const rootNode = zReader::Load(
         path,
         0,
         0
@@ -1279,7 +1279,7 @@ int __fastcall LoadDefinitionsFromPath(
     g_zTurret_LoadedDefRoot = rootNode;
 
     zEffectAnimEntry *defaultDestroyAnim = 0;
-    zReader::Node *destroyAnimNode = zReader_GetNamedNode(
+    zReader::Node *destroyAnimNode = zRdrGetNode(
         rootNode,
         "DESTROY_ANIM"
     );
@@ -1292,7 +1292,7 @@ int __fastcall LoadDefinitionsFromPath(
     zEffectAnimEntry *const napalmDestroyAnim = zEffectAnim::FindEntryByName(
         g_Player_NapalmVehicleEffectName
     );
-    zReader::Node *const turretListNode = zReader_GetNamedNode(
+    zReader::Node *const turretListNode = zRdrGetNode(
         rootNode,
         "TURRET"
     );
@@ -1301,7 +1301,7 @@ int __fastcall LoadDefinitionsFromPath(
         while (index < turretListNode->value.nodes[0].value.i32) {
             char *const turretName = turretListNode->value.nodes[index].value.str;
             zReader::Node *const readerNode =
-                turretName != 0 ? zReader_GetNamedNode(
+                turretName != 0 ? zRdrGetNode(
                     turretListNode,
                     turretName
                 ) : 0;
@@ -1467,7 +1467,7 @@ int __cdecl FreeAllRuntimes() {
 
     g_zTurret_RuntimeCount = 0;
     if (g_zTurret_LoadedDefRoot != 0) {
-        zReader::FreeLoadedTree(g_zTurret_LoadedDefRoot);
+        zReader::Free(g_zTurret_LoadedDefRoot);
         g_zTurret_LoadedDefRoot = 0;
     }
 

@@ -1,0 +1,23 @@
+{
+  "name": "zreader_read_node_literals",
+  "description": "Exact retail identities for the source-path and invalid-node diagnostic literals emitted by zRdrRead. Extents include the NUL terminator; the following byte is not part of the diagnostic string.",
+  "target_binary": "recoil",
+  "source_filename": "zreader.cpp",
+  "source_from": "src/GameZRecoil/zReader/zreader.cpp",
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "functions": [],
+  "data_symbols": [
+    {
+      "address": "0x4e2118",
+      "symbol": "??_C@_0CI@BOAJ@D?3?2Proj?2GameZRecoil?2zReader?2zrea@",
+      "name": "zRdrRead source path",
+      "byte_length": 40
+    },
+    {
+      "address": "0x4e2140",
+      "symbol": "??_C@_0CH@FKAO@Invalid?5reader?5node?5type?5in?5zRdr@",
+      "name": "zRdrRead invalid node diagnostic",
+      "byte_length": 39
+    }
+  ]
+}

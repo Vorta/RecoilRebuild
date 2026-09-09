@@ -618,8 +618,14 @@ def _byte_remapped_switch_index(
     return source_register, struct.unpack_from("<I", data, start + 2)[0], clear.offset
 
 
-def _is_vc5_same_register_lea_nop(data: bytes, instruction: DecodedInstruction) -> bool:
+def _is_vc5_same_register_nop(data: bytes, instruction: DecodedInstruction) -> bool:
     start = instruction.offset
+    # VC5 also aligns an inline table with an unprefixed full-width MOV r,r.
+    # Register-direct operands are essential: a memory read may fault, and a
+    # different destination changes state even when the instruction is short.
+    if instruction.size == 2 and data[start] in {0x89, 0x8B}:
+        modrm = data[start + 1]
+        return modrm >> 6 == 3 and (modrm >> 3) & 7 == modrm & 7
     if instruction.opcode != "8d" or instruction.size != 3:
         return False
     if data[start] != 0x8D or data[start + 2] != 0:
@@ -643,7 +649,7 @@ def _is_proven_switch_table_padding(
         instruction = instructions_by_offset.get(offset)
         if instruction is None or offset + instruction.size > end:
             return False
-        if data[offset : offset + instruction.size] != b"\x90" and not _is_vc5_same_register_lea_nop(
+        if data[offset : offset + instruction.size] != b"\x90" and not _is_vc5_same_register_nop(
             data, instruction
         ):
             return False

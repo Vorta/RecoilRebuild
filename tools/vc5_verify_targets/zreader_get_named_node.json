@@ -18,13 +18,13 @@
   "functions": [
     {
       "address": "0x48cf70",
-      "symbol": "@zReader_GetNamedNode@8",
-      "name": "zReader_GetNamedNode"
+      "symbol": "@zRdrGetNode@8",
+      "name": "zRdrGetNode"
     },
     {
       "address": "0x48cf80",
-      "symbol": "?ReadNamedString@zReader@@YIPBDPAUNode@1@PBD@Z",
-      "name": "zReader::ReadNamedString"
+      "symbol": "?GetString@zReader@@YIPBDPAUNode@1@PBD@Z",
+      "name": "zReader::GetString"
     }
   ]
 }

@@ -1743,7 +1743,7 @@ RECOIL_STATIC_ASSERT(
  */
 #define PlayerLoadSoundSample(parentNode, name, outSample) \
     do { \
-        zReader::Node *const playerSoundNode = zReader_GetNamedNode( \
+        zReader::Node *const playerSoundNode = zRdrGetNode( \
             (parentNode), \
             (name) \
         ); \
@@ -1793,7 +1793,7 @@ RECOIL_STATIC_ASSERT(
  */
 #define PlayerLoadModalFxList(modalNode, name, entries) \
     do { \
-        zReader::Node *const playerFxListNode = zReader_GetNamedNode( \
+        zReader::Node *const playerFxListNode = zRdrGetNode( \
             (modalNode), \
             (name) \
         ); \
@@ -1821,7 +1821,7 @@ RECOIL_STATIC_ASSERT(
  */
 #define PlayerLoadModalWaveParams(modalData, modalNode, name) \
     do { \
-        zReader::Node *const playerWaveNode = zReader_GetNamedNode( \
+        zReader::Node *const playerWaveNode = zRdrGetNode( \
             (modalNode), \
             (name) \
         ); \
@@ -3835,7 +3835,7 @@ const char *__fastcall SelectZrdByDifficulty(
         filename = g_Player_VehicleArchiveName_Hard;
     }
 
-    if (zReader::TryResolvePath(
+    if (zReader::FindFile(
         filename,
         extraSearchPath
     ) == 0) {
@@ -3946,14 +3946,14 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     g_Player_CopterSndNode2 = 0;
     g_Player_BftSplashAnimEntry = zEffectAnim::FindEntryByName(g_Player_BftSplashAnimName);
 
-    zReader::Node *playerRoot = zReader::LoadNodeFromPath(
+    zReader::Node *playerRoot = zReader::Load(
         g_Player_ConfigArchiveName,
         0,
         0
     );
     {
         zReader::Node *const root = playerRoot;
-        zReader::Node *node = zReader_GetNamedNode(
+        zReader::Node *node = zRdrGetNode(
             root,
             g_Player_ConfigKey_CameraZone
         );
@@ -3968,7 +3968,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             }
         }
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_MaxCamYawRate
         );
@@ -3977,7 +3977,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             1
         ) : 2.0f;
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_MousePush
         );
@@ -3995,7 +3995,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             g_Player_MousePushY = 0.00999999978f;
         }
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_FirstPersonCamElevationRate
         );
@@ -4004,7 +4004,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             1
         ) : 5.0f;
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_FirstPersonCamElevationLimit
         );
@@ -4022,7 +4022,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             g_Player_FpCamElevationMax = 1.0f;
         }
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_UnderwaterCam
         );
@@ -4077,7 +4077,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             g_Player_UnderwaterCamAlpha = 0.5f;
         }
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_CameraElastic
         );
@@ -4088,7 +4088,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             );
         }
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_MaxCamTetherAngle
         );
@@ -4099,7 +4099,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             ) * 0.01745329251994f;
         }
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_NormalGravity
         );
@@ -4108,7 +4108,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             1
         ) : 28.0f;
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_WaterGravity
         );
@@ -4118,7 +4118,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
                 1
             ) : g_Player_NominalGravity * 0.333333343f;
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_QuicksandGravity
         );
@@ -4128,7 +4128,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
                 1
             ) : g_Player_NominalGravity * 0.166666672f;
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_QuicksandSink
         );
@@ -4137,7 +4137,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             1
         ) : 0.899999976f;
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_LavaSink
         );
@@ -4146,7 +4146,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             1
         ) : 0.600000024f;
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_MaxSlope
         );
@@ -4155,7 +4155,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             1
         ) : 0.707000017f;
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_MakeHot
         );
@@ -4166,7 +4166,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             ));
         }
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_ConfigKey_MakeCold
         );
@@ -4177,7 +4177,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             ));
         }
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_BurningAnimName
         );
@@ -4188,7 +4188,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             ));
         }
     
-        node = zReader_GetNamedNode(
+        node = zRdrGetNode(
             root,
             g_Player_LowShieldSndName
         );
@@ -4211,7 +4211,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         g_Hud_LowMeterNextBeepTime = 0.0f;
         g_Player_CopterSndSample = zSnd::FindSampleByName(g_Player_CopterSndName);
     }
-    zReader::FreeLoadedTree(playerRoot);
+    zReader::Free(playerRoot);
 
     g_Player_RuntimeInputFlags = 3;
     zEffectAnimEntry *asyncEntry = zEffectAnim::FindNextAsyncEntry(0);
@@ -4225,7 +4225,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     }
 
     zReader::Node *vehicleRoot =
-        zReader::LoadNodeFromPath(
+        zReader::Load(
             zVehicle::SelectZrdByDifficulty(0),
             0,
             0
@@ -4254,7 +4254,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         }
         g_PlayerMasterCommonDataList.tail = commonData;
         ++g_PlayerMasterCommonDataList.count;
-        zReader::Node *const vehicleNode = zReader_GetNamedNode(
+        zReader::Node *const vehicleNode = zRdrGetNode(
             vehicleRoot,
             vehicleName
         );
@@ -4345,8 +4345,8 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         stealthPlayerState->rootNode,
         0
     );
-    zReader_GetNamedNode(
-        zReader_GetNamedNode(
+    zRdrGetNode(
+        zRdrGetNode(
             vehicleRoot,
             g_Player_ConfigNode_Stealth
         ),
@@ -4367,7 +4367,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     stealthSaveState->firstSaveState->playerState->projectileSpawnVel.x = 0.0f;
     stealthPlayerState->cameraState = zOpt::GetCameraModePlayerState();
 
-    zReader::Node *aivRoot = zReader::LoadNodeFromPath(
+    zReader::Node *aivRoot = zReader::Load(
         GetAivZrdPath(),
         0,
         0
@@ -4404,11 +4404,11 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             vehicleName
         );
 
-        if (zReader_GetNamedNode(
+        if (zRdrGetNode(
             vehicleRoot,
             vehicleName
         ) != 0) {
-            zReader::Node *const aivNode = zReader_GetNamedNode(
+            zReader::Node *const aivNode = zRdrGetNode(
                 aivRoot,
                 aivName
             );
@@ -4447,8 +4447,8 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         }
     }
 
-    zReader::FreeLoadedTree(vehicleRoot);
-    zReader::FreeLoadedTree(aivRoot);
+    zReader::Free(vehicleRoot);
+    zReader::Free(aivRoot);
 
     zUtil_SaveGameState *const headSaveState = g_PlayerSaveStateList.head;
     headSaveState->playerState->lifecycleState = kPlayerLifecycleInactive;
@@ -4547,7 +4547,7 @@ namespace zReader {
  * Purpose: load mover definitions from the current ZRD tree.
  */
 void __cdecl LoadMoversFromZrd() {
-    Node *const treeRoot = LoadNodeFromPath(
+    Node *const treeRoot = Load(
         "movers.zrd",
         0,
         0
@@ -4578,7 +4578,7 @@ void __cdecl LoadMoversFromZrd() {
         }
     }
 
-    FreeLoadedTree(treeRoot);
+    Free(treeRoot);
 }
 } // namespace zReader
 namespace Checkpoint {
@@ -5525,7 +5525,7 @@ int __fastcall BuildResolvedParentDir(
     char fullPath[0x104] = {0};
     _fullpath(
         fullPath,
-        TryResolvePath(
+        FindFile(
             filename,
             0
         ),
@@ -5720,11 +5720,11 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     commonData->modalCount = ((PlayerZrdArrayCount(vehicleNode) - 1) / 2) - 1;
 
-    zReader::Node *const commonModeNode = zReader_GetNamedNode(
+    zReader::Node *const commonModeNode = zRdrGetNode(
         vehicleNode,
         g_Player_ConfigNode_CommonMode
     );
-    zReader::Node *node = zReader_GetNamedNode(
+    zReader::Node *node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_Nanite
     );
@@ -5742,7 +5742,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->naniteMaxLevel = 0;
     }
 
-    zReader::Node *const soundsNode = zReader_GetNamedNode(
+    zReader::Node *const soundsNode = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_Sounds
     );
@@ -5764,7 +5764,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         );
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_Activation
     );
@@ -5779,7 +5779,7 @@ void __fastcall LoadMasterCommonDataFromNode(
             kPlayerDefaultActivationRange * kPlayerDefaultActivationRange;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         "not_pursuit_dwell"
     );
@@ -5789,7 +5789,7 @@ void __fastcall LoadMasterCommonDataFromNode(
             1
         ) : kPlayerDefaultNotPursuitDwellTime;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         "return_range"
     );
@@ -5803,7 +5803,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->returnRangeSq = kPlayerDefaultReturnRange * kPlayerDefaultReturnRange;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_StartAnims
     );
@@ -5815,7 +5815,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         );
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_CamBack
     );
@@ -5844,7 +5844,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->cambackDist2 = 2.25f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_AimY
     );
@@ -5862,7 +5862,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->aimYawMax = 2.0f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_CameraUdSwing
     );
@@ -5890,7 +5890,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->cameraUdSwing[3] = 0.0f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_TrackSwitch
     );
@@ -5913,7 +5913,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->trackSwitchDist2 = 10000.0f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_Health
     );
@@ -5928,7 +5928,7 @@ void __fastcall LoadMasterCommonDataFromNode(
     }
     commonData->invMaxHealth = 1.0f / commonData->maxHealth;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_Pickups
     );
@@ -5949,7 +5949,7 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->pickupCapacity = 0;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         commonModeNode,
         g_Player_NodeName_Weapons
     );
@@ -6017,7 +6017,7 @@ void __fastcall LoadMasterModalDataFromNode(
         modalName
     );
 
-    zReader::Node *node = zReader_GetNamedNode(
+    zReader::Node *node = zRdrGetNode(
         modalNode,
         g_Player_ConfigNode_Mode
     );
@@ -6074,7 +6074,7 @@ void __fastcall LoadMasterModalDataFromNode(
     }
 
     PlayerLoadModalPointList(
-        zReader_GetNamedNode(
+        zRdrGetNode(
             modalNode,
             g_Player_ConfigKey_Platform
         ),
@@ -6082,7 +6082,7 @@ void __fastcall LoadMasterModalDataFromNode(
         &modalData->platformPointCount
     );
     PlayerLoadModalPointList(
-        zReader_GetNamedNode(
+        zRdrGetNode(
             modalNode,
             g_Player_ConfigKey_Collision
         ),
@@ -6090,7 +6090,7 @@ void __fastcall LoadMasterModalDataFromNode(
         &modalData->probePointCount
     );
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_Rates
     );
@@ -6108,7 +6108,7 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->maxSpeed = 30.0f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_Friction
     );
@@ -6134,7 +6134,7 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->frictionDynamic = modalData->frictionStatic * 0.899999976f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_Stopping
     );
@@ -6143,7 +6143,7 @@ void __fastcall LoadMasterModalDataFromNode(
         1
     ) : 8.0f;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_QuicksandSlowdown
     );
@@ -6152,7 +6152,7 @@ void __fastcall LoadMasterModalDataFromNode(
         1
     ) : 0.899999976f;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_LavaSlowdown
     );
@@ -6161,7 +6161,7 @@ void __fastcall LoadMasterModalDataFromNode(
         1
     ) : 0.800000012f;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_Turns
     );
@@ -6179,7 +6179,7 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->yawRateMax = 2.0f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_TurnDamping
     );
@@ -6188,7 +6188,7 @@ void __fastcall LoadMasterModalDataFromNode(
         1
     ) : 30.0f;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_RateDamping
     );
@@ -6206,7 +6206,7 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->rateDampingDecel = 30.0f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_AccelDamping
     );
@@ -6215,7 +6215,7 @@ void __fastcall LoadMasterModalDataFromNode(
         1
     ) : 8.0f;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_AltControl
     );
@@ -6238,7 +6238,7 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->hoverNormalLerpRate = -3.0f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_Mass
     );
@@ -6248,7 +6248,7 @@ void __fastcall LoadMasterModalDataFromNode(
     ) : 1.0f;
     modalData->invMass = 1.0f / modalData->mass;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_ConfigKey_GunPitch
     );
@@ -6266,7 +6266,7 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->gunPitchRate = 0.5f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_NodeName_ModeAlt
     );
@@ -6275,7 +6275,7 @@ void __fastcall LoadMasterModalDataFromNode(
         1
     ) : 2.0f;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_NodeName_ChassisSmooth
     );
@@ -6284,7 +6284,7 @@ void __fastcall LoadMasterModalDataFromNode(
         1
     ))) : 0.0f;
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_NodeName_ChassisPitch
     );
@@ -6307,7 +6307,7 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->chassisPitchDamping = 0.0f;
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_NodeName_ChassisRoll
     );
@@ -6347,7 +6347,7 @@ void __fastcall LoadMasterModalDataFromNode(
         g_Player_ConfigKey_SubWave
     );
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         modalNode,
         g_Player_NodeName_CollisionDamage
     );
@@ -6406,7 +6406,7 @@ void __fastcall LoadMasterModalDataFromNode(
         modalData->fxList_fromAmphibToHover
     );
 
-    zReader::Node *const soundsNode = zReader_GetNamedNode(
+    zReader::Node *const soundsNode = zRdrGetNode(
         modalNode,
         g_Player_NodeName_Sounds
     );
@@ -6445,7 +6445,7 @@ void __fastcall LoadMasterModalDataFromNode(
         &modalData->sfxLand
     );
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         soundsNode,
         g_Player_NodeName_PitchScale
     );
@@ -6456,7 +6456,7 @@ void __fastcall LoadMasterModalDataFromNode(
         );
     }
 
-    node = zReader_GetNamedNode(
+    node = zRdrGetNode(
         soundsNode,
         g_Player_NodeName_VolumeScale
     );

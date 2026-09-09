@@ -135,13 +135,6 @@ char g_zSnd_SoundGroupDelayPlayLoadErrorFmt[0x2e] =
  * Purpose: provide the writable DELAY_PLAY parser key.
  */
 char g_zSnd_SoundGroupDelayPlayKey[0xb] = "DELAY_PLAY";
-
-
-
-
-
-
-
 }
 
 /**
@@ -159,7 +152,7 @@ extern "C" zSndSample *__fastcall zSndPendingList_FindByName(
         return 0;
     }
 
-    return (zSndSample *)(zArchiveList_FindPayloadByPredicate(
+    return (zSndSample *)(zArchiveList_FindCompare(
         g_zSndStream_PendingList,
         &zSndPendingList_MatchNamePredicate,
         (char *)(sampleName)
@@ -198,7 +191,7 @@ extern "C" int __fastcall zSndGroup_QueuePendingLoadsFromConfigNode(
     }
 
     if (g_zSndStream_PendingList == 0) {
-        g_zSndStream_PendingList = zArchiveList_CreateEmpty();
+        g_zSndStream_PendingList = zArchiveList_New();
         if (g_zSndStream_PendingList == 0) {
             return 0;
         }
@@ -208,7 +201,7 @@ extern "C" int __fastcall zSndGroup_QueuePendingLoadsFromConfigNode(
     for (int i = 1; i < nodeArray[0].value.i32; ++i) {
         zSndGroup *payload = zSndGroup_LoadFromConfigNode(&nodeArray[i]);
         if (payload != 0) {
-            zArchiveList_PushFrontPayload(
+            zArchiveList_AddHead(
                 g_zSndStream_PendingList,
                 payload
             );
@@ -743,7 +736,7 @@ void zSndStreamRequest::StateWaitTerminationDelay() {
  * request back to the free list.
  */
 extern "C" void __cdecl zSndStreamMgr_RecycleFinishedRequest() {
-    zArchiveList_FindPayloadByPredicate(
+    zArchiveList_FindCompare(
         g_zSndStream_ActiveList,
         &zSndStreamMgr::UpdateActiveRequestPredicate,
         0
@@ -753,11 +746,11 @@ extern "C" void __cdecl zSndStreamMgr_RecycleFinishedRequest() {
         return;
     }
 
-    zArchiveList_RemovePayload(
+    zArchiveList_Remove(
         g_zSndStream_ActiveList,
         g_zSndStream_MatchedRequest
     );
-    zArchiveList_PushFrontPayload(
+    zArchiveList_AddHead(
         g_zSndStream_FreeList,
         g_zSndStream_MatchedRequest
     );
@@ -783,28 +776,28 @@ int __cdecl Shutdown() {
     g_zSndStream_RootNode = 0;
 
     if (g_zSndStream_ActiveList != 0) {
-        void *payload = zArchiveList_PopFrontPayload(g_zSndStream_ActiveList);
+        void *payload = zArchiveList_RemoveHead(g_zSndStream_ActiveList);
         while (payload != 0) {
             free(payload);
-            payload = zArchiveList_PopFrontPayload(g_zSndStream_ActiveList);
+            payload = zArchiveList_RemoveHead(g_zSndStream_ActiveList);
         }
-        zArchiveList_Destroy(g_zSndStream_ActiveList);
+        zArchiveList_Free(g_zSndStream_ActiveList);
         g_zSndStream_ActiveList = 0;
     }
 
     if (g_zSndStream_FreeList != 0) {
-        void *payload = zArchiveList_PopFrontPayload(g_zSndStream_FreeList);
+        void *payload = zArchiveList_RemoveHead(g_zSndStream_FreeList);
         while (payload != 0) {
             free(payload);
-            payload = zArchiveList_PopFrontPayload(g_zSndStream_FreeList);
+            payload = zArchiveList_RemoveHead(g_zSndStream_FreeList);
         }
-        zArchiveList_Destroy(g_zSndStream_FreeList);
+        zArchiveList_Free(g_zSndStream_FreeList);
         g_zSndStream_FreeList = 0;
     }
 
     if (g_zSndStream_PendingList != 0) {
         zSndGroup *pendingConfig = (zSndGroup *)(
-            zArchiveList_PopFrontPayload(g_zSndStream_PendingList)
+            zArchiveList_RemoveHead(g_zSndStream_PendingList)
         );
         while (pendingConfig != 0) {
             if (pendingConfig->createGuard == 1) {
@@ -822,11 +815,11 @@ int __cdecl Shutdown() {
                 free(pendingConfig);
             }
             pendingConfig = (zSndGroup *)(
-                zArchiveList_PopFrontPayload(g_zSndStream_PendingList)
+                zArchiveList_RemoveHead(g_zSndStream_PendingList)
             );
         }
 
-        zArchiveList_Destroy(g_zSndStream_PendingList);
+        zArchiveList_Free(g_zSndStream_PendingList);
         g_zSndStream_PendingList = 0;
     }
     return 1;
@@ -858,7 +851,7 @@ int __fastcall MatchStreamRequestPredicate(
 extern "C" int __fastcall zSndStreamRequest_StopIfActive(
     zSndPlayHandle *request
 ) {
-    void *const found = zArchiveList_FindPayloadByPredicate(
+    void *const found = zArchiveList_FindCompare(
         g_zSndStream_ActiveList,
         &MatchStreamRequestPredicate,
         request
@@ -918,7 +911,7 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
         zSndStreamMgr_EnsureInit();
     }
 
-    if (playSolo != 0 && zArchiveList_FindPayloadByPredicate(
+    if (playSolo != 0 && zArchiveList_FindCompare(
                              g_zSndStream_ActiveList,
                              &zSndStreamRequest_MatchGroupPredicate,
                              this
@@ -927,7 +920,7 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
     }
 
     zSndStreamRequest *request =
-        (zSndStreamRequest *)(zArchiveList_PopFrontPayload(g_zSndStream_FreeList));
+        (zSndStreamRequest *)(zArchiveList_RemoveHead(g_zSndStream_FreeList));
     if (request == 0) {
         request = (zSndStreamRequest *)(malloc(sizeof(zSndStreamRequest)));
         if (request == 0) {
@@ -940,7 +933,7 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
         0,
         sizeof(*request)
     );
-    zArchiveList_PushFrontPayload(
+    zArchiveList_AddHead(
         g_zSndStream_ActiveList,
         request
     );
@@ -981,21 +974,21 @@ extern "C" int __cdecl zSndStreamMgr_EnsureInit() {
     }
 
     if (g_zSndStream_PendingList == 0) {
-        g_zSndStream_PendingList = zArchiveList_CreateEmpty();
+        g_zSndStream_PendingList = zArchiveList_New();
         if (g_zSndStream_PendingList == 0) {
             return 0;
         }
     }
 
     if (g_zSndStream_ActiveList == 0) {
-        g_zSndStream_ActiveList = zArchiveList_CreateEmpty();
+        g_zSndStream_ActiveList = zArchiveList_New();
         if (g_zSndStream_ActiveList == 0) {
             return 0;
         }
     }
 
     if (g_zSndStream_FreeList == 0) {
-        g_zSndStream_FreeList = zArchiveList_CreateEmpty();
+        g_zSndStream_FreeList = zArchiveList_New();
         if (g_zSndStream_FreeList == 0) {
             return 0;
         }

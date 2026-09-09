@@ -261,7 +261,7 @@ int __fastcall LoadConfigResources(
     SetCameraNode(worldNode);
     zVideo::ReturnSuccessStub();
 
-    g_zDEClient_ConfigReaderRoot = zReader::LoadNodeFromPath(
+    g_zDEClient_ConfigReaderRoot = zReader::Load(
         g_zDEClient_ConfigArchiveName,
         0,
         0
@@ -278,7 +278,7 @@ int __fastcall LoadConfigResources(
         );
     }
 
-    zReader::Node *const craterNode = zReader_GetNamedNode(
+    zReader::Node *const craterNode = zRdrGetNode(
         g_zDEClient_ConfigReaderRoot,
         g_zDEClient_CraterNodeName
     );
@@ -288,22 +288,22 @@ int __fastcall LoadConfigResources(
     g_zDEClient_CraterEventTemplateDefaults.depth = 4.0f;
     g_zDEClient_CraterEventTemplateDefaults.radius = 20.0f;
 
-    zReader::ReadNamedInt(
+    zReader::GetInt(
         craterNode,
         g_zDEClient_PointsFieldName,
         &g_zDEClient_CraterEventTemplateDefaults.pointCount
     );
-    zReader::ReadNamedFloat(
+    zReader::GetFloat(
         craterNode,
         g_zDEClient_SlopeFieldName,
         &g_zDEClient_CraterEventTemplateDefaults.slope
     );
-    zReader::ReadNamedFloat(
+    zReader::GetFloat(
         craterNode,
         g_zDEClient_DepthFieldName,
         &g_zDEClient_CraterEventTemplateDefaults.depth
     );
-    zReader::ReadNamedFloat(
+    zReader::GetFloat(
         craterNode,
         g_zDEClient_RadiusFieldName,
         &g_zDEClient_CraterEventTemplateDefaults.radius
@@ -318,7 +318,7 @@ int __fastcall LoadConfigResources(
     zDEClient_CraterDisplaySourceEntry *defaultDisplaySource = g_zDEClient_CraterDisplaySourceList;
     if (LoadMaterialFromTexturePath_Local(
             &defaultDisplaySource->craterMaterial,
-            (char *)(zReader::ReadNamedString(
+            (char *)(zReader::GetString(
                 craterNode,
                 g_zDEClient_DefaultTextureNodeName
             ))
@@ -327,12 +327,12 @@ int __fastcall LoadConfigResources(
     }
 
     defaultDisplaySource->effectAnimEntry =
-        zEffectAnim::FindEntryByName(zReader::ReadNamedString(
+        zEffectAnim::FindEntryByName(zReader::GetString(
             craterNode,
             g_zDEClient_DefaultAnimNodeName
         ));
 
-    zReader::Node *const textureAnimNode = zReader_GetNamedNode(
+    zReader::Node *const textureAnimNode = zRdrGetNode(
         craterNode,
         g_zDEClient_TextureAnimNodeName
     );
@@ -358,7 +358,7 @@ int __fastcall LoadConfigResources(
             }
 
             zReader::Node *const entryNode =
-                zReader_GetNamedNode(
+                zRdrGetNode(
                     textureAnimNode,
                     textureAnimNode->value.nodes[i].value.str
                 );
@@ -386,13 +386,13 @@ int __fastcall LoadConfigResources(
     }
 
     zReader::Node *const quickSandNode =
-        zReader_GetNamedNode(
+        zRdrGetNode(
             g_zDEClient_ConfigReaderRoot,
             g_zDEClient_QuickSandNodeName
         );
     if (quickSandNode != 0) {
         zReader::Node *const defaultTextureNode =
-            zReader_GetNamedNode(
+            zRdrGetNode(
                 quickSandNode,
                 g_zDEClient_DefaultTextureNodeName
             );
@@ -422,22 +422,22 @@ int __fastcall LoadConfigResources(
         g_zDEClient_QuickSandEventTemplateDefaults.depth = 4.0f;
         g_zDEClient_QuickSandEventTemplateDefaults.radius = 20.0f;
 
-        zReader::ReadNamedInt(
+        zReader::GetInt(
             quickSandNode,
             g_zDEClient_PointsFieldName,
             &g_zDEClient_QuickSandEventTemplateDefaults.pointCount
         );
-        zReader::ReadNamedFloat(
+        zReader::GetFloat(
             quickSandNode,
             g_zDEClient_SlopeFieldName,
             &g_zDEClient_QuickSandEventTemplateDefaults.slope
         );
-        zReader::ReadNamedFloat(
+        zReader::GetFloat(
             quickSandNode,
             g_zDEClient_DepthFieldName,
             &g_zDEClient_QuickSandEventTemplateDefaults.depth
         );
-        zReader::ReadNamedFloat(
+        zReader::GetFloat(
             quickSandNode,
             g_zDEClient_RadiusFieldName,
             &g_zDEClient_QuickSandEventTemplateDefaults.radius
@@ -515,7 +515,7 @@ int __fastcall LoadConfigResources(
         zImage::TexDir_LoadPendingEntries();
     }
 
-    zReader::FreeLoadedTree(g_zDEClient_ConfigReaderRoot);
+    zReader::Free(g_zDEClient_ConfigReaderRoot);
     const int rebuildBltRectOnReload = g_zDEClient_RebuildBltRectOnReload;
     g_zDEClient_ConfigReaderRoot = 0;
 

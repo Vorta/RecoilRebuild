@@ -716,8 +716,8 @@
       ],
       "successor": {
         "address": "0x48c7d0",
-        "symbol": "?ZRDR_PreallocNodePool@zUtil@@YIXH@Z",
-        "name": "zUtil::ZRDR_PreallocNodePool",
+        "symbol": "?ZRDR_InitNodePool@zUtil@@YIXH@Z",
+        "name": "zUtil::ZRDR_InitNodePool",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

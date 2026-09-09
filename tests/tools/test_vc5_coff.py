@@ -191,6 +191,12 @@ def test_retail_decoder_proves_remapped_and_direct_tables_in_one_trailing_island
     from _recoil.commands.relocation_expectations import decode_x86_operand_sites
 
     base, code = mapped_switch_bytes()
+    for opcode in (0x89, 0x8B):
+        for register in range(8):
+            aligned = code[:52] + bytes((opcode, 0xC0 + register * 9, 0x90, 0x90)) + code[56:]
+            sites, unresolved = decode_x86_operand_sites(aligned, function_address=base)
+            assert not unresolved
+            assert [site.offset for site in sites if site.kind == "switch-table-entry"] == [56, 60, 64, 72, 76]
     for tail in (b"", b"\x90\x90"):
         sites, unresolved = decode_x86_operand_sites(code + tail, function_address=base)
         assert not unresolved
@@ -213,6 +219,10 @@ def test_retail_decoder_rejects_unproven_remap_flow_extents_and_targets():
         (56, struct.pack("<I", base + 52)),  # Target is alignment before the data island.
         (36, struct.pack("<I", base + 68)),  # The second table overlaps the map.
         (52, b"\x40"),  # Alignment is executable work, not proven padding.
+        (52, bytes.fromhex("8b f7")),  # Different registers change state.
+        (52, bytes.fromhex("8b 3f")),  # Memory MOV can fault.
+        (52, bytes.fromhex("66 8b ff")),  # Not the unprefixed VC5 alignment form.
+        (52, bytes.fromhex("8a ff")),  # Partial-register MOV is not accepted.
         (40, b"\xe9" + struct.pack("<i", 15 - 45)),  # An incoming branch bypasses the bound.
         (80, b"\xcc"),  # Unproven data follows the final table.
     )
