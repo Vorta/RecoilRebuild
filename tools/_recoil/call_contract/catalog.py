@@ -1787,7 +1787,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
                 "late_shelf_zgame_zsys_zui_zbd_order_current_shape"
             ),
             "recoil:vc5-target:zgame_opt_4b2960_4b33f0_authored_order",
-            "recoil:vc5-target:zgame_options_load_helpers",
         ),
     },
     "symbol:recoil:function:0x4b2bf0": {
@@ -1839,7 +1838,6 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
                 "late_shelf_zgame_zsys_zui_zbd_order_current_shape"
             ),
             "recoil:vc5-target:zgame_opt_4b2960_4b33f0_authored_order",
-            "recoil:vc5-target:zgame_options_load_helpers",
         ),
     },
 }
@@ -3194,6 +3192,7 @@ CACHED_FREAD_CALLER_PHYSICAL_BLOCK_ID = "recoil:block:0x415ab0"
 
 
 CACHED_FREAD_CALLER_TARGET_IDS = (
+    "recoil:vc5-target:map_retail_interval_linked_order",
     "recoil:vc5-target:map_text_block_order_current_shape",
 )
 
@@ -12396,7 +12395,7 @@ ZINPUT_JOYSTICK_LATER_AGGREGATE_LEAF_SPECS = {
     "0x472450": {
         "end": "0x472480",
         "symbol": "@zInputDICreateForceFeedbackEffect@8",
-        "name": "zInputDI::CreateForceFeedbackEffect",
+        "name": "zInputDICreateForceFeedbackEffect",
         "anchor": (
             "recoil:anchor:gamezrecoil.zinput.zin-joystick."
             "zinput-di-createforcefeedbackeffect"
@@ -12841,7 +12840,7 @@ ZINPUT_BINDMAP_CANDIDATE_DISPATCH_SPECS = {
     "0x470e80": {
         "end": "0x470eb0",
         "symbol": "@zInputBindMapContextDispatchFromKeyboardEvent@4",
-        "name": "zInput_BindMapContext::DispatchFromKeyboardEvent",
+        "name": "zInputBindMapContextDispatchFromKeyboardEvent",
         "anchor": (
             "recoil:anchor:gamezrecoil.zinput.zinput."
             "zinput-bindmapcontext-dispatchfromkeyboardevent"
@@ -13611,7 +13610,7 @@ DIRECTSOUND_CREATE_CALLER_PROFILES: Mapping[str, Mapping[str, Any]] = {
         "identity": ZSND_DIRECTSOUND_CREATE_CALLER_IDENTITY,
         "end_exclusive": ZSND_DIRECTSOUND_CREATE_CALLER_END_EXCLUSIVE,
         "symbol": ZSND_DIRECTSOUND_CREATE_CALLER_SYMBOL,
-        "navigation_name": "zSndBackend::InitDirectSound",
+        "navigation_name": "zSndBackendInitDirectSound",
         "physical_block_id": "recoil:block:0x4a12c0",
         "candidate_size": ZSND_DIRECTSOUND_CREATE_CANDIDATE_SIZE,
         "candidate_section_index": ZSND_DIRECTSOUND_CREATE_COFF_SECTION_INDEX,

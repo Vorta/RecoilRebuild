@@ -60,6 +60,33 @@ from _recoil.lib.progress import ProgressDocument, normalize_address
 from _recoil.lib.tooling import REPO_ROOT
 
 
+def _candidate_local_read_only_scalar_matches(definition: Any, data: bytes) -> bool:
+    """Check storage/value facts without freezing movable COFF coordinates.
+
+    The caller proves the relocation-selected name and its semantic role,
+    uniqueness, relocation type/addend, operand use, and external exclusions.
+    This predicate grants no retail identity or original source storage model.
+    """
+    return (
+        definition.section_name == ".rdata"
+        and definition.section_number > 0
+        and definition.value >= 0
+        and definition.symbol_type == 0
+        and definition.storage_class == IMAGE_SYM_CLASS_STATIC
+        and definition.aux_count == 0
+        and bool(data)
+        and definition.data == data
+    )
+
+
+def _candidate_compiler_local_scalar_matches(definition: Any, data: bytes) -> bool:
+    """Additionally require a VC5-generated temporary scalar spelling."""
+    return (
+        re.fullmatch(r"\$T[0-9]+", definition.name) is not None
+        and _candidate_local_read_only_scalar_matches(definition, data)
+    )
+
+
 def _exact_cod_inline_emitted_bsf_instructions(
     lines: Sequence[str],
     instructions: Sequence[Instruction],
@@ -828,19 +855,14 @@ def _candidate_reviewed_constructor_definitions(
     )
 
 
-def _candidate_unit_header_source_files(
+def _candidate_unit_source_observation(
     receipts: Sequence[Mapping[str, Any]],
     *,
     target_name: str,
     source_from: str,
     build_dir: Path,
-) -> dict[str, tuple[str, ...]]:
-    """Read only the header set observed for this fresh compiled TU.
-
-    These invocation-local observations select possible source files; they
-    prove neither provider identity nor bytes. Exact numbered COD rows must
-    still identify one file, and the normal provider proof remains mandatory.
-    """
+) -> Mapping[str, Any]:
+    """Bind one invocation-local verifier/parent source compilation observation."""
     matches = []
     expected_build_dir = build_dir.resolve()
     for row in receipts:
@@ -874,6 +896,13 @@ def _candidate_unit_header_source_files(
         != build_dir.resolve()
     ):
         raise ValueError("COMDAT header provenance rejects stale or conflicting TU observations")
+    return observation
+
+
+def _candidate_unit_header_source_files(receipts, *, target_name, source_from, build_dir):
+    """Read only headers observed for this fresh TU; no provider authority."""
+    observation = _candidate_unit_source_observation(receipts, target_name=target_name,
+        source_from=source_from, build_dir=build_dir)
     headers = observation.get("toolchain", {}).get("header_inputs")
     if not isinstance(headers, list):
         raise ValueError("COMDAT header provenance lacks the observed header population")
@@ -895,6 +924,26 @@ def _candidate_unit_header_source_files(
             encoding="utf-8", errors="replace",
         ).splitlines())
     return result
+
+
+def _candidate_current_source_path(provenance, observation, *, build_dir):
+    """Map only the exact observed compiled input back to its current source."""
+    if observation is None:
+        return ""
+    source = observation.get("source", {})
+    source_from = observation.get("source_from")
+    inputs = [row for row in observation.get("dependencies", []) if row.get("role") == "compiled-input"]
+    if (not isinstance(source_from, str) or not source_from.startswith("src/")
+            or len(inputs) != 1 or not isinstance(source.get("physical_identity"), Mapping)
+            or not isinstance(inputs[0].get("physical_identity"), Mapping)
+            or not Path(source.get("path", "")).is_absolute()
+            or not Path(inputs[0].get("path", "")).is_absolute()
+            or Path(source["path"]).resolve() != (REPO_ROOT / source_from).resolve()):
+        raise ValueError("current source mapping requires exact authored/compiled input observations")
+    emitted = Path(provenance)
+    if not emitted.is_absolute():
+        emitted = build_dir / emitted
+    return source_from if emitted.resolve() == Path(inputs[0]["path"]).resolve() else ""
 
 
 def _candidate_comdat_source_provenance(
@@ -947,6 +996,18 @@ def _candidate_comdat_source_provenance(
         for line in lines[: proc_indexes[0]]
         if re.match(r"^\s*;\s*File\s+\S", line)
     ]
+    title_rows = [
+        match.group(1).strip()
+        for line in lines[: proc_indexes[0]]
+        if (match := re.match(r"^\s*TITLE\s+(.+)$", line, re.IGNORECASE))
+    ]
+    if len(title_rows) > 1:
+        raise ValueError(f"candidate COMDAT {symbol_name!r} has ambiguous COD TITLE provenance")
+    # TITLE establishes the primary source before VC5 emits its first File
+    # marker. Early out-of-line empty bodies may contain only a closing brace,
+    # which cannot uniquely identify a header by source-row content alone.
+    if not file_rows and title_rows:
+        file_rows = title_rows
     active_file = file_rows[-1] if file_rows else ""
     source_rows: list[tuple[int, str]] = []
     for line in proc_lines:
@@ -1004,6 +1065,7 @@ def _candidate_tu_local_function_definitions(
     cod_path: Path | None = None,
     *,
     header_source_files: Mapping[str, Sequence[str]] | None = None,
+    source_observation: Mapping[str, Any] | None = None,
 ) -> dict[str, CandidateTuLocalFunctionDefinition]:
     """Snapshot complete external VC5 function COMDAT definitions.
 
@@ -1021,6 +1083,11 @@ def _candidate_tu_local_function_definitions(
         for item in coff_object.symbols
         if item.storage_class == IMAGE_SYM_CLASS_EXTERNAL and item.type == 0x20
     }
+    defined_names = [item.name for item in coff_object.symbols
+                     if item.storage_class == IMAGE_SYM_CLASS_EXTERNAL and item.type == 0x20
+                     and item.section_number > 0]
+    if len(defined_names) != len(set(defined_names)):
+        raise ValueError("candidate object has duplicate external function definitions")
     for symbol in coff_object.symbols:
         if (
             symbol.section_number <= 0
@@ -1083,6 +1150,9 @@ def _candidate_tu_local_function_definitions(
             if cod_path is not None
             else CandidateAssembly((), frozenset())
         )
+        provenance = _candidate_comdat_source_provenance(
+            cod_path, symbol.name, header_source_files=header_source_files,
+        )
         definitions[symbol.name] = CandidateTuLocalFunctionDefinition(
             symbol=symbol.name,
             data=function.data,
@@ -1097,9 +1167,12 @@ def _candidate_tu_local_function_definitions(
             instructions=parsed.instructions,
             local_control_flow_indices=parsed.local_control_flow_indices,
             local_control_flow_targets=parsed.local_control_flow_targets,
-            source_provenance=_candidate_comdat_source_provenance(
-                cod_path, symbol.name, header_source_files=header_source_files,
-            ),
+            source_provenance=provenance,
+            current_source_path=_candidate_current_source_path(provenance, source_observation,
+                build_dir=cod_path.parent) if cod_path is not None else "",
+            object_path=str(coff_object.path) if getattr(coff_object, "path", None) is not None else "",
+            symbol_index=symbol.index, section_number=symbol.section_number,
+            symbol_value=symbol.value, storage_class=symbol.storage_class, symbol_type=symbol.type,
         )
     return definitions
 
@@ -1867,6 +1940,11 @@ def _compile_slice_candidates(
                             source_from=str(getattr(_entry, "source_from", target.source_from)),
                             build_dir=cod_path.parent,
                         ),
+                        source_observation=_candidate_unit_source_observation(
+                            toolchain_receipts or (), target_name=target.name,
+                            source_from=str(getattr(_entry, "source_from", target.source_from)),
+                            build_dir=cod_path.parent,
+                        ),
                     )
                 )
                 tu_local_function_definitions_by_cod[cod_path] = (
@@ -1955,6 +2033,7 @@ def _compile_slice_candidates(
                     else None
                 ),
                 caller_definition=CandidateCallerDefinition(
+                    object_path=str(coff_object.path) if getattr(coff_object, "path", None) is not None else "",
                     symbol=symbol_name,
                     data=caller_bytes.data,
                     relocations=caller_bytes.relocations,

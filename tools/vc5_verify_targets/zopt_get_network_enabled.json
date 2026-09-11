@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x408260",
-      "symbol": "?GetNetworkEnabled@zOpt@@YAHXZ",
+      "symbol": "?GetNetworkEnabled@zOpt@@YIHXZ",
       "name": "zOpt::GetNetworkEnabled",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

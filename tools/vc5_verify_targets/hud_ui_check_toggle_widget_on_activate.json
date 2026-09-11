@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x4b7290",
-      "symbol": "?OnActivate@HudUiCheckToggleWidget@@QAEXXZ",
+      "symbol": "?OnActivate@HudUiCheckToggleWidget@@UAEXXZ",
       "name": "HudUiCheckToggleWidget::OnActivate"
     }
   ]

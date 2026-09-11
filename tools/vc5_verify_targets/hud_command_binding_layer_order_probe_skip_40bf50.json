@@ -274,7 +274,7 @@
         },
         {
           "address": "0x40bda0",
-          "symbol": "?QueueEnter@HudCmdDialogState@@SAXXZ",
+          "symbol": "?QueueEnter@HudCmdDialogState@@SIXXZ",
           "name": "HudCmdDialogState::QueueEnter"
         },
         {
@@ -330,12 +330,12 @@
         },
         {
           "address": "0x40bf00",
-          "symbol": "?FreeFieldPtr@HudUtil@@QAEXXZ",
+          "symbol": "??1HudCmdBindingEntry@@QAE@XZ",
           "name": "HudUtil::FreeFieldPtr"
         },
         {
           "address": "0x40bf20",
-          "symbol": "?DeleteAndReturnNull@HudCmdBindingEntry@@SGPAU1@PAU1@@Z",
+          "symbol": "??RHudCmdBindingEntryDelete@@QBEPAUHudCmdBindingEntry@@PAU1@@Z",
           "name": "HudCmdBindingEntry::DeleteAndReturnNull"
         },
         {

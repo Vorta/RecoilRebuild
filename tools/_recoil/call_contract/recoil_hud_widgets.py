@@ -3272,7 +3272,7 @@ def _hud_ui_aux_overlay_apply_text_line_authority(
         != _cc_catalog.HUD_UI_AUX_OVERLAY_APPLY_TEXT_LINE_CALLER_SYMBOL
         or getattr(contribution_row, "symbol_regex", None) is not None
         or getattr(contribution_row, "name", "")
-        != "HudUiAuxOverlay::ApplyTextLineOp"
+        != "HudUiAuxOverlay::UpdateTextLine"
         or getattr(contribution_row, "pipeline_class", "") != "authored"
         or getattr(contribution_row, "authored_order_role", "")
         != "authored-body"
@@ -3308,7 +3308,7 @@ def _hud_ui_aux_overlay_apply_text_line_authority(
         != _cc_catalog.HUD_UI_AUX_OVERLAY_APPLY_TEXT_LINE_CALLER_END_EXCLUSIVE
         or caller_symbol.get("size") != 0xE0
         or caller_symbol.get("navigation_name")
-        != "HudUiAuxOverlay::ApplyTextLineOp"
+        != "HudUiAuxOverlay::UpdateTextLine"
         or caller_symbol.get("output_section_id") != "recoil:section:.text"
         or caller_symbol.get("physical_block_id") != "recoil:block:0x404ca0"
         or not exact_required_target_membership(
@@ -3880,9 +3880,9 @@ def _hud_ui_mgr_enable_stacks_authority(
         or byte_target.get("binary") != "recoil"
         or byte_target.get("kind") != "vc5"
         or byte_target.get("name") != "hud_ui_text_stack_show_enable"
-        or byte_target.get("symbol_ids")
-        != ["recoil:function:0x4138d0", caller_symbol_id]
-        or byte_target.get("unresolved_addresses") != []
+        or not _cc_targets._registered_function_population_matches(
+            byte_target, ("recoil:function:0x4138d0", caller_symbol_id), symbols
+        )
         or not isinstance(byte_registration, Mapping)
         or byte_registration.get("manifest_path")
         != "tools/vc5_verify_targets/hud_ui_text_stack_show_enable.json"

@@ -21,12 +21,12 @@
   "functions": [
     {
       "address": "0x414b60",
-      "symbol": "?CanLoadGame@HudUiMainMenuDialog@@SAHXZ",
+      "symbol": "?CanLoadGame@HudUiMainMenuDialog@@SIHXZ",
       "name": "HudUiMainMenuDialog::CanLoadGame"
     },
     {
       "address": "0x414b90",
-      "symbol": "?CanSaveGame@HudUiMainMenuDialog@@SAHXZ",
+      "symbol": "?CanSaveGame@HudUiMainMenuDialog@@SIHXZ",
       "name": "HudUiMainMenuDialog::CanSaveGame"
     }
   ]

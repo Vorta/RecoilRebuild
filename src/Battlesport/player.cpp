@@ -4164,9 +4164,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->cameraState = zOpt::GetCameraModePlayerState();
     playerState->cameraLerpActive = 0;
     playerState->thirdPersonYawOffset = 0.0f;
-    playerState->thirdPersonSideOffset = commonData->cambackSide0;
-    playerState->thirdPersonBaseYOffset = commonData->cambackBase0;
-    playerState->cameraDistance = commonData->cambackDist0;
+    playerState->cameraBackOffset = commonData->cameraBackOffset;
     playerState->cameraConfigParam0 = commonData->cambackSide1;
     playerState->cameraConfigParam1 = commonData->cambackBase1;
     playerState->cameraConfigParam2 = commonData->cambackDist1;
@@ -4908,9 +4906,9 @@ void __fastcall LoadMasterCommonDataFromNode(
         zReader::Node *const first = PlayerZrdArrayBase(node)[1].value.nodes;
         zReader::Node *const second = PlayerZrdArrayBase(node)[2].value.nodes;
         zReader::Node *const third = PlayerZrdArrayBase(node)[3].value.nodes;
-        commonData->cambackSide0 = first[1].value.f32;
-        commonData->cambackBase0 = first[2].value.f32;
-        commonData->cambackDist0 = first[3].value.f32;
+        commonData->cameraBackOffset.x = first[1].value.f32;
+        commonData->cameraBackOffset.y = first[2].value.f32;
+        commonData->cameraBackOffset.z = first[3].value.f32;
         commonData->cambackSide1 = second[1].value.f32;
         commonData->cambackBase1 = second[2].value.f32;
         commonData->cambackDist1 = second[3].value.f32;
@@ -4918,9 +4916,9 @@ void __fastcall LoadMasterCommonDataFromNode(
         commonData->cambackBase2 = third[2].value.f32;
         commonData->cambackDist2 = third[3].value.f32;
     } else {
-        commonData->cambackSide0 = 0.0f;
-        commonData->cambackBase0 = 4.0f;
-        commonData->cambackDist0 = 9.0f;
+        commonData->cameraBackOffset.x = 0.0f;
+        commonData->cameraBackOffset.y = 4.0f;
+        commonData->cameraBackOffset.z = 9.0f;
         commonData->cambackSide1 = 0.0f;
         commonData->cambackBase1 = 3.5f;
         commonData->cambackDist1 = 2.25f;
@@ -6769,7 +6767,7 @@ void __fastcall TickLocalPlayerControls(
     playerState->cameraLerpStart.y = cameraTarget.y - playerState->worldPos.y;
     playerState->cameraLerpStart.z = cameraTarget.z - playerState->worldPos.z;
 
-    const float cameraDistance = -playerState->cameraDistance;
+    const float cameraDistance = -playerState->cameraBackOffset.z;
     playerState->cameraLerpEnd.x = cameraDistance * playerState->autoTurnTargetDir.x;
     playerState->cameraLerpEnd.y = cameraDistance * playerState->autoTurnTargetDir.y;
     playerState->cameraLerpEnd.z = cameraDistance * playerState->autoTurnTargetDir.z;

@@ -421,10 +421,13 @@ class CoffObject:
         self.symbols_by_index = symbols_by_index
         self.relocations_by_section = relocations_by_section
         self.symbols_by_name = {symbol.name: symbol for symbol in symbols}
+        self.path: Path | None = None
 
     @classmethod
     def from_path(cls, path: Path) -> "CoffObject":
-        return cls.from_bytes(path.read_bytes())
+        result = cls.from_bytes(path.read_bytes())
+        result.path = path.resolve()
+        return result
 
     @classmethod
     def from_bytes(cls, data: bytes) -> "CoffObject":

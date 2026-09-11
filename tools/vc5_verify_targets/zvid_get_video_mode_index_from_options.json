@@ -18,7 +18,7 @@
   "functions": [
     {
       "address": "0x4086b0",
-      "symbol": "?GetVideoModeIndexFromOptions@zVid@@YAHXZ",
+      "symbol": "?GetVideoModeIndexFromOptions@zVid@@YIHXZ",
       "name": "zVid::GetVideoModeIndexFromOptions",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

@@ -349,7 +349,7 @@
         {
           "address": "0x412c10",
           "symbol_regex": "\\?LoadTypeIFromZarRoot@HudLayoutBase@@.*|\\?LoadTypeIFromZarRoot@HudLayoutSW@@.*",
-          "name": "HudLayoutSW::LoadTypeIFromZarRoot",
+          "name": "HudLayoutBase::LoadTypeIFromZarRoot",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,

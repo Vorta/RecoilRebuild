@@ -34,8 +34,9 @@ def import_at(image, address):
     return dict(dll=item.dll, name=item.import_name, ordinal=item.import_ordinal), iat
 
 
-def prove_import_member(obj, object_symbol, import_name):
-    """Prove the long-format VC5 named import member, including its name table."""
+def prove_import_member(obj, object_symbol, import_name, *, import_ordinal=None,
+                        descriptor_name="__IMPORT_DESCRIPTOR_MSVCRT"):
+    """Prove a long-format VC5 import member's exact name or ordinal tables."""
     def symbol(name):
         found = [s for s in obj.symbols if s.name == name]
         require(len(found) == 1, "import member symbol is missing or ambiguous: " + name)
@@ -55,43 +56,61 @@ def prove_import_member(obj, object_symbol, import_name):
     require(len(relocs) == 1 and (relocs[0].offset, relocs[0].type, relocs[0].symbol_index)
             == (2, 6, iat_symbol.index), "canonical thunk has the wrong IAT relocation")
     iat = obj.section(iat_symbol.section_number)
-    require(iat.name == ".idata$5" and iat.raw_data == bytes(4), "canonical IAT extent/addend drift")
+    require(iat.name == ".idata$5", "canonical IAT section drift")
     names = [s for s in obj.sections if s.name == ".idata$6"]
     lookup = [s for s in obj.sections if s.name == ".idata$4"]
-    require(len(names) == len(lookup) == 1, "canonical import tables are ambiguous")
-    name = names[0]
-    require(name.raw_data[2:] == import_name.encode("ascii") + b"\0"
-            and not obj.relocations_by_section.get(name.index), "canonical import name drift")
-    for section in (iat, lookup[0]):
-        refs = obj.relocations_by_section.get(section.index, ())
-        require(section.raw_data == bytes(4) and len(refs) == 1
-                and refs[0].offset == 0 and refs[0].type == 7, "canonical import lookup relocation drift")
-        target = obj.symbols_by_index[refs[0].symbol_index]
-        require(target.section_number == name.index and target.value == 0
-                and target.storage_class == 3 and target.type == 0,
-                "canonical import lookup does not target the exact name table")
-    descriptor = symbol("__IMPORT_DESCRIPTOR_MSVCRT")
+    require(len(lookup) == 1, "canonical import lookup table is ambiguous")
+    if import_ordinal is None:
+        require(len(names) == 1, "canonical import name table is ambiguous")
+        name = names[0]
+        require(name.raw_data[2:] == import_name.encode("ascii") + b"\0"
+                and not obj.relocations_by_section.get(name.index), "canonical import name drift")
+        for section in (iat, lookup[0]):
+            refs = obj.relocations_by_section.get(section.index, ())
+            require(section.raw_data == bytes(4) and len(refs) == 1
+                    and refs[0].offset == 0 and refs[0].type == 7, "canonical import lookup relocation drift")
+            target = obj.symbols_by_index[refs[0].symbol_index]
+            require(target.section_number == name.index and target.value == 0
+                    and target.storage_class == 3 and target.type == 0,
+                    "canonical import lookup does not target the exact name table")
+    else:
+        require(type(import_ordinal) is int and 0 <= import_ordinal <= 0xffff
+                and import_name == f"#{import_ordinal}", "invalid canonical import ordinal identity")
+        require(not names, "ordinal import unexpectedly contains a name table")
+        encoded = struct.pack("<I", 0x80000000 | import_ordinal)
+        for section in (iat, lookup[0]):
+            require(section.raw_data == encoded and not obj.relocations_by_section.get(section.index),
+                    "canonical ordinal import table drift")
+    descriptor = symbol(descriptor_name)
     require(descriptor.storage_class == 2 and descriptor.type == 0 and descriptor.value == 0
             and descriptor.section_number == 0, "canonical runtime descriptor dependency drift")
-    return dict(symbol=object_symbol, iat_symbol=iat_symbol.name, code_size=6,
+    proof = dict(symbol=object_symbol, iat_symbol=iat_symbol.name, code_size=6,
                 relocation=dict(offset=2, type=6, addend=0), import_name=import_name)
+    if import_ordinal is not None:
+        proof.update(import_ordinal=import_ordinal, descriptor=descriptor_name)
+    return proof
 
 
 def canonical_import_proof(object_symbol, identity):
     from _recoil.commands.provider_function_mutation import parse_archive_members
-    require(identity["dll"].casefold() == "msvcrt.dll" and identity["ordinal"] is None,
-            "native import proof currently requires a named canonical MSVCRT import")
-    library = "VC/LIB/MSVCRT.LIB"
+    dll, ordinal = identity["dll"].casefold(), identity["ordinal"]
+    if dll == "msvcrt.dll" and ordinal is None:
+        library, member_name, descriptor = "VC/LIB/MSVCRT.LIB", "MSVCRT.dll", "__IMPORT_DESCRIPTOR_MSVCRT"
+    elif dll == "mfc42.dll" and type(ordinal) is int:
+        library, member_name, descriptor = "VC/MFC/LIB/MFC42.LIB", "MFC42.DLL", "__IMPORT_DESCRIPTOR_MFC42"
+    else:
+        raise ValueError("native import proof requires a named MSVCRT or ordinal MFC42 canonical import")
     matches = []
     for member in parse_archive_members((DEFAULT_VC5_ROOT / library).read_bytes()):
         if object_symbol.encode("ascii") not in member.data:
             continue
         obj = CoffObject.from_bytes(member.data)
         if any(s.name == object_symbol and s.section_number > 0 for s in obj.symbols):
-            require(member.name == "MSVCRT.dll", "canonical import member DLL differs")
-            matches.append(prove_import_member(obj, object_symbol, identity["name"]))
+            require(member.name == member_name, "canonical import member DLL differs")
+            matches.append(prove_import_member(obj, object_symbol, identity["name"],
+                           import_ordinal=ordinal, descriptor_name=descriptor))
     require(len(matches) == 1, "canonical import definition is missing or ambiguous")
-    return dict(library=library, member="MSVCRT.dll", **matches[0])
+    return dict(library=library, member=member_name, **matches[0])
 
 
 def binding_context(document, bindings, source_id, object_symbol, offset, target_symbol, evidence_ids, reference):
@@ -168,6 +187,41 @@ def prove_candidate_import(obj, body, relocation, expected, parsed_map, image, c
     require(identity == expected["native_import"]["identity"], "linked thunk resolves to a different DLL/import")
 
 
+def stage_import_binding(entries, binding, expected_binding=None):
+    """Refresh only registration provenance, retaining every freshly derived fact."""
+    require(isinstance(entries, list), "native import bindings must be a list")
+    require(all(isinstance(item, dict) and isinstance(item.get("context"), dict) for item in entries),
+            "native import binding collection is malformed")
+    matches = [i for i, item in enumerate(entries)
+               if item["context"].get("offset") == binding["context"]["offset"]]
+    if expected_binding is None:
+        require(not matches, "import site already has a binding")
+        entries.append(deepcopy(binding))
+        return "added"
+    require(isinstance(expected_binding, dict)
+            and set(expected_binding) == {"schema", "reviewed", "reason", "context"}
+            and expected_binding.get("schema") == SCHEMA
+            and expected_binding.get("reviewed") is True,
+            "native import refresh requires an exact reviewed old binding")
+    require(len(matches) == 1 and entries[matches[0]] == expected_binding,
+            "native import refresh old binding is missing, duplicated or stale")
+    old_context, new_context = deepcopy(expected_binding["context"]), deepcopy(binding["context"])
+    require(isinstance(old_context, dict) and isinstance(new_context, dict)
+            and isinstance(old_context.get("source_binding"), dict)
+            and isinstance(new_context.get("source_binding"), dict),
+            "native import refresh source context is malformed")
+    old_source, new_source = old_context.pop("source_binding"), new_context.pop("source_binding")
+    require(old_context == new_context, "native import refresh cannot change target, operand or provider facts")
+    old_ids, new_ids = old_source.pop("registration_ids"), new_source.pop("registration_ids")
+    require(old_source == new_source, "native import refresh cannot change source identity or extent")
+    for ids in (old_ids, new_ids):
+        require(isinstance(ids, list) and ids and all(isinstance(item, str) and item for item in ids)
+                and len(ids) == len(set(ids)), "native import refresh registration set is invalid")
+    require(old_ids != new_ids, "native import refresh requires changed source registrations")
+    entries[matches[0]] = deepcopy(binding)
+    return "refreshed-source-registration"
+
+
 def main(argv=None):
     configure_stdio()
     parser = argparse.ArgumentParser(description=__doc__)
@@ -181,9 +235,12 @@ def main(argv=None):
     try:
         from _recoil.commands.live_byte_verify import _bindings, DEFAULT_MANIFEST_DIR, DEFAULT_REFERENCE
         payload = json.loads(args.payload_file.read_text(encoding="utf-8-sig"))
-        require(set(payload) == {"reviewed", "source_symbol_id", "object_symbol", "offset", "target_symbol", "evidence_ids", "reason"}
+        fields = {"reviewed", "source_symbol_id", "object_symbol", "offset", "target_symbol", "evidence_ids", "reason"}
+        require(isinstance(payload, dict) and (set(payload) == fields or set(payload) == fields | {"expected_binding"})
                 and payload["reviewed"] is True and isinstance(payload["reason"], str) and payload["reason"].strip(),
                 "native import requires the exact reviewed source-site payload")
+        require("expected_binding" not in payload or isinstance(payload["expected_binding"], dict),
+                "native import refresh expected_binding must be an exact object")
         store = ProgressStore(DEFAULT_PROGRESS_PATH)
         document = store.load()
         require(document.revision == args.expected_revision, "tracker revision changed")
@@ -191,11 +248,10 @@ def main(argv=None):
             payload["object_symbol"], payload["offset"], payload["target_symbol"], payload["evidence_ids"], DEFAULT_REFERENCE)
         proposed = deepcopy(document.data)
         entries = proposed["symbols"][payload["source_symbol_id"]].setdefault(FIELD, [])
-        require(not any(b["context"]["offset"] == payload["offset"] for b in entries), "import site already has a binding")
         binding = dict(schema=SCHEMA, reviewed=True, reason=payload["reason"], context=context)
-        entries.append(binding)
+        action = stage_import_binding(entries, binding, payload.get("expected_binding"))
         commit = store.commit(proposed, expected_revision=args.expected_revision, apply=args.apply)
-        print(json.dumps(dict(kind="native-import-binding", binding=binding, accepted_owner=False,
+        print(json.dumps(dict(kind="native-import-binding", action=action, binding=binding, accepted_owner=False,
                               accepted_provider_bytes=False, commit=commit.to_dict()), indent=2))
         return 0
     except (OSError, ValueError, KeyError, TypeError, ProgressError) as exc:

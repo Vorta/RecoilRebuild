@@ -2987,7 +2987,7 @@ def _hud_ui_mgr_ensure_objective_sensor_center_retail_guard(
         0x4104C1: (("8b", "cb"), r"mov\s+ecx\s*,\s*ebx"),
         0x4104C3: (
             ("e8", "a8", "ca", "07", "00"),
-            r"call\s+(?:0x48cf70|zReader(?:::|_)GetNamedNode)",
+            r"call\s+(?:0x48cf70|zReader::zRdrGetNode)",
         ),
         0x4104C8: (("8b", "f0"), r"mov\s+esi\s*,\s*eax"),
         0x4104CA: (("3b", "f7"), r"cmp\s+esi\s*,\s*edi"),

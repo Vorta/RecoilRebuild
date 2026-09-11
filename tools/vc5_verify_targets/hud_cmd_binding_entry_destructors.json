@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x40bf20",
-      "symbol": "?DeleteAndReturnNull@HudCmdBindingEntry@@SGPAU1@PAU1@@Z",
+      "symbol": "??RHudCmdBindingEntryDelete@@QBEPAUHudCmdBindingEntry@@PAU1@@Z",
       "name": "HudCmdBindingEntry::DeleteAndReturnNull"
     }
   ]

@@ -379,6 +379,7 @@ class IdentityIndexes:
         default_factory=dict
     )
     candidate_only_names: frozenset[str] = frozenset()
+    call_only_icf_by_site: Mapping[str, Mapping[str, Any]] = field(default_factory=dict)
     reviewed_icf_group_by_address: Mapping[str, str] = field(default_factory=dict)
     reviewed_icf_group_by_logical_identity: Mapping[str, str] = field(
         default_factory=dict
@@ -582,6 +583,7 @@ class CandidateCallerDefinition:
     section_start: int = 0
     section_end: int = 0
     associated_sections: tuple[CandidateAssociatedSection, ...] = ()
+    object_path: str = ""
 
 
 @dataclass(frozen=True)
@@ -630,6 +632,13 @@ class CandidateTuLocalFunctionDefinition:
         default_factory=dict
     )
     source_provenance: str = ""
+    current_source_path: str = ""
+    object_path: str = ""
+    symbol_index: int = -1
+    section_number: int = 0
+    symbol_value: int = 0
+    storage_class: int = 0
+    symbol_type: int = 0
 
 
 @dataclass(frozen=True)

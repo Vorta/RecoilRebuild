@@ -483,7 +483,7 @@
     },
     {
       "address": "0x474d10",
-      "symbol": "?Vec3DirectionAnglesBetweenPoints@zMath@@YIPAUzVec3@@PBU2@0PAU2@@Z",
+      "symbol": "?Vec3DirectionAnglesBetweenPoints@zMath@@YI?AUzVec3@@PBU2@0@Z",
       "name": "zMath::Vec3DirectionAnglesBetweenPoints",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

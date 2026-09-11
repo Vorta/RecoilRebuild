@@ -71,18 +71,13 @@
       "full_order_gate": true
     },
     {
-      "address": "0x40bf00",
-      "symbol": "?FreeFieldPtr@HudUtil@@QAEXXZ",
-      "name": "HudUtil::FreeFieldPtr"
-    },
-    {
       "address": "0x40be60",
       "symbol": "?CopyRange@HudCmdBindingEntry@@SIPAPAU1@PAPAU1@00@Z",
       "name": "HudCmdBindingEntry::CopyRange"
     },
     {
       "address": "0x4b7020",
-      "symbol": "??1HudUiCheckToggleWidget@@QAE@XZ",
+      "symbol": "??1HudUiCheckToggleWidget@@UAE@XZ",
       "name": "HudUiCheckToggleWidget::~HudUiCheckToggleWidget"
     },
     {
@@ -164,5 +159,30 @@
       "bn_name": "g_HudCmdMouseButton_FTable",
       "byte_length": 136
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x40bf00",
+          "symbol": "??1HudCmdBindingEntry@@QAE@XZ",
+          "name": "HudCmdBindingEntry::~HudCmdBindingEntry"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x4b7020",
+          "symbol": "??1HudUiCheckToggleWidget@@UAE@XZ",
+          "name": "HudUiCheckToggleWidget::~HudUiCheckToggleWidget"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

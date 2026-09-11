@@ -245,7 +245,7 @@
         },
         {
           "address": "0x40d1c0",
-          "symbol": "?QueueEnter@HudUiOptionsPanelOverlayOwner@@SAXXZ",
+          "symbol": "?QueueEnter@HudUiOptionsPanelOverlayOwner@@SIXXZ",
           "name": "HudUiOptionsPanelOverlayOwner::QueueEnter"
         }
       ]

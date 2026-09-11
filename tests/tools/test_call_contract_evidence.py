@@ -1,6 +1,39 @@
 from __future__ import annotations
 
 
+def _check_compiler_scalar_identity_does_not_freeze_object_coordinates():
+    from dataclasses import replace
+    from _recoil.call_contract.candidate import (
+        _candidate_compiler_local_scalar_matches, _candidate_local_read_only_scalar_matches,
+    )
+    from _recoil.call_contract.records import CandidateLocalStaticDefinition
+
+    expected = b"\x00\x00\x80\x3f"
+    row = CandidateLocalStaticDefinition("$T123", ".rdata", 3, 16, 0, 3, 0, expected)
+    for section, offset, name in ((3, 16, "$T123"), (19, 700, "$T98765")):
+        assert _candidate_compiler_local_scalar_matches(
+            replace(row, section_number=section, value=offset, name=name), expected
+        )
+    for mutation in (
+        dict(name="namedScalar"), dict(name="$T123suffix"),
+        dict(section_name=".data"), dict(section_name=".text"),
+        dict(section_number=0), dict(section_number=-1), dict(value=-1),
+        dict(symbol_type=32), dict(storage_class=2), dict(aux_count=1),
+        dict(data=expected[:-1]), dict(data=expected + b"\x00"),
+        dict(data=b"\x00" * 4),
+    ):
+        assert not _candidate_compiler_local_scalar_matches(replace(row, **mutation), expected)
+    assert not _candidate_compiler_local_scalar_matches(replace(row, data=b""), b"")
+    # A named private scalar uses the same storage proof. Its exact role/name
+    # is separately bound by the caller; it is not a compiler temporary.
+    named = replace(row, name="_scale$S456", section_number=11, value=2048)
+    assert _candidate_local_read_only_scalar_matches(named, expected)
+    assert not _candidate_compiler_local_scalar_matches(named, expected)
+    for mutation in (dict(section_name=".data"), dict(storage_class=2),
+                     dict(data=b"\x00" * 4), dict(value=-1), dict(aux_count=1)):
+        assert not _candidate_local_read_only_scalar_matches(replace(named, **mutation), expected)
+
+
 def test_aggregate_field_receiver_requires_coff_and_every_cfg_arrival():
     from dataclasses import replace
     from types import SimpleNamespace as Row
@@ -1111,7 +1144,7 @@ def test_header_registration_proves_every_logical_specialization(monkeypatch, tm
         prove()
 
 
-def test_header_catalog_extension_preserves_identity_extent_and_owner():
+def test_header_catalog_extension_preserves_identity_extent_and_owner(monkeypatch):
     from copy import deepcopy
     from types import SimpleNamespace as Row
     from _recoil.commands import provider_function_mutation as providers
@@ -1138,6 +1171,40 @@ def test_header_catalog_extension_preserves_identity_extent_and_owner():
     row, start, end, preserved = validate()
     assert (start, end) == (0x1000, 0x1010) and row == function and preserved == owner
     assert row is not function and preserved is not owner
+    old_name = "?helper@@YAXPAUOldType@@@Z"
+    new_name = "?helper@@YAXPAUNewType@@@Z"
+    recipes = {key: {"object_symbol": name, "canonical_header": "VC/INCLUDE/header",
+                       "semantic_provider": "test"}
+               for key, name in (("primary", "_primary"), ("renamed", new_name))}
+    monkeypatch.setattr(providers, "HEADER_PROBE_RECIPES", recipes)
+    renamed_function = deepcopy(function)
+    renamed_function["provider_object_identity"]["retail_icf"]["logical_symbols"].append(old_name)
+    renamed_request = {**request, "retail_icf_logical_symbols": ["_primary", new_name],
+                       "logical_type_renames": [{"from": "OldType", "to": "NewType"}]}
+    normalized_request = {**renamed_request, "reviewed": True,
+        "owner_id": "recoil:owner:provider.test", "reason": "Reviewed source type rename",
+        "physical_emitter_state": "winner-unknown", "retail_icf_winner_status": "winner-unknown"}
+    assert providers.normalize_provider_function_request(normalized_request) == normalized_request
+    for pairs in ([], None, {}, [{"from": "OldType", "to": "OldType"}],
+                  [{"from": "OldType", "to": "New Type"}],
+                  [{"from": "OldType", "to": "NewType", "extra": True}],
+                  [{"from": "OldType", "to": "NewType"}] * 2,
+                  [{"from": "OldType", "to": "NewType"}, {"from": "NewType", "to": "Third"}]):
+        with pytest.raises(providers.ProviderFunctionMutationError):
+            providers.normalize_provider_function_request({**normalized_request, "logical_type_renames": pairs})
+    assert validate(f=renamed_function, r=renamed_request)[0] == renamed_function
+    for changes in (
+        {"logical_type_renames": [{"from": "Missing", "to": "NewType"}]},
+        {"retail_icf_logical_symbols": ["_primary", old_name, new_name]},
+        {"retail_icf_logical_symbols": [new_name, "_primary"]},
+        {"retail_icf_logical_symbols": [new_name]},
+        {"logical_type_renames": []},
+    ):
+        with pytest.raises(providers.ProviderFunctionMutationError):
+            validate(f=renamed_function, r={**renamed_request, **changes})
+    del recipes["renamed"]
+    with pytest.raises(providers.ProviderFunctionMutationError, match="independent registered probe"):
+        validate(f=renamed_function, r=renamed_request)
     folded = {**function, "authored_order_role": "compiler-generated-icf-representative"}
     folded_row, _, _, folded_owner = validate(f=folded)
     assert folded_row == folded and folded_owner == owner
@@ -1227,7 +1294,68 @@ def test_spilled_loop_index_is_not_an_unknown_stack_receiver():
         assert not _is_bounded_stack_vptr(expression.replace(old, new))
 
 
+def _check_overloaded_bn_names_require_exact_relative_transfer():
+    from types import SimpleNamespace as Row
+    from _recoil.commands.asm_verify import Instruction
+    from _recoil.call_contract.records import IdentityIndexes
+    from _recoil.call_contract.targets import _canonical_direct_identity
+    indexes = IdentityIndexes(by_address={"0x1020": "function:first", "0x1040": "function:second"},
+        by_candidate_name={}, provider_ids=frozenset(), storage_by_address={}, storage_by_name={})
+    names = {"Panel::Panel": [Row(address="0x1020", name="Panel::Panel"),
+                              Row(address="0x1040", name="Panel::Panel")]}
+    def select(target=0x1020, opcode=0xe8, *, unique=True, site=0x1000, source="bn", raw=None, mnemonic=None):
+        length = 2 if opcode == 0xeb else 5
+        body = bytes((opcode,)) + (target-site-length).to_bytes(length-1, "little", signed=True)
+        if raw is not None:
+            body = raw
+        text = (mnemonic or ("call" if opcode == 0xe8 else "jmp")) + " Panel::Panel"
+        instruction = Instruction(text=text, raw_text=text, bytes=tuple(f"{b:02x}" for b in body), source_line="")
+        return _canonical_direct_identity("Panel::Panel", source=source, caller_identity="caller",
+            caller_start=0x1000, caller_end=0x1010, indexes=indexes, bridge_names=names,
+            compiler_generated_bridges={}, call_site_address=site, call_site_unique=unique,
+            retail_instruction=instruction)
+    for opcode in (0xe8, 0xe9, 0xeb):
+        assert select(opcode=opcode) == ("direct", "function:first")
+        assert select(target=0x1040, opcode=opcode) == ("direct", "function:second")
+    for mutation in ({"unique": False}, {"site": 0x100f}, {"site": 0xff0}, {"target": 0x1060},
+                     {"raw": b"\xff\xd0"}, {"raw": b"\xe8\x00"}, {"mnemonic": "jmp"}, {"source": "cod"}):
+        with pytest.raises(ValueError):
+            select(**mutation)
+
+
+def _check_indexed_inbound_xrefs_disambiguate_containing_overloads():
+    from types import SimpleNamespace as Row
+    from _recoil.call_contract.identity import _complete_bn_inbound_direct_transfers
+    name = "Panel::Panel"
+    def prove(start="0x2000", names=None, info_start=None, info_name=None,
+              instruction="00002005  e8 f6 0f 00 00  call Panel::Panel", duplicate=False):
+        xref = {"address": "0x2005", "function": name, "function_address": start}
+        if start is None:
+            del xref["function_address"]
+        rows = [xref, dict(xref)] if duplicate else [xref]
+        bridge = Row(
+            get_json=lambda endpoint, **kwargs: {"code_references": rows,
+                "data_references": [], "total": len(rows), "truncated": False, "has_more": False},
+            function_at=lambda address: {"functions": names if names is not None else [name]},
+            function_info=lambda identifier: {"function": {
+                "name": info_name or name,
+                "address": info_start or ("0x1000" if identifier == name else identifier)}},
+            assembly=lambda address: instruction if address == "0x2000" else "00001000  c3  ret",
+        )
+        return _complete_bn_inbound_direct_transfers(bridge, target_address="0x3000")
+    result = prove()
+    assert len(result) == 1 and result[0][:2] == ("0x2005", "0x2000") and result[0][3] == "call"
+    for changes in ({"start": None}, {"start": "0x1000"}, {"start": "0x2006"},
+                    {"start": "invalid"}, {"info_start": "0x1000"}, {"info_name": "Other"},
+                    {"names": [name, name]}, {"names": []}, {"duplicate": True},
+                    {"instruction": "00002005  e8 f5 0f 00 00  call Panel::Panel"}):
+        with pytest.raises(ValueError):
+            prove(**changes)
+
+
 def test_deferred_comdat_requires_unique_exact_observed_header_rows(tmp_path):
+    _check_overloaded_bn_names_require_exact_relative_transfer()
+    _check_indexed_inbound_xrefs_disambiguate_containing_overloads()
     from _recoil.call_contract.candidate import _candidate_comdat_source_provenance
     source = tmp_path / "unit.cpp"
     source.write_text("unrelated\n", encoding="utf-8")
@@ -1251,6 +1379,19 @@ def test_deferred_comdat_requires_unique_exact_observed_header_rows(tmp_path):
                 str(tmp_path / "other.h"): ("different declaration", "return;"),
             },
         )
+    source.write_text("definition\n}\n", encoding="utf-8")
+    listing.write_text(f"TITLE {source}\n_helper PROC NEAR\n; 2 : }}\n"
+        "  00000 c3 ret 0\n_helper ENDP\n", encoding="utf-8")
+    ambiguous_headers = {header: ("one", "}"), str(tmp_path / "other.h"): ("two", "}")}
+    assert _candidate_comdat_source_provenance(
+        listing, "_helper", header_source_files=ambiguous_headers) == str(source)
+    source.write_text("definition\nreturn;\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="ambiguous exact COD source-row"):
+        _candidate_comdat_source_provenance(listing, "_helper", header_source_files=ambiguous_headers)
+    listing.write_text(f"TITLE {source}\nTITLE {header}\n_helper PROC NEAR\n"
+        "  00000 c3 ret 0\n_helper ENDP\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="ambiguous COD TITLE"):
+        _candidate_comdat_source_provenance(listing, "_helper", header_source_files=ambiguous_headers)
 
 
 def test_comdat_header_pool_requires_exact_current_tu_observation(tmp_path):
@@ -1298,6 +1439,31 @@ def test_comdat_header_pool_requires_exact_current_tu_observation(tmp_path):
     invalid["parent_receipt"]["pre_observation"] = {"verification_eligible": False}
     with pytest.raises(ValueError, match="stale or conflicting"):
         _candidate_unit_header_source_files([auxiliary, invalid], **kwargs)
+    from _recoil.call_contract.candidate import _candidate_current_source_path
+    from _recoil.lib.tooling import REPO_ROOT
+    mapped = deepcopy(observation)
+    compiled = tmp_path / "_tu_order" / "00_unit.cpp"
+    mapped["source"] = dict(path=str(REPO_ROOT / "src/unit.cpp"), physical_identity={"test": 1})
+    mapped["dependencies"] = [dict(role="compiled-input", path=str(compiled), physical_identity={"test": 2})]
+    assert _candidate_current_source_path("_tu_order/00_unit.cpp", mapped, build_dir=tmp_path) == "src/unit.cpp"
+    assert _candidate_current_source_path(str(compiled), mapped, build_dir=tmp_path) == "src/unit.cpp"
+    assert _candidate_current_source_path(str(header), mapped, build_dir=tmp_path) == ""
+    assert _candidate_current_source_path("_tu_order/other.cpp", mapped, build_dir=tmp_path) == ""
+    assert _candidate_current_source_path(str(compiled), None, build_dir=tmp_path) == ""
+    for mutation in ("missing-input", "duplicate-input", "different-source", "relative-input", "no-identity"):
+        changed = deepcopy(mapped)
+        if mutation == "missing-input":
+            changed["dependencies"] = []
+        elif mutation == "duplicate-input":
+            changed["dependencies"] *= 2
+        elif mutation == "different-source":
+            changed["source"]["path"] = str(REPO_ROOT / "src/other.cpp")
+        elif mutation == "relative-input":
+            changed["dependencies"][0]["path"] = "relative.cpp"
+        else:
+            changed["dependencies"][0]["physical_identity"] = None
+        with pytest.raises(ValueError, match="exact authored/compiled input"):
+            _candidate_current_source_path(str(compiled), changed, build_dir=tmp_path)
 
 
 def test_member_storage_rendering_preserves_load_depth_roots_offsets_and_call_shape():
@@ -1397,7 +1563,11 @@ def test_scalar_initializer_equates_byte_stores_and_bounded_rep():
 
 
 def test_reviewed_target_authority_is_not_duplicated_by_diagnostics():
+    _exercise_call_only_icf_authority()
+    _exercise_current_cross_tu_source_signature()
     import pytest
+    from copy import deepcopy
+    from _recoil.call_contract.logical_identity import _reviewed_order_alias_ids
     from _recoil.lib.authored_icf import (
         reviewed_authority_targets, exact_selected_target_membership,
         exact_required_target_membership,
@@ -1421,6 +1591,439 @@ def test_reviewed_target_authority_is_not_duplicated_by_diagnostics():
                  [{"evidence_contract": contract}]):
         with pytest.raises(ValueError):
             reviewed_authority_targets(rows, "accepted")
+    aliases = {
+        "first": {"original_name_status": "recovered"},
+        "second": {"original_name_status": "provisional"},
+        "new": {"original_name_status": "provisional"},
+    }
+    review = dict(reviewed=True, spelling_kind="reconstruction-only",
+                  original_spelling="unknown", identity_basis="Retail caller protocol")
+    provenance = {"provisional_alias_reviews": {"new": review}}
+    assert _reviewed_order_alias_ids(aliases, [{}]) == set(aliases)
+    assert _reviewed_order_alias_ids(aliases, [provenance]) == {"first", "second"}
+    # A provisional label alone never removes an existing order member.
+    assert "second" in _reviewed_order_alias_ids(aliases, [provenance])
+    invalid = [{"provisional_alias_reviews": None},
+               {"provisional_alias_reviews": {"missing": review}},
+               {"provisional_alias_reviews": {"first": review}},
+               {"provisional_alias_reviews": {"new": review, "second": review}}]
+    for field, value in (("reviewed", 1), ("spelling_kind", "recovered"),
+                         ("original_spelling", "Known"), ("identity_basis", " "),
+                         ("identity_basis", None), ("unexpected", True)):
+        bad = deepcopy(provenance)
+        bad["provisional_alias_reviews"]["new"][field] = value
+        invalid.append(bad)
+    for bad in invalid:
+        with pytest.raises(ValueError):
+            _reviewed_order_alias_ids(aliases, [bad])
+    with pytest.raises(ValueError):
+        _reviewed_order_alias_ids(aliases, [provenance, provenance])
+
+
+def _exercise_current_cross_tu_source_signature():
+    """Historical names cannot replace or block the independent current source join."""
+    from copy import deepcopy
+    from _recoil.call_contract.dispatch import _current_cross_tu_callee_source_signature as prove
+    source = "src/example.cpp"
+    args = dict(source=source, address="0x401000",
+        registration=dict(check_translation_unit_function_order=True, source_from=source,
+                          manifest_path="tools/vc5_verify_targets/example.json"),
+        contribution=dict(order_scope="authored", inventory_only=False, candidate_only_extras=[],
+                          function_addresses=["0x401000"]),
+        source_trace=dict(state="resolved", reason_code=None, source_edges=[dict(relation="defines",
+            anchor_id="recoil:anchor:example", emission_context=dict(translation_unit=source))]),
+        block=dict(agent_source_path=source, source_path=source, original_source_path=source))
+    assert prove(**args)
+    for original in (None, "historical/unknown.cpp", "unrelated.cpp"):
+        changed = deepcopy(args)
+        changed["block"]["original_source_path"] = original
+        assert prove(**changed)
+    for group, key, value in (
+        ("registration", "check_translation_unit_function_order", False),
+        ("registration", "source_from", "src/other.cpp"),
+        ("registration", "manifest_path", ""),
+        ("contribution", "order_scope", "full"),
+        ("contribution", "inventory_only", True),
+        ("contribution", "candidate_only_extras", [{"symbol": "_Other"}]),
+        ("contribution", "function_addresses", []),
+        ("contribution", "function_addresses", ["0x401000", "0x401000"]),
+        ("source_trace", "state", "unresolved"),
+        ("source_trace", "reason_code", "conflicting"),
+        ("source_trace", "source_edges", []),
+        ("source_trace", "source_edges", args["source_trace"]["source_edges"] * 2),
+        ("block", "agent_source_path", "src/other.cpp"),
+        ("block", "source_path", "src/other.cpp"),
+    ):
+        changed = deepcopy(args)
+        changed[group][key] = value
+        assert not prove(**changed), (group, key)
+    for key, value in (("relation", "emits"), ("anchor_id", ""),
+                       ("emission_context", {"translation_unit": "src/other.cpp"})):
+        changed = deepcopy(args)
+        changed["source_trace"]["source_edges"][0][key] = value
+        assert not prove(**changed), key
+
+
+def _exercise_call_only_icf_authority():
+    """Synthetic authority mutations, never a retail reconstruction test."""
+    import json
+    import struct
+    import tempfile
+    from pathlib import Path
+    from copy import deepcopy
+    from types import SimpleNamespace
+    import pytest
+    from _recoil.lib import call_only_icf as authority
+    from _recoil.lib.progress import ProgressError
+    from _recoil.commands import call_only_icf as command, vc5_build, live_byte_verify
+    physical_id, logical_id = "recoil:function:0x402000", "recoil:logical-function:0x402000:empty"
+    owner_id, caller_id, evidence_id = "owner", "recoil:function:0x401000", "review"
+    name = "?Empty@Example@@YIXPAUState@@@Z"
+    trace = dict(state="resolved", reason_code=None, source_edges=[dict(relation="defines",
+        anchor_id="recoil:anchor:example.empty", emission_context=dict(translation_unit="src/example.cpp"),
+        evidence_ids=[])])
+    alias = dict(original_name_status="provisional", pipeline_class="authored", authored_order_role="authored-body",
+        fold_status="proven-fold-alias", source_owner_status="authored-owner", owner_id=owner_id,
+        object_symbol=name, source_traceability=trace, evidence_ids=[evidence_id])
+    review = dict(reviewed=True, original_spelling="unknown", spelling_kind="reconstruction-only",
+                  identity_basis="Independent direct-call protocol")
+    evidence = dict(result="passed", disposition="accepted", freshness="current", gating=True, validation_mode="live",
+        kind="authored-order-icf-logical-alias-review", scope_ids=[physical_id, logical_id, owner_id],
+        provenance=dict(candidate_independent=True, physical_target="0x402000", retail_call_site="0x401002",
+            original_spelling="unknown", original_definition_location="unknown",
+            retail_operand="0x401003", provisional_alias_reviews={logical_id: review},
+            validation_context=dict(candidate_output_used=False, accepted_dimensions=authority.ACCEPTED,
+                source_contract="void fastcall(saveState*)", unaccepted_dimensions=authority.WITHHELD)))
+    physical = dict(address="0x402000", end_exclusive="0x402001", size=1, binary="recoil", kind="function",
+        pipeline_class="non-authored", authored_order_role="compiler-generated-icf-representative",
+        physical_block_id="block", icf_address_group=dict(winner_status="winner-unknown", winner_identity_key=None),
+        logical_aliases={logical_id: alias})
+    data = dict(symbols={physical_id: physical, caller_id: dict(address="0x401000",
+        end_exclusive="0x401008", pipeline_class="authored", binary="recoil", kind="function",
+        extent_state="known", size=8, physical_block_id="caller-block",
+        verification_target_ids=["caller-target"])}, owners={owner_id: dict(binary="recoil",
+        kind="source-file", provider_state="pending", source_paths=["src/example.cpp"],
+        gates=dict(source="pending", owner_linkage="pending"))}, evidence={evidence_id: evidence},
+        physical_blocks={"caller-block": dict(accepted_order_facts=dict(phase="authored-function-order",
+            validation_mode="live", target_id="caller-target", matched_identities=[caller_id],
+            covered_block_ids=["caller-block"]), order=dict(authored=dict(body=dict(result="passed",
+                disposition="accepted", freshness="current", validation_mode="live", gating=True))))},
+        verification_targets={"caller-target": dict(binary="recoil", kind="vc5", name="example", registration=dict(
+            manifest_path="tools/vc5_verify_targets/example.json", functions=[dict(address="0x401000",
+            symbol="?Caller@Example@@YIXPAUState@@@Z", pipeline_class="authored", authored_order_gate=True,
+            required_presence=True)]))})
+    contract = dict(schema=authority.SCHEMA, reviewed=True, physical_symbol_id=physical_id,
+        physical_address="0x402000", logical_id=logical_id, owner_id=owner_id, object_symbol=name,
+        caller_id=caller_id, caller_address="0x401000", caller_end_exclusive="0x401008",
+        caller_object_symbol="?Caller@Example@@YIXPAUState@@@Z", call_address="0x401002", operand_address="0x401003",
+        abi=dict(convention="fastcall", return_type="void", parameter_type="State", parameter_register="ecx",
+            stack_argument_bytes=0, caller_cleanup_bytes=0, return_consumed=False, form="call", dispatch="direct",
+            namespace="Example", function_name="Empty"), source_traceability=trace, review_evidence_id=evidence_id,
+        review_evidence=deepcopy(evidence), group_context=authority.group_context(physical),
+        accepted_dimensions=authority.ACCEPTED, withheld_dimensions=authority.WITHHELD,
+        candidate_independent=True, candidate_output_used=False, membership_exhaustive=False, order_authority=False)
+    assert authority.validate_contract(data, contract) == alias
+    registered = deepcopy(data)
+    registered["symbols"][physical_id]["logical_aliases"][logical_id][authority.FIELD] = contract
+    authority.validate_inventory(registered, {contract["call_address"]: contract})
+    for mutation in ("orphan", "other-alias", "other-group", "unvalidated", "physical-field"):
+        changed = deepcopy(registered)
+        validated = {contract["call_address"]: contract}
+        if mutation == "orphan":
+            changed["symbols"][physical_id]["logical_aliases"]["other"] = {authority.FIELD: contract}
+        elif mutation == "other-alias":
+            changed["symbols"][physical_id]["logical_aliases"][logical_id][authority.FIELD]["logical_id"] = "other"
+        elif mutation == "other-group":
+            changed["symbols"]["other"] = dict(logical_aliases={logical_id: {authority.FIELD: contract}})
+        elif mutation == "unvalidated":
+            validated = {}
+        else:
+            changed["symbols"][physical_id][authority.FIELD] = contract
+        with pytest.raises(ProgressError):
+            authority.validate_inventory(changed, validated)
+    from _recoil.call_contract.logical_identity import _winner_unknown_icf_group_indexes
+    # A group with no qualifying accepted review is skipped by ordinary group
+    # discovery, but its stored call-only field must still cause a failure.
+    with pytest.raises(ProgressError, match="orphan, skipped"):
+        _winner_unknown_icf_group_indexes(SimpleNamespace(data=registered, collection=lambda key: registered[key]))
+    for key, value in (("schema", "unknown"), ("reviewed", 1), ("caller_id", "other"),
+            ("caller_address", "0x401001"), ("caller_end_exclusive", "0x401009"),
+            ("call_address", "0x401003"), ("operand_address", "0x401004"),
+            ("physical_address", "0x402001"), ("logical_id", "other"), ("owner_id", "other"),
+            ("object_symbol", name.upper()), ("candidate_independent", False),
+            ("candidate_output_used", True), ("membership_exhaustive", True), ("order_authority", True),
+            ("accepted_dimensions", ["object-bytes"]), ("withheld_dimensions", []), ("extra", True)):
+        bad = deepcopy(contract)
+        bad[key] = value
+        with pytest.raises((ProgressError, KeyError)):
+            authority.validate_contract(data, bad)
+    for key, value in (("convention", "cdecl"), ("return_type", "int"), ("parameter_type", "Other"),
+            ("parameter_register", "edx"), ("stack_argument_bytes", 4), ("caller_cleanup_bytes", 4),
+            ("return_consumed", True), ("form", "tail"), ("dispatch", "indirect"),
+            ("namespace", "Other"), ("function_name", "Other")):
+        bad = deepcopy(contract)
+        bad["abi"][key] = value
+        with pytest.raises(ProgressError):
+            authority.validate_contract(data, bad)
+    for key, value in (("gating", False), ("freshness", "stale"), ("disposition", "observed"),
+                       ("result", "failed"), ("kind", "free-text")):
+        changed, bad = deepcopy(data), deepcopy(contract)
+        changed["evidence"][evidence_id][key] = value
+        bad["review_evidence"] = deepcopy(changed["evidence"][evidence_id])
+        with pytest.raises(ProgressError):
+            authority.validate_contract(changed, bad)
+    for key, value in (("original_spelling", "Known"), ("original_definition_location", "known.cpp"),
+                       ("source_contract", "int fastcall(other*)"), ("unaccepted_dimensions", [])):
+        changed, bad = deepcopy(data), deepcopy(contract)
+        provenance = changed["evidence"][evidence_id]["provenance"]
+        destination = provenance["validation_context"] if key in {"source_contract", "unaccepted_dimensions"} else provenance
+        destination[key] = value
+        bad["review_evidence"] = deepcopy(changed["evidence"][evidence_id])
+        with pytest.raises(ProgressError):
+            authority.validate_contract(changed, bad)
+    for gate in ("source", "owner_linkage"):
+        for value in ("failed", "rejected", "stale-conflicting", "provider-owned"):
+            changed = deepcopy(data)
+            changed["owners"][owner_id]["gates"][gate] = value
+            with pytest.raises(ProgressError):
+                authority.validate_contract(changed, contract)
+    for mutation in ("provider", "duplicate-symbol", "duplicate-logical", "order-row", "matched-order", "winner"):
+        changed = deepcopy(data)
+        if mutation == "provider":
+            changed["owners"][owner_id]["provider_state"] = "accepted"
+        elif mutation == "duplicate-symbol":
+            changed["symbols"]["other"] = dict(object_symbol=name.upper())
+        elif mutation == "duplicate-logical":
+            changed["symbols"]["other"] = dict(logical_aliases={logical_id: alias})
+        elif mutation == "order-row":
+            changed["verification_targets"]["target"] = dict(functions=[dict(logical_identity_key=logical_id)])
+        elif mutation == "matched-order":
+            changed["physical_blocks"]["block"] = dict(accepted_order_facts=dict(matched_identities=[logical_id]))
+        else:
+            changed["symbols"][physical_id]["icf_address_group"]["winner_identity_key"] = logical_id
+        with pytest.raises(ProgressError):
+            authority.validate_contract(changed, contract)
+    with tempfile.TemporaryDirectory() as folder, pytest.MonkeyPatch.context() as patch:
+        root = Path(folder)
+        (root / "src").mkdir()
+        source = root / "src/example.cpp"
+        original = ('namespace Example {\n/**\n * @recoil-anchor recoil:anchor:example.empty\n'
+                    f' * @recoil-artifact defines .text {logical_id}: Empty callback.\n'
+                    ' *\n * Purpose: Empty callback.\n */\nvoid __fastcall Empty(State *) {}\n}\n')
+        source.write_text(original)
+        patch.setattr(vc5_build, "load_config", lambda: SimpleNamespace(sources=(source,)))
+        from _recoil.lib import verification_targets
+        patch.setattr(verification_targets, "vc5_target_registration",
+                      lambda path: ("caller-target", data["verification_targets"]["caller-target"]))
+        authority.validate_caller_authority(data, contract)
+        with pytest.raises(ProgressError, match="caller symbol differs"):
+            authority.validate_caller_authority(data, {**contract, "caller_object_symbol": "other"})
+        wrong = deepcopy(data)
+        wrong["verification_targets"]["caller-target"]["registration"]["functions"][0]["symbol"] = "other"
+        with pytest.raises(ProgressError, match="registration is stale"):
+            authority.validate_caller_authority(wrong, contract)
+        wrong = deepcopy(data)
+        wrong["verification_targets"]["other"] = dict(registration=dict(functions=[dict(
+            symbol=contract["caller_object_symbol"].upper(), address="0x403000")]))
+        with pytest.raises(ProgressError, match="conflicting registered"):
+            authority.validate_caller_authority(wrong, contract)
+        for key, value in (("binary", "other"), ("kind", "other"), ("name", "other")):
+            current = deepcopy(data["verification_targets"]["caller-target"])
+            current[key] = value
+            patch.setattr(verification_targets, "vc5_target_registration",
+                          lambda path: ("caller-target", current))
+            with pytest.raises(ProgressError, match="metadata differs"):
+                authority.validate_caller_authority(data, contract)
+        from _recoil.call_contract import identity as identity_module
+        original_rows = identity_module._mapping_target_function_rows_with_views
+        # Deliberately inject an independent current row view while metadata
+        # stays equal, proving the explicit comparison rather than container equality.
+        current = deepcopy(data["verification_targets"]["caller-target"])
+        patch.setattr(verification_targets, "vc5_target_registration", lambda path: ("caller-target", current))
+        for mutation in ("symbol", "removed", "extra", "duplicate"):
+            changed_rows = list(deepcopy(original_rows(current)))
+            if mutation == "symbol":
+                changed_rows[0][1]["symbol"] = "other"
+            elif mutation == "removed":
+                changed_rows.clear()
+            elif mutation == "extra":
+                changed_rows.append(("linked_function_intervals", {**changed_rows[0][1], "logical_identity_key": "other"}))
+            else:
+                changed_rows *= 2
+            patch.setattr(identity_module, "_mapping_target_function_rows_with_views",
+                          lambda value: tuple(changed_rows) if value is current else original_rows(value))
+            with pytest.raises(ProgressError, match="row population"):
+                authority.validate_caller_authority(data, contract)
+        patch.setattr(identity_module, "_mapping_target_function_rows_with_views", original_rows)
+        for mutation in ("literal-regex", "general-regex", "provider", "membership"):
+            wrong = deepcopy(data)
+            if mutation == "membership":
+                wrong["symbols"][caller_id]["verification_target_ids"] = []
+            else:
+                claim = deepcopy(current["registration"]["functions"][0])
+                if mutation.endswith("regex"):
+                    import re
+                    claim["symbol"] = None
+                    claim["symbol_regex"] = ("^(?:" + re.escape(contract["caller_object_symbol"]) + ")$"
+                        if mutation == "literal-regex" else r"\?Caller@.*")
+                    claim["address"] = "0x403000"
+                else:
+                    claim["pipeline_class"] = "non-authored"
+                wrong["verification_targets"]["other"] = dict(binary="recoil", kind="vc5",
+                    registration=dict(functions=[claim]))
+            with pytest.raises(ProgressError):
+                authority.validate_caller_authority(wrong, contract)
+        assert authority.validate_source(data, contract, root=root) == "src/example.cpp"
+        for altered in (original.replace("void __fastcall", "int __fastcall"),
+                        original.replace("namespace Example", "namespace Other"),
+                        original.replace("State *", "Other *"), original.replace("Empty(State", "Wrong(State"),
+                        original + '\nvoid Empty(int) {}\n'):
+            source.write_text(altered)
+            with pytest.raises(ProgressError):
+                authority.validate_source(data, contract, root=root)
+        source.write_text(original)
+        duplicate = root / "src/duplicate.cpp"
+        duplicate.write_text(original)
+        with pytest.raises(ProgressError):
+            authority.validate_source(data, contract, root=root)
+        duplicate.unlink()
+        for edges in ([], trace["source_edges"] * 2):
+            bad = deepcopy(contract)
+            bad["source_traceability"]["source_edges"] = edges
+            with pytest.raises(ProgressError):
+                authority.validate_source(data, bad, root=root)
+        patch.setattr(command, "validate_source", lambda d, c: authority.validate_source(d, c, root=root))
+        patch.setattr(live_byte_verify, "_pe_bytes", lambda *args: b'\xe8' + struct.pack('<i', 0x402000 - 0x401007))
+        payload = dict(reviewed=True, reason="Review", expected_alias=alias, contract=contract)
+        staged = command.stage(data, payload)
+        staged["symbols"][physical_id]["logical_aliases"][logical_id].pop(authority.FIELD)
+        assert staged == data  # No gate, order, provider, tier or byte changes.
+        _exercise_call_only_build_uniqueness(registered, root, patch)
+    _exercise_call_only_icf_live_scope(contract)
+
+
+def _exercise_call_only_build_uniqueness(data, root, patch):
+    from types import SimpleNamespace
+    import pytest
+    from _recoil.lib.call_only_icf import prove_unique_build_definitions
+    from _recoil.lib.progress import ProgressError
+    from _recoil.commands.asm_verify import CoffObject
+    from _recoil.call_contract.candidate import _candidate_tu_local_function_definitions
+    name = '?Empty@Example@@YIXPAUState@@@Z'
+    expected = root / 'obj/src/example.obj'
+    expected.parent.mkdir(parents=True)
+    expected.write_bytes(b'fixture')
+    symbol = SimpleNamespace(name=name, section_number=1, storage_class=2, type=0x20)
+    patch.setattr(CoffObject, 'from_path', lambda path: SimpleNamespace(symbols=(symbol,)))
+    prove_unique_build_definitions(data, root)
+    duplicate = root / 'obj/src/other.obj'
+    duplicate.write_bytes(b'fixture')
+    with pytest.raises(ProgressError, match='missing or duplicated'):
+        prove_unique_build_definitions(data, root)
+    duplicate.unlink()
+    patch.setattr(CoffObject, 'from_path', lambda path: SimpleNamespace(symbols=(symbol, symbol)))
+    with pytest.raises(ProgressError, match='missing or duplicated'):
+        prove_unique_build_definitions(data, root)
+    with pytest.raises(ValueError, match='duplicate external function'):
+        _candidate_tu_local_function_definitions(SimpleNamespace(symbols=(symbol, symbol)))
+
+
+def _exercise_call_only_icf_live_scope(contract):
+    from copy import deepcopy
+    from types import SimpleNamespace
+    import struct
+    import pytest
+    from _recoil.commands.asm_verify import Instruction
+    from _recoil.commands import live_byte_verify
+    from _recoil.call_contract.records import IdentityIndexes, CandidateTuLocalFunctionDefinition
+    from _recoil.call_contract.call_only_icf import prove_call
+    from _recoil.call_contract.targets import _canonical_direct_identity
+    from _recoil.lib.progress import ProgressError
+    from _recoil.lib.tooling import REPO_ROOT
+    indexes = IdentityIndexes(by_address={}, by_candidate_name={}, provider_ids=frozenset(),
+        storage_by_address={}, storage_by_name={}, call_only_icf_by_site={contract["call_address"]: contract})
+    kwargs = dict(source="cod", caller_identity="symbol:" + contract["caller_id"],
+        caller_start=0x401000, caller_end=0x401008, indexes=indexes, bridge_names={},
+        compiler_generated_bridges={}, call_site_address=0x401002, call_site_unique=True,
+        retail_call_site_address="0x401002", call_only_icf_proved=True)
+    assert _canonical_direct_identity(contract["object_symbol"], **kwargs) == (
+        "direct", "logical:" + contract["logical_id"])
+    for key, value in (("caller_identity", "other"), ("caller_start", 0x401001),
+            ("caller_end", 0x401009), ("call_site_unique", False), ("call_only_icf_proved", False),
+            ("retail_call_site_address", "0x401003"), ("retail_call_site_address", None)):
+        with pytest.raises(ProgressError):
+            _canonical_direct_identity(contract["object_symbol"], **{**kwargs, key: value})
+    with pytest.raises(ProgressError):
+        _canonical_direct_identity("__imp_" + contract["object_symbol"], **kwargs)
+    def instruction(text, code, at):
+        return Instruction(text=text, raw_text=text, bytes=tuple(f"{b:02x}" for b in code),
+                           source_line=f' {at:05x} ' + code.hex(' ') + ' ' + text)
+    name = contract["object_symbol"]
+    rows = (instruction('mov ecx, esi', b'\x8b\xce', 0),
+            instruction('call ' + name, b'\xe8\0\0\0\0', 2), instruction('ret', b'\xc3', 7))
+    relocation = SimpleNamespace(offset=3, type=20, symbol_name=name, symbol_index=1)
+    symbol = SimpleNamespace(name=name, index=1, storage_class=2, symbol_type=0x20,
+        section_number=2, value=0, section_data=b'\xc3')
+    caller = SimpleNamespace(symbol=contract["caller_object_symbol"], data=b'\x8b\xce\xe8\0\0\0\0\xc3',
+        relocations=(relocation,), relocation_mask=(False, False, False, True, True, True, True, False),
+        coff_symbols=(symbol,), object_path=str(REPO_ROOT / 'build/example.obj'))
+    definition = CandidateTuLocalFunctionDefinition(symbol=name, data=b'\xc3', relocations=(),
+        relocation_mask=(False,), section_size=1, section_external_functions=(name,),
+        section_is_comdat=True, comdat_selection=2, instructions=(instruction('ret', b'\xc3', 0),),
+        source_provenance=str(REPO_ROOT / 'src/example.cpp'), current_source_path='src/example.cpp',
+        object_path=caller.object_path, symbol_index=1, section_number=2, symbol_value=0,
+        storage_class=2, symbol_type=0x20)
+    live = dict(source="cod", caller_identity="symbol:" + contract["caller_id"], caller_start=0x401000,
+        instructions=rows, index=1, instruction_addresses=(0x401000, 0x401002, 0x401007),
+        caller_definition=caller, callee_definitions={name: definition})
+    retail = b'\x8b\xce\xe8' + struct.pack('<i', 0x402000 - 0x401007) + b'\xc3'
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(live_byte_verify, "_pe_bytes", lambda *args: retail)
+        assert prove_call(contract, **live)
+        for mutate in ("no-caller", "wrong-caller", "extent", "instruction", "no-relocation",
+                       "duplicate-relocation", "wrong-symbol", "imported", "duplicate-symbol",
+                       "absent-definition", "wrong-provenance", "cleanup", "target-body", "wrong-site",
+                       "other-object", "other-section", "other-symbol-index"):
+            bad = deepcopy(live)
+            if mutate == "no-caller":
+                bad["caller_definition"] = None
+            elif mutate == "wrong-caller":
+                bad["caller_identity"] = "other"
+            elif mutate == "extent":
+                bad["caller_definition"].data += b'\x90'
+            elif mutate == "instruction":
+                bad["caller_definition"].data = b'\x8b\xca' + caller.data[2:]
+            elif mutate == "no-relocation":
+                bad["caller_definition"].relocations = ()
+            elif mutate == "duplicate-relocation":
+                bad["caller_definition"].relocations *= 2
+            elif mutate == "wrong-symbol":
+                bad["caller_definition"].relocations[0].symbol_name = "other"
+            elif mutate == "imported":
+                bad["caller_definition"].coff_symbols[0].section_number = 0
+            elif mutate == "duplicate-symbol":
+                bad["caller_definition"].coff_symbols *= 2
+            elif mutate == "absent-definition":
+                bad["callee_definitions"] = {}
+            elif mutate in {"wrong-provenance", "cleanup", "target-body"}:
+                from dataclasses import replace
+                change = {"current_source_path": "src/other.cpp"} if mutate == "wrong-provenance" else (
+                    {"data": b'\xc2\x04\0', "section_size": 3, "relocation_mask": (False,) * 3,
+                     "instructions": (instruction('ret 4', b'\xc2\x04\0', 0),)} if mutate == "cleanup" else
+                    {"data": b'\x90\xc3', "section_size": 2, "relocation_mask": (False,) * 2,
+                     "instructions": (instruction('nop', b'\x90', 0), instruction('ret', b'\xc3', 1))})
+                bad["callee_definitions"][name] = replace(definition, **change)
+                if "data" in change:
+                    bad["caller_definition"].coff_symbols[0].section_data = change["data"]
+            elif mutate in {"other-object", "other-section", "other-symbol-index"}:
+                from dataclasses import replace
+                change = ({"object_path": "other.obj"} if mutate == "other-object" else
+                          {"section_number": 3} if mutate == "other-section" else {"symbol_index": 2})
+                bad["callee_definitions"][name] = replace(definition, **change)
+            else:
+                bad["instruction_addresses"] = (0x401000, 0x401003, 0x401007)
+            with pytest.raises(ProgressError):
+                prove_call(contract, **bad)
 
 
 def test_regex_authority_uses_unique_same_address_accepted_order_target():
@@ -2909,7 +3512,9 @@ def test_exact_body_virtual_lineage_checks_candidate_listing_and_slot(monkeypatc
         replace(instructions[0], bytes=("8b", "09")), *instructions[1:])))
 
 
-def test_pooled_data_alias_index_requires_unique_physical_storage_and_evidence():
+def test_storage_and_target_identities_require_exact_typed_populations():
+    _check_compiler_scalar_identity_does_not_freeze_object_coordinates()
+    _check_registered_target_population_requires_exact_typed_physical_functions()
     from copy import deepcopy
     from types import SimpleNamespace as Row
     from _recoil.call_contract.storage_identity import _index_reviewed_pooled_data_names
@@ -3590,3 +4195,23 @@ def test_cfg_backward_inline_panel_cursor_retains_initial_member_and_signed_step
     assert prove(rendered_step="sub edi, 0x2ac") == ""
     assert prove(raw_step="66 81 ef a4 02") == ""
     assert prove(clobber=True) == ""
+
+
+def _check_registered_target_population_requires_exact_typed_physical_functions():
+    from _recoil.call_contract.targets import _registered_function_population_matches as matches
+    ids = ("recoil:function:0x1000", "recoil:function:0x1020")
+    symbols = {key: {"binary": "recoil", "kind": "function", "address": key.rsplit(":", 1)[1]}
+               for key in ids}
+    target = {"binary": "recoil", "registered_addresses": ["0x1000", "0x1020"]}
+    assert matches(target, ids, symbols)
+    for addresses in ([], ["0x1000"], ["0x1000", "0x1000"], ["0x1020", "0x1000"],
+                      ["0x1000", "0x1020", "0x1040"], ["0x1000", "0x1040"]):
+        assert not matches(dict(target, registered_addresses=addresses), ids, symbols)
+    assert not matches({"binary": "recoil", "symbol_ids": list(ids)}, ids, symbols)
+    assert not matches(target, (), symbols)
+    assert not matches(target, (ids[0], ids[0]), symbols)
+    assert not matches(target, ids, {ids[0]: symbols[ids[0]]})
+    for change in ({"kind": "data"}, {"binary": "messages"}, {"address": "0x1040"}):
+        altered = dict(symbols)
+        altered[ids[1]] = dict(symbols[ids[1]], **change)
+        assert not matches(target, ids, altered)

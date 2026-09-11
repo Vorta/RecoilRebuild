@@ -63,24 +63,8 @@
       "byte_length": 11
     },
     {
-      "address": "0x4dae4c",
-      "symbol": "",
-      "symbol_regex": "_kGlobalContextSearchPath\\$S[0-9]+",
-      "name": "kGlobalContextSearchPath",
-      "bn_name": "g_zInterp_GlobalContext_SearchPath",
-      "byte_length": 6
-    },
-    {
-      "address": "0x4dae54",
-      "symbol": "",
-      "symbol_regex": "_kCommandNameWeaponSetMaxTetherAltitude\\$S[0-9]+",
-      "name": "kCommandNameWeaponSetMaxTetherAltitude",
-      "bn_name": "g_zInterp_CommandName_WeaponSetMaxTetherAltitude",
-      "byte_length": 27
-    },
-    {
       "address": "0x4edb78",
-      "symbol": "?g_zInterp_GlobalContext@@3TzInterp_GlobalContextStorage@@A",
+      "symbol": "?g_zInterp_GlobalContext@@3UCRecoilInterp@@A",
       "name": "g_zInterp_GlobalContext",
       "bn_name": "g_zInterp_GlobalContext",
       "byte_length": 204

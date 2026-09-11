@@ -479,8 +479,7 @@ namespace zClass_Light {
                 pointB.z = localPointB.x * matrix->xz + localPointB.y * matrix->yz
                     + localPointB.z * matrix->zz + matrix->posZ;
             }
-            zVec3 outAngles = {0};
-            zMath::Vec3DirectionAnglesBetweenPoints(&pointA, &pointB, &outAngles);
+            zVec3 outAngles = zMath::Vec3DirectionAnglesBetweenPoints(&pointA, &pointB);
             outAngles.z = 0.0f;
             data->worldRotation = outAngles;
         }

@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x40bea0",
-      "symbol": "?GetFont@HudUiPanel@@QAEPAXXZ",
+      "symbol": "?GetFont@HudUiPanel@@UAEPAXXZ",
       "name": "HudUiPanel::GetFont"
     }
   ]

@@ -403,6 +403,13 @@ def _stage_missing_physical_target(
                 "created data owner relationship already exists or conflicts"
             )
     relationships.append(relationship)
+    entries = owner_copy.setdefault("reimplementation", {}).setdefault("entries", {})
+    if not isinstance(entries, dict) or target_symbol_id in entries:
+        raise RelocationExceptionMutationError("created data has conflicting owner tier bookkeeping")
+    entries[target_symbol_id] = {"kind": "data", "tier": "X", "evidence_ids": []}
+    for gate, state in owner_copy.get("gates", {}).items():
+        if state == "accepted":
+            owner_copy["gates"][gate] = "pending"
     proposed_document = ProgressDocument(proposed)
     proposed_owner = proposed_document.collection("owners")[owner_id]
     owner_context = relocation_target_owner_context(
@@ -421,6 +428,32 @@ def _stage_missing_physical_target(
         "owner_binding": owner_context,
         "relationship": relationship,
     }
+
+
+def _bind_existing_physical_owner(document, normalized):
+    """Re-derive a primary-owned literal's context instead of dropping it on rebinding."""
+    if (normalized.get("exception_mode") != PHYSICAL_TARGET_UNRESOLVED_VC5_TEMPORARY
+            or normalized.get("physical_target_binding", {}).get("ownership_state") != "primary-owned"):
+        return
+    target_id = normalized["target_symbol_id"]
+    matches = [(owner_id, owner, edge)
+               for owner_id, owner in document.collection("owners").items()
+               for edge in owner.get("relationships", [])
+               if edge.get("kind") == "primary-data" and edge.get("symbol_id") == target_id]
+    if len(matches) != 1:
+        raise RelocationExceptionMutationError("primary-owned literal requires exactly one current primary owner")
+    owner_id, owner, edge = matches[0]
+    try:
+        _validate_owner_evidence(document, owner_id=owner_id, evidence_ids=normalized["evidence_ids"])
+    except RelocationTargetMutationError as exc:
+        raise RelocationExceptionMutationError(str(exc)) from exc
+    if owner.get("kind") == "provider-boundary":
+        raise RelocationExceptionMutationError("compiler-literal binding cannot substitute for a provider boundary")
+    if edge.get("address") != normalized["physical_target_binding"]["address"]:
+        raise RelocationExceptionMutationError("literal primary owner relationship has a different address")
+    normalized["physical_target_owner_binding"] = relocation_target_owner_context(
+        owner_id=owner_id, owner=owner, evidence_ids=normalized["evidence_ids"])
+    normalized["physical_target_relationship"] = deepcopy(edge)
 
 
 def set_reviewed_exception(
@@ -488,6 +521,9 @@ def set_reviewed_exception(
             normalized = normalize_reviewed_exception(normalized)
         except RelocationExpectationError as exc:
             raise RelocationExceptionMutationError(str(exc)) from exc
+    else:
+        _bind_existing_physical_owner(proposed_document, normalized)
+        normalized = normalize_reviewed_exception(normalized)
     _append_exception(
         proposed,
         source_symbol_id=source_symbol_id,

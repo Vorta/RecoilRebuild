@@ -70,7 +70,7 @@
     {
       "address": "0x472450",
       "symbol": "@zInputDICreateForceFeedbackEffect@8",
-      "name": "zInputDI::CreateForceFeedbackEffect"
+      "name": "zInputDICreateForceFeedbackEffect"
     },
     {
       "address": "0x472480",

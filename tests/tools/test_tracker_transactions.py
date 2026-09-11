@@ -253,7 +253,74 @@ def test_function_tail_separation_requires_exact_snapshot_and_live_boundary_proo
         controls.clear()
 
 
+def _check_provisional_alias_labels_preserve_identity_and_require_independent_review():
+    from copy import deepcopy
+    from _recoil.commands.progress_cli import _parse_logical_alias_group_payload, ProgressError
+
+    prefix = "recoil:logical-function:0x401000:"
+    def alias(name, status):
+        return dict(object_symbol="?" + name + "@@", original_name=name, original_name_status=status,
+                    source_owner_status="authored-owner", owner_id="recoil:owner:unit",
+                    pipeline_class="authored", authored_order_role="authored-body",
+                    fold_status="proven-fold-alias")
+    old = {prefix + "first": alias("First", "recovered"), prefix + "second": alias("Second", "provisional")}
+    current = dict(pipeline_class="non-authored", authored_order_role="compiler-generated-icf-representative",
+                   physical_block_id="recoil:block:0x401000", linked_address_group=None,
+                   icf_address_group=dict(winner_status="winner-unknown", winner_identity_key=None, evidence_ids=["prior"]),
+                   logical_aliases={key: dict(value, evidence_ids=["prior"]) for key, value in old.items()})
+    review = dict(reviewed=True, spelling_kind="reconstruction-only", original_spelling="unknown",
+                  identity_basis="Independent retail caller protocol proves a distinct logical callee.")
+    payload = dict(schema="recoil-logical-alias-group-v2", reviewed=True, reason="Reviewed logical extension",
+                   symbol_id="recoil:function:0x401000", address="0x401000", current=current,
+                   icf_address_group=dict(winner_status="winner-unknown", winner_identity_key=None),
+                   logical_aliases={**old, prefix + "third": alias("Third", "provisional")},
+                   new_evidence=dict(summary="Retail identity review",
+                       provenance=dict(candidate_independent=True, provisional_alias_reviews={prefix + "third": review}),
+                       artifacts=[dict(path="support/Recoil.exe", size=1)],
+                       validation_context=dict(candidate_output_used=False)))
+    before = deepcopy(payload)
+    parsed = _parse_logical_alias_group_payload(json.dumps(payload))
+    assert parsed["logical_aliases"][prefix + "third"]["original_name_status"] == "provisional"
+    assert parsed["current"] == current and payload == before
+    # A spelling label grants no instruction, linkage, source-location, or owner acceptance.
+    assert set(parsed["logical_aliases"][prefix + "third"]) == set(alias("Third", "provisional"))
+    invalid = []
+    for field, value in (("reviewed", 1), ("spelling_kind", "recovered"), ("original_spelling", "Third"),
+                         ("identity_basis", ""), ("unexpected", True)):
+        row = deepcopy(payload)
+        row["new_evidence"]["provenance"]["provisional_alias_reviews"][prefix + "third"][field] = value
+        invalid.append(row)
+    for reviews in ({}, {prefix + "third": None}, {prefix + "other": review}):
+        row = deepcopy(payload)
+        row["new_evidence"]["provenance"]["provisional_alias_reviews"] = reviews
+        invalid.append(row)
+    for field, value in (("pipeline_class", "authored"), ("logical_aliases", None), ("icf_address_group", None)):
+        row = deepcopy(payload)
+        row["current"][field] = value
+        invalid.append(row)
+    row = deepcopy(payload)
+    del row["logical_aliases"][prefix + "first"]
+    invalid.append(row)
+    row = deepcopy(payload)
+    row["logical_aliases"][prefix + "second"]["original_name"] = "Renamed"
+    invalid.append(row)
+    row = deepcopy(payload)
+    row["current"]["icf_address_group"]["winner_status"] = "selected-winner"
+    invalid.append(row)
+    row = deepcopy(payload)
+    row["new_evidence"]["validation_context"]["candidate_output_used"] = True
+    invalid.append(row)
+    row = deepcopy(payload)
+    row["logical_aliases"][prefix + "third"]["original_name_status"] = "unknown"
+    invalid.append(row)
+    for row in invalid:
+        with pytest.raises(ProgressError):
+            _parse_logical_alias_group_payload(json.dumps(row))
+    assert payload == before
+
+
 def test_exception_removal_requires_complete_typed_match_and_preserves_other_facts(monkeypatch, tmp_path, capsys):
+    _check_provisional_alias_labels_preserve_identity_and_require_independent_review()
     _check_relocation_source_name_refresh_preserves_context(monkeypatch)
     _check_symbol_name_batch_is_atomic_and_preserves_semantic_facts()
     _check_symbol_name_cli_dry_run_and_stale_revision(tmp_path, monkeypatch, capsys)
@@ -469,6 +536,7 @@ def test_temporary_scalar_creation_preserves_extent_and_pending_acceptance(monke
     data["owners"][owner_id] = {
         "binary": "recoil", "kind": "source-file", "provider_state": "unresolved",
         "lifecycle_state": "active", "evidence_ids": [evidence_id], "relationships": [],
+        "gates": {"boundary": "accepted", "source": "accepted", "data": "accepted", "owner_linkage": "accepted"},
     }
     data["evidence"][evidence_id] = {"scope_ids": [owner_id]}
     section_requests = []
@@ -503,6 +571,19 @@ def test_temporary_scalar_creation_preserves_extent_and_pending_acceptance(monke
         assert row["accepted_order_facts"] is None
         assert all(value["result"] == "pending" for value in row["binary_state"].values())
         assert target_id not in data["symbols"]
+        owner = proposed["owners"][owner_id]
+        assert owner["reimplementation"]["entries"][target_id] == {"kind": "data", "tier": "X", "evidence_ids": []}
+        assert set(owner["gates"].values()) == {"pending"}
+        normalized = {"exception_mode": expectations.PHYSICAL_TARGET_UNRESOLVED_VC5_TEMPORARY,
+                      "target_symbol_id": target_id, "evidence_ids": [evidence_id],
+                      "physical_target_binding": {"ownership_state": "primary-owned", "address": hex(target)}}
+        mutation._bind_existing_physical_owner(ProgressDocument(proposed), normalized)
+        assert normalized["physical_target_owner_binding"] == result["owner_binding"]
+        assert normalized["physical_target_relationship"] == result["relationship"]
+        ambiguous = deepcopy(proposed)
+        ambiguous["owners"][owner_id + ".duplicate"] = deepcopy(owner)
+        with pytest.raises(mutation.RelocationExceptionMutationError, match="exactly one current"):
+            mutation._bind_existing_physical_owner(ProgressDocument(ambiguous), normalized)
 
     for size in (0, 3, 5, 16):
         with pytest.raises(mutation.RelocationExceptionMutationError, match="four or eight"):
@@ -950,6 +1031,98 @@ def test_source_path_relocation_is_boundary_aware_and_conservatively_invalidates
     assert data["migration"]["unrelated_path"] == OLD_TIME_PREFIX + "keeper/Clock.cpp"
     assert details["scheduler_before"]["phase"] == details["scheduler_after"]["phase"]
     assert details["preserved"]["acceptance_not_expanded"] is True
+    _check_partial_source_extraction(tmp_path / "partial")
+
+
+def _check_partial_source_extraction(root: Path) -> None:
+    from copy import deepcopy
+    from _recoil.commands.source_path_extraction import apply_extraction, extraction_snapshot
+    from _recoil.lib.progress import state_record
+
+    old_path, new_path = "src/Owner.cpp", "src/Component.cpp"
+    (root / "src").mkdir(parents=True)
+    (root / old_path).write_text("void Retained() {}\n", encoding="utf-8")
+    moved = "recoil:function:0x401000"
+    retained = "recoil:function:0x401010"
+    block_id, span_id, owner_id = "recoil:block:0x401000", "recoil:semantic:unit", "recoil:owner:unit"
+    source = (
+        "/**\n * @recoil-anchor recoil:anchor:unit.extracted\n"
+        " * @recoil-artifact defines .text recoil:function:0x401000: Component body.\n"
+        " *\n * Purpose: Update the component.\n */\nvoid Extracted() {}\n"
+    )
+    (root / new_path).write_text(source, encoding="utf-8")
+    trace = {"state": "resolved", "reason_code": None, "source_edges": [{
+        "relation": "defines", "anchor_id": "recoil:anchor:unit.extracted",
+        "emission_context": {"translation_unit": old_path}, "evidence_ids": []}]}
+    data = ProgressDocument.empty().data
+    data["symbols"] = {
+        symbol_id: {"binary": "recoil", "kind": "function", "address": address,
+                    "pipeline_class": "authored", "source_traceability": deepcopy(trace),
+                    "physical_block_id": block_id, "semantic_span_ids": [span_id],
+                    "binary_state": {"call_contract": state_record("passed", "accepted", "current", [])},
+                    "function_match": {"freshness": "current"},
+                    "instruction_match_review": {"sentinel": True},
+                    "accepted_byte_facts": {"sentinel": True}}
+        for symbol_id, address in ((moved, "0x401000"), (retained, "0x401010"))
+    }
+    data["owners"] = {owner_id: {"binary": "recoil", "source_paths": [old_path],
+        "relationships": [{"kind": "primary-function", "symbol_id": moved}],
+        "gates": {"boundary": "accepted", "source": "accepted", "data": "accepted"},
+        "address_metadata": {"0x401000": {"name": "Component", "source_path": old_path}},
+        "reimplementation": {"entries": {moved: {"tier": "B", "evidence_ids": []}}}}}
+    data["physical_blocks"] = {block_id: {"binary": "recoil", "source_path": old_path,
+        "original_source_path": "historical.cpp", "contribution_ids": [moved, retained],
+        "mapping": {"state": "unresolved", "status": "inferred", "evidence_ids": []}}}
+    data["semantic_spans"] = {span_id: {"source_path": old_path, "symbol_ids": [moved, retained]}}
+    data["verification_targets"] = {"target": {"binary": "recoil", "source_files": [old_path, new_path]}}
+    baseline = deepcopy(data)
+    payload = extraction_snapshot(data, old_path, new_path, root=root)
+    payload.update(reviewed=True, reason="Independent reviewed compilation boundary")
+    with pytest.MonkeyPatch.context() as patch:
+        # The existing pipeline kernel tests own scheduler mechanics. Here its
+        # observable contract isolates exact source-scope and rollback guards.
+        patch.setattr(ProgressDocument, "pipeline", lambda *_args, **_kwargs: {"phase": "authored-byte-match"})
+        patch.setattr(ProgressDocument, "audit", lambda *_args, **_kwargs: [])
+        result = apply_extraction(data, payload, root=root)
+        assert result["accepted"] is False
+        assert data["symbols"][moved]["source_traceability"]["source_edges"][0]["emission_context"]["translation_unit"] == new_path
+        assert data["symbols"][retained]["source_traceability"] == baseline["symbols"][retained]["source_traceability"]
+        assert "accepted_byte_facts" not in data["symbols"][retained]
+        assert data["symbols"][retained]["function_match"]["freshness"] == "changed"
+        assert "instruction_match_review" not in data["symbols"][retained]
+        assert data["owners"][owner_id]["relationships"] == baseline["owners"][owner_id]["relationships"]
+        assert data["owners"][owner_id]["gates"] == {"boundary": "accepted", "source": "pending", "data": "accepted"}
+        assert data["owners"][owner_id]["reimplementation"]["entries"][moved]["tier"] == "C"
+        assert data["physical_blocks"][block_id]["original_source_path"] is None
+        assert (root / old_path).read_text() == "void Retained() {}\n"
+        synchronized = deepcopy(baseline)
+        synchronized["symbols"][moved]["source_traceability"]["source_edges"][0]["emission_context"]["translation_unit"] = new_path
+        current_payload = extraction_snapshot(synchronized, old_path, new_path, root=root)
+        current_payload.update(reviewed=True, reason="Defining topology was synchronized separately")
+        apply_extraction(synchronized, current_payload, root=root)
+        assert synchronized["symbols"][moved]["source_traceability"] == data["symbols"][moved]["source_traceability"]
+        missing_trace = deepcopy(baseline)
+        del missing_trace["symbols"][moved]["source_traceability"]
+        with pytest.raises(ValueError, match="register the current defining source edge first"):
+            extraction_snapshot(missing_trace, old_path, new_path, root=root)
+        for field in ("expected_owners", "expected_blocks", "expected_artifacts", "expected_verification_targets"):
+            stale = deepcopy(payload)
+            stale[field] = {}
+            working = deepcopy(baseline)
+            with pytest.raises(ValueError, match="stale or incomplete"):
+                apply_extraction(working, stale, root=root)
+            assert working == baseline
+        protected = deepcopy(baseline)
+        protected["physical_blocks"][block_id]["mapping"]["state"] = "accepted"
+        protected_payload = extraction_snapshot(protected, old_path, new_path, root=root)
+        protected_payload.update(reviewed=True, reason="Must remain blocked")
+        before = deepcopy(protected)
+        with pytest.raises(ValueError, match="accepted source-file mapping"):
+            apply_extraction(protected, protected_payload, root=root)
+        assert protected == before
+        (root / old_path).write_text(source, encoding="utf-8")
+        with pytest.raises(ValueError, match="still occur"):
+            extraction_snapshot(baseline, old_path, new_path, root=root)
 
 
 def test_source_path_relocation_refuses_unsynchronized_or_drifted_scope(

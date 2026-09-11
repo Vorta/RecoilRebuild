@@ -26,7 +26,7 @@
     },
     {
       "address": "0x4080b0",
-      "symbol": "?GetAudioApiOption@zSnd@@YAHXZ",
+      "symbol": "?GetAudioApiOption@zSnd@@YIHXZ",
       "name": "zSnd::GetAudioApiOption",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

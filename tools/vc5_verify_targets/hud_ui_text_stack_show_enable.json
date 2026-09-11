@@ -25,7 +25,7 @@
     },
     {
       "address": "0x413910",
-      "symbol": "?EnableTopAndChatStacks@HudUiMgr@@YAXXZ",
+      "symbol": "?EnableTopAndChatStacks@HudUiMgr@@YIXXZ",
       "name": "HudUiMgr::EnableTopAndChatStacks"
     }
   ]

@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x40fb70",
-      "symbol": "??0HudUiMeter@@QAE@XZ",
+      "symbol": "??0HudUiShieldMeterCandidate@@QAE@XZ",
       "name": "HudUiMeter::HudUiMeter"
     }
   ],

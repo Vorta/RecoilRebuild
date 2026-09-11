@@ -110,7 +110,7 @@
         {
           "address": "0x415c90",
           "symbol_regex": "\\?UpdateCachedBounds@HudSensorMapNode@@.*",
-          "name": "HudSensorMapNode::GetOrRecomputeCachedBounds",
+          "name": "HudSensorMapNode::UpdateCachedBounds",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,

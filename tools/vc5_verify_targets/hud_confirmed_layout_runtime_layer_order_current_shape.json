@@ -208,7 +208,7 @@
         {
           "address": "0x412c10",
           "symbol_regex": "\\?LoadTypeIFromZarRoot@HudLayoutBase@@.*|\\?LoadTypeIFromZarRoot@HudLayoutSW@@.*",
-          "name": "HudLayoutSW::LoadTypeIFromZarRoot"
+          "name": "HudLayoutBase::LoadTypeIFromZarRoot"
         },
         {
           "address": "0x412c60",

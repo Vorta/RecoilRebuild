@@ -1187,6 +1187,7 @@ def build_identity_indexes(
     (
         reviewed_icf_group_by_address,
         reviewed_icf_group_by_logical_identity,
+        call_only_icf_by_site,
     ) = _cc_logical_identity._winner_unknown_icf_group_indexes(document)
     (
         reviewed_non_gating_logical_target_by_address,
@@ -1205,7 +1206,9 @@ def build_identity_indexes(
         str, tuple[str, str]
     ] = {}
     reviewed_authored_icf_physical_by_logical_identity: dict[str, str] = {}
-    authored_icf_candidate_only_names: set[str] = set()
+    authored_icf_candidate_only_names: set[str] = {
+        contract["object_symbol"] for contract in call_only_icf_by_site.values()
+    }
     authored_icf_object_memberships: dict[str, tuple[str, str, str]] = {}
     for symbol_id, symbol in document.collection("symbols").items():
         if not isinstance(symbol, Mapping):
@@ -1230,6 +1233,7 @@ def build_identity_indexes(
         identity = _symbol_identity(str(symbol_id), symbol)
         logical_aliases = symbol.get("logical_aliases")
         if isinstance(logical_aliases, Mapping) and logical_aliases:
+            from _recoil.lib.call_only_icf import FIELD
             group = symbol.get("icf_address_group")
             authored_icf_group = bool(
                 isinstance(group, Mapping)
@@ -1252,6 +1256,7 @@ def build_identity_indexes(
                 )
                 for alias_id, alias in logical_aliases.items()
                 if isinstance(alias, Mapping)
+                and FIELD not in alias
                 and alias.get("pipeline_class") in {"authored", "authored-lifecycle"}
                 and (
                     alias.get("fold_status") == "proven-fold-alias"
@@ -1620,6 +1625,8 @@ def build_identity_indexes(
             continue
         for alias_id, alias in logical_aliases.items():
             if not isinstance(alias, Mapping):
+                continue
+            if "call_only_extension" in alias:
                 continue
             object_symbol = alias.get("object_symbol")
             if isinstance(object_symbol, str) and object_symbol:
@@ -2006,6 +2013,7 @@ def build_identity_indexes(
         storage_by_address=storage_by_address,
         storage_by_name=storage_by_name,
         candidate_only_names=frozenset(authored_icf_candidate_only_names),
+        call_only_icf_by_site=call_only_icf_by_site,
         reviewed_icf_group_by_address=reviewed_icf_group_by_address,
         reviewed_icf_group_by_logical_identity=(
             reviewed_icf_group_by_logical_identity
@@ -2203,15 +2211,17 @@ def _bn_unique_containing_function(
     bridge: BinaryNinjaBridge,
     *,
     instruction_address: str,
+    expected_start: str | None = None,
 ) -> tuple[str, str]:
     """Resolve an interior instruction through BN's containing-function API.
 
     ``functionInfo`` is an exact function lookup and deliberately returns a
     structured 404 for an interior instruction address.  The containing
     function must therefore be selected by ``functionAt`` first.  Its unique
-    declared name is then used for a named ``functionInfo`` lookup so the
-    assembly request is anchored at BN's declared start, never at the xref
-    instruction or a tracker contribution boundary.
+    declared name is checked against ``functionInfo`` at the indexed xref's
+    caller start when available. Names alone cannot distinguish overloads.
+    Legacy name-only xrefs retain the named lookup and the downstream exact
+    instruction check; no containing start is inferred from the instruction.
     """
 
     normalized_instruction = normalize_address(instruction_address)
@@ -2269,7 +2279,7 @@ def _bn_unique_containing_function(
 
     containing_name = containing_names[0]
     try:
-        info = bridge.function_info(containing_name)
+        info = bridge.function_info(expected_start or containing_name)
     except (AttributeError, BridgeError, OSError, RuntimeError, ValueError) as exc:
         raise ValueError(
             "BN inbound-xref authority cannot resolve the named containing function"
@@ -2288,10 +2298,16 @@ def _bn_unique_containing_function(
     if (
         not function_address
         or address_value(function_address) > address_value(normalized_instruction)
+        or (expected_start is not None and function_address != expected_start)
     ):
         raise ValueError(
             "BN inbound-xref authority cannot resolve the named containing start"
         )
+    if expected_start is not None:
+        record = info.get("function", info)
+        if (not isinstance(record, Mapping)
+            or record.get("name", record.get("function_name")) != containing_name):
+            raise ValueError("BN inbound-xref caller start disagrees with the containing name")
     return containing_name, function_address
 
 
@@ -2304,8 +2320,8 @@ def _complete_bn_inbound_direct_transfers(
     """Prove every inbound code edge is an exact direct E8/E9 transfer.
 
     Xref source addresses are instruction addresses.  Assembly is requested
-    only after ``functionAt`` selects exactly one containing name and named
-    ``functionInfo`` supplies its declared start.  Complete data-only inbound
+    only after ``functionAt`` selects exactly one containing name and exact
+    ``functionInfo`` confirms the indexed caller start. Complete data-only inbound
     sets are valid and yield an empty tuple; absence of recognizable complete
     xref authority yields ``None``.
     """
@@ -2362,9 +2378,13 @@ def _complete_bn_inbound_direct_transfers(
                     "reviewed HudUiTextLabel padding xref byte drifted"
                 )
             continue
+        indexed_start = _bn_xref_address(row, "function_address", "function_start")
+        if not indexed_start and any(key in row for key in ("function_address", "function_start")):
+            raise ValueError("BN inbound-xref authority has a malformed caller start")
         _function_name, function_address = _bn_unique_containing_function(
             bridge,
             instruction_address=source_address,
+            expected_start=indexed_start or None,
         )
         caller_rows = assembly_by_function.get(function_address)
         if caller_rows is None:

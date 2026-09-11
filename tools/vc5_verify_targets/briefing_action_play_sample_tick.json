@@ -21,7 +21,7 @@
   "functions": [
     {
       "address": "0x404aa0",
-      "symbol_regex": "\\?Tick@BriefingActionPlaySample@\\?%Briefing\\.cpp[0-9]+@@UAEHM@Z",
+      "symbol_regex": "\\?Tick@BriefingActionPlaySample@\\?%[^@]*Briefing\\.cpp[0-9]+@@UAEHM@Z",
       "name": "BriefingActionPlaySample::Tick"
     }
   ]

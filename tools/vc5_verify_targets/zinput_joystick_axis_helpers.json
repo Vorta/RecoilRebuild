@@ -18,7 +18,7 @@
   "functions": [
     {
       "address": "0x4083c0",
-      "symbol": "?GetJoystickOption@zInp@@YAHXZ",
+      "symbol": "?GetJoystickOption@zInp@@YIHXZ",
       "name": "zInp::GetJoystickOption",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

@@ -21,37 +21,37 @@
   "functions": [
     {
       "address": "0x414f40",
-      "symbol": "?OnActivate@CHudUiMainMenuDialogCreditsButton@@QAEXXZ",
+      "symbol": "?OnActivate@CHudUiMainMenuDialogCreditsButton@@UAEXXZ",
       "name": "CHudUiMainMenuDialogCreditsButton::OnActivate"
     },
     {
       "address": "0x414f60",
-      "symbol": "?OnActivate@CHudUiMainMenuDialogSaveButton@@QAEXXZ",
+      "symbol": "?OnActivate@CHudUiMainMenuDialogSaveButton@@UAEXXZ",
       "name": "CHudUiMainMenuDialogSaveButton::OnActivate"
     },
     {
       "address": "0x414f80",
-      "symbol": "?OnActivate@CHudUiMainMenuDialogNewGameButton@@QAEXXZ",
+      "symbol": "?OnActivate@CHudUiMainMenuDialogNewGameButton@@UAEXXZ",
       "name": "CHudUiMainMenuDialogNewGameButton::OnActivate"
     },
     {
       "address": "0x414fa0",
-      "symbol": "?OnActivate@HudUiMenuBackButton@@QAEXXZ",
+      "symbol": "?OnActivate@HudUiMenuBackButton@@UAEXXZ",
       "name": "HudUiMenuBackButton::OnActivate"
     },
     {
       "address": "0x414fc0",
-      "symbol": "?OnActivate@CHudUiMainMenuDialogOptionsButton@@QAEXXZ",
+      "symbol": "?OnActivate@CHudUiMainMenuDialogOptionsButton@@UAEXXZ",
       "name": "CHudUiMainMenuDialogOptionsButton::OnActivate"
     },
     {
       "address": "0x414fe0",
-      "symbol": "?OnActivate@CHudUiMainMenuDialogQuitButton@@QAEXXZ",
+      "symbol": "?OnActivate@CHudUiMainMenuDialogQuitButton@@UAEXXZ",
       "name": "CHudUiMainMenuDialogQuitButton::OnActivate"
     },
     {
       "address": "0x415000",
-      "symbol": "?OnActivate@CHudUiMainMenuDialogControlsButton@@QAEXXZ",
+      "symbol": "?OnActivate@CHudUiMainMenuDialogControlsButton@@UAEXXZ",
       "name": "CHudUiMainMenuDialogControlsButton::OnActivate"
     },
     {

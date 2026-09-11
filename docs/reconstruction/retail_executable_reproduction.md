@@ -399,6 +399,39 @@ An explicit empty expectation is valid. A missing deterministic target identity
 uses reviewed `progress relocation-target bind`. A genuine ambiguity alone
 uses reviewed `progress relocation-exception set`. Both are dry-run-first.
 
+A registered aggregate data slice resolves only within its retail field extent.
+Its `object_offset` contributes to the expected COFF and resolved-target addend;
+the containing object's base is not the field's address. Conflicting offsets,
+nonzero function offsets, and incompatible provider bindings remain unresolved.
+
+### Unused Assignments in Matching Source
+
+The user authorized unused local assignments on 2026-09-11, including embedded
+assignments that preserve an input in a temporary whose stored value is never
+subsequently read. Such source can represent leftover captures from earlier
+code. Unused storage alone is not a reason to reject an otherwise matching
+C/C++ reconstruction or require renewed permission in similar future cases.
+
+The approved example is `Player::UpdateFirstPersonCameraFromInput` at
+`0x4059a0`, with both expressions inside the positive-speed branch:
+
+```cpp
+float unscaledMin, unscaledMax;
+elevationMin = (unscaledMin = elevationMin) * elevationScale;
+elevationMax = (unscaledMax = elevationMax) * elevationScale;
+```
+
+Document unused values and the byte-matching reason beside their declaration.
+Compare complete current bodies and relocation semantics, and require the
+normal linked presence/identity and normalized linked-body proof before a
+match annotation or stage acceptance. The exact output supports the source
+form's compiler compatibility; it does not prove the original variable names
+or the authors' intended later use. This allowance does not change the rules
+for raw assembly, unrelated dead functions, compiler flags or linker tricks.
+Earlier camera audit/Pro statements rejecting this form solely for unused
+assignments predate this explicit user authorization and are superseded on
+that point; their compiler observations remain diagnostic evidence.
+
 ### Function Match Levels and Pro-Reviewed Fallback
 
 `byte` and `instruction` are per-function levels, separate from owner tiers and

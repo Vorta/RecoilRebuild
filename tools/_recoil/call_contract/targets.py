@@ -23,6 +23,31 @@ from _recoil.commands.asm_verify import Instruction
 from _recoil.lib.progress import ProgressError, address_value, normalize_address
 
 
+def _registered_function_population_matches(
+    target: Mapping[str, Any], symbol_ids: tuple[str, ...],
+    symbols: Mapping[str, Any],
+) -> bool:
+    """Prove a current target's exact ordered physical function population."""
+    binary = target.get("binary")
+    if not symbol_ids or len(set(symbol_ids)) != len(symbol_ids):
+        return False
+    addresses = []
+    for symbol_id in symbol_ids:
+        row = symbols.get(symbol_id)
+        if not isinstance(row, Mapping):
+            return False
+        address = row.get("address")
+        if (
+            row.get("kind") != "function" or row.get("binary") != binary
+            or not isinstance(address, str)
+            or re.fullmatch(r"0x[0-9a-f]+", address) is None
+            or symbol_id != f"{binary}:function:{address}"
+        ):
+            return False
+        addresses.append(address)
+    return target.get("registered_addresses") == addresses
+
+
 def _pointer_vector_destroy_provider_identity(
     name: str,
     *,
@@ -376,7 +401,30 @@ def _canonical_direct_identity(
     call_site_unique: bool | None = None,
     retail_call_site_address: str | int | None = None,
     cod_source_line: str = "",
+    retail_instruction: Instruction | None = None,
+    call_only_icf_proved: bool = False,
 ) -> tuple[str, str]:
+    from _recoil.lib.call_only_icf import require
+    selected_site = call_site_address if source == "bn" else retail_call_site_address
+    selected_site = normalize_address(selected_site) if selected_site is not None else ""
+    call_only = indexes.call_only_icf_by_site.get(selected_site)
+    candidate_call_only = [contract for contract in indexes.call_only_icf_by_site.values()
+                           if contract["object_symbol"] == operand.strip()]
+    if call_only is not None or (source == "cod" and candidate_call_only):
+        require(call_only is not None and call_only_icf_proved and call_site_unique is True
+                and caller_identity == "symbol:" + call_only["caller_id"]
+                and caller_start == address_value(call_only["caller_address"])
+                and caller_end == address_value(call_only["caller_end_exclusive"]),
+                "call target requires its exact proved caller/site")
+        if source == "cod":
+            require(operand.strip() == call_only["object_symbol"], "candidate call target changed")
+        else:
+            require(retail_instruction is not None, "retail opcode is missing")
+            raw = bytes.fromhex(" ".join(retail_instruction.bytes))
+            require(len(raw) == 5 and raw[0] == 0xe8
+                    and address_value(selected_site) + 5 + struct.unpack_from('<i', raw, 1)[0]
+                    == address_value(call_only["physical_address"]), "retail call target changed")
+        return "direct", "logical:" + call_only["logical_id"]
     if "__imp_" in operand:
         match = _cc_catalog.DECORATED_RE.search(operand)
         if match is None:
@@ -533,6 +581,30 @@ def _canonical_direct_identity(
                 for item in matches
                 if getattr(item, "address", "")
             }
+            if len(addresses) > 1 and retail_instruction is not None:
+                # Overloads may have identical BN display names. Only the
+                # exact direct transfer encoding at this unique retail site
+                # may select one of those already indexed physical entries.
+                try:
+                    body = bytes(int(token, 16) for token in retail_instruction.bytes)
+                    mnemonic = _cc_cfg._instruction_mnemonic(retail_instruction)
+                    site = address_value(call_site_address) if call_site_address is not None else -1
+                    width = 4 if len(body) == 5 and body[0] in (0xE8, 0xE9) else (
+                        1 if len(body) == 2 and body[0] == 0xEB else 0)
+                    valid = (call_site_unique is True and caller_start <= site
+                        and site + len(body) <= caller_end and width
+                        and _cc_cfg._exact_invocation_encoding(retail_instruction, mnemonic=mnemonic)
+                        and mnemonic == ("call" if body[0] == 0xE8 else "jmp"))
+                    selected_address = normalize_address(
+                        (site + len(body) + int.from_bytes(body[1:], "little", signed=True)) & 0xFFFFFFFF
+                    ) if valid else ""
+                except (TypeError, ValueError, ProgressError):
+                    selected_address = ""
+                if selected_address in addresses:
+                    matches = [item for item in matches
+                        if getattr(item, "address", "")
+                        and normalize_address(str(item.address)) == selected_address]
+                    addresses = {selected_address}
             if len(addresses) != 1:
                 raise ValueError(
                     f"ambiguous bn {exact_name_kind} call target identity "

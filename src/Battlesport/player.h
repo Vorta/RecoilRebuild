@@ -149,9 +149,9 @@ struct PlayerMasterCommonData {
     float notPursuitDwellTime;
     float returnRangeSq;
     char startAnimsName[0x50];
-    float cambackSide0;
-    float cambackBase0;
-    float cambackDist0;
+    // Retail copies this side/height/distance vector as one aggregate.
+    zVec3 cameraBackOffset;
+
     float cambackSide1;
     float cambackBase1;
     float cambackDist1;
@@ -494,6 +494,8 @@ void __fastcall AsyncCommandCallback(
 void __fastcall TickLocalPlayerControls(zUtil_SaveGameState *saveState);
 void __cdecl RegisterGameplayCommandCallbacksAndCreateFfEffects();
 void __fastcall TickActiveCameraState(zUtil_SaveGameState *saveState);
+// Inferred camera-state handler; the original spelling and body location are unknown.
+void __fastcall UpdateCameraState5(zUtil_SaveGameState *saveState);
 void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState *saveState);
 void __fastcall UpdateTopDownCameraState(zUtil_SaveGameState *saveState);
 void __fastcall UpdateFirstPersonCameraFromInput(
@@ -1149,19 +1151,19 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         PlayerMasterCommonData,
-        cambackSide0
+        cameraBackOffset.x
     ) == 0x350
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         PlayerMasterCommonData,
-        cambackBase0
+        cameraBackOffset.y
     ) == 0x354
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         PlayerMasterCommonData,
-        cambackDist0
+        cameraBackOffset.z
     ) == 0x358
 );
 RECOIL_STATIC_ASSERT(

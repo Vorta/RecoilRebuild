@@ -38,7 +38,7 @@
       "functions": [
         {
           "address": "0x408a30",
-          "symbol": "?Constructor@HudUiControlsDialog@@QAEPAU1@XZ",
+          "symbol": "??0HudUiControlsDialog@@QAE@XZ",
           "name": "HudUiControlsDialog::Constructor"
         },
         {

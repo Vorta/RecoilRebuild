@@ -8,6 +8,7 @@ from _recoil.call_contract import callable_identity as _cc_callable_identity
 from _recoil.call_contract import catalog as _cc_catalog
 from _recoil.call_contract import cfg as _cc_cfg
 from _recoil.call_contract import identity as _cc_identity
+from _recoil.call_contract.listing import _matches_compiler_literal
 from _recoil.call_contract import targets as _cc_targets
 
 if TYPE_CHECKING:
@@ -358,20 +359,12 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
 
     def exact_local_literal(
         *,
-        value: int,
         data: bytes,
     ) -> CandidateLocalStaticDefinition:
         matches = tuple(
             item
             for item in local_static_definitions
-            if re.fullmatch(r"\$T[0-9]+", item.name) is not None
-            and item.section_name == ".rdata"
-            and item.section_number == 4
-            and item.value == value
-            and item.symbol_type == 0
-            and item.storage_class == IMAGE_SYM_CLASS_STATIC
-            and item.aux_count == 0
-            and item.data == data
+            if _matches_compiler_literal(item, data)
         )
         if (
             len(matches) != 1
@@ -384,16 +377,14 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
             raise ValueError(
                 "HUD reticle rebaseline rejects exact current governed "
                 "local-static "
-                f"$T literal at .rdata+0x{value:x}"
+                f"$T literal with contents {data.hex()}"
             )
         return matches[0]
 
     negative_one_literal = exact_local_literal(
-        value=0x390,
         data=bytes.fromhex("00 00 80 bf"),
     )
     positive_one_literal = exact_local_literal(
-        value=0x378,
         data=bytes.fromhex("00 00 80 3f"),
     )
     if negative_one_literal.name == positive_one_literal.name:

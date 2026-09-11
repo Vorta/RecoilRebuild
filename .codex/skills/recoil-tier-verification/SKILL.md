@@ -29,6 +29,14 @@ Inspect owner membership, source model, traceability docblocks, touched globals 
 
 Raw assembly is exception-only. First exhaust credible source-faithful VC5SP3 C/C++ variants. Then use ChatGPT Pro directly for the required advisory critique. Any allowed inline block must be minimal, backed by exact opcode/register/FPU evidence, documented by an immediate `Purpose:` block, and covered by the address-scoped raw-assembly allowlist. Naked functions, `_emit`, `.asm` files, whole-function assembly, stack shells, and order tricks remain forbidden outside documented CPU-probe exceptions.
 
+Raw eligibility does not waive source-level field access. Use recovered C/C++
+member names in VC5 inline assembly, for example `[ebx]zVec3.z`, rather than
+`[ebx+8]` or an invented numeric offset constant. Recover the typed layout
+when a field is unknown. Numeric displacements in retail/generated disassembly
+are evidence, not an acceptable spelling for authored structure-field access.
+Recompile and compare complete bodies and relocation semantics after changing
+the operand spelling; preserve source line counts.
+
 For a promotion, state every satisfied gate and any floor imposed by a weaker member. Use source-owner scrutiny for positive B/A/S acceptance. Apply the exact reviewed tracker mutation dry-run first; use the conservative downgrade route when evidence regresses.
 
 Use `progress owner review-context --tier <tier>` to obtain the complete fresh

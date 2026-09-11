@@ -27,7 +27,7 @@
     },
     {
       "address": "0x408330",
-      "symbol": "?GetFullscreenOption@zOpt@@YAHXZ",
+      "symbol": "?GetFullscreenOption@zOpt@@YIHXZ",
       "name": "zOpt::GetFullscreenOption",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -36,7 +36,7 @@
     },
     {
       "address": "0x408650",
-      "symbol": "?GetDisplaySection@zOpt@@YAPAUzOpt_ViewRectSection@@XZ",
+      "symbol": "?GetDisplaySection@zOpt@@YIPAUzOpt_ViewRectSection@@XZ",
       "name": "zOpt::GetDisplaySection",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -45,7 +45,7 @@
     },
     {
       "address": "0x408660",
-      "symbol": "?zOptDisplaySectionGetWidth@@YAHXZ",
+      "symbol": "?zOptDisplaySectionGetWidth@@YIHXZ",
       "name": "zOptDisplaySectionGetWidth",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -54,7 +54,7 @@
     },
     {
       "address": "0x408670",
-      "symbol": "?zOptDisplaySectionGetHeight@@YAHXZ",
+      "symbol": "?zOptDisplaySectionGetHeight@@YIHXZ",
       "name": "zOptDisplaySectionGetHeight",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -63,7 +63,7 @@
     },
     {
       "address": "0x408690",
-      "symbol": "?GetDisplaySectionBitsPerPixel@zOpt@@YAHXZ",
+      "symbol": "?GetDisplaySectionBitsPerPixel@zOpt@@YIHXZ",
       "name": "zOpt::GetDisplaySectionBitsPerPixel",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -72,7 +72,7 @@
     },
     {
       "address": "0x4086a0",
-      "symbol": "?GetVideoStrideValue@zOpt@@YAHXZ",
+      "symbol": "?GetVideoStrideValue@zOpt@@YIHXZ",
       "name": "zOpt::GetVideoStrideValue",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -81,7 +81,7 @@
     },
     {
       "address": "0x4086d0",
-      "symbol": "?GetWindowSectionHeight@zOpt@@YAHXZ",
+      "symbol": "?GetWindowSectionHeight@zOpt@@YIHXZ",
       "name": "zOpt::GetWindowSectionHeight",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

@@ -607,6 +607,7 @@ class UnitCloseoutStore:
 
 
 class UnitCloseoutDocument:
+    data = {"symbols": {}}
     slices = [
         {
             "id": "recoil:call-contract-slice:unit",

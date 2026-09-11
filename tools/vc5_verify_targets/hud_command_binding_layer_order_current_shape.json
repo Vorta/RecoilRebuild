@@ -276,7 +276,7 @@
         },
         {
           "address": "0x40bda0",
-          "symbol": "?QueueEnter@HudCmdDialogState@@SAXXZ",
+          "symbol": "?QueueEnter@HudCmdDialogState@@SIXXZ",
           "name": "HudCmdDialogState::QueueEnter"
         },
         {

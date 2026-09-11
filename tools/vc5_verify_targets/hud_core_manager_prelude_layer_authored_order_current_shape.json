@@ -69,21 +69,21 @@
         },
         {
           "address": "0x40d9e0",
-          "symbol_regex": "\\?ConstructorEx@HudUiMeter@@.*",
           "name": "HudUiMeter::ConstructorEx",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "authored-lifecycle-body",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "??0HudUiManagerMeterBaseCandidate@@QAE@XZ"
         },
         {
           "address": "0x40da00",
-          "symbol_regex": "\\?Constructor@HudUiMessage@@.*",
           "name": "HudUiMessage::Constructor",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "authored-lifecycle-body",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "??0HudUiMessage@@QAE@XZ"
         },
         {
           "address": "0x40dac0",
@@ -105,21 +105,21 @@
         },
         {
           "address": "0x40dbf0",
-          "symbol_regex": "\\?Constructor@HudUiCounterTextPanel@@.*",
           "name": "HudUiCounterTextPanel::Constructor",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "authored-lifecycle-body",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "??0HudUiCounterTextPanel@@QAE@XZ"
         },
         {
           "address": "0x40dcd0",
-          "symbol_regex": "\\?Constructor@HudUiTriplet@@.*",
           "name": "HudUiTriplet::Constructor",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "authored-lifecycle-body",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "??0HudUiTriplet@@QAE@XZ"
         },
         {
           "address": "0x40e010",
@@ -141,12 +141,12 @@
         },
         {
           "address": "0x40e070",
-          "symbol_regex": "\\?DestructorCore@HudUiTriplet@@.*",
           "name": "HudUiTriplet::DestructorCore",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "authored-lifecycle-body",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "??1HudUiTriplet@@QAE@XZ"
         },
         {
           "address": "0x40e140",
@@ -285,12 +285,12 @@
         },
         {
           "address": "0x40ed80",
-          "symbol_regex": "\\?ConstructorDefault@HudUiTimerPanel@@.*",
           "name": "HudUiTimerPanel::ConstructorDefault",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "authored-lifecycle-body",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "??0HudUiTimerPanel@@QAE@XZ"
         },
         {
           "address": "0x40ee60",
@@ -366,12 +366,12 @@
         },
         {
           "address": "0x40f200",
-          "symbol_regex": "\\?Constructor@HudUiTripletPanel@@.*",
           "name": "HudUiTripletPanel::Constructor",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "authored-lifecycle-body",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "??0HudUiTripletPanel@@QAE@XZ"
         },
         {
           "address": "0x40f2e0",
@@ -456,12 +456,12 @@
         },
         {
           "address": "0x40fb70",
-          "symbol_regex": "\\?\\?0HudUiMeter@@.*",
           "name": "HudUiMeter::HudUiMeter",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
-          "full_order_gate": true
+          "full_order_gate": true,
+          "symbol": "??0HudUiShieldMeterCandidate@@QAE@XZ"
         },
         {
           "address": "0x40fb90",

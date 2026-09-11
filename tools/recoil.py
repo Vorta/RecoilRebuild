@@ -367,6 +367,7 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
     spec("progress relocation-target bind-native-eh", "native_eh_relocations", summary="Bind one reviewed native VC5 EH parent to its existing provider handler and canonical absolute exception-list symbol.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
     spec("progress relocation-target bind-native-array-cleanup", "native_array_cleanup", summary="Bind one reviewed native array cleanup reference to its existing generated lifecycle target without promoting an original alias or source-owner model.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
     spec("progress relocation-target bind-native-import", "native_import_relocations", summary="Bind one reviewed authored reference to an unowned non-authored import thunk using immutable retail and the canonical VC5 import member, without owner or provider-byte acceptance.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
+    spec("progress call-contract bind-icf-extension", "call_only_icf", summary="Register exact reviewed site-bound ICF call eligibility without order, owner, provider or byte acceptance.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="call-contract", acceptance_effects=()),
     spec(
         "progress provider-target register",
         "provider_target_mutation",
@@ -569,7 +570,12 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
             "summary, provenance, durable artifacts, and validation context with candidate_output_used=false; "
             "it derives the exact physical-symbol/logical-alias/owner scope, predicts one generated evidence "
             "id during dry-run, then atomically creates and assigns that same id to the group and every alias "
-            "on apply. Caller-supplied evidence ids or scopes and candidate outputs/artifacts fail closed. The "
+            "on apply. V2 provisional names mean reconstruction spelling with unknown original spelling; "
+            "they require an existing compiler ICF group, unchanged existing members and winner state, "
+            "and exact new_evidence.provenance.provisional_alias_reviews for newly added provisional "
+            "aliases (reviewed=true, spelling_kind=reconstruction-only, original_spelling=unknown, "
+            "and a nonempty candidate-independent identity_basis). They accept no original source "
+            "placement. Caller-supplied evidence ids or scopes and candidate outputs/artifacts fail closed. The "
             "v3 is an existing winner-unknown group evidence refresh. V4 is the distinct authored-linker-"
             "coalesced model: it preserves one authored physical order/byte/call gate and address-exclusive "
             "physical primary owner while recording two or more non-gating authored logical members with "
@@ -847,6 +853,27 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         mutates=True,
         required_revision_domains=("global",),
         mutation_scope="source-path",
+    ),
+    spec(
+        "progress source-path extract",
+        "source_path_extraction",
+        summary="Guard a reviewed partial TU extraction while retaining both production files.",
+        description=(
+            "Prepare exact current artifact, owner, block, semantic and synchronized-target snapshots; "
+            "review the payload before dry-run/apply. The route preserves retail identities and the "
+            "block grid, updates current defining TU relationships, retracts only unresolved broad "
+            "filename inference, and invalidates affected source/order/call/byte acceptance. "
+            "It grants no original filename, source-owner, provider, tier or matching proof."
+        ),
+        category="progress",
+        examples=(
+            "python tools/recoil.py progress source-path extract --old-source src/old.cpp --new-source src/new.cpp --expected-revision <revision> --prepare --json",
+            "python tools/recoil.py progress source-path extract --payload-file build/reviewed-extraction.json --expected-revision <revision> --dry-run --json",
+        ),
+        mutates=True,
+        required_revision_domains=("global",),
+        mutation_scope="source-path",
+        acceptance_effects=(),
     ),
     spec(
         "progress data-extent register",

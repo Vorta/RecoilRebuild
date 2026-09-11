@@ -102,7 +102,7 @@
         },
         {
           "address": "0x407e00",
-          "symbol": "?OptionsSaveGameOptions@zGame@@YAHXZ",
+          "symbol": "?OptionsSaveGameOptions@zGame@@YIHXZ",
           "name": "zGame::OptionsSaveGameOptions",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -129,7 +129,7 @@
         },
         {
           "address": "0x407e50",
-          "symbol": "?GetThrottleMode@zOpt@@YAHXZ",
+          "symbol": "?GetThrottleMode@zOpt@@YIHXZ",
           "name": "zOpt::GetThrottleMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -147,7 +147,7 @@
         },
         {
           "address": "0x407e80",
-          "symbol": "?GetSteeringMode@zOpt@@YAHXZ",
+          "symbol": "?GetSteeringMode@zOpt@@YIHXZ",
           "name": "zOpt::GetSteeringMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -165,7 +165,7 @@
         },
         {
           "address": "0x407eb0",
-          "symbol": "?GetCursorMode@zOpt@@YAHXZ",
+          "symbol": "?GetCursorMode@zOpt@@YIHXZ",
           "name": "zOpt::GetCursorMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -183,7 +183,7 @@
         },
         {
           "address": "0x407ef0",
-          "symbol": "?GetCameraModePlayerState@zOpt@@YAHXZ",
+          "symbol": "?GetCameraModePlayerState@zOpt@@YIHXZ",
           "name": "zOpt::GetCameraModeAsPlayerCameraState",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -201,7 +201,7 @@
         },
         {
           "address": "0x407f20",
-          "symbol": "?GetGameDifficultyMode@zOpt@@YAHXZ",
+          "symbol": "?GetGameDifficultyMode@zOpt@@YIHXZ",
           "name": "zOpt::GetGameDifficultyMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -219,7 +219,7 @@
         },
         {
           "address": "0x407f80",
-          "symbol": "?GetEffectsLevelForCurrentHwMode@zOpt@@YAHXZ",
+          "symbol": "?GetEffectsLevelForCurrentHwMode@zOpt@@YIHXZ",
           "name": "zOpt::GetEffectsLevelForCurrentHwMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -237,7 +237,7 @@
         },
         {
           "address": "0x408030",
-          "symbol": "?GetObjectLODForCurrentHwMode@zOpt@@YAHXZ",
+          "symbol": "?GetObjectLODForCurrentHwMode@zOpt@@YIHXZ",
           "name": "zOpt::GetObjectLODForCurrentHwMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -255,7 +255,7 @@
         },
         {
           "address": "0x408060",
-          "symbol": "?GetMuteSoundOption@zOpt@@YAHXZ",
+          "symbol": "?GetMuteSoundOption@zOpt@@YIHXZ",
           "name": "zOpt::GetMuteSoundOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -273,7 +273,7 @@
         },
         {
           "address": "0x408090",
-          "symbol": "?GetSoundVolumeOption@zOpt@@YAMXZ",
+          "symbol": "?GetSoundVolumeOption@zOpt@@YIMXZ",
           "name": "zOpt::GetSoundVolumeOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -291,7 +291,7 @@
         },
         {
           "address": "0x4080b0",
-          "symbol": "?GetAudioApiOption@zSnd@@YAHXZ",
+          "symbol": "?GetAudioApiOption@zSnd@@YIHXZ",
           "name": "zSnd::GetAudioApiOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -309,7 +309,7 @@
         },
         {
           "address": "0x4080d0",
-          "symbol": "?GetSoundLODOption@zOpt@@YAHXZ",
+          "symbol": "?GetSoundLODOption@zOpt@@YIHXZ",
           "name": "zOpt::GetSoundLODOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -327,7 +327,7 @@
         },
         {
           "address": "0x408100",
-          "symbol": "?GetTextureMemoryForCurrentHwMode@zOpt@@YAHXZ",
+          "symbol": "?GetTextureMemoryForCurrentHwMode@zOpt@@YIHXZ",
           "name": "zOpt::GetTextureMemoryForCurrentHwMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -345,7 +345,7 @@
         },
         {
           "address": "0x408190",
-          "symbol": "?zOptGetPlayerName@@YAPADXZ",
+          "symbol": "?zOptGetPlayerName@@YIPADXZ",
           "name": "zOpt::GetPlayerName",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -363,7 +363,7 @@
         },
         {
           "address": "0x4081f0",
-          "symbol": "?GetGraphicsFlagsForCurrentHwMode@zOpt@@YAHXZ",
+          "symbol": "?GetGraphicsFlagsForCurrentHwMode@zOpt@@YIHXZ",
           "name": "zOpt::GetGraphicsFlagsForCurrentHwMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -381,7 +381,7 @@
         },
         {
           "address": "0x408220",
-          "symbol": "?GetCDAudioOption@zSnd@@YAHXZ",
+          "symbol": "?GetCDAudioOption@zSnd@@YIHXZ",
           "name": "zSnd::GetCDAudioOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -417,7 +417,7 @@
         },
         {
           "address": "0x408260",
-          "symbol": "?GetNetworkEnabled@zOpt@@YAHXZ",
+          "symbol": "?GetNetworkEnabled@zOpt@@YIHXZ",
           "name": "zOpt::GetNetworkEnabled",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -426,7 +426,7 @@
         },
         {
           "address": "0x408270",
-          "symbol": "?GetNetworkModemEnabled@zOpt@@YAHXZ",
+          "symbol": "?GetNetworkModemEnabled@zOpt@@YIHXZ",
           "name": "zOpt::GetNetworkModemEnabled",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -489,7 +489,7 @@
         },
         {
           "address": "0x408310",
-          "symbol": "?GetAccelerationOption@zVid@@YAHXZ",
+          "symbol": "?GetAccelerationOption@zVid@@YIHXZ",
           "name": "zVid::GetAccelerationOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -498,7 +498,7 @@
         },
         {
           "address": "0x408320",
-          "symbol": "?GetHwApiOption@zVid@@YAHXZ",
+          "symbol": "?GetHwApiOption@zVid@@YIHXZ",
           "name": "zVid::GetHwApiOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -507,7 +507,7 @@
         },
         {
           "address": "0x408330",
-          "symbol": "?GetFullscreenOption@zOpt@@YAHXZ",
+          "symbol": "?GetFullscreenOption@zOpt@@YIHXZ",
           "name": "zOpt::GetFullscreenOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -516,7 +516,7 @@
         },
         {
           "address": "0x408340",
-          "symbol": "?GetHudVisibilityOption@zOpt@@YAHXZ",
+          "symbol": "?GetHudVisibilityOption@zOpt@@YIHXZ",
           "name": "zOpt::GetHudVisibilityOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -525,7 +525,7 @@
         },
         {
           "address": "0x408360",
-          "symbol": "?GetHudTypeForCurrentHwMode@zOpt@@YAHXZ",
+          "symbol": "?GetHudTypeForCurrentHwMode@zOpt@@YIHXZ",
           "name": "zOpt::GetHudTypeForCurrentHwMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -534,7 +534,7 @@
         },
         {
           "address": "0x408380",
-          "symbol": "?GetReplicateMode@zOpt@@YAHXZ",
+          "symbol": "?GetReplicateMode@zOpt@@YIHXZ",
           "name": "zOpt::GetReplicateMode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -570,7 +570,7 @@
         },
         {
           "address": "0x4083c0",
-          "symbol": "?GetJoystickOption@zInp@@YAHXZ",
+          "symbol": "?GetJoystickOption@zInp@@YIHXZ",
           "name": "zInp::GetJoystickOption",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -615,7 +615,7 @@
         },
         {
           "address": "0x4084e0",
-          "symbol": "?zOptCameraSectionGetActiveCamera@@YAPAUzClass_NodePartial@@XZ",
+          "symbol": "?zOptCameraSectionGetActiveCamera@@YIPAUzClass_NodePartial@@XZ",
           "name": "zOptCameraSectionGetActiveCamera",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -651,7 +651,7 @@
         },
         {
           "address": "0x4085a0",
-          "symbol": "?GetRenderSection@zOpt@@YAPAUzOpt_ViewRectSection@@XZ",
+          "symbol": "?GetRenderSection@zOpt@@YIPAUzOpt_ViewRectSection@@XZ",
           "name": "zOpt::GetRenderSection",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -687,7 +687,7 @@
         },
         {
           "address": "0x408650",
-          "symbol": "?GetDisplaySection@zOpt@@YAPAUzOpt_ViewRectSection@@XZ",
+          "symbol": "?GetDisplaySection@zOpt@@YIPAUzOpt_ViewRectSection@@XZ",
           "name": "zOpt::GetDisplaySection",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -696,7 +696,7 @@
         },
         {
           "address": "0x408660",
-          "symbol": "?zOptDisplaySectionGetWidth@@YAHXZ",
+          "symbol": "?zOptDisplaySectionGetWidth@@YIHXZ",
           "name": "zOptDisplaySectionGetWidth",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -705,7 +705,7 @@
         },
         {
           "address": "0x408670",
-          "symbol": "?zOptDisplaySectionGetHeight@@YAHXZ",
+          "symbol": "?zOptDisplaySectionGetHeight@@YIHXZ",
           "name": "zOptDisplaySectionGetHeight",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -723,7 +723,7 @@
         },
         {
           "address": "0x408690",
-          "symbol": "?GetDisplaySectionBitsPerPixel@zOpt@@YAHXZ",
+          "symbol": "?GetDisplaySectionBitsPerPixel@zOpt@@YIHXZ",
           "name": "zOpt::GetDisplaySectionBitsPerPixel",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -732,7 +732,7 @@
         },
         {
           "address": "0x4086a0",
-          "symbol": "?GetVideoStrideValue@zOpt@@YAHXZ",
+          "symbol": "?GetVideoStrideValue@zOpt@@YIHXZ",
           "name": "zOpt::GetVideoStrideValue",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -741,7 +741,7 @@
         },
         {
           "address": "0x4086b0",
-          "symbol": "?GetVideoModeIndexFromOptions@zVid@@YAHXZ",
+          "symbol": "?GetVideoModeIndexFromOptions@zVid@@YIHXZ",
           "name": "zVid::GetVideoModeIndexFromOptions",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -750,7 +750,7 @@
         },
         {
           "address": "0x4086c0",
-          "symbol": "?GetWindowSection@zOpt@@YAPAUzOpt_ViewRectSection@@XZ",
+          "symbol": "?GetWindowSection@zOpt@@YIPAUzOpt_ViewRectSection@@XZ",
           "name": "zOpt::GetWindowSection",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -759,7 +759,7 @@
         },
         {
           "address": "0x4086d0",
-          "symbol": "?GetWindowSectionHeight@zOpt@@YAHXZ",
+          "symbol": "?GetWindowSectionHeight@zOpt@@YIHXZ",
           "name": "zOpt::GetWindowSectionHeight",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -813,7 +813,7 @@
         },
         {
           "address": "0x408a20",
-          "symbol": "?zOptGetWolPasswordFlagValue@@YAHXZ",
+          "symbol": "?zOptGetWolPasswordFlagValue@@YIHXZ",
           "name": "zOptGetWolPasswordFlagValue",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",

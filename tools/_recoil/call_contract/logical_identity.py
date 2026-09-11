@@ -16,15 +16,53 @@ from _recoil.lib.progress import (
 from _recoil.lib.tooling import REPO_ROOT
 
 
+def _reviewed_order_alias_ids(aliases, provenances) -> set[str]:
+    """Keep order membership distinct from reviewed provisional call identities.
+
+    The v2 extension route preserves existing members and reviews each added
+    provisional identity independently. It does not establish definition order.
+    All aliases still undergo the group's identity/owner/evidence validation.
+    """
+    extensions: set[str] = set()
+    for provenance in provenances:
+        reviews = provenance.get("provisional_alias_reviews", {})
+        if not isinstance(reviews, Mapping):
+            raise ValueError("ICF provisional alias reviews must be an object")
+        for identity, review in reviews.items():
+            alias = aliases.get(identity)
+            if (
+                not isinstance(alias, Mapping)
+                or alias.get("original_name_status") != "provisional"
+                or not isinstance(review, Mapping)
+                or set(review) != {
+                    "reviewed", "spelling_kind", "original_spelling", "identity_basis",
+                }
+                or review.get("reviewed") is not True
+                or review.get("spelling_kind") != "reconstruction-only"
+                or review.get("original_spelling") != "unknown"
+                or not isinstance(review.get("identity_basis"), str)
+                or not review["identity_basis"].strip()
+                or identity in extensions
+            ):
+                raise ValueError("ICF provisional call identity review is invalid")
+            extensions.add(identity)
+    ordered = set(aliases) - extensions
+    if len(ordered) < 2:
+        raise ValueError("ICF extension requires the existing reviewed order group")
+    return ordered
+
+
 def _winner_unknown_icf_group_indexes(
     document: ProgressDocument,
-) -> tuple[dict[str, str], dict[str, str]]:
+) -> tuple[dict[str, str], dict[str, str], dict[str, Mapping[str, Any]]]:
     """Build exact reviewed ICF-group authority before inspecting a candidate."""
     targets = document.collection("verification_targets")
     owners = document.collection("owners")
     evidence_rows = document.collection("evidence")
     groups_by_address: dict[str, str] = {}
     groups_by_logical_identity: dict[str, str] = {}
+    validated_call_only: dict[str, Mapping[str, Any]] = {}
+    from _recoil.lib.call_only_icf import FIELD, require, validate_inventory
 
     for symbol_id, symbol in document.collection("symbols").items():
         if not isinstance(symbol, Mapping):
@@ -96,6 +134,10 @@ def _winner_unknown_icf_group_indexes(
             *aliases.keys(),
             *(alias.get("owner_id") for alias in aliases.values()),
         }
+        order_alias_ids = _reviewed_order_alias_ids(
+            aliases, [evidence_rows[eid].get("provenance", {}) for eid in group_evidence],
+        )
+        pending_call_only = {}
 
         object_symbols: set[str] = set()
         recovered_original_names: set[str] = set()
@@ -142,6 +184,19 @@ def _winner_unknown_icf_group_indexes(
                 )
             owner = owners.get(owner_id)
             gates = owner.get("gates") if isinstance(owner, Mapping) else None
+            call_only = alias_id not in order_alias_ids
+            require(call_only or FIELD not in alias, "call-only contract attached to a base order alias")
+            if call_only:
+                from _recoil.lib.call_only_icf import validate_contract, validate_source, validate_caller_authority
+                validate_contract(document.data, alias.get(FIELD))
+                validate_caller_authority(document.data, alias[FIELD])
+                require(alias[FIELD]["physical_symbol_id"] == symbol_id
+                        and alias[FIELD]["logical_id"] == alias_id,
+                        "contract attached to a different group/alias")
+                validate_source(document.data, alias[FIELD])
+                site = normalize_address(alias[FIELD]["call_address"])
+                require(site not in pending_call_only, "duplicate site in reviewed group")
+                pending_call_only[site] = alias[FIELD]
             if (
                 not isinstance(owner, Mapping)
                 or owner.get("binary") != "recoil"
@@ -149,8 +204,8 @@ def _winner_unknown_icf_group_indexes(
                 or owner.get("provider_state")
                 in {"accepted", "provider-boundary", "provider-owned"}
                 or not isinstance(gates, Mapping)
-                or gates.get("source") != "accepted"
-                or gates.get("owner_linkage") != "accepted"
+                or (not call_only and gates.get("source") != "accepted")
+                or (not call_only and gates.get("owner_linkage") != "accepted")
             ):
                 raise ValueError(
                     f"winner-unknown ICF group {symbol_id} has missing, provider, "
@@ -229,6 +284,9 @@ def _winner_unknown_icf_group_indexes(
             [evidence_rows[eid].get("provenance") for eid in group_evidence],
             accepted_order.get("target_id"),
         )
+        order_alias_ids = _reviewed_order_alias_ids(
+            aliases, [evidence_rows[eid]["provenance"] for eid in group_evidence],
+        )
         matching_targets: list[tuple[str, Mapping[str, Any], dict[str, Mapping[str, Any]]]] = []
         for target_id, target in targets.items():
             if (
@@ -268,7 +326,7 @@ def _winner_unknown_icf_group_indexes(
                     f"winner-unknown ICF group {symbol_id} has conflicting governed "
                     "target evidence"
                 )
-        if set(stored_rows) != alias_ids:
+        if set(stored_rows) != order_alias_ids:
             raise ValueError(
                 f"winner-unknown ICF group {symbol_id} has incomplete governed "
                 "target alias membership"
@@ -282,9 +340,9 @@ def _winner_unknown_icf_group_indexes(
             and row.get("logical_identity_key")
         ]
         if (
-            len(stored_all_at_address) != len(alias_ids)
+            len(stored_all_at_address) != len(order_alias_ids)
             or {str(row["logical_identity_key"]) for row in stored_all_at_address}
-            != alias_ids
+            != order_alias_ids
         ):
             raise ValueError(
                 f"winner-unknown ICF group {symbol_id} has extra or duplicate "
@@ -379,14 +437,14 @@ def _winner_unknown_icf_group_indexes(
             and row.get("logical_identity_key")
         ]
         if (
-            len(current_rows) != len(alias_ids)
-            or {str(row["logical_identity_key"]) for row in current_rows} != alias_ids
-            or len(current_all_at_address) != len(alias_ids)
+            len(current_rows) != len(order_alias_ids)
+            or {str(row["logical_identity_key"]) for row in current_rows} != order_alias_ids
+            or len(current_all_at_address) != len(order_alias_ids)
             or {
                 str(row["logical_identity_key"])
                 for row in current_all_at_address
             }
-            != alias_ids
+            != order_alias_ids
             or any(
                 dict(row) != dict(stored_rows[str(row["logical_identity_key"])])
                 for row in current_rows
@@ -404,7 +462,7 @@ def _winner_unknown_icf_group_indexes(
                 f"winner-unknown ICF address {address} has conflicting groups"
             )
         groups_by_address[address] = group_identity
-        for alias_id in alias_ids:
+        for alias_id in order_alias_ids:
             logical_identity = f"logical:{alias_id}"
             prior = groups_by_logical_identity.get(logical_identity)
             if prior not in {None, group_identity}:
@@ -413,8 +471,12 @@ def _winner_unknown_icf_group_indexes(
                     "conflicting groups"
                 )
             groups_by_logical_identity[logical_identity] = group_identity
+        for site, contract in pending_call_only.items():
+            require(site not in validated_call_only, "duplicate call-only site authority")
+            validated_call_only[site] = contract
 
-    return groups_by_address, groups_by_logical_identity
+    validate_inventory(document.data, validated_call_only)
+    return groups_by_address, groups_by_logical_identity, validated_call_only
 
 
 def _registered_non_gating_logical_target_indexes(

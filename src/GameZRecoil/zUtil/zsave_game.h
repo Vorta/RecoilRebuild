@@ -249,9 +249,9 @@ struct zUtil_PlayerStateStorage {
             };
             unsigned char unknown_0514[0x0c];
             zVec3 cameraDirNext;
-            float thirdPersonSideOffset;
-            float thirdPersonBaseYOffset;
-            float cameraDistance;
+            // Retail copies this side/height/distance vector as one aggregate.
+            zVec3 cameraBackOffset;
+
             zVec3 cameraState2TargetOffset;
             union {
                 struct {
@@ -1276,19 +1276,19 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zUtil_PlayerStateStorage,
-        thirdPersonSideOffset
+        cameraBackOffset.x
     ) == 0x52c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         zUtil_PlayerStateStorage,
-        thirdPersonBaseYOffset
+        cameraBackOffset.y
     ) == 0x530
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         zUtil_PlayerStateStorage,
-        cameraDistance
+        cameraBackOffset.z
     ) == 0x534
 );
 RECOIL_STATIC_ASSERT(

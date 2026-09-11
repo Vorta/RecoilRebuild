@@ -12,6 +12,7 @@ from _recoil.call_contract import instructions as _cc_instructions
 from _recoil.call_contract import receiver_instructions as _cc_receiver_instructions
 from _recoil.call_contract import recoil_hud_sensor as _cc_recoil_hud_sensor
 from _recoil.call_contract import targets as _cc_targets
+from _recoil.call_contract.listing import _matches_compiler_literal
 
 if TYPE_CHECKING:
     from _recoil.call_contract.records import (
@@ -3641,14 +3642,7 @@ def _hud_ui_mgr_objective_start_hide_candidate_vptr_bridges(
     positive_one_literals = tuple(
         item
         for item in local_static_definitions
-        if re.fullmatch(r"\$T[0-9]+", item.name) is not None
-        and item.section_name == ".rdata"
-        and item.section_number == 4
-        and item.value == 0x378
-        and item.symbol_type == 0
-        and item.storage_class == IMAGE_SYM_CLASS_STATIC
-        and item.aux_count == 0
-        and item.data == bytes.fromhex("00 00 80 3f")
+        if _matches_compiler_literal(item, bytes.fromhex("00 00 80 3f"))
     )
     require("positive_one_literal.match_count", len(positive_one_literals), 1)
     positive_one_literal = positive_one_literals[0]
@@ -4106,14 +4100,7 @@ def _hud_ui_mgr_objective_start_hide_widget_candidate_vptr_bridges(
     positive_one_literal_names = tuple(
         item.name
         for item in caller.local_static_definitions
-        if re.fullmatch(r"\$T[0-9]+", item.name) is not None
-        and item.section_name == ".rdata"
-        and item.section_number == 4
-        and item.value == 0x378
-        and item.symbol_type == 0
-        and item.storage_class == IMAGE_SYM_CLASS_STATIC
-        and item.aux_count == 0
-        and item.data == bytes.fromhex("00 00 80 3f")
+        if _matches_compiler_literal(item, bytes.fromhex("00 00 80 3f"))
     ) if caller is not None else ()
     if len(positive_one_literal_names) != 1:
         raise ValueError(
@@ -4954,26 +4941,12 @@ def _hud_ui_mgr_objective_start_hide_topology_candidate_vptr_bridges(
     positive_one_literals = tuple(
         item
         for item in local_static_definitions
-        if re.fullmatch(r"\$T[0-9]+", item.name) is not None
-        and item.section_name == ".rdata"
-        and item.section_number == 4
-        and item.value == 0x378
-        and item.symbol_type == 0
-        and item.storage_class == IMAGE_SYM_CLASS_STATIC
-        and item.aux_count == 0
-        and item.data == bytes.fromhex("00 00 80 3f")
+        if _matches_compiler_literal(item, bytes.fromhex("00 00 80 3f"))
     )
     positive_two_literals = tuple(
         item
         for item in local_static_definitions
-        if re.fullmatch(r"\$T[0-9]+", item.name) is not None
-        and item.section_name == ".rdata"
-        and item.section_number == 4
-        and item.value == 0x3B0
-        and item.symbol_type == 0
-        and item.storage_class == IMAGE_SYM_CLASS_STATIC
-        and item.aux_count == 0
-        and item.data == bytes.fromhex("00 00 00 40")
+        if _matches_compiler_literal(item, bytes.fromhex("00 00 00 40"))
     )
     if len(positive_one_literals) != 1 or len(positive_two_literals) != 1:
         raise ValueError(

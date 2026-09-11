@@ -58,6 +58,7 @@ class TargetIdentity:
     object_symbols: tuple[str, ...]
     source: str
     registered_selector: tuple[str, str, str] | None = None
+    object_offset: int = 0
 
 
 @dataclass(frozen=True)
@@ -307,6 +308,7 @@ def _modrm_extent(
         elif mod == 1:
             cursor += 1
         elif mod == 2:
+            absolute_disp = cursor
             cursor += 4
     elif mod == 0 and rm == 5:
         absolute_disp = cursor
@@ -314,6 +316,7 @@ def _modrm_extent(
     elif mod == 1:
         cursor += 1
     elif mod == 2:
+        absolute_disp = cursor
         cursor += 4
     _require(data, offset, cursor - offset, instruction_offset=instruction_offset)
     return cursor, reg, absolute_disp
@@ -371,7 +374,7 @@ def _decode_one(data: bytes, offset: int) -> DecodedInstruction:
                     OperandSite(
                         absolute_disp,
                         IMAGE_REL_I386_DIR32,
-                        "absolute32",
+                        "potential-absolute32" if data[offset] >> 6 == 2 else "absolute32",
                         start,
                         opcode_text,
                     )
@@ -459,10 +462,11 @@ def _decode_one(data: bytes, offset: int) -> DecodedInstruction:
                 OperandSite(
                     absolute_disp,
                     IMAGE_REL_I386_DIR32,
-                    # LEA also represents arithmetic such as index*8+8. Its
-                    # displacement requires the same image-range screening as
-                    # an immediate; a real image base still requires identity.
-                    "potential-absolute32" if opcode == 0x8D else "absolute32",
+                    # LEA arithmetic and register-relative disp32 fields may
+                    # be ordinary offsets or indexed image addresses. Screen
+                    # them like immediates; an image address needs identity.
+                    "potential-absolute32"
+                    if opcode == 0x8D or data[offset] >> 6 == 2 else "absolute32",
                     start,
                     opcode_text,
                 )
@@ -857,8 +861,11 @@ def decode_x86_operand_sites(
         for instruction in instructions
         if instruction.opcode in {"c2", "c3", "ca", "cb"}
         and instruction.offset + instruction.size <= first_table_offset
-        and _is_proven_switch_table_padding(
-            data, instructions, start=instruction.offset + instruction.size, end=first_table_offset
+        and (
+            instruction.offset + instruction.size == first_table_offset
+            or _is_proven_switch_table_padding(
+                data, instructions, start=instruction.offset + instruction.size, end=first_table_offset
+            )
         )
     ]
     # All independently bounded tables must form one trailing data island.
@@ -935,12 +942,23 @@ def decode_x86_operand_sites(
             for index in range(len(table.entry_targets))
         )
         if table.map_operand_offset is not None:
-            sites.append(
-                OperandSite(
-                    table.map_operand_offset, IMAGE_REL_I386_DIR32, "absolute32",
-                    table.map_operand_offset - 2, "8a",
-                )
-            )
+            # The instruction decoder already reported this indexed disp32.
+            # The switch proof upgrades its identity requirement; it must not
+            # add a second relocation for the same encoded operand.
+            map_sites = [index for index, site in enumerate(sites)
+                         if site.offset == table.map_operand_offset
+                         and site.relocation_type == IMAGE_REL_I386_DIR32]
+            if len(map_sites) != 1:
+                unresolved.append({
+                    "kind": "ambiguous-switch-map-operand",
+                    "offset": table.map_operand_offset,
+                    "message": "proven switch map must have one decoded address operand",
+                })
+                continue
+            index = map_sites[0]
+            site = sites[index]
+            sites[index] = OperandSite(site.offset, site.relocation_type,
+                                      "absolute32", site.instruction_offset, site.opcode)
     sites.sort(key=lambda site: (site.offset, site.relocation_type, site.kind))
     unresolved.sort(key=lambda item: (int(item.get("offset", -1)), str(item.get("kind", ""))))
     return tuple(sites), tuple(unresolved)
@@ -2945,6 +2963,16 @@ def build_target_identity_state(
             object_symbols.add(str(normalized["object_symbol"]))
             source_parts.append("reviewed-relocation-target-binding")
         registered = bindings.get(str(symbol_id), ())
+        offsets = [getattr(item.function, "object_offset", 0) for item in registered]
+        object_offset = offsets[0] if offsets else 0
+        if (any(type(value) is not int or value < 0 or value > address for value in offsets)
+                or any(value != object_offset for value in offsets)
+                or (object_offset and (row.get("kind") not in {"data", "data-symbol", "provider-data"}
+                    or set(source_parts) != {"registered-vc5-target"}))):
+            blockers.append({"kind": "invalid-registered-target-offset",
+                             "target_symbol_id": str(symbol_id),
+                             "message": "registered data slice has conflicting or unsupported object offsets"})
+            continue
         selector = registered_target_selector(registered, object_symbols)
         selector_context = None
         if selector is not None:
@@ -2965,6 +2993,7 @@ def build_target_identity_state(
                     object_symbols=tuple(sorted(object_symbols)),
                     source="+".join(sorted(set(source_parts))),
                     registered_selector=selector_context,
+                    object_offset=object_offset,
                 )
             )
     return tuple(identities), blockers
@@ -2977,9 +3006,9 @@ def _resolve_identity(
     candidates: list[tuple[TargetIdentity, int]] = []
     for identity in identities:
         if target == identity.address:
-            candidates.append((identity, 0))
+            candidates.append((identity, identity.object_offset))
         elif identity.end_exclusive is not None and identity.address < target < identity.end_exclusive:
-            candidates.append((identity, target - identity.address))
+            candidates.append((identity, target - identity.address + identity.object_offset))
     projections = [
         {
             "symbol_id": identity.symbol_id,
@@ -2989,6 +3018,7 @@ def _resolve_identity(
             ),
             "object_symbols": list(identity.object_symbols),
             "target_addend": addend,
+            "object_offset": identity.object_offset,
             "source": identity.source,
         }
         for identity, addend in candidates

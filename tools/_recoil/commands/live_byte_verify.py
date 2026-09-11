@@ -132,7 +132,8 @@ class RetailObjectReader:
         )
 
 
-def _canonicalize_registered_target_selectors(function_bytes, candidates, catalog, load_definition):
+def _canonicalize_registered_target_selectors(function_bytes, candidates, catalog, load_definition,
+                                              *, coff_object=None):
     by_site = {}
     for expected in catalog:
         if expected.get("registered_target_selector") is not None:
@@ -150,7 +151,24 @@ def _canonicalize_registered_target_selectors(function_bytes, candidates, catalo
                 definition = load_definition(selector["source_from"])
                 name = resolve_target_definition(definition, selector)
                 if name != relocation.symbol_name:
-                    raise ValueError("relocation does not name the unique registered definition")
+                    # A native switch may name a local label in this very
+                    # function. Compose the two proofs only after rechecking
+                    # that label in the same freshly loaded object. Matching
+                    # a spelling from another TU cannot establish containment.
+                    relative = relocation.offset - function_bytes.start
+                    if (coff_object is None or definition is not coff_object
+                            or selector["kind"] != "function"
+                            or relocation.type != IMAGE_REL_I386_DIR32
+                            or not 0 <= relative <= len(function_bytes.data) - 4):
+                        raise ValueError("relocation does not name the unique registered definition")
+                    local = _canonicalize_same_comdat_local_label(
+                        coff_object=coff_object, function_bytes=function_bytes,
+                        relocation=relocation, raw_addend=int.from_bytes(
+                            function_bytes.data[relative:relative + 4], "little"))
+                    if (not local.canonicalized or local.symbol_name != name
+                            or canonical.symbol_name != name
+                            or local.coff_addend != canonical.coff_addend):
+                        raise ValueError("local target does not prove the registered function and addend")
                 canonical = replace(canonical, symbol_name=item["target_symbol"],
                     registered_symbol_name=name, canonicalized=True,
                     reason="fresh-definition-for-registered-symbol-selector")
@@ -646,7 +664,8 @@ def _canonicalize_vc5_local_data_ordinals(
         coff_object, function_bytes, candidates, relocation_catalog)
     if load_definition is not None:
         candidates = _canonicalize_registered_target_selectors(
-            function_bytes, candidates, relocation_catalog, load_definition)
+            function_bytes, candidates, relocation_catalog, load_definition,
+            coff_object=coff_object)
 
     physical_candidate_storage_keys: set[tuple[int, int]] = set()
     physical_expected_storage_bases: set[int] = set()
@@ -2442,7 +2461,8 @@ def _compare_row(
             coff_object, function_bytes, candidate_relocations, relocation_catalog)
     if mode != "authored":
         candidate_relocations = _canonicalize_registered_target_selectors(
-            function_bytes, candidate_relocations, relocation_catalog, load_definition)
+            function_bytes, candidate_relocations, relocation_catalog, load_definition,
+            coff_object=coff_object)
     observed_keys = {
         (
             relocation.offset - function_bytes.start,

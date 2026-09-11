@@ -18,7 +18,7 @@
   "functions": [
     {
       "address": "0x408220",
-      "symbol": "?GetCDAudioOption@zSnd@@YAHXZ",
+      "symbol": "?GetCDAudioOption@zSnd@@YIHXZ",
       "name": "zSnd::GetCDAudioOption",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

@@ -74,6 +74,28 @@ and Pro answers cannot replace a fresh build. Keep exact-byte dimensions false
 for instruction matches; serial byte stages use the explicit approved
 instruction alternative, retaining every relocation and placement obligation.
 
+A reviewed provisional extension of a winner-unknown compiler ICF group may
+have call-only authority while its owner's source/linkage gates remain pending.
+Use `progress call-contract bind-icf-extension --payload-file ...
+--expected-revision ... --dry-run --json`, review the exact diff, then apply.
+The payload contains `reviewed`, `reason`, exact `expected_alias`, and a
+`winner-unknown-icf-call-only-extension-v1` `contract`. It binds the exact group,
+alias, semantic owner, reconstruction symbol, source edge, accepted review,
+caller, instruction/operand, ABI, and accepted/withheld dimensions. This route
+accepts no reconstruction facts. The base order members retain their strict
+owner and governed-order requirements. The extension never enters a global
+alias/group map or any order population.
+
+V1 requires a void fastcall callback with one ECX record-pointer argument,
+no stack arguments or cleanup, and no consumed return. Fresh call verification
+requires one local external definition in the exact production TU and an exact
+call relocation to it. It conservatively requires the complete caller's retail
+instruction shape, operand positions/types and local control-flow targets;
+changed shapes require a separate reviewed ABI proof. The empty callback's
+current return behavior is also checked. These checks grant no body-byte,
+original-TU, winner, provider, aggregate owner-gate or tier acceptance. Ordinary
+call census, target comparisons and the final fresh closeout remain mandatory.
+
 Live self-validating commands rebuild current source and apply their own CAS-guarded result:
 
 ```powershell
@@ -161,15 +183,27 @@ binds a dependency to an existing generated lifecycle target; it does not create
 an authored ICF group or accept an original alias census, source model, owner
 gate, or tier. The original folded winner remains unresolved when unproved.
 
-For a direct authored reference to an existing unowned non-authored MSVCRT import thunk, use
+For a direct authored reference to an existing unowned non-authored named MSVCRT
+or ordinal MFC42 import thunk, use
 `progress relocation-target bind-native-import --payload-file <reviewed-json>
 --expected-revision <revision> --dry-run --json`, review, then repeat with
 `--apply`. The exact payload fields are `reviewed: true`, `source_symbol_id`,
 `object_symbol`, `offset`, `target_symbol`, `evidence_ids`, and `reason`. The
-proof derives the exact retail IAT/DLL/name, requires one matching canonical VC5
-long import member and its code/name-table relocations, then checks the current
+proof derives the exact retail IAT/DLL/name or ordinal, requires one matching canonical VC5
+long import member and its code and lookup tables, then checks the current
 COFF reference and linked thunk/import. Unresolved ownership and the inventory
 extent remain unchanged; no provider body, padding, storage, or gate is accepted.
+Named MSVCRT imports require exact name-table relocations. Ordinal MFC42 imports
+require the exact ordinal word in both lookup tables, no lookup relocations or
+name table, and the canonical MFC42 descriptor dependency.
+
+After a governed source registration move, the same native-import route accepts
+an optional `expected_binding` containing the complete exact stored binding.
+Dry-run and review before apply. It re-derives retail and canonical-import facts
+and permits only the source binding's `registration_ids` to change; source
+identity/extent, call operand, target, IAT, import, provider recipe, and evidence
+must remain identical. A missing, duplicate, or stale old snapshot fails. The
+refresh accepts no provider or function bytes and still requires fresh live proof.
 
 To retract a superseded relocation exception, use
 `progress relocation-exception remove` with the source id/address, the complete
@@ -199,6 +233,26 @@ semantic-span, owner, artifact, and pre-synchronized verification-target id
 sets. This route changes only current implementation paths, retains historical
 provenance, and conservatively invalidates dependent order, call-contract, and
 byte facts.
+
+For a reviewed partial TU extraction that retains both production files, use
+`progress source-path extract` after editing the files and synchronizing all
+affected verification targets. `--old-source`, `--new-source`, an expected
+revision and `--prepare --json` produce an unreviewed exact snapshot payload.
+Every definition requires its exact resolved defining edge in the old TU or an
+already synchronized edge in the new TU. Register missing current topology
+through `progress source-trace replace-batch` first; extraction does not invent
+absent defining evidence.
+Review it, set its `reviewed` and nonempty `reason` fields, then use
+`--payload-file build/reviewed-extraction.json` with `--dry-run --json`, review
+the proposed changes, and repeat with `--apply --json`. This route authenticates
+the complete new TU's attached authored function definitions, retains current
+semantic identities and the retail block grid, updates defining source edges
+and owner paths, and invalidates affected order/call/byte and source/linkage
+gates. It retracts broad filename inference only on already-unresolved mappings
+without accepted mapping evidence, retaining the prior observation in history.
+It refuses accepted historical filename mappings. It accepts no original
+filename, source model, provider, owner tier, or body match. Use the source-model
+skill's required review before proposing a disputed compilation boundary.
 
 For positive existing-storage or owner acceptance, use the scoped live commands
 and review-template procedure in

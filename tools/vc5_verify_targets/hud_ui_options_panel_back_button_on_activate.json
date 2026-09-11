@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x40c6e0",
-      "symbol": "?OnActivate@HudUiOptionsPanelBackButton@@QAEXXZ",
+      "symbol": "?OnActivate@HudUiOptionsPanelBackButton@@UAEXXZ",
       "name": "HudUiOptionsPanelBackButton::OnActivate"
     }
   ]

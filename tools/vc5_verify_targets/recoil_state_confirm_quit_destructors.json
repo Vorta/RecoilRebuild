@@ -59,7 +59,7 @@
     },
     {
       "address": "0x4159b0",
-      "symbol": "?QueueEnter@RecoilStateConfirmQuit@@SAXXZ",
+      "symbol": "?QueueEnter@RecoilStateConfirmQuit@@SIXXZ",
       "name": "RecoilStateConfirmQuit::QueueEnter"
     }
   ]

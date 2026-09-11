@@ -1,7 +1,7 @@
 {
   "name": "hud_ui_zrd_widget_destructor_core",
   "description": "HudUiZrdWidget destructor core cleanup and owned vector teardown.",
-  "source_filename": "zhud_ui.cpp",
+  "source_filename": "zui_widgets.cpp",
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "include_dirs": [
     "src",
@@ -14,14 +14,14 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zUI/zui.cpp"
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
   ],
   "functions": [
     {
       "address": "0x4b50c0",
-      "symbol": "??1HudUiZrdWidget@@QAE@XZ",
+      "symbol": "??1HudUiZrdWidget@@UAE@XZ",
       "name": "HudUiZrdWidget::~HudUiZrdWidget"
     }
   ],
-  "source_from": "src/GameZRecoil/zUI/zui.cpp"
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp"
 }

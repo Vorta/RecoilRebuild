@@ -1,6 +1,6 @@
 {
   "name": "hud_tail_sensor_loading_authored_order_current_shape",
-  "description": "Focused VC5SP3 authored-function-order projection for the physical hud.cpp sensor/loading tail [0x4136f0,0x414300). The 22 listed authored-body/authored-lifecycle-body gating identities are copied mechanically from the comprehensive HUD manifest; every other raw/static/compiler definition is inventoried as a mechanically nonblocking extra. The historical full-order target remains separate. This target proves no byte, source-owner, provider, exact linked RVA, full-order, tier, or final executable gate.",
+  "description": "Focused VC5SP3 authored-function-order projection for the physical hud.cpp sensor/loading tail [0x4136f0,0x414300). The 22 listed authored-body/authored-lifecycle-body gating identities are copied mechanically from the comprehensive HUD manifest; every other raw/static/compiler definition is inventoried as a mechanically nonblocking extra. This target proves no byte, source-owner, provider, exact linked RVA, full-order, tier, or final executable gate.",
   "target_binary": "recoil",
   "retail_start": "0x4136f0",
   "retail_end_exclusive": "0x414300",
@@ -88,7 +88,7 @@
         {
           "address": "0x4137f0",
           "symbol": "?UpdateTextLine@HudUiAuxOverlay@@YIXHHPBD@Z",
-          "name": "HudUiAuxOverlay::ApplyTextLineOp",
+          "name": "HudUiAuxOverlay::UpdateTextLine",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -114,7 +114,7 @@
         },
         {
           "address": "0x413910",
-          "symbol": "?EnableTopAndChatStacks@HudUiMgr@@YAXXZ",
+          "symbol": "?EnableTopAndChatStacks@HudUiMgr@@YIXXZ",
           "name": "HudUiMgr::EnableTopAndChatStacks",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -123,7 +123,7 @@
         },
         {
           "address": "0x413950",
-          "symbol": "?DisableTopAndChatStacks@HudUiMgr@@YAXXZ",
+          "symbol_regex": "^(?:\\?DisableTopAndChatStacks@HudUiMgr@@YAXXZ|\\?DisableTopAndChatStacks@HudUiMgr@@YIXXZ)$",
           "name": "HudUiMgr::DisableTopAndChatStacks",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -177,7 +177,7 @@
         },
         {
           "address": "0x413c10",
-          "symbol": "?ApplyMeterQuad@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiMeter@@HHPBHPAUHudUiRect@@@Z",
+          "symbol": "?ApplyMeterQuad@HudUiLayoutNode@@YIHPAUNode@zReader@@PAUHudUiBar@@HHPBHPAUHudUiRect@@@Z",
           "name": "HudUiLayoutNode::ApplyMeterQuad",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",

@@ -232,7 +232,7 @@
     {
       "address": "0x470e80",
       "symbol": "@zInputBindMapContextDispatchFromKeyboardEvent@4",
-      "name": "zInput_BindMapContext::DispatchFromKeyboardEvent",
+      "name": "zInputBindMapContextDispatchFromKeyboardEvent",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,

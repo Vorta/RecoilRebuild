@@ -18,6 +18,26 @@ from _recoil.commands.asm_verify import Instruction, parse_instruction_record
 from _recoil.commands.asm_verify import parse_assembly as _parse_assembly
 
 
+def _matches_compiler_literal(item, data: bytes) -> bool:
+    """Recognize exact local literal contents without freezing COFF placement.
+
+    Callers must still require unique selection and prove their complete
+    relocation reference to the selected symbol. Section ordinal and pool offset
+    are candidate layout, not a call-contract identity or linked-layout proof.
+    """
+    from _recoil.commands.asm_verify import IMAGE_SYM_CLASS_STATIC
+    return (
+        re.fullmatch(r"\$T[0-9]+", item.name) is not None
+        and item.section_name == ".rdata"
+        and item.section_number > 0
+        and item.value >= 0
+        and item.symbol_type == 0
+        and item.storage_class == IMAGE_SYM_CLASS_STATIC
+        and item.aux_count == 0
+        and item.data == data
+    )
+
+
 def _exact_cod_wrapped_mov_source_line(
     first_line: str,
     continuation_line: str,

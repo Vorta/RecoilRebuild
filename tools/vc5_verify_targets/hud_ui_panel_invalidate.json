@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x40be90",
-      "symbol": "?Invalidate@HudUiPanel@@QAEXXZ",
+      "symbol": "?Invalidate@HudUiPanel@@UAEXXZ",
       "name": "HudUiPanel::Invalidate"
     }
   ]

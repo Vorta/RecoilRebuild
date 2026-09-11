@@ -27,7 +27,7 @@
     {"address":"0x4723a0","symbol":"?DIGetButtonTransitionState@zInput@@YIHH@Z","name":"zInput::DIGetButtonTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x4723d0","symbol":"?DIWaitForButtonPress@zInput@@YIHH@Z","name":"zInput::DIWaitForButtonPress","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x472410","symbol":"?DIResetTransitionState@zInput@@YAXXZ","name":"zInput::DIResetTransitionState","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x472450","symbol":"@zInputDICreateForceFeedbackEffect@8","name":"zInputDI::CreateForceFeedbackEffect","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x472450","symbol":"@zInputDICreateForceFeedbackEffect@8","name":"zInputDICreateForceFeedbackEffect","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x472480","symbol":"_zInputDIHasForceFeedback","name":"zInputDI::HasForceFeedback","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x472490","symbol":"?DIReportError@zInput@@YIHHPBDH@Z","name":"zInput::DIReportError","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],

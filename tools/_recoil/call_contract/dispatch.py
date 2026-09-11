@@ -896,6 +896,37 @@ def _select_registered_symbol_regex_authority(
     return next(iter(governing.values()))
 
 
+def _current_cross_tu_callee_source_signature(
+    *, registration, contribution, source_trace, block, source, address,
+):
+    """Current definition attribution; original block filenames grant no call authority.
+
+    The caller separately proves the synchronized target row, unique authored
+    order occurrence, exact external COFF identity and invocation relocations.
+    This join retains the current contribution and exclusive defining edge even
+    when the historical TU name is unresolved or differs from the current path.
+    """
+    edges = source_trace.get("source_edges") if isinstance(source_trace, Mapping) else None
+    return bool(
+        source and isinstance(registration, Mapping) and isinstance(contribution, Mapping)
+        and registration.get("check_translation_unit_function_order") is True
+        and contribution.get("order_scope") == "authored"
+        and contribution.get("inventory_only") is False
+        and contribution.get("candidate_only_extras") == []
+        and isinstance(contribution.get("function_addresses"), list)
+        and contribution["function_addresses"].count(address) == 1
+        and registration.get("source_from") == source
+        and registration.get("manifest_path")
+        and isinstance(source_trace, Mapping) and source_trace.get("state") == "resolved"
+        and source_trace.get("reason_code") in {None, ""}
+        and isinstance(edges, list) and len(edges) == 1 and isinstance(edges[0], Mapping)
+        and edges[0].get("relation") == "defines" and edges[0].get("anchor_id")
+        and edges[0].get("emission_context") == {"translation_unit": source}
+        and isinstance(block, Mapping) and block.get("agent_source_path") == source
+        and block.get("source_path") == source
+    )
+
+
 def _registered_target_symbol_regex_direct_candidate_bridges(
     candidate: CandidateAssembly,
     *,
@@ -1514,11 +1545,6 @@ def _registered_target_symbol_regex_direct_candidate_bridges(
                             )
 
             source_trace = symbol.get("source_traceability")
-            source_edges = (
-                source_trace.get("source_edges")
-                if isinstance(source_trace, Mapping)
-                else None
-            )
             callee_source = (
                 callee_source_rows[0][0]
                 if len(callee_source_rows) == 1
@@ -1534,35 +1560,9 @@ def _registered_target_symbol_regex_direct_candidate_bridges(
                 if isinstance(registration, Mapping)
                 else ""
             )
-            if (
-                not callee_source
-                or not isinstance(callee_contribution, Mapping)
-                or registration.get("check_translation_unit_function_order")
-                is not True
-                or callee_contribution.get("order_scope") != "authored"
-                or callee_contribution.get("inventory_only") is not False
-                or callee_contribution.get("candidate_only_extras") != []
-                or not isinstance(
-                    callee_contribution.get("function_addresses"),
-                    list,
-                )
-                or callee_contribution["function_addresses"].count(address)
-                != 1
-                or registration.get("source_from") != callee_source
-                or not callee_manifest
-                or not isinstance(source_trace, Mapping)
-                or source_trace.get("state") != "resolved"
-                or source_trace.get("reason_code") not in {None, ""}
-                or not isinstance(source_edges, list)
-                or len(source_edges) != 1
-                or not isinstance(source_edges[0], Mapping)
-                or source_edges[0].get("relation") != "defines"
-                or not source_edges[0].get("anchor_id")
-                or source_edges[0].get("emission_context")
-                != {"translation_unit": callee_source}
-                or block.get("agent_source_path") != callee_source
-                or block.get("original_source_path") != callee_source
-                or block.get("source_path") != callee_source
+            if not _current_cross_tu_callee_source_signature(
+                registration=registration, contribution=callee_contribution,
+                source_trace=source_trace, block=block, source=callee_source, address=address,
             ):
                 raise ValueError(
                     "registered target symbol-regex cross-TU bridge lacks "

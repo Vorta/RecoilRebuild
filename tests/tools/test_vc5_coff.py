@@ -191,6 +191,13 @@ def test_retail_decoder_proves_remapped_and_direct_tables_in_one_trailing_island
     from _recoil.commands.relocation_expectations import decode_x86_operand_sites
 
     base, code = mapped_switch_bytes()
+    # The last RET may already end at the aligned table boundary.
+    adjacent = bytearray(code[:52] + code[56:])
+    for field, target in ((17, 64), (24, 52), (36, 68)):
+        struct.pack_into("<I", adjacent, field, base + target)
+    sites, unresolved = decode_x86_operand_sites(bytes(adjacent), function_address=base)
+    assert not unresolved
+    assert [site.offset for site in sites if site.kind == "switch-table-entry"] == [52, 56, 60, 68, 72]
     for opcode in (0x89, 0x8B):
         for register in range(8):
             aligned = code[:52] + bytes((opcode, 0xC0 + register * 9, 0x90, 0x90)) + code[56:]
@@ -203,6 +210,7 @@ def test_retail_decoder_proves_remapped_and_direct_tables_in_one_trailing_island
         assert [site.offset for site in sites if site.kind == "switch-table-entry"] == [56, 60, 64, 72, 76]
         assert [site.offset for site in sites if site.kind == "absolute32"] == [17, 24, 36]
         assert all(site.relocation_type == 6 for site in sites)
+        assert len(sites) == len({(site.offset, site.relocation_type) for site in sites})
 
 
 def test_retail_decoder_rejects_unproven_remap_flow_extents_and_targets():
@@ -280,10 +288,29 @@ def test_retail_derivation_screens_arithmetic_lea_but_retains_absolute_symbol_re
     # (VC5's __except_list). Segment prefixes must not erase that requirement.
     code[:] = bytes.fromhex("64 a1 00 00 00 00 64 89 25 00 00 00 00 c3")
     assert len(derive()["unresolved"]) == 2
+    # Register-relative disp32 can index an image object. Cover a plain
+    # ModRM operand, SIB, two-byte opcode and x87, including interior addends.
+    # Ordinary positive field and negative frame offsets must stay excluded.
+    code[:] = bytes.fromhex(
+        "8b 80 01 20 40 00 8b 84 8b 02 20 40 00 "
+        "0f b6 88 03 20 40 00 d8 80 04 20 40 00 "
+        "8b 80 34 12 00 00 8b 85 00 ff ff ff "
+        "0f b6 88 10 00 00 00 8b 84 8b 10 00 00 00 c3"
+    )
+    indexed = derive()
+    assert indexed["passed"], indexed
+    assert [(x["offset"], x["target_symbol"], x["coff_addend"])
+            for x in indexed["expectations"]] == [
+        (2, "_table", 1), (9, "_table", 2),
+        (16, "_table", 3), (22, "_table", 4),
+    ]
+    code[2:6] = struct.pack("<I", 0x403000)
+    assert derive()["unresolved"][0]["kind"] == "missing-target-identity"
     _exercise_native_eh_role_witnesses(monkeypatch)
     _exercise_native_array_cleanup(monkeypatch)
     _exercise_native_array_destruction(monkeypatch)
     _exercise_native_import_references(monkeypatch)
+    _exercise_native_import_source_refresh()
 
 
 def _exercise_registered_byte_selectors(monkeypatch):
@@ -328,6 +355,34 @@ def _exercise_registered_byte_selectors(monkeypatch):
         state[0].object_symbols, "other-tu", (pattern, "src/other.cpp", "function"))
     assert expected._resolve_identity(0x402000, [state[0], competing])[0] is None
 
+    # A registered data slice names its containing COFF object plus an offset.
+    # The retail field extent remains the only eligible resolution interval.
+    field = Row(symbol="_table", symbol_regex=None, object_offset=12)
+    field_binding = Row(function=field, source_from="src/unit.cpp", target=binding.target)
+    with monkeypatch.context() as patch:
+        patch.setitem(row, "kind", "data")
+        state, blockers = expected.build_target_identity_state(document, {symbol_id: [field_binding]})
+        assert not blockers and state[0].object_offset == 12
+        assert expected._resolve_identity(0x402000, state)[1] == 12
+        assert expected._resolve_identity(0x402004, state)[1] == 16
+        assert expected._resolve_identity(0x401fff, state)[0] is None
+        assert expected._resolve_identity(0x402010, state)[0] is None
+        base = expected.TargetIdentity("table", 0x401ff4, 0x402010, ("_table",), "registered-vc5-target")
+        assert expected._resolve_identity(0x402004, [state[0], base])[1] == 16
+        wrong = expected.TargetIdentity("other", 0x402000, 0x402010, ("_table",), "registered-vc5-target")
+        assert expected._resolve_identity(0x402004, [state[0], wrong])[0] is None
+        for invalid in (-1, True, "12", 0x500000):
+            with monkeypatch.context() as changed:
+                changed.setattr(field, "object_offset", invalid)
+                identities, blockers = expected.build_target_identity_state(document, {symbol_id: [field_binding]})
+                assert not identities and blockers[0]["kind"] == "invalid-registered-target-offset"
+        zero = Row(function=Row(symbol="_table", symbol_regex=None, object_offset=0),
+                   source_from="src/unit.cpp", target=binding.target)
+        identities, blockers = expected.build_target_identity_state(document, {symbol_id: [field_binding, zero]})
+        assert not identities and blockers
+    identities, blockers = expected.build_target_identity_state(document, {symbol_id: [field_binding]})
+    assert not identities and blockers  # Nonzero slices cannot describe functions.
+
     symbol = Row(name="_entry_fastcall", section_number=1, storage_class=2, type=0x20, value=0)
     section = Row(characteristics=0x20, name=".text", index=1)
     obj = Row(symbols=[symbol], section=lambda index: section)
@@ -367,6 +422,43 @@ def _exercise_registered_byte_selectors(monkeypatch):
     catalog.append(catalog[0])
     assert not prove().registered_symbol_name
 
+    # A switch label must retain its independently proved containing function
+    # and body-relative addend when that function uses a registered selector.
+    label = Row(name="$L42", index=1, section_number=1, storage_class=6, type=0, value=12)
+    symbol.index = 0
+    obj.symbols.append(label)
+    obj.symbols_by_index = {0: symbol, 1: label}
+    obj.function_end = lambda entry, selected: 32
+    section.characteristics = 0x1020
+    body = Row(start=0, end=32, natural_end=32, section_index=1,
+               symbol=symbol.name, data=bytes(32))
+    relocation = Row(offset=4, type=6, symbol_name=label.name, symbol_index=1)
+    canonical = live._canonicalize_same_comdat_local_label(
+        coff_object=obj, function_bytes=body, relocation=relocation, raw_addend=0)
+    assert canonical.canonicalized and canonical.coff_addend == 12
+    catalog = [dict(offset=4, type=6, target_symbol=selectors.PREFIX+pattern,
+                    registered_target_selector=selector)]
+    def prove_local(definition=None):
+        return live._canonicalize_registered_target_selectors(
+            body, [(relocation, canonical)], catalog,
+            lambda source: obj if definition is None else definition,
+            coff_object=obj)[0][1]
+    matched = prove_local()
+    assert matched.symbol_name == selectors.PREFIX+pattern
+    assert matched.registered_symbol_name == symbol.name and matched.coff_addend == 12
+    assert not prove_local(Row(**vars(obj))).registered_symbol_name
+    for target, attribute, value in (
+        (label, "storage_class", 3), (label, "section_number", 2),
+        (label, "value", 32), (section, "characteristics", 0x20),
+        (body, "symbol", "_other"), (body, "data", bytes(4)),
+        (relocation, "symbol_index", 0), (relocation, "type", 20),
+    ):
+        with monkeypatch.context() as patch:
+            patch.setattr(target, attribute, value)
+            assert not prove_local().registered_symbol_name
+    canonical = live.CanonicalRelocationTarget(symbol.name, 13, True, "same-comdat-local-label")
+    assert not prove_local().registered_symbol_name
+
 
 def _exercise_native_import_references(monkeypatch):
     from types import SimpleNamespace as Row
@@ -403,6 +495,39 @@ def _exercise_native_import_references(monkeypatch):
     with pytest.raises(ValueError, match="ambiguous"): imports.prove_import_member(obj, "_convert", "convert")
     obj.symbols.pop()
 
+    # Ordinal import members have two literal ordinal words, no name section,
+    # and no lookup relocations. Keep their proof distinct from named imports.
+    with monkeypatch.context() as patch:
+        patch.setattr(obj, "sections", sections[:3])
+        patch.setattr(obj, "symbols", [symbols[0], symbols[1], symbols[3]])
+        patch.setattr(obj, "relocations_by_section", {1: refs[1]})
+        patch.setattr(symbols[3], "name", "__IMPORT_DESCRIPTOR_MFC42")
+        for section in sections[1:3]:
+            patch.setattr(section, "raw_data", struct.pack("<I", 0x8000002a))
+        def ordinal_proof(ordinal=42, name="#42"):
+            return imports.prove_import_member(obj, "_convert", name, import_ordinal=ordinal,
+                                                descriptor_name="__IMPORT_DESCRIPTOR_MFC42")
+        assert ordinal_proof()["import_ordinal"] == 42
+        for ordinal, name in ((43, "#43"), (-1, "#-1"), (65536, "#65536"),
+                              (True, "#True"), (42, "convert")):
+            with pytest.raises(ValueError): ordinal_proof(ordinal, name)
+        for target, attr, value in [(sections[1], "raw_data", struct.pack("<I", 42)),
+            (sections[2], "raw_data", struct.pack("<I", 0x8000002b)),
+            (sections[1], "raw_data", struct.pack("<I", 0x8000002a)+bytes(4)),
+            (obj, "sections", sections), (symbols[3], "name", "__IMPORT_DESCRIPTOR_OTHER"),
+            (obj, "relocations_by_section", {1: refs[1], 2: refs[2]}),
+            (obj, "relocations_by_section", {1: refs[1], 3: refs[3]}),
+            (refs[1][0], "symbol_index", 2)]:
+            with monkeypatch.context() as changed:
+                changed.setattr(target, attr, value)
+                with pytest.raises(ValueError): ordinal_proof()
+
+    for identity in (dict(dll="OTHER.dll", name="#42", ordinal=42),
+                     dict(dll="MFC42.DLL", name="convert", ordinal=None),
+                     dict(dll="MSVCRT.dll", name="#42", ordinal=42)):
+        with pytest.raises(ValueError, match="requires"):
+            imports.canonical_import_proof("_convert", identity)
+
     identity = dict(dll="MSVCRT.dll", name="convert", ordinal=None)
     table = [Row(address="0x408000", dll="MSVCRT.dll", import_name="convert", import_ordinal=None)]
     with monkeypatch.context() as patch:
@@ -436,6 +561,53 @@ def _exercise_native_import_references(monkeypatch):
         for wrong in (dict(identity, dll="OTHER.dll"), dict(identity, name="other"), dict(identity, ordinal=1)):
             patch.setattr(imports, "import_at", lambda *args: (wrong, 0x408000))
             with pytest.raises(ValueError, match="different DLL/import"): prove()
+
+
+def _exercise_native_import_source_refresh():
+    from copy import deepcopy
+    from _recoil.commands import native_import_relocations as imports
+
+    old = dict(schema=imports.SCHEMA, reviewed=True, reason="Retail import",
+               context=dict(offset=1, opcode="e8", target=0x407000,
+                            identity=dict(dll="MSVCRT.dll", name="convert", ordinal=None),
+                            evidence_ids=["evidence"], canonical=dict(symbol="_convert"),
+                            source_binding=dict(symbol_id="caller", object_symbol="_caller",
+                                                address="0x401000", end_exclusive="0x401010",
+                                                registration_ids=["vc5:unit:source:src/old.cpp"])))
+    entries = []
+    assert imports.stage_import_binding(entries, old) == "added"
+    with pytest.raises(ValueError, match="already"): imports.stage_import_binding(entries, old)
+    current = deepcopy(old)
+    current["reason"] = "Refresh current implementation registration"
+    current["context"]["source_binding"]["registration_ids"] = ["vc5:unit:source:src/current.cpp"]
+    bad_old = deepcopy(old)
+    bad_old["reason"] = "stale"
+    for expected_old in (bad_old, {}, dict(old, schema="unknown"), dict(old, reviewed=1)):
+        with pytest.raises(ValueError): imports.stage_import_binding(entries, current, expected_old)
+    with pytest.raises(ValueError, match="duplicated"):
+        imports.stage_import_binding([old, deepcopy(old)], current, old)
+    with pytest.raises(ValueError): imports.stage_import_binding([], current, old)
+    for invalid in (None, {}, [None], [{}]):
+        with pytest.raises(ValueError): imports.stage_import_binding(invalid, current, old)
+    for field, value in (("offset", 2), ("opcode", "e9"), ("target", 0x407001),
+                         ("identity", dict(dll="OTHER.dll", name="convert", ordinal=None)),
+                         ("evidence_ids", ["new"]), ("canonical", dict(symbol="_other")),
+                         ("unexpected", True)):
+        bad = deepcopy(current)
+        bad["context"][field] = value
+        with pytest.raises(ValueError): imports.stage_import_binding(entries, bad, old)
+    for field, value in (("symbol_id", "other"), ("object_symbol", "_other"),
+                         ("address", "0x401001"), ("end_exclusive", "0x401011"),
+                         ("unexpected", True), ("registration_ids", []),
+                         ("registration_ids", ["duplicate", "duplicate"]),
+                         ("registration_ids", [None]), ("registration_ids", "bad")):
+        bad = deepcopy(current)
+        bad["context"]["source_binding"][field] = value
+        with pytest.raises(ValueError): imports.stage_import_binding(entries, bad, old)
+    with pytest.raises(ValueError, match="changed"): imports.stage_import_binding(entries, old, old)
+    assert entries == [old]
+    assert imports.stage_import_binding(entries, current, old) == "refreshed-source-registration"
+    assert entries == [current] and old["context"]["source_binding"]["registration_ids"] == ["vc5:unit:source:src/old.cpp"]
 
 
 def _exercise_native_array_cleanup(monkeypatch):
@@ -807,6 +979,18 @@ def test_authored_byte_derivation_uses_exact_folded_call_selectors_and_rejects_d
 def test_named_static_stem_requires_exact_storage_contents_and_all_readers(monkeypatch, tmp_path):
     from types import SimpleNamespace as Row
     from _recoil.commands import live_byte_verify as byte
+    from _recoil.call_contract.listing import _matches_compiler_literal
+
+    literal = dict(name="$T42", section_name=".rdata", section_number=7,
+                   value=0x120, symbol_type=0, storage_class=3, aux_count=0,
+                   data=struct.pack("<f", 1))
+    assert _matches_compiler_literal(Row(**literal), literal["data"])
+    assert _matches_compiler_literal(Row(**{**literal, "value": 0x560,
+                                           "section_number": 12}), literal["data"])
+    for field, value in (("name", "named"), ("section_name", ".data"),
+                         ("section_number", 0), ("value", -1), ("symbol_type", 0x20),
+                         ("storage_class", 2), ("aux_count", 1), ("data", b"bad")):
+        assert not _matches_compiler_literal(Row(**{**literal, field: value}), literal["data"])
 
     # A virtual-only data range must not read the following section's file
     # bytes. Only the explicit loaded-data path may supply PE zero fill.

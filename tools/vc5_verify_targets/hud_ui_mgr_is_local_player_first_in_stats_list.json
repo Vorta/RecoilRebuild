@@ -20,17 +20,8 @@
   "functions": [
     {
       "address": "0x4143a0",
-      "symbol": "?IsLocalPlayerFirstInStatsList@HudUiMgr@@YAHXZ",
+      "symbol": "?IsLocalPlayerFirstInStatsList@HudUiMgr@@YIHXZ",
       "name": "HudUiMgr::IsLocalPlayerFirstInStatsList"
-    }
-  ],
-  "data_symbols": [
-    {
-      "address": "0x4ed4e0",
-      "symbol": "?g_HudUiMgrStatsList@@3PAUHudUiStatsListElement@@A",
-      "name": "g_HudUiMgrStatsList",
-      "bn_name": "g_HudUiStatsListElement",
-      "byte_length": 4
     }
   ]
 }

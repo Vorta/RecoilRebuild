@@ -1,9 +1,9 @@
 {
   "name": "hud_ui_timer_panel_global_accessors_data",
-  "description": "HudUiTimerPanel global accessor authored data.",
+  "description": "Current candidate bindings for the HUD timer and statistics pointer access ranges. Four-byte comparison slices are not accepted physical extents or original member declarations.",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "source_filename": "zhud_ui.cpp",
-  "source_from": "src/GameZRecoil/zUI/zui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -15,15 +15,24 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zUI/zui.cpp"
+    "src/GameZRecoil/zUI/zui_widgets.cpp"
   ],
   "data_symbols": [
     {
       "address": "0x4ea654",
-      "symbol": "?g_HudUiMgrTimerPanel@@3PAUHudUiTimerPanel@@A",
+      "symbol": "?g_HudUiMgr@@3THudUiMgrDataStorage@@A",
       "name": "g_HudUiMgrTimerPanel",
       "bn_name": "g_HudUiTimerPanel",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 18308
+    },
+    {
+      "address": "0x4ed4e0",
+      "symbol": "?g_HudUiMgr@@3THudUiMgrDataStorage@@A",
+      "name": "g_HudUiMgrStatsList",
+      "bn_name": "g_HudUiStatsListElement",
+      "byte_length": 4,
+      "object_offset": 30224
     }
   ]
 }

@@ -761,6 +761,7 @@ def normalize_provider_function_request(value: Mapping[str, Any]) -> dict[str, A
             "physical_emitter_state",
             "retail_icf_winner_status",
             "retail_icf_logical_symbols",
+            "logical_type_renames",
         }
     )
     allowed = common | mode_fields
@@ -874,6 +875,24 @@ def normalize_provider_function_request(value: Mapping[str, Any]) -> dict[str, A
                 "retail_icf_logical_symbols": list(logical_symbols),
             }
         )
+        if "logical_type_renames" in value:
+            renames = value["logical_type_renames"]
+            if not isinstance(renames, list) or not renames:
+                raise ProviderFunctionMutationError("logical_type_renames requires reviewed type-name pairs")
+            seen_old, seen_new = set(), set()
+            for rename in renames:
+                if (not isinstance(rename, dict) or set(rename) != {"from", "to"}
+                    or any(not isinstance(rename[key], str)
+                           or re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", rename[key]) is None
+                           for key in ("from", "to"))
+                    or rename["from"] == rename["to"]
+                    or rename["from"] in seen_old or rename["to"] in seen_new):
+                    raise ProviderFunctionMutationError("logical_type_renames requires unique C++ identifier pairs")
+                seen_old.add(rename["from"])
+                seen_new.add(rename["to"])
+            if seen_old & seen_new:
+                raise ProviderFunctionMutationError("logical_type_renames cannot chain or swap types")
+            result["logical_type_renames"] = deepcopy(renames)
     return result
 
 
@@ -1177,9 +1196,10 @@ def _validate_header_provider_extension(
         raise ProviderFunctionMutationError("header extension cannot replace provider identity")
     icf = catalog.get("retail_icf")
     prior = icf.get("logical_symbols") if isinstance(icf, Mapping) else None
+    renamed_prior = _renamed_header_logical_symbols(prior, request)
     if (not isinstance(prior, list) or not prior
         or any(not isinstance(item, str) for item in prior) or len(set(prior)) != len(prior)
-        or not set(prior).issubset(request["retail_icf_logical_symbols"])
+        or not set(renamed_prior).issubset(request["retail_icf_logical_symbols"])
         or request["object_symbol"] not in prior):
         raise ProviderFunctionMutationError("header extension cannot remove or infer prior logical names")
     primary = [edge for edge in owner.get("relationships", [])
@@ -1195,6 +1215,31 @@ def _validate_header_provider_extension(
         or catalog.get("body_size") != row["size"]):
         raise ProviderFunctionMutationError("header extension requires unchanged exact extent")
     return row, extent[0], extent[1], owner
+
+
+def _renamed_header_logical_symbols(prior, request):
+    """Refresh reviewed struct spellings without changing the provider census.
+
+    Registration subsequently rebuilds every canonical-header specialization
+    and compares it directly with retail; this selector accepts no body facts.
+    """
+    renames = request.get("logical_type_renames", ())
+    if not renames:
+        return prior
+    if not isinstance(prior, list) or any(not isinstance(name, str) for name in prior):
+        raise ProviderFunctionMutationError("type-name refresh requires existing logical symbols")
+    updated = list(prior)
+    for rename in renames:
+        old, new = "U" + rename["from"] + "@@", "U" + rename["to"] + "@@"
+        if not any(old in name for name in updated) or any(new in name for name in updated):
+            raise ProviderFunctionMutationError("type-name refresh requires an exact old spelling and absent new spelling")
+        updated = [name.replace(old, new) for name in updated]
+    if (request["object_symbol"] not in updated
+        or len(set(updated)) != len(prior)
+        or updated != request["retail_icf_logical_symbols"]):
+        raise ProviderFunctionMutationError("type-name refresh must preserve the primary identity and complete ordered logical census")
+    _canonical_header_logical_probe_recipes(request)
+    return updated
 
 
 def _validate_tracker_ownership(
@@ -1710,6 +1755,8 @@ def register_provider_function(
             document, function_id=function_id, address=normalized_address, request=request,
         )
     else:
+        if request.get("logical_type_renames"):
+            raise ProviderFunctionMutationError("type-name refresh requires an existing header provider")
         existing_owner = _existing_header_inventory_owner(
             document, function_id=function_id, address=normalized_address, request=request,
         )
@@ -1761,6 +1808,8 @@ def register_provider_function(
         "end_exclusive": normalize_address(end),
         **asdict(proof),
     }
+    if request.get("logical_type_renames"):
+        provenance["logical_type_renames"] = deepcopy(request["logical_type_renames"])
     try:
         evidence_id = add_live_evidence(
             proposed,

@@ -598,8 +598,7 @@ float __fastcall UpdateBeamNodeBetweenPoints(
 
     zClass_Object3D::gwObject3DSetPosition(obj3d, srcPos->x, srcPos->y, srcPos->z);
 
-    zVec3 angles = {0};
-    zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos, &angles);
+    const zVec3 angles = zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos);
     zClass_Object3D::gwObject3DSetRotation(obj3d, angles.x, angles.y, 0.0f);
 
     zVec3 scale = {0};
@@ -647,8 +646,7 @@ float __fastcall UpdateBeamNodeBetweenFractions(
 
     zClass_Object3D::gwObject3DSetPosition(obj3d, start.x, start.y, start.z);
 
-    zVec3 angles = {0};
-    zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos, &angles);
+    const zVec3 angles = zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos);
     zClass_Object3D::gwObject3DSetRotation(obj3d, angles.x, angles.y, 0.0f);
 
     zVec3 scale = {0};

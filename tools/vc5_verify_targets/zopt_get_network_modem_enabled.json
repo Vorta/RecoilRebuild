@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x408270",
-      "symbol": "?GetNetworkModemEnabled@zOpt@@YAHXZ",
+      "symbol": "?GetNetworkModemEnabled@zOpt@@YIHXZ",
       "name": "zOpt::GetNetworkModemEnabled",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

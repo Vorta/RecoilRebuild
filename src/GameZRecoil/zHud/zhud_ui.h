@@ -395,7 +395,7 @@ struct HudLayoutBase : HudUiContainer {
     virtual void Enable();
     virtual void Disable();
     virtual void OnActivated();
-    void LoadTypeIFromZarRoot(zReader::Node *parentNode);
+    int LoadTypeIFromZarRoot(zReader::Node *parentNode);
 };
 
 struct HudLayoutSW : HudLayoutBase {

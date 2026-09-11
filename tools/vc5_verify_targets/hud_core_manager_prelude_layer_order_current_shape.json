@@ -121,13 +121,13 @@
         },
         {
           "address": "0x40d9e0",
-          "symbol_regex": "\\?ConstructorEx@HudUiMeter@@.*",
-          "name": "HudUiMeter::ConstructorEx"
+          "name": "HudUiMeter::ConstructorEx",
+          "symbol": "??0HudUiManagerMeterBaseCandidate@@QAE@XZ"
         },
         {
           "address": "0x40da00",
-          "symbol_regex": "\\?Constructor@HudUiMessage@@.*",
-          "name": "HudUiMessage::Constructor"
+          "name": "HudUiMessage::Constructor",
+          "symbol": "??0HudUiMessage@@QAE@XZ"
         },
         {
           "address": "0x40daa0",
@@ -164,13 +164,13 @@
         },
         {
           "address": "0x40dbf0",
-          "symbol_regex": "\\?Constructor@HudUiCounterTextPanel@@.*",
-          "name": "HudUiCounterTextPanel::Constructor"
+          "name": "HudUiCounterTextPanel::Constructor",
+          "symbol": "??0HudUiCounterTextPanel@@QAE@XZ"
         },
         {
           "address": "0x40dcd0",
-          "symbol_regex": "\\?Constructor@HudUiTriplet@@.*",
-          "name": "HudUiTriplet::Constructor"
+          "name": "HudUiTriplet::Constructor",
+          "symbol": "??0HudUiTriplet@@QAE@XZ"
         },
         {
           "address": "0x40e010",
@@ -184,8 +184,8 @@
         },
         {
           "address": "0x40e070",
-          "symbol_regex": "\\?DestructorCore@HudUiTriplet@@.*",
-          "name": "HudUiTriplet::DestructorCore"
+          "name": "HudUiTriplet::DestructorCore",
+          "symbol": "??1HudUiTriplet@@QAE@XZ"
         },
         {
           "address": "0x40e140",
@@ -264,8 +264,8 @@
         },
         {
           "address": "0x40ed80",
-          "symbol_regex": "\\?ConstructorDefault@HudUiTimerPanel@@.*",
-          "name": "HudUiTimerPanel::ConstructorDefault"
+          "name": "HudUiTimerPanel::ConstructorDefault",
+          "symbol": "??0HudUiTimerPanel@@QAE@XZ"
         },
         {
           "address": "0x40ee60",
@@ -309,8 +309,8 @@
         },
         {
           "address": "0x40f200",
-          "symbol_regex": "\\?Constructor@HudUiTripletPanel@@.*",
-          "name": "HudUiTripletPanel::Constructor"
+          "name": "HudUiTripletPanel::Constructor",
+          "symbol": "??0HudUiTripletPanel@@QAE@XZ"
         },
         {
           "address": "0x40f2b0",
@@ -381,8 +381,8 @@
         },
         {
           "address": "0x40fb70",
-          "symbol_regex": "\\?\\?0HudUiMeter@@.*",
-          "name": "HudUiMeter::HudUiMeter"
+          "name": "HudUiMeter::HudUiMeter",
+          "symbol": "??0HudUiShieldMeterCandidate@@QAE@XZ"
         },
         {
           "address": "0x40fb90",

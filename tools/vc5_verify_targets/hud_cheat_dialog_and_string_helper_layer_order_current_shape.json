@@ -37,7 +37,7 @@
     },
     {
       "address": "0x406cf0",
-      "symbol": "?ClearNanitePanelCheatSentinel@HudCheat@@YAXXZ",
+      "symbol": "?ClearNanitePanelCheatSentinel@HudCheat@@YIXXZ",
       "name": "HudCheat::ClearNanitePanelCheatSentinel"
     },
     {
@@ -107,12 +107,12 @@
     },
     {
       "address": "0x407100",
-      "symbol": "?QueueExitCurrentState@HudUiCallback@@YAXXZ",
+      "symbol": "?QueueExitCurrentState@HudUiCallback@@YIXXZ",
       "name": "HudUiCallback::QueueExitCurrentState"
     },
     {
       "address": "0x407110",
-      "symbol": "?QueueCheatCodeState@HudUiCallback@@YAHXZ",
+      "symbol": "?QueueCheatCodeState@HudUiCallback@@YIHXZ",
       "name": "HudUiCallback::QueueCheatCodeState"
     },
     {

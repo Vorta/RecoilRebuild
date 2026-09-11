@@ -84,7 +84,8 @@
     "src/GameZRecoil/zSound/zsnd_play.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zUI/zui.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zUI/zui_widgets.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
-    "src/GameZRecoil/zUtil/zutl_zbd.cpp": "vc5_o2_ob1_md_gx_fastcall_facs"
+    "src/GameZRecoil/zUtil/zutl_zbd.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/Battlesport/camera.cpp": "vc5_o2_ob1_md_gx_fastcall_facs"
   },
   "zeroarg_abi_equivalence": [
     {
@@ -787,6 +788,7 @@
     "src/Battlesport/about.cpp",
     "src/Battlesport/ai_net.cpp",
     "src/Battlesport/Briefing.cpp",
+    "src/Battlesport/camera.cpp",
     "src/Battlesport/hud.cpp",
     "src/Battlesport/map.cpp",
     "src/Battlesport/mission.cpp",

@@ -275,10 +275,9 @@ void __fastcall MatBuildEulerRotation3x3(
     float angleY,
     float angleZ
 );
-zVec3 *__fastcall Vec3DirectionAnglesBetweenPoints(
+zVec3 __fastcall Vec3DirectionAnglesBetweenPoints(
     const zVec3 *pointA,
-    const zVec3 *pointB,
-    zVec3 *outAngles
+    const zVec3 *pointB
 );
 void __fastcall Vec3ArrayProjectToCachedY(
     const zVec3 *points,

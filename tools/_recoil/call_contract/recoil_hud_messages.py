@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from _recoil.call_contract import callable_identity as _cc_callable_identity
+from _recoil.call_contract import candidate as _cc_candidate
 from _recoil.call_contract import catalog as _cc_catalog
 from _recoil.call_contract import cfg as _cc_cfg
 from _recoil.call_contract import comparison as _cc_comparison
@@ -1079,7 +1080,7 @@ def _hud_ui_message_clear_display_vptr_bridges(
             "state": "not-applicable",
         }
         or literal_row.get("verification_target_ids")
-        != ["recoil:vc5-target:zinput_bindmap_current_name_wrappers"]
+        != []
         or indexes.storage_by_address.get(
             _cc_catalog.HUD_UI_MESSAGE_CLEAR_DISPLAY_EMPTY_LITERAL_ADDRESS
         )
@@ -2246,23 +2247,9 @@ def _hud_ui_message_update_selected_weapon_vptr_bridges(
         exact_zero_float_local_definitions = tuple(
             row
             for row in caller.local_static_definitions
-            if (
-                row.section_name,
-                row.section_number,
-                row.value,
-                row.symbol_type,
-                row.storage_class,
-                row.aux_count,
-                row.data,
-            )
-            == (
-                ".rdata",
-                4,
-                0x374,
-                0,
-                IMAGE_SYM_CLASS_STATIC,
-                0,
-                b"\x00\x00\x00\x00",
+            if row.name == zero_float_symbol
+            and _cc_candidate._candidate_compiler_local_scalar_matches(
+                row, b"\x00\x00\x00\x00"
             )
         )
         external_symbol_population = (
@@ -2316,23 +2303,8 @@ def _hud_ui_message_update_selected_weapon_vptr_bridges(
         exact_semantic_local_definitions = tuple(
             row
             for row in semantic_local_definitions
-            if (
-                row.section_name,
-                row.section_number,
-                row.value,
-                row.symbol_type,
-                row.storage_class,
-                row.aux_count,
-                row.data,
-            )
-            == (
-                ".rdata",
-                4,
-                0x2FC,
-                0,
-                IMAGE_SYM_CLASS_STATIC,
-                0,
-                b"\xa3\x79\xeb\x4c",
+            if _cc_candidate._candidate_local_read_only_scalar_matches(
+                row, b"\xa3\x79\xeb\x4c"
             )
         )
         external_symbol_population = (
@@ -2869,50 +2841,23 @@ def _hud_ui_message_update_selected_weapon_vptr_bridges(
         )
     )
     expected_local_statics = {
-        zero_float_symbol: (
-            ".rdata",
-            4,
-            0x374,
-            0,
-            IMAGE_SYM_CLASS_STATIC,
-            0,
-            b"\x00\x00\x00\x00",
-        ),
-        candidate_clear_float_symbol: (
-            ".rdata",
-            4,
-            0x2FC,
-            0,
-            IMAGE_SYM_CLASS_STATIC,
-            0,
-            b"\xa3\x79\xeb\x4c",
-        ),
+        zero_float_symbol: b"\x00\x00\x00\x00",
+        candidate_clear_float_symbol: b"\xa3\x79\xeb\x4c",
     }
     if (
-        len(caller.local_static_definitions)
-        != len(expected_local_statics)
+        len(caller.local_static_definitions) != len(expected_local_statics)
         or len(local_static_by_name) != len(expected_local_statics)
+        or set(local_static_by_name) != set(expected_local_statics)
         or any(
-            (
-                row.section_name,
-                row.section_number,
-                row.value,
-                row.symbol_type,
-                row.storage_class,
-                row.aux_count,
-                row.data,
-            )
-            != expected
+            not _cc_candidate._candidate_local_read_only_scalar_matches(row, expected)
             for name, expected in expected_local_statics.items()
             for row in (local_static_by_name.get(name),)
             if row is not None
         )
-        or set(local_static_by_name) != set(expected_local_statics)
     ):
         raise ValueError(
             "HUD message UpdateSelectedWeaponDisplay bridge rejects candidate "
-            "COFF local-static identity/section/value/class/data provenance "
-            "drift"
+            "COFF local-static identity/section/class/data provenance drift"
         )
 
     retail_bridges = {

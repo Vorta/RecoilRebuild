@@ -1542,6 +1542,20 @@ def extract_invocation_contract(
                 and len(calls) < len(reviewed_retail_call_sites_by_ordinal)
                 else None
             )
+            call_only_site = (instruction_addresses[index] if source == "bn"
+                              else reviewed_retail_call_site)
+            call_only_contract = indexes.call_only_icf_by_site.get(
+                normalize_address(call_only_site) if call_only_site is not None else "")
+            call_only_proved = False
+            if call_only_contract is not None:
+                from _recoil.call_contract.call_only_icf import prove_call
+                call_only_proved = prove_call(call_only_contract, source=source,
+                    caller_identity=caller_identity, caller_start=start, instructions=instructions,
+                    index=index, instruction_addresses=instruction_addresses,
+                    caller_definition=candidate_caller_definition,
+                    callee_definitions=candidate_direct_callee_definitions,
+                    local_control_flow_indices=local_control_flow_indices,
+                    local_control_flow_targets=local_control_flow_targets)
             identity_kind, target_identity = _cc_targets._canonical_direct_identity(
                 operand,
                 source=source,
@@ -1565,6 +1579,8 @@ def extract_invocation_contract(
                 cod_source_line=(
                     instruction.source_line if source == "cod" else ""
                 ),
+                retail_instruction=instruction if source == "bn" else None,
+                call_only_icf_proved=call_only_proved,
             )
             slot = None
             storage = ""

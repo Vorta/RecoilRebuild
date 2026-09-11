@@ -1,0 +1,47 @@
+{
+  "name": "recoil_interp_data",
+  "description": "Current HUD-TU data bindings for the Recoil interpreter search path and native command name; original storage and owner gates remain separate.",
+  "source_filename": "hud.cpp",
+  "source_from": "src/Battlesport/hud.cpp",
+  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "include_dirs": [
+    "src",
+    "tools/_recoil/compat/include",
+    "src/GameZRecoil/include",
+    "src/GameZRecoil/zClass",
+    "src/GameZRecoil/zEffect",
+    "src/GameZRecoil/zError",
+    "src/GameZRecoil/zInterp",
+    "src/GameZRecoil/zModel",
+    "src/GameZRecoil/zReader",
+    "src/GameZRecoil/zRender",
+    "src/GameZRecoil/zSound",
+    "src/GameZRecoil/zUtil",
+    "src/GameZRecoil/zVideo",
+    "src/GameZRecoil/zWeapon",
+    "src/Battlesport",
+    "support/sdk/DirectX6/include",
+    "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
+  ],
+  "source_files": [
+    "src/Battlesport/hud.cpp"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4dae4c",
+      "symbol": "",
+      "symbol_regex": "_kHudTailGlobalContextSearchPath\\$S[0-9]+",
+      "name": "kHudTailGlobalContextSearchPath",
+      "bn_name": "g_zInterp_GlobalContext_SearchPath",
+      "byte_length": 6
+    },
+    {
+      "address": "0x4dae54",
+      "symbol": "",
+      "symbol_regex": "_kHudTailCommandNameWeaponSetMaxTetherAltitude\\$S[0-9]+",
+      "name": "kHudTailCommandNameWeaponSetMaxTetherAltitude",
+      "bn_name": "g_zInterp_CommandName_WeaponSetMaxTetherAltitude",
+      "byte_length": 27
+    }
+  ]
+}

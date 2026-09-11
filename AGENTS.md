@@ -249,6 +249,16 @@ or post-link patching.
 Source-level C/C++ `goto` is forbidden in production `src/`. Recover
 structured source. Raw assembly remains exception-only under the tier skill.
 
+Unused local assignments are allowed when they reproduce retail byte output,
+including assignments embedded in expressions whose saved values are never
+subsequently read. The user explicitly authorized this source form and similar
+future cases on 2026-09-11; do not reject it solely because the stored values
+are unused or request the same permission again. Document the unused values
+and their byte-matching purpose nearby, and retain the complete live code,
+relocation and linked-body proof requirements. Matching output establishes
+compiler compatibility, not the original authors' variable names or intent.
+See the executable runbook's unused-assignment guidance for the camera example.
+
 Use canonical attached source anchors:
 
 ```cpp
@@ -330,7 +340,9 @@ tier-B+ acceptance.
 
 Raw assembly requires failed credible C/C++ variants, a triggered Pro pass,
 exact BN/VC5 opcode/register/FPU evidence, a nearby `Purpose:` docblock, and
-an address-scoped `.agent/RAW_ASSEMBLY_ALLOWLIST.txt` entry. Naked functions,
+an address-scoped `.agent/RAW_ASSEMBLY_ALLOWLIST.txt` entry. Raw eligibility does
+not permit hard-coded structure-field offsets: use recovered C/C++ member names
+in inline assembly, as specified by the tier skill. Naked functions,
 `_emit`, `.asm` files, whole-function assembly, and order tricks remain
 forbidden outside documented CPU-probe exceptions.
 

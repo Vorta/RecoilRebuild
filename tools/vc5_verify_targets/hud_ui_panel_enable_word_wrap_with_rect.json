@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x40bec0",
-      "symbol": "?EnableWordWrapWithRect@HudUiPanel@@QAEXPBUHudUiRect@@@Z",
+      "symbol": "?EnableWordWrapWithRect@HudUiPanel@@UAEXPBUHudUiRect@@@Z",
       "name": "HudUiPanel::EnableWordWrapWithRect"
     }
   ]

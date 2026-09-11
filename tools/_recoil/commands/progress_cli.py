@@ -4600,6 +4600,8 @@ def close_live_call_contract(
         build_root=build_root,
         progress_path=progress_path,
     )
+    from _recoil.lib.call_only_icf import prove_unique_build_definitions
+    prove_unique_build_definitions(document.data, build_root / "whole-program-linkability")
     emit("call-contract closeout LINK PASS")
     _require_call_contract_closeout_vector_unchanged(store, initial_vector)
     _require_call_contract_proof_inputs_unchanged(
@@ -6187,15 +6189,15 @@ def _parse_logical_alias_group_payload(
         )
         allowed_name_statuses = (
             {"recovered", "provisional"}
-            if is_v3 or is_v4
+            if is_v2 or is_v3 or is_v4
             else {"recovered"}
         )
         if alias["original_name_status"] not in allowed_name_statuses:
             raise ProgressError(
                 f"logical alias {raw_identity_key!r}.original_name_status must be "
                 + (
-                    "the preserved existing value 'recovered' or 'provisional'"
-                    if is_v3 or is_v4
+                    "'recovered' or explicitly reviewed 'provisional'"
+                    if is_v2 or is_v3 or is_v4
                     else "'recovered'"
                 )
             )
@@ -6357,7 +6359,46 @@ def _parse_logical_alias_group_payload(
         payload["new_evidence"] = _parse_logical_alias_new_evidence(
             payload["new_evidence"]
         )
+    if is_v2 and any(alias["original_name_status"] == "provisional" for alias in aliases.values()):
+        _validate_provisional_compiler_alias_extension(payload)
     return payload
+
+
+def _validate_provisional_compiler_alias_extension(payload: Mapping[str, Any]) -> None:
+    """A provisional label describes reconstruction spelling, never a recovered name."""
+    current = payload["current"]
+    previous = current["logical_aliases"]
+    previous_group = current["icf_address_group"]
+    if (
+        current["pipeline_class"] != "non-authored"
+        or current["authored_order_role"] != "compiler-generated-icf-representative"
+        or not isinstance(previous, Mapping) or not previous
+        or not isinstance(previous_group, Mapping)
+    ):
+        raise ProgressError("provisional aliases require an existing compiler ICF group")
+    aliases = payload["logical_aliases"]
+    for identity, alias in previous.items():
+        expected = {key: value for key, value in alias.items() if key != "evidence_ids"}
+        if aliases.get(identity) != expected:
+            raise ProgressError("provisional alias extension must preserve every existing logical member")
+    expected_group = {key: value for key, value in previous_group.items() if key != "evidence_ids"}
+    if payload["icf_address_group"] != expected_group:
+        raise ProgressError("provisional alias extension must preserve the physical ICF winner state")
+    provisional = {identity for identity, alias in aliases.items()
+                   if identity not in previous and alias["original_name_status"] == "provisional"}
+    reviews = payload["new_evidence"]["provenance"].get("provisional_alias_reviews", {})
+    if not isinstance(reviews, Mapping) or set(reviews) != provisional:
+        raise ProgressError("provisional_alias_reviews must cover exactly the new provisional aliases")
+    for identity, raw_review in reviews.items():
+        if not isinstance(raw_review, Mapping):
+            raise ProgressError("provisional alias review must be an object")
+        review = _require_exact_payload_fields(raw_review, {
+            "reviewed", "spelling_kind", "original_spelling", "identity_basis",
+        }, label=f"provisional alias review {identity!r}")
+        if (review["reviewed"] is not True or review["spelling_kind"] != "reconstruction-only"
+                or review["original_spelling"] != "unknown"):
+            raise ProgressError("provisional alias review must affirm reconstruction-only spelling and unknown original spelling")
+        _require_payload_string(review["identity_basis"], label="provisional alias independent identity basis")
 
 
 def _load_logical_alias_group_payload(args: argparse.Namespace) -> dict[str, Any]:
