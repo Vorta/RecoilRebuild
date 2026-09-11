@@ -2182,15 +2182,8 @@ namespace gwNode {
         }
 
         zMath::MatLoadIdentity();
-        zVec3 directionAngles = {0};
-        zMath::Vec3DirectionAnglesBetweenPoints(
-            &worldPosition,
-            &worldOrientationBasis[0],
-            &directionAngles
-        );
-        outOrientation->x = directionAngles.x;
-        outOrientation->y = directionAngles.y;
-        outOrientation->z = directionAngles.z;
+        *outOrientation = zMath::Vec3DirectionAnglesBetweenPoints(
+            &worldPosition, &worldOrientationBasis[0]);
         outOrientation->z =
             zMathVec3ElevationAngleBetweenPoints(&worldPosition, &worldOrientationBasis[1]);
 

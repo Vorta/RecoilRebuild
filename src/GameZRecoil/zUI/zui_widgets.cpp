@@ -4942,9 +4942,7 @@ void HudUiContainer::InvalidateChildren() {
 void HudUiFillBitmap::SetNormalizedValueAndRebuild(
     float value
 ) {
-    unsigned int valueBits = 0;
-    memcpy(&valueBits, &value, sizeof(valueBits));
-    memcpy(&normalizedValue, &valueBits, sizeof(normalizedValue));
+    normalizedValue = value;
     Invalidate();
 }
 

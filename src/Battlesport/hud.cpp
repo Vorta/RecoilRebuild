@@ -325,12 +325,9 @@ int HudUiElement::GetCenterY() {
  * Purpose: return x directly or the aligned image center x when widget alignment is active.
  */
 int HudUiWidget::GetCenterX() {
-    if (alignFlags != 0) {
-        const int width = image != 0 ? image->width : 0;
-        return x + (width / 2);
-    }
-
-    return x;
+    return alignFlags != 0
+        ? x + ((image != 0 ? image->width : 0) / 2)
+        : x;
 }
 
 /**
@@ -342,12 +339,9 @@ int HudUiWidget::GetCenterX() {
  * Purpose: return y directly or the aligned image center y when widget alignment is active.
  */
 int HudUiWidget::GetCenterY() {
-    if (alignFlags != 0) {
-        const int height = image != 0 ? image->height : 0;
-        return y + (height / 2);
-    }
-
-    return y;
+    return alignFlags != 0
+        ? y + ((image != 0 ? image->height : 0) / 2)
+        : y;
 }
 
 /**
@@ -357,17 +351,11 @@ int HudUiWidget::GetCenterY() {
  * Purpose: rebuild a widget blit rectangle from the current image dimensions.
  */
 RECOIL_NO_GS void HudUiWidget::RebuildBltRectFromImage() {
-    zVidImagePartial *const sourceImage = image;
-    int right = x;
-    int bottom = y;
     HudUiRect rect;
-
-    rect.left = right;
-    rect.top = bottom;
-    right += sourceImage != 0 ? sourceImage->width : 0;
-    rect.right = right;
-    bottom += sourceImage != 0 ? sourceImage->height : 0;
-    rect.bottom = bottom;
+    rect.left = x;
+    rect.top = y;
+    rect.right = rect.left + (image != 0 ? image->width : 0);
+    rect.bottom = rect.top + (image != 0 ? image->height : 0);
 
     SetClipRect(&rect);
 }
@@ -401,1156 +389,6 @@ inline void __cdecl ReportOld(
 ) {}
 
 } // namespace zError
-
-namespace Player {
-
-enum HudPhysicalPlayerMasterTypeId {
-    kPlayerMasterTypeSub = 2,
-    kPlayerMasterTypeTrack = 3
-};
-
-enum HudPhysicalPlayerCameraState {
-    kPlayerCameraStateToggleRequest = 0,
-    kPlayerCameraStateThirdPerson = 1,
-    kPlayerCameraStateClearScreen = 2,
-    kPlayerCameraStateFirstPerson = 3,
-    kPlayerCameraStateTargeting = 4,
-    kPlayerCameraStateProjectileAttached = 7,
-    kPlayerCameraStateRestorePrevious = 8
-};
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.tickactivecamerastate
- * @recoil-artifact defines .text recoil:function:0x404e90: Player::TickActiveCameraState.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::TickActiveCameraState from the recovered
- * Battlesport gameplay source file.
- */
-void __fastcall TickActiveCameraState(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    g_Player_CameraVariantUpdatedThisTick = 0;
-
-    if (g_Player_RebuildCameraDirFlatFromCurrentTarget != 0) {
-        zVec3 targetWorldPos = playerState->worldPos;
-        zVec3 activeCameraTarget = {0};
-        zClass_Camera::gwCameraGetTarget(
-            g_MainCamera,
-            &activeCameraTarget.x,
-            &activeCameraTarget.y,
-            &activeCameraTarget.z
-        );
-
-        playerState->cameraTargetDistance =
-            zMath::Vec3DeltaLength(&activeCameraTarget, &targetWorldPos);
-
-        targetWorldPos.y += playerState->cameraYOffset;
-        const float dirX = targetWorldPos.x - activeCameraTarget.x;
-        const float dirY = targetWorldPos.y - activeCameraTarget.y;
-        const float dirZ = targetWorldPos.z - activeCameraTarget.z;
-        const float invLength = 1.0f / (float)(sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
-        playerState->cameraDirFlat.z = dirZ * invLength;
-        playerState->cameraDirFlat.x = dirX * invLength;
-        playerState->cameraDirFlat.y = dirY * invLength;
-        g_Player_RebuildCameraDirFlatFromCurrentTarget = 0;
-    }
-
-    switch (playerState->cameraState) {
-    case 1:
-        UpdateChaseCameraFromInput(saveState);
-        break;
-    case kPlayerCameraStateClearScreen:
-        UpdateTopDownCameraState(saveState);
-        break;
-    case kPlayerCameraStateFirstPerson:
-        UpdateFirstPersonCameraFromInput(saveState);
-        break;
-    case kPlayerCameraStateTargeting:
-        UpdateThirdPersonCamera(saveState);
-        break;
-    case 5:
-        zGame::ReturnOnlyStub();
-        break;
-    case 6:
-        UpdateCameraFromStoredTargetTowardPlayer(saveState);
-        break;
-    case kPlayerCameraStateProjectileAttached:
-        RestoreThirdPersonCameraFromObstructionState(saveState);
-        break;
-    }
-
-    if (g_Player_CameraVariantUpdatedThisTick == 0) {
-        UpdateCameraVariantFromCameraPos(saveState, &playerState->cameraTarget);
-    }
-
-    UpdateCameraWeatherFxEmitterVisibility();
-
-    if (playerState->cameraState == kPlayerCameraStateClearScreen) {
-        playerState->cameraBasisCache = playerState->steerBasisNorm;
-    } else {
-        playerState->cameraBasisCache = playerState->cameraDirNext;
-    }
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.updatechasecamerafrominput
- * @recoil-artifact defines .text recoil:function:0x405040: Player::UpdateChaseCameraFromInput.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::UpdateChaseCameraFromInput from the recovered
- * Battlesport gameplay source file.
- */
-void __fastcall UpdateChaseCameraFromInput(
-    zUtil_SaveGameState *saveState
-) {
-    const float kVerticalSpeedCameraInputCutoff = 11.0f;
-    const float kCameraElevationInputScale = -8.0f;
-    const float kCameraVelocitySwingScale = -0.0900000036f;
-    const float kCameraElevationBaseClearance = 0.5f;
-    const float kCameraHeadingDotEpsilon = 0.0000999999975f;
-    const float kCameraDistanceDampingRate = -6.0f;
-    const float kTrackYOffsetDampingRate = 5.0f;
-    const float kNonTrackYOffsetDampingRate = 3.0f;
-
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerMasterCommonData *const masterCommonData = playerState->masterCommonData;
-    PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
-    const float cameraZone = g_Player_CameraZone;
-    const float cameraZoneInvRange = g_Player_CameraZoneInvRange;
-    const float maxCamYawRate = g_Player_MaxCamYawRate;
-
-    zInput::MouseStateSnapshot mouseState = {0};
-    if (zOpt::GetCursorMode() != 0) {
-        memcpy(&mouseState, zInput::MouseGetStateSnapshotPtr(), sizeof(mouseState));
-    }
-
-    float yawDelta = 0.0f;
-    if (playerState->joyCameraYawInput != 0.0f) {
-        yawDelta = maxCamYawRate * g_FrameDeltaTimeSec * playerState->joyCameraYawInput;
-    } else if (zOpt::GetSteeringMode() != 0) {
-        if (zOpt::GetCursorMode() != 0) {
-            if (playerState->cursorDeltaX == 0.0f && mouseState.deltaX != 0) {
-                yawDelta = (float)(mouseState.deltaX) * g_Player_MousePushX;
-            }
-        } else if (playerState->cursorNormX > cameraZone) {
-            yawDelta = (playerState->cursorNormX - cameraZone) * cameraZoneInvRange *
-                       maxCamYawRate * g_FrameDeltaTimeSec;
-        } else if (playerState->cursorNormX < -cameraZone) {
-            yawDelta = (cameraZone + playerState->cursorNormX) * cameraZoneInvRange *
-                       maxCamYawRate * g_FrameDeltaTimeSec;
-        }
-    }
-    playerState->thirdPersonYawOffset += yawDelta;
-
-    const float invertedCameraZoneInvRange = -cameraZoneInvRange;
-    if ((float)(fabs(playerState->localVel.z)) < kVerticalSpeedCameraInputCutoff) {
-        float elevationDelta = 0.0f;
-        if (zOpt::GetCursorMode() != 0) {
-            if (playerState->cursorDeltaY == 0.0f && mouseState.deltaY != 0) {
-                elevationDelta = (float)(mouseState.deltaY) * g_Player_MousePushY;
-            }
-        } else if (playerState->cursorNormY > cameraZone) {
-            elevationDelta = (playerState->cursorNormY - cameraZone) * invertedCameraZoneInvRange *
-                             g_FrameDeltaTimeSec * kCameraElevationInputScale;
-        } else if (playerState->cursorNormY < -cameraZone) {
-            elevationDelta = (cameraZone + playerState->cursorNormY) * invertedCameraZoneInvRange *
-                             g_FrameDeltaTimeSec * kCameraElevationInputScale;
-        }
-        playerState->cameraElevationOffset -= elevationDelta;
-    }
-
-    const float thirdPersonSideOffset = playerState->thirdPersonSideOffset;
-    const float thirdPersonBaseYOffset = playerState->thirdPersonBaseYOffset;
-    const float cameraDistance = playerState->cameraDistance;
-
-    const float horizontalProjectileSpeed = (float)(sqrt(
-        playerState->projectileSpawnVel.x * playerState->projectileSpawnVel.x +
-        playerState->projectileSpawnVel.z * playerState->projectileSpawnVel.z
-    ));
-    union {
-        int bits;
-        float value;
-    } speedSwingBits;
-    speedSwingBits.bits =
-        (int)(horizontalProjectileSpeed * kCameraVelocitySwingScale * 12102200.0f) + 0x3f800000;
-    const float speedSwingFactor = speedSwingBits.value;
-    float maxElevationOffset = masterCommonData->cameraUdSwing[0] * speedSwingFactor;
-    const float baseElevationLimit = thirdPersonBaseYOffset - kCameraElevationBaseClearance;
-    if (baseElevationLimit < maxElevationOffset) {
-        maxElevationOffset = baseElevationLimit;
-    }
-
-    if (playerState->cameraElevationOffset > maxElevationOffset) {
-        playerState->cameraElevationOffset = maxElevationOffset;
-    } else if (playerState->cameraElevationOffset < -maxElevationOffset) {
-        playerState->cameraElevationOffset = -maxElevationOffset;
-    }
-
-    const float headingLerpBase = playerState->slipSfxActive != 0
-                                      ? g_Player_CameraHeadingLerpBaseWhenFlagSet
-                                      : g_Player_CameraHeadingLerpBaseWhenFlagClear;
-    union {
-        int bits;
-        float value;
-    } headingBlendBits;
-    headingBlendBits.bits =
-        (int)(-(headingLerpBase +
-                  1.0f / (g_Player_CameraHeadingDotAbs + kCameraHeadingDotEpsilon)) *
-              g_FrameDeltaTimeSec * 12102200.0f) +
-        0x3f800000;
-    const float headingBlend = headingBlendBits.value;
-    zVec3 flatSteerBasis = playerState->steerBasisNorm;
-    zMath::Vec3LerpNormalize(&playerState->cameraDirFlat, &flatSteerBasis, headingBlend);
-    g_Player_CameraHeadingDotAbs = (float)(fabs(
-        playerState->steerBasisNorm.x * playerState->cameraDirFlat.x +
-        playerState->steerBasisNorm.z * playerState->cameraDirFlat.z
-    ));
-
-    float cameraDirX = playerState->cameraDirFlat.x;
-    float cameraDirZ = playerState->cameraDirFlat.z;
-    if (playerState->thirdPersonYawOffset != 0.0f) {
-        const float yawSin = (float)(sin(playerState->thirdPersonYawOffset));
-        const float yawCos = (float)(cos(playerState->thirdPersonYawOffset));
-        cameraDirX = yawCos * playerState->cameraDirFlat.x - yawSin * playerState->cameraDirFlat.z;
-        cameraDirZ = yawCos * playerState->cameraDirFlat.z + yawSin * playerState->cameraDirFlat.x;
-    }
-
-    float targetDistance = playerState->cameraTargetDistance;
-    if (playerState->slipSfxActive == 0) {
-        targetDistance = cameraDistance - g_Player_CameraElastic * playerState->localVel.z;
-    }
-
-    union {
-        int bits;
-        float value;
-    } distanceBlendBits;
-    distanceBlendBits.bits =
-        (int)(g_FrameDeltaTimeSec * kCameraDistanceDampingRate * 12102200.0f) + 0x3f800000;
-    const float distanceBlend = distanceBlendBits.value;
-    playerState->cameraTargetDistance =
-        (1.0f - distanceBlend) * targetDistance + distanceBlend * playerState->cameraTargetDistance;
-
-    zVec3 cameraOffset = {0};
-    cameraOffset.x =
-        -cameraDirZ * thirdPersonSideOffset - cameraDirX * playerState->cameraTargetDistance;
-    cameraOffset.z =
-        cameraDirX * thirdPersonSideOffset - cameraDirZ * playerState->cameraTargetDistance;
-
-    const float yOffsetRate = masterModalData->masterType == kPlayerMasterTypeTrack
-                                  ? kTrackYOffsetDampingRate
-                                  : kNonTrackYOffsetDampingRate;
-    union {
-        int bits;
-        float value;
-    } yOffsetBlendBits;
-    yOffsetBlendBits.bits =
-        (int)(-yOffsetRate * g_FrameDeltaTimeSec * 12102200.0f) + 0x3f800000;
-    const float yOffsetBlend = yOffsetBlendBits.value;
-    const float yOffsetInvBlend = 1.0f - yOffsetBlend;
-    float targetYOffset = (cameraOffset.x * playerState->steerBasisNorm.x +
-                              playerState->steerBasisNorm.z * cameraOffset.z) *
-                          playerState->steerBasisRaw.y;
-    if (masterModalData->masterType == kPlayerMasterTypeTrack && targetYOffset <= 0.0f) {
-        targetYOffset = 0.0f;
-    }
-    playerState->thirdPersonPositionYOffset =
-        yOffsetBlend * playerState->thirdPersonPositionYOffset + targetYOffset * yOffsetInvBlend;
-
-    zVec3 cameraPos = {0};
-    cameraPos.x = playerState->worldPos.x + cameraOffset.x;
-    cameraPos.y = playerState->worldPos.y + thirdPersonBaseYOffset +
-                  playerState->thirdPersonPositionYOffset - playerState->cameraElevationOffset;
-    cameraPos.z = playerState->worldPos.z + cameraOffset.z;
-
-    zVec3 focusPos = playerState->worldPos;
-    focusPos.y += playerState->cameraYOffset;
-    if (masterModalData->masterType == kPlayerMasterTypeSub) {
-        AdjustSubCameraFocusForObstruction(saveState, &focusPos);
-    }
-
-    const float dirX = focusPos.x - cameraPos.x;
-    const float dirY = focusPos.y - cameraPos.y;
-    const float dirZ = focusPos.z - cameraPos.z;
-    const float invDirLength = 1.0f / (float)(sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
-    playerState->cameraDirNext.z = dirZ * invDirLength;
-    playerState->cameraDirNext.x = dirX * invDirLength;
-    playerState->cameraDirNext.y = dirY * invDirLength;
-
-    AdjustThirdPersonCameraBySideProbes(
-        saveState,
-        &cameraPos,
-        &focusPos,
-        &playerState->cameraDirNext
-    );
-
-    zClass_Camera::gwCameraSetTarget(g_MainCamera, cameraPos.x, cameraPos.y, cameraPos.z);
-    zVec3 cameraAngles = {0};
-    zVec3 *const cameraAnglesPtr =
-        zMath::Vec3DirectionAnglesBetweenPoints(&cameraPos, &focusPos, &cameraAngles);
-    zClass_Camera::gwCameraSetPosition(
-        g_MainCamera,
-        cameraAnglesPtr->x,
-        cameraAnglesPtr->y,
-        cameraAnglesPtr->z
-    );
-
-    playerState->cameraTarget = cameraPos;
-    playerState->cameraDir = playerState->cameraDirNext;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.updatethirdpersoncamera
- * @recoil-artifact defines .text recoil:function:0x405650: Player::UpdateThirdPersonCamera
- * BN source path: D:\Proj\GameZRecoil\zGame\Player\Player_Camera.cpp.
- * Purpose: update the third-person camera target, camera orientation, horizon
- * node, and cached direction vectors from the active player state.
- */
-void __fastcall UpdateThirdPersonCamera(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zVec3 cameraTarget = {
-        playerState->worldPos.x + playerState->cameraLerpStart.x,
-        playerState->worldPos.y + playerState->cameraLerpStart.y,
-        playerState->worldPos.z + playerState->cameraLerpStart.z,
-    };
-
-    zClass_Camera::gwCameraSetTarget(g_MainCamera, cameraTarget.x, cameraTarget.y, cameraTarget.z);
-    if (g_Player_HorizonNode != 0) {
-        zClass_Object3D::gwObject3DSetPosition(
-            g_Player_HorizonNode,
-            cameraTarget.x,
-            cameraTarget.y,
-            cameraTarget.z
-        );
-    }
-
-    zVec3 cameraLookAt = playerState->worldPos;
-    cameraLookAt.y += playerState->cameraYOffset;
-
-    zVec3 cameraAngles = {0};
-    zMath::Vec3DirectionAnglesBetweenPoints(&cameraTarget, &cameraLookAt, &cameraAngles);
-    zClass_Camera::gwCameraSetPosition(
-        g_MainCamera,
-        cameraAngles.x,
-        cameraAngles.y,
-        cameraAngles.z
-    );
-
-    zVec3 dir = {
-        playerState->autoTurnTargetWorldPos.x - cameraTarget.x,
-        playerState->autoTurnTargetWorldPos.y - cameraTarget.y,
-        playerState->autoTurnTargetWorldPos.z - cameraTarget.z,
-    };
-    const float invLength = 1.0f / (float)(sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z));
-    playerState->cameraDirNext.x = dir.x * invLength;
-    playerState->cameraDirNext.y = dir.y * invLength;
-    playerState->cameraDirNext.z = dir.z * invLength;
-
-    playerState->cameraTarget = cameraTarget;
-    playerState->cameraDir = playerState->cameraDirNext;
-    playerState->cameraDirFlat = playerState->cameraDirNext;
-    playerState->cameraDirFlat.y = 0.0f;
-    zMath::Vec3NormalizeXZ(&playerState->cameraDirFlat, &playerState->cameraDirFlat);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.updatetopdowncamerastate
- * @recoil-artifact defines .text recoil:function:0x4057d0: Player::UpdateTopDownCameraState.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::UpdateTopDownCameraState from the recovered
- * Battlesport gameplay source file.
- */
-void __fastcall UpdateTopDownCameraState(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    playerState->cameraTarget.x = playerState->worldPos.x + playerState->cameraState2TargetOffset.x;
-    playerState->cameraTarget.y = playerState->worldPos.y + playerState->cameraState2TargetOffset.y;
-    playerState->cameraTarget.z = playerState->worldPos.z + playerState->cameraState2TargetOffset.z;
-
-    zClass_Camera::gwCameraSetTarget(
-        g_MainCamera,
-        playerState->cameraTarget.x,
-        playerState->cameraTarget.y,
-        playerState->cameraTarget.z
-    );
-    zClass_Camera::gwCameraSetPosition(g_MainCamera, -1.54999995f, 0.0f, 0.0f);
-    playerState->cameraDir.x = 0.0f;
-    playerState->cameraDir.y = -1.0f;
-    playerState->cameraDir.z = 0.0f;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.updatecamerafromstoredtargettowardplayer
- * @recoil-artifact defines .text recoil:function:0x405870: Player::UpdateCameraFromStoredTargetTowardPlayer.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::UpdateCameraFromStoredTargetTowardPlayer from the recovered
- * Battlesport gameplay source file.
- */
-void __fastcall UpdateCameraFromStoredTargetTowardPlayer(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zVec3 lookAt = playerState->worldPos;
-    lookAt.y += playerState->cameraState == kPlayerCameraStateThirdPerson
-                    ? playerState->cameraYOffset
-                    : playerState->cameraState6YOffset;
-
-    zVec3 cameraTarget = playerState->cameraTarget;
-    const float dirX = lookAt.x - cameraTarget.x;
-    const float dirY = lookAt.y - cameraTarget.y;
-    const float dirZ = lookAt.z - cameraTarget.z;
-    const float invDirLength = 1.0f / (float)(sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ));
-    playerState->cameraDirNext.z = dirZ * invDirLength;
-    playerState->cameraDirNext.x = dirX * invDirLength;
-    playerState->cameraDirNext.y = dirY * invDirLength;
-
-    zVec3 cameraAngles = {0};
-    zVec3 *const cameraAnglesPtr =
-        zMath::Vec3DirectionAnglesBetweenPoints(&cameraTarget, &lookAt, &cameraAngles);
-    zClass_Camera::gwCameraSetPosition(
-        g_MainCamera,
-        cameraAnglesPtr->x,
-        cameraAnglesPtr->y,
-        cameraAnglesPtr->z
-    );
-
-    playerState->cameraDir = playerState->cameraDirNext;
-    playerState->cameraDirFlat = playerState->cameraDirNext;
-    playerState->cameraDirFlat.y = 0.0f;
-    zMath::Vec3NormalizeXZ(&playerState->cameraDirFlat, &playerState->cameraDirFlat);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.updatefirstpersoncamerafrominput
- * @recoil-artifact defines .text recoil:function:0x4059a0: Player::UpdateFirstPersonCameraFromInput.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::UpdateFirstPersonCameraFromInput from the recovered
- * Battlesport gameplay source file.
- */
-void __fastcall UpdateFirstPersonCameraFromInput(
-    zUtil_SaveGameState *saveState
-) {
-    const float kForwardSpeedClampThreshold = 10.0f;
-    const float kForwardSpeedClampScale = -0.0153999999f;
-    const float kElevationCameraPosScale = -0.349999994f;
-
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    const float cameraZone = g_Player_CameraZone;
-    const float invertedCameraZoneInvRange = -g_Player_CameraZoneInvRange;
-
-    if (zOpt::GetCursorMode() != 0) {
-        zInput::MouseStateSnapshot mouseState = *zInput::MouseGetStateSnapshotPtr();
-        if (playerState->cursorDeltaY == 0.0f && mouseState.deltaY != 0) {
-            playerState->cameraElevationOffset -= (float)(mouseState.deltaY) * g_Player_MousePushY;
-        }
-    } else if (playerState->cursorNormY > cameraZone) {
-        playerState->cameraElevationOffset += (playerState->cursorNormY - cameraZone) *
-                                              invertedCameraZoneInvRange *
-                                              g_Player_FpCamElevationRate * g_FrameDeltaTimeSec;
-    } else if (playerState->cursorNormY < -cameraZone) {
-        playerState->cameraElevationOffset += (cameraZone + playerState->cursorNormY) *
-                                              invertedCameraZoneInvRange *
-                                              g_Player_FpCamElevationRate * g_FrameDeltaTimeSec;
-    }
-
-    float elevationMin = g_Player_FpCamElevationMin;
-    float elevationMax = g_Player_FpCamElevationMax;
-    const float forwardSpeed = (float)(sqrt(
-        playerState->projectileSpawnVel.x * playerState->projectileSpawnVel.x +
-        playerState->projectileSpawnVel.z * playerState->projectileSpawnVel.z
-    ));
-    const float speedOverThreshold = forwardSpeed - kForwardSpeedClampThreshold;
-    if (speedOverThreshold > 0.0f) {
-        union {
-            int bits;
-            float value;
-        } elevationScaleBits;
-        elevationScaleBits.bits =
-            (int)(speedOverThreshold * kForwardSpeedClampScale * 12102200.0f) + 0x3f800000;
-        const float elevationScale = elevationScaleBits.value;
-        elevationMin *= elevationScale;
-        elevationMax *= elevationScale;
-    }
-
-    if (playerState->cameraElevationOffset > elevationMax) {
-        playerState->cameraElevationOffset = elevationMax;
-    } else if (playerState->cameraElevationOffset < elevationMin) {
-        playerState->cameraElevationOffset = elevationMin;
-    }
-
-    const zMat4x3 &motionBasis = playerState->motionBasis;
-    const zVec3 &localOffset = playerState->cameraState6LocalOffset;
-    zVec3 cameraPoint = playerState->worldPos;
-    zVec3 cameraLocalOffsetWorld = {0};
-    cameraLocalOffsetWorld.x = localOffset.x * motionBasis.xx + localOffset.y * motionBasis.yx +
-                               localOffset.z * motionBasis.zx;
-    cameraLocalOffsetWorld.y = localOffset.x * motionBasis.xy + localOffset.y * motionBasis.yy +
-                               localOffset.z * motionBasis.zy;
-    cameraLocalOffsetWorld.z = localOffset.x * motionBasis.xz + localOffset.y * motionBasis.yz +
-                               localOffset.z * motionBasis.zz;
-    cameraPoint.x += cameraLocalOffsetWorld.x;
-    cameraPoint.y += cameraLocalOffsetWorld.y;
-    cameraPoint.z += cameraLocalOffsetWorld.z;
-
-    zClass_Camera::gwCameraSetTarget(g_MainCamera, cameraPoint.x, cameraPoint.y, cameraPoint.z);
-    playerState->cameraTarget = cameraPoint;
-
-    zVec3 cameraPosition = playerState->cameraState6BasePos;
-    cameraPosition.x -= playerState->cameraElevationOffset * kElevationCameraPosScale;
-    zClass_Camera::gwCameraSetPosition(
-        g_MainCamera,
-        cameraPosition.x,
-        cameraPosition.y,
-        cameraPosition.z
-    );
-
-    playerState->cameraDirNext = playerState->steerBasisRaw;
-    playerState->cameraDirFlat = playerState->steerBasisRaw;
-    playerState->cameraDir = playerState->steerBasisRaw;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.applycamerastate
- * @recoil-artifact defines .text recoil:function:0x405c90: Player::ApplyCameraState
- * BN source path: D:\Proj\GameZRecoil\zGame\Player\Player_Camera.cpp.
- * Purpose: apply a requested player camera state while preserving previous
- * state and option flags for first-person, third-person, clear-screen, and
- * projectile views.
- */
-void __fastcall ApplyCameraState(
-    int newState
-) {
-    zUtil_SaveGameState *const saveState = g_CurrentPlayerSaveState;
-    if (saveState == 0) {
-        return;
-    }
-
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    int currentState = playerState->cameraState;
-    if (newState == currentState || (currentState == kPlayerCameraStateClearScreen &&
-                                        newState == kPlayerCameraStateProjectileAttached)) {
-        return;
-    }
-
-    if (currentState == kPlayerCameraStateProjectileAttached &&
-        newState != kPlayerCameraStateRestorePrevious) {
-        ApplyCameraState(kPlayerCameraStateRestorePrevious);
-        currentState = playerState->cameraState;
-    }
-
-    if (newState == kPlayerCameraStateToggleRequest) {
-        switch (currentState) {
-        case kPlayerCameraStateThirdPerson:
-            newState = kPlayerCameraStateFirstPerson;
-            break;
-        case kPlayerCameraStateClearScreen:
-            newState = kPlayerCameraStateRestorePrevious;
-            break;
-        case kPlayerCameraStateFirstPerson:
-            newState = kPlayerCameraStateThirdPerson;
-            break;
-        default:
-            break;
-        }
-    }
-
-    int resolvedState = newState;
-    switch (newState) {
-    case kPlayerCameraStateThirdPerson:
-        playerState->cameraLerpActive = 0;
-        playerState->cameraTargetDistance = playerState->cameraDistance;
-        if (currentState == kPlayerCameraStateFirstPerson) {
-            zOpt::SetSteeringMode(g_Player_SavedSteeringMode);
-        }
-        break;
-
-    case kPlayerCameraStateClearScreen:
-        zVideo::ExchangeClearScreenBufferEnabled(1);
-        break;
-
-    case kPlayerCameraStateFirstPerson:
-        g_Player_SavedSteeringMode = zOpt::GetSteeringMode();
-        zOpt::SetSteeringMode(0);
-        playerState->cameraElevationOffset = 0.0f;
-        break;
-
-    case kPlayerCameraStateProjectileAttached: {
-        OptCatalogRuntimeInstanceStorage *const attachState =
-            (OptCatalogRuntimeInstanceStorage *)(playerState->activeAltGunController->attachState);
-        zClass_NodePartial *const projectileNode = attachState->projectileNode;
-        zClass_Camera::gwCameraSetTarget(g_MainCamera, 0.0f, 1.0f, 1.0f);
-        zClass_Camera::gwCameraSetPosition(g_MainCamera, 0.0f, 0.0f, 0.0f);
-        zClass_Class::AddChild(projectileNode, g_MainCamera);
-        zClass_Object3D::gwObject3DSetAlphaScale(projectileNode, 0.5f);
-        zClass_Object3D::gwObject3DSetLitFlag(projectileNode, 1);
-        ((HudUiElement *)(&g_Player_State7FxPass3Ui))->SetVisible(1);
-        break;
-    }
-
-    case kPlayerCameraStateRestorePrevious:
-        resolvedState = playerState->previousCameraState;
-        if (currentState == kPlayerCameraStateProjectileAttached) {
-            OptCatalogRuntimeInstanceStorage *const attachState =
-                (OptCatalogRuntimeInstanceStorage *)(playerState->activeAltGunController
-                        ->attachState);
-            zClass_NodePartial *const projectileNode = attachState->projectileNode;
-            zClass_Class::RemoveChild(projectileNode, g_MainCamera);
-            zClass_Object3D::gwObject3DSetAlphaScale(projectileNode, 1.0f);
-            zClass_Object3D::gwObject3DSetLitFlag(projectileNode, 0);
-            UpdateThirdPersonCamera(saveState);
-            ((HudUiElement *)(&g_Player_State7FxPass3Ui))->SetVisible(0);
-            zTag4::Clear(&g_VariantTag_Current);
-            g_Variant_CurrentTag = g_VariantTag_Current;
-        } else if (currentState == kPlayerCameraStateClearScreen) {
-            zVideo::ExchangeClearScreenBufferEnabled(0);
-            UpdateThirdPersonCamera(saveState);
-        }
-        break;
-
-    default:
-        break;
-    }
-
-    playerState->previousCameraState = currentState;
-    playerState->cameraState = resolvedState;
-
-    if (resolvedState == kPlayerCameraStateThirdPerson) {
-        zOpt::SetCameraMode(1);
-    } else if (resolvedState == kPlayerCameraStateFirstPerson) {
-        zOpt::SetCameraMode(0);
-    }
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.togglesteeringmodeandresetmouselook
- * @recoil-artifact defines .text recoil:function:0x405ec0: Player::ToggleSteeringModeAndResetMouseLook
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: Reset active mouse-look state and toggle the steering-mode option.
- * Source owner: battlesport_gameplay.player_camera_control_state_bridge,
- * not a C++ Player class and not the accepted player_camera.c source-file
- * owner.
- */
-void ToggleSteeringModeAndResetMouseLook() {
-    ResetMouseControlStateAndRecenterCursor((zUtil_SaveGameState *)g_GameStateOrMapTable);
-    zOpt::SetSteeringMode(zOpt::GetSteeringMode() == 0 ? 1 : 0);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.adjustthirdpersoncamerabyoffsetprobes
- * @recoil-artifact defines .text recoil:function:0x405ee0: Player::AdjustThirdPersonCameraByOffsetProbes.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::AdjustThirdPersonCameraByOffsetProbes from the recovered
- * Battlesport gameplay source file.
- */
-int __fastcall AdjustThirdPersonCameraByOffsetProbes(
-    zUtil_SaveGameState *saveState,
-    zVec3 *cameraPos,
-    const zVec3 *sideDir
-) {
-    const int kCameraProbeStopAfterFirstHitFlag = 0x40000;
-    const float kCameraSideProbeDistance = 2.0f;
-    const float kSubVerticalProbeDistance = 2.0f;
-
-    PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
-    zClass_NodePartial *const rootNode = saveState->playerState->rootNode;
-
-    zVec3 perpDir = {0};
-    zMath::Vec3PerpXZ(sideDir, &perpDir);
-    zVec3 normalizedPerp = {0};
-    zMath::Vec3NormalizeXZ(&perpDir, &normalizedPerp);
-    normalizedPerp.y = 0.0f;
-
-    const zVec3 sideOffset = {
-        normalizedPerp.x * kCameraSideProbeDistance,
-        0.0f,
-        normalizedPerp.z * kCameraSideProbeDistance,
-    };
-
-    zClass_DiSegmentEndpoints segmentPairs[3] = {0};
-    segmentPairs[0].start = *cameraPos;
-    segmentPairs[0].end.x = cameraPos->x + sideOffset.x;
-    segmentPairs[0].end.y = cameraPos->y + sideOffset.y;
-    segmentPairs[0].end.z = cameraPos->z + sideOffset.z;
-    segmentPairs[1].start = *cameraPos;
-    segmentPairs[1].end.x = cameraPos->x - sideOffset.x;
-    segmentPairs[1].end.y = cameraPos->y - sideOffset.y;
-    segmentPairs[1].end.z = cameraPos->z - sideOffset.z;
-
-    int endpointCount = 4;
-    if (masterModalData->masterType == kPlayerMasterTypeSub) {
-        endpointCount = 6;
-        segmentPairs[2].start = *cameraPos;
-        segmentPairs[2].end.x = cameraPos->x;
-        segmentPairs[2].end.y = cameraPos->y + kSubVerticalProbeDistance;
-        segmentPairs[2].end.z = cameraPos->z;
-    }
-
-    zClass_cls_di::SetStopAfterFirstHit(kCameraProbeStopAfterFirstHitFlag);
-    zClass_Class::gwNodeSetRaycastable(rootNode, 0);
-
-    PlayerProbeSampleCandidateBuffer probeBatches[3] = {0};
-    zClass_cls_di::BuildProbeHitBatchesForSegments(
-        g_Player_RuntimeDiScene,
-        segmentPairs,
-        endpointCount,
-        probeBatches
-    );
-
-    zClass_Class::gwNodeSetRaycastable(rootNode, 1);
-    FilterCameraProbeBlockingHits(probeBatches, endpointCount >> 1);
-
-    zVec3 outHitPos = {0};
-    int result = 0;
-    if (FindNearestThirdPersonCameraProbePoint(probeBatches, 1, cameraPos, &outHitPos) != 0) {
-        result = 1;
-        cameraPos->x += outHitPos.x - segmentPairs[0].end.x;
-        cameraPos->z += outHitPos.z - segmentPairs[0].end.z;
-    } else if (FindNearestThirdPersonCameraProbePoint(&probeBatches[1], 1, cameraPos, &outHitPos) !=
-               0) {
-        result = 1;
-        cameraPos->x += outHitPos.x - segmentPairs[1].end.x;
-        cameraPos->z += outHitPos.z - segmentPairs[1].end.z;
-    }
-
-    if (masterModalData->masterType == kPlayerMasterTypeSub &&
-        FindNearestThirdPersonCameraProbePoint(&probeBatches[2], 1, cameraPos, &outHitPos) != 0) {
-        result |= 1;
-        cameraPos->y += outHitPos.y - segmentPairs[2].end.y;
-    }
-
-    return result;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.adjustthirdpersoncamerabysideprobes
- * @recoil-artifact defines .text recoil:function:0x406110: Player::AdjustThirdPersonCameraBySideProbes.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::AdjustThirdPersonCameraBySideProbes from the recovered
- * Battlesport gameplay source file.
- */
-int __fastcall AdjustThirdPersonCameraBySideProbes(
-    zUtil_SaveGameState *saveState,
-    zVec3 *cameraPos,
-    const zVec3 *focusPos,
-    zVec3 *cameraDirNext
-) {
-    const int kCameraProbeStopAfterFirstHitFlag = 0x40000;
-    const float kSubCameraProbeHeightOffset = 2.20000005f;
-    const float kCameraPickMaxY = 500.0f;
-    const float kCameraPickRiseWindow = 0.00100000005f;
-    const float kCameraFloorLift = 0.5f;
-
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zClass_NodePartial *const rootNode = playerState->rootNode;
-    const zTag4Partial savedVariantTag = g_Variant_CurrentTag;
-    int cameraAdjusted = 0;
-
-    zTag4::Clear(&g_Variant_CurrentTag);
-
-    const zVec3 sideProbeOffset = {
-        -g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->x,
-        -g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->y,
-        -g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->z,
-    };
-    const zVec3 sideProbeEndpoint = {
-        cameraPos->x + sideProbeOffset.x,
-        cameraPos->y + sideProbeOffset.y,
-        cameraPos->z + sideProbeOffset.z,
-    };
-
-    zClass_DiSegmentEndpoints segmentPairs[2] = {0};
-    segmentPairs[0].start = sideProbeEndpoint;
-    segmentPairs[0].end = *focusPos;
-    segmentPairs[1].start = *focusPos;
-    segmentPairs[1].end = sideProbeEndpoint;
-
-    zClass_Class::gwNodeSetRaycastable(rootNode, 0);
-    zClass_cls_di::SetStopAfterFirstHit(kCameraProbeStopAfterFirstHitFlag);
-
-    PlayerProbeSampleCandidateBuffer probeBatches[2] = {0};
-    zClass_cls_di::BuildProbeHitBatchesForSegments(
-        g_Player_RuntimeDiScene,
-        segmentPairs,
-        4,
-        probeBatches
-    );
-
-    zClass_Class::gwNodeSetRaycastable(rootNode, 1);
-    FilterCameraProbeBlockingHits(probeBatches, 2);
-
-    zVec3 hitPos = {0};
-    if (FindNearestThirdPersonCameraProbePoint(probeBatches, 2, focusPos, &hitPos) != 0) {
-        cameraPos->x = hitPos.x + g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->x;
-        cameraPos->y = hitPos.y + g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->y;
-        cameraPos->z = hitPos.z + g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->z;
-        cameraAdjusted = 1;
-    }
-
-    cameraAdjusted |= AdjustThirdPersonCameraByOffsetProbes(saveState, cameraPos, cameraDirNext);
-
-    int preferAttachmentSlot1 = 0;
-    if (saveState->primaryModalState->masterModalData->masterType == kPlayerMasterTypeSub) {
-        preferAttachmentSlot1 = 1;
-        const float subClampY = playerState->subModeProbeBestHeight - kSubCameraProbeHeightOffset;
-        if (subClampY < cameraPos->y) {
-            cameraPos->y = subClampY;
-        }
-    }
-
-    g_Variant_CurrentTag = savedVariantTag;
-    zClass_Class::gwNodeSetCellPickable(rootNode, 0);
-    const int pickResult = zClass_cls_di::BuildPickCandidateListBelowPoint(
-        g_Player_RuntimeDiScene,
-        probeBatches,
-        cameraPos->x,
-        kCameraPickMaxY,
-        cameraPos->z
-    );
-    zClass_Class::gwNodeSetCellPickable(rootNode, 1);
-    if (pickResult != 0) {
-        return cameraAdjusted;
-    }
-
-    int selectedCandidateIndex = 0;
-    int selectedImpactSlot = 0;
-    float taggedHeight = 0.0f;
-    const float selectedHeight = SelectProbeSampleHeightFromCandidates(
-        probeBatches,
-        &selectedCandidateIndex,
-        cameraPos->y,
-        kCameraPickRiseWindow,
-        preferAttachmentSlot1,
-        &selectedImpactSlot,
-        &taggedHeight
-    );
-    UpdateCameraVariantFromAnchor(probeBatches, cameraPos, selectedCandidateIndex);
-
-    const float targetY = selectedHeight + kCameraFloorLift;
-    g_Player_CameraVariantUpdatedThisTick = 1;
-    if (targetY <= cameraPos->y) {
-        return cameraAdjusted;
-    }
-
-    cameraPos->y = targetY;
-
-    const float dx = focusPos->x - cameraPos->x;
-    const float dy = focusPos->y - cameraPos->y;
-    const float dz = focusPos->z - cameraPos->z;
-    const float invLength = 1.0f / (float)(sqrt(dx * dx + dy * dy + dz * dz));
-    cameraDirNext->x = dx * invLength;
-    cameraDirNext->y = dy * invLength;
-    cameraDirNext->z = dz * invLength;
-
-    return 1;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.restorethirdpersoncamerafromobstructionstate
- * @recoil-artifact defines .text recoil:function:0x4063f0: Player::RestoreThirdPersonCameraFromObstructionState.
- * @recoil-match byte
- *
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::RestoreThirdPersonCameraFromObstructionState from the recovered
- * Battlesport gameplay source file.
- */
-void __fastcall RestoreThirdPersonCameraFromObstructionState(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    gwNode::GetWorldPosition(g_MainCamera, &playerState->cameraTarget);
-    playerState->cameraDir = playerState->cameraObstructionDir;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.unbindcurrentsavestateifsingleplayer
- * @recoil-artifact defines .text recoil:function:0x406430: Player::UnbindCurrentSaveStateIfSinglePlayer
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: Clear the current save-state binding when the mission is not in
- * network play.
- * Source owner: battlesport_gameplay.player_camera_control_state_bridge,
- * not a C++ Player class and not the accepted player_camera.c source-file
- * owner.
- */
-void UnbindCurrentSaveStateIfSinglePlayer() {
-    if (zOpt::GetNetworkEnabled() == 0) {
-        g_CurrentPlayerSaveState->playerState->currentSaveStateBound = 0;
-        g_CurrentPlayerSaveState = 0;
-    }
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.bindactivegamestateascurrentsavestate
- * @recoil-artifact defines .text recoil:function:0x406450: Player::BindActiveGameStateAsCurrentSaveState
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: Bind the active local game-state record as the current save state
- * for camera/control paths.
- * Source owner: battlesport_gameplay.player_camera_control_state_bridge,
- * not a C++ Player class and not the accepted player_camera.c source-file
- * owner.
- */
-void BindActiveGameStateAsCurrentSaveState() {
-    zUtil_SaveGameState *const activeSaveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
-    activeSaveState->playerState->currentSaveStateBound = 1;
-    g_CurrentPlayerSaveState = activeSaveState;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.updatecameravariantfromcamerapos
- * @recoil-artifact defines .text recoil:function:0x406470: Player::UpdateCameraVariantFromCameraPos.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::UpdateCameraVariantFromCameraPos from the recovered
- * Battlesport gameplay source file.
- */
-void __fastcall UpdateCameraVariantFromCameraPos(
-    zUtil_SaveGameState *saveState,
-    zVec3 *cameraPos
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerProbeSampleCandidateBuffer candidateBuffers[2] = {0};
-
-    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
-    const int pickResult = zClass_cls_di::BuildPickCandidateListBelowPoint(
-        g_Player_RuntimeDiScene,
-        candidateBuffers,
-        cameraPos->x,
-        500.0f,
-        cameraPos->z
-    );
-    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 1);
-
-    if (pickResult == 0) {
-        int selectedCandidateIndex = 0;
-        int selectedImpactSlot = 0;
-        float taggedHeight = 0.0f;
-        SelectProbeSampleHeightFromCandidates(
-            candidateBuffers,
-            &selectedCandidateIndex,
-            cameraPos->y,
-            0.00100000005f,
-            pickResult,
-            &selectedImpactSlot,
-            &taggedHeight
-        );
-        UpdateCameraVariantFromAnchor(candidateBuffers, cameraPos, selectedCandidateIndex);
-    }
-
-    g_Player_CameraVariantUpdatedThisTick = 1;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.updatecameravariantfromanchor
- * @recoil-artifact defines .text recoil:function:0x406510: Player::UpdateCameraVariantFromAnchor.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::UpdateCameraVariantFromAnchor from the recovered
- * Battlesport gameplay source file.
- */
-void __fastcall UpdateCameraVariantFromAnchor(
-    PlayerProbeSampleCandidateBuffer *candidates,
-    zVec3 *cameraPos,
-    int selectedCandidateIndex
-) {
-    (void)cameraPos;
-
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
-    const zTag4Partial playerVariantTag = playerState->variantTag;
-
-    zTag4Partial finalVariantTag = g_Player_LastValidCameraVariantTag;
-    if (candidates->candidateCount > 0 &&
-        candidates->entries[selectedCandidateIndex].variantTag.count > 0) {
-        g_VariantTag_Current = candidates->entries[selectedCandidateIndex].variantTag;
-
-        for (int playerTagIndex = 0; playerTagIndex < playerVariantTag.count; ++playerTagIndex) {
-            const unsigned char playerTag = playerVariantTag.tags[playerTagIndex];
-            int tagAlreadyPresent = 0;
-            for (int tagIndex = 0; tagIndex < g_VariantTag_Current.count; ++tagIndex) {
-                if (playerTag == g_VariantTag_Current.tags[tagIndex]) {
-                    tagAlreadyPresent = 1;
-                    break;
-                }
-            }
-
-            if (tagAlreadyPresent == 0 && g_VariantTag_Current.count < 3) {
-                g_VariantTag_Current.tags[g_VariantTag_Current.count] = playerTag;
-                ++g_VariantTag_Current.count;
-            }
-        }
-
-        int tagIsComplete = 1;
-        for (int tagIndex = 0; tagIndex < g_VariantTag_Current.count; ++tagIndex) {
-            if (g_VariantTag_Current.tags[tagIndex] == 0xff) {
-                tagIsComplete = 0;
-            }
-        }
-
-        if (tagIsComplete != 0) {
-            g_Player_LastValidCameraVariantTag = g_VariantTag_Current;
-            finalVariantTag = g_VariantTag_Current;
-        }
-    }
-
-    g_VariantTag_Current = finalVariantTag;
-    g_Variant_CurrentTag = finalVariantTag;
-    zClass_Camera::gwCameraSetVariantTagOverride(g_MainCamera, &g_VariantTag_Current);
-    zEffect::SetVariantOverridePackedIdsIfComplete(&g_VariantTag_Current);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.updatecameraweatherfxemittervisibility
- * @recoil-artifact defines .text recoil:function:0x406610: Player::UpdateCameraWeatherFxEmitterVisibility.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::UpdateCameraWeatherFxEmitterVisibility from the recovered
- * Battlesport gameplay source file.
- */
-void UpdateCameraWeatherFxEmitterVisibility() {
-    HudUiElement *const fxElement = g_HudSensorTracker.fxPass3Obj;
-    if (fxElement == 0) {
-        return;
-    }
-
-    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
-    const int isSubMode =
-        saveState->primaryModalState->masterModalData->masterType == kPlayerMasterTypeSub;
-    int shouldBeVisible = 0;
-    if (isSubMode == 0) {
-        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-        zVec3 cameraTarget = {0};
-        zClass_Camera::gwCameraGetTarget(
-            g_MainCamera,
-            &cameraTarget.x,
-            &cameraTarget.y,
-            &cameraTarget.z
-        );
-        zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
-        zClass_cls_di::SetStopAfterFirstHit(0x40000);
-        zClass_cls_di::SetBreakOnFirstCandidate(1);
-
-        PlayerProbeSampleCandidateBuffer raycastCandidates = {0};
-        const int raycastResult = zClass_cls_di::RaycastFindClosest(
-            g_Player_RuntimeDiScene,
-            &raycastCandidates,
-            cameraTarget.x,
-            cameraTarget.y,
-            cameraTarget.z,
-            cameraTarget.x,
-            cameraTarget.y + 50.0f,
-            cameraTarget.z
-        );
-
-        zClass_cls_di::SetBreakOnFirstCandidate(0);
-        zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1);
-
-        const int shouldHide = raycastResult == 0 && raycastCandidates.candidateCount > 0 ? 1 : 0;
-        shouldBeVisible = shouldHide == 0 ? 1 : 0;
-    }
-
-    const int isVisible = (fxElement->flags & 0x10) == 0 ? 1 : 0;
-    if (isVisible != shouldBeVisible) {
-        fxElement->SetVisible(shouldBeVisible);
-    }
-
-    if ((fxElement->flags & 0x10) != 0) {
-        return;
-    }
-
-    HudWeatherFx *const weatherFx = (HudWeatherFx *)(fxElement);
-    weatherFx->camera = g_MainCamera;
-    weatherFx->activeParticleCount = zOpt::GetReplicateMode() == 0 ? 1 : 0;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.filtercameraprobeblockinghits
- * @recoil-artifact defines .text recoil:function:0x406730: Player::FilterCameraProbeBlockingHits.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::FilterCameraProbeBlockingHits from the recovered
- * Battlesport gameplay source file.
- */
-void __fastcall FilterCameraProbeBlockingHits(
-    PlayerProbeSampleCandidateBuffer *batches,
-    int batchCount
-) {
-    const int kIgnoredCameraProbeNodeFlag = 0x8000000;
-    const int kCallbackContextPresentFlag = 0x100000;
-    const int kPlayerCollisionContextKind = 2;
-
-    if (batchCount <= 0) {
-        return;
-    }
-
-    PlayerProbeSampleCandidateBuffer *batch = batches;
-    for (int batchIndex = 0; batchIndex < batchCount; ++batchIndex) {
-        for (int hitIndex = 0; hitIndex < batch->candidateCount; ++hitIndex) {
-            zClassDiPickCandidateEntry *const candidate = &batch->entries[hitIndex];
-            zClass_NodePartial *const node = candidate->node;
-            const int flags = node->flags;
-
-            if ((flags & kIgnoredCameraProbeNodeFlag) != 0) {
-                candidate->node = 0;
-                continue;
-            }
-
-            if ((flags & kCallbackContextPresentFlag) != 0 && node->callbackContext != 0) {
-                int *const contextKind = (int *)(node->callbackContext);
-                if (*contextKind == kPlayerCollisionContextKind) {
-                    candidate->node = 0;
-                }
-            } else if (g_HudSensorTracker.raceCheckpointMode != 0 &&
-                       HudSensorTracker::ParseCheckpointNumberFromNode(node) != 0) {
-                candidate->node = 0;
-            }
-        }
-
-        ++batch;
-    }
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.adjustsubcamerafocusforobstruction
- * @recoil-artifact defines .text recoil:function:0x4067a0: Player::AdjustSubCameraFocusForObstruction.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
- * Purpose: reimplement Player::AdjustSubCameraFocusForObstruction from the recovered
- * Battlesport gameplay source file.
- */
-int __fastcall AdjustSubCameraFocusForObstruction(
-    zUtil_SaveGameState *saveState,
-    zVec3 *focusPos
-) {
-    const int kCameraProbeStopAfterFirstHitFlag = 0x40000;
-    const float kSubCameraFocusObstructionYOffset = 0.200000003f;
-
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zClass_DiSegmentEndpoints segmentPairs[2] = {0};
-    segmentPairs[0].start = playerState->worldPos;
-    segmentPairs[0].end = *focusPos;
-    segmentPairs[1].start = *focusPos;
-    segmentPairs[1].end = playerState->worldPos;
-
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
-    zClass_cls_di::SetStopAfterFirstHit(kCameraProbeStopAfterFirstHitFlag);
-
-    PlayerProbeSampleCandidateBuffer probeBatches[2] = {0};
-    zClass_cls_di::BuildProbeHitBatchesForSegments(
-        g_Player_RuntimeDiScene,
-        segmentPairs,
-        4,
-        probeBatches
-    );
-
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1);
-    FilterCameraProbeBlockingHits(probeBatches, 2);
-
-    zVec3 hitPos = {0};
-    if (FindNearestThirdPersonCameraProbePoint(probeBatches, 2, &playerState->worldPos, &hitPos) !=
-        0) {
-        focusPos->y -= kSubCameraFocusObstructionYOffset;
-        return 1;
-    }
-
-    return 0;
-}
-
-} // namespace Player
 
 #include "recoil/Mfc42Abi.h"
 
@@ -3007,13 +1845,13 @@ int __fastcall SelectProfileValueForSystem(
         return defaultValue;
     }
 
-    zReader::Node *const ruleList = profileRuleListNode->value.nodes;
-    const int count = ruleList[0].value.i32;
+    // Preserve the rule-node reloads across condition evaluation.
+    const int count = profileRuleListNode->value.nodes[0].value.i32;
     {
         for (int ruleIndex = 1; ruleIndex < count; ++ruleIndex) {
-            zReader::Node *const ruleCells = ruleList[ruleIndex].value.nodes;
-            if (EvaluateProfileMetricCondition(&ruleCells[1]) != 0) {
-                return ReadScalarValueAsInt(&ruleCells[2]);
+
+            if (EvaluateProfileMetricCondition(&profileRuleListNode->value.nodes[ruleIndex].value.nodes[1]) != 0) {
+                return ReadScalarValueAsInt(&profileRuleListNode->value.nodes[ruleIndex].value.nodes[2]);
             }
         }
     }
@@ -3603,7 +2441,7 @@ void __fastcall SetSteeringMode(
  * Purpose: return the steering-control bit from the game-control option mask.
  */
 int GetSteeringMode() {
-    return (*g_zGame_Options_PointerCache.gameControlOptions >> 1) & 1;
+    return ((unsigned int)*g_zGame_Options_PointerCache.gameControlOptions >> 1) & 1;
 }
 
 /**
@@ -3629,7 +2467,7 @@ void __fastcall SetCursorMode(
  * Purpose: return the cursor-control bit from the game-control option mask.
  */
 int GetCursorMode() {
-    return (*g_zGame_Options_PointerCache.gameControlOptions >> 2) & 1;
+    return ((unsigned int)*g_zGame_Options_PointerCache.gameControlOptions >> 2) & 1;
 }
 
 /**
@@ -3657,7 +2495,7 @@ void __fastcall SetCameraMode(
  * Purpose: map the third-person camera option bit to the player camera state value.
  */
 int GetCameraModePlayerState() {
-    return ((~*g_zGame_Options_PointerCache.gameControlOptions & ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON) | 4) >> 2;
+    return ((~(unsigned int)*g_zGame_Options_PointerCache.gameControlOptions & ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON) | 4) >> 2;
 }
 
 /**
@@ -3688,14 +2526,16 @@ int GetGameDifficultyMode() {
 void __fastcall SetEffectsLevelForCurrentHwMode(
     int level
 ) {
-    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.effectsLevelHw : g_zGame_Options_PointerCache.effectsLevelSw) = level;
+    if (g_zOpt_HwMode != 0) {
+        *g_zGame_Options_PointerCache.effectsLevelHw = level;
+    } else {
+        *g_zGame_Options_PointerCache.effectsLevelSw = level;
+    }
 
-    if (level == 0) {
-        zEffect::SetConditionalEffectLevel(2);
-    } else if (level == 1) {
-        zEffect::SetConditionalEffectLevel(1);
-    } else if (level == 2) {
-        zEffect::SetConditionalEffectLevel(0);
+    switch (level) {
+    case 0: zEffect::SetConditionalEffectLevel(2); break;
+    case 1: zEffect::SetConditionalEffectLevel(1); break;
+    case 2: zEffect::SetConditionalEffectLevel(0); break;
     }
 }
 
@@ -3705,7 +2545,11 @@ void __fastcall SetEffectsLevelForCurrentHwMode(
  * Purpose: return the effects level stored for the active hardware mode.
  */
 int GetEffectsLevelForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.effectsLevelHw : g_zGame_Options_PointerCache.effectsLevelSw);
+    if (g_zOpt_HwMode != 0) {
+        return *g_zGame_Options_PointerCache.effectsLevelHw;
+    } else {
+        return *g_zGame_Options_PointerCache.effectsLevelSw;
+    }
 }
 
 /**
@@ -3716,33 +2560,25 @@ int GetEffectsLevelForCurrentHwMode() {
 void __fastcall SetObjectLODForCurrentHwMode(
     int level
 ) {
+    float clipDistance = 1.0f;
     zClass_NodePartial *const camera = zOptCameraSectionGetActiveCamera();
-    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.objectLodHw : g_zGame_Options_PointerCache.objectLodSw) = level;
+    if (g_zOpt_HwMode != 0) {
+        *g_zGame_Options_PointerCache.objectLodHw = level;
+    } else {
+        *g_zGame_Options_PointerCache.objectLodSw = level;
+    }
 
     if (camera == 0) {
         return;
     }
 
-    float clipDistance = 1.0f;
     switch (level) {
-    case 0:
-        zClass_Camera::gwCameraSetClipDistance(camera, clipDistance);
-        break;
-
-    case 1:
-        clipDistance = 0.75f;
-        zClass_Camera::gwCameraSetClipDistance(camera, clipDistance);
-        break;
-
-    case 2:
-        clipDistance = 0.5f;
-        zClass_Camera::gwCameraSetClipDistance(camera, clipDistance);
-        break;
-
-    default:
-        zClass_Camera::gwCameraSetClipDistance(camera, clipDistance);
-        break;
+    case 0: clipDistance = 1.0f; break;
+    case 1: clipDistance = 0.75f; break;
+    case 2: clipDistance = 0.5f; break;
     }
+    zClass_Camera::gwCameraSetClipDistance(camera, clipDistance);
+
 }
 
 /**
@@ -3751,7 +2587,11 @@ void __fastcall SetObjectLODForCurrentHwMode(
  * Purpose: return the object LOD value for the active hardware mode.
  */
 int GetObjectLODForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.objectLodHw : g_zGame_Options_PointerCache.objectLodSw);
+    if (g_zOpt_HwMode != 0) {
+        return *g_zGame_Options_PointerCache.objectLodHw;
+    } else {
+        return *g_zGame_Options_PointerCache.objectLodSw;
+    }
 }
 
 /**
@@ -3851,7 +2691,11 @@ int GetSoundLODOption() {
 void __fastcall SetTextureMemoryForCurrentHwMode(
     int value
 ) {
-    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.textureMemoryHw : g_zGame_Options_PointerCache.textureMemorySw) = value;
+    if (g_zOpt_HwMode != 0) {
+        *g_zGame_Options_PointerCache.textureMemoryHw = value;
+    } else {
+        *g_zGame_Options_PointerCache.textureMemorySw = value;
+    }
 }
 
 /**
@@ -3860,7 +2704,11 @@ void __fastcall SetTextureMemoryForCurrentHwMode(
  * Purpose: return the texture memory value for the active hardware mode.
  */
 int GetTextureMemoryForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.textureMemoryHw : g_zGame_Options_PointerCache.textureMemorySw);
+    if (g_zOpt_HwMode != 0) {
+        return *g_zGame_Options_PointerCache.textureMemoryHw;
+    } else {
+        return *g_zGame_Options_PointerCache.textureMemorySw;
+    }
 }
 
 /**
@@ -3869,18 +2717,13 @@ int GetTextureMemoryForCurrentHwMode() {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
  * Purpose: copy the supplied player name into the configured option buffer.
  */
-void __fastcall SetPlayerName(
-    const char *name
-) {
-    char *const buffer = (char *)(g_zGame_Options_PointerCache.playerName->payloadOrBuffer);
-    const unsigned int dataSize = (unsigned int)(g_zGame_Options_PointerCache.playerName->dataSize);
-    const size_t nameLength = strlen(name);
-
-    if (nameLength < dataSize) {
-        memcpy(buffer, name, nameLength + 1);
+void __fastcall SetPlayerName(const char *name) {
+    if (strlen(name) < (unsigned int)g_zGame_Options_PointerCache.playerName->dataSize) {
+        strcpy((char *)g_zGame_Options_PointerCache.playerName->payloadOrBuffer, name);
     } else {
-        strncpy(buffer, name, dataSize - 1);
-        buffer[dataSize - 1] = '\0';
+        strncpy((char *)g_zGame_Options_PointerCache.playerName->payloadOrBuffer, name,
+            g_zGame_Options_PointerCache.playerName->dataSize - 1);
+        ((char *)g_zGame_Options_PointerCache.playerName->payloadOrBuffer)[g_zGame_Options_PointerCache.playerName->dataSize - 1] = '\0';
     }
 }
 
@@ -3906,7 +2749,11 @@ namespace zOpt {
 void __fastcall SetGraphicsFlagsForCurrentHwMode(
     int flags
 ) {
-    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.gfxFlagsHw : g_zGame_Options_PointerCache.gfxFlagsSw) = flags;
+    if (g_zOpt_HwMode != 0) {
+        *g_zGame_Options_PointerCache.gfxFlagsHw = flags;
+    } else {
+        *g_zGame_Options_PointerCache.gfxFlagsSw = flags;
+    }
 
     zClass_NodePartial *const sunlight = zClass::FindByTypeAndName(
         6,
@@ -3928,7 +2775,11 @@ void __fastcall SetGraphicsFlagsForCurrentHwMode(
  * Purpose: return the graphics option bitmask for the active hardware mode.
  */
 int GetGraphicsFlagsForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.gfxFlagsHw : g_zGame_Options_PointerCache.gfxFlagsSw);
+    if (g_zOpt_HwMode != 0) {
+        return *g_zGame_Options_PointerCache.gfxFlagsHw;
+    } else {
+        return *g_zGame_Options_PointerCache.gfxFlagsSw;
+    }
 }
 
 } // namespace zOpt
@@ -4073,7 +2924,11 @@ void __fastcall SetFullscreenOption(
 void __fastcall SetHudVisibilityOption(
     int hudVisibility
 ) {
-    *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.hudVisibilityHw : g_zGame_Options_PointerCache.hudVisibilitySw) = hudVisibility;
+    if (g_zOpt_HwMode != 0) {
+        *g_zGame_Options_PointerCache.hudVisibilityHw = hudVisibility;
+    } else {
+        *g_zGame_Options_PointerCache.hudVisibilitySw = hudVisibility;
+    }
 }
 
 /**
@@ -4151,7 +3006,11 @@ int GetFullscreenOption() {
  * Purpose: return the HUD visibility option for the active hardware mode.
  */
 int GetHudVisibilityOption() {
-    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.hudVisibilityHw : g_zGame_Options_PointerCache.hudVisibilitySw);
+    if (g_zOpt_HwMode != 0) {
+        return *g_zGame_Options_PointerCache.hudVisibilityHw;
+    } else {
+        return *g_zGame_Options_PointerCache.hudVisibilitySw;
+    }
 }
 
 /**
@@ -4161,7 +3020,11 @@ int GetHudVisibilityOption() {
  * Purpose: return the HUD type option for the active hardware mode.
  */
 int GetHudTypeForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? g_zGame_Options_PointerCache.hudTypeHw : g_zGame_Options_PointerCache.hudTypeSw);
+    if (g_zOpt_HwMode != 0) {
+        return *g_zGame_Options_PointerCache.hudTypeHw;
+    } else {
+        return *g_zGame_Options_PointerCache.hudTypeSw;
+    }
 }
 
 /**
@@ -4306,8 +3169,8 @@ void __fastcall CameraSectionSetActiveCamera(
     }
 
     zOpt_ViewRectSection *const renderSection = *g_zGame_Options_PointerCache.renderSection;
-    float fovX = 0.0f;
-    float fovY = 0.0f;
+    float fovX;
+    float fovY;
     zClass_Camera::gwCameraGetFOV(camera, &fovX, &fovY);
 
     fovX = (float)(renderSection->width) * fovY / (float)(renderSection->height);
@@ -4322,11 +3185,11 @@ void __fastcall CameraSectionSetActiveCamera(
  * Purpose: return active camera or null when unavailable.
  */
 zClass_NodePartial *zOptCameraSectionGetActiveCamera() {
-    if (g_zGame_Options_PointerCache.cameraSection == 0 || *g_zGame_Options_PointerCache.cameraSection == 0) {
-        return 0;
+    zClass_NodePartial *camera = 0;
+    if (g_zGame_Options_PointerCache.cameraSection != 0 && *g_zGame_Options_PointerCache.cameraSection != 0) {
+        camera = (*g_zGame_Options_PointerCache.cameraSection)->m_pCamera;
     }
-
-    return (*g_zGame_Options_PointerCache.cameraSection)->m_pCamera;
+    return camera;
 }
 namespace zOpt {
 
@@ -4762,7 +3625,8 @@ void __fastcall ScreenToWorld(
     }
 
     pointXY[0] *= 0.5f;
-    pointXY[1] = (float)(renderSection->y) + (pointXY[1] - (float)(displaySection->y)) * 0.5f;
+    const float scaledY = (pointXY[1] - (float)displaySection->y) * 0.5f;
+    pointXY[1] = scaledY + (float)renderSection->y;
     zOpt::ViewRectSectionClampPointToInclusiveBounds(renderSection, pointXY);
 }
 
@@ -5041,9 +3905,8 @@ RecoilStateControls::~RecoilStateControls() {
     HudUiControlsDialog *dialog = (HudUiControlsDialog *)m_dialog;
     if (dialog != 0) {
         delete dialog;
+        m_dialog = 0;
     }
-
-    m_dialog = 0;
 }
 
 /**
@@ -5095,7 +3958,7 @@ void RecoilStateControls::OnDeactivate() {
         );
     }
 
-    dialog->SetEnabled(0);
+    m_dialog->SetEnabled(0);
     ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
 
     HudUiControlsDialog *dialogToDelete = (HudUiControlsDialog *)m_dialog;
@@ -5156,15 +4019,12 @@ void RecoilStateControls::OnResume(
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
-    dialog->SetEnabled(1);
-    ((HudUiContainer *)dialog)->InvalidateChildren();
-    ((HudUiContainer *)dialog)->UpdateAll(0.0f);
+    m_dialog->SetEnabled(1);
+    ((HudUiContainer *)m_dialog)->InvalidateChildren();
+    ((HudUiContainer *)m_dialog)->UpdateAll(0.0f);
     zVideo::DispatchUnlockPrimarySurfaceState();
 
-    zOpt_ViewRectSection *const dstRect = zOpt::GetWindowSection();
-    zOpt_ViewRectSection *const srcRect = zOpt::GetWindowSection();
-    zVideo::AdjustSurfacesIfEnabled((zVidRect32 *)srcRect, (zVidRect32 *)dstRect, 1, 1);
+    zVideo::AdjustSurfacesIfEnabled((zVidRect32 *)zOpt::GetWindowSection(), (zVidRect32 *)zOpt::GetWindowSection(), 1, 1);
 }
 
 /**
@@ -5332,7 +4192,7 @@ void HudUiCreditsPanel::UpdateAll(
     fadeProgress += fadeStep * deltaSeconds;
     HudUiBackgroundContainer::UpdateAll(deltaSeconds);
 
-    if (fadeProgress < 1.0f) {
+    if (fadeProgress < 1.0) {
         return;
     }
 
@@ -7477,11 +6337,14 @@ void CHudUiOptionsPanelLighting::InitFromOptions() {
  * Purpose: toggle the global lighting graphics flag from the lighting checkbox.
  */
 void CHudUiOptionsPanelLighting::SyncFromOptions() {
-    const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
+    int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
     HudUiCheckToggleWidget::OnActivate();
-    zOpt::SetGraphicsFlagsForCurrentHwMode(
-        checked != 0 ? (flags | ZOPT_GRAPHICS_GLOBAL_LIGHT) : (flags & ~ZOPT_GRAPHICS_GLOBAL_LIGHT)
-    );
+    if (checked != 0) {
+        flags |= ZOPT_GRAPHICS_GLOBAL_LIGHT;
+    } else {
+        flags &= ~ZOPT_GRAPHICS_GLOBAL_LIGHT;
+    }
+    zOpt::SetGraphicsFlagsForCurrentHwMode(flags);
 }
 
 /**
@@ -7520,11 +6383,14 @@ void CHudUiOptionsPanelPerspective::InitFromOptions() {
  * Purpose: toggle the perspective graphics flag and refresh span routine selection.
  */
 void CHudUiOptionsPanelPerspective::SyncFromOptions() {
-    const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
+    int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
     HudUiCheckToggleWidget::OnActivate();
-    zOpt::SetGraphicsFlagsForCurrentHwMode(
-        checked != 0 ? (flags | ZOPT_GRAPHICS_PERSPECTIVE) : (flags & ~ZOPT_GRAPHICS_PERSPECTIVE)
-    );
+    if (checked != 0) {
+        flags |= ZOPT_GRAPHICS_PERSPECTIVE;
+    } else {
+        flags &= ~ZOPT_GRAPHICS_PERSPECTIVE;
+    }
+    zOpt::SetGraphicsFlagsForCurrentHwMode(flags);
     zRndr::SelectSpanRoutines();
 }
 
@@ -7843,8 +6709,8 @@ void CHudUiOptionsPanelMusicVolume::PostLoadFromZrd() {
  * Purpose: synchronize the music volume fill widget from the current CD volume.
  */
 void CHudUiOptionsPanelMusicVolume::SyncFromOptions() {
-    unsigned short primaryVolume = 0;
-    unsigned short secondaryVolume = 0;
+    unsigned short primaryVolume;
+    unsigned short secondaryVolume;
     zSndCd::GetVolume(&primaryVolume, &secondaryVolume);
     SetNormalizedValueAndRebuild((float)(primaryVolume)*ZSND_CD_VOLUME_TO_NORMALIZED);
 }
@@ -7876,64 +6742,60 @@ void CHudUiOptionsPanelResolution::PostLoadFromZrd() {
  * Purpose: synchronize and constrain the resolution selector for the active renderer.
  */
 void CHudUiOptionsPanelResolution::SyncFromOptions() {
-    const int accelerationOption = zVid::GetAccelerationOption();
-
-    if (accelerationOption == ZVID_HW_MODE_SOFTWARE) {
-        const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
-        switch (modeCase) {
-        case 0:
-            SetIndexClamped(3);
-            SetVisibleRange(2, 4);
-            return;
-        case 1:
-            SetIndexClamped(1);
-            SetVisibleRange(0, 2);
-            return;
-        case 2:
-            SetIndexClamped(2);
-            SetVisibleRange(2, 4);
-            return;
-        case 3:
+    if (zVid::GetAccelerationOption() != ZVID_HW_MODE_SOFTWARE) {
+        switch (zVid::GetVideoModeIndexFromOptions()) {
+        case ZVID_MODE_640X480:
             SetIndexClamped(0);
-            SetVisibleRange(0, 2);
-            return;
-        case 4:
+            SetVisibleRange(0, 1);
+            break;
+        case ZVID_MODE_320X240_TO_640X480:
+            SetIndexClamped(1);
+            SetVisibleRange(1, 2);
+            break;
+        case ZVID_MODE_640X400:
+            SetIndexClamped(2);
+            SetVisibleRange(2, 3);
+            break;
+        case ZVID_MODE_320X200_TO_640X400:
+            SetIndexClamped(3);
+            SetVisibleRange(3, 4);
+            break;
+        case ZVID_MODE_800X600:
             SetIndexClamped(4);
             SetVisibleRange(4, 5);
-            return;
-        case 5:
+            break;
+        case ZVID_MODE_1024X768:
             SetIndexClamped(5);
             SetVisibleRange(5, 6);
-            return;
+            break;
         }
-    }
-
-    const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
-    switch (modeCase) {
-    case 0:
-        SetIndexClamped(3);
-        SetVisibleRange(3, 4);
-        return;
-    case 1:
-        SetIndexClamped(1);
-        SetVisibleRange(1, 2);
-        return;
-    case 2:
-        SetIndexClamped(2);
-        SetVisibleRange(2, 3);
-        return;
-    case 3:
-        SetIndexClamped(0);
-        SetVisibleRange(0, 1);
-        return;
-    case 4:
-        SetIndexClamped(4);
-        SetVisibleRange(4, 5);
-        return;
-    case 5:
-        SetIndexClamped(5);
-        SetVisibleRange(5, 6);
-        return;
+    } else {
+        switch (zVid::GetVideoModeIndexFromOptions()) {
+        case ZVID_MODE_640X480:
+            SetIndexClamped(0);
+            SetVisibleRange(0, 2);
+            break;
+        case ZVID_MODE_320X240_TO_640X480:
+            SetIndexClamped(1);
+            SetVisibleRange(0, 2);
+            break;
+        case ZVID_MODE_640X400:
+            SetIndexClamped(2);
+            SetVisibleRange(2, 4);
+            break;
+        case ZVID_MODE_320X200_TO_640X400:
+            SetIndexClamped(3);
+            SetVisibleRange(2, 4);
+            break;
+        case ZVID_MODE_800X600:
+            SetIndexClamped(4);
+            SetVisibleRange(4, 5);
+            break;
+        case ZVID_MODE_1024X768:
+            SetIndexClamped(5);
+            SetVisibleRange(5, 6);
+            break;
+        }
     }
 }
 
@@ -8120,7 +6982,7 @@ int __fastcall CompareSortKey(
         return keyB < keyA ? 1 : 0;
     }
 
-    return (unsigned int)(entryB->playerKey) < (unsigned int)(entryA->playerKey) ? 1 : 0;
+    return (unsigned int)(entryA->playerKey) > (unsigned int)(entryB->playerKey) ? 1 : 0;
 }
 
 } // namespace HudUiListMenuEntry
@@ -8859,16 +7721,9 @@ void HudUiTriplet::InterpolateLayout(
  * Purpose: report whether the first scoreboard entry belongs to the local network player.
  */
 int HudUiTriplet::IsLocalPlayerFirstEntry() {
-    HudUiScoreboardEntry *const begin = entries.begin();
-    int count = 0;
-    if (begin != 0) {
-        count = (int)(entries.end() - begin);
-    }
-
-    if (count == 0) {
+    if (entries.empty()) {
         return -1;
     }
-
     return zNetworkGetLocalPlayerKey() == entries.begin()->playerKey ? 1 : 0;
 }
 
@@ -9023,18 +7878,12 @@ float HudUiTimerPanel::GetSeconds() {
  * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: advance the running timer and update base HudUiElement state.
  */
-void HudUiTimerPanel::Update(
-    float deltaSeconds
-) {
+void HudUiTimerPanel::Update(float deltaSeconds) {
     if (stopped == 0) {
-        const float frameDelta =
-            zOpt::GetNetworkEnabled() != 0 ? g_Time_UnscaledDeltaTimeSec : g_FrameDeltaTimeSec;
-        const float newElapsedSeconds =
-            elapsedSeconds + (float)(secondsStep) * frameDelta;
-        elapsedSeconds = newElapsedSeconds;
-        UpdateHMSFromSeconds(newElapsedSeconds);
+        elapsedSeconds += zOpt::GetNetworkEnabled() != 0 ?
+            secondsStep * g_Time_UnscaledDeltaTimeSec : secondsStep * g_FrameDeltaTimeSec;
+        UpdateHMSFromSeconds(elapsedSeconds);
     }
-
     HudUiElement::Update(deltaSeconds);
 }
 
@@ -9787,12 +8636,11 @@ void __fastcall HudUiMgr::OnViewportChanged(
  * transition is active.
  */
 int HudUiMgr::TickLayoutDelay() {
-    if (g_HudUiMgrLayoutDelayFrames == 0) {
-        return 0;
+    if (g_HudUiMgrLayoutDelayFrames != 0) {
+        --g_HudUiMgrLayoutDelayFrames;
+        return 1;
     }
-
-    --g_HudUiMgrLayoutDelayFrames;
-    return 1;
+    return 0;
 }
 namespace {
 struct HudReticleAttachStatePartial {
@@ -10852,8 +9700,8 @@ void TickMeterFillAnimation() {
     if (g_HudUiMgrObjectiveMeterFillAnimTimerSec >= 3.0f) {
         const int fillPixels =
             (int)(ceil((double)(g_HudUiMgrObjectiveMeter.fillPixelsMax)));
-        g_HudUiMgrObjectiveMeterFillAnimEnabled = 0;
         const int top = (int)(g_HudUiMgrObjectiveMeter.points[1].y) - fillPixels;
+        g_HudUiMgrObjectiveMeterFillAnimEnabled = 0;
         g_HudUiMgrObjectiveMeter.points[0].y = (float)(top);
         g_HudUiMgrObjectiveMeter.points[3].y = (float)(top);
     } else {
@@ -10958,8 +9806,8 @@ void Begin() {
         g_HudUiMgrObjectivePhase = 3;
         g_HudUiMgrObjectivePhaseTimerSec =
             g_HudUiMgrObjectivePhaseDurationSec - g_HudUiMgrObjectivePhaseTimerSec;
-        g_HudUiMgrObjectiveAutoHideDelaySec = 0.0f;
     }
+    g_HudUiMgrObjectiveAutoHideDelaySec = 0.0f;
 }
 
 /**
@@ -11761,20 +10609,17 @@ void HudLayoutBase::Disable() {
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutbase-loadtypeifromzarroot
- * @recoil-artifact defines .text recoil:function:0x412c10: HudLayoutSW::LoadTypeIFromZarRoot.
+ * @recoil-artifact defines .text recoil:function:0x412c10: HudLayoutBase::LoadTypeIFromZarRoot.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: load the TYPEI HUD layout rectangle from the ZRD root.
  */
-void HudLayoutBase::LoadTypeIFromZarRoot(
-    zReader::Node *parentNode
-) {
+int HudLayoutBase::LoadTypeIFromZarRoot(zReader::Node *parentNode) {
     zReader::Node *const typeINode = zRdrGetNode(parentNode, g_HudLayout_TypeISectionName);
-    if (typeINode == 0) {
-        return;
+    if (typeINode != 0) {
+        HudUiLayoutNode::ReadRectOffsetAndSize(&typeINode->value.nodes[1], &layoutRect, 0, 0, 0);
+        activeRect = layoutRect;
     }
-
-    HudUiLayoutNode::ReadRectOffsetAndSize(&typeINode->value.nodes[1], &layoutRect, 0, 0, 0);
-    activeRect = layoutRect;
+    return 1;
 }
 
 /**
@@ -12252,14 +11097,14 @@ namespace zOpt {
  * Purpose: Toggle the HUD type between standard and perspective for the current hardware mode.
  */
 int ToggleHudTypeForCurrentHwMode() {
-    const int currentHudType = GetHudTypeForCurrentHwMode();
-    if (currentHudType == ZOPT_HUD_TYPE_STANDARD) {
+    switch (GetHudTypeForCurrentHwMode()) {
+    case ZOPT_HUD_TYPE_STANDARD:
+        return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_PERSPECTIVE);
+    case ZOPT_HUD_TYPE_PERSPECTIVE:
+        return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_STANDARD);
+    default:
         return GetHudTypeForCurrentHwMode();
     }
-    if (currentHudType == ZOPT_HUD_TYPE_PERSPECTIVE) {
-        return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_STANDARD);
-    }
-    return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_PERSPECTIVE);
 }
 
 } // namespace zOpt
@@ -12511,9 +11356,8 @@ void __fastcall ShowTopMessageLine(
     const char *message,
     float duration
 ) {
-    HudUiTextStack4 *const topStack = g_HudUiTopMessageStack;
-    if (topStack->enabled != 0) {
-        topStack->PushLine(message, duration);
+    if (g_HudUiTopMessageStack->enabled != 0) {
+        g_HudUiTopMessageStack->PushLine(message, duration);
     }
 }
 
@@ -12527,9 +11371,8 @@ void __fastcall ShowChatLine(
     const char *message,
     float duration
 ) {
-    HudUiTextStack4 *const chatStack = g_HudUiChatMessageStack;
-    if (chatStack->enabled != 0) {
-        chatStack->PushLine(message, duration);
+    if (g_HudUiChatMessageStack->enabled != 0) {
+        g_HudUiChatMessageStack->PushLine(message, duration);
     }
 }
 } // namespace HudUi
@@ -13192,10 +12035,12 @@ void __fastcall ShowPlayerKillMessage(
     GameNetPlayerRow *killerRow
 ) {
     const char *killVerb = "";
-    if (killEntry == 0) {
+    if (killEntry != 0) {
+        if (killEntry->killVerbString != 0) {
+            killVerb = killEntry->killVerbString;
+        }
+    } else {
         killVerb = zLoc::GetMessageString(0x253);
-    } else if (killEntry->killVerbString != 0) {
-        killVerb = killEntry->killVerbString;
     }
 
     char message[0x50];
@@ -13417,7 +12262,7 @@ void InsertPivotIntoSortedPrefix(
 ) {
     HudUiScoreboardEntry *insertSlot = slot;
     HudUiScoreboardEntry *previousEntry = insertSlot - 1;
-    while (HudRuntimeListMenuEntryComesBefore(pivot, *previousEntry)) {
+    while (CompareSortKey(&pivot, previousEntry) != 0) {
         *insertSlot = *previousEntry;
         insertSlot = previousEntry;
         --previousEntry;
@@ -13662,19 +12507,12 @@ inline CHudUiMainMenuDialogControlsButton::CHudUiMainMenuDialogControlsButton() 
  * Purpose: Allow load-game navigation unless the active player state is blocked.
  */
 int HudUiMainMenuDialog::CanLoadGame() {
-    zUtil_PlayerStateStorage *playerState;
     zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
-    if (gameState == 0) {
-        return 1;
-    }
-
-    playerState = (zUtil_PlayerStateStorage *)gameState->playerState;
-    if (playerState == 0) {
-        return 1;
-    }
-
-    if (PlayerMenuSaveLoadBlocked(playerState) != 0) {
-        return 0;
+    if (gameState != 0) {
+        zUtil_PlayerStateStorage *const playerState = (zUtil_PlayerStateStorage *)gameState->playerState;
+        if (playerState != 0 && PlayerMenuSaveLoadBlocked(playerState) != 0) {
+            return 0;
+        }
     }
     return 1;
 }
@@ -13688,16 +12526,11 @@ int HudUiMainMenuDialog::CanLoadGame() {
 int HudUiMainMenuDialog::CanSaveGame() {
     zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
     if (gameState == 0) {
-        return (int)gameState;
+        return 0;
     }
-
     zUtil_PlayerStateStorage *const playerState =
         (zUtil_PlayerStateStorage *)gameState->playerState;
-    if (playerState == 0) {
-        return 1;
-    }
-
-    if (PlayerMenuSaveLoadBlocked(playerState) != 0) {
+    if (playerState != 0 && PlayerMenuSaveLoadBlocked(playerState) != 0) {
         return 0;
     }
     return 1;
@@ -14000,12 +12833,12 @@ void CHudUiMainMenuDialogLoadButton::OnActivate() {
  * Purpose: initialize the static main-menu transition app state and clear its
  * dialog/audio ownership fields.
  */
-RecoilStateMainMenuTransition::RecoilStateMainMenuTransition()
-    : m_mainMenuDialog(0),
-      m_savedHalfResAdjustMode(0),
-      m_entryRoute(RECOIL_MAINMENU_ROUTE_FRONTEND),
-      m_deferredVideoModeIndex(ZVID_MODE_INVALID_COMPLEMENT),
-      m_pausedAudioSnapshot(0) {}
+RecoilStateMainMenuTransition::RecoilStateMainMenuTransition() {
+    m_mainMenuDialog = 0;
+    m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
+    m_deferredVideoModeIndex = ZVID_MODE_INVALID_COMPLEMENT;
+    m_pausedAudioSnapshot = 0;
+}
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-destructor-recoilstatemainmenutransition

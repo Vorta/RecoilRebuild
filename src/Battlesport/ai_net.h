@@ -2203,12 +2203,12 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-dot-xyz recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.fast-sqrt-estimate recoil:function:0x4024a0
- * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.discriminant
- * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.discriminant recoil:function:0x4024a0
+ *
+ *
  * Original function evidence: retail 0x4024a0 contains two shared fixed-register
  * grouped-x87 subtraction islands, three full-XYZ dot islands, and one
- * vector-add island. Raw assembly also evaluates the discriminant in the
- * separately reviewed balanced six-instruction island [0x402624,0x402635).
+ * vector-add island. Native C++ with unused input captures evaluates the
+ * discriminant with the retail x87 order at [0x402624,0x402635).
  * The fast square-root bit transform remains the named-local four-instruction
  * island documented at its macro definition. Pointer binds, numerator/division,
  * fallback, rand tail, control flow, and the fastcall shell are compiler-generated.
@@ -2268,36 +2268,14 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
 
     {
         float fastSqrtEstimate;
+        float discriminant;
         {
             float dotProduct;
+            float unscaledQuadraticA, unscaledDistanceSquared; // Unused captures preserve the retail x87 evaluation order.
             AINET_VECTOR_DOT_XYZ(dotProduct, leadVectors[2], leadVectors[2]);
-            /**
-             * Pro reviews 2026-09-08T13-20-12-880Z and
-             * 2026-09-08T13-53-30-754Z scope the six-instruction arithmetic
-             * island to [0x402624,0x402635). The sibling scopes distinguish
-             * the squared-distance input from the completed discriminant.
-             * Purpose: Evaluate the intercept discriminant with retail x87
-             * operand order and one final rounding boundary. The following
-             * fstp completes this same contiguous, balanced island.
-             */
-            __asm {
-                fld dword ptr [quadraticA]
-                fmul dword ptr [dotProduct]
-                fld dword ptr [leadCoefficient.quadraticB]
-                fmul dword ptr [leadCoefficient.quadraticB]
-                faddp ST(1), ST(0)
-            }
+            discriminant = (unscaledQuadraticA = quadraticA) * (unscaledDistanceSquared = dotProduct) + leadCoefficient.quadraticB * leadCoefficient.quadraticB;
         }
-        {
-            float discriminant;
-            /**
-             * Purpose: Complete the preceding five raw-assembly instructions
-             * with their single final float store. No generated instruction
-             * may intervene across these sibling local lifetimes.
-             */
-            __asm fstp dword ptr [discriminant]
-            AINET_FAST_SQRT_ESTIMATE(fastSqrtEstimate, discriminant);
-        }
+        AINET_FAST_SQRT_ESTIMATE(fastSqrtEstimate, discriminant);
         const float leadScaleNumerator =
             fastSqrtEstimate + leadCoefficient.quadraticB;
 
@@ -2334,10 +2312,10 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zUtil_PlayerStateStorage *const targetPlayerState = targetState->playerState;
-    const float offsetDistance = playerState->aiNet->pursuitParam0;
     zVec3 targetDir;
     zVec3 targetToPlayerDir;
     zVec3 offsetTarget;
+    const float offsetDistance = playerState->aiNet->pursuitParam0;
 
     {
         zVec3 *v0 = &targetToPlayerDir;

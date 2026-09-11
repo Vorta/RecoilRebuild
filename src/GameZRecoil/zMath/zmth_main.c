@@ -1879,18 +1879,18 @@ namespace zMath {
  * Purpose: computes pitch and yaw angles from one point toward another and
  * clears roll in the output vector.
  */
-zVec3 *__fastcall Vec3DirectionAnglesBetweenPoints(
+zVec3 __fastcall Vec3DirectionAnglesBetweenPoints(
     const zVec3 *pointA,
-    const zVec3 *pointB,
-    zVec3 *outAngles
+    const zVec3 *pointB
 ) {
+    zVec3 result;
     const float dx = pointA->x - pointB->x;
     const float dy = pointB->y - pointA->y;
     const float dz = pointA->z - pointB->z;
-    outAngles->x = atan2(dy, sqrt(dx * dx + dz * dz));
-    outAngles->y = atan2(dx, dz);
-    outAngles->z = 0.0f;
-    return outAngles;
+    result.x = atan2(dy, sqrt(dx * dx + dz * dz));
+    result.y = atan2(dx, dz);
+    result.z = 0.0f;
+    return result;
 }
 } // namespace zMath
 
