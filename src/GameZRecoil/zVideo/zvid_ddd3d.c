@@ -2536,17 +2536,17 @@ RECOIL_NO_GS int __fastcall ReportError(
     )
 
     switch (hresult) {
-    case DDERR_GENERIC:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_Generic);
-        break;
     case DDERR_UNSUPPORTED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_Unsupported);
         break;
-    case DDERR_OUTOFMEMORY:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_OutOfMemory);
+    case DDERR_GENERIC:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_Generic);
         break;
     case DDERR_NOTINITIALIZED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NotInitialized);
+        break;
+    case DDERR_OUTOFMEMORY:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_OutOfMemory);
         break;
     case DDERR_INVALIDPARAMS:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_InvalidParams);
@@ -2608,14 +2608,14 @@ RECOIL_NO_GS int __fastcall ReportError(
     case DDERR_NOCOLORKEY:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoColorKey);
         break;
-    case DDERR_NOCOLORKEYHW:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoColorKeyHw);
+    case DDERR_NOEXCLUSIVEMODE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoExclusiveMode);
         break;
     case DDERR_NODIRECTDRAWSUPPORT:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoDirectDrawSupport);
         break;
-    case DDERR_NOEXCLUSIVEMODE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoExclusiveMode);
+    case DDERR_NOCOLORKEYHW:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoColorKeyHw);
         break;
     case DDERR_NOFLIPHW:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoFlipHw);
@@ -2668,14 +2668,14 @@ RECOIL_NO_GS int __fastcall ReportError(
     case DDERR_OUTOFVIDEOMEMORY:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_OutOfVideoMemory);
         break;
-    case DDERR_OVERLAYCANTCLIP:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_OverlayCantClip);
+    case DDERR_PALETTEBUSY:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_PaletteBusy);
         break;
     case DDERR_OVERLAYCOLORKEYONLYONEACTIVE:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_OverlayColorKeyOnlyOneActive);
         break;
-    case DDERR_PALETTEBUSY:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_PaletteBusy);
+    case DDERR_OVERLAYCANTCLIP:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_OverlayCantClip);
         break;
     case DDERR_COLORKEYNOTSET:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_ColorKeyNotSet);
@@ -2722,6 +2722,105 @@ RECOIL_NO_GS int __fastcall ReportError(
     case DDERR_WASSTILLDRAWING:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_WasStillDrawing);
         break;
+    case DDERR_BLTFASTCANTCLIP:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_BltFastCantClip);
+        break;
+    case DDERR_CANTCREATEDC:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_CantCreateDc);
+        break;
+    case DDERR_CANTDUPLICATE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_CantDuplicate);
+        break;
+    case DDERR_CLIPPERISUSINGHWND:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_ClipperIsUsingHwnd);
+        break;
+    case DDERR_DCALREADYCREATED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_DcAlreadyCreated);
+        break;
+    case DDERR_DIRECTDRAWALREADYCREATED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_DirectDrawAlreadyCreated);
+        break;
+    case DDERR_EXCLUSIVEMODEALREADYSET:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_ExclusiveModeAlreadySet);
+        break;
+    case DDERR_HWNDALREADYSET:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_HwndAlreadySet);
+        break;
+    case DDERR_HWNDSUBCLASSED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_HwndSubclassed);
+        break;
+    case DDERR_IMPLICITLYCREATED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_ImplicitlyCreated);
+        break;
+    case DDERR_INVALIDDIRECTDRAWGUID:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_InvalidDirectDrawGuid);
+        break;
+    case DDERR_INVALIDPOSITION:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_InvalidPosition);
+        break;
+    case DDERR_INVALIDSURFACETYPE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_InvalidSurfaceType);
+        break;
+    case DDERR_NOBLTHW:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoBltHw);
+        break;
+    case DDERR_NOCLIPPERATTACHED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoClipperAttached);
+        break;
+    case DDERR_NODC:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoDirectDc);
+        break;
+    case DDERR_NODDROPSHW:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoDdRopsHw);
+        break;
+    case DDERR_NODIRECTDRAWHW:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoDirectDrawHw);
+        break;
+    case DDERR_NOEMULATION:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoEmulation);
+        break;
+    case DDERR_NOHWND:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoHwnd);
+        break;
+    case DDERR_NOMIPMAPHW:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoMipMapHw);
+        break;
+    case DDERR_NOPALETTEATTACHED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoPaletteAttached);
+        break;
+    case DDERR_NOPALETTEHW:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoPaletteHw);
+        break;
+    case DDERR_NOTAOVERLAYSURFACE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoAOverlaySurface);
+        break;
+    case DDERR_NOTFLIPPABLE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NotFlippable);
+        break;
+    case DDERR_NOTLOCKED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NotLocked);
+        break;
+    case DDERR_NOTPALETTIZED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NotPalettized);
+        break;
+    case DDERR_OVERLAYNOTVISIBLE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_OverlayNotVisible);
+        break;
+    case DDERR_PRIMARYSURFACEALREADYEXISTS:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_PrimarySurfaceAlreadyExists);
+        break;
+    case DDERR_REGIONTOOSMALL:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_RegionTooSmall);
+        break;
+    case DDERR_UNSUPPORTEDMODE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_UnsupportedMode);
+        break;
+    case DDERR_WRONGMODE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_WrongMode);
+        break;
+    case DDERR_XALIGN:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_XAlign);
+        break;
     case DDERR_CANTPAGELOCK:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_CantPageLock);
         break;
@@ -2731,113 +2830,17 @@ RECOIL_NO_GS int __fastcall ReportError(
     case DDERR_NOTPAGELOCKED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NotPageLocked);
         break;
-    case DDERR_XALIGN:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_XAlign);
-        break;
-    case DDERR_INVALIDDIRECTDRAWGUID:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_InvalidDirectDrawGuid);
-        break;
-    case DDERR_DIRECTDRAWALREADYCREATED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_DirectDrawAlreadyCreated);
-        break;
-    case DDERR_NODIRECTDRAWHW:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoDirectDrawHw);
-        break;
-    case DDERR_PRIMARYSURFACEALREADYEXISTS:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_PrimarySurfaceAlreadyExists);
-        break;
-    case DDERR_NOEMULATION:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoEmulation);
-        break;
-    case DDERR_REGIONTOOSMALL:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_RegionTooSmall);
-        break;
-    case DDERR_CLIPPERISUSINGHWND:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_ClipperIsUsingHwnd);
-        break;
-    case DDERR_NOCLIPPERATTACHED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoClipperAttached);
-        break;
-    case DDERR_NOHWND:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoHwnd);
-        break;
-    case DDERR_HWNDSUBCLASSED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_HwndSubclassed);
-        break;
-    case DDERR_HWNDALREADYSET:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_HwndAlreadySet);
-        break;
-    case DDERR_NOPALETTEATTACHED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoPaletteAttached);
-        break;
-    case DDERR_NOPALETTEHW:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoPaletteHw);
-        break;
-    case DDERR_BLTFASTCANTCLIP:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_BltFastCantClip);
-        break;
-    case DDERR_NOBLTHW:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoBltHw);
-        break;
-    case DDERR_NODDROPSHW:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoDdRopsHw);
-        break;
-    case DDERR_OVERLAYNOTVISIBLE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_OverlayNotVisible);
-        break;
-    case DDERR_INVALIDPOSITION:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_InvalidPosition);
-        break;
-    case DDERR_NOTAOVERLAYSURFACE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoAOverlaySurface);
-        break;
-    case DDERR_EXCLUSIVEMODEALREADYSET:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_ExclusiveModeAlreadySet);
-        break;
-    case DDERR_NOTFLIPPABLE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NotFlippable);
-        break;
-    case DDERR_CANTDUPLICATE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_CantDuplicate);
-        break;
-    case DDERR_NOTLOCKED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NotLocked);
-        break;
-    case DDERR_CANTCREATEDC:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_CantCreateDc);
-        break;
-    case DDERR_NODC:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoDirectDc);
-        break;
-    case DDERR_WRONGMODE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_WrongMode);
-        break;
-    case DDERR_IMPLICITLYCREATED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_ImplicitlyCreated);
-        break;
-    case DDERR_NOTPALETTIZED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NotPalettized);
-        break;
-    case DDERR_UNSUPPORTEDMODE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_UnsupportedMode);
-        break;
-    case DDERR_NOMIPMAPHW:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_NoMipMapHw);
-        break;
-    case DDERR_INVALIDSURFACETYPE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_InvalidSurfaceType);
-        break;
-    case DDERR_DCALREADYCREATED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_DDErrorName_DcAlreadyCreated);
+    case D3DERR_BADMINORVERSION:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_BadMinorVersion);
         break;
     case D3DERR_BADMAJORVERSION:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_BadMajorVersion);
         break;
-    case D3DERR_BADMINORVERSION:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_BadMinorVersion);
-        break;
     case D3DERR_INVALID_DEVICE:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_InvalidDevice);
+        break;
+    case D3DERR_EXECUTE_CLIPPED_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteClippedFailed);
         break;
     case D3DERR_EXECUTE_CREATE_FAILED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteCreateFailed);
@@ -2845,11 +2848,11 @@ RECOIL_NO_GS int __fastcall ReportError(
     case D3DERR_EXECUTE_DESTROY_FAILED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteDestroyFailed);
         break;
+    case D3DERR_EXECUTE_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteFailed);
+        break;
     case D3DERR_EXECUTE_LOCK_FAILED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteLockFailed);
-        break;
-    case D3DERR_EXECUTE_UNLOCK_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteUnlockFailed);
         break;
     case D3DERR_EXECUTE_LOCKED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteLocked);
@@ -2857,56 +2860,8 @@ RECOIL_NO_GS int __fastcall ReportError(
     case D3DERR_EXECUTE_NOT_LOCKED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteNotLocked);
         break;
-    case D3DERR_EXECUTE_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteFailed);
-        break;
-    case D3DERR_EXECUTE_CLIPPED_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteClippedFailed);
-        break;
-    case D3DERR_TEXTURE_NO_SUPPORT:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureNoSupport);
-        break;
-    case D3DERR_TEXTURE_CREATE_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureCreateFailed);
-        break;
-    case D3DERR_TEXTURE_DESTROY_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureDestroyFailed);
-        break;
-    case D3DERR_TEXTURE_LOCK_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureLockFailed);
-        break;
-    case D3DERR_TEXTURE_UNLOCK_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureUnlockFailed);
-        break;
-    case D3DERR_TEXTURE_LOAD_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureLoadFailed);
-        break;
-    case D3DERR_TEXTURE_SWAP_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureSwapFailed);
-        break;
-    case D3DERR_TEXTURE_LOCKED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureLocked);
-        break;
-    case D3DERR_TEXTURE_NOT_LOCKED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureNotLocked);
-        break;
-    case D3DERR_TEXTURE_GETSURF_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureGetSurfFailed);
-        break;
-    case D3DERR_MATRIX_CREATE_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MatrixCreateFailed);
-        break;
-    case D3DERR_MATRIX_DESTROY_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MatrixDestroyFailed);
-        break;
-    case D3DERR_MATRIX_SETDATA_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MatrixSetDataFailed);
-        break;
-    case D3DERR_MATRIX_GETDATA_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MatrixGetDataFailed);
-        break;
-    case D3DERR_SETVIEWPORTDATA_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SetViewportDataFailed);
+    case D3DERR_EXECUTE_UNLOCK_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ExecuteUnlockFailed);
         break;
     case D3DERR_INVALIDCURRENTVIEWPORT:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_InvalidCurrentViewport);
@@ -2917,20 +2872,65 @@ RECOIL_NO_GS int __fastcall ReportError(
     case D3DERR_INVALIDVERTEXTYPE:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_InvalidVertexType);
         break;
-    case D3DERR_TEXTURE_BADSIZE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureBadSize);
-        break;
     case D3DERR_MATERIAL_CREATE_FAILED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MaterialCreateFailed);
         break;
     case D3DERR_MATERIAL_DESTROY_FAILED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MaterialDestroyFailed);
         break;
+    case D3DERR_MATERIAL_GETDATA_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MaterialGetDataFailed);
+        break;
     case D3DERR_MATERIAL_SETDATA_FAILED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MaterialSetDataFailed);
         break;
-    case D3DERR_MATERIAL_GETDATA_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MaterialGetDataFailed);
+    case D3DERR_MATRIX_CREATE_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MatrixCreateFailed);
+        break;
+    case D3DERR_MATRIX_DESTROY_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MatrixDestroyFailed);
+        break;
+    case D3DERR_MATRIX_GETDATA_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MatrixGetDataFailed);
+        break;
+    case D3DERR_MATRIX_SETDATA_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_MatrixSetDataFailed);
+        break;
+    case D3DERR_SETVIEWPORTDATA_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SetViewportDataFailed);
+        break;
+    case D3DERR_TEXTURE_BADSIZE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureBadSize);
+        break;
+    case D3DERR_TEXTURE_CREATE_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureCreateFailed);
+        break;
+    case D3DERR_TEXTURE_DESTROY_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureDestroyFailed);
+        break;
+    case D3DERR_TEXTURE_GETSURF_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureGetSurfFailed);
+        break;
+    case D3DERR_TEXTURE_LOAD_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureLoadFailed);
+        break;
+    case D3DERR_TEXTURE_LOCK_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureLockFailed);
+        break;
+    case D3DERR_TEXTURE_LOCKED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureLocked);
+        break;
+    case D3DERR_TEXTURE_NO_SUPPORT:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureNoSupport);
+        break;
+    case D3DERR_TEXTURE_NOT_LOCKED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureNotLocked);
+        break;
+    case D3DERR_TEXTURE_SWAP_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureSwapFailed);
+        break;
+    case D3DERR_TEXTURE_UNLOCK_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_TextureUnlockFailed);
         break;
     case D3DERR_ZBUFF_NEEDS_SYSTEMMEMORY:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ZBuffNeedsSystemMemory);
@@ -2941,18 +2941,6 @@ RECOIL_NO_GS int __fastcall ReportError(
     case D3DERR_LIGHT_SET_FAILED:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_LightSetFailed);
         break;
-    case D3DERR_SCENE_IN_SCENE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SceneInScene);
-        break;
-    case D3DERR_SCENE_NOT_IN_SCENE:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SceneNotInScene);
-        break;
-    case D3DERR_SCENE_BEGIN_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SceneBeginFailed);
-        break;
-    case D3DERR_SCENE_END_FAILED:
-        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SceneEndFailed);
-        break;
     case D3DERR_INBEGIN:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_InBegin);
         break;
@@ -2961,6 +2949,18 @@ RECOIL_NO_GS int __fastcall ReportError(
         break;
     case D3DERR_NOVIEWPORTS:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_NoViewports);
+        break;
+    case D3DERR_SCENE_BEGIN_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SceneBeginFailed);
+        break;
+    case D3DERR_SCENE_END_FAILED:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SceneEndFailed);
+        break;
+    case D3DERR_SCENE_IN_SCENE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SceneInScene);
+        break;
+    case D3DERR_SCENE_NOT_IN_SCENE:
+        ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_SceneNotInScene);
         break;
     case D3DERR_VIEWPORTDATANOTSET:
         ZVIDEO_DD_REPORT_ERROR_NAME(g_zVideo_D3DErrorName_ViewportDataNotSet);

@@ -18,20 +18,6 @@ using zSys::Sub64;
 const unsigned int g_zSys_CpuBenchmarkDurationTable[12] =
     {0, 0, 0, 115, 47, 43, 38, 38, 38, 38, 38, 38};
 
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-g-zsys-cpuvendorexpectedintel
- * @recoil-artifact defines .data recoil:data:0x4e467c: g_zSys_CpuVendorExpectedIntel.
- * Purpose: supplies the expected Intel vendor bytes for CPU detection.
- */
-const char g_zSys_CpuVendorExpectedIntel[0x0d] = "GenuineIntel";
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-g-zsys-cpuvendorscratchpadinit
- * @recoil-artifact defines .data recoil:data:0x4e468c: g_zSys_CpuVendorScratchPadInit.
- * Purpose: initializes the 12-byte CPUID vendor scratch buffer.
- */
-const char g_zSys_CpuVendorScratchPadInit[0x0d] = "------------";
-
 struct CpuBenchmarkResolver {
     zSys::CpuBenchmarkResult * ResolveCpuBenchmarkPacket(
         zSys::CpuBenchmarkResult *outBuffer
@@ -46,7 +32,6 @@ struct CpuBenchmarkResolver {
         zSys::CpuBenchmarkResult *outBuffer
     );
 };
-
 } // namespace
 
 /**
@@ -59,6 +44,8 @@ namespace zSys {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-getcpumhz
  * @recoil-artifact defines .text recoil:function:0x4b31c0: zSys::GetCpuMhz.
+ * @recoil-match byte
+ *
  * Purpose: resolve the current CPU benchmark packet and return the rounded MHz value.
  */
 RECOIL_NO_GS int __cdecl GetCpuMhz() {
@@ -104,7 +91,6 @@ unsigned short __cdecl HasCpuidSupport() {
 #else
     return 1;
 #endif
-
 }
 
 /**
@@ -114,8 +100,8 @@ unsigned short __cdecl HasCpuidSupport() {
  *
  * Purpose: classifies the CPU family and carries the non-Intel marker in bit 15.
  */
-int __cdecl DetectCpuClassAndFeatures() {
-    int result;
+unsigned short __cdecl DetectCpuClassAndFeatures() {
+    unsigned short result;
     if ((unsigned short)HasCpuidSupport() != 0) {
         result = ReadCpuidVendorAndFamily();
     } else {
@@ -142,69 +128,55 @@ int __cdecl DetectCpuClassAndFeatures() {
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zsys-zsys_cpu-function-readcpuidfeatureflags
  * @recoil-artifact defines .text recoil:function:0x4b3480: zSys::ReadCpuidFeatureFlags.
+ * @recoil-artifact emits .data recoil:data:0x4e467c: Shared Intel vendor literal.
+ * @recoil-artifact emits .data recoil:data:0x4e468c: Shared vendor scratch literal.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.read-cpuid-feature-flags
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.read-cpuid-feature-flags
- * Purpose: reads CPUID feature flags after validating CPUID support and vendor
- * state; VC5 C++ has no CPUID intrinsic, so this documented raw-assembly
- * CPU-probe exception emits the opcode while preserving its fixed-register
- * vendor result.
+ * @recoil-match byte
+ *
+ * Purpose: read CPUID feature flags after validating support and vendor state.
+ * VC5 C++ has no CPUID intrinsic; this raw-assembly exception preserves retail bytes.
  */
 unsigned int __cdecl ReadCpuidFeatureFlags() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
-    struct CpuVendorBuffer { char bytes[0x0c]; };
-    struct CpuFeatureScratch {
-        CpuVendorBuffer expectedVendor;
-        CpuVendorBuffer cpuidVendor;
-        unsigned int result;
+    struct CpuVendorBuffer {
+        unsigned int first;
+        unsigned int middle;
+        unsigned int last;
     };
-    volatile CpuFeatureScratch scratch;
-    __asm {
-        mov eax, dword ptr [g_zSys_CpuVendorScratchPadInit]
-        mov ecx, dword ptr [g_zSys_CpuVendorScratchPadInit + 4]
-        mov edx, dword ptr [g_zSys_CpuVendorScratchPadInit + 8]
-        mov dword ptr [scratch.cpuidVendor], eax
-        mov eax, dword ptr [g_zSys_CpuVendorExpectedIntel]
-        mov dword ptr [scratch.cpuidVendor + 4], ecx
-        mov ecx, dword ptr [g_zSys_CpuVendorExpectedIntel + 4]
-        mov dword ptr [scratch.cpuidVendor + 8], edx
-        mov edx, dword ptr [g_zSys_CpuVendorExpectedIntel + 8]
-        mov dword ptr [scratch.result], 0
-        mov dword ptr [scratch.expectedVendor], eax
-        mov dword ptr [scratch.expectedVendor + 4], ecx
-        mov dword ptr [scratch.expectedVendor + 8], edx
-    }
+    CpuVendorBuffer cpuidVendor;
+    CpuVendorBuffer expectedVendor;
+    unsigned int result;
+    result = 0;
+    memcpy((void *)&cpuidVendor, "------------", 12);
+    memcpy((void *)&expectedVendor, "GenuineIntel", 12);
     if ((unsigned short)HasCpuidSupport() != 0) {
         __asm {
             xor eax, eax
             _emit 0x0f
             _emit 0xa2
-            mov dword ptr [scratch.cpuidVendor], ebx
-            mov dword ptr [scratch.cpuidVendor + 4], edx
-            mov dword ptr [scratch.cpuidVendor + 8], ecx
-            xor eax, eax
-            mov ecx, 1
-        recoil_cpu_feature_vendor_compare:
-            mov dl, byte ptr [ebp + eax - 010h]
-            mov bl, byte ptr [ebp + eax - 01ch]
-            cmp dl, bl
-            je recoil_cpu_feature_vendor_compare_next
-            mov dword ptr [g_zSys_CpuVendorNonIntelMarker], ecx
-        recoil_cpu_feature_vendor_compare_next:
-            inc eax
-            cmp eax, 0ch
-            jl recoil_cpu_feature_vendor_compare
+            mov dword ptr [cpuidVendor.first], ebx
+            mov dword ptr [cpuidVendor.middle], edx
+            mov dword ptr [cpuidVendor.last], ecx
+        }
+        for (int i = 0; i < 12; ++i) {
+            if (((const char *)&cpuidVendor)[i] != ((const char *)&expectedVendor)[i]) {
+                g_zSys_CpuVendorNonIntelMarker = 1;
+            }
+        }
+        __asm {
             cmp eax, 1
             jl recoil_cpu_feature_done
             xor eax, eax
             inc eax
             _emit 0x0f
             _emit 0xa2
-            mov dword ptr [scratch.result], edx
+            mov dword ptr [result], edx
         recoil_cpu_feature_done:
-            mov eax, dword ptr [scratch.result]
+            mov eax, dword ptr [result]
         }
     }
-    return scratch.result;
+    return result;
 #else
     int cpuInfo[4] = {0};
     if (HasCpuidSupport() == 0) {
@@ -379,68 +351,41 @@ int __cdecl DetectIs80386ByAcFlag() {
  * @recoil-artifact defines .text recoil:function:0x4b3640: zSys::ReadCpuidVendorAndFamily.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.read-cpuid-vendor-and-family
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.read-cpuid-vendor-and-family
- * Purpose: reads CPUID vendor/family data and records non-Intel state; VC5 C++
- * has no CPUID intrinsic and did not preserve the retail register/byte shape,
- * so this documented raw-assembly CPU-probe exception emits the required
- * opcodes locally.
+ * @recoil-match byte
+ *
+ * Purpose: read CPUID vendor and family data, recording non-Intel state.
+ * VC5 C++ has no CPUID intrinsic; this raw-assembly exception preserves retail bytes.
  */
-int __cdecl ReadCpuidVendorAndFamily() {
+unsigned short __cdecl ReadCpuidVendorAndFamily() {
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
-    struct CpuVendorBuffer { char bytes[0x0c]; };
+    struct CpuVendorBuffer {
+        unsigned int first;
+        unsigned int middle;
+        unsigned int last;
+    };
     CpuVendorBuffer cpuidVendor;
     CpuVendorBuffer expectedVendor;
-    unsigned int cpuidFamily;
+    unsigned short cpuidFamily;
     unsigned char cpuidModel;
     unsigned char cpuidStepping;
+    cpuidFamily = 0xffff;
+    cpuidStepping = 0;
+    memcpy(&cpuidVendor, "------------", 12);
+    memcpy(&expectedVendor, "GenuineIntel", 12);
     __asm {
-        mov eax, dword ptr [g_zSys_CpuVendorScratchPadInit]
-        mov ecx, dword ptr [g_zSys_CpuVendorScratchPadInit + 4]
-        mov edx, dword ptr [g_zSys_CpuVendorScratchPadInit + 8]
-        _emit 0x89
-        _emit 0x45
-        _emit 0xec
-        mov eax, dword ptr [g_zSys_CpuVendorExpectedIntel]
-        _emit 0x89
-        _emit 0x4d
-        _emit 0xf0
-        mov ecx, dword ptr [g_zSys_CpuVendorExpectedIntel + 4]
-        _emit 0x89
-        _emit 0x55
-        _emit 0xf4
-        mov edx, dword ptr [g_zSys_CpuVendorExpectedIntel + 8]
-        _emit 0x53
-        mov dword ptr [cpuidFamily], 0ffffh
-        mov byte ptr [cpuidStepping], 0
-        mov dword ptr [expectedVendor], eax
-        mov dword ptr [expectedVendor + 4], ecx
-        mov dword ptr [expectedVendor + 8], edx
         xor eax, eax
         _emit 0x0f
         _emit 0xa2
-        _emit 0x89
-        _emit 0x5d
-        _emit 0xec
-        mov dword ptr [cpuidVendor + 4], edx
-        mov dword ptr [cpuidVendor + 8], ecx
-        xor eax, eax
-        mov ecx, 1
-    recoil_cpu_vendor_family_compare:
-        _emit 0x8a
-        _emit 0x54
-        _emit 0x05
-        _emit 0xec
-        _emit 0x8a
-        _emit 0x5c
-        _emit 0x05
-        _emit 0xe0
-        _emit 0x3a
-        _emit 0xd3
-        je recoil_cpu_vendor_family_compare_next
-        mov dword ptr [g_zSys_CpuVendorNonIntelMarker], ecx
-    recoil_cpu_vendor_family_compare_next:
-        inc eax
-        cmp eax, 0ch
-        jl recoil_cpu_vendor_family_compare
+        mov dword ptr [cpuidVendor.first], ebx
+        mov dword ptr [cpuidVendor.middle], edx
+        mov dword ptr [cpuidVendor.last], ecx
+    }
+    for (int i = 0; i < 12; ++i) {
+        if (((const char *)&cpuidVendor)[i] != ((const char *)&expectedVendor)[i]) {
+            g_zSys_CpuVendorNonIntelMarker = 1;
+        }
+    }
+    __asm {
         cmp eax, 1
         jl recoil_cpu_vendor_family_done
         xor eax, eax
@@ -458,9 +403,8 @@ int __cdecl ReadCpuidVendorAndFamily() {
         mov word ptr [cpuidFamily], ax
     recoil_cpu_vendor_family_done:
         mov ax, word ptr [cpuidFamily]
-        mov ax, word ptr [cpuidFamily]
-        _emit 0x5b
     }
+    return cpuidFamily;
 #else
     int cpuInfo[4] = {0};
     __cpuid(cpuInfo, 0);
@@ -468,25 +412,26 @@ int __cdecl ReadCpuidVendorAndFamily() {
     memcpy(&vendor[0], &cpuInfo[1], 4);
     memcpy(&vendor[4], &cpuInfo[3], 4);
     memcpy(&vendor[8], &cpuInfo[2], 4);
-    if (memcmp(vendor, g_zSys_CpuVendorExpectedIntel, sizeof(vendor)) != 0) {
+    if (memcmp(vendor, "GenuineIntel", sizeof(vendor)) != 0) {
         g_zSys_CpuVendorNonIntelMarker = 1;
     }
     __cpuid(cpuInfo, 1);
     return (cpuInfo[0] >> 8) & 0x0f;
 #endif
 }
-
 } // namespace zSys
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-cpubenchmarkresolver-resolvecpubenchmarkpacket
  * @recoil-artifact defines .text recoil:function:0x4b36f0: CpuBenchmarkResolver::ResolveCpuBenchmarkPacket.
+ *
+ *
  * Purpose: chooses the CPU benchmark strategy and writes the result packet.
  */
 zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
     zSys::CpuBenchmarkResult *outBuffer
 ) {
-    const int cpuClass = zSys::DetectCpuClassAndFeatures();
+    const unsigned short cpuClass = zSys::DetectCpuClassAndFeatures();
     const unsigned int featureFlags = zSys::ReadCpuidFeatureFlags();
     const int cpuClassHint = (int)((unsigned int)(this));
     if ((cpuClass & 0x8000) != 0) {
@@ -529,8 +474,11 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
 /**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-measure-mhz-via-bsf-loop-qpc
+ * @recoil-artifact defines .text recoil:function:0x4b37f0: CPU timing result.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-mhz-via-bsf-loop-qpc
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-mhz-via-bsf-loop-qpc recoil:function:0x4b37f0
+ *
  * Original function evidence: retail 0x4b37f0 contains this exact CPU timing body.
  * Purpose: measures CPU MHz with the fixed BSF/QPC loop; VC5 C++ did not
  * preserve the retail fixed-register loop or epilogue, so this documented CPU
@@ -697,8 +645,11 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
 /**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-measure-cpu-mhz-rdtsc-qpc
+ * @recoil-artifact defines .text recoil:function:0x4b38e0: CPU timing result.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-rdtsc-qpc
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-rdtsc-qpc recoil:function:0x4b38e0
+ *
  * Original function evidence: retail 0x4b38e0 contains this exact CPU timing body.
  * Purpose: measures CPU MHz with the RDTSC/QPC sampling loop; VC5 C++ cannot
  * issue RDTSC or preserve the retail priority/register/epilogue shape, so this
@@ -1033,8 +984,11 @@ void __fastcall ReadTsc64(
 } // namespace zSys
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
 /**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-measure-cpu-mhz-cmos-rtc
+ * @recoil-artifact defines .text recoil:function:0x4b3b50: CPU timing result.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-cmos-rtc
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-cmos-rtc recoil:function:0x4b3b50
+ *
  * Original function evidence: retail 0x4b3b50 contains this exact CPU timing body.
  * Purpose: measures CPU MHz against CMOS RTC second transitions; VC5 C++ did
  * not preserve the retail port-I/O/TSC coordination or epilogue, so this

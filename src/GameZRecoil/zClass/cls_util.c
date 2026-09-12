@@ -259,25 +259,6 @@ char g_zClass_CopyWorldClassNodesErrorMsg[0x25] =
 namespace {
     const int kDefaultNodeArraySize = 8250;
     const unsigned int kNodeFreeTagIndexMask = 0x00ffffff;
-
-    /**
-     * Original-source helper evidence: no standalone retail function is present;
-     * observed BBox callers 0x4525d0 and 0x452650 inline the same operation.
-     * Evidence: both callers use the same float-bit radius approximation,
-     * `bits >> 1` plus 0x1fc00000, after accumulating squared half-extents.
-     * Purpose: return the retail approximate range from a squared range.
-     */
-#define ApproximateRangeFromRangeSq(result, rangeSq) \
-    do { \
-        union { \
-            float range; \
-            int bits; \
-        } approximateValue; \
-        approximateValue.range = (rangeSq); \
-        approximateValue.bits = \
-            (approximateValue.bits >> 1) + 0x1fc00000; \
-        (result) = approximateValue.range; \
-    } while (0)
 }
 
 namespace zClass {
@@ -338,10 +319,10 @@ namespace zClass {
             g_zClass_NodeArraySize = kDefaultNodeArraySize;
         }
 
-        const size_t nodeArrayBytes =
-            (size_t)(g_zClass_NodeArraySize) * sizeof(zClass_NodeFreeListSlot);
-        g_zClass_NodeArray = (zClass_NodeFreeListSlot *)(malloc(nodeArrayBytes));
-        memset(g_zClass_NodeArray, 0, nodeArrayBytes);
+        g_zClass_NodeArray = (zClass_NodeFreeListSlot *)(malloc(
+            (size_t)g_zClass_NodeArraySize * sizeof(zClass_NodeFreeListSlot)));
+        memset(g_zClass_NodeArray, 0,
+            (size_t)g_zClass_NodeArraySize * sizeof(zClass_NodeFreeListSlot));
 
         g_zClass_ActiveNodeCount = 0;
         g_zClass_NodeFreeHeadIndex = 0;
@@ -473,43 +454,43 @@ namespace zClass_cls_util {
         zClass_NodePartial * dest
     ) {
         int result = 0;
+        unsigned int displayInstanceValue;
 
-        if (source->userDataOrDiRef == 0) {
-            return result;
-        }
+        if (source->userDataOrDiRef != 0) {
+            if (g_zClass_CopyNodeCloneDiMode != 0) {
+                unsigned int sourceInstanceValue;
+                result = zClass_Class::gwNodeGetUserData(source, &sourceInstanceValue);
+                if (result != 0) {
+                    return result;
+                }
 
-        unsigned int displayInstanceValue = 0;
-        if (g_zClass_CopyNodeCloneDiMode != 0) {
-            result = zClass_Class::gwNodeGetUserData(source, &displayInstanceValue);
-            if (result != 0) {
-                return result;
-            }
-
-            zDiPartial *displayInstance =
-                (zDiPartial *)((unsigned int)(displayInstanceValue));
-            if (g_zClass_CopyNodeDiArg1 == 0 ||
-                zDi::HasSpecialFlagsOrAuxMaterialData(displayInstance) != 0) {
-                displayInstance = zDi::CloneToInstance(
-                    displayInstance,
-                    g_zClass_CopyNodeDiArg0,
-                    g_zClass_CopyNodeDiArg1
-                );
-                if (displayInstance == 0) {
-                    return 1;
+                displayInstanceValue = sourceInstanceValue;
+                int cloneInstance = 1;
+                if (g_zClass_CopyNodeDiArg1 != 0 &&
+                    zDi::HasSpecialFlagsOrAuxMaterialData((zDiPartial *)sourceInstanceValue) == 0) {
+                    cloneInstance = 0;
+                }
+                if (cloneInstance) {
+                    const unsigned int clonedInstanceValue = (unsigned int)zDi::CloneToInstance(
+                        (zDiPartial *)sourceInstanceValue,
+                        g_zClass_CopyNodeDiArg0,
+                        g_zClass_CopyNodeDiArg1);
+                    if (clonedInstanceValue == 0) {
+                        return 1;
+                    }
+                    displayInstanceValue = clonedInstanceValue;
+                    return zClass_Class::gwNodeSetDisplayInstance(dest, (zDiPartial *)displayInstanceValue);
+                }
+            } else {
+                result = zClass_Class::gwNodeGetUserData(source, &displayInstanceValue);
+                if (result != 0) {
+                    return result;
                 }
             }
-
-            return zClass_Class::gwNodeSetDisplayInstance(dest, displayInstance);
-        } else {
-            result = zClass_Class::gwNodeGetUserData(source, &displayInstanceValue);
-            if (result == 0) {
-                return zClass_Class::gwNodeSetDisplayInstance(
-                    dest,
-                    (zDiPartial *)((unsigned int)(displayInstanceValue))
-                );
-            }
-            return result;
+            result = zClass_Class::gwNodeSetDisplayInstance(dest, (zDiPartial *)displayInstanceValue);
         }
+
+        return result;
     }
 
     /**
@@ -534,7 +515,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetActive(dest, (source->flags >> 2) & 1);
+        result = zClass_Class::gwNodeSetActive(dest, ((unsigned int)source->flags >> 2) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -547,7 +528,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetCellPickable(dest, (source->flags >> 3) & 1);
+        result = zClass_Class::gwNodeSetCellPickable(dest, ((unsigned int)source->flags >> 3) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -560,7 +541,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetRaycastable(dest, (source->flags >> 4) & 1);
+        result = zClass_Class::gwNodeSetRaycastable(dest, ((unsigned int)source->flags >> 4) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -573,7 +554,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetPickable(dest, (source->flags >> 5) & 1);
+        result = zClass_Class::gwNodeSetPickable(dest, ((unsigned int)source->flags >> 5) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -586,7 +567,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetHasHitCallback(dest, (source->flags >> 6) & 1);
+        result = zClass_Class::gwNodeSetHasHitCallback(dest, ((unsigned int)source->flags >> 6) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -599,7 +580,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetBypassFarClip(dest, (source->flags >> 7) & 1);
+        result = zClass_Class::gwNodeSetBypassFarClip(dest, ((unsigned int)source->flags >> 7) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -612,7 +593,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetFlag16(dest, (source->flags >> 16) & 1);
+        result = zClass_Class::gwNodeSetFlag16(dest, ((unsigned int)source->flags >> 16) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -625,7 +606,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetFlag17(dest, (source->flags >> 17) & 1);
+        result = zClass_Class::gwNodeSetFlag17(dest, ((unsigned int)source->flags >> 17) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -638,7 +619,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeClearVariantGate(dest, (source->flags >> 24) & 1);
+        result = zClass_Class::gwNodeClearVariantGate(dest, ((unsigned int)source->flags >> 24) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -651,7 +632,7 @@ namespace zClass_cls_util {
             return result;
         }
 
-        result = zClass_Class::gwNodeSetVertexAlphaOverride(dest, (source->flags >> 23) & 1);
+        result = zClass_Class::gwNodeSetVertexAlphaOverride(dest, ((unsigned int)source->flags >> 23) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
@@ -741,12 +722,13 @@ namespace zClass_cls_util {
     zClass_NodePartial *__fastcall CopyCameraNode(
         zClass_NodePartial * source
     ) {
+        int result; // Status captures are unused afterward but are proven by byte matching.
         zClass_NodePartial *const camera = zClass_Camera::gwCameraNew();
         if (camera == 0) {
             return camera;
         }
 
-        if (CopyNodeBaseData(source, camera) != 0) {
+        if ((result = CopyNodeBaseData(source, camera)) != 0) {
             zError::ReportOld(
                 0x100,
                 g_zClass_SourceFile_ClsUtilC,
@@ -760,35 +742,35 @@ namespace zClass_cls_util {
         }
 
         zClass_CameraDataPartial *const data = (zClass_CameraDataPartial *)(source->classData);
-        if (zClass_Camera::gwCameraSetWorld(camera, data->worldNode) != 0) {
+        if ((result = zClass_Camera::gwCameraSetWorld(camera, data->worldNode)) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetWindow(camera, data->windowNode) != 0) {
+        if ((result = zClass_Camera::gwCameraSetWindow(camera, data->windowNode)) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetTarget(
+        if ((result = zClass_Camera::gwCameraSetTarget(
                 camera,
                 data->targetOrEuler.x,
                 data->targetOrEuler.y,
                 data->targetOrEuler.z
-            ) != 0) {
+            )) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetPosition(
+        if ((result = zClass_Camera::gwCameraSetPosition(
                 camera,
                 data->posOffset.x,
                 data->posOffset.y,
                 data->posOffset.z
-            ) != 0) {
+            )) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetNearFarClip(camera, data->nearClip, data->farClip) != 0) {
+        if ((result = zClass_Camera::gwCameraSetNearFarClip(camera, data->nearClip, data->farClip)) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetClipDistance(camera, data->clipDistance) != 0) {
+        if ((result = zClass_Camera::gwCameraSetClipDistance(camera, data->clipDistance)) != 0) {
             return 0;
         }
-        if (zClass_Camera::gwCameraSetFOV(camera, data->fovX, data->fovY) != 0) {
+        if ((result = zClass_Camera::gwCameraSetFOV(camera, data->fovX, data->fovY)) != 0) {
             return 0;
         }
 
@@ -798,7 +780,6 @@ namespace zClass_cls_util {
                 return 0;
             }
         }
-
         return camera;
     }
 
@@ -844,12 +825,13 @@ namespace zClass_cls_util {
     zClass_NodePartial *__fastcall CopyObject3DNode(
         zClass_NodePartial * source
     ) {
+        int result; // Status captures are unused afterward but are proven by byte matching.
         zClass_NodePartial *const parent = zClass_Object3D::gwObject3DInit();
         if (parent == 0) {
             return parent;
         }
 
-        if (CopyNodeBaseData(source, parent) != 0) {
+        if ((result = CopyNodeBaseData(source, parent)) != 0) {
             zError::ReportOld(
                 0x100,
                 g_zClass_SourceFile_ClsUtilC,
@@ -863,41 +845,41 @@ namespace zClass_cls_util {
         }
 
         zClass_Object3DDataPartial *const data = (zClass_Object3DDataPartial *)(source->classData);
-        if (zClass_Object3D::gwObject3DSetAlphaScale(parent, data->alphaScale) != 0) {
+        if ((result = zClass_Object3D::gwObject3DSetAlphaScale(parent, data->alphaScale)) != 0) {
             return 0;
         }
-        if (zClass_Object3D::gwObject3DSetLitFlag(parent, (data->flags >> 1) & 1) != 0) {
+        if ((result = zClass_Object3D::gwObject3DSetLitFlag(parent, ((unsigned int)data->flags >> 1) & 1)) != 0) {
             return 0;
         }
 
         if ((data->flags & 0x08) == 0) {
             if ((data->flags & 0x10) != 0) {
-                if (zClass_Object3D::gwObject3DSetMatrix(parent, data->localMatrix) != 0) {
+                if ((result = zClass_Object3D::gwObject3DSetMatrix(parent, data->localMatrix)) != 0) {
                     return 0;
                 }
             } else {
-                if (zClass_Object3D::gwObject3DSetPosition(
+                if ((result = zClass_Object3D::gwObject3DSetPosition(
                         parent,
                         data->localMatrix[9],
                         data->localMatrix[10],
                         data->localMatrix[11]
-                    ) != 0) {
+                    )) != 0) {
                     return 0;
                 }
-                if (zClass_Object3D::gwObject3DSetRotation(
+                if ((result = zClass_Object3D::gwObject3DSetRotation(
                         parent,
                         data->rotation.x,
                         data->rotation.y,
                         data->rotation.z
-                    ) != 0) {
+                    )) != 0) {
                     return 0;
                 }
-                if (zClass_Object3D::gwObject3DSetScale(
+                if ((result = zClass_Object3D::gwObject3DSetScale(
                         parent,
                         data->scale.x,
                         data->scale.y,
                         data->scale.z
-                    ) != 0) {
+                    )) != 0) {
                     return 0;
                 }
             }
@@ -909,7 +891,6 @@ namespace zClass_cls_util {
                 return 0;
             }
         }
-
         return parent;
     }
 
@@ -933,9 +914,14 @@ namespace zClass_cls_util {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copylodnode
      * @recoil-artifact defines .text recoil:function:0x452250: zClass_cls_util::CopyLodNode
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.copy-lod-range recoil:function:0x452250
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.copy-lod-range
+     *
      * Purpose: allocate and populate a copied LOD node and its copied children.
+     * Raw assembly: Pro-reviewed after native VC5 C++ range-estimate variants failed.
      */
     zClass_NodePartial *__fastcall CopyLodNode(zClass_NodePartial * source) {
+        float savedRange; // Unused later; this argument capture is proven by byte matching.
         zClass_NodePartial *const parent = zClass_Lod::gwLodNew();
         if (parent == 0) {
             return parent;
@@ -973,8 +959,24 @@ namespace zClass_cls_util {
         destData->active = sourceData->active;
 
         float range = 0.0f;
-        ApproximateRangeFromRangeSq(range, sourceData->rangeSq);
-        if (zClass_Lod::SetTargetNodeAndRange(parent, sourceData->rangeNode, range) != 0) {
+        {
+            int inputValue;
+            memcpy(&inputValue, &sourceData->rangeSq, sizeof(inputValue));
+            float rangeValue;
+            /**
+             * Purpose: Compute the retail range estimate from the named input bits.
+             * Address-specific Pro review permits only this four-op conversion;
+             * native VC5 C++ variants did not reproduce its storage and schedule.
+             */
+            __asm {
+                mov eax, inputValue
+                sar eax, 1
+                add eax, 01fc00000h
+                mov rangeValue, eax
+            }
+            range = rangeValue;
+        }
+        if (zClass_Lod::SetTargetNodeAndRange(parent, sourceData->rangeNode, (savedRange = range)) != 0) {
             return 0;
         }
 
@@ -1028,39 +1030,39 @@ namespace zClass_cls_util {
     zClass_NodePartial *__fastcall CopyNodeDispatch(
         zClass_NodePartial * source
     ) {
+        zClass_NodePartial *result = 0;
         if (source == 0) {
             zError::ReportOld(0x400, g_zClass_SourceFile_ClsUtilC, 0x5b8, "Null node pointer.");
             return 0;
         }
-
         if ((source->flags & 0x04000000) != 0) {
             return source;
         }
 
-        zClass_NodePartial *result = 0;
         switch (source->classId) {
         case 5:
             result = CopyObject3DNode(source);
             break;
         case 6:
-            return CopyLodNode(source);
+            result = CopyLodNode(source);
+            break;
         case 1:
             result = CopyCameraNode(source);
             break;
         case 9:
-            CopyLightNode(source);
+            result = CopyLightNode(source);
             break;
         case 10:
-            CopySoundNode(source);
+            result = CopySoundNode(source);
             break;
         case 8:
-            CopyAnimateNode(source);
+            result = CopyAnimateNode(source);
             break;
         case 7:
-            CopySequenceNode(source);
+            result = CopySequenceNode(source);
             break;
         case 11:
-            CopySwitchNode(source);
+            result = CopySwitchNode(source);
             break;
         case 2:
             zError::ReportOld(
@@ -1069,7 +1071,7 @@ namespace zClass_cls_util {
                 0x5e1,
                 g_zClass_CopyWorldClassNodesErrorMsg
             );
-            break;
+            return 0;
         default:
             zError::ReportOld(
                 0x100,
@@ -1098,8 +1100,8 @@ namespace zClass_cls_util {
             return 0;
         }
 
-        const int savedDiArg0 = g_zClass_CopyNodeDiArg0;
         const int savedCloneDiMode = g_zClass_CopyNodeCloneDiMode;
+        const int savedDiArg0 = g_zClass_CopyNodeDiArg0;
         g_zClass_CopyNodeCloneDiMode = cloneDiMode;
         g_zClass_CopyNodeDiArg0 = diArg0;
 
@@ -1125,8 +1127,8 @@ namespace zClass_cls_util {
             return 0;
         }
 
-        const int savedDiArg0 = g_zClass_CopyNodeDiArg0;
         const int savedCloneDiMode = g_zClass_CopyNodeCloneDiMode;
+        const int savedDiArg0 = g_zClass_CopyNodeDiArg0;
         const int savedDiArg1 = g_zClass_CopyNodeDiArg1;
         g_zClass_CopyNodeCloneDiMode = cloneDiMode;
         g_zClass_CopyNodeDiArg0 = diArg0;
@@ -1144,30 +1146,54 @@ namespace BBox {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.minmaxtoboundingsphere
      * @recoil-artifact defines .text recoil:function:0x4525d0: BBox::MinMaxToBoundingSphere.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.minmax-radius recoil:function:0x4525d0
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.minmax-radius
+     *
      * Purpose: write the min/max bbox center and retail approximate
      * bounding-sphere radius.
+     * Raw assembly: Pro-reviewed after native VC5 C++ radius-estimate variants failed.
      */
     float *__fastcall MinMaxToBoundingSphere(
         const zBBox3f *bbox,
         zVec3 *outCenter,
         float *outRadius
     ) {
+        float savedHalf; // Unused later; these input captures are proven by byte matching.
         const float halfX = (bbox->maxX - bbox->minX) * 0.5f;
         const float halfY = (bbox->maxY - bbox->minY) * 0.5f;
         const float halfZ = (bbox->maxZ - bbox->minZ) * 0.5f;
-        outCenter->x = bbox->minX + halfX;
-        outCenter->y = bbox->minY + halfY;
-        outCenter->z = bbox->minZ + halfZ;
+        outCenter->x = (savedHalf = halfX) + bbox->minX;
+        outCenter->y = (savedHalf = halfY) + bbox->minY;
+        outCenter->z = (savedHalf = halfZ) + bbox->minZ;
 
-        ApproximateRangeFromRangeSq(*outRadius, halfX * halfX + halfY * halfY + halfZ * halfZ);
+        {
+            float rangeSquaredValue = halfX * halfX + halfY * halfY + halfZ * halfZ;
+            float rangeValue;
+            /**
+             * Purpose: Compute the retail radius estimate from the squared half-extents.
+             * Address-specific Pro review permits only this four-op conversion;
+             * native VC5 C++ variants did not reproduce its storage and schedule.
+             */
+            __asm {
+                mov eax, rangeSquaredValue
+                sar eax, 1
+                add eax, 01fc00000h
+                mov rangeValue, eax
+            }
+            *outRadius = rangeValue;
+        }
         return outRadius;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.cornerstoboundingsphere
      * @recoil-artifact defines .text recoil:function:0x452650: BBox::CornersToBoundingSphere.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.corners-radius recoil:function:0x452650
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.corners-radius
+     *
      * Purpose: scan eight bbox corners, write the center, and write the
      * retail approximate bounding-sphere radius.
+     * Raw assembly: Pro-reviewed after native VC5 C++ radius-estimate variants failed.
      */
     void __fastcall CornersToBoundingSphere(
         zBBoxCorners * corners,
@@ -1175,38 +1201,55 @@ namespace BBox {
         float *outRadius
     ) {
         const zVec3 *corner = (const zVec3 *)corners->values;
-        float minX = corner[0].x;
-        float maxX = corner[0].x;
-        float minY = corner[0].y;
-        float maxY = corner[0].y;
-        float minZ = corner[0].z;
-        float maxZ = corner[0].z;
+        zBBox3f bounds;
+        bounds.minX = corner->x;
+        bounds.maxX = corner->x;
+        bounds.minY = corner->y;
+        bounds.maxY = corner->y;
+        bounds.minZ = corner->z;
+        bounds.maxZ = corner->z;
+        ++corner;
 
-        for (int i = 1; i < 8; ++i) {
-            if (corner[i].x < minX) {
-                minX = corner[i].x;
-            } else if (corner[i].x > maxX) {
-                maxX = corner[i].x;
+        for (int i = 7; i > 0; --i, ++corner) {
+            if (corner->x < bounds.minX) {
+                bounds.minX = corner->x;
+            } else if (corner->x > bounds.maxX) {
+                bounds.maxX = corner->x;
             }
-            if (corner[i].y < minY) {
-                minY = corner[i].y;
-            } else if (corner[i].y > maxY) {
-                maxY = corner[i].y;
+            if (corner->y < bounds.minY) {
+                bounds.minY = corner->y;
+            } else if (corner->y > bounds.maxY) {
+                bounds.maxY = corner->y;
             }
-            if (corner[i].z < minZ) {
-                minZ = corner[i].z;
-            } else if (corner[i].z > maxZ) {
-                maxZ = corner[i].z;
+            if (corner->z < bounds.minZ) {
+                bounds.minZ = corner->z;
+            } else if (corner->z > bounds.maxZ) {
+                bounds.maxZ = corner->z;
             }
         }
 
-        const float halfX = (maxX - minX) * 0.5f;
-        const float halfY = (maxY - minY) * 0.5f;
-        const float halfZ = (maxZ - minZ) * 0.5f;
-        outCenter->x = minX + halfX;
-        outCenter->y = minY + halfY;
-        outCenter->z = minZ + halfZ;
-        ApproximateRangeFromRangeSq(*outRadius, halfX * halfX + halfY * halfY + halfZ * halfZ);
+        const float halfX = (bounds.maxX - bounds.minX) * 0.5f;
+        const float halfY = (bounds.maxY - bounds.minY) * 0.5f;
+        const float halfZ = (bounds.maxZ - bounds.minZ) * 0.5f;
+        outCenter->x = bounds.minX + halfX;
+        outCenter->y = bounds.minY + halfY;
+        outCenter->z = bounds.minZ + halfZ;
+        {
+            float rangeSquaredValue = halfX * halfX + halfY * halfY + halfZ * halfZ;
+            float rangeValue;
+            /**
+             * Purpose: Compute the retail radius estimate after scanning the corner bounds.
+             * Address-specific Pro review permits only this four-op conversion;
+             * native VC5 C++ variants did not reproduce its storage and schedule.
+             */
+            __asm {
+                mov eax, rangeSquaredValue
+                sar eax, 1
+                add eax, 01fc00000h
+                mov rangeValue, eax
+            }
+            *outRadius = rangeValue;
+        }
     }
 }
 
@@ -1226,7 +1269,7 @@ namespace zClass_Class {
             return root;
         }
 
-        for (int i = root->listCountB - 1; i >= 0; --i) {
+        for (int i = root->listCountB; i--; ) {
             zClass_NodePartial *found = FindSubNodeByName(root->listB[i], name);
             if (found != 0) {
                 return found;
@@ -1269,7 +1312,7 @@ namespace zClass {
             return 1;
         }
 
-        for (int i = root->listCountB - 1; i >= 0; --i) {
+        for (int i = root->listCountB; i-- > 0; ) {
             if (AnyNodeMatchesPredicateRecursive(root->listB[i], predicate) == 1) {
                 return 1;
             }

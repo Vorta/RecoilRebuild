@@ -1848,13 +1848,13 @@ namespace zGeometry_WeilerBuffer {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-init-0x467600
  * @recoil-artifact defines .text recoil:function:0x467600: zGeometry_WeilerBuffer::Init
+ * @recoil-match byte
+ *
  * Purpose: Allocate zero-filled Weiler buffer storage and initialize append state.
  */
-void __fastcall Init(
-    zGeometry_WeilerBufferPartial *self,
+void __fastcall Init(zGeometry_WeilerBufferPartial *self,
     int initialCapacity,
-    int elementSize
-) {
+    int elementSize) {
     void *const base = calloc(initialCapacity, elementSize);
     self->capacity = initialCapacity;
     self->base = base;

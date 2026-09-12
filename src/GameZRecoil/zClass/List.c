@@ -199,8 +199,6 @@ namespace {
     const int kQueuedTreeBucket = 7;
     const int kZClassNodeWorld = 2;
     const int kTypeListInsertedFlag = 0x01;
-    const char kListSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\List.c";
-
 }
 
 namespace zClass_TypeList {
@@ -403,16 +401,16 @@ namespace zClass_TypeList {
         const int wasDeferredEnabled = g_zClass_DeferredProcessingEnabled;
         g_zClass_DeferredProcessingEnabled = 0;
 
-        for (zClass_TypeListLink *link = bucket; link != 0; link = link->next) {
-            zClass_NodePartial *node = link->node;
+        while (bucket != 0) {
+            zClass_NodePartial *node = bucket->node;
             zClass_NodeActionCallback callback = (zClass_NodeActionCallback)(node->actionCallback);
             if (callback == 0) {
-                link->pendingRemove = 1;
-            } else if (link->pendingRemove == 0 && (node->flags & 0x04) != 0) {
+                bucket->pendingRemove = 1;
+            } else if (bucket->pendingRemove == 0 && (node->flags & 0x04) != 0) {
                 callback(node);
             }
+            bucket = bucket->next;
         }
-
         g_zClass_DeferredProcessingEnabled = wasDeferredEnabled;
         zClass::ProcessDeferredWork();
     }
@@ -562,12 +560,13 @@ namespace zClass_TypeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.countnodes
      * @recoil-artifact defines .text recoil:function:0x44ec90: zClass_TypeList::CountNodes.
+     *
      * Purpose: count the links currently present in one type-list bucket.
      */
     int __fastcall CountNodes(int bucket) {
+        zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[bucket];
         int count = 0;
-        for (zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[bucket]; link != 0;
-            link = link->next) {
+        for (; link != 0; link = link->next) {
             ++count;
         }
         return count;
@@ -819,7 +818,7 @@ namespace zClass_List {
                 sprintf(
                     g_zError_DebugMsgBuffer,
                     "%s: Line %d: Unknown class type while deleting node from lists.\n",
-                    kListSourceFile,
+                    "D:\\Proj\\GameZRecoil\\zClass\\List.c",
                     0x75d
                 );
                 zError::EmitDebugBuffer(1);
@@ -869,7 +868,7 @@ namespace zClass_List {
         if (link != 0) {
             zError::ReportOld(
                 0x400,
-                kListSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\List.c",
                 0x92d,
                 "ERROR deleting list nodes; Not all nodes were deleteable"
             );
@@ -879,7 +878,7 @@ namespace zClass_List {
         if (zClass_TypeList::CountNodes(bucket) != 0) {
             zError::ReportOld(
                 0x400,
-                kListSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\List.c",
                 0x935,
                 "ERROR deleting list nodes; %d nodes left on list"
             );
@@ -894,6 +893,7 @@ namespace zClass_List {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwlistdeleteanode
      * @recoil-artifact defines .text recoil:function:0x44f1d0: zClass_List::_gwListDeleteANode.
+     *
      * Purpose: delete one node according to its class-specific child,
      * ownership, and object-data cleanup rules.
      */
@@ -1091,29 +1091,29 @@ namespace zClass_List {
                 }
             }
 
+            // Each grid row contains contiguous areas. Remove every area child
+            // before checking whether the world node can be deleted.
+
             {
-                int row = 0;
                 zWorldAreaPartial **rowCursor = worldData->areaGridRows;
-                if (worldData->areaGridRowCount > 0) {
-                    do {
-                        zWorldAreaPartial *area = *rowCursor;
-                        int col = 0;
-                        if (worldData->areaGridColCount > 0) {
-                            do {
-                                while (area->childCount > 0) {
-                                    result =
-                                        zClass_World::RemoveChildAtGrid(node, area->childList[0]);
-                                    if (result != 0) {
-                                        return result;
-                                    }
+                int row = 0;
+                for (; row < worldData->areaGridRowCount; ++row) {
+                    zWorldAreaPartial *area = *rowCursor;
+                    int col = 0;
+                    if (worldData->areaGridColCount > 0) {
+                        do {
+                            while (area->childCount > 0) {
+                                result =
+                                    zClass_World::RemoveChildAtGrid(node, area->childList[0]);
+                                if (result != 0) {
+                                    return result;
                                 }
-                                ++area;
-                                ++col;
-                            } while (col < worldData->areaGridColCount);
-                        }
-                        ++rowCursor;
-                        ++row;
-                    } while (row < worldData->areaGridRowCount);
+                            }
+                            ++area;
+                            ++col;
+                        } while (col < worldData->areaGridColCount);
+                    }
+                    ++rowCursor;
                 }
             }
 
@@ -1126,7 +1126,7 @@ namespace zClass_List {
         default:
             zError::ReportOld(
                 0x400,
-                kListSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\List.c",
                 0x8d4,
                 "_gwListDeleteANode(): Unrecognized node class type:node = %s ptr = 0x%08x class_type = %d",
                 node,

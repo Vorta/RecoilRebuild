@@ -9,27 +9,27 @@ namespace zError {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zerror.zerr-old.zerror-emitdebugbuffer
      * @recoil-artifact defines .text recoil:function:0x4622f0: zError::EmitDebugBuffer.
-     * Purpose: Forwards the shared debug buffer through the stripped legacy report stub.
+     * @recoil-match byte
+     *
+     * Purpose: forward the shared debug buffer to the legacy error report.
+     * Pass the severity, original source path, line number, and shared buffer.
+     * Retail calls the cdecl ReportOld alias folded at 0x404e80.
+     * The release report implementation is stripped and returns immediately.
      */
     void __fastcall EmitDebugBuffer(int severity) {
-        ReportOld(
-            severity,
-            "D:\\Proj\\GameZRecoil\\zError\\zerr_old.c",
-            0x23,
-            g_zError_DebugMsgBuffer
-        );
+        ReportOld(severity, "D:\\Proj\\GameZRecoil\\zError\\zerr_old.c", 0x23, g_zError_DebugMsgBuffer);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zerror.zerr-old.recoilerror-initoutputcontext
-     * @recoil-artifact defines .text recoil:function:0x462310: RecoilError::InitOutputContext.
+     * @recoil-artifact defines .text recoil:function:0x462310: zError::InitOutputContext.
+     * @recoil-match byte
+     *
      * Purpose: Resets the legacy error-output counters and stores the target output window.
      */
-    int __fastcall InitOutputContext(
-        void *hWnd,
+    int __fastcall InitOutputContext(void *hWnd,
         int maxBytes,
-        const char *
-    ) {
+        const char *) {
         g_RecoilError_OutputBytesWritten = 0;
         g_RecoilError_OutputMaxBytes = maxBytes;
         g_RecoilError_OutputHWnd = (HWND)hWnd;

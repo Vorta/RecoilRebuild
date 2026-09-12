@@ -135,7 +135,7 @@ struct zEffectAnimLightEvent {
     int fieldMask;
     int activeState;
     int mode;
-    unsigned int coneAngleBits;
+    int directional;
     int param;
     int basisNodeRefIndex;
     float basisOrColorX;
@@ -851,7 +851,7 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zEffectAnimLightEvent,
-        coneAngleBits
+        directional
     ) == 0x3c
 );
 RECOIL_STATIC_ASSERT(

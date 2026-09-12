@@ -20,7 +20,7 @@ namespace {
     const int kSingleParentFlag = 0x00080000;
     const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
 
-    const char kObject3DSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c";
+
 }
 
 namespace zClass_Node {
@@ -113,7 +113,7 @@ namespace zClass_Object3D {
     zClass_NodePartial *__cdecl gwObject3DInit() {
         zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x12f, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x12f, "Null node pointer.");
             return 0;
         }
 
@@ -143,15 +143,15 @@ namespace zClass_Object3D {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x178, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x178, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x179, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x179, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x17a, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x17a, "Null class data pointer");
             return 5;
         }
 
@@ -170,15 +170,15 @@ namespace zClass_Object3D {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x194, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x194, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x195, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x195, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x196, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x196, "Null class data pointer");
             return 5;
         }
 
@@ -198,13 +198,13 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x1b1, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x1b1, "Null node pointer.");
             return 5;
         }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
-                kObject3DSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x1b3,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 kZClassNodeObject3D,
@@ -238,13 +238,13 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x1d9, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x1d9, "Null node pointer.");
             return 5;
         }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
-                kObject3DSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x1db,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 kZClassNodeObject3D,
@@ -432,7 +432,7 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x294, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x294, "Null node pointer.");
             return 5;
         }
         data = (zClass_Object3DDataPartial *)(node->classData);
@@ -472,7 +472,7 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x331, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x331, "Null node pointer.");
             return 5;
         }
         data = (zClass_Object3DDataPartial *)(node->classData);
@@ -499,7 +499,7 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x357, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x357, "Null node pointer.");
             return 5;
         }
         data = (zClass_Object3DDataPartial *)(node->classData);
@@ -539,7 +539,7 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x3a9, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x3a9, "Null node pointer.");
             return 5;
         }
         data = (zClass_Object3DDataPartial *)(node->classData);
@@ -566,7 +566,7 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x3cf, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x3cf, "Null node pointer.");
             return 5;
         }
         data = (zClass_Object3DDataPartial *)(node->classData);
@@ -609,13 +609,13 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x41a, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x41a, "Null node pointer.");
             return 5;
         }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
-                kObject3DSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x41c,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 kZClassNodeObject3D,
@@ -647,7 +647,7 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x441, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x441, "Null node pointer.");
             return 5;
         }
         data = (zClass_Object3DDataPartial *)(node->classData);
@@ -685,13 +685,13 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x47e, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x47e, "Null node pointer.");
             return 5;
         }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
-                kObject3DSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x480,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 kZClassNodeObject3D,
@@ -734,13 +734,13 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x4bb, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x4bb, "Null node pointer.");
             return 5;
         }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
-                kObject3DSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x4bd,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 kZClassNodeObject3D,
@@ -774,21 +774,21 @@ namespace zClass_Object3D {
         zClass_Object3DDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x4fe, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x4fe, "Null node pointer.");
             return 0;
         }
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kObject3DSourceFile, 0x4ff, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x4ff, "Null class data pointer");
             return 0;
         }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
-                kObject3DSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x500,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
-                kZClassNodeObject3D,
-                node->classId
+                node->classId,
+                kZClassNodeObject3D
             );
             return 0;
         }
@@ -881,15 +881,15 @@ namespace zClass_Object3D_ModelRefLerpQueue {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.reset
      * @recoil-artifact defines .text recoil:function:0x438180: zClass_Object3D_ModelRefLerpQueue::Reset
+     * @recoil-match byte
+     *
      * Purpose: delete all queued model-reference lerp tasks and zero the global
      * queue state.
      */
     void __cdecl Reset() {
         zClass_Object3D_ModelRefLerpTask *task = g_ModelRefLerpQueueState.head;
         while (task != 0) {
-            zClass_Object3D_ModelRefLerpTask *const next = task != 0
-                ? task->next
-                : 0;
+            zClass_Object3D_ModelRefLerpTask *const next = task != 0 ? task->next : 0;
             ::operator delete(task);
             task = next;
         }

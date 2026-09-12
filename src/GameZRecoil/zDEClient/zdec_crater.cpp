@@ -394,7 +394,7 @@ zDEClient_CraterFeature *__fastcall CreateFeatureStructFromEventTemplate(
             (zModel_MaterialPartial *)(result->eventTemplate.craterMaterialSlot);
         result->displaySourceEntry = g_zDEClient_CraterDisplaySourceList;
 
-        for (int i = 1; i < g_zDEClient_CraterDisplaySourceCount; ++i) {
+        for (unsigned int i = 1; i < g_zDEClient_CraterDisplaySourceCount; ++i) {
             if (g_zDEClient_CraterDisplaySourceList[i].sourceMaterial == sourceMaterial) {
                 result->displaySourceEntry = &g_zDEClient_CraterDisplaySourceList[i];
                 break;

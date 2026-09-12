@@ -19,6 +19,7 @@ extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.g-zclass-cameraautoclipdistanceadjustenabled
  * @recoil-artifact defines .data recoil:data:0x4ddd14: g_zClass_CameraAutoClipDistanceAdjustEnabled.
+ *
  * Purpose: enable adaptive camera clip-distance changes during scene render.
  */
 int g_zClass_CameraAutoClipDistanceAdjustEnabled = 0;
@@ -167,7 +168,6 @@ namespace {
      * The generic diagnostic text/format strings are pooled across zClass
      * callers, so their owner is shared rather than Camera.c-only.
      */
-    const char kCameraSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Camera.c";
 
     /**
      * Original inline validation construct observed in camera setter/getter
@@ -179,21 +179,21 @@ namespace {
     ((node) == 0 \
         ? (zError::ReportOld( \
               0x400, \
-              kCameraSourceFile, \
+              "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", \
               (nullLine), \
               "Null node pointer." \
           ), 5) \
         : ((node)->classData == 0 \
               ? (zError::ReportOld( \
                     0x400, \
-                    kCameraSourceFile, \
+                    "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", \
                     (dataLine), \
                     "Null class data pointer" \
                 ), 5) \
               : ((node)->classId != kZClassNodeCamera \
                     ? (zError::ReportOld( \
                           0x400, \
-                          kCameraSourceFile, \
+                          "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", \
                           (classLine), \
                           "Bad Class Found.\n Wanted (%d)\n Found (%d)", \
                           (node)->classId, \
@@ -242,7 +242,7 @@ namespace zClass_Camera {
     zClass_NodePartial *__cdecl gwCameraNew() {
         zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x1e8, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x1e8, "Null node pointer.");
             return 0;
         }
 
@@ -279,11 +279,11 @@ namespace zClass_Camera {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x239, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x239, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x23a, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x23a, "Null node pointer.");
             return 5;
         }
 
@@ -302,11 +302,11 @@ namespace zClass_Camera {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x251, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x251, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x252, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x252, "Null node pointer.");
             return 5;
         }
 
@@ -401,27 +401,27 @@ namespace zClass_Camera {
         zClass_NodePartial * world
     ) {
         if (camera == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x2be, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x2be, "Null node pointer.");
             return 5;
         }
         if (world == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x2bf, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x2bf, "Null node pointer.");
             return 5;
         }
 
         if (camera->classData == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x2c1, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x2c1, "Null class data pointer");
             return 5;
         }
         if (world->classData == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x2c2, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x2c2, "Null class data pointer");
             return 5;
         }
 
         if (camera->classId != kZClassNodeCamera) {
             zError::ReportOld(
                 0x400,
-                kCameraSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
                 0x2c4,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 camera->classId,
@@ -432,7 +432,7 @@ namespace zClass_Camera {
         if (world->classId != kZClassNodeWorld) {
             zError::ReportOld(
                 0x400,
-                kCameraSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
                 0x2c5,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 world->classId,
@@ -924,12 +924,12 @@ namespace zClass_Camera {
      */
     int __fastcall gwCameraUpdate(zClass_NodePartial * camera) {
         if (camera == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x75c, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x75c, "Null node pointer.");
             return 5;
         }
 
         if (camera->classData == 0) {
-            zError::ReportOld(0x400, kCameraSourceFile, 0x75d, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x75d, "Null class data pointer");
             return 5;
         }
 
@@ -2367,7 +2367,7 @@ namespace zClass_Camera {
 
         zError::ReportOld(
             0x200,
-            kCameraSourceFile,
+            "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
             0x1049,
             g_zClass_FindConvexHullUnexpectedReturnMsg
         );
@@ -2457,7 +2457,7 @@ namespace zClass_Camera {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt,
-                kCameraSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
                 0x10ea
             );
             zError::EmitDebugBuffer(1);
@@ -2565,7 +2565,7 @@ namespace zClass_Camera {
                             if (ringIndex >= 50) {
                                 zError::ReportOld(
                                     0x200,
-                                    kCameraSourceFile,
+                                    "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
                                     0x11aa,
                                     g_zClass_DiamondTilerNeedMoreRingsMsg
                                 );
@@ -2576,7 +2576,7 @@ namespace zClass_Camera {
                                 if (tileIndex >= 30) {
                                     zError::ReportOld(
                                         0x200,
-                                        kCameraSourceFile,
+                                        "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
                                         0x11a4,
                                         g_zClass_DiamondTilerNeedMoreCellsPerRingMsg
                                     );
@@ -2691,7 +2691,7 @@ namespace zClass_Camera {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt,
-                kCameraSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
                 0x1279
             );
             zError::EmitDebugBuffer(1);
@@ -2838,7 +2838,7 @@ namespace zClass_Camera {
                             if (ringIndex >= 50) {
                                 zError::ReportOld(
                                     0x200,
-                                    kCameraSourceFile,
+                                    "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
                                     0x1357,
                                     g_zClass_DiamondTilerNeedMoreRingsMsg
                                 );
@@ -2849,7 +2849,7 @@ namespace zClass_Camera {
                                 if (tileIndex >= 30) {
                                     zError::ReportOld(
                                         0x200,
-                                        kCameraSourceFile,
+                                        "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
                                         0x1351,
                                         g_zClass_DiamondTilerNeedMoreCellsPerRingMsg
                                     );
@@ -2940,7 +2940,7 @@ namespace zClass_Camera {
 
                             zClass_LightDataPartial *lightData =
                                 worldData->lightDataList[lightIndex];
-                            if (lightData->isDirectionalMode == 0 || lightData->enabled == 0) {
+                            if (lightData->isPointSource == 0 || lightData->enabled == 0) {
                                 lightData->lightSubMode = 1;
                                 continue;
                             }

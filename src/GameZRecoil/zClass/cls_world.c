@@ -17,6 +17,7 @@ extern "C" {
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrorvirtualareapartitionnullfmt
  * @recoil-artifact defines .data recoil:data:0x4de23c: g_zClass_LineErrorVirtualAreaPartitionNullFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x5b].
+ *
  * Purpose: report a missing virtual-area partition grid during world
  * partition initialization.
  */
@@ -73,7 +74,6 @@ char g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt[0x64] =
 }
 
 namespace {
-    const char kWorldSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c";
 
     /**
      * Original static helper observed in zClass_World grid-coordinate callers
@@ -242,9 +242,9 @@ namespace zClass_World {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldnew
      * @recoil-artifact defines .text recoil:function:0x4501c0: zClass_World::gwWorldNew.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
-     * Purpose: allocate and initialize a world node and its class data, then
-     * insert it into the world type list.
+     * @recoil-match byte
+     *
+     * Purpose: allocate a world node and its class data, then add it to the world type list.
      */
     zClass_NodePartial *__cdecl gwWorldNew() {
         zClass_NodePartial *node = zClass_Class::gwNodeNew();
@@ -317,7 +317,7 @@ namespace zClass_World {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_zClass_LineErrorVirtualAreaPartitionNullFmt,
-                kWorldSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x245
             );
             zError::EmitDebugBuffer(5);
@@ -659,13 +659,13 @@ namespace zClass_World {
         int gridRow
     ) {
         if (world == 0) {
-            zError::ReportOld(0x400, kWorldSourceFile, 0x6d4, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6d4, "Null node pointer.");
             return 0;
         }
 
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kWorldSourceFile, 0x6d5, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6d5, "Null class data pointer");
             return 0;
         }
 
@@ -685,13 +685,13 @@ namespace zClass_World {
         int gridRow
     ) {
         if (world == 0) {
-            zError::ReportOld(0x400, kWorldSourceFile, 0x6f5, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6f5, "Null node pointer.");
             return 5;
         }
 
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kWorldSourceFile, 0x6f6, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6f6, "Null class data pointer");
             return 5;
         }
 
@@ -737,8 +737,8 @@ namespace zClass_World {
     ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->ambientColor.red = red;
-        data->ambientColor.blue = blue;
         data->ambientColor.green = green;
+        data->ambientColor.blue = blue;
         data->flags |= 0x02;
         return 0;
     }
@@ -1108,7 +1108,7 @@ namespace zClass_World {
         if (maxFeatures > 255) {
             zError::ReportOld(
                 0x200,
-                kWorldSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0xc01,
                 g_zClass_PartitionMaxDecFeatureCountOverflowFmt,
                 maxFeatures
@@ -1281,7 +1281,7 @@ namespace zClass_World {
         if (childIndex < 0) {
             zError::ReportOld(
                 0x200,
-                kWorldSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0xfaf,
                 "ERROR deleting child node %s from parent node %s",
                 child,
@@ -1378,7 +1378,7 @@ namespace zClass_World {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt,
-                kWorldSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x108d,
                 (unsigned int)((unsigned int)(world)),
                 (unsigned int)((unsigned int)(light))
@@ -1406,7 +1406,7 @@ namespace zClass_World {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_zClass_LineErrorDeleteLightWorldNotFoundFmt,
-                kWorldSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x10b4,
                 (unsigned int)((unsigned int)(world)),
                 (unsigned int)((unsigned int)(light))
@@ -1518,7 +1518,7 @@ namespace zClass_World {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt,
-                kWorldSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x11cc,
                 (unsigned int)((unsigned int)(world)),
                 (unsigned int)((unsigned int)(sound))
@@ -1546,7 +1546,7 @@ namespace zClass_World {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_zClass_LineErrorDeleteSoundWorldNotFoundFmt,
-                kWorldSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x11f3,
                 (unsigned int)((unsigned int)(world)),
                 (unsigned int)((unsigned int)(sound))

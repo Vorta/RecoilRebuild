@@ -11,15 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace {
-    const char kSoundSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Sound.c";
-
-}
-
 namespace zClass_Sound {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-gwsoundnew
      * @recoil-artifact defines .text recoil:function:0x4529c0: zClass_Sound::gwSoundNew
+     * @recoil-match byte
      *
      * Purpose: allocate a sound node, seed default bounds and attenuation
      * state, activate it, and register it with the sound type list.
@@ -27,7 +23,7 @@ namespace zClass_Sound {
     zClass_NodePartial *__cdecl gwSoundNew() {
         zClass_NodePartial *const node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x76, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x76, "Null node pointer.");
             return 0;
         }
 
@@ -45,12 +41,12 @@ namespace zClass_Sound {
         node->classData = soundData;
         soundData->sample = 0;
         soundData->playHandle = 0;
-        soundData->runtimeFlags |= 0x01;
         soundData->falloffMode = 1;
         soundData->rangeMin = 32.0f;
         soundData->rangeMax = 64.0f;
         soundData->rangeMaxSq = 4096.0f;
         soundData->invRangeSpan = 0.03125f;
+        soundData->runtimeFlags |= 0x01;
 
         zClass_Class::gwNodeSetActive(node, 1);
         soundData->attachedWorldCount = 0;
@@ -63,19 +59,20 @@ namespace zClass_Sound {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-deletenode
      * @recoil-artifact defines .text recoil:function:0x452ab0: zClass_Sound::DeleteNode
+     * @recoil-match byte
      *
      * Purpose: stop and release active playback, reject deletion while attached
      * to world nodes, free world attachment storage, and free the node.
      */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0xc3, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0xc3, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0xc4, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0xc4, "Null class data pointer");
             return 5;
         }
 
@@ -93,7 +90,7 @@ namespace zClass_Sound {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 "%s: Line %d: ERROR deleting sound; Sound attached to %d world nodes.\n",
-                kSoundSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Sound.c",
                 0xda,
                 soundData->attachedWorldCount
             );
@@ -109,50 +106,50 @@ namespace zClass_Sound {
         return zClass_Class::TryFreeNode(node);
     }
 
-    int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-removechild
      * @recoil-artifact defines .text recoil:function:0x452b80: zClass_Sound::RemoveChild
+     * @recoil-match byte
      *
      * Purpose: validate sound parent and child nodes, then remove the child
      * through the shared zClass child-list helper.
      */
-    RemoveChild(
+    int __fastcall RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x100, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x100, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x101, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x101, "Null node pointer.");
             return 5;
         }
 
         return zClass_Class::RemoveChildGeneric(parent, child);
     }
 
-    int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-setsamplesetbyname
      * @recoil-artifact defines .text recoil:function:0x452bc0: zClass_Sound::SetSampleSetByName
+     * @recoil-match byte
      *
      * Purpose: copy the sample-set name into the sound data, resolve the sound
      * sample, reset playback, and mark the runtime state dirty.
      */
-    SetSampleSetByName(
+    int __fastcall SetSampleSetByName(
         zClass_NodePartial * node,
         const char *name
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x11e, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x11e, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x11f, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x11f, "Null class data pointer");
             return 5;
         }
 
@@ -173,6 +170,7 @@ namespace zClass_Sound {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-gwsoundsetactive
      * @recoil-artifact defines .text recoil:function:0x452c60: zClass_Sound::gwSoundSetActive
+     * @recoil-match byte
      *
      * Purpose: toggle sound-node activity, stopping managed playback when the
      * node is deactivated.
@@ -182,13 +180,13 @@ namespace zClass_Sound {
         int active
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x149, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x149, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x14a, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x14a, "Null class data pointer");
             return 5;
         }
 
@@ -211,28 +209,28 @@ namespace zClass_Sound {
         return 0;
     }
 
-    int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-gwsoundsetposition
      * @recoil-artifact defines .text recoil:function:0x452d00: zClass_Sound::gwSoundSetPosition
+     * @recoil-match byte
      *
      * Purpose: store the sound node's local position and mark transform and
      * playback state dirty.
      */
-    gwSoundSetPosition(
+    int __fastcall gwSoundSetPosition(
         zClass_NodePartial * node,
         float x,
         float y,
         float z
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x17e, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x17e, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x17f, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x17f, "Null class data pointer");
             return 5;
         }
 
@@ -243,28 +241,28 @@ namespace zClass_Sound {
         return 0;
     }
 
-    int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-gwsoundgetposition
      * @recoil-artifact defines .text recoil:function:0x452d60: zClass_Sound::gwSoundGetPosition
+     * @recoil-match byte
      *
      * Purpose: copy the sound node's local position into the caller-provided
      * output coordinates.
      */
-    gwSoundGetPosition(
+    int __fastcall gwSoundGetPosition(
         zClass_NodePartial * node,
         float *outX,
         float *outY,
         float *outZ
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x1d0, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x1d0, "Null node pointer.");
             return 5;
         }
 
         zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x1d1, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x1d1, "Null class data pointer");
             return 5;
         }
 
@@ -278,12 +276,13 @@ namespace zClass_Sound {
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-updateplayback
      * @recoil-artifact defines .text recoil:function:0x452dc0: zClass_Sound::UpdatePlayback
      *
+     *
      * Purpose: update or create positional and non-positional playback handles
      * for active sound nodes, then clear the dirty playback flag.
      */
     int __fastcall UpdatePlayback(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x224, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x224, "Null node pointer.");
             return 5;
         }
 
@@ -293,7 +292,7 @@ namespace zClass_Sound {
 
         zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x22a, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x22a, "Null class data pointer");
             return 5;
         }
 
@@ -331,15 +330,16 @@ namespace zClass_Sound {
         return 0;
     }
 
-    int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-computeworldtransform
      * @recoil-artifact defines .text recoil:function:0x452ec0: zClass_Sound::ComputeWorldTransform
      *
+     *
      * Purpose: build the node-to-world matrix and cache the sound emitter's
      * world position in sound runtime data.
+     * The matrix stack is restored before returning.
      */
-    ComputeWorldTransform(
+    int __fastcall ComputeWorldTransform(
         zClass_NodePartial * node,
         zClass_SoundDataPartial * soundData
     ) {

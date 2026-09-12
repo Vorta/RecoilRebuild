@@ -725,13 +725,13 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x480ec0: zRndr::GlobalStringTableReleaseDynamicEntries
  * Purpose: release dynamically loaded renderer global-string entries and restore the fixed prefix count.
  */
-void __cdecl GlobalStringTableReleaseDynamicEntries() {
+int __cdecl GlobalStringTableReleaseDynamicEntries() {
     for (int i = 6; i < g_zRndr_GlobalStringCount; ++i) {
         free(g_zRndr_GlobalStringTable[i]);
         g_zRndr_GlobalStringTable[i] = 0;
     }
-
     g_zRndr_GlobalStringCount = 6;
+    return 0;
 }
 } // namespace zRndr
 
@@ -745,9 +745,9 @@ int __cdecl Shutdown() {
     ReleaseAllActive();
     if (g_zModel_MatlPool != 0) {
         free(g_zModel_MatlPool);
-        g_zModel_MatlPool = 0;
     }
 
+    g_zModel_MatlPool = 0;
     g_zModel_MatlPoolCapacity = 0;
     g_zModel_MatlPoolInUseCount = 0;
     g_zModel_MatlFreeHeadIndex = -1;

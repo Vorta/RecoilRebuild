@@ -19,8 +19,8 @@ namespace {
  * file; this slice only consumes them, so the source/data owner gate remains
  * blocked until the larger zSound runtime-global owner is linked.
  */
-const char kZSndCreateSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp";
-const char kCreateSoundBufferError[] = "Error creating sound buffer ( %s )";
+
+
 
 const unsigned int kRiffMagic = 0x46464952;
 const unsigned int kWaveMagic = 0x45564157;
@@ -100,17 +100,17 @@ int __fastcall zSndSample::InitFromWaveDataA3D(
     zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
     int error = device->NewSource(0, (zA3dProviderSource **)&primaryVoice.backendBuffer);
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x4e);
+        return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x4e);
     }
 
     error = ((zA3dProviderSource *)(primaryVoice.backendBuffer))->SetWaveFormat(fmt);
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x51);
+        return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x51);
     }
 
     error = ((zA3dProviderSource *)(primaryVoice.backendBuffer))->AllocateWaveData(pcmByteCount);
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x54);
+        return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x54);
     }
 
     zA3dProviderSource *buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
@@ -124,7 +124,7 @@ int __fastcall zSndSample::InitFromWaveDataA3D(
         0
     );
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x5a);
+        return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x5a);
     }
 
     memcpy(audioPtr1, loadedWaveData->pcmData, audioBytes1);
@@ -136,7 +136,7 @@ int __fastcall zSndSample::InitFromWaveDataA3D(
     buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
     error = buffer->Unlock(audioPtr1, audioBytes1, audioPtr2, audioBytes2);
     if (error != 0) {
-        return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x66);
+        return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x66);
     }
 
     buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
@@ -257,12 +257,12 @@ int __fastcall zSndSample::InitFromWaveDataDirectSound(
     if (createError != 0) {
         zError::ReportOld(
             0x200,
-            kZSndCreateSourceFile,
+            "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp",
             0xf5,
-            kCreateSoundBufferError,
+            "Error creating sound buffer ( %s )",
             loadedWaveData->nameOrPath
         );
-        zSnd::ReportDirectSoundError(createError, kZSndCreateSourceFile, 0xf6);
+        zSnd::ReportDirectSoundError(createError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0xf6);
         return 0;
     }
 
@@ -271,12 +271,12 @@ int __fastcall zSndSample::InitFromWaveDataDirectSound(
     DWORD status;
     int error = ((LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer))->GetStatus(&status);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x10e);
+        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x10e);
     }
     if ((status & 0x02) != 0) {
         error = ((LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer))->Restore();
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x113);
+            return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x113);
         }
     }
 
@@ -294,7 +294,7 @@ int __fastcall zSndSample::InitFromWaveDataDirectSound(
         0
     );
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x11d);
+        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x11d);
     }
 
     memcpy(audioPtr1, loadedWaveData->pcmData, audioBytes1);
@@ -310,12 +310,12 @@ int __fastcall zSndSample::InitFromWaveDataDirectSound(
         audioBytes2
     );
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x12a);
+        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x12a);
     }
 
     error = ((LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer))->SetCurrentPosition(0);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x130);
+        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x130);
     }
 
     markerCount = loadedWaveData->cuePointCount;
@@ -363,8 +363,8 @@ int __fastcall zSndSample::LockBackendBuffers(
     unsigned int offset,
     unsigned int bytes,
     void **buffer1,
-    int *buffer1Bytes,
     void **buffer2,
+    int *buffer1Bytes,
     int *buffer2Bytes
 ) {
     int error = 0;
@@ -378,13 +378,13 @@ int __fastcall zSndSample::LockBackendBuffers(
             offset,
             bytes,
             buffer1,
-            (LPDWORD)buffer2,
-            (LPVOID *)buffer1Bytes,
+            (LPDWORD)buffer1Bytes,
+            buffer2,
             (LPDWORD)buffer2Bytes,
             0
         );
         if (error != 0) {
-            return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x1e3);
+            return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x1e3);
         }
         break;
 
@@ -399,7 +399,7 @@ int __fastcall zSndSample::LockBackendBuffers(
             0
         );
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x1ec);
+            return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x1ec);
         }
         break;
     }
@@ -420,8 +420,8 @@ int __fastcall zSndSample::LockBackendBuffers(
  */
 int __fastcall zSndSample::UnlockBackendBuffers(
     void *buffer1,
-    int buffer1Bytes,
     void *buffer2,
+    int buffer1Bytes,
     int buffer2Bytes
 ) {
     int error = 0;
@@ -438,7 +438,7 @@ int __fastcall zSndSample::UnlockBackendBuffers(
             buffer2Bytes
         );
         if (error != 0) {
-            return zSnd::ReportA3DError(error, kZSndCreateSourceFile, 0x21b);
+            return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x21b);
         }
         break;
 
@@ -450,7 +450,7 @@ int __fastcall zSndSample::UnlockBackendBuffers(
             buffer2Bytes
         );
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndCreateSourceFile, 0x222);
+            return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x222);
         }
         break;
     }

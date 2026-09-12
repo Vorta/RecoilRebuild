@@ -191,7 +191,7 @@ void HudUiElement::Draw() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-drawbase
  * @recoil-artifact defines .text recoil:function:0x404cb0: HudUiElement::DrawBase.
- * @recoil-match byte
+ *
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: blit the element's attached image at its current position using its clip rect.
@@ -752,9 +752,9 @@ namespace zStr {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.containscaseinsensitive
  * @recoil-artifact defines .text recoil:function:0x406a00: zStr::ContainsCaseInsensitive
+ * @recoil-match byte
  *
- * Purpose: compare uppercase bounded copies of two strings and report whether
- * the needle appears in the haystack.
+ * Purpose: Search uppercase copies of the haystack and needle for a substring match.
  */
 int __fastcall ContainsCaseInsensitive(
     const char *haystack,
@@ -804,12 +804,12 @@ const int kHudCheatMasterTypeSub = 2;
 const int kHudCheatMasterTypeHover = 4;
 const int kHudCheatMasterTypeAmphib = 5;
 const int kHudCheatAltGunTransitionReset = 16;
-
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.executecommandstring
  * @recoil-artifact defines .text recoil:function:0x406af0: HudCheat::ExecuteCommandString.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Match localized cheat commands, apply pickup effects, restore respawn state, and bind HUD hotkeys.
+ * @recoil-match byte
+ *
+ * Purpose: Match localized cheat commands and apply their player or HUD effects.
  */
 int __fastcall ExecuteCommandString(
     CString *commandString
@@ -1055,11 +1055,11 @@ RecoilStateCheatCode::~RecoilStateCheatCode() {
         m_dialog = 0;
     }
 }
-
-
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecheatcode-ontrybecomecurrent
  * @recoil-artifact defines .text recoil:function:0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\RecoilStateCheatCode.cpp.
  * Purpose: enter the cheat-code dialog state after capturing video and audio presentation state.
  */
@@ -1084,11 +1084,11 @@ int RecoilStateCheatCode::OnTryBecomeCurrent() {
     dialog->SetEnabled(1);
     return 1;
 }
-
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecheatcode-ondeactivate
  * @recoil-artifact defines .text recoil:function:0x407010: RecoilStateCheatCode::OnDeactivate.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\RecoilStateCheatCode.cpp.
+ * @recoil-match byte
+ *
  * Purpose: leave the cheat-code dialog state, restore presentation state, and execute the entered command.
  */
 void RecoilStateCheatCode::OnDeactivate() {
@@ -1662,8 +1662,8 @@ struct zOpt_NameInt32Pair {
 };
 
 /**
- * Source helper data: no standalone retail data artifact is assigned.
- * Evidence: address-backed caller 0x407190 performs the named scalar lookup.
+ * Retail data: the 27-entry named scalar table occupies [0x4da3e0, 0x4da4b8).
+ * Evidence: LookupNamedValueAsInt bounds its eight-byte entries at 0x4da4b8.
  * Purpose: map the option parser's symbolic scalar names to integer values.
  */
 const zOpt_NameInt32Pair g_zOpt_NamedScalarValues[] = {
@@ -3602,8 +3602,8 @@ namespace HudUiMgr {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.screentoworld
  * @recoil-artifact defines .text recoil:function:0x4089c0: HudUiMgr::ScreenToWorld.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * BN name: MapReplicatedScreenToRenderPoint.
+ * @recoil-match byte
+ *
  * Purpose: map a replicated display-space HUD point back into render-viewport
  * coordinates before clamping it to the render section.
  * Source shape: __fastcall function with a single float *pointXY argument;
@@ -3612,20 +3612,20 @@ namespace HudUiMgr {
  * Data dependencies: zOpt render/display view-rect option globals and
  * replicate mode are covered by accepted owner
  * engine.zgame.zopt_video_section_option_globals.
- * HudUi data: touches no HudUi table, singleton, or manager-owned storage.
+ * Data: local half-scale has two retail readers; its source name is inferred.
  */
 void __fastcall ScreenToWorld(
     float *pointXY
 ) {
     zOpt_ViewRectSection *const renderSection = *g_zGame_Options_PointerCache.renderSection;
     zOpt_ViewRectSection *const displaySection = *g_zGame_Options_PointerCache.displaySection;
-
+    static const float screenScale = 0.5f;
     if (zOpt::GetReplicateMode() == 0) {
         return;
     }
-
-    pointXY[0] *= 0.5f;
-    const float scaledY = (pointXY[1] - (float)displaySection->y) * 0.5f;
+    const float unscaledX = pointXY[0];
+    pointXY[0] = unscaledX * screenScale;
+    const float scaledY = (pointXY[1] - (float)displaySection->y) * screenScale;
     pointXY[1] = scaledY + (float)renderSection->y;
     zOpt::ViewRectSectionClampPointToInclusiveBounds(renderSection, pointXY);
 }
@@ -5766,9 +5766,9 @@ HudCmdDialogState::~HudCmdDialogState() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialogstate-ontrybecomecurrent
  * @recoil-artifact defines .text recoil:function:0x40bcf0: HudCmdDialogState::OnTryBecomeCurrent.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
- * Purpose: Allocate the 0xce00-byte command dialog, construct and store it,
- * enable it, suspend keyboard input, and accept the state transition.
+ * @recoil-match byte
+ *
+ * Purpose: Create and enable the command dialog, suspend keyboard input, and accept the state transition.
  */
 int HudCmdDialogState::OnTryBecomeCurrent() {
     HudCmdDialog *dialog = new HudCmdDialog;
@@ -6940,11 +6940,11 @@ HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner() {
         m_dialog = 0;
     }
 }
-
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduioptionspaneloverlayowner-ontrybecomecurrent
  * @recoil-artifact defines .text recoil:function:0x40d150: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * @recoil-match byte
+ *
  * Purpose: Create and enable the options dialog panel when the overlay owner becomes current.
  */
 int HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
@@ -10549,11 +10549,11 @@ inline HudLayoutBase::HudLayoutBase()
     : widget0(0) {
     AddChild(&widget0);
 }
-
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutsw-hudlayoutsw
  * @recoil-artifact defines .text recoil:function:0x412b60: HudLayoutSW::HudLayoutSW.
- * Source file evidence: BN labels this function as a Battlesport hud.cpp helper.
+ * @recoil-match byte
+ *
  * Purpose: construct the software HUD layout through its automatic base lifetime.
  */
 HudLayoutSW::HudLayoutSW() {
@@ -10756,9 +10756,9 @@ int __fastcall ApplyViewportRect(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayouthw-hudlayouthw
  * @recoil-artifact defines .text recoil:function:0x412ea0: HudLayoutHW::HudLayoutHW.
- * Source file evidence: BN labels this function as a Battlesport hud.cpp helper.
- * Purpose: construct the hardware HUD layout and attach its image widgets in
- * the retail child-list order after automatic member construction.
+ * @recoil-match byte
+ *
+ * Purpose: Construct the hardware HUD layout and attach its image widgets in their display order.
  */
 HudLayoutHW::HudLayoutHW()
     : widget1(0),
@@ -13058,9 +13058,9 @@ int GetCDAudioOption();
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-ondeactivate
  * @recoil-artifact defines .text recoil:function:0x4153d0: RecoilStateMainMenuTransition::OnDeactivate.
+ * @recoil-match byte
  *
- * Purpose: tear down the main-menu dialog, apply deferred video/HUD/audio
- * restoration, resume paused sounds, and stop CD audio when leaving the state.
+ * Purpose: Close the main menu, apply pending display settings, restore paused sounds, and stop CD audio.
  */
 void RecoilStateMainMenuTransition::OnDeactivate() {
     int previousHudType;

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 namespace {
-    const char kSequenceSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Seq.c";
+
     const int kZClassNodeLod = 6;
 
 }
@@ -34,7 +34,7 @@ namespace zClass_Sequence {
     zClass_NodePartial *__cdecl gwSequenceNew() {
         zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x41, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x41, "Null node pointer.");
             return 0;
         }
 
@@ -66,15 +66,15 @@ namespace zClass_Sequence {
         int i;
 
         if (parent == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x94, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x94, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x95, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x95, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x96, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x96, "Null class data pointer");
             return 5;
         }
 
@@ -115,15 +115,15 @@ namespace zClass_Sequence {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0xd3, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0xd3, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0xd4, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0xd4, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0xd5, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0xd5, "Null class data pointer");
             return 5;
         }
 
@@ -168,13 +168,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x113, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x113, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x114, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x114, "Null class data pointer");
             return 5;
         }
 
@@ -196,13 +196,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x133, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x133, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x134, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x134, "Null class data pointer");
             return 5;
         }
 
@@ -224,13 +224,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x153, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x153, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x154, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x154, "Null class data pointer");
             return 5;
         }
 
@@ -252,13 +252,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x173, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x173, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x174, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x174, "Null class data pointer");
             return 5;
         }
 
@@ -277,13 +277,13 @@ namespace zClass_Sequence {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x193, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x193, "Null node pointer.");
             return 5;
         }
 
         data = (zClass_SequenceDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kSequenceSourceFile, 0x194, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x194, "Null class data pointer");
             return 5;
         }
 

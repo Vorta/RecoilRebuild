@@ -1737,8 +1737,8 @@ namespace zImage {
  */
 int __cdecl Shutdown() {
     zVid_TexDir::Shutdown();
-    zRdrFreeSearchPathList(g_zImage_MissionSearchPathList);
-    g_zImage_MissionSearchPathList = 0;
+    g_zImage_MissionSearchPathList = zRdrFreeSearchPathList(g_zImage_MissionSearchPathList);
+
     return 1;
 }
 } // namespace zImage

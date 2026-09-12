@@ -279,9 +279,9 @@ struct zClass_LightDataPartial {
     float falloff;
     float intensityScale;
     zColorRgb specularColor;
-    float coneAngle;
-    int isPointMode;
-    int isDirectionalMode;
+    int isDirectional;
+    int isDirectedSource;
+    int isPointSource;
     int lightParam;
     int lightSubMode;
     float range1;
@@ -1562,19 +1562,19 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zClass_LightDataPartial,
-        coneAngle
+        isDirectional
     ) == 0xb8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         zClass_LightDataPartial,
-        isPointMode
+        isDirectedSource
     ) == 0xbc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         zClass_LightDataPartial,
-        isDirectionalMode
+        isPointSource
     ) == 0xc0
 );
 RECOIL_STATIC_ASSERT(
@@ -2522,12 +2522,12 @@ int __fastcall gwLightSetFalloff(
     zClass_NodePartial *node,
     float falloff
 );
-int __fastcall gwLightSetConeAngle(
+int __fastcall gwLightSetDirectional(
     zClass_NodePartial *node,
-    unsigned int coneAngleBits
+    int directional
 );
-int __fastcall gwLightSetPointMode(zClass_NodePartial *node);
-int __fastcall gwLightSetDirectionalMode(zClass_NodePartial *node);
+int __fastcall gwLightSetDirectedSource(zClass_NodePartial *node);
+int __fastcall gwLightSetPointSource(zClass_NodePartial *node);
 int __fastcall gwLightSetParam(
     zClass_NodePartial *node,
     int param
@@ -2803,9 +2803,9 @@ int __fastcall SetDamageHitCallback(
 );
 int __fastcall ClearDamageHandler(zClass_NodePartial *node);
 int __fastcall SetDamageTimerCallback(
-    void *callback,
+    void *context,
     zClass_NodePartial *node,
-    void *context
+    void *callback
 );
 } // namespace zClass_Node
 
