@@ -100,7 +100,7 @@ void __fastcall LoadDynamicEntriesFromPath(char *path);
 } // namespace zRndr_GlobalStringTable
 
 namespace zRndr {
-void GlobalStringTableReleaseDynamicEntries();
+int GlobalStringTableReleaseDynamicEntries();
 
 struct ActiveRegionRectPartial {
     int x;

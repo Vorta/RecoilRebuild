@@ -1433,8 +1433,10 @@ def _r4564_prove_candidate_callback_function_reference(
     instruction_index: int,
     operand_name: str,
     immediate_delta: int,
+    indexes: IdentityIndexes,
+    authored_identity: str,
 ) -> int:
-    """Validate one exact same-TU callback-function address reference."""
+    """Validate an exact defined or independently identified external callback."""
 
     caller = candidate.caller_definition
     if caller is None:
@@ -1463,9 +1465,27 @@ def _r4564_prove_candidate_callback_function_reference(
         and symbol.natural_end > symbol.value
         and symbol.natural_end <= symbol.section_size
     )
+    authored_external = (
+        symbol.section_number == 0
+        and symbol.value == 0
+        and symbol.section_name == ""
+        and symbol.section_size == 0
+        and symbol.natural_end == 0
+        and symbol.weak_external_tag_index is None
+        and symbol.weak_external_characteristics is None
+        and caller.undefined_external_functions.count(operand_name) == 1
+        and operand_name not in caller.defined_external_functions
+        and operand_name not in caller.undefined_external_data
+        and operand_name not in caller.defined_external_data
+        and authored_identity.startswith("symbol:recoil:function:")
+        and authored_identity not in indexes.provider_ids
+        and indexes.by_candidate_name.get(operand_name) == authored_identity
+        and indexes.by_address.get(authored_identity.removeprefix("symbol:recoil:function:")) == authored_identity
+        and operand_name not in indexes.storage_by_name
+    )
     if (
         len(references) != 1
-        or not same_tu_defined
+        or not (same_tu_defined or authored_external)
         or symbol.symbol_type != 0x20
         or symbol.storage_class != IMAGE_SYM_CLASS_EXTERNAL
         or symbol.aux_count != 0
@@ -1480,7 +1500,7 @@ def _r4564_prove_candidate_callback_function_reference(
     ):
         raise ValueError(
             "r4564 dynamic callback-function source rejects malformed "
-            "same-TU COFF function/DIR32 provenance"
+            "defined or reviewed external COFF function/DIR32 provenance"
         )
     return relocation_offset
 
@@ -1874,6 +1894,8 @@ def _r4564_candidate_callback_storage_bridges(
                 instruction_index=instruction_index,
                 operand_name=operand_name,
                 immediate_delta=immediate_delta,
+                indexes=indexes,
+                authored_identity=authored_identity,
             )
             proof = (operand_name, relocation_offset)
             if proof in proven_expressions:

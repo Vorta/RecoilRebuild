@@ -34,8 +34,8 @@ def effects(subject: str, dimensions: tuple[str, ...],
 
 AUTHORED_ORDER_EFFECTS = effects("authored-block", AUTHORED_ORDER_DIMENSIONS)
 FULL_ORDER_EFFECTS = effects("full-block", FULL_ORDER_DIMENSIONS)
-AUTHORED_BYTE_EFFECTS = effects("authored-function", AUTHORED_BYTE_DIMENSIONS + ("object_instruction", "linked_body_instruction"))
-LINKED_BYTE_EFFECTS = effects("selected-linked-function", EXACT_LINK_DIMENSIONS + ("linked_instruction",))
+AUTHORED_BYTE_EFFECTS = effects("authored-function", AUTHORED_BYTE_DIMENSIONS + ("object_instruction", "linked_body_instruction", "object_commutative", "linked_body_commutative"))
+LINKED_BYTE_EFFECTS = effects("selected-linked-function", EXACT_LINK_DIMENSIONS + ("linked_instruction", "linked_commutative"))
 CALL_EFFECTS = effects("authored-function", (CALL_CONTRACT_DIMENSION,))
 CLOSEOUT_EFFECTS = effects("authored-call-census", ("fresh-scan-and-linkability",))
 FINAL_EFFECTS = effects("typed-final-image", ("complete-live-comparison",), "verify")

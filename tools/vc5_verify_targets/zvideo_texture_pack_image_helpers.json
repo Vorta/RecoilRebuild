@@ -1,8 +1,7 @@
 {
   "name": "zvideo_texture_pack_image_helpers",
-  "description": "zVideo texture-pack image lookup and alpha cleanup helpers used by zImage.",
-  "source_filename": "zVideo.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zVideo texture-pack image lookup and alpha cleanup helpers used by zImage. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zimg_texture.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -12,7 +11,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
   ],
   "functions": [
     {
@@ -31,5 +30,18 @@
       "name": "zVid_TexturePack::LoadBuiltinImageByName"
     }
   ],
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x46d870",
+        "0x46d940",
+        "0x46dd30"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

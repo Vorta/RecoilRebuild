@@ -1,6 +1,6 @@
 {
   "name": "zclass_remove_child_delete_dispatch",
-  "description": "zClass_Class remove-child and delete-dispatch source-file slice.",
+  "description": "Class.c delete-dispatch and generic remove-child methods; Switch.c owns the separately registered validation wrappers.",
   "source_filename": "Class.c",
   "source_from": "src/GameZRecoil/zClass/Class.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -35,11 +35,6 @@
       "address": "0x448660",
       "symbol": "?RemoveChildGeneric@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
       "name": "zClass_Class::RemoveChildGeneric"
-    },
-    {
-      "address": "0x452970",
-      "symbol": "?RemoveChildValidated@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::RemoveChildValidated"
     }
   ]
 }

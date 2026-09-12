@@ -170,10 +170,9 @@ def test_acceptance_effects_match_real_order_and_byte_writes_without_storage_pro
         data["symbols"]["function"]["binary_state"] = {}
         accept_live_byte_groups(data, mode=mode, groups=[["function"]], evidence_id="proof", facts={})
         declared = recoil.COMMANDS[("progress", route)].acceptance_effects
-        # Effects declare both alternatives; an exact match must not be
-        # required to write the optional instruction-fallback dimensions.
+        # Exact matching does not write the optional reviewed alternatives.
         assert set(data["symbols"]["function"]["binary_state"]) == {
-            effect.dimension for effect in declared if not effect.dimension.endswith("instruction")}
+            effect.dimension for effect in declared if not effect.dimension.endswith(("instruction", "commutative"))}
     assert not _storage_accepted(storage)
     assert all(row == pending for row in storage["verification"].values())
     assert data["owners"] == {"owner": {"tier": "X"}}

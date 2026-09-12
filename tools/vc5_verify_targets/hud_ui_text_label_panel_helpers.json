@@ -1,7 +1,6 @@
 {
   "name": "hud_ui_text_label_panel_helpers",
-  "description": "Late zui.cpp text-label/panel bodies plus naturally emitted hud.cpp command-binding helpers and class tables.",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "description": "Late zui.cpp text-label/panel bodies plus naturally emitted hud.cpp command-binding helpers and class tables. Explicit function placements and current spellings follow the complete authored-order targets. Existing data registrations and any unresolved provider entries retain their prior scope; each TU uses its canonical compiler profile.",
   "source_filename": "zui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "include_dirs": [
@@ -49,17 +48,17 @@
     {
       "address": "0x4bcb50",
       "symbol": "??0HudUiTextLabel@@QAE@PBDHHH@Z",
-      "name": "HudUiTextLabel::HudUiTextLabel"
+      "name": "HudUiTextLabel::ConstructorWithPosAndFlags"
     },
     {
       "address": "0x4ba740",
       "symbol": "??0HudUiPanel@@QAE@PBDHH@Z",
-      "name": "HudUiPanel::HudUiPanel"
+      "name": "HudUiPanel::ConstructorDefault"
     },
     {
       "address": "0x4bab40",
       "symbol": "??1HudUiPanel@@UAE@XZ",
-      "name": "HudUiPanel::~HudUiPanel"
+      "name": "HudUiPanel::Destructor"
     },
     {
       "address": "0x40a590",
@@ -72,38 +71,38 @@
     },
     {
       "address": "0x40be60",
-      "symbol": "?CopyRange@HudCmdBindingEntry@@SIPAPAU1@PAPAU1@00@Z",
-      "name": "HudCmdBindingEntry::CopyRange"
+      "symbol": "?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z",
+      "name": "std::copy<HudCmdBindingEntry **, HudCmdBindingEntry **>"
     },
     {
       "address": "0x4b7020",
       "symbol": "??1HudUiCheckToggleWidget@@UAE@XZ",
-      "name": "HudUiCheckToggleWidget::~HudUiCheckToggleWidget"
+      "name": "HudUiCheckToggleWidget::DestructorCore"
     },
     {
       "address": "0x40a940",
-      "symbol": "?Destructor@HudCmdCommandList@@QAEXXZ",
-      "name": "HudCmdCommandList::Destructor"
+      "symbol": "??1HudCmdCommandList@@UAE@XZ",
+      "name": "HudCmdCommandList::~HudCmdCommandList"
     },
     {
       "address": "0x40aa30",
-      "symbol": "?Destructor@HudCmdKeyAButton@@QAEXXZ",
-      "name": "HudCmdKeyAButton::Destructor"
+      "symbol": "??1HudCmdKeyAButton@@UAE@XZ",
+      "name": "HudCmdKeyAButton::~HudCmdKeyAButton"
     },
     {
       "address": "0x40ab20",
-      "symbol": "?Destructor@HudCmdKeyBButton@@QAEXXZ",
-      "name": "HudCmdKeyBButton::Destructor"
+      "symbol": "??1HudCmdKeyBButton@@UAE@XZ",
+      "name": "HudCmdKeyBButton::~HudCmdKeyBButton"
     },
     {
       "address": "0x40ac10",
-      "symbol": "?Destructor@HudCmdJoyButton@@QAEXXZ",
-      "name": "HudCmdJoyButton::Destructor"
+      "symbol": "??1HudCmdJoyButton@@UAE@XZ",
+      "name": "HudCmdJoyButton::~HudCmdJoyButton"
     },
     {
       "address": "0x40ad00",
-      "symbol": "?Destructor@HudCmdMouseButton@@QAEXXZ",
-      "name": "HudCmdMouseButton::Destructor"
+      "symbol": "??1HudCmdMouseButton@@UAE@XZ",
+      "name": "HudCmdMouseButton::~HudCmdMouseButton"
     },
     {
       "address": "0x4bb540",
@@ -163,8 +162,38 @@
   "translation_unit_function_order": [
     {
       "source_from": "src/Battlesport/hud.cpp",
-      "order_scope": "authored",
+      "order_scope": "full",
       "functions": [
+        {
+          "address": "0x40a940",
+          "symbol": "??1HudCmdCommandList@@UAE@XZ",
+          "name": "HudCmdCommandList::~HudCmdCommandList"
+        },
+        {
+          "address": "0x40aa30",
+          "symbol": "??1HudCmdKeyAButton@@UAE@XZ",
+          "name": "HudCmdKeyAButton::~HudCmdKeyAButton"
+        },
+        {
+          "address": "0x40ab20",
+          "symbol": "??1HudCmdKeyBButton@@UAE@XZ",
+          "name": "HudCmdKeyBButton::~HudCmdKeyBButton"
+        },
+        {
+          "address": "0x40ac10",
+          "symbol": "??1HudCmdJoyButton@@UAE@XZ",
+          "name": "HudCmdJoyButton::~HudCmdJoyButton"
+        },
+        {
+          "address": "0x40ad00",
+          "symbol": "??1HudCmdMouseButton@@UAE@XZ",
+          "name": "HudCmdMouseButton::~HudCmdMouseButton"
+        },
+        {
+          "address": "0x40be60",
+          "symbol": "?copy@std@@YIPAPAUHudCmdBindingEntry@@PAPAU2@00@Z",
+          "name": "std::copy<HudCmdBindingEntry **, HudCmdBindingEntry **>"
+        },
         {
           "address": "0x40bf00",
           "symbol": "??1HudCmdBindingEntry@@QAE@XZ",
@@ -174,15 +203,67 @@
     },
     {
       "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
-      "order_scope": "authored",
+      "order_scope": "full",
       "functions": [
         {
           "address": "0x4b7020",
           "symbol": "??1HudUiCheckToggleWidget@@UAE@XZ",
           "name": "HudUiCheckToggleWidget::~HudUiCheckToggleWidget"
+        },
+        {
+          "address": "0x4ba740",
+          "symbol": "??0HudUiPanel@@QAE@PBDHH@Z",
+          "name": "HudUiPanel::ConstructorDefault"
+        },
+        {
+          "address": "0x4bab40",
+          "symbol": "??1HudUiPanel@@UAE@XZ",
+          "name": "HudUiPanel::Destructor"
+        },
+        {
+          "address": "0x4bb440",
+          "symbol": "?GetLastTextPtr@HudUiPanel@@QAEPADXZ",
+          "name": "HudUiPanel::GetLastTextPtr"
+        },
+        {
+          "address": "0x4bb540",
+          "symbol": "?SetTextFmt@HudUiPanel@@UAAXPBDZZ",
+          "name": "HudUiPanel::SetTextFmt"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x4bcb50",
+          "symbol": "??0HudUiTextLabel@@QAE@PBDHHH@Z",
+          "name": "HudUiTextLabel::ConstructorWithPosAndFlags"
+        },
+        {
+          "address": "0x4bccf0",
+          "symbol": "?SetTextFmt@HudUiTextLabel@@UAAXPBDZZ",
+          "name": "HudUiTextLabel::SetTextFmt"
+        },
+        {
+          "address": "0x4bcd80",
+          "symbol": "?RebuildTextBounds@HudUiTextLabel@@QAEXXZ",
+          "name": "HudUiTextLabel::RebuildTextBounds"
+        },
+        {
+          "address": "0x4bcdc0",
+          "symbol": "?MeasureTextWidth@HudUiTextLabel@@QAEHXZ",
+          "name": "HudUiTextLabel::MeasureTextWidth"
+        },
+        {
+          "address": "0x4bcdf0",
+          "symbol": "?UpdateTextExtents@HudUiTextLabel@@QAEXXZ",
+          "name": "HudUiTextLabel::UpdateTextExtents"
         }
       ]
     }
   ],
-  "check_translation_unit_function_order": true
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

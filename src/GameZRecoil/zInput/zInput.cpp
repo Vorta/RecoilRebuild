@@ -1001,11 +1001,11 @@ void zInput_BindMapContext::RebuildLookupIndices() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-initcommandmap
  * @recoil-artifact defines .text recoil:function:0x4708f0: zInput_BindMapContext::InitCommandMap.
+ * @recoil-match byte
+ *
  * Purpose: Allocate command binding, lookup, callback, and label storage for a bind-map context.
  */
-void zInput_BindMapContext::InitCommandMap(
-    int commandCount
-) {
+void zInput_BindMapContext::InitCommandMap(int commandCount) {
     m_commandCount = commandCount;
     zOptionEntryPartial *option =
         zGame::OptionsGetOrCreateOption(

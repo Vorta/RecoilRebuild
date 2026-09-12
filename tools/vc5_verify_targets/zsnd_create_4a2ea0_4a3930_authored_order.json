@@ -43,7 +43,7 @@
     },
     {
       "address": "0x4a34e0",
-      "symbol": "?LockBackendBuffers@zSndSample@@QAIHIIPAPAXPAH01@Z",
+      "symbol": "?LockBackendBuffers@zSndSample@@QAIHIIPAPAX0PAH1@Z",
       "name": "zSndSample::LockBackendBuffers",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -52,7 +52,7 @@
     },
     {
       "address": "0x4a3590",
-      "symbol": "?UnlockBackendBuffers@zSndSample@@QAIHPAXH0H@Z",
+      "symbol": "?UnlockBackendBuffers@zSndSample@@QAIHPAX0HH@Z",
       "name": "zSndSample::UnlockBackendBuffers",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

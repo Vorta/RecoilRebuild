@@ -19,7 +19,8 @@
   "data_symbols": [
     {
       "address": "0x4d291c",
-      "symbol": "_g_zMath_Vec3UnitFloat$S36467",
+      "symbol": "_g_zMath_Vec3UnitFloat",
+      "symbol_regex": "_g_zMath_Vec3UnitFloat\\$S[0-9]+",
       "name": "g_zMath_Vec3UnitFloat",
       "bn_name": "g_zMath_Vec3UnitFloat",
       "byte_length": 4

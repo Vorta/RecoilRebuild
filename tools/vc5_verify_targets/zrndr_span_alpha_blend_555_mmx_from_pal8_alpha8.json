@@ -1,9 +1,9 @@
 {
   "name": "zrndr_span_alpha_blend_555_mmx_from_pal8_alpha8",
   "description": "VC verification target for zRndr::SpanAlphaBlend555MmxFromPal8Alpha8.",
-  "source_filename": "zRndr.cpp",
+  "source_filename": "zrndr_span.cpp",
   "compiler_profile": "vc5_o2_ob0_md_zrndr_span_mmx_raw_asm_facs",
-  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "source_from": "src/GameZRecoil/zRender/zrndr_span.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -14,7 +14,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zRender/zrndr_draw.c"
+    "src/GameZRecoil/zRender/zrndr_span.cpp"
   ],
   "functions": [
     {

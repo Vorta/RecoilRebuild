@@ -1,9 +1,9 @@
 {
   "name": "zinput_joystick_transition_wait",
-  "description": "zInput joystick button transition and wait-for-press helpers.",
+  "description": "zInput joystick button transition and wait-for-press helpers. Data fields retain their retail addresses and extents as slices of the typed zInput global-state object; function placements remain in their registered translation units.",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
-  "source_filename": "zin_joystick.cpp",
-  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -37,17 +37,38 @@
   "data_symbols": [
     {
       "address": "0x565bd4",
-      "symbol": "_g_zInput_JoystickCurrentState",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_JoystickCurrentState",
       "bn_name": "g_zInput_JoystickCurrentState",
-      "byte_length": 272
+      "byte_length": 272,
+      "object_offset": 16164
     },
     {
       "address": "0x565ce4",
-      "symbol": "_g_zInput_JoystickPreviousState",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_JoystickPreviousState",
       "bn_name": "g_zInput_JoystickPreviousState",
-      "byte_length": 272
+      "byte_length": 272,
+      "object_offset": 16436
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x4723a0",
+          "symbol": "?DIGetButtonTransitionState@zInput@@YIHH@Z",
+          "name": "zInput::DIGetButtonTransitionState"
+        },
+        {
+          "address": "0x4723d0",
+          "symbol": "?DIWaitForButtonPress@zInput@@YIHH@Z",
+          "name": "zInput::DIWaitForButtonPress"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

@@ -330,7 +330,7 @@ void __fastcall RecycleRuntimeInstanceStorage(
 );
 int __cdecl Shutdown();
 int __cdecl ShutdownCore();
-void __fastcall FreeTrailRuntimeStateStorage(void *trailRuntimeState);
+int __fastcall FreeTrailRuntimeStateStorage(void *trailRuntimeState);
 int __fastcall DeactivateTrailRuntimeState(
     OptCatalogTrailRuntimeState *trailRuntimeState
 );

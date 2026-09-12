@@ -434,11 +434,12 @@ that point; their compiler observations remain diagnostic evidence.
 
 ### Function Match Levels and Pro-Reviewed Fallback
 
-`byte` and `instruction` are per-function levels, separate from owner tiers and
+`byte`, `instruction` and `commutative` are per-function levels, separate from owner tiers and
 serial-stage acceptance. Mirror the current complete proof in the function's
-attached canonical Doxygen comment with exactly one `@recoil-match byte` or
-`@recoil-match instruction`. An unproved function has no such directive.
-Both levels require all relocation semantics, linked presence/identity and
+attached canonical Doxygen comment with exactly one `@recoil-match byte`,
+`@recoil-match instruction`, or `@recoil-match commutative`.
+An unproved function has no such directive.
+All levels require all relocation semantics, linked presence/identity and
 normalized linked-body checks listed above. A masked object comparison alone
 does not qualify for an annotation. Exact linked RVA is required at stage 5.
 
@@ -451,7 +452,7 @@ stack operations and ABI boundaries. Unsupported effects fail closed. No opcode
 replacement, instruction scheduling, changed stack layout, data/padding or
 provider exception is implied.
 
-Before using the alternative, send ChatGPT Pro the current source/compiler
+Before using the instruction alternative, send ChatGPT Pro the current source/compiler
 context, complete register differences, compiler evidence and credible failed
 C/C++ variants. Require explicit compiler attribution and an engineering
 judgment that no concrete credible source-faithful alternative remains untried.
@@ -476,6 +477,76 @@ agree with the live comparison. Artifacts document review; they cannot replace
 the current build. Refresh invalidates source-dependent match evidence on drift;
 an exact-byte upgrade requires no additional Pro review.
 
+The `commutative` alternative has a separate, narrow proof. Its initial support
+is an exchange of the two binary32 memory factors between `FLD m32` and
+`FMUL m32`. It retains each instruction's operation, position, length and
+encoding form, ordered addition inputs/grouping, memory widths, output stores,
+integer code and control flow. The verifier derives instruction/table boundaries
+from retail, then follows paired load origins and x87 stack values through
+balanced single-entry regions. No store, call, GPR change or branch into a
+region may intervene. Every differing operand must belong to a specifically
+proved load/multiply exchange. Unknown effects, mixed register reassignment,
+changed embedded tables, padding, relocation targets or layout block.
+
+This is a **conditional numerical match**. Its supported FP contract is owned
+by `COMMUTATIVE_CONTRACT` in `tools/_recoil/lib/commutative_match.py`:
+
+- finite binary32 values at each affected read in valid ordinary stable memory;
+- the same fixed supported x87 control word, all exceptions masked, and enough
+  free push slots at each region entry (the proof reports the number required);
+- identical stored representations, including signed zero, plus equal integer
+  state, control flow and ABI behavior;
+- excluded x87 status, saved environment and dead physical registers cannot
+  influence included observations through callers, callees or asynchronous inspection;
+- ordinary function entry and ABI call/return flow, without external interior
+  entries or return-address manipulation.
+
+Supported control words use an architected rounding mode and 24-, 53- or 64-bit
+precision, never the reserved precision encoding. The proof preserves the opaque
+incoming numerical stack; its capacity precondition is not inferred from the
+region's maximum depth. Noninterference is a continuation obligation, not simply
+permission to omit FP status fields from a comparison. Unresolved indirect calls
+and jumps are rejected. Direct entries, including `LOOP`/`LOOPE`/`LOOPNE`/`JCXZ`,
+come from the independent retail decoder. Status/environment observers and MMX
+accesses that can expose physical x87 register state also block the initial proof.
+
+The kernel's `scope: normalized-function-body-only`, `accepts_function_match:
+false`, `accepts_exact_bytes: false` and `pending_obligations` identify body
+feedback. Its `exact` field means only equality of the supplied buffers; it
+does not prove original object or image bytes. It takes no relocation catalog
+or symbol identity to imply validation it does not perform. The enclosing live
+verifier alone joins that body proof with current Pro eligibility, exact
+relocation semantics, linked presence/identity and the corresponding linked
+body from the same fresh build. Decoded instruction-span counts include
+alignment instructions; embedded-table byte counts do not include that padding.
+
+The live proof establishes equivalence under this contract; it does not prove
+that arbitrary runtime matrices or external DLLs satisfy the assumptions.
+NaNs/infinities, unmasked traps, volatile/MMIO/racing memory and FP diagnostic
+observations are excluded. Load/multiply exception timing and saved environment
+are architectural effects described by the [Intel x87 architecture manual](https://cdrdv2-public.intel.com/671436/253665-sdm-vol-1.pdf).
+Do not infer runtime FP state solely from a CRT default. Record a concrete
+caller/domain justification and retain the conditional contract in every report.
+
+Send Pro the current source/compiler context, exact differences, credible failed
+byte variants, proposed proof, FP contract and caller justification. Require
+compiler operand-selection attribution, engineering exhaustion within the
+governed constraints, and the standalone `COMMUTATIVE_MATCH_APPROVED` decision.
+Negative/ambiguous advice and transport failures grant no eligibility. Register:
+
+```powershell
+python tools/recoil.py progress match review-commutative --payload-file <review.json> --expected-revision <revision> --dry-run --json
+python tools/recoil.py progress match review-commutative --payload-file <review.json> --expected-revision <revision> --apply --json
+```
+
+Use the same exact payload fields as the instruction review, with
+`decision: "compiler-commutative-operand-selection-only"`, plus `contract`
+(the complete supported contract object) and a nonempty
+`contract_justification`. The receipt must confirm submission, the answer must
+contain the positive decision and occur in the transcript, and the source,
+compiler context, exact differences, contract and proof version must remain
+current. Pro grants fallback eligibility, never machine acceptance.
+
 For a workspace census or an explicit function, use:
 
 ```powershell
@@ -490,7 +561,7 @@ counts, preserves encoding/newlines and guards against intervening edits.
 `--dry-run` still builds and previews; a later apply uses another fresh root.
 This command does not advance any serial stage or owner tier. The stage 3/5
 commands independently rebuild and accept their own eligible groups, recording
-instruction proofs separately from exact-byte states. Mixed groups use their
+instruction and commutative proofs separately from exact-byte states. Mixed groups use their
 weakest fully proved level; an unproved member blocks the group.
 
 ## Stage 4: Full Function Order
@@ -519,8 +590,8 @@ python tools/recoil.py progress advance-live-linked-byte --build-root <fresh-roo
 ```
 
 Linked validation requires exact linked RVA, resolved operands, target identity,
-and raw linked-image bytes, or the approved instruction proof for register
-encodings in authored bodies. It may advance only explicitly matched physical
+and raw linked-image bytes, or the approved instruction/commutative proof for
+its permitted differences in authored bodies. It may advance only explicitly matched physical
 groups before the first typed divergence.
 
 ## Stage 6: Final Typed Validation
@@ -545,12 +616,14 @@ Every range must be covered exactly once. Gaps, overlaps, unknown extents,
 ambiguous padding, missing providers, or unresolved entities block before the
 unrestricted build.
 
-Final comparison freshly re-proves accepted instruction matches at their exact
-retail locations. Only the resulting register-encoding differences may differ
+Final comparison freshly re-proves accepted instruction and commutative matches
+at their exact retail locations. Only the resulting proved differences may differ
 in `.text` and the complete file; all other bytes and typed facts retain their
 exact checks. Reports preserve exact-byte booleans and separately identify
-instruction matches. Passing with instruction matches is not byte equality or
-tier S. Source annotations and old reports never grant a final-image exemption.
+instruction and commutative matches, retaining each commutative FP contract.
+Passing with either relaxed level is not byte equality or tier S. A commutative
+result remains conditional on its reviewed domain. Source annotations and old
+reports never grant a final-image exemption.
 
 ## Source Shape
 
@@ -669,7 +742,7 @@ apply with another fresh root. Acceptance rebuilds and requires the reviewed
 comparison to reproduce; the earlier build is never reused as acceptance.
 
 Tier A reviews the complete current differences and grants no function match
-annotation. Owner byte gates and tier S reject instruction-only matches.
+annotation. Owner byte gates and tier S reject instruction and commutative matches.
 Higher tiers require separately accepted boundary/source/data/linkage gates;
 S additionally requires the owner byte gate and fresh provider comparisons.
 Only the named gates or primary-entry tier promotions are written. Existing

@@ -21,5 +21,25 @@
       "name": "zError::InitOutputContext"
     }
   ],
-  "source_from": "src/GameZRecoil/zError/zerr_old.c"
+  "source_from": "src/GameZRecoil/zError/zerr_old.c",
+  "data_symbols": [
+    {
+      "address": "0x53a2f0",
+      "symbol": "_g_RecoilError_OutputHWnd",
+      "name": "g_RecoilError_OutputHWnd",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53a2f4",
+      "symbol": "_g_RecoilError_OutputMaxBytes",
+      "name": "g_RecoilError_OutputMaxBytes",
+      "byte_length": 4
+    },
+    {
+      "address": "0x53a2f8",
+      "symbol": "_g_RecoilError_OutputBytesWritten",
+      "name": "g_RecoilError_OutputBytesWritten",
+      "byte_length": 4
+    }
+  ]
 }

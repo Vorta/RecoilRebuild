@@ -516,14 +516,14 @@ void __cdecl DIResetTransitionState() {
         return;
     }
 
-    for (int i = 1; i < 11; ++i) {
+    for (unsigned int i = 1; i < 11; ++i) {
         g_zInput_JoystickPreviousState.rgbButtons[i] = 0;
         g_zInput_JoystickCurrentState.rgbButtons[i] = 0;
     }
 
-    for (int i_2916 = 0; i_2916 < 4; ++i_2916) {
-        g_zInput_JoystickCurrentState.rgdwPOV[i_2916] = 0xffff;
-        g_zInput_JoystickPreviousState.rgdwPOV[i_2916] = 0xffff;
+    for (unsigned int j = 0; j < 4; ++j) {
+        g_zInput_JoystickCurrentState.rgdwPOV[j] = 0xffff;
+        g_zInput_JoystickPreviousState.rgdwPOV[j] = 0xffff;
     }
 }
 

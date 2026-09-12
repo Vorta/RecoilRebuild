@@ -1,8 +1,7 @@
 {
   "name": "hud_ui_background_cursor_widget_set_image_by_path_owned_and_refresh",
-  "description": "HudUiBackgroundCursorWidget image load and capture refresh dispatch.",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
-  "source_filename": "zhud_ui.cpp",
+  "description": "HudUiBackgroundCursorWidget image load and capture refresh dispatch. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "include_dirs": [
     "src",
@@ -20,8 +19,19 @@
   "functions": [
     {
       "address": "0x4bfa50",
-      "symbol": "?SetImageByPathOwnedAndRefresh@HudUiBackgroundCursorWidget@@QAEXPBD@Z",
+      "symbol": "?SetImageByPathOwnedAndRefresh@HudUiBackgroundCursorWidget@@UAEXPBD@Z",
       "name": "HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4bfa50"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

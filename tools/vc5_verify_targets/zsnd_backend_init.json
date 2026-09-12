@@ -1,8 +1,7 @@
 {
   "name": "zsnd_backend_init",
-  "description": "zSound DirectSound and A3D backend provider initialization.",
+  "description": "zSound DirectSound and A3D backend provider initialization. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
   "source_filename": "zsnd_init.cpp",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -16,6 +15,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
+    "src/GameZRecoil/zGame/zgame_opt.c",
     "src/GameZRecoil/zSound/zsnd_init.cpp"
   ],
   "functions": [
@@ -42,7 +42,7 @@
     {
       "address": "0x4a1d10",
       "symbol": "_zSndBackendInitA3D",
-      "name": "zSndBackendInitA3D"
+      "name": "zSndBackend::InitA3D"
     },
     {
       "address": "0x4a1e50",
@@ -50,5 +50,27 @@
       "name": "zSndBackendInitDirectSound"
     }
   ],
-  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp"
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4b2f50",
+        "0x4b2fa0",
+        "0x4b2fc0",
+        "0x4b31f0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4a1d10",
+        "0x4a1e50"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

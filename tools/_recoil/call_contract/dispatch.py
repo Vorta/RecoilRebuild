@@ -1977,8 +1977,9 @@ def _registered_decorated_target_direct_candidate_bridges(
                 ) from exc
             symbol_id = f"recoil:function:{address}"
             function_addresses = registration.get("function_addresses")
-            target_symbol_ids = target_row.get("symbol_ids")
-            unresolved_addresses = target_row.get("unresolved_addresses")
+            target_symbol_ids = _cc_targets._registered_target_artifact_ids(
+                target_row, document.collection("symbols")
+            )
             try:
                 registered_count = sum(
                     1
@@ -2003,7 +2004,6 @@ def _registered_decorated_target_direct_candidate_bridges(
                 or registered_count != 1
                 or not isinstance(target_symbol_ids, list)
                 or target_symbol_ids.count(symbol_id) != 1
-                or unresolved_addresses != []
                 or getattr(live_row, "required_presence", None) is not True
             ):
                 raise ValueError(

@@ -508,73 +508,73 @@ int zFMV_Stream::ReadAndDecodeFrame(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-fillaudiobuffer
  * @recoil-artifact defines .text recoil:function:0x464540: zFMV_Stream::FillAudioBuffer
- * Purpose: lock the DirectSound backing buffers and refill them from the AVI audio stream.
+ *
+ * Purpose: lock the sound buffers, refill the AVI audio spans, and
+ * release the buffers.
  */
 int zFMV_Stream::FillAudioBuffer(
     unsigned int offset,
     unsigned int bytes
 ) {
-    void *buffer1Data = 0;
-    void *buffer2Data = 0;
-    int buffer1Bytes = 0;
-    int buffer2Bytes = 0;
+    void *buffer1Data;
+    void *buffer2Data;
+    int buffer1Bytes;
+    int buffer2Bytes;
 
-    const int result = audioSample->LockBackendBuffers(
+    int result = audioSample->LockBackendBuffers(
         offset,
         bytes,
         &buffer1Data,
-        &buffer1Bytes,
         &buffer2Data,
+        &buffer1Bytes,
         &buffer2Bytes
     );
-    if (result == 0) {
-        return result;
-    }
 
-    const unsigned int sampleSize = audioStreamInfo.dwSampleSize;
-    unsigned int &readSampleIndex = audioReadSampleIndex;
-
-    if (buffer1Bytes != 0) {
-        if (AVIStreamRead(
-                audioStream,
-                readSampleIndex,
-                (LONG)((unsigned int)(buffer1Bytes) / sampleSize),
-                buffer1Data,
-                buffer1Bytes,
-                0,
-                0
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0x13d,
-                g_zFMV_CannotReadAviSoundStreamMsg
-            );
-        }
-        readSampleIndex += (unsigned int)(buffer1Bytes) / sampleSize;
-    }
-
-    if (buffer2Bytes != 0) {
-        if (AVIStreamRead(
-                audioStream,
-                readSampleIndex,
-                (LONG)((unsigned int)(buffer2Bytes) / sampleSize),
-                buffer2Data,
-                buffer2Bytes,
-                0,
-                0
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0x144,
-                g_zFMV_CannotReadAviSoundStreamMsg
-            );
+    if (result != 0) {
+        if (buffer1Bytes != 0) {
+            if (AVIStreamRead(
+                    audioStream,
+                    audioReadSampleIndex,
+                    (LONG)((unsigned int)(buffer1Bytes) / audioStreamInfo.dwSampleSize),
+                    buffer1Data,
+                    buffer1Bytes,
+                    0,
+                    0
+                ) != 0) {
+                zError::ReportOld(
+                    0x400,
+                    g_zFMV_SourceFile_FmvStreamCpp,
+                    0x13d,
+                    g_zFMV_CannotReadAviSoundStreamMsg
+                );
+            }
+            audioReadSampleIndex += (unsigned int)(buffer1Bytes) / audioStreamInfo.dwSampleSize;
         }
 
-        // The original advances by the first locked span again after the wrapped read.
-        readSampleIndex += (unsigned int)(buffer1Bytes) / sampleSize;
+        if (buffer2Bytes != 0) {
+            if (AVIStreamRead(
+                    audioStream,
+                    audioReadSampleIndex,
+                    (LONG)((unsigned int)(buffer2Bytes) / audioStreamInfo.dwSampleSize),
+                    buffer2Data,
+                    buffer2Bytes,
+                    0,
+                    0
+                ) != 0) {
+                zError::ReportOld(
+                    0x400,
+                    g_zFMV_SourceFile_FmvStreamCpp,
+                    0x144,
+                    g_zFMV_CannotReadAviSoundStreamMsg
+                );
+            }
+
+            // The original advances by the first locked span again after the wrapped read.
+            audioReadSampleIndex += (unsigned int)(buffer1Bytes) / audioStreamInfo.dwSampleSize;
+        }
+
+        result = audioSample->UnlockBackendBuffers(buffer1Data, buffer2Data, buffer1Bytes, buffer2Bytes);
     }
 
-    return audioSample->UnlockBackendBuffers(buffer1Data, buffer1Bytes, buffer2Data, buffer2Bytes);
+    return result;
 }

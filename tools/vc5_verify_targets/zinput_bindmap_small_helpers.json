@@ -1,6 +1,6 @@
 {
   "name": "zinput_bindmap_small_helpers",
-  "description": "zInput bind group, command label, key/button name, and current-context wrapper helpers.",
+  "description": "zInput bind group, command label, key/button name, and current-context wrapper helpers. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "source_filename": "zInput.cpp",
   "source_from": "src/GameZRecoil/zInput/zInput.cpp",
@@ -14,8 +14,8 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zInput/zInput.cpp",
-    "src/Battlesport/player.cpp"
+    "src/Battlesport/player.cpp",
+    "src/GameZRecoil/zInput/zInput.cpp"
   ],
   "order_edit_paths": [
     "src/Battlesport/player.cpp",
@@ -88,5 +88,33 @@
       "symbol": "?BindMapCurrentCopyMouseButtonName@zInput@@YIPADHPADH@Z",
       "name": "zInput::BindMapCurrentCopyMouseButtonName"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/player.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x42a4b0",
+        "0x42a4d0",
+        "0x42a4e0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x470f80",
+        "0x471040",
+        "0x471070",
+        "0x4716d0",
+        "0x4716e0",
+        "0x4716f0",
+        "0x471700",
+        "0x471800",
+        "0x471820",
+        "0x471840"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

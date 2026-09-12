@@ -1,9 +1,8 @@
 {
   "name": "zsnd_sample_get_play_cursor_bytes",
-  "description": "zSndSample play cursor query backend dispatch.",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
-  "source_filename": "zsnd_play.cpp",
-  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "description": "zSndSample play cursor query backend dispatch. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zsnd_create.cpp",
+  "source_from": "src/GameZRecoil/zSound/zsnd_create.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -13,7 +12,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zSound/zsnd_play.cpp"
+    "src/GameZRecoil/zSound/zsnd_create.cpp"
   ],
   "functions": [
     {
@@ -21,5 +20,16 @@
       "symbol": "?GetPlayCursorBytes@zSndSample@@QAEIXZ",
       "name": "zSndSample::GetPlayCursorBytes"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_create.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4a3620"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

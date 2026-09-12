@@ -18,10 +18,10 @@
   "data_symbols": [
     {
       "address": "0x4dd484",
-      "symbol_regex": "_kDownloadSourcePathFormat\\$S[0-9]+",
       "name": "g_PathJoinFmt",
       "bn_name": "g_PathJoinFmt",
-      "byte_length": 6
+      "byte_length": 6,
+      "symbol": "??_C@_05KEJO@?$CFs?2?$CFs?$AA@"
     }
   ]
 }

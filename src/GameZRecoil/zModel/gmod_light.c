@@ -384,7 +384,7 @@ void __fastcall zModelLightPointInPolygonInitXZ(
         active.useFullWeight = 0;
         active.contributesToLighting = 0;
         active.reserved_10 = 0;
-        if (lightDataList[i]->isPointMode != 0) {
+        if (lightDataList[i]->isDirectedSource != 0) {
             gModel_ActiveLightSpecialIndex = gModel_ActiveLightCount;
         }
         ++gModel_ActiveLightCount;
@@ -455,7 +455,7 @@ namespace zModel_Light {
                 continue;
             }
 
-            if ((g_zVideo_ActiveRendererPath != 0 && light->isPointMode != 0) ||
+            if ((g_zVideo_ActiveRendererPath != 0 && light->isDirectedSource != 0) ||
                 light->enabled == 0) {
                 entry.useFullWeight = 1;
                 entry.contributesToLighting = 1;
@@ -468,7 +468,7 @@ namespace zModel_Light {
             }
 
             float distance = 0.0f;
-            if (light->isPointMode != 0) {
+            if (light->isDirectedSource != 0) {
                 gModel_ActiveLightSpecialIndex = i;
                 distance = sphereCenter->z;
             } else {
@@ -487,7 +487,7 @@ namespace zModel_Light {
 
             lightDistances[i] = distance - radius;
             const float farEdge = distance + radius;
-            if (lightDistances[i] >= light->range2 && light->isPointMode == 0) {
+            if (lightDistances[i] >= light->range2 && light->isDirectedSource == 0) {
                 continue;
             }
 
@@ -498,7 +498,7 @@ namespace zModel_Light {
                 continue;
             }
 
-            if (light->isPointMode != 0) {
+            if (light->isDirectedSource != 0) {
                 hasSoftwarePointLight = 1;
             }
             ++result;
@@ -516,7 +516,7 @@ namespace zModel_Light {
 
             zClass_LightDataPartial *light = entry.light;
             if (hasSoftwarePointLight != 0 && g_zModel_SoftwarePathActive != 0 &&
-                light->isPointMode == 0) {
+                light->isDirectedSource == 0) {
                 entry.contributesToLighting = 0;
                 --result;
                 continue;
@@ -534,7 +534,7 @@ namespace zModel_Light {
                 weight = 0.0f;
             }
 
-            if (light->isPointMode != 0) {
+            if (light->isDirectedSource != 0) {
                 g_Clip_PolyAttr1[i_647] = weight;
             } else {
                 g_Clip_PolyAttr0[i_647] = weight;
@@ -581,7 +581,7 @@ namespace zModel_Light {
                 zModel_ActiveLightEntryLive &entry = gModel_ActiveLights[lightIndex];
                 zClass_LightDataPartial *light = entry.light;
 
-                if (*lightFlags == 1 && light->lightParam != 0 && light->isPointMode == 0) {
+                if (*lightFlags == 1 && light->lightParam != 0 && light->isDirectedSource == 0) {
                     continue;
                 }
 
@@ -595,7 +595,7 @@ namespace zModel_Light {
                     continue;
                 }
 
-                if (light->isPointMode != 0) {
+                if (light->isDirectedSource != 0) {
                     distances[lightIndex][vertexIndex] = vertex.z;
                     if (vertex.z < light->range2) {
                         lightToVertex[lightIndex][vertexIndex] = vertex;
@@ -678,16 +678,16 @@ namespace zModel_Light {
                 }
 
                 float angularWeight = 1.0f;
-                if (light->coneAngle != 0 || light->isPointMode != 0) {
+                if (light->isDirectional != 0 || light->isDirectedSource != 0) {
                     float dotProduct = 0.0f;
-                    if (light->isPointMode != 0 && g_zModel_CurrentPolyNormals != 0) {
+                    if (light->isDirectedSource != 0 && g_zModel_CurrentPolyNormals != 0) {
                         const zVec3 &polyNormal =
                             g_zModel_CurrentPolyNormals[vertexIndex];
                         dotProduct =
                             polyNormal.x * light->viewDir.x +
                             polyNormal.y * light->viewDir.y +
                             polyNormal.z * light->viewDir.z;
-                    } else if (light->isPointMode != 0) {
+                    } else if (light->isDirectedSource != 0) {
                         const zVec3 &direction =
                             lightToVertex[lightIndex][vertexIndex];
                         dotProduct =
@@ -702,18 +702,18 @@ namespace zModel_Light {
                     }
                     angularWeight = dotProduct;
 
-                    if (light->isPointMode != 0 && angularWeight < kMinPointNormalWeight) {
+                    if (light->isDirectedSource != 0 && angularWeight < kMinPointNormalWeight) {
                         angularWeight = kMinPointNormalWeight;
                     }
 
-                    if (light->coneAngle != 0) {
+                    if (light->isDirectional != 0) {
                         const zVec3 &direction =
                             lightToVertex[lightIndex][vertexIndex];
                         float coneWeight =
                             direction.x * light->viewDir.x +
                             direction.y * light->viewDir.y +
                             direction.z * light->viewDir.z;
-                        if (light->isPointMode != 0 && g_zModel_CurrentPolyNormals != 0) {
+                        if (light->isDirectedSource != 0 && g_zModel_CurrentPolyNormals != 0) {
                             const zVec3 &polyNormal =
                                 g_zModel_CurrentPolyNormals[vertexIndex];
                             coneWeight =
@@ -739,9 +739,9 @@ namespace zModel_Light {
                     intensity = light->intensityScale;
                 }
 
-                float weight = light->isPointMode != 0 ? 1.0f - intensity : intensity;
+                float weight = light->isDirectedSource != 0 ? 1.0f - intensity : intensity;
                 if (g_zVideo_ActiveRendererPath == 0) {
-                    if (light->isPointMode != 0) {
+                    if (light->isDirectedSource != 0) {
                         if (entry.useFullWeight == 0) {
                             const float distanceWeight = EvalDistanceWeight(
                                 light,
@@ -763,7 +763,7 @@ namespace zModel_Light {
                         fogWeights[vertexIndex] += weight;
                         fogSum += weight;
                     }
-                } else if (light->isPointMode != 0) {
+                } else if (light->isDirectedSource != 0) {
                     if (entry.useFullWeight == 0) {
                         const float distanceWeight = EvalDistanceWeight(
                             light,
@@ -1050,18 +1050,18 @@ int __fastcall zModelLightBuildLightWeights(
                     }
 
                     float angularWeight = 1.0f;
-                    if (light->coneAngle != 0 || light->isPointMode != 0) {
-                        const zVec3 &direction = light->isPointMode != 0
+                    if (light->isDirectional != 0 || light->isDirectedSource != 0) {
+                        const zVec3 &direction = light->isDirectedSource != 0
                                                      ? lightToVertex[lightIndex][vertexIndex]
                                                      : light->viewDir;
                         angularWeight =
                             surfaceNormal->x * direction.x +
                             surfaceNormal->y * direction.y +
                             surfaceNormal->z * direction.z;
-                        if (light->isPointMode != 0 && angularWeight < kMinPointNormalWeight) {
+                        if (light->isDirectedSource != 0 && angularWeight < kMinPointNormalWeight) {
                             angularWeight = kMinPointNormalWeight;
                         }
-                        if (light->coneAngle != 0) {
+                        if (light->isDirectional != 0) {
                             const float coneDot =
                                 direction.x * light->viewDir.x +
                                 direction.y * light->viewDir.y +
@@ -1081,10 +1081,10 @@ int __fastcall zModelLightBuildLightWeights(
                         intensity = light->intensityScale;
                     }
 
-                    float baseWeight = light->isPointMode != 0 ? 1.0f - intensity : intensity;
+                    float baseWeight = light->isDirectedSource != 0 ? 1.0f - intensity : intensity;
                     if (entry.useFullWeight == 0) {
                         if (g_zVideo_ActiveRendererPath == 0) {
-                            if (light->isPointMode != 0) {
+                            if (light->isDirectedSource != 0) {
                                 const float distanceWeight =
                                     zModel_Light::EvalDistanceWeight(
                                         light,
@@ -1115,7 +1115,7 @@ int __fastcall zModelLightBuildLightWeights(
                                 }
                                 continue;
                             }
-                        } else if (light->isPointMode != 0) {
+                        } else if (light->isDirectedSource != 0) {
                             const float distanceWeight = zModel_Light::EvalDistanceWeight(
                                 light,
                                 gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]

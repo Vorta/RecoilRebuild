@@ -1,7 +1,6 @@
 {
   "name": "zinput_bindmap_overlay_globals",
-  "description": "zInput bind-map overlay current-context and stack globals.",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zInput bind-map overlay current-context and stack globals. Data fields retain their retail addresses and extents as slices of the typed zInput global-state object; function placements remain in their registered translation units.",
   "source_filename": "zInput.cpp",
   "source_from": "src/GameZRecoil/zInput/zInput.cpp",
   "include_dirs": [
@@ -19,31 +18,36 @@
   "data_symbols": [
     {
       "address": "0x565ea0",
-      "symbol": "_g_zInput_BindMap_Current",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_BindMap_Current",
       "bn_name": "g_zInput_BindMap_Current",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16880
     },
     {
       "address": "0x565eac",
-      "symbol": "_g_zInput_BindMapOverlayNodeFreeList",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_BindMapOverlayNodeFreeList",
       "bn_name": "g_zInput_BindMapOverlayNodeFreeList",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16892
     },
     {
       "address": "0x565eb0",
-      "symbol": "_g_zInput_BindMapOverlayNodeStackHead",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_BindMapOverlayNodeStackHead",
       "bn_name": "g_zInput_BindMapOverlayNodeStackHead",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16896
     },
     {
       "address": "0x565eb8",
-      "symbol": "_g_zInput_BindMapOverlayDepth",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_BindMapOverlayDepth",
       "bn_name": "g_zInput_BindMapOverlayDepth",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16904
     }
-  ]
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

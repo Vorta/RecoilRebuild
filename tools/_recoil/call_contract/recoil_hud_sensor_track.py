@@ -223,9 +223,10 @@ def _hud_ui_mgr_sensor_track_counter_slot_vptr_bridges(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST
@@ -2229,9 +2230,10 @@ def _hud_ui_mgr_sensor_track_marker_loop_candidate_vptr_bridges(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST

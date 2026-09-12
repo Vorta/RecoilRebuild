@@ -1,9 +1,9 @@
 {
   "name": "zinput_mouse_poll_wait",
-  "description": "zInput mouse poll and wait-for-button helpers.",
+  "description": "zInput mouse poll and wait-for-button helpers. Data fields retain their retail addresses and extents as slices of the typed zInput global-state object; function placements remain in their registered translation units.",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
-  "source_filename": "zin_mouse.cpp",
-  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+  "source_filename": "zInput.cpp",
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -63,24 +63,27 @@
     },
     {
       "address": "0x565e78",
-      "symbol": "_g_zInput_MouseDevice",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_MouseDevice",
       "bn_name": "g_zInput_MouseDevice",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16840
     },
     {
       "address": "0x565e7c",
-      "symbol": "_g_zInput_MouseCurrentState",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_MouseCurrentState",
       "bn_name": "g_zInput_MouseCurrentX",
-      "byte_length": 16
+      "byte_length": 16,
+      "object_offset": 16844
     },
     {
       "address": "0x565e8c",
-      "symbol": "_g_zInput_MousePreviousState",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_MousePreviousState",
       "bn_name": "g_zInput_MousePreviousX",
-      "byte_length": 16
+      "byte_length": 16,
+      "object_offset": 16860
     },
     {
       "address": "0x561c80",
@@ -91,10 +94,35 @@
     },
     {
       "address": "0x565ea0",
-      "symbol": "_g_zInput_BindMap_Current",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_BindMap_Current",
       "bn_name": "g_zInput_BindMap_Current",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16880
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x4703b0",
+          "symbol": "?MousePollAndStoreState@zInput@@YIXE@Z",
+          "name": "zInput::MousePollAndStoreState"
+        },
+        {
+          "address": "0x4703c0",
+          "symbol": "?MousePollState@zInput@@YIHE@Z",
+          "name": "zInput::MousePollState"
+        },
+        {
+          "address": "0x470680",
+          "symbol": "?MouseWaitForButtonPress@zInput@@YIHH@Z",
+          "name": "zInput::MouseWaitForButtonPress"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

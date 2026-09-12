@@ -1,8 +1,7 @@
 {
   "name": "zvid_accepted_hardware_renderer_count_cached",
-  "description": "zVid cached accepted hardware renderer-count getter.",
-  "source_filename": "zVideo.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zVid cached accepted hardware renderer-count getter. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zgame_opt.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -13,7 +12,8 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zGame/zgame_opt.c",
+    "src/GameZRecoil/zVideo/zvid_dd.c"
   ],
   "functions": [
     {
@@ -27,5 +27,23 @@
       "name": "zVid::GetAcceptedHardwareRendererCountCached"
     }
   ],
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+  "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zGame/zgame_opt.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4b3220"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4a9910"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

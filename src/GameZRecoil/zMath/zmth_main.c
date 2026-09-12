@@ -529,9 +529,9 @@ void __fastcall zMathVec3DivScalar(
         }
         return;
     }
-
+    float savedInverse; // Unused afterward but proven by byte matching.
     const float inverseScalar = g_zMath_Vec3UnitFloat / scalar;
-    out->x = inverseScalar * vec->x;
+    out->x = (savedInverse = inverseScalar) * vec->x;
     out->y = vec->y * inverseScalar;
     out->z = vec->z * inverseScalar;
 }
@@ -1382,9 +1382,9 @@ void __fastcall Vec3ArrayProjectToCachedY(
     int count
 ) {
     for (int i = 0; i < count; ++i) {
-        outValues[i] = points[i].x * g_zMath_CameraScratchA.xy +
-                       points[i].y * g_zMath_CameraScratchA.yy +
-                       points[i].z * g_zMath_CameraScratchA.zy + g_zMath_CameraScratchA.posY;
+        float xy = points[i].x * g_zMath_CameraScratchA.xy +
+                   points[i].y * g_zMath_CameraScratchA.yy;
+        outValues[i] = xy + points[i].z * g_zMath_CameraScratchA.zy + g_zMath_CameraScratchA.posY;
     }
 }
 
@@ -2320,12 +2320,12 @@ void __fastcall zMathQuatMultiply(
 ) {
     outAB->w =
         quatB->w * quatA->w - quatA->x * quatB->x - quatA->y * quatB->y - quatA->z * quatB->z;
-    outAB->x =
-        quatB->w * quatA->x + quatA->w * quatB->x + quatB->z * quatA->y - quatA->z * quatB->y;
-    outAB->y =
-        quatB->w * quatA->y + quatA->w * quatB->y + quatA->z * quatB->x - quatB->z * quatA->x;
-    outAB->z =
-        quatB->w * quatA->z + quatA->w * quatB->z + quatB->y * quatA->x - quatA->y * quatB->x;
+    const float scaledX = quatB->w * quatA->x;
+    outAB->x = scaledX + quatA->w * quatB->x + quatB->z * quatA->y - quatA->z * quatB->y;
+    const float scaledY = quatB->w * quatA->y;
+    outAB->y = scaledY + quatA->w * quatB->y + quatA->z * quatB->x - quatB->z * quatA->x;
+    const float scaledZ = quatB->w * quatA->z;
+    outAB->z = scaledZ + quatA->w * quatB->z + quatB->y * quatA->x - quatA->y * quatB->x;
 }
 
 /**

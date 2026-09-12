@@ -23,10 +23,11 @@ Reason directly from BN, retail, source, and VC5 evidence first. Use the package
 
 ## Recording the result
 
-Pro is also mandatory before a proposed `instruction` match fallback. Follow
-the executable runbook's review contract: compiler-register attribution and no
+Pro is also mandatory before an `instruction` or `commutative` match fallback. Follow
+the executable runbook's review contract: compiler attribution for the specific difference and no
 remaining concrete credible source-faithful option, backed by the attempted
 variants and exact differences. That review accepts no historical source model;
 the subsequent live comparison independently proves the function match.
+For commutative matching, review and report its explicit FP domain assumptions.
 
 State the proposed owner boundary, source placement, membership, artifact relationships, confidence, and unresolved alternatives. Update source docblocks and tracker relationships through governed commands. Manual positive owner/model changes are dry-run first. Source-model recovery alone does not accept provider status, order, bytes, gates, tier, or final-image coverage.

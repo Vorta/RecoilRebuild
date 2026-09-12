@@ -1,8 +1,8 @@
 {
   "name": "zclass_list_remove_child_delete_dispatch",
   "description": "zClass List remove-child checked dispatch member.",
-  "source_filename": "List.c",
-  "source_from": "src/GameZRecoil/zClass/List.c",
+  "source_filename": "Window.c",
+  "source_from": "src/GameZRecoil/zClass/Window.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
     "src",
@@ -17,7 +17,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zClass/List.c"
+    "src/GameZRecoil/zClass/Window.c"
   ],
   "functions": [
     {

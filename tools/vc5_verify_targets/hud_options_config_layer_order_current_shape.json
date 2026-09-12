@@ -1639,5 +1639,13 @@
       }
     }
   ],
+  "data_symbols": [
+    {
+      "address": "0x4ccda4",
+      "symbol_regex": "_\\?screenScale@\\?1\\?\\?ScreenToWorld@HudUiMgr@@YIXPAM@Z@4MB\\$S[0-9]+",
+      "name": "HudUiMgr::ScreenToWorld::screenScale",
+      "byte_length": 4
+    }
+  ],
   "source_from": "src/Battlesport/hud.cpp"
 }

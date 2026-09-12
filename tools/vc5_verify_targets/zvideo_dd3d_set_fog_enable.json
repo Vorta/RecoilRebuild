@@ -1,9 +1,8 @@
 {
   "name": "zvideo_dd3d_set_fog_enable",
-  "description": "VC verification target for zVideo_dd3d::SetFogEnable.",
-  "source_filename": "zVideo.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "description": "VC verification target for zVideo_dd3d::SetFogEnable. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zvid_ddd3d.c",
+  "source_from": "src/GameZRecoil/zVideo/zvid_ddd3d.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -14,7 +13,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zVideo/zvid_ddd3d.c"
   ],
   "functions": [
     {
@@ -22,5 +21,16 @@
       "symbol": "?SetFogEnable@zVideo_dd3d@@YIXH@Z",
       "name": "zVideo_dd3d::SetFogEnable"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_ddd3d.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4aa9e0"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

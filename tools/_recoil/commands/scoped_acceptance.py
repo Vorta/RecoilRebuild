@@ -259,7 +259,7 @@ def verify_owner(live, owner_id, *, gates, tier):
             values = live.function(identity, bytes_required="byte" in required_gates or member_tier in {"A", "S"}, exact_required=member_exact,
                 linked_required=bool(required_gates & {"owner_linkage", "byte"}) or member_tier in {"B", "A", "S"})
             if member_exact:
-                require(all(value.get("match_level") == "byte" for value in values), "instruction matching cannot accept owner bytes or tier S")
+                require(all(value.get("match_level") == "byte" for value in values), "relaxed matching cannot accept owner bytes or tier S")
             results[identity] = values
         else:
             if not required_gates & {"data", "owner_linkage", "byte"} and member_tier in {"X", "C"}:

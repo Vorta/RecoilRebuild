@@ -817,9 +817,9 @@ int __fastcall HandleLightEvent(
     }
 
     if (event->mode != 0) {
-        zClass_Light::gwLightSetDirectionalMode(lightNode);
+        zClass_Light::gwLightSetPointSource(lightNode);
     } else {
-        zClass_Light::gwLightSetPointMode(lightNode);
+        zClass_Light::gwLightSetDirectedSource(lightNode);
     }
 
     if ((event->fieldMask & 0x01) != 0) {
@@ -890,7 +890,7 @@ int __fastcall HandleLightEvent(
     }
 
     if ((event->fieldMask & 0x80) != 0) {
-        zClass_Light::gwLightSetConeAngle(lightNode, event->coneAngleBits);
+        zClass_Light::gwLightSetDirectional(lightNode, event->directional);
     }
 
     if ((event->fieldMask & 0x100) != 0) {
@@ -2339,7 +2339,7 @@ int __fastcall HandleAddChildEvent(
         zClass_NodePartial *const childNode = self->nodeRefList[event->childNodeRefIndex].node;
 
         for (int i = 0; i < parentNode->listCountB; ++i) {
-            if (parentNode->listB[i] == childNode) {
+            if (childNode == parentNode->listB[i]) {
                 return 2;
             }
         }
@@ -4407,12 +4407,12 @@ int __fastcall ResetForNode(
     if (rootNode->classId == 2 || rootNode->classId == 1) {
         self->flags &= ~0x00000100u;
     } else {
-        if (zClass_World::AddChildAtGrid(g_zEffect_World, self->boundNode) != 0) {
+        const int status = zClass_World::AddChildAtGrid(g_zEffect_World, self->boundNode);
+        if (status != 0) {
             return -1;
         }
         self->flags |= 0x00000100u;
     }
-
     self->triggerCurrentValue = 0.0f;
     zEffect_Anim::CaptureNodeStates(self);
 

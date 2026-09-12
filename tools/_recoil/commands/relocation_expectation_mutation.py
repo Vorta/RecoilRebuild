@@ -17,6 +17,7 @@ from _recoil.commands.relocation_expectations import (
     decode_retail_target_sites,
     normalize_reviewed_exception,
     relocation_target_owner_context,
+    validate_reviewed_target_extent,
 )
 from _recoil.commands.relocation_target_mutation import (
     RelocationTargetMutationError,
@@ -159,11 +160,12 @@ def prepare_reviewed_exception(
     else:
         target_binding = normalized["target_binding"]
     target_address = address_value(str(target_binding["address"]))
-    target_end = address_value(str(target_binding["end_exclusive"]))
-    if not target_address <= retail_target < target_end:
-        raise RelocationExceptionMutationError(
-            "immutable retail operand does not fall within the selected target symbol extent"
+    try:
+        validate_reviewed_target_extent(
+            normalized, document=document, source=source, reference=reference,
         )
+    except (RelocationExpectationError, OSError, ValueError) as exc:
+        raise RelocationExceptionMutationError(str(exc)) from exc
     target_addend = retail_target - target_address
     if int(normalized["resolved_target_addend"]) != target_addend:
         raise RelocationExceptionMutationError(

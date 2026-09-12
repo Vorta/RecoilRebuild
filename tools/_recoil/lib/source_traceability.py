@@ -25,7 +25,7 @@ ANCHOR_RE = re.compile(r"^@recoil-anchor[ \t]+(\S+)[ \t]*$")
 ARTIFACT_RE = re.compile(
     r"^@recoil-artifact[ \t]+(\S+)[ \t]+(\S+)[ \t]+(\S+):[ \t]*(\S.*)$"
 )
-MATCH_RE = re.compile(r"^@recoil-match[ \t]+(byte|instruction)[ \t]*$")
+MATCH_RE = re.compile(r"^@recoil-match[ \t]+(byte|instruction|commutative)[ \t]*$")
 LEGACY_REIMPLEMENTS_RE = re.compile(
     r"^Reimplements[ \t]+(?:(data)[ \t]+)?(0x[0-9A-Fa-f]+):[ \t]*(\S.*)",
     re.IGNORECASE,
@@ -647,7 +647,7 @@ def parse_source_trace_text(
                 match_rows.append((line, match[1] if match else ""))
                 if match is None:
                     findings.append(SourceTraceFinding("malformed-match-directive", path, line,
-                        "expected '@recoil-match byte' or '@recoil-match instruction'"))
+                        "expected '@recoil-match byte', '@recoil-match instruction' or '@recoil-match commutative'"))
                 continue
             anchor_match = ANCHOR_RE.fullmatch(value)
             if anchor_match is not None:

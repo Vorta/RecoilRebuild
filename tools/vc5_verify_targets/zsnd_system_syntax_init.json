@@ -1,8 +1,7 @@
 {
   "name": "zsnd_system_syntax_init",
-  "description": "zSound named and legacy sound-set syntax initialization.",
-  "source_filename": "zsnd_system.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zSound named and legacy sound-set syntax initialization. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zsnd_init.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -13,18 +12,18 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zSound/zsnd_fade.cpp"
+    "src/GameZRecoil/zSound/zsnd_init.cpp"
   ],
   "functions": [
     {
       "address": "0x4a1870",
       "symbol": "@zSndSystemInitNamedSetsSyntax@4",
-      "name": "zSndSystemInitNamedSetsSyntax"
+      "name": "zSndSystem::InitNamedSetsSyntax"
     },
     {
       "address": "0x4a1510",
       "symbol": "@zSndSystemInitLegacySetsSyntax@4",
-      "name": "zSndSystemInitLegacySetsSyntax"
+      "name": "zSndSystem::InitLegacySetsSyntax"
     },
     {
       "address": "0x4a13d0",
@@ -32,5 +31,18 @@
       "name": "zSndSystem::Shutdown"
     }
   ],
-  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp"
+  "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_init.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4a13d0",
+        "0x4a1510",
+        "0x4a1870"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

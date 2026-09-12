@@ -16,14 +16,15 @@ Authored tiers are cumulative:
 
 The owner tier is the floor of all primary entries and required gates. Passing behavior, correct ABI shape, one exact function, order validation, or a data result never silently promotes the complete owner.
 
-Per-function `byte` and `instruction` match levels are separate from owner
-tiers. Both require a complete live function proof including relocation
+Per-function `byte`, `instruction` and `commutative` match levels are separate from owner
+tiers. All require a complete live function proof including relocation
 semantics and linked presence/identity. Mirror only that current proof with
-`@recoil-match byte` or `@recoil-match instruction` on the actual definition;
-otherwise omit the directive. Instruction evidence may support reviewed tier A,
-but never exact-byte tier S. Prefer bytes; instruction fallback requires the
-specific Pro review and independent register-value proof defined in AGENTS.md
-and the executable runbook. Do not substitute register masking for equivalence.
+the corresponding `@recoil-match` directive on the actual definition;
+otherwise omit it. Reviewed relaxed evidence may support tier A, but never
+exact-byte tier S. Prefer bytes; either fallback requires its specific Pro
+review and independent value-flow proof defined in AGENTS.md and the executable
+runbook. Commutative matching retains an explicit conditional FP contract.
+Do not substitute operand masking or sorting for equivalence.
 
 Inspect owner membership, source model, traceability docblocks, touched globals and extents, table/callback/helper provenance, provider boundaries, raw object evidence, relocations, linked presence, exact RVAs and operands where applicable, and VC5-generated lifecycle or helper artifacts. Tier C is derived from primary-entry coverage; it has no separate test-manifest gate.
 

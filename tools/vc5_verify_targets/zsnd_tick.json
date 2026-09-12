@@ -1,8 +1,7 @@
 {
   "name": "zsnd_tick",
-  "description": "zSound system tick backend/fade/last-voice marker update.",
-  "source_filename": "zsnd_system.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zSound system tick backend/fade/last-voice marker update. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zsnd_play.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -13,7 +12,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zSound/zsnd_fade.cpp"
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
   ],
   "functions": [
     {
@@ -22,5 +21,16 @@
       "name": "zSnd::Tick"
     }
   ],
-  "source_from": "src/GameZRecoil/zSound/zsnd_fade.cpp"
+  "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x49f620"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

@@ -8,7 +8,6 @@
 #include "zdi.h"
 
 namespace {
-    const char kAnimateSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Animate.c";
     const short kAnimateStateStopped = 2;
     const short kAnimateAdvanceActive = 1;
     const short kAnimateLoopDisabled = -1;
@@ -19,65 +18,66 @@ namespace zClass_Animate {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.deletenode
      * @recoil-artifact defines .text recoil:function:0x453b10: zClass_Animate::DeleteNode
+     * @recoil-match byte
      *
      * Purpose: validate the animate node pointer and return the node to the
      * shared zClass free-list machinery.
      */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kAnimateSourceFile, 0x72, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x72, "Null node pointer.");
             return 5;
         }
 
         return zClass_Class::TryFreeNode(node);
     }
 
-    int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.addchild
      * @recoil-artifact defines .text recoil:function:0x453b40: zClass_Animate::AddChild
+     * @recoil-match byte
      *
      * Purpose: validate animate parent and child nodes, then append the child
      * through the shared zClass child-list helper.
      */
-    AddChild(
+    int __fastcall AddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kAnimateSourceFile, 0x80, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x80, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kAnimateSourceFile, 0x81, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x81, "Null node pointer.");
             return 5;
         }
 
         return zClass_Class::AddChildGeneric(parent, child);
     }
 
-    int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.removechild
      * @recoil-artifact defines .text recoil:function:0x453b80: zClass_Animate::RemoveChild
+     * @recoil-match byte
      *
      * Purpose: validate animate parent, child, and class-data pointers, then
      * remove the child through the shared zClass child-list helper.
      */
-    RemoveChild(
+    int __fastcall RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kAnimateSourceFile, 0x97, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x97, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kAnimateSourceFile, 0x98, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x98, "Null node pointer.");
             return 5;
         }
         if (parent->classData == 0) {
-            zError::ReportOld(0x400, kAnimateSourceFile, 0x99, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x99, "Null class data pointer");
             return 5;
         }
 
@@ -87,31 +87,32 @@ namespace zClass_Animate {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.updatenode
      * @recoil-artifact defines .text recoil:function:0x453bd0: zClass_Animate::UpdateNode
+     * @recoil-match byte
      *
      * Purpose: update active animation runtime state, sample transforms, and
      * enqueue the node for type-list processing when it becomes dirty.
      */
     int __fastcall UpdateNode(zClass_NodePartial * node) {
         zClass_AnimateDataPartial *data;
-
         if (node == 0) {
-            zError::ReportOld(0x400, kAnimateSourceFile, 0x1a9, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x1a9, "Null node pointer.");
             return 5;
         }
-
         data = (zClass_AnimateDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kAnimateSourceFile, 0x1aa, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x1aa, "Null class data pointer");
             return 5;
         }
-
         if ((data->statusFlags & 0x04) != 0) {
-            if (AdvanceTime(&data->runtime, g_FrameDeltaTimeSec) == kAnimateStateStopped) {
+            const float deltaTime = g_FrameDeltaTimeSec;
+            if (AdvanceTime(&data->runtime, deltaTime) == kAnimateStateStopped) {
+                data = (zClass_AnimateDataPartial *)node->classData;
                 data->statusFlags &= ~0x04;
                 return 0;
             }
-
+            data = (zClass_AnimateDataPartial *)node->classData;
             SampleTransform(&data->runtime);
+            data = (zClass_AnimateDataPartial *)node->classData;
             data->flags |= 0x01;
             if ((node->flags & 0x01) == 0) {
                 if (zClass_TypeList::Insert(7, node) == 0) {
@@ -120,11 +121,9 @@ namespace zClass_Animate {
             }
             node->flags |= 0x02;
         }
-
         return 0;
     }
 
-    short __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.advancetime
      * @recoil-artifact defines .text recoil:function:0x453c90: zClass_Animate::AdvanceTime
@@ -132,8 +131,9 @@ namespace zClass_Animate {
      *
      * Purpose: advance the animation clock, stop non-looping animations at the
      * end, and wrap looping animations back to their loop base.
+     * The loop-count sentinel distinguishes one-shot playback from looping.
      */
-    AdvanceTime(
+    short __fastcall AdvanceTime(
         zClass_AnimateRuntimePartial * runtime,
         float deltaTime
     ) {

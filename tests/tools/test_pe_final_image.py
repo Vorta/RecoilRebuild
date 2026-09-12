@@ -161,6 +161,7 @@ def test_timestamp_is_diagnostic_but_every_other_image_byte_is_retained(tmp_path
     assert normalized[:headers.pe_offset + 8] == data[:headers.pe_offset + 8]
     assert normalized[headers.pe_offset + 12:] == data[headers.pe_offset + 12:]
     _exercise_final_instruction_matches(tmp_path, monkeypatch)
+    _exercise_final_commutative_matches(tmp_path, monkeypatch)
 
 
 def _exercise_final_instruction_matches(tmp_path, monkeypatch):
@@ -211,6 +212,57 @@ def _exercise_final_instruction_matches(tmp_path, monkeypatch):
     invalid = deepcopy(coverage)
     invalid["sections"][0]["typed_entities"][0]["identities"].append({"symbol_id": "alias", "match_level": "byte"})
     assert not verify(candidate, invalid)["passed"]
+
+
+def _exercise_final_commutative_matches(tmp_path, monkeypatch):
+    from copy import deepcopy
+    from _recoil.commands import live_final_verify as final
+    from _recoil.lib import match_evidence as evidence
+    from _recoil.lib.function_match import MATCH_VERSION
+    from _recoil.lib.commutative_match import compare_commutative, COMMUTATIVE_VERSION, COMMUTATIVE_CONTRACT
+    source = tmp_path / "unit.cpp"
+    source.write_text("void f() {}\n")
+    monkeypatch.setattr(evidence, "REPO_ROOT", tmp_path)
+    context = {"source": "unit.cpp", "current": True}
+    monkeypatch.setattr(evidence, "source_context", lambda *a: context)
+    first, second = bytes.fromhex("d94004 d84a08 d91f c3"), bytes.fromhex("d94208 d84804 d91f c3")
+    proof = compare_commutative(first, second, function_address=0x401000, contract=COMMUTATIVE_CONTRACT)
+    retail = bytearray(minimal_pe()); retail[0x200:0x200 + len(first)] = first
+    candidate = bytearray(retail); candidate[0x200:0x200 + len(second)] = second
+    state = {"version": MATCH_VERSION, "commutative_version": COMMUTATIVE_VERSION,
+             "level": "commutative", "validation_mode": "live", "freshness": "current",
+             "evidence_ids": ["proof"], "review_evidence_id": "review",
+             "dependencies": evidence.dependency_states(["unit.cpp"]), "retail_relocations": []}
+    review = {"version": MATCH_VERSION, "commutative_version": COMMUTATIVE_VERSION,
+              "evidence_id": "review", "decision": "compiler-commutative-operand-selection-only",
+              "no_remaining_credible_source_options": True, "context": context,
+              "differences": proof["differences"], "contract": deepcopy(COMMUTATIVE_CONTRACT),
+              "contract_justification": "ordinary finite numerical caller domain"}
+    identity = {"symbol_id": "recoil:function:0x401000", "map_symbol": "?f@@YAXXZ", "match_level": "commutative",
+                "function_match": state, "commutative_match_review": review}
+    coverage = {"complete": True, "sections": [{"name": ".text", "typed_entities": [
+        {"start": 0, "end": len(first), "identities": [identity]}]}]}
+    monkeypatch.setattr(final, "validate_coverage_view", lambda *a, **kw: [])
+    monkeypatch.setattr(final, "_validate_coverage_text_population", lambda *a: [])
+    def verify(code=candidate, catalog=coverage):
+        return final._compare_image_data(source, source, candidate_data=bytes(code), reference_data=bytes(retail),
+                                         coverage=catalog, candidate_map_rows=[])
+    report = verify()
+    assert report["passed"], report["semantic_failures"]
+    assert report["contains_commutative_matches"] and not report["contains_instruction_matches"]
+    assert not report["normalized_complete_file_equal"] and not report["sections"][0]["exact_bytes"]
+    assert report["commutative_matches"][0]["proof"]["contract"] == COMMUTATIVE_CONTRACT
+    for offset in (0x202, 0x210, 0x300):
+        changed = bytearray(candidate); changed[offset] ^= 1
+        assert not verify(changed)["passed"]
+    for field, value in (("decision", "not-approved"), ("contract", {}), ("contract_justification", ""),
+                         ("commutative_version", 0), ("differences", []), ("context", {"source": "unit.cpp"})):
+        invalid = deepcopy(coverage)
+        invalid["sections"][0]["typed_entities"][0]["identities"][0]["commutative_match_review"][field] = value
+        assert not verify(catalog=invalid)["passed"]
+    invalid = deepcopy(coverage)
+    invalid["sections"][0]["typed_entities"][0]["identities"].append({"symbol_id": "alias", "match_level": "byte"})
+    assert not verify(catalog=invalid)["passed"]
 
 
 def test_semantic_and_raw_difference_reporting_is_bounded_and_typed() -> None:

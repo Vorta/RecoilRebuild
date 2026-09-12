@@ -24,7 +24,7 @@
 namespace {
 const unsigned int kRandUnitScaleBits = 0x38000100u;
 const unsigned int kEffectAnimNeedsCopiedRootFlag = 0x00008000u;
-const char kZeffAnimInitSourceFile[] = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c";
+
 const char kAnimationNodeNotFoundMessage[] =
     "Animation node not found.\n  Animation: %s; Node: %s\n";
 
@@ -156,7 +156,7 @@ void __fastcall SetZbdFilename(
     if (strlen(filename) > 0x80) {
         zError::ReportOld(
             0x400,
-            kZeffAnimInitSourceFile,
+            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
             0xd1,
             "Animation ZBD filename too long: %s\n",
             filename
@@ -263,7 +263,7 @@ int __fastcall FindOrCreateSoundRef(
     if (self->soundRefCount == 0xff) {
         zError::ReportOld(
             0x400,
-            kZeffAnimInitSourceFile,
+            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
             0x1b7,
             "Sound list overflow.\n  Animation: %s\n",
             self
@@ -321,7 +321,7 @@ int __fastcall FindOrCreateLightRef(
     if (self->lightRefCount == 0xff) {
         zError::ReportOld(
             0x400,
-            kZeffAnimInitSourceFile,
+            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
             0x200,
             "Light list overflow.\n  Animation: %s\n",
             self
@@ -486,7 +486,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
         if (copiedRoot == 0) {
             zError::ReportOld(
                 0x400,
-                kZeffAnimInitSourceFile,
+                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                 0x26d1,
                 "ERROR:\n  Copying Animation Node Tree: %s\n",
                 clonedEntry
@@ -506,7 +506,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     if (clonedEntry->callbackNode == 0) {
         zError::ReportOld(
             0x400,
-            kZeffAnimInitSourceFile,
+            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
             0x26e7,
             kAnimationNodeNotFoundMessage,
             clonedEntry,
@@ -697,7 +697,7 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
         if (self->callbackNode == 0) {
             zError::ReportOld(
                 0x400,
-                kZeffAnimInitSourceFile,
+                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                 0x27f9,
                 kAnimationNodeNotFoundMessage,
                 self,
@@ -719,7 +719,7 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
             if (tracked->trackedNode == 0) {
                 zError::ReportOld(
                     0x400,
-                    kZeffAnimInitSourceFile,
+                    "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                     0x2811,
                     kAnimationNodeNotFoundMessage,
                     self,
@@ -738,7 +738,7 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
             if (nodeRef->node == 0) {
                 zError::ReportOld(
                     0x400,
-                    kZeffAnimInitSourceFile,
+                    "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                     0x282c,
                     kAnimationNodeNotFoundMessage,
                     self,
@@ -1190,7 +1190,7 @@ int __cdecl LoadZbd() {
                 if (prereqSearchRoot == 0) {
                     zError::ReportOld(
                         0x400,
-                        kZeffAnimInitSourceFile,
+                        "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                         0x2c17,
                         g_zEffectAnim_ActivationPrereqNodeNotFoundFmt,
                         entry,
@@ -1270,7 +1270,7 @@ int __cdecl LoadAndInstantiate() {
         if (entry->activationState == 2) {
             zError::ReportOld(
                 0x400,
-                kZeffAnimInitSourceFile,
+                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                 0x2d55,
                 g_zEffectAnim_CorruptAnimationLoadedFmt,
                 entry

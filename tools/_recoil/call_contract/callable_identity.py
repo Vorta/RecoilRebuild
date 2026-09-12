@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from _recoil.call_contract import targets as _cc_targets
+
 from typing import TYPE_CHECKING
 
 from _recoil.call_contract import catalog as _cc_catalog
@@ -1819,6 +1821,7 @@ def _chkstk_compiler_helper_candidate_bridge(
             else None
         )
         source_path = str(caller_spec["source_path"])
+        target_source_path = str(caller_spec.get("target_source_from", source_path))
         source_trace = caller_row.get("source_traceability")
         source_edges = (
             source_trace.get("source_edges")
@@ -1838,7 +1841,7 @@ def _chkstk_compiler_helper_candidate_bridge(
             or getattr(target, "target_binary", "") != "recoil"
             or Path(str(getattr(target, "manifest_path", ""))).resolve()
             != Path(caller_spec["target_manifest"]).resolve()
-            or getattr(target, "source_from", "") != source_path
+            or getattr(target, "source_from", "") != target_source_path
             or len(target_function_rows) != 1
             or getattr(target_function_rows[0], "symbol", "")
             != caller_spec["symbol"]
@@ -1859,7 +1862,11 @@ def _chkstk_compiler_helper_candidate_bridge(
             != Path(caller_spec["target_manifest"])
             .relative_to(REPO_ROOT)
             .as_posix()
-            or registration.get("source_from") != source_path
+            or registration.get("source_from") != target_source_path
+            or not _cc_targets._target_function_definition_source_matches(
+                target, registration, address=caller_spec["address"],
+                symbol=caller_spec["symbol"], source_path=source_path,
+            )
             or registration.get("order_edit_paths")
             != list(caller_spec.get("order_edit_paths", (source_path,)))
             or registration.get("function_addresses", []).count(

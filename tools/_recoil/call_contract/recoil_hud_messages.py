@@ -1079,8 +1079,11 @@ def _hud_ui_message_clear_display_vptr_bridges(
             "source_edges": [],
             "state": "not-applicable",
         }
-        or literal_row.get("verification_target_ids")
-        != []
+        or not _cc_targets._registered_artifact_target_memberships_match(
+            _cc_catalog.HUD_UI_MESSAGE_CLEAR_DISPLAY_EMPTY_LITERAL_ID,
+            symbols,
+            document.collection("verification_targets"),
+        )
         or indexes.storage_by_address.get(
             _cc_catalog.HUD_UI_MESSAGE_CLEAR_DISPLAY_EMPTY_LITERAL_ADDRESS
         )

@@ -18,7 +18,7 @@
   "functions": [
     {
       "address": "0x4b1f90",
-      "symbol": "?FreeTrailRuntimeStateStorage@OptCatalog@@YIXPAX@Z",
+      "symbol": "?FreeTrailRuntimeStateStorage@OptCatalog@@YIHPAX@Z",
       "name": "OptCatalog::FreeTrailRuntimeStateStorage"
     },
     {

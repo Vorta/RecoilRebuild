@@ -849,6 +849,8 @@
     "src/GameZRecoil/zNetwork/znet_dplay.cpp",
     "src/GameZRecoil/zReader/zreader.cpp",
     "src/GameZRecoil/zRender/zrndr_draw.c",
+    "src/GameZRecoil/zRender/zrndr_fog.cpp",
+    "src/GameZRecoil/zRender/zrndr_span.cpp",
     "src/GameZRecoil/zSound/zsnd_3d.cpp",
     "src/GameZRecoil/zSound/zsnd_cd.cpp",
     "src/GameZRecoil/zSound/zsnd_create.cpp",

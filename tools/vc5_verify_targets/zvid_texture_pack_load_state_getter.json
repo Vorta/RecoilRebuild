@@ -1,8 +1,7 @@
 {
   "name": "zvid_texture_pack_load_state_getter",
-  "description": "zVid texture-pack load-state getter/setter and backing global.",
-  "source_filename": "zVideo.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zVid texture-pack load-state getter/setter and backing global. Explicit function placements and current spellings follow the complete authored-order targets. Existing data registrations and any unresolved provider entries retain their prior scope; each TU uses its canonical compiler profile.",
+  "source_filename": "zvid_main.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -13,7 +12,8 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zVideo/zvid_main.c",
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
   ],
   "functions": [
     {
@@ -36,5 +36,25 @@
       "byte_length": 4
     }
   ],
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x46d5b0",
+          "symbol": "?SetTexturePackLoadState@zVid@@YIXH@Z",
+          "name": "zVid::SetTexturePackLoadState"
+        },
+        {
+          "address": "0x46d5c0",
+          "symbol": "?GetTexturePackLoadState@zVid@@YAHXZ",
+          "name": "zVid::GetTexturePackLoadState"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

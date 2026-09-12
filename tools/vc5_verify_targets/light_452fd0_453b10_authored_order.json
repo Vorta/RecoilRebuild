@@ -59,8 +59,8 @@
     },
     {
       "address": "0x4532a0",
-      "symbol": "?gwLightSetConeAngle@zClass_Light@@YIHPAUzClass_NodePartial@@I@Z",
-      "name": "zClass_Light::gwLightSetConeAngle",
+      "symbol": "?gwLightSetDirectional@zClass_Light@@YIHPAUzClass_NodePartial@@H@Z",
+      "name": "zClass_Light::gwLightSetDirectional",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -68,8 +68,8 @@
     },
     {
       "address": "0x4532f0",
-      "symbol": "?gwLightSetPointMode@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Light::gwLightSetPointMode",
+      "symbol": "?gwLightSetDirectedSource@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Light::gwLightSetDirectedSource",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -77,8 +77,8 @@
     },
     {
       "address": "0x453350",
-      "symbol": "?gwLightSetDirectionalMode@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Light::gwLightSetDirectionalMode",
+      "symbol": "?gwLightSetPointSource@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
+      "name": "zClass_Light::gwLightSetPointSource",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,

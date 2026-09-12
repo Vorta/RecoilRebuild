@@ -124,9 +124,9 @@ int zSndWaveData::ParseLoadedWaveFile() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-zsndwavedata-loadandparseifneeded
  * @recoil-artifact defines .text recoil:function:0x4a5540: zSndWaveData::LoadAndParseIfNeeded.
+ * @recoil-match byte
  *
- * Purpose: load a named WAV file from disk once, parse it, and cache the parse
- * result.
+ * Purpose: load a named WAV file from disk once and cache its parsed data.
  */
 int zSndWaveData::LoadAndParseIfNeeded() {
     if (parsedOk != 0) {
@@ -180,9 +180,9 @@ int zSndWaveData::Reset() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-zsndwavedata-loadandparsefromindexarchiveifneeded
  * @recoil-artifact defines .text recoil:function:0x4a5600: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded.
+ * @recoil-match byte
  *
- * Purpose: load a named WAV payload from an index archive once, parse it, and
- * cache the parse result.
+ * Purpose: load a named WAV payload from an index archive once and cache its parsed data.
  */
 int zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(
     zIndexArchive *archive

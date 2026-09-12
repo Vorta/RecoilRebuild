@@ -1,8 +1,7 @@
 {
   "name": "hud_ui_background_member_helpers",
-  "description": "HUD background member constructor/destructor helpers used by HudUiBackground.",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
-  "source_filename": "zhud_ui.cpp",
+  "description": "HUD background member constructor/destructor helpers used by HudUiBackground. Explicit per-TU placements follow the existing zui_4b3ce0_4bffe0_authored_order projection; the function census and production source are unchanged. Each TU uses its canonical configured compiler profile. The video-widget destructor uses its current inherited-virtual decorated spelling, as in the complete UI target.",
+  "source_filename": "zui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "include_dirs": [
     "src",
@@ -26,7 +25,7 @@
   "functions": [
     {
       "address": "0x4bfcd0",
-      "symbol": "??1HudUiBackgroundVideoWidget@@QAE@XZ",
+      "symbol": "??1HudUiBackgroundVideoWidget@@UAE@XZ",
       "name": "HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget"
     },
     {
@@ -38,6 +37,25 @@
       "address": "0x4ba020",
       "symbol": "??0HudUiTransitionTextPanel@@QAE@XZ",
       "name": "HudUiTransitionTextPanel::HudUiTransitionTextPanel"
+    }
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4ba020",
+        "0x4ba4c0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4bfcd0"
+      ]
     }
   ]
 }

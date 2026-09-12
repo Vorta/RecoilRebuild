@@ -112,8 +112,9 @@ def _hud_shield_layout_affine_storage_bridges(
         or target.get("binary") != "recoil"
         or target.get("kind") != "vc5"
         or target.get("name") != "hud_ui_mgr_data"
-        or target.get("symbol_ids") != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or target.get("unresolved_addresses") not in (None, [])
+        or _cc_targets._registered_target_artifact_ids(
+            target, document.collection("symbols")
+        ) != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
         or not isinstance(registration, Mapping)
         or registration.get("binary") != "recoil"
         or registration.get("name") != "hud_ui_mgr_data"

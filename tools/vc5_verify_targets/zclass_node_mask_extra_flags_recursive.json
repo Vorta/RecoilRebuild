@@ -1,9 +1,8 @@
 {
   "name": "zclass_node_mask_extra_flags_recursive",
-  "description": "zClass_Node recursive flag-state helpers in Class.c.",
+  "description": "zClass_Node recursive flag-state helpers. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
   "source_filename": "Class.c",
   "source_from": "src/GameZRecoil/zClass/Class.c",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -17,6 +16,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
+    "src/Battlesport/player.cpp",
     "src/GameZRecoil/zClass/Class.c"
   ],
   "functions": [
@@ -45,5 +45,26 @@
       "symbol": "?SetDiFlagBit0Recursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
       "name": "zClass_Node::SetDiFlagBit0Recursive"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/player.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x421d60",
+        "0x421da0",
+        "0x421de0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zClass/Class.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x437e60",
+        "0x437ea0"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

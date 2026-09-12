@@ -1,7 +1,7 @@
 {
   "name": "zinput_poll_active_devices",
-  "description": "zInput::PollActiveDevices dispatcher and active-device flag/refcount globals.",
-  "source_filename": "zin_init.cpp",
+  "description": "zInput::PollActiveDevices dispatcher and active-device flag/refcount globals. Data fields retain their retail addresses and extents as slices of the typed zInput global-state object; function placements remain in their registered translation units.",
+  "source_filename": "zInput.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
     "src",
@@ -31,46 +31,66 @@
   "data_symbols": [
     {
       "address": "0x561cb8",
-      "symbol": "_g_zInput_DeviceRegistry",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_DeviceRegistry",
       "bn_name": "g_zInput_DeviceRegistry",
-      "byte_length": 1
+      "byte_length": 1,
+      "object_offset": 8
     },
     {
       "address": "0x561cbc",
-      "symbol": "_g_zInputKeyboardPollRefCount",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInputKeyboardPollRefCount",
       "bn_name": "g_zInputKeyboardPollRefCount",
-      "byte_length": 2
+      "byte_length": 2,
+      "object_offset": 12
     },
     {
       "address": "0x561cb9",
-      "symbol": "_g_zInputJoystickFlags",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInputJoystickFlags",
       "bn_name": "g_zInputJoystickFlags",
-      "byte_length": 1
+      "byte_length": 1,
+      "object_offset": 9
     },
     {
       "address": "0x561cbe",
-      "symbol": "_g_zInputJoystickPollRefCount",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInputJoystickPollRefCount",
       "bn_name": "g_zInputJoystickPollRefCount",
-      "byte_length": 2
+      "byte_length": 2,
+      "object_offset": 14
     },
     {
       "address": "0x561cba",
-      "symbol": "_g_zInputMouseFlags",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInputMouseFlags",
       "bn_name": "g_zInputMouseFlags",
-      "byte_length": 1
+      "byte_length": 1,
+      "object_offset": 10
     },
     {
       "address": "0x561cc0",
-      "symbol": "_g_zInputMousePollRefCount",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInputMousePollRefCount",
       "bn_name": "g_zInputMousePollRefCount",
-      "byte_length": 2
+      "byte_length": 2,
+      "object_offset": 16
     }
   ],
-  "source_from": "src/GameZRecoil/zInput/zin_init.cpp"
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x471de0",
+          "symbol": "?PollActiveDevices@zInput@@YIXE@Z",
+          "name": "zInput::PollActiveDevices"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

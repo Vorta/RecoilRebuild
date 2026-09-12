@@ -17,14 +17,14 @@ char g_zClass_SourceFile_SwitchC[0x24] =
 
 namespace zClass_Class {
     /**
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
-     * Purpose: validate Switch.c parent/child node state, then link the child
-     * through the generic zClass listA/listB ownership routine.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.switch.addchildvalidated
+     * @recoil-artifact defines .text recoil:function:0x452920: zClass_Class::AddChildValidated.
+     * @recoil-match byte
+     *
+     * Purpose: validate both nodes, then link the child through the generic lists.
      */
-    int __fastcall AddChildValidated(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
-    ) {
+    int __fastcall AddChildValidated(zClass_NodePartial *parent,
+        zClass_NodePartial *child) {
         if (parent == 0) {
             zError::ReportOld(0x400, g_zClass_SourceFile_SwitchC, 0x80, "Null node pointer.");
             return 5;
@@ -42,14 +42,14 @@ namespace zClass_Class {
     }
 
     /**
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
-     * Purpose: validate Switch.c parent/child node state, then unlink the child
-     * through the generic zClass listA/listB ownership routine.
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.switch.removechildvalidated
+     * @recoil-artifact defines .text recoil:function:0x452970: zClass_Class::RemoveChildValidated.
+     * @recoil-match byte
+     *
+     * Purpose: validate both nodes, then unlink the child through the generic lists.
      */
-    int __fastcall RemoveChildValidated(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
-    ) {
+    int __fastcall RemoveChildValidated(zClass_NodePartial *parent,
+        zClass_NodePartial *child) {
         if (parent == 0) {
             zError::ReportOld(0x400, g_zClass_SourceFile_SwitchC, 0x9f, "Null node pointer.");
             return 5;
@@ -63,7 +63,7 @@ namespace zClass_Class {
                 0x400,
                 g_zClass_SourceFile_SwitchC,
                 0xa1,
-                "Null node class data pointer."
+                "Null class data pointer"
             );
             return 5;
         }

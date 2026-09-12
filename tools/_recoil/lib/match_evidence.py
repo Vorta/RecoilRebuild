@@ -7,7 +7,8 @@ from pathlib import Path
 import re
 from typing import Any, Mapping
 
-from _recoil.lib.function_match import MATCH_LEVELS, MATCH_VERSION
+from _recoil.lib.function_match import MATCH_LEVELS, MATCH_VERSION, weakest_match_level
+from _recoil.lib.commutative_match import COMMUTATIVE_VERSION, valid_contract
 from _recoil.lib.tooling import REPO_ROOT, DEFAULT_VC5_ROOT
 
 _TAG_LINE = re.compile(r"^[ \t]*\*[ \t]*@recoil-match[^\r\n]*(?:\r?\n|$)", re.MULTILINE)
@@ -77,11 +78,16 @@ def dependency_states(paths: list[str]) -> list[dict[str, Any]]:
     return result
 
 
-def review_current(review: Any, context: Mapping[str, Any], differences: list[dict[str, Any]]) -> bool:
+def review_current(review: Any, context: Mapping[str, Any], differences: list[dict[str, Any]],
+                   *, level: str = "instruction") -> bool:
+    decision = {"instruction": "compiler-register-allocation-only",
+                "commutative": "compiler-commutative-operand-selection-only"}.get(level)
     return (isinstance(review, Mapping) and review.get("version") == MATCH_VERSION
-            and review.get("decision") == "compiler-register-allocation-only"
+            and decision is not None and review.get("decision") == decision
             and review.get("no_remaining_credible_source_options") is True
             and bool(review.get("evidence_id"))
+            and (level != "commutative" or (review.get("commutative_version") == COMMUTATIVE_VERSION
+                 and valid_contract(review.get("contract")) and bool(review.get("contract_justification"))))
             and review.get("context") == context and review.get("differences") == differences)
 
 
@@ -96,12 +102,11 @@ def current_match_level(symbol: Mapping[str, Any], *, check_files: bool = True) 
     if check_files and (not isinstance(dependencies, list) or not dependencies
                         or dependency_states([p["path"] for p in dependencies]) != dependencies):
         return None
-    if state["level"] == "instruction":
-        review = symbol.get("instruction_match_review")
-        if (not isinstance(review, Mapping) or review.get("version") != MATCH_VERSION
-                or state.get("review_evidence_id") != review.get("evidence_id")
-                or review.get("decision") != "compiler-register-allocation-only"
-                or review.get("no_remaining_credible_source_options") is not True):
+    if state["level"] != "byte":
+        review = symbol.get(state["level"] + "_match_review")
+        if (not isinstance(review, Mapping) or state.get("review_evidence_id") != review.get("evidence_id")
+                or not review_current(review, review.get("context", {}), review.get("differences", []), level=state["level"])
+                or (state["level"] == "commutative" and state.get("commutative_version") != COMMUTATIVE_VERSION)):
             return None
     return str(state["level"])
 
@@ -111,13 +116,14 @@ def stage_match_current(symbol: Mapping[str, Any], mode: str, accepted) -> bool:
     from _recoil.lib.progress import AUTHORED_BYTE_DIMENSIONS, EXACT_LINK_DIMENSIONS
     state = symbol.get("binary_state", {})
     exact = AUTHORED_BYTE_DIMENSIONS if mode == "authored" else EXACT_LINK_DIMENSIONS
-    if all(accepted(state.get(dimension)) for dimension in exact):
-        return True
-    if current_match_level(symbol) != "instruction":
-        return False
+    level = current_match_level(symbol)
+    if level not in {"instruction", "commutative"}:
+        return all(accepted(state.get(dimension)) for dimension in exact)
+    # A new non-byte classification must not inherit older exact-byte stage
+    # records. Only that level's explicitly accepted alternative can satisfy it.
     required = (("relocation_identity", "linked_presence", "linked_target_identity",
-                 "object_instruction", "linked_body_instruction") if mode == "authored"
-                else ("linked_address", "linked_targets", "linked_instruction"))
+                 "object_" + level, "linked_body_" + level) if mode == "authored"
+                else ("linked_address", "linked_targets", "linked_" + level))
     return all(accepted(state.get(dimension)) for dimension in required)
 
 
@@ -142,7 +148,7 @@ def annotation_edits(documents, symbols: Mapping[str, Any]) -> tuple[list[dict[s
             if not identities:
                 continue
             levels = [current_match_level(symbols.get(identity, {})) for identity in identities]
-            level = None if any(x is None for x in levels) else "instruction" if "instruction" in levels else "byte"
+            level = weakest_match_level(levels)
             comment = text[anchor.comment_start:anchor.comment_end]
             replacement = strip_match_annotations(comment)
             if level:
@@ -175,7 +181,7 @@ def annotation_findings(document, symbols):
     from _recoil.lib.source_traceability import SourceTraceFinding
     for match in document.matches:
         levels = [current_match_level(symbols.get(identity, {})) for identity in match.artifact_ids]
-        expected = None if any(x is None for x in levels) else "instruction" if "instruction" in levels else "byte"
+        expected = weakest_match_level(levels)
         if expected != match.level:
             yield SourceTraceFinding("match-evidence-disagreement", document.path, match.line,
                 f"@recoil-match {match.level} disagrees with current complete proof {expected!r}", match.anchor_id)

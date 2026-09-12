@@ -1,9 +1,8 @@
 {
   "name": "hud_ui_text_polyline_constructor_cluster",
-  "description": "HudUiTextInput, HudUiPolyline, and HudUiSliderBorder constructor cluster.",
-  "source_filename": "zhud_ui.cpp",
+  "description": "HudUiTextInput, HudUiPolyline, and HudUiSliderBorder constructor cluster. Explicit per-TU placements follow the existing zui_4b3ce0_4bffe0_authored_order projection; the function census and production source are unchanged. Each TU uses its canonical configured compiler profile.",
+  "source_filename": "zui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui.cpp",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -58,6 +57,29 @@
       "address": "0x4b4620",
       "symbol": "??0HudUiSliderBorder@@QAE@XZ",
       "name": "HudUiSliderBorder::HudUiSliderBorder"
+    }
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4b42f0",
+        "0x4b43d0",
+        "0x4b4410",
+        "0x4b4420",
+        "0x4b4620"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4bf840",
+        "0x4bf8b0"
+      ]
     }
   ]
 }

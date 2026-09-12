@@ -1,9 +1,9 @@
 {
   "name": "zvideo_dd_enum_direct3d_device_callback",
   "description": "VC verification target for zVideo_dd::EnumDirect3DDeviceCallback.",
-  "source_filename": "zVideo.cpp",
+  "source_filename": "zvid_dd.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "source_from": "src/GameZRecoil/zVideo/zvid_dd.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -14,7 +14,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zVideo/zvid_dd.c"
   ],
   "functions": [
     {

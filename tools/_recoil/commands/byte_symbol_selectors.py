@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping
 
 PREFIX = "@vc5-symbol-regex:"
 
@@ -52,6 +53,60 @@ def registered_target_selector(bindings, object_symbols):
     if source_paths != {source} or any(not re.fullmatch(pattern, name) for name in object_symbols):
         return None
     return dict(symbol_regex=pattern, source_from=source)
+
+
+def reviewed_named_static_stem(bindings, object_symbols, reviewed_symbols):
+    """Reconcile one reviewed C-style static name with its exact VC5 suffix family.
+
+    The stem selects the existing complete storage-and-reader proof. This does
+    not resolve a candidate name or waive any data or linked comparison.
+    """
+    if not bindings or len(reviewed_symbols) != 1:
+        return None
+    stem = next(iter(reviewed_symbols))
+    if not re.fullmatch(r"_[A-Za-z_][A-Za-z_0-9]*", stem):
+        return None
+    pattern = re.escape(stem) + r"\$S[0-9]+"
+    if any(name != stem and not re.fullmatch(pattern, name) for name in object_symbols):
+        return None
+    sources = set()
+    for binding in bindings:
+        source = str(getattr(binding, "source_from", "") or
+                     getattr(binding.target, "source_from", "")).replace("\\", "/")
+        function = binding.function
+        name = str(getattr(function, "symbol", "") or "")
+        selector = getattr(function, "symbol_regex", None)
+        if (not source or getattr(function, "object_offset", 0) != 0
+                or selector not in (None, pattern)
+                or (name and name != stem and not re.fullmatch(pattern, name))
+                or (not name and selector is None)):
+            return None
+        sources.add(source)
+    return stem if len(sources) == 1 else None
+
+
+def reviewed_named_static_owner(row, symbol_id, binding):
+    """Recognize the primary-data witness in an already revalidated binding.
+
+    Data ownership is a relationship; older rows need not duplicate it in an
+    ownership_state field. The caller still owns full binding staleness checks.
+    """
+    if (not isinstance(binding, Mapping) or binding.get("reviewed") is not True
+            or row.get("kind") != "data" or row.get("output_section_id") != "recoil:section:.rdata"
+            or row.get("ownership_state") not in (None, "primary-owned")):
+        return False
+    context = binding.get("binding_context")
+    if not isinstance(context, Mapping):
+        return False
+    owner, target, relationship = (context.get(k) for k in ("owner", "target", "relationship"))
+    return (all(isinstance(item, Mapping) for item in (owner, target, relationship))
+            and isinstance(owner.get("owner_id"), str) and bool(owner["owner_id"])
+            and target.get("symbol_id") == relationship.get("symbol_id") == symbol_id
+            and target.get("object_symbol") == binding.get("object_symbol")
+            and all(target.get(k) == row.get(k) for k in
+                    ("kind", "address", "end_exclusive", "output_section_id", "ownership_state"))
+            and relationship.get("kind") == "primary-data"
+            and relationship.get("address") == row.get("address"))
 
 
 def resolve_target_definition(obj, selector):

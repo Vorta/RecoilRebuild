@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from _recoil.call_contract import targets as _cc_targets
+
 from typing import TYPE_CHECKING
 
 from _recoil.call_contract import callable_identity as _cc_callable_identity
@@ -2108,8 +2110,9 @@ def _prove_zsnd_wave_data_generated_destructor_ordinary_body_bridge(
         or focused_target.get("kind") != "vc5"
         or focused_target.get("name")
         != _cc_catalog.ZSND_WAVE_DATA_DESTRUCTOR_FOCUSED_TARGET_NAME
-        or focused_target.get("symbol_ids") != [symbol_id]
-        or focused_target.get("unresolved_addresses") != []
+        or _cc_targets._registered_target_artifact_ids(
+            focused_target, document.collection("symbols")
+        ) != [symbol_id]
         or not isinstance(focused_registration, Mapping)
         or focused_registration.get("binary") != "recoil"
         or focused_registration.get("name")

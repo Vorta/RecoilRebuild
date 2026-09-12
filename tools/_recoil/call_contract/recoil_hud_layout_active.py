@@ -482,9 +482,10 @@ def _hud_layout_hw_set_active_objective_counter_candidate_bridges(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST
@@ -1103,9 +1104,10 @@ def _hud_layout_hw_set_active_timer_panel_candidate_bridges(
         or timer_target.get("kind") != "vc5"
         or timer_target.get("name")
         != "hud_ui_timer_panel_global_accessors_data"
-        or timer_target.get("symbol_ids")
-        != [_cc_catalog.HUD_UI_MGR_TIMER_PANEL_SYMBOL_ID]
-        or timer_target.get("unresolved_addresses") != []
+        or _cc_targets._registered_target_artifact_ids(
+            timer_target, document.collection("symbols")
+        )
+        != [_cc_catalog.HUD_UI_MGR_TIMER_PANEL_SYMBOL_ID, "recoil:data:0x4ed4e0"]
         or not isinstance(timer_registration, Mapping)
         or timer_registration.get("manifest_path")
         != (
@@ -1113,9 +1115,9 @@ def _hud_layout_hw_set_active_timer_panel_candidate_bridges(
             "hud_ui_timer_panel_global_accessors_data.json"
         )
         or timer_registration.get("source_from")
-        != "src/GameZRecoil/zUI/zui.cpp"
+        != "src/GameZRecoil/zUI/zui_widgets.cpp"
         or timer_registration.get("data_addresses")
-        != [_cc_catalog.HUD_UI_MGR_TIMER_PANEL_ADDRESS]
+        != [_cc_catalog.HUD_UI_MGR_TIMER_PANEL_ADDRESS, "0x4ed4e0"]
         or indexes.storage_by_address.get(_cc_catalog.HUD_UI_MGR_TIMER_PANEL_ADDRESS)
         != _cc_catalog.HUD_UI_MGR_TIMER_PANEL_STORAGE_IDENTITY
         or _cc_catalog.HUD_UI_MGR_TIMER_PANEL_STORAGE_IDENTITY in indexes.provider_ids

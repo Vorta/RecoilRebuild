@@ -343,7 +343,9 @@ def _hud_layout_hw_update_objective_dirty_rect_register_storage_bridges(
         or not isinstance(aggregate_target, Mapping)
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("data_addresses")
@@ -1858,9 +1860,10 @@ def _hud_ui_mgr_viewport_layout_candidate_vptr_bridges(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST
@@ -2990,9 +2993,10 @@ def _hud_ui_mgr_trigger_current_layout_on_activated_bridges(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST
@@ -3489,9 +3493,10 @@ def _hud_ui_mgr_switch_active_dialog_current_layout_bridges(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST
@@ -3966,7 +3971,7 @@ def _hud_layout_apply_text_label_authority(
         or vc5_target.get("binary") != "recoil"
         or vc5_target.get("kind") != "vc5"
         or vc5_target.get("name") != _cc_catalog.HUD_UI_MGR_INIT_LAYOUTS_TARGET_NAME
-        or vc5_target.get("unresolved_addresses") not in (None, [])
+        or _cc_targets._registered_target_artifact_ids(vc5_target, document.collection("symbols")) is None
         or tuple(vc5_target.get("registered_addresses", ())).count(
             _cc_catalog.HUD_LAYOUT_APPLY_TEXT_LABEL_CALLER_START
         )

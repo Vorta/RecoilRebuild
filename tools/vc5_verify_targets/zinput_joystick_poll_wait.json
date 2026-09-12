@@ -1,6 +1,6 @@
 {
   "name": "zinput_joystick_poll_wait",
-  "description": "zInput joystick poll, callback dispatch, and wait-for-button helpers.",
+  "description": "zInput joystick poll, callback dispatch, and wait-for-button helpers. Explicit function placements and current spellings follow the complete authored-order targets. Existing data registrations and any unresolved provider entries retain their prior scope; each TU uses its canonical compiler profile. Data fields retain their retail addresses and extents as slices of the typed zInput global-state object; function placements remain in their registered translation units.",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "source_filename": "zInput.cpp",
   "source_from": "src/GameZRecoil/zInput/zInput.cpp",
@@ -47,38 +47,43 @@
   "data_symbols": [
     {
       "address": "0x565bcc",
-      "symbol": "_g_zInput_JoystickInitialized",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_JoystickInitialized",
       "bn_name": "g_zInput_JoystickInitialized",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16156
     },
     {
       "address": "0x565bd0",
-      "symbol": "_g_zInput_JoystickDevice",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_JoystickDevice",
       "bn_name": "g_zInput_JoystickDevice",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16160
     },
     {
       "address": "0x565bd4",
-      "symbol": "_g_zInput_JoystickCurrentState",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_JoystickCurrentState",
       "bn_name": "g_zInput_JoystickCurrentState",
-      "byte_length": 272
+      "byte_length": 272,
+      "object_offset": 16164
     },
     {
       "address": "0x565ce4",
-      "symbol": "_g_zInput_JoystickPreviousState",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_JoystickPreviousState",
       "bn_name": "g_zInput_JoystickPreviousState",
-      "byte_length": 272
+      "byte_length": 272,
+      "object_offset": 16436
     },
     {
       "address": "0x565e14",
-      "symbol": "_g_zInput_JoystickAxisCount",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_JoystickAxisCount",
       "bn_name": "g_zInput_JoystickAxisCount",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16740
     },
     {
       "address": "0x566310",
@@ -89,10 +94,46 @@
     },
     {
       "address": "0x565ea0",
-      "symbol": "_g_zInput_BindMap_Current",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_BindMap_Current",
       "bn_name": "g_zInput_BindMap_Current",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16880
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x470db0",
+          "symbol": "?DispatchJoystickButtonCallbacks@zInput_BindMapContext@@QAEXXZ",
+          "name": "zInput_BindMapContext::DispatchJoystickButtonCallbacks"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x4722c0",
+          "symbol": "?DIPollJoystickState@zInput@@YIPAUDIJOYSTATE2@@E@Z",
+          "name": "zInput::DIPollJoystickState"
+        },
+        {
+          "address": "0x472390",
+          "symbol": "?DIGetCurrentState@zInput@@YAPAUDIJOYSTATE2@@XZ",
+          "name": "zInput::DIGetCurrentState"
+        },
+        {
+          "address": "0x4723d0",
+          "symbol": "?DIWaitForButtonPress@zInput@@YIHH@Z",
+          "name": "zInput::DIWaitForButtonPress"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

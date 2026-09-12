@@ -511,10 +511,24 @@ def plan_data_artifact_registration(
                 continue
             scope_ids = evidence_row.get("scope_ids")
             summary = evidence_row.get("summary")
+            if isinstance(scope_ids, list) and artifact_id in scope_ids:
+                already_named.append(str(evidence_id))
+                continue
+            provenance = evidence_row.get("provenance")
+            observation = provenance.get("observation") if isinstance(provenance, Mapping) else None
+            observed_id = observation.get("artifact_id") if isinstance(observation, Mapping) else None
             if (
-                isinstance(scope_ids, list)
-                and artifact_id in scope_ids
-            ) or (
+                evidence_row.get("kind") == REVIEWED_EVIDENCE_KIND
+                and isinstance(observed_id, str)
+                and SOURCE_ARTIFACT_ID_RE.fullmatch(observed_id)
+                and ":data:" in observed_id
+                and scope_ids == [observed_id]
+                and observation.get("address") == observed_id.split(":", 2)[2]
+            ):
+                # Its exact typed observation names another artifact. A summary
+                # may mention this address solely as that artifact's exclusive end.
+                continue
+            if (
                 isinstance(summary, str)
                 and address_token in summary.lower()
             ):

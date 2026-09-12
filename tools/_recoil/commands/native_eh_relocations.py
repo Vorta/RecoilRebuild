@@ -292,6 +292,36 @@ def prove_linked_packet(obj, body, target, candidate_target, parsed_map, image):
     require(all(left[1] <= right[0] for left, right in zip(intervals, intervals[1:])), "linked EH packet sections overlap")
 
 
+def stage_eh_binding(row, binding, expected_binding=None):
+    """Refresh source registrations without replacing reviewed EH facts."""
+    if expected_binding is None:
+        require(FIELD not in row, "native EH binding already exists; do not overwrite reviewed facts")
+        row[FIELD] = deepcopy(binding)
+        return "added"
+    require(isinstance(expected_binding, dict)
+            and set(expected_binding) == {"schema", "reviewed", "reason", "context"}
+            and expected_binding.get("schema") == SCHEMA
+            and expected_binding.get("reviewed") is True
+            and isinstance(expected_binding.get("reason"), str) and expected_binding["reason"].strip(),
+            "native EH refresh requires an exact reviewed old binding")
+    require(FIELD in row and row[FIELD] == expected_binding,
+            "native EH refresh old binding is missing or stale")
+    old_context, new_context = deepcopy(expected_binding["context"]), deepcopy(binding["context"])
+    require(isinstance(old_context, dict) and isinstance(new_context, dict)
+            and isinstance(old_context.get("source"), dict) and isinstance(new_context.get("source"), dict),
+            "native EH refresh source context is malformed")
+    old_source, new_source = old_context.pop("source"), new_context.pop("source")
+    require(old_context == new_context, "native EH refresh cannot change retail, runtime or provider facts")
+    old_ids, new_ids = old_source.pop("registration_ids", None), new_source.pop("registration_ids", None)
+    require(old_source == new_source, "native EH refresh cannot change source identity or extent")
+    for ids in (old_ids, new_ids):
+        require(isinstance(ids, list) and ids and all(isinstance(item, str) and item for item in ids)
+                and len(ids) == len(set(ids)), "native EH refresh registration set is invalid")
+    require(old_ids != new_ids, "native EH refresh requires changed source registrations")
+    row[FIELD] = deepcopy(binding)
+    return "refreshed-source-registration"
+
+
 def main(argv=None):
     configure_stdio()
     parser = argparse.ArgumentParser(description=__doc__)
@@ -305,9 +335,12 @@ def main(argv=None):
     try:
         from _recoil.commands.live_byte_verify import _bindings, DEFAULT_MANIFEST_DIR, DEFAULT_REFERENCE
         payload = json.loads(args.payload_file.read_text(encoding="utf-8-sig"))
-        require(set(payload) == {"reviewed", "source_symbol_id", "object_symbol", "provider_owner_id", "evidence_ids", "reason"}
+        fields = {"reviewed", "source_symbol_id", "object_symbol", "provider_owner_id", "evidence_ids", "reason"}
+        require(isinstance(payload, dict) and fields <= set(payload) and set(payload) <= fields | {"expected_binding"}
                 and payload["reviewed"] is True and isinstance(payload["reason"], str) and payload["reason"].strip(),
                 "native EH binding requires the exact reviewed source/provider payload")
+        require("expected_binding" not in payload or isinstance(payload["expected_binding"], dict),
+                "native EH refresh expected_binding must be an exact object")
         store = ProgressStore(DEFAULT_PROGRESS_PATH)
         document = store.load()
         require(document.revision == args.expected_revision, "tracker revision changed")
@@ -316,10 +349,10 @@ def main(argv=None):
                                   payload["provider_owner_id"], payload["evidence_ids"], DEFAULT_REFERENCE)
         proposed = deepcopy(document.data)
         row = proposed["symbols"][payload["source_symbol_id"]]
-        require(FIELD not in row, "native EH binding already exists; do not overwrite reviewed facts")
-        row[FIELD] = dict(schema=SCHEMA, reviewed=True, reason=payload["reason"], context=context)
+        binding = dict(schema=SCHEMA, reviewed=True, reason=payload["reason"], context=context)
+        action = stage_eh_binding(row, binding, payload.get("expected_binding"))
         commit = store.commit(proposed, expected_revision=args.expected_revision, apply=args.apply)
-        print(json.dumps(dict(kind="native-eh-relocation-binding", binding=row[FIELD],
+        print(json.dumps(dict(kind="native-eh-relocation-binding", action=action, binding=row[FIELD],
                               accepted_provider_bytes=False, commit=commit.to_dict()), indent=2))
         return 0
     except (OSError, ValueError, KeyError, TypeError, ProgressError) as exc:

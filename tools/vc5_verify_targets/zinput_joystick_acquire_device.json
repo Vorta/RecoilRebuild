@@ -1,7 +1,7 @@
 {
   "name": "zinput_joystick_acquire_device",
-  "description": "zInput::DIAcquireJoystickDevice acquires the joystick device when present.",
-  "source_filename": "zin_joystick.cpp",
+  "description": "zInput::DIAcquireJoystickDevice acquires the joystick device when present. Data fields retain their retail addresses and extents as slices of the typed zInput global-state object; function placements remain in their registered translation units.",
+  "source_filename": "zInput.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
     "src",
@@ -31,11 +31,26 @@
   "data_symbols": [
     {
       "address": "0x565bd0",
-      "symbol": "_g_zInput_JoystickDevice",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_JoystickDevice",
       "bn_name": "g_zInput_JoystickDevice",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 16160
     }
   ],
-  "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp"
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_joystick.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x471fb0",
+          "symbol": "?DIAcquireJoystickDevice@zInput@@YAHXZ",
+          "name": "zInput::DIAcquireJoystickDevice"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

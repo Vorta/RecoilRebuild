@@ -441,6 +441,7 @@ def test_iat_transfer_population_keeps_copies_and_unanimous_imports_but_not_conf
 
 
 def test_iat_copy_reaches_extraction_without_changing_its_definition_identity():
+    _check_absolute_iat_mov_encoding_and_relocation_proof()
     from dataclasses import replace
     from _recoil.call_contract.extraction import extract_invocation_contract
     from _recoil.call_contract.listing import parse_assembly
@@ -461,6 +462,70 @@ def test_iat_copy_reaches_extraction_without_changing_its_definition_identity():
     assert default == replace(proof, transfer_registers=("esi",))
     with pytest.raises(ValueError, match="populations disagree"):
         replace(proof, transfer_offsets=("0xa", "0xc"))
+
+
+def _check_absolute_iat_mov_encoding_and_relocation_proof():
+    from dataclasses import replace
+    from types import SimpleNamespace as Row
+    from _recoil.call_contract.extraction import extract_invocation_contract
+    from _recoil.call_contract.iat import _candidate_exact_iat_register_load_proofs
+    from _recoil.call_contract.listing import parse_assembly
+    from _recoil.call_contract.receiver_instructions import _absolute_dword_mov_load
+    from _recoil.call_contract.receiver_storage import _exact_iat_register_load_provenance
+    from _recoil.call_contract.records import CandidateAssembly, CandidateCallerDefinition, IdentityIndexes
+
+    name, identity, slot = "__imp__task", "iat:task", "0x402000"
+    indexes = IdentityIndexes(by_address={}, by_candidate_name={}, provider_ids=frozenset(),
+        storage_by_address={slot: identity}, storage_by_name={"task": identity, name: identity})
+    imports = (Row(address=slot, dll="runtime.dll", import_name="task", import_ordinal=None),)
+    for prefix, address_offset in ((b"\xa1", 1), (b"\x8b\x05", 2)):
+        load = prefix + b"\0" * 4
+        assert _absolute_dword_mov_load(load) == ("eax", address_offset)
+        # Copy the loaded pointer and kill EAX before invoking the copy.
+        body = load + bytes.fromhex("8b f8 33 c0 ff d7 c3")
+        size = len(load)
+        text = (f"00000 {load.hex(' ')} mov eax, dword ptr {name}\n"
+            f"{size:05x} 8b f8 mov edi, eax\n{size+2:05x} 33 c0 xor eax, eax\n"
+            f"{size+4:05x} ff d7 call edi\n{size+6:05x} c3 ret")
+        rows = tuple(parse_assembly(text, source="cod"))
+        relocation = Row(offset=address_offset, type=6, symbol_name=name)
+        definition = CandidateCallerDefinition(symbol="caller", data=body,
+            relocations=(relocation,), relocation_mask=tuple(address_offset <= i < address_offset+4 for i in range(len(body))),
+            undefined_external_functions=(), undefined_external_data=(name,))
+        candidate = CandidateAssembly(instructions=rows, local_control_flow_indices=frozenset(), caller_definition=definition)
+        def prove(value=candidate, supplied_indexes=indexes):
+            return _candidate_exact_iat_register_load_proofs(value, indexes=supplied_indexes, retail_import_targets=imports)
+        proofs = prove()
+        assert proofs["0x0"].destination == "eax"
+        assert proofs["0x0"].transfer_registers == ("edi",)
+        result = extract_invocation_contract(rows, source="cod", caller_identity="symbol:caller", caller_start="0x400000",
+            caller_end_exclusive=hex(0x400000+len(body)), indexes=indexes, candidate_exact_iat_register_load_proofs=proofs)
+        assert len(result) == 1 and result[0]["target_identity"] == identity
+        for changes in (
+            dict(relocations=()), dict(relocations=(Row(offset=address_offset+1, type=6, symbol_name=name),)),
+            dict(relocations=(Row(offset=address_offset, type=0x14, symbol_name=name),)),
+            dict(relocations=(Row(offset=address_offset, type=6, symbol_name="__imp__other"),)),
+            dict(relocations=(relocation, relocation)), dict(relocation_mask=(False,)*len(body)),
+            dict(data=body[:address_offset]+b"\x01"+body[address_offset+1:]),
+            dict(defined_external_data=(name,)),
+        ):
+            with pytest.raises(ValueError):
+                prove(replace(candidate, caller_definition=replace(definition, **changes)))
+        with pytest.raises(ValueError):
+            prove(supplied_indexes=replace(indexes, storage_by_address={}))
+
+        retail_load = prefix + bytes.fromhex("00 20 40 00")
+        instruction = parse_assembly(f"00400000 {retail_load.hex(' ')} mov eax, dword [{slot}]", source="bn")[0]
+        kwargs = dict(assembly_source="bn", destination="eax", exact_memory=slot, rendered_address=slot,
+            identity=identity, indexes=indexes, instruction_address="0x400000", reviewed_identity=False)
+        assert _exact_iat_register_load_provenance(instruction, **kwargs) == "exact-iat-load(eax,0x400000,iat:task)"
+        for changes in (dict(destination="ecx"), dict(rendered_address="0x403000"), dict(instruction_address="")):
+            with pytest.raises(ValueError):
+                _exact_iat_register_load_provenance(instruction, **(kwargs | changes))
+    for raw in ("", "a1", "a1 00 00 00", "a1 00 00 00 00 90", "66 a1 00 00 00 00",
+                "64 a1 00 00 00 00", "a3 00 00 00 00", "a0 00 00 00 00", "8b 45 00 00 00 00",
+                "8b 04 25 00 00 00 00", "89 05 00 00 00 00"):
+        assert _absolute_dword_mov_load(bytes.fromhex(raw)) is None
 
 
 def test_complete_classifier_cfg_accepts_a_backward_case_without_bypassing_the_guard():
@@ -3515,6 +3580,10 @@ def test_exact_body_virtual_lineage_checks_candidate_listing_and_slot(monkeypatc
 def test_storage_and_target_identities_require_exact_typed_populations():
     _check_compiler_scalar_identity_does_not_freeze_object_coordinates()
     _check_registered_target_population_requires_exact_typed_physical_functions()
+    _check_registered_artifact_population_uses_current_address_census()
+    _check_verification_memberships_do_not_change_pooled_storage_identity()
+    _check_registered_data_names_converge_with_reviewed_bindings()
+    _check_definition_sources_and_external_callback_identity()
     from copy import deepcopy
     from types import SimpleNamespace as Row
     from _recoil.call_contract.storage_identity import _index_reviewed_pooled_data_names
@@ -3554,10 +3623,10 @@ def test_storage_and_target_identities_require_exact_typed_populations():
         value["pooling"]["physical_artifact_id"] = "other"
     assert index({key: physical, "other": competing}, addresses={
         "0x2000": f"storage:{key}", "0x3000": "storage:other"}) == ""
-    from _recoil.call_contract.storage_identity import _pooled_data_manifest_supplier
+    from _recoil.call_contract.storage_identity import _reviewed_data_manifest_supplier
     document = Row(collection=lambda _: {key: physical})
     def supplier(address="0x2000", size=1, identity=f"storage:{key}"):
-        return _pooled_data_manifest_supplier(document, target_id="target:unit",
+        return _reviewed_data_manifest_supplier(document, target_id="target:unit",
             row=Row(symbol=name, address=address, byte_length=size), identity=identity)
     assert supplier().storage_identity == f"storage:{key}"
     assert supplier("0x3000") is None
@@ -3565,6 +3634,113 @@ def test_storage_and_target_identities_require_exact_typed_populations():
     assert supplier(size=True) is None
     assert supplier(identity="") is None
     assert supplier(identity="storage:missing") is None
+
+
+def _check_definition_sources_and_external_callback_identity():
+    from dataclasses import replace
+    from types import SimpleNamespace as Row
+    from _recoil.call_contract.callbacks import _r4564_prove_candidate_callback_function_reference
+    from _recoil.call_contract.targets import _target_function_definition_source_matches
+    from _recoil.call_contract.records import CandidateAssembly, CandidateCallerDefinition, CandidateCoffSymbolDefinition, IdentityIndexes
+
+    address, name, path = "0x402000", "?Callback@@YAXXZ", "src/spans.cpp"
+    identity = "symbol:recoil:function:" + address
+    row = dict(address=address, symbol=name)
+    entries = [dict(source_from="src/draw.cpp", functions=[]), dict(source_from=path, functions=[row])]
+    def source_proof(manifest_entries=entries, registered_entries=entries, defining_path=path):
+        target = Row(source_from="src/draw.cpp", check_translation_unit_function_order=True,
+            translation_unit_function_order=tuple(Row(source_from=e['source_from'], functions=tuple(Row(**r) for r in e['functions'])) for e in manifest_entries))
+        registration = dict(source_from="src/draw.cpp", translation_unit_function_order=registered_entries)
+        return _target_function_definition_source_matches(target, registration,
+            address=address, symbol=name, source_path=defining_path)
+    assert source_proof()
+    assert not source_proof(defining_path="src/draw.cpp")
+    assert not source_proof(manifest_entries=entries+entries)
+    assert not source_proof(registered_entries=entries+entries)
+    assert not source_proof(registered_entries=list(reversed(entries)))
+    assert not source_proof(registered_entries=[entries[0], dict(source_from=path, functions=[row,row])])
+    assert not source_proof(registered_entries=[entries[0], dict(source_from=path, functions=[row | dict(symbol="other")])])
+    assert source_proof(manifest_entries=[], registered_entries=[], defining_path="src/draw.cpp")
+    assert not source_proof(manifest_entries=[], registered_entries=entries, defining_path="src/draw.cpp")
+
+    symbol = CandidateCoffSymbolDefinition(index=2, name=name, value=0, section_number=0,
+        symbol_type=0x20, storage_class=2, aux_count=0, weak_external_tag_index=None,
+        weak_external_characteristics=None, section_name="", section_size=0,
+        section_characteristics=0, natural_end=0)
+    relocation = Row(offset=3, type=6, symbol_name=name, symbol_index=2)
+    body = bytes.fromhex("c7 45 fc 00 00 00 00 c3")
+    definition = CandidateCallerDefinition(symbol="caller", data=body,
+        relocations=(relocation,), relocation_mask=(False,False,False,True,True,True,True,False),
+        undefined_external_functions=(name,), coff_symbols=(symbol,))
+    candidate = CandidateAssembly(instructions=(), local_control_flow_indices=frozenset(), caller_definition=definition)
+    indexes = IdentityIndexes(by_address={address:identity}, by_candidate_name={name:identity},
+        provider_ids=frozenset(), storage_by_address={}, storage_by_name={})
+    def callback_proof(value=candidate, supplied_indexes=indexes, target_identity=identity):
+        return _r4564_prove_candidate_callback_function_reference(value, (0,), instruction_index=0,
+            operand_name=name, immediate_delta=3, indexes=supplied_indexes, authored_identity=target_identity)
+    assert callback_proof() == 3
+    defined = replace(symbol, section_number=1, section_name=".text", section_size=16, natural_end=16)
+    assert callback_proof(replace(candidate, caller_definition=replace(definition,
+        undefined_external_functions=(), defined_external_functions=(name,), coff_symbols=(defined,)))) == 3
+    for changes in (dict(section_number=-1), dict(value=1), dict(symbol_type=0), dict(storage_class=105),
+                    dict(aux_count=1), dict(section_size=1), dict(natural_end=1), dict(weak_external_tag_index=4)):
+        with pytest.raises(ValueError):
+            callback_proof(replace(candidate, caller_definition=replace(definition, coff_symbols=(replace(symbol, **changes),))))
+    for changes in (dict(undefined_external_functions=()), dict(undefined_external_functions=(name,name)),
+                    dict(undefined_external_data=(name,)), dict(defined_external_functions=(name,)),
+                    dict(relocations=()), dict(relocations=(Row(offset=3,type=0x14,symbol_name=name,symbol_index=2),)),
+                    dict(relocations=(Row(offset=3,type=6,symbol_name=name,symbol_index=3),)),
+                    dict(data=body[:3]+b"\x01"+body[4:]), dict(relocation_mask=(False,)*len(body))):
+        with pytest.raises(ValueError):
+            callback_proof(replace(candidate, caller_definition=replace(definition, **changes)))
+    for changes in (dict(by_candidate_name={}), dict(by_candidate_name={name:"symbol:other"}),
+                    dict(by_address={}), dict(provider_ids=frozenset({identity})), dict(storage_by_name={name:""})):
+        with pytest.raises(ValueError):
+            callback_proof(supplied_indexes=replace(indexes, **changes))
+
+
+def _check_registered_data_names_converge_with_reviewed_bindings():
+    from pathlib import Path
+    from tempfile import TemporaryDirectory
+    from types import SimpleNamespace as Row
+    from _recoil.call_contract import storage_identity
+    from _recoil.lib import verification_targets
+
+    name, key, target_id = "??_C@_00A@?$AA@", "recoil:data:0x2000", "recoil:vc5-target:unit"
+    identity = f"storage:{key}"
+    physical = dict(binary="recoil", kind="data", address="0x2000", end_exclusive="0x2001", size=1, extent_state="known")
+    manifest_path = "tools/vc5_verify_targets/unit.json"
+    target = dict(binary="recoil", kind="vc5", name="unit", registered_addresses=["0x2000"],
+        registration=dict(manifest_path=manifest_path, data_addresses=["0x2000"]))
+    manifest_row = Row(symbol=name, address="0x2000", byte_length=1, symbol_regex=None)
+    with TemporaryDirectory() as temporary, pytest.MonkeyPatch.context() as patch:
+        root = Path(temporary)
+        path = root / manifest_path
+        path.parent.mkdir(parents=True)
+        path.write_text("{}")
+        patch.setattr(storage_identity, "REPO_ROOT", root)
+        patch.setattr(verification_targets, "vc5_target_registration", lambda _: (target_id, target))
+        def prove(rows=(manifest_row,), prior=None, reviewed=None, symbol=physical):
+            patch.setattr(storage_identity, "load_manifest", lambda *args, **kwargs: Row(data_symbols=rows))
+            collections = {"verification_targets": {target_id: target}, "symbols": {key: symbol}}
+            document = Row(collection=lambda collection: collections.get(collection, {}))
+            result = dict(prior or {})
+            storage_identity._index_registered_decorated_data_names(document, storage_by_name=result,
+                reviewed_storage_by_name={name: identity} if reviewed is None else reviewed)
+            return result.get(name)
+        assert prove() == identity
+        assert prove(prior={name: identity}) == identity
+        assert prove(prior={name: ""}) == ""
+        assert prove(prior={name: "storage:other"}) == ""
+        assert prove(reviewed={}) == ""
+        assert prove(reviewed={name: ""}) == ""
+        assert prove(reviewed={name: "storage:missing"}) == ""
+        assert prove(rows=(manifest_row, manifest_row)) == ""
+        assert prove(rows=(Row(symbol=name, address="0x3000", byte_length=1, symbol_regex=None),)) == ""
+        for size in (0, 2, True):
+            assert prove(rows=(Row(symbol=name, address="0x2000", byte_length=size, symbol_regex=None),)) == ""
+        for changes in (dict(size=True), dict(size=0), dict(end_exclusive="0x2002"), dict(extent_state="unknown"), dict(kind="provider-data")):
+            assert prove(symbol=physical | changes) == ""
 
 
 def test_wrapped_disp32_mov_retains_only_exact_listing_coordinates():
@@ -3630,18 +3806,17 @@ def test_raw_call_count_guard_precedes_helper_projections_and_checks_retail_cens
     assert len(funclets.instructions) == 5
 
 
-@pytest.mark.parametrize("mnemonic", ["bts", "btr", "btc"])
-def test_bit_modify_instructions_kill_register_provenance(mnemonic) -> None:
+def test_bit_modify_instructions_kill_register_provenance() -> None:
     from _recoil.call_contract.cfg import _instruction_may_clobber_register
     from _recoil.commands.asm_verify import Instruction
 
-    text = f"{mnemonic} ebx, 1"
-    encoding = {"bts": "0f ba eb 01", "btr": "0f ba f3 01", "btc": "0f ba fb 01"}[mnemonic]
-    instruction = Instruction(text=text, raw_text=text, bytes=tuple(encoding.split()), source_line=text)
-    assert _instruction_may_clobber_register(instruction, "ebx")
-    assert not _instruction_may_clobber_register(instruction, "esi")
-    assert _instruction_may_clobber_register(
-        Instruction(text=text, raw_text=text, bytes=(), source_line=text), "esi")
+    for mnemonic, encoding in {"bts": "0f ba eb 01", "btr": "0f ba f3 01", "btc": "0f ba fb 01"}.items():
+        text = f"{mnemonic} ebx, 1"
+        instruction = Instruction(text=text, raw_text=text, bytes=tuple(encoding.split()), source_line=text)
+        assert _instruction_may_clobber_register(instruction, "ebx")
+        assert not _instruction_may_clobber_register(instruction, "esi")
+        assert _instruction_may_clobber_register(
+            Instruction(text=text, raw_text=text, bytes=(), source_line=text), "esi")
 
 
 def test_dynamic_probe_coordinates_allow_only_uniform_translation() -> None:
@@ -4215,3 +4390,59 @@ def _check_registered_target_population_requires_exact_typed_physical_functions(
         altered = dict(symbols)
         altered[ids[1]] = dict(symbols[ids[1]], **change)
         assert not matches(target, ids, altered)
+
+
+def _check_registered_artifact_population_uses_current_address_census():
+    from _recoil.call_contract.targets import _registered_target_artifact_ids as resolve
+    ids = ["recoil:function:0x1000", "recoil:data:0x2000"]
+    symbols = {
+        ids[0]: {"binary": "recoil", "kind": "provider-function", "address": "0x1000"},
+        ids[1]: {"binary": "recoil", "kind": "data", "address": "0x2000"},
+    }
+    target = {"binary": "recoil", "registered_addresses": ["0x1000", "0x2000"]}
+    assert resolve(target, symbols) == ids
+    assert resolve(dict(target, registered_addresses=["0x2000", "0x1000"]), symbols) == ids[::-1]
+    assert resolve({"binary": "recoil", "symbol_ids": ids, "unresolved_addresses": []}, symbols) is None
+    for addresses in (None, [], ["0x1000", "0x1000"], ["0x1000", "0x3000"],
+                      ["0x1000", 0x2000], ["0x1000", "0X2000"], ["0x1000", "2000"]):
+        assert resolve(dict(target, registered_addresses=addresses), symbols) is None
+    for change in ({"binary": "messages"}, {"address": "0x2004"}, {"kind": "function"}):
+        altered = dict(symbols)
+        altered[ids[1]] = dict(symbols[ids[1]], **change)
+        assert resolve(target, altered) is None
+    ambiguous = dict(symbols)
+    ambiguous["recoil:function:0x2000"] = {"binary": "recoil", "kind": "function", "address": "0x2000"}
+    assert resolve(target, ambiguous) is None
+    assert resolve(dict(target, binary="messages"), symbols) is None
+    assert resolve(target, {ids[0]: symbols[ids[0]]}) is None
+
+
+def _check_verification_memberships_do_not_change_pooled_storage_identity():
+    from _recoil.call_contract.targets import _registered_artifact_target_memberships_match as matches
+    key = "recoil:data:0x2000"
+    symbol = dict(binary="recoil", kind="data", address="0x2000",
+                  disposition="provider", verification_target_ids=[])
+    target = dict(binary="recoil", kind="vc5", registered_addresses=["0x2000"])
+    assert matches(key, {key: symbol}, {})
+    symbol = dict(symbol, verification_target_ids=["first"])
+    assert matches(key, {key: symbol}, {"first": target})
+    # This is a membership proof for the selected literal. Another target's
+    # unresolved, unselected entry cannot establish or invalidate that identity.
+    assert matches(key, {key: symbol}, {"first": dict(target,
+                   registered_addresses=["0x3000", "0x2000"])})
+    assert matches(key, {key: dict(symbol, verification_target_ids=["first", "second"])},
+                   {"first": target, "second": dict(target)})
+    for references in (None, "first", ["first", "first"], ["missing"], [""], [None]):
+        assert not matches(key, {key: dict(symbol, verification_target_ids=references)},
+                           {"first": target})
+    for change in (dict(kind="provider"), dict(binary="messages"),
+                   dict(registered_addresses=[]), dict(registered_addresses=["0x2004"]),
+                   dict(registered_addresses=["0x2000", "0x2000"]),
+                   dict(registered_addresses=["0x2000", 0x3000]),
+                   dict(registered_addresses=["0x2000", "0X3000"])):
+        assert not matches(key, {key: symbol}, {"first": dict(target, **change)})
+    assert not matches(key, {key: symbol}, {})
+    assert not matches(key, {}, {"first": target})
+    ambiguous = {key: symbol, "recoil:function:0x2000":
+                 dict(binary="recoil", kind="function", address="0x2000")}
+    assert not matches(key, ambiguous, {"first": target})

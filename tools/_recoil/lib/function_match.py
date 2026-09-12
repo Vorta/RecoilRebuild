@@ -15,8 +15,15 @@ from _recoil.call_contract.instructions import (
 )
 
 MATCH_VERSION = 1
-MATCH_LEVELS = frozenset({"byte", "instruction"})
+MATCH_LEVELS = frozenset({"byte", "instruction", "commutative"})
 INSTRUCTION_DIMENSIONS = ("object_instruction", "linked_body_instruction", "linked_instruction")
+
+
+def weakest_match_level(levels):
+    values = list(levels)
+    if not values or any(value not in MATCH_LEVELS for value in values):
+        return None
+    return next(value for value in ("commutative", "instruction", "byte") if value in values)
 _ALL = (1 << 256) - 1
 _FLAGS = 256
 

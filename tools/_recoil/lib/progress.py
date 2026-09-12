@@ -95,7 +95,8 @@ EXACT_LINK_DIMENSIONS = ("linked_address", "linked_targets", "linked_byte")
 SYMBOL_BINARY_DIMENSIONS = tuple(
     dict.fromkeys(
         (*AUTHORED_BYTE_DIMENSIONS, CALL_CONTRACT_DIMENSION, *EXACT_LINK_DIMENSIONS,
-         "object_instruction", "linked_body_instruction", "linked_instruction")
+         "object_instruction", "linked_body_instruction", "linked_instruction",
+         "object_commutative", "linked_body_commutative", "linked_commutative")
     )
 )
 AUTHORED_ORDER_DIMENSIONS = (
@@ -1904,6 +1905,7 @@ def invalidate_order_dependencies(
         if isinstance(symbol.get("function_match"), dict):
             symbol["function_match"]["freshness"] = "changed"
         symbol.pop("instruction_match_review", None)
+        symbol.pop("commutative_match_review", None)
         changed_symbols.append(str(symbol_id))
     return {"block_ids": changed_blocks, "symbol_ids": changed_symbols}
 

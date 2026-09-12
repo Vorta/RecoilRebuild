@@ -1,8 +1,7 @@
 {
   "name": "hud_ui_background_cursor_widget_set_pos",
-  "description": "HudUiBackgroundCursorWidget SetPos delegate and capture refresh.",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
-  "source_filename": "zhud_ui.cpp",
+  "description": "HudUiBackgroundCursorWidget SetPos delegate and capture refresh. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "include_dirs": [
     "src",
@@ -20,8 +19,19 @@
   "functions": [
     {
       "address": "0x4bfb70",
-      "symbol": "?SetPos@HudUiBackgroundCursorWidget@@QAEXHH@Z",
+      "symbol": "?SetPos@HudUiBackgroundCursorWidget@@UAEXHH@Z",
       "name": "HudUiBackgroundCursorWidget::SetPos"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4bfb70"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

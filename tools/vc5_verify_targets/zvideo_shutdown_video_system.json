@@ -1,7 +1,7 @@
 {
   "name": "zvideo_shutdown_video_system",
   "description": "zVideo top-level shutdown guard and backend dispatch.",
-  "source_filename": "zVideo.cpp",
+  "source_filename": "zvid_init.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
     "src",
@@ -13,7 +13,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zVideo/zvid_init.c"
   ],
   "functions": [
     {
@@ -22,5 +22,5 @@
       "name": "zVideo::ShutdownVideoSystem"
     }
   ],
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+  "source_from": "src/GameZRecoil/zVideo/zvid_init.c"
 }

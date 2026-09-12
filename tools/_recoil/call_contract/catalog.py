@@ -1485,6 +1485,8 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             "src/GameZRecoil/zRender/zrndr_draw.c",
             "src/GameZRecoil/zVideo/zvid_main.c",
             "src/GameZRecoil/zMath/zmth_main.c",
+            "src/GameZRecoil/zRender/zrndr_fog.cpp",
+            "src/GameZRecoil/zRender/zrndr_span.cpp",
         ),
         "source_anchor": (
             "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"
@@ -1525,11 +1527,14 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             / "vc5_verify_targets"
             / "zrender_zrndr_draw_48d340_49f614_authored_order.json"
         ),
-        "source_path": "src/GameZRecoil/zRender/zrndr_draw.c",
+        "source_path": "src/GameZRecoil/zRender/zrndr_span.cpp",
+        "target_source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
         "order_edit_paths": (
             "src/GameZRecoil/zRender/zrndr_draw.c",
             "src/GameZRecoil/zVideo/zvid_main.c",
             "src/GameZRecoil/zMath/zmth_main.c",
+            "src/GameZRecoil/zRender/zrndr_fog.cpp",
+            "src/GameZRecoil/zRender/zrndr_span.cpp",
         ),
         "source_anchor": (
             "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"
@@ -1573,11 +1578,14 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             / "vc5_verify_targets"
             / "zrender_zrndr_draw_48d340_49f614_authored_order.json"
         ),
-        "source_path": "src/GameZRecoil/zRender/zrndr_draw.c",
+        "source_path": "src/GameZRecoil/zRender/zrndr_span.cpp",
+        "target_source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
         "order_edit_paths": (
             "src/GameZRecoil/zRender/zrndr_draw.c",
             "src/GameZRecoil/zVideo/zvid_main.c",
             "src/GameZRecoil/zMath/zmth_main.c",
+            "src/GameZRecoil/zRender/zrndr_fog.cpp",
+            "src/GameZRecoil/zRender/zrndr_span.cpp",
         ),
         "source_anchor": (
             "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"
@@ -1621,11 +1629,14 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             / "vc5_verify_targets"
             / "zrender_zrndr_draw_48d340_49f614_authored_order.json"
         ),
-        "source_path": "src/GameZRecoil/zRender/zrndr_draw.c",
+        "source_path": "src/GameZRecoil/zRender/zrndr_span.cpp",
+        "target_source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
         "order_edit_paths": (
             "src/GameZRecoil/zRender/zrndr_draw.c",
             "src/GameZRecoil/zVideo/zvid_main.c",
             "src/GameZRecoil/zMath/zmth_main.c",
+            "src/GameZRecoil/zRender/zrndr_fog.cpp",
+            "src/GameZRecoil/zRender/zrndr_span.cpp",
         ),
         "source_anchor": (
             "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"
@@ -1669,11 +1680,14 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             / "vc5_verify_targets"
             / "zrender_zrndr_draw_48d340_49f614_authored_order.json"
         ),
-        "source_path": "src/GameZRecoil/zRender/zrndr_draw.c",
+        "source_path": "src/GameZRecoil/zRender/zrndr_span.cpp",
+        "target_source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
         "order_edit_paths": (
             "src/GameZRecoil/zRender/zrndr_draw.c",
             "src/GameZRecoil/zVideo/zvid_main.c",
             "src/GameZRecoil/zMath/zmth_main.c",
+            "src/GameZRecoil/zRender/zrndr_fog.cpp",
+            "src/GameZRecoil/zRender/zrndr_span.cpp",
         ),
         "source_anchor": (
             "recoil:anchor:gamezrecoil-zrender-zrndr-draw-"

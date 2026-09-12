@@ -1,8 +1,7 @@
 {
   "name": "hud_ui_element_constructor",
-  "description": "HudUiElement base constructor.",
-  "source_filename": "zhud_ui.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "HudUiElement base constructor. Explicit per-TU placements follow the existing zui_4b3ce0_4bffe0_authored_order projection; the function census and production source are unchanged. Each TU uses its canonical configured compiler profile.",
+  "source_filename": "zui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "include_dirs": [
     "src",
@@ -78,6 +77,32 @@
       "authored_order_role": "non-authored",
       "provenance": "provider-boundary",
       "required_presence": true
+    }
+  ],
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
+  "check_translation_unit_function_order": true,
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4b4070",
+        "0x4b40c0",
+        "0x4b4120",
+        "0x4ba850",
+        "0x4ba9e0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4bc320",
+        "0x4bc3a0",
+        "0x4bc410",
+        "0x4bcbe0",
+        "0x4bcc80"
+      ]
     }
   ]
 }

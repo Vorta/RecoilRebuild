@@ -134,10 +134,11 @@ def _apply_extraction(data: dict[str, Any], payload: Mapping[str, Any],
     selected = set(payload["expected_artifacts"])
     old_source, new_source = payload["old_source"], payload["new_source"]
     # All source/order acceptance is re-proved. Historical accepted filename
-    # mappings are outside this implementation-only operation.
+    # mappings are outside this implementation-only operation. Evidence on an
+    # unresolved mapping is an observation to preserve, not mapping acceptance.
     for block in payload["expected_blocks"].values():
         mapping = block.get("mapping", {})
-        if mapping.get("state") != "unresolved" or mapping.get("evidence_ids"):
+        if mapping.get("state") != "unresolved":
             raise ProgressError("TU extraction cannot retract an accepted source-file mapping")
     artifacts = {a.artifact_id: (a, row) for a, row in _iter_tracker_artifacts_mutable(data)}
     physical_ids: set[str] = set()
@@ -185,16 +186,35 @@ def _apply_extraction(data: dict[str, Any], payload: Mapping[str, Any],
                             artifact_ids=sorted(selected_by_block[block_id]), reason=payload["reason"],
                             prior_original_source_path=block.get("original_source_path"),
                             prior_mapping=deepcopy(block["mapping"])))
-        block["original_source_path"] = None
-        block["mapping"]["status"] = "unresolved original TU paths; reviewed current implementation extraction"
+        if not block["mapping"].get("evidence_ids"):
+            block["original_source_path"] = None
+            block["mapping"]["status"] = "unresolved original TU paths; reviewed current implementation extraction"
     for span_id in payload["expected_semantic_spans"]:
         span = data["semantic_spans"][span_id]
         span.setdefault("implementation_extractions", []).append(dict(
             old_source=old_source, new_source=new_source,
             artifact_ids=sorted(selected_by_span[span_id]), reason=payload["reason"],
             prior_source_path=span.get("source_path"), prior_status=span.get("status")))
-        retained_symbols = set(span.get("symbol_ids", [])) - selected
-        span["source_path"] = (old_source + "; " + new_source) if retained_symbols else new_source
+        # Repeated extractions can leave one semantic span in several current
+        # inputs. Derive those paths from all members, not just this move's old
+        # and new input. Keep prior observations if any member is unresolved.
+        members = span.get("symbol_ids", [])
+        complete = bool(members)
+        current_paths = []
+        for member_id in members:
+            member = artifacts.get(member_id)
+            trace = member[1].get("source_traceability", {}) if member else {}
+            edges = trace.get("source_edges", [])
+            if (trace.get("state") != "resolved" or len(edges) != 1
+                    or edges[0].get("relation") != "defines"
+                    or not edges[0].get("emission_context", {}).get("translation_unit")):
+                complete = False
+                continue
+            current_paths.append(edges[0]["emission_context"]["translation_unit"])
+        prior_paths = [path.strip() for path in str(span.get("source_path") or old_source).split(";")
+                       if path.strip()]
+        retained_paths = [path for path in prior_paths if not complete or path in current_paths]
+        span["source_path"] = "; ".join(dict.fromkeys([*retained_paths, *current_paths, new_source]))
         span["status"] = "current implementation spans reviewed compilation units; historical paths unresolved"
     # Include every body in the changed compile/order groups, including shared
     # physical representatives whose other aliases remain in their current TUs.

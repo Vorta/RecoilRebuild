@@ -22,12 +22,12 @@
     },
     {
       "address": "0x4b3420",
-      "symbol": "?DetectCpuClassAndFeatures@zSys@@YAHXZ",
+      "symbol": "?DetectCpuClassAndFeatures@zSys@@YAGXZ",
       "name": "zSys::DetectCpuClassAndFeatures"
     },
     {
       "address": "0x4b3640",
-      "symbol": "?ReadCpuidVendorAndFamily@zSys@@YAHXZ",
+      "symbol": "?ReadCpuidVendorAndFamily@zSys@@YAGXZ",
       "name": "zSys::ReadCpuidVendorAndFamily"
     },
     {
@@ -57,14 +57,14 @@
     },
     {
       "address": "0x4b37f0",
-      "symbol": "?MeasureMhzViaBsfLoopQpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "symbol_regex": "\\?MeasureMhzViaBsfLoopQpc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?MeasureMhzViaBsfLoopQpc@CpuBenchmarkResolver@\\?%.*zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol": "?MeasureMhzViaBsfLoopQpc@CpuBenchmarkResolver@?%zsys_cpu.cpp487431177@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
       "name": "CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc"
     },
     {
       "address": "0x4b38e0",
-      "symbol": "?MeasureCpuMhzRdtscQpc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "symbol_regex": "\\?MeasureCpuMhzRdtscQpc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?MeasureCpuMhzRdtscQpc@CpuBenchmarkResolver@\\?%.*zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol": "?MeasureCpuMhzRdtscQpc@CpuBenchmarkResolver@?%zsys_cpu.cpp487431177@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
       "name": "CpuBenchmarkResolver::MeasureCpuMhzRdtscQpc"
     },
     {
@@ -79,8 +79,8 @@
     },
     {
       "address": "0x4b3b50",
-      "symbol": "?MeasureCpuMhzCmosRtc@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "symbol_regex": "\\?MeasureCpuMhzCmosRtc@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?MeasureCpuMhzCmosRtc@CpuBenchmarkResolver@\\?%.*zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol": "?MeasureCpuMhzCmosRtc@CpuBenchmarkResolver@?%zsys_cpu.cpp487431177@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
       "name": "CpuBenchmarkResolver::MeasureCpuMhzCmosRtc"
     },
     {
@@ -90,8 +90,8 @@
     },
     {
       "address": "0x4b36f0",
-      "symbol": "?ResolveCpuBenchmarkPacket@CpuBenchmarkResolver@?%zsys_cpu.cpp277069571@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
-      "symbol_regex": "\\?ResolveCpuBenchmarkPacket@CpuBenchmarkResolver@\\?%zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol_regex": "\\?ResolveCpuBenchmarkPacket@CpuBenchmarkResolver@\\?%.*zsys_cpu\\.cpp[0-9]+@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
+      "symbol": "?ResolveCpuBenchmarkPacket@CpuBenchmarkResolver@?%zsys_cpu.cpp487431177@@QAEPAUCpuBenchmarkResult@zSys@@PAU34@@Z",
       "name": "CpuBenchmarkResolver::ResolveCpuBenchmarkPacket"
     },
     {
@@ -103,17 +103,17 @@
   "data_symbols": [
     {
       "address": "0x4e467c",
-      "symbol_regex": "_g_zSys_CpuVendorExpectedIntel\\$S[0-9]+",
-      "name": "g_zSys_CpuVendorExpectedIntel",
+      "name": "Intel vendor comparison literal",
       "bn_name": "g_zSys_CpuVendorExpectedIntel",
-      "byte_length": 13
+      "byte_length": 13,
+      "symbol": "??_C@_0N@GALO@GenuineIntel?$AA@"
     },
     {
       "address": "0x4e468c",
-      "symbol_regex": "_g_zSys_CpuVendorScratchPadInit\\$S[0-9]+",
-      "name": "g_zSys_CpuVendorScratchPadInit",
+      "name": "CPUID vendor initialization literal",
       "bn_name": "g_zSys_CpuVendorScratchPadInit",
-      "byte_length": 13
+      "byte_length": 13,
+      "symbol": "??_C@_0N@NIED@?9?9?9?9?9?9?9?9?9?9?9?9?$AA@"
     },
     {
       "address": "0x56bd14",

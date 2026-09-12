@@ -2512,11 +2512,11 @@ int __cdecl Shutdown() {
         Reset();
         free(g_zModel_DiPoolBase);
         g_zModel_DiPoolBase = 0;
+        g_zModel_DiPoolCapacity = 0;
+        g_zModel_DiPoolInUseCount = 0;
+        g_zModel_DiPoolFreeHeadIndex = -1;
     }
 
-    g_zModel_DiPoolCapacity = 0;
-    g_zModel_DiPoolInUseCount = 0;
-    g_zModel_DiPoolFreeHeadIndex = -1;
     return 0;
 }
 } // namespace zModel_Display
@@ -3258,7 +3258,7 @@ void __fastcall EvalBoundingSphereLightingFlags(
         }
 
         zClass_LightDataPartial *light = entry.light;
-        if (g_zModel_SoftwarePathActive != 0 && light->isPointMode != 0) {
+        if (g_zModel_SoftwarePathActive != 0 && light->isDirectedSource != 0) {
             continue;
         }
 

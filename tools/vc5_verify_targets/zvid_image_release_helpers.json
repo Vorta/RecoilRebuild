@@ -1,9 +1,8 @@
 {
   "name": "zvid_image_release_helpers",
-  "description": "zVid image buffer release, destroy, and default-image guarded release helpers.",
-  "source_filename": "zVideo.cpp",
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zVid image buffer release, destroy, and default-image guarded release helpers. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zimg_texture.cpp",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -14,7 +13,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
   ],
   "functions": [
     {
@@ -32,5 +31,18 @@
       "symbol": "?ReleaseOwnedBuffers@zVid_Image@@YIXPAUzVidImagePartial@@@Z",
       "name": "zVid_Image::ReleaseOwnedBuffers"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x46d5a0",
+        "0x46ecc0",
+        "0x46ecf0"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

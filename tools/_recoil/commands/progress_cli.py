@@ -2842,16 +2842,16 @@ def _validate_byte_result(
     if len(matched) > len(expected_groups):
         raise ProgressError("live byte result matched more groups than the tracker mode contains")
     for group in result.get("matched_groups", []):
-        if group.get("match_level", "byte") not in {"byte", "instruction"}:
+        if group.get("match_level", "byte") not in {"byte", "instruction", "commutative"}:
             raise ProgressError("live byte result has an invalid match level")
-        if group.get("match_level") == "instruction":
+        if group.get("match_level") in {"instruction", "commutative"}:
             identities = group.get("identity_results")
             if not isinstance(identities, list) or not identities or any(
-                not item.get("passed") or (item.get("match_level") == "instruction" and
-                    (item.get("instruction_review_current") is not True or not item.get("review_evidence_id")))
+                not item.get("passed") or (item.get("match_level") in {"instruction", "commutative"} and
+                    (item.get(item["match_level"] + "_review_current") is not True or not item.get("review_evidence_id")))
                 for item in identities
             ):
-                raise ProgressError("instruction result lacks complete fresh proof and Pro review")
+                raise ProgressError("reviewed match result lacks complete fresh proof and Pro review")
     for index, scope_ids in enumerate(matched):
         expected = list(expected_groups[index]["scope_ids"])
         if scope_ids != expected:

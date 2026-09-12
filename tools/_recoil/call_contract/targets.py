@@ -48,6 +48,129 @@ def _registered_function_population_matches(
     return target.get("registered_addresses") == addresses
 
 
+def _target_function_definition_source_matches(
+    target: Any, registration: Mapping[str, Any], *,
+    address: str, symbol: str, source_path: str,
+) -> bool:
+    """Join one source definition through matching current TU projections.
+
+    A multi-input target's root source is distinct from the TU that defines
+    a particular function. Both the parsed manifest and stored registration
+    must select exactly the same definition; duplicate or stale routes reject.
+    """
+    entries = tuple(getattr(target, "translation_unit_function_order", ()))
+    stored_entries = registration.get("translation_unit_function_order") or []
+    if not entries:
+        return (not stored_entries
+            and getattr(target, "source_from", "") == source_path
+            and registration.get("source_from") == source_path)
+    if (not isinstance(stored_entries, list)
+            or len(entries) != len(stored_entries)
+            or not getattr(target, "check_translation_unit_function_order", False)
+            or any(not isinstance(entry, Mapping) for entry in stored_entries)):
+        return False
+    paths = tuple(getattr(entry, "source_from", "") for entry in entries)
+    if (not all(isinstance(path, str) and path for path in paths)
+            or len(paths) != len(set(paths))
+            or paths != tuple(entry.get("source_from") for entry in stored_entries)):
+        return False
+    manifest_rows = [(getattr(entry, "source_from", ""), row)
+        for entry in entries for row in getattr(entry, "functions", ())
+        if getattr(row, "address", "") == address]
+    stored_rows = [(entry.get("source_from"), row)
+        for entry in stored_entries for row in entry.get("functions", ())
+        if isinstance(row, Mapping) and row.get("address") == address]
+    return (len(manifest_rows) == len(stored_rows) == 1
+        and manifest_rows[0][0] == stored_rows[0][0] == source_path
+        and getattr(manifest_rows[0][1], "symbol", "") == symbol
+        and stored_rows[0][1].get("symbol") == symbol)
+
+
+def _registered_target_artifact_ids(
+    target: Mapping[str, Any], symbols: Mapping[str, Any],
+) -> list[str] | None:
+    """Resolve the current ordered address census to exact typed artifacts.
+
+    Verification targets store addresses, not cached symbol-id or unresolved
+    lists. Require one physical function/data identity per address; a missing,
+    duplicate, cross-binary, wrong-kind or ambiguous entry supplies no proof.
+    This derives membership only and accepts no provider, owner or byte facts.
+    """
+    binary = target.get("binary")
+    addresses = target.get("registered_addresses")
+    if (
+        not isinstance(binary, str) or not binary
+        or not isinstance(addresses, list) or not addresses
+        or any(not isinstance(address, str) for address in addresses)
+        or len(set(addresses)) != len(addresses)
+    ):
+        return None
+    result = []
+    for address in addresses:
+        if re.fullmatch(r"0x[0-9a-f]+", address) is None:
+            return None
+        matches = []
+        for family, kinds in (
+            ("function", {"function", "provider-function"}),
+            ("data", {"data", "provider-data"}),
+        ):
+            symbol_id = f"{binary}:{family}:{address}"
+            row = symbols.get(symbol_id)
+            if row is None:
+                continue
+            if (
+                not isinstance(row, Mapping)
+                or row.get("binary") != binary
+                or row.get("kind") not in kinds
+                or row.get("address") != address
+            ):
+                return None
+            matches.append(symbol_id)
+        if len(matches) != 1:
+            return None
+        result.append(matches[0])
+    return result
+
+
+def _registered_artifact_target_memberships_match(
+    symbol_id: str, symbols: Mapping[str, Any], targets: Mapping[str, Any],
+) -> bool:
+    """Validate attached verification references without treating them as owners.
+
+    A pooled literal can acquire more verification consumers without changing
+    its physical identity. Every declared target must still select that exact
+    typed artifact once; absent, duplicate or conflicting references reject.
+    Unrelated target entries stay outside this relationship proof. This check
+    accepts neither their identities nor any storage, source or provider facts.
+    """
+    symbol = symbols.get(symbol_id)
+    if not isinstance(symbol, Mapping):
+        return False
+    address = symbol.get("address")
+    if _registered_target_artifact_ids(
+        {"binary": symbol.get("binary"), "registered_addresses": [address]}, symbols,
+    ) != [symbol_id]:
+        return False
+    target_ids = symbol.get("verification_target_ids")
+    if (not isinstance(target_ids, list)
+            or any(not isinstance(item, str) or not item for item in target_ids)
+            or len(target_ids) != len(set(target_ids))):
+        return False
+    for target_id in target_ids:
+        target = targets.get(target_id)
+        if (not isinstance(target, Mapping) or target.get("kind") != "vc5"
+                or target.get("binary") != symbol.get("binary")):
+            return False
+        addresses = target.get("registered_addresses")
+        if (not isinstance(addresses, list)
+                or any(not isinstance(item, str)
+                       or re.fullmatch(r"0x[0-9a-f]+", item) is None for item in addresses)
+                or len(addresses) != len(set(addresses))
+                or addresses.count(address) != 1):
+            return False
+    return True
+
+
 def _pointer_vector_destroy_provider_identity(
     name: str,
     *,

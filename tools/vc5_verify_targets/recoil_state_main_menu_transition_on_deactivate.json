@@ -19,7 +19,7 @@
     {
       "address": "0x4153d0",
       "bn_byte_length": 608,
-      "symbol": "?OnDeactivate@RecoilStateMainMenuTransition@@QAEXXZ",
+      "symbol_regex": "\\?OnDeactivate@RecoilStateMainMenuTransition@@.*",
       "name": "RecoilStateMainMenuTransition::OnDeactivate"
     }
   ]

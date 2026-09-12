@@ -234,14 +234,14 @@ struct zSndSample {
         unsigned int offset,
         unsigned int bytes,
         void **buffer1,
-        int *buffer1Bytes,
         void **buffer2,
+        int *buffer1Bytes,
         int *buffer2Bytes
     );
     int __fastcall UnlockBackendBuffers(
         void *buffer1,
-        int buffer1Bytes,
         void *buffer2,
+        int buffer1Bytes,
         int buffer2Bytes
     );
     unsigned int GetPlayCursorBytes();

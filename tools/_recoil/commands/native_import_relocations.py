@@ -1,7 +1,8 @@
 """Bind an authored reference to a retail and canonical VC5 import thunk.
 
-The source-site proof preserves the existing non-authored target and its unknown
-ownership/extent tail. It accepts no provider body, padding, storage, or owner.
+The source-site proof preserves the existing non-authored target, its unresolved
+or explicitly reviewed accepted provider ownership, and its extent tail. It
+accepts no provider body, padding, storage, or owner.
 """
 from __future__ import annotations
 
@@ -96,10 +97,12 @@ def canonical_import_proof(object_symbol, identity):
     dll, ordinal = identity["dll"].casefold(), identity["ordinal"]
     if dll == "msvcrt.dll" and ordinal is None:
         library, member_name, descriptor = "VC/LIB/MSVCRT.LIB", "MSVCRT.dll", "__IMPORT_DESCRIPTOR_MSVCRT"
+    elif dll == "avifil32.dll" and ordinal is None:
+        library, member_name, descriptor = "VC/LIB/VFW32.LIB", "AVIFIL32.dll", "__IMPORT_DESCRIPTOR_AVIFIL32"
     elif dll == "mfc42.dll" and type(ordinal) is int:
         library, member_name, descriptor = "VC/MFC/LIB/MFC42.LIB", "MFC42.DLL", "__IMPORT_DESCRIPTOR_MFC42"
     else:
-        raise ValueError("native import proof requires a named MSVCRT or ordinal MFC42 canonical import")
+        raise ValueError("native import proof requires a named MSVCRT/AVIFIL32 or ordinal MFC42 canonical import")
     matches = []
     for member in parse_archive_members((DEFAULT_VC5_ROOT / library).read_bytes()):
         if object_symbol.encode("ascii") not in member.data:
@@ -113,7 +116,41 @@ def canonical_import_proof(object_symbol, identity):
     return dict(library=library, member=member_name, **matches[0])
 
 
-def binding_context(document, bindings, source_id, object_symbol, offset, target_symbol, evidence_ids, reference):
+def import_owner_context(document, target_id, target_row, provider_owner_id=None):
+    """Retain an unowned target or one explicitly selected accepted provider."""
+    require(not any(target_row.get(k) for k in
+                    ("object_symbol", "logical_aliases", "relocation_target_binding", "provider_object_identity")),
+            "native import target already has a typed identity")
+    owners = [(key, owner) for key, owner in document.collection("owners").items()
+              if any(r.get("kind") == "primary-function" and
+                     (r.get("symbol_id") == target_id or r.get("address") == target_row["address"])
+                     for r in owner.get("relationships", []))]
+    if provider_owner_id is None:
+        require(target_row.get("ownership_state") in {None, "unresolved"} and not owners,
+                "native import target ownership requires an explicit accepted provider")
+        return None
+    require(isinstance(provider_owner_id, str) and provider_owner_id
+            and len(owners) == 1 and owners[0][0] == provider_owner_id
+            and target_row.get("ownership_state") == "primary-owned",
+            "native import provider must be the exclusive existing primary owner")
+    owner = owners[0][1]
+    require(owner.get("binary") == "recoil" and owner.get("kind") == "provider-boundary"
+            and owner.get("provider_state") == "accepted" and owner.get("lifecycle_state") == "accepted"
+            and owner.get("gates", {}).get("boundary") == "accepted"
+            and owner.get("gates", {}).get("source") == "accepted",
+            "native import provider boundary and source must already be accepted")
+    relationships = [r for r in owner.get("relationships", []) if r.get("kind") == "primary-function"
+                     and (r.get("symbol_id") == target_id or r.get("address") == target_row["address"])]
+    require(len(relationships) == 1 and relationships[0].get("symbol_id") == target_id
+            and relationships[0].get("address") == target_row["address"],
+            "native import provider requires one exact existing primary relationship")
+    # Capture the full owner record so later ownership, gate, recipe, or evidence
+    # edits require renewed review. This dependency proof accepts none of them.
+    return dict(owner_id=provider_owner_id, owner=deepcopy(owner))
+
+
+def binding_context(document, bindings, source_id, object_symbol, offset, target_symbol, evidence_ids, reference,
+                    provider_owner_id=None):
     from _recoil.commands.live_byte_verify import _pe_bytes
     from _recoil.commands.relocation_expectations import build_object_binding_snapshot, decode_x86_operand_sites
     row = document.collection("symbols").get(source_id, {})
@@ -134,25 +171,20 @@ def binding_context(document, bindings, source_id, object_symbol, offset, target
             and address_value(target_row["address"]) == target
             and target_row.get("size") == address_value(target_row["end_exclusive"])-target >= 6,
             "target is not an existing known non-authored thunk inventory row")
-    # This route deliberately preserves an unowned inventory row. Existing
-    # provider packages continue through the ordinary relocation-target route.
-    require(target_row.get("ownership_state") in {None, "unresolved"}
-            and not any(target_row.get(k) for k in ("object_symbol", "logical_aliases", "relocation_target_binding", "provider_object_identity")),
-            "native import target already has ownership or a typed identity")
-    require(not any(r.get("kind") == "primary-function" and
-            (r.get("symbol_id") == target_id or r.get("address") == target_row["address"])
-            for o in document.collection("owners").values() for r in o.get("relationships", [])),
-            "native import target already has a primary owner")
+    owner_context = import_owner_context(document, target_id, target_row, provider_owner_id)
     require(isinstance(evidence_ids, list) and evidence_ids and len(set(evidence_ids)) == len(evidence_ids)
             and set(evidence_ids) <= set(row.get("evidence_ids", []))
             and all(e in document.collection("evidence") for e in evidence_ids), "import evidence is not current source evidence")
     identity, iat = import_at(reference, target)
     proof = canonical_import_proof(target_symbol, identity)
-    return dict(source_binding=build_object_binding_snapshot(document, bindings, symbol_id=source_id,
+    context = dict(source_binding=build_object_binding_snapshot(document, bindings, symbol_id=source_id,
                 object_symbol=object_symbol), offset=offset, opcode=found[0].opcode, target=target,
                 target_id=target_id, target_context={k: target_row.get(k) for k in
                     ("address", "end_exclusive", "size", "kind", "pipeline_class", "ownership_state", "output_section_id")},
                 identity=identity, iat=iat, canonical=proof, evidence_ids=evidence_ids)
+    if owner_context is not None:
+        context["provider_owner"] = owner_context
+    return context
 
 
 def derive_import_expectations(document, bindings, row, object_symbol, reference):
@@ -164,7 +196,8 @@ def derive_import_expectations(document, bindings, row, object_symbol, reference
             if old["source_binding"]["object_symbol"] != object_symbol:
                 continue
             context = binding_context(document, bindings, source_id, object_symbol, old["offset"],
-                                      old["canonical"]["symbol"], old["evidence_ids"], reference)
+                                      old["canonical"]["symbol"], old["evidence_ids"], reference,
+                                      old.get("provider_owner", {}).get("owner_id"))
             require(context == old, "native import binding is stale")
             key = (old["offset"], 20)
             require(key not in result, "duplicate native import selector")
@@ -236,7 +269,8 @@ def main(argv=None):
         from _recoil.commands.live_byte_verify import _bindings, DEFAULT_MANIFEST_DIR, DEFAULT_REFERENCE
         payload = json.loads(args.payload_file.read_text(encoding="utf-8-sig"))
         fields = {"reviewed", "source_symbol_id", "object_symbol", "offset", "target_symbol", "evidence_ids", "reason"}
-        require(isinstance(payload, dict) and (set(payload) == fields or set(payload) == fields | {"expected_binding"})
+        require(isinstance(payload, dict) and fields <= set(payload)
+                and set(payload) <= fields | {"expected_binding", "provider_owner_id"}
                 and payload["reviewed"] is True and isinstance(payload["reason"], str) and payload["reason"].strip(),
                 "native import requires the exact reviewed source-site payload")
         require("expected_binding" not in payload or isinstance(payload["expected_binding"], dict),
@@ -245,7 +279,8 @@ def main(argv=None):
         document = store.load()
         require(document.revision == args.expected_revision, "tracker revision changed")
         context = binding_context(document, _bindings(document, DEFAULT_MANIFEST_DIR), payload["source_symbol_id"],
-            payload["object_symbol"], payload["offset"], payload["target_symbol"], payload["evidence_ids"], DEFAULT_REFERENCE)
+            payload["object_symbol"], payload["offset"], payload["target_symbol"], payload["evidence_ids"], DEFAULT_REFERENCE,
+            payload.get("provider_owner_id"))
         proposed = deepcopy(document.data)
         entries = proposed["symbols"][payload["source_symbol_id"]].setdefault(FIELD, [])
         binding = dict(schema=SCHEMA, reviewed=True, reason=payload["reason"], context=context)

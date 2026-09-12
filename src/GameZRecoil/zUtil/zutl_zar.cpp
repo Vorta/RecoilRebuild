@@ -550,7 +550,7 @@ int zIndexArchive::Init(
             0x400,
             "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zar.cpp",
             0x4c,
-            "GetLastError(0x%08x) : %s",
+            "GetLastError(0x%08x): %s",
             lastError,
             message
         );

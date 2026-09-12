@@ -1760,12 +1760,12 @@ float __stdcall zSnd::SetGlobalVolumeScale(
  * @recoil-artifact defines .text recoil:function:0x4a10b0: zSnd::MulGlobalVolumeScaleAndGetPrev.
  * Purpose: multiply the global sound-volume scale and return its previous value.
  */
-float __stdcall zSnd::MulGlobalVolumeScaleAndGetPrev(
-    float scale
-) {
+float __stdcall zSnd::MulGlobalVolumeScaleAndGetPrev(float scale) {
     float *const globalVolumeScale = (float *)(g_zSnd_GlobalVolumeScalePtr);
+    // savedScale is unused afterward but is proven by byte matching.
+    float savedScale;
     const float previousScale = *globalVolumeScale;
-    *globalVolumeScale = previousScale * scale;
+    *globalVolumeScale = (savedScale = *globalVolumeScale) * scale;
     return previousScale;
 }
 

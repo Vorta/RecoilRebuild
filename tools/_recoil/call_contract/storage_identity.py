@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from _recoil.call_contract import targets as _cc_targets
+
 from typing import TYPE_CHECKING
 
 from _recoil.call_contract import identity as _cc_identity
@@ -122,7 +124,9 @@ def _registered_data_supplier(
         or getattr(row, "bn_name", "") != getattr(row, "name", "")
     ):
         return None
-    target_symbol_ids = target.get("symbol_ids")
+    target_symbol_ids = _cc_targets._registered_target_artifact_ids(
+        target, document.collection("symbols")
+    )
     verification_target_ids = symbol.get("verification_target_ids")
     if (
         not isinstance(target_symbol_ids, list)
@@ -284,7 +288,7 @@ def _index_registered_decorated_data_names(
     document: ProgressDocument,
     *,
     storage_by_name: dict[str, str],
-    pooled_storage_by_name: Mapping[str, str] | None = None,
+    reviewed_storage_by_name: Mapping[str, str] | None = None,
 ) -> None:
     """Publish exact decorated data names only after all suppliers converge."""
     from _recoil.lib.verification_targets import vc5_target_registration
@@ -308,7 +312,9 @@ def _index_registered_decorated_data_names(
         if (
             not isinstance(registration, Mapping)
             or not registration.get("data_addresses")
-            or not target.get("symbol_ids")
+            or not _cc_targets._registered_target_artifact_ids(
+                target, document.collection("symbols")
+            )
         ):
             continue
         manifest_value = registration.get("manifest_path")
@@ -370,10 +376,10 @@ def _index_registered_decorated_data_names(
             if len(same_address_rows) != 1:
                 ambiguous_names.add(name)
                 continue
-            if name in (pooled_storage_by_name or {}):
-                supplier = _pooled_data_manifest_supplier(
+            if name in (reviewed_storage_by_name or {}):
+                supplier = _reviewed_data_manifest_supplier(
                     document, row=row, target_id=str(target_id),
-                    identity=pooled_storage_by_name[name],
+                    identity=reviewed_storage_by_name[name],
                 )
             else:
                 supplier = _registered_data_supplier(
@@ -400,11 +406,12 @@ def _index_registered_decorated_data_names(
         if (
             name in ambiguous_names
             or len(identities) != 1
-            or name in storage_by_name
         ):
             storage_by_name[name] = ""
             continue
-        storage_by_name[name] = next(iter(identities))[0]
+        _cc_identity._publish_collected_identity(
+            storage_by_name, name, {next(iter(identities))[0]},
+        )
 
 
 def _current_tracker_iat_storage_packages(
@@ -651,13 +658,13 @@ def _current_tracker_iat_storage_packages(
     return tuple(packages)
 
 
-def _pooled_data_manifest_supplier(
+def _reviewed_data_manifest_supplier(
     document: ProgressDocument, *, row: Any, target_id: str, identity: str,
 ) -> RegisteredDecoratedDataNameSupplier | None:
-    """Require a literal manifest occurrence to agree with typed pooling.
+    """Require a manifest occurrence to agree with a reviewed data identity.
 
-    The caller supplies an independently validated pooling identity. Old
-    navigation names do not turn a provider literal into authored storage.
+    The caller independently validates a pooling or existing-data binding.
+    A manifest's navigation label supplies neither ownership nor acceptance.
     A differing physical address or extent remains a conflicting supplier.
     """
     from _recoil.call_contract.records import RegisteredDecoratedDataNameSupplier
@@ -670,9 +677,16 @@ def _pooled_data_manifest_supplier(
         address = normalize_address(str(row.address))
     except (AttributeError, ValueError, ProgressError):
         return None
-    if (address != physical.get("address")
+    if (physical.get("binary") != "recoil"
+            or physical.get("kind") != "data"
+            or physical.get("extent_state") != "known"
+            or address != physical.get("address")
             or type(getattr(row, "byte_length", None)) is not int
-            or row.byte_length != physical.get("size")):
+            or type(physical.get("size")) is not int
+            or row.byte_length != physical.get("size")
+            or row.byte_length <= 0
+            or physical.get("end_exclusive") != normalize_address(
+                address_value(address) + row.byte_length)):
         return None
     return RegisteredDecoratedDataNameSupplier(
         name=str(row.symbol), address=address, storage_identity=identity,

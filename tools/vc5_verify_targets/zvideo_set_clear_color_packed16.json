@@ -1,9 +1,8 @@
 {
   "name": "zvideo_set_clear_color_packed16",
-  "description": "VC verification target for zVideo::SetClearColorPacked16.",
-  "source_filename": "zVideo.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "description": "VC verification target for zVideo::SetClearColorPacked16. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zvid_init.c",
+  "source_from": "src/GameZRecoil/zVideo/zvid_init.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -14,7 +13,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zVideo/zvid_init.c"
   ],
   "functions": [
     {
@@ -22,5 +21,16 @@
       "symbol": "@zVideoSetClearColorPacked16@4",
       "name": "zVideoSetClearColorPacked16"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_init.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4a6b80"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

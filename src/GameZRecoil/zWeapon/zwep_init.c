@@ -957,7 +957,7 @@ namespace OptCatalog {
     OptCatalogEntryDef *__fastcall FindEntryById(int entryId) {
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
             OptCatalogEntryDef &entry = g_OptCatalog_EntryTable[i];
-            if (entry.keyName != 0 && entry.ordinalIndex == entryId) {
+            if (entry.keyName != 0 && entryId == entry.ordinalIndex) {
                 return &g_OptCatalog_EntryTable[i];
             }
         }
@@ -3377,8 +3377,8 @@ void __fastcall OnWeaponsSectionDataReady(
     unsigned int,
     void *
 ) {
-    g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
     g_OptCatalog_DamageFeedbackHitCount = *(int *)(weaponData);
+    g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
 }
 } // namespace zWeapon
 namespace OptCatalog {
@@ -4108,11 +4108,11 @@ namespace OptCatalog {
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-freetrailruntimestatestorage
  * @recoil-artifact defines .text recoil:function:0x4b1f90: OptCatalog::FreeTrailRuntimeStateStorage
  * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
- * Purpose: release trail runtime-state storage owned by player and
- * turret cleanup paths.
+ * Purpose: release trail runtime-state storage and return zero status.
  */
-    void __fastcall FreeTrailRuntimeStateStorage(void *trailRuntimeState) {
+    int __fastcall FreeTrailRuntimeStateStorage(void *trailRuntimeState) {
         free(trailRuntimeState);
+        return 0;
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -4459,14 +4459,14 @@ namespace zClass_Node {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setdamagehitcallback
  * @recoil-artifact defines .text recoil:function:0x4b25a0: zClass_Node::SetDamageHitCallback
+ * @recoil-match byte
+ *
  * Purpose: create or reuse a damage handler, install its hit callback, and
  * propagate the handler through the node subtree.
  */
-    int __fastcall SetDamageHitCallback(
-        void *context,
+    int __fastcall SetDamageHitCallback(void *context,
         zClass_NodePartial *node,
-        void *callback
-    ) {
+        void *callback) {
         OptCatalogDamageHandlerPartial *handler =
             (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
                 ->damageHandler);
@@ -4570,9 +4570,9 @@ namespace zClass_Node {
  * and propagate the handler through the node subtree.
  */
     int __fastcall SetDamageTimerCallback(
-        void *callback,
+        void *context,
         zClass_NodePartial *node,
-        void *context
+        void *callback
     ) {
         OptCatalogDamageHandlerPartial *handler =
             (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))

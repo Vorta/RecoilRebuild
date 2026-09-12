@@ -992,9 +992,6 @@ def _candidate_exact_iat_register_load_proofs(
     """
     from _recoil.call_contract.records import CandidateExactIatRegisterLoadProof
 
-    register_names = (
-        "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi",
-    )
     candidate_rows: list[
         tuple[int, int, Instruction, bytes, str, str]
     ] = []
@@ -1004,15 +1001,11 @@ def _candidate_exact_iat_register_load_proofs(
             body = bytes(int(item, 16) for item in instruction.bytes)
         except (TypeError, ValueError):
             continue
-        if (
-            len(body) != 6
-            or body[0] != 0x8B
-            or body[1] >> 6 != 0
-            or body[1] & 0x07 != 0x05
-        ):
+        decoded_load = _cc_receiver_instructions._absolute_dword_mov_load(body)
+        if decoded_load is None:
             continue
         operands = _cc_cfg._instruction_operand(instruction).split(",", 1)
-        destination = register_names[(body[1] >> 3) & 0x07]
+        destination = decoded_load[0]
         if (
             _cc_cfg._instruction_mnemonic(instruction) != "mov"
             or len(operands) != 2
@@ -1078,7 +1071,10 @@ def _candidate_exact_iat_register_load_proofs(
     ) in candidate_rows:
         definition_offset = normalize_address(offset)
         import_name = _cc_receiver_instructions._candidate_iat_import_name(object_symbol)
-        relocation_offset = offset + 2
+        decoded_load = _cc_receiver_instructions._absolute_dword_mov_load(body)
+        assert decoded_load is not None
+        address_offset = decoded_load[1]
+        relocation_offset = offset + address_offset
         relocations = [
             row for row in definition.relocations if row.offset == relocation_offset
         ]
@@ -1089,7 +1085,7 @@ def _candidate_exact_iat_register_load_proofs(
             definition.defined_external_data.count(object_symbol),
         )
         if (
-            body[2:6] != b"\x00\x00\x00\x00"
+            body[address_offset:address_offset + 4] != b"\x00\x00\x00\x00"
             or len(relocations) != 1
             or relocations[0].type != IMAGE_REL_I386_DIR32
             or relocations[0].symbol_name != object_symbol
@@ -1291,12 +1287,10 @@ def _comparison_scoped_cached_fread_iat_indexes(
             body = bytes(int(item, 16) for item in instruction.bytes)
         except (TypeError, ValueError):
             body = b""
+        decoded_load = _cc_receiver_instructions._absolute_dword_mov_load(body)
         decoded_slot = (
-            len(body) == 6
-            and body[0] == 0x8B
-            and body[1] >> 6 == 0
-            and body[1] & 0x07 == 0x05
-            and normalize_address(struct.unpack_from("<I", body, 2)[0])
+            decoded_load is not None
+            and normalize_address(struct.unpack_from("<I", body, decoded_load[1])[0])
             == _cc_catalog.CACHED_FREAD_IAT_ADDRESS
         )
         rendered_slot = _cc_catalog.CACHED_FREAD_IAT_ADDRESS in tuple(

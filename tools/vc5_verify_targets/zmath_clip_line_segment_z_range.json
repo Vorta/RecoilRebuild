@@ -1,8 +1,7 @@
 {
   "name": "zmath_clip_line_segment_z_range",
-  "description": "zMath line-segment Z clip helpers.",
-  "source_filename": "zMath.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zMath line-segment Z clip helpers. Explicit function placements and current spellings follow the complete authored-order targets. Existing data registrations and any unresolved provider entries retain their prior scope; each TU uses its canonical compiler profile.",
+  "source_filename": "zmth_main.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -13,7 +12,8 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zMath/zmth_main.c"
+    "src/GameZRecoil/zMath/zmth_main.c",
+    "src/GameZRecoil/zUI/zui.cpp"
   ],
   "functions": [
     {
@@ -43,5 +43,25 @@
       "byte_length": 4
     }
   ],
-  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+  "source_from": "src/GameZRecoil/zMath/zmth_main.c",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x4bd720",
+          "symbol": "?ClipLineSegmentToZRange@zMath@@YIHPAUzVec3@@0@Z",
+          "name": "zMath::ClipLineSegmentToZRange"
+        },
+        {
+          "address": "0x4bd800",
+          "symbol": "?ClipLineSegmentPointToZ@zMath@@YIXPAUzVec3@@PBU2@M@Z",
+          "name": "zMath::ClipLineSegmentPointToZ"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

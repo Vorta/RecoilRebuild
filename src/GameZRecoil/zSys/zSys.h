@@ -44,7 +44,7 @@ RECOIL_NO_GS void __fastcall ProbePlatformAndVideoCaps(
 int __cdecl CheckCpuSignatureMask();
 int __cdecl HasCpuidSupportRuntimeOptions();
 unsigned short __cdecl HasCpuidSupport();
-int __cdecl ReadCpuidVendorAndFamily();
+unsigned short __cdecl ReadCpuidVendorAndFamily();
 unsigned int __cdecl ReadCpuidFeatureFlags();
 unsigned int __cdecl ReadCmosRtcSecondsBcd();
 void __fastcall ReadTsc64(
@@ -63,7 +63,7 @@ int __cdecl ProbeDivZeroFlagBehavior();
 int __cdecl DetectIs8086ByEflagsHiBits();
 int __cdecl DetectIs80286ByEflagsHiBits();
 int __cdecl DetectIs80386ByAcFlag();
-int __cdecl DetectCpuClassAndFeatures();
+unsigned short __cdecl DetectCpuClassAndFeatures();
 int __cdecl GetCpuClass();
 RECOIL_NO_GS int __cdecl GetCpuMhz();
 int __cdecl ReturnZeroStub();

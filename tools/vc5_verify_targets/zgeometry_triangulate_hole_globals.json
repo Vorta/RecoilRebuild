@@ -22,7 +22,7 @@
     {
       "address": "0x53a748",
       "symbol": "",
-      "symbol_regex": "\\?g_zGeometry_TriangulateHole_CombinedPoints@\\?%zgeo_convexify\\.cpp[0-9]+@@3PAUzVec3@@A",
+      "symbol_regex": "\\?g_zGeometry_TriangulateHole_CombinedPoints@\\?%(?:[^@]*[\\\\/])?zgeo_convexify\\.cpp[0-9]+@@3PAUzVec3@@A",
       "name": "g_zGeometry_TriangulateHole_CombinedPoints",
       "bn_name": "g_zGeometry_TriangulateHole_CombinedPoints",
       "byte_length": 4
@@ -30,7 +30,7 @@
     {
       "address": "0x53d750",
       "symbol": "",
-      "symbol_regex": "\\?g_zGeometry_TriangulateHole_TriangleCount@\\?%zgeo_convexify\\.cpp[0-9]+@@3HA",
+      "symbol_regex": "\\?g_zGeometry_TriangulateHole_TriangleCount@\\?%(?:[^@]*[\\\\/])?zgeo_convexify\\.cpp[0-9]+@@3HA",
       "name": "g_zGeometry_TriangulateHole_TriangleCount",
       "bn_name": "g_zGeometry_TriangulateHole_TriangleCount",
       "byte_length": 4
@@ -38,7 +38,7 @@
     {
       "address": "0x53d754",
       "symbol": "",
-      "symbol_regex": "\\?g_zGeometry_TriangulateHole_CombinedPointCount@\\?%zgeo_convexify\\.cpp[0-9]+@@3HA",
+      "symbol_regex": "\\?g_zGeometry_TriangulateHole_CombinedPointCount@\\?%(?:[^@]*[\\\\/])?zgeo_convexify\\.cpp[0-9]+@@3HA",
       "name": "g_zGeometry_TriangulateHole_CombinedPointCount",
       "bn_name": "g_zGeometry_TriangulateHole_CombinedPointCount",
       "byte_length": 4
@@ -46,7 +46,7 @@
     {
       "address": "0x53a750",
       "symbol": "",
-      "symbol_regex": "\\?g_zGeometry_TriangulateHole_TriangleIndices@\\?%zgeo_convexify\\.cpp[0-9]+@@3PAUzGeometry_TriangleIndexTriple@@A",
+      "symbol_regex": "\\?g_zGeometry_TriangulateHole_TriangleIndices@\\?%(?:[^@]*[\\\\/])?zgeo_convexify\\.cpp[0-9]+@@3PAUzGeometry_TriangleIndexTriple@@A",
       "name": "g_zGeometry_TriangulateHole_TriangleIndices",
       "bn_name": "g_zGeometry_TriangulateHole_TriangleIndices",
       "byte_length": 12288
@@ -54,7 +54,7 @@
     {
       "address": "0x53d758",
       "symbol": "",
-      "symbol_regex": "\\?g_zGeometry_TriangulateHole_CachedPlane@\\?%zgeo_convexify\\.cpp[0-9]+@@3UzGeometry_PlaneEquationPartial@@A",
+      "symbol_regex": "\\?g_zGeometry_TriangulateHole_CachedPlane@\\?%(?:[^@]*[\\\\/])?zgeo_convexify\\.cpp[0-9]+@@3UzGeometry_PlaneEquationPartial@@A",
       "name": "g_zGeometry_TriangulateHole_CachedPlane",
       "bn_name": "g_zGeometry_TriangulateHole_CachedPlane",
       "byte_length": 16

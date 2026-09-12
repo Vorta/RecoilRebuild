@@ -972,14 +972,14 @@ def _registered_pointer_vector_destroy_provider_suppliers(
             target = target_rows.get(str(target_id))
             if not isinstance(target, Mapping):
                 continue
-            symbol_ids = target.get("symbol_ids")
-            unresolved_addresses = target.get("unresolved_addresses")
+            symbol_ids = _cc_targets._registered_target_artifact_ids(
+                target, document.collection("symbols")
+            )
             if (
                 target.get("binary") != "recoil"
                 or target.get("kind") != "vc5"
                 or not isinstance(symbol_ids, list)
                 or symbol_ids.count(str(symbol_id)) != 1
-                or unresolved_addresses not in (None, [])
             ):
                 continue
             registration = target.get("registration")
@@ -1945,10 +1945,16 @@ def build_identity_indexes(
         storage_by_address=storage_by_address,
         storage_by_name=pooled_storage_by_name,
     )
+    reviewed_storage_by_name = dict(pooled_storage_by_name)
+    for symbol_id, _symbol, binding, _address in reviewed_data_bindings:
+        _publish_collected_identity(
+            reviewed_storage_by_name, str(binding["object_symbol"]),
+            {f"storage:{symbol_id}"},
+        )
     _cc_storage_identity._index_registered_decorated_data_names(
         document,
         storage_by_name=storage_by_name,
-        pooled_storage_by_name=pooled_storage_by_name,
+        reviewed_storage_by_name=reviewed_storage_by_name,
     )
     for name, identity in pooled_storage_by_name.items():
         _publish_collected_identity(storage_by_name, name, {identity})

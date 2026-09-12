@@ -1,9 +1,8 @@
 {
   "name": "zsnd_stream_request_match_request_predicate",
-  "description": "zSndStreamRequest::MatchRequestPredicate compares active-list payloads against the requested stream handle.",
-  "source_filename": "zsnd_group.cpp",
+  "description": "zSndStreamRequest::MatchRequestPredicate compares active-list payloads against the requested stream handle. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zsnd_grp.cpp",
   "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -18,8 +17,19 @@
   "functions": [
     {
       "address": "0x4a51e0",
-      "symbol_regex": "\\?MatchStreamRequestPredicate@\\?%zsnd_group\\.cpp[0-9]+@@YIHPAX0@Z",
-      "name": "zSndStreamRequest::MatchRequestPredicate"
+      "symbol_regex": "\\?MatchStreamRequestPredicate@\\?%[^@]*zsnd_grp\\.cpp[0-9]+@@YIHPAX0@Z",
+      "name": "MatchStreamRequestPredicate"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_grp.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4a51e0"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

@@ -21,6 +21,22 @@ from _recoil.commands.asm_verify import Instruction
 from _recoil.lib.progress import normalize_address
 
 
+def _absolute_dword_mov_load(body: bytes) -> tuple[str, int] | None:
+    """Decode only an unprefixed absolute MOV r32 load and its address field.
+
+    A1 uses EAX implicitly with the address at byte one. The 8B ModRM form
+    encodes its destination explicitly and puts the same field at byte two.
+    Prefixes, register-relative addressing, stores and other widths reject.
+    """
+    if len(body) == 5 and body[0] == 0xA1:
+        return "eax", 1
+    if (len(body) == 6 and body[0] == 0x8B
+            and body[1] >> 6 == 0 and body[1] & 7 == 5):
+        registers = ("eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi")
+        return registers[(body[1] >> 3) & 7], 2
+    return None
+
+
 def _candidate_iat_import_name(object_symbol: str) -> str:
     """Derive only the import-directory name encoded by an MSVC IAT symbol."""
 

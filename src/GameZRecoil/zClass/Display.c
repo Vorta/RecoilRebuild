@@ -8,18 +8,13 @@
 namespace {
     const int kZClassNodeDisplay = 4;
 
-    /*
-     * BN diagnostic string data used by Display.c validation paths at
-     * 0x44fdd0, 0x44fe50, 0x44fe90, 0x44ff10, and 0x44ff90.
-     */
-    const char kDisplaySourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Display.c";
-
 }
 
 namespace zClass_Display {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.deletenode
      * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-display-delete-node: zClass_Display::DeleteNode
+     *
      * Purpose: route display deletion through the generic node free path.
      */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
@@ -30,13 +25,14 @@ namespace zClass_Display {
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplayinit
      * @recoil-artifact defines .text recoil:function:0x44fdd0: zClass_Display::gwDisplayInit
      *
+     *
      * Purpose: allocate a display node, initialize its class data defaults, and
      * insert it into the display type list.
      */
     zClass_NodePartial *__cdecl gwDisplayInit() {
         zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(0x400, kDisplaySourceFile, 0x41, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0x41, "Null node pointer.");
             return 0;
         }
 
@@ -61,6 +57,7 @@ namespace zClass_Display {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-removechild
      * @recoil-artifact defines .text recoil:function:0x44fe50: zClass_Display::RemoveChild
+     * @recoil-match byte
      *
      * Purpose: validate the parent and child pointers, then remove the child
      * through the generic zClass child-list helper.
@@ -70,12 +67,12 @@ namespace zClass_Display {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kDisplaySourceFile, 0x8f, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0x8f, "Null node pointer.");
             return 5;
         }
 
         if (child == 0) {
-            zError::ReportOld(0x400, kDisplaySourceFile, 0x90, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0x90, "Null node pointer.");
             return 5;
         }
 
@@ -86,6 +83,7 @@ namespace zClass_Display {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetsize
      * @recoil-artifact defines .text recoil:function:0x44fe90: zClass_Display::gwDisplaySetSize
+     * @recoil-match byte
      *
      * Purpose: validate a display node and update its stored width and height.
      */
@@ -95,17 +93,17 @@ namespace zClass_Display {
         int height
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kDisplaySourceFile, 0xb0, "node != NULL");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0xb0, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kDisplaySourceFile, 0xb1, "node->classData != NULL");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0xb1, "Null class data pointer");
             return 5;
         }
         if (node->classId != kZClassNodeDisplay) {
             zError::ReportOld(
                 0x400,
-                kDisplaySourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Display.c",
                 0xb2,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 node->classId,
@@ -124,6 +122,7 @@ namespace zClass_Display {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetposition
      * @recoil-artifact defines .text recoil:function:0x44ff10: zClass_Display::gwDisplaySetPosition
+     * @recoil-match byte
      *
      * Purpose: validate a display node and update its stored screen position.
      */
@@ -133,17 +132,17 @@ namespace zClass_Display {
         int y
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kDisplaySourceFile, 0xee, "node != NULL");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0xee, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kDisplaySourceFile, 0xef, "node->classData != NULL");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0xef, "Null class data pointer");
             return 5;
         }
         if (node->classId != kZClassNodeDisplay) {
             zError::ReportOld(
                 0x400,
-                kDisplaySourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Display.c",
                 0xf0,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 node->classId,
@@ -163,6 +162,7 @@ namespace zClass_Display {
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetbackgroundcolor
      * @recoil-artifact defines .text recoil:function:0x44ff90: zClass_Display::gwDisplaySetBackgroundColor
      *
+     *
      * Purpose: update the display background color, pack it to the video clear
      * color format, and set the renderer clear color.
      */
@@ -173,17 +173,17 @@ namespace zClass_Display {
         float blue
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kDisplaySourceFile, 0x133, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0x133, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kDisplaySourceFile, 0x134, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0x134, "Null class data pointer");
             return 5;
         }
         if (node->classId != kZClassNodeDisplay) {
             zError::ReportOld(
                 0x400,
-                kDisplaySourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Display.c",
                 0x135,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 node->classId,

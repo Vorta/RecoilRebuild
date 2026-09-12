@@ -51,7 +51,8 @@ from _recoil.lib.progress import (
 )
 from _recoil.lib.pe import parse_pe_headers, rva_to_offset
 from _recoil.lib.tooling import REPO_ROOT, configure_stdio, display_path
-from _recoil.lib.function_match import MATCH_VERSION, compare_instructions
+from _recoil.lib.function_match import MATCH_VERSION, compare_instructions, weakest_match_level
+from _recoil.lib.commutative_match import compare_commutative, COMMUTATIVE_CONTRACT, BODY_PROOF_SCOPE
 from _recoil.lib.match_evidence import source_context, review_current
 
 
@@ -1055,10 +1056,13 @@ def _canonicalize_vc5_local_data_ordinals(
             return reject("compiler-local-candidate-content-drift")
 
         if _vc5_compiler_local_family(raw_symbol) == ("named-static", expected_symbol):
+            from _recoil.commands.byte_symbol_selectors import reviewed_named_static_owner
+            primary_owned = (target_row.get("ownership_state") == "primary-owned"
+                             or reviewed_named_static_owner(target_row, target_symbol_id, binding))
             if (
                 not section.characteristics & IMAGE_SCN_CNT_INITIALIZED_DATA
                 or section.characteristics & (IMAGE_SCN_CNT_UNINITIALIZED_DATA | IMAGE_SCN_MEM_WRITE)
-                or target_row.get("ownership_state") != "primary-owned"
+                or not primary_owned
                 or _integer(expected.get("coff_addend"), field="COFF relocation addend") != 0 or resolved_target_addend != 0
             ):
                 return reject("named-static-storage-or-addend-drift")
@@ -1469,20 +1473,36 @@ def _bindings(
     targets = document.collection("verification_targets")
 
     def target_functions(target: Any) -> list[tuple[Any, str]]:
-        rows: list[tuple[Any, str]] = [
-            (function, _source_backed_path(target.source_from))
-            for function in target.functions
-        ]
-        rows.extend(
+        def identity(function: Any) -> tuple[str, str, str]:
+            return (normalize_address(function.address), object_selector(function),
+                    str(function.logical_identity_key or ""))
+
+        unit_rows = [
             (function, _source_backed_path(entry.source_from))
             for entry in target.translation_unit_function_order
             for function in entry.functions
-        )
-        rows.extend(
-            (function, _source_backed_path(target.source_from))
+        ]
+        placements: dict[tuple[str, str, str], list[str]] = {}
+        for function, source_from in unit_rows:
+            placements.setdefault(identity(function), []).append(source_from)
+        # The top-level catalog and linked intervals can span several TUs.
+        # Their exact explicit placements override the default compile host;
+        # they do not also require a definition in that unrelated primary TU.
+        # Retain every declared emission site, independent of candidate output.
+        catalog = list(target.functions)
+        catalog.extend(
+            function
             for interval in target.linked_function_intervals
             for function in interval.functions
         )
+        rows = [
+            (function, source_from)
+            for function in catalog
+            for source_from in placements.get(
+                identity(function), [_source_backed_path(target.source_from)]
+            )
+        ]
+        rows.extend(unit_rows)
         result: list[tuple[Any, str]] = []
         seen: set[tuple[str, str, str, str]] = set()
         for function, source_from in rows:
@@ -1701,11 +1721,17 @@ def _registered_retail_reader_universe(
                         "the target address; its data-reader semantics are unresolved"
                     )
                 continue
-            retail_sites = decode_retail_target_sites(
-                row=source_row,
-                retail_target=retail_target,
-                reference=reference,
-            )
+            try:
+                retail_sites = decode_retail_target_sites(
+                    row=source_row,
+                    retail_target=retail_target,
+                    reference=reference,
+                )
+            except RelocationExpectationError as exc:
+                raise LiveByteError(
+                    f"{target_symbol_id}: registered retail reader {source_symbol_id} "
+                    f"cannot be completely decoded: {exc}"
+                ) from exc
             if not retail_sites:
                 continue
             if (
@@ -2362,6 +2388,7 @@ def _compare_row(
         "object_body_equal_outside_relocations": object_passed,
     }
     instruction_proof = None
+    commutative_proof = None
     if not object_passed:
         normalized_object = bytes(
             retail_bytes[index] if function_bytes.relocation_mask[index] else value
@@ -2371,7 +2398,12 @@ def _compare_row(
         instruction_proof = compare_instructions(retail_bytes, normalized_object,
             relocations=list(relocation_catalog or ()), symbol=binding.function.symbol)
         result["instruction_proof"] = instruction_proof
-        if (not instruction_proof["passed"] and not allow_near_byte_review) or mode == "object":
+        if not instruction_proof["passed"]:
+            commutative_proof = compare_commutative(retail_bytes, normalized_object,
+                function_address=retail_start, contract=COMMUTATIVE_CONTRACT)
+            result["commutative_proof"] = commutative_proof
+        if (not instruction_proof["passed"] and not (commutative_proof and commutative_proof["passed"])
+                and not allow_near_byte_review) or mode == "object":
             return result
         scope = str(binding.scope_id or row.get("symbol_id", ""))
         review = (target_rows or {}).get(scope, {}).get("instruction_match_review")
@@ -2379,6 +2411,11 @@ def _compare_row(
         result["instruction_review_current"] = (instruction_proof["passed"] and
             review_current(review, context, instruction_proof["differences"]))
         result["review_evidence_id"] = review.get("evidence_id") if isinstance(review, Mapping) else None
+        if commutative_proof and commutative_proof["passed"]:
+            review = (target_rows or {}).get(scope, {}).get("commutative_match_review")
+            result["commutative_review_current"] = review_current(
+                review, context, commutative_proof["differences"], level="commutative")
+            result["review_evidence_id"] = review.get("evidence_id") if isinstance(review, Mapping) else None
     if mode == "object":
         return result
     assert parsed_map is not None
@@ -2399,11 +2436,15 @@ def _compare_row(
         function_bytes.relocation_mask,
     )
     linked_instruction_proof = None
+    linked_commutative_proof = None
     if not linked_body_passed and instruction_proof is not None:
         normalized_linked = bytes(retail_bytes[i] if function_bytes.relocation_mask[i] else value
                                   for i, value in enumerate(candidate_bytes))
         linked_instruction_proof = compare_instructions(retail_bytes, normalized_linked,
             relocations=list(relocation_catalog or ()), symbol=binding.function.symbol)
+        if commutative_proof is not None:
+            linked_commutative_proof = compare_commutative(retail_bytes, normalized_linked,
+                function_address=retail_start, contract=COMMUTATIVE_CONTRACT)
     relocation_rows: list[dict[str, Any]] = []
     relocations_passed = True
     if relocation_catalog is None:
@@ -2723,10 +2764,15 @@ def _compare_row(
                           and linked_instruction_proof is not None and linked_instruction_proof["passed"]
                           and instruction_proof["differences"] == linked_instruction_proof["differences"]
                           and result.get("instruction_review_current") is True)
-    body_passed = (object_passed and linked_body_passed) or instruction_passed
+    commutative_passed = (commutative_proof is not None and commutative_proof["passed"]
+                         and commutative_proof.get("scope") == BODY_PROOF_SCOPE
+                         and linked_commutative_proof is not None and linked_commutative_proof["passed"]
+                         and commutative_proof == linked_commutative_proof
+                         and result.get("commutative_review_current") is True)
+    body_passed = (object_passed and linked_body_passed) or instruction_passed or commutative_passed
     passed = body_passed and relocations_passed
     if mode == "linked":
-        passed = passed and exact_address and (exact_bytes or instruction_passed)
+        passed = passed and exact_address and (exact_bytes or instruction_passed or commutative_passed)
     result.update(
         passed=passed,
         stage="linked-body" if not passed else "complete",
@@ -2737,9 +2783,12 @@ def _compare_row(
         exact_linked_bytes=exact_bytes,
         relocations=relocation_rows,
         relocation_expectations_exact=relocations_passed,
-        match_level=("byte" if object_passed and linked_body_passed else "instruction") if passed else None,
+        match_level=("byte" if object_passed and linked_body_passed else
+                     "instruction" if instruction_passed else "commutative") if passed else None,
         instruction_equivalent=bool(instruction_proof and instruction_proof["passed"]),
         linked_instruction_proof=linked_instruction_proof,
+        commutative_equivalent=bool(commutative_proof and commutative_proof["passed"]),
+        linked_commutative_proof=linked_commutative_proof,
         match_version=MATCH_VERSION,
         retail_relocations=list(relocation_catalog),
         # Advisory near-byte review may inspect code differences only after
@@ -2750,8 +2799,11 @@ def _compare_row(
         # Compatibility projection for old report readers; expectations are now
         # derived live and are not a required stored tracker catalog.
     )
-    if not passed and relocations_passed and not object_passed and result.get("instruction_review_current") is not True:
-        result["stage"] = "instruction-review-required"
+    if not passed and relocations_passed and not object_passed:
+        if result.get("commutative_equivalent") and result.get("commutative_review_current") is not True:
+            result["stage"] = "commutative-review-required"
+        elif result.get("instruction_equivalent") and result.get("instruction_review_current") is not True:
+            result["stage"] = "instruction-review-required"
     if not exact_bytes:
         result["first_difference"] = _first_byte_difference(retail_bytes, candidate_bytes)
     return result
@@ -2993,7 +3045,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 break
             continue
         matched = _matched_group_contract(row, bindings)
-        matched["match_level"] = "instruction" if any(item.get("match_level") == "instruction" for item in group_results) else "byte"
+        matched["match_level"] = weakest_match_level(item.get("match_level", "byte") for item in group_results)
         matched["identity_results"] = group_results
         matched_groups.append(matched)
     if dependency_states(input_paths) != inputs_before:

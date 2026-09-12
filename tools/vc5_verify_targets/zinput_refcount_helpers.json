@@ -1,6 +1,6 @@
 {
   "name": "zinput_refcount_helpers",
-  "description": "zInput keyboard and mouse poll-reference helpers.",
+  "description": "zInput keyboard and mouse poll-reference helpers. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
   "source_filename": "zin_mouse.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
@@ -38,5 +38,23 @@
       "name": "zInput::MouseAddRef"
     }
   ],
-  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp"
+  "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_mouse.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x470610"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_init.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x471d20",
+        "0x471da0"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

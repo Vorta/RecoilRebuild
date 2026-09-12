@@ -14,42 +14,21 @@
 
 namespace {
     const int kZClassNodeLight = 9;
-    const char kLightSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Light.c";
-}
-
-namespace Light {
-    /**
-     * Purpose: provenance marker for the thermal-pool body emitted in the
-     * literal-backed zwep_init.c physical contribution.
-     */
-    /**
-     * Purpose: provenance marker for the thermal-pool body emitted in the
-     * literal-backed zwep_init.c physical contribution.
-     */
-    /**
-     * Purpose: provenance marker for the thermal-pool body emitted in the
-     * literal-backed zwep_init.c physical contribution.
-     */
-    /**
-     * Purpose: provenance marker for the thermal-pool body emitted in the
-     * literal-backed zwep_init.c physical contribution.
-     */
-
-
-
 }
 
 namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightnew
      * @recoil-artifact defines .text recoil:function:0x452fd0: zClass_Light::gwLightNew
+     *
+     *
      * Purpose: allocate and initialize a light node, its light-class data,
      * default bounds, modes, color, range, and type-list membership.
      */
     zClass_NodePartial *__cdecl gwLightNew() {
         zClass_NodePartial *node = zClass_Class::gwNodeNew();
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x96, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x96, "Null node pointer.");
             return 0;
         }
 
@@ -78,9 +57,9 @@ namespace zClass_Light {
         data->falloff = 0.0f;
         data->intensityScale = 1.0f;
         data->enabled = 1;
-        data->coneAngle = 0.0f;
-        data->isPointMode = 0;
-        data->isDirectionalMode = 1;
+        data->isDirectional = 0;
+        data->isDirectedSource = 0;
+        data->isPointSource = 1;
         data->lightParam = 1;
         data->lightSubMode = 1;
         data->range1 = 32.0f;
@@ -99,26 +78,26 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.deletenode
      * @recoil-artifact defines .text recoil:function:0x453110: zClass_Light::DeleteNode
+     * @recoil-match byte
+     *
      * Purpose: validate light-owned class data, reject deletion while attached
      * to worlds, release the world attachment list, and return the node storage.
      */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0xf8, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0xf8, "Null node pointer.");
             return 5;
         }
-
         zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0xf9, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0xf9, "Null class data pointer");
             return 5;
         }
-
         if (data->attachedWorldCount > 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 "%s: Line %d: ERROR deleting light; Light attached to %d world nodes.\n",
-                kLightSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Light.c",
                 0x101,
                 data->attachedWorldCount
             );
@@ -137,6 +116,8 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.removechild
      * @recoil-artifact defines .text recoil:function:0x4531c0: zClass_Light::RemoveChild
+     * @recoil-match byte
+     *
      * Purpose: validate parent and child light-node pointers before delegating
      * removal to the generic zClass child-list helper.
      */
@@ -145,21 +126,21 @@ namespace zClass_Light {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x127, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x127, "Null node pointer.");
             return 5;
         }
-
         if (child == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x128, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x128, "Null node pointer.");
             return 5;
         }
-
         return zClass_Class::RemoveChildGeneric(parent, child);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetintensity
      * @recoil-artifact defines .text recoil:function:0x453200: zClass_Light::gwLightSetIntensity
+     * @recoil-match byte
+     *
      * Purpose: validate light data, store the intensity scale, and mark the
      * light transform/state dirty.
      */
@@ -168,16 +149,15 @@ namespace zClass_Light {
         float intensity
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x157, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x157, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x158, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x158, "Null class data pointer");
             return 5;
         }
-
         data->dirty = 1;
         data->intensityScale = intensity;
         return 0;
@@ -186,6 +166,8 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetfalloff
      * @recoil-artifact defines .text recoil:function:0x453250: zClass_Light::gwLightSetFalloff
+     * @recoil-match byte
+     *
      * Purpose: validate light data, store the falloff value, and mark the light
      * transform/state dirty.
      */
@@ -194,16 +176,15 @@ namespace zClass_Light {
         float falloff
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x176, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x176, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x177, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x177, "Null class data pointer");
             return 5;
         }
-
         data->dirty = 1;
         data->falloff = falloff;
         return 0;
@@ -211,74 +192,77 @@ namespace zClass_Light {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetconeangle
-     * @recoil-artifact defines .text recoil:function:0x4532a0: zClass_Light::gwLightSetConeAngle
-     * Purpose: validate light data, preserve the incoming cone-angle bit pattern
-     * as a float, and mark the light transform/state dirty.
+     * @recoil-artifact defines .text recoil:function:0x4532a0: zClass_Light::gwLightSetDirectional
+     * @recoil-match byte
+     *
+     * Purpose: store the 32-bit directional flag used by LightSetDirectional
+     * and mark the light transform/state dirty.
      */
-    int __fastcall gwLightSetConeAngle(
+    int __fastcall gwLightSetDirectional(
         zClass_NodePartial * node,
-        unsigned int coneAngleBits
+        int directional
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x196, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x196, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x197, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x197, "Null class data pointer");
             return 5;
         }
-
-        memcpy(&data->coneAngle, &coneAngleBits, sizeof(data->coneAngle));
+        data->isDirectional = directional;
         data->dirty = 1;
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetpointmode
-     * @recoil-artifact defines .text recoil:function:0x4532f0: zClass_Light::gwLightSetPointMode
-     * Purpose: validate light data, enable point-light mode, disable directional
-     * mode, and mark the light transform/state dirty.
+     * @recoil-artifact defines .text recoil:function:0x4532f0: zClass_Light::gwLightSetDirectedSource
+     * @recoil-match byte
+     *
+     * Purpose: select the directed light source used by LightSetDirectedSource,
+     * disable the point source, and mark the light transform/state dirty.
      */
-    int __fastcall gwLightSetPointMode(zClass_NodePartial * node) {
+    int __fastcall gwLightSetDirectedSource(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x1b5, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x1b5, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x1b6, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x1b6, "Null class data pointer");
             return 5;
         }
-
-        data->isPointMode = 1;
-        data->isDirectionalMode = 0;
+        data->isDirectedSource = 1;
+        data->isPointSource = 0;
         data->dirty = 1;
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetdirectionalmode
-     * @recoil-artifact defines .text recoil:function:0x453350: zClass_Light::gwLightSetDirectionalMode
-     * Purpose: validate light data, enable directional-light mode, disable point
-     * mode, and mark the light transform/state dirty.
+     * @recoil-artifact defines .text recoil:function:0x453350: zClass_Light::gwLightSetPointSource
+     * @recoil-match byte
+     *
+     * Purpose: select the point light source used by LightSetPointSource,
+     * disable the directed source, and mark the light transform/state dirty.
      */
-    int __fastcall gwLightSetDirectionalMode(zClass_NodePartial * node) {
+    int __fastcall gwLightSetPointSource(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x1d5, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x1d5, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x1d6, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x1d6, "Null class data pointer");
             return 5;
         }
-
-        data->isPointMode = 0;
-        data->isDirectionalMode = 1;
+        data->isDirectedSource = 0;
+        data->isPointSource = 1;
         data->dirty = 1;
         return 0;
     }
@@ -286,6 +270,8 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetparam
      * @recoil-artifact defines .text recoil:function:0x4533b0: zClass_Light::gwLightSetParam
+     * @recoil-match byte
+     *
      * Purpose: validate light data, store the light parameter selector, and mark
      * the light transform/state dirty.
      */
@@ -294,24 +280,25 @@ namespace zClass_Light {
         int param
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x1f2, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x1f2, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x1f3, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x1f3, "Null class data pointer");
             return 5;
         }
-
         data->lightParam = param;
-        data->dirty = 1;
+        ((zClass_LightDataPartial *)node->classData)->dirty = 1;
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetrange
      * @recoil-artifact defines .text recoil:function:0x453400: zClass_Light::gwLightSetRange
+     *
+     *
      * Purpose: validate light data, order and store the two range values, repair
      * equal ranges with the original debug path, and cache range-derived values.
      */
@@ -321,26 +308,25 @@ namespace zClass_Light {
         float rangeB
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x211, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x211, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x212, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x212, "Null class data pointer");
             return 5;
         }
-
         data->range1 = rangeA < rangeB ? rangeA : rangeB;
         data->range2 = rangeA > rangeB ? rangeA : rangeB;
-        if (data->range1 == data->range2) {
+        if (rangeB == rangeA) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 "%s: Line %d: ERROR setting light ranges; Range2 can't be equal to Range1.\n",
-                kLightSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Light.c",
                 0x21c
             );
-            data->range2 = data->range1 + 10.0f;
+            data->range2 = data->range1 - (-10.0f);
         }
 
         const float delta = data->range2 - data->range1;
@@ -353,6 +339,8 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightgetrange
      * @recoil-artifact defines .text recoil:function:0x453500: zClass_Light::gwLightGetRange
+     * @recoil-match byte
+     *
      * Purpose: validate light data and return the cached inner and outer light
      * range values.
      */
@@ -362,13 +350,13 @@ namespace zClass_Light {
         float *outRange2
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x242, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x242, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x243, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x243, "Null class data pointer");
             return 5;
         }
 
@@ -380,6 +368,8 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetposition
      * @recoil-artifact defines .text recoil:function:0x453560: zClass_Light::gwLightSetPosition
+     * @recoil-match byte
+     *
      * Purpose: validate light data, store local position components, and mark
      * the light transform/state dirty.
      */
@@ -390,13 +380,13 @@ namespace zClass_Light {
         float z
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x266, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x266, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x267, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x267, "Null class data pointer");
             return 5;
         }
 
@@ -410,6 +400,8 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetrotation
      * @recoil-artifact defines .text recoil:function:0x4535c0: zClass_Light::gwLightSetRotation
+     * @recoil-match byte
+     *
      * Purpose: validate light data, store local rotation components, and mark
      * the light transform/state dirty.
      */
@@ -420,13 +412,13 @@ namespace zClass_Light {
         float z
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x2da, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x2da, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x2db, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x2db, "Null class data pointer");
             return 5;
         }
 
@@ -440,6 +432,8 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.computeworldtransform
      * @recoil-artifact defines .text recoil:function:0x453620: zClass_Light::ComputeWorldTransform
+     *
+     *
      * Purpose: build the node-to-world transform, update world position,
      * direction, and rotation caches, then restore the zMath matrix stack.
      */
@@ -467,7 +461,7 @@ namespace zClass_Light {
                 + localPointA.z * matrix->zz + matrix->posZ;
         }
 
-        if (data->isPointMode != 0 || data->coneAngle != 0.0f) {
+        if (data->isDirectedSource != 0 || data->isDirectional != 0) {
             zVec3 pointB = localPointB;
             if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
                 const zMat4x3 *matrix =
@@ -496,12 +490,14 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightupdate
      * @recoil-artifact defines .text recoil:function:0x453880: zClass_Light::gwLightUpdate
+     *
+     *
      * Purpose: validate dirty light nodes, refresh world/view transform caches
      * for point, cone, and directional modes, and clear the dirty flag.
      */
     int __fastcall gwLightUpdate(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x395, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x395, "Null node pointer.");
             return 5;
         }
 
@@ -511,7 +507,7 @@ namespace zClass_Light {
 
         zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x39b, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x39b, "Null class data pointer");
             return 5;
         }
 
@@ -520,14 +516,14 @@ namespace zClass_Light {
         zMath::MatStackPushAndCloneParent((float *)(&slotBuffer));
         zMath::MatLoadCameraScratchB();
 
-        if (data->isPointMode != 0 || data->coneAngle != 0.0f) {
+        if (data->isDirectedSource != 0 || data->isDirectional != 0) {
             zMathMatTransformNormalBatch(&data->worldDir, &data->viewDir, 1);
             data->viewDir.x = -data->viewDir.x;
             data->viewDir.y = -data->viewDir.y;
             data->viewDir.z = -data->viewDir.z;
         }
 
-        if (data->isDirectionalMode != 0) {
+        if (data->isPointSource != 0) {
             data->worldPosScratch = data->worldPosition;
             if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
                 data->viewPos = data->worldPosScratch;
@@ -557,6 +553,8 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightgetspecularcolor
      * @recoil-artifact defines .text recoil:function:0x453a40: zClass_Light::gwLightGetSpecularColor
+     * @recoil-match byte
+     *
      * Purpose: validate light data and return the stored specular RGB color.
      */
     int __fastcall gwLightGetSpecularColor(
@@ -566,13 +564,13 @@ namespace zClass_Light {
         float *outBlue
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x3ea, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x3ea, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x3eb, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x3eb, "Null class data pointer");
             return 5;
         }
 
@@ -585,6 +583,8 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetspecularcolor
      * @recoil-artifact defines .text recoil:function:0x453aa0: zClass_Light::gwLightSetSpecularColor
+     * @recoil-match byte
+     *
      * Purpose: validate light data, store clamped/staged specular RGB color
      * state, and mark the light transform/state dirty.
      */
@@ -595,13 +595,13 @@ namespace zClass_Light {
         float blue
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x40f, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x40f, "Null node pointer.");
             return 5;
         }
         zClass_LightDataPartial *data =
             (zClass_LightDataPartial *)(node->classData);
         if (data == 0) {
-            zError::ReportOld(0x400, kLightSourceFile, 0x410, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Light.c", 0x410, "Null class data pointer");
             return 5;
         }
 

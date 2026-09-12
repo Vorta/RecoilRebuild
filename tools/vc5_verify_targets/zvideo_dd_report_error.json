@@ -1,7 +1,7 @@
 {
   "name": "zvideo_dd_report_error",
   "description": "zVideo DirectDraw/Direct3D HRESULT reporting helper.",
-  "source_filename": "zVideo.cpp",
+  "source_filename": "zvid_ddd3d.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
     "src",
@@ -13,7 +13,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zVideo/zvid_ddd3d.c"
   ],
   "functions": [
     {
@@ -23,5 +23,5 @@
       "bn_byte_length": 3296
     }
   ],
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+  "source_from": "src/GameZRecoil/zVideo/zvid_ddd3d.c"
 }

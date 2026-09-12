@@ -1,9 +1,8 @@
 {
   "name": "zvideo_blur_region_cluster",
-  "description": "zVideo FX-surface blur region cluster.",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
-  "source_filename": "zVideo.cpp",
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "description": "zVideo FX-surface blur region cluster. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zrndr_draw.c",
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -16,7 +15,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zRender/zrndr_draw.c"
   ],
   "functions": [
     {
@@ -39,5 +38,19 @@
       "symbol": "?buffBlurRegionByMode@zVideo@@YIXPAUzVidRect32@@H@Z",
       "name": "zVideo::buffBlurRegionByMode"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x48e380",
+        "0x48e670",
+        "0x48e870",
+        "0x48ea00"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

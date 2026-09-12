@@ -1,8 +1,7 @@
 {
   "name": "zvideo_primary_blit_directdraw",
-  "description": "zVideo primary-surface blit clipping and DirectDraw surface lock/unlock helpers.",
-  "source_filename": "zVideo.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zVideo primary-surface blit clipping and DirectDraw surface lock/unlock helpers. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zvid_dd.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -13,12 +12,14 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zVideo/zvid_dd.c",
+    "src/GameZRecoil/zVideo/zvid_buff.c",
+    "src/GameZRecoil/zRender/zrndr_draw.c"
   ],
   "functions": [
     {
       "address": "0x4a8060",
-      "symbol": "?LockDirectDrawSurface@zVideo_dd@@YIHPAUIDirectDrawSurface3@@PAUDDSURFACEDESC@@@Z",
+      "symbol": "?LockDirectDrawSurface@zVideo_dd@@YIHPAUIDirectDrawSurface3@@PAU_DDSURFACEDESC@@@Z",
       "name": "zVideo_dd::LockDirectDrawSurface"
     },
     {
@@ -52,5 +53,34 @@
       "name": "zVid_Image::BlitToActiveTarget"
     }
   ],
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+  "source_from": "src/GameZRecoil/zVideo/zvid_dd.c",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_dd.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4a7fc0",
+        "0x4a8030",
+        "0x4a8060",
+        "0x4a80c0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zVideo/zvid_buff.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4a69c0",
+        "0x4a69e0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x48f500"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

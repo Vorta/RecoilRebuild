@@ -182,8 +182,8 @@
         },
         {
           "address": "0x412b60",
-          "symbol_regex": "\\?Constructor@HudLayoutSW@@.*",
-          "name": "HudLayoutSW::Constructor"
+          "symbol_regex": "\\?\\?0HudLayoutSW@@QAE@XZ",
+          "name": "HudLayoutSW::HudLayoutSW"
         },
         {
           "address": "0x412bd0",
@@ -222,8 +222,8 @@
         },
         {
           "address": "0x412ea0",
-          "symbol_regex": "\\?Constructor@HudLayoutHW@@.*",
-          "name": "HudLayoutHW::Constructor"
+          "symbol_regex": "\\?\\?0HudLayoutHW@@QAE@XZ",
+          "name": "HudLayoutHW::HudLayoutHW"
         },
         {
           "address": "0x412f70",

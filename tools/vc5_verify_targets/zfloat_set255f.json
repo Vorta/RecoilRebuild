@@ -1,8 +1,7 @@
 {
   "name": "zfloat_set255f",
-  "description": "zFloat::Set255f stores the 255.0f byte-max scale constant through a fastcall float pointer.",
-  "source_filename": "zMath.cpp",
-  "compiler_profile": "vc5_o2_ob0_facs",
+  "description": "zFloat::Set255f stores the 255.0f byte-max scale constant through a fastcall float pointer. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zrndr_draw.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -13,7 +12,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zMath/zmth_main.c"
+    "src/GameZRecoil/zRender/zrndr_draw.c"
   ],
   "functions": [
     {
@@ -22,5 +21,16 @@
       "name": "zFloat::Set255f"
     }
   ],
-  "source_from": "src/GameZRecoil/zMath/zmth_main.c"
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x490330"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

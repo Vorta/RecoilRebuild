@@ -1,9 +1,8 @@
 {
   "name": "zvideo_fxpass3_update_local",
-  "description": "zVideo::FxPass3UpdateLocal local pass-3 FX update wrapper.",
-  "source_filename": "zVideo.cpp",
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zVideo::FxPass3UpdateLocal local pass-3 FX update wrapper. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zui.cpp",
+  "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -14,7 +13,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zUI/zui.cpp"
   ],
   "functions": [
     {
@@ -22,5 +21,16 @@
       "symbol": "?FxPass3UpdateLocal@zVideo@@YIXM@Z",
       "name": "zVideo::FxPass3UpdateLocal"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4bef70"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

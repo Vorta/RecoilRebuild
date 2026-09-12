@@ -1178,7 +1178,7 @@ void __cdecl zTimedTask::TickActiveList() {
 
         if ((task->flags & 0x01) != 0) {
             task->remainingSeconds -= g_FrameDeltaTimeSec;
-            if (task->remainingSeconds <= 0.0f) {
+            if (task->remainingSeconds <= 0.0) {
                 task->kind = 9;
                 task->RemoveFromActiveList();
             }
@@ -2915,11 +2915,11 @@ HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget()
     stream = 0;
     elapsedTimeSec = 0.0f;
 }
-
 /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4bfc80 HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget callers.
- * Purpose: run the recovered HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget teardown path.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-destructor
+ * @recoil-artifact defines .text recoil:function:0x4bfcd0: HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget.
+ *
+ * Purpose: destroy the owned movie stream and run the base widget teardown.
  */
 HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget() {
     zFMV_Stream *const oldStream = stream;
@@ -2931,9 +2931,9 @@ HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget() {
 }
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-destructor
- * @recoil-artifact defines .text recoil:function:0x4bfcd0: HudUiBackgroundVideoWidget::Destructor.
- * Purpose: Runs the authored video-widget destructor entry used by the HUD UI owner.
+ * Purpose: invoke the native destructor through the explicit cleanup method.
+ * The virtual destructor above owns the retail body at 0x4bfcd0.
+ *
  */
 void HudUiBackgroundVideoWidget::Destructor() {
     this->~HudUiBackgroundVideoWidget();

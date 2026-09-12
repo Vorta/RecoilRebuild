@@ -21,17 +21,17 @@
   "data_symbols": [
     {
       "address": "0x4e2450",
-      "symbol_regex": "_kZSndCreateSourceFile\\$S[0-9]+",
       "name": "g_zSnd_SourceFile_ZsndCreateCpp",
       "bn_name": "g_zSnd_SourceFile_ZsndCreateCpp",
-      "byte_length": 43
+      "byte_length": 43,
+      "symbol": "??_C@_0CL@NBCN@D?3?2Proj?2GameZRecoil?2zSound?2zsnd_@"
     },
     {
       "address": "0x4e247c",
-      "symbol_regex": "_kCreateSoundBufferError\\$S[0-9]+",
       "name": "g_zSnd_CreateSoundBufferErrorFmt",
       "bn_name": "g_zSnd_CreateSoundBufferErrorFmt",
-      "byte_length": 35
+      "byte_length": 35,
+      "symbol": "??_C@_0CD@NINO@Error?5creating?5sound?5buffer?5?$CI?5?$CFs@"
     }
   ]
 }

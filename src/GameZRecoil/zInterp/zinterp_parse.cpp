@@ -1823,14 +1823,14 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "LightSetDirectedSource") != 0) {
-            zClass_Light::gwLightSetPointMode((zClass_NodePartial *)(currentNode));
+            zClass_Light::gwLightSetDirectedSource((zClass_NodePartial *)(currentNode));
             return 1;
         }
 
         if (CommandIs(this, "LightSetDirectional") != 0) {
-            zClass_Light::gwLightSetConeAngle(
+            zClass_Light::gwLightSetDirectional(
                 (zClass_NodePartial *)(currentNode),
-                (unsigned int)(ParseBoolToken())
+                ParseBoolToken()
             );
             return 1;
         }
@@ -1849,7 +1849,7 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "LightSetPointSource") != 0) {
-            zClass_Light::gwLightSetDirectionalMode((zClass_NodePartial *)(currentNode));
+            zClass_Light::gwLightSetPointSource((zClass_NodePartial *)(currentNode));
             return 1;
         }
 

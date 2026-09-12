@@ -1,8 +1,7 @@
 {
   "name": "hud_ui_transition_text_panel_update",
-  "description": "HudUiTransitionTextPanel::Update.",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
-  "source_filename": "zhud_ui.cpp",
+  "description": "HudUiTransitionTextPanel::Update. Explicit function placements and current spellings follow the complete authored-order targets. Existing data registrations and any unresolved provider entries retain their prior scope; each TU uses its canonical compiler profile.",
+  "source_filename": "zui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "include_dirs": [
     "src",
@@ -43,5 +42,31 @@
       "bn_name": "g_HudUiTransitionTextPanel_FTable",
       "byte_length": 148
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui_widgets.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x4bb460",
+          "symbol": "?Draw@HudUiPanel@@UAEXXZ",
+          "name": "HudUiPanel::Draw"
+        }
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x4bc9f0",
+          "symbol": "?Update@HudUiTransitionTextPanel@@UAEXM@Z",
+          "name": "HudUiTransitionTextPanel::Update"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

@@ -582,6 +582,12 @@ def _bound_preserved_between(
         opcode = data[start]
         if opcode == 0x90 and instruction.size == 1:
             continue
+        if 0x50 <= opcode <= 0x57 and instruction.size == 1:
+            # An unprefixed register PUSH changes only ESP and memory, while
+            # preserving the CMP flags and every possible SIB index register.
+            if register == 4:
+                return False
+            continue
         if opcode not in {0x89, 0x8B, 0x8D, 0xC7} or instruction.size < 2:
             return False
         modrm = data[start + 1]
@@ -768,6 +774,8 @@ def decode_x86_operand_sites(
     data: bytes,
     *,
     function_address: int | None = None,
+    instruction_spans: list[tuple[int, int]] | None = None,
+    control_flow_targets: list[tuple[int, int]] | None = None,
 ) -> tuple[tuple[OperandSite, ...], tuple[dict[str, Any], ...]]:
     sites: list[OperandSite] = []
     unresolved: list[dict[str, Any]] = []
@@ -961,6 +969,10 @@ def decode_x86_operand_sites(
                                       "absolute32", site.instruction_offset, site.opcode)
     sites.sort(key=lambda site: (site.offset, site.relocation_type, site.kind))
     unresolved.sort(key=lambda item: (int(item.get("offset", -1)), str(item.get("kind", ""))))
+    if instruction_spans is not None and not unresolved:
+        instruction_spans.extend((item.offset, item.size) for item in instructions)
+    if control_flow_targets is not None and not unresolved:
+        control_flow_targets.extend(direct_targets)
     return tuple(sites), tuple(unresolved)
 
 
@@ -2058,6 +2070,69 @@ def decode_retail_relocation_site(
     }
 
 
+def validate_reviewed_target_extent(
+    value: Mapping[str, Any],
+    *,
+    document: ProgressDocument,
+    source: Mapping[str, Any],
+    reference: Path = DEFAULT_REFERENCE,
+) -> None:
+    """Keep target extents half-open except for reviewed end-pointer comparisons.
+
+    An adjacent object's start is not necessarily the source-level identity of
+    an array bound. This exception requires the exact existing data extent and
+    a register/immediate CMP, which cannot dereference the end pointer. It does
+    not change ordinary identity lookup or infer an array from candidate code.
+    """
+    physical_mode = (
+        value.get("exception_mode") == PHYSICAL_TARGET_UNRESOLVED_VC5_TEMPORARY
+    )
+    binding = value["physical_target_binding" if physical_mode else "target_binding"]
+    start = address_value(str(binding["address"]))
+    end = address_value(str(binding["end_exclusive"]))
+    target = int(value["retail_target"])
+    if start <= target < end:
+        return
+    target_row = document.collection("symbols").get(value.get("target_symbol_id"))
+    if (
+        physical_mode or target != end or end <= start
+        or int(value["type"]) != IMAGE_REL_I386_DIR32
+        or int(value["coff_addend"]) != end - start
+        or int(value["resolved_target_addend"]) != end - start
+        or not isinstance(target_row, Mapping)
+        or target_row.get("kind") != "data"
+        or target_row.get("extent_state") != "known"
+        or target_row.get("size") != end - start
+        or target_row.get("address") != binding["address"]
+        or target_row.get("end_exclusive") != binding["end_exclusive"]
+    ):
+        raise RelocationExpectationError(
+            "immutable retail operand is outside the selected target extent "
+            "and is not an exact typed one-past-end data pointer"
+        )
+    decoded = decode_retail_relocation_site(
+        row=source, offset=int(value["offset"]),
+        relocation_type=IMAGE_REL_I386_DIR32, reference=reference,
+    )
+    image = reference.read_bytes()
+    headers = parse_pe_headers(image, source=str(reference))
+    prefix = _pe_bytes(
+        image, headers,
+        address_value(str(source["address"])) + decoded["instruction_offset"],
+        decoded["offset"] - decoded["instruction_offset"],
+    )
+    if (
+        decoded["retail_target"] != target
+        or decoded["operand_kind"] != "potential-absolute32"
+        or not (prefix == b"\x3d" or (
+            len(prefix) == 2 and prefix[0] == 0x81 and prefix[1] & 0xF8 == 0xF8
+        ))
+    ):
+        raise RelocationExpectationError(
+            "reviewed one-past-end target requires a retail CMP reg32, imm32 operand"
+        )
+
+
 def decode_retail_target_sites(
     *,
     row: Mapping[str, Any],
@@ -2852,7 +2927,9 @@ def build_target_identity_state(
     reference: Path = DEFAULT_REFERENCE,
 ) -> tuple[tuple[TargetIdentity, ...], list[dict[str, Any]]]:
     """Build usable target identities and typed blockers for stale governed bindings."""
-    from _recoil.commands.byte_symbol_selectors import PREFIX, registered_target_selector
+    from _recoil.commands.byte_symbol_selectors import (
+        PREFIX, registered_target_selector, reviewed_named_static_stem, reviewed_named_static_owner,
+    )
     identities: list[TargetIdentity] = []
     blockers: list[dict[str, Any]] = []
     for symbol_id, row in document.collection("symbols").items():
@@ -2894,6 +2971,8 @@ def build_target_identity_state(
             assert isinstance(provider, Mapping)
             object_symbols.add(str(provider["map_symbol"]))
             source_parts.append("linked-provider-binding")
+        reviewed_objects: set[str] = set()
+        owned_static_objects: set[str] = set()
         for index, item in enumerate(_accepted_relocation_target_bindings(row)):
             # Compatibility for pre-governance reviewed target rows. New mutations
             # always write binding_context and therefore receive live staleness checks.
@@ -2961,6 +3040,9 @@ def build_target_identity_state(
                 )
                 continue
             object_symbols.add(str(normalized["object_symbol"]))
+            reviewed_objects.add(str(normalized["object_symbol"]))
+            if reviewed_named_static_owner(row, str(symbol_id), normalized):
+                owned_static_objects.add(str(normalized["object_symbol"]))
             source_parts.append("reviewed-relocation-target-binding")
         registered = bindings.get(str(symbol_id), ())
         offsets = [getattr(item.function, "object_offset", 0) for item in registered]
@@ -2975,7 +3057,13 @@ def build_target_identity_state(
             continue
         selector = registered_target_selector(registered, object_symbols)
         selector_context = None
-        if selector is not None:
+        stem = (reviewed_named_static_stem(registered, object_symbols, reviewed_objects)
+                if row.get("kind") == "data" and (row.get("ownership_state") == "primary-owned"
+                    or (reviewed_objects and owned_static_objects == reviewed_objects))
+                and row.get("output_section_id") == "recoil:section:.rdata" else None)
+        if stem is not None:
+            object_symbols = {stem}
+        elif selector is not None:
             object_symbols = {PREFIX + selector["symbol_regex"]}
             selector_context = (selector["symbol_regex"], selector["source_from"],
                                 "data" if row.get("kind") in {"data", "data-symbol", "provider-data"} else "function")
@@ -3345,6 +3433,10 @@ def derive_relocation_expectations(
         if reviewed is not None:
             used_exceptions.add(key)
             try:
+                if reviewed.get("legacy_reviewed_catalog") is not True:
+                    validate_reviewed_target_extent(
+                        reviewed, document=document, source=row, reference=reference,
+                    )
                 reviewed_target = _integer(
                     reviewed.get("retail_target"), field="reviewed retail target"
                 )

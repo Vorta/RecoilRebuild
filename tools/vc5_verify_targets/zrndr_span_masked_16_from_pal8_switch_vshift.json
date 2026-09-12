@@ -15,7 +15,8 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zRender/zrndr_draw.c"
+    "src/GameZRecoil/zRender/zrndr_draw.c",
+    "src/GameZRecoil/zRender/zrndr_span.cpp"
   ],
   "functions": [
     {
@@ -82,5 +83,15 @@
       "bn_name": "gRndr_SavedEspSlot",
       "byte_length": 4
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zRender/zrndr_span.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x49bbf0"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

@@ -1,9 +1,8 @@
 {
   "name": "zvid_texture_pack_ensure_default_image_pack_loaded",
-  "description": "VC verification target for zVidTexturePackEnsureDefaultImagePackLoaded.",
-  "source_filename": "zVideo.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c",
+  "description": "VC verification target for zVidTexturePackEnsureDefaultImagePackLoaded. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zimg_texture.cpp",
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -14,13 +13,24 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
   ],
   "functions": [
     {
       "address": "0x46da40",
       "symbol": "_zVidTexturePackEnsureDefaultImagePackLoaded",
-      "name": "zVidTexturePackEnsureDefaultImagePackLoaded"
+      "name": "zVid_TexturePack::EnsureDefaultImagePackLoaded"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x46da40"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

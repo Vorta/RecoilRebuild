@@ -1,9 +1,8 @@
 {
   "name": "zclass_find_sub_node_by_name",
-  "description": "zClass_Class::FindSubNodeByName recursive child lookup.",
-  "source_filename": "Class.c",
-  "source_from": "src/GameZRecoil/zClass/Class.c",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zClass_Class::FindSubNodeByName recursive child lookup. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "cls_util.c",
+  "source_from": "src/GameZRecoil/zClass/cls_util.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -17,7 +16,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zClass/Class.c"
+    "src/GameZRecoil/zClass/cls_util.c"
   ],
   "functions": [
     {
@@ -25,5 +24,16 @@
       "symbol": "?FindSubNodeByName@zClass_Class@@YIPAUzClass_NodePartial@@PAU2@PBD@Z",
       "name": "zClass_Class::FindSubNodeByName"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zClass/cls_util.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x452770"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

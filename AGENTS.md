@@ -75,19 +75,21 @@ The six stages are strictly serial:
 3. **`authored-byte-match`** — require object body equality outside
    relocation fields plus exact relocation type/target/addend semantics, linked
    presence, target identity, and relocation-normalized linked body bytes.
-   Prioritize `byte`; the reviewed `instruction` alternative below may satisfy
-   body comparisons without asserting exact byte equality.
+   Prioritize `byte`; the reviewed `instruction` and `commutative` alternatives
+   below may satisfy body comparisons without asserting exact byte equality.
 4. **`full-function-order`** — begin only after every authored call contract,
    its fresh closeout, and every authored byte group are current. Require exact
    selected linked groups, identities, RVAs, order, providers, padding, and
    seams.
 5. **`linked-byte-match`** — require exact linked RVA, resolved operands,
    targets, and raw linked-image bytes for every selected row, or the same
-   approved instruction proof for authored function register encodings only.
+   approved instruction or commutative proof for its narrowly permitted
+   authored-function differences only.
 6. **`final-validation`** — require complete live typed coverage of headers,
    sections, functions, variables, providers, resources, directories, padding,
    zero-fill, relocations, and overlay. Freshly re-prove approved instruction
-   matches; report them separately from exact bytes. All other bytes stay exact.
+   and commutative matches; report both separately from exact bytes, including
+   commutative FP assumptions. All other bytes stay exact.
 
 An unresolved row or unclassified selected extra blocks its stage. One stage
 never silently accepts or revokes an owner, model, provider, tier, storage
@@ -176,10 +178,11 @@ valid. Missing deterministic target identity uses dry-run-first
 ### Function Match Levels
 
 An attached function-definition docblock may contain exactly one
-`@recoil-match byte` or `@recoil-match instruction`. No other values are valid.
+`@recoil-match byte`, `@recoil-match instruction`, or
+`@recoil-match commutative`. No other values are valid.
 Functions without a complete current matching proof have no match annotation.
 The annotation mirrors per-function live evidence; it neither accepts a stage
-nor promotes an owner tier. Both levels require exact relocation semantics,
+nor promotes an owner tier. All levels require exact relocation semantics,
 linked presence/identity, and the corresponding normalized linked-body proof.
 Exact linked placement is a later, separate requirement.
 
@@ -201,11 +204,45 @@ about every possible C++ program. Register the reviewed decision through
 fallback eligibility; fresh machine comparison still proves acceptance.
 Ambiguous/negative answers and transport failures grant no fallback.
 
+`commutative` permits only proved exchanges of the same two operand values of
+a supported commutative operation. Instruction operations/order/boundaries/
+lengths, addition grouping, memory widths, stores, calls, control flow, stack
+and ABI behavior stay exact. The initial proof supports x87 `FLD m32`/`FMUL m32`
+factor roles in balanced single-entry regions. It follows load origins and
+the x87 stack; it does not sort instructions or reassociate expressions.
+Simultaneous GPR reassignment is currently unsupported and blocks this proof.
+
+Floating-point commutation is explicitly conditional: finite binary32 values at
+each affected read in valid ordinary stable memory, the same fixed supported
+control word with all x87 exceptions masked, enough free push slots at each
+region entry, and noninterference of excluded x87 status/saved environment/dead
+physical registers. Excluded state must not influence included observations
+through callers, callees or asynchronous inspection. Ordinary function entry
+and ABI call/return flow are assumed; external interior entries and return-address
+manipulation are excluded. Numerical stores mean identical representations,
+including signed zero. These are reviewed caller/domain assumptions, not a machine proof
+that every runtime input satisfies them. NaNs/infinities, unmasked traps,
+volatile/MMIO/racing reads and FP diagnostic observations are outside this
+contract. Reports retain the assumptions; this level asserts neither universal
+architectural equivalence nor exact bytes and cannot support tier S.
+The numerical kernel reports body-only scope and pending relocation/link/review
+obligations. Equal supplied normalized buffers never establish original byte
+equality. Complete acceptance is decided only by the enclosing fresh verifier.
+
+Before accepting `commutative`, consult Pro with the current source/compiler
+context, exact factor exchanges, failed credible variants, the proposed proof
+and the explicit FP contract with its caller justification. Require compiler
+operand-selection attribution and engineering exhaustion under the governed
+constraints. Register through `progress match review-commutative` (dry-run,
+review, apply). A positive review grants eligibility only; complete fresh object,
+relocation and linked comparisons remain mandatory. Prefer a byte upgrade
+whenever it becomes possible. The executable runbook owns the exact payload.
+
 `progress match refresh --all` (or `--at <address>`) with a fresh build root and
 expected revision performs complete live function classification and mirrors
 annotations without advancing the serial scheduler. Preserve source line counts
 when changing comments so `__LINE__` remains unchanged. Changed source/compiler
-context, identities, verifier semantics or register differences require renewed
+context, identities, verifier semantics, FP contract or permitted differences require renewed
 proof and, where relevant, renewed Pro review. Exact matches upgrade to `byte`
 without Pro. See the executable runbook for payload and command contracts.
 
@@ -291,7 +328,7 @@ Pro line directly when:
 - raw inline assembly is proposed after credible source-faithful VC5 C/C++
   variants fail;
 - the user explicitly requests an external critique.
-- an `instruction` fallback is proposed after credible byte-match attempts.
+- an `instruction` or `commutative` fallback is proposed after credible byte-match attempts.
 
 Routine registered order execution, first-divergence interpretation,
 current-source rechecks, deterministic retail derivation, identity lookup, tool

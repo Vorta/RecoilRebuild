@@ -25,7 +25,7 @@
   "functions": [
     {
       "address": "0x42ee40",
-      "symbol": "?SetEnabled@HudUiBackgroundContainer@@QAEXH@Z",
+      "symbol": "?SetEnabled@HudUiBackgroundContainer@@UAEXH@Z",
       "name": "HudUiBackgroundContainer::SetEnabled"
     },
     {

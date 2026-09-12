@@ -29,7 +29,7 @@
   "data_symbols": [
     {
       "address": "0x4da3e0",
-      "symbol": "_g_zOpt_NamedScalarValues$S64674",
+      "symbol_regex": "_g_zOpt_NamedScalarValues\\$S[0-9]+",
       "name": "g_zOpt_NamedScalarValues",
       "bn_name": "g_zOpt_NamedScalarValues",
       "byte_length": 216

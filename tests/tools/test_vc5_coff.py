@@ -187,10 +187,196 @@ def test_instruction_match_proves_values_and_requires_current_review(tmp_path, m
     assert data["symbols"][identity]["binary_state"]["linked_byte"]["result"] == "passed"
 
 
+def test_commutative_match_is_narrow_conditional_and_separate_from_bytes(tmp_path, monkeypatch):
+    from copy import deepcopy
+    from _recoil.lib.commutative_match import compare_commutative, COMMUTATIVE_CONTRACT, COMMUTATIVE_VERSION
+    from _recoil.lib.function_match import MATCH_VERSION, weakest_match_level
+    from _recoil.lib import match_evidence as evidence
+    from _recoil.lib.source_traceability import parse_source_trace_text
+    from _recoil.lib.progress import is_current_accepted_state, ProgressError, AUTHORED_BYTE_DIMENSIONS, EXACT_LINK_DIMENSIONS
+    from _recoil.commands.progress_v2 import accept_live_byte_groups
+
+    def compare(a, b, **kwargs):
+        return compare_commutative(bytes.fromhex(a), bytes.fromhex(b), function_address=0x600000,
+                                   contract=kwargs.pop("contract", COMMUTATIVE_CONTRACT), **kwargs)
+
+    first = "d94004 d84a08 d91f c3"
+    second = "d94208 d84804 d91f c3"
+    proof = compare(first, second)
+    assert proof["passed"] and proof["conditional"] and len(proof["exchanges"]) == 1
+    assert proof["scope"] == "normalized-function-body-only"
+    assert not proof["accepts_function_match"] and not proof["accepts_exact_bytes"]
+    assert proof["pending_obligations"] and not proof["runtime_contract_proven"]
+    assert proof["regions"] == [{"start": 0, "end_exclusive": 8, "extra_stack_depth": 1}]
+    assert compare(first, first)["exact"]
+    assert not compare(first, first)["accepts_exact_bytes"]  # equality of supplied buffers only
+    # Calls before the function's zero-based decoder origin wrap to unsigned
+    # x86 targets in Capstone; the independent signed relative target agrees.
+    assert compare("e8f6ffffff " + first, "e8f6ffffff " + second)["passed"]
+    # Pro's concrete counterexample: LOOP re-enters FMUL without its originating
+    # FLD. First iteration stores 6 in both; second stores 15 versus 10.
+    for branch in ("e0", "e1", "e2", "e3"):
+        a = "d906 d900 d80a d91b " + branch + "fa c3"
+        b = "d906 d902 d808 d91b " + branch + "fa c3"
+        assert not compare(a, b)["passed"], branch
+    # A loop that repeats the entire balanced region remains admissible.
+    assert compare("d906 d900 d80a d91b e2f8 c3", "d906 d902 d808 d91b e2f8 c3")["passed"]
+    for contract in (None, {}, {**COMMUTATIVE_CONTRACT, "inputs": "any floating-point bit pattern"}):
+        assert not compare(first, second, contract=contract)["passed"]
+    # Interleaved loads/FXCH must follow values, not merely compare mnemonics.
+    dot = "d94004 d9420c d84b08 d9c9 d84e10 dec1 d91f c3"
+    swapped = "d94004 d94308 d84a0c d9c9 d84e10 dec1 d91f c3"
+    assert compare(dot, swapped)["passed"]
+    rejected = [
+        (first, "d94208 d84808 d91f c3"),  # different factor
+        (first, "d94208 d84804 d91e c3"),  # store target
+        (first, "dd4208 dc4804 d91f c3"),  # m64 instead of m32
+        (first, "d94208 d84004 d91f c3"),  # addition instead of multiplication
+        (dot, swapped.replace("d9c9", "d9ca")),  # stack operation changed
+        (dot, swapped.replace("dec1", "dec2")),  # addition grouping changed
+        (first + "90", second + "cc"),  # trailing byte cannot be relaxed
+        ("31c0 " + first, "31c9 " + second),  # mixed unproved GPR reassignment
+        ("d94004 40 d84a08 d91f c3", "d94208 40 d84804 d91f c3"),  # address clobber
+        ("d94004 8900 d84a08 d91f c3", "d94208 8900 d84804 d91f c3"),  # aliased store
+        ("d94004 e800100000 d84a08 d91f c3", "d94208 e800100000 d84804 d91f c3"),  # call
+        ("7403 " + first, "7403 " + second),  # branch enters after load
+        ("ff20 " + first, "ff20 " + second),  # unproved indirect jump
+        ("ff10 " + first, "ff10 " + second),  # unproved indirect call
+        (first[:-2] + "dfe0 c3", second[:-2] + "dfe0 c3"),  # reads status word
+        (first[:-2] + "d92f c3", second[:-2] + "d92f c3"),  # changes control word
+        (first[:-2] + "0f7ec0 c3", second[:-2] + "0f7ec0 c3"),  # reads aliased x87/MMX bits
+        ("d94004 d8ca d91f c3", "d94208 d8ca d91f c3"),  # unproved entry ST(2)
+    ]
+    for a, b in rejected:
+        assert not compare(a, b)["passed"], (a, b)
+    # Same code behind an independently bounded retail switch; its entries
+    # remain exact, even when the function otherwise qualifies.
+    base = 0x600000
+    prefix = bytes.fromhex("83f801 7710 ff2485") + struct.pack("<I", base + 24)
+    code = prefix + bytes.fromhex(first) + bytes.fromhex("c3 9090")
+    assert len(code) == 24
+    code += struct.pack("<II", base + 12, base + 21)
+    candidate = bytearray(code); candidate[12:21] = bytes.fromhex(second)
+    table_proof = compare_commutative(code, bytes(candidate), function_address=base, contract=COMMUTATIVE_CONTRACT)
+    assert table_proof["passed"], table_proof
+    candidate[-4:] = struct.pack("<I", base + 12)
+    assert not compare_commutative(code, bytes(candidate), function_address=base, contract=COMMUTATIVE_CONTRACT)["passed"]
+
+    identity = "recoil:function:0x401000"
+    text = ("/**\r\n * @recoil-anchor recoil:anchor:unit\r\n * @recoil-artifact defines .text "
+            + identity + ": Unit.\r\n *\r\n *\r\n * Purpose: unit.\r\n */\r\nvoid f() {}\r\n")
+    path = tmp_path / "unit.cpp"; path.write_bytes(text.encode())
+    monkeypatch.setattr(evidence, "REPO_ROOT", tmp_path)
+    context = {"source": "unit.cpp"}
+    review = {"version": MATCH_VERSION, "commutative_version": COMMUTATIVE_VERSION,
+              "evidence_id": "review", "decision": "compiler-commutative-operand-selection-only",
+              "no_remaining_credible_source_options": True, "context": context,
+              "differences": proof["differences"], "contract": deepcopy(COMMUTATIVE_CONTRACT),
+              "contract_justification": "ordinary finite inputs; FP diagnostics are outside the reviewed observation domain"}
+    state = {"version": MATCH_VERSION, "commutative_version": COMMUTATIVE_VERSION,
+             "level": "commutative", "validation_mode": "live", "freshness": "current",
+             "evidence_ids": ["proof"], "review_evidence_id": "review",
+             "dependencies": evidence.dependency_states(["unit.cpp"])}
+    row = {"function_match": state, "commutative_match_review": review}
+    assert evidence.current_match_level(row) == "commutative"
+    assert evidence.review_current(review, context, proof["differences"], level="commutative")
+    assert not evidence.review_current(review, context, proof["differences"])  # never a register-only proof
+    for field, value in (("contract", {}), ("contract_justification", ""), ("commutative_version", 0),
+                         ("no_remaining_credible_source_options", False), ("evidence_id", "")):
+        bad = deepcopy(row); bad["commutative_match_review"][field] = value
+        assert evidence.current_match_level(bad) is None
+    assert weakest_match_level(["byte", "instruction", "commutative"]) == "commutative"
+    assert weakest_match_level(["commutative", None]) is None
+    edits, _ = evidence.annotation_edits([parse_source_trace_text(text, path="unit.cpp")], {identity: row})
+    tagged = edits[0]["after"]
+    assert b" * @recoil-match commutative\r\n *\r\n * Purpose:" in tagged
+    assert tagged.count(b"\n") == text.count("\n")
+    parsed = parse_source_trace_text(tagged.decode(), path="unit.cpp")
+    assert not parsed.findings and parsed.matches[0].level == "commutative"
+    data = {"symbols": {identity: deepcopy(row)}}
+    obsolete_exact = deepcopy(row)
+    obsolete_exact["binary_state"] = {dimension: {"result": "passed", "disposition": "accepted",
+        "freshness": "current", "validation_mode": "live", "evidence_ids": ["older-proof"]}
+        for dimension in (*AUTHORED_BYTE_DIMENSIONS, *EXACT_LINK_DIMENSIONS)}
+    for mode in ("authored", "linked"):
+        assert not evidence.stage_match_current(obsolete_exact, mode, is_current_accepted_state)
+    for mode in ("authored", "linked"):
+        accept_live_byte_groups(data, mode=mode, groups=[[identity]], evidence_id="proof",
+            facts={"validation_mode": "live", "mode": mode, "match_levels": {identity: "commutative"}})
+        assert evidence.stage_match_current(data["symbols"][identity], mode, is_current_accepted_state)
+    binary = data["symbols"][identity]["binary_state"]
+    assert all(binary[x]["result"] == "failed" for x in ("object_byte", "linked_body_byte", "linked_byte"))
+    assert not any(x.endswith("instruction") for x in binary)
+    data["symbols"][identity]["commutative_match_review"]["contract"] = {}
+    assert not evidence.stage_match_current(data["symbols"][identity], "linked", is_current_accepted_state)
+    with pytest.raises(ProgressError):
+        accept_live_byte_groups(data, mode="linked", groups=[[identity]], evidence_id="proof",
+            facts={"match_levels": {identity: "commutative"}})
+    # Captured Pro advice grants eligibility only. A receipt, positive answer,
+    # transcript inclusion and the exact current compiler/source context are
+    # all independently required by the command, before any live proof.
+    import json
+    from types import SimpleNamespace as Row
+    from _recoil.commands import match_progress, live_byte_verify
+    monkeypatch.setattr(match_progress, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(match_progress, "source_context", lambda *a: context)
+    monkeypatch.setattr(match_progress, "add_live_evidence", lambda *a, **k: "new-review")
+    monkeypatch.setattr(live_byte_verify, "_rows", lambda *a: [{}])
+    monkeypatch.setattr(live_byte_verify, "_bindings", lambda *a: [])
+    monkeypatch.setattr(live_byte_verify, "_select_bindings", lambda *a: [Row(source_from="unit.cpp")])
+    review_row = {**deepcopy(row), "pipeline_class": "authored", "address": "0x401000"}
+    document = Row(collection=lambda name: {identity: review_row})
+    def mutate_review(transform, **kwargs):
+        preview = {"symbols": {identity: deepcopy(review_row)}}
+        transform(preview)
+        updated = preview["symbols"][identity]
+        assert updated["function_match"]["freshness"] == "changed"
+        assert "binary_state" not in updated
+        assert updated["commutative_match_review"]["evidence_id"] == "new-review"
+        return Row(to_dict=lambda: {"applied": False})
+    store = Row(mutate=mutate_review)
+    payload = {"symbol_id": identity, "reviewed": True, "decision": review["decision"],
+               "no_remaining_credible_source_options": True, "reason": "reviewed compiler operand selection",
+               "attempts": ["credible C++ forms failed"], "differences": proof["differences"],
+               "source_context": context, "contract": COMMUTATIVE_CONTRACT,
+               "contract_justification": review["contract_justification"],
+               **{key: key + ".txt" for key in ("prompt", "answer", "transcript", "receipt")}}
+    artifacts = {"prompt": "Detailed source/compiler context and failed variants.",
+                 "answer": "COMMUTATIVE_MATCH_APPROVED\n", "transcript": "COMMUTATIVE_MATCH_APPROVED\n",
+                 "receipt": json.dumps({"submission": {"status": "confirmed"}})}
+    args = Row(operation="review-commutative", payload_file=tmp_path / "review.json", expected_revision=1, apply=False)
+    def review_command(values=payload, exchange=artifacts):
+        args.payload_file.write_text(json.dumps(values))
+        for key, value in exchange.items():
+            (tmp_path / payload[key]).write_text(value)
+        return match_progress._review(args, document, store)
+    assert review_command()["advisory_only"]
+    for key, value in (("receipt", json.dumps({"submission": {"status": "unknown"}})),
+                       ("answer", "INSTRUCTION_MATCH_APPROVED\n"), ("transcript", "missing answer"),
+                       ("answer", "COMMUTATIVE_MATCH_APPROVED\nCOMMUTATIVE_MATCH_NOT_APPROVED\n")):
+        with pytest.raises(ProgressError):
+            review_command(exchange={**artifacts, key: value})
+    for key, value in (("source_context", {}), ("contract", {}), ("contract_justification", ""),
+                       ("reviewed", False), ("no_remaining_credible_source_options", False)):
+        with pytest.raises(ProgressError):
+            review_command(values={**payload, key: value})
+
+
 def test_retail_decoder_proves_remapped_and_direct_tables_in_one_trailing_island():
-    from _recoil.commands.relocation_expectations import decode_x86_operand_sites
+    from _recoil.commands.relocation_expectations import (
+        _bound_preserved_between, _decode_one, decode_x86_operand_sites,
+    )
 
     base, code = mapped_switch_bytes()
+    # VC5 may schedule callee-save PUSH instructions after CMP. Their stack
+    # writes preserve the bound and flags, except when ESP itself is bounded.
+    for register in range(8):
+        pushed = code[:3] + bytes([0x50 + register]) + b"\x90" * 7 + code[11:]
+        sites, unresolved = decode_x86_operand_sites(pushed, function_address=base)
+        assert not unresolved
+        assert [site.offset for site in sites if site.kind == "switch-table-entry"] == [56, 60, 64, 72, 76]
+        push = bytes([0x50 + register])
+        assert not _bound_preserved_between(push, [_decode_one(push, 0)], 4)
     # The last RET may already end at the aligned table boundary.
     adjacent = bytearray(code[:52] + code[56:])
     for field, target in ((17, 64), (24, 52), (36, 68)):
@@ -222,6 +408,9 @@ def test_retail_decoder_rejects_unproven_remap_flow_extents_and_targets():
         (1, b"\xfb"),  # The bound applies to a different register.
         (3, bytes.fromhex("8b 44 24 04 90 90 90 90")),  # Bounded index is overwritten.
         (3, bytes.fromhex("83 c0 01 90 90 90 90 90")),  # Bound flags are clobbered.
+        (3, b"\x58" + b"\x90" * 7),  # POP overwrites the bounded EAX.
+        (3, b"\x9d" + b"\x90" * 7),  # POPF overwrites the comparison flags.
+        (3, b"\x66\x57" + b"\x90" * 6),  # Operand-size variants remain unproved.
         (68, b"\x03"),  # Map selects an entry outside the pointer table.
         (56, struct.pack("<I", base + 41)),  # Target is inside an instruction.
         (56, struct.pack("<I", base + 52)),  # Target is alignment before the data island.
@@ -307,10 +496,94 @@ def test_retail_derivation_screens_arithmetic_lea_but_retains_absolute_symbol_re
     code[2:6] = struct.pack("<I", 0x403000)
     assert derive()["unresolved"][0]["kind"] == "missing-target-identity"
     _exercise_native_eh_role_witnesses(monkeypatch)
+    _exercise_native_eh_source_refresh()
     _exercise_native_array_cleanup(monkeypatch)
     _exercise_native_array_destruction(monkeypatch)
     _exercise_native_import_references(monkeypatch)
+    _exercise_native_import_owner_context(monkeypatch)
     _exercise_native_import_source_refresh()
+
+
+def test_reviewed_one_past_end_pointer_keeps_array_identity(tmp_path, monkeypatch):
+    from copy import deepcopy
+    from types import SimpleNamespace as Row
+    from _recoil.commands import relocation_expectations as expected
+    from _recoil.commands import relocation_expectation_mutation as mutation
+
+    reference = tmp_path / "retail.exe"
+    reference.write_bytes(b"immutable retail fixture")
+    base, array, end = 0x600000, 0x601000, 0x601010
+    source_id, target_id = "recoil:function:0x600000", "recoil:data:0x601000"
+    code = bytearray(b"\xbe" + struct.pack("<I", array)
+                     + b"\x81\xfe" + struct.pack("<I", end) + b"\xc3")
+    source = dict(binary="recoil", kind="function", address=hex(base),
+                  end_exclusive=hex(base+len(code)), object_symbol="_iterate", scope_ids=[source_id])
+    target = dict(binary="recoil", kind="data", address=hex(array), end_exclusive=hex(end),
+                  size=16, extent_state="known", object_symbol="_items")
+    symbols = {source_id: source, target_id: target}
+    document = Row(collection=lambda name: symbols if name == "symbols" else {"proof": {}})
+    monkeypatch.setattr(expected, "parse_pe_headers", lambda *a, **k: Row(image_base=base, size_of_image=0x10000))
+    monkeypatch.setattr(expected, "_pe_bytes", lambda image, headers, address, size: bytes(code[address-base:address-base+size]))
+    identities = (expected.TargetIdentity(target_id, array, end, ("_items",), "registered-vc5-target"),
+                  expected.TargetIdentity("recoil:data:0x601010", end, end+16, ("_next",), "registered-vc5-target"))
+    monkeypatch.setattr(expected, "build_target_identity_state", lambda *a, **k: (identities, []))
+    payload = dict(reviewed=True, object_symbol="_iterate", offset=7, type=6,
+                   target_symbol="_items", target_symbol_id=target_id, coff_addend=16,
+                   resolved_target_addend=16, retail_target=end, evidence_ids=["proof"],
+                   reason="Reviewed end pointer for the existing array.")
+
+    def prepare(request=None):
+        return mutation.prepare_reviewed_exception(document=document, bindings={}, source_symbol_id=source_id,
+            source_address=hex(base), payload=payload if request is None else request, reference=reference)
+
+    def derive():
+        return expected.derive_relocation_expectations(document=document, bindings={}, row={**source, "physical_rows": [source]},
+            object_symbol="_iterate", reference=reference)
+
+    # Ordinary lookup remains half-open and chooses the neighboring object.
+    assert derive()["expectations"][-1]["target_symbol"] == "_next"
+    reviewed, decoded = prepare()
+    assert decoded["retail_target"] == end
+    source["relocation_expectation_exceptions"] = [reviewed]
+    result = derive()
+    assert result["passed"], result
+    bound = result["expectations"][-1]
+    assert (bound["target_symbol"], bound["coff_addend"], bound["resolved_target_addend"]) == ("_items", 16, 16)
+    for change in ({"coff_addend": 15}, {"resolved_target_addend": 15}, {"reviewed": False},
+                   {"retail_target": end+1}, {"type": 20}):
+        with pytest.raises(mutation.RelocationExceptionMutationError):
+            prepare({**payload, **change})
+    for change in ({"kind": "function"}, {"extent_state": "unknown"}, {"size": 20}):
+        saved = deepcopy(target)
+        target.update(change)
+        with pytest.raises(mutation.RelocationExceptionMutationError):
+            prepare()
+        assert not derive()["passed"]  # live proof repeats the same boundary obligation
+        target.clear(); target.update(saved)
+    # A stale extent cannot silently become an interior reference.
+    target["end_exclusive"] = hex(end+4)
+    assert not derive()["passed"]
+    target["end_exclusive"] = hex(end)
+    original = bytes(code)
+    for replacement, operand_offset in [
+        (b"\xbf" + struct.pack("<I", end) + b"\xc3", 1),  # MOV reg, pointer
+        (b"\x81\x3e" + struct.pack("<I", end) + b"\xc3", 2),  # CMP [reg], pointer
+        (b"\x8b\x05" + struct.pack("<I", end) + b"\xc3", 2),  # dereference end
+        (b"\x81\xf6" + struct.pack("<I", end) + b"\xc3", 2),  # XOR reg, pointer
+    ]:
+        code[:] = replacement
+        source["end_exclusive"] = hex(base+len(code))
+        with pytest.raises(mutation.RelocationExceptionMutationError):
+            prepare({**payload, "offset": operand_offset})
+    # The accumulator encoding has the same safe comparison semantics.
+    code[:] = b"\x3d" + struct.pack("<I", end) + b"\xc3"
+    source["end_exclusive"] = hex(base+len(code))
+    assert prepare({**payload, "offset": 1})[1]["opcode"] == "3d"
+    code[:] = original
+    source["end_exclusive"] = hex(base+len(code))
+    # A forged stored addend is rejected during live derivation, not only on write.
+    reviewed["coff_addend"] = 15
+    assert not derive()["passed"]
 
 
 def _exercise_registered_byte_selectors(monkeypatch):
@@ -335,6 +608,69 @@ def _exercise_registered_byte_selectors(monkeypatch):
     literal.source_from = "src/unit.cpp"
     other = Row(function=Row(symbol="", symbol_regex="_different"), source_from="src/unit.cpp", target=binding.target)
     assert selectors.registered_target_selector([binding, other], set()) is None
+
+    # A reviewed static stem and its exact compiler-suffix selector identify
+    # the same storage. Keep the stem so the complete reader proof still runs.
+    data_id = "recoil:data:0x503000"
+    data_binding = Row(function=Row(symbol="_constant", symbol_regex=r"_constant\$S[0-9]+"),
+                       source_from="src/unit.cpp", target=binding.target)
+    reviewed = dict(reviewed=True, object_symbol="_constant",
+                    binding_context={"source_binding": {"symbol_id": "recoil:function:0x401000"}})
+    data_row = dict(binary="recoil", address="0x503000", end_exclusive="0x503004",
+                    kind="data", ownership_state="primary-owned",
+                    output_section_id="recoil:section:.rdata", relocation_target_binding=reviewed)
+    data_document = Row(collection=lambda name: {data_id: data_row} if name == "symbols" else {})
+    with monkeypatch.context() as patch:
+        patch.setattr(expected, "relocation_target_binding_staleness", lambda item, **kw: (item, []))
+        def data_state(extra=()):
+            return expected.build_target_identity_state(data_document, {data_id: [data_binding, *extra]})
+        state, blockers = data_state()
+        assert not blockers and state[0].object_symbols == ("_constant",)
+        assert state[0].registered_selector is None
+        assert "reviewed-relocation-target-binding" in state[0].source
+        for target, field, value in (
+            (data_row, "kind", "function"), (data_row, "ownership_state", "unresolved"),
+            (data_row, "output_section_id", "recoil:section:.data"),
+            (reviewed, "object_symbol", "_other"), (reviewed, "reviewed", False)):
+            with monkeypatch.context() as changed:
+                changed.setitem(target, field, value)
+                state, _ = data_state()
+                assert state[0].object_symbols != ("_constant",)
+        for field, value in (("symbol_regex", r"_constant.*"),
+                             ("symbol_regex", r"_other\$S[0-9]+"), ("symbol", "_other"),
+                             ("object_offset", 4)):
+            with monkeypatch.context() as changed:
+                changed.setattr(data_binding.function, field, value, raising=False)
+                state, blockers = data_state()
+                assert blockers or state[0].object_symbols != ("_constant",)
+        other_tu = Row(function=data_binding.function, source_from="src/other.cpp", target=binding.target)
+        assert data_state([other_tu])[0][0].object_symbols != ("_constant",)
+        patch.setattr(expected, "relocation_target_binding_staleness",
+                      lambda item, **kw: (item, [{"field": "source_binding"}]))
+        state, blockers = data_state()
+        assert blockers and state[0].object_symbols != ("_constant",)
+        patch.setattr(expected, "relocation_target_binding_staleness", lambda item, **kw: (item, []))
+        # Older data rows record primary ownership only in the reviewed
+        # relationship, without a duplicate ownership_state field.
+        patch.delitem(data_row, "ownership_state")
+        context = reviewed["binding_context"]
+        patch.setitem(context, "owner", {"owner_id": "recoil:owner:unit"})
+        patch.setitem(context, "target", {**{k:data_row.get(k) for k in
+            ("kind", "address", "end_exclusive", "output_section_id", "ownership_state")},
+            "symbol_id": data_id, "object_symbol": "_constant"})
+        patch.setitem(context, "relationship", {"kind":"primary-data", "symbol_id":data_id,
+                                               "address":data_row["address"]})
+        assert data_state()[0][0].object_symbols == ("_constant",)
+        for target, field, value in ((context["owner"], "owner_id", ""),
+            (context["relationship"], "kind", "primary-function"),
+            (context["relationship"], "address", "0x503004"),
+            (context["target"], "end_exclusive", "0x503008")):
+            with monkeypatch.context() as changed:
+                changed.setitem(target, field, value)
+                assert data_state()[0][0].object_symbols != ("_constant",)
+        patch.setattr(expected, "relocation_target_binding_staleness",
+                      lambda item, **kw: (item, [{"field":"relationship"}]))
+        assert data_state()[1]
 
     symbol_id = "recoil:function:0x402000"
     row = dict(binary="recoil", address="0x402000", end_exclusive="0x402010", kind="function")
@@ -524,9 +860,34 @@ def _exercise_native_import_references(monkeypatch):
 
     for identity in (dict(dll="OTHER.dll", name="#42", ordinal=42),
                      dict(dll="MFC42.DLL", name="convert", ordinal=None),
-                     dict(dll="MSVCRT.dll", name="#42", ordinal=42)):
+                     dict(dll="MSVCRT.dll", name="#42", ordinal=42),
+                     dict(dll="AVIFIL32.dll", name="#42", ordinal=42)):
         with pytest.raises(ValueError, match="requires"):
             imports.canonical_import_proof("_convert", identity)
+
+    # Named Video for Windows imports use the same strict long member proof;
+    # their exact canonical archive, DLL member and descriptor still matter.
+    from _recoil.commands import provider_function_mutation as archives
+    video_identity = dict(dll="AVIFIL32.dll", name="convert", ordinal=None)
+    member = Row(name="AVIFIL32.dll", data=b"fixture _convert")
+    read_paths = []
+    with monkeypatch.context() as patch:
+        patch.setattr(Path, "read_bytes", lambda path: read_paths.append(path) or b"archive")
+        patch.setattr(archives, "parse_archive_members", lambda data: [member])
+        patch.setattr(imports.CoffObject, "from_bytes", lambda data: obj)
+        patch.setattr(symbols[3], "name", "__IMPORT_DESCRIPTOR_AVIFIL32")
+        proof = imports.canonical_import_proof("_convert", video_identity)
+        assert proof["library"] == "VC/LIB/VFW32.LIB" and proof["member"] == "AVIFIL32.dll"
+        assert read_paths == [imports.DEFAULT_VC5_ROOT / "VC/LIB/VFW32.LIB"]
+        for target, field, value in ((member, "name", "OTHER.dll"),
+                                    (symbols[3], "name", "__IMPORT_DESCRIPTOR_MSVCRT"),
+                                    (sections[3], "raw_data", b"\0\0other\0")):
+            with monkeypatch.context() as changed:
+                changed.setattr(target, field, value)
+                with pytest.raises(ValueError): imports.canonical_import_proof("_convert", video_identity)
+        patch.setattr(archives, "parse_archive_members", lambda data: [member, member])
+        with pytest.raises(ValueError, match="ambiguous"):
+            imports.canonical_import_proof("_convert", video_identity)
 
     identity = dict(dll="MSVCRT.dll", name="convert", ordinal=None)
     table = [Row(address="0x408000", dll="MSVCRT.dll", import_name="convert", import_ordinal=None)]
@@ -563,6 +924,122 @@ def _exercise_native_import_references(monkeypatch):
             with pytest.raises(ValueError, match="different DLL/import"): prove()
 
 
+def _exercise_native_import_owner_context(monkeypatch):
+    from copy import deepcopy
+    from types import SimpleNamespace as Row
+    from _recoil.commands import native_import_relocations as imports
+
+    target_id, owner_id = "recoil:function:0x407000", "recoil:owner:provider.example"
+    target = dict(address="0x407000", ownership_state="unresolved")
+    owners = {}
+    document = Row(collection=lambda name: owners)
+    prove = lambda selected=None: imports.import_owner_context(document, target_id, target, selected)
+    assert prove() is None
+    with pytest.raises(ValueError): prove(owner_id)
+    target["ownership_state"] = "primary-owned"
+    relationship = dict(kind="primary-function", symbol_id=target_id, address=target["address"])
+    owner = dict(binary="recoil", kind="provider-boundary", provider_state="accepted",
+                 lifecycle_state="accepted", gates=dict(boundary="accepted", source="accepted", byte="deferred"),
+                 relationships=[relationship], evidence_ids=[])
+    owners[owner_id] = owner
+    with pytest.raises(ValueError): prove()
+    baseline = deepcopy((target, owners))
+    saved = prove(owner_id)
+    assert saved == dict(owner_id=owner_id, owner=owner)
+    assert (target, owners) == baseline
+    assert saved["owner"] is not owner
+    for selected in ("other", "", True, 1):
+        with pytest.raises(ValueError): prove(selected)
+    for record, key, value in [
+        (target, "ownership_state", "unresolved"), (owner, "binary", "messages"),
+        (owner, "kind", "class"), (owner, "provider_state", "pending"),
+        (owner, "lifecycle_state", "discovered"), (owner["gates"], "boundary", "pending"),
+        (owner["gates"], "source", "pending"), (relationship, "symbol_id", "other"),
+        (relationship, "address", "0x407010"),
+        (owner, "relationships", [relationship, deepcopy(relationship)]),
+    ]:
+        with monkeypatch.context() as patch:
+            patch.setitem(record, key, value)
+            with pytest.raises(ValueError): prove(owner_id)
+    owners["other"] = deepcopy(owner)
+    with pytest.raises(ValueError): prove(owner_id)
+    del owners["other"]
+    for field in ("object_symbol", "logical_aliases", "relocation_target_binding", "provider_object_identity"):
+        with monkeypatch.context() as patch:
+            patch.setitem(target, field, "already-bound")
+            with pytest.raises(ValueError): prove(owner_id)
+    owner["evidence_ids"].append("new-provider-evidence")
+    assert saved != prove(owner_id) and saved["owner"]["evidence_ids"] == []
+    # Live expectation derivation must re-read the selected owner and reject
+    # stale ownership snapshots; no changed context may reuse a stored proof.
+    old = dict(source_binding=dict(object_symbol="_caller"), offset=1,
+               canonical=dict(symbol="_convert"), evidence_ids=["source-evidence"],
+               provider_owner=saved, target_id=target_id, target=0x407000)
+    binding = dict(schema=imports.SCHEMA, reviewed=True, context=old)
+    symbols = {"caller": {imports.FIELD: [binding]}}
+    doc = Row(collection=lambda name: symbols)
+    calls = []
+    with monkeypatch.context() as patch:
+        def context(*args):
+            calls.append(args[-1])
+            return dict(old, provider_owner=prove(owner_id))
+        patch.setattr(imports, "binding_context", context)
+        with pytest.raises(ValueError, match="stale"):
+            imports.derive_import_expectations(doc, [], dict(scope_ids=["caller"]), "_caller", Path("retail.exe"))
+        assert calls == [owner_id]
+        owner["evidence_ids"].clear()
+        assert imports.derive_import_expectations(doc, [], dict(scope_ids=["caller"]), "_caller", Path("retail.exe"))
+
+
+def _exercise_native_eh_source_refresh():
+    from copy import deepcopy
+    from _recoil.commands import native_eh_relocations as eh
+
+    old = dict(schema=eh.SCHEMA, reviewed=True, reason="Retail EH parent",
+               context=dict(retail=dict(handler=0x402000, handler_offset=3, max_state=1),
+                            runtime=dict(value=0), target=dict(address="0x402000"),
+                            target_id="handler", owner_id=None, relationship=None, evidence_ids=["evidence"],
+                            source=dict(symbol_id="caller", object_symbol="_caller", address="0x401000",
+                                        end_exclusive="0x401030", registration_ids=["vc5:old"])))
+    row = dict(unrelated="preserved")
+    assert eh.stage_eh_binding(row, old) == "added"
+    with pytest.raises(ValueError, match="already"): eh.stage_eh_binding(row, old)
+    current = deepcopy(old)
+    current["reason"] = "Corrected source selector registrations"
+    current["context"]["source"]["registration_ids"] = ["vc5:old", "vc5:corrected"]
+    for invalid in ({}, dict(old, reviewed=1), dict(old, schema="unknown"), dict(old, reason=""),
+                    dict(old, reason="stale"), None):
+        with pytest.raises(ValueError): eh.stage_eh_binding(row, current, invalid)
+    with pytest.raises(ValueError, match="missing"): eh.stage_eh_binding({}, current, old)
+    for field, value in (("retail", dict(handler=0x402001)), ("runtime", dict(value=1)),
+                         ("target", dict(address="0x402001")), ("target_id", "other"),
+                         ("owner_id", "owner"), ("relationship", {}), ("evidence_ids", ["new"]),
+                         ("provider_lifecycle", dict(state="accepted")), ("unexpected", True)):
+        bad = deepcopy(current)
+        bad["context"][field] = value
+        with pytest.raises(ValueError): eh.stage_eh_binding(row, bad, old)
+    for field, value in (("symbol_id", "other"), ("object_symbol", "_other"),
+                         ("address", "0x401001"), ("end_exclusive", "0x401031"), ("unexpected", True),
+                         ("registration_ids", []), ("registration_ids", ["same", "same"]),
+                         ("registration_ids", [None]), ("registration_ids", "bad")):
+        bad = deepcopy(current)
+        bad["context"]["source"][field] = value
+        with pytest.raises(ValueError): eh.stage_eh_binding(row, bad, old)
+    for context in (None, {}, dict(old["context"], source=None)):
+        malformed = dict(old, context=context)
+        with pytest.raises(ValueError): eh.stage_eh_binding({eh.FIELD:malformed}, current, malformed)
+    missing = deepcopy(old)
+    del missing["context"]["source"]["registration_ids"]
+    with pytest.raises(ValueError): eh.stage_eh_binding({eh.FIELD:missing}, current, missing)
+    with pytest.raises(ValueError, match="changed"): eh.stage_eh_binding(row, old, old)
+    assert row == dict(unrelated="preserved", **{eh.FIELD:old})
+    assert eh.stage_eh_binding(row, current, old) == "refreshed-source-registration"
+    assert row == dict(unrelated="preserved", **{eh.FIELD:current})
+    current["context"]["source"]["registration_ids"].clear()
+    assert row[eh.FIELD]["context"]["source"]["registration_ids"] == ["vc5:old", "vc5:corrected"]
+    assert old["context"]["source"]["registration_ids"] == ["vc5:old"]
+
+
 def _exercise_native_import_source_refresh():
     from copy import deepcopy
     from _recoil.commands import native_import_relocations as imports
@@ -592,6 +1069,7 @@ def _exercise_native_import_source_refresh():
     for field, value in (("offset", 2), ("opcode", "e9"), ("target", 0x407001),
                          ("identity", dict(dll="OTHER.dll", name="convert", ordinal=None)),
                          ("evidence_ids", ["new"]), ("canonical", dict(symbol="_other")),
+                         ("provider_owner", dict(owner_id="new-owner", owner={})),
                          ("unexpected", True)):
         bad = deepcopy(current)
         bad["context"][field] = value
@@ -1048,6 +1526,25 @@ def test_named_static_stem_requires_exact_storage_contents_and_all_readers(monke
     good = check()
     assert good.symbol_name == "_limit" and good.compiler_local_ordinal_canonicalized
     assert good.expected_target_bytes == struct.pack("<f", 5)
+    from copy import deepcopy
+    relational_row = deepcopy(target_row)
+    del relational_row["ownership_state"]
+    context = dict(owner={"owner_id":"recoil:owner:unit"},
+        target={**{k:relational_row.get(k) for k in
+            ("kind", "address", "end_exclusive", "output_section_id", "ownership_state")},
+            "symbol_id":target_id, "object_symbol":"_limit"},
+        relationship={"kind":"primary-data", "symbol_id":target_id, "address":"0x501000"})
+    relational_row["relocation_target_binding"].update(reviewed=True, binding_context=context)
+    assert check(row=relational_row).compiler_local_ordinal_canonicalized
+    assert not check(row=relational_row, universe=[]).compiler_local_ordinal_canonicalized
+    for changed_row, field, value in ((context["owner"], "owner_id", None),
+        (context["relationship"], "symbol_id", "recoil:data:0x501004"),
+        (context["relationship"], "kind", "consumes"),
+        (context["target"], "object_symbol", "_other"),
+        (context["target"], "end_exclusive", "0x501008")):
+        with monkeypatch.context() as changed:
+            changed.setitem(changed_row, field, value)
+            assert not check(row=relational_row).compiler_local_ordinal_canonicalized
     # Registered selectors must be resolved before the all-or-nothing local
     # ordinal proof. Their presence cannot hide a bad selector or bad scalar.
     literal = Row(name='_label123', index=2, value=0, section_number=3, storage_class=2, type=0)
@@ -1112,6 +1609,19 @@ def test_named_static_stem_requires_exact_storage_contents_and_all_readers(monke
         return byte._registered_retail_reader_universe(document=document, bindings=bindings,
             binding=binding, target_symbol_id=target_id, reference=Path("retail.exe"))
 
+    assert universe() == tuple(readers)
+    # An incomplete retail decode leaves the complete reader proof unavailable;
+    # the full census must receive a scoped failure, never an empty reader set.
+    def incomplete_decode(**kwargs):
+        raise byte.RelocationExpectationError("unproven indexed jump")
+
+    with monkeypatch.context() as decode_patch:
+        decode_patch.setattr(byte, "decode_retail_target_sites", incomplete_decode)
+        with pytest.raises(byte.LiveByteError) as unavailable:
+            universe()
+        assert target_id in str(unavailable.value) and source_id in str(unavailable.value)
+        assert "unproven indexed jump" in str(unavailable.value)
+        assert isinstance(unavailable.value.__cause__, byte.RelocationExpectationError)
     assert universe() == tuple(readers)
     # Separate manifests for the same TU contribute a single reader census;
     # private function spellings are resolved only as fresh COFF witnesses.
@@ -1324,6 +1834,57 @@ def _exercise_near_byte_review(tmp_path, monkeypatch):
     linked[0] = actual
     incomplete = compare(True, [{"offset": 1, "type": 6, "target_symbol": "_missing"}])
     assert not incomplete.get("structural_comparison_complete", False) and not incomplete["passed"]
+
+    # Join a real numerical body proof with relocation/link obligations. The
+    # COFF/map adapters supply one typed fixture; body equivalence must never
+    # bypass a missing relocation, wrong addend/target or absent linked body.
+    from _recoil.lib.commutative_match import COMMUTATIVE_CONTRACT, COMMUTATIVE_VERSION
+    from _recoil.lib.function_match import MATCH_VERSION
+    expected = bytes.fromhex("be00304000 d94004 d84a08 d91f c3")
+    actual = bytes.fromhex("be00000000 d94208 d84804 d91f c3")
+    linked[0] = bytes.fromhex("be00404000 d94208 d84804 d91f c3")
+    relocation = Row(offset=1, type=6, symbol_name="_data")
+    body = Row(start=0, data=actual, relocation_mask=tuple(1 <= i < 5 for i in range(len(actual))),
+               relocations=[relocation], section_index=1)
+    row["end_exclusive"] = hex(0x401000 + len(expected))
+    catalog = [{"offset": 1, "type": 6, "target_symbol": "_data", "coff_addend": 0,
+                "retail_target": 0x403000, "resolved_target_addend": 0}]
+    canonical = byte.CanonicalRelocationTarget("_data", 0, False, "fixture")
+    monkeypatch.setattr(byte, "_canonicalize_vc5_local_data_ordinals", lambda **kw:
+                        [(rel, canonical) for rel in body.relocations])
+    monkeypatch.setattr(byte, "_candidate_target_identity", lambda **kw:
+        byte.CandidateTargetIdentity(frozenset({0x404000}), frozenset({"_data"}), "fixture", "typed target"))
+    reviews = {}
+    mapped = [Row(symbol="_entry", address=0x402000, is_function=True)]
+    def compare_commutative_link(relocations=catalog):
+        return byte._compare_row(mode="authored", row=row, binding=binding, config=Row(sources=[tmp_path/"unit.cpp"]),
+            paths=Row(exe_path=candidate), reference=reference, parsed_map=Row(symbols=mapped),
+            relocation_catalog=relocations, target_rows=reviews)
+    pending = compare_commutative_link()
+    assert pending["commutative_proof"]["passed"] and pending["stage"] == "commutative-review-required"
+    review = {"version": MATCH_VERSION, "commutative_version": COMMUTATIVE_VERSION,
+              "decision": "compiler-commutative-operand-selection-only", "evidence_id": "review",
+              "no_remaining_credible_source_options": True, "context": {},
+              "differences": pending["commutative_proof"]["differences"], "contract": COMMUTATIVE_CONTRACT,
+              "contract_justification": "reviewed finite ordinary ABI domain and continuation noninterference"}
+    reviews[row["symbol_id"]] = {"commutative_match_review": review}
+    complete = compare_commutative_link()
+    assert complete["passed"] and complete["match_level"] == "commutative"
+    assert complete["relocation_expectations_exact"] and not complete["object_body_equal_outside_relocations"]
+    for invalid in (None, [], [{**catalog[0], "type": 20}], [{**catalog[0], "target_symbol": "_wrong"}],
+                    [{**catalog[0], "coff_addend": 4}], [{**catalog[0], "retail_target": 0x403004}]):
+        result = compare_commutative_link(invalid)
+        assert result["commutative_proof"]["passed"] and not result["passed"]
+    mapped.clear()
+    assert compare_commutative_link()["stage"] == "linked-presence"
+    mapped.append(Row(symbol="_entry", address=0x402000, is_function=True))
+    linked[0] = bytes.fromhex("be04404000 d94208 d84804 d91f c3")
+    assert not compare_commutative_link()["passed"]  # resolved operand/addend drift
+    linked[0] = bytes.fromhex("be00404000 d94208 d84808 d91f c3")
+    assert not compare_commutative_link()["passed"]  # linked body differs from object witness
+    linked[0] = bytes.fromhex("be00404000 d94208 d84804 d91f c3")
+    review["context"] = {"stale": True}
+    assert not compare_commutative_link()["passed"]
 
 
 def alias_object(alias: str = "_alias", target: str = "_target") -> bytes:
@@ -1574,6 +2135,62 @@ def test_linked_presence_rejects_missing_data_and_ambiguous_function_symbols() -
         authored_linked_presence_report((), present)
 
 
+def _check_byte_binding_translation_unit_projection(monkeypatch):
+    from dataclasses import replace
+    from types import SimpleNamespace as Row
+    from _recoil.commands import live_byte_verify as byte
+
+    first = vc5_verify.VerifyFunction("0x401000", "_first", "first")
+    second = vc5_verify.VerifyFunction("0x402000", "_second", "second")
+    folded = replace(second, symbol="_folded", logical_identity_key="logical:folded")
+    other_alias = replace(second, logical_identity_key="logical:other")
+    unmapped = vc5_verify.VerifyFunction("0x403000", "_unmapped", "unmapped")
+    target = Row(name="units", manifest_path=Path("tools/units.json"),
+                 source_from="src/primary.cpp", functions=(first, second, folded, other_alias),
+                 translation_unit_function_order=(
+                     Row(source_from="src/primary.cpp", functions=(first,)),
+                     Row(source_from="src/second.cpp", functions=(second,)),
+                     Row(source_from="src/third.cpp", functions=(folded,))),
+                 linked_function_intervals=(Row(functions=(second, unmapped)),))
+    symbols = {f"function:{address}": dict(address=address, kind="function",
+                verification_target_ids=["units"]) for address in
+               (first.address, second.address, unmapped.address)}
+    collections = {"symbols": symbols, "verification_targets": {
+        "units": {"kind": "vc5", "registration": {"name": "units"}}}}
+    document = Row(collection=lambda name: collections[name])
+    with monkeypatch.context() as patch:
+        patch.setattr(byte, "load_manifests", lambda *args, **kwargs: [target])
+        def sources():
+            bindings = byte._bindings(document, Path("tools"))
+            return {(binding.function.address, binding.function.symbol,
+                     binding.function.logical_identity_key or "", binding.source_from)
+                    for group in bindings.values() for binding in group}
+        expected = {
+            (first.address, "_first", "", "src/primary.cpp"),
+            (second.address, "_second", "", "src/second.cpp"),
+            (folded.address, "_folded", "logical:folded", "src/third.cpp"),
+            (other_alias.address, "_second", "logical:other", "src/primary.cpp"),
+            (unmapped.address, "_unmapped", "", "src/primary.cpp"),
+        }
+        assert sources() == expected
+        # All explicit inline emission sites remain mandatory; a second site
+        # is neither discarded nor replaced by the unrelated default TU.
+        target.translation_unit_function_order += (
+            Row(source_from="src/fourth.cpp", functions=(second,)),)
+        expected.add((second.address, "_second", "", "src/fourth.cpp"))
+        assert sources() == expected
+        # Clearing explicit placements restores ordinary single-TU selection.
+        target.translation_unit_function_order = ()
+        assert sources() == {(address, symbol, identity, "src/primary.cpp")
+                             for address, symbol, identity, source in expected}
+        # A registered identity without any source still fails selection.
+        target.source_from = ""
+        bindings = byte._bindings(document, Path("tools"))
+        with pytest.raises(byte.LiveByteError, match="no source-backed byte target"):
+            byte._select_bindings(bindings, dict(address=first.address,
+                scope_ids=[f"function:{first.address}"]))
+
+
 def test_linked_presence_census_rejects_stale_or_uncovered_authority(monkeypatch: pytest.MonkeyPatch) -> None:
     from dataclasses import replace
     from types import SimpleNamespace
@@ -1613,6 +2230,8 @@ def test_linked_presence_census_rejects_stale_or_uncovered_authority(monkeypatch
     target.functions = (replace(function, required_presence=False),)
     with pytest.raises(ValueError, match="required presence"):
         vc5_build.required_authored_linked_functions(document)
+
+    _check_byte_binding_translation_unit_projection(monkeypatch)
 
 
 def test_playground_request_rejects_reuse_profiles_and_partial_modes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -190,7 +190,7 @@ zClass_LodDistanceState g_zClass_LodDistanceStateStack[4] = {0};
 }
 
 namespace {
-    const char kClassSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Class.c";
+
     const int kQueuedTreeBucket = 7;
     const int kTypeListInsertedFlag = 0x01;
     const int kTransformQueuedFlag = 0x02;
@@ -237,30 +237,6 @@ namespace {
             viewOverlay
         ) == 0x80
     );
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c typed vector-field access patterns.
-     * Purpose: address a mutable zVec3 field inside a recovered class record.
-     */
-    zVec3 *Vec3At(
-        void *base,
-        size_t offset
-    ) {
-        return (zVec3 *)((unsigned char *)(base) + offset);
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is
-     * present; observed in Class.c typed vector-field access patterns.
-     * Purpose: address a const zVec3 field inside a recovered class record.
-     */
-    const zVec3 *Vec3At(
-        const void *base,
-        size_t offset
-    ) {
-        return (const zVec3 *)((const unsigned char *)(base) + offset);
-    }
 
     /**
      * Original-source helper evidence: no standalone retail function is
@@ -366,8 +342,9 @@ namespace zClass_Class {
      * Purpose: validate node ownership and dispatch deletion by classId.
      */
     int __fastcall DeleteNodeByType(zClass_NodePartial * node) {
+        int result; // Case 0 leaves this uninitialized, as reproduced by VC5 byte comparison.
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x231, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x231, "Null node pointer.");
             return 5;
         }
 
@@ -377,40 +354,52 @@ namespace zClass_Class {
 
         switch (node->classId) {
         case 5:
-            return zClass_Object3D::DeleteNode(node);
+            result = zClass_Object3D::DeleteNode(node);
+            break;
         case 1:
-            return zClass_Camera::DeleteNode(node);
+            result = zClass_Camera::DeleteNode(node);
+            break;
         case 2:
-            return zClass_World::DeleteNode(node);
+            result = zClass_World::DeleteNode(node);
+            break;
         case 3:
-            return zClass_Window::DeleteNode(node);
+            result = zClass_Window::DeleteNode(node);
+            break;
         case 4:
-            return zClass_Display::DeleteNode(node);
+            result = zClass_Display::DeleteNode(node);
+            break;
         case 6:
-            return zClass_Lod::DeleteNode(node);
+            result = zClass_Lod::DeleteNode(node);
+            break;
         case 7:
-            return zClass_Sequence::DeleteNode(node);
+            result = zClass_Sequence::DeleteNode(node);
+            break;
         case 8:
-            return zClass_Animate::DeleteNode(node);
+            result = zClass_Animate::DeleteNode(node);
+            break;
         case 9:
-            return zClass_Light::DeleteNode(node);
+            result = zClass_Light::DeleteNode(node);
+            break;
         case 10:
-            return zClass_Sound::DeleteNode(node);
+            result = zClass_Sound::DeleteNode(node);
+            break;
         case 11:
-            return zClass_Switch::DeleteNode(node);
+            result = zClass_Switch::DeleteNode(node);
+            break;
         case 0:
             TryFreeNode(node);
-            return (int)((unsigned int)(node));
+            break;
         default:
             zError::ReportOld(
                 0x400,
-                kClassSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
                 0x272,
                 "ERROR: Unrecognized node class type for node: %s\n",
                 node->name
             );
             return 1;
         }
+        return result;
     }
 
     /**
@@ -421,7 +410,7 @@ namespace zClass_Class {
      */
     int __fastcall FreeNodeToFreeList(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x28e, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x28e, "Null node pointer.");
             return 5;
         }
         if (node->listCountB > 0) {
@@ -449,9 +438,9 @@ namespace zClass_Class {
         }
 
         const ptrdiff_t index = (zClass_NodeFreeListSlot *)(node)-g_zClass_NodeArray;
-        zClass_NodeFreeListSlot &slot = g_zClass_NodeArray[index];
-        slot.freeTag =
-            (slot.freeTag & 0xff000000) | ((unsigned int)(g_zClass_NodeFreeHeadIndex) & 0x00ffffff);
+        unsigned int *freeTag = &g_zClass_NodeArray[index].freeTag;
+        *freeTag =
+            (*freeTag & 0xff000000) | ((unsigned int)(g_zClass_NodeFreeHeadIndex) & 0x00ffffff);
         --g_zClass_ActiveNodeCount;
         g_zClass_NodeFreeHeadIndex = (int)(index);
 
@@ -466,7 +455,7 @@ namespace zClass_Class {
      */
     int __fastcall TryFreeNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x2f0, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x2f0, "Null node pointer.");
             return 5;
         }
 
@@ -495,7 +484,7 @@ namespace zClass_Class {
         const char *name
     ) {
         if (root == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x33a, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x33a, "Null node pointer.");
             return 0;
         }
 
@@ -525,17 +514,19 @@ namespace zClass_Class {
         int active
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x38d, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x38d, "Null node pointer.");
             return 5;
         }
 
-        if (
-            node->classId == 1 ||
-            node->classId == 2 ||
-            node->classId == 5 ||
-            node->classId == 6 ||
-            node->classId == 9
-        ) {
+        switch (node->classId) {
+        case 10:
+            zClass_Sound::gwSoundSetActive(node, active);
+            return 0;
+        case 1:
+        case 2:
+        case 5:
+        case 6:
+        case 9:
             if (active == 1) {
                 node->flags |= 0x04;
             } else if (active == 0) {
@@ -543,14 +534,10 @@ namespace zClass_Class {
             }
             return 0;
         }
-        if (node->classId == 10) {
-            zClass_Sound::gwSoundSetActive(node, active);
-            return 0;
-        }
 
         zError::ReportOld(
             0x400,
-            kClassSourceFile,
+            "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
             0x3a4,
             "gwNodeSetActive(): Unrecognized node class type:\n  node = %s class_type = %d\n",
             node,
@@ -569,7 +556,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x3b7, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x3b7, "Null node pointer.");
             return 5;
         }
 
@@ -592,7 +579,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x3c6, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x3c6, "Null node pointer.");
             return 5;
         }
 
@@ -616,7 +603,7 @@ namespace zClass_Class {
         const char *name
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x3df, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x3df, "Null node pointer.");
             return 5;
         }
 
@@ -637,7 +624,7 @@ namespace zClass_Class {
      */
     char *__fastcall gwNodeGetName(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x40d, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x40d, "Null node pointer.");
             return 0;
         }
 
@@ -725,22 +712,20 @@ namespace zClass_Class {
         void *actionCallback
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x47e, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x47e, "Null node pointer.");
             return 5;
         }
 
         int callbackPriority = node->callbackPriority;
         if (callbackPriority >= 0 && callbackPriority < 6) {
-            if (node->actionCallback == 0) {
-                if (actionCallback != 0) {
-                    if (zClass_TypeList::Insert(callbackPriority, node) != 0) {
-                        if ((node->flags & 0x800) == 0) {
-                            free(node);
-                        }
-                        return 5;
+            if (node->actionCallback == 0 && actionCallback != 0) {
+                if (zClass_TypeList::Insert(callbackPriority, node) != 0) {
+                    if ((node->flags & 0x800) == 0) {
+                        free(node);
                     }
+                    return 5;
                 }
-            } else if (actionCallback == 0) {
+            } else if (node->actionCallback != 0 && actionCallback == 0) {
                 zClass_TypeList::MarkPendingRemoval(callbackPriority, node);
             }
 
@@ -750,7 +735,7 @@ namespace zClass_Class {
 
         zError::ReportOld(
             0x400,
-            kClassSourceFile,
+            "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
             0x483,
             "ERROR setting action callback; priority = %d",
             callbackPriority
@@ -769,22 +754,20 @@ namespace zClass_Class {
         void *actionCallback
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x4c3, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x4c3, "Null node pointer.");
             return 5;
         }
 
         int callbackPriority = node->callbackPriority;
         if (callbackPriority >= 0 && callbackPriority < 6) {
-            if (node->actionCallback == 0) {
-                if (actionCallback != 0) {
-                    if (zClass_TypeList::InsertChildNodes(callbackPriority, node) != 0) {
-                        if ((node->flags & 0x800) == 0) {
-                            free(node);
-                        }
-                        return 5;
+            if (node->actionCallback == 0 && actionCallback != 0) {
+                if (zClass_TypeList::InsertChildNodes(callbackPriority, node) != 0) {
+                    if ((node->flags & 0x800) == 0) {
+                        free(node);
                     }
+                    return 5;
                 }
-            } else if (actionCallback == 0) {
+            } else if (node->actionCallback != 0 && actionCallback == 0) {
                 zClass_TypeList::MarkPendingRemoval(callbackPriority, node);
             }
 
@@ -794,7 +777,7 @@ namespace zClass_Class {
 
         zError::ReportOld(
             0x400,
-            kClassSourceFile,
+            "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
             0x4c8,
             "ERROR setting action callback; priority = %d",
             callbackPriority
@@ -813,7 +796,7 @@ namespace zClass_Class {
         int priority
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x4fc, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x4fc, "Null node pointer.");
             return 5;
         }
 
@@ -840,7 +823,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x529, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x529, "Null node pointer.");
             return 5;
         }
 
@@ -863,11 +846,11 @@ namespace zClass_Class {
         int *outValue
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x542, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x542, "Null node pointer.");
             return 5;
         }
 
-        *outValue = (node->flags >> 3) & 1;
+        *outValue = (node->flags & 0x08) != 0;
         return 0;
     }
 
@@ -881,7 +864,7 @@ namespace zClass_Class {
         int *outValue
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x556, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x556, "Null node pointer.");
             return 5;
         }
 
@@ -899,7 +882,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x56c, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x56c, "Null node pointer.");
             return 5;
         }
 
@@ -922,11 +905,11 @@ namespace zClass_Class {
         int *outValue
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x584, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x584, "Null node pointer.");
             return 5;
         }
 
-        *outValue = (node->flags >> 4) & 1;
+        *outValue = (node->flags & 0x10) != 0;
         return 0;
     }
 
@@ -940,7 +923,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x59a, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x59a, "Null node pointer.");
             return 5;
         }
 
@@ -963,11 +946,11 @@ namespace zClass_Class {
         int *outValue
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x5b2, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x5b2, "Null node pointer.");
             return 5;
         }
 
-        *outValue = (node->flags >> 5) & 1;
+        *outValue = (node->flags & 0x20) != 0;
         return 0;
     }
 
@@ -982,7 +965,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x5c7, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x5c7, "Null node pointer.");
             return 5;
         }
 
@@ -1005,7 +988,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x5e1, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x5e1, "Null node pointer.");
             return 5;
         }
 
@@ -1053,7 +1036,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x60f, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x60f, "Null node pointer.");
             return 5;
         }
 
@@ -1074,7 +1057,7 @@ namespace zClass_Class {
         int value
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x62d, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x62d, "Null node pointer.");
             return 5;
         }
 
@@ -1099,11 +1082,11 @@ namespace zClass_Class {
         zClass_NodePartial * child
     ) {
         if (child == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x666, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x666, "Null node pointer.");
             return 5;
         }
         if (parent == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x667, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x667, "Null node pointer.");
             return 5;
         }
 
@@ -1121,6 +1104,18 @@ namespace zClass_Class {
         case 6:
             result = zClass_Lod::gwLodAddChild(parent, child);
             break;
+        case 7:
+            sprintf(
+                g_zError_DebugMsgBuffer,
+                "%s: Line %d: ERROR: Please use dedicated function "
+                "gwSequenceAddChild() for node: %s\n",
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
+                0x687,
+                parent->name
+            );
+            zError::EmitDebugBuffer(1);
+            result = 1;
+            break;
         case 8:
             result = zClass_Animate::AddChild(parent, child);
             break;
@@ -1133,23 +1128,11 @@ namespace zClass_Class {
         case 11:
             result = zClass_Class::AddChildValidated(parent, child);
             break;
-        case 7:
-            sprintf(
-                g_zError_DebugMsgBuffer,
-                "%s: Line %d: ERROR: Please use dedicated function "
-                "gwSequenceAddChild() for node: %s\n",
-                kClassSourceFile,
-                0x687,
-                parent->name
-            );
-            zError::EmitDebugBuffer(1);
-            result = 1;
-            break;
         default:
             sprintf(
                 g_zError_DebugMsgBuffer,
                 "%s: Line %d: ERROR: Unrecognized node class type for node: %s\n",
-                kClassSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
                 0x69f,
                 parent->name
             );
@@ -1177,17 +1160,17 @@ namespace zClass_Class {
             parent->listB,
             (size_t)(newChildCount) * sizeof(parent->listB[0])
         ));
-        parent->listB[parent->listCountB] = child;
-        parent->listCountB = newChildCount;
+        parent->listB[newChildCount - 1] = child;
+        ++parent->listCountB;
 
         const int newParentCount = child->listCountA + 1;
         child->listA = (zClass_NodePartial **)(realloc(
             child->listA,
             (size_t)(newParentCount) * sizeof(child->listA[0])
         ));
-        child->listA[child->listCountA] = parent;
-        child->listCountA = newParentCount;
-        if (newParentCount > 1) {
+        child->listA[newParentCount - 1] = parent;
+        ++child->listCountA;
+        if (child->listCountA > 1) {
             SetSingleParentFlagRecursive(child, 0);
         }
 
@@ -1213,11 +1196,11 @@ namespace zClass_Class {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x713, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x713, "Null node pointer.");
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x714, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x714, "Null node pointer.");
             return 5;
         }
 
@@ -1260,7 +1243,7 @@ namespace zClass_Class {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 "%s: Line %d: ERROR: Unrecognized node class type for node: %s\n",
-                kClassSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
                 0x748,
                 parent->name
             );
@@ -1293,7 +1276,7 @@ namespace zClass_Class {
         if (childIndex < 0) {
             zError::ReportOld(
                 0x200,
-                kClassSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
                 0x79c,
                 "ERROR deleting child node %s from parent node %s",
                 child,
@@ -1346,11 +1329,11 @@ namespace zClass_Class {
         zBBox3f * outBBox
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x7f9, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x7f9, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x7fa, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x7fa, "Null class data pointer");
             return 5;
         }
         if ((node->flags & 0x100) == 0) {
@@ -1372,25 +1355,24 @@ namespace zClass_Class {
         zBBoxCorners * outCorners
     ) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x81b, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x81b, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x81c, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x81c, "Null class data pointer");
             return 5;
         }
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
 
-        const zBBox3f *bbox = (const zBBox3f *)(node->cachedBounds);
         if (node->classId == 5) {
             const zClass_Object3DDataPartial *objectData =
                 (const zClass_Object3DDataPartial *)(node->classData);
             if ((objectData->flags & 0x08) == 0) {
                 zMathMatTransformBBoxToCorners(
                     (const zMat4x3 *)(objectData->localMatrix),
-                    bbox,
+                    (const zBBox3f *)node->cachedBounds,
                     outCorners
                 );
                 return 0;
@@ -1401,7 +1383,7 @@ namespace zClass_Class {
             zMathMatTransformBBoxToCorners(
                 &((const zClass_CameraBBoxQueryDataPartial *)(cameraData))
                     ->viewOverlay.cachedViewMatrix,
-                bbox,
+                (const zBBox3f *)node->cachedBounds,
                 outCorners
             );
             return 0;
@@ -1411,7 +1393,7 @@ namespace zClass_Class {
             if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
                 zMathMatTransformBBoxToCorners(
                     (const zMat4x3 *)(animateData->animatedTransform),
-                    bbox,
+                    (const zBBox3f *)node->cachedBounds,
                     outCorners
                 );
                 return 0;
@@ -1419,62 +1401,51 @@ namespace zClass_Class {
         }
 
         float *out = outCorners->values;
-        out[0] = bbox->minX; out[1] = bbox->minY; out[2] = bbox->maxZ;
-        out[3] = bbox->maxX; out[4] = bbox->minY; out[5] = bbox->maxZ;
-        out[6] = bbox->maxX; out[7] = bbox->minY; out[8] = bbox->minZ;
-        out[9] = bbox->minX; out[10] = bbox->minY; out[11] = bbox->minZ;
-        out[12] = bbox->minX; out[13] = bbox->maxY; out[14] = bbox->maxZ;
-        out[15] = bbox->maxX; out[16] = bbox->maxY; out[17] = bbox->maxZ;
-        out[18] = bbox->maxX; out[19] = bbox->maxY; out[20] = bbox->minZ;
-        out[21] = bbox->minX; out[22] = bbox->maxY; out[23] = bbox->minZ;
+        out[0] = node->cachedBounds[0]; out[1] = node->cachedBounds[1]; out[2] = node->cachedBounds[5];
+        out[3] = node->cachedBounds[3]; out[4] = node->cachedBounds[1]; out[5] = node->cachedBounds[5];
+        out[6] = node->cachedBounds[3]; out[7] = node->cachedBounds[1]; out[8] = node->cachedBounds[2];
+        out[9] = node->cachedBounds[0]; out[10] = node->cachedBounds[1]; out[11] = node->cachedBounds[2];
+        out[12] = node->cachedBounds[0]; out[13] = node->cachedBounds[4]; out[14] = node->cachedBounds[5];
+        out[15] = node->cachedBounds[3]; out[16] = node->cachedBounds[4]; out[17] = node->cachedBounds[5];
+        out[18] = node->cachedBounds[3]; out[19] = node->cachedBounds[4]; out[20] = node->cachedBounds[2];
+        out[21] = node->cachedBounds[0]; out[22] = node->cachedBounds[4]; out[23] = node->cachedBounds[2];
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetviewbboxcorners
      * @recoil-artifact defines .text recoil:function:0x448920: zClass_Class::gwNodeGetViewBBoxCorners.
-     * Purpose: return cached bounds corners after combining the active view
-     * transform with any class-specific node transform.
+     * @recoil-match commutative
+     *
+     * Purpose: return cached bounds corners after combining the view and node transforms.
      */
     int __fastcall gwNodeGetViewBBoxCorners(
         zClass_NodePartial * node,
         zBBoxCorners * outCorners
     ) {
+        int returnCode = 0;
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x85f, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x85f, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x860, "Null class data pointer");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x860, "Null class data pointer");
             return 5;
         }
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
 
-        int returnCode = 0;
         int currentIsIdentity = zMathMatIsCurrentIdentity();
         zMat4x3 *currentMatrix = zMathMatGetCurrent();
         int skipTransform = 0;
         const zMat4x3 *nodeMatrix = 0;
 
         switch (node->classId) {
-        case 1: {
-            const zClass_CameraDataPartial *cameraData =
-                (const zClass_CameraDataPartial *)(node->classData);
-            nodeMatrix = &((const zClass_CameraBBoxQueryDataPartial *)(cameraData))
-                ->viewOverlay.cachedViewMatrix;
-            break;
-        }
-        case 2:
-        case 6:
-        case 7:
-            skipTransform = 1;
-            break;
         case 5: {
             const zClass_Object3DDataPartial *objectData =
                 (const zClass_Object3DDataPartial *)(node->classData);
-            skipTransform = (objectData->flags >> 3) & 0x01;
+            skipTransform = ((unsigned int)objectData->flags >> 3) & 0x01;
             nodeMatrix = (const zMat4x3 *)(objectData->localMatrix);
             break;
         }
@@ -1488,6 +1459,19 @@ namespace zClass_Class {
             nodeMatrix = (const zMat4x3 *)(animateData->animatedTransform);
             break;
         }
+        case 1: {
+            const zClass_CameraDataPartial *cameraData =
+                (const zClass_CameraDataPartial *)(node->classData);
+            nodeMatrix = &((const zClass_CameraBBoxQueryDataPartial *)(cameraData))
+                ->viewOverlay.cachedViewMatrix;
+            break;
+        }
+        case 2:
+        case 6:
+        case 7:
+            skipTransform = 1;
+            nodeMatrix = 0;
+            break;
         case 9:
         case 10:
             break;
@@ -1503,40 +1487,57 @@ namespace zClass_Class {
             skipTransform = 1;
         }
 
-        const zBBox3f *bbox = (const zBBox3f *)(node->cachedBounds);
-        zMat4x3 combinedMatrix = {0};
+        zMat4x3 combinedMatrix;
+        const zMat4x3 *transformMatrix;
         if (currentIsIdentity != 0) {
             if (skipTransform != 0) {
                 float *out = outCorners->values;
-                out[0] = bbox->minX; out[1] = bbox->minY; out[2] = bbox->maxZ;
-                out[3] = bbox->maxX; out[4] = bbox->minY; out[5] = bbox->maxZ;
-                out[6] = bbox->maxX; out[7] = bbox->minY; out[8] = bbox->minZ;
-                out[9] = bbox->minX; out[10] = bbox->minY; out[11] = bbox->minZ;
-                out[12] = bbox->minX; out[13] = bbox->maxY; out[14] = bbox->maxZ;
-                out[15] = bbox->maxX; out[16] = bbox->maxY; out[17] = bbox->maxZ;
-                out[18] = bbox->maxX; out[19] = bbox->maxY; out[20] = bbox->minZ;
-                out[21] = bbox->minX; out[22] = bbox->maxY; out[23] = bbox->minZ;
+                out[0] = node->cachedBounds[0]; out[1] = node->cachedBounds[1]; out[2] = node->cachedBounds[5];
+                out[3] = node->cachedBounds[3]; out[4] = node->cachedBounds[1]; out[5] = node->cachedBounds[5];
+                out[6] = node->cachedBounds[3]; out[7] = node->cachedBounds[1]; out[8] = node->cachedBounds[2];
+                out[9] = node->cachedBounds[0]; out[10] = node->cachedBounds[1]; out[11] = node->cachedBounds[2];
+                out[12] = node->cachedBounds[0]; out[13] = node->cachedBounds[4]; out[14] = node->cachedBounds[5];
+                out[15] = node->cachedBounds[3]; out[16] = node->cachedBounds[4]; out[17] = node->cachedBounds[5];
+                out[18] = node->cachedBounds[3]; out[19] = node->cachedBounds[4]; out[20] = node->cachedBounds[2];
+                out[21] = node->cachedBounds[0]; out[22] = node->cachedBounds[4]; out[23] = node->cachedBounds[2];
                 return returnCode;
             }
-            combinedMatrix = *nodeMatrix;
+            transformMatrix = nodeMatrix;
         } else if (skipTransform != 0) {
-            combinedMatrix = *currentMatrix;
+            transformMatrix = currentMatrix;
         } else {
-            combinedMatrix.xx = currentMatrix->xx * nodeMatrix->xx + currentMatrix->yx * nodeMatrix->xy + currentMatrix->zx * nodeMatrix->xz;
-            combinedMatrix.yx = currentMatrix->xx * nodeMatrix->yx + currentMatrix->yx * nodeMatrix->yy + currentMatrix->zx * nodeMatrix->yz;
-            combinedMatrix.zx = currentMatrix->xx * nodeMatrix->zx + currentMatrix->yx * nodeMatrix->zy + currentMatrix->zx * nodeMatrix->zz;
-            combinedMatrix.xy = currentMatrix->xy * nodeMatrix->xx + currentMatrix->yy * nodeMatrix->xy + currentMatrix->zy * nodeMatrix->xz;
-            combinedMatrix.yy = currentMatrix->xy * nodeMatrix->yx + currentMatrix->yy * nodeMatrix->yy + currentMatrix->zy * nodeMatrix->yz;
-            combinedMatrix.zy = currentMatrix->xy * nodeMatrix->zx + currentMatrix->yy * nodeMatrix->zy + currentMatrix->zy * nodeMatrix->zz;
-            combinedMatrix.xz = currentMatrix->xz * nodeMatrix->xx + currentMatrix->yz * nodeMatrix->xy + currentMatrix->zz * nodeMatrix->xz;
-            combinedMatrix.yz = currentMatrix->xz * nodeMatrix->yx + currentMatrix->yz * nodeMatrix->yy + currentMatrix->zz * nodeMatrix->yz;
-            combinedMatrix.zz = currentMatrix->xz * nodeMatrix->zx + currentMatrix->yz * nodeMatrix->zy + currentMatrix->zz * nodeMatrix->zz;
-            combinedMatrix.posX = currentMatrix->xx * nodeMatrix->posX + currentMatrix->yx * nodeMatrix->posY + currentMatrix->zx * nodeMatrix->posZ + currentMatrix->posX;
-            combinedMatrix.posY = currentMatrix->xy * nodeMatrix->posX + currentMatrix->yy * nodeMatrix->posY + currentMatrix->zy * nodeMatrix->posZ + currentMatrix->posY;
-            combinedMatrix.posZ = currentMatrix->xz * nodeMatrix->posX + currentMatrix->yz * nodeMatrix->posY + currentMatrix->zz * nodeMatrix->posZ + currentMatrix->posZ;
+            double xxPartial;
+            float zxPartial;
+            float yyPartial;
+            double xzPartial;
+            double zzPartial;
+            double posYPartial;
+            double xxValue, yxValue; // Unused captures preserve the observed VC5 store sequence.
+            const zMat4x3 *left = currentMatrix;
+            const zMat4x3 *right = nodeMatrix;
+            zMat4x3 *product = &combinedMatrix;
+            xxPartial = left->zx * right->xz + left->yx * right->xy;
+            product->xx = xxValue = xxPartial + left->xx * right->xx;
+            product->yx = yxValue = left->xx * right->yx + left->yx * right->yy + left->zx * right->yz;
+            zxPartial = left->xx * right->zx + left->zx * right->zz;
+            product->zx = zxPartial + left->yx * right->zy;
+            product->xy = left->xy * right->xx + left->yy * right->xy + left->zy * right->xz;
+            yyPartial = left->xy * right->yx + left->zy * right->yz;
+            product->yy = yyPartial + left->yy * right->yy;
+            product->zy = left->xy * right->zx + left->yy * right->zy + left->zy * right->zz;
+            xzPartial = left->xz * right->xx + left->zz * right->xz;
+            product->xz = xzPartial + left->yz * right->xy;
+            product->yz = left->xz * right->yx + left->yz * right->yy + left->zz * right->yz;
+            zzPartial = left->xz * right->zx + left->zz * right->zz;
+            product->zz = zzPartial + left->yz * right->zy;
+            product->posX = left->xx * right->posX + left->yx * right->posY + left->zx * right->posZ + left->posX;
+            posYPartial = left->yy * right->posY + left->zy * right->posZ;
+            product->posY = posYPartial + left->xy * right->posX + left->posY;
+            product->posZ = (float)(left->xz * right->posX + left->yz * right->posY) + left->zz * right->posZ + left->posZ;
+            transformMatrix = product;
         }
 
-        zMathMatTransformBBoxToCorners(&combinedMatrix, bbox, outCorners);
+        zMathMatTransformBBoxToCorners(transformMatrix, (const zBBox3f *)node->cachedBounds, outCorners);
         return returnCode;
     }
 
@@ -1548,25 +1549,43 @@ namespace zClass_Class {
      */
     int __fastcall gwNodeUpdate(zClass_NodePartial * node) {
         int result = 0;
-        bool needsBBoxRecalc = false;
-        const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
+        int needsBBoxRecalc = 0;
 
-        if ((node->boundsFlags & 0x01) != 0) {
-            gwNodeUpdateDisplayInstance(node);
-            needsBBoxRecalc = true;
+        if (node->boundsFlags != 0) {
+            if ((node->boundsFlags & 0x01) != 0) {
+                gwNodeUpdateDisplayInstance(node);
+                needsBBoxRecalc = 1;
+            }
+            if ((node->boundsFlags & 0x02) != 0) {
+                gwNodeComputeChildBBox(node);
+                needsBBoxRecalc = 1;
+            }
+            node->boundsFlags &= 0x04;
         }
-        if ((node->boundsFlags & 0x02) != 0) {
-            gwNodeComputeChildBBox(node);
-            needsBBoxRecalc = true;
-        }
-        node->boundsFlags &= 0x04;
-
-        zClass_NodePartial *nodeValue = node;
 
         switch (node->classId) {
+        case 5: {
+            zClass_Object3DDataPartial *objectData =
+                (zClass_Object3DDataPartial *)(node->classData);
+            if ((objectData->flags & 0x01) != 0) {
+                if ((objectData->flags & 0x10) == 0) {
+                    // Preserve translation before MatLoadIdentity overwrites its storage.
+                    const zVec3 position = *(const zVec3 *)&objectData->localMatrix[9];
+                    zMath::MatStackPushPtr(objectData->localMatrix);
+                    zMath::MatLoadIdentity();
+                    zMath::MatApplyLocalTRS(&objectData->rotation, &position, &objectData->scale);
+                    zMath::MatStackPopPtr();
+                }
+                gwNodeRecalcBBox(node);
+                needsBBoxRecalc = 0;
+                objectData->flags &= ~0x01;
+            }
+            break;
+        }
         case 1: {
+            const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
             zClass_CameraDataPartial *cameraData = (zClass_CameraDataPartial *)(node->classData);
-            if (cameraData != 0 && (cameraData->cameraFlags & 0x04) != 0) {
+            if ((cameraData->cameraFlags & 0x04) != 0) {
                 if ((cameraData->cameraFlags & 0x02) == 0) {
                     zMath::MatStackPushPtr(
                         (float *)(&((zClass_CameraBBoxQueryDataPartial *)(cameraData))
@@ -1581,30 +1600,8 @@ namespace zClass_Class {
                     zMath::MatStackPopPtr();
                 }
                 gwNodeRecalcBBox(node);
+                needsBBoxRecalc = 0;
                 cameraData->cameraFlags &= ~0x04;
-                needsBBoxRecalc = false;
-            }
-            break;
-        }
-        case 5: {
-            zClass_Object3DDataPartial *objectData =
-                (zClass_Object3DDataPartial *)(node->classData);
-            if (objectData != 0 && (objectData->flags & 0x01) != 0) {
-                if ((objectData->flags & 0x10) == 0) {
-                    // Preserve translation before MatLoadIdentity overwrites its storage.
-                    const zVec3 position = {
-                        objectData->localMatrix[9],
-                        objectData->localMatrix[10],
-                        objectData->localMatrix[11]
-                    };
-                    zMath::MatStackPushPtr(objectData->localMatrix);
-                    zMath::MatLoadIdentity();
-                    zMath::MatApplyLocalTRS(&objectData->rotation, &position, &objectData->scale);
-                    zMath::MatStackPopPtr();
-                }
-                gwNodeRecalcBBox(node);
-                objectData->flags &= ~0x01;
-                needsBBoxRecalc = false;
             }
             break;
         }
@@ -1625,7 +1622,7 @@ namespace zClass_Class {
                     );
                     zMath::MatStackPopPtr();
                     gwNodeRecalcBBox(node);
-                    needsBBoxRecalc = false;
+                    needsBBoxRecalc = 0;
                 }
                 animateData->flags = 0;
             }
@@ -1637,7 +1634,7 @@ namespace zClass_Class {
         default:
             zError::ReportOld(
                 0x200,
-                kClassSourceFile,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
                 0x99e,
                 "gwNodeUpdate(): Unrecognized node class type:\n  node = %s class_type = %d\n",
                 node,
@@ -1662,7 +1659,7 @@ namespace zClass_Class {
      */
     int __fastcall gwNodeRecalcBBox(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0x9d0, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x9d0, "Null node pointer.");
             return 5;
         }
         if (node->classId == 2) {
@@ -1767,7 +1764,7 @@ namespace zClass_Class {
      */
     int __fastcall gwNodeComputeChildBBox(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0xaa3, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0xaa3, "Null node pointer.");
             return 5;
         }
 
@@ -1859,7 +1856,7 @@ namespace zClass_Class {
      */
     int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0xb31, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0xb31, "Null node pointer.");
             return 5;
         }
 
@@ -1906,7 +1903,7 @@ namespace gwNode {
         zVec3 zeroAngles = {0};
 
         if (node == 0) {
-            zError::ReportOld(0x400, kClassSourceFile, 0xb66, "Null node pointer.");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0xb66, "Null node pointer.");
             return 5;
         }
 
@@ -1927,7 +1924,7 @@ namespace gwNode {
             if (current->listCountA > 1) {
                 zError::ReportOld(
                     0x800,
-                    kClassSourceFile,
+                    "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
                     0xb80,
                     "node has multiple parents; count = %d.\n  node = %s class_type = %d\n",
                     current->listCountA,
@@ -2042,7 +2039,7 @@ namespace gwNode {
                     g_zError_DebugMsgBuffer,
                     "%s: Line %d: gwNodeBuildNodeToAncestorMatrix(): Unrecognized node "
                     "class type:\n",
-                    kClassSourceFile,
+                    "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
                     0xbfa
                 );
                 sprintf(
@@ -2068,34 +2065,30 @@ namespace gwNode {
         zClass_NodePartial * node,
         zVec3 * outPosition
     ) {
-        if (node == 0) {
-            return 1;
-        }
-
-        if (node->classId == 5 && (node->flags & kSingleParentFlag) != 0) {
-            zClass_Object3DDataPartial *objectData =
-                (zClass_Object3DDataPartial *)(node->classData);
-            if ((objectData->flags & 0x20) == 0) {
-                outPosition->x = objectData->cachedWorldMatrix[9];
-                outPosition->y = objectData->cachedWorldMatrix[10];
-                outPosition->z = objectData->cachedWorldMatrix[11];
-                return 0;
+        if (node != 0) {
+            if (node->classId == 5 && (node->flags & kSingleParentFlag) != 0) {
+                zClass_Object3DDataPartial *objectData =
+                    (zClass_Object3DDataPartial *)(node->classData);
+                if ((objectData->flags & 0x20) == 0) {
+                    memcpy(outPosition, &objectData->cachedWorldMatrix[9], sizeof(*outPosition));
+                    return 0;
+                }
             }
+
+            outPosition->x = outPosition->y = outPosition->z = 0.0f;
+
+            float matrix[12];
+            zMath::MatStackPushPtr(matrix);
+            zMath::MatLoadIdentity();
+            gwNodeBuildNodeToAncestorMatrix(node, 1);
+            outPosition->x = matrix[9];
+            outPosition->y = matrix[10];
+            outPosition->z = matrix[11];
+            zMath::MatStackPopPtr();
+            return 0;
         }
 
-        outPosition->x = 0.0f;
-        outPosition->y = 0.0f;
-        outPosition->z = 0.0f;
-
-        float matrix[12];
-        zMath::MatStackPushPtr(matrix);
-        zMath::MatLoadIdentity();
-        gwNodeBuildNodeToAncestorMatrix(node, 1);
-        outPosition->x = matrix[9];
-        outPosition->y = matrix[10];
-        outPosition->z = matrix[11];
-        zMath::MatStackPopPtr();
-        return 0;
+        return 1;
     }
 
     /**
@@ -2107,22 +2100,22 @@ namespace gwNode {
         zClass_NodePartial * node,
         zVec3 * point
     ) {
-        if (node == 0) {
-            return 1;
-        }
+        if (node != 0) {
+            if (point->x == 0.0f && point->y == 0.0f && point->z == 0.0f) {
+                GetWorldPosition(node, point);
+                return 0;
+            }
 
-        if (point->x == 0.0f && point->y == 0.0f && point->z == 0.0f) {
-            GetWorldPosition(node, point);
+            float matrix[12];
+            zMath::MatStackPushPtr(matrix);
+            zMath::MatLoadIdentity();
+            gwNodeBuildNodeToAncestorMatrix(node, 1);
+            zMath::MatTransformPointBatchInPlace(point, 1);
+            zMath::MatStackPopPtr();
             return 0;
         }
 
-        zMat4x3 matrix = {0};
-        zMath::MatStackPushPtr((float *)(&matrix));
-        zMath::MatLoadIdentity();
-        gwNodeBuildNodeToAncestorMatrix(node, 1);
-        zMath::MatTransformPointBatchInPlace(point, 1);
-        zMath::MatStackPopPtr();
-        return 0;
+        return 1;
     }
 
     /**
@@ -2200,29 +2193,26 @@ namespace zClass_Class {
      */
     zClass_NodePartial *__fastcall gwNodeGetRoot(zClass_NodePartial * node) {
         zClass_NodePartial *current = node;
-        if (current == 0) {
-            return 0;
-        }
-
-        while (current->listCountA != 0) {
-            if (current->listCountA != 1) {
+        while (current != 0) {
+            switch (current->listCountA) {
+            case 0:
+                return current;
+            case 1:
+                current = current->listA[0];
+                break;
+            default:
                 zError::ReportOld(
                     0x200,
-                    kClassSourceFile,
+                    "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
                     0xd0d,
                     "Error getting root node; Multiple parents found.\n  Node: %s\n",
                     current
                 );
                 return 0;
             }
-
-            current = current->listA[0];
-            if (current == 0) {
-                return 0;
-            }
         }
 
-        return current;
+        return 0;
     }
 
     /**
@@ -2236,26 +2226,26 @@ namespace zClass_Class {
         zClass_NodePartial * node
     ) {
         zClass_NodePartial *current = node;
-        while (current != 0 && current->listCountA != 0) {
-            if (current->listCountA != 1) {
+        while (current != 0) {
+            switch (current->listCountA) {
+            case 0:
+                return 0;
+            case 1:
+                if (current->listA[0]->classId == 2) {
+                    return current;
+                }
+                current = current->listA[0];
+                break;
+            default:
                 zError::ReportOld(
                     0x200,
-                    kClassSourceFile,
+                    "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
                     0xd4e,
                     "Error getting root node; Multiple parents found.\n  Node: %s\n",
                     current
                 );
                 return 0;
             }
-
-            zClass_NodePartial *parent = current->listA[0];
-            if (parent == 0) {
-                return 0;
-            }
-            if (parent->classId == 2) {
-                return current;
-            }
-            current = parent;
         }
 
         return 0;

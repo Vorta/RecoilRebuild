@@ -489,16 +489,16 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm mov ebx, zaddEnd                                     \
         __asm mov ecx, zaddWorld                                   \
         __asm mov edx, zaddDst                                     \
-        __asm fld dword ptr [ebx+0]                                \
-        __asm fadd dword ptr [ecx+0]                               \
-        __asm fld dword ptr [ebx+4]                                \
-        __asm fadd dword ptr [ecx+4]                               \
-        __asm fld dword ptr [ebx+8]                                \
-        __asm fadd dword ptr [ecx+8]                               \
+        __asm fld dword ptr [ebx]zVec3.x                           \
+        __asm fadd dword ptr [ecx]zVec3.x                          \
+        __asm fld dword ptr [ebx]zVec3.y                           \
+        __asm fadd dword ptr [ecx]zVec3.y                          \
+        __asm fld dword ptr [ebx]zVec3.z                           \
+        __asm fadd dword ptr [ecx]zVec3.z                          \
         __asm fxch ST(2)                                           \
-        __asm fstp dword ptr [edx+0]                               \
-        __asm fstp dword ptr [edx+4]                               \
-        __asm fstp dword ptr [edx+8]                               \
+        __asm fstp dword ptr [edx]zVec3.x                          \
+        __asm fstp dword ptr [edx]zVec3.y                          \
+        __asm fstp dword ptr [edx]zVec3.z                          \
     } while (0)
 
 /**
@@ -518,16 +518,16 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm mov ebx, source                                  \
         __asm mov ecx, subtractor                              \
         __asm mov edx, destination                             \
-        __asm fld dword ptr [ebx+0]                            \
-        __asm fsub dword ptr [ecx+0]                           \
-        __asm fld dword ptr [ebx+4]                            \
-        __asm fsub dword ptr [ecx+4]                           \
-        __asm fld dword ptr [ebx+8]                            \
-        __asm fsub dword ptr [ecx+8]                           \
+        __asm fld dword ptr [ebx]zVec3.x                       \
+        __asm fsub dword ptr [ecx]zVec3.x                      \
+        __asm fld dword ptr [ebx]zVec3.y                       \
+        __asm fsub dword ptr [ecx]zVec3.y                      \
+        __asm fld dword ptr [ebx]zVec3.z                       \
+        __asm fsub dword ptr [ecx]zVec3.z                      \
         __asm fxch ST(2)                                       \
-        __asm fstp dword ptr [edx+0]                           \
-        __asm fstp dword ptr [edx+4]                           \
-        __asm fstp dword ptr [edx+8]                           \
+        __asm fstp dword ptr [edx]zVec3.x                      \
+        __asm fstp dword ptr [edx]zVec3.y                      \
+        __asm fstp dword ptr [edx]zVec3.z                      \
     }
 
 /**
@@ -620,10 +620,10 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 #define AINET_PATH_PROBE_CLAMP_TRAVEL_VC5(deltaPtr, xzLengthLocal, pathWidthValue) \
     do {                                                                           \
         __asm mov ecx, deltaPtr                                                    \
-        __asm fld dword ptr [ecx+0]                                                \
-        __asm fmul dword ptr [ecx+0]                                               \
-        __asm fld dword ptr [ecx+8]                                                \
-        __asm fmul dword ptr [ecx+8]                                               \
+        __asm fld dword ptr [ecx]zVec3.x                                           \
+        __asm fmul dword ptr [ecx]zVec3.x                                          \
+        __asm fld dword ptr [ecx]zVec3.z                                           \
+        __asm fmul dword ptr [ecx]zVec3.z                                          \
         __asm faddp ST(1), ST(0)                                                   \
         __asm fsqrt                                                               \
         __asm fstp dword ptr xzLengthLocal                                         \
@@ -637,17 +637,17 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm jne ainet_path_probe_clamp_store                                     \
         __asm fstp ST(0)                                                           \
         __asm mov ecx, deltaPtr                                                    \
-        __asm fld dword ptr [ecx+0]                                                \
-        __asm fmul dword ptr [ecx+0]                                               \
-        __asm fld dword ptr [ecx+8]                                                \
-        __asm fmul dword ptr [ecx+8]                                               \
+        __asm fld dword ptr [ecx]zVec3.x                                           \
+        __asm fmul dword ptr [ecx]zVec3.x                                          \
+        __asm fld dword ptr [ecx]zVec3.z                                           \
+        __asm fmul dword ptr [ecx]zVec3.z                                          \
         __asm faddp ST(1), ST(0)                                                   \
         __asm fsqrt                                                               \
         __asm fstp dword ptr xzLengthLocal                                         \
         __asm fld dword ptr xzLengthLocal                                          \
         __asm fsub dword ptr pathWidthValue                                        \
         __asm ainet_path_probe_clamp_store:                                        \
-        __asm fstp dword ptr [esi+0Ch]                                             \
+        __asm fstp dword ptr [esi]AINetPathProbeFan.clampedTravel                  \
     } while (0)
 
 /**
@@ -699,10 +699,10 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         v0 = &(steer);                       \
         __asm mov ecx, v0                    \
         __asm mov edx, v1                    \
-        __asm fld dword ptr [ecx+0]          \
-        __asm fmul dword ptr [edx+0]         \
-        __asm fld dword ptr [ecx+8]          \
-        __asm fmul dword ptr [edx+8]         \
+        __asm fld dword ptr [ecx]zVec3.x     \
+        __asm fmul dword ptr [edx]zVec3.x    \
+        __asm fld dword ptr [ecx]zVec3.z     \
+        __asm fmul dword ptr [edx]zVec3.z    \
         __asm faddp ST(1), ST(0)             \
         __asm fstp dword ptr [out]           \
     } while (0)
@@ -722,10 +722,10 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         v2 = &(steer);                         \
         __asm mov ebx, v2                      \
         __asm mov ecx, v1                      \
-        __asm fld dword ptr [ebx+8]            \
-        __asm fmul dword ptr [ecx+0]           \
-        __asm fld dword ptr [ebx+0]            \
-        __asm fmul dword ptr [ecx+8]           \
+        __asm fld dword ptr [ebx]zVec3.z       \
+        __asm fmul dword ptr [ecx]zVec3.x      \
+        __asm fld dword ptr [ebx]zVec3.x       \
+        __asm fmul dword ptr [ecx]zVec3.z      \
         __asm fsubp ST(1), ST(0)               \
         __asm fstp dword ptr [out]             \
     } while (0)
@@ -747,12 +747,12 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         v0 = &(source);                           \
         __asm mov ecx, v0                         \
         __asm mov edx, v1                         \
-        __asm fld dword ptr [ecx+0]               \
-        __asm fmul dword ptr [edx+0]              \
-        __asm fld dword ptr [ecx+4]               \
-        __asm fmul dword ptr [edx+4]              \
-        __asm fld dword ptr [ecx+8]               \
-        __asm fmul dword ptr [edx+8]              \
+        __asm fld dword ptr [ecx]zVec3.x          \
+        __asm fmul dword ptr [edx]zVec3.x         \
+        __asm fld dword ptr [ecx]zVec3.y          \
+        __asm fmul dword ptr [edx]zVec3.y         \
+        __asm fld dword ptr [ecx]zVec3.z          \
+        __asm fmul dword ptr [edx]zVec3.z         \
         __asm fxch ST(1)                          \
         __asm faddp ST(2), ST(0)                  \
         __asm faddp ST(1), ST(0)                  \
@@ -794,16 +794,16 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm mov ebx, sourcePtr                                 \
         __asm mov ecx, addendPtr                                 \
         __asm mov edx, destination                    \
-        __asm fld dword ptr [ebx+0]                   \
-        __asm fadd dword ptr [ecx+0]                  \
-        __asm fld dword ptr [ebx+4]                   \
-        __asm fadd dword ptr [ecx+4]                  \
-        __asm fld dword ptr [ebx+8]                   \
-        __asm fadd dword ptr [ecx+8]                  \
+        __asm fld dword ptr [ebx]zVec3.x              \
+        __asm fadd dword ptr [ecx]zVec3.x             \
+        __asm fld dword ptr [ebx]zVec3.y              \
+        __asm fadd dword ptr [ecx]zVec3.y             \
+        __asm fld dword ptr [ebx]zVec3.z              \
+        __asm fadd dword ptr [ecx]zVec3.z             \
         __asm fxch ST(2)                              \
-        __asm fstp dword ptr [edx+0]                  \
-        __asm fstp dword ptr [edx+4]                  \
-        __asm fstp dword ptr [edx+8]                  \
+        __asm fstp dword ptr [edx]zVec3.x             \
+        __asm fstp dword ptr [edx]zVec3.y             \
+        __asm fstp dword ptr [edx]zVec3.z             \
     } while (0)
 #define AINET_VECTOR_ADD(destination, source, addend)          \
     do {                                                       \

@@ -1,8 +1,7 @@
 {
   "name": "zsnd_set_use_archive_banks_flag",
-  "description": "zSnd archive-bank usage flag setter.",
+  "description": "zSnd archive-bank usage flag setter. Explicit function placements and current spellings follow the complete authored-order targets. Existing data registrations and any unresolved provider entries retain their prior scope; each TU uses its canonical compiler profile.",
   "source_filename": "zsnd_cd.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -12,7 +11,8 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zSound/zsnd_cd.cpp"
+    "src/GameZRecoil/zSound/zsnd_cd.cpp",
+    "src/GameZRecoil/zSound/zsnd_play.cpp"
   ],
   "functions": [
     {
@@ -30,5 +30,20 @@
       "byte_length": 4
     }
   ],
-  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp"
+  "source_from": "src/GameZRecoil/zSound/zsnd_cd.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zSound/zsnd_play.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x4a07f0",
+          "symbol": "?SetUseArchiveBanksFlag@zSnd@@YIXH@Z",
+          "name": "zSnd::SetUseArchiveBanksFlag"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

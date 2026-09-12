@@ -16,7 +16,8 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zRender/zrndr_draw.c"
+    "src/GameZRecoil/zRender/zrndr_draw.c",
+    "src/GameZRecoil/zRender/zrndr_fog.cpp"
   ],
   "functions": [
     {
@@ -35,5 +36,23 @@
       "name": "zRndr::InitGlobals"
     }
   ],
-  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"
+  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zRender/zrndr_draw.c",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x48fd80",
+        "0x4904d0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zRender/zrndr_fog.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x49b1e0"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

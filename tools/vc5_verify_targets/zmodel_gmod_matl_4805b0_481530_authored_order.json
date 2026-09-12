@@ -122,7 +122,7 @@
     },
     {
       "address": "0x480ec0",
-      "symbol": "?GlobalStringTableReleaseDynamicEntries@zRndr@@YAXXZ",
+      "symbol": "?GlobalStringTableReleaseDynamicEntries@zRndr@@YAHXZ",
       "name": "zRndr::GlobalStringTableReleaseDynamicEntries",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

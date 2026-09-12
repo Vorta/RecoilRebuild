@@ -1,9 +1,8 @@
 {
   "name": "light_return_to_free_list",
-  "description": "Light::ReturnToFreeList resets a thermal-glow light range, removes it from the runtime world, and pushes it onto the free list.",
-  "source_filename": "Light.c",
-  "source_from": "src/GameZRecoil/zClass/Light.c",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "Light::ReturnToFreeList resets a thermal-glow light range, removes it from the runtime world, and pushes it onto the free list. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zwep_init.c",
+  "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -18,7 +17,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zClass/Light.c"
+    "src/GameZRecoil/zWeapon/zwep_init.c"
   ],
   "functions": [
     {
@@ -26,5 +25,16 @@
       "symbol": "?ReturnToFreeList@Light@@YIXPAUzClass_NodePartial@@@Z",
       "name": "Light::ReturnToFreeList"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4b2570"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

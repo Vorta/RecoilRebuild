@@ -995,7 +995,7 @@ const unsigned int kDownloadPathBufferSize = 256;
 const unsigned int kDownloadPromptBufferSize = 128;
 const unsigned int kDownloadPromptMessageId = 0x3043;
 const unsigned int kDownloadDialogResourceId = 162;
-const char kDownloadSourcePathFormat[] = "%s\\%s";
+
 const char kWestwoodOnlineUpgradeRegistryKey[] = "SOFTWARE\\Westwood\\Recoil";
 
 } // namespace
@@ -4379,7 +4379,7 @@ BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
         GetCurrentDirectoryA(kDownloadPathBufferSize, g_WestwoodOnlineUpgradeDownloadRestoreCwd);
 
         entry = g_pWestwoodOnlineUpgradeDownloadReadyList;
-        sprintf(sourcePath, kDownloadSourcePathFormat, entry->m_sourcePathBase, entry->m_fileName);
+        sprintf(sourcePath, "%s\\%s", entry->m_sourcePathBase, entry->m_fileName);
         if (SetCurrentDirectoryA(g_pWestwoodOnlineUpgradeDownloadReadyList->m_downloadDirectory) ==
             0) {
             CreateDirectoryA(g_pWestwoodOnlineUpgradeDownloadReadyList->m_downloadDirectory, 0);

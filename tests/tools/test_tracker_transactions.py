@@ -813,6 +813,60 @@ def test_data_aggregate_coalescence_preserves_views_and_rejects_incomplete_closu
         with pytest.raises(aggregate.DataAggregateError, match=message):
             aggregate.plan_coalescence(changed, request, expected_revision=data["revision"], repo_root=tmp_path)
 
+    _check_adjacent_data_artifact_registration(data, section_id, target_id, tmp_path)
+
+
+def _check_adjacent_data_artifact_registration(data, section_id, target_id, tmp_path):
+    from copy import deepcopy
+    from _recoil.commands import data_artifact_progress as artifacts
+
+    def request(address):
+        artifact_id = f"recoil:data:{address}"
+        end = hex(int(address, 16) + 4)
+        observation = dict(artifact_id=artifact_id, address=address, size=4,
+                           end_exclusive=end, output_section_id=section_id)
+        return dict(operation=artifacts.REGISTER_OPERATION, reviewed=True,
+            artifact_id=artifact_id, artifact=dict(address=address, binary="recoil",
+                navigation_name="UnitScalar", disposition="authored",
+                source_traceability_state="unresolved", source_traceability_reason_code="unit-origin-unknown",
+                output_section_id=section_id, size=4, end_exclusive=end,
+                evidence_ids=[], verification_target_ids=[target_id]),
+            new_evidence=dict(kind=artifacts.REVIEWED_EVIDENCE_KIND,
+                method=artifacts.REVIEWED_EVIDENCE_METHOD,
+                summary=f"Retail scalar {address}..{end} has an exact four-byte extent; its source origin remains unresolved.",
+                scope_ids=[artifact_id], observation=observation,
+                command=f"python tools/recoil.py audit bn-data-evidence {address} --size 4 --binary recoil --json",
+                target_id=target_id, artifacts=[]))
+
+    before = deepcopy(data)
+    first_request, next_request = request("0x4da030"), request("0x4da034")
+    first = artifacts.plan_data_artifact_registration(data, first_request,
+        expected_revision=data["revision"], repo_root=tmp_path)
+    assert data == before
+    adjacent = first.proposed
+    second = artifacts.plan_data_artifact_registration(adjacent, next_request,
+        expected_revision=adjacent["revision"], repo_root=tmp_path)
+    assert second.row["address"] == "0x4da034"
+    assert second.row["evidence_ids"] != first.row["evidence_ids"]
+    assert second.row["source_traceability"]["state"] == "unresolved"
+    assert second.row["storage_contribution_ids"] == []
+    assert second.proposed["owners"] == data["owners"]
+    for alter in (
+        lambda row: row.update(scope_ids=[next_request["artifact_id"]]),
+        lambda row: row.pop("provenance"),
+        lambda row: row["provenance"]["observation"].update(address="0x4da038"),
+    ):
+        changed = deepcopy(adjacent)
+        alter(changed["evidence"][first.evidence_id])
+        with pytest.raises(artifacts.DataArtifactProgressError, match="existing evidence row names"):
+            artifacts.plan_data_artifact_registration(changed, next_request,
+                expected_revision=changed["revision"], repo_root=tmp_path)
+    duplicate = deepcopy(adjacent)
+    duplicate["symbols"].pop(first.artifact_id)
+    with pytest.raises(artifacts.DataArtifactProgressError, match="existing evidence row names"):
+        artifacts.plan_data_artifact_registration(duplicate, first_request,
+            expected_revision=duplicate["revision"], repo_root=tmp_path)
+
 
 def test_source_trace_repair_compares_raw_current_but_validates_replacement():
     from copy import deepcopy
@@ -1095,6 +1149,33 @@ def _check_partial_source_extraction(root: Path) -> None:
         assert data["owners"][owner_id]["reimplementation"]["entries"][moved]["tier"] == "C"
         assert data["physical_blocks"][block_id]["original_source_path"] is None
         assert (root / old_path).read_text() == "void Retained() {}\n"
+        observed = deepcopy(baseline)
+        observed_block = observed["physical_blocks"][block_id]
+        observed_block["mapping"].update(
+            evidence_ids=["recoil:evidence:unit.filename-observation"],
+            status="mapped-with-semantic-conflicts", file_literal="0x500000",
+            literal_xrefs=["0x401012"], confidence="observed literal; scope unresolved")
+        observed_before = deepcopy(observed_block)
+        observed_payload = extraction_snapshot(observed, old_path, new_path, root=root)
+        observed_payload.update(reviewed=True, reason="Retain unresolved historical observations")
+        observed_result = apply_extraction(observed, observed_payload, root=root)
+        assert observed_result["accepted"] is False
+        # apply_extraction commits a deep copy, so inspect the actual new record.
+        observed_block = observed["physical_blocks"][block_id]
+        assert observed_block["mapping"] == observed_before["mapping"]
+        assert observed_block["original_source_path"] == observed_before["original_source_path"]
+        assert observed_block["implementation_extractions"][-1]["prior_mapping"] == observed_before["mapping"]
+        assert observed["symbols"][moved]["source_traceability"]["source_edges"][0]["emission_context"]["translation_unit"] == new_path
+        assert "accepted_byte_facts" not in observed["symbols"][retained]
+        assert observed["owners"][owner_id]["gates"]["source"] == "pending"
+        partial = deepcopy(baseline)
+        partial["symbols"][retained]["source_traceability"] = {"state": "unresolved", "source_edges": []}
+        prior_paths = "src/PriorObservation.cpp; " + old_path
+        partial["semantic_spans"][span_id]["source_path"] = prior_paths
+        partial_payload = extraction_snapshot(partial, old_path, new_path, root=root)
+        partial_payload.update(reviewed=True, reason="Retain paths of unresolved members")
+        apply_extraction(partial, partial_payload, root=root)
+        assert partial["semantic_spans"][span_id]["source_path"] == prior_paths + "; " + new_path
         synchronized = deepcopy(baseline)
         synchronized["symbols"][moved]["source_traceability"]["source_edges"][0]["emission_context"]["translation_unit"] = new_path
         current_payload = extraction_snapshot(synchronized, old_path, new_path, root=root)
@@ -1114,12 +1195,30 @@ def _check_partial_source_extraction(root: Path) -> None:
             assert working == baseline
         protected = deepcopy(baseline)
         protected["physical_blocks"][block_id]["mapping"]["state"] = "accepted"
+        protected["physical_blocks"][block_id]["mapping"]["evidence_ids"] = ["recoil:evidence:unit.accepted-mapping"]
         protected_payload = extraction_snapshot(protected, old_path, new_path, root=root)
         protected_payload.update(reviewed=True, reason="Must remain blocked")
         before = deepcopy(protected)
         with pytest.raises(ValueError, match="accepted source-file mapping"):
             apply_extraction(protected, protected_payload, root=root)
         assert protected == before
+        # A second extraction from the same retained input must not overwrite
+        # the first extracted input in the semantic span's current path list.
+        chain = deepcopy(data)
+        third_path = "src/SecondComponent.cpp"
+        second_source = source.replace(moved, retained).replace(
+            "recoil:anchor:unit.extracted", "recoil:anchor:unit.second")
+        (root / third_path).write_text(second_source, encoding="utf-8")
+        (root / old_path).write_text("void Remaining() {}\n", encoding="utf-8")
+        chain["symbols"][retained]["source_traceability"]["source_edges"][0]["anchor_id"] = "recoil:anchor:unit.second"
+        chain["owners"][owner_id]["relationships"].append(
+            {"kind": "primary-function", "symbol_id": retained})
+        chain["verification_targets"]["target"]["source_files"].append(third_path)
+        chain_payload = extraction_snapshot(chain, old_path, third_path, root=root)
+        chain_payload.update(reviewed=True, reason="Second independent extraction")
+        apply_extraction(chain, chain_payload, root=root)
+        assert chain["semantic_spans"][span_id]["source_path"] == new_path + "; " + third_path
+        assert len(chain["semantic_spans"][span_id]["implementation_extractions"]) == 2
         (root / old_path).write_text(source, encoding="utf-8")
         with pytest.raises(ValueError, match="still occur"):
             extraction_snapshot(baseline, old_path, new_path, root=root)

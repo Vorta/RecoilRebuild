@@ -413,8 +413,9 @@ def _text_entities(
             }
             from _recoil.lib.match_evidence import current_match_level
             identity["match_level"] = current_match_level(symbol) or "byte"
-            if identity["match_level"] == "instruction":
-                identity["instruction_match_review"] = symbol.get("instruction_match_review")
+            if identity["match_level"] in {"instruction", "commutative"}:
+                review_key = identity["match_level"] + "_match_review"
+                identity[review_key] = symbol.get(review_key)
                 identity["function_match"] = symbol.get("function_match")
             if "provider" in symbol:
                 identity["provider"] = symbol.get("provider")

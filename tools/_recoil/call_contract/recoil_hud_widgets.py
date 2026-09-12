@@ -241,8 +241,9 @@ def _hud_ui_mgr_stats_list_static_storage_reference_bridges(
         or target.get("binary") != "recoil"
         or target.get("kind") != "vc5"
         or target.get("name") != "hud_ui_mgr_data"
-        or target.get("symbol_ids") != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or target.get("unresolved_addresses") not in (None, [])
+        or _cc_targets._registered_target_artifact_ids(
+            target, document.collection("symbols")
+        ) != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
         or not isinstance(registration, Mapping)
         or registration.get("binary") != "recoil"
         or registration.get("name") != "hud_ui_mgr_data"
@@ -1280,14 +1281,15 @@ def _hud_ui_mp_exit_update_candidate_indirect_bridge(
         or stack_target.get("binary") != "recoil"
         or stack_target.get("kind") != "vc5"
         or stack_target.get("name") != "hud_ui_top_message_stack_global"
-        or stack_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            stack_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MP_EXIT_UPDATE_STACK_SYMBOL_ID]
-        or stack_target.get("unresolved_addresses") != []
         or not isinstance(stack_registration, Mapping)
         or stack_registration.get("manifest_path")
         != "tools/vc5_verify_targets/hud_ui_top_message_stack_global.json"
         or stack_registration.get("source_from")
-        != "src/GameZRecoil/zUI/zui.cpp"
+        != "src/GameZRecoil/zUI/zui_widgets.cpp"
         or stack_registration.get("data_addresses")
         != [_cc_catalog.HUD_UI_MP_EXIT_UPDATE_STACK_ADDRESS]
         or indexes.storage_by_address.get(_cc_catalog.HUD_UI_MP_EXIT_UPDATE_STACK_ADDRESS)
@@ -1621,9 +1623,10 @@ def _hud_ui_mgr_enable_hud_candidate_vptr_bridges(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST
@@ -2099,9 +2102,10 @@ def _hud_ui_mgr_disable_track_marker_loop_vptr_bridge(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST
@@ -3382,9 +3386,10 @@ def _hud_ui_aux_overlay_apply_text_line_authority(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST
@@ -4024,8 +4029,9 @@ def _hud_ui_mgr_enable_stacks_authority(
             or target_row.get("kind") != "vc5"
             or target_row.get("name")
             != target_id.removeprefix("recoil:vc5-target:")
-            or target_row.get("symbol_ids") != [symbol_id]
-            or target_row.get("unresolved_addresses") != []
+            or _cc_targets._registered_target_artifact_ids(
+                target_row, document.collection("symbols")
+            ) != [symbol_id]
             or not isinstance(registration, Mapping)
             or registration.get("manifest_path")
             != (
@@ -4033,7 +4039,7 @@ def _hud_ui_mgr_enable_stacks_authority(
                 f"{target_id.removeprefix('recoil:vc5-target:')}.json"
             )
             or registration.get("source_from")
-            != "src/GameZRecoil/zUI/zui.cpp"
+            != "src/GameZRecoil/zUI/zui_widgets.cpp"
             or registration.get("data_addresses") != [address]
             or indexes.storage_by_address.get(address) != storage_identity
             or indexes.storage_by_name.get(navigation_name)
@@ -4673,8 +4679,9 @@ def _hud_ui_mgr_disable_stacks_authority(
             or target_row.get("kind") != "vc5"
             or target_row.get("name")
             != target_id.removeprefix("recoil:vc5-target:")
-            or target_row.get("symbol_ids") != [symbol_id]
-            or target_row.get("unresolved_addresses") != []
+            or _cc_targets._registered_target_artifact_ids(
+                target_row, document.collection("symbols")
+            ) != [symbol_id]
             or not isinstance(registration, Mapping)
             or registration.get("manifest_path")
             != (
@@ -4682,7 +4689,7 @@ def _hud_ui_mgr_disable_stacks_authority(
                 f"{target_id.removeprefix('recoil:vc5-target:')}.json"
             )
             or registration.get("source_from")
-            != "src/GameZRecoil/zUI/zui.cpp"
+            != "src/GameZRecoil/zUI/zui_widgets.cpp"
             or registration.get("data_addresses") != [address]
             or indexes.storage_by_address.get(address) != storage_identity
             or indexes.storage_by_name.get(navigation_name)

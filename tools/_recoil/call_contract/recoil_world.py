@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from _recoil.call_contract import targets as _cc_targets
+
 from typing import TYPE_CHECKING
 
 from _recoil.call_contract import callable_identity as _cc_callable_identity
@@ -245,9 +247,10 @@ def _zdeclient_qsand_callback_authority_provenance(
             and callback_target.get("binary") == "recoil"
             and callback_target.get("kind") == "vc5"
             and callback_target.get("name") == "zdeclient_net_relay_callback_globals"
-            and callback_target.get("symbol_ids")
+            and _cc_targets._registered_target_artifact_ids(
+                callback_target, document.collection("symbols")
+            )
             == [_cc_catalog.ZDECLIENT_QSAND_CALLBACK_SYMBOL_ID, "recoil:data:0x539de8"]
-            and callback_target.get("unresolved_addresses") in (None, [])
             and isinstance(callback_registration, Mapping)
             and callback_registration.get("manifest_path")
             == _cc_catalog.ZDECLIENT_QSAND_CALLBACK_TARGET_MANIFEST
@@ -652,12 +655,13 @@ def _zdeclient_crater_callback_authority_provenance(
             and callback_target.get("kind") == "vc5"
             and callback_target.get("name")
             == "zdeclient_net_relay_callback_globals"
-            and callback_target.get("symbol_ids")
+            and _cc_targets._registered_target_artifact_ids(
+                callback_target, document.collection("symbols")
+            )
             == [
                 _cc_catalog.ZDECLIENT_QSAND_CALLBACK_SYMBOL_ID,
                 _cc_catalog.ZDECLIENT_CRATER_CALLBACK_SYMBOL_ID,
             ]
-            and callback_target.get("unresolved_addresses") in (None, [])
             and isinstance(callback_registration, Mapping)
             and callback_registration.get("manifest_path")
             == _cc_catalog.ZDECLIENT_QSAND_CALLBACK_TARGET_MANIFEST

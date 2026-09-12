@@ -1,7 +1,7 @@
 {
   "name": "zrndr_blend_packed_color_565_with_fog_in_place",
   "description": "zRndr packed 565 fog color blend helper.",
-  "source_filename": "zRndr.cpp",
+  "source_filename": "zrndr_span.cpp",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
     "src",
@@ -16,7 +16,7 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zRender/zrndr_draw.c"
+    "src/GameZRecoil/zRender/zrndr_span.cpp"
   ],
   "functions": [
     {
@@ -25,5 +25,5 @@
       "name": "zRndr::BlendPackedColor565WithFogInPlace"
     }
   ],
-  "source_from": "src/GameZRecoil/zRender/zrndr_draw.c"
+  "source_from": "src/GameZRecoil/zRender/zrndr_span.cpp"
 }

@@ -1,7 +1,7 @@
 {
   "name": "zinput_keyboard_wait_for_any_key_press",
-  "description": "zInput::KeyboardWaitForAnyKeyPress function and keyboard wait-event globals.",
-  "source_filename": "zin_kbd.cpp",
+  "description": "zInput::KeyboardWaitForAnyKeyPress function and keyboard wait-event globals. Data fields retain their retail addresses and extents as slices of the typed zInput global-state object; function placements remain in their registered translation units.",
+  "source_filename": "zInput.cpp",
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "include_dirs": [
     "src",
@@ -31,32 +31,50 @@
   "data_symbols": [
     {
       "address": "0x561cc8",
-      "symbol": "_g_zInput_KbdDevice",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_KbdDevice",
       "bn_name": "g_zInput_KbdDevice",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 24
     },
     {
       "address": "0x561ccc",
-      "symbol": "_g_zInput_KbdEventBuffer",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_KbdEventBuffer",
       "bn_name": "g_zInput_KbdEventBuffer",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 28
     },
     {
       "address": "0x561cd0",
-      "symbol": "_g_zInput_KbdModifierState",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInput_KbdModifierState",
       "bn_name": "g_zInput_KbdModifierState",
-      "byte_length": 4
+      "byte_length": 4,
+      "object_offset": 32
     },
     {
       "address": "0x561cd4",
-      "symbol": "_g_zInputKbdKeyDispatchTable",
+      "symbol": "_g_zInput_GlobalStateStorage",
       "name": "g_zInputKbdKeyDispatchTable",
       "bn_name": "g_zInputKbdKeyDispatchTable",
-      "byte_length": 16112
+      "byte_length": 16112,
+      "object_offset": 36
     }
   ],
-  "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp"
+  "source_from": "src/GameZRecoil/zInput/zInput.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zInput/zin_kbd.cpp",
+      "order_scope": "full",
+      "functions": [
+        {
+          "address": "0x46fa10",
+          "symbol": "?KeyboardWaitForAnyKeyPress@zInput@@YIHH@Z",
+          "name": "zInput::KeyboardWaitForAnyKeyPress"
+        }
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true
 }

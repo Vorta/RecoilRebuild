@@ -236,9 +236,10 @@ def _hud_ui_mgr_update_frame_current_layout_candidate_bridges(
         or aggregate_target.get("binary") != "recoil"
         or aggregate_target.get("kind") != "vc5"
         or aggregate_target.get("name") != "hud_ui_mgr_data"
-        or aggregate_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            aggregate_target, document.collection("symbols")
+        )
         != [_cc_catalog.HUD_UI_MGR_AGGREGATE_SYMBOL_ID]
-        or aggregate_target.get("unresolved_addresses") not in (None, [])
         or not isinstance(aggregate_registration, Mapping)
         or aggregate_registration.get("manifest_path")
         != _cc_catalog.HUD_UI_MGR_AGGREGATE_TARGET_MANIFEST
@@ -743,9 +744,10 @@ def _hud_ui_mgr_update_frame_objective_timer_candidate_bridges(
         or timer_target.get("kind") != "vc5"
         or timer_target.get("name")
         != "hud_ui_timer_panel_global_accessors_data"
-        or timer_target.get("symbol_ids")
-        != [_cc_catalog.HUD_UI_MGR_DISABLE_TIMER_PANEL_SYMBOL_ID]
-        or timer_target.get("unresolved_addresses") != []
+        or _cc_targets._registered_target_artifact_ids(
+            timer_target, document.collection("symbols")
+        )
+        != [_cc_catalog.HUD_UI_MGR_DISABLE_TIMER_PANEL_SYMBOL_ID, "recoil:data:0x4ed4e0"]
         or not isinstance(timer_registration, Mapping)
         or timer_registration.get("manifest_path")
         != (
@@ -753,9 +755,9 @@ def _hud_ui_mgr_update_frame_objective_timer_candidate_bridges(
             "hud_ui_timer_panel_global_accessors_data.json"
         )
         or timer_registration.get("source_from")
-        != "src/GameZRecoil/zUI/zui.cpp"
+        != "src/GameZRecoil/zUI/zui_widgets.cpp"
         or timer_registration.get("data_addresses")
-        != [_cc_catalog.HUD_UI_MGR_DISABLE_TIMER_PANEL_ADDRESS]
+        != [_cc_catalog.HUD_UI_MGR_DISABLE_TIMER_PANEL_ADDRESS, "0x4ed4e0"]
         or indexes.storage_by_address.get(
             _cc_catalog.HUD_UI_MGR_DISABLE_TIMER_PANEL_ADDRESS
         )
@@ -1747,8 +1749,9 @@ def _hud_ui_mgr_update_frame_stack_menu_candidate_bridges(
             or target.get("kind") != "vc5"
             or target.get("name")
             != target_id.removeprefix("recoil:vc5-target:")
-            or target.get("symbol_ids") != [symbol_id]
-            or target.get("unresolved_addresses") != []
+            or _cc_targets._registered_target_artifact_ids(
+                target, document.collection("symbols")
+            ) != [symbol_id]
             or not isinstance(registration, Mapping)
             or registration.get("manifest_path")
             != (
@@ -1756,7 +1759,7 @@ def _hud_ui_mgr_update_frame_stack_menu_candidate_bridges(
                 f"{target_id.removeprefix('recoil:vc5-target:')}.json"
             )
             or registration.get("source_from")
-            != "src/GameZRecoil/zUI/zui.cpp"
+            != "src/GameZRecoil/zUI/zui_widgets.cpp"
             or registration.get("data_addresses") != [address]
             or indexes.storage_by_address.get(address)
             != f"storage:{symbol_id}"

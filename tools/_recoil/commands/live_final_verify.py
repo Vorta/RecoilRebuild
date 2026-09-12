@@ -307,9 +307,10 @@ def _validate_coverage_text_population(
     return failures
 
 
-def _instruction_match_differences(reference_data, candidate_data, reference_headers, candidate_headers, coverage):
+def _reviewed_match_differences(reference_data, candidate_data, reference_headers, candidate_headers, coverage):
     """Derive permitted file offsets from fresh complete function proofs only."""
     from _recoil.lib.function_match import compare_instructions
+    from _recoil.lib.commutative_match import compare_commutative, BODY_PROOF_SCOPE
     from _recoil.lib.match_evidence import source_context, review_current, current_match_level
     from _recoil.lib.pe import rva_to_offset
     offsets, reports = set(), []
@@ -320,33 +321,34 @@ def _instruction_match_differences(reference_data, candidate_data, reference_hea
             continue
         for entity in section.get("typed_entities", []):
             identities = entity.get("identities", [])
-            if not any(item.get("match_level") == "instruction" for item in identities):
+            if not any(item.get("match_level") in {"instruction", "commutative"} for item in identities):
                 continue
             group_offsets = set()
             group_passed = True
             for identity in identities:
                 result = {"symbol_id": identity.get("symbol_id"), "passed": False,
-                          "reason": "instruction match lacks a current complete linked proof"}
+                          "reason": "reviewed match lacks a current complete linked proof"}
                 try:
                     if (reference_text is None or candidate_text is None or
                             reference_headers.image_base != candidate_headers.image_base or
                             _section_projection(reference_text) != _section_projection(candidate_text)):
-                        raise LiveFinalError("instruction matching does not relax linked placement")
+                        raise LiveFinalError("reviewed matching does not relax linked placement")
                     start, end = int(entity["start"]), int(entity["end"])
                     if not 0 <= start < end <= reference_text.raw_size:
-                        raise LiveFinalError("invalid instruction-match typed extent")
+                        raise LiveFinalError("invalid reviewed-match typed extent")
                     file_start = reference_text.raw_pointer + start
                     retail = reference_data[file_start:reference_text.raw_pointer + end]
                     candidate = candidate_data[file_start:reference_text.raw_pointer + end]
-                    if identity.get("match_level") != "instruction":
+                    level = identity.get("match_level")
+                    if level not in {"instruction", "commutative"}:
                         if retail != candidate:
-                            raise LiveFinalError("a byte-matched alias does not permit register differences")
+                            raise LiveFinalError("a byte-matched alias does not permit relaxed differences")
                         result.update(passed=True, match_level="byte", reason="exact")
                     else:
                         state = identity.get("function_match", {})
-                        review = identity.get("instruction_match_review", {})
-                        if current_match_level(identity) != "instruction":
-                            raise LiveFinalError("stale instruction-match evidence")
+                        review = identity.get(level + "_match_review", {})
+                        if current_match_level(identity) != level:
+                            raise LiveFinalError("stale " + level + "-match evidence")
                         catalog = state.get("retail_relocations")
                         if not isinstance(catalog, list):
                             raise LiveFinalError("missing typed relocation contract")
@@ -360,16 +362,22 @@ def _instruction_match_differences(reference_data, candidate_data, reference_hea
                                         if relocation["type"] == 20 else raw)
                             if observed != int(relocation["retail_target"]):
                                 raise LiveFinalError("retail relocation context changed")
-                        proof = compare_instructions(retail, candidate, relocations=catalog,
-                                                     symbol=str(identity.get("map_symbol", "")))
+                        if level == "commutative":
+                            proof = compare_commutative(retail, candidate, function_address=body_va,
+                                contract=review.get("contract"))
+                            if proof.get("scope") != BODY_PROOF_SCOPE:
+                                raise LiveFinalError("commutative proof scope is missing or invalid")
+                        else:
+                            proof = compare_instructions(retail, candidate, relocations=catalog,
+                                                         symbol=str(identity.get("map_symbol", "")))
                         if not proof["passed"]:
                             raise LiveFinalError(proof["reason"])
                         if not proof.get("exact"):
                             context = source_context(review["context"]["source"], load_config(DEFAULT_FINAL_CONFIG))
-                            if not review_current(review, context, proof["differences"]):
-                                raise LiveFinalError("Pro review does not cover this live instruction difference")
-                        result.update(passed=True, match_level="byte" if proof.get("exact") else "instruction",
-                                      proof=proof, reason="complete live instruction comparison")
+                            if not review_current(review, context, proof["differences"], level=level):
+                                raise LiveFinalError("Pro review does not cover this live " + level + " difference")
+                        result.update(passed=True, match_level="byte" if proof.get("exact") else level,
+                                      proof=proof, reason="complete live " + level + " comparison")
                         group_offsets.update(file_start + index for index, (a, b) in enumerate(zip(retail, candidate)) if a != b)
                 except (KeyError, TypeError, ValueError, OSError, LiveFinalError) as exc:
                     result["reason"] = f"{identity.get('symbol_id')}: {exc}"
@@ -407,9 +415,9 @@ def _compare_image_data(
     if reference_header != candidate_header:
         failures.append("PE headers differ outside the candidate COFF TimeDateStamp field")
 
-    permitted_offsets, instruction_results = _instruction_match_differences(
+    permitted_offsets, reviewed_results = _reviewed_match_differences(
         reference_data, candidate_data, reference_headers, candidate_headers, coverage)
-    failures.extend(row["reason"] for row in instruction_results if not row["passed"])
+    failures.extend(row["reason"] for row in reviewed_results if not row["passed"])
     normalized_complete_file_equal = (
         _complete_image_bytes_without_timestamp(reference_data, reference_headers)
         == _complete_image_bytes_without_timestamp(candidate_data, candidate_headers)
@@ -421,7 +429,7 @@ def _compare_image_data(
     permitted_complete_file_equal = expected_complete == bytes(observed_complete)
     if not permitted_complete_file_equal:
         failures.append(
-            "complete PE file bytes differ outside the COFF TimeDateStamp field and live-proved register encodings"
+            "complete PE file bytes differ outside the COFF TimeDateStamp field and live-proved reviewed function differences"
         )
 
     reference_sections = {section.name: section for section in reference_headers.sections}
@@ -513,8 +521,11 @@ def _compare_image_data(
         "timestamp_is_diagnostic_only": True,
         "normalized_complete_file_equal": normalized_complete_file_equal,
         "permitted_complete_file_equal": permitted_complete_file_equal,
-        "instruction_matches": instruction_results,
-        "contains_instruction_matches": bool(instruction_results),
+        "instruction_matches": [row for row in reviewed_results if row.get("match_level") == "instruction"],
+        "contains_instruction_matches": any(row.get("match_level") == "instruction" for row in reviewed_results),
+        "commutative_matches": [row for row in reviewed_results if row.get("match_level") == "commutative"],
+        "contains_commutative_matches": any(row.get("match_level") == "commutative" for row in reviewed_results),
+        "reviewed_match_results": reviewed_results,
         "raw_file_equal_diagnostic": candidate_data == reference_data,
         "raw_difference_ranges_diagnostic": raw_differences,
         "timestamp_only_raw_difference": timestamp_only,

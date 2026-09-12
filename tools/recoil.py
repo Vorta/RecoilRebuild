@@ -364,9 +364,9 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
     spec("progress relocation-exception set", "relocation_expectation_mutation", prepend=("set",), summary="Revision-guard one reviewed retail-relocation ambiguity exception against exact current source and target context.", category="progress", examples=("python tools/recoil.py progress relocation-exception set --source-symbol-id <physical-symbol-id> --source-address 0xNNNNNN --payload-json '<json-object>' --expected-revision <revision> --dry-run --json",), mutates=True),
     spec("progress relocation-exception remove", "relocation_expectation_mutation", prepend=("remove",), summary="Retract one complete exact-match reviewed exception without changing target or owner facts; dry-run first.", category="progress", mutates=True),
     spec("progress relocation-target bind", "relocation_target_mutation", prepend=("bind",), summary="Bind one immutable-retail relocation operand to reviewed existing or exact known-extent target identity.", category="progress", examples=("python tools/recoil.py progress relocation-target bind --source-symbol-id <physical-symbol-id> --source-address 0xNNNNNN --payload-json '<reviewed-binding>' --expected-revision <revision> --dry-run --json",), mutates=True),
-    spec("progress relocation-target bind-native-eh", "native_eh_relocations", summary="Bind one reviewed native VC5 EH parent to its existing provider handler and canonical absolute exception-list symbol.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
+    spec("progress relocation-target bind-native-eh", "native_eh_relocations", summary="Bind one reviewed native VC5 EH parent, or refresh only corrected source registrations, preserving its handler and canonical absolute exception-list identity.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
     spec("progress relocation-target bind-native-array-cleanup", "native_array_cleanup", summary="Bind one reviewed native array cleanup reference to its existing generated lifecycle target without promoting an original alias or source-owner model.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
-    spec("progress relocation-target bind-native-import", "native_import_relocations", summary="Bind one reviewed authored reference to an unowned non-authored import thunk using immutable retail and the canonical VC5 import member, without owner or provider-byte acceptance.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
+    spec("progress relocation-target bind-native-import", "native_import_relocations", summary="Bind one reviewed authored reference to a non-authored import thunk using immutable retail and the canonical VC5 import member, preserving unresolved ownership or an explicitly selected accepted provider without owner or provider-byte acceptance.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="relocation-target", acceptance_effects=()),
     spec("progress call-contract bind-icf-extension", "call_only_icf", summary="Register exact reviewed site-bound ICF call eligibility without order, owner, provider or byte acceptance.", category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="call-contract", acceptance_effects=()),
     spec(
         "progress provider-target register",
@@ -773,6 +773,13 @@ _PROGRESS_TYPED_SPECS: tuple[CommandSpec, ...] = (
         "match_progress",
         prepend=("review-instruction",),
         summary="Record reviewed Pro eligibility for register-only instruction matching; accepts no function or stage.",
+        category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="match-review",
+    ),
+    spec(
+        "progress match review-commutative",
+        "match_progress",
+        prepend=("review-commutative",),
+        summary="Record reviewed Pro eligibility and an explicit FP contract for commutative matching; accepts no function or stage.",
         category="progress", mutates=True, required_revision_domains=("global",), mutation_scope="match-review",
     ),
     spec(

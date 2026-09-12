@@ -8,7 +8,8 @@ from pathlib import Path
 import sys
 from typing import Any, Mapping
 
-from _recoil.lib.function_match import MATCH_VERSION
+from _recoil.lib.function_match import MATCH_VERSION, MATCH_LEVELS
+from _recoil.lib.commutative_match import COMMUTATIVE_VERSION, valid_contract
 from _recoil.lib.match_evidence import (annotation_edits, dependency_states, source_context)
 from _recoil.lib.progress import (DEFAULT_PROGRESS_PATH, ProgressStore, ProgressError, ConcurrentProgressUpdate)
 from _recoil.lib.source_traceability import parse_source_trace_path
@@ -17,6 +18,7 @@ from _recoil.commands.progress_v2 import add_live_evidence
 
 PROOF_DEPENDENCIES = (
     "tools/_recoil/lib/function_match.py", "tools/_recoil/lib/match_evidence.py",
+    "tools/_recoil/lib/commutative_match.py",
     "tools/_recoil/commands/live_byte_verify.py", "tools/_recoil/commands/relocation_expectations.py",
     "tools/_recoil/call_contract/instructions.py", "tools/_recoil/config/vc5_final_build.json",
     "tools/requirements.txt", "tools/_recoil/lib/call_contract_generations.py",
@@ -31,7 +33,7 @@ def prepare_updates(document, report, config):
     updates = {}
     for group in report.get("matched_groups", []):
         level = group.get("match_level", "byte")
-        if level not in {"byte", "instruction"}:
+        if level not in MATCH_LEVELS:
             raise ProgressError("live match result has an invalid match level")
         for identity in group["scope_ids"]:
             sources = sorted({item["source_from"] for item in group.get("target_bindings", [])
@@ -43,13 +45,15 @@ def prepare_updates(document, report, config):
                 if source not in contexts:
                     contexts[source] = source_context(source, config)
                 dependencies.update(contexts[source]["files"])
-            review = document.collection("symbols")[identity].get("instruction_match_review", {})
+            review = document.collection("symbols")[identity].get(level + "_match_review", {})
             bodies = [item for item in group.get("identity_results", []) if identity in item.get("scope_ids", [])]
             updates[identity] = {"version": MATCH_VERSION, "level": level,
                 "validation_mode": "live", "freshness": "current", "evidence_ids": ["pending-live-evidence"],
-                "review_evidence_id": review.get("evidence_id") if level == "instruction" else None,
+                "review_evidence_id": review.get("evidence_id") if level != "byte" else None,
                 "dependencies": dependency_states(list(dependencies)), "source_paths": sources,
                 "retail_relocations": bodies[0].get("retail_relocations", []) if bodies else []}
+            if level == "commutative":
+                updates[identity]["commutative_version"] = COMMUTATIVE_VERSION
     return updates
 
 
@@ -100,18 +104,26 @@ def _review(args, document, store):
     from _recoil.commands.vc5_build import DEFAULT_MANIFEST, load_config
     from _recoil.commands.vc5_verify import DEFAULT_MANIFEST_DIR
     payload = json.loads(args.payload_file.read_text(encoding="utf-8-sig"))
+    level = args.operation.removeprefix("review-")
+    decision = ("compiler-register-allocation-only" if level == "instruction"
+                else "compiler-commutative-operand-selection-only")
     required = {"symbol_id", "decision", "no_remaining_credible_source_options", "reason", "attempts",
                 "differences", "source_context", "prompt", "answer", "transcript", "receipt", "reviewed"}
+    if level == "commutative":
+        required.update(("contract", "contract_justification"))
     if not isinstance(payload, dict) or set(payload) != required or payload["reviewed"] is not True:
         raise ProgressError(f"review payload must contain exactly {sorted(required)} and reviewed:true")
-    if payload["decision"] != "compiler-register-allocation-only" or payload["no_remaining_credible_source_options"] is not True:
+    if payload["decision"] != decision or payload["no_remaining_credible_source_options"] is not True:
         raise ProgressError("Pro must explicitly confirm compiler attribution and exhaustion of credible source options")
     if not payload["attempts"] or not payload["differences"] or not str(payload["reason"]).strip():
         raise ProgressError("review needs concrete attempts, differences and rationale")
+    if level == "commutative" and (not valid_contract(payload["contract"])
+                                  or not str(payload["contract_justification"]).strip()):
+        raise ProgressError("commutative review needs the supported explicit FP contract and its caller justification")
     identity = payload["symbol_id"]
     symbol = document.collection("symbols").get(identity)
     if not symbol or symbol.get("pipeline_class") not in {"authored", "authored-lifecycle"}:
-        raise ProgressError("instruction review requires an existing authored function")
+        raise ProgressError("match review requires an existing authored function")
     artifacts = {}
     for name in ("prompt", "answer", "transcript", "receipt"):
         path = (REPO_ROOT / payload[name]).resolve()
@@ -123,8 +135,9 @@ def _review(args, document, store):
     # Require an unambiguous, captured decision in the actual answer. This is
     # advisory eligibility only; the independent live machine proof is mandatory.
     import re
-    if not re.search(r"(?m)^INSTRUCTION_MATCH_APPROVED[ \t]*$", artifacts["answer"]) or "INSTRUCTION_MATCH_NOT_APPROVED" in artifacts["answer"]:
-        raise ProgressError("captured Pro answer lacks the explicit INSTRUCTION_MATCH_APPROVED decision")
+    sentinel = level.upper() + "_MATCH_APPROVED"
+    if not re.search(r"(?m)^" + sentinel + r"[ \t]*$", artifacts["answer"]) or level.upper() + "_MATCH_NOT_APPROVED" in artifacts["answer"]:
+        raise ProgressError("captured Pro answer lacks the explicit " + sentinel + " decision")
     if artifacts["answer"].strip() not in artifacts["transcript"]:
         raise ProgressError("captured answer is not present in the submitted exchange transcript")
     rows = _rows(document, "authored", symbol["address"])
@@ -136,18 +149,21 @@ def _review(args, document, store):
               "no_remaining_credible_source_options": True, "context": context,
               "differences": payload["differences"], "reason": payload["reason"], "attempts": payload["attempts"],
               "artifacts": {key: payload[key] for key in artifacts}}
+    if level == "commutative":
+        review.update(commutative_version=COMMUTATIVE_VERSION, contract=payload["contract"],
+                      contract_justification=payload["contract_justification"])
     def transform(data):
-        evidence_id = add_live_evidence(data, kind="instruction-match-pro-review",
-            summary=f"Pro reviewed instruction fallback eligibility for {identity}", scope_ids=[identity],
+        evidence_id = add_live_evidence(data, kind=level + "-match-pro-review",
+            summary=f"Pro reviewed {level} fallback eligibility for {identity}", scope_ids=[identity],
             provenance={"advisory_only": True, "artifacts": review["artifacts"], "answer": artifacts["answer"],
                         "reason": payload["reason"], "attempts": payload["attempts"]})
         review["evidence_id"] = evidence_id
-        data["symbols"][identity]["instruction_match_review"] = review
+        data["symbols"][identity][level + "_match_review"] = review
         prior = data["symbols"][identity].get("function_match")
-        if isinstance(prior, dict) and prior.get("level") == "instruction":
+        if isinstance(prior, dict) and prior.get("level") == level:
             prior["freshness"] = "changed"
     commit = store.mutate(transform, expected_revision=args.expected_revision, apply=args.apply)
-    return {"kind": "instruction-match-review", "symbol_id": identity, "advisory_only": True,
+    return {"kind": level + "-match-review", "symbol_id": identity, "advisory_only": True,
             "decision": payload["decision"], "commit": commit.to_dict()}
 
 
@@ -193,7 +209,7 @@ def _refresh(args, document, store):
 
 def build_parser():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("review-instruction", "refresh"))
+    parser.add_argument("operation", choices=("review-instruction", "review-commutative", "refresh"))
     parser.add_argument("--progress", type=Path, default=DEFAULT_PROGRESS_PATH)
     parser.add_argument("--expected-revision", type=int, required=True)
     parser.add_argument("--payload-file", type=Path)
@@ -216,9 +232,9 @@ def main(argv=None):
         document = store.load()
         if document.revision != args.expected_revision:
             raise ConcurrentProgressUpdate(f"revision changed: expected {args.expected_revision}, found {document.revision}")
-        if args.operation == "review-instruction":
+        if args.operation.startswith("review-"):
             if args.payload_file is None:
-                raise ProgressError("review-instruction requires --payload-file")
+                raise ProgressError(args.operation + " requires --payload-file")
             result = _review(args, document, store)
         else:
             if not (args.all or args.at) or args.build_root is None:

@@ -87,13 +87,11 @@ CZFMVPlayback::~CZFMVPlayback() {
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-openandplay
  * @recoil-artifact defines .text recoil:function:0x462370: CZFMVPlayback::OpenAndPlay.
+ * @recoil-match byte
+ *
  * Purpose: open an MCI MPEG device, configure its window/rect/time format, and start playback.
  */
-void CZFMVPlayback::OpenAndPlay(
-    unsigned int startMs,
-    int endMs,
-    int notifyFlag
-) {
+void CZFMVPlayback::OpenAndPlay(unsigned int startMs, int endMs, int notifyFlag) {
     zVideo_dd::FlipToGDIIfAttached();
 
     // Retail writes only the MCI fields consumed by each command.
@@ -171,6 +169,8 @@ void CZFMVPlayback::OpenAndPlay(
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-stopandclose
  * @recoil-artifact defines .text recoil:function:0x4624f0: CZFMVPlayback::StopAndClose.
+ * @recoil-match byte
+ *
  * Purpose: stop and close the active MCI device, reporting any failure.
  */
 void CZFMVPlayback::StopAndClose() {
@@ -204,11 +204,11 @@ int CZFMVPlayback::SetDestRect(
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zfmv-fmv_main-function-zfmv_playback-reportmcierror
  * @recoil-artifact defines .text recoil:function:0x462570: CZFMVPlayback::ReportMciError.
+ * @recoil-match byte
+ *
  * Purpose: translate an MCI error code and report it through the old zError path.
  */
-int CZFMVPlayback::ReportMciError(
-    unsigned int mciError
-) {
+int CZFMVPlayback::ReportMciError(unsigned int mciError) {
     char errorText[0x80];
     if (mciGetErrorStringA(mciError, errorText, sizeof(errorText)) == 0) {
         strcpy(errorText, g_zFMV_UnknownErrorIdMsg);

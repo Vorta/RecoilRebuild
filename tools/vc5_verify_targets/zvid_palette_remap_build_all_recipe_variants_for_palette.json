@@ -1,8 +1,7 @@
 {
   "name": "zvid_palette_remap_build_all_recipe_variants_for_palette",
-  "description": "zVideo palette-remap rebuild helper for all active recipes on one palette.",
-  "source_filename": "zVideo.cpp",
-  "compiler_profile": "vc5_o2_ob0_md_facs",
+  "description": "zVideo palette-remap rebuild helper for all active recipes on one palette. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zimg_texture.cpp",
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -12,14 +11,25 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zVideo/zvid_main.c"
+    "src/GameZRecoil/zImage/zimg_texture.cpp"
   ],
   "functions": [
     {
       "address": "0x46e8d0",
       "symbol": "@zVidPaletteRemapBuildAllRecipeVariantsForPalette@8",
-      "name": "zVidPaletteRemapBuildAllRecipeVariantsForPalette"
+      "name": "zVid_PaletteRemap::BuildAllRecipeVariantsForPalette"
     }
   ],
-  "source_from": "src/GameZRecoil/zVideo/zvid_main.c"
+  "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zImage/zimg_texture.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x46e8d0"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

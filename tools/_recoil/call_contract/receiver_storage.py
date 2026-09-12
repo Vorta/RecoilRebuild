@@ -452,30 +452,21 @@ def _exact_iat_register_load_provenance(
         raise ValueError(
             "IAT register provenance requires exact MOV encoding"
         ) from exc
-    registers = (
-        "eax",
-        "ecx",
-        "edx",
-        "ebx",
-        "esp",
-        "ebp",
-        "esi",
-        "edi",
-    )
+    decoded_load = _cc_receiver_instructions._absolute_dword_mov_load(body)
     definition_address = instruction_address
     if (
         not identity.startswith("iat:")
-        or len(body) != 6
-        or body[0] != 0x8B
-        or body[1] >> 6 != 0
-        or body[1] & 0x07 != 0x05
-        or registers[(body[1] >> 3) & 0x07] != destination
+        or decoded_load is None
+        or decoded_load[0] != destination
+        or _cc_cfg._instruction_mnemonic(instruction) != "mov"
         or not definition_address
     ):
         raise ValueError(
             "IAT register provenance requires one exact absolute MOV load"
         )
-    decoded_address = normalize_address(struct.unpack("<I", body[2:6])[0])
+    address_offset = decoded_load[1]
+    address_bytes = body[address_offset:address_offset + 4]
+    decoded_address = normalize_address(struct.unpack("<I", address_bytes)[0])
     if assembly_source == "bn":
         retail_address = rendered_address or decoded_address
         if (
@@ -505,7 +496,7 @@ def _exact_iat_register_load_provenance(
         )
         if (
             rendered_address is not None
-            or body[2:6] != b"\x00\x00\x00\x00"
+            or address_bytes != b"\x00\x00\x00\x00"
             or re.fullmatch(r"__imp_[A-Za-z0-9_@$?]+", exact_memory)
             is None
             or (

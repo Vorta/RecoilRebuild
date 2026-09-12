@@ -1,8 +1,7 @@
 {
   "name": "hud_ui_background_video_widget_rebuild_blt_rect",
-  "description": "HudUiBackgroundVideoWidget::RebuildBltRect.",
-  "compiler_profile": "vc5_o2_ob1_md_gx_facs",
-  "source_filename": "zhud_ui.cpp",
+  "description": "HudUiBackgroundVideoWidget::RebuildBltRect. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "source_filename": "zui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "include_dirs": [
     "src",
@@ -20,8 +19,19 @@
   "functions": [
     {
       "address": "0x4bff00",
-      "symbol": "?RebuildBltRect@HudUiBackgroundVideoWidget@@QAEXXZ",
+      "symbol": "?RebuildBltRect@HudUiBackgroundVideoWidget@@UAEXXZ",
       "name": "HudUiBackgroundVideoWidget::RebuildBltRect"
     }
-  ]
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/GameZRecoil/zUI/zui.cpp",
+      "order_scope": "full",
+      "function_address_refs": [
+        "0x4bff00"
+      ]
+    }
+  ],
+  "check_translation_unit_function_order": true,
+  "compile_context_from": "tools/_recoil/config/vc5_final_build.json"
 }

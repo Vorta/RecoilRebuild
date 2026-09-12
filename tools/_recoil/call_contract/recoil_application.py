@@ -1812,8 +1812,9 @@ def _recoil_app_mp_exit_deactivate_candidate_indirect_bridge(
         or focused_target.get("kind") != "vc5"
         or focused_target.get("name")
         != _cc_catalog.RECOIL_APP_MP_EXIT_DEACTIVATE_CALLER_TARGET_NAME
-        or focused_target.get("symbol_ids") != [caller_symbol_id]
-        or focused_target.get("unresolved_addresses") != []
+        or _cc_targets._registered_target_artifact_ids(
+            focused_target, document.collection("symbols")
+        ) != [caller_symbol_id]
         or not isinstance(focused_registration, Mapping)
         or focused_registration.get("manifest_path")
         != (
@@ -1942,9 +1943,10 @@ def _recoil_app_mp_exit_deactivate_candidate_indirect_bridge(
         or dialog_target.get("kind") != "vc5"
         or dialog_target.get("name")
         != "hud_ui_mp_exit_dialog_singleton_data"
-        or dialog_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            dialog_target, document.collection("symbols")
+        )
         != [_cc_catalog.RECOIL_APP_MP_EXIT_DIALOG_SYMBOL_ID]
-        or dialog_target.get("unresolved_addresses") != []
         or not isinstance(dialog_registration, Mapping)
         or dialog_registration.get("manifest_path")
         != (
@@ -2240,8 +2242,9 @@ def _recoil_app_mp_exit_update_should_quit_candidate_indirect_bridge(
         or focused_target.get("kind") != "vc5"
         or focused_target.get("name")
         != _cc_catalog.RECOIL_APP_MP_EXIT_UPDATE_SHOULD_QUIT_CALLER_TARGET_NAME
-        or focused_target.get("symbol_ids") != [caller_symbol_id]
-        or focused_target.get("unresolved_addresses") != []
+        or _cc_targets._registered_target_artifact_ids(
+            focused_target, document.collection("symbols")
+        ) != [caller_symbol_id]
         or not isinstance(focused_registration, Mapping)
         or focused_registration.get("manifest_path")
         != (
@@ -2373,9 +2376,10 @@ def _recoil_app_mp_exit_update_should_quit_candidate_indirect_bridge(
         or dialog_target.get("kind") != "vc5"
         or dialog_target.get("name")
         != "hud_ui_mp_exit_dialog_singleton_data"
-        or dialog_target.get("symbol_ids")
+        or _cc_targets._registered_target_artifact_ids(
+            dialog_target, document.collection("symbols")
+        )
         != [_cc_catalog.RECOIL_APP_MP_EXIT_DIALOG_SYMBOL_ID]
-        or dialog_target.get("unresolved_addresses") != []
         or not isinstance(dialog_registration, Mapping)
         or dialog_registration.get("manifest_path")
         != (

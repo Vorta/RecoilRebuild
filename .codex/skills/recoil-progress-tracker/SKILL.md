@@ -65,14 +65,17 @@ their owning reviewed procedure. Follow it with a fresh full match refresh.
 
 Function match classification is distinct from serial stage acceptance. Use
 `progress match refresh --all` or `--at <address>` with a fresh build root,
-expected revision and dry-run/apply to record complete live `byte`/`instruction`
+expected revision and dry-run/apply to record complete live `byte`/`instruction`/`commutative`
 proofs and synchronize `@recoil-match` source mirrors. This does not move the
 scheduler. Register specific Pro fallback eligibility through
-`progress match review-instruction --payload-file ...` (dry-run, review, apply).
-The executable runbook owns its exact payload. Old comparisons, annotations,
+`progress match review-instruction --payload-file ...` or
+`progress match review-commutative --payload-file ...` (dry-run, review, apply).
+The executable runbook owns their exact payloads and the commutative FP contract.
+Old comparisons, annotations,
 and Pro answers cannot replace a fresh build. Keep exact-byte dimensions false
-for instruction matches; serial byte stages use the explicit approved
-instruction alternative, retaining every relocation and placement obligation.
+for both relaxed levels; serial byte stages use their explicit approved
+alternatives, retaining every relocation and placement obligation. Report
+commutative matches separately with their conditional domain assumptions.
 
 A reviewed provisional extension of a winner-unknown compiler ICF group may
 have call-only authority while its owner's source/linkage gates remain pending.
@@ -146,6 +149,14 @@ Named internal read-only data may use its stable object-name stem in a reviewed
 relocation-target binding. The byte verifier proves the compiler's suffixed
 static symbol against exact retail storage and the complete registered reader
 population; do not invent a compiler ordinal for the expected identity.
+An exact single-TU `$S` decimal-suffix selector may coexist with that reviewed
+stem. The verifier reconciles only that same named-static family and retains
+the complete storage, contents, reader and linked proof. Competing patterns,
+other source files, stale bindings and interior offsets remain unresolved.
+For older data rows without a duplicate `ownership_state`, the current reviewed
+binding's exact primary-data relationship supplies the ownership witness. Its
+owner, target, relationship and source context must still pass live staleness
+checks; recording an ownership flag is neither required nor a substitute.
 
 For a native VC5 unwind-only EH parent, use
 `progress relocation-target bind-native-eh --payload-file <reviewed-json> --expected-revision <revision> --dry-run --json`,
@@ -166,6 +177,14 @@ verification requires the parent-associated COFF sections and the complete
 linked packet relocation graph. Keep FS:[0] relocations; never invent a data
 extent at address zero or use a generated label ordinal as expected identity.
 
+After correcting source registrations, the native EH route accepts optional
+`expected_binding` with the complete exact stored binding. Dry-run and review
+before apply. It re-derives retail, runtime and provider context and permits only
+the source snapshot's `registration_ids` to change. Source identity, extent,
+handler, unwind facts, runtime proof, provider relationship and evidence must
+remain identical. This refresh accepts no function or provider bytes; follow it
+with fresh complete consumer and linked EH-packet verification.
+
 For a compiler-generated implicit cleanup selected by native member-array
 construction or destruction, use `progress relocation-target bind-native-array-cleanup` with
 `--payload-file`, `--expected-revision`, and `--dry-run --json`, review, then
@@ -183,19 +202,29 @@ binds a dependency to an existing generated lifecycle target; it does not create
 an authored ICF group or accept an original alias census, source model, owner
 gate, or tier. The original folded winner remains unresolved when unproved.
 
-For a direct authored reference to an existing unowned non-authored named MSVCRT
-or ordinal MFC42 import thunk, use
+For a direct authored reference to an existing non-authored named MSVCRT or
+AVIFIL32 import thunk, or an ordinal MFC42 import thunk, use
 `progress relocation-target bind-native-import --payload-file <reviewed-json>
 --expected-revision <revision> --dry-run --json`, review, then repeat with
 `--apply`. The exact payload fields are `reviewed: true`, `source_symbol_id`,
-`object_symbol`, `offset`, `target_symbol`, `evidence_ids`, and `reason`. The
+`object_symbol`, `offset`, `target_symbol`, `evidence_ids`, and `reason`. By
+default the target must be unowned. Optional `provider_owner_id` selects one
+existing exclusive primary provider with accepted lifecycle, boundary and source
+gates. This preserves the complete owner record, including any absent historical
+owner evidence, and requires current parent-function evidence plus the same
+fresh canonical import proof. Owner, relationship, gate, recipe or evidence
+changes make the binding stale and require renewed review. Targets with a
+separately registered typed identity use the ordinary target route. The
 proof derives the exact retail IAT/DLL/name or ordinal, requires one matching canonical VC5
 long import member and its code and lookup tables, then checks the current
-COFF reference and linked thunk/import. Unresolved ownership and the inventory
+COFF reference and linked thunk/import. Existing ownership and the inventory
 extent remain unchanged; no provider body, padding, storage, or gate is accepted.
-Named MSVCRT imports require exact name-table relocations. Ordinal MFC42 imports
+Named imports require exact name-table relocations. AVIFIL32 uses the canonical
+VC5 `VC/LIB/VFW32.LIB`, `AVIFIL32.dll` member and AVIFIL32 descriptor dependency.
+Ordinal MFC42 imports
 require the exact ordinal word in both lookup tables, no lookup relocations or
-name table, and the canonical MFC42 descriptor dependency.
+name table, and the canonical MFC42 descriptor dependency. Neither ownership
+case accepts a new owner or provider fact.
 
 After a governed source registration move, the same native-import route accepts
 an optional `expected_binding` containing the complete exact stored binding.
@@ -211,6 +240,15 @@ stored exception as `--payload-json`, a `--reason`, and the expected revision.
 Dry-run and review first. Removal changes only that exact exception; it retains
 target/owner facts and accepts no replacement evidence. Bind the replacement
 identity separately and require fresh live byte acceptance.
+
+An ordinary reviewed relocation exception may select the one-past-end bound of
+an existing data object for a retail `CMP reg32, imm32` operand. Register its
+known extent first and use that exact size as both addends; supply the existing
+object's identity, not the adjacent object's start. Mutation and fresh live
+derivation verify the immutable comparison and current extent. Dereferences,
+other instructions, unknown extents and out-of-range addends remain blocked.
+This site-specific review changes neither ordinary half-open target lookup nor
+data ownership, storage acceptance or function match requirements.
 
 For a real function whose typed extent includes an unreferenced INT3 alignment
 tail, use `progress symbol separate-tail-padding --payload-file ...` with an
@@ -249,7 +287,11 @@ the complete new TU's attached authored function definitions, retains current
 semantic identities and the retail block grid, updates defining source edges
 and owner paths, and invalidates affected order/call/byte and source/linkage
 gates. It retracts broad filename inference only on already-unresolved mappings
-without accepted mapping evidence, retaining the prior observation in history.
+without evidence, retaining the prior observation in history. For an unresolved
+mapping with evidence, it preserves the original path, complete mapping and
+evidence while recording the current implementation extraction separately.
+Repeated extractions retain the complete current semantic-span path set from
+resolved defining edges; unresolved members keep prior path observations.
 It refuses accepted historical filename mappings. It accepts no original
 filename, source model, provider, owner tier, or body match. Use the source-model
 skill's required review before proposing a disputed compilation boundary.
