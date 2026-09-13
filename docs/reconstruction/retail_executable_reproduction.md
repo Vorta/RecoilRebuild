@@ -399,6 +399,18 @@ An explicit empty expectation is valid. A missing deterministic target identity
 uses reviewed `progress relocation-target bind`. A genuine ambiguity alone
 uses reviewed `progress relocation-exception set`. Both are dry-run-first.
 
+A one-past-array comparison is a genuine per-operand ambiguity when the same
+retail address is also the next object's start. Use `progress
+relocation-exception set` for that operand, selecting the existing array's
+`target_symbol_id` and object selector, with both `coff_addend` and
+`resolved_target_addend` equal to the array's exact size. The narrow proof
+requires known typed data bounds and an authenticated `CMP reg32, imm32`
+operand at exactly `end_exclusive`. It rejects dereferences, other operations,
+wrong addends and stale extents, and repeats these checks during live derivation.
+Keep ordinary target lookup half-open and retain references to the adjacent
+object. This review grants no function, owner or storage acceptance; the fresh
+object and linked comparison must still prove the candidate operand.
+
 Existing folded aliases need a site-specific exception review when their physical
 address alone does not determine the logical callee. Adding an ordinary target
 binding does not choose one alias from that group and can stale other reviewed

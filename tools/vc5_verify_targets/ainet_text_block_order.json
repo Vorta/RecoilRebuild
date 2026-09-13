@@ -11,7 +11,7 @@
   "data_symbols": [
     {
       "address": "0x4cc844",
-      "symbol": "_kPlayerAiForwardPathAdvanceDistance",
+      "symbol_regex": "_kPlayerAiForwardPathAdvanceDistance\\$S[0-9]+",
       "name": "kPlayerAiForwardPathAdvanceDistance",
       "byte_length": 4
     }

@@ -3035,7 +3035,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         }
         checked += 1
         if getattr(args, "classify_all", False) and (checked == 1 or checked % 100 == 0):
-            print(f"Function census: {checked}/{len(rows)} groups checked, {len(matched_groups)} matched", file=sys.stderr, flush=True)
+            matched_count = len(matched_groups) + int(comparison["passed"])
+            print(f"Function census: {checked}/{len(rows)} groups checked, {matched_count} matched", file=sys.stderr, flush=True)
         classifications.append({"scope_ids": list(row["scope_ids"]), "address": row["address"],
                                "passed": comparison["passed"], "identity_results": group_results})
         if not comparison["passed"]:
