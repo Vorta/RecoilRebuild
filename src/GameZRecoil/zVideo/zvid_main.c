@@ -1735,7 +1735,7 @@ RECOIL_STATIC_ASSERT(sizeof(zVidTexturePackEntry) == 0xa4);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zVidPaletteRemapRecipe,
-        color1R
+        color1
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
@@ -1924,23 +1924,22 @@ namespace zVideo_buff {
 
 namespace zVideo {
 
-
-
-
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-handlesoftwaremodehotkeycommand
  * @recoil-artifact defines .text recoil:function:0x437ef0: zVideo::HandleSoftwareModeHotkeyCommand.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: cycle the software-mode hotkey presets while preserving HUD state.
  *
  * Evidence: BN dispatches on GetVideoModeIndexFromOptions() - 2 and cycles
  * modes 2->4, 3->5, 4->2, and 5->3; only the downscale paths request
  * half-resolution adjustment disablement.
+ * The saved HUD type is restored on every path through the switch,
+ * including modes outside these presets. Case order follows the retail
+ * dispatch bodies.
  */
-void __fastcall HandleSoftwareModeHotkeyCommand(
-    int
-) {
+void __fastcall HandleSoftwareModeHotkeyCommand(int) {
     if (g_zVideo_SoftwareModeHotkeyEnabled == 0) {
         return;
     }
@@ -1948,43 +1947,44 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
     const int previousHudType = zOpt::SetHudTypeForCurrentHwMode(1);
     const int currentModeIndex = zVid::GetVideoModeIndexFromOptions();
 
-    switch (currentModeIndex - 2) {
-    case 0:
+    switch (currentModeIndex) {
+    case 2:
         if (InitApplyModeIndex(4) == 0) {
             zVid::SetVideoModeIndex(4);
-            if (zVid::GetAccelerationOption() == 0)
+            if (zVid::GetAccelerationOption() == 0) {
                 SetHalfResAdjustMode(1);
+            }
         }
-        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
         break;
 
-    case 1:
-        if (InitApplyModeIndex(5) == 0) {
-            zVid::SetVideoModeIndex(5);
-            if (zVid::GetAccelerationOption() == 0)
-                SetHalfResAdjustMode(1);
-        }
-        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
-        break;
-    case 2:
+    case 4:
         if (InitApplyModeIndex(2) == 0) {
             zVid::SetVideoModeIndex(2);
             if (zVid::GetAccelerationOption() == 0) {
                 SetHalfResAdjustMode(0);
             }
         }
-        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
         break;
+
     case 3:
+        if (InitApplyModeIndex(5) == 0) {
+            zVid::SetVideoModeIndex(5);
+            if (zVid::GetAccelerationOption() == 0) {
+                SetHalfResAdjustMode(1);
+            }
+        }
+        break;
+
+    case 5:
         if (InitApplyModeIndex(3) == 0) {
             zVid::SetVideoModeIndex(3);
             if (zVid::GetAccelerationOption() == 0) {
                 SetHalfResAdjustMode(0);
             }
         }
-        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
         break;
     }
+    zOpt::SetHudTypeForCurrentHwMode(previousHudType);
 }
 
 
@@ -2334,67 +2334,67 @@ int __fastcall LoadPaletteFileAndApplyBrightness(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-applybrightnesstopaletteentries
  * @recoil-artifact defines .text recoil:function:0x4c8070: zVideo::ApplyBrightnessToPaletteEntries.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
- * Purpose: provide the recovered zVideo::ApplyBrightnessToPaletteEntries behavior.
+ * Purpose: adjust system-palette brightness, clamp RGB channels, and submit it.
  */
-int __fastcall ApplyBrightnessToPaletteEntries(
-    PALETTEENTRY *paletteEntries
-) {
+int __fastcall ApplyBrightnessToPaletteEntries(PALETTEENTRY *paletteEntries) {
     if (g_zVideo_IsInitialized == 0) {
         return 0x5a560000;
     }
 
     if (paletteEntries != 0) {
-        memcpy(
-            g_zVideo_SystemPaletteEntries,
-            paletteEntries,
-            sizeof(g_zVideo_SystemPaletteEntries)
-        );
+        memcpy(g_zVideo_SystemPaletteEntries, paletteEntries, sizeof(g_zVideo_SystemPaletteEntries));
     }
 
     PALETTEENTRY adjustedEntries[256];
-    memcpy(adjustedEntries, g_zVideo_SystemPaletteEntries, sizeof(adjustedEntries));
-
     const int brightnessDelta =
         ((int)((unsigned char)g_zVideo_PaletteBrightnessLevel) << 3) - 32;
+    memcpy(adjustedEntries, g_zVideo_SystemPaletteEntries, sizeof(adjustedEntries));
+
     if (brightnessDelta > 0) {
-        for (int index = 0; index < 256; ++index) {
-            const int red = adjustedEntries[index].peRed + brightnessDelta;
-            const int green = adjustedEntries[index].peGreen + brightnessDelta;
-            const int blue = adjustedEntries[index].peBlue + brightnessDelta;
-            adjustedEntries[index].peRed = (BYTE)(red > 255 ? 255 : red);
-            adjustedEntries[index].peGreen = (BYTE)(green > 255 ? 255 : green);
-            adjustedEntries[index].peBlue = (BYTE)(blue > 255 ? 255 : blue);
+        PALETTEENTRY *entry = adjustedEntries;
+        for (int index = 0; index < 256; ++index, ++entry) {
+            if (entry->peRed + brightnessDelta < 255) {
+                entry->peRed += (BYTE)brightnessDelta;
+            } else {
+                entry->peRed = 255;
+            }
+            if (entry->peGreen + brightnessDelta < 255) {
+                entry->peGreen += (BYTE)brightnessDelta;
+            } else {
+                entry->peGreen = 255;
+            }
+            if (entry->peBlue + brightnessDelta < 255) {
+                entry->peBlue += (BYTE)brightnessDelta;
+            } else {
+                entry->peBlue = 255;
+            }
         }
     } else if (brightnessDelta < 0) {
-        for (int index = 0; index < 256; ++index) {
-            const int red = adjustedEntries[index].peRed + brightnessDelta;
-            const int green = adjustedEntries[index].peGreen + brightnessDelta;
-            const int blue = adjustedEntries[index].peBlue + brightnessDelta;
-            adjustedEntries[index].peRed = (BYTE)(red < 0 ? 0 : red);
-            adjustedEntries[index].peGreen = (BYTE)(green < 0 ? 0 : green);
-            adjustedEntries[index].peBlue = (BYTE)(blue < 0 ? 0 : blue);
+        PALETTEENTRY *entry = adjustedEntries;
+        for (int index = 0; index < 256; ++index, ++entry) {
+            if (entry->peRed + brightnessDelta > 0) {
+                entry->peRed += (BYTE)brightnessDelta;
+            } else {
+                entry->peRed = 0;
+            }
+            if (entry->peGreen + brightnessDelta > 0) {
+                entry->peGreen += (BYTE)brightnessDelta;
+            } else {
+                entry->peGreen = 0;
+            }
+            if (entry->peBlue + brightnessDelta > 0) {
+                entry->peBlue += (BYTE)brightnessDelta;
+            } else {
+                entry->peBlue = 0;
+            }
         }
     }
 
     return g_zVideo_pfnPaletteSetEntries(0, 256, adjustedEntries);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 } // namespace zVideo

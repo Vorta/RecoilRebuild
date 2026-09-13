@@ -429,7 +429,7 @@ def test_repair_created_data_preserves_legacy_owner_and_refuses_acquired_state(m
             check(changed)
 
 
-def test_missing_typed_data_preserves_exact_owner_facts_and_rejects_conflicts(monkeypatch):
+def test_relocation_target_creation_and_retraction_preserve_unrelated_facts(monkeypatch):
     from copy import deepcopy
     from types import SimpleNamespace
     from _recoil.commands import relocation_target_mutation as mutation
@@ -505,6 +505,52 @@ def test_missing_typed_data_preserves_exact_owner_facts_and_rejects_conflicts(mo
     with pytest.raises(mutation.RelocationTargetMutationError, match="already exists"):
         bind()
     assert len(commits) == 1
+
+    # Removing a mistaken registration is subtraction only. The exact saved
+    # binding guards all of its source, target, owner and provenance fields.
+    binding = {"reviewed": True, "object_symbol": "_token", "binding_context": {
+        "creation_mode": "existing-symbol", "target": {"symbol_id": target_id},
+        "source_binding": {"symbol_id": "recoil:function:0x401000"}}}
+    unrelated = {"object_symbol": "_other", "evidence_ids": ["keep"]}
+    removal_data = ProgressDocument.empty().data
+    removal_data["symbols"][target_id] = {"binary": "recoil", "address": "0x501000",
+        "kind": "data", "relocation_target_binding": [deepcopy(binding), deepcopy(unrelated)]}
+    removal_data["owners"][owner_id] = deepcopy(original_owner)
+    request = {"reviewed": True, "reason": "remove only redundant registration",
+               "expected_binding": deepcopy(binding)}
+    original_removal = deepcopy(removal_data)
+    proposed, report = mutation.prepare_target_retraction(ProgressDocument(removal_data), target_id, request)
+    expected = deepcopy(removal_data)
+    expected["symbols"][target_id]["relocation_target_binding"] = [unrelated]
+    assert proposed == expected and removal_data == original_removal
+    assert report["removed_binding"] == binding and report["acceptance_effects"] == []
+    for value in (binding, [binding]):
+        removal_data["symbols"][target_id]["relocation_target_binding"] = deepcopy(value)
+        proposed, _ = mutation.prepare_target_retraction(ProgressDocument(removal_data), target_id, request)
+        assert "relocation_target_binding" not in proposed["symbols"][target_id]
+        assert proposed["owners"] == removal_data["owners"]
+    for value in ([], [binding, binding], [{**binding, "reason": "intervening edit"}]):
+        removal_data["symbols"][target_id]["relocation_target_binding"] = deepcopy(value)
+        with pytest.raises(mutation.RelocationTargetMutationError, match="exactly one unchanged"):
+            mutation.prepare_target_retraction(ProgressDocument(removal_data), target_id, request)
+    for change in ({"reviewed": False}, {"reason": ""}, {"extra": True}):
+        with pytest.raises(mutation.RelocationTargetMutationError):
+            mutation.prepare_target_retraction(ProgressDocument(removal_data), target_id, {**request, **change})
+    for change in ({"creation_mode": "created-data-symbol"}, {"target": {"symbol_id": "different"}}):
+        changed_binding = {**binding, "binding_context": {**binding["binding_context"], **change}}
+        with pytest.raises(mutation.RelocationTargetMutationError):
+            mutation.prepare_target_retraction(ProgressDocument(removal_data), target_id,
+                                              {**request, "expected_binding": changed_binding})
+    removal_data["symbols"][target_id]["relocation_target_binding"] = deepcopy(binding)
+    monkeypatch.setattr(mutation, "ProgressStore", lambda _: SimpleNamespace(
+        load=lambda: ProgressDocument(deepcopy(removal_data)), commit=commit))
+    with pytest.raises(mutation.RelocationTargetMutationError, match="revision changed"):
+        mutation.retract_relocation_target(progress=Path("unused.sqlite3"), target_symbol_id=target_id,
+                                          payload=request, expected_revision=1, apply=True)
+    result = mutation.retract_relocation_target(progress=Path("unused.sqlite3"), target_symbol_id=target_id,
+                                              payload=request, expected_revision=0, apply=False)
+    assert result["commit"]["applied"] is False and len(commits) == 2
+    assert "relocation_target_binding" not in commits[-1]["symbols"][target_id]
 
 
 def test_temporary_scalar_creation_preserves_extent_and_pending_acceptance(monkeypatch):
@@ -781,6 +827,22 @@ def test_data_aggregate_coalescence_preserves_views_and_rejects_incomplete_closu
             "command": f"python tools/recoil.py audit bn-data-evidence {base} --size 8 --binary recoil --json",
             "target_id": target_id, "artifacts": []},
     }
+    # Existing attached field definitions are archived, not reinterpreted as
+    # accepted aggregate or member source. Mixed targets keep their code census.
+    old_trace = {"state": "resolved", "source_edges": [{"anchor_id": "unit-old-field"}], "reason_code": None}
+    data["symbols"][field_ids[1]]["source_traceability"] = deepcopy(old_trace)
+    payload["expected_current"]["symbols"][field_ids[1]]["source_traceability"] = deepcopy(old_trace)
+    registration["function_addresses"] = ["0x401000"]
+    replacement["registration"]["function_addresses"] = ["0x401000"]
+    payload["expected_current"]["verification_targets"][target_id]["registration"]["function_addresses"] = ["0x401000"]
+    data["owners"]["recoil:owner:unit.consumer"] = {
+        "binary": "recoil", "kind": "record", "name": "Unit consumer", "section": "unit",
+        "lifecycle_state": "discovered", "source_paths": [], "evidence_ids": [],
+        "gates": {g: "pending" for g in ("boundary", "source", "data", "owner_linkage", "byte")},
+        "relationships": [{"kind": "anchor-address", "address": tail}],
+        "reimplementation": {"entries": {}},
+    }
+    data["symbols"][function_id]["function_match"] = {"classification": "byte", "target": field_ids[1]}
     before = deepcopy(data)
     result = aggregate.plan_coalescence(data, payload, expected_revision=data["revision"], repo_root=tmp_path)
     proposed = result["proposed"]
@@ -792,6 +854,14 @@ def test_data_aggregate_coalescence_preserves_views_and_rejects_incomplete_closu
     assert "accepted_byte_facts" not in proposed["symbols"][function_id]
     assert proposed["physical_blocks"] == data["physical_blocks"]
     assert proposed["evidence"][result["evidence_id"]]["provenance"]["superseded_records"] == payload["expected_current"]
+    assert proposed["verification_targets"][target_id]["registration"]["function_addresses"] == ["0x401000"]
+    assert proposed["symbols"][field_ids[0]]["logical_aliases"][payload["fields"][1]["logical_artifact_id"]]["source_traceability"]["state"] == "unresolved"
+    replacement["registration"]["function_addresses"] = ["0x401010"]
+    with pytest.raises(aggregate.DataAggregateError, match="non-data registration"):
+        aggregate.plan_coalescence(data, payload, expected_revision=data["revision"], repo_root=tmp_path)
+    replacement["registration"]["function_addresses"] = ["0x401000"]
+    assert "function_match" not in proposed["symbols"][function_id]
+    assert proposed["evidence"][result["evidence_id"]]["provenance"]["superseded_function_matches"][function_id] == data["symbols"][function_id]["function_match"]
     assert len(proposed["storage_contributions"]) == 1
     for corrupt, message in (
         (lambda d, p: p["padding"].clear(), "coverage"),

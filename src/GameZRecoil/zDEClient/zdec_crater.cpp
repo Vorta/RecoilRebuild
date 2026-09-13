@@ -114,18 +114,18 @@ void __fastcall DestroyFeature(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-initeventtemplatedefaults
  * @recoil-artifact defines .text recoil:function:0x456b00: zDEClient_Crater::InitEventTemplateDefaults
+ * @recoil-match byte
  *
  * Purpose: copy the configured crater event template defaults into a caller
- * supplied event template.
+ * supplied event template and return zero status.
+ * Retail explicitly clears EAX before the copy; both indexed callers
+ * currently discard the result.
  */
-void __fastcall InitEventTemplateDefaults(
+int __fastcall InitEventTemplateDefaults(
     zDEClient_CraterEventTemplate *eventTemplate
 ) {
-    memcpy(
-        eventTemplate,
-        &g_zDEClient_CraterEventTemplateDefaults,
-        sizeof(zDEClient_CraterEventTemplate)
-    );
+    *eventTemplate = g_zDEClient_CraterEventTemplateDefaults;
+    return 0;
 }
 
 /**
@@ -408,7 +408,9 @@ zDEClient_CraterFeature *__fastcall CreateFeatureStructFromEventTemplate(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-build
  * @recoil-artifact defines .text recoil:function:0x4570e0: zDEClient_Crater::Build
- * Purpose: Clip the crater polygon into the feature grid cell and adopt the clipped point list.
+ * @recoil-match byte
+ *
+ * Purpose: clip crater geometry, adopt positive results, and normalize negative results to zero.
  */
 int __fastcall Build(
     zDEClient_CraterFeature *featureInstance
@@ -420,26 +422,24 @@ int __fastcall Build(
         featureInstance->clipPatchOutput
     );
 
-    if (result <= 0) {
-        if (result < 0) {
-            result = 0;
+    if (result > 0) {
+        if (featureInstance->clipPatchOutput->points == 0) {
+            return 0;
         }
 
-        return result;
+        if (featureInstance->points != 0) {
+            free(featureInstance->points);
+        }
+
+        featureInstance->points = featureInstance->clipPatchOutput->points;
+        featureInstance->eventTemplate.pointCount = featureInstance->clipPatchOutput->pointCount;
+    } else if (result < 0) {
+        result = 0;
     }
 
-    if (featureInstance->clipPatchOutput->points == 0) {
-        return 0;
-    }
-
-    if (featureInstance->points != 0) {
-        free(featureInstance->points);
-    }
-
-    featureInstance->points = featureInstance->clipPatchOutput->points;
-    featureInstance->eventTemplate.pointCount = featureInstance->clipPatchOutput->pointCount;
     return result;
 }
+
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-createfeature

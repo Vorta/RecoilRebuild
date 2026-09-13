@@ -26,7 +26,7 @@
   "data_symbols": [
     {
       "address": "0x4e2208",
-      "symbol_regex": "_kZSndPlaySourceFile\\$S[0-9]+",
+      "symbol_regex": "\\?\\?_C@_0CJ@[A-Z0-9]+@D\\?3\\?2Proj\\?2GameZRecoil\\?2zSound\\?2zsnd_@",
       "name": "g_zSnd_SourceFile_ZsndPlayCpp",
       "bn_name": "g_zSnd_SourceFile_ZsndPlayCpp",
       "byte_length": 41

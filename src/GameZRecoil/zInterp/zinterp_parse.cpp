@@ -2927,7 +2927,7 @@ inline int CZInterp::ReadPreparedScriptIndex(zInterpPreparedScriptHeader &prepar
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-loadpreparedscriptindex
  * @recoil-artifact defines .text recoil:function:0x4c5550: CZInterp::LoadPreparedScriptIndex.
- * @recoil-match instruction
+ *
  *
  * Purpose: open and validate the prepared script index and cache its entries.
  */

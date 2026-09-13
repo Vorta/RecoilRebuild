@@ -42,7 +42,7 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
     from _recoil.call_contract.records import ReviewedExactIndirectStorageBridge
     caller = candidate.caller_definition
     caller_symbol = (
-        "?UpdateTargetReticleFromCursor@HudUiMgr@@YIHHPAUzVec3@@MM@Z"
+        "?UpdateTargetReticleFromCursor@HudUiMgr@@YIHHMMPAUzVec3@@@Z"
     )
     superseded_wsi024_prefix_end = 0x24F
     superseded_wsi024_tail_start = 0x4D2
@@ -1086,7 +1086,7 @@ def _hud_ui_mgr_reticle_widget_candidate_vptr_bridges(
         return {}
 
     caller_symbol_name = (
-        "?UpdateTargetReticleFromCursor@HudUiMgr@@YIHHPAUzVec3@@MM@Z"
+        "?UpdateTargetReticleFromCursor@HudUiMgr@@YIHHMMPAUzVec3@@@Z"
     )
     caller_symbol_id = "recoil:function:0x411270"
     caller_identity_expected = f"symbol:{caller_symbol_id}"

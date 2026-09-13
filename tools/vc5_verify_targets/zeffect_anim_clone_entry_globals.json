@@ -1,6 +1,6 @@
 {
   "name": "zeffect_anim_clone_entry_globals",
-  "description": "zEffectAnim clone-entry mutable backing globals.",
+  "description": "zEffectAnim clone-entry and resource-root mutable backing globals.",
   "source_filename": "zEffect.cpp",
   "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -41,6 +41,13 @@
       "symbol": "_g_zEffectAnim_CopyNodeArg2",
       "name": "g_zEffectAnim_CopyNodeArg2",
       "bn_name": "g_zEffectAnim_CopyNodeArg2",
+      "byte_length": 4
+    },
+    {
+      "address": "0x4df730",
+      "symbol": "_g_zEffect_ResourceNode",
+      "name": "g_zEffect_ResourceNode",
+      "bn_name": "g_zEffect_ResourceNode",
       "byte_length": 4
     }
   ]

@@ -239,7 +239,7 @@ inline float FastExp(float value) {
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.sin-cos
  *
  * Inferred original inline helper: a repeated retail FSINCOS normal arm.
- * Raw assembly: Reviewed only for 0x405040 at [0x405390,0x40539f).
+ * Raw assembly: Reviewed consumers 0x405040 and 0x474010; exact ranges are in the allowlist.
  * Purpose: Use FSINCOS for ordered |angle| <= 9.22e18 and unordered values.
  * Separate C++ sine/cosine expressions handle larger magnitudes.
  * Outputs must be distinct; the raw arm stores cosine, then sine as floats.

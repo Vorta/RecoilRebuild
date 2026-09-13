@@ -54,14 +54,14 @@ extern int g_zModel_DiPoolInUseCount;
 extern int g_zModel_DiPoolFreeHeadIndex;
 extern int gModel_HasActiveLights;
 
-struct zModel_LightStatePartial {
-    unsigned char unknown_00[0x24];
-    int flags;
-};
+/*
+ * Active lights retain their scene node alongside the light class data.
+ * Node flags govern participation; class data supplies lighting parameters.
+ */
 
 struct zModel_ActiveLightEntryLive {
     zClass_LightDataPartial *light;
-    zModel_LightStatePartial *lightState;
+    zClass_NodePartial *lightNode;
     int useFullWeight;
     int contributesToLighting;
     unsigned int reserved_10;
@@ -69,7 +69,7 @@ struct zModel_ActiveLightEntryLive {
 
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zModel_LightStatePartial,
+        zClass_NodePartial,
         flags
     ) == 0x24
 );
@@ -104,7 +104,7 @@ extern int gModel_ActiveLightCount;
 extern int gModel_ActiveLightSpecialIndex;
 extern zModel_ActiveLightEntryLive gModel_ActiveLights[0x40];
 extern zClass_LightDataPartial **gModel_LightInputDataList;
-extern zModel_LightStatePartial **gModel_LightInputNodeStates;
+extern zClass_NodePartial **gModel_LightInputNodeStates;
 extern int gModel_LightInputCount;
 extern int g_zModel_SoftwarePathActive;
 extern float g_Clip_PolyAttr0[0x40];
@@ -285,8 +285,8 @@ int __fastcall zModelLightBuildLightWeights(
     float fogBlendScale
 );
 void __fastcall zModelLightPointInPolygonInitXZ(
+    zClass_NodePartial **lightNodes,
     zClass_LightDataPartial **lightDataList,
-    zModel_LightStatePartial **lightNodeStates,
     int lightCount
 );
 

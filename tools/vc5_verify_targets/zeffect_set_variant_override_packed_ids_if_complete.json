@@ -20,18 +20,10 @@
   ],
   "data_symbols": [
     {
-      "address": "0x575dc4",
-      "symbol": "_g_zEffect_VariantOverrideEnabled",
-      "name": "g_zEffect_VariantOverrideEnabled",
-      "bn_name": "g_zEffect_VariantOverrideEnabled",
-      "byte_length": 4
-    },
-    {
-      "address": "0x575dd4",
-      "symbol": "_g_zEffect_VariantOverridePackedIds",
-      "name": "g_zEffect_VariantOverridePackedIds",
-      "bn_name": "g_zEffect_VariantOverridePackedIds",
-      "byte_length": 4
+      "address": "0x575da0",
+      "symbol": "_g_zEffectAnim_State",
+      "name": "g_zEffectAnim_State",
+      "byte_length": 60
     }
   ],
   "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c"

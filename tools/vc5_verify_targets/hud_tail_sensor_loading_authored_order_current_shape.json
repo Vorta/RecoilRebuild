@@ -78,7 +78,7 @@
         },
         {
           "address": "0x4137c0",
-          "symbol": "?ClearTextLines@HudUiAuxOverlay@@YAXXZ",
+          "symbol_regex": "^(?:\\?ClearTextLines@HudUiAuxOverlay@@YAXXZ|\\?ClearTextLines@HudUiAuxOverlay@@YIXXZ)$",
           "name": "HudUiAuxOverlay::ClearTextLines",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",

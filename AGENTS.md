@@ -211,19 +211,32 @@ and ABI behavior stay exact. The initial proof supports x87 `FLD m32`/`FMUL m32`
 factor roles in balanced single-entry regions. It follows load origins and
 the x87 stack; it does not sort instructions or reassociate expressions.
 Simultaneous GPR reassignment is currently unsupported and blocks this proof.
+An identical `FADDP` may consume equal ordered operands while unrelated tracked
+slots remain unequal; those slots retain their separate value histories.
+At most one identical unprefixed 32-bit stack-argument `MOV` may occur in a
+region, at a complete numerical-stack equality checkpoint. Its destination
+cannot address any floating-point read in that region. Exact load provenance
+and unchanged integer/address state are retained; this permits no instruction
+motion or register reassignment.
 
 Floating-point commutation is explicitly conditional: finite binary32 values at
 each affected read in valid ordinary stable memory, the same fixed supported
 control word with all x87 exceptions masked, enough free push slots at each
-region entry, and noninterference of excluded x87 status/saved environment/dead
-physical registers. Excluded state must not influence included observations
+region entry, and noninterference of excluded transient live x87 operands,
+status/saved environment/dead physical registers. Excluded state must not influence included observations
 through callers, callees or asynchronous inspection. Ordinary function entry
 and ABI call/return flow are assumed; external interior entries and return-address
 manipulation are excluded. Numerical stores mean identical representations,
 including signed zero. These are reviewed caller/domain assumptions, not a machine proof
 that every runtime input satisfies them. NaNs/infinities, unmasked traps,
 volatile/MMIO/racing reads and FP diagnostic observations are outside this
-contract. Reports retain the assumptions; this level asserts neither universal
+contract. Region accesses assume normal completion through valid ordinary
+readable inputs and writable output. Admitted stack arguments must be initialized,
+live, readable four-byte slots with equal stable contents and unchanged addressing
+state. Program-visible memory-fault and debugging observations are excluded;
+transparent paging or asynchronous service must not expose operand-read order
+or transient FP state. These memory obligations also require caller justification.
+Reports retain the assumptions; this level asserts neither universal
 architectural equivalence nor exact bytes and cannot support tier S.
 The numerical kernel reports body-only scope and pending relocation/link/review
 obligations. Equal supplied normalized buffers never establish original byte

@@ -1,6 +1,6 @@
 {
   "name": "hud_ui_load_game_dialog_on_primary_action_thunk",
-  "description": "VC verification target for HudUiLoadGameDialog::OnPrimaryActionThunk.",
+  "description": "VC verification target for HudUiSaveGameDialog::OnPrimaryActionThunk.",
   "source_filename": "RecoilApp_Late.cpp",
   "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
   "source_from": "src/Battlesport/RecoilApp.cpp",
@@ -19,8 +19,8 @@
   "functions": [
     {
       "address": "0x434970",
-      "symbol": "?OnPrimaryActionThunk@HudUiLoadGameDialog@@QAEXXZ",
-      "name": "HudUiLoadGameDialog::OnPrimaryActionThunk"
+      "symbol": "?OnPrimaryActionThunk@HudUiSaveGameDialog@@UAEXXZ",
+      "name": "HudUiSaveGameDialog::OnPrimaryActionThunk"
     }
   ]
 }

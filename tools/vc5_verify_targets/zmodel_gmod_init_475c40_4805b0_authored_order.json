@@ -365,7 +365,7 @@
     },
     {
       "address": "0x478c70",
-      "symbol": "?zVideoFrustumTestSphereClipMask@@YIHPAUzVec3@@PAHM@Z",
+      "symbol": "?zVideoFrustumTestSphereClipMask@@YIHPAUzVec3@@MPAH@Z",
       "name": "zVideo::FrustumTestSphereClipMask",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

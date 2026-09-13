@@ -30,18 +30,10 @@
   ],
   "data_symbols": [
     {
-      "address": "0x575daa",
-      "symbol": "_g_zEffectAnim_EntryCount",
-      "name": "g_zEffectAnim_EntryCount",
-      "bn_name": "g_zEffectAnim_EntryCount",
-      "byte_length": 2
-    },
-    {
-      "address": "0x575dac",
-      "symbol": "_g_zEffectAnim_EntryList",
-      "name": "g_zEffectAnim_EntryList",
-      "bn_name": "g_zEffectAnim_EntryList",
-      "byte_length": 4
+      "address": "0x575da0",
+      "symbol": "_g_zEffectAnim_State",
+      "name": "g_zEffectAnim_State",
+      "byte_length": 60
     }
   ]
 }

@@ -9,7 +9,7 @@
 
 #include "recoil/recoil_callconv.h"
 
-struct zColorRgb;
+#include "GameZRecoil/include/zClass.h"
 struct zClass_CameraDataPartial;
 struct zClass_NodePartial;
 struct HudUiRect;
@@ -286,12 +286,12 @@ struct zVidTexturePackEntry {
 };
 
 struct zVidPaletteRemapRecipe {
-    float color0R;
-    float color0G;
-    float color0B;
-    float color1R;
-    float color1G;
-    float color1B;
+    /*
+     * The endpoints use the same RGB representation as the light colours.
+     * Their strengths control each endpoint contribution to the remap.
+     */
+    zColorRgb color0;
+    zColorRgb color1;
     float color0Strength;
     float color1Strength;
 };
@@ -755,8 +755,8 @@ void __fastcall zVideoUpdateProjectionStateFromCameraData(
 );
 int __fastcall zVideoFrustumTestSphereClipMask(
     zVec3 *sphereCenter,
-    int *clipMaskInOut,
-    float radius
+    float radius,
+    int *clipMaskInOut
 );
 
 int __fastcall zVideoswRenderFrame(

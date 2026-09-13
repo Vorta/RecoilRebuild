@@ -1486,6 +1486,65 @@ def bind_relocation_target(
     }
 
 
+def prepare_target_retraction(document: ProgressDocument, target_symbol_id: str,
+                              payload: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Subtract one exactly reviewed registration; preserve all other semantic facts."""
+    if set(payload) != {"reviewed", "reason", "expected_binding"} or payload.get("reviewed") is not True:
+        raise RelocationTargetMutationError("retraction requires reviewed, reason, and exact expected_binding")
+    if not isinstance(payload.get("reason"), str) or not payload["reason"].strip():
+        raise RelocationTargetMutationError("retraction reason must be non-empty")
+    expected = payload.get("expected_binding")
+    if not isinstance(expected, Mapping):
+        raise RelocationTargetMutationError("expected_binding must be a complete binding object")
+    try:
+        normalized = normalize_relocation_target_binding(expected)
+    except RelocationExpectationError as exc:
+        raise RelocationTargetMutationError(str(exc)) from exc
+    context = normalized["binding_context"]
+    if context["creation_mode"] != "existing-symbol":
+        raise RelocationTargetMutationError("retraction is limited to bindings of pre-existing symbols")
+    if context["target"]["symbol_id"] != target_symbol_id:
+        raise RelocationTargetMutationError("retraction target disagrees with expected_binding")
+    row = document.collection("symbols").get(target_symbol_id)
+    if not isinstance(row, Mapping) or row.get("binary") != "recoil":
+        raise RelocationTargetMutationError("retraction target is not an existing Recoil symbol")
+    rows = _binding_rows(row)
+    matches = [index for index, binding in enumerate(rows) if binding == expected]
+    if len(matches) != 1:
+        raise RelocationTargetMutationError("expected_binding must select exactly one unchanged registration")
+    proposed = deepcopy(document.data)
+    target = proposed["symbols"][target_symbol_id]
+    del rows[matches[0]]
+    if rows:
+        # Keep the original container shape and every unselected binding verbatim.
+        target["relocation_target_binding"] = rows
+    else:
+        del target["relocation_target_binding"]
+    return proposed, {"report_version": 1, "kind": "relocation-target-binding-retraction",
+                      "validation_mode": "reviewed-exact-snapshot", "target_created": False,
+                      "target_symbol_id": target_symbol_id,
+                      "source_symbol_id": context["source_binding"]["symbol_id"],
+                      "removed_binding": deepcopy(expected), "reason": payload["reason"],
+                      "acceptance_effects": []}
+
+
+def retract_relocation_target(*, progress: Path, target_symbol_id: str,
+                              payload: Mapping[str, Any], expected_revision: int,
+                              apply: bool) -> dict[str, Any]:
+    store = ProgressStore(progress)
+    try:
+        document = store.load()
+        if document.revision != expected_revision:
+            raise RelocationTargetMutationError(
+                f"revision changed: expected {expected_revision}, found {document.revision}")
+        proposed, report = prepare_target_retraction(document, target_symbol_id, payload)
+        report["commit"] = store.commit(proposed, expected_revision=expected_revision,
+                                         apply=apply).to_dict()
+        return report
+    except ProgressError as exc:
+        raise RelocationTargetMutationError(str(exc)) from exc
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Bind one immutable-retail relocation target to reviewed tracker identity."
@@ -1503,10 +1562,22 @@ def build_parser() -> argparse.ArgumentParser:
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--apply", action="store_true")
     child.add_argument("--json", action="store_true")
+    child = subparsers.add_parser("retract")
+    child.add_argument("--target-symbol-id", required=True)
+    child.add_argument("--payload-json", required=True)
+    child.add_argument("--progress", type=Path, default=DEFAULT_TRACKER)
+    child.add_argument("--expected-revision", type=int, required=True)
+    mode = child.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--dry-run", action="store_true")
+    mode.add_argument("--apply", action="store_true")
+    child.add_argument("--json", action="store_true")
     return parser
 
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
+    if args.command == "retract":
+        return retract_relocation_target(progress=args.progress, target_symbol_id=args.target_symbol_id,
+            payload=_payload(args.payload_json), expected_revision=args.expected_revision, apply=bool(args.apply))
     if args.command != "bind":
         raise RelocationTargetMutationError(f"unsupported operation {args.command!r}")
     return bind_relocation_target(

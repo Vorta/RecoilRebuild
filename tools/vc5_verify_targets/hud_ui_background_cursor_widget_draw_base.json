@@ -4,6 +4,19 @@
   "check_translation_unit_function_order": true,
   "translation_unit_function_order": [
     {
+      "source_from": "src/Battlesport/hud.cpp",
+      "order_scope": "authored",
+      "functions": [
+        {
+          "address": "0x404cb0",
+          "symbol": "?DrawBase@HudUiElement@@UAEXXZ",
+          "name": "HudUiElement::DrawBase",
+          "pipeline_class": "authored",
+          "authored_order_role": "authored-body"
+        }
+      ]
+    },
+    {
       "source_from": "src/GameZRecoil/zUI/zui.cpp",
       "order_scope": "authored",
       "functions": [
@@ -88,6 +101,10 @@
     }
   ],
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
+  "source_compile_profiles": {
+    "src/Battlesport/hud.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zUI/zui.cpp": "vc5_o2_ob1_md_gx_fastcall_facs"
+  },
   "source_filename": "zui.cpp",
   "source_from": "src/GameZRecoil/zUI/zui.cpp",
   "include_dirs": [
@@ -101,7 +118,8 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/GameZRecoil/zUI/zui.cpp"
+    "src/GameZRecoil/zUI/zui.cpp",
+    "src/Battlesport/hud.cpp"
   ],
   "functions": [
     {

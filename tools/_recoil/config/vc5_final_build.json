@@ -85,7 +85,8 @@
     "src/GameZRecoil/zUI/zui.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zUI/zui_widgets.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
     "src/GameZRecoil/zUtil/zutl_zbd.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
-    "src/Battlesport/camera.cpp": "vc5_o2_ob1_md_gx_fastcall_facs"
+    "src/Battlesport/camera.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/GameZRecoil/zMath/zmth_main.c": "vc5_o2_ob1_md_gx_fastcall_facs"
   },
   "zeroarg_abi_equivalence": [
     {
@@ -842,9 +843,11 @@
     "src/GameZRecoil/zInput/zin_joystick.cpp",
     "src/GameZRecoil/zInterp/zinterp_parse.cpp",
     "src/GameZRecoil/zMath/zmth_main.c",
+    "src/GameZRecoil/zMath/zmth_quat.c",
     "src/GameZRecoil/zModel/gmod_const.c",
     "src/GameZRecoil/zModel/gmod_init.c",
     "src/GameZRecoil/zModel/gmod_light.c",
+    "src/GameZRecoil/zModel/gmod_fog.c",
     "src/GameZRecoil/zModel/gmod_matl.c",
     "src/GameZRecoil/zNetwork/znet_dplay.cpp",
     "src/GameZRecoil/zReader/zreader.cpp",

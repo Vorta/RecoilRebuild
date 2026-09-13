@@ -2,7 +2,7 @@
 
 This is a semantic correction, not data, owner, byte, or linkage acceptance.
 The deliberately narrow first route requires one owner, standalone physical
-fields, complete field/padding coverage, and data-only verification targets.
+fields, complete field/padding coverage, and exact preservation of function registrations.
 """
 from __future__ import annotations
 
@@ -154,8 +154,8 @@ def plan_coalescence(tracker: Mapping[str, Any], payload: Mapping[str, Any], *,
                 and row.get("binary") == binary and row.get("address") == field_address
                 and row.get("output_section_id") == section_id, "field is not same-section authored data")
         require(row.get("physical_block_id") is None and not row.get("semantic_span_ids")
-                and not row.get("logical_aliases") and not row.get("source_traceability", {}).get("source_edges"),
-                "coalescence requires standalone fields without source edges or aliases")
+                and not row.get("logical_aliases"),
+                "coalescence requires standalone fields without physical blocks or aliases")
         require(row.get("extent_state") in {"unknown", "known"}, "field extent state is unresolved")
         if row["extent_state"] == "known":
             require(row.get("size") == field_size and row.get("end_exclusive") == hex(field_start + field_size),
@@ -219,7 +219,13 @@ def plan_coalescence(tracker: Mapping[str, Any], payload: Mapping[str, Any], *,
         claims = [r for r in current_owner.get("relationships", [])
                   if r.get("symbol_id") in field_ids or r.get("address") in field_addresses]
         if current_id != owner_id:
-            require(not claims and not references(current_owner, field_ids | storage_ids | field_addresses),
+            # A navigation anchor retains its literal retail address; it makes
+            # no physical ownership or storage claim and needs no remapping.
+            other = deepcopy(dict(current_owner))
+            other["relationships"] = [r for r in other.get("relationships", [])
+                if not (set(r) == {"kind", "address"} and r.get("kind") == "anchor-address"
+                        and r.get("address") in field_addresses)]
+            require(not references(other, field_ids | storage_ids | field_addresses),
                     f"foreign owner refers to aggregate fields: {current_id}")
         else:
             require(len(claims) == len(fields) and {r.get("symbol_id") for r in claims} == field_ids
@@ -234,15 +240,14 @@ def plan_coalescence(tracker: Mapping[str, Any], payload: Mapping[str, Any], *,
                 "output_section_id": section_id, "verification_target_ids": sorted(target_ids)}
     evidence = _normalize_reviewed_evidence(payload["new_evidence"], artifact_id=aggregate_id, artifact=artifact)
     # Read only the reviewed existing manifest closure. New registrations must
-    # retain source/profile and all unrelated addresses, with no function gates.
+    # retain every non-data registration fact, including all function gates.
+    # Old source edges describe the superseded physical definitions and are
+    # archived below; logical field views require a fresh source relationship.
     replacements: dict[str, Any] = {}
     for target_id in sorted(target_ids):
         old = tracker["verification_targets"][target_id]
         require(old == expected["verification_targets"][target_id], "target snapshot is stale")
         registration = old.get("registration", {})
-        require(not registration.get("function_addresses") and not registration.get("translation_unit_function_order")
-                and not registration.get("linked_function_intervals") and not registration.get("check_function_order")
-                and not registration.get("check_translation_unit_function_order"), "only data-only targets can be coalesced")
         path = (repo_root / registration["manifest_path"]).resolve()
         require(path.is_relative_to((repo_root / "tools/vc5_verify_targets").resolve()), "manifest outside governed directory")
         manifest = load_manifest(path, enforce_source_policy=True)
@@ -250,9 +255,9 @@ def plan_coalescence(tracker: Mapping[str, Any], payload: Mapping[str, Any], *,
         nr = new["registration"]
         require(new_id == target_id and nr["source_from"] == registration["source_from"]
                 and nr["compiler_profile"] == registration["compiler_profile"], "target identity/source/profile changed")
-        require(not nr["function_addresses"] and not nr["translation_unit_function_order"]
-                and not nr["linked_function_intervals"] and not nr["check_function_order"]
-                and not nr["check_translation_unit_function_order"], "replacement target must be data-only")
+        require({k: v for k, v in nr.items() if k != "data_addresses"} ==
+                {k: v for k, v in registration.items() if k != "data_addresses"},
+                "replacement target changes non-data registration facts")
         old_addresses = set(registration["data_addresses"])
         require(set(nr["data_addresses"]) == (old_addresses - field_addresses) | {address},
                 "replacement target data census is not exact")
@@ -336,6 +341,11 @@ def plan_coalescence(tracker: Mapping[str, Any], payload: Mapping[str, Any], *,
     # The reused base id changes from a field to an aggregate too. Never let
     # unrelated old field bindings silently acquire the new aggregate meaning.
     all_old_ids = field_ids | storage_ids
+    superseded_matches = {}
+    for sid, row in proposed["symbols"].items():
+        if row.get("binary") == binary and references(row.get("function_match"), all_old_ids):
+            superseded_matches[sid] = deepcopy(tracker["symbols"][sid]["function_match"])
+            row.pop("function_match")
     for sid, row in proposed["symbols"].items():
         if sid != aggregate_id:
             require(not references(row, all_old_ids), f"unhandled current field binding in symbol {sid}")
@@ -359,6 +369,7 @@ def plan_coalescence(tracker: Mapping[str, Any], payload: Mapping[str, Any], *,
         "freshness": "historical", "gating": False, "validation_mode": "historical-observation",
         "artifacts": deepcopy(evidence["artifacts"]),
         "provenance": {**deepcopy(evidence), "superseded_records": archive,
+                       "superseded_function_matches": superseded_matches,
                        "layout_fields": deepcopy(fields), "layout_padding": deepcopy(payload["padding"]),
                        "acceptance_effect": "invalidation-only"},
     }

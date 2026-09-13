@@ -1347,7 +1347,9 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "retail_setup_offset": 0x03,
         "retail_call_offset": 0x08,
         "retail_frame_size": 0x2080,
-        "candidate_frame_size": 0x207C,
+        # The native transformed-normal origin adds one 12-byte zVec3 local.
+        # This is a call-only compiler-frame check, not a retail-byte match.
+        "candidate_frame_size": 0x2088,
         "target_id": (
             "recoil:vc5-target:"
             "zmodel_gmod_init_475c40_4805b0_authored_order"
@@ -1395,6 +1397,10 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             / "zmodel_gmod_light_487a30_489d00_authored_order.json"
         ),
         "source_path": "src/GameZRecoil/zModel/gmod_light.c",
+        "order_edit_paths": (
+            "src/GameZRecoil/zModel/gmod_light.c",
+            "src/GameZRecoil/zModel/gmod_fog.c",
+        ),
         "source_anchor": (
             "recoil:anchor:gamezrecoil-zmodel-gmod-light-"
             "zmodel-light-setactivelights"
@@ -1427,6 +1433,10 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
             / "zmodel_gmod_light_487a30_489d00_authored_order.json"
         ),
         "source_path": "src/GameZRecoil/zModel/gmod_light.c",
+        "order_edit_paths": (
+            "src/GameZRecoil/zModel/gmod_light.c",
+            "src/GameZRecoil/zModel/gmod_fog.c",
+        ),
         "source_anchor": (
             "recoil:anchor:gamezrecoil-zmodel-gmod-light-"
             "zmodel-light-buildlightweights"
@@ -2125,6 +2135,7 @@ MSVC_CIASIN_CALLER_SOURCE_PATH = "src/GameZRecoil/zMath/zmth_main.c"
 MSVC_CIASIN_ORDER_EDIT_PATHS = (
     MSVC_CIASIN_CALLER_SOURCE_PATH,
     "src/GameZRecoil/zMath/zmth_decls.h",
+    "src/GameZRecoil/zMath/zmth_quat.c",
 )
 
 
@@ -2215,6 +2226,8 @@ ZWEP_CIASIN_CANDIDATE_PROFILES: Mapping[str, Mapping[str, Any]] = {
         "end": "0x4b0530",
         "symbol": "?ProcessRuntimeInstances@OptCatalog@@YAXXZ",
         "name": "OptCatalog::ProcessRuntimeInstances",
+        # Current candidate coordinates remain distinct from the immutable
+        # retail provider identities and complete 103-call ordinal census.
         "body_size": 0x14C0,
         "sites": (
             (0x456, "__CIasin"),

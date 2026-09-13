@@ -187,6 +187,59 @@ def test_instruction_match_proves_values_and_requires_current_review(tmp_path, m
     assert data["symbols"][identity]["binary_state"]["linked_byte"]["result"] == "passed"
 
 
+def _exercise_commutative_stack_argument_loads(compare):
+    first = "d94104 d84a08 8b442404 d918 c3"
+    second = "d94208 d84904 8b442404 d918 c3"
+    proof = compare(first, second)
+    assert proof["passed"] and proof["conditional"]
+    assert not proof["accepts_function_match"] and not proof["accepts_exact_bytes"]
+    assert proof["regions"][0]["exact_stack_argument_loads"] == [{
+        "offset": 6, "destination": "eax", "width": 4,
+        "base": "esp-region-entry", "segment": "ss", "bytes": "8b442404",
+        "esp_displacement": 4,
+        "precondition": "valid ordinary stable ABI stack argument memory"}]
+    assert "memory_accesses" in proof["contract"]
+    old_contract = dict(proof["contract"])
+    del old_contract["memory_accesses"]
+    assert not compare(first, second, contract=old_contract)["passed"]
+    for changed in ("8b442408", "8b5c2404", "668b442404"):
+        assert not compare(first, second.replace("8b442404", changed))["passed"]
+    # Unsupported effects remain blocked even when byte-identical on both sides.
+    for operation in ("89442404", "8b4304", "8b447404", "648b442404", "668b442404",
+                      "678b442404", "8b642404", "8b6c2404", "8b442405",
+                      "8b0424", "8b4c2404", "83c404"):
+        assert not compare(first.replace("8b442404", operation),
+                           second.replace("8b442404", operation))["passed"], operation
+    rejected = [
+        ("d94104 8b442404 d84a08 d918 c3", "d94208 8b442404 d84904 d918 c3"),
+        (first.replace("d918", "d84004 d918"), second.replace("d918", "d84004 d918")),
+        (first.replace("d918", "d94004 dec1 d918"), second.replace("d918", "d94004 dec1 d918")),
+        ("d9430c " + first.replace("d918", "d9c9 d84804 dec1 d918"),
+         "d9430c " + second.replace("d918", "d9c9 d84804 dec1 d918")),
+        ("d94104 d84a08 d9448604 dec1 8b742404 d918 c3",
+         "d94208 d84904 d9448604 dec1 8b742404 d918 c3"),
+        (first.replace("d918", "8b5c2408 d918"), second.replace("d918", "8b5c2408 d918")),
+        ("7406 " + first, "7406 " + second),  # interior entry at the MOV
+        # The unequal factor is consumed by the addition, not left untouched.
+        ("d94104 d94304 dec1 d84a08 8b442404 d918 c3",
+         "d94208 d94304 dec1 d84904 8b442404 d918 c3"),
+        ("d94104 d84304 d84a08 8b442404 d918 c3",
+         "d94208 d84304 d84904 8b442404 d918 c3"),
+        # FADD m32 retains its conservative whole-tracked-stack condition.
+        ("d94104 d94304 d84308 d9c9 d84a08 dec1 8b442404 d918 c3",
+         "d94208 d94304 d84308 d9c9 d84904 dec1 8b442404 d918 c3"),
+    ]
+    for a, b in rejected:
+        assert not compare(a, b)["passed"], (a, b)
+    assert compare("d9430c " + first.replace("d918", "dec1 d918"),
+                   "d9430c " + second.replace("d918", "dec1 d918"))["passed"]
+    assert compare(first[:-2] + first, second[:-2] + second)["passed"]
+    # FADDP reads two equal top operands while the bottom factor stays unequal.
+    # That pending value must survive until its own later FMUL establishes equality.
+    assert compare("d94104 d94304 d94308 dec1 d9c9 d84a08 dec1 8b442404 d918 c3",
+                   "d94208 d94304 d94308 dec1 d9c9 d84904 dec1 8b442404 d918 c3")["passed"]
+
+
 def test_commutative_match_is_narrow_conditional_and_separate_from_bytes(tmp_path, monkeypatch):
     from copy import deepcopy
     from _recoil.lib.commutative_match import compare_commutative, COMMUTATIVE_CONTRACT, COMMUTATIVE_VERSION
@@ -200,6 +253,7 @@ def test_commutative_match_is_narrow_conditional_and_separate_from_bytes(tmp_pat
         return compare_commutative(bytes.fromhex(a), bytes.fromhex(b), function_address=0x600000,
                                    contract=kwargs.pop("contract", COMMUTATIVE_CONTRACT), **kwargs)
 
+    _exercise_commutative_stack_argument_loads(compare)
     first = "d94004 d84a08 d91f c3"
     second = "d94208 d84804 d91f c3"
     proof = compare(first, second)

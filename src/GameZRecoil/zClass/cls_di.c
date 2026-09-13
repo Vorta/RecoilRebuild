@@ -12,13 +12,13 @@
 
 zClass_DiRaycastFilterRuntime g_zClass_cls_di_RaycastFilterRuntime = {0};
 /*
- * Purpose: retain the current candidate pending source-extent recovery.
- * Retail's hexahedron wrapper writes four entries, but generic polygon
- * paths copy a runtime vertex count. Four is an observed access prefix,
- * not a proven safe allocation bound; do not accept this declaration as
- * source-faithful or enlarge it solely from the following zero-filled gap.
+ * Purpose: retain whole polygon faces without overwriting adjacent globals.
+ * Mission-one runtime captures prove writes through vertex 13; four entries
+ * corrupt the node capacity and neighboring state. This provisional capacity
+ * follows the 64-vertex retail scratch family and available 0x300-byte span.
+ * The original allocation extent remains unresolved; this is no data proof.
  */
-zVec3 g_zClass_DiFaceVertexScratch4[4] = {0};
+zVec3 g_zClass_DiFaceVertexScratch4[64] = {0};
 
 namespace {
     const char *kClsDiSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_di.c";

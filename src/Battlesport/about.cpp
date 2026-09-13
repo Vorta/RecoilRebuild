@@ -3,7 +3,7 @@
 /**
  * @recoil-anchor recoil:anchor:battlesport.about.caboutdlg-constructor
  * @recoil-artifact defines .text recoil:function:0x401000: CAboutDlg::Constructor.
- *
+ * @recoil-match byte
  *
  * Purpose: construct the authored About dialog over the MFC CDialog provider
  * base with the recovered dialog resource id and caller-supplied parent.

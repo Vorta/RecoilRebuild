@@ -1383,14 +1383,14 @@ void __fastcall ApplyRecipeToPaletteVariant(
         const int blue = packed & 0x001f;
         b = (float)(blue) * 0.0322580636f;
 
-        color.r = ((recipe->color0R - r) * inverseVariantWeight * recipe->color0Strength +
-                      (recipe->color1R - r) * variantWeight * recipe->color1Strength + r) *
+        color.r = ((recipe->color0.red - r) * inverseVariantWeight * recipe->color0Strength +
+                      (recipe->color1.red - r) * variantWeight * recipe->color1Strength + r) *
                   255.0f;
-        color.g = ((recipe->color1G - g) * variantWeight * recipe->color1Strength +
-                      (recipe->color0G - g) * inverseVariantWeight * recipe->color0Strength + g) *
+        color.g = ((recipe->color1.green - g) * variantWeight * recipe->color1Strength +
+                      (recipe->color0.green - g) * inverseVariantWeight * recipe->color0Strength + g) *
                   255.0f;
-        color.b = ((recipe->color1B - b) * variantWeight * recipe->color1Strength +
-                      (recipe->color0B - b) * inverseVariantWeight * recipe->color0Strength + b) *
+        color.b = ((recipe->color1.blue - b) * variantWeight * recipe->color1Strength +
+                      (recipe->color0.blue - b) * inverseVariantWeight * recipe->color0Strength + b) *
                   255.0f;
 
         *destColors = zVidPackColorRgbFloats(&color);
@@ -1414,11 +1414,11 @@ int __fastcall FindRecipeIndex(
 ) {
     for (int i = 0; i < g_zVid_PaletteRemapRecipeCount; ++i) {
         zVidPaletteRemapRecipe *candidate = &g_zVid_PaletteRemapRecipes[i];
-        if (recipe->color0R == candidate->color0R && recipe->color0G == candidate->color0G &&
-            recipe->color0B == candidate->color0B &&
+        if (recipe->color0.red == candidate->color0.red && recipe->color0.green == candidate->color0.green &&
+            recipe->color0.blue == candidate->color0.blue &&
             recipe->color0Strength == candidate->color0Strength &&
-            recipe->color1R == candidate->color1R && recipe->color1G == candidate->color1G &&
-            recipe->color1B == candidate->color1B &&
+            recipe->color1.red == candidate->color1.red && recipe->color1.green == candidate->color1.green &&
+            recipe->color1.blue == candidate->color1.blue &&
             recipe->color1Strength == candidate->color1Strength) {
             return i;
         }
@@ -1582,13 +1582,13 @@ extern "C" int __fastcall zVidPaletteRemapFindRecipeIndexFromRgb(
     zColorRgb *rgb
 ) {
     zVidPaletteRemapRecipe recipe;
-    recipe.color0R = 0.0f;
-    recipe.color0G = 0.0f;
-    recipe.color0B = 0.0f;
+    recipe.color0.red = 0.0f;
+    recipe.color0.green = 0.0f;
+    recipe.color0.blue = 0.0f;
     recipe.color0Strength = 0.0f;
-    recipe.color1R = rgb->red;
-    recipe.color1G = rgb->green;
-    recipe.color1B = rgb->blue;
+    recipe.color1.red = rgb->red;
+    recipe.color1.green = rgb->green;
+    recipe.color1.blue = rgb->blue;
     recipe.color1Strength = 1.0f;
     return zVid_PaletteRemap::FindRecipeIndex(&recipe);
 }
@@ -1940,8 +1940,8 @@ struct zVidImageFileHeader {
     short height;
     unsigned char headerFlags;
     unsigned char unknown_09[3];
-    short textureAddressFlagsPacked;
     short paletteMeta;
+    short textureAddressFlagsPacked;
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zVidImageFileHeader) == 0x10);
@@ -1950,7 +1950,7 @@ RECOIL_STATIC_ASSERT(sizeof(zVidImageFileHeader) == 0x10);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-image-readheader
  * @recoil-artifact defines .text recoil:function:0x46ed70: zVid_Image::ReadHeader.
- * Purpose: provide the recovered zVid_Image::ReadHeader behavior.
+ * Purpose: read the file palette count at 0x0c and addressing flags at 0x0e.
  */
 int __fastcall ReadHeader(
     FILE *file,
@@ -1960,13 +1960,13 @@ int __fastcall ReadHeader(
         return -1;
     }
 
-    zVidImageFileHeader header = {0};
+    zVidImageFileHeader header;
     fread(&header, 0x10, 1, file);
     SetSize(image, header.width, header.height);
     SetFormatCode(image, header.formatCode);
     SetHeaderFlagsByte(image, header.headerFlags);
-    image->paletteMetaPacked = header.paletteMeta;
     image->textureAddressFlagsPacked = header.textureAddressFlagsPacked;
+    image->paletteMetaPacked = header.paletteMeta;
     return 0;
 }
 

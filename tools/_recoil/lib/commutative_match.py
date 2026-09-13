@@ -9,7 +9,7 @@ from typing import Any, Mapping
 
 from _recoil.call_contract.instructions import _decoder
 
-COMMUTATIVE_VERSION = 1
+COMMUTATIVE_VERSION = 2
 BODY_PROOF_SCOPE = "normalized-function-body-only"
 PENDING_OBLIGATIONS = ("relocation-type-target-addend-semantics", "linked-presence-and-identity",
                        "corresponding-linked-body-proof", "current-source-compiler-and-Pro-review")
@@ -18,7 +18,8 @@ COMMUTATIVE_CONTRACT = {
     "inputs": "finite binary32 values at each affected read in valid ordinary stable memory",
     "environment": "same fixed supported x87 control word with all exceptions masked and enough free push slots for each proved region",
     "observations": "identical stored floating-point representations including signed zero, integer state, control flow and ABI",
-    "continuations": "excluded x87 status, saved environment and dead physical registers cannot influence included observations through callers, callees or asynchronous inspection",
+    "continuations": "excluded transient live x87 operands, status, saved environment and dead physical registers cannot influence included observations through callers, callees or asynchronous inspection",
+    "memory_accesses": "normal completion through valid ordinary readable inputs and writable output; admitted stack arguments are initialized live readable four-byte slots with equal stable contents and unchanged addressing state; no program-visible memory-fault or debugging observations; transparent paging or asynchronous service must not expose operand-read order or transient FP state",
     "entry_model": "ordinary function entry and ABI call/return flow; no external interior entries or return-address manipulation",
 }
 
@@ -52,15 +53,51 @@ def _stack_index(instruction):
     return int(name[3:-1])
 
 
+def _stack_argument_load(instruction):
+    """Only an exact ordinary 32-bit ABI argument load; never a general MOV."""
+    from capstone.x86_const import X86_OP_MEM, X86_OP_REG
+    operands = instruction.operands
+    if (instruction.mnemonic != "mov" or any(instruction.prefix)
+            or instruction.bytes[0] != 0x8b or len(operands) != 2
+            or operands[0].type != X86_OP_REG or operands[0].size != 4
+            or operands[1].type != X86_OP_MEM or operands[1].size != 4):
+        raise ValueError("unsupported integer operation in x87 region")
+    destination = instruction.reg_name(operands[0].reg)
+    memory = operands[1].mem
+    if (destination not in {"eax", "ebx", "ecx", "edx", "esi", "edi"}
+            or instruction.reg_name(memory.base) != "esp" or memory.index
+            or memory.segment or memory.scale != 1
+            or memory.disp < 4 or memory.disp % 4):
+        raise ValueError("only ordinary aligned stack argument loads are supported")
+    return destination, int(memory.disp)
+
+
 def _region(left, right, begin, entries):
     """A local replacement above an opaque, untouched incoming x87 stack.
 
-    No GPR writes, branches, calls or stores intervene before the final pop.
-    Thus address tokens name the same memory epoch in both executions, even
-    when input addresses alias. A branch into the region interior blocks it.
+    Integer state stays equal. At most one exact MOV may load a proved ordinary
+    stack argument; its destination never addresses a floating-point read in
+    this region. Other registers and ESP stay unchanged. No branches, calls or
+    stores intervene before the final pop. Thus read tokens name the same memory
+    epoch, even when input addresses alias. Interior control-flow entries block.
+    FADDP compares its actual ordered read operands; unrelated tracked
+    differences remain until independently proved equal. The MOV checkpoint
+    and terminal store require complete tracked-stack equality.
     """
     stacks = ([], [])
     swaps = []
+    stack_loads = []
+    read_address_registers = set()
+    reloaded_registers = set()
+
+    def read_memory(instruction):
+        memory = _memory(instruction)
+        registers = {memory[1], memory[2]} - {""}
+        if registers & reloaded_registers:
+            raise ValueError("floating-point read uses a reloaded address register")
+        read_address_registers.update(registers)
+        return memory
+
     maximum_depth = 0
     for index in range(begin, len(left)):
         a, b = left[index], right[index]
@@ -69,13 +106,27 @@ def _region(left, right, begin, entries):
         if index != begin and a.address in entries:
             raise ValueError("control flow enters an operand-exchange region")
         op = a.mnemonic
-        if op not in {"fld", "fmul", "fxch", "fadd", "faddp", "fstp"}:
+        if op not in {"fld", "fmul", "fxch", "fadd", "faddp", "fstp", "mov"}:
             raise ValueError("unsupported or intervening effect in x87 region")
         if op not in {"fld", "fmul"} and a.bytes != b.bytes:
             raise ValueError("only FLD/FMUL memory operand roles may differ")
-        if op == "fld":
+        if op == "mov":
+            if stack_loads:
+                raise ValueError("only one stack argument load per region is supported")
+            destination, displacement = _stack_argument_load(a)
+            if stacks[0] != stacks[1]:
+                raise ValueError("stack load intervenes before floating-point values agree")
+            if destination in read_address_registers:
+                raise ValueError("stack load overwrites a floating-point address origin")
+            reloaded_registers.add(destination)
+            stack_loads.append({"offset": int(a.address), "destination": destination,
+                                "width": 4, "base": "esp-region-entry", "segment": "ss",
+                                "bytes": bytes(a.bytes).hex(),
+                                "esp_displacement": displacement,
+                                "precondition": "valid ordinary stable ABI stack argument memory"})
+        elif op == "fld":
             for stack, ins in zip(stacks, (a, b)):
-                stack.insert(0, ("memory", _memory(ins), int(ins.address)))
+                stack.insert(0, ("memory", read_memory(ins), int(ins.address)))
             maximum_depth = max(maximum_depth, len(stacks[0]))
             if maximum_depth > 8:
                 raise ValueError("x87 region exceeds stack capacity")
@@ -87,7 +138,7 @@ def _region(left, right, begin, entries):
                 value = stack[0]
                 if value[0] != "memory":
                     raise ValueError("only a loaded binary32 factor times a binary32 memory factor is supported")
-                pairs.append((value[1], _memory(ins)))
+                pairs.append((value[1], read_memory(ins)))
             if pairs[0] == pairs[1]:
                 value = ("multiply", pairs[0], int(a.address))
             elif pairs[0] == tuple(reversed(pairs[1])):
@@ -107,15 +158,20 @@ def _region(left, right, begin, entries):
             for stack in stacks:
                 stack[0], stack[slot] = stack[slot], stack[0]
         elif op in {"fadd", "faddp"}:
-            if not stacks[0] or stacks[0] != stacks[1]:
+            if not stacks[0] or not stacks[1]:
                 raise ValueError("ordered addition inputs differ")
             if op == "fadd":
-                value = ("add", stacks[0][0], ("memory", _memory(a)), int(a.address))
+                if stacks[0] != stacks[1]:
+                    raise ValueError("memory addition requires equal tracked stacks")
+                value = ("add", stacks[0][0], ("memory", read_memory(a)), int(a.address))
                 stacks[0][0] = stacks[1][0] = value
             else:
                 slot = _stack_index(a)
                 if not 0 < slot < len(stacks[0]):
                     raise ValueError("addition touches an unproved incoming stack value")
+                if (len(stacks[0]) != len(stacks[1]) or stacks[0][0] != stacks[1][0]
+                        or stacks[0][slot] != stacks[1][slot]):
+                    raise ValueError("ordered addition selected operands differ")
                 value = ("add", stacks[0][slot], stacks[0][0], int(a.address))
                 for stack in stacks:
                     stack[slot] = value
@@ -124,7 +180,7 @@ def _region(left, right, begin, entries):
             _memory(a)
             if len(stacks[0]) != 1 or stacks[0] != stacks[1]:
                 raise ValueError("store value differs or region does not preserve the incoming stack")
-            return index + 1, swaps, maximum_depth
+            return index + 1, swaps, maximum_depth, stack_loads
     raise ValueError("unterminated x87 operand-exchange region")
 
 
@@ -223,7 +279,7 @@ def compare_commutative(retail: bytes, candidate: bytes, *, function_address: in
             if instruction.mnemonic != "fld" or instruction.address in covered:
                 continue
             try:
-                end, swaps, depth = _region(left, right, begin, entries)
+                end, swaps, depth, stack_loads = _region(left, right, begin, entries)
             except ValueError:
                 continue  # An exact region needs no relaxation; every changed byte must still be covered.
             region_offsets = {int(x.address) for x in left[begin:end]}
@@ -232,7 +288,8 @@ def compare_commutative(retail: bytes, candidate: bytes, *, function_address: in
                 exchanges.extend(swaps)
                 regions.append({"start": int(instruction.address),
                                 "end_exclusive": int(left[end - 1].address + left[end - 1].size),
-                                "extra_stack_depth": depth})
+                                "extra_stack_depth": depth,
+                                **({"exact_stack_argument_loads": stack_loads} if stack_loads else {})})
         exchange_offsets = {offset for pair in exchanges for offset in (pair["load_offset"], pair["multiply_offset"])}
         if not changed or not changed <= covered or not changed <= exchange_offsets or not exchanges:
             return fail("not every changed operand has a balanced, single-entry x87 value-flow proof",

@@ -225,13 +225,13 @@ void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState *saveState) {
     float headingDot;
     ZMTH_VECTOR_DOT_XZ(headingDot, &cameraScratch, &playerState->cameraDirFlat);
     g_Player_CameraHeadingDotAbs = (float)fabs(headingDot);
-
     zVec3 cameraDirection;
     if (playerState->thirdPersonYawOffset != 0.0f) {
         float yawSin, yawCos;
+        float unscaledCos, unscaledSin; // Unused saved values; these assignments reproduce the retail bytes.
         zMath::SinCos(playerState->thirdPersonYawOffset, &yawSin, &yawCos);
         cameraDirection.x = yawCos * playerState->cameraDirFlat.x - yawSin * playerState->cameraDirFlat.z;
-        cameraDirection.z = yawCos * playerState->cameraDirFlat.z + yawSin * playerState->cameraDirFlat.x;
+        cameraDirection.z = (unscaledCos = yawCos) * playerState->cameraDirFlat.z + (unscaledSin = yawSin) * playerState->cameraDirFlat.x;
     } else {
         cameraDirection = playerState->cameraDirFlat;
     }
@@ -734,7 +734,7 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
     const float kSubCameraProbeHeightOffset = 2.20000005f;
     const float kCameraPickMaxY = 500.0f;
     const float kCameraPickRiseWindow = 0.00100000005f;
-    const float kCameraFloorLift = 0.5f;
+    const float kCameraFloorOffset = -0.5f;
 
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zClass_NodePartial *const rootNode = playerState->rootNode;
@@ -743,10 +743,11 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
 
     zTag4::Clear(&g_Variant_CurrentTag);
 
-    const zVec3 sideProbeOffset = {
-        -g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->x,
-        -g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->y,
-        -g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->z,
+    float negativeScale;
+    zVec3 sideProbeOffset = {
+        (negativeScale = -g_Player_ThirdPersonCameraSideProbeOffsetScale) * cameraDirNext->x,
+        negativeScale * cameraDirNext->y,
+        negativeScale * cameraDirNext->z,
     };
     const zVec3 sideProbeEndpoint = {
         cameraPos->x + sideProbeOffset.x,
@@ -754,31 +755,31 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
         cameraPos->z + sideProbeOffset.z,
     };
 
-    zClass_DiSegmentEndpoints segmentPairs[2] = {0};
-    segmentPairs[0].start = sideProbeEndpoint;
-    segmentPairs[0].end = *focusPos;
-    segmentPairs[1].start = *focusPos;
+    zClass_DiSegmentEndpoints segmentPairs[2];
     segmentPairs[1].end = sideProbeEndpoint;
+    segmentPairs[0].start = sideProbeEndpoint;
+    segmentPairs[1].start = *focusPos;
+    segmentPairs[0].end = *focusPos;
 
     zClass_Class::gwNodeSetRaycastable(rootNode, 0);
     zClass_cls_di::SetStopAfterFirstHit(kCameraProbeStopAfterFirstHitFlag);
 
-    PlayerProbeSampleCandidateBuffer probeBatches[2] = {0};
+    PlayerProbeSampleCandidateBuffer probeBatches[2];
     zClass_cls_di::BuildProbeHitBatchesForSegments(
-        g_Player_RuntimeDiScene,
-        segmentPairs,
-        4,
-        probeBatches
-    );
+        g_Player_RuntimeDiScene, segmentPairs, 4, probeBatches);
 
     zClass_Class::gwNodeSetRaycastable(rootNode, 1);
     FilterCameraProbeBlockingHits(probeBatches, 2);
 
-    zVec3 hitPos = {0};
+    zVec3 hitPos;
+
     if (FindNearestThirdPersonCameraProbePoint(probeBatches, 2, focusPos, &hitPos) != 0) {
-        cameraPos->x = hitPos.x + g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->x;
-        cameraPos->y = hitPos.y + g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->y;
-        cameraPos->z = hitPos.z + g_Player_ThirdPersonCameraSideProbeOffsetScale * cameraDirNext->z;
+        sideProbeOffset.x = cameraDirNext->x * g_Player_ThirdPersonCameraSideProbeOffsetScale;
+        sideProbeOffset.y = cameraDirNext->y * g_Player_ThirdPersonCameraSideProbeOffsetScale;
+        sideProbeOffset.z = cameraDirNext->z * g_Player_ThirdPersonCameraSideProbeOffsetScale;
+        cameraPos->x = hitPos.x + sideProbeOffset.x;
+        cameraPos->y = hitPos.y + sideProbeOffset.y;
+        cameraPos->z = hitPos.z + sideProbeOffset.z;
         cameraAdjusted = 1;
     }
 
@@ -788,7 +789,7 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
     if (saveState->primaryModalState->masterModalData->masterType == kPlayerMasterTypeSub) {
         preferAttachmentSlot1 = 1;
         const float subClampY = playerState->subModeProbeBestHeight - kSubCameraProbeHeightOffset;
-        if (subClampY < cameraPos->y) {
+        if (!(subClampY > cameraPos->y)) {
             cameraPos->y = subClampY;
         }
     }
@@ -807,9 +808,9 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
         return cameraAdjusted;
     }
 
-    int selectedCandidateIndex = 0;
-    int selectedImpactSlot = 0;
-    float taggedHeight = 0.0f;
+    int selectedCandidateIndex;
+    int selectedImpactSlot;
+    float taggedHeight;
     const float selectedHeight = SelectProbeSampleHeightFromCandidates(
         probeBatches,
         &selectedCandidateIndex,
@@ -821,17 +822,16 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
     );
     UpdateCameraVariantFromAnchor(probeBatches, cameraPos, selectedCandidateIndex);
 
-    const float targetY = selectedHeight + kCameraFloorLift;
+    const float targetY = selectedHeight - kCameraFloorOffset;
     g_Player_CameraVariantUpdatedThisTick = 1;
-    if (targetY <= cameraPos->y) {
-        return cameraAdjusted;
+    if (targetY > cameraPos->y) {
+        cameraPos->y = targetY;
+
+        ZMTH_VECTOR_DIRECTION(cameraDirNext, cameraPos, focusPos);
+        cameraAdjusted = 1;
     }
 
-    cameraPos->y = targetY;
-
-    ZMTH_VECTOR_DIRECTION(cameraDirNext, cameraPos, focusPos);
-
-    return 1;
+    return cameraAdjusted;
 }
 
 /**

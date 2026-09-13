@@ -755,7 +755,7 @@
       ],
       "successor": {
         "address": "0x487a30",
-        "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUzClass_LightDataPartial@@PAPAUzModel_LightStatePartial@@H@Z",
+        "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUzClass_NodePartial@@PAPAUzClass_LightDataPartial@@H@Z",
         "name": "zModelLightPointInPolygonInitXZ",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",

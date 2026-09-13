@@ -23,11 +23,10 @@
   ],
   "data_symbols": [
     {
-      "address": "0x575dbc",
-      "symbol": "_g_zEffect_DefaultGravity",
-      "name": "g_zEffect_DefaultGravity",
-      "bn_name": "g_zEffect_DefaultGravity",
-      "byte_length": 4
+      "address": "0x575da0",
+      "symbol": "_g_zEffectAnim_State",
+      "name": "g_zEffectAnim_State",
+      "byte_length": 60
     },
     {
       "address": "0x4df734",

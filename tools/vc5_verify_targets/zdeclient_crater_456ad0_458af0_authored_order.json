@@ -25,7 +25,7 @@
     },
     {
       "address": "0x456b00",
-      "symbol": "?InitEventTemplateDefaults@zDEClient_Crater@@YIXPAUzDEClient_CraterEventTemplate@@@Z",
+      "symbol": "?InitEventTemplateDefaults@zDEClient_Crater@@YIHPAUzDEClient_CraterEventTemplate@@@Z",
       "name": "zDEClient_Crater::InitEventTemplateDefaults",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

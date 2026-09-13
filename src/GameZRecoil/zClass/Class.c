@@ -1773,43 +1773,43 @@ namespace zClass_Class {
             return 0;
         }
 
-        zBBoxCorners corners = {0};
+        zClass_NodeFreeListSlot *nodeSlot = (zClass_NodeFreeListSlot *)node;
+        zBBoxCorners corners;
         int childIndex = 0;
+        int nextChildIndex = node->listCountB;
+
         for (; childIndex < node->listCountB; ++childIndex) {
             zClass_NodePartial *child = node->listB[childIndex];
             if ((child->flags & 0x100) == 0) {
                 continue;
             }
 
-            gwNodeGetWorldBBoxCorners(child, &corners);
-            zBBox3f *childBBox = &((zClass_NodeFreeListSlot *)(node))->secondaryBounds;
-            childBBox->minX = corners.values[0];
-            childBBox->minY = corners.values[1];
-            childBBox->minZ = corners.values[2];
-            childBBox->maxX = corners.values[0];
-            childBBox->maxY = corners.values[1];
-            childBBox->maxZ = corners.values[2];
-            node->flags |= 0x400;
+            gwNodeGetWorldBBoxCorners(node->listB[childIndex], &corners);
+            nextChildIndex = childIndex + 1;
+            nodeSlot->node.flags |= 0x400;
+
+            nodeSlot->secondaryBounds.maxX = nodeSlot->secondaryBounds.minX = corners.values[0];
+            nodeSlot->secondaryBounds.maxY = nodeSlot->secondaryBounds.minY = corners.values[1];
+            nodeSlot->secondaryBounds.maxZ = nodeSlot->secondaryBounds.minZ = corners.values[2];
 
             for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
                 const float *corner = &corners.values[cornerIndex * 3];
-                if (corner[0] < childBBox->minX) {
-                    childBBox->minX = corner[0];
-                } else if (corner[0] > childBBox->maxX) {
-                    childBBox->maxX = corner[0];
+                if (corner[0] < nodeSlot->secondaryBounds.minX) {
+                    nodeSlot->secondaryBounds.minX = corner[0];
+                } else if (corner[0] > nodeSlot->secondaryBounds.maxX) {
+                    nodeSlot->secondaryBounds.maxX = corner[0];
                 }
-                if (corner[1] < childBBox->minY) {
-                    childBBox->minY = corner[1];
-                } else if (corner[1] > childBBox->maxY) {
-                    childBBox->maxY = corner[1];
+                if (corner[1] < nodeSlot->secondaryBounds.minY) {
+                    nodeSlot->secondaryBounds.minY = corner[1];
+                } else if (corner[1] > nodeSlot->secondaryBounds.maxY) {
+                    nodeSlot->secondaryBounds.maxY = corner[1];
                 }
-                if (corner[2] < childBBox->minZ) {
-                    childBBox->minZ = corner[2];
-                } else if (corner[2] > childBBox->maxZ) {
-                    childBBox->maxZ = corner[2];
+                if (corner[2] < nodeSlot->secondaryBounds.minZ) {
+                    nodeSlot->secondaryBounds.minZ = corner[2];
+                } else if (corner[2] > nodeSlot->secondaryBounds.maxZ) {
+                    nodeSlot->secondaryBounds.maxZ = corner[2];
                 }
             }
-            ++childIndex;
             break;
         }
 
@@ -1817,30 +1817,30 @@ namespace zClass_Class {
             return 0;
         }
 
-        for (; childIndex < node->listCountB; ++childIndex) {
+        for (childIndex = nextChildIndex; childIndex < node->listCountB; ++childIndex) {
             zClass_NodePartial *child = node->listB[childIndex];
             if ((child->flags & 0x100) == 0) {
                 continue;
             }
 
             gwNodeGetWorldBBoxCorners(child, &corners);
-            zBBox3f *childBBox = &((zClass_NodeFreeListSlot *)(node))->secondaryBounds;
+
             for (int cornerIndex = 0; cornerIndex < 8; ++cornerIndex) {
                 const float *corner = &corners.values[cornerIndex * 3];
-                if (corner[0] < childBBox->minX) {
-                    childBBox->minX = corner[0];
-                } else if (corner[0] > childBBox->maxX) {
-                    childBBox->maxX = corner[0];
+                if (corner[0] < nodeSlot->secondaryBounds.minX) {
+                    nodeSlot->secondaryBounds.minX = corner[0];
+                } else if (corner[0] > nodeSlot->secondaryBounds.maxX) {
+                    nodeSlot->secondaryBounds.maxX = corner[0];
                 }
-                if (corner[1] < childBBox->minY) {
-                    childBBox->minY = corner[1];
-                } else if (corner[1] > childBBox->maxY) {
-                    childBBox->maxY = corner[1];
+                if (corner[1] < nodeSlot->secondaryBounds.minY) {
+                    nodeSlot->secondaryBounds.minY = corner[1];
+                } else if (corner[1] > nodeSlot->secondaryBounds.maxY) {
+                    nodeSlot->secondaryBounds.maxY = corner[1];
                 }
-                if (corner[2] < childBBox->minZ) {
-                    childBBox->minZ = corner[2];
-                } else if (corner[2] > childBBox->maxZ) {
-                    childBBox->maxZ = corner[2];
+                if (corner[2] < nodeSlot->secondaryBounds.minZ) {
+                    nodeSlot->secondaryBounds.minZ = corner[2];
+                } else if (corner[2] > nodeSlot->secondaryBounds.maxZ) {
+                    nodeSlot->secondaryBounds.maxZ = corner[2];
                 }
             }
         }

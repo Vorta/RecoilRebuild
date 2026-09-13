@@ -182,7 +182,7 @@
         },
         {
           "address": "0x409b00",
-          "symbol": "?QueuePush@RecoilStateCredits@@SAXXZ",
+          "symbol_regex": "^(?:\\?QueuePush@RecoilStateCredits@@SAXXZ|\\?QueuePush@RecoilStateCredits@@SIXXZ)$",
           "name": "RecoilStateCredits::QueuePush"
         }
       ]

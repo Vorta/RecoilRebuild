@@ -764,7 +764,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     }
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_UnloadingMissionMsg);
-    HudUiMgr::UpdateTargetReticleFromCursor(0, 0, 0.0f, 0.0f);
+    HudUiMgr::UpdateTargetReticleFromCursor(0, 0.0f, 0.0f, 0);
     HudUiMgr::DisableHud();
     HudUiLoadingCheckpoint::AdvanceAndLog(0);
     HudUiAuxOverlay::ClearTextLines();
@@ -1439,7 +1439,7 @@ void HudSensorTracker::ResetHudForMissionStart() {
         );
         HudUiTimerPanel::SetRunning(1);
         HudUiMgr::TriggerCurrentLayoutOnActivated();
-        HudUiMgr::UpdateTargetReticleFromCursor(1, 0, 0.5f, 0.5f);
+        HudUiMgr::UpdateTargetReticleFromCursor(1, 0.5f, 0.5f, 0);
         OptCatalogSetDamageMaskEnabled(0);
         pendingPlayerSave.skipTimerResetOnStart = 0;
         return;
@@ -3889,7 +3889,7 @@ void CHudUiNetExitPanelResumeWidget::ShowPreview() {
         zInput::BindMapCurrentSetMouseBinding(1, 0);
 
         if (zInp::GetJoystickOption() == 0) {
-            HudUiMgr::UpdateTargetReticleFromCursor(0, 0, 0.0f, 0.0f);
+            HudUiMgr::UpdateTargetReticleFromCursor(0, 0.0f, 0.0f, 0);
 
             HudUiElement *const focus = g_HudUiNetExitPanel_SavedInputFocus;
             if (focus != 0) {
@@ -3912,7 +3912,7 @@ void CHudUiNetExitPanelResumeWidget::HidePreview() {
         zInput::BindMapContextPop();
 
         if (zInp::GetJoystickOption() == 0) {
-            HudUiMgr::UpdateTargetReticleFromCursor(1, 0, 0.0f, 0.0f);
+            HudUiMgr::UpdateTargetReticleFromCursor(1, 0.0f, 0.0f, 0);
             HudUiBackgroundContainer *const backgroundOwner = (HudUiBackgroundContainer *)(owner);
             g_HudUiNetExitPanel_SavedInputFocus = backgroundOwner->GetInputFocus();
             backgroundOwner->SetInputFocus(0);

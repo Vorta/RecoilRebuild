@@ -27,32 +27,10 @@
   ],
   "data_symbols": [
     {
-      "address": "0x575dc0",
-      "symbol": "_g_zEffect_ConditionalRefPosEnabled",
-      "name": "g_zEffect_ConditionalRefPosEnabled",
-      "bn_name": "g_zEffect_ConditionalRefPosEnabled",
-      "byte_length": 4
-    },
-    {
-      "address": "0x575dc8",
-      "symbol": "_g_zEffect_ConditionalRefPosX",
-      "name": "g_zEffect_ConditionalRefPosX",
-      "bn_name": "g_zEffect_ConditionalRefPosX",
-      "byte_length": 4
-    },
-    {
-      "address": "0x575dcc",
-      "symbol": "_g_zEffect_ConditionalRefPosY",
-      "name": "g_zEffect_ConditionalRefPosY",
-      "bn_name": "g_zEffect_ConditionalRefPosY",
-      "byte_length": 4
-    },
-    {
-      "address": "0x575dd0",
-      "symbol": "_g_zEffect_ConditionalRefPosZ",
-      "name": "g_zEffect_ConditionalRefPosZ",
-      "bn_name": "g_zEffect_ConditionalRefPosZ",
-      "byte_length": 4
+      "address": "0x575da0",
+      "symbol": "_g_zEffectAnim_State",
+      "name": "g_zEffectAnim_State",
+      "byte_length": 60
     }
   ],
   "source_from": "src/GameZRecoil/zEffect/zeff_anim_run.c"

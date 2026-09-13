@@ -30,18 +30,10 @@
       "byte_length": 4
     },
     {
-      "address": "0x575db8",
-      "symbol": "_g_zEffect_World",
-      "name": "g_zEffect_World",
-      "bn_name": "g_zEffect_World",
-      "byte_length": 4
-    },
-    {
-      "address": "0x575dd8",
-      "symbol": "_g_zEffect_FrameDeltaRemainingSec",
-      "name": "g_zEffect_FrameDeltaRemainingSec",
-      "bn_name": "g_zEffect_FrameDeltaRemainingSec",
-      "byte_length": 4
+      "address": "0x575da0",
+      "symbol": "_g_zEffectAnim_State",
+      "name": "g_zEffectAnim_State",
+      "byte_length": 60
     },
     {
       "address": "0x4df674",

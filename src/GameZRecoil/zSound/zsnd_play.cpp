@@ -25,7 +25,7 @@ extern "C" void *g_zSnd_BackendListenerHandle;
 
 
 namespace {
-const char kZSndPlaySourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp";
+
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.g-zsnd-directsoundattenunitygain
@@ -405,7 +405,7 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
         );
         voice->backendBuffer = (zSndBuffer *)duplicateSource;
         if (error < 0) {
-            zSnd::ReportA3DError(error, kZSndPlaySourceFile, 0xb2);
+            zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0xb2);
             free(voice);
             return 0;
         }
@@ -633,7 +633,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
     device->Flush();
 
     if (playError != 0) {
-        zSnd::ReportA3DError(playError, kZSndPlaySourceFile, 0x209);
+        zSnd::ReportA3DError(playError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x209);
     }
 
     return result;
@@ -703,7 +703,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
 
     const int playError = buffer->Play(0, 0, replayFields.flags & 0x01);
     if (playError != 0) {
-        zSnd::ReportDirectSoundError(playError, kZSndPlaySourceFile, 0x29f);
+        zSnd::ReportDirectSoundError(playError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x29f);
     }
 
     return result;
@@ -798,7 +798,7 @@ int zSndPlayHandle::StopIfActive() {
 
         error = source->Stop();
         if (error != 0) {
-            return zSnd::ReportA3DError(error, kZSndPlaySourceFile, 0x38c);
+            return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x38c);
         }
 
         return error;
@@ -811,21 +811,21 @@ int zSndPlayHandle::StopIfActive() {
 
         error = buffer->GetStatus((LPDWORD)&status);
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x392);
+            return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x392);
         }
 
         if (status == 2) {
             buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
             error = buffer->Restore();
             if (error != 0) {
-                return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x396);
+                return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x396);
             }
         }
 
         buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
         error = buffer->Stop();
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x39a);
+            return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x39a);
         }
 
         return error;
@@ -853,7 +853,7 @@ int zSndSample::StopActiveVoicesIfPlaying() {
 
         int error = primarySource->Stop();
         if (error != 0) {
-            return zSnd::ReportA3DError(error, kZSndPlaySourceFile, 0x3c0);
+            return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x3c0);
         }
 
         {
@@ -863,7 +863,7 @@ int zSndSample::StopActiveVoicesIfPlaying() {
                     zA3dProviderSource *const source = (zA3dProviderSource *)(voice->backendBuffer);
                     error = source->Stop();
                     if (error != 0) {
-                        return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x3cb);
+                        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x3cb);
                     }
                 }
             }
@@ -880,7 +880,7 @@ int zSndSample::StopActiveVoicesIfPlaying() {
 
         int error = primaryBuffer->Stop();
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x3d6);
+            return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x3d6);
         }
 
         {
@@ -890,7 +890,7 @@ int zSndSample::StopActiveVoicesIfPlaying() {
                     LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(voice->backendBuffer);
                     error = buffer->Stop();
                     if (error != 0) {
-                        return zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x3de);
+                        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x3de);
                     }
                 }
             }
@@ -1043,7 +1043,7 @@ void __fastcall zSndPlayHandle::PlayWithDeltaA3D(
     zA3dProviderSource *const source = (zA3dProviderSource *)playHandle->backendBuffer;
     const int error = source->Play((unsigned char)(replayFields->flags) & 1);
     if (error != 0) {
-        zSnd::ReportA3DError(error, kZSndPlaySourceFile, 0x58a);
+        zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x58a);
     }
 }
 
@@ -1064,7 +1064,7 @@ void __fastcall zSndPlayHandle::PlayWithDeltaDirectSound(
         LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)playHandle->backendBuffer;
         const int error = buffer->SetVolume(playHandle->gainScaled);
         if (error != 0) {
-            zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x5a5);
+            zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x5a5);
         }
     }
 
@@ -1072,14 +1072,14 @@ void __fastcall zSndPlayHandle::PlayWithDeltaDirectSound(
         LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)playHandle->backendBuffer;
         const int error = buffer->SetCurrentPosition(0);
         if (error != 0) {
-            zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x5ad);
+            zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x5ad);
         }
     }
 
     LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)playHandle->backendBuffer;
     const int error = buffer->Play(0, 0, (unsigned char)(replayFields->flags) & 1);
     if (error != 0) {
-        zSnd::ReportDirectSoundError(error, kZSndPlaySourceFile, 0x5b4);
+        zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x5b4);
     }
 }
 

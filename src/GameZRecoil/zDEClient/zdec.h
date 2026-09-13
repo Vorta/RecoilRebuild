@@ -322,7 +322,7 @@ int __fastcall NetRelayCallback(
     NetPkt0F_CraterEvent *packet
 );
 void __fastcall DestroyFeature(zDEClient_CraterFeature *featureInstance);
-void __fastcall InitEventTemplateDefaults(
+int __fastcall InitEventTemplateDefaults(
     zDEClient_CraterEventTemplate *eventTemplate
 );
 int __fastcall InstanceEvent(

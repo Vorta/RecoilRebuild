@@ -1,6 +1,6 @@
 {
   "name": "zmath_zmth_main_472670_475c40_authored_order",
-  "description": "Prepared authored-order target for the complete literal-backed zMath physical block [0x472670,0x475c40), compiled directly from zmth_main.c. All 68 selected retail rows are ordinary authored bodies. The source-path literal at 0x4e0ed4 is referenced by zMath::CrtMatherrHandler; the separate source-defined _matherr CRT hook and other unlisted static/support definitions are raw-object diagnostics only. This target proves no source owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "description": "Authored order for the complete retail math interval [0x472670,0x475c40): 63 definitions in zmth_main.c and the contiguous five-function quaternion family in inferred zmth_quat.c. Separate constant-reader cohorts and reviewed native experiments support the current extraction; original filenames, historical TU boundaries and storage ownership remain unresolved. Preserve all 68 linked identities, both outer neighbors and raw-definition diagnostics. This target accepts no owner, tier, bytes, exact RVA or final-image fact.",
   "target_binary": "recoil",
   "retail_start": "0x472670",
   "retail_end_exclusive": "0x475c40",
@@ -10,7 +10,8 @@
   "check_translation_unit_function_order": true,
   "order_edit_paths": [
     "src/GameZRecoil/zMath/zmth_main.c",
-    "src/GameZRecoil/zMath/zmth_decls.h"
+    "src/GameZRecoil/zMath/zmth_decls.h",
+    "src/GameZRecoil/zMath/zmth_quat.c"
   ],
   "functions": [
     {
@@ -693,7 +694,13 @@
         "0x475070",
         "0x475130",
         "0x475210",
-        "0x4753e0",
+        "0x4753e0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zMath/zmth_quat.c",
+      "order_scope": "authored",
+      "function_address_refs": [
         "0x4757c0",
         "0x475910",
         "0x4759d0",
@@ -797,5 +804,9 @@
         "full_order_gate": true
       }
     }
+  ],
+  "source_files": [
+    "src/GameZRecoil/zMath/zmth_main.c",
+    "src/GameZRecoil/zMath/zmth_quat.c"
   ]
 }

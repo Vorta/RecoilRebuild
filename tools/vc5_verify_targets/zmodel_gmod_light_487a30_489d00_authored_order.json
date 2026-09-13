@@ -1,6 +1,6 @@
 {
   "name": "zmodel_gmod_light_487a30_489d00_authored_order",
-  "description": "Prepared authored-order target for the complete literal-backed gmod_light.c physical block [0x487a30,0x489d00). All nine selected rows are ordinary authored bodies already defined exactly once in gmod_light.c, but their current TU definition order is not retail order. Unlisted raw helper and header-COMDAT definitions remain diagnostic-only at the authored TU gate. This target proves no owner, tier, bytes, full linked population, exact RVA, or final-image fact.",
+  "description": "Authored order for the light/fog retail interval [0x487a30,0x489d00). The five light functions remain in gmod_light.c; four fog evaluators compile in inferred gmod_fog.c, supported by the separate retail constant-reader groups and reviewed native compiler/linker evidence. The original fog filename and storage ownership remain unresolved. Preserve all nine linked identities and both outer neighbors; this target accepts no owner, tier, bytes, exact RVA or final-image fact.",
   "target_binary": "recoil",
   "retail_start": "0x487a30",
   "retail_end_exclusive": "0x489d00",
@@ -9,12 +9,13 @@
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "check_translation_unit_function_order": true,
   "order_edit_paths": [
-    "src/GameZRecoil/zModel/gmod_light.c"
+    "src/GameZRecoil/zModel/gmod_light.c",
+    "src/GameZRecoil/zModel/gmod_fog.c"
   ],
   "functions": [
     {
       "address": "0x487a30",
-      "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUzClass_LightDataPartial@@PAPAUzModel_LightStatePartial@@H@Z",
+      "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUzClass_NodePartial@@PAPAUzClass_LightDataPartial@@H@Z",
       "name": "zModelLightPointInPolygonInitXZ",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -103,7 +104,13 @@
         "0x487c50",
         "0x487f10",
         "0x488d60",
-        "0x4894f0",
+        "0x4894f0"
+      ]
+    },
+    {
+      "source_from": "src/GameZRecoil/zModel/gmod_fog.c",
+      "order_scope": "authored",
+      "function_address_refs": [
         "0x489540",
         "0x4896d0",
         "0x489920",
@@ -147,6 +154,9 @@
         "full_order_gate": true
       }
     }
+  ],
+  "source_files": [
+    "src/GameZRecoil/zModel/gmod_light.c",
+    "src/GameZRecoil/zModel/gmod_fog.c"
   ]
 }
-

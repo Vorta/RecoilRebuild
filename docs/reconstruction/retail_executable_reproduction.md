@@ -399,6 +399,19 @@ An explicit empty expectation is valid. A missing deterministic target identity
 uses reviewed `progress relocation-target bind`. A genuine ambiguity alone
 uses reviewed `progress relocation-exception set`. Both are dry-run-first.
 
+Existing folded aliases need a site-specific exception review when their physical
+address alone does not determine the logical callee. Adding an ordinary target
+binding does not choose one alias from that group and can stale other reviewed
+contexts by adding a global registration witness. Retract a mistaken binding of
+a pre-existing symbol through `progress relocation-target retract
+--target-symbol-id <id> --payload-json <json>` with the expected revision, first
+`--dry-run --json`, then the reviewed `--apply --json`. Its exact payload fields
+are `reviewed: true`, a nonempty `reason`, and `expected_binding` containing the
+entire unchanged stored binding. It removes exactly that registration and
+preserves the symbol, other bindings, ownership, providers and evidence.
+Created-data bindings are outside this route. Retraction grants no acceptance;
+follow the correction with fresh match verification.
+
 A registered aggregate data slice resolves only within its retail field extent.
 Its `object_offset` contributes to the expected COFF and resolved-target addend;
 the containing object's base is not the field's address. Conflicting offsets,
@@ -483,8 +496,9 @@ is an exchange of the two binary32 memory factors between `FLD m32` and
 encoding form, ordered addition inputs/grouping, memory widths, output stores,
 integer code and control flow. The verifier derives instruction/table boundaries
 from retail, then follows paired load origins and x87 stack values through
-balanced single-entry regions. No store, call, GPR change or branch into a
-region may intervene. Every differing operand must belong to a specifically
+balanced single-entry regions. No store, call or interior branch may intervene;
+the sole permitted GPR write is the exact stack-argument load described below.
+Every differing operand must belong to a specifically
 proved load/multiply exchange. Unknown effects, mixed register reassignment,
 changed embedded tables, padding, relocation targets or layout block.
 
@@ -496,8 +510,13 @@ by `COMMUTATIVE_CONTRACT` in `tools/_recoil/lib/commutative_match.py`:
   free push slots at each region entry (the proof reports the number required);
 - identical stored representations, including signed zero, plus equal integer
   state, control flow and ABI behavior;
-- excluded x87 status, saved environment and dead physical registers cannot
+- excluded transient live x87 operands, status, saved environment and dead physical registers cannot
   influence included observations through callers, callees or asynchronous inspection;
+- normal completion through valid ordinary readable inputs and writable output;
+  admitted stack arguments are initialized, live, readable four-byte slots with
+  equal stable contents and unchanged addressing state; program-visible memory
+  faults and debugging observations are excluded, and transparent paging or
+  asynchronous services must not expose operand-read order or transient FP state;
 - ordinary function entry and ABI call/return flow, without external interior
   entries or return-address manipulation.
 
@@ -509,6 +528,28 @@ permission to omit FP status fields from a comparison. Unresolved indirect calls
 and jumps are rejected. Direct entries, including `LOOP`/`LOOPE`/`LOOPNE`/`JCXZ`,
 come from the independent retail decoder. Status/environment observers and MMX
 accesses that can expose physical x87 register state also block the initial proof.
+
+An exact `FADDP` compares its actual two ordered operands and preserves the
+separate histories of all other tracked slots. A pending unequal factor may
+remain untouched until its own proved multiplication; it cannot be consumed
+by an addition prematurely. `FADD m32` retains whole-stack equality.
+
+A balanced region may also contain at most one byte-identical, unprefixed
+`MOV reg32,[ESP+displacement]`, with a positive four-byte-aligned displacement,
+no index or segment override, and a destination other than ESP or EBP. Complete
+tracked x87 stacks must agree at the load. The destination cannot be a base or
+index of any earlier or later floating-point read in either execution, including
+exact memory additions. The terminal identical store may use that newly loaded
+register. The proof records the exact instruction, width, destination, signed
+displacement, unchanged ESP basis and implicit SS addressing. Integer state stays
+equal through the common stack load; valid ABI argument memory is a reviewed
+precondition, not inferred from the operand spelling. All other instruction and
+control-flow restrictions remain. This is neither GPR reassignment nor a general
+permission for intervening integer operations.
+
+Proof/contract changes invalidate prior relaxed reviews. Renew the complete
+caller/domain justification under the current contract and run fresh live proof;
+old review eligibility must not be silently retained.
 
 The kernel's `scope: normalized-function-body-only`, `accepts_function_match:
 false`, `accepts_exact_bytes: false` and `pending_obligations` identify body
@@ -705,8 +746,11 @@ independent monotonic revision.
 When fresh retail layout evidence proves that existing standalone authored
 data globals are fields of one native aggregate, use the reviewed
 `progress data-artifact coalesce` command. Its exact snapshot payload must
-enumerate all fields, padding, storage, the single owner, and data-only target
-registrations. Update the selected manifests to the reviewed aggregate before
+enumerate all fields, padding, storage, the single owner, and target
+registrations. Mixed code/data targets must preserve every non-data registration
+fact exactly. Existing field source edges are archived as superseded physical
+definitions; logical field views and the aggregate need fresh source topology.
+Update the selected manifests to the reviewed aggregate before
 the dry-run. The transaction preserves historical records and logical field
 views, rejects unhandled references/overlaps, and invalidates call/byte evidence
 without changing function order or accepting an owner/data/linkage gate.

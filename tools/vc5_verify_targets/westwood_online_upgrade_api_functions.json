@@ -3,6 +3,10 @@
   "description": "WestwoodOnlineUpgradeApi source-file startup functions.",
   "source_filename": "WestwoodOnlineUpgradeApi.cpp",
   "compiler_profile": "vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs",
+  "source_compile_profiles": {
+    "src/Battlesport/player.cpp": "vc5_o2_ob1_md_gx_fastcall_facs",
+    "src/Battlesport/WOL.cpp": "vc5_o2_ob1_md_gx_fastcall_facs"
+  },
   "include_dirs": [
     "src",
     "tools/_recoil/compat/include",
@@ -12,9 +16,11 @@
     "D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE"
   ],
   "source_files": [
-    "src/Battlesport/WOL.cpp"
+    "src/Battlesport/WOL.cpp",
+    "src/Battlesport/player.cpp"
   ],
   "source_from": "src/Battlesport/WOL.cpp",
+  "check_translation_unit_function_order": true,
   "functions": [
     {
       "address": "0x42dda0",
@@ -28,13 +34,31 @@
     },
     {
       "address": "0x43d280",
-      "symbol": "?Shutdown@WestwoodOnlineUpgradeApi@@SAXXZ",
+      "symbol_regex": "^(?:\\?Shutdown@WestwoodOnlineUpgradeApi@@SAXXZ|\\?Shutdown@WestwoodOnlineUpgradeApi@@SIXXZ)$",
       "name": "WestwoodOnlineUpgradeApi::Shutdown"
     },
     {
       "address": "0x43d2e0",
-      "symbol": "?Init@WestwoodOnlineUpgradeApi@@SAHXZ",
+      "symbol_regex": "^(?:\\?Init@WestwoodOnlineUpgradeApi@@SAHXZ|\\?Init@WestwoodOnlineUpgradeApi@@SIHXZ)$",
       "name": "WestwoodOnlineUpgradeApi::Init"
+    }
+  ],
+  "translation_unit_function_order": [
+    {
+      "source_from": "src/Battlesport/player.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x42dda0"
+      ]
+    },
+    {
+      "source_from": "src/Battlesport/WOL.cpp",
+      "order_scope": "authored",
+      "function_address_refs": [
+        "0x43d130",
+        "0x43d280",
+        "0x43d2e0"
+      ]
     }
   ]
 }

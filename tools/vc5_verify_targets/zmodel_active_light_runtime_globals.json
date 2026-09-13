@@ -22,7 +22,7 @@
   "data_symbols": [
     {
       "address": "0x57d410",
-      "symbol": "?gModel_LightInputNodeStates@@3PAPAUzModel_LightStatePartial@@A",
+      "symbol": "?gModel_LightInputNodeStates@@3PAPAUzClass_NodePartial@@A",
       "name": "gModel_LightInputNodeStates",
       "bn_name": "gModel_LightInputNodeStates",
       "byte_length": 4

@@ -491,9 +491,9 @@ void __fastcall SetReticleMode(int mode);
 int __fastcall EnsureHudLoaded(const char *entryPath);
 int __fastcall UpdateTargetReticleFromCursor(
     int reticleMode,
-    zVec3 *worldHitPoint,
     float normalizedX,
-    float normalizedY
+    float normalizedY,
+    zVec3 *worldHitPoint
 );
 void __fastcall OnViewportChanged(
     const HudUiRect *hudRectOrNull,

@@ -1,4 +1,78 @@
 {
+  "functions": [
+    {
+      "address": "0x42ac90",
+      "authored_order_role": "authored-body",
+      "full_order_gate": true,
+      "name": "Player::TransitionToMasterTypeTrack",
+      "pipeline_class": "authored",
+      "required_presence": true,
+      "symbol": "?TransitionToMasterTypeTrack@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+    },
+    {
+      "address": "0x42aeb0",
+      "authored_order_role": "authored-body",
+      "full_order_gate": true,
+      "name": "Player::TransitionToMasterTypeAmphib",
+      "pipeline_class": "authored",
+      "required_presence": true,
+      "symbol": "?TransitionToMasterTypeAmphib@Player@@YIHPAUzUtil_SaveGameState@@HH@Z"
+    },
+    {
+      "address": "0x42b0f0",
+      "authored_order_role": "authored-body",
+      "full_order_gate": true,
+      "name": "Player::TransitionToMasterTypeHover",
+      "pipeline_class": "authored",
+      "required_presence": true,
+      "symbol": "?TransitionToMasterTypeHover@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+    },
+    {
+      "address": "0x42b2a0",
+      "authored_order_role": "authored-body",
+      "full_order_gate": true,
+      "name": "Player::TransitionToMasterTypeSub",
+      "pipeline_class": "authored",
+      "required_presence": true,
+      "symbol": "?TransitionToMasterTypeSub@Player@@YIHPAUzUtil_SaveGameState@@H@Z"
+    },
+    {
+      "address": "0x42b810",
+      "authored_order_role": "authored-body",
+      "full_order_gate": true,
+      "name": "Player::SyncLocalPoseFromRootNode",
+      "pipeline_class": "authored",
+      "required_presence": true,
+      "symbol": "?SyncLocalPoseFromRootNode@Player@@YAXXZ"
+    },
+    {
+      "address": "0x42bb30",
+      "authored_order_role": "authored-body",
+      "full_order_gate": true,
+      "name": "Player::AsyncCommandCallback",
+      "pipeline_class": "authored",
+      "required_presence": true,
+      "symbol": "?AsyncCommandCallback@Player@@YIXPAUzEffectAnimEntry@@PAXH@Z"
+    },
+    {
+      "address": "0x42be70",
+      "authored_order_role": "authored-body",
+      "full_order_gate": true,
+      "name": "Player::CaptureCurrentObjectPoseAsRestartAnchor",
+      "pipeline_class": "authored",
+      "required_presence": true,
+      "symbol": "?CaptureCurrentObjectPoseAsRestartAnchor@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+    },
+    {
+      "address": "0x42bed0",
+      "authored_order_role": "authored-body",
+      "full_order_gate": true,
+      "name": "Player::ResetMotionTransientState",
+      "pipeline_class": "authored",
+      "required_presence": true,
+      "symbol": "?ResetMotionTransientState@Player@@YIXPAUzUtil_SaveGameState@@@Z"
+    }
+  ],
   "check_translation_unit_function_order": true,
   "compile_context_from": "tools/_recoil/config/vc5_final_build.json",
   "description": "Exact authored-order target for the retail literal-backed player.cpp physical block [0x41ea90,0x42de10). The 165 authored gating identities, ten compiler-generated/non-authored full-order rows, immediate pickup/player and player/RecoilApp seams, and cross-host semantic exceptions are retail-reviewed. This target checks natural VC5 translation-unit order and linked authored projection only; it accepts no bytes, owner, provider, data, linkage, or tier fact.",
@@ -3436,5 +3510,13 @@
     "src/GameZRecoil/zMath/zmth_main.c",
     "src/GameZRecoil/zMath/zmth_decls.h",
     "src/GameZRecoil/zMath/zmth.h"
+  ],
+  "data_symbols": [
+    {
+      "address": "0x4d0860",
+      "symbol_regex": "^_kPlayerMasterTypeTrackCooldownNegSec\\$S[0-9]+$",
+      "name": "kPlayerMasterTypeTrackCooldownNegSec",
+      "byte_length": 4
+    }
   ]
 }
