@@ -38,7 +38,7 @@ extern char g_HudUiCounterText_PlayerLabel[];
 /**
  * Purpose: remember the most recent mover node accepted from movers.zrd.
  */
-extern "C" zClass_NodePartial *g_Mover_LastLoadedNode = 0;
+extern "C" CZNodePartial *g_Mover_LastLoadedNode = 0;
 
 extern "C" {
 /**
@@ -586,7 +586,7 @@ int g_Player_HorizonNodeFollowCameraEnabled = 0;
  * @recoil-artifact defines .data recoil:data:0x4f36c0: g_Player_HorizonNode.
  * Purpose: Stores g Player HorizonNode data used by battlesport_gameplay.player_horizon_follow_globals.
  */
-zClass_NodePartial *g_Player_HorizonNode = 0;
+CZNodePartial *g_Player_HorizonNode = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-playerprevcamerastate
  * @recoil-artifact defines .data recoil:data:0x4f36d0: g_PlayerPrevCameraState.
@@ -614,25 +614,25 @@ int g_Player_SavedSteeringMode = 0;
  * while healthy.
  * Purpose: stores the plan-tracked g_Player_CopterHealthyNode1 gameplay data symbol.
  */
-zClass_NodePartial *g_Player_CopterHealthyNode1 = 0;
+CZNodePartial *g_Player_CopterHealthyNode1 = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-copterhealthynode2
  * @recoil-artifact defines .data recoil:data:0x4f3bc0: g_Player_CopterHealthyNode2.
  * Purpose: stores the plan-tracked g_Player_CopterHealthyNode2 gameplay data symbol.
  */
-zClass_NodePartial *g_Player_CopterHealthyNode2 = 0;
+CZNodePartial *g_Player_CopterHealthyNode2 = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-coptersndnode1
  * @recoil-artifact defines .data recoil:data:0x4f36c4: g_Player_CopterSndNode1.
  * Purpose: stores the plan-tracked g_Player_CopterSndNode1 gameplay data symbol.
  */
-zClass_NodePartial *g_Player_CopterSndNode1 = 0;
+CZNodePartial *g_Player_CopterSndNode1 = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-coptersndnode2
  * @recoil-artifact defines .data recoil:data:0x4f36c8: g_Player_CopterSndNode2.
  * Purpose: stores the plan-tracked g_Player_CopterSndNode2 gameplay data symbol.
  */
-zClass_NodePartial *g_Player_CopterSndNode2 = 0;
+CZNodePartial *g_Player_CopterSndNode2 = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-coptersndsample
  * @recoil-artifact defines .data recoil:data:0x4f36cc: g_Player_CopterSndSample.
@@ -1842,13 +1842,13 @@ RECOIL_STATIC_ASSERT(
  */
 #define PLAYER_INIT_ACTION_CALLBACK_NODE(callback) \
     do { \
-        zClass_NodePartial *playerInitActionNode = \
-            zClass_Object3D::gwObject3DInit(); \
-        zClass_Class::gwNodeSetPriority( \
+        CZNodePartial *playerInitActionNode = \
+            CZObject3D::gwObject3DInit(); \
+        CZClass::gwNodeSetPriority( \
             playerInitActionNode, \
             2 \
         ); \
-        zClass_Class::gwNodeSetActionCallback( \
+        CZClass::gwNodeSetActionCallback( \
             playerInitActionNode, \
             (callback) \
         ); \
@@ -2394,7 +2394,7 @@ void SetState7FxPass3Visible(
  */
 #define GetNodeDamageHandler(node) \
     ((OptCatalogDamageHandlerPartial *)( \
-        ((zClass_NodeFreeListSlot *)(node))->damageHandler \
+        ((CZNodeFreeListSlot *)(node))->damageHandler \
     ))
 
 /**
@@ -2810,13 +2810,13 @@ namespace Player {
  * Battlesport gameplay source file.
  */
 void __fastcall RecordNodeFlagsForRestore(
-    zClass_NodePartial *node
+    CZNodePartial *node
 ) {
     PlayerNodeFlagRestoreEntry value;
     value.node = node;
-    zClass_Class::gwNodeGetCellPickable(node, &value.wasCellPickable);
-    zClass_Class::gwNodeGetRaycastable(node, &value.wasRaycastable);
-    zClass_Class::gwNodeGetPickable(node, &value.wasPickable);
+    CZClass::gwNodeGetCellPickable(node, &value.wasCellPickable);
+    CZClass::gwNodeGetRaycastable(node, &value.wasRaycastable);
+    CZClass::gwNodeGetPickable(node, &value.wasPickable);
 
     g_PlayerNodeFlagRestoreEntries.push_back(value);
 }
@@ -2838,15 +2838,15 @@ void __cdecl RestoreRecordedNodeFlags() {
         g_PlayerNodeFlagRestoreEntries.begin();
     while (entry != g_PlayerNodeFlagRestoreEntries.end()) {
         const PlayerNodeFlagRestoreEntry value = *entry;
-        zClass_NodePartial *const node = value.node;
+        CZNodePartial *const node = value.node;
         if (value.wasCellPickable != 0) {
-            zClass_Class::gwNodeSetCellPickable(node, 1);
+            CZClass::gwNodeSetCellPickable(node, 1);
         }
         if (value.wasRaycastable != 0) {
-            zClass_Class::gwNodeSetRaycastable(node, 1);
+            CZClass::gwNodeSetRaycastable(node, 1);
         }
         if (value.wasPickable != 0) {
-            zClass_Class::gwNodeSetPickable(node, 1);
+            CZClass::gwNodeSetPickable(node, 1);
         }
         ++entry;
     }
@@ -2901,13 +2901,13 @@ void __fastcall BuildMissionSaveData(
     outData->bankInput = playerState->bankInput;
     outData->playerMasterType = masterModalData->masterType;
 
-    zClass_Camera::gwCameraGetTarget(
+    CZCamera::gwCameraGetTarget(
         g_MainCamera,
         &outData->cameraTarget.x,
         &outData->cameraTarget.y,
         &outData->cameraTarget.z
     );
-    zClass_Camera::gwCameraGetPosition(
+    CZCamera::gwCameraGetPosition(
         g_MainCamera,
         &outData->cameraPosition.x,
         &outData->cameraPosition.y,
@@ -3048,13 +3048,13 @@ void __fastcall ApplyMissionSaveData(
     ApplyMasterTypeTransition(saveState, saveData->playerMasterType, 1);
     playerState->primaryGunGateUntilTime = 0.0f;
 
-    zClass_Camera::gwCameraSetTarget(
+    CZCamera::gwCameraSetTarget(
         g_MainCamera,
         saveData->cameraTarget.x,
         saveData->cameraTarget.y,
         saveData->cameraTarget.z
     );
-    zClass_Camera::gwCameraSetPosition(
+    CZCamera::gwCameraSetPosition(
         g_MainCamera,
         saveData->cameraPosition.x,
         saveData->cameraPosition.y,
@@ -3331,14 +3331,14 @@ void __fastcall zZarReadVehicleListSection(
     playerState->aiCurrentPathNeighborIndex = 0;
 
     if (saveState != (zUtil_SaveGameState *)g_GameStateOrMapTable && restoreHealthyNode != 0) {
-        zClass_NodePartial *const healthyNode =
-            zClass_Class::FindNodeRecursiveByName(
+        CZNodePartial *const healthyNode =
+            CZClass::FindNodeRecursiveByName(
                 playerState->rootNode,
                 g_Player_HealthySubNodeName
             );
         if (healthyNode != 0) {
-            zClass_Object3D::gwObject3DSetPosition(healthyNode, 0.0f, 0.0f, 0.0f);
-            zClass_Object3D::gwObject3DSetRotation(healthyNode, 0.0f, 0.0f, 0.0f);
+            CZObject3D::gwObject3DSetPosition(healthyNode, 0.0f, 0.0f, 0.0f);
+            CZObject3D::gwObject3DSetRotation(healthyNode, 0.0f, 0.0f, 0.0f);
         }
 
         if (playerState->destroyedRespawnAsyncHandle != 0) {
@@ -3351,13 +3351,13 @@ void __fastcall zZarReadVehicleListSection(
         }
     }
 
-    zClass_Class::gwNodeSetActive(
+    CZClass::gwNodeSetActive(
         playerState->rootNode,
         playerState->lifecycleState == kPlayerLifecycleInactive ? 0 : 1
     );
-    zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack(playerState->rootNode);
+    CZNode::LoadFlagBit8MaterialImagesAndTexturePack(playerState->rootNode);
     zTag4::Clear(&playerState->variantTag);
-    zClass_Class::gwNodeSetNodeType(playerState->rootNode, playerState->variantTag.tags[0]);
+    CZClass::gwNodeSetNodeType(playerState->rootNode, playerState->variantTag.tags[0]);
 }
 } // namespace Player
 namespace Player {
@@ -3435,7 +3435,7 @@ void __fastcall DestroySaveGameState(
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     FreeAltWeaponTrailRuntimeStates(saveState);
-    zClass_Node::ClearDamageHandler(playerState->rootNode);
+    CZNode::ClearDamageHandler(playerState->rootNode);
 
     HudUiMgrSensorTrackNode *const trackNode =
         (HudUiMgrSensorTrackNode *)(playerState->rootNode->callbackContext);
@@ -3520,8 +3520,8 @@ namespace Player {
  * early return path at 0x420870.
  */
 void __fastcall InitMissionRuntimeFromWorldAndCamera(
-    zClass_NodePartial *worldNode,
-    zClass_NodePartial *cameraNode
+    CZNodePartial *worldNode,
+    CZNodePartial *cameraNode
 ) {
     if (g_Player_MissionInitFirstRunFlag != 0) {
         g_HudUiTopMessageStack->AddChild((HudUiElement *)(&g_Player_TopMsgPanel1));
@@ -3552,19 +3552,19 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
 
     g_Player_RuntimeDiScene = worldNode;
     g_MainCamera = cameraNode;
-    g_Player_HorizonNode = zClass_Class::FindSubNodeByName(
+    g_Player_HorizonNode = CZClass::FindSubNodeByName(
         g_HudSensorTracker.worldNode,
         g_Player_NodeName_Horizon
     );
 
     float fovX = 0.0f;
     float fovY = 0.0f;
-    zClass_Camera::gwCameraGetFOV(g_MainCamera, &fovX, &fovY);
-    zClass_Camera::gwCameraSetPosition(g_MainCamera, 0.0f, 0.0f, 0.0f);
-    zClass_Camera::gwCameraSetTarget(g_MainCamera, 0.0f, 0.0f, 0.0f);
+    CZCamera::gwCameraGetFOV(g_MainCamera, &fovX, &fovY);
+    CZCamera::gwCameraSetPosition(g_MainCamera, 0.0f, 0.0f, 0.0f);
+    CZCamera::gwCameraSetTarget(g_MainCamera, 0.0f, 0.0f, 0.0f);
     if (g_Player_HorizonNode != 0) {
         g_Player_HorizonNodeFollowCameraEnabled = 1;
-        zClass_Object3D::gwObject3DSetPosition(g_Player_HorizonNode, 0.0f, 0.0f, 0.0f);
+        CZObject3D::gwObject3DSetPosition(g_Player_HorizonNode, 0.0f, 0.0f, 0.0f);
     }
 
     memset(&g_VariantTag_Current, 0, sizeof(g_VariantTag_Current));
@@ -3573,7 +3573,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
 
     PLAYER_INIT_ACTION_CALLBACK_NODE((void *)(&TickAllPlayers));
     PLAYER_INIT_ACTION_CALLBACK_NODE((void *)(&PickupRespawnQueue::Update));
-    PLAYER_INIT_ACTION_CALLBACK_NODE((void *)(&zClass_Object3D_ModelRefLerpQueue::Update));
+    PLAYER_INIT_ACTION_CALLBACK_NODE((void *)(&CZObject3DModelRefLerpQueue::Update));
 
     g_Player_LocalControlEnabled = zOpt::GetNetworkEnabled();
     g_Player_TotalTimeSecScaled = g_Time_AccumulatedTimeSec;
@@ -3767,13 +3767,13 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     PlayerModalState *const stealthModalState =
         (PlayerModalState *)zUtilSaveGameStateListAllocAppend(stealthSaveState);
     g_Player2SaveState = stealthSaveState;
-    stealthPlayerState->rootNode = zClass_Object3D::gwObject3DInit();
-    zClass_Class::gwNodeSetName(stealthPlayerState->rootNode, g_Player_DisplayName_Stealth);
-    zClass_Object3D::gwObject3DSetPosition(stealthPlayerState->rootNode, 500.0f, 50.0f, 500.0f);
-    zClass_Object3D::gwObject3DSetRotation(stealthPlayerState->rootNode, 0.0f, 0.0f, 0.0f);
-    zClass_Class::gwNodeSetPriority(stealthPlayerState->rootNode, 1);
-    zClass_Class::gwNodeSetRaycastable(stealthPlayerState->rootNode, 0);
-    zClass_Class::gwNodeSetCellPickable(stealthPlayerState->rootNode, 0);
+    stealthPlayerState->rootNode = CZObject3D::gwObject3DInit();
+    CZClass::gwNodeSetName(stealthPlayerState->rootNode, g_Player_DisplayName_Stealth);
+    CZObject3D::gwObject3DSetPosition(stealthPlayerState->rootNode, 500.0f, 50.0f, 500.0f);
+    CZObject3D::gwObject3DSetRotation(stealthPlayerState->rootNode, 0.0f, 0.0f, 0.0f);
+    CZClass::gwNodeSetPriority(stealthPlayerState->rootNode, 1);
+    CZClass::gwNodeSetRaycastable(stealthPlayerState->rootNode, 0);
+    CZClass::gwNodeSetCellPickable(stealthPlayerState->rootNode, 0);
     zRdrGetNode(
         zRdrGetNode(vehicleRoot, g_Player_ConfigNode_Stealth),
         g_Player_ConfigNode_CommonMode
@@ -3869,14 +3869,14 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     }
 
     stealthPlayerState->worldPos = localSaveState->playerState->worldPos;
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         stealthPlayerState->rootNode,
         stealthPlayerState->worldPos.x,
         stealthPlayerState->worldPos.y,
         stealthPlayerState->worldPos.z
     );
     stealthPlayerState->vehicleRotationAngles = localSaveState->playerState->vehicleRotationAngles;
-    zClass_Object3D::gwObject3DSetRotation(
+    CZObject3D::gwObject3DSetRotation(
         stealthPlayerState->rootNode,
         stealthPlayerState->vehiclePitchRad,
         stealthPlayerState->restartYawRad,
@@ -3921,7 +3921,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
         (zInputCommandCallbackFn)(HandleAltWeaponBankSelectInput)
     );
     RegisterGameplayCommandCallbacksAndCreateFfEffects();
-    zClass_Node::MaskExtraFlagsRecursive(g_Player_RuntimeDiScene, 0);
+    CZNode::MaskExtraFlagsRecursive(g_Player_RuntimeDiScene, 0);
     zReader::LoadMoversFromZrd();
     if (g_HudSensorTracker.raceCheckpointMode != 0) {
         Checkpoint::InstantiateNamedObjects();
@@ -3942,10 +3942,10 @@ void __cdecl LoadMoversFromZrd() {
     Node *const moverArray = rootArray[1].value.nodes;
     const int moverCount = moverArray[0].value.i32 - 1;
     for (int i = 0; i < moverCount; ++i) {
-        zClass_NodePartial *const mover = zClass::FindByTypeAndName(6, moverArray[i + 1].value.str);
+        CZNodePartial *const mover = CZClass::FindByTypeAndName(6, moverArray[i + 1].value.str);
         if (mover != 0) {
-            zClass_Node::PropagateExtraFlagsRecursive(mover, 1);
-            zClass_Node::SetContextRecursive(mover, mover, 0x200000);
+            CZNode::PropagateExtraFlagsRecursive(mover, 1);
+            CZNode::SetContextRecursive(mover, mover, 0x200000);
             g_Mover_LastLoadedNode = mover;
         }
     }
@@ -3966,15 +3966,15 @@ void __cdecl InstantiateNamedObjects() {
 
     for (int checkpointNumber = 1; checkpointNumber <= checkpointCount; ++checkpointNumber) {
         searchName.Format(g_Checkpoint_NodeNameFmt, checkpointNumber);
-        zClass_NodePartial *const checkpointNode =
-            zClass::FindByTypeAndName(6, (const char *)searchName);
+        CZNodePartial *const checkpointNode =
+            CZClass::FindByTypeAndName(6, (const char *)searchName);
         if (checkpointNode != 0) {
-            zClass_Node::PropagateExtraFlagsRecursive(
+            CZNode::PropagateExtraFlagsRecursive(
                 checkpointNode,
                 kCheckpointNodeAuxFlagTracked
             );
-            zClass_Node::PropagateFlagsRecursive(checkpointNode, kCheckpointNodePickableFlag);
-            zClass_Node::SetContextRecursive(
+            CZNode::PropagateFlagsRecursive(checkpointNode, kCheckpointNodePickableFlag);
+            CZNode::SetContextRecursive(
                 checkpointNode,
                 checkpointNode,
                 kCheckpointNodeContextFlag
@@ -4025,13 +4025,13 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)saveState;
     }
 
-    zClass_Object3D::gwObject3DGetPosition(
+    CZObject3D::gwObject3DGetPosition(
         playerState->rootNode,
         &playerState->worldPos.x,
         &playerState->worldPos.y,
         &playerState->worldPos.z
     );
-    zClass_Object3D::gwObject3DGetRotation(
+    CZObject3D::gwObject3DGetRotation(
         playerState->rootNode,
         &playerState->vehiclePitchRad,
         &playerState->restartYawRad,
@@ -4094,10 +4094,10 @@ void __fastcall InitStateFromNameAndMasterCommonData(
             AINet::FindNearestNode(&playerState->worldPos, aiNet->nodeListHead);
         playerState->aiHomePathNode = playerState->aiCurrentPathNode;
 
-        zClass_NodePartial *const healthyNode =
-            zClass_Class::FindSubNodeByName(playerState->rootNode, g_Player_HealthySubNodeName);
+        CZNodePartial *const healthyNode =
+            CZClass::FindSubNodeByName(playerState->rootNode, g_Player_HealthySubNodeName);
         if (healthyNode != 0) {
-            zClass_Class::gwNodeSetCellPickable(healthyNode, 0);
+            CZClass::gwNodeSetCellPickable(healthyNode, 0);
         }
 
         if (aiNet->activateRadius != 0.0f) {
@@ -4192,16 +4192,16 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->cameraTransitionTimer = 0;
     playerState->cameraTransitionBlend = 1.0f;
 
-    zClass_NodePartial *const targetNode =
-        zClass_Class::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_Target);
+    CZNodePartial *const targetNode =
+        CZClass::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_Target);
     if (targetNode != 0) {
-        zClass_Object3D::gwObject3DGetPosition(
+        CZObject3D::gwObject3DGetPosition(
             targetNode,
             &playerState->fxOffsetLocal.x,
             &playerState->fxOffsetLocal.y,
             &playerState->fxOffsetLocal.z
         );
-        zClass_Class::gwNodeSetActive(targetNode, 0);
+        CZClass::gwNodeSetActive(targetNode, 0);
     } else {
         playerState->fxOffsetLocal.x = 0.0f;
         playerState->fxOffsetLocal.y = 0.0f;
@@ -4211,21 +4211,21 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->fxOffsetWorld.y = playerState->worldPos.y + playerState->fxOffsetLocal.y;
     playerState->fxOffsetWorld.z = playerState->worldPos.z + playerState->fxOffsetLocal.z;
 
-    playerState->bodyNode = zClass_Class::FindSubNodeByName(
+    playerState->bodyNode = CZClass::FindSubNodeByName(
         playerState->rootNode,
         g_Player_NodeName_Body
     );
-    playerState->turretNode = zClass_Class::FindSubNodeByName(
+    playerState->turretNode = CZClass::FindSubNodeByName(
         playerState->rootNode,
         g_Player_NodeName_Turret
     );
-    playerState->doorLeftNode = zClass_Class::FindSubNodeByName(
+    playerState->doorLeftNode = CZClass::FindSubNodeByName(
         playerState->rootNode,
         g_Player_NodeName_DoorLeft
     );
     playerState->doorRightNode =
-        zClass_Class::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_DoorRight);
-    playerState->modeVariantNode = zClass_Class::FindSubNodeByName(
+        CZClass::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_DoorRight);
+    playerState->modeVariantNode = CZClass::FindSubNodeByName(
         playerState->rootNode,
         g_Player_NodeName_Shadow
     );
@@ -4243,9 +4243,9 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     if (playerState != localPlayerState) {
         HudUiMgrSensorTrackNode *const context =
             HudUiMgrSensor::TrackListAdd(HUD_SENSOR_TRACK_KIND_PLAYER, saveState);
-        zClass_Node::SetContextRecursive(
+        CZNode::SetContextRecursive(
             playerState->rootNode,
-            (zClass_NodePartial *)context,
+            (CZNodePartial *)context,
             0x100000
         );
     }
@@ -4289,43 +4289,43 @@ void __fastcall BindModalStateFromMasterModalData(
         zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x5c3, errorText);
     }
 
-    zClass_NodePartial *const rootNode = playerState->rootNode;
-    modalState->nodeRightMorphs = zClass_Class::FindSubNodeByName(
+    CZNodePartial *const rootNode = playerState->rootNode;
+    modalState->nodeRightMorphs = CZClass::FindSubNodeByName(
         rootNode,
         g_Player_NodeName_RightMorphs
     );
-    modalState->nodeLeftMorphs = zClass_Class::FindSubNodeByName(
+    modalState->nodeLeftMorphs = CZClass::FindSubNodeByName(
         rootNode,
         g_Player_NodeName_LeftMorphs
     );
-    modalState->modalNode = zClass_Class::FindSubNodeByName(rootNode, g_Player_NodeName_Chassis);
-    modalState->nodeRTracks = zClass_Class::FindSubNodeByName(
+    modalState->modalNode = CZClass::FindSubNodeByName(rootNode, g_Player_NodeName_Chassis);
+    modalState->nodeRTracks = CZClass::FindSubNodeByName(
         rootNode,
         g_Player_NodeName_RightTracks
     );
-    modalState->nodeLTracks = zClass_Class::FindSubNodeByName(
+    modalState->nodeLTracks = CZClass::FindSubNodeByName(
         rootNode,
         g_Player_NodeName_LeftTracks
     );
-    modalState->nodeProps = zClass_Class::FindSubNodeByName(rootNode, g_Player_NodeName_Props);
-    modalState->nodeCaustic1 = zClass_Class::FindSubNodeByName(
+    modalState->nodeProps = CZClass::FindSubNodeByName(rootNode, g_Player_NodeName_Props);
+    modalState->nodeCaustic1 = CZClass::FindSubNodeByName(
         rootNode,
         g_Player_EffectNodeName_Caustic1
     );
-    modalState->nodeWake = zClass_Class::FindSubNodeByName(rootNode, g_Player_EffectNodeName_Wake);
-    modalState->nodeSplashL = zClass_Class::FindSubNodeByName(
+    modalState->nodeWake = CZClass::FindSubNodeByName(rootNode, g_Player_EffectNodeName_Wake);
+    modalState->nodeSplashL = CZClass::FindSubNodeByName(
         rootNode,
         g_Player_EffectNodeName_SplashLeft
     );
-    modalState->nodeSplashR = zClass_Class::FindSubNodeByName(
+    modalState->nodeSplashR = CZClass::FindSubNodeByName(
         rootNode,
         g_Player_EffectNodeName_SplashRight
     );
-    modalState->nodeDustL = zClass_Class::FindSubNodeByName(
+    modalState->nodeDustL = CZClass::FindSubNodeByName(
         rootNode,
         g_Player_EffectNodeName_DustLeft
     );
-    modalState->nodeDustR = zClass_Class::FindSubNodeByName(
+    modalState->nodeDustR = CZClass::FindSubNodeByName(
         rootNode,
         g_Player_EffectNodeName_DustRight
     );
@@ -4404,11 +4404,11 @@ void __fastcall SampleGroundAndAlignRootToSurface(
 
     zTag4::Clear(&playerState->variantTag);
     g_Variant_CurrentTag = playerState->variantTag;
-    zClass_Class::gwNodeSetNodeType(playerState->rootNode, playerState->variantTag.tags[0]);
-    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
+    CZClass::gwNodeSetNodeType(playerState->rootNode, playerState->variantTag.tags[0]);
+    CZClass::gwNodeSetCellPickable(playerState->rootNode, 0);
 
     PlayerProbeSampleCandidateBuffer candidateBuffer = {0};
-    zClass_cls_di::BuildPickCandidateListBelowPoint(
+    CZDisplayInstance::BuildPickCandidateListBelowPoint(
         g_Player_RuntimeDiScene,
         &candidateBuffer,
         playerState->worldPos.x,
@@ -4429,18 +4429,18 @@ void __fastcall SampleGroundAndAlignRootToSurface(
         &taggedHeight
     );
 
-    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 1);
+    CZClass::gwNodeSetCellPickable(playerState->rootNode, 1);
 
     if (candidateBuffer.candidateCount > 0) {
         zClassDiPickCandidateEntry *const selectedCandidate =
             &candidateBuffer.entries[bestCandidateIndex];
         playerState->variantTag = selectedCandidate->variantTag;
 
-        zClass_NodePartial *const worldChild =
-            zClass_Class::gwNodeGetWorldChild(selectedCandidate->node);
+        CZNodePartial *const worldChild =
+            CZClass::gwNodeGetWorldChild(selectedCandidate->node);
         const int nodeType =
             worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
-        zClass_Class::gwNodeSetNodeType(playerState->rootNode, nodeType);
+        CZClass::gwNodeSetNodeType(playerState->rootNode, nodeType);
 
         if (updateRotation == 0) {
             return;
@@ -4466,14 +4466,14 @@ void __fastcall SampleGroundAndAlignRootToSurface(
         const float rollAngleRad = (float)(asin(-yawRelativeNormal.x));
         playerState->vehiclePitchRad = clampedPitchAngleRad;
         playerState->vehicleRollRad = rollAngleRad;
-        zClass_Object3D::gwObject3DSetRotation(
+        CZObject3D::gwObject3DSetRotation(
             playerState->rootNode,
             playerState->vehiclePitchRad,
             playerState->restartYawRad,
             rollAngleRad
         );
     } else {
-        zClass_Class::gwNodeSetNodeType(playerState->rootNode, 0xff);
+        CZClass::gwNodeSetNodeType(playerState->rootNode, 0xff);
     }
 }
 } // namespace Player
@@ -4491,31 +4491,31 @@ namespace Player {
  * folds the AddChildAtGrid status branch because the callee decompiles as
  * returning zero; assembly keeps the failure gate before rename.
  */
-zClass_NodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
+CZNodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
     const char *templateName,
     const char *newName
 ) {
-    zClass_NodePartial *const source = zClass::FindByTypeAndName(6, templateName);
+    CZNodePartial *const source = CZClass::FindByTypeAndName(6, templateName);
     if (source == 0) {
         return 0;
     }
 
     const int cloneDiMode = zOpt::GetNetworkEnabled() != 0 ? 1 : 0;
-    zClass_NodePartial *const child =
-        zClass_cls_util::CopyNodeWithCloneOptions(source, cloneDiMode, cloneDiMode);
+    CZNodePartial *const child =
+        CZUtil::CopyNodeWithCloneOptions(source, cloneDiMode, cloneDiMode);
     if (child == 0) {
         return 0;
     }
 
-    if (zClass_World::AddChildAtGrid(g_Player_RuntimeDiScene, child) != 0) {
+    if (CZWorld::AddChildAtGrid(g_Player_RuntimeDiScene, child) != 0) {
         return 0;
     }
 
-    if (zClass_Class::gwNodeSetName(child, newName) != 0) {
+    if (CZClass::gwNodeSetName(child, newName) != 0) {
         return 0;
     }
 
-    zClass_Class::gwNodeSetActive(child, 1);
+    CZClass::gwNodeSetActive(child, 1);
     return child;
 }
 } // namespace Player
@@ -4543,25 +4543,25 @@ int __fastcall CreateFromNamesAtPose(
     const char *objectName
 ) {
     const int objectIsBft00 = strcmp(objectName, g_Player_NodeName_Bft00) == 0;
-    zClass_NodePartial *rootNode = 0;
+    CZNodePartial *rootNode = 0;
 
     if (zOpt::GetNetworkEnabled() != 0 && objectIsBft00 != 0) {
-        rootNode = zClass::FindByTypeAndName(6, g_Player_NodeName_Bft00);
+        rootNode = CZClass::FindByTypeAndName(6, g_Player_NodeName_Bft00);
         if (rootNode == 0) {
             return 0;
         }
 
-        zClass_NodePartial *const networkClone =
-            zClass_cls_util::CopyNodeWithCloneOptions(rootNode, 1, 1);
+        CZNodePartial *const networkClone =
+            CZUtil::CopyNodeWithCloneOptions(rootNode, 1, 1);
         if (networkClone != 0) {
-            zClass_Class::gwNodeSetName(networkClone, "bft_99");
+            CZClass::gwNodeSetName(networkClone, "bft_99");
         }
 
         rootNode->flags |= kPlayerNodeFlagNetworkBftCloneSource;
     }
 
     if (rootNode == 0) {
-        rootNode = zClass::FindByTypeAndName(6, objectName);
+        rootNode = CZClass::FindByTypeAndName(6, objectName);
         if (rootNode == 0) {
             rootNode = CloneType6NodeFromTemplateAndRename(templateName, objectName);
         }
@@ -4585,8 +4585,8 @@ int __fastcall CreateFromNamesAtPose(
 
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     if (spawnPos != 0) {
-        zClass_Object3D::gwObject3DSetPosition(rootNode, spawnPos->x, spawnPos->y, spawnPos->z);
-        zClass_Object3D::gwObject3DSetRotation(
+        CZObject3D::gwObject3DSetPosition(rootNode, spawnPos->x, spawnPos->y, spawnPos->z);
+        CZObject3D::gwObject3DSetRotation(
             rootNode,
             0.0f,
             (float)(yawDeg * 0.017453292519943295),
@@ -4596,31 +4596,31 @@ int __fastcall CreateFromNamesAtPose(
     }
 
     if (rootNode->listCountA == 0) {
-        zClass_Class::AddChild(g_Player_RuntimeDiScene, rootNode);
+        CZClass::AddChild(g_Player_RuntimeDiScene, rootNode);
     }
 
     playerState->rootNode = rootNode;
     InitStateFromNameAndMasterCommonData(saveState, objectName, templateName);
 
     if (objectIsBft00 != 0) {
-        zClass_Node::SetDamageHitCallback(
+        CZNode::SetDamageHitCallback(
             saveState,
             playerState->rootNode,
             (void *)(&EnterDestroyedState)
         );
         g_OptCatalogDamageFeedbackTrackedNode = playerState->rootNode;
         g_Player_LocalFxOffsetWorldPtr = &playerState->fxOffsetWorld;
-        zClass_Camera::SetTargetNode(playerState->rootNode);
+        CZCamera::SetTargetNode(playerState->rootNode);
         g_HudSensorTracker.SetTrackedSaveState(saveState);
         if (zOpt::GetNetworkEnabled() == 0 && OptCatalogIsDamageMaskEnabled() != 0) {
-            zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive(playerState->rootNode, 1);
+            CZNode::SetMaterialFlagBit9ForFlagBit0EntriesRecursive(playerState->rootNode, 1);
         }
     } else {
         void *callback = (void *)(&HitCallbackRecordContextAndTimedStatus);
         if (strstr(objectName, "net") != 0) {
             callback = (void *)(&HitCallbackRecordNetContextAndTimedStatus);
         }
-        zClass_Node::SetDamageHitCallback(saveState, playerState->rootNode, callback);
+        CZNode::SetDamageHitCallback(saveState, playerState->rootNode, callback);
     }
 
     PlayerMasterCommonData *const commonData = playerState->masterCommonData;
@@ -4647,7 +4647,7 @@ int __fastcall CreateFromNamesAtPose(
     return 1;
 }
 } // namespace Player
-namespace zClass_Node {
+namespace CZNode {
 /**
  * BN evidence: fastcall self/mask, auxFlags at 0x28, signed
  * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
@@ -4655,7 +4655,7 @@ namespace zClass_Node {
  * Purpose: AND a mask into auxFlags across a node's child-list subtree.
  */
     void __fastcall MaskExtraFlagsRecursive(
-        zClass_NodePartial * self,
+        CZNodePartial * self,
         int mask
     ) {
         self->auxFlags &= mask;
@@ -4664,8 +4664,8 @@ namespace zClass_Node {
             MaskExtraFlagsRecursive(self->listB[i], mask);
         }
     }
-} // namespace zClass_Node
-namespace zClass_Node {
+} // namespace CZNode
+namespace CZNode {
 /**
  * BN evidence: fastcall self/flags, auxFlags at 0x28, signed
  * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
@@ -4673,7 +4673,7 @@ namespace zClass_Node {
  * Purpose: OR auxFlags into each node in a child-list subtree.
  */
     void __fastcall PropagateExtraFlagsRecursive(
-        zClass_NodePartial * self,
+        CZNodePartial * self,
         int flags
     ) {
         self->auxFlags |= flags;
@@ -4682,8 +4682,8 @@ namespace zClass_Node {
             PropagateExtraFlagsRecursive(self->listB[i], flags);
         }
     }
-} // namespace zClass_Node
-namespace zClass_Node {
+} // namespace CZNode
+namespace CZNode {
 /**
  * BN evidence: fastcall self/flags, flags at 0x24, signed listCountB at
  * 0x5c, listB at 0x60, recursive self-call only, and no global data
@@ -4691,7 +4691,7 @@ namespace zClass_Node {
  * Purpose: OR normal node flags into each node in a child-list subtree.
  */
     void __fastcall PropagateFlagsRecursive(
-        zClass_NodePartial * self,
+        CZNodePartial * self,
         int flags
     ) {
         self->flags |= flags;
@@ -4700,7 +4700,7 @@ namespace zClass_Node {
             PropagateFlagsRecursive(self->listB[i], flags);
         }
     }
-} // namespace zClass_Node
+} // namespace CZNode
 namespace zReader {
 /**
  * Purpose: build the parent directory for the currently resolved ZRDR path.
@@ -4760,7 +4760,7 @@ namespace Player {
  */
 int __fastcall BuildCollisionPointsFromModel(
     zUtil_SaveGameState *saveState,
-    zClass_NodePartial *modelNode
+    CZNodePartial *modelNode
 ) {
     PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
     zVec3 collisionPoints[12];
@@ -4768,19 +4768,19 @@ int __fastcall BuildCollisionPointsFromModel(
     for (int i = 0; i < 12; ++i) {
         char nodeName[0x50];
         sprintf(nodeName, "collide%02d", i);
-        zClass_NodePartial *const collisionNode =
-            zClass_Class::FindSubNodeByName(modelNode, nodeName);
+        CZNodePartial *const collisionNode =
+            CZClass::FindSubNodeByName(modelNode, nodeName);
         if (collisionNode == 0) {
             return 0;
         }
 
-        zClass_Object3D::gwObject3DGetPosition(
+        CZObject3D::gwObject3DGetPosition(
             collisionNode,
             &collisionPoints[i].x,
             &collisionPoints[i].y,
             &collisionPoints[i].z
         );
-        zClass_Class::gwNodeSetActive(collisionNode, 0);
+        CZClass::gwNodeSetActive(collisionNode, 0);
     }
 
     masterModalData->probePoints[0] = collisionPoints[0];
@@ -4813,27 +4813,27 @@ namespace Player {
  */
 int __fastcall BuildSupportPointsFromModel(
     zUtil_SaveGameState *saveState,
-    zClass_NodePartial *modelNode
+    CZNodePartial *modelNode
 ) {
     PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
 
     for (int i = 0; i < 4; ++i) {
         char nodeName[0x50];
         sprintf(nodeName, "support%02d", i);
-        zClass_NodePartial *const supportNode =
-            zClass_Class::FindSubNodeByName(modelNode, nodeName);
+        CZNodePartial *const supportNode =
+            CZClass::FindSubNodeByName(modelNode, nodeName);
         if (supportNode == 0) {
             return 0;
         }
 
         zVec3 *const supportPoint = &masterModalData->probePoints[15 + i];
-        zClass_Object3D::gwObject3DGetPosition(
+        CZObject3D::gwObject3DGetPosition(
             supportNode,
             &supportPoint->x,
             &supportPoint->y,
             &supportPoint->z
         );
-        zClass_Class::gwNodeSetActive(supportNode, 0);
+        CZClass::gwNodeSetActive(supportNode, 0);
     }
 
     return 1;
@@ -5549,7 +5549,7 @@ void __fastcall BuildPendingContactQueues(
         );
     }
 
-    zClass_DiSegmentEndpoints segmentPairs[15];
+    CZDisplayInstanceSegmentEndpoints segmentPairs[15];
     int segmentTags[15];
     int segmentCount = 0;
     const float probeYAdvance = playerState->projectileSpawnVel.y * g_Player_DeltaTime;
@@ -5615,17 +5615,17 @@ namespace Player {
  */
 int __fastcall CollectPendingContactsForSegments(
     zUtil_SaveGameState *saveState,
-    zClass_DiSegmentEndpoints *segmentPairs,
+    CZDisplayInstanceSegmentEndpoints *segmentPairs,
     int endpointCount,
     int *segmentTags
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
+    CZClass::gwNodeSetRaycastable(playerState->rootNode, 0);
     g_Variant_CurrentTag = playerState->variantTag;
 
     PlayerProbeSampleCandidateBuffer hitBatches[24] = {0};
-    zClass_cls_di::BuildProbeHitBatchesForSegments(
+    CZDisplayInstance::BuildProbeHitBatchesForSegments(
         g_Player_RuntimeDiScene,
         segmentPairs,
         endpointCount,
@@ -5633,7 +5633,7 @@ int __fastcall CollectPendingContactsForSegments(
     );
 
     g_Variant_CurrentTag = g_VariantTag_Current;
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1);
+    CZClass::gwNodeSetRaycastable(playerState->rootNode, 1);
 
     for (int endpointIndex = 0; endpointIndex < endpointCount; endpointIndex += 2) {
         const int segmentIndex = endpointIndex >> 1;
@@ -5674,7 +5674,7 @@ void __fastcall ClassifyPendingContactsForSegment(
 
     for (int hitIndex = 0; hitIndex < sceneResults->candidateCount; ++hitIndex) {
         zClassDiPickCandidateEntry *const candidate = &sceneResults->entries[hitIndex];
-        zClass_NodePartial *node = candidate->node;
+        CZNodePartial *node = candidate->node;
         PlayerPendingContact *queuedContact = 0;
 
         if (g_HudSensorTracker.raceCheckpointMode != 0) {
@@ -5825,12 +5825,12 @@ int __fastcall PassesCollectionTest(
     (void)saveState;
     zUtil_PlayerStateStorage *const playerState =
         (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
-    zClass_NodePartial *const pickupNode = contact->hit.node;
+    CZNodePartial *const pickupNode = contact->hit.node;
 
     g_Variant_CurrentTag = playerState->variantTag;
-    zClass_Class::gwNodeSetRaycastable(pickupNode, 0);
-    zClass_cls_di::SetBreakOnFirstCandidate(1);
-    zClass_cls_di::SetStopAfterFirstHit(0x40000);
+    CZClass::gwNodeSetRaycastable(pickupNode, 0);
+    CZDisplayInstance::SetBreakOnFirstCandidate(1);
+    CZDisplayInstance::SetStopAfterFirstHit(0x40000);
 
     const zVec3 startPoint = {
         contact->hit.hitPos.x,
@@ -5844,7 +5844,7 @@ int __fastcall PassesCollectionTest(
     };
 
     PlayerProbeSampleCandidateBuffer rayData = {0};
-    const int raycastResult = zClass_cls_di::RaycastFindClosest(
+    const int raycastResult = CZDisplayInstance::RaycastFindClosest(
         g_Player_RuntimeDiScene,
         &rayData,
         startPoint.x,
@@ -5855,8 +5855,8 @@ int __fastcall PassesCollectionTest(
         endPoint.z
     );
 
-    zClass_cls_di::SetBreakOnFirstCandidate(0);
-    zClass_Class::gwNodeSetRaycastable(pickupNode, 1);
+    CZDisplayInstance::SetBreakOnFirstCandidate(0);
+    CZClass::gwNodeSetRaycastable(pickupNode, 1);
 
     return raycastResult == 0 && rayData.candidateCount != 0 ? 0 : 1;
 }
@@ -5907,7 +5907,7 @@ void __fastcall ResolvePendingCollisionContact(
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
-    zClass_NodePartial *const hitNode = contact->hit.node;
+    CZNodePartial *const hitNode = contact->hit.node;
 
     zVec3 sweepStart = contact->sweepStart;
     zVec3 sweepEnd = contact->sweepEnd;
@@ -6011,7 +6011,7 @@ void __fastcall ResolvePendingCollisionContact(
                 if (projectileVelY < 0.0f) {
                     projectileVelY *= -0.5f;
                 }
-                zClass_Class::gwNodeSetCellPickable(hitNode, 1);
+                CZClass::gwNodeSetCellPickable(hitNode, 1);
             }
 
             if (Vec3Dot(playerState->projectileSpawnVel, playerState->projectileSpawnVel) < 1.0f) {
@@ -6259,10 +6259,10 @@ void __fastcall ProcessTransferContactQueue(
             PLAYER_REMOVE_EXISTING_PENDING_CONTACT(&playerState->transferQueue, contact);
             PLAYER_APPEND_EXISTING_PENDING_CONTACT(&playerState->preferredCollisionQueue, contact);
         } else {
-            zClass_NodePartial *const hitNode = contact->hit.node;
+            CZNodePartial *const hitNode = contact->hit.node;
             RecordNodeFlagsForRestore(hitNode);
-            zClass_Class::gwNodeSetCellPickable(hitNode, 0);
-            zClass_Class::gwNodeSetRaycastable(hitNode, 0);
+            CZClass::gwNodeSetCellPickable(hitNode, 0);
+            CZClass::gwNodeSetRaycastable(hitNode, 0);
         }
         contact = next;
     }
@@ -6290,7 +6290,7 @@ int __fastcall TryResolvePendingCollisionProbeSweep(
 
     ClearPendingContactQueues(saveState);
 
-    zClass_DiSegmentEndpoints segmentPairs[6];
+    CZDisplayInstanceSegmentEndpoints segmentPairs[6];
     int segmentTags[6];
     for (int i = 0; i < 6; ++i) {
         segmentPairs[i].start = playerState->rootProbeWorldByIndex[i];
@@ -6323,13 +6323,13 @@ int __fastcall TryResolvePendingCollisionProbeSweep(
  * name when checkpoint flags permit it.
  */
 int __fastcall HudSensorTracker::ParseCheckpointNumberFromNode(
-    zClass_NodePartial *node
+    CZNodePartial *node
 ) {
     if ((node->flags & 0x200000) == 0) {
         return 0;
     }
 
-    zClass_NodePartial *const contextNode = node->callbackContext;
+    CZNodePartial *const contextNode = node->callbackContext;
     if ((contextNode->auxFlags & 2) == 0) {
         return 0;
     }
@@ -6422,7 +6422,7 @@ int __fastcall CollectPendingCollisionContactsForQuadProbe(
         );
     }
 
-    zClass_DiSegmentEndpoints segmentPairs[kQuadProbeSegmentCount];
+    CZDisplayInstanceSegmentEndpoints segmentPairs[kQuadProbeSegmentCount];
     int segmentTags[kQuadProbeSegmentCount] = {0, 1, 2, 3, 4, 5};
     segmentPairs[0].start = playerState->modalProbeWorldByIndex[0];
     segmentPairs[0].end = playerState->modalProbeWorldByIndex[2];
@@ -6763,7 +6763,7 @@ void __fastcall TickLocalPlayerControls(
     SetAutoTurnTargetDirFromWorldPoint(saveState, &playerState->autoTurnTargetWorldPos);
 
     zVec3 cameraTarget = {0};
-    zClass_Camera::gwCameraGetTarget(
+    CZCamera::gwCameraGetTarget(
         g_MainCamera,
         &cameraTarget.x,
         &cameraTarget.y,
@@ -6944,7 +6944,7 @@ void __cdecl TickAllPlayers() {
             if (zOpt::GetNetworkEnabled() != 0 &&
                 saveState != (zUtil_SaveGameState *)g_GameStateOrMapTable &&
                 saveState != g_Player2SaveState) {
-                zClass_Class::gwNodeSetActive(playerState->rootNode, 0);
+                CZClass::gwNodeSetActive(playerState->rootNode, 0);
             }
         } else if (lifecycleState == kPlayerLifecycleRemote) {
             TickRemoteNetworkPlayer(saveState);
@@ -7140,7 +7140,7 @@ void __fastcall UpdateMasterTypeTrack(
         PLAYER_WRAP_SIGNED_TWO_PI(playerState->yawPoseCache);
         zMath::MatStackPushPtr((float *)&playerState->environmentAttachmentMatrix);
         zMath::MatLoadIdentity();
-        gwNode::gwNodeBuildNodeToAncestorMatrix(playerState->environmentAttachmentNode, 3);
+        CZNode::gwNodeBuildNodeToAncestorMatrix(playerState->environmentAttachmentNode, 3);
         zMath::MatStackPopPtr();
         playerState->restartYawRad =
             (float)(atan2(
@@ -7254,7 +7254,7 @@ void __fastcall UpdateMasterTypeTrack(
     }
 
     if (playerState->airborneFlag != playerState->airborneFlagPrev) {
-        zClass_Class::gwNodeSetActive(
+        CZClass::gwNodeSetActive(
             playerState->modeVariantNode,
             playerState->airborneFlag == 0 ? 1 : 0
         );
@@ -7265,13 +7265,13 @@ void __fastcall UpdateMasterTypeTrack(
         PLAYER_CACHE_ATTACHMENT_LOCAL_OFFSET(playerState);
     }
 
-    zClass_Object3D::gwObject3DSetRotation(
+    CZObject3D::gwObject3DSetRotation(
         playerState->rootNode,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
         playerState->vehicleRollRad
     );
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         playerState->rootNode,
         playerState->worldPos.x,
         playerState->worldPos.y,
@@ -7308,7 +7308,7 @@ void __fastcall UpdateMasterTypeTrack(
             primaryModalState->chassisRollAngleRad,
             masterModalData->chassisRollDamping
         );
-        zClass_Object3D::gwObject3DSetRotation(
+        CZObject3D::gwObject3DSetRotation(
             primaryModalState->modalNode,
             primaryModalState->chassisPitchAngleRad,
             0.0f,
@@ -7316,11 +7316,11 @@ void __fastcall UpdateMasterTypeTrack(
         );
     }
 
-    zClass_Class::gwNodeUpdate(playerState->rootNode);
+    CZClass::gwNodeUpdate(playerState->rootNode);
     if (primaryModalState->modalNode != 0) {
-        zClass_Class::gwNodeUpdate(primaryModalState->modalNode);
+        CZClass::gwNodeUpdate(primaryModalState->modalNode);
     }
-    float *const rootMatrix = zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode);
+    float *const rootMatrix = CZObject3D::gwObject3DGetMatrixPtr(playerState->rootNode);
     memcpy(&playerState->previousTransform, rootMatrix, sizeof(playerState->previousTransform));
     playerState->bankBasis = playerState->steerBasisNorm;
     playerState->cachedVehicleRotationAngles = playerState->vehicleRotationAngles;
@@ -7338,9 +7338,9 @@ void __fastcall UpdateMasterTypeTrack(
         }
 
         unsigned int displayInstanceValue = 0;
-        zClass_Class::gwNodeGetUserData(primaryModalState->nodeRTracks, &displayInstanceValue);
+        CZClass::gwNodeGetUserData(primaryModalState->nodeRTracks, &displayInstanceValue);
         zDi::SetCurrentVariant((zDiPartial *)displayInstanceValue, variantIndex);
-        zClass_Class::gwNodeGetUserData(primaryModalState->nodeRTracks, &displayInstanceValue);
+        CZClass::gwNodeGetUserData(primaryModalState->nodeRTracks, &displayInstanceValue);
         zModel::SetDiTextureWorldPerMeter(
             (zDiPartial *)displayInstanceValue,
             1,
@@ -7352,7 +7352,7 @@ void __fastcall UpdateMasterTypeTrack(
         );
 
         const float leftTrackSpeed = -playerState->localVel.z - playerState->angVelYaw * 2.25f;
-        zClass_Class::gwNodeGetUserData(primaryModalState->nodeLTracks, &displayInstanceValue);
+        CZClass::gwNodeGetUserData(primaryModalState->nodeLTracks, &displayInstanceValue);
         zModel::SetDiTextureWorldPerMeter(
             (zDiPartial *)displayInstanceValue,
             1,
@@ -7366,18 +7366,18 @@ void __fastcall UpdateMasterTypeTrack(
 
     if (primaryModalState->nodeDustL != 0 && primaryModalState->nodeDustR != 0) {
         if (playerState->airborneFlag != 0) {
-            zClass_Object3D::gwObject3DSetScale(primaryModalState->nodeDustL, 0.0f, 0.0f, 0.0f);
-            zClass_Object3D::gwObject3DSetScale(primaryModalState->nodeDustR, 0.0f, 0.0f, 0.0f);
+            CZObject3D::gwObject3DSetScale(primaryModalState->nodeDustL, 0.0f, 0.0f, 0.0f);
+            CZObject3D::gwObject3DSetScale(primaryModalState->nodeDustR, 0.0f, 0.0f, 0.0f);
         } else {
             const float dustScale =
                 (float)(fabs(playerState->localVel.z)) / playerState->axisClampRuntime;
-            zClass_Object3D::gwObject3DSetScale(
+            CZObject3D::gwObject3DSetScale(
                 primaryModalState->nodeDustL,
                 dustScale,
                 dustScale,
                 dustScale
             );
-            zClass_Object3D::gwObject3DSetScale(
+            CZObject3D::gwObject3DSetScale(
                 primaryModalState->nodeDustR,
                 dustScale,
                 dustScale,
@@ -7456,13 +7456,13 @@ void __fastcall UpdateMasterTypeHover(
         }
     }
 
-    zClass_Object3D::gwObject3DSetRotation(
+    CZObject3D::gwObject3DSetRotation(
         playerState->rootNode,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
         playerState->vehicleRollRad
     );
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         playerState->rootNode,
         playerState->worldPos.x,
         playerState->worldPos.y,
@@ -7473,10 +7473,10 @@ void __fastcall UpdateMasterTypeHover(
     playerState->fxOffsetWorld.y = playerState->fxOffsetLocal.y + playerState->worldPos.y;
     playerState->fxOffsetWorld.z = playerState->fxOffsetLocal.z + playerState->worldPos.z;
 
-    zClass_Class::gwNodeUpdate(playerState->rootNode);
+    CZClass::gwNodeUpdate(playerState->rootNode);
     memcpy(
         &playerState->previousTransform,
-        zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode),
+        CZObject3D::gwObject3DGetMatrixPtr(playerState->rootNode),
         sizeof(playerState->previousTransform)
     );
 
@@ -7505,7 +7505,7 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(
     float outBestHeight = 0.0f;
     PlayerProbeTypeHistogram outTypeHistogram = {0};
     int outAttachmentCandidateCount = 0;
-    zClass_NodePartial *outAttachmentNode = 0;
+    CZNodePartial *outAttachmentNode = 0;
     ProbeModalSampleHeights(
         saveState,
         probeHeightByPoint,
@@ -7600,7 +7600,7 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(
 
     const float hoverLiftError = minHoverClearance - masterModalData->modeAltTransitionTime;
     if (playerState->modeVariantNode != 0) {
-        zClass_Class::gwNodeSetActive(playerState->modeVariantNode, hoverLiftError <= 2.0f ? 1 : 0);
+        CZClass::gwNodeSetActive(playerState->modeVariantNode, hoverLiftError <= 2.0f ? 1 : 0);
     }
 
     if (hoverLiftError >= 2.0f && playerState->localVel.y >= 0.0f) {
@@ -7681,7 +7681,7 @@ void __fastcall UpdateMasterTypeAmphib(
         PLAYER_WRAP_SIGNED_TWO_PI(playerState->yawPoseCache);
         zMath::MatStackPushPtr((float *)&playerState->environmentAttachmentMatrix);
         zMath::MatLoadIdentity();
-        gwNode::gwNodeBuildNodeToAncestorMatrix(playerState->environmentAttachmentNode, 3);
+        CZNode::gwNodeBuildNodeToAncestorMatrix(playerState->environmentAttachmentNode, 3);
         zMath::MatStackPopPtr();
         playerState->restartYawRad =
             (float)(atan2(
@@ -7764,13 +7764,13 @@ void __fastcall UpdateMasterTypeAmphib(
         }
     }
 
-    zClass_Object3D::gwObject3DSetRotation(
+    CZObject3D::gwObject3DSetRotation(
         playerState->rootNode,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
         playerState->vehicleRollRad
     );
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         playerState->rootNode,
         playerState->worldPos.x,
         playerState->worldPos.y,
@@ -7780,9 +7780,9 @@ void __fastcall UpdateMasterTypeAmphib(
     playerState->fxOffsetWorld.y = playerState->fxOffsetLocal.y + playerState->worldPos.y;
     playerState->fxOffsetWorld.z = playerState->fxOffsetLocal.z + playerState->worldPos.z;
 
-    zClass_Class::gwNodeUpdate(playerState->rootNode);
+    CZClass::gwNodeUpdate(playerState->rootNode);
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
-    float *const rootMatrix = zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode);
+    float *const rootMatrix = CZObject3D::gwObject3DGetMatrixPtr(playerState->rootNode);
     memcpy(&playerState->previousTransform, rootMatrix, sizeof(playerState->previousTransform));
     playerState->bankBasis = playerState->steerBasisNorm;
     playerState->cachedVehicleRotationAngles = playerState->vehicleRotationAngles;
@@ -7790,19 +7790,19 @@ void __fastcall UpdateMasterTypeAmphib(
     if (primaryModalState->nodeWake != 0) {
         const float wakeScale =
             (float)(fabs(playerState->localVel.z)) / playerState->axisClampRuntime;
-        zClass_Object3D::gwObject3DSetScale(
+        CZObject3D::gwObject3DSetScale(
             primaryModalState->nodeWake,
             wakeScale,
             wakeScale,
             wakeScale
         );
-        zClass_Object3D::gwObject3DSetScale(
+        CZObject3D::gwObject3DSetScale(
             primaryModalState->nodeSplashL,
             wakeScale,
             wakeScale,
             wakeScale
         );
-        zClass_Object3D::gwObject3DSetScale(
+        CZObject3D::gwObject3DSetScale(
             primaryModalState->nodeSplashR,
             wakeScale,
             wakeScale,
@@ -7830,7 +7830,7 @@ void __fastcall UpdateMasterTypeAmphibFromModalProbe(
     float outBestHeight = 0.0f;
     PlayerProbeTypeHistogram outTypeHistogram = {0};
     int outAttachmentCandidateCount = 0;
-    zClass_NodePartial *outAttachmentNode = 0;
+    CZNodePartial *outAttachmentNode = 0;
     ProbeModalSampleHeights(
         saveState,
         probeHeightByPoint,
@@ -7956,13 +7956,13 @@ void __fastcall UpdateMasterTypeBasic(
 
     UpdateMasterTypeBasicOrTrackFromModalProbe(saveState);
 
-    zClass_Object3D::gwObject3DSetRotation(
+    CZObject3D::gwObject3DSetRotation(
         playerState->rootNode,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
         playerState->vehicleRollRad
     );
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         playerState->rootNode,
         playerState->worldPos.x,
         playerState->worldPos.y,
@@ -7973,10 +7973,10 @@ void __fastcall UpdateMasterTypeBasic(
     playerState->fxOffsetWorld.y = playerState->fxOffsetLocal.y + playerState->worldPos.y;
     playerState->fxOffsetWorld.z = playerState->fxOffsetLocal.z + playerState->worldPos.z;
 
-    zClass_Class::gwNodeUpdate(playerState->rootNode);
+    CZClass::gwNodeUpdate(playerState->rootNode);
     memcpy(
         &playerState->previousTransform,
-        zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode),
+        CZObject3D::gwObject3DGetMatrixPtr(playerState->rootNode),
         sizeof(playerState->previousTransform)
     );
 
@@ -8005,7 +8005,7 @@ void __fastcall UpdateMasterTypeBasicOrTrackFromModalProbe(
     float unusedBestHeight = 0.0f;
     PlayerProbeTypeHistogram unusedHistogram = {0};
     int unusedAttachmentCandidateCount = 0;
-    zClass_NodePartial *unusedAttachmentNode = 0;
+    CZNodePartial *unusedAttachmentNode = 0;
     ProbeModalSampleHeights(
         saveState,
         sampleHeights,
@@ -8180,13 +8180,13 @@ void __fastcall UpdateMasterTypeSub(
         }
     }
 
-    zClass_Object3D::gwObject3DSetRotation(
+    CZObject3D::gwObject3DSetRotation(
         playerState->rootNode,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
         playerState->vehicleRollRad
     );
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         playerState->rootNode,
         playerState->worldPos.x,
         playerState->worldPos.y,
@@ -8195,20 +8195,20 @@ void __fastcall UpdateMasterTypeSub(
     playerState->fxOffsetWorld.x = playerState->fxOffsetLocal.x + playerState->worldPos.x;
     playerState->fxOffsetWorld.y = playerState->fxOffsetLocal.y + playerState->worldPos.y;
     playerState->fxOffsetWorld.z = playerState->fxOffsetLocal.z + playerState->worldPos.z;
-    zClass_Class::gwNodeUpdate(playerState->rootNode);
+    CZClass::gwNodeUpdate(playerState->rootNode);
 
-    float *const rootMatrix = zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode);
+    float *const rootMatrix = CZObject3D::gwObject3DGetMatrixPtr(playerState->rootNode);
     memcpy(&playerState->previousTransform, rootMatrix, sizeof(playerState->previousTransform));
     playerState->bankBasis = playerState->steerBasisNorm;
     playerState->cachedPitchRad = playerState->vehiclePitchRad;
     playerState->cachedYawRad = playerState->restartYawRad;
     playerState->cachedRollRad = playerState->vehicleRollRad;
 
-    zClass_NodePartial *const nodeProps = primaryModalState->nodeProps;
+    CZNodePartial *const nodeProps = primaryModalState->nodeProps;
     if (nodeProps != 0) {
         const float cycleSpeed = 6.0f - playerState->localVel.z * 0.5f;
         unsigned int displayInstanceValue = 0;
-        zClass_Class::gwNodeGetUserData(nodeProps, &displayInstanceValue);
+        CZClass::gwNodeGetUserData(nodeProps, &displayInstanceValue);
         zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, cycleSpeed);
     }
 }
@@ -8232,7 +8232,7 @@ void __fastcall UpdateSubModeWaterProbeState(
     float outBestHeight = 0.0f;
     PlayerProbeTypeHistogram outTypeHistogram = {0};
     int outAttachmentCandidateCount = 0;
-    zClass_NodePartial *outAttachmentNode = 0;
+    CZNodePartial *outAttachmentNode = 0;
     ProbeModalSampleHeights(
         saveState,
         probeHeightByPoint,
@@ -8299,10 +8299,10 @@ void __fastcall UpdateSubModeWaterProbeState(
         ((HudUiElement *)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(1);
         g_Player_HorizonNodeFollowCameraEnabled = 0;
 
-        zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
+        CZNodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
         if (nodeCaustic1 != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
+            CZClass::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
             zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, 12.0f);
         }
     }
@@ -8377,7 +8377,7 @@ void __fastcall ProbeModalSampleHeights(
     int preferAttachmentSlot1,
     PlayerProbeTypeHistogram *outTypeHistogram,
     int *outAttachmentCandidateCount,
-    zClass_NodePartial **outAttachmentNode
+    CZNodePartial **outAttachmentNode
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zUtil_PlayerStateStorage *const globalPlayerState =
@@ -8386,8 +8386,8 @@ void __fastcall ProbeModalSampleHeights(
     PlayerMasterModalData *const masterModalData = primaryModalState->masterModalData;
 
     memset(outTypeHistogram, 0, sizeof(*outTypeHistogram));
-    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
-    zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
+    CZClass::gwNodeSetCellPickable(playerState->rootNode, 0);
+    CZClass::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
 
     const float probeYAdvance = playerState->projectileSpawnVel.y * g_Player_DeltaTime;
     const int probePointCount = primaryModalState->modalStateCode;
@@ -8409,12 +8409,12 @@ void __fastcall ProbeModalSampleHeights(
         maxRiseWindow = 4.0f;
     }
 
-    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
-    zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
+    CZClass::gwNodeSetCellPickable(playerState->rootNode, 0);
+    CZClass::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
     g_Variant_CurrentTag = playerState->variantTag;
 
     PlayerProbeSampleCandidateBuffer candidateBuffers[PLAYER_MAX_MODAL_PROBE_POINTS] = {0};
-    zClass_cls_di::BuildPickCandidatesForPointBatch(
+    CZDisplayInstance::BuildPickCandidatesForPointBatch(
         g_Player_RuntimeDiScene,
         primaryModalState->transformedProbePointWorldByIndex,
         probePointCount,
@@ -8423,8 +8423,8 @@ void __fastcall ProbeModalSampleHeights(
     );
 
     g_Variant_CurrentTag = g_VariantTag_Current;
-    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 1);
-    zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 1);
+    CZClass::gwNodeSetCellPickable(playerState->rootNode, 1);
+    CZClass::gwNodeSetCellPickable(globalPlayerState->rootNode, 1);
 
     *outBestHeight = -300.0f;
     *outAttachmentCandidateCount = 0;
@@ -8462,29 +8462,29 @@ void __fastcall ProbeModalSampleHeights(
                     primaryModalState->transformedProbePointWorldByIndex[0].z;
                 playerState->variantTag = selectedCandidate->variantTag;
 
-                zClass_NodePartial *const worldChild =
-                    zClass_Class::gwNodeGetWorldChild(selectedCandidate->node);
+                CZNodePartial *const worldChild =
+                    CZClass::gwNodeGetWorldChild(selectedCandidate->node);
                 if (worldChild != 0) {
-                    zClass_Class::gwNodeSetNodeType(playerState->rootNode, worldChild->nodeType);
+                    CZClass::gwNodeSetNodeType(playerState->rootNode, worldChild->nodeType);
                 } else {
-                    zClass_Class::gwNodeSetNodeType(
+                    CZClass::gwNodeSetNodeType(
                         playerState->rootNode,
                         selectedCandidate->variantTag.tags[0]
                     );
                 }
             } else {
-                zClass_Class::gwNodeSetNodeType(playerState->rootNode, 0xff);
+                CZClass::gwNodeSetNodeType(playerState->rootNode, 0xff);
             }
         }
 
         outTypeHistogram->countByImpactSlot[selectedImpactSlot] += 1;
 
         if (candidateBuffer->candidateCount != 0) {
-            zClass_NodePartial *const candidateNode =
+            CZNodePartial *const candidateNode =
                 candidateBuffer->entries[bestCandidateIndex].node;
             if (candidateNode != 0 && candidateNode->auxFlags != 0) {
                 *outAttachmentCandidateCount += 1;
-                *outAttachmentNode = (zClass_NodePartial *)(candidateNode->callbackContext);
+                *outAttachmentNode = (CZNodePartial *)(candidateNode->callbackContext);
             }
         }
     }
@@ -8648,7 +8648,7 @@ void __fastcall ApplyPitchRollVelocityImpulseFromDirection(
     zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float *)(&slotBuffer));
     zMath::MatLoadRotationFrom3x3(
-        (const zMat4x3 *)(zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode))
+        (const zMat4x3 *)(CZObject3D::gwObject3DGetMatrixPtr(playerState->rootNode))
     );
     zMath::Vec3ArrayTransformDirection(&localDirection, 1);
     zMath::MatStackPopPtr();
@@ -9482,25 +9482,25 @@ int __fastcall TransitionToMasterTypeTrack(
             return 0;
         }
 
-        zClass_Object3D::gwObject3DSetPosition(
+        CZObject3D::gwObject3DSetPosition(
             playerState->altWeaponBanks[1].controllerA.attachNodePrimary,
             0.0f,
             0.0f,
             0.0f
         );
-        zClass_Object3D::gwObject3DSetPosition(
+        CZObject3D::gwObject3DSetPosition(
             playerState->altWeaponBanks[1].controllerA.attachNodeSecondary,
             0.0f,
             0.0f,
             0.0f
         );
-        zClass_Object3D::gwObject3DSetPosition(
+        CZObject3D::gwObject3DSetPosition(
             playerState->altWeaponBanks[1].controllerB.attachNodePrimary,
             0.0f,
             0.0f,
             0.0f
         );
-        zClass_Object3D::gwObject3DSetPosition(
+        CZObject3D::gwObject3DSetPosition(
             playerState->altWeaponBanks[1].controllerB.attachNodeSecondary,
             0.0f,
             0.0f,
@@ -9511,10 +9511,10 @@ int __fastcall TransitionToMasterTypeTrack(
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
         ReactivateCopterSndNodesIfHealthy();
 
-        zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
+        CZNodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
         if (nodeCaustic1 != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
+            CZClass::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
             zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, 0.0f);
         }
 
@@ -9525,7 +9525,7 @@ int __fastcall TransitionToMasterTypeTrack(
     saveState->SelectModalStateByMasterType(kPlayerMasterTypeTrack);
     playerState->masterTypeTransitionCooldownUntilTime =
         g_Time_AccumulatedTimeSec - kPlayerMasterTypeTrackCooldownNegSec;
-    zClass_Class::gwNodeSetActive(playerState->modeVariantNode, 1);
+    CZClass::gwNodeSetActive(playerState->modeVariantNode, 1);
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x238), 5.0f);
@@ -9591,11 +9591,11 @@ int __fastcall TransitionToMasterTypeAmphib(
         );
     } else if (sourceMasterType == kPlayerMasterTypeTrack) {
         playerState->airborneFlag = 0;
-        zClass_NodePartial *const modalNode = primaryModalState->modalNode;
+        CZNodePartial *const modalNode = primaryModalState->modalNode;
         if (modalNode != 0) {
-            zClass_Object3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
+            CZObject3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
         }
-        zClass_Class::gwNodeSetActive(playerState->modeVariantNode, 1);
+        CZClass::gwNodeSetActive(playerState->modeVariantNode, 1);
         PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
             masterModalData->fxList_fromTrackToAmphib,
             playerState->rootNode,
@@ -9611,10 +9611,10 @@ int __fastcall TransitionToMasterTypeAmphib(
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
         ReactivateCopterSndNodesIfHealthy();
 
-        zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
+        CZNodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
         if (nodeCaustic1 != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
+            CZClass::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
             zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, 0.0f);
         }
 
@@ -9698,11 +9698,11 @@ int __fastcall TransitionToMasterTypeHover(
         );
     } else if (sourceMasterType == kPlayerMasterTypeTrack) {
         playerState->airborneFlag = 0;
-        zClass_NodePartial *const modalNode = primaryModalState->modalNode;
+        CZNodePartial *const modalNode = primaryModalState->modalNode;
         if (modalNode != 0) {
-            zClass_Object3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
+            CZObject3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
         }
-        zClass_Class::gwNodeSetActive(playerState->modeVariantNode, 1);
+        CZClass::gwNodeSetActive(playerState->modeVariantNode, 1);
         PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(
             masterModalData->fxList_fromTrackToHover,
             playerState->rootNode,
@@ -9718,10 +9718,10 @@ int __fastcall TransitionToMasterTypeHover(
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
         ReactivateCopterSndNodesIfHealthy();
 
-        zClass_NodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
+        CZNodePartial *const nodeCaustic1 = primaryModalState->nodeCaustic1;
         if (nodeCaustic1 != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
+            CZClass::gwNodeGetUserData(nodeCaustic1, &displayInstanceValue);
             zDi::SetCurrentVariantCycleTextureSpeed((zDiPartial *)displayInstanceValue, 0.0f);
         }
 
@@ -9781,9 +9781,9 @@ int __fastcall TransitionToMasterTypeSub(
         }
 
         playerState->airborneFlag = 0;
-        zClass_NodePartial *const modalNode = primaryModalState->modalNode;
+        CZNodePartial *const modalNode = primaryModalState->modalNode;
         if (modalNode != 0) {
-            zClass_Object3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
+            CZObject3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
         }
 
         playerState->localVel.y = -3.0f;
@@ -9959,14 +9959,14 @@ namespace Player {
  * active, then restart the cached chopper sample through the node play handle.
  */
 void __cdecl ReactivateCopterSndNodesIfHealthy() {
-    zClass_NodePartial *const healthyNode1 = g_Player_CopterHealthyNode1;
+    CZNodePartial *const healthyNode1 = g_Player_CopterHealthyNode1;
     if (healthyNode1 != 0 && (healthyNode1->flags & 0x04) != 0) {
-        zClass_NodePartial *const sndNode1 = g_Player_CopterSndNode1;
+        CZNodePartial *const sndNode1 = g_Player_CopterSndNode1;
         if (sndNode1 != 0) {
-            zClass_Class::gwNodeSetActive(sndNode1, 1);
+            CZClass::gwNodeSetActive(sndNode1, 1);
 
-            zClass_SoundDataPartial *const soundData =
-                (zClass_SoundDataPartial *)(sndNode1->classData);
+            CZSoundDataPartial *const soundData =
+                (CZSoundDataPartial *)(sndNode1->classData);
             if (soundData != 0) {
                 zSndPlayHandle *const playHandle = soundData->playHandle;
                 if (playHandle != 0) {
@@ -9981,14 +9981,14 @@ void __cdecl ReactivateCopterSndNodesIfHealthy() {
         }
     }
 
-    zClass_NodePartial *const healthyNode2 = g_Player_CopterHealthyNode2;
+    CZNodePartial *const healthyNode2 = g_Player_CopterHealthyNode2;
     if (healthyNode2 != 0 && (healthyNode2->flags & 0x04) != 0) {
-        zClass_NodePartial *const sndNode2 = g_Player_CopterSndNode2;
+        CZNodePartial *const sndNode2 = g_Player_CopterSndNode2;
         if (sndNode2 != 0) {
-            zClass_Class::gwNodeSetActive(sndNode2, 1);
+            CZClass::gwNodeSetActive(sndNode2, 1);
 
-            zClass_SoundDataPartial *const soundData =
-                (zClass_SoundDataPartial *)(sndNode2->classData);
+            CZSoundDataPartial *const soundData =
+                (CZSoundDataPartial *)(sndNode2->classData);
             if (soundData != 0) {
                 zSndPlayHandle *const playHandle = soundData->playHandle;
                 if (playHandle != 0) {
@@ -10013,38 +10013,38 @@ namespace Player {
  */
 void __cdecl CacheDisableCopterSndNodesAndStopSample() {
     if (g_Player_CopterSndNode1 == 0) {
-        zClass_NodePartial *const copterRoot = zClass::FindByTypeAndName(
+        CZNodePartial *const copterRoot = CZClass::FindByTypeAndName(
             6,
             g_Player_CopterTypeName01
         );
         if (copterRoot != 0) {
-            g_Player_CopterHealthyNode1 = zClass_Class::FindSubNodeByName(
+            g_Player_CopterHealthyNode1 = CZClass::FindSubNodeByName(
                 copterRoot,
                 g_Player_HealthySubNodeName
             );
-            g_Player_CopterSndNode1 = zClass_Class::FindSubNodeByName(copterRoot, "snd_chopper");
+            g_Player_CopterSndNode1 = CZClass::FindSubNodeByName(copterRoot, "snd_chopper");
         }
     }
 
     if (g_Player_CopterSndNode2 == 0) {
-        zClass_NodePartial *const copterRoot = zClass::FindByTypeAndName(
+        CZNodePartial *const copterRoot = CZClass::FindByTypeAndName(
             6,
             g_Player_CopterTypeName02
         );
         if (copterRoot != 0) {
-            g_Player_CopterHealthyNode2 = zClass_Class::FindSubNodeByName(
+            g_Player_CopterHealthyNode2 = CZClass::FindSubNodeByName(
                 copterRoot,
                 g_Player_HealthySubNodeName
             );
-            g_Player_CopterSndNode2 = zClass_Class::FindSubNodeByName(copterRoot, "snd_chopper");
+            g_Player_CopterSndNode2 = CZClass::FindSubNodeByName(copterRoot, "snd_chopper");
         }
     }
 
     if (g_Player_CopterSndNode1 != 0) {
-        zClass_Class::gwNodeSetActive(g_Player_CopterSndNode1, 0);
+        CZClass::gwNodeSetActive(g_Player_CopterSndNode1, 0);
     }
     if (g_Player_CopterSndNode2 != 0) {
-        zClass_Class::gwNodeSetActive(g_Player_CopterSndNode2, 0);
+        CZClass::gwNodeSetActive(g_Player_CopterSndNode2, 0);
     }
 
     g_Player_CopterSndSample->StopActiveVoicesIfPlaying();
@@ -10121,13 +10121,13 @@ void __cdecl SyncLocalPoseFromRootNode() {
     zUtil_PlayerStateStorage *const playerState =
         ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
 
-    zClass_Object3D::gwObject3DGetPosition(
+    CZObject3D::gwObject3DGetPosition(
         playerState->rootNode,
         &playerState->worldPos.x,
         &playerState->worldPos.y,
         &playerState->worldPos.z
     );
-    zClass_Object3D::gwObject3DGetRotation(
+    CZObject3D::gwObject3DGetRotation(
         playerState->rootNode,
         &playerState->vehiclePitchRad,
         &playerState->restartYawRad,
@@ -10210,7 +10210,7 @@ void __fastcall RebuildMotionBasisFromSteerBasis(
     playerState->motionBasis = motionBasis;
 }
 } // namespace Player
-namespace zClass_cls_di {
+namespace CZDisplayInstance {
 /**
  * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
  * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -10239,7 +10239,7 @@ namespace zClass_cls_di {
         );
         return result;
     }
-} // namespace zClass_cls_di
+} // namespace CZDisplayInstance
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-setautoturntargetdirfromworldpoint
@@ -10443,7 +10443,7 @@ void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
     zUtil_PlayerStateStorage *const playerState = g_LocalPlayerSaveState->playerState;
 
     zVec3 worldPos;
-    zClass_Object3D::gwObject3DGetPosition(
+    CZObject3D::gwObject3DGetPosition(
         playerState->rootNode,
         &worldPos.x,
         &worldPos.y,
@@ -10451,7 +10451,7 @@ void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
     );
 
     zVec3 rotation;
-    zClass_Object3D::gwObject3DGetRotation(playerState->rootNode, &rotation.x, &rotation.y, &rotation.z);
+    CZObject3D::gwObject3DGetRotation(playerState->rootNode, &rotation.x, &rotation.y, &rotation.z);
 
     SetWorldPoseAndRestartAnchor(saveState, &worldPos, rotation.y);
 }
@@ -11171,11 +11171,11 @@ void __fastcall BuildEnvironmentProbeResult(
 
     zUtil_PlayerStateStorage *const globalPlayerState =
         (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
-    zClass_Class::gwNodeSetCellPickable(playerState->rootNode, 0);
-    zClass_Class::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
+    CZClass::gwNodeSetCellPickable(playerState->rootNode, 0);
+    CZClass::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
 
     g_Variant_CurrentTag = playerState->variantTag;
-    zClass_cls_di::BuildPickCandidatesForPointBatch(
+    CZDisplayInstance::BuildPickCandidatesForPointBatch(
         g_Player_RuntimeDiScene,
         g_PlayerEnvProbeWorldPoints,
         g_PlayerEnvProbeSampleCount,
@@ -11226,24 +11226,24 @@ void __fastcall BuildEnvironmentProbeResult(
                     primaryModalState->transformedProbePointWorldByIndex[0].z;
                 playerState->variantTag = selectedCandidate->variantTag;
 
-                zClass_NodePartial *const worldChild =
-                    zClass_Class::gwNodeGetWorldChild(selectedCandidate->node);
+                CZNodePartial *const worldChild =
+                    CZClass::gwNodeGetWorldChild(selectedCandidate->node);
                 const int nodeType =
                     worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
-                zClass_Class::gwNodeSetNodeType(playerState->rootNode, nodeType);
+                CZClass::gwNodeSetNodeType(playerState->rootNode, nodeType);
             } else {
-                zClass_Class::gwNodeSetNodeType(playerState->rootNode, 0xff);
+                CZClass::gwNodeSetNodeType(playerState->rootNode, 0xff);
             }
         }
 
         outProbe->hitHistogram.countByImpactSlot[selectedImpactSlot] += 1;
 
         if (candidateBuffer->candidateCount != 0) {
-            zClass_NodePartial *const candidateNode =
+            CZNodePartial *const candidateNode =
                 candidateBuffer->entries[bestCandidateIndex].node;
             if (candidateNode != 0 && candidateNode->auxFlags != 0) {
                 outProbe->attachmentCandidateCount += 1;
-                outProbe->attachmentNode = (zClass_NodePartial *)(candidateNode->callbackContext);
+                outProbe->attachmentNode = (CZNodePartial *)(candidateNode->callbackContext);
             }
         }
 
@@ -11375,8 +11375,8 @@ int __fastcall ApplyEnvironmentProbeResult(
         if (wasAttached == 0) {
             playerState->environmentAttachmentActive = 1;
             playerState->environmentAttachmentNode = envProbe->attachmentNode;
-            zClass_Object3DDataPartial *const objectData =
-                (zClass_Object3DDataPartial *)(envProbe->attachmentNode->classData);
+            CZObject3DDataPartial *const objectData =
+                (CZObject3DDataPartial *)(envProbe->attachmentNode->classData);
             memcpy(
                 &playerState->environmentAttachmentMatrix,
                 objectData->cachedWorldMatrix,
@@ -11391,8 +11391,8 @@ int __fastcall ApplyEnvironmentProbeResult(
             PLAYER_CACHE_ATTACHMENT_LOCAL_OFFSET(playerState);
         }
     } else if (wasAttached != 0) {
-        zClass_Object3DDataPartial *const objectData =
-            (zClass_Object3DDataPartial *)(playerState->environmentAttachmentNode->classData);
+        CZObject3DDataPartial *const objectData =
+            (CZObject3DDataPartial *)(playerState->environmentAttachmentNode->classData);
         memcpy(
             &playerState->environmentAttachmentMatrix,
             objectData->cachedWorldMatrix,

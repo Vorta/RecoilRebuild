@@ -5,7 +5,7 @@
 #include "recoil/recoil_callconv.h"
 
 struct zZbdSectionCallbackCtx;
-struct zClass_NodePartial;
+struct CZNodePartial;
 struct OptCatalogEntryDef;
 
 namespace zReader {
@@ -27,7 +27,7 @@ int __cdecl zWepInit();
 
 namespace zWeapon {
 int __fastcall LoadOptCatalogFromPath(
-    zClass_NodePartial *worldNode,
+    CZNodePartial *worldNode,
     const char *path,
     int networkState,
     zWeaponOptCatalogEntryCallback entryCallback

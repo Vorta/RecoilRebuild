@@ -1151,7 +1151,7 @@ int CZInterp::HandleBuiltinCommand(
  * Purpose: recursively log a zClass node tree with two-space child indentation.
  */
 void CZInterp::PrintNodeTree(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int indent
 ) {
     if (node != 0) {
@@ -1350,8 +1350,8 @@ int CZInterp::DispatchCoreCommand(
     case 'A':
         if (CommandIs(this, "AddChild") != 0) {
             char *const searchName = NextToken();
-            zClass_NodePartial *const child = zClass::FindByTypeAndName(6, searchName);
-            zClass_NodePartial *const parent = (zClass_NodePartial *)(currentNode);
+            CZNodePartial *const child = CZClass::FindByTypeAndName(6, searchName);
+            CZNodePartial *const parent = (CZNodePartial *)(currentNode);
             if (parent == 0) {
                 ReportErrorf(
                     this,
@@ -1371,7 +1371,7 @@ int CZInterp::DispatchCoreCommand(
                 );
                 return 1;
             }
-            zClass_Class::AddChild(parent, child);
+            CZClass::AddChild(parent, child);
             return 1;
         }
 
@@ -1397,7 +1397,7 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Camera::gwCameraSetPosition((zClass_NodePartial *)(currentNode), x, y, z);
+            CZCamera::gwCameraSetPosition((CZNodePartial *)(currentNode), x, y, z);
             return 1;
         }
 
@@ -1406,11 +1406,11 @@ int CZInterp::DispatchCoreCommand(
                 return 1;
             }
 
-            zClass_Camera::gwCameraGetTarget((zClass_NodePartial *)(currentNode), &x, &y, &z);
+            CZCamera::gwCameraGetTarget((CZNodePartial *)(currentNode), &x, &y, &z);
             Logf(
                 this,
                 "%s --> ( %.2f %.2f %.2f )",
-                ((zClass_NodePartial *)(currentNode))->name,
+                ((CZNodePartial *)(currentNode))->name,
                 x,
                 y,
                 z
@@ -1419,13 +1419,13 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "CameraSetActive") != 0) {
-            zClass_Camera::gwCameraSetActive((zClass_NodePartial *)(currentNode), ParseBoolToken());
+            CZCamera::gwCameraSetActive((CZNodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandHasPrefix(this, "CameraSetDynamicLOD") != 0) {
             x = ParseFloatToken();
-            zClass_Camera::SetViewDistance(1, x);
+            CZCamera::SetViewDistance(1, x);
             return 1;
         }
 
@@ -1434,8 +1434,8 @@ int CZInterp::DispatchCoreCommand(
             float verticalFov = ParseFloatToken();
             horizontalFov = (float)(horizontalFov * kDegreesToRadians);
             verticalFov = (float)(verticalFov * kDegreesToRadians);
-            zClass_Camera::gwCameraSetFOV(
-                (zClass_NodePartial *)(currentNode),
+            CZCamera::gwCameraSetFOV(
+                (CZNodePartial *)(currentNode),
                 horizontalFov,
                 verticalFov
             );
@@ -1443,21 +1443,21 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "CameraSetHorizonXZ") != 0) {
-            zClass_NodePartial *const horizon = zClass::FindByTypeAndName(6, NextToken());
-            zClass_Camera::gwCameraSetHorizonXZ((zClass_NodePartial *)(currentNode), horizon);
+            CZNodePartial *const horizon = CZClass::FindByTypeAndName(6, NextToken());
+            CZCamera::gwCameraSetHorizonXZ((CZNodePartial *)(currentNode), horizon);
             return 1;
         }
 
         if (CommandIs(this, "CameraSetHorizon") != 0) {
-            zClass_NodePartial *const horizon = zClass::FindByTypeAndName(6, NextToken());
-            zClass_Camera::gwCameraSetHorizon((zClass_NodePartial *)(currentNode), horizon);
+            CZNodePartial *const horizon = CZClass::FindByTypeAndName(6, NextToken());
+            CZCamera::gwCameraSetHorizon((CZNodePartial *)(currentNode), horizon);
             return 1;
         }
 
         if (CommandHasPrefix(this, "CameraSetLODMultiplier") != 0) {
             const float clipDistance = ParseFloatToken();
-            zClass_Camera::gwCameraSetClipDistance(
-                (zClass_NodePartial *)(currentNode),
+            CZCamera::gwCameraSetClipDistance(
+                (CZNodePartial *)(currentNode),
                 clipDistance
             );
             return 1;
@@ -1466,8 +1466,8 @@ int CZInterp::DispatchCoreCommand(
         if (CommandIs(this, "CameraSetNearFarClip") != 0) {
             const float nearClip = ParseFloatToken();
             const float farClip = ParseFloatToken();
-            zClass_Camera::gwCameraSetNearFarClip(
-                (zClass_NodePartial *)(currentNode),
+            CZCamera::gwCameraSetNearFarClip(
+                (CZNodePartial *)(currentNode),
                 nearClip,
                 farClip
             );
@@ -1477,14 +1477,14 @@ int CZInterp::DispatchCoreCommand(
         if (CommandIsExact(this, "CameraSetNearClip") != 0) {
             float nearClip;
             float farClip;
-            zClass_Camera::gwCameraGetNearFarClip(
-                (zClass_NodePartial *)(currentNode),
+            CZCamera::gwCameraGetNearFarClip(
+                (CZNodePartial *)(currentNode),
                 &nearClip,
                 &farClip
             );
             nearClip = ParseFloatToken();
-            zClass_Camera::gwCameraSetNearFarClip(
-                (zClass_NodePartial *)(currentNode),
+            CZCamera::gwCameraSetNearFarClip(
+                (CZNodePartial *)(currentNode),
                 nearClip,
                 farClip
             );
@@ -1494,14 +1494,14 @@ int CZInterp::DispatchCoreCommand(
         if (CommandIsExact(this, "CameraSetFarClip") != 0) {
             float nearClip;
             float farClip;
-            zClass_Camera::gwCameraGetNearFarClip(
-                (zClass_NodePartial *)(currentNode),
+            CZCamera::gwCameraGetNearFarClip(
+                (CZNodePartial *)(currentNode),
                 &nearClip,
                 &farClip
             );
             farClip = ParseFloatToken();
-            zClass_Camera::gwCameraSetNearFarClip(
-                (zClass_NodePartial *)(currentNode),
+            CZCamera::gwCameraSetNearFarClip(
+                (CZNodePartial *)(currentNode),
                 nearClip,
                 farClip
             );
@@ -1509,19 +1509,19 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandHasPrefix(this, "CameraSetObjectHSETest") != 0) {
-            zClass_Camera::SetObjectHseTestEnabled(ParseBoolToken());
+            CZCamera::SetObjectHseTestEnabled(ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "CameraSetWindow") != 0) {
-            zClass_NodePartial *const window = zClass::FindByTypeAndName(14, NextToken());
-            zClass_Camera::gwCameraSetWindow((zClass_NodePartial *)(currentNode), window);
+            CZNodePartial *const window = CZClass::FindByTypeAndName(14, NextToken());
+            CZCamera::gwCameraSetWindow((CZNodePartial *)(currentNode), window);
             return 1;
         }
 
         if (CommandIs(this, "CameraSetWorld") != 0) {
-            zClass_NodePartial *const world = zClass::FindByTypeAndName(13, NextToken());
-            zClass_Camera::gwCameraSetWorld((zClass_NodePartial *)(currentNode), world);
+            CZNodePartial *const world = CZClass::FindByTypeAndName(13, NextToken());
+            CZCamera::gwCameraSetWorld((CZNodePartial *)(currentNode), world);
             return 1;
         }
 
@@ -1529,17 +1529,17 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Camera::gwCameraSetTarget((zClass_NodePartial *)(currentNode), x, y, z);
+            CZCamera::gwCameraSetTarget((CZNodePartial *)(currentNode), x, y, z);
             return 1;
         }
 
         if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "CountCameraNodes", 14) == 0) {
-            printf("# of nodes in camera list = %d\n", zClass_TypeList::CountNodes(8));
+            printf("# of nodes in camera list = %d\n", CZTypeList::CountNodes(8));
             return 1;
         }
 
         if (CommandIs(this, "CountUsedNodes") != 0) {
-            printf("# of nodes in used list = %d\n", zClass_TypeList::CountNodes(6));
+            printf("# of nodes in used list = %d\n", CZTypeList::CountNodes(6));
             return 1;
         }
 
@@ -1568,8 +1568,8 @@ int CZInterp::DispatchCoreCommand(
                 return 1;
             }
 
-            zClass_Class::gwNodeGetUserData(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeGetUserData(
+                (CZNodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
@@ -1579,7 +1579,7 @@ int CZInterp::DispatchCoreCommand(
                     "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
                     0x1a2,
                     "ERROR no GFX data for cycled texture (%s)",
-                    ((zClass_NodePartial *)(currentNode))->name
+                    ((CZNodePartial *)(currentNode))->name
                 );
             }
 
@@ -1592,7 +1592,7 @@ int CZInterp::DispatchCoreCommand(
                     "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
                     0x1a8,
                     "Node (%s) has no graphics data for cycled texture\n",
-                    ((zClass_NodePartial *)(currentNode))->name
+                    ((CZNodePartial *)(currentNode))->name
                 );
             }
             return 1;
@@ -1613,19 +1613,19 @@ int CZInterp::DispatchCoreCommand(
     case 'D':
         if (CommandIs(this, "DeleteChild") != 0) {
             char *const name = NextToken();
-            zClass_NodePartial *const child = zClass_Class::FindSubNodeByName(
-                (zClass_NodePartial *)(currentNode),
+            CZNodePartial *const child = CZClass::FindSubNodeByName(
+                (CZNodePartial *)(currentNode),
                 name
             );
             if (currentNode != 0 && child != 0) {
-                zClass_Class::RemoveChild((zClass_NodePartial *)(currentNode), child);
+                CZClass::RemoveChild((CZNodePartial *)(currentNode), child);
             } else {
                 zError::ReportOld(
                     0x200,
                     "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
                     0x1c6,
                     "interp: DeleteChild (%s, %s) --> NULL NODE",
-                    currentNode != 0 ? ((zClass_NodePartial *)(currentNode))->name : "NULL",
+                    currentNode != 0 ? ((CZNodePartial *)(currentNode))->name : "NULL",
                     name
                 );
             }
@@ -1639,7 +1639,7 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandHasPrefix(this, "DeleteTree") != 0) {
             char *const searchName = NextToken();
-            zClass_NodePartial *const node = zClass::FindByTypeAndName(6, searchName);
+            CZNodePartial *const node = CZClass::FindByTypeAndName(6, searchName);
             if (node == 0) {
                 zError::ReportOld(
                     0x200,
@@ -1650,21 +1650,21 @@ int CZInterp::DispatchCoreCommand(
                 );
                 return 1;
             }
-            zClass_Util::DestroyNodeRecursive(node);
+            CZUtil::DestroyNodeRecursive(node);
             return 1;
         }
 
         if (CommandIs(this, "DisplayOrigin") != 0) {
             const int x = ParseIntToken();
             const int y = ParseIntToken();
-            zClass_Display::gwDisplaySetPosition((zClass_NodePartial *)(currentNode), x, y);
+            CZDisplay::gwDisplaySetPosition((CZNodePartial *)(currentNode), x, y);
             return 1;
         }
 
         if (CommandIs(this, "DisplayResolution") != 0) {
             const int width = ParseIntToken();
             const int height = ParseIntToken();
-            zClass_Display::gwDisplaySetSize((zClass_NodePartial *)(currentNode), width, height);
+            CZDisplay::gwDisplaySetSize((CZNodePartial *)(currentNode), width, height);
             return 1;
         }
 
@@ -1672,8 +1672,8 @@ int CZInterp::DispatchCoreCommand(
             red = ParseFloatToken();
             green = ParseFloatToken();
             blue = ParseFloatToken();
-            zClass_Display::gwDisplaySetBackgroundColor(
-                (zClass_NodePartial *)(currentNode),
+            CZDisplay::gwDisplaySetBackgroundColor(
+                (CZNodePartial *)(currentNode),
                 red,
                 green,
                 blue
@@ -1702,7 +1702,7 @@ int CZInterp::DispatchCoreCommand(
     case 'F':
         if (CommandIs(this, "FindNode") != 0) {
             char *const searchName = NextToken();
-            currentNode = zClass::FindByTypeAndName(6, searchName);
+            currentNode = CZClass::FindByTypeAndName(6, searchName);
             if (currentNode == 0) {
                 ReportErrorf(this, "FindNode %s: FAILED", searchName);
             }
@@ -1711,8 +1711,8 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandIs(this, "FindSubNode") != 0) {
             char *const name = NextToken();
-            currentNode = zClass_Class::FindSubNodeByName(
-                (zClass_NodePartial *)(currentNode),
+            currentNode = CZClass::FindSubNodeByName(
+                (CZNodePartial *)(currentNode),
                 name
             );
             if (currentNode == 0) {
@@ -1723,20 +1723,20 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandIs(this, "FreeNode") != 0) {
             char *const searchName = NextToken();
-            zClass_NodePartial *const node = zClass::FindByTypeAndName(6, searchName);
+            CZNodePartial *const node = CZClass::FindByTypeAndName(6, searchName);
             int result;
             switch (node->classId) {
                 case 1:
-                    result = zClass_Camera::DeleteNode(node);
+                    result = CZCamera::DeleteNode(node);
                     break;
                 case 2:
-                    result = zClass_World::DeleteNode(node);
+                    result = CZWorld::DeleteNode(node);
                     break;
                 case 3:
-                    result = zClass_Window::DeleteNode(node);
+                    result = CZWindow::DeleteNode(node);
                     break;
                 case 5:
-                    result = zClass_Object3D::DeleteNode(node);
+                    result = CZObject3D::DeleteNode(node);
                     break;
                 default:
                     printf("Unrecognized node class = %d\n", node->classId);
@@ -1754,7 +1754,7 @@ int CZInterp::DispatchCoreCommand(
     case 'G':
         if (CommandIs(this, "GameZReadZBDFile") != 0) {
             char *const filename = NextToken();
-            if (GameZ::ReadZBDFile(filename) != 0) {
+            if (CZZbd::ReadZBDFile(filename) != 0) {
                 ReportErrorf(this, "%s %s FAILED", commandToken, filename);
             }
             return 1;
@@ -1762,9 +1762,9 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandIs(this, "GameZWriteZBDFile") != 0) {
             char *const filename = NextToken();
-            zClass_Class::gwNodeUpdateAll();
-            zClass::ProcessDeferredWork();
-            GameZ::WriteZBDFile(filename);
+            CZClass::gwNodeUpdateAll();
+            CZClass::ProcessDeferredWork();
+            CZZbd::WriteZBDFile(filename);
             return 1;
         }
 
@@ -1787,19 +1787,19 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "LightNew") != 0) {
-            currentNode = zClass_Light::gwLightNew();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZLight::gwLightNew();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "LightSetActive") != 0) {
-            zClass_Class::gwNodeSetActive((zClass_NodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetActive((CZNodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "LightSetAmbient") != 0) {
             x = ParseFloatToken();
-            zClass_Light::gwLightSetIntensity((zClass_NodePartial *)(currentNode), x);
+            CZLight::gwLightSetIntensity((CZNodePartial *)(currentNode), x);
             return 1;
         }
 
@@ -1807,8 +1807,8 @@ int CZInterp::DispatchCoreCommand(
             red = ParseFloatToken();
             green = ParseFloatToken();
             blue = ParseFloatToken();
-            zClass_Light::gwLightSetSpecularColor(
-                (zClass_NodePartial *)(currentNode),
+            CZLight::gwLightSetSpecularColor(
+                (CZNodePartial *)(currentNode),
                 red,
                 green,
                 blue
@@ -1818,18 +1818,18 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandIs(this, "LightSetDiffuse") != 0) {
             x = ParseFloatToken();
-            zClass_Light::gwLightSetFalloff((zClass_NodePartial *)(currentNode), x);
+            CZLight::gwLightSetFalloff((CZNodePartial *)(currentNode), x);
             return 1;
         }
 
         if (CommandIs(this, "LightSetDirectedSource") != 0) {
-            zClass_Light::gwLightSetDirectedSource((zClass_NodePartial *)(currentNode));
+            CZLight::gwLightSetDirectedSource((CZNodePartial *)(currentNode));
             return 1;
         }
 
         if (CommandIs(this, "LightSetDirectional") != 0) {
-            zClass_Light::gwLightSetDirectional(
-                (zClass_NodePartial *)(currentNode),
+            CZLight::gwLightSetDirectional(
+                (CZNodePartial *)(currentNode),
                 ParseBoolToken()
             );
             return 1;
@@ -1839,8 +1839,8 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Light::gwLightSetRotation(
-                (zClass_NodePartial *)(currentNode),
+            CZLight::gwLightSetRotation(
+                (CZNodePartial *)(currentNode),
                 (float)(x * kDegreesToRadians),
                 (float)(y * kDegreesToRadians),
                 (float)(z * kDegreesToRadians)
@@ -1849,14 +1849,14 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "LightSetPointSource") != 0) {
-            zClass_Light::gwLightSetPointSource((zClass_NodePartial *)(currentNode));
+            CZLight::gwLightSetPointSource((CZNodePartial *)(currentNode));
             return 1;
         }
 
         if (CommandIs(this, "LightSetRanges") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_Light::gwLightSetRange((zClass_NodePartial *)(currentNode), x, y);
+            CZLight::gwLightSetRange((CZNodePartial *)(currentNode), x, y);
             return 1;
         }
 
@@ -1866,7 +1866,7 @@ int CZInterp::DispatchCoreCommand(
                 return 1;
             }
 
-            zClass_Light::gwLightSetParam((zClass_NodePartial *)(currentNode), ParseBoolToken());
+            CZLight::gwLightSetParam((CZNodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
@@ -1874,7 +1874,7 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Light::gwLightSetPosition((zClass_NodePartial *)(currentNode), x, y, z);
+            CZLight::gwLightSetPosition((CZNodePartial *)(currentNode), x, y, z);
             return 1;
         }
 
@@ -1884,16 +1884,16 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "LODAddChild") != 0) {
-            zClass_NodePartial *const child = zClass::FindByTypeAndName(6, NextToken());
-            zClass_Lod::gwLodAddChild((zClass_NodePartial *)(currentNode), child);
+            CZNodePartial *const child = CZClass::FindByTypeAndName(6, NextToken());
+            CZLod::gwLodAddChild((CZNodePartial *)(currentNode), child);
             return 1;
         }
 
         if (CommandIs(this, "LODSetRange") != 0) {
             float nearRange = ParseFloatToken();
             float farRange = ParseFloatToken();
-            ((zClass_LodDataPartial *)(((zClass_NodePartial *)(currentNode))->classData))->nearRangeSq = nearRange * nearRange;
-            ((zClass_LodDataPartial *)(((zClass_NodePartial *)(currentNode))->classData))->farRangeSq = farRange * farRange;
+            ((CZLodDataPartial *)(((CZNodePartial *)(currentNode))->classData))->nearRangeSq = nearRange * nearRange;
+            ((CZLodDataPartial *)(((CZNodePartial *)(currentNode))->classData))->farRangeSq = farRange * farRange;
         } else {
             IncErrorCount();
         }
@@ -1926,11 +1926,11 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "ModelNew") != 0) {
-            currentNode = zClass_Object3D::gwObject3DInit();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZObject3D::gwObject3DInit();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             runtimeBlob->displayInstance = zModel_DiPool::AllocFromFreeList();
-            zClass_Class::gwNodeSetDisplayInstance(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeSetDisplayInstance(
+                (CZNodePartial *)(currentNode),
                 runtimeBlob->displayInstance
             );
             const char *const modelType = NextToken();
@@ -1989,79 +1989,79 @@ int CZInterp::DispatchCoreCommand(
         }
     case 'N':
         if (CommandIs(this, "NewCamera") != 0) {
-            currentNode = zClass_Camera::gwCameraNew();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZCamera::gwCameraNew();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewDisplay") != 0) {
-            currentNode = zClass_Display::gwDisplayInit();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZDisplay::gwDisplayInit();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewLOD") != 0) {
-            currentNode = zClass_Lod::gwLodNew();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZLod::gwLodNew();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewNode") != 0) {
-            currentNode = zClass_Class::gwNodeNew();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZClass::gwNodeNew();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewObject3D") != 0) {
-            currentNode = zClass_Object3D::gwObject3DInit();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZObject3D::gwObject3DInit();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewSEQ") != 0) {
-            currentNode = zClass_Sequence::gwSequenceNew();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZSequence::gwSequenceNew();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewWindow") != 0) {
-            currentNode = zClass_Window::gwWindowNew();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZWindow::gwWindowNew();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewWorld") != 0) {
-            currentNode = zClass_World::gwWorldNew();
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            currentNode = CZWorld::gwWorldNew();
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NodeSetActive") != 0) {
-            zClass_Class::gwNodeSetActive((zClass_NodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetActive((CZNodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "NodeSetDescription") != 0) {
-            zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NodeSetCanModify") != 0) {
-            zClass_Class::gwNodeSetFlag16((zClass_NodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetFlag16((CZNodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "NodeSetLighting") != 0) {
-            zClass_Node::AssignInt32ToDiRecursive(
-                (zClass_NodePartial *)(currentNode),
+            CZNode::AssignInt32ToDiRecursive(
+                (CZNodePartial *)(currentNode),
                 ParseBoolToken()
             );
             return 1;
         }
 
         if (CommandIs(this, "NodeSetOverwrite") != 0) {
-            zClass_Class::gwNodeSetVertexAlphaOverride(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeSetVertexAlphaOverride(
+                (CZNodePartial *)(currentNode),
                 ParseBoolToken()
             );
             return 1;
@@ -2072,10 +2072,10 @@ int CZInterp::DispatchCoreCommand(
     case 'O':
         if (CommandIs(this, "Object3DAddChild") != 0) {
             char *const searchName = NextToken();
-            zClass_NodePartial *const child = zClass::FindByTypeAndName(6, searchName);
-            zClass_NodePartial *const parent = (zClass_NodePartial *)(currentNode);
+            CZNodePartial *const child = CZClass::FindByTypeAndName(6, searchName);
+            CZNodePartial *const parent = (CZNodePartial *)(currentNode);
             if (parent != 0 && child != 0) {
-                zClass_Object3D::gwObject3DAddChild(parent, child);
+                CZObject3D::gwObject3DAddChild(parent, child);
             } else {
                 zError::ReportOld(
                     0x200,
@@ -2093,11 +2093,11 @@ int CZInterp::DispatchCoreCommand(
             if (currentNode == 0) {
                 return 1;
             }
-            zClass_Object3D::gwObject3DGetPosition((zClass_NodePartial *)(currentNode), &x, &y, &z);
+            CZObject3D::gwObject3DGetPosition((CZNodePartial *)(currentNode), &x, &y, &z);
             Logf(
                 this,
                 "%s --> ( %.2f %.2f %.2f )",
-                ((zClass_NodePartial *)(currentNode))->name,
+                ((CZNodePartial *)(currentNode))->name,
                 x,
                 y,
                 z
@@ -2108,15 +2108,15 @@ int CZInterp::DispatchCoreCommand(
         if (CommandIs(this, "Object3DRegisterTexturesToWorld") != 0) {
             const int registerTextures = ParseBoolToken();
             if (registerTextures != 0) {
-                zClass_Class::gwNodeGetUserData(
-                    (zClass_NodePartial *)(currentNode),
+                CZClass::gwNodeGetUserData(
+                    (CZNodePartial *)(currentNode),
                     &g_zInterp_NodeUserDataScratch
                 );
                 g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
                 g_zInterp_CurrentCycleTextureDi->flags |= 0x04;
             } else {
-                zClass_Class::gwNodeGetUserData(
-                    (zClass_NodePartial *)(currentNode),
+                CZClass::gwNodeGetUserData(
+                    (CZNodePartial *)(currentNode),
                     &g_zInterp_NodeUserDataScratch
                 );
                 g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
@@ -2129,8 +2129,8 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Object3D::gwObject3DSetRotation(
-                (zClass_NodePartial *)(currentNode),
+            CZObject3D::gwObject3DSetRotation(
+                (CZNodePartial *)(currentNode),
                 (float)(x * kDegreesToRadians),
                 (float)(y * kDegreesToRadians),
                 (float)(z * kDegreesToRadians)
@@ -2142,24 +2142,24 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Object3D::gwObject3DSetScale((zClass_NodePartial *)(currentNode), x, y, z);
+            CZObject3D::gwObject3DSetScale((CZNodePartial *)(currentNode), x, y, z);
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetActionPriority") != 0) {
-            zClass_Class::gwNodeSetPriority((zClass_NodePartial *)(currentNode), ParseIntToken());
+            CZClass::gwNodeSetPriority((CZNodePartial *)(currentNode), ParseIntToken());
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetActive") != 0) {
-            zClass_Class::gwNodeSetActive((zClass_NodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetActive((CZNodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetColor") != 0) {
             const int colorMode = ParseIntToken();
-            zClass_Class::gwNodeGetUserData(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeGetUserData(
+                (CZNodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_Object3DCommandDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
@@ -2168,8 +2168,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "Object3DSetFacade") != 0) {
-            zClass_Class::gwNodeGetUserData(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeGetUserData(
+                (CZNodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
@@ -2178,8 +2178,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "Object3DSetOpacityIsSet") != 0) {
-            zClass_Object3D::gwObject3DSetLitFlag(
-                (zClass_NodePartial *)(currentNode),
+            CZObject3D::gwObject3DSetLitFlag(
+                (CZNodePartial *)(currentNode),
                 ParseIntToken()
             );
             return 1;
@@ -2187,13 +2187,13 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandIs(this, "Object3DSetOpacity") != 0) {
             const float opacity = ParseFloatToken();
-            zClass_Object3D::gwObject3DSetAlphaScale((zClass_NodePartial *)(currentNode), opacity);
+            CZObject3D::gwObject3DSetAlphaScale((CZNodePartial *)(currentNode), opacity);
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetPoints") != 0) {
-            zClass_Class::gwNodeGetUserData(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeGetUserData(
+                (CZNodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
@@ -2202,8 +2202,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "Object3DSetPriority") != 0) {
-            zClass_Class::gwNodeGetUserData(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeGetUserData(
+                (CZNodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_Object3DCommandDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
@@ -2219,7 +2219,7 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             if (enabled != 0) {
-                if (RegisterScrollAlwaysNode((zClass_NodePartial *)(currentNode), x, y, 1) == 0) {
+                if (RegisterScrollAlwaysNode((CZNodePartial *)(currentNode), x, y, 1) == 0) {
                     zError::ReportOld(
                         0x200,
                         "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
@@ -2231,7 +2231,7 @@ int CZInterp::DispatchCoreCommand(
                 }
                 return 1;
             }
-            HandleScrollDisable((zClass_NodePartial *)(currentNode));
+            HandleScrollDisable((CZNodePartial *)(currentNode));
             return 1;
         }
 
@@ -2239,7 +2239,7 @@ int CZInterp::DispatchCoreCommand(
             const int enabled = ParseBoolToken();
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_NodePartial *const node = (zClass_NodePartial *)(currentNode);
+            CZNodePartial *const node = (CZNodePartial *)(currentNode);
             if (node == 0) {
                 ReportErrorf(
                     this,
@@ -2261,8 +2261,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "Object3DSetShowBackFace") != 0) {
-            zClass_Class::gwNodeGetUserData(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeGetUserData(
+                (CZNodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             g_zInterp_Object3DCommandDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
@@ -2290,8 +2290,8 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandIs(this, "Object3DSetMorphVertex") != 0) {
             y = ParseFloatToken();
-            zClass_Class::gwNodeGetUserData(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeGetUserData(
+                (CZNodePartial *)(currentNode),
                 &g_zInterp_NodeUserDataScratch
             );
             zDiPartial *const di = (zDiPartial *)g_zInterp_NodeUserDataScratch;
@@ -2302,7 +2302,7 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            zClass_Object3D::gwObject3DSetPosition((zClass_NodePartial *)(currentNode), x, y, z);
+            CZObject3D::gwObject3DSetPosition((CZNodePartial *)(currentNode), x, y, z);
         } else {
             IncErrorCount();
         }
@@ -2315,12 +2315,12 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandIs(this, "PrintNodeCount") != 0) {
             char *const prefixText = NextToken();
-            zClass::FindNextByTypePrefix(prefixText, 6);
+            CZClass::FindNextByTypePrefix(prefixText, 6);
             int count = 0;
-            zClass_NodePartial *node = zClass::FindNextByTypePrefix(0, 0);
+            CZNodePartial *node = CZClass::FindNextByTypePrefix(0, 0);
             while (node != 0) {
                 ++count;
-                node = zClass::FindNextByTypePrefix(0, 0);
+                node = CZClass::FindNextByTypePrefix(0, 0);
             }
             printf("Node count for %s = %d\n", prefixText, count);
             return 1;
@@ -2330,12 +2330,12 @@ int CZInterp::DispatchCoreCommand(
             if (currentNode == 0) {
                 ReportErrorf(this, "No current node");
             }
-            PrintNodeTree((zClass_NodePartial *)(currentNode), 2);
+            PrintNodeTree((CZNodePartial *)(currentNode), 2);
             return 1;
         }
 
         if (CommandIs(this, "PrintUsedNodes") != 0) {
-            zClass_TypeList::PrintBucket(6);
+            CZTypeList::PrintBucket(6);
             return 1;
         } else {
             IncErrorCount();
@@ -2360,9 +2360,9 @@ int CZInterp::DispatchCoreCommand(
                 char *const searchName = NextToken();
                 const int insertIndex = ParseIntToken();
                 const float delay = ParseFloatToken();
-                zClass_NodePartial *const child = zClass::FindByTypeAndName(6, searchName);
-                zClass_Sequence::gwSequenceAddChild(
-                    (zClass_NodePartial *)(currentNode),
+                CZNodePartial *const child = CZClass::FindByTypeAndName(6, searchName);
+                CZSequence::gwSequenceAddChild(
+                    (CZNodePartial *)(currentNode),
                     child,
                     insertIndex,
                     delay
@@ -2371,35 +2371,35 @@ int CZInterp::DispatchCoreCommand(
             }
 
             if (CommandHasPrefix(this, "SEQNew") != 0) {
-                currentNode = zClass_Sequence::gwSequenceNew();
-                zClass_Class::gwNodeSetName((zClass_NodePartial *)(currentNode), NextToken());
+                currentNode = CZSequence::gwSequenceNew();
+                CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
                 return 1;
             }
 
             if (CommandHasPrefix(this, "SEQSetActive") != 0) {
-                zClass_Sequence::SetActive((zClass_NodePartial *)(currentNode), ParseIntToken());
+                CZSequence::SetActive((CZNodePartial *)(currentNode), ParseIntToken());
                 return 1;
             }
 
             if (CommandHasPrefix(this, "SEQSetLoop") != 0) {
-                zClass_Sequence::SetLoop((zClass_NodePartial *)(currentNode), ParseIntToken());
+                CZSequence::SetLoop((CZNodePartial *)(currentNode), ParseIntToken());
                 return 1;
             }
 
             if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "SEQSetPause", 12) == 0) {
-                zClass_Sequence::SetPause((zClass_NodePartial *)(currentNode), ParseIntToken());
+                CZSequence::SetPause((CZNodePartial *)(currentNode), ParseIntToken());
                 return 1;
             }
 
             if (CommandHasPrefix(this, "SEQSetRepeat") != 0) {
-                zClass_Sequence::SetRepeat((zClass_NodePartial *)(currentNode), ParseIntToken());
+                CZSequence::SetRepeat((CZNodePartial *)(currentNode), ParseIntToken());
             }
             return 1;
         }
 
         if (CommandHasPrefix(this, "SetAltitudeSurface") != 0) {
-            zClass_Class::gwNodeSetCellPickable(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeSetCellPickable(
+                (CZNodePartial *)(currentNode),
                 ParseBoolToken()
             );
             return 1;
@@ -2426,7 +2426,7 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "SetGameZNodeArraySize") != 0) {
-            zClass::SetNodeArraySize(ParseIntToken());
+            CZClass::SetNodeArraySize(ParseIntToken());
             return 1;
         }
 
@@ -2441,21 +2441,21 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandHasPrefix(this, "SetIntersectBBOX") != 0) {
-            zClass_Class::gwNodeSetPickable((zClass_NodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetPickable((CZNodePartial *)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandHasPrefix(this, "SetIntersectSurface") != 0) {
-            zClass_Class::gwNodeSetRaycastable(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeSetRaycastable(
+                (CZNodePartial *)(currentNode),
                 ParseBoolToken()
             );
             return 1;
         }
 
         if (CommandHasPrefix(this, "SetLandmark") != 0) {
-            zClass_Class::gwNodeSetBypassFarClip(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeSetBypassFarClip(
+                (CZNodePartial *)(currentNode),
                 ParseBoolToken()
             );
             return 1;
@@ -2507,8 +2507,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandHasPrefix(this, "SetProximity") != 0) {
-            zClass_Class::gwNodeSetHasHitCallback(
-                (zClass_NodePartial *)(currentNode),
+            CZClass::gwNodeSetHasHitCallback(
+                (CZNodePartial *)(currentNode),
                 ParseBoolToken()
             );
             return 1;
@@ -2566,13 +2566,13 @@ int CZInterp::DispatchCoreCommand(
         }
     case 'W':
         if (CommandEqualsPrefix("WindowAddClearPolygonVertex", 0x1b) != 0) {
-            if (ValidateArgsAndNodeType(3, 3, (zClass_NodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(3, 3, (CZNodePartial *)(currentNode)) != 0) {
                 zVec3 point;
                 point.x = ParseFloatToken();
                 point.y = ParseFloatToken();
                 point.z = ParseFloatToken();
-                zClass_Window::gwWindowAddClearPolygonVertex(
-                    (zClass_NodePartial *)(currentNode),
+                CZWindow::gwWindowAddClearPolygonVertex(
+                    (CZNodePartial *)(currentNode),
                     &point
                 );
             }
@@ -2580,9 +2580,9 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WindowBuffer", 0xf) != 0) {
-            if (ValidateArgsAndNodeType(1, 3, (zClass_NodePartial *)(currentNode)) != 0) {
-                zClass_Window::gwWindowSetBuffer(
-                    (zClass_NodePartial *)(currentNode),
+            if (ValidateArgsAndNodeType(1, 3, (CZNodePartial *)(currentNode)) != 0) {
+                CZWindow::gwWindowSetBuffer(
+                    (CZNodePartial *)(currentNode),
                     ParseIntToken()
                 );
             }
@@ -2590,22 +2590,22 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WindowCloseClearPolygon", 0x17) != 0) {
-            zClass_Window::gwWindowCloseClearPolygon((zClass_NodePartial *)(currentNode));
+            CZWindow::gwWindowCloseClearPolygon((CZNodePartial *)(currentNode));
             return 1;
         }
 
         if (CommandEqualsPrefix("WindowOrigin", 0xc) != 0) {
             const int width = ParseIntToken();
             const int height = ParseIntToken();
-            zClass_Window::gwWindowSetSize((zClass_NodePartial *)(currentNode), width, height);
+            CZWindow::gwWindowSetSize((CZNodePartial *)(currentNode), width, height);
             return 1;
         }
 
         if (CommandEqualsPrefix("WindowResolution", 0x10) != 0) {
             const int width = ParseIntToken();
             const int height = ParseIntToken();
-            zClass_Window::gwWindowSetResolution(
-                (zClass_NodePartial *)(currentNode),
+            CZWindow::gwWindowSetResolution(
+                (CZNodePartial *)(currentNode),
                 width,
                 height
             );
@@ -2613,38 +2613,38 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WindowSetClearPolygon", 0x15) != 0) {
-            zClass_Window::gwWindowSetClearPolygon(
-                (zClass_NodePartial *)(currentNode),
+            CZWindow::gwWindowSetClearPolygon(
+                (CZNodePartial *)(currentNode),
                 ParseBoolToken()
             );
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldAddLight", 0xd) != 0) {
-            zClass_NodePartial *const light = zClass::FindByTypeAndName(9, NextToken());
-            zClass_World::AddLight((zClass_NodePartial *)(currentNode), light);
+            CZNodePartial *const light = CZClass::FindByTypeAndName(9, NextToken());
+            CZWorld::AddLight((CZNodePartial *)(currentNode), light);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldExtents", 0xc) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_World::gwWorldSetSize((zClass_NodePartial *)(currentNode), x, y);
+            CZWorld::gwWorldSetSize((CZNodePartial *)(currentNode), x, y);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldOrigin", 0xb) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_World::gwWorldSetOrigin((zClass_NodePartial *)(currentNode), x, y);
+            CZWorld::gwWorldSetOrigin((CZNodePartial *)(currentNode), x, y);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldPartitionInclusionTolerance", 0x20) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_World::gwWorldSetPartitionInclusionTolerance(
-                (zClass_NodePartial *)(currentNode),
+            CZWorld::gwWorldSetPartitionInclusionTolerance(
+                (CZNodePartial *)(currentNode),
                 x,
                 y
             );
@@ -2652,8 +2652,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WorldPartitionMaxDECFeatureCount", 0x20) != 0) {
-            zClass_World::gwWorldSetMaxDecFeatures(
-                (zClass_NodePartial *)(currentNode),
+            CZWorld::gwWorldSetMaxDecFeatures(
+                (CZNodePartial *)(currentNode),
                 ParseIntToken()
             );
             return 1;
@@ -2662,14 +2662,14 @@ int CZInterp::DispatchCoreCommand(
         if (CommandEqualsPrefix("WorldPartition", 0xe) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_World::gwWorldSetVirtualAreaPartition((zClass_NodePartial *)(currentNode), x, y);
+            CZWorld::gwWorldSetVirtualAreaPartition((CZNodePartial *)(currentNode), x, y);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldSetFogAltitude", 0x13) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            zClass_World::SetPendingFogAltitudeRange((zClass_NodePartial *)(currentNode), x, y);
+            CZWorld::SetPendingFogAltitudeRange((CZNodePartial *)(currentNode), x, y);
             return 1;
         }
 
@@ -2677,8 +2677,8 @@ int CZInterp::DispatchCoreCommand(
             red = ParseFloatToken();
             green = ParseFloatToken();
             blue = ParseFloatToken();
-            zClass_World::SetPendingFogColorRgb01(
-                (zClass_NodePartial *)(currentNode),
+            CZWorld::SetPendingFogColorRgb01(
+                (CZNodePartial *)(currentNode),
                 red,
                 green,
                 blue
@@ -2688,16 +2688,16 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandEqualsPrefix("WorldSetFogDensity", 0x12) != 0) {
             const float density = ParseFloatToken();
-            zClass_World::SetPendingFogDensity((zClass_NodePartial *)(currentNode), density);
+            CZWorld::SetPendingFogDensity((CZNodePartial *)(currentNode), density);
             return 1;
         }
 
         if (CommandEquals("WorldSetFogRange") != 0) {
-            if (ValidateArgsAndNodeType(2, 2, (zClass_NodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(2, 2, (CZNodePartial *)(currentNode)) != 0) {
                 const float nearRange = ParseFloatToken();
                 const float farRange = ParseFloatToken();
-                zClass_World::SetPendingFogRange(
-                    (zClass_NodePartial *)(currentNode),
+                CZWorld::SetPendingFogRange(
+                    (CZNodePartial *)(currentNode),
                     nearRange,
                     farRange
                 );
@@ -2706,17 +2706,17 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEquals("WorldSetFogRangeNear") != 0) {
-            if (ValidateArgsAndNodeType(1, 2, (zClass_NodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(1, 2, (CZNodePartial *)(currentNode)) != 0) {
                 float nearRange;
                 float farRange;
-                zClass_World::GetPendingFogRange(
-                    (zClass_NodePartial *)(currentNode),
+                CZWorld::GetPendingFogRange(
+                    (CZNodePartial *)(currentNode),
                     &nearRange,
                     &farRange
                 );
                 nearRange = ParseFloatToken();
-                zClass_World::SetPendingFogRange(
-                    (zClass_NodePartial *)(currentNode),
+                CZWorld::SetPendingFogRange(
+                    (CZNodePartial *)(currentNode),
                     nearRange,
                     farRange
                 );
@@ -2725,17 +2725,17 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEquals("WorldSetFogRangeFar") != 0) {
-            if (ValidateArgsAndNodeType(1, 2, (zClass_NodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(1, 2, (CZNodePartial *)(currentNode)) != 0) {
                 float nearRange;
                 float farRange;
-                zClass_World::GetPendingFogRange(
-                    (zClass_NodePartial *)(currentNode),
+                CZWorld::GetPendingFogRange(
+                    (CZNodePartial *)(currentNode),
                     &nearRange,
                     &farRange
                 );
                 farRange = ParseFloatToken();
-                zClass_World::SetPendingFogRange(
-                    (zClass_NodePartial *)(currentNode),
+                CZWorld::SetPendingFogRange(
+                    (CZNodePartial *)(currentNode),
                     nearRange,
                     farRange
                 );
@@ -2744,18 +2744,18 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEquals("WorldGetFogRange") != 0) {
-            if (ValidateArgsAndNodeType(0, 2, (zClass_NodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(0, 2, (CZNodePartial *)(currentNode)) != 0) {
                 float nearRange;
                 float farRange;
-                zClass_World::GetPendingFogRange(
-                    (zClass_NodePartial *)(currentNode),
+                CZWorld::GetPendingFogRange(
+                    (CZNodePartial *)(currentNode),
                     &nearRange,
                     &farRange
                 );
                 Logf(
                     this,
                     "Fog Range: [%s] [ %.2f, %.2f ]",
-                    ((zClass_NodePartial *)(currentNode))->name,
+                    ((CZNodePartial *)(currentNode))->name,
                     nearRange,
                     farRange
                 );
@@ -2764,17 +2764,17 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WorldSetFogState", 0x10) != 0) {
-            if (ValidateArgsAndNodeType(1, 2, (zClass_NodePartial *)(currentNode)) == 0) {
+            if (ValidateArgsAndNodeType(1, 2, (CZNodePartial *)(currentNode)) == 0) {
                 return 1;
             }
 
             char *const state = NextToken();
             if (strncmp(state, "linear", 6) == 0) {
-                zClass_World::SetPendingFogState((zClass_NodePartial *)(currentNode), 1);
+                CZWorld::SetPendingFogState((CZNodePartial *)(currentNode), 1);
             } else if (strncmp(state, "exponential", 11) == 0) {
-                zClass_World::SetPendingFogState((zClass_NodePartial *)(currentNode), 2);
+                CZWorld::SetPendingFogState((CZNodePartial *)(currentNode), 2);
             } else if (strncmp(state, "off", 3) == 0) {
-                zClass_World::SetPendingFogState((zClass_NodePartial *)(currentNode), 0);
+                CZWorld::SetPendingFogState((CZNodePartial *)(currentNode), 0);
             } else {
                 printf("Did not understand: %s\n", state);
             }
@@ -2782,8 +2782,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WorldSetVirtualPartition", 0x18) != 0) {
-            zClass_World::SetVirtualPartition(
-                (zClass_NodePartial *)(currentNode),
+            CZWorld::SetVirtualPartition(
+                (CZNodePartial *)(currentNode),
                 ParseBoolToken()
             );
             return 1;
@@ -3037,7 +3037,7 @@ FILE * CZInterp::OpenPreparedScriptStream(
 bool CZInterp::ValidateArgsAndNodeType(
     int expectedArgCount,
     int expectedClassType,
-    zClass_NodePartial *node
+    CZNodePartial *node
 ) {
     if (expectedClassType != 0) {
         if (node == 0) {
@@ -3085,10 +3085,10 @@ bool CZInterp::ValidateArgsAndNodeType(
  * provider entry and returning false.
  */
 bool CZInterp::HandleScrollDisable(
-    zClass_NodePartial *node
+    CZNodePartial *node
 ) {
     if (node != 0) {
-        zClass_Class::gwNodeGetUserData(node, 0);
+        CZClass::gwNodeGetUserData(node, 0);
     }
 
     return 0;
@@ -3102,32 +3102,32 @@ bool CZInterp::HandleScrollDisable(
  * Purpose: register a node for immediate or driver-driven texture scrolling.
  */
 bool CZInterp::RegisterScrollAlwaysNode(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float scrollRateU,
     float scrollRateV,
     bool installDriverCallback
 ) {
     if (node != 0) {
         unsigned int diValue = 0;
-        zClass_Class::gwNodeGetUserData(node, &diValue);
+        CZClass::gwNodeGetUserData(node, &diValue);
         zDiPartial *const di = (zDiPartial *)(diValue);
         if (di != 0) {
             zModel::SetDiTextureWorldPerMeter(di, 1, scrollRateU, scrollRateV);
             if (installDriverCallback != 0) {
                 if (scrollAlwaysDriverNode == 0) {
-                    scrollAlwaysDriverNode = zClass_Object3D::gwObject3DInit();
-                    zClass_Class::gwNodeSetActionCallback(
+                    scrollAlwaysDriverNode = CZObject3D::gwObject3DInit();
+                    CZClass::gwNodeSetActionCallback(
                         scrollAlwaysDriverNode,
                         (void *)(&zInterp_Object3D::ScrollAlwaysTickAction)
                     );
-                    zClass_Class::gwNodeSetName(scrollAlwaysDriverNode, "ScrollAlways");
+                    CZClass::gwNodeSetName(scrollAlwaysDriverNode, "ScrollAlways");
                     scrollAlwaysDriverNode->callbackContext =
-                        (zClass_NodePartial *)(this);
+                        (CZNodePartial *)(this);
                 }
 
                 scrollAlwaysList.push_back(node);
             } else {
-                zClass_Class::gwNodeSetActionCallback(
+                CZClass::gwNodeSetActionCallback(
                     node,
                     (void *)(&zInterp_Object3D::DefaultRenderAction)
                 );
@@ -3147,10 +3147,10 @@ namespace zInterp_Object3D {
  * Purpose: update scrolling textures for a node's display-instance payload.
  */
 int __fastcall DefaultRenderAction(
-    zClass_NodePartial *node
+    CZNodePartial *node
 ) {
     unsigned int userData;
-    zClass_Class::gwNodeGetUserData(node, &userData);
+    CZClass::gwNodeGetUserData(node, &userData);
     return zModelInstanceUpdateScrollingTexturesIfNeeded((zModel_InstancePartial *)(userData));
 }
 
@@ -3163,7 +3163,7 @@ int __fastcall DefaultRenderAction(
  * update action for each payload node.
  */
 void __fastcall ScrollAlwaysTickAction(
-    zClass_NodePartial *wrapperNode
+    CZNodePartial *wrapperNode
 ) {
     if (wrapperNode == 0) {
         return;

@@ -76,14 +76,14 @@ extern OptCatalogEntryDef *g_Player_MakeColdOptEntry;
 extern zEffectAnimEntry *g_Player_BftSplashAnimEntry;
 extern zEffectAnimEntry *g_Player_ActiveDebugScriptAsyncEntry;
 extern int g_Player_HorizonNodeFollowCameraEnabled;
-extern zClass_NodePartial *g_Player_HorizonNode;
+extern CZNodePartial *g_Player_HorizonNode;
 extern int g_PlayerPrevCameraState;
 extern int g_PlayerPrevSteeringMode;
 extern int g_Player_SavedSteeringMode;
-extern zClass_NodePartial *g_Player_CopterHealthyNode1;
-extern zClass_NodePartial *g_Player_CopterHealthyNode2;
-extern zClass_NodePartial *g_Player_CopterSndNode1;
-extern zClass_NodePartial *g_Player_CopterSndNode2;
+extern CZNodePartial *g_Player_CopterHealthyNode1;
+extern CZNodePartial *g_Player_CopterHealthyNode2;
+extern CZNodePartial *g_Player_CopterSndNode1;
+extern CZNodePartial *g_Player_CopterSndNode2;
 extern zSndSample *g_Player_CopterSndSample;
 extern int g_PlayerEnvProbeSampleCount;
 extern int g_PlayerEnvProbe_AboveGroundFlags[10];
@@ -247,7 +247,7 @@ struct PlayerEnvProbeResult {
     float minProbeDepth;
     int preferAttachmentSlot1;
     int attachmentCandidateCount;
-    zClass_NodePartial *attachmentNode;
+    CZNodePartial *attachmentNode;
     int impactSlotBySample[9];
     PlayerProbeTypeHistogram hitHistogram;
     PlayerProbeSampleCandidateBuffer candidateBuffers[7];
@@ -268,9 +268,9 @@ struct PlayerMissionSaveTimedHitStatus {
     unsigned int savedHitSourceEntryId;
     float currentLevel;
     float targetLevel;
-    zClass_NodePartial *lightNode;
+    CZNodePartial *lightNode;
     float nextUpdateTime;
-    zClass_NodePartial *lightParentNode;
+    CZNodePartial *lightParentNode;
 };
 
 struct PlayerMissionSaveData {
@@ -333,7 +333,7 @@ struct PlayerMineSaveEntry {
 };
 
 struct PlayerNodeFlagRestoreEntry {
-    zClass_NodePartial *node;
+    CZNodePartial *node;
     int wasCellPickable;
     int wasRaycastable;
     int wasPickable;
@@ -440,7 +440,7 @@ void __fastcall ExtractVehicleNameFromAivName(
     const char *aivName,
     char *outVehicleName
 );
-zClass_NodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
+CZNodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
     const char *templateName,
     const char *newName
 );
@@ -573,7 +573,7 @@ void __fastcall ClassifyPendingContactsForSegment(
 );
 int __fastcall CollectPendingContactsForSegments(
     zUtil_SaveGameState *saveState,
-    zClass_DiSegmentEndpoints *segmentPairs,
+    CZDisplayInstanceSegmentEndpoints *segmentPairs,
     int endpointCount,
     int *segmentTags
 );
@@ -669,7 +669,7 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
     void *hitRenderPointEntry,
     float damage
 );
-void __fastcall RecordNodeFlagsForRestore(zClass_NodePartial *node);
+void __fastcall RecordNodeFlagsForRestore(CZNodePartial *node);
 void __fastcall BuildMissionSaveData(PlayerMissionSaveData *outData);
 void __fastcall ApplyMissionSaveData(PlayerMissionSaveData *saveData);
 void __cdecl RestoreRecordedNodeFlags();
@@ -725,8 +725,8 @@ int __fastcall UpdateStatusMeter(
 );
 int __fastcall IsMissionProbeType1EnabledById(int missionId);
 void __fastcall InitMissionRuntimeFromWorldAndCamera(
-    zClass_NodePartial *worldNode,
-    zClass_NodePartial *cameraNode
+    CZNodePartial *worldNode,
+    CZNodePartial *cameraNode
 );
 void __fastcall LoadMasterCommonDataFromNode(
     PlayerMasterCommonData *commonData,
@@ -740,11 +740,11 @@ void __fastcall LoadMasterModalDataFromNode(
 );
 int __fastcall BuildCollisionPointsFromModel(
     zUtil_SaveGameState *saveState,
-    zClass_NodePartial *modelNode
+    CZNodePartial *modelNode
 );
 int __fastcall BuildSupportPointsFromModel(
     zUtil_SaveGameState *saveState,
-    zClass_NodePartial *modelNode
+    CZNodePartial *modelNode
 );
 void __fastcall BindModalStateFromMasterModalData(
     zUtil_SaveGameState *saveState,
@@ -837,8 +837,8 @@ void __fastcall AutoSwitchToNextUsableAltWeapon(
 void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState *saveState);
 void __fastcall UpdateGunAndTurretAimNodes(
     const zVec3 *aimDirection,
-    zClass_NodePartial *gunNode,
-    zClass_NodePartial *turretNode
+    CZNodePartial *gunNode,
+    CZNodePartial *turretNode
 );
 void __fastcall ApplyAimPitchToDirection(
     zVec3 *direction,
@@ -891,7 +891,7 @@ void __fastcall ProbeModalSampleHeights(
     int preferAttachmentSlot1,
     PlayerProbeTypeHistogram *outTypeHistogram,
     int *outAttachmentCandidateCount,
-    zClass_NodePartial **outAttachmentNode
+    CZNodePartial **outAttachmentNode
 );
 void __fastcall BuildEnvironmentProbeResult(
     zUtil_SaveGameState *saveState,
@@ -985,7 +985,7 @@ void __fastcall ComposeAimBasisWorldMatrix(
 );
 void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
     PlayerGunFireSlot *slot,
-    zClass_NodePartial *slotNode,
+    CZNodePartial *slotNode,
     float slotAimY,
     int applyMatrix
 );

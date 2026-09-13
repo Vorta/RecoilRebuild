@@ -10,35 +10,35 @@ namespace {
 
 }
 
-namespace zClass_Display {
+namespace CZDisplay {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.deletenode
-     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-display-delete-node: zClass_Display::DeleteNode
+     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-display-delete-node: CZDisplay::DeleteNode
      *
      * Purpose: route display deletion through the generic node free path.
      */
-    int __fastcall DeleteNode(zClass_NodePartial * node) {
-        return zClass_Class::TryFreeNode(node);
+    int __fastcall DeleteNode(CZNodePartial * node) {
+        return CZClass::TryFreeNode(node);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplayinit
-     * @recoil-artifact defines .text recoil:function:0x44fdd0: zClass_Display::gwDisplayInit
+     * @recoil-artifact defines .text recoil:function:0x44fdd0: CZDisplay::gwDisplayInit
      *
      *
      * Purpose: allocate a display node, initialize its class data defaults, and
      * insert it into the display type list.
      */
-    zClass_NodePartial *__cdecl gwDisplayInit() {
-        zClass_NodePartial *node = zClass_Class::gwNodeNew();
+    CZNodePartial *__cdecl gwDisplayInit() {
+        CZNodePartial *node = CZClass::gwNodeNew();
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0x41, "Null node pointer.");
             return 0;
         }
 
         node->classId = kZClassNodeDisplay;
-        zClass_DisplayDataPartial *data =
-            (zClass_DisplayDataPartial *)(calloc(1, sizeof(zClass_DisplayDataPartial)));
+        CZDisplayDataPartial *data =
+            (CZDisplayDataPartial *)(calloc(1, sizeof(CZDisplayDataPartial)));
         node->classData = data;
         data->width = 1;
         data->height = 1;
@@ -46,8 +46,8 @@ namespace zClass_Display {
         data->backgroundG = 0.392f;
         data->backgroundB = 1.0f;
 
-        if (zClass_TypeList::Insert(15, node) != 0) {
-            zClass_Class::DeleteNodeByType(node);
+        if (CZTypeList::Insert(15, node) != 0) {
+            CZClass::DeleteNodeByType(node);
             return 0;
         }
 
@@ -56,15 +56,15 @@ namespace zClass_Display {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-removechild
-     * @recoil-artifact defines .text recoil:function:0x44fe50: zClass_Display::RemoveChild
+     * @recoil-artifact defines .text recoil:function:0x44fe50: CZDisplay::RemoveChild
      * @recoil-match byte
      *
      * Purpose: validate the parent and child pointers, then remove the child
      * through the generic zClass child-list helper.
      */
     int __fastcall RemoveChild(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
+        CZNodePartial * parent,
+        CZNodePartial * child
     ) {
         if (parent == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Display.c", 0x8f, "Null node pointer.");
@@ -76,19 +76,19 @@ namespace zClass_Display {
             return 5;
         }
 
-        zClass_Class::RemoveChildGeneric(parent, child);
+        CZClass::RemoveChildGeneric(parent, child);
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetsize
-     * @recoil-artifact defines .text recoil:function:0x44fe90: zClass_Display::gwDisplaySetSize
+     * @recoil-artifact defines .text recoil:function:0x44fe90: CZDisplay::gwDisplaySetSize
      * @recoil-match byte
      *
      * Purpose: validate a display node and update its stored width and height.
      */
     int __fastcall gwDisplaySetSize(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         int width,
         int height
     ) {
@@ -112,8 +112,8 @@ namespace zClass_Display {
             return 3;
         }
 
-        zClass_DisplayDataPartial *data =
-            (zClass_DisplayDataPartial *)(node->classData);
+        CZDisplayDataPartial *data =
+            (CZDisplayDataPartial *)(node->classData);
         data->width = width;
         data->height = height;
         return 0;
@@ -121,13 +121,13 @@ namespace zClass_Display {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetposition
-     * @recoil-artifact defines .text recoil:function:0x44ff10: zClass_Display::gwDisplaySetPosition
+     * @recoil-artifact defines .text recoil:function:0x44ff10: CZDisplay::gwDisplaySetPosition
      * @recoil-match byte
      *
      * Purpose: validate a display node and update its stored screen position.
      */
     int __fastcall gwDisplaySetPosition(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         int x,
         int y
     ) {
@@ -151,8 +151,8 @@ namespace zClass_Display {
             return 3;
         }
 
-        zClass_DisplayDataPartial *data =
-            (zClass_DisplayDataPartial *)(node->classData);
+        CZDisplayDataPartial *data =
+            (CZDisplayDataPartial *)(node->classData);
         data->x = x;
         data->y = y;
         return 0;
@@ -160,14 +160,14 @@ namespace zClass_Display {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetbackgroundcolor
-     * @recoil-artifact defines .text recoil:function:0x44ff90: zClass_Display::gwDisplaySetBackgroundColor
+     * @recoil-artifact defines .text recoil:function:0x44ff90: CZDisplay::gwDisplaySetBackgroundColor
      *
      *
      * Purpose: update the display background color, pack it to the video clear
      * color format, and set the renderer clear color.
      */
     int __fastcall gwDisplaySetBackgroundColor(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         float red,
         float green,
         float blue
@@ -192,8 +192,8 @@ namespace zClass_Display {
             return 3;
         }
 
-        zClass_DisplayDataPartial *data =
-            (zClass_DisplayDataPartial *)(node->classData);
+        CZDisplayDataPartial *data =
+            (CZDisplayDataPartial *)(node->classData);
         data->backgroundR = red;
         data->backgroundG = green;
         data->backgroundB = blue;

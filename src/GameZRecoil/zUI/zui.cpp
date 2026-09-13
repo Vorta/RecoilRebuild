@@ -1891,10 +1891,10 @@ void HudWeatherFxSnow::Update(
     const float viewportHeightF = (float)(viewportHeight);
 
     zVec3 cameraTarget;
-    zClass_Camera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
+    CZCamera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
 
     zVec3 cameraAngles;
-    zClass_Camera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
+    CZCamera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
     cameraTargetDrift.x =
@@ -2051,10 +2051,10 @@ void HudWeatherFxRain::Update(
     const float viewportHeightF = (float)(viewportHeight);
 
     zVec3 cameraTarget;
-    zClass_Camera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
+    CZCamera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
 
     zVec3 cameraAngles;
-    zClass_Camera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
+    CZCamera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
     cameraTargetDrift.x =

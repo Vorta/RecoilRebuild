@@ -18,8 +18,8 @@ struct zSndSample;
 struct zUtil_SaveGameState;
 
 struct PickupAirdropSpawnRef {
-    zClass_NodePartial *carrierNode;
-    zClass_NodePartial *dropAttachNode;
+    CZNodePartial *carrierNode;
+    CZNodePartial *dropAttachNode;
     zVec3 worldPos;
 
     PickupAirdropSpawnRef * InitNodesFromCarrierNodeName(
@@ -44,7 +44,7 @@ RECOIL_STATIC_ASSERT(sizeof(PickupAirdropSpawnRef) == 0x14);
 
 struct PickupBvolHitCallbackContext {
     unsigned char unknown_00[0x24];
-    zClass_NodePartial *ownerNode;
+    CZNodePartial *ownerNode;
 };
 
 struct PickupNodeRuntimeFields {
@@ -60,7 +60,7 @@ struct PickupSpawnDef {
     int amount;
     zVec3 position;
     zVec3 rotation;
-    zClass_NodePartial *pickupObj;
+    CZNodePartial *pickupObj;
     int spawnParam;
     int refCount;
     float respawnDelay;
@@ -263,7 +263,7 @@ struct PickupType {
     int defaultAmount;
     const char *logicalName;
     int nameSuffixMax;
-    zClass_NodePartial *templateNode;
+    CZNodePartial *templateNode;
     zSndSample *pickupSound;
     zVidImagePartial *optMetaImage;
     int unknown_24;
@@ -310,7 +310,7 @@ extern PickupRespawnQueue g_PickupRespawnQueue;
 extern PickupSpawnList g_PickupSpawnList_Primary;
 extern int g_NextPickupId;
 extern int g_Pickup_LastVTOLDropIndex;
-extern zClass_NodePartial *g_Pickup_SceneNode;
+extern CZNodePartial *g_Pickup_SceneNode;
 extern PickupPkt11Delta g_PickupPkt11Flag2Delta;
 extern PickupPkt11Delta g_PickupPkt11Flag8Delta;
 extern PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay;
@@ -321,7 +321,7 @@ extern PickupAirdropSpawnRef *g_Pickup_GlobalAirdropSpawnRef;
 
 namespace Pickup {
 int __fastcall Init(
-    zClass_NodePartial *sceneNode,
+    CZNodePartial *sceneNode,
     const char *pickupsCfgPath
 );
 int __cdecl InitAndLoadPuppySpawns();
@@ -337,7 +337,7 @@ void __fastcall ArchiveReadRecord(
     unsigned int size,
     void *userData
 );
-int __fastcall ResolveOwnerFromBvolHit(zClass_NodePartial **nodeInOut);
+int __fastcall ResolveOwnerFromBvolHit(CZNodePartial **nodeInOut);
 PickupSpawnDef *__fastcall FindSpawnByPickupId(
     int pickupId,
     PickupSpawnList *list
@@ -347,7 +347,7 @@ int __fastcall SpawnListContainsPickupId(
     PickupSpawnList *list
 );
 void __cdecl ReconcilePrimaryAndNetworkCopySpawnLists();
-PickupSpawnDef *__fastcall GetSpawnDefFromNode(zClass_NodePartial *pickupNode);
+PickupSpawnDef *__fastcall GetSpawnDefFromNode(CZNodePartial *pickupNode);
 zVidImagePartial *__fastcall FindOptMetaImageByOptEntry(
     OptCatalogEntryDef *optEntry
 );
@@ -356,7 +356,7 @@ PickupType *__fastcall FindDroppableTypeForPlayerCurrentWeapon(
 );
 void __fastcall RemoveOtherSpawnsWithSameOptEntry(
     OptCatalogEntryDef *optEntry,
-    zClass_NodePartial *keepPickupObj
+    CZNodePartial *keepPickupObj
 );
 int __fastcall SendPkt11Flag2Delta(PickupSpawnDef *spawn);
 int __fastcall SendPkt11Flag8Delta(PickupSpawnDef *spawn);
@@ -374,8 +374,8 @@ void __fastcall SendPkt12AirdropSpawnChuteRelay(
     zVec3 *spawnPos,
     int nextPickupId
 );
-int __fastcall AssignBvolGroupAndId(zClass_NodePartial *pickupObj);
-zClass_NodePartial *__fastcall CreateObjectInstance(
+int __fastcall AssignBvolGroupAndId(CZNodePartial *pickupObj);
+CZNodePartial *__fastcall CreateObjectInstance(
     int typeIndex,
     int overrideAmount
 );
@@ -399,7 +399,7 @@ PickupSpawnDef *__fastcall SpawnFromParsedZrdEntry(
     PickupParsedZrdEntry *entry
 );
 PickupSpawnDef *__fastcall CreateSpawnDefAndLink(
-    zClass_NodePartial *pickupObj,
+    CZNodePartial *pickupObj,
     zVec3 *position,
     zVec3 *rotation,
     int spawnParam,
@@ -407,11 +407,11 @@ PickupSpawnDef *__fastcall CreateSpawnDefAndLink(
 );
 void __fastcall RegisterExistingObject(
     int unused,
-    zClass_NodePartial *pickupObj,
+    CZNodePartial *pickupObj,
     int eventValue
 );
 void __fastcall SetVariantFromTerrain(
-    zClass_NodePartial *pickupObj,
+    CZNodePartial *pickupObj,
     zVec3 *position
 );
 void __fastcall RespawnSpawnDef(PickupSpawnDef *spawn);
@@ -429,11 +429,11 @@ int __fastcall SpawnListHasEntryNearXZ(
 );
 void __fastcall RemoveObject(
     zEffectAnimEntry *animEntry,
-    zClass_NodePartial *pickupObj,
+    CZNodePartial *pickupObj,
     int eventValue
 );
 int __fastcall OnCollected(
-    zClass_NodePartial *hitNode,
+    CZNodePartial *hitNode,
     zUtil_SaveGameState *saveState
 );
 int __fastcall GrantAmmoOrWeapon(
@@ -484,7 +484,7 @@ RECOIL_STATIC_ASSERT(
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
-    sizeof(PickupNodeRuntimeFields) == sizeof(((zClass_NodePartial *)0)->name)
+    sizeof(PickupNodeRuntimeFields) == sizeof(((CZNodePartial *)0)->name)
 );
 RECOIL_STATIC_ASSERT(
     offsetof(

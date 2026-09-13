@@ -215,13 +215,13 @@ RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_FeatureNodeName) == 0x0d);
  * @recoil-artifact defines .data recoil:data:0x539e18: g_zDEClient_CameraNode.
  * Purpose: Stores g zDEClient CameraNode data used by engine.zeffect.zdeclient_camera_globals.
  */
-zClass_NodePartial *g_zDEClient_CameraNode = 0;
+CZNodePartial *g_zDEClient_CameraNode = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-cameranodeclassdata
  * @recoil-artifact defines .data recoil:data:0x539e1c: g_zDEClient_CameraNodeClassData.
  * Purpose: Stores g zDEClient CameraNodeClassData data used by engine.zeffect.zdeclient_camera_globals.
  */
-zClass_CameraDataPartial *g_zDEClient_CameraNodeClassData = 0;
+CZCameraDataPartial *g_zDEClient_CameraNodeClassData = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclientqsandnetrelaycallback
  * @recoil-artifact defines .data recoil:data:0x539de4: g_zDEClientQSandNetRelayCallback.
@@ -244,7 +244,7 @@ namespace zDEClient {
  * active camera, and register feature reload callbacks.
  */
 int __fastcall LoadConfigResources(
-    zClass_NodePartial *worldNode
+    CZNodePartial *worldNode
 ) {
     int textureLoadPending = 0;
     if (worldNode == 0) {

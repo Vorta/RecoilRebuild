@@ -14,35 +14,35 @@ namespace {
 
 }
 
-namespace zClass_Animate {
+namespace CZAnimate {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.deletenode
-     * @recoil-artifact defines .text recoil:function:0x453b10: zClass_Animate::DeleteNode
+     * @recoil-artifact defines .text recoil:function:0x453b10: CZAnimate::DeleteNode
      * @recoil-match byte
      *
      * Purpose: validate the animate node pointer and return the node to the
      * shared zClass free-list machinery.
      */
-    int __fastcall DeleteNode(zClass_NodePartial * node) {
+    int __fastcall DeleteNode(CZNodePartial * node) {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x72, "Null node pointer.");
             return 5;
         }
 
-        return zClass_Class::TryFreeNode(node);
+        return CZClass::TryFreeNode(node);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.addchild
-     * @recoil-artifact defines .text recoil:function:0x453b40: zClass_Animate::AddChild
+     * @recoil-artifact defines .text recoil:function:0x453b40: CZAnimate::AddChild
      * @recoil-match byte
      *
      * Purpose: validate animate parent and child nodes, then append the child
      * through the shared zClass child-list helper.
      */
     int __fastcall AddChild(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
+        CZNodePartial * parent,
+        CZNodePartial * child
     ) {
         if (parent == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x80, "Null node pointer.");
@@ -53,20 +53,20 @@ namespace zClass_Animate {
             return 5;
         }
 
-        return zClass_Class::AddChildGeneric(parent, child);
+        return CZClass::AddChildGeneric(parent, child);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.removechild
-     * @recoil-artifact defines .text recoil:function:0x453b80: zClass_Animate::RemoveChild
+     * @recoil-artifact defines .text recoil:function:0x453b80: CZAnimate::RemoveChild
      * @recoil-match byte
      *
      * Purpose: validate animate parent, child, and class-data pointers, then
      * remove the child through the shared zClass child-list helper.
      */
     int __fastcall RemoveChild(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
+        CZNodePartial * parent,
+        CZNodePartial * child
     ) {
         if (parent == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x97, "Null node pointer.");
@@ -81,24 +81,24 @@ namespace zClass_Animate {
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(parent, child);
+        return CZClass::RemoveChildGeneric(parent, child);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.updatenode
-     * @recoil-artifact defines .text recoil:function:0x453bd0: zClass_Animate::UpdateNode
+     * @recoil-artifact defines .text recoil:function:0x453bd0: CZAnimate::UpdateNode
      * @recoil-match byte
      *
      * Purpose: update active animation runtime state, sample transforms, and
      * enqueue the node for type-list processing when it becomes dirty.
      */
-    int __fastcall UpdateNode(zClass_NodePartial * node) {
-        zClass_AnimateDataPartial *data;
+    int __fastcall UpdateNode(CZNodePartial * node) {
+        CZAnimateDataPartial *data;
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x1a9, "Null node pointer.");
             return 5;
         }
-        data = (zClass_AnimateDataPartial *)(node->classData);
+        data = (CZAnimateDataPartial *)(node->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Animate.c", 0x1aa, "Null class data pointer");
             return 5;
@@ -106,16 +106,16 @@ namespace zClass_Animate {
         if ((data->statusFlags & 0x04) != 0) {
             const float deltaTime = g_FrameDeltaTimeSec;
             if (AdvanceTime(&data->runtime, deltaTime) == kAnimateStateStopped) {
-                data = (zClass_AnimateDataPartial *)node->classData;
+                data = (CZAnimateDataPartial *)node->classData;
                 data->statusFlags &= ~0x04;
                 return 0;
             }
-            data = (zClass_AnimateDataPartial *)node->classData;
+            data = (CZAnimateDataPartial *)node->classData;
             SampleTransform(&data->runtime);
-            data = (zClass_AnimateDataPartial *)node->classData;
+            data = (CZAnimateDataPartial *)node->classData;
             data->flags |= 0x01;
             if ((node->flags & 0x01) == 0) {
-                if (zClass_TypeList::Insert(7, node) == 0) {
+                if (CZTypeList::Insert(7, node) == 0) {
                     node->flags |= 0x01;
                 }
             }
@@ -126,7 +126,7 @@ namespace zClass_Animate {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.advancetime
-     * @recoil-artifact defines .text recoil:function:0x453c90: zClass_Animate::AdvanceTime
+     * @recoil-artifact defines .text recoil:function:0x453c90: CZAnimate::AdvanceTime
      * @recoil-match byte
      *
      * Purpose: advance the animation clock, stop non-looping animations at the
@@ -134,7 +134,7 @@ namespace zClass_Animate {
      * The loop-count sentinel distinguishes one-shot playback from looping.
      */
     short __fastcall AdvanceTime(
-        zClass_AnimateRuntimePartial * runtime,
+        CZAnimateRuntimePartial * runtime,
         float deltaTime
     ) {
         if (runtime->state == kAnimateStateStopped) {
@@ -163,12 +163,12 @@ namespace zClass_Animate {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.sampletransform
-     * @recoil-artifact defines .text recoil:function:0x453d20: zClass_Animate::SampleTransform
+     * @recoil-artifact defines .text recoil:function:0x453d20: CZAnimate::SampleTransform
      *
      * Purpose: sample interpolated rotation, position, and scale keyframe data
      * for the current animation time.
      */
-    short __fastcall SampleTransform(zClass_AnimateRuntimePartial * runtime) {
+    short __fastcall SampleTransform(CZAnimateRuntimePartial * runtime) {
         if (runtime->state == kAnimateStateStopped) {
             return kAnimateStateStopped;
         }
@@ -177,8 +177,8 @@ namespace zClass_Animate {
             runtime->currentTime * (float)(runtime->maxFrameIndex - 1) / runtime->duration;
         const int frameIndex = (int)(frame);
         const float fraction = frame - (float)(frameIndex);
-        const zClass_AnimateKeyframePartial *key0 = &runtime->keyframes[frameIndex];
-        const zClass_AnimateKeyframePartial *key1 = &runtime->keyframes[frameIndex + 1];
+        const CZAnimateKeyframePartial *key0 = &runtime->keyframes[frameIndex];
+        const CZAnimateKeyframePartial *key1 = &runtime->keyframes[frameIndex + 1];
 
         runtime->sampledRotation.x =
             ((key1->rotation.x - key0->rotation.x) * fraction + key0->rotation.x) *

@@ -60,8 +60,8 @@ extern int gModel_HasActiveLights;
  */
 
 struct zModel_ActiveLightEntryLive {
-    zClass_LightDataPartial *light;
-    zClass_NodePartial *lightNode;
+    CZLightDataPartial *light;
+    CZNodePartial *lightNode;
     int useFullWeight;
     int contributesToLighting;
     unsigned int reserved_10;
@@ -69,7 +69,7 @@ struct zModel_ActiveLightEntryLive {
 
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         flags
     ) == 0x24
 );
@@ -103,8 +103,8 @@ RECOIL_STATIC_ASSERT(sizeof(zModel_FogTargetColorOverride) == 0x10);
 extern int gModel_ActiveLightCount;
 extern int gModel_ActiveLightSpecialIndex;
 extern zModel_ActiveLightEntryLive gModel_ActiveLights[0x40];
-extern zClass_LightDataPartial **gModel_LightInputDataList;
-extern zClass_NodePartial **gModel_LightInputNodeStates;
+extern CZLightDataPartial **gModel_LightInputDataList;
+extern CZNodePartial **gModel_LightInputNodeStates;
 extern int gModel_LightInputCount;
 extern int g_zModel_SoftwarePathActive;
 extern float g_Clip_PolyAttr0[0x40];
@@ -285,8 +285,8 @@ int __fastcall zModelLightBuildLightWeights(
     float fogBlendScale
 );
 void __fastcall zModelLightPointInPolygonInitXZ(
-    zClass_NodePartial **lightNodes,
-    zClass_LightDataPartial **lightDataList,
+    CZNodePartial **lightNodes,
+    CZLightDataPartial **lightDataList,
     int lightCount
 );
 
@@ -310,11 +310,11 @@ int __fastcall SetDiTextureWorldPerMeter(
     float scrollRateV
 );
 void __fastcall RenderNodeHardware(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int clipMask
 );
 void __fastcall RenderNodeSoftware(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int clipMask
 );
 void __stdcall SetBackfaceEliminationToleranceScalar(float scalar);
@@ -344,7 +344,7 @@ void __cdecl zModelFogApplyCurrentColor();
 
 namespace zModel_Light {
 float __fastcall EvalDistanceWeight(
-    const zClass_LightDataPartial *light,
+    const CZLightDataPartial *light,
     float distance
 );
 float __fastcall EvalSphereFogFade(

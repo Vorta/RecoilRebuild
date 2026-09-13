@@ -14,54 +14,54 @@ namespace {
 
 }
 
-namespace zClass_Sequence {
+namespace CZSequence {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sequence.deletenode
-     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-sequence-delete-node: zClass_Sequence::DeleteNode
+     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-sequence-delete-node: CZSequence::DeleteNode
      * Purpose: route sequence deletion through the generic node free path.
      */
-    int __fastcall DeleteNode(zClass_NodePartial * node) {
-        return zClass_Class::TryFreeNode(node);
+    int __fastcall DeleteNode(CZNodePartial * node) {
+        return CZClass::TryFreeNode(node);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-gwsequencenew
-     * @recoil-artifact defines .text recoil:function:0x453ee0: zClass_Sequence::gwSequenceNew
+     * @recoil-artifact defines .text recoil:function:0x453ee0: CZSequence::gwSequenceNew
      *
      * Purpose: allocate a sequence node, attach zeroed sequence class data,
      * seed the forward step, and register the node with the type list.
      */
-    zClass_NodePartial *__cdecl gwSequenceNew() {
-        zClass_NodePartial *node = zClass_Class::gwNodeNew();
+    CZNodePartial *__cdecl gwSequenceNew() {
+        CZNodePartial *node = CZClass::gwNodeNew();
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x41, "Null node pointer.");
             return 0;
         }
 
         node->classId = 7;
-        zClass_SequenceDataPartial *data =
-            (zClass_SequenceDataPartial *)(calloc(1, sizeof(zClass_SequenceDataPartial)));
+        CZSequenceDataPartial *data =
+            (CZSequenceDataPartial *)(calloc(1, sizeof(CZSequenceDataPartial)));
         node->classData = data;
         data->step = 1;
-        zClass_TypeList::Insert(11, node);
+        CZTypeList::Insert(11, node);
         return node;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-gwsequenceaddchild
-     * @recoil-artifact defines .text recoil:function:0x453f40: zClass_Sequence::gwSequenceAddChild
+     * @recoil-artifact defines .text recoil:function:0x453f40: CZSequence::gwSequenceAddChild
      *
      * Purpose: append a child node, grow the sequence entry storage, and insert
      * the child delay record at the requested sequence index.
      */
     int __fastcall gwSequenceAddChild(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child,
+        CZNodePartial * parent,
+        CZNodePartial * child,
         int insertIndex,
         float delay
     ) {
         int addResult;
-        zClass_SequenceDataPartial *data;
+        CZSequenceDataPartial *data;
         int entryCount;
         int i;
 
@@ -78,16 +78,16 @@ namespace zClass_Sequence {
             return 5;
         }
 
-        addResult = zClass_Class::AddChildGeneric(parent, child);
+        addResult = CZClass::AddChildGeneric(parent, child);
         if (addResult != 0) {
             return addResult;
         }
 
-        data = (zClass_SequenceDataPartial *)(parent->classData);
-        data = (zClass_SequenceDataPartial *)(realloc(
+        data = (CZSequenceDataPartial *)(parent->classData);
+        data = (CZSequenceDataPartial *)(realloc(
             data,
-            data->entryCount * sizeof(zClass_SequenceEntryPartial) +
-                sizeof(zClass_SequenceDataPartial)
+            data->entryCount * sizeof(CZSequenceEntryPartial) +
+                sizeof(CZSequenceDataPartial)
         ));
         parent->classData = data;
 
@@ -105,14 +105,14 @@ namespace zClass_Sequence {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-removechild
-     * @recoil-artifact defines .text recoil:function:0x454000: zClass_Sequence::RemoveChild
+     * @recoil-artifact defines .text recoil:function:0x454000: CZSequence::RemoveChild
      *
      * Purpose: remove a child from both the zClass child list and the sequence
      * entry list, then clamp the active index back to the first entry if needed.
      */
     RemoveChild(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
+        CZNodePartial * parent,
+        CZNodePartial * child
     ) {
         if (parent == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0xd3, "Null node pointer.");
@@ -127,12 +127,12 @@ namespace zClass_Sequence {
             return 5;
         }
 
-        const int removeResult = zClass_Class::RemoveChildGeneric(parent, child);
+        const int removeResult = CZClass::RemoveChildGeneric(parent, child);
         if (removeResult != 0) {
             return removeResult;
         }
 
-        zClass_SequenceDataPartial *data = (zClass_SequenceDataPartial *)(parent->classData);
+        CZSequenceDataPartial *data = (CZSequenceDataPartial *)(parent->classData);
         int childIndex = -1;
         for (int i = 0; i < data->entryCount; ++i) {
             if (data->entries[i].node == child) {
@@ -157,22 +157,22 @@ namespace zClass_Sequence {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setactive
-     * @recoil-artifact defines .text recoil:function:0x4540c0: zClass_Sequence::SetActive
+     * @recoil-artifact defines .text recoil:function:0x4540c0: CZSequence::SetActive
      *
      * Purpose: set whether the sequence advances and renders its active child.
      */
     int __fastcall SetActive(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         int active
     ) {
-        zClass_SequenceDataPartial *data;
+        CZSequenceDataPartial *data;
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x113, "Null node pointer.");
             return 5;
         }
 
-        data = (zClass_SequenceDataPartial *)(node->classData);
+        data = (CZSequenceDataPartial *)(node->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x114, "Null class data pointer");
             return 5;
@@ -184,23 +184,23 @@ namespace zClass_Sequence {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setrepeat
-     * @recoil-artifact defines .text recoil:function:0x454100: zClass_Sequence::SetRepeat
+     * @recoil-artifact defines .text recoil:function:0x454100: CZSequence::SetRepeat
      *
      * Purpose: set whether the sequence remains active when traversal reaches
      * either end of the entry list.
      */
     int __fastcall SetRepeat(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         int repeat
     ) {
-        zClass_SequenceDataPartial *data;
+        CZSequenceDataPartial *data;
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x133, "Null node pointer.");
             return 5;
         }
 
-        data = (zClass_SequenceDataPartial *)(node->classData);
+        data = (CZSequenceDataPartial *)(node->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x134, "Null class data pointer");
             return 5;
@@ -212,23 +212,23 @@ namespace zClass_Sequence {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setloop
-     * @recoil-artifact defines .text recoil:function:0x454140: zClass_Sequence::SetLoop
+     * @recoil-artifact defines .text recoil:function:0x454140: CZSequence::SetLoop
      *
      * Purpose: set whether sequence traversal wraps at the entry-list bounds
      * instead of reversing direction.
      */
     int __fastcall SetLoop(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         int loop
     ) {
-        zClass_SequenceDataPartial *data;
+        CZSequenceDataPartial *data;
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x153, "Null node pointer.");
             return 5;
         }
 
-        data = (zClass_SequenceDataPartial *)(node->classData);
+        data = (CZSequenceDataPartial *)(node->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x154, "Null class data pointer");
             return 5;
@@ -240,23 +240,23 @@ namespace zClass_Sequence {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setpause
-     * @recoil-artifact defines .text recoil:function:0x454180: zClass_Sequence::SetPause
+     * @recoil-artifact defines .text recoil:function:0x454180: CZSequence::SetPause
      *
      * Purpose: set the pause flag that suppresses time advancement while
      * keeping the sequence active state unchanged.
      */
     int __fastcall SetPause(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         int paused
     ) {
-        zClass_SequenceDataPartial *data;
+        CZSequenceDataPartial *data;
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x173, "Null node pointer.");
             return 5;
         }
 
-        data = (zClass_SequenceDataPartial *)(node->classData);
+        data = (CZSequenceDataPartial *)(node->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x174, "Null class data pointer");
             return 5;
@@ -268,20 +268,20 @@ namespace zClass_Sequence {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-update
-     * @recoil-artifact defines .text recoil:function:0x4541c0: zClass_Sequence::Update
+     * @recoil-artifact defines .text recoil:function:0x4541c0: CZSequence::Update
      *
      * Purpose: accumulate frame time and advance the active sequence entry,
      * applying repeat, wrap, and direction-reversal behavior at the bounds.
      */
-    int __fastcall Update(zClass_NodePartial * node) {
-        zClass_SequenceDataPartial *data;
+    int __fastcall Update(CZNodePartial * node) {
+        CZSequenceDataPartial *data;
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x193, "Null node pointer.");
             return 5;
         }
 
-        data = (zClass_SequenceDataPartial *)(node->classData);
+        data = (CZSequenceDataPartial *)(node->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Seq.c", 0x194, "Null class data pointer");
             return 5;
@@ -337,31 +337,31 @@ namespace zClass_Sequence {
 
 }
 
-namespace zClass_Lod {
+namespace CZLod {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.lod.deletenode
-     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-lod-delete-node: zClass_Lod::DeleteNode
+     * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-lod-delete-node: CZLod::DeleteNode
      * Purpose: route LOD deletion through the generic node free path.
      */
-    int __fastcall DeleteNode(zClass_NodePartial * node) {
-        return zClass_Class::TryFreeNode(node);
+    int __fastcall DeleteNode(CZNodePartial * node) {
+        return CZClass::TryFreeNode(node);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodnew
-     * @recoil-artifact defines .text recoil:function:0x4542a0: zClass_Lod::gwLodNew.
+     * @recoil-artifact defines .text recoil:function:0x4542a0: CZLod::gwLodNew.
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
      *
      * Purpose: allocate an LOD node, attach zeroed LOD class data, and seed the
      * original default range and active-distance settings.
      */
-    zClass_NodePartial *__cdecl gwLodNew() {
-        zClass_NodePartial *node = zClass_Class::gwNodeNew();
+    CZNodePartial *__cdecl gwLodNew() {
+        CZNodePartial *node = CZClass::gwNodeNew();
         node->classId = kZClassNodeLod;
 
-        zClass_LodDataPartial *data =
-            (zClass_LodDataPartial *)(calloc(1, sizeof(zClass_LodDataPartial)));
+        CZLodDataPartial *data =
+            (CZLodDataPartial *)(calloc(1, sizeof(CZLodDataPartial)));
         node->classData = data;
         data->computeOwnDistance = 1;
         data->nearRange = 1000.0f;
@@ -373,7 +373,7 @@ namespace zClass_Lod {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodaddchild
-     * @recoil-artifact defines .text recoil:function:0x454310: zClass_Lod::gwLodAddChild.
+     * @recoil-artifact defines .text recoil:function:0x454310: CZLod::gwLodAddChild.
      * @recoil-match byte
      *
      * The original implementation translation unit is unresolved; Seq.c is
@@ -382,16 +382,16 @@ namespace zClass_Lod {
      * helper.
      */
     gwLodAddChild(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
+        CZNodePartial * parent,
+        CZNodePartial * child
     ) {
-        return zClass_Class::AddChildGeneric(parent, child);
+        return CZClass::AddChildGeneric(parent, child);
     }
 
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-removechild
-     * @recoil-artifact defines .text recoil:function:0x454320: zClass_Lod::RemoveChild.
+     * @recoil-artifact defines .text recoil:function:0x454320: CZLod::RemoveChild.
      * @recoil-match byte
      *
      * The original implementation translation unit is unresolved; Seq.c is
@@ -400,17 +400,17 @@ namespace zClass_Lod {
      * child-list helper and return success.
      */
     RemoveChild(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
+        CZNodePartial * parent,
+        CZNodePartial * child
     ) {
-        zClass_Class::RemoveChildGeneric(parent, child);
+        CZClass::RemoveChildGeneric(parent, child);
         return 0;
     }
 
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-setcomputeowndistance
-     * @recoil-artifact defines .text recoil:function:0x454330: zClass_Lod::SetComputeOwnDistance.
+     * @recoil-artifact defines .text recoil:function:0x454330: CZLod::SetComputeOwnDistance.
      * @recoil-match byte
      *
      * The original implementation translation unit is unresolved; Seq.c is
@@ -419,17 +419,17 @@ namespace zClass_Lod {
      * during render traversal.
      */
     SetComputeOwnDistance(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         int enabled
     ) {
-        ((zClass_LodDataPartial *)(node->classData))->computeOwnDistance = enabled;
+        ((CZLodDataPartial *)(node->classData))->computeOwnDistance = enabled;
         return 0;
     }
 
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-settargetnodeandrange
-     * @recoil-artifact defines .text recoil:function:0x454340: zClass_Lod::SetTargetNodeAndRange.
+     * @recoil-artifact defines .text recoil:function:0x454340: CZLod::SetTargetNodeAndRange.
      * @recoil-match byte
      *
      * The original implementation translation unit is unresolved; Seq.c is
@@ -438,11 +438,11 @@ namespace zClass_Lod {
      * range when a target is present.
      */
     SetTargetNodeAndRange(
-        zClass_NodePartial * node,
-        zClass_NodePartial * target,
+        CZNodePartial * node,
+        CZNodePartial * target,
         float range
     ) {
-        zClass_LodDataPartial *data = (zClass_LodDataPartial *)(node->classData);
+        CZLodDataPartial *data = (CZLodDataPartial *)(node->classData);
         data->rangeNode = target;
         if (target != 0) {
             data->rangeSq = range * range;

@@ -642,7 +642,7 @@ extern zArchiveList *g_zSndStream_ActiveList;
 extern zArchiveList *g_zSndStream_FreeList;
 extern zSndStreamRequest *g_zSndStream_MatchedRequest;
 extern int g_zSndStream_MatchedRequestCount;
-extern zClass_NodePartial *g_zSndStream_RootNode;
+extern CZNodePartial *g_zSndStream_RootNode;
 extern int g_zSndCdFlags;
 extern int g_zSndCdLastPlayMode;
 extern int g_zSndCdDeviceId;

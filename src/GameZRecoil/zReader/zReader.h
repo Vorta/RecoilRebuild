@@ -7,7 +7,7 @@
 #include "recoil/recoil_types.h"
 #include <stdio.h>
 
-struct zClass_NodePartial;
+struct CZNodePartial;
 
 namespace zReader {
 enum NodeType {
@@ -163,7 +163,7 @@ extern char *g_zUtil_ZRDR_WildcardPath;
 extern int g_zUtil_ZRDR_WildcardDigits[5];
 extern int g_zUtil_ZRDR_WildcardStarCount;
 extern char *g_zUtil_ZRDR_WildcardStarPtrs[5];
-extern zClass_NodePartial *g_Mover_LastLoadedNode;
+extern CZNodePartial *g_Mover_LastLoadedNode;
 extern int g_zRndr_GlobalStringCount;
 extern char *g_zRndr_GlobalStringTable[100];
 

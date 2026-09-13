@@ -898,7 +898,7 @@ extern "C" {
  * Authored zModel display global.
  * Purpose: dispatch visible model nodes to the active renderer path.
  */
-zClass_RenderFn gModel_RenderFn = 0;
+CZRenderFn gModel_RenderFn = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-clipmaskstack
  * @recoil-artifact defines .data recoil:data:0x57d9e4: gModel_ClipMaskStack.
@@ -3261,7 +3261,7 @@ void __fastcall EvalBoundingSphereLightingFlags(
             continue;
         }
 
-        zClass_LightDataPartial *light = entry.light;
+        CZLightDataPartial *light = entry.light;
         if (g_zModel_SoftwarePathActive != 0 && light->isDirectedSource != 0) {
             continue;
         }
@@ -3301,7 +3301,7 @@ namespace zModel {
  * Purpose: render a display-instance node through the software renderer path.
  */
 void __fastcall RenderNodeSoftware(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int clipMask
 ) {
     zDiPartial *const di = NodeDisplayInstance(node);
@@ -3698,7 +3698,7 @@ namespace zModel {
  * @recoil-artifact defines .text recoil:function:0x477b30: zModel::RenderNodeHardware
  * Purpose: render a display-instance node through the hardware renderer path.
  */
-void __fastcall RenderNodeHardware(zClass_NodePartial * node, int clipMask) {
+void __fastcall RenderNodeHardware(CZNodePartial * node, int clipMask) {
     zDiPartial *const di = NodeDisplayInstance(node);
     if (di == 0) {
         return;
@@ -4206,7 +4206,7 @@ int __fastcall zVideoFrustumTestSphereClipMask(
     const int oldMask = *clipMaskInOut;
     *clipMaskInOut = 0;
 
-    zClass_CameraDataPartial *viewContext = g_zVideo_pActiveProjectionViewContext;
+    CZCameraDataPartial *viewContext = g_zVideo_pActiveProjectionViewContext;
     zVec3 delta;
     if ((oldMask & 0x10) != 0) {
         delta.x = sphereCenter->x - viewContext->nearClipCenter.x;
@@ -4742,7 +4742,7 @@ int __fastcall OptCatalogIsDamageMaskSlotPtrRegistered(void *slotPtr) {
  * Purpose: provide the recovered zVideoSetActiveViewContext behavior.
  */
 void __fastcall zVideoSetActiveViewContext(
-    zClass_CameraDataPartial *viewContext
+    CZCameraDataPartial *viewContext
 ) {
     g_zVideo_pActiveProjectionViewContext = viewContext;
 
@@ -4761,7 +4761,7 @@ void __fastcall zVideoSetActiveViewContext(
 
     int windowX;
     int windowY;
-    if (zClass_Window::gwWindowGetSize(
+    if (CZWindow::gwWindowGetSize(
         g_zVideo_pActiveProjectionViewContext->windowNode,
         &windowX,
         &windowY
@@ -4772,7 +4772,7 @@ void __fastcall zVideoSetActiveViewContext(
 
     int width;
     int height;
-    if (zClass_Window::gwWindowGetResolution(
+    if (CZWindow::gwWindowGetResolution(
         g_zVideo_pActiveProjectionViewContext->windowNode,
         &width,
         &height
@@ -4890,7 +4890,7 @@ void __fastcall SetTargetRect(
  * Purpose: provide the recovered zVideoUpdateProjectionStateFromCameraData behavior.
  */
 void __fastcall zVideoUpdateProjectionStateFromCameraData(
-    zClass_CameraDataPartial *cameraData
+    CZCameraDataPartial *cameraData
 ) {
     zMat4x3 slotBuffer = {0};
     zMath::MatStackPushPtr((float *)(&slotBuffer));
@@ -4937,7 +4937,7 @@ void __fastcall zVideoUpdateProjectionStateFromCameraData(
  * clipping planes for the alternate clipping pass.
  */
 void __fastcall zClipAltBuildFrustumPlanes(
-    zClass_CameraDataPartial *cameraData
+    CZCameraDataPartial *cameraData
 ) {
     zMath::MatStackPushPtr(cameraData->worldTransform);
     zMathMatTransformNormalBatch(

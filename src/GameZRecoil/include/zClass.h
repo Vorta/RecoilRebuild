@@ -12,13 +12,13 @@
 
 struct zBBoxCorners;
 struct zDiPartial;
-struct zClass_LightDataPartial;
-struct zClass_SoundDataPartial;
+struct CZLightDataPartial;
+struct CZSoundDataPartial;
 struct zSndPlayHandle;
 struct zSndSample;
 struct zZbdSectionCallbackCtx;
 
-struct zClass_NodePartial {
+struct CZNodePartial {
     char name[0x24];
     int flags;
     int auxFlags;
@@ -28,37 +28,37 @@ struct zClass_NodePartial {
     int classId;
     void *classData;
     unsigned int userDataOrDiRef;
-    zClass_NodePartial *callbackContext;
+    CZNodePartial *callbackContext;
     int callbackPriority;
     void *actionCallback;
     int gridCol;
     int gridRow;
     int listCountA;
-    zClass_NodePartial **listA;
+    CZNodePartial **listA;
     int listCountB;
-    zClass_NodePartial **listB;
+    CZNodePartial **listB;
     float cachedSphereCenter[4];
     float cachedBounds[6];
 };
 
-struct zClass_TypeListLink {
-    zClass_NodePartial *node;
-    zClass_TypeListLink *prev;
-    zClass_TypeListLink *next;
+struct CZTypeListLink {
+    CZNodePartial *node;
+    CZTypeListLink *prev;
+    CZTypeListLink *next;
     int pendingRemove;
 };
 
-struct zClass_TypeListBucket {
-    zClass_TypeListLink *head;
-    zClass_TypeListLink *tail;
+struct CZTypeListBucket {
+    CZTypeListLink *head;
+    CZTypeListLink *tail;
     int pendingRemovalDirty;
 };
 
-typedef int(__fastcall *zClass_NodePredicate)(zClass_NodePartial *node);
-typedef int(__fastcall *zClass_NodeActionCallback)(zClass_NodePartial *node);
+typedef int(__fastcall *CZNodePredicate)(CZNodePartial *node);
+typedef int(__fastcall *CZNodeActionCallback)(CZNodePartial *node);
 
-struct zClass_NodeFreeListSlot {
-    zClass_NodePartial node;
+struct CZNodeFreeListSlot {
+    CZNodePartial node;
     zBBox3f primaryBounds;
     zBBox3f secondaryBounds;
     void *damageHandler;
@@ -87,17 +87,17 @@ inline zVec3 zVec3Make(
     return value;
 }
 
-struct zClass_WindowClearPoly {
+struct CZWindowClearPoly {
     zVec3 vertices[4];
     int vertCount;
 };
 
-struct zClass_WindowDataPartial {
+struct CZWindowDataPartial {
     int viewportWidth;
     int viewportHeight;
     int resolutionWidth;
     int resolutionHeight;
-    zClass_WindowClearPoly clearPolys[4];
+    CZWindowClearPoly clearPolys[4];
     int clearPolyIndexFlags;
     int bufferIndex;
     void *buffer;
@@ -106,7 +106,7 @@ struct zClass_WindowDataPartial {
     int fbBpp;
 };
 
-struct zClass_DisplayDataPartial {
+struct CZDisplayDataPartial {
     int x;
     int y;
     int width;
@@ -133,10 +133,10 @@ struct zWorldAreaPartial {
     unsigned char unknown_38;
     unsigned char displayRefreshQueued;
     short childCount;
-    zClass_NodePartial **childList;
+    CZNodePartial **childList;
 };
 
-struct zClass_WorldDataPartial {
+struct CZWorldDataPartial {
     int flags;
     int pendingAreaUpdateCount;
     int pendingAreaUpdateCapacity;
@@ -173,15 +173,15 @@ struct zClass_WorldDataPartial {
     float scaleY;
     float scaleZ;
     int lightCount;
-    zClass_NodePartial **lightNodes;
-    zClass_LightDataPartial **lightDataList;
+    CZNodePartial **lightNodes;
+    CZLightDataPartial **lightDataList;
     int soundCount;
-    zClass_NodePartial **soundNodes;
-    zClass_SoundDataPartial **soundDataList;
+    CZNodePartial **soundNodes;
+    CZSoundDataPartial **soundDataList;
     int areaGridExternalOwnership;
 };
 
-struct zClass_WorldSettingsSectionRecord {
+struct CZWorldSettingsSectionRecord {
     int fogState;
     zColorRgb fogColorRgb01;
     float fogRangeNear;
@@ -191,7 +191,7 @@ struct zClass_WorldSettingsSectionRecord {
     float fogDensity;
 };
 
-struct zClass_SoundDataPartial {
+struct CZSoundDataPartial {
     zSndSample *sample;
     zSndPlayHandle *playHandle;
     char sampleSetName[0x24];
@@ -205,15 +205,15 @@ struct zClass_SoundDataPartial {
     float rangeMaxSq;
     float invRangeSpan;
     int attachedWorldCount;
-    zClass_NodePartial **attachedWorlds;
+    CZNodePartial **attachedWorlds;
 };
 
-struct zClass_SequenceEntryPartial {
-    zClass_NodePartial *node;
+struct CZSequenceEntryPartial {
+    CZNodePartial *node;
     float triggerTime;
 };
 
-struct zClass_SequenceDataPartial {
+struct CZSequenceDataPartial {
     int isActive;
     int repeatAtBounds;
     int wrapAtBounds;
@@ -222,10 +222,10 @@ struct zClass_SequenceDataPartial {
     int currentIndex;
     float currentTime;
     int entryCount;
-    zClass_SequenceEntryPartial entries[1];
+    CZSequenceEntryPartial entries[1];
 };
 
-struct zClass_SwitchDataPartial {
+struct CZSwitchDataPartial {
     int activeMaskIndex;
     unsigned int childMasks[1];
 };
@@ -235,7 +235,7 @@ struct zTag4Partial {
     unsigned char tags[3];
 };
 
-struct zClass_Object3DDataPartial {
+struct CZObject3DDataPartial {
     int flags;
     float alphaScale;
     zColorRgb color;
@@ -246,7 +246,7 @@ struct zClass_Object3DDataPartial {
     float cachedWorldMatrix[12];
 };
 
-struct zClass_LodDataPartial {
+struct CZLodDataPartial {
     int computeOwnDistance;
     float nearRangeSq;
     float nearRange;
@@ -259,11 +259,11 @@ struct zClass_LodDataPartial {
     float fogStartDist;
     float vertexShadingAmount;
     int active;
-    zClass_NodePartial *rangeNode;
+    CZNodePartial *rangeNode;
     float rangeSq;
 };
 
-struct zClass_LightDataPartial {
+struct CZLightDataPartial {
     int dirty;
     int enabled;
     zVec3 localRotation;
@@ -289,18 +289,18 @@ struct zClass_LightDataPartial {
     float range2Sq;
     float invRangeDelta;
     int attachedWorldCount;
-    zClass_NodePartial **attachedWorlds;
+    CZNodePartial **attachedWorlds;
 };
 
-struct zClass_AnimateKeyframePartial {
+struct CZAnimateKeyframePartial {
     zVec3 rotation;
     zVec3 position;
     zVec3 scale;
 };
 
-struct zClass_AnimateRuntimePartial {
+struct CZAnimateRuntimePartial {
     unsigned char unknown_00[0x04];
-    zClass_AnimateKeyframePartial *keyframes;
+    CZAnimateKeyframePartial *keyframes;
     zVec3 sampledRotation;
     zVec3 sampledPosition;
     zVec3 sampledScale;
@@ -318,19 +318,19 @@ struct zClass_AnimateRuntimePartial {
     short loopCount;
 };
 
-struct zClass_AnimateDataPartial {
+struct CZAnimateDataPartial {
     int flags;
     int statusFlags;
     float animatedTransform[12];
     float savedParentMatrix[12];
-    zClass_AnimateRuntimePartial runtime;
+    CZAnimateRuntimePartial runtime;
 };
 
-struct zClass_CameraDataPartial {
-    zClass_NodePartial *worldNode;
-    zClass_NodePartial *windowNode;
-    zClass_NodePartial *horizonNode;
-    zClass_NodePartial *horizonXZNode;
+struct CZCameraDataPartial {
+    CZNodePartial *worldNode;
+    CZNodePartial *windowNode;
+    CZNodePartial *horizonNode;
+    CZNodePartial *horizonXZNode;
     int cameraFlags;
     zVec3 targetOrEuler;
     zVec3 posOffset;
@@ -374,7 +374,7 @@ struct zClass_CameraDataPartial {
     zTag4Partial variantTag;
 };
 
-struct zClass_ZbdHeader {
+struct CZZbdHeader {
     int magic;
     int version;
     int texDirArg;
@@ -386,222 +386,222 @@ struct zClass_ZbdHeader {
     int nodeTableOffset;
 };
 
-struct zClass_RenderColorAlphaState {
+struct CZRenderColorAlphaState {
     zColorRgb color;
     float alpha;
 };
 
-struct zClass_LodDistanceState {
+struct CZLodDistanceState {
     zVec3 center;
     float distanceSq;
 };
 
-typedef void(__fastcall *zClass_RenderFn)(
-    zClass_NodePartial *node,
+typedef void(__fastcall *CZRenderFn)(
+    CZNodePartial *node,
     int clipMask
 );
 
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         name
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         flags
     ) == 0x24
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         auxFlags
     ) == 0x28
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         boundsFlags
     ) == 0x2c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         classId
     ) == 0x34
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         name
     ) == 0x00
 );
-RECOIL_STATIC_ASSERT(sizeof(((zClass_NodePartial *)0)->name) == 0x24);
+RECOIL_STATIC_ASSERT(sizeof(((CZNodePartial *)0)->name) == 0x24);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         nodeType
     ) == 0x30
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         classData
     ) == 0x38
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         userDataOrDiRef
     ) == 0x3c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         callbackContext
     ) == 0x40
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         callbackPriority
     ) == 0x44
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         actionCallback
     ) == 0x48
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         gridCol
     ) == 0x4c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         gridRow
     ) == 0x50
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         listCountA
     ) == 0x54
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         listA
     ) == 0x58
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         listCountB
     ) == 0x5c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         listB
     ) == 0x60
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodePartial,
+        CZNodePartial,
         cachedBounds
     ) == 0x74
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_NodePartial) == 0x8c);
-RECOIL_STATIC_ASSERT(sizeof(zClass_TypeListLink) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(CZNodePartial) == 0x8c);
+RECOIL_STATIC_ASSERT(sizeof(CZTypeListLink) == 0x10);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_TypeListBucket,
+        CZTypeListBucket,
         head
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_TypeListBucket,
+        CZTypeListBucket,
         tail
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_TypeListBucket,
+        CZTypeListBucket,
         pendingRemovalDirty
     ) == 0x08
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_TypeListBucket) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(CZTypeListBucket) == 0x0c);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodeFreeListSlot,
+        CZNodeFreeListSlot,
         primaryBounds
     ) == 0x8c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodeFreeListSlot,
+        CZNodeFreeListSlot,
         secondaryBounds
     ) == 0xa4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodeFreeListSlot,
+        CZNodeFreeListSlot,
         damageHandler
     ) == 0xbc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_NodeFreeListSlot,
+        CZNodeFreeListSlot,
         freeTag
     ) == 0xc0
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_NodeFreeListSlot) == 0xc4);
-RECOIL_STATIC_ASSERT(sizeof(zClass_ZbdHeader) == 0x24);
+RECOIL_STATIC_ASSERT(sizeof(CZNodeFreeListSlot) == 0xc4);
+RECOIL_STATIC_ASSERT(sizeof(CZZbdHeader) == 0x24);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_ZbdHeader,
+        CZZbdHeader,
         texDirArg
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_ZbdHeader,
+        CZZbdHeader,
         texDirOffset
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_ZbdHeader,
+        CZZbdHeader,
         matlOffset
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_ZbdHeader,
+        CZZbdHeader,
         model3dOffset
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_ZbdHeader,
+        CZZbdHeader,
         nodeCount
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_ZbdHeader,
+        CZZbdHeader,
         nodeFreeHead
     ) == 0x1c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_ZbdHeader,
+        CZZbdHeader,
         nodeTableOffset
     ) == 0x20
 );
@@ -632,337 +632,337 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(OptCatalogDamageHandlerPartial) == 0x10);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowClearPoly,
+        CZWindowClearPoly,
         vertices
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowClearPoly,
+        CZWindowClearPoly,
         vertCount
     ) == 0x30
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_WindowClearPoly) == 0x34);
+RECOIL_STATIC_ASSERT(sizeof(CZWindowClearPoly) == 0x34);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3DDataPartial,
+        CZObject3DDataPartial,
         flags
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3DDataPartial,
+        CZObject3DDataPartial,
         alphaScale
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3DDataPartial,
+        CZObject3DDataPartial,
         color
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3DDataPartial,
+        CZObject3DDataPartial,
         colorAlpha
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3DDataPartial,
+        CZObject3DDataPartial,
         rotation
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3DDataPartial,
+        CZObject3DDataPartial,
         scale
     ) == 0x24
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3DDataPartial,
+        CZObject3DDataPartial,
         localMatrix
     ) == 0x30
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3DDataPartial,
+        CZObject3DDataPartial,
         cachedWorldMatrix
     ) == 0x60
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_Object3DDataPartial) == 0x90);
+RECOIL_STATIC_ASSERT(sizeof(CZObject3DDataPartial) == 0x90);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateDataPartial,
+        CZAnimateDataPartial,
         statusFlags
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateDataPartial,
+        CZAnimateDataPartial,
         animatedTransform
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateDataPartial,
+        CZAnimateDataPartial,
         savedParentMatrix
     ) == 0x38
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateDataPartial,
+        CZAnimateDataPartial,
         runtime
     ) == 0x68
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         keyframes
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         sampledRotation
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         sampledPosition
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         sampledScale
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         outputRotationScale
     ) == 0x2c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         outputPositionScale
     ) == 0x38
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         outputScaleScale
     ) == 0x44
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         duration
     ) == 0x50
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         currentTime
     ) == 0x58
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         loopBase
     ) == 0x5c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         startTime
     ) == 0x60
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         state
     ) == 0x64
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         maxFrameIndex
     ) == 0x68
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateRuntimePartial,
+        CZAnimateRuntimePartial,
         loopCount
     ) == 0x6a
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateKeyframePartial,
+        CZAnimateKeyframePartial,
         rotation
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateKeyframePartial,
+        CZAnimateKeyframePartial,
         position
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateKeyframePartial,
+        CZAnimateKeyframePartial,
         scale
     ) == 0x18
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_AnimateKeyframePartial) == 0x24);
-RECOIL_STATIC_ASSERT(sizeof(zClass_AnimateRuntimePartial) == 0x6c);
+RECOIL_STATIC_ASSERT(sizeof(CZAnimateKeyframePartial) == 0x24);
+RECOIL_STATIC_ASSERT(sizeof(CZAnimateRuntimePartial) == 0x6c);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateDataPartial,
+        CZAnimateDataPartial,
         runtime
     ) +
         offsetof(
-            zClass_AnimateRuntimePartial,
+            CZAnimateRuntimePartial,
             sampledRotation
         ) ==
     0x70
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateDataPartial,
+        CZAnimateDataPartial,
         runtime
     ) +
         offsetof(
-            zClass_AnimateRuntimePartial,
+            CZAnimateRuntimePartial,
             sampledPosition
         ) ==
     0x7c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_AnimateDataPartial,
+        CZAnimateDataPartial,
         runtime
     ) +
         offsetof(
-            zClass_AnimateRuntimePartial,
+            CZAnimateRuntimePartial,
             sampledScale
         ) ==
     0x88
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         viewportWidth
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         viewportHeight
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         resolutionWidth
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         resolutionHeight
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         clearPolys
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         clearPolyIndexFlags
     ) == 0xe0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         bufferIndex
     ) == 0xe4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         buffer
     ) == 0xe8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         fbWidth
     ) == 0xec
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         fbHeight
     ) == 0xf0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WindowDataPartial,
+        CZWindowDataPartial,
         fbBpp
     ) == 0xf4
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_WindowDataPartial) == 0xf8);
+RECOIL_STATIC_ASSERT(sizeof(CZWindowDataPartial) == 0xf8);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DisplayDataPartial,
+        CZDisplayDataPartial,
         x
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DisplayDataPartial,
+        CZDisplayDataPartial,
         y
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DisplayDataPartial,
+        CZDisplayDataPartial,
         width
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DisplayDataPartial,
+        CZDisplayDataPartial,
         height
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DisplayDataPartial,
+        CZDisplayDataPartial,
         backgroundR
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DisplayDataPartial,
+        CZDisplayDataPartial,
         backgroundG
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DisplayDataPartial,
+        CZDisplayDataPartial,
         backgroundB
     ) == 0x18
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_DisplayDataPartial) == 0x1c);
+RECOIL_STATIC_ASSERT(sizeof(CZDisplayDataPartial) == 0x1c);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zWorldAreaPartial,
@@ -1014,618 +1014,618 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(zWorldAreaPartial) == 0x40);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         pendingAreaUpdateCount
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         pendingAreaUpdateCapacity
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         pendingAreaUpdates
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         fogState
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         ambientColor
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         originX
     ) == 0x34
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         originZ
     ) == 0x38
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         worldMaxX
     ) == 0x44
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         worldMaxZ
     ) == 0x48
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         partitionMaxDecFeatureCount
     ) == 0x4c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         clampQueriesToBounds
     ) == 0x50
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaCellSizeX
     ) == 0x54
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaCellSizeZ
     ) == 0x58
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaHalfSizeX
     ) == 0x5c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaHalfSizeZ
     ) == 0x60
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaInvSizeX
     ) == 0x64
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaInvSizeZ
     ) == 0x68
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaCellRadiusBias
     ) == 0x6c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         partitionInclusionTolX
     ) == 0x70
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         partitionInclusionTolZ
     ) == 0x74
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaGridColCount
     ) == 0x78
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaGridRowCount
     ) == 0x7c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaGridRows
     ) == 0x80
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         scaleX
     ) == 0x84
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         scaleY
     ) == 0x88
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         scaleZ
     ) == 0x8c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         lightCount
     ) == 0x90
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         lightNodes
     ) == 0x94
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         lightDataList
     ) == 0x98
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         soundCount
     ) == 0x9c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         soundNodes
     ) == 0xa0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         soundDataList
     ) == 0xa4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldDataPartial,
+        CZWorldDataPartial,
         areaGridExternalOwnership
     ) == 0xa8
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_WorldDataPartial) == 0xac);
+RECOIL_STATIC_ASSERT(sizeof(CZWorldDataPartial) == 0xac);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldSettingsSectionRecord,
+        CZWorldSettingsSectionRecord,
         fogState
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldSettingsSectionRecord,
+        CZWorldSettingsSectionRecord,
         fogColorRgb01
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldSettingsSectionRecord,
+        CZWorldSettingsSectionRecord,
         fogRangeNear
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldSettingsSectionRecord,
+        CZWorldSettingsSectionRecord,
         fogRangeFar
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldSettingsSectionRecord,
+        CZWorldSettingsSectionRecord,
         fogAltitudeHigh
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldSettingsSectionRecord,
+        CZWorldSettingsSectionRecord,
         fogAltitudeLow
     ) == 0x1c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_WorldSettingsSectionRecord,
+        CZWorldSettingsSectionRecord,
         fogDensity
     ) == 0x20
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_WorldSettingsSectionRecord) == 0x24);
+RECOIL_STATIC_ASSERT(sizeof(CZWorldSettingsSectionRecord) == 0x24);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         sample
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         playHandle
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         sampleSetName
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         runtimeFlags
     ) == 0x2c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         localPosition
     ) == 0x30
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         worldPos
     ) == 0x3c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         savedParentMatrix
     ) == 0x48
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         falloffMode
     ) == 0x78
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         rangeMin
     ) == 0x7c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         rangeMax
     ) == 0x80
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         rangeMaxSq
     ) == 0x84
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         invRangeSpan
     ) == 0x88
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         attachedWorldCount
     ) == 0x8c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SoundDataPartial,
+        CZSoundDataPartial,
         attachedWorlds
     ) == 0x90
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_SoundDataPartial) == 0x94);
+RECOIL_STATIC_ASSERT(sizeof(CZSoundDataPartial) == 0x94);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceDataPartial,
+        CZSequenceDataPartial,
         isActive
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceDataPartial,
+        CZSequenceDataPartial,
         repeatAtBounds
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceDataPartial,
+        CZSequenceDataPartial,
         wrapAtBounds
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceDataPartial,
+        CZSequenceDataPartial,
         isPaused
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceDataPartial,
+        CZSequenceDataPartial,
         step
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceDataPartial,
+        CZSequenceDataPartial,
         currentIndex
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceDataPartial,
+        CZSequenceDataPartial,
         currentTime
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceDataPartial,
+        CZSequenceDataPartial,
         entryCount
     ) == 0x1c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceDataPartial,
+        CZSequenceDataPartial,
         entries
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceEntryPartial,
+        CZSequenceEntryPartial,
         node
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SequenceEntryPartial,
+        CZSequenceEntryPartial,
         triggerTime
     ) == 0x04
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_SequenceEntryPartial) == 0x08);
+RECOIL_STATIC_ASSERT(sizeof(CZSequenceEntryPartial) == 0x08);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SwitchDataPartial,
+        CZSwitchDataPartial,
         activeMaskIndex
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_SwitchDataPartial,
+        CZSwitchDataPartial,
         childMasks
     ) == 0x04
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_RenderColorAlphaState) == 0x10);
-RECOIL_STATIC_ASSERT(sizeof(zClass_LodDistanceState) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(CZRenderColorAlphaState) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(CZLodDistanceState) == 0x10);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         computeOwnDistance
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         nearRangeSq
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         nearRange
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         farRangeSq
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         fadeWidth
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         fadeAmount
     ) == 0x1c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         fadeEndScale
     ) == 0x28
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         fogFadeWidth
     ) == 0x34
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         vertexShadingAmount
     ) == 0x40
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         active
     ) == 0x44
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         rangeNode
     ) == 0x48
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LodDataPartial,
+        CZLodDataPartial,
         rangeSq
     ) == 0x4c
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_LodDataPartial) == 0x50);
+RECOIL_STATIC_ASSERT(sizeof(CZLodDataPartial) == 0x50);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         worldPosScratch
     ) == 0x68
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         viewPos
     ) == 0x80
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         localRotation
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         localPosition
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         worldRotation
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         worldPosition
     ) == 0x2c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         savedParentMatrix
     ) == 0x38
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         worldDir
     ) == 0x8c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         falloff
     ) == 0xa4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         intensityScale
     ) == 0xa8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         specularColor
     ) == 0xac
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         isDirectional
     ) == 0xb8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         isDirectedSource
     ) == 0xbc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         isPointSource
     ) == 0xc0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         lightParam
     ) == 0xc4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         lightSubMode
     ) == 0xc8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         range1
     ) == 0xcc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         range2
     ) == 0xd0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         range2Sq
     ) == 0xd4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         invRangeDelta
     ) == 0xd8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         attachedWorldCount
     ) == 0xdc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_LightDataPartial,
+        CZLightDataPartial,
         attachedWorlds
     ) == 0xe0
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_LightDataPartial) == 0xe4);
+RECOIL_STATIC_ASSERT(sizeof(CZLightDataPartial) == 0xe4);
 RECOIL_STATIC_ASSERT(sizeof(zTag4Partial) == 0x04);
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -1635,257 +1635,257 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         worldNode
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         windowNode
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         horizonNode
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         horizonXZNode
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         cameraFlags
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         targetOrEuler
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         posOffset
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         cameraPos
     ) == 0x2c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         eulerAngles
     ) == 0x38
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         worldTransform
     ) == 0x44
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         forwardDir
     ) == 0x74
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         worldTarget
     ) == 0xa4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         nearClip
     ) == 0xb0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         farClip
     ) == 0xb4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         nearClipCenter
     ) == 0xb8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         farClipCenter
     ) == 0xc4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         clipDistance
     ) == 0xd0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         invClipDistanceSq
     ) == 0xd4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         viewportWidth
     ) == 0xd8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         viewportHeight
     ) == 0xdc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         frustumWidth
     ) == 0xe0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         frustumHeight
     ) == 0xe4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         fovX
     ) == 0xe8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         fovY
     ) == 0xec
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         frustumYaw
     ) == 0xf0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         frustumPitch
     ) == 0xf4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         frustumVectorsDirty
     ) == 0xf8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         frustumOrigin
     ) == 0xfc
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         frustumCorners
     ) == 0x108
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         localFrustumNormalsDirty
     ) == 0x138
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         localFrustumLeftNormal
     ) == 0x13c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         localFrustumRightNormal
     ) == 0x148
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         localFrustumBottomNormal
     ) == 0x154
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         localFrustumTopNormal
     ) == 0x160
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         localFrustumNearNormal
     ) == 0x16c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         localFrustumFarNormal
     ) == 0x178
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         transformDirty
     ) == 0x184
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         worldFrustumNormals
     ) == 0x188
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         viewportScaleX
     ) == 0x1d4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         viewportScaleY
     ) == 0x1d8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         variantOverrideEnabled
     ) == 0x1e0
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_CameraDataPartial,
+        CZCameraDataPartial,
         variantTag
     ) == 0x1e4
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_CameraDataPartial) == 0x1e8);
+RECOIL_STATIC_ASSERT(sizeof(CZCameraDataPartial) == 0x1e8);
 
 struct zCamera_FrustumGridTilePartial {
     int col;
@@ -1952,18 +1952,18 @@ extern int g_zCamera_FrustumFootprintPointCount;
 extern zCamera_FrustumGridTileRingPartial g_zCamera_FrustumGridTileRings[50];
 extern int gModel_ClipMaskStack[0x10];
 extern int *gModel_ClipMaskStackTop;
-extern zClass_RenderFn gModel_RenderFn;
-extern int g_zClass_RenderBoundsContextActive;
-extern int g_zClass_RenderFrustumGridTileIndex;
-extern int g_zClass_RenderRangeFadeActive;
-extern float g_zClass_RenderRangeFadeScale;
-extern int g_zClass_RenderVertexAlphaOverrideActive;
-extern int g_zClass_RenderAlphaScaleStackTop;
-extern float g_zClass_RenderAlphaScaleStack[0x10];
-extern int g_zClass_SoftwarePathStateStackTop;
-extern zClass_RenderColorAlphaState g_zClass_SoftwarePathRenderStateStack[4];
-extern int g_zClass_LodDistanceStateStackTop;
-extern zClass_LodDistanceState g_zClass_LodDistanceStateStack[4];
+extern CZRenderFn gModel_RenderFn;
+extern int g_CZClass_RenderBoundsContextActive;
+extern int g_CZClass_RenderFrustumGridTileIndex;
+extern int g_CZClass_RenderRangeFadeActive;
+extern float g_CZClass_RenderRangeFadeScale;
+extern int g_CZClass_RenderVertexAlphaOverrideActive;
+extern int g_CZClass_RenderAlphaScaleStackTop;
+extern float g_CZClass_RenderAlphaScaleStack[0x10];
+extern int g_CZClass_SoftwarePathStateStackTop;
+extern CZRenderColorAlphaState g_CZClass_SoftwarePathRenderStateStack[4];
+extern int g_CZClass_LodDistanceStateStackTop;
+extern CZLodDistanceState g_CZClass_LodDistanceStateStack[4];
 }
 
 /**
@@ -1973,10 +1973,10 @@ extern zClass_LodDistanceState g_zClass_LodDistanceStateStack[4];
  * Purpose: view a scene node as the enclosing free-list slot record that owns
  * the cached primary and secondary bounds.
  */
-inline zClass_NodeFreeListSlot *zClassNodeSlotFromNode(
-    zClass_NodePartial *node
+inline CZNodeFreeListSlot *zClassNodeSlotFromNode(
+    CZNodePartial *node
 ) {
-    return (zClass_NodeFreeListSlot *)node;
+    return (CZNodeFreeListSlot *)node;
 }
 
 /**
@@ -1986,10 +1986,10 @@ inline zClass_NodeFreeListSlot *zClassNodeSlotFromNode(
  * Purpose: view a const scene node as the enclosing free-list slot record that
  * owns the cached primary and secondary bounds.
  */
-inline const zClass_NodeFreeListSlot *zClassNodeSlotFromNode(
-    const zClass_NodePartial *node
+inline const CZNodeFreeListSlot *zClassNodeSlotFromNode(
+    const CZNodePartial *node
 ) {
-    return (const zClass_NodeFreeListSlot *)node;
+    return (const CZNodeFreeListSlot *)node;
 }
 
 /**
@@ -2000,7 +2000,7 @@ inline const zClass_NodeFreeListSlot *zClassNodeSlotFromNode(
  * bounding box.
  */
 inline zVec3 *zClassNodeViewSphereCenter(
-    zClass_NodePartial *node
+    CZNodePartial *node
 ) {
     return (zVec3 *)node->cachedSphereCenter;
 }
@@ -2014,7 +2014,7 @@ inline zVec3 *zClassNodeViewSphereCenter(
  * bounding box.
  */
 inline const zVec3 *zClassNodeViewSphereCenter(
-    const zClass_NodePartial *node
+    const CZNodePartial *node
 ) {
     return (const zVec3 *)node->cachedSphereCenter;
 }
@@ -2027,7 +2027,7 @@ inline const zVec3 *zClassNodeViewSphereCenter(
  * bounding box.
  */
 inline float *zClassNodeViewSphereRadius(
-    zClass_NodePartial *node
+    CZNodePartial *node
 ) {
     return &node->cachedSphereCenter[3];
 }
@@ -2041,12 +2041,12 @@ inline float *zClassNodeViewSphereRadius(
  * bounding box.
  */
 inline const float *zClassNodeViewSphereRadius(
-    const zClass_NodePartial *node
+    const CZNodePartial *node
 ) {
     return &node->cachedSphereCenter[3];
 }
 
-namespace BBox {
+namespace CZBBox {
 void __fastcall ExpandToCorners(
     const zBBox3f *bbox,
     zBBoxCorners *outCorners
@@ -2061,76 +2061,76 @@ void __fastcall CornersToBoundingSphere(
     zVec3 *outCenter,
     float *outRadius
 );
-} // namespace BBox
+} // namespace CZBBox
 
 namespace zTag4 {
 void __fastcall Clear(zTag4Partial *tag);
 }
 
-namespace zClass_Window {
-zClass_NodePartial *__cdecl gwWindowNew();
-int __fastcall DeleteNode(zClass_NodePartial *node);
+namespace CZWindow {
+CZNodePartial *__cdecl gwWindowNew();
+int __fastcall DeleteNode(CZNodePartial *node);
 int __fastcall gwWindowSetResolution(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int width,
     int height
 );
 int __fastcall gwWindowGetResolution(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int *outWidth,
     int *outHeight
 );
 int __fastcall gwWindowSetSize(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int width,
     int height
 );
 int __fastcall gwWindowGetSize(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int *outWidth,
     int *outHeight
 );
 int __fastcall gwWindowSetBuffer(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int bufferIndex
 );
 int __fastcall gwWindowSetClearPolygon(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int enabled
 );
 int __fastcall gwWindowAddClearPolygonVertex(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     const zVec3 *point
 );
-int __fastcall gwWindowCloseClearPolygon(zClass_NodePartial *node);
-} // namespace zClass_Window
+int __fastcall gwWindowCloseClearPolygon(CZNodePartial *node);
+} // namespace CZWindow
 
-namespace zClass_Display {
-zClass_NodePartial *__cdecl gwDisplayInit();
-int __fastcall DeleteNode(zClass_NodePartial *node);
+namespace CZDisplay {
+CZNodePartial *__cdecl gwDisplayInit();
+int __fastcall DeleteNode(CZNodePartial *node);
 int __fastcall RemoveChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall gwDisplaySetSize(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int width,
     int height
 );
 int __fastcall gwDisplaySetPosition(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int x,
     int y
 );
 int __fastcall gwDisplaySetBackgroundColor(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float red,
     float green,
     float blue
 );
-} // namespace zClass_Display
+} // namespace CZDisplay
 
-namespace zClass_World {
+namespace CZWorld {
 int __fastcall WriteSettingsSection(
     zZbdSectionCallbackCtx *callbackCtx,
     void *userData
@@ -2138,102 +2138,102 @@ int __fastcall WriteSettingsSection(
 void __fastcall ReadSettingsSection(
     zZbdSectionCallbackCtx *callbackCtx,
     const char *worldName,
-    zClass_WorldSettingsSectionRecord *settings,
+    CZWorldSettingsSectionRecord *settings,
     unsigned int size,
     void *userData
 );
-zClass_NodePartial *__cdecl gwWorldNew();
-int __fastcall DeleteNode(zClass_NodePartial *world);
-int __fastcall FreeVirtualAreaPartitions(zClass_NodePartial *world);
+CZNodePartial *__cdecl gwWorldNew();
+int __fastcall DeleteNode(CZNodePartial *world);
+int __fastcall FreeVirtualAreaPartitions(CZNodePartial *world);
 int __fastcall QueueAreaUpdate(
-    zClass_NodePartial *world,
-    zClass_WorldDataPartial *worldData,
+    CZNodePartial *world,
+    CZWorldDataPartial *worldData,
     zWorldAreaPartial *area
 );
 int __fastcall RebuildAreaBounds(
-    zClass_WorldDataPartial *worldData,
+    CZWorldDataPartial *worldData,
     zWorldAreaPartial *area
 );
-int __fastcall ApplyPendingFogSettings(zClass_NodePartial *world);
+int __fastcall ApplyPendingFogSettings(CZNodePartial *world);
 int __fastcall SetPendingFogState(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int fogState
 );
 int __fastcall SetPendingFogColorRgb01(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float red,
     float green,
     float blue
 );
 int __fastcall SetPendingFogAltitudeRange(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float minAlt,
     float maxAlt
 );
 int __fastcall SetPendingFogRange(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float nearRange,
     float farRange
 );
 int __fastcall GetPendingFogDensity(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float *outDensity
 );
 int __fastcall GetPendingFogState(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int *outState
 );
 int __fastcall GetPendingFogColorRgb01(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float *outRed,
     float *outGreen,
     float *outBlue
 );
 int __fastcall GetPendingFogRange(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float *outNearRange,
     float *outFarRange
 );
 int __fastcall GetPendingFogAltitudeRange(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float *outMinAlt,
     float *outMaxAlt
 );
 int __fastcall SetPendingFogDensity(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float density
 );
 int __fastcall gwWorldSetOrigin(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float originX,
     float originZ
 );
 int __fastcall gwWorldSetSize(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float sizeX,
     float sizeZ
 );
 int __fastcall gwWorldSetPartitionInclusionTolerance(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float toleranceX,
     float toleranceZ
 );
 int __fastcall gwWorldSetMaxDecFeatures(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int maxFeatures
 );
 int __fastcall gwWorldSetVirtualAreaPartition(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     float cellSizeX,
     float cellSizeZ
 );
-int __fastcall InitVirtualAreaPartitions(zClass_NodePartial *world);
+int __fastcall InitVirtualAreaPartitions(CZNodePartial *world);
 int __fastcall SetVirtualPartition(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int enabled
 );
 int __fastcall WorldRectToGridIndex(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int *outGridCol,
     float minX,
     float maxX,
@@ -2242,7 +2242,7 @@ int __fastcall WorldRectToGridIndex(
     int *outGridRow
 );
 int __fastcall WorldToGridCoordsClampedEx(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int *outGridCol,
     float worldX,
     float worldZ,
@@ -2252,221 +2252,221 @@ int __fastcall WorldToGridCoordsClampedEx(
     int *insideBoundsOut
 );
 int __fastcall WorldToGridCoordsClamped(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int *outGridCol,
     float worldX,
     float worldZ,
     int *outGridRow
 );
 zWorldAreaPartial *__fastcall GetAreaPartitionAtGrid(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int gridCol,
     int gridRow
 );
 int __fastcall AddChildAtGrid(
-    zClass_NodePartial *world,
-    zClass_NodePartial *child
+    CZNodePartial *world,
+    CZNodePartial *child
 );
 int __fastcall EnsureGridCellDisplayPosition(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int gridCol,
     int gridRow
 );
 int __fastcall AddChildToGridCell(
-    zClass_NodePartial *world,
-    zClass_NodePartial *child,
+    CZNodePartial *world,
+    CZNodePartial *child,
     int gridCol,
     int gridRow
 );
 int __fastcall RemoveChildAtGrid(
-    zClass_NodePartial *world,
-    zClass_NodePartial *child
+    CZNodePartial *world,
+    CZNodePartial *child
 );
 int __fastcall AddLight(
-    zClass_NodePartial *world,
-    zClass_NodePartial *light
+    CZNodePartial *world,
+    CZNodePartial *light
 );
 int __fastcall RemoveLight(
-    zClass_NodePartial *world,
-    zClass_NodePartial *light
+    CZNodePartial *world,
+    CZNodePartial *light
 );
-int __fastcall InitLightPointInPolygonXZ(zClass_NodePartial *world);
-int __fastcall UpdateAllLights(zClass_NodePartial *world);
+int __fastcall InitLightPointInPolygonXZ(CZNodePartial *world);
+int __fastcall UpdateAllLights(CZNodePartial *world);
 int __fastcall AddSound(
-    zClass_NodePartial *world,
-    zClass_NodePartial *sound
+    CZNodePartial *world,
+    CZNodePartial *sound
 );
 int __fastcall RemoveSound(
-    zClass_NodePartial *world,
-    zClass_NodePartial *sound
+    CZNodePartial *world,
+    CZNodePartial *sound
 );
-int __fastcall UpdateAllSounds(zClass_NodePartial *world);
-} // namespace zClass_World
+int __fastcall UpdateAllSounds(CZNodePartial *world);
+} // namespace CZWorld
 
-namespace zClass_Object3D {
-zClass_NodePartial *__cdecl gwObject3DInit();
+namespace CZObject3D {
+CZNodePartial *__cdecl gwObject3DInit();
 int __fastcall RenderTraverse(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int siblingCountHint
 );
-int __fastcall PropagateTransformDirty(zClass_NodePartial *node);
+int __fastcall PropagateTransformDirty(CZNodePartial *node);
 int __fastcall gwObject3DSetVisibleFlag(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int visible
 );
 int __fastcall gwObject3DSetColorAlpha(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     zColorRgb *color,
     float alpha
 );
 int __fastcall gwObject3DSetAlphaScale(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float alphaScale
 );
 int __fastcall gwObject3DGetAlphaScale(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float *outAlphaScale
 );
 int __fastcall gwObject3DSetLitFlag(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int lit
 );
 int __fastcall gwObject3DSetScale(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float x,
     float y,
     float z
 );
 int __fastcall gwObject3DGetScale(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float *outX,
     float *outY,
     float *outZ
 );
 int __fastcall gwObject3DGetRotation(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float *outX,
     float *outY,
     float *outZ
 );
 int __fastcall gwObject3DSetRotation(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float x,
     float y,
     float z
 );
 int __fastcall gwObject3DTranslateRotation(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float dx,
     float dy,
     float dz
 );
 int __fastcall gwObject3DGetPosition(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float *outX,
     float *outY,
     float *outZ
 );
 int __fastcall gwObject3DSetPosition(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float x,
     float y,
     float z
 );
 int __fastcall gwObject3DTranslatePosition(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float dx,
     float dy,
     float dz
 );
-float *__fastcall gwObject3DGetMatrixPtr(zClass_NodePartial *node);
+float *__fastcall gwObject3DGetMatrixPtr(CZNodePartial *node);
 int __fastcall gwObject3DSetMatrix(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float *matrix
 );
 int __fastcall gwObject3DAddChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall RemoveChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
-int __fastcall DeleteNode(zClass_NodePartial *node);
-} // namespace zClass_Object3D
+int __fastcall DeleteNode(CZNodePartial *node);
+} // namespace CZObject3D
 
-struct zClass_Object3D_ModelRefLerpTask {
-    zClass_NodePartial *node;
+struct CZObject3DModelRefLerpTask {
+    CZNodePartial *node;
     void *callbackCtx;
     void *onComplete;
     int invertModelRef;
     float targetModelRef;
     float currentModelRef;
     float modelRefDeltaPerSec;
-    zClass_Object3D_ModelRefLerpTask *next;
+    CZObject3DModelRefLerpTask *next;
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3D_ModelRefLerpTask,
+        CZObject3DModelRefLerpTask,
         callbackCtx
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3D_ModelRefLerpTask,
+        CZObject3DModelRefLerpTask,
         onComplete
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3D_ModelRefLerpTask,
+        CZObject3DModelRefLerpTask,
         invertModelRef
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3D_ModelRefLerpTask,
+        CZObject3DModelRefLerpTask,
         targetModelRef
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3D_ModelRefLerpTask,
+        CZObject3DModelRefLerpTask,
         currentModelRef
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3D_ModelRefLerpTask,
+        CZObject3DModelRefLerpTask,
         modelRefDeltaPerSec
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_Object3D_ModelRefLerpTask,
+        CZObject3DModelRefLerpTask,
         next
     ) == 0x1c
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_Object3D_ModelRefLerpTask) == 0x20);
+RECOIL_STATIC_ASSERT(sizeof(CZObject3DModelRefLerpTask) == 0x20);
 
-struct zClass_Object3D_ModelRefLerpQueueState {
+struct CZObject3DModelRefLerpQueueState {
     unsigned int listAux;
-    zClass_Object3D_ModelRefLerpTask *head;
-    zClass_Object3D_ModelRefLerpTask *tail;
+    CZObject3DModelRefLerpTask *head;
+    CZObject3DModelRefLerpTask *tail;
     unsigned int count;
-    zClass_Object3D_ModelRefLerpQueueState();
+    CZObject3DModelRefLerpQueueState();
 };
-RECOIL_STATIC_ASSERT(sizeof(zClass_Object3D_ModelRefLerpQueueState) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(CZObject3DModelRefLerpQueueState) == 0x10);
 
 extern "C" {
-extern zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState;
+extern CZObject3DModelRefLerpQueueState g_ModelRefLerpQueueState;
 }
 
-typedef void(__fastcall *zClass_Object3D_ModelRefLerpCallback)(void *callbackCtx);
+typedef void(__fastcall *CZObject3DModelRefLerpCallback)(void *callbackCtx);
 
-namespace zClass_Object3D_ModelRefLerpQueue {
+namespace CZObject3DModelRefLerpQueue {
 void __fastcall Add(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     void *callbackCtx,
     void *onComplete,
     float startModelRef,
@@ -2475,224 +2475,224 @@ void __fastcall Add(
 );
 void __cdecl Reset();
 void __cdecl Update();
-} // namespace zClass_Object3D_ModelRefLerpQueue
+} // namespace CZObject3DModelRefLerpQueue
 
-namespace zClass_Lod {
-zClass_NodePartial *__cdecl gwLodNew();
-int __fastcall DeleteNode(zClass_NodePartial *node);
+namespace CZLod {
+CZNodePartial *__cdecl gwLodNew();
+int __fastcall DeleteNode(CZNodePartial *node);
 int __fastcall RenderTraverse(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int siblingCountHint
 );
 int __fastcall gwLodAddChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall RemoveChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall SetComputeOwnDistance(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int enabled
 );
 int __fastcall SetTargetNodeAndRange(
-    zClass_NodePartial *node,
-    zClass_NodePartial *target,
+    CZNodePartial *node,
+    CZNodePartial *target,
     float range
 );
-} // namespace zClass_Lod
+} // namespace CZLod
 
-namespace zClass_Light {
-zClass_NodePartial *__cdecl gwLightNew();
+namespace CZLight {
+CZNodePartial *__cdecl gwLightNew();
 int __fastcall RenderTraverse(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int siblingCountHint
 );
-int __fastcall DeleteNode(zClass_NodePartial *node);
+int __fastcall DeleteNode(CZNodePartial *node);
 int __fastcall RemoveChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall gwLightSetIntensity(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float intensity
 );
 int __fastcall gwLightSetFalloff(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float falloff
 );
 int __fastcall gwLightSetDirectional(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int directional
 );
-int __fastcall gwLightSetDirectedSource(zClass_NodePartial *node);
-int __fastcall gwLightSetPointSource(zClass_NodePartial *node);
+int __fastcall gwLightSetDirectedSource(CZNodePartial *node);
+int __fastcall gwLightSetPointSource(CZNodePartial *node);
 int __fastcall gwLightSetParam(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int param
 );
 int __fastcall gwLightSetRange(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float rangeA,
     float rangeB
 );
 int __fastcall gwLightGetRange(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float *outRange1,
     float *outRange2
 );
 int __fastcall gwLightSetPosition(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float x,
     float y,
     float z
 );
 int __fastcall gwLightSetRotation(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float x,
     float y,
     float z
 );
 int __fastcall ComputeWorldTransform(
-    zClass_NodePartial *node,
-    zClass_LightDataPartial *data
+    CZNodePartial *node,
+    CZLightDataPartial *data
 );
-int __fastcall gwLightUpdate(zClass_NodePartial *node);
+int __fastcall gwLightUpdate(CZNodePartial *node);
 int __fastcall gwLightGetSpecularColor(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float *outRed,
     float *outGreen,
     float *outBlue
 );
 int __fastcall gwLightSetSpecularColor(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float red,
     float green,
     float blue
 );
-} // namespace zClass_Light
+} // namespace CZLight
 
-namespace zClass_Camera {
-zClass_NodePartial *__cdecl gwCameraNew();
-int __fastcall DeleteNode(zClass_NodePartial *node);
+namespace CZCamera {
+CZNodePartial *__cdecl gwCameraNew();
+int __fastcall DeleteNode(CZNodePartial *node);
 int __fastcall RenderTraverse(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int siblingCountHint
 );
 int __fastcall gwCameraAddChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall gwCameraRemoveChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall gwCameraSetActive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int active
 );
 int __fastcall gwCameraSetFlagBit0(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int enabled
 );
-int __fastcall SetTargetNode(zClass_NodePartial *target);
-zClass_NodePartial *__fastcall SetActiveCamera(zClass_NodePartial *camera);
+int __fastcall SetTargetNode(CZNodePartial *target);
+CZNodePartial *__fastcall SetActiveCamera(CZNodePartial *camera);
 int __fastcall SetObjectHseTestEnabled(int enabled);
 int __fastcall gwCameraSetWorld(
-    zClass_NodePartial *camera,
-    zClass_NodePartial *world
+    CZNodePartial *camera,
+    CZNodePartial *world
 );
-zClass_NodePartial *__fastcall gwCameraGetWorld(zClass_NodePartial *camera);
+CZNodePartial *__fastcall gwCameraGetWorld(CZNodePartial *camera);
 int __fastcall gwCameraSetWindow(
-    zClass_NodePartial *camera,
-    zClass_NodePartial *window
+    CZNodePartial *camera,
+    CZNodePartial *window
 );
 int __fastcall ActivateChildren(
-    zClass_NodePartial *camera,
-    zClass_CameraDataPartial *data
+    CZNodePartial *camera,
+    CZCameraDataPartial *data
 );
 int __fastcall gwCameraSetPosition(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float x,
     float y,
     float z
 );
 int __fastcall gwCameraTranslate(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float dx,
     float dy,
     float dz
 );
 int __fastcall gwCameraGetPosition(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float *outX,
     float *outY,
     float *outZ
 );
 int __fastcall gwCameraSetTarget(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float x,
     float y,
     float z
 );
 int __fastcall gwCameraTranslateTarget(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float dx,
     float dy,
     float dz
 );
 int __fastcall gwCameraGetTarget(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float *outX,
     float *outY,
     float *outZ
 );
 int __fastcall gwCameraSetNearFarClip(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float nearClip,
     float farClip
 );
 int __fastcall gwCameraGetNearFarClip(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float *outNear,
     float *outFar
 );
 int __fastcall gwCameraSetViewport(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float viewportWidth,
     float viewportHeight
 );
 int __fastcall gwCameraGetViewport(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float *outWidth,
     float *outHeight
 );
 int __fastcall gwCameraGetFOV(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float *outFovX,
     float *outFovY
 );
 int __fastcall gwCameraSetFOV(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float fovX,
     float fovY
 );
 int __fastcall gwCameraGetClipDistance(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float *outClipDistance
 );
 int __fastcall gwCameraSetClipDistance(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     float clipDistance
 );
 int __fastcall gwCameraSetHorizon(
-    zClass_NodePartial *camera,
-    zClass_NodePartial *horizonNode
+    CZNodePartial *camera,
+    CZNodePartial *horizonNode
 );
 int __fastcall gwCameraSetHorizonXZ(
-    zClass_NodePartial *camera,
-    zClass_NodePartial *horizonXZNode
+    CZNodePartial *camera,
+    CZNodePartial *horizonXZNode
 );
 void __fastcall SetViewDistance(
     int enableAutoClip,
@@ -2707,175 +2707,175 @@ int __fastcall FindConvexHullXZ(
     int count
 );
 int __fastcall BuildFrustumGridTiles(
-    zClass_NodePartial *world,
-    zClass_WorldDataPartial *worldData,
-    zClass_CameraDataPartial *cameraData
+    CZNodePartial *world,
+    CZWorldDataPartial *worldData,
+    CZCameraDataPartial *cameraData
 );
 int __fastcall BuildFrustumGridTilesFromParams(
-    zClass_NodePartial *world,
-    zClass_WorldDataPartial *worldData,
-    zClass_CameraDataPartial *cameraData
+    CZNodePartial *world,
+    CZWorldDataPartial *worldData,
+    CZCameraDataPartial *cameraData
 );
 int __fastcall RenderFrustumGridTiles(
-    zClass_NodePartial *world,
-    zClass_NodePartial *camera,
-    zClass_CameraDataPartial *cameraData
+    CZNodePartial *world,
+    CZNodePartial *camera,
+    CZCameraDataPartial *cameraData
 );
-void __fastcall RenderOverlayNodes(zClass_NodePartial *world);
+void __fastcall RenderOverlayNodes(CZNodePartial *world);
 void __fastcall RenderWorld(
-    zClass_NodePartial *world,
-    zClass_NodePartial *camera,
-    zClass_CameraDataPartial *cameraData
+    CZNodePartial *world,
+    CZNodePartial *camera,
+    CZCameraDataPartial *cameraData
 );
 int __fastcall gwCameraSetVariantTagOverride(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     zTag4Partial *variantTag
 );
 int __fastcall RenderScene(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     int updateFxPass3Local
 );
 int __fastcall BuildWorldTransform(
-    zClass_NodePartial *camera,
-    zClass_CameraDataPartial *data,
+    CZNodePartial *camera,
+    CZCameraDataPartial *data,
     zVec3 *posOffset
 );
 int __fastcall UpdateImpl(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     zVec3 *posOffset
 );
-int __fastcall gwCameraUpdate(zClass_NodePartial *camera);
+int __fastcall gwCameraUpdate(CZNodePartial *camera);
 void __cdecl SyncViewContextPositions();
-} // namespace zClass_Camera
+} // namespace CZCamera
 
-namespace zClass_Node {
-int __fastcall ClearPickupFlagsRecursive(zClass_NodePartial *node);
-int __fastcall SetPickupFlagsRecursive(zClass_NodePartial *node);
-void __fastcall PropagateTransformDirtyRecursive(zClass_NodePartial *self);
+namespace CZNode {
+int __fastcall ClearPickupFlagsRecursive(CZNodePartial *node);
+int __fastcall SetPickupFlagsRecursive(CZNodePartial *node);
+void __fastcall PropagateTransformDirtyRecursive(CZNodePartial *self);
 void __fastcall MaskExtraFlagsRecursive(
-    zClass_NodePartial *self,
+    CZNodePartial *self,
     int mask
 );
 void __fastcall PropagateExtraFlagsRecursive(
-    zClass_NodePartial *self,
+    CZNodePartial *self,
     int flags
 );
 void __fastcall PropagateFlagsRecursive(
-    zClass_NodePartial *self,
+    CZNodePartial *self,
     int flags
 );
 void __fastcall SetContextRecursive(
-    zClass_NodePartial *self,
-    zClass_NodePartial *context,
+    CZNodePartial *self,
+    CZNodePartial *context,
     int flagMask
 );
 void __fastcall SetDiFlagBit0Recursive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int enabled
 );
-int __fastcall HasRenderableDiPredicate(zClass_NodePartial *node);
+int __fastcall HasRenderableDiPredicate(CZNodePartial *node);
 void __fastcall SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int enabled
 );
 void __fastcall InvalidateFlagBit8MaterialImagesRecursive(
-    zClass_NodePartial *node
+    CZNodePartial *node
 );
 void __fastcall LoadFlagBit8MaterialImagesAndTexturePack(
-    zClass_NodePartial *node
+    CZNodePartial *node
 );
 void __fastcall AssignInt32ToDiRecursive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
 void __fastcall AssignDamageHandlerRecursiveIfMissing(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     OptCatalogDamageHandlerPartial *handler
 );
 void __fastcall ClearDamageHandlerRecursive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     OptCatalogDamageHandlerPartial *handler
 );
 int __fastcall SetDamageHitCallback(
     void *context,
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     void *callback
 );
-int __fastcall ClearDamageHandler(zClass_NodePartial *node);
+int __fastcall ClearDamageHandler(CZNodePartial *node);
 int __fastcall SetDamageTimerCallback(
     void *context,
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     void *callback
 );
-} // namespace zClass_Node
+} // namespace CZNode
 
-namespace zClass_TypeList {
-zClass_TypeListLink *__cdecl AllocLink();
-void __fastcall FreeLink(zClass_TypeListLink *link);
+namespace CZTypeList {
+CZTypeListLink *__cdecl AllocLink();
+void __fastcall FreeLink(CZTypeListLink *link);
 void __cdecl FreeAll();
 void __fastcall ProcessPendingRemovals(int bucket);
 int __fastcall CountNodes(int bucket);
 void __fastcall PrintBucket(int bucket);
-zClass_TypeListLink *__fastcall GetBucketHead(int bucket);
+CZTypeListLink *__fastcall GetBucketHead(int bucket);
 int __fastcall MarkPendingRemoval(
     int bucket,
-    zClass_NodePartial *node
+    CZNodePartial *node
 );
 int __fastcall Insert(
     int bucket,
-    zClass_NodePartial *node
+    CZNodePartial *node
 );
 int __fastcall InsertChildNodes(
     int bucket,
-    zClass_NodePartial *node
+    CZNodePartial *node
 );
 void __cdecl UpdateAllBuckets();
-void __fastcall UpdateBucket(zClass_TypeListLink *bucket);
+void __fastcall UpdateBucket(CZTypeListLink *bucket);
 int __cdecl UpdateQueuedTrees();
 int __cdecl UpdateSequences();
 int __cdecl UpdateAnimations();
-} // namespace zClass_TypeList
+} // namespace CZTypeList
 
-namespace gwNode {
+namespace CZNode {
 int __fastcall gwNodeBuildNodeToAncestorMatrix(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int matMode
 );
 int __fastcall GetWorldPosition(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     zVec3 *outPosition
 );
 int __fastcall TransformPoint(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     zVec3 *point
 );
 int __fastcall GetWorldPosAndOrientation(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     zVec3 *inOutPosition,
     zVec3 *outOrientation
 );
-int __fastcall UpdateSubtree(zClass_NodePartial *node);
-void __fastcall UpdateTree(zClass_NodePartial *node);
-} // namespace gwNode
+int __fastcall UpdateSubtree(CZNodePartial *node);
+void __fastcall UpdateTree(CZNodePartial *node);
+} // namespace CZNode
 
-namespace zClass_NodeList {
-int __fastcall Insert(zClass_NodePartial *node);
+namespace CZNodeList {
+int __fastcall Insert(CZNodePartial *node);
 void __cdecl ProcessPendingFrees();
-} // namespace zClass_NodeList
+} // namespace CZNodeList
 
-namespace zClass_List {
-int __fastcall DeleteNodeFromLists(zClass_NodePartial *node);
-int __fastcall _gwListDeleteANode(zClass_NodePartial *node);
+namespace CZList {
+int __fastcall DeleteNodeFromLists(CZNodePartial *node);
+int __fastcall _gwListDeleteANode(CZNodePartial *node);
 int __fastcall DeleteAllOfType(int bucket);
 int __cdecl RenderActiveCameras();
-zClass_NodePartial *__fastcall IterateBucketFiltered(
+CZNodePartial *__fastcall IterateBucketFiltered(
     const char *filterText,
     int bucket,
-    zClass_NodePredicate predicate
+    CZNodePredicate predicate
 );
-} // namespace zClass_List
+} // namespace CZList
 
-namespace zClass {
+namespace CZClass {
 void __fastcall SetNodeArraySize(int size);
 int __cdecl IsInitialized();
 int __cdecl Init();
@@ -2883,376 +2883,376 @@ int __cdecl ResetCurrentZbdPath();
 int __cdecl ShutdownCore();
 int __cdecl Shutdown();
 int __cdecl ProcessDeferredWork();
-int __fastcall NodePtrToValidatedIndex(zClass_NodePartial *node);
-zClass_NodePartial *__fastcall FindByTypeAndName(
+int __fastcall NodePtrToValidatedIndex(CZNodePartial *node);
+CZNodePartial *__fastcall FindByTypeAndName(
     int bucket,
     const char *name
 );
-int __fastcall FindNextByTypePrefixPredicate(zClass_NodePartial *node);
-zClass_NodePartial *__fastcall FindNextByTypePrefix(
+int __fastcall FindNextByTypePrefixPredicate(CZNodePartial *node);
+CZNodePartial *__fastcall FindNextByTypePrefix(
     const char *prefixText,
     int bucket
 );
 int __fastcall AnyNodeMatchesPredicateRecursive(
-    zClass_NodePartial *root,
-    zClass_NodePredicate predicate
+    CZNodePartial *root,
+    CZNodePredicate predicate
 );
 int __fastcall RemoveChildChecked(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
-} // namespace zClass
+} // namespace CZClass
 
-namespace zClass_Class {
-zClass_NodePartial *__cdecl gwNodeNew();
-int __fastcall DeleteNodeByType(zClass_NodePartial *node);
-int __fastcall gwNodeUpdate(zClass_NodePartial *node);
+namespace CZClass {
+CZNodePartial *__cdecl gwNodeNew();
+int __fastcall DeleteNodeByType(CZNodePartial *node);
+int __fastcall gwNodeUpdate(CZNodePartial *node);
 int __cdecl gwNodeUpdateAll();
-int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial *node);
+int __fastcall gwNodeUpdateDisplayInstance(CZNodePartial *node);
 int __fastcall gwNodeGetBBox(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     zBBox3f *outBBox
 );
 int __fastcall gwNodeGetWorldBBoxCorners(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     zBBoxCorners *outCorners
 );
 int __fastcall gwNodeGetViewBBoxCorners(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     zBBoxCorners *outCorners
 );
-int __fastcall gwNodeComputeChildBBox(zClass_NodePartial *node);
-int __fastcall gwNodeRecalcBBox(zClass_NodePartial *node);
+int __fastcall gwNodeComputeChildBBox(CZNodePartial *node);
+int __fastcall gwNodeRecalcBBox(CZNodePartial *node);
 int __fastcall gwNodeSetActive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int active
 );
 int __fastcall gwNodeSetFlag16(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
 int __fastcall gwNodeSetFlag17(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
 int __fastcall gwNodeSetDisplayInstance(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     zDiPartial *displayInstance
 );
 int __fastcall gwNodeSetName(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     const char *name
 );
-char *__fastcall gwNodeGetName(zClass_NodePartial *node);
+char *__fastcall gwNodeGetName(CZNodePartial *node);
 int __fastcall gwNodeGetUserData(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     unsigned int *outData
 );
 int __fastcall gwNodeSetActionCallback(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     void *actionCallback
 );
 int __fastcall gwNodeSetActionCallbackTail(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     void *actionCallback
 );
 int __fastcall gwNodeSetPriority(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int priority
 );
 int __fastcall gwNodeSetCellPickable(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
 int __fastcall gwNodeGetCellPickable(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int *outValue
 );
 int __fastcall gwNodeGetNodeType(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int *outValue
 );
 int __fastcall gwNodeSetRaycastable(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
 int __fastcall gwNodeGetRaycastable(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int *outValue
 );
 int __fastcall gwNodeSetPickable(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
 int __fastcall gwNodeGetPickable(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int *outValue
 );
 int __fastcall gwNodeSetHasHitCallback(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
 int __fastcall gwNodeSetBypassFarClip(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
 int __fastcall gwNodeSetNodeType(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int nodeType
 );
 int __fastcall gwNodeClearVariantGate(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
 int __fastcall gwNodeSetVertexAlphaOverride(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int value
 );
-zClass_NodePartial *__fastcall gwNodeGetRoot(zClass_NodePartial *node);
-zClass_NodePartial *__fastcall gwNodeGetWorldChild(zClass_NodePartial *node);
-int __fastcall gwNodeFindNextByNamePredicate(zClass_NodePartial *node);
-zClass_NodePartial *__fastcall gwNodeFindNextByName(
+CZNodePartial *__fastcall gwNodeGetRoot(CZNodePartial *node);
+CZNodePartial *__fastcall gwNodeGetWorldChild(CZNodePartial *node);
+int __fastcall gwNodeFindNextByNamePredicate(CZNodePartial *node);
+CZNodePartial *__fastcall gwNodeFindNextByName(
     const char *name,
     int bucket
 );
-zClass_NodePartial *__fastcall FindSubNodeByName(
-    zClass_NodePartial *root,
+CZNodePartial *__fastcall FindSubNodeByName(
+    CZNodePartial *root,
     const char *name
 );
-zClass_NodePartial *__fastcall FindNodeRecursiveByName(
-    zClass_NodePartial *root,
+CZNodePartial *__fastcall FindNodeRecursiveByName(
+    CZNodePartial *root,
     const char *name
 );
 int __fastcall SetSingleParentFlagRecursive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int setFlag
 );
 int __fastcall AddChildValidated(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall RemoveChildValidated(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall AddChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall AddChildGeneric(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall RemoveChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall RemoveChildGeneric(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
-int __fastcall FreeNodeToFreeList(zClass_NodePartial *node);
-int __fastcall TryFreeNode(zClass_NodePartial *node);
+int __fastcall FreeNodeToFreeList(CZNodePartial *node);
+int __fastcall TryFreeNode(CZNodePartial *node);
 int __fastcall gwNodeRenderDispatch(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int siblingCountHint
 );
-} // namespace zClass_Class
+} // namespace CZClass
 
-namespace zClass_Sound {
+namespace CZSound {
 int __fastcall RenderTraverse(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int siblingCountHint
 );
 }
 
-namespace zClass_Animate {
+namespace CZAnimate {
 int __fastcall RenderTraverse(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int siblingCountHint
 );
 }
 
-namespace zClass_Sequence {
+namespace CZSequence {
 int __fastcall RenderTraverse(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int siblingCountHint
 );
 }
 
-namespace zClass_Switch {
-int __fastcall DeleteNode(zClass_NodePartial *node);
+namespace CZSwitch {
+int __fastcall DeleteNode(CZNodePartial *node);
 int __fastcall RenderTraverse(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int siblingCountHint
 );
 }
 
-namespace zClass_Util {
-int __fastcall DestroyNodeRecursive(zClass_NodePartial *node);
+namespace CZUtil {
+int __fastcall DestroyNodeRecursive(CZNodePartial *node);
 }
 
-namespace zClass_cls_util {
+namespace CZUtil {
 int __fastcall CopyNodeDisplayInstance(
-    zClass_NodePartial *source,
-    zClass_NodePartial *dest
+    CZNodePartial *source,
+    CZNodePartial *dest
 );
 int __fastcall CopyNodeBaseData(
-    zClass_NodePartial *source,
-    zClass_NodePartial *dest
+    CZNodePartial *source,
+    CZNodePartial *dest
 );
-zClass_NodePartial *__fastcall CopyLightNode(
-    zClass_NodePartial *source
+CZNodePartial *__fastcall CopyLightNode(
+    CZNodePartial *source
 );
-zClass_NodePartial *__fastcall CopySoundNode(
-    zClass_NodePartial *source
+CZNodePartial *__fastcall CopySoundNode(
+    CZNodePartial *source
 );
-zClass_NodePartial *__fastcall CopyCameraNode(zClass_NodePartial *source);
-zClass_NodePartial *__fastcall CopyObject3DNode(zClass_NodePartial *source);
-zClass_NodePartial *__fastcall CopyAnimateNode(
-    zClass_NodePartial *source
+CZNodePartial *__fastcall CopyCameraNode(CZNodePartial *source);
+CZNodePartial *__fastcall CopyObject3DNode(CZNodePartial *source);
+CZNodePartial *__fastcall CopyAnimateNode(
+    CZNodePartial *source
 );
-zClass_NodePartial *__fastcall CopyLodNode(zClass_NodePartial *source);
-zClass_NodePartial *__fastcall CopySequenceNode(
-    zClass_NodePartial *source
+CZNodePartial *__fastcall CopyLodNode(CZNodePartial *source);
+CZNodePartial *__fastcall CopySequenceNode(
+    CZNodePartial *source
 );
-zClass_NodePartial *__fastcall CopySwitchNode(zClass_NodePartial *source);
-zClass_NodePartial *__fastcall CopyNodeDispatch(zClass_NodePartial *source);
-zClass_NodePartial *__fastcall CopyNodeWithCloneOptions(
-    zClass_NodePartial *source,
+CZNodePartial *__fastcall CopySwitchNode(CZNodePartial *source);
+CZNodePartial *__fastcall CopyNodeDispatch(CZNodePartial *source);
+CZNodePartial *__fastcall CopyNodeWithCloneOptions(
+    CZNodePartial *source,
     int cloneDiMode,
     int diArg0
 );
-zClass_NodePartial *__fastcall CopyNode(
-    zClass_NodePartial *source,
+CZNodePartial *__fastcall CopyNode(
+    CZNodePartial *source,
     int cloneDiMode,
     int diArg0,
     int diArg1
 );
-} // namespace zClass_cls_util
+} // namespace CZUtil
 
-namespace zClass_Sound {
-zClass_NodePartial *__cdecl gwSoundNew();
-int __fastcall DeleteNode(zClass_NodePartial *node);
+namespace CZSound {
+CZNodePartial *__cdecl gwSoundNew();
+int __fastcall DeleteNode(CZNodePartial *node);
 int __fastcall RemoveChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
 int __fastcall SetSampleSetByName(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     const char *name
 );
 int __fastcall gwSoundSetActive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int active
 );
 int __fastcall gwSoundSetPosition(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float x,
     float y,
     float z
 );
 int __fastcall gwSoundGetPosition(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     float *outX,
     float *outY,
     float *outZ
 );
-int __fastcall UpdatePlayback(zClass_NodePartial *node);
+int __fastcall UpdatePlayback(CZNodePartial *node);
 int __fastcall ComputeWorldTransform(
-    zClass_NodePartial *node,
-    zClass_SoundDataPartial *soundData
+    CZNodePartial *node,
+    CZSoundDataPartial *soundData
 );
-} // namespace zClass_Sound
+} // namespace CZSound
 
-namespace zClass_Animate {
+namespace CZAnimate {
 short __fastcall AdvanceTime(
-    zClass_AnimateRuntimePartial *runtime,
+    CZAnimateRuntimePartial *runtime,
     float deltaTime
 );
-short __fastcall SampleTransform(zClass_AnimateRuntimePartial *runtime);
-int __fastcall UpdateNode(zClass_NodePartial *node);
+short __fastcall SampleTransform(CZAnimateRuntimePartial *runtime);
+int __fastcall UpdateNode(CZNodePartial *node);
 int __fastcall AddChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
-int __fastcall DeleteNode(zClass_NodePartial *node);
+int __fastcall DeleteNode(CZNodePartial *node);
 int __fastcall RemoveChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
-} // namespace zClass_Animate
+} // namespace CZAnimate
 
-namespace zClass_Sequence {
-zClass_NodePartial *__cdecl gwSequenceNew();
-int __fastcall DeleteNode(zClass_NodePartial *node);
+namespace CZSequence {
+CZNodePartial *__cdecl gwSequenceNew();
+int __fastcall DeleteNode(CZNodePartial *node);
 int __fastcall gwSequenceAddChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child,
+    CZNodePartial *parent,
+    CZNodePartial *child,
     int insertIndex,
     float delay
 );
 int __fastcall SetActive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int active
 );
 int __fastcall SetRepeat(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int repeat
 );
 int __fastcall SetLoop(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int loop
 );
 int __fastcall SetPause(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int paused
 );
 int __fastcall RemoveChild(
-    zClass_NodePartial *parent,
-    zClass_NodePartial *child
+    CZNodePartial *parent,
+    CZNodePartial *child
 );
-int __fastcall Update(zClass_NodePartial *node);
-} // namespace zClass_Sequence
+int __fastcall Update(CZNodePartial *node);
+} // namespace CZSequence
 
-namespace Light {
+namespace CZLight {
 int __cdecl InitThermalGlowPool();
 int __cdecl DestroyThermalGlowPool();
-zClass_NodePartial *__fastcall AllocFromFreeListAndAttach(
+CZNodePartial *__fastcall AllocFromFreeListAndAttach(
     zColorRgb *specularColor
 );
-void __fastcall ReturnToFreeList(zClass_NodePartial *lightNode);
-} // namespace Light
+void __fastcall ReturnToFreeList(CZNodePartial *lightNode);
+} // namespace CZLight
 
-namespace GameZ {
+namespace CZZbd {
 RECOIL_NO_GS int __fastcall WriteZBDFile(const char *filename);
 RECOIL_NO_GS int __fastcall ReadZBDFile(const char *filename);
 FILE *__fastcall OpenAndReadZBDHeader(
     const char *filename,
-    zClass_ZbdHeader *outHeader
+    CZZbdHeader *outHeader
 );
-} // namespace GameZ
+} // namespace CZZbd
 
-namespace GameZ_ZBD {
-int __fastcall NodePtrToIndex(zClass_NodePartial *node);
-zClass_NodePartial *__fastcall NodeIndexToPtr(int index);
+namespace CZZbd {
+int __fastcall NodePtrToIndex(CZNodePartial *node);
+CZNodePartial *__fastcall NodeIndexToPtr(int index);
 int __fastcall WriteNodeRefListIndices(
-    zClass_NodePartial **nodeRefList,
+    CZNodePartial **nodeRefList,
     int entryCount,
     void *stream
 );
 RECOIL_NO_GS int __fastcall WriteSingleNodeClassData(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     void *stream
 );
 int __fastcall WriteNodeTable(void *stream);
 int __fastcall ReadNodeRefListIndices(
-    zClass_NodePartial **nodeRefList,
+    CZNodePartial **nodeRefList,
     int entryCount,
     void *stream
 );
 int __fastcall ReadSingleNodeClassData(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     void *stream
 );
 int __fastcall ReadNodeTable(
@@ -3260,73 +3260,73 @@ int __fastcall ReadNodeTable(
     void *stream
 );
 RECOIL_NO_GS int __fastcall ReloadDisplayInstancesFromCurrentPath_Local(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int recurseChildren
 );
 RECOIL_NO_GS int __fastcall ReloadDisplayInstancesRecursive_Local(
     void *stream,
-    zClass_ZbdHeader *zbdHeader,
-    zClass_NodePartial *node,
+    CZZbdHeader *zbdHeader,
+    CZNodePartial *node,
     int recurseChildren
 );
-} // namespace GameZ_ZBD
+} // namespace CZZbd
 
 extern "C" {
-extern zClass_NodeFreeListSlot *g_zClass_NodeArray;
-extern int g_zClass_NodeArraySize;
-extern int g_zClass_ActiveNodeCount;
-extern int g_zClass_NodeFreeHeadIndex;
-extern int g_zClass_IsInitialized;
-extern zClass_TypeListLink *g_zClass_TypeList_FreeLinkHead;
-extern zClass_TypeListLink *g_zClass_NodeList_PendingFreeHead;
-extern int g_zClass_DeferredProcessingEnabled;
-extern int g_zClass_TypeList_LiveLinkCount;
-extern int g_zClass_TypeList_PeakLiveLinkCount;
-extern zClass_TypeListBucket g_zClass_TypeList_Buckets[16];
-extern zClass_TypeListLink **g_zClassCallbackPriorityHeadSlotPtrs[6];
-extern zClass_TypeListLink **g_zClass_TypeList_HeadSlotPtrs[16];
-extern zClass_TypeListLink **g_zClass_TypeList_TailSlotPtrs[16];
-extern zClass_TypeListLink *g_zClass_FilterIterCursor;
-extern unsigned int g_zClass_FilterIterUnknownDword0;
-extern const char *g_zClass_FilterIterText;
-extern unsigned int g_zClass_FilterIterUnknownDword1;
-extern int g_zClass_FilterIterPrefixLen;
-extern char g_zClass_CurrentZbdPath[0x30];
-extern zClass_NodePartial **g_GameZ_Zbd_NodeIndexScratch;
+extern CZNodeFreeListSlot *g_CZClass_NodeArray;
+extern int g_CZClass_NodeArraySize;
+extern int g_CZClass_ActiveNodeCount;
+extern int g_CZClass_NodeFreeHeadIndex;
+extern int g_CZClass_IsInitialized;
+extern CZTypeListLink *g_CZTypeList_FreeLinkHead;
+extern CZTypeListLink *g_CZNodeList_PendingFreeHead;
+extern int g_CZClass_DeferredProcessingEnabled;
+extern int g_CZTypeList_LiveLinkCount;
+extern int g_CZTypeList_PeakLiveLinkCount;
+extern CZTypeListBucket g_CZTypeList_Buckets[16];
+extern CZTypeListLink **g_CZClassCallbackPriorityHeadSlotPtrs[6];
+extern CZTypeListLink **g_CZTypeList_HeadSlotPtrs[16];
+extern CZTypeListLink **g_CZTypeList_TailSlotPtrs[16];
+extern CZTypeListLink *g_CZClass_FilterIterCursor;
+extern unsigned int g_CZClass_FilterIterUnknownDword0;
+extern const char *g_CZClass_FilterIterText;
+extern unsigned int g_CZClass_FilterIterUnknownDword1;
+extern int g_CZClass_FilterIterPrefixLen;
+extern char g_CZClass_CurrentZbdPath[0x30];
+extern CZNodePartial **g_GameZ_Zbd_NodeIndexScratch;
 extern int g_GameZ_Zbd_NodeIndexScratchCapacity;
-extern int g_zClass_CameraAutoClipDistanceAdjustEnabled;
-extern float g_zClass_CameraAutoClipDistanceThreshold;
-extern float g_zClass_CameraAutoClipDistanceScale;
-extern float g_zClass_CameraAutoClipDistanceStep;
-extern float g_zClass_CameraAutoClipDistanceMinScale;
-extern int g_zClass_ObjectHseTestEnabled;
-extern zClass_NodePartial *g_zClass_CurrentCamera;
-extern zClass_NodePartial *g_zClass_CameraTargetNode;
-extern char g_zClass_VapStaticsNodeName[0x0c];
-extern zClass_NodePartial *g_MainCamera;
-extern zClass_CameraDataPartial *g_zVideo_pActiveViewContext;
-extern zClass_NodePartial *g_Player_RuntimeDiScene;
-extern int g_zClass_CopyNodeCloneDiMode;
-extern int g_zClass_CopyNodeDiArg0;
-extern int g_zClass_CopyNodeDiArg1;
-extern int g_zClass_RebuildGwWorldBltRectOnShutdown;
-extern char g_zClass_GWWorldNodeName[8];
+extern int g_CZClass_CameraAutoClipDistanceAdjustEnabled;
+extern float g_CZClass_CameraAutoClipDistanceThreshold;
+extern float g_CZClass_CameraAutoClipDistanceScale;
+extern float g_CZClass_CameraAutoClipDistanceStep;
+extern float g_CZClass_CameraAutoClipDistanceMinScale;
+extern int g_CZClass_ObjectHseTestEnabled;
+extern CZNodePartial *g_CZClass_CurrentCamera;
+extern CZNodePartial *g_CZClass_CameraTargetNode;
+extern char g_CZClass_VapStaticsNodeName[0x0c];
+extern CZNodePartial *g_MainCamera;
+extern CZCameraDataPartial *g_zVideo_pActiveViewContext;
+extern CZNodePartial *g_Player_RuntimeDiScene;
+extern int g_CZClass_CopyNodeCloneDiMode;
+extern int g_CZClass_CopyNodeDiArg0;
+extern int g_CZClass_CopyNodeDiArg1;
+extern int g_CZClass_RebuildGwWorldBltRectOnShutdown;
+extern char g_CZClass_GWWorldNodeName[8];
 }
 
-namespace zClass_TypeList {
+namespace CZTypeList {
 /**
  * Original inline helper; no standalone retail function exists. Observed in
  * the List.c type-list accessor cluster used by callers including 0x44e700,
  * 0x44e920, 0x44ed90, 0x44ee10, and 0x44eed0; evidence basis is the repeated
  * bucket head, tail, and dirty-field access through the recovered bucket slot
- * tables and g_zClass_TypeList_Buckets.
+ * tables and g_CZTypeList_Buckets.
  * Purpose: recover typed bucket record access for shared type-list bucket
  * fields while preserving the proven bucket mapping.
  */
-inline zClass_TypeListBucket &Bucket(
+inline CZTypeListBucket &Bucket(
     int bucket
 ) {
-    return *(zClass_TypeListBucket *)(g_zClass_TypeList_HeadSlotPtrs[bucket]);
+    return *(CZTypeListBucket *)(g_CZTypeList_HeadSlotPtrs[bucket]);
 }
 
 /**
@@ -3337,10 +3337,10 @@ inline zClass_TypeListBucket &Bucket(
  * Purpose: return the bucket head link slot used by type-list traversal,
  * insertion, and pending-removal processing.
  */
-inline zClass_TypeListLink *&Head(
+inline CZTypeListLink *&Head(
     int bucket
 ) {
-    return *g_zClass_TypeList_HeadSlotPtrs[bucket];
+    return *g_CZTypeList_HeadSlotPtrs[bucket];
 }
 
 /**
@@ -3350,17 +3350,17 @@ inline zClass_TypeListLink *&Head(
  * Purpose: return the bucket tail link slot used when appending, trimming, or
  * clearing type-list buckets.
  */
-inline zClass_TypeListLink *&Tail(
+inline CZTypeListLink *&Tail(
     int bucket
 ) {
-    return *g_zClass_TypeList_TailSlotPtrs[bucket];
+    return *g_CZTypeList_TailSlotPtrs[bucket];
 }
 
 /**
  * Original inline helper; no standalone retail function exists. Observed in
- * 0x44e920 zClass::ProcessDeferredWork as the repeated pending-removal dirty
+ * 0x44e920 CZClass::ProcessDeferredWork as the repeated pending-removal dirty
  * check for each bucket; evidence basis is the BN-visible bucket processing
- * order and the matching recovered g_zClass_TypeList_Buckets field reads.
+ * order and the matching recovered g_CZTypeList_Buckets field reads.
  * Purpose: expose the mapped pending-removal dirty flag for the requested
  * type-list bucket.
  */
@@ -3369,37 +3369,37 @@ inline int &PendingRemovalDirty(
 ) {
     switch (bucket) {
     case 0:
-        return g_zClass_TypeList_Buckets[1].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[1].pendingRemovalDirty;
     case 1:
-        return g_zClass_TypeList_Buckets[2].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[2].pendingRemovalDirty;
     case 2:
-        return g_zClass_TypeList_Buckets[3].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[3].pendingRemovalDirty;
     case 3:
-        return g_zClass_TypeList_Buckets[4].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[4].pendingRemovalDirty;
     case 4:
-        return g_zClass_TypeList_Buckets[5].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[5].pendingRemovalDirty;
     case 5:
-        return g_zClass_TypeList_Buckets[6].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[6].pendingRemovalDirty;
     case 6:
-        return g_zClass_TypeList_Buckets[0].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[0].pendingRemovalDirty;
     case 7:
-        return g_zClass_TypeList_Buckets[7].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[7].pendingRemovalDirty;
     case 8:
-        return g_zClass_TypeList_Buckets[8].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[8].pendingRemovalDirty;
     case 9:
-        return g_zClass_TypeList_Buckets[9].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[9].pendingRemovalDirty;
     case 10:
-        return g_zClass_TypeList_Buckets[10].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[10].pendingRemovalDirty;
     case 11:
-        return g_zClass_TypeList_Buckets[14].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[14].pendingRemovalDirty;
     case 12:
-        return g_zClass_TypeList_Buckets[15].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[15].pendingRemovalDirty;
     case 13:
-        return g_zClass_TypeList_Buckets[11].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[11].pendingRemovalDirty;
     case 14:
-        return g_zClass_TypeList_Buckets[12].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[12].pendingRemovalDirty;
     case 15:
-        return g_zClass_TypeList_Buckets[13].pendingRemovalDirty;
+        return g_CZTypeList_Buckets[13].pendingRemovalDirty;
     default:
         return Bucket(bucket).pendingRemovalDirty;
     }
@@ -3407,8 +3407,8 @@ inline int &PendingRemovalDirty(
 
 /**
  * Original inline helper; no standalone retail function exists. Observed in
- * 0x44eed0 zClass_TypeList::MarkPendingRemoval and 0x44e700
- * zClass_TypeList::ProcessPendingRemovals as the repeated dirty-flag write
+ * 0x44eed0 CZTypeList::MarkPendingRemoval and 0x44e700
+ * CZTypeList::ProcessPendingRemovals as the repeated dirty-flag write
  * after marking or draining deferred removals.
  * Purpose: store the mapped pending-removal dirty flag for the requested
  * type-list bucket without altering the recovered bucket order.
@@ -3419,57 +3419,57 @@ inline void SetPendingRemovalDirty(
 ) {
     switch (bucket) {
     case 0:
-        g_zClass_TypeList_Buckets[1].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[1].pendingRemovalDirty = value;
         break;
     case 1:
-        g_zClass_TypeList_Buckets[2].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[2].pendingRemovalDirty = value;
         break;
     case 2:
-        g_zClass_TypeList_Buckets[3].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[3].pendingRemovalDirty = value;
         break;
     case 3:
-        g_zClass_TypeList_Buckets[4].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[4].pendingRemovalDirty = value;
         break;
     case 4:
-        g_zClass_TypeList_Buckets[5].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[5].pendingRemovalDirty = value;
         break;
     case 5:
-        g_zClass_TypeList_Buckets[6].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[6].pendingRemovalDirty = value;
         break;
     case 6:
-        g_zClass_TypeList_Buckets[0].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[0].pendingRemovalDirty = value;
         break;
     case 7:
-        g_zClass_TypeList_Buckets[7].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[7].pendingRemovalDirty = value;
         break;
     case 8:
-        g_zClass_TypeList_Buckets[8].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[8].pendingRemovalDirty = value;
         break;
     case 9:
-        g_zClass_TypeList_Buckets[9].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[9].pendingRemovalDirty = value;
         break;
     case 10:
-        g_zClass_TypeList_Buckets[10].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[10].pendingRemovalDirty = value;
         break;
     case 11:
-        g_zClass_TypeList_Buckets[14].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[14].pendingRemovalDirty = value;
         break;
     case 12:
-        g_zClass_TypeList_Buckets[15].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[15].pendingRemovalDirty = value;
         break;
     case 13:
-        g_zClass_TypeList_Buckets[11].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[11].pendingRemovalDirty = value;
         break;
     case 14:
-        g_zClass_TypeList_Buckets[12].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[12].pendingRemovalDirty = value;
         break;
     case 15:
-        g_zClass_TypeList_Buckets[13].pendingRemovalDirty = value;
+        g_CZTypeList_Buckets[13].pendingRemovalDirty = value;
         break;
     default:
         break;
     }
 }
-} // namespace zClass_TypeList
+} // namespace CZTypeList
 
 #endif

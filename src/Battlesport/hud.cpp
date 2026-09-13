@@ -1166,7 +1166,7 @@ int HudUiCallback::QueueCheatCodeState() {
  * Provider boundary: GameZRecoil/zClass/cls_stubs.c retail stub at 0x407130.
  * Purpose: provide a generic zClass vtable stub that returns success.
  */
-int zStub::ReturnOneNoArgs() {
+int CZStub::ReturnOneNoArgs() {
     return 1;
 }
 
@@ -1175,7 +1175,7 @@ int zStub::ReturnOneNoArgs() {
  * Purpose: provide a generic zClass vtable stub that returns failure or empty
  * state.
  */
-int zStub::ReturnZeroNoArgs() {
+int CZStub::ReturnZeroNoArgs() {
     return 0;
 }
 
@@ -1184,7 +1184,7 @@ int zStub::ReturnZeroNoArgs() {
  * Purpose: provide a generic one-argument zClass vtable stub with no side
  * effects.
  */
-void zStub::NoOp1Arg(
+void CZStub::NoOp1Arg(
     int
 ) {}
 
@@ -1193,7 +1193,7 @@ void zStub::NoOp1Arg(
  * Purpose: provide a generic two-argument zClass vtable stub that returns
  * success.
  */
-int zStub::ReturnOne2Args(
+int CZStub::ReturnOne2Args(
     int,
     int
 ) {
@@ -2561,7 +2561,7 @@ void __fastcall SetObjectLODForCurrentHwMode(
     int level
 ) {
     float clipDistance = 1.0f;
-    zClass_NodePartial *const camera = zOptCameraSectionGetActiveCamera();
+    CZNodePartial *const camera = zOptCameraSectionGetActiveCamera();
     if (g_zOpt_HwMode != 0) {
         *g_zGame_Options_PointerCache.objectLodHw = level;
     } else {
@@ -2577,7 +2577,7 @@ void __fastcall SetObjectLODForCurrentHwMode(
     case 1: clipDistance = 0.75f; break;
     case 2: clipDistance = 0.5f; break;
     }
-    zClass_Camera::gwCameraSetClipDistance(camera, clipDistance);
+    CZCamera::gwCameraSetClipDistance(camera, clipDistance);
 
 }
 
@@ -2755,15 +2755,15 @@ void __fastcall SetGraphicsFlagsForCurrentHwMode(
         *g_zGame_Options_PointerCache.gfxFlagsSw = flags;
     }
 
-    zClass_NodePartial *const sunlight = zClass::FindByTypeAndName(
+    CZNodePartial *const sunlight = CZClass::FindByTypeAndName(
         6,
         g_zOpt_DetailOptionName_Sunlight
     );
     if (sunlight != 0) {
         if ((flags & 0x10) != 0) {
-            zClass_Class::gwNodeSetActive(sunlight, 1);
+            CZClass::gwNodeSetActive(sunlight, 1);
         } else {
-            zClass_Class::gwNodeSetActive(sunlight, 0);
+            CZClass::gwNodeSetActive(sunlight, 0);
         }
     }
 }
@@ -3160,7 +3160,7 @@ void __fastcall ViewRectSectionClampPointToInclusiveBounds(
  * Purpose: store camera, recompute FOV, and reapply LOD.
  */
 void __fastcall CameraSectionSetActiveCamera(
-    zClass_NodePartial *camera
+    CZNodePartial *camera
 ) {
     zOpt_CameraSection *const cameraSection = *g_zGame_Options_PointerCache.cameraSection;
     cameraSection->m_pCamera = camera;
@@ -3171,10 +3171,10 @@ void __fastcall CameraSectionSetActiveCamera(
     zOpt_ViewRectSection *const renderSection = *g_zGame_Options_PointerCache.renderSection;
     float fovX;
     float fovY;
-    zClass_Camera::gwCameraGetFOV(camera, &fovX, &fovY);
+    CZCamera::gwCameraGetFOV(camera, &fovX, &fovY);
 
     fovX = (float)(renderSection->width) * fovY / (float)(renderSection->height);
-    zClass_Camera::gwCameraSetFOV(cameraSection->m_pCamera, fovX, fovY);
+    CZCamera::gwCameraSetFOV(cameraSection->m_pCamera, fovX, fovY);
     zOpt::SetObjectLODForCurrentHwMode(zOpt::GetObjectLODForCurrentHwMode());
 }
 
@@ -3184,8 +3184,8 @@ void __fastcall CameraSectionSetActiveCamera(
  * @recoil-artifact defines .text recoil:function:0x4084e0: zOptCameraSectionGetActiveCamera
  * Purpose: return active camera or null when unavailable.
  */
-zClass_NodePartial *zOptCameraSectionGetActiveCamera() {
-    zClass_NodePartial *camera = 0;
+CZNodePartial *zOptCameraSectionGetActiveCamera() {
+    CZNodePartial *camera = 0;
     if (g_zGame_Options_PointerCache.cameraSection != 0 && *g_zGame_Options_PointerCache.cameraSection != 0) {
         camera = (*g_zGame_Options_PointerCache.cameraSection)->m_pCamera;
     }
@@ -3212,8 +3212,8 @@ void __fastcall RenderSectionSetSize(
     zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.renderSection;
     ViewRectSectionSetSize(section, width, height);
     if (section->target != 0) {
-        zClass_Window::gwWindowSetResolution(
-            (zClass_NodePartial *)(section->target),
+        CZWindow::gwWindowSetResolution(
+            (CZNodePartial *)(section->target),
             section->width,
             section->height
         );
@@ -3240,13 +3240,13 @@ void __fastcall RenderSectionSetPosition(
     zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.renderSection;
     ViewRectSectionSetPosition(section, x, y);
     if (section->target != 0) {
-        zClass_Window::gwWindowSetResolution(
-            (zClass_NodePartial *)(section->target),
+        CZWindow::gwWindowSetResolution(
+            (CZNodePartial *)(section->target),
             section->width,
             section->height
         );
-        zClass_Window::gwWindowSetSize(
-            (zClass_NodePartial *)(section->target),
+        CZWindow::gwWindowSetSize(
+            (CZNodePartial *)(section->target),
             section->x,
             section->y
         );
@@ -3259,14 +3259,14 @@ void __fastcall RenderSectionSetPosition(
  * Purpose: attach target window and apply render rectangle.
  */
 void __fastcall RenderSectionSetTargetWindow(
-    zClass_NodePartial *windowNode
+    CZNodePartial *windowNode
 ) {
     zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.renderSection;
     section->target = windowNode;
     if (windowNode != 0) {
-        zClass_Window::gwWindowSetResolution(windowNode, section->width, section->height);
-        zClass_Window::gwWindowSetSize(
-            (zClass_NodePartial *)(section->target),
+        CZWindow::gwWindowSetResolution(windowNode, section->width, section->height);
+        CZWindow::gwWindowSetSize(
+            (CZNodePartial *)(section->target),
             section->x,
             section->y
         );
@@ -3288,14 +3288,14 @@ zOpt_ViewRectSection *GetRenderSection() {
  * Purpose: attach target display and apply display rectangle.
  */
 void __fastcall DisplaySectionSetTargetDisplay(
-    zClass_NodePartial *displayNode
+    CZNodePartial *displayNode
 ) {
     zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.displaySection;
     section->target = displayNode;
     if (displayNode != 0) {
-        zClass_Display::gwDisplaySetSize(displayNode, section->width, section->height);
-        zClass_Display::gwDisplaySetPosition(
-            (zClass_NodePartial *)(section->target),
+        CZDisplay::gwDisplaySetSize(displayNode, section->width, section->height);
+        CZDisplay::gwDisplaySetPosition(
+            (CZNodePartial *)(section->target),
             section->x,
             section->y
         );
@@ -3322,13 +3322,13 @@ void __fastcall DisplaySectionSetPosition(
     zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.displaySection;
     ViewRectSectionSetPosition(section, x, y);
     if (section->target != 0) {
-        zClass_Display::gwDisplaySetSize(
-            (zClass_NodePartial *)(section->target),
+        CZDisplay::gwDisplaySetSize(
+            (CZNodePartial *)(section->target),
             section->width,
             section->height
         );
-        zClass_Display::gwDisplaySetPosition(
-            (zClass_NodePartial *)(section->target),
+        CZDisplay::gwDisplaySetPosition(
+            (CZNodePartial *)(section->target),
             section->x,
             section->y
         );
@@ -3354,8 +3354,8 @@ void __fastcall DisplaySectionSetSize(
     zOpt_ViewRectSection *section = *g_zGame_Options_PointerCache.displaySection;
     ViewRectSectionSetSize(section, width, height);
     if (section->target != 0) {
-        zClass_Display::gwDisplaySetSize(
-            (zClass_NodePartial *)(section->target),
+        CZDisplay::gwDisplaySetSize(
+            (CZNodePartial *)(section->target),
             section->width,
             section->height
         );
@@ -8645,7 +8645,7 @@ int HudUiMgr::TickLayoutDelay() {
 namespace {
 struct HudReticleAttachStatePartial {
     unsigned char unknown_00[0x0c];
-    zClass_NodePartial *projectileNode;
+    CZNodePartial *projectileNode;
 };
 
 struct HudReticleAltGunControllerPartial {
@@ -8660,7 +8660,7 @@ struct HudReticlePlayerStatePartial {
     unsigned char unknown_590[0x54];
     HudReticleAltGunControllerPartial *activeAltGunController;
     unsigned char unknown_5e8[0x8e8];
-    zClass_NodePartial *rootNode;
+    CZNodePartial *rootNode;
 };
 
 RECOIL_STATIC_ASSERT(offsetof(HudReticleAttachStatePartial, projectileNode) == 0x0c);
@@ -9477,7 +9477,7 @@ int __fastcall UpdateTargetReticleFromCursor(
 
     float nearClip = 0.0f;
     float farClip = 0.0f;
-    zClass_Camera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
+    CZCamera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
 
     zVec3 nearPoint = {0};
     projectedPoint.reciprocalZ = 1.0f / nearClip;
@@ -9487,26 +9487,26 @@ int __fastcall UpdateTargetReticleFromCursor(
     projectedPoint.reciprocalZ = 1.0f / playerState->activeAltGunController->optCatalogEntry->range;
     zMathUnprojectPointBatchZBuf(&projectedPoint, &farPoint, 1);
 
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
+    CZClass::gwNodeSetRaycastable(playerState->rootNode, 0);
     if (playerState->cameraState == 7) {
-        zClass_Class::gwNodeSetRaycastable(
+        CZClass::gwNodeSetRaycastable(
             playerState->activeAltGunController->attachState->projectileNode,
             0
         );
     }
 
-    zClass_cls_di::SetStopAfterFirstHit(0x40000);
+    CZDisplayInstance::SetStopAfterFirstHit(0x40000);
     PlayerProbeSampleCandidateBuffer rayData = {0};
-    const int raycastResult = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
+    const int raycastResult = CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
         g_Player_RuntimeDiScene,
         &nearPoint,
         &farPoint,
         &rayData
     );
 
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
+    CZClass::gwNodeSetRaycastable(playerState->rootNode, 0);
     if (playerState->cameraState == 7) {
-        zClass_Class::gwNodeSetRaycastable(
+        CZClass::gwNodeSetRaycastable(
             playerState->activeAltGunController->attachState->projectileNode,
             1
         );
@@ -9524,7 +9524,7 @@ int __fastcall UpdateTargetReticleFromCursor(
         g_HudUiMgrReticleProjection[1] = candidate.hitPos.y;
         g_HudUiMgrReticleProjection[2] = candidate.hitPos.z;
 
-        zClass_NodeFreeListSlot *const hitSlot = (zClass_NodeFreeListSlot *)(candidate.node);
+        CZNodeFreeListSlot *const hitSlot = (CZNodeFreeListSlot *)(candidate.node);
         reticleImage =
             hitSlot->damageHandler != 0 ? g_HudUiMgrReticleImages[2] : g_HudUiMgrReticleImages[0];
     }
@@ -10655,7 +10655,7 @@ int HudLayoutSW::SetActive(
             const int replicateMode = zOpt::GetReplicateMode();
             float nearClip = 0.0f;
             float farClip = 0.0f;
-            zClass_Camera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
+            CZCamera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
 
             const float invNearClip = 1.0f / nearClip;
             zRndr::SpanOcclusionSubmitOccluderRect(
@@ -10734,13 +10734,13 @@ int __fastcall ApplyViewportRect(
 
     zOpt::RenderSectionSetSize(width, height);
 
-    zClass_NodePartial *const camera = g_HudSensorTracker.cameraNode;
+    CZNodePartial *const camera = g_HudSensorTracker.cameraNode;
     if (camera != 0) {
         float fovX = 0.0f;
         float fovY = 0.0f;
-        zClass_Camera::gwCameraGetFOV(camera, &fovX, &fovY);
+        CZCamera::gwCameraGetFOV(camera, &fovX, &fovY);
         fovY = viewportHeight / viewportWidth * fovX;
-        zClass_Camera::gwCameraSetFOV(camera, fovX, fovY);
+        CZCamera::gwCameraSetFOV(camera, fovX, fovY);
     }
 
     zOpt_ViewRectSection *const renderSection = zOpt::GetRenderSection();
@@ -10886,7 +10886,7 @@ int HudLayoutHW::SetActive(
 
             float nearClip = 0.0f;
             float farClip = 0.0f;
-            zClass_Camera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
+            CZCamera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
             zRndr::SpanOcclusionSubmitOccluderRect(
                 &occluderRect,
                 zOpt::GetReplicateMode(),

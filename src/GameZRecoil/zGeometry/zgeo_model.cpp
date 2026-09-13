@@ -38,7 +38,7 @@ char g_zGeometry_WeilerAlgorithmClipErrorMsg[0x26] =
     "Weiler algorithm clip error occurred.";
 
 struct zGeometry_ClipPatchModelNodeBoundsView {
-    zClass_NodePartial node;
+    CZNodePartial node;
     float boundsMinX;
     unsigned char unknown_90[0x04];
     float boundsNegMaxY;
@@ -481,8 +481,8 @@ int __fastcall ApplyNodeDiPairs(
                 zGeometry_ClipPatchNodeDiPair *const pair = &partition->nodeDiPairs[i];
 
                 unsigned int oldDisplayInstanceValue = 0;
-                zClass_Class::gwNodeGetUserData(pair->node, &oldDisplayInstanceValue);
-                zClass_Class::gwNodeSetDisplayInstance(pair->node, pair->di);
+                CZClass::gwNodeGetUserData(pair->node, &oldDisplayInstanceValue);
+                CZClass::gwNodeSetDisplayInstance(pair->node, pair->di);
 
                 if (oldDisplayInstanceValue != 0) {
                     zModel_DiPool::FreeIfUnreferenced(
@@ -551,14 +551,14 @@ namespace zDEClient {
  */
 zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
     zGeometry_ClipPatchPartitionOutput *partitionOutput,
-    zClass_NodePartial *parentNode,
-    zClass_NodePartial **outNode
+    CZNodePartial *parentNode,
+    CZNodePartial **outNode
 ) {
     if (partitionOutput == 0) {
         return 0;
     }
 
-    zClass_NodePartial *child = zClass_Object3D::gwObject3DInit();
+    CZNodePartial *child = CZObject3D::gwObject3DInit();
     if (child == 0) {
         if (outNode != 0) {
             *outNode = child;
@@ -571,7 +571,7 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
         *outNode = child;
     }
 
-    zClass_Class::gwNodeSetNodeType(child, 0xff);
+    CZClass::gwNodeSetNodeType(child, 0xff);
 
     for (int i = 0; i < partitionOutput->nodeDiPairCount; ++i) {
         zGeometry_ClipPatchNodeView *const node = partitionOutput->nodeDiPairs[i].node;
@@ -580,14 +580,14 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
         }
 
         int nodeType;
-        zClass_Class::gwNodeGetNodeType(node, &nodeType);
+        CZClass::gwNodeGetNodeType(node, &nodeType);
         if (nodeType != 0xff) {
-            zClass_Class::gwNodeSetNodeType(child, nodeType);
+            CZClass::gwNodeSetNodeType(child, nodeType);
             break;
         }
     }
 
-    zClass_Class::gwNodeSetFlag17(child, 1);
+    CZClass::gwNodeSetFlag17(child, 1);
 
     zDiPartial *const displayInstance = zModel_DiPool::AllocFromFreeList();
     if (displayInstance == 0) {
@@ -595,12 +595,12 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
             *outNode = 0;
         }
 
-        zClass_Object3D::DeleteNode(child);
+        CZObject3D::DeleteNode(child);
         return 0;
     }
 
-    zClass_Class::AddChild(parentNode, child);
-    zClass_Class::gwNodeSetDisplayInstance(child, displayInstance);
+    CZClass::AddChild(parentNode, child);
+    CZClass::gwNodeSetDisplayInstance(child, displayInstance);
     return displayInstance;
 }
 
@@ -752,7 +752,7 @@ int __fastcall ClipPatch(
         sizeof(zGeometry_ClipPatchNodeDiPair)
     ));
 
-    zClass_NodePartial *const cameraNode = zDEClient::GetCameraNode();
+    CZNodePartial *const cameraNode = zDEClient::GetCameraNode();
     const int candidateCapacity = cameraNode->listCountB + featureGridNodeCount;
     zGeometry_ClipPatchNodeView **insideNodes = (zGeometry_ClipPatchNodeView **)(malloc(
         (size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView *)

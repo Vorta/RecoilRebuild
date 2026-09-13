@@ -70,8 +70,8 @@ int __cdecl ShutdownAll() {
  * runtime free list and texture cycling data.
  */
 int __fastcall InitFromPath(
-    zClass_NodePartial *worldNode,
-    zClass_NodePartial *cameraNode,
+    CZNodePartial *worldNode,
+    CZNodePartial *cameraNode,
     const char *path
 ) {
     if (g_zEffect_RuntimeManager.initialized != 0) {
@@ -79,7 +79,7 @@ int __fastcall InitFromPath(
     }
 
     zReader::Node *const rootNode = zReader::Load(path, 0, 0);
-    g_zEffect_RuntimeManager.loadedTemplateTree = (zClass_NodePartial *)(rootNode);
+    g_zEffect_RuntimeManager.loadedTemplateTree = (CZNodePartial *)(rootNode);
     if (rootNode == 0) {
         fprintf(stderr, g_zEffect_ReadFieldFailedFmt, kZeffInitSourceFile, 0xd8, path);
         return -1;
@@ -105,8 +105,8 @@ int __fastcall InitFromPath(
             effectNode->value.nodes[1].value.str;
         runtimeEntry->effectName = (char *)(zReader::GetString(effectNode, "NAME"));
 
-        zClass_NodePartial *const templateNode =
-            zClass::FindByTypeAndName(6, runtimeEntry->modelNodeName);
+        CZNodePartial *const templateNode =
+            CZClass::FindByTypeAndName(6, runtimeEntry->modelNodeName);
         runtimeEntry->effectNode = templateNode;
         if (templateNode == 0) {
             fprintf(
@@ -132,9 +132,9 @@ int __fastcall InitFromPath(
             continue;
         }
 
-        zClass_Class::gwNodeSetCellPickable(runtimeEntry->effectNode, 0);
-        zClass_Class::gwNodeSetRaycastable(runtimeEntry->effectNode, 0);
-        zClass_Class::gwNodeSetActive(runtimeEntry->effectNode, 0);
+        CZClass::gwNodeSetCellPickable(runtimeEntry->effectNode, 0);
+        CZClass::gwNodeSetRaycastable(runtimeEntry->effectNode, 0);
+        CZClass::gwNodeSetActive(runtimeEntry->effectNode, 0);
         runtimeEntry->effectIndex = i;
         runtimeEntry->effectGfxData = gfxData;
         zUtil::StoreInt32((int *)(gfxData), 1);
@@ -198,7 +198,7 @@ int __cdecl Reset() {
             (zEffect_RuntimeEntry *)(zArchiveListRemoveHead(freeList));
         while (entry != 0) {
             if (entry->effectNode != 0) {
-                zClass_Util::DestroyNodeRecursive(entry->effectNode);
+                CZUtil::DestroyNodeRecursive(entry->effectNode);
             }
 
             free(entry);

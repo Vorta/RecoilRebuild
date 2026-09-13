@@ -2,7 +2,7 @@
 
 #include "recoil/recoil_callconv.h"
 
-struct zStub {
+struct CZStub {
     int ReturnOneNoArgs();
     int ReturnZeroNoArgs();
     void NoOp1Arg(int);

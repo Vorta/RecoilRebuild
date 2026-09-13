@@ -548,7 +548,7 @@ char g_PickupLogicalName_ERFPG_AMMO[] = "ERFPG_AMMO";
  * @recoil-artifact defines .data recoil:data:0x4f3328: g_Pickup_SceneNode (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: cache the scene node used as the parent and terrain query root for pickups.
  */
-zClass_NodePartial *g_Pickup_SceneNode = 0;
+CZNodePartial *g_Pickup_SceneNode = 0;
 
 extern "C" {
 /**
@@ -806,7 +806,7 @@ void __cdecl Pickup::Shutdown() {
  * Purpose: initialize pickup templates, metadata images, sounds, and archive handlers.
  */
 int __fastcall Pickup::Init(
-    zClass_NodePartial *sceneNode,
+    CZNodePartial *sceneNode,
     const char *pickupsCfgPath
 ) {
     g_Pickup_SceneNode = sceneNode;
@@ -817,11 +817,11 @@ int __fastcall Pickup::Init(
 
         char templateName[0x28];
         sprintf(templateName, kPickupTemplateNameFormat, pickupType.typeIndex);
-        pickupType.templateNode = zClass::FindByTypeAndName(6, templateName);
+        pickupType.templateNode = CZClass::FindByTypeAndName(6, templateName);
         pickupType.pickupSound = defaultPickupSound;
         pickupType.nameSuffixMax = 0;
 
-        zClass_NodePartial *const templateNode = pickupType.templateNode;
+        CZNodePartial *const templateNode = pickupType.templateNode;
         if (templateNode != 0) {
             PickupNodeRuntimeFields *const fields =
                 (PickupNodeRuntimeFields *)(templateNode->name);
@@ -888,14 +888,14 @@ int __fastcall Pickup::Init(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.zclass-node-clearpickupflagsrecursive
- * @recoil-artifact defines .text recoil:function:0x41ceb0: zClass_Node::ClearPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-artifact defines .text recoil:function:0x41ceb0: CZNode::ClearPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
  * @recoil-match byte
  *
  * Purpose: clear pickup interaction flags from a node and each child in its
  * secondary child list.
  */
-int __fastcall zClass_Node::ClearPickupFlagsRecursive(
-    zClass_NodePartial *node
+int __fastcall CZNode::ClearPickupFlagsRecursive(
+    CZNodePartial *node
 ) {
     node->flags &= ~0x40018;
 
@@ -908,13 +908,13 @@ int __fastcall zClass_Node::ClearPickupFlagsRecursive(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.zclass-node-setpickupflagsrecursive
- * @recoil-artifact defines .text recoil:function:0x41cef0: zClass_Node::SetPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-artifact defines .text recoil:function:0x41cef0: CZNode::SetPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
  * @recoil-match byte
  *
  * Purpose: restore pickup active/raycast flags on a node and its secondary children.
  */
-int __fastcall zClass_Node::SetPickupFlagsRecursive(
-    zClass_NodePartial *node
+int __fastcall CZNode::SetPickupFlagsRecursive(
+    CZNodePartial *node
 ) {
     node->flags = (node->flags & ~0x08) | 0x40010;
 
@@ -933,9 +933,9 @@ int __fastcall zClass_Node::SetPickupFlagsRecursive(
  * Purpose: resolve a pickup bvol hit node back to its owning pickup node.
  */
 int __fastcall Pickup::ResolveOwnerFromBvolHit(
-    zClass_NodePartial **nodeInOut
+    CZNodePartial **nodeInOut
 ) {
-    zClass_NodePartial *const node = *nodeInOut;
+    CZNodePartial *const node = *nodeInOut;
     if (node == 0 || (node->flags & 0x40000) == 0) {
         return 0;
     }
@@ -953,11 +953,11 @@ int __fastcall Pickup::ResolveOwnerFromBvolHit(
  */
 void __fastcall Pickup::RemoveObject(
     zEffectAnimEntry *animEntry,
-    zClass_NodePartial *pickupObj,
+    CZNodePartial *pickupObj,
     int
 ) {
     PickupSpawnDef *const spawn = (PickupSpawnDef *)(pickupObj->callbackContext);
-    zClass_Class::gwNodeSetActive(pickupObj, 0);
+    CZClass::gwNodeSetActive(pickupObj, 0);
 
     if (spawn != 0 && spawn->respawnDelay != 0.0f) {
         if (zOpt::GetNetworkEnabled() != 0 && animEntry != 0) {
@@ -989,7 +989,7 @@ void __fastcall Pickup::RemoveObject(
             SendPkt11Flag2Delta(spawn);
         }
 
-        zClass_Class::RemoveChild(pickupObj->listA[0], pickupObj);
+        CZClass::RemoveChild(pickupObj->listA[0], pickupObj);
     }
 
     if (spawn != 0 && g_PickupSpawnList_Primary.count != 0) {
@@ -1035,10 +1035,10 @@ void __fastcall Pickup::RemoveObject(
  * Purpose: apply a collected pickup and transition the pickup object to its pickup animation or removal.
  */
 int __fastcall Pickup::OnCollected(
-    zClass_NodePartial *hitNode,
+    CZNodePartial *hitNode,
     zUtil_SaveGameState *saveState
 ) {
-    zClass_NodePartial *pickupObj = hitNode;
+    CZNodePartial *pickupObj = hitNode;
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     if (ResolveOwnerFromBvolHit(&pickupObj) == 0) {
         return 0;
@@ -1051,9 +1051,9 @@ int __fastcall Pickup::OnCollected(
         return 0;
     }
 
-    zClass_Node::ClearPickupFlagsRecursive(pickupObj);
-    zClass_Class::gwNodeSetRaycastable(pickupObj, 0);
-    zClass_Class::gwNodeSetPickable(pickupObj, 0);
+    CZNode::ClearPickupFlagsRecursive(pickupObj);
+    CZClass::gwNodeSetRaycastable(pickupObj, 0);
+    CZClass::gwNodeSetPickable(pickupObj, 0);
 
     PickupType *const pickupType = &g_PickupTypes[pickupTypeId];
     if (pickupType->weaponKeyName != 0) {
@@ -1068,9 +1068,9 @@ int __fastcall Pickup::OnCollected(
     zEffectAnimEntry *const animEntry = zEffectAnim::FindEntryByName(pickupAnimName);
     if (animEntry != 0) {
         zVec3 worldPosition;
-        gwNode::GetWorldPosition(pickupObj, &worldPosition);
+        CZNode::GetWorldPosition(pickupObj, &worldPosition);
         pickupType->pickupSound->PlayA3DSimple(1.0f);
-        zClass_Class::gwNodeSetName(pickupObj, pickupAnimName);
+        CZClass::gwNodeSetName(pickupObj, pickupAnimName);
         zEffectAnimEntry *const runtimeEntry = zEffectAnim::SetTransformRefsThunk(
             animEntry,
             pickupObj,
@@ -1388,13 +1388,13 @@ void __fastcall PickupSpawnList::RemoveAndFreeNode(
         }
     }
 
-    zClass_NodePartial *const pickupObj = node->pickupObj;
+    CZNodePartial *const pickupObj = node->pickupObj;
     if (pickupObj != 0) {
         if (pickupObj->listA != 0) {
-            zClass_World::RemoveChildAtGrid(pickupObj->listA[0], pickupObj);
+            CZWorld::RemoveChildAtGrid(pickupObj->listA[0], pickupObj);
         }
 
-        zClass_Util::DestroyNodeRecursive(pickupObj);
+        CZUtil::DestroyNodeRecursive(pickupObj);
     }
 
     free(node);
@@ -1406,14 +1406,14 @@ void __fastcall PickupSpawnList::RemoveAndFreeNode(
  * Purpose: allocate a spawn definition, attach it to the primary list, and bind node context.
  */
 PickupSpawnDef *__fastcall Pickup::CreateSpawnDefAndLink(
-    zClass_NodePartial *pickupObj,
+    CZNodePartial *pickupObj,
     zVec3 *position,
     zVec3 *rotation,
     int spawnParam,
     int linkToScene
 ) {
     if (linkToScene != 0) {
-        zClass_Class::AddChild(g_Pickup_SceneNode, pickupObj);
+        CZClass::AddChild(g_Pickup_SceneNode, pickupObj);
     }
 
     PickupSpawnDef *const spawn = (PickupSpawnDef *)(malloc(sizeof(PickupSpawnDef)));
@@ -1456,7 +1456,7 @@ PickupSpawnDef *__fastcall Pickup::CreateSpawnDefAndLink(
     spawn->next = 0;
     ++g_PickupSpawnList_Primary.count;
 
-    zClass_Node::SetContextRecursive(pickupObj, (zClass_NodePartial *)spawn, 0x240000);
+    CZNode::SetContextRecursive(pickupObj, (CZNodePartial *)spawn, 0x240000);
     return spawn;
 }
 
@@ -1474,16 +1474,16 @@ PickupSpawnDef *__fastcall Pickup::SpawnAt(
     zVec3 *rotation,
     int spawnParam
 ) {
-    zClass_NodePartial *const pickupObj = CreateObjectInstance(typeIndex, amount);
+    CZNodePartial *const pickupObj = CreateObjectInstance(typeIndex, amount);
     if (pickupObj == 0) {
         return 0;
     }
 
     SetVariantFromTerrain(pickupObj, position);
-    zClass_Object3D::gwObject3DSetPosition(pickupObj, position->x, position->y, position->z);
+    CZObject3D::gwObject3DSetPosition(pickupObj, position->x, position->y, position->z);
 
     if (rotation != 0) {
-        zClass_Object3D::gwObject3DSetRotation(pickupObj, rotation->x, rotation->y, rotation->z);
+        CZObject3D::gwObject3DSetRotation(pickupObj, rotation->x, rotation->y, rotation->z);
     }
 
     PickupSpawnDef *const spawn =
@@ -1497,7 +1497,7 @@ PickupSpawnDef *__fastcall Pickup::SpawnAt(
  * @recoil-artifact defines .text recoil:function:0x41dab0: Pickup::CreateObjectInstance (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clone a pickup template node, assign its runtime fields, and name it for spawning.
  */
-zClass_NodePartial *__fastcall Pickup::CreateObjectInstance(
+CZNodePartial *__fastcall Pickup::CreateObjectInstance(
     int typeIndex,
     int overrideAmount
 ) {
@@ -1506,8 +1506,8 @@ zClass_NodePartial *__fastcall Pickup::CreateObjectInstance(
         return 0;
     }
 
-    zClass_NodePartial *const pickupObj =
-        zClass_cls_util::CopyNodeWithCloneOptions(pickupType->templateNode, 1, 0);
+    CZNodePartial *const pickupObj =
+        CZUtil::CopyNodeWithCloneOptions(pickupType->templateNode, 1, 0);
     if (pickupObj == 0) {
         return 0;
     }
@@ -1519,7 +1519,7 @@ zClass_NodePartial *__fastcall Pickup::CreateObjectInstance(
         pickupType->typeIndex,
         pickupType->nameSuffixMax
     );
-    zClass_Class::gwNodeSetName(pickupObj, pickupName);
+    CZClass::gwNodeSetName(pickupObj, pickupName);
 
     int amount = overrideAmount;
     if (amount == 0) {
@@ -1531,7 +1531,7 @@ zClass_NodePartial *__fastcall Pickup::CreateObjectInstance(
         return pickupObj;
     }
 
-    zClass_Util::DestroyNodeRecursive(pickupObj);
+    CZUtil::DestroyNodeRecursive(pickupObj);
     return 0;
 }
 
@@ -1556,9 +1556,9 @@ PickupType *__fastcall PickupType::GetByIndexPure(
  * Purpose: parse a pickup node name, assign runtime pickup fields, and disable its bvol child.
  */
 int __fastcall Pickup::AssignBvolGroupAndId(
-    zClass_NodePartial *pickupObj
+    CZNodePartial *pickupObj
 ) {
-    zClass_NodePartial *const bvolNode = zClass_Class::FindSubNodeByName(
+    CZNodePartial *const bvolNode = CZClass::FindSubNodeByName(
         pickupObj,
         kPickupBvolNodeName
     );
@@ -1586,8 +1586,8 @@ int __fastcall Pickup::AssignBvolGroupAndId(
     }
 
     pickupObj->flags = (pickupObj->flags & ~0x08) | 0x20;
-    zClass_Class::gwNodeSetActive(bvolNode, 0);
-    zClass_Node::SetDiFlagBit0Recursive(pickupObj, 0);
+    CZClass::gwNodeSetActive(bvolNode, 0);
+    CZNode::SetDiFlagBit0Recursive(pickupObj, 0);
     return 1;
 }
 
@@ -1624,7 +1624,7 @@ int __fastcall Pickup::SpawnWithAirdropChute(
     int typeIndex,
     zVec3 *position
 ) {
-    zClass_NodePartial *const pickupObj = CreateObjectInstance(typeIndex, 0);
+    CZNodePartial *const pickupObj = CreateObjectInstance(typeIndex, 0);
     if (pickupObj == 0) {
         return 0;
     }
@@ -1645,13 +1645,13 @@ int __fastcall Pickup::SpawnWithAirdropChute(
         0.0f,
         0.0f
     );
-    zClass_NodePartial *const chuteRoot = zEffectAnim::GetRootNodeOrNull(chuteEntry);
-    zClass_NodePartial *const attachNode = zClass_Class::FindSubNodeByName(
+    CZNodePartial *const chuteRoot = zEffectAnim::GetRootNodeOrNull(chuteEntry);
+    CZNodePartial *const attachNode = CZClass::FindSubNodeByName(
         chuteRoot,
         kPickupAirdropAttachNodeName
     );
-    zClass_Class::AddChild(attachNode, pickupObj);
-    zClass_Class::gwNodeSetActive(pickupObj, 0);
+    CZClass::AddChild(attachNode, pickupObj);
+    CZClass::gwNodeSetActive(pickupObj, 0);
     zEffectAnimEntry::SetOnStateDoneCallback(
         chuteEntry,
         (void *)&RegisterExistingObject,
@@ -1669,18 +1669,18 @@ int __fastcall Pickup::SpawnWithAirdropChute(
  */
 void __fastcall Pickup::RegisterExistingObject(
     int,
-    zClass_NodePartial *pickupObj,
+    CZNodePartial *pickupObj,
     int
 ) {
     zVec3 worldPos;
-    gwNode::GetWorldPosition(pickupObj, &worldPos);
+    CZNode::GetWorldPosition(pickupObj, &worldPos);
 
     if (pickupObj->listCountA == 1 && pickupObj->listA[0] != 0) {
-        zClass_Class::RemoveChild(pickupObj->listA[0], pickupObj);
+        CZClass::RemoveChild(pickupObj->listA[0], pickupObj);
     }
 
-    zClass_Class::gwNodeSetActive(pickupObj, 1);
-    zClass_Object3D::gwObject3DSetPosition(pickupObj, worldPos.x, worldPos.y, worldPos.z);
+    CZClass::gwNodeSetActive(pickupObj, 1);
+    CZObject3D::gwObject3DSetPosition(pickupObj, worldPos.x, worldPos.y, worldPos.z);
     CreateSpawnDefAndLink(pickupObj, &worldPos, 0, 0, 1);
 }
 
@@ -1770,8 +1770,8 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
 
     g_PickupSpawnList_Primary.Clear();
 
-    zClass::FindNextByTypePrefix(g_Pickup_NodePrefix, 6);
-    zClass_NodePartial *pickupObj = zClass::FindNextByTypePrefix(0, 6);
+    CZClass::FindNextByTypePrefix(g_Pickup_NodePrefix, 6);
+    CZNodePartial *pickupObj = CZClass::FindNextByTypePrefix(0, 6);
     while (pickupObj != 0) {
         if (strlen(pickupObj->name) > 5 && isdigit((unsigned char)(pickupObj->name[2])) != 0) {
             zVec3 zeroVec = {0.0f, 0.0f, 0.0f};
@@ -1786,7 +1786,7 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
             }
         }
 
-        pickupObj = zClass::FindNextByTypePrefix(0, 6);
+        pickupObj = CZClass::FindNextByTypePrefix(0, 6);
     }
 
     zReader::Node *const treeRoot =
@@ -2002,7 +2002,7 @@ void PickupRespawnQueue::ClearAndFree() {
  */
 void __fastcall Pickup::RemoveOtherSpawnsWithSameOptEntry(
     OptCatalogEntryDef *optEntry,
-    zClass_NodePartial *keepPickupObj
+    CZNodePartial *keepPickupObj
 ) {
     PickupSpawnDef *spawn = g_PickupSpawnList_Primary.head;
     while (spawn != 0) {
@@ -2020,14 +2020,14 @@ void __fastcall Pickup::RemoveOtherSpawnsWithSameOptEntry(
  * Purpose: choose the pickup variant tag from terrain below the spawn point.
  */
 void __fastcall Pickup::SetVariantFromTerrain(
-    zClass_NodePartial *pickupObj,
+    CZNodePartial *pickupObj,
     zVec3 *position
 ) {
     zTag4::Clear(&g_VariantTag_Current);
     g_Variant_CurrentTag = g_VariantTag_Current;
 
     PlayerProbeSampleCandidateBuffer candidateBuffer;
-    zClass_cls_di::BuildPickCandidateListBelowPoint(
+    CZDisplayInstance::BuildPickCandidateListBelowPoint(
         g_Pickup_SceneNode,
         &candidateBuffer,
         position->x,
@@ -2051,9 +2051,9 @@ void __fastcall Pickup::SetVariantFromTerrain(
     int variantTag = 255;
     if (candidateBuffer.candidateCount != 0) {
         zClassDiPickCandidateEntry *const candidate = &candidateBuffer.entries[bestCandidateIndex];
-        zClass_NodePartial *const worldChild = zClass_Class::gwNodeGetWorldChild(candidate->node);
+        CZNodePartial *const worldChild = CZClass::gwNodeGetWorldChild(candidate->node);
         if (worldChild != 0) {
-            zClass_Class::gwNodeSetNodeType(pickupObj, worldChild->nodeType);
+            CZClass::gwNodeSetNodeType(pickupObj, worldChild->nodeType);
             zDi::SetVariantTagIfUnset(
                 (zDiPartial *)(pickupObj->userDataOrDiRef),
                 worldChild->nodeType
@@ -2061,12 +2061,12 @@ void __fastcall Pickup::SetVariantFromTerrain(
             return;
         } else {
             variantTag = candidate->variantTag.tags[0];
-            zClass_Class::gwNodeSetNodeType(pickupObj, variantTag);
+            CZClass::gwNodeSetNodeType(pickupObj, variantTag);
             zDi::SetVariantTagIfUnset((zDiPartial *)(pickupObj->userDataOrDiRef), variantTag);
         }
     }
 
-    zClass_Class::gwNodeSetNodeType(pickupObj, variantTag);
+    CZClass::gwNodeSetNodeType(pickupObj, variantTag);
     zDi::SetVariantTagIfUnset((zDiPartial *)(pickupObj->userDataOrDiRef), variantTag);
 }
 
@@ -2210,30 +2210,30 @@ void __cdecl PickupRespawnQueue::Update() {
 void __fastcall Pickup::RespawnSpawnDef(
     PickupSpawnDef *spawn
 ) {
-    zClass_NodePartial *const pickupObj = spawn->pickupObj;
+    CZNodePartial *const pickupObj = spawn->pickupObj;
 
-    zClass_Class::gwNodeSetActive(pickupObj, 1);
-    zClass_Class::gwNodeSetRaycastable(pickupObj, 1);
-    zClass_Class::gwNodeSetPickable(pickupObj, 1);
-    zClass_Class::gwNodeSetName(pickupObj, spawn->name);
-    zClass_Node::SetPickupFlagsRecursive(pickupObj);
+    CZClass::gwNodeSetActive(pickupObj, 1);
+    CZClass::gwNodeSetRaycastable(pickupObj, 1);
+    CZClass::gwNodeSetPickable(pickupObj, 1);
+    CZClass::gwNodeSetName(pickupObj, spawn->name);
+    CZNode::SetPickupFlagsRecursive(pickupObj);
 
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         pickupObj,
         spawn->position.x,
         spawn->position.y,
         spawn->position.z
     );
-    zClass_Object3D::gwObject3DSetRotation(
+    CZObject3D::gwObject3DSetRotation(
         pickupObj,
         spawn->rotation.x,
         spawn->rotation.y,
         spawn->rotation.z
     );
-    zClass_Object3D::gwObject3DSetScale(pickupObj, 1.0f, 1.0f, 1.0f);
-    zClass_Object3D::gwObject3DSetLitFlag(pickupObj, 1);
-    zClass_Object3D::gwObject3DSetAlphaScale(pickupObj, 0.0f);
-    zClass_Object3D_ModelRefLerpQueue::Add(pickupObj, 0, 0, 0.0f, 1.0f, 7.0f);
+    CZObject3D::gwObject3DSetScale(pickupObj, 1.0f, 1.0f, 1.0f);
+    CZObject3D::gwObject3DSetLitFlag(pickupObj, 1);
+    CZObject3D::gwObject3DSetAlphaScale(pickupObj, 0.0f);
+    CZObject3DModelRefLerpQueue::Add(pickupObj, 0, 0, 0.0f, 1.0f, 7.0f);
 }
 
 /**
@@ -2251,7 +2251,7 @@ int __fastcall Pickup::ArchiveWriteAll(
     int firstRecord = 1;
     PickupSpawnDef *spawn = g_PickupSpawnList_Primary.head;
     while (spawn != 0 && result != 0) {
-        zClass_NodePartial *const pickupObj = spawn->pickupObj;
+        CZNodePartial *const pickupObj = spawn->pickupObj;
         if ((pickupObj->flags & 0x40000) != 0) {
             PickupArchiveRecord record;
             record.firstRecord = firstRecord;
@@ -2397,7 +2397,7 @@ PickupSpawnDef *__fastcall Pickup::FindSpawnByPickupId(
  * Purpose: return the spawn definition stored in a pickup node callback context.
  */
 PickupSpawnDef *__fastcall Pickup::GetSpawnDefFromNode(
-    zClass_NodePartial *pickupNode
+    CZNodePartial *pickupNode
 ) {
     return (PickupSpawnDef *)(pickupNode->callbackContext);
 }
@@ -2480,16 +2480,16 @@ void __fastcall Pickup::SpawnAtCarrierNodeByName(
     int typeIndex,
     int amount
 ) {
-    zClass_NodePartial *const carrierNode = zClass::FindByTypeAndName(6, carrierNodeName);
+    CZNodePartial *const carrierNode = CZClass::FindByTypeAndName(6, carrierNodeName);
     if (carrierNode == 0) {
         return;
     }
 
     zVec3 position;
-    gwNode::GetWorldPosition(carrierNode, &position);
+    CZNode::GetWorldPosition(carrierNode, &position);
 
     zVec3 rotation;
-    zClass_Object3D::gwObject3DGetRotation(carrierNode, &rotation.x, &rotation.y, &rotation.z);
+    CZObject3D::gwObject3DGetRotation(carrierNode, &rotation.x, &rotation.y, &rotation.z);
     SpawnAt(typeIndex, amount, &position, &rotation, 0);
 }
 
@@ -2502,8 +2502,8 @@ namespace PickupTypeMeta {
 namespace Net {
 } // namespace Net
 
-namespace zClass_Node {
-} // namespace zClass_Node
+namespace CZNode {
+} // namespace CZNode
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-initnodesfromcarriernodename
@@ -2513,8 +2513,8 @@ namespace zClass_Node {
 PickupAirdropSpawnRef *PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
     const char *carrierNodeName
 ) {
-    carrierNode = zClass::FindByTypeAndName(6, carrierNodeName);
-    dropAttachNode = zClass_Class::FindSubNodeByName(carrierNode, g_Player_HealthySubNodeName);
+    carrierNode = CZClass::FindByTypeAndName(6, carrierNodeName);
+    dropAttachNode = CZClass::FindSubNodeByName(carrierNode, g_Player_HealthySubNodeName);
     return this;
 }
 
@@ -2577,7 +2577,7 @@ int PickupAirdropSpawnRef::CanSpawnWithClearance(
  * Purpose: refresh and return the cached world position of the airdrop carrier.
  */
 zVec3 *PickupAirdropSpawnRef::GetWorldPos() {
-    gwNode::GetWorldPosition(carrierNode, &worldPos);
+    CZNode::GetWorldPosition(carrierNode, &worldPos);
     return &worldPos;
 }
 
@@ -2742,10 +2742,10 @@ int __fastcall HandlePkt11SpawnDelta(
     }
 
     if ((flags & 8u) != 0) {
-        zClass_NodePartial *const pickupObj = spawn->pickupObj;
-        zClass_Node::ClearPickupFlagsRecursive(pickupObj);
-        zClass_Class::gwNodeSetRaycastable(pickupObj, 0);
-        zClass_Class::gwNodeSetPickable(pickupObj, 0);
+        CZNodePartial *const pickupObj = spawn->pickupObj;
+        CZNode::ClearPickupFlagsRecursive(pickupObj);
+        CZClass::gwNodeSetRaycastable(pickupObj, 0);
+        CZClass::gwNodeSetPickable(pickupObj, 0);
         RemoveObject(0, pickupObj, 0);
     }
 
