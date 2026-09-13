@@ -22,7 +22,7 @@ struct OptCatalogRaycastHitEntry;
 struct OptCatalogRaycastHitList;
 
 struct OptCatalogTrailNodeSlot {
-    zClass_NodePartial *node;
+    CZNodePartial *node;
     zVec3 pos;
     zVec3 dir;
     float scale;
@@ -32,11 +32,11 @@ struct OptCatalogTrailRuntimeState {
     OptCatalogTrailRuntimeState *next;
     OptCatalogTrailRuntimeState *prev;
     OptCatalogEntryDef *ownerEntry;
-    zClass_NodePartial *projectileNode;
+    CZNodePartial *projectileNode;
     zTag4Partial *variantTagPtr;
     zSndPlayHandle *stopSoundHandle;
     float ammoOrChargeMirror;
-    zClass_NodePartial *lightNode;
+    CZNodePartial *lightNode;
     zVec3 *spawnPos;
     zVec3 *spawnDir;
     float trailBlend;
@@ -58,7 +58,7 @@ struct OptCatalogFxSpec {
     zEffectAnimEntry *attachedAnimationEntry;
     zEffectAnimEntry *modelAnimationEntry;
     int effectTemplateIndex;
-    zClass_NodePartial *modelNode;
+    CZNodePartial *modelNode;
     int soundCount;
     zSndSample *soundSamples[4];
     int bounceSoundCount;
@@ -72,13 +72,13 @@ struct OptCatalogDamageFeedbackVariant {
 
 struct OptCatalogRuntimeInstanceStorage {
     OptCatalogRuntimeInstanceStorage *next;
-    zClass_NodePartial *ownerNode;
+    CZNodePartial *ownerNode;
     unsigned int variantTag;
-    zClass_NodePartial *projectileNode;
+    CZNodePartial *projectileNode;
     zEffectAnimEntry *flyoutAnimPrimary;
     zEffectAnimEntry *flyoutAnimSecondary;
     zEffectAnimEntry *asyncFxHandle;
-    zClass_NodePartial *attachCloneChild;
+    CZNodePartial *attachCloneChild;
     zVec3 origin;
     zVec3 aux;
     zVec3 dir;
@@ -120,7 +120,7 @@ struct OptCatalogSurfaceMaterialRef {
     unsigned char unknown_14[0x0c];
     union {
         int impactSlot;
-        zClass_NodePartial *impactOwnerNode;
+        CZNodePartial *impactOwnerNode;
     };
 };
 
@@ -129,7 +129,7 @@ struct OptCatalogHitEventPartial {
     zVec3 hitPos;
     unsigned char unknown_18[0x08];
     OptCatalogSurfaceMaterialRef *surfaceRef;
-    zClass_NodePartial *hitNode;
+    CZNodePartial *hitNode;
 };
 
 typedef void(__fastcall *OptCatalogImpactCallback)(
@@ -195,7 +195,7 @@ struct OptCatalogEntryDef {
             zEffectAnimEntry *flyoutAttachedAnimationEntry;
             zEffectAnimEntry *flyoutModelAnimationEntry;
             unsigned char unknown_0c0[0x04];
-            zClass_NodePartial *attachCloneTemplateNode;
+            CZNodePartial *attachCloneTemplateNode;
             unsigned char unknown_0c8[0x04];
             zSndSample *trailLoopSample;
             unsigned char unknown_0d0[0x24];
@@ -204,8 +204,8 @@ struct OptCatalogEntryDef {
     };
     OptCatalogFxSpec *impactFxTable;
     union {
-        zClass_NodePartial *impactNodeListHead;
-        zClass_NodePartial *attachCloneChildFreeList;
+        CZNodePartial *impactNodeListHead;
+        CZNodePartial *attachCloneChildFreeList;
     };
     int damageFeedbackVariantCount;
     OptCatalogDamageFeedbackVariant damageFeedbackVariants[4];
@@ -236,13 +236,13 @@ typedef int(__fastcall *OptCatalogHitCallback)(
 );
 typedef void(__fastcall *OptCatalogDamageFeedbackCallback)(
     OptCatalogDamageHandlerPartial *handler,
-    zClass_NodePartial *hitNode,
+    CZNodePartial *hitNode,
     float damageAmount
 );
 typedef void(__fastcall *OptCatalogRemoveRuntimeRelayCallback)(
     OptCatalogEntryDef *entry,
     zVec3 *pointOrVec3,
-    zClass_NodePartial *ownerNode
+    CZNodePartial *ownerNode
 );
 
 namespace OptCatalog {
@@ -255,12 +255,12 @@ void __fastcall BlendDirectionTowardTarget(
 );
 OptCatalogEntryDef *__fastcall FindEntryByName(const char *name);
 OptCatalogEntryDef *__fastcall FindEntryById(int entryId);
-zClass_NodePartial *__fastcall CreateTrailSegmentNodeFromTemplate(
-    zClass_NodePartial *templateNode
+CZNodePartial *__fastcall CreateTrailSegmentNodeFromTemplate(
+    CZNodePartial *templateNode
 );
 OptCatalogTrailRuntimeState *__fastcall CreateTrailRuntimeState(
     OptCatalogEntryDef *entry,
-    zClass_NodePartial *projectileNode,
+    CZNodePartial *projectileNode,
     zTag4Partial *variantTagPtr,
     void *reserved,
     zVec3 *spawnPos,
@@ -278,7 +278,7 @@ int __fastcall AltGunDispatchAllocRuntimeGateCallback(
 void __fastcall SendPkt0ARemoveRuntimeRelay(
     OptCatalogEntryDef *self,
     zVec3 *pointOrVec3,
-    zClass_NodePartial *ownerNode
+    CZNodePartial *ownerNode
 );
 int __fastcall HandlePkt0ARemoveRuntimeRelay(
     int senderPlayerId,
@@ -289,7 +289,7 @@ void __fastcall LoadFxSpecFromReaderNode(
     OptCatalogFxSpec *spec,
     const char *childName
 );
-zClass_NodePartial *__fastcall AllocOrReuseAttachNodeChildClone(
+CZNodePartial *__fastcall AllocOrReuseAttachNodeChildClone(
     OptCatalogEntryDef *self
 );
 void __fastcall ClearRuntimeInstanceAsyncFxHandleCallback(
@@ -306,7 +306,7 @@ OptCatalogRuntimeInstanceStorage *__fastcall AllocOrReuseAttachNodeClone(
 );
 OptCatalogRuntimeInstanceStorage *__fastcall AllocRuntimeInstance(
     OptCatalogEntryDef *self,
-    zClass_NodePartial *ownerNode,
+    CZNodePartial *ownerNode,
     zTag4Partial *variantTagOrNull,
     zVec3 *spawnPos,
     zVec3 *spawnDir,
@@ -317,7 +317,7 @@ OptCatalogRuntimeInstanceStorage *__fastcall AllocRuntimeInstance(
 OptCatalogRuntimeInstanceStorage *__fastcall SpawnRuntimeInstanceAt(
     OptCatalogEntryDef *self,
     zVec3 *spawnPos,
-    zClass_NodePartial *ownerNode
+    CZNodePartial *ownerNode
 );
 void __fastcall RecycleRuntimeInstance(
     OptCatalogEntryDef *self,
@@ -350,7 +350,7 @@ float __fastcall ComputeAimPitchForTarget(
 );
 int __fastcall InvokeDamageFeedbackAndHitCallback(
     OptCatalogEntryDef *self,
-    zClass_NodePartial *damageOwnerNode,
+    CZNodePartial *damageOwnerNode,
     zVec3 *sourcePos,
     OptCatalogHitEventPartial *hitEvent,
     float damageAmount
@@ -371,14 +371,14 @@ zVec3 *__cdecl GetCapturedHitSourcePtr();
 int __fastcall EmitCraterImpactEvent(
     OptCatalogEntryDef *self,
     OptCatalogHitEventPartial *hitEvent,
-    zClass_NodePartial *unusedOwnerNode,
-    zClass_NodePartial *damageOwnerNode
+    CZNodePartial *unusedOwnerNode,
+    CZNodePartial *damageOwnerNode
 );
 void __fastcall EmitQSandImpactEvent(
     OptCatalogEntryDef *self,
     OptCatalogHitEventPartial *hitEvent,
-    zClass_NodePartial *unusedOwnerNode,
-    zClass_NodePartial *damageOwnerNode
+    CZNodePartial *unusedOwnerNode,
+    CZNodePartial *damageOwnerNode
 );
 void __fastcall PlayImpactSound(
     OptCatalogEntryDef *self,
@@ -415,7 +415,7 @@ void __cdecl ProcessRuntimeInstances();
 int __fastcall RemoveRuntimeInstance(
     OptCatalogEntryDef *self,
     zVec3 *pointOrVec3,
-    zClass_NodePartial *ownerNode
+    CZNodePartial *ownerNode
 );
 int __fastcall CanSpawnThroughRay(
     OptCatalogEntryDef *self,
@@ -479,7 +479,7 @@ extern OptCatalogEntryDef *g_OptCatalog_EntryTable;
 extern int g_OptCatalogRuntimeInstanceCount;
 extern void *g_OptCatalogRuntimeInstancePool;
 extern OptCatalogRuntimeInstanceStorage *g_OptCatalogFreeRuntimeInstanceList;
-extern zClass_NodePartial *g_OptCatalogRuntimeWorld;
+extern CZNodePartial *g_OptCatalogRuntimeWorld;
 extern int *g_OptCatalogPendingSpawnTargetCountPtr;
 extern PlayerProgressTargetSlotRuntime *g_OptCatalogPendingSpawnTargetListPtr;
 extern float g_OptCatalogMaxCraterRadius;
@@ -490,12 +490,12 @@ extern void *g_OptCatalog_CurrentDamageOwnerOrCtx;
 extern void *g_OptCatalogDamageFeedbackCallback;
 extern float g_OptCatalogLockOnWarningGateTimeSec;
 extern int g_OptCatalog_DamageFeedbackHitCount;
-extern zClass_NodePartial *g_OptCatalogDamageFeedbackTrackedNode;
+extern CZNodePartial *g_OptCatalogDamageFeedbackTrackedNode;
 extern float g_OptCatalogDamageFeedbackIntensityScalar;
 extern float g_OptCatalogNextSpawnScale;
 extern float g_OptCatalogRuntimeDeltaTime;
 extern float g_OptCatalogRuntimeNowSec;
-extern zClass_NodePartial *g_OptCatalogThermalGlowFreeList;
+extern CZNodePartial *g_OptCatalogThermalGlowFreeList;
 extern OptCatalogRuntimeInstanceStorage *g_OptCatalog_MineIteratorCursor;
 extern zReader::Node *g_OptCatalogLoadedTreeRoot;
 extern zSndSample *g_OptCatalogSndTriggerInactive;

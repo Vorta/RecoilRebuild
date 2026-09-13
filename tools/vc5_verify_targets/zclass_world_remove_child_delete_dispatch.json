@@ -22,13 +22,13 @@
   "functions": [
     {
       "address": "0x450e40",
-      "symbol": "?FreeVirtualAreaPartitions@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_World::FreeVirtualAreaPartitions"
+      "symbol": "?FreeVirtualAreaPartitions@CZWorld@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZWorld::FreeVirtualAreaPartitions"
     },
     {
       "address": "0x450240",
-      "symbol": "?DeleteNode@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_World::DeleteNode"
+      "symbol": "?DeleteNode@CZWorld@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZWorld::DeleteNode"
     }
   ]
 }

@@ -203,12 +203,12 @@
     },
     {
       "address": "0x401d50",
-      "symbol": "?HasLineOfSightFromLocalPlayerFxOffset@AINet@@SIHPAUzClass_NodePartial@@PBUzVec3@@H@Z",
+      "symbol": "?HasLineOfSightFromLocalPlayerFxOffset@AINet@@SIHPAUCZNodePartial@@PBUzVec3@@H@Z",
       "name": "AINet::HasLineOfSightFromLocalPlayerFxOffset"
     },
     {
       "address": "0x401e50",
-      "symbol": "?HasLineOfSightFromCameraTarget@AINet@@SIHPAUzClass_NodePartial@@PBUzVec3@@H@Z",
+      "symbol": "?HasLineOfSightFromCameraTarget@AINet@@SIHPAUCZNodePartial@@PBUzVec3@@H@Z",
       "name": "AINet::HasLineOfSightFromCameraTarget"
     },
     {

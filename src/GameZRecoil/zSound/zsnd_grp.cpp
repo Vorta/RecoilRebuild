@@ -12,7 +12,7 @@ extern "C" zArchiveList *g_zSndStream_ActiveList = 0;
 extern "C" zArchiveList *g_zSndStream_FreeList = 0;
 extern "C" zSndStreamRequest *g_zSndStream_MatchedRequest = 0;
 extern "C" int g_zSndStream_MatchedRequestCount = 0;
-extern "C" zClass_NodePartial *g_zSndStream_RootNode = 0;
+extern "C" CZNodePartial *g_zSndStream_RootNode = 0;
 
 extern "C" {
 /**
@@ -705,9 +705,9 @@ namespace zSndStreamMgr {
  * stream-manager root/list globals, and return success.
  */
 int __cdecl Shutdown() {
-    if (g_zSndStream_RootNode != 0 && zClass::IsInitialized() != 0) {
-        zClass_Class::gwNodeSetActionCallback(g_zSndStream_RootNode, 0);
-        zClass_Object3D::DeleteNode(g_zSndStream_RootNode);
+    if (g_zSndStream_RootNode != 0 && CZClass::IsInitialized() != 0) {
+        CZClass::gwNodeSetActionCallback(g_zSndStream_RootNode, 0);
+        CZObject3D::DeleteNode(g_zSndStream_RootNode);
     }
     g_zSndStream_RootNode = 0;
 
@@ -886,12 +886,12 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
  */
 extern "C" int __cdecl zSndStreamMgrEnsureInit() {
     if (g_zSndStream_RootNode == 0) {
-        g_zSndStream_RootNode = zClass_Object3D::gwObject3DInit();
+        g_zSndStream_RootNode = CZObject3D::gwObject3DInit();
         if (g_zSndStream_RootNode == 0) {
             return 0;
         }
 
-        zClass_Class::gwNodeSetActionCallbackTail(
+        CZClass::gwNodeSetActionCallbackTail(
             g_zSndStream_RootNode,
             (void *)(&zSndStreamMgrRecycleFinishedRequest)
         );

@@ -1,6 +1,6 @@
 {
   "name": "zclass_sound_update_playback",
-  "description": "zClass_Sound::UpdatePlayback active sound playback updater.",
+  "description": "CZSound::UpdatePlayback active sound playback updater.",
   "source_filename": "Sound.c",
   "source_from": "src/GameZRecoil/zClass/Sound.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -21,8 +21,8 @@
   "functions": [
     {
       "address": "0x452dc0",
-      "symbol": "?UpdatePlayback@zClass_Sound@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Sound::UpdatePlayback"
+      "symbol": "?UpdatePlayback@CZSound@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZSound::UpdatePlayback"
     }
   ]
 }

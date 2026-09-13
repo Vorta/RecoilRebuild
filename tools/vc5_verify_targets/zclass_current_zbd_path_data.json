@@ -23,9 +23,9 @@
   "data_symbols": [
     {
       "address": "0x539ca8",
-      "symbol": "_g_zClass_CurrentZbdPath",
-      "name": "g_zClass_CurrentZbdPath",
-      "bn_name": "g_zClass_CurrentZbdPath",
+      "symbol": "_g_CZClass_CurrentZbdPath",
+      "name": "g_CZClass_CurrentZbdPath",
+      "bn_name": "g_CZClass_CurrentZbdPath",
       "byte_length": 48
     }
   ]

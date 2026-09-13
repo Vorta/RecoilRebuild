@@ -1,6 +1,6 @@
 {
   "name": "zclass_node_action_callbacks",
-  "description": "zClass_Class action-callback setters for head and tail callback-list insertion.",
+  "description": "CZClass action-callback setters for head and tail callback-list insertion.",
   "source_filename": "Class.c",
   "source_from": "src/GameZRecoil/zClass/Class.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,13 +22,13 @@
   "functions": [
     {
       "address": "0x447f30",
-      "symbol": "?gwNodeSetActionCallback@zClass_Class@@YIHPAUzClass_NodePartial@@PAX@Z",
-      "name": "zClass_Class::gwNodeSetActionCallback"
+      "symbol": "?gwNodeSetActionCallback@CZClass@@YIHPAUCZNodePartial@@PAX@Z",
+      "name": "CZClass::gwNodeSetActionCallback"
     },
     {
       "address": "0x447fe0",
-      "symbol": "?gwNodeSetActionCallbackTail@zClass_Class@@YIHPAUzClass_NodePartial@@PAX@Z",
-      "name": "zClass_Class::gwNodeSetActionCallbackTail"
+      "symbol": "?gwNodeSetActionCallbackTail@CZClass@@YIHPAUCZNodePartial@@PAX@Z",
+      "name": "CZClass::gwNodeSetActionCallbackTail"
     }
   ]
 }

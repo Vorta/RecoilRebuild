@@ -22,37 +22,37 @@
   "data_symbols": [
     {
       "address": "0x4f49ac",
-      "symbol": "_g_zClass_TypeListZeroShadowBuckets",
-      "name": "g_zClass_TypeListZeroShadowBuckets",
+      "symbol": "_g_CZClass_TypeListZeroShadowBuckets",
+      "name": "g_CZClass_TypeListZeroShadowBuckets",
       "bn_name": "g_zClassAllNodesTypeListHead",
       "byte_length": 192
     },
     {
       "address": "0x4f4a6c",
-      "symbol": "_g_zClass_TypeListZeroShadowFreeLinkHead",
-      "name": "g_zClass_TypeListZeroShadowFreeLinkHead",
-      "bn_name": "g_zClass_TypeListFreeHead",
+      "symbol": "_g_CZClass_TypeListZeroShadowFreeLinkHead",
+      "name": "g_CZClass_TypeListZeroShadowFreeLinkHead",
+      "bn_name": "g_CZClass_TypeListFreeHead",
       "byte_length": 4
     },
     {
       "address": "0x4f4a70",
-      "symbol": "_g_zClass_NodeListZeroShadowHead",
-      "name": "g_zClass_NodeListZeroShadowHead",
-      "bn_name": "g_zClass_NodeListHead",
+      "symbol": "_g_CZClass_NodeListZeroShadowHead",
+      "name": "g_CZClass_NodeListZeroShadowHead",
+      "bn_name": "g_CZClass_NodeListHead",
       "byte_length": 4
     },
     {
       "address": "0x4f4a74",
-      "symbol": "_g_zClass_TypeListZeroShadowAllocCount",
-      "name": "g_zClass_TypeListZeroShadowAllocCount",
-      "bn_name": "g_zClass_TypeListAllocCount",
+      "symbol": "_g_CZClass_TypeListZeroShadowAllocCount",
+      "name": "g_CZClass_TypeListZeroShadowAllocCount",
+      "bn_name": "g_CZClass_TypeListAllocCount",
       "byte_length": 4
     },
     {
       "address": "0x4f4a78",
-      "symbol": "_g_zClass_TypeListZeroShadowAllocPeak",
-      "name": "g_zClass_TypeListZeroShadowAllocPeak",
-      "bn_name": "g_zClass_TypeListAllocPeak",
+      "symbol": "_g_CZClass_TypeListZeroShadowAllocPeak",
+      "name": "g_CZClass_TypeListZeroShadowAllocPeak",
+      "bn_name": "g_CZClass_TypeListAllocPeak",
       "byte_length": 4
     }
   ]

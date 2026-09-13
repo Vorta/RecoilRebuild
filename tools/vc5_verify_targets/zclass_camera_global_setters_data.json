@@ -23,58 +23,58 @@
   "data_symbols": [
     {
       "address": "0x4ddd10",
-      "symbol": "_g_zClass_ObjectHseTestEnabled",
-      "name": "g_zClass_ObjectHseTestEnabled",
-      "bn_name": "g_zClass_ObjectHseTestEnabled",
+      "symbol": "_g_CZClass_ObjectHseTestEnabled",
+      "name": "g_CZClass_ObjectHseTestEnabled",
+      "bn_name": "g_CZClass_ObjectHseTestEnabled",
       "byte_length": 4
     },
     {
       "address": "0x4ddd14",
-      "symbol": "_g_zClass_CameraAutoClipDistanceAdjustEnabled",
-      "name": "g_zClass_CameraAutoClipDistanceAdjustEnabled",
-      "bn_name": "g_zClass_CameraAutoClipDistanceAdjustEnabled",
+      "symbol": "_g_CZClass_CameraAutoClipDistanceAdjustEnabled",
+      "name": "g_CZClass_CameraAutoClipDistanceAdjustEnabled",
+      "bn_name": "g_CZClass_CameraAutoClipDistanceAdjustEnabled",
       "byte_length": 4
     },
     {
       "address": "0x4ddd18",
-      "symbol": "_g_zClass_CameraAutoClipDistanceThreshold",
-      "name": "g_zClass_CameraAutoClipDistanceThreshold",
-      "bn_name": "g_zClass_CameraAutoClipDistanceThreshold",
+      "symbol": "_g_CZClass_CameraAutoClipDistanceThreshold",
+      "name": "g_CZClass_CameraAutoClipDistanceThreshold",
+      "bn_name": "g_CZClass_CameraAutoClipDistanceThreshold",
       "byte_length": 4
     },
     {
       "address": "0x4ddd1c",
-      "symbol": "_g_zClass_CameraAutoClipDistanceScale",
-      "name": "g_zClass_CameraAutoClipDistanceScale",
-      "bn_name": "g_zClass_CameraAutoClipDistanceScale",
+      "symbol": "_g_CZClass_CameraAutoClipDistanceScale",
+      "name": "g_CZClass_CameraAutoClipDistanceScale",
+      "bn_name": "g_CZClass_CameraAutoClipDistanceScale",
       "byte_length": 4
     },
     {
       "address": "0x4ddd20",
-      "symbol": "_g_zClass_CameraAutoClipDistanceStep",
-      "name": "g_zClass_CameraAutoClipDistanceStep",
-      "bn_name": "g_zClass_CameraAutoClipDistanceStep",
+      "symbol": "_g_CZClass_CameraAutoClipDistanceStep",
+      "name": "g_CZClass_CameraAutoClipDistanceStep",
+      "bn_name": "g_CZClass_CameraAutoClipDistanceStep",
       "byte_length": 4
     },
     {
       "address": "0x4ddd24",
-      "symbol": "_g_zClass_CameraAutoClipDistanceMinScale",
-      "name": "g_zClass_CameraAutoClipDistanceMinScale",
-      "bn_name": "g_zClass_CameraAutoClipDistanceMinScale",
+      "symbol": "_g_CZClass_CameraAutoClipDistanceMinScale",
+      "name": "g_CZClass_CameraAutoClipDistanceMinScale",
+      "bn_name": "g_CZClass_CameraAutoClipDistanceMinScale",
       "byte_length": 4
     },
     {
       "address": "0x4ddd34",
-      "symbol": "_g_zClass_CurrentCamera",
-      "name": "g_zClass_CurrentCamera",
-      "bn_name": "g_zClass_CurrentCamera",
+      "symbol": "_g_CZClass_CurrentCamera",
+      "name": "g_CZClass_CurrentCamera",
+      "bn_name": "g_CZClass_CurrentCamera",
       "byte_length": 4
     },
     {
       "address": "0x4ddd38",
-      "symbol": "_g_zClass_CameraTargetNode",
-      "name": "g_zClass_CameraTargetNode",
-      "bn_name": "g_zClass_CameraTargetNode",
+      "symbol": "_g_CZClass_CameraTargetNode",
+      "name": "g_CZClass_CameraTargetNode",
+      "bn_name": "g_CZClass_CameraTargetNode",
       "byte_length": 4
     }
   ]

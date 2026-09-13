@@ -23,23 +23,23 @@
   "functions": [
     {
       "address": "0x451f70",
-      "symbol": "?CopyCameraNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_cls_util::CopyCameraNode"
+      "symbol": "?CopyCameraNode@CZUtil@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZUtil::CopyCameraNode"
     },
     {
       "address": "0x452100",
-      "symbol": "?CopyObject3DNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_cls_util::CopyObject3DNode"
+      "symbol": "?CopyObject3DNode@CZUtil@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZUtil::CopyObject3DNode"
     },
     {
       "address": "0x452250",
-      "symbol": "?CopyLodNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_cls_util::CopyLodNode"
+      "symbol": "?CopyLodNode@CZUtil@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZUtil::CopyLodNode"
     },
     {
       "address": "0x452400",
-      "symbol": "?CopyNodeDispatch@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_cls_util::CopyNodeDispatch"
+      "symbol": "?CopyNodeDispatch@CZUtil@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZUtil::CopyNodeDispatch"
     }
   ]
 }

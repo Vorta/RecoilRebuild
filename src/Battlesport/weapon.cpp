@@ -191,13 +191,13 @@ void TickAltGunLowerTransition(
 
     const float y = controller->attachPosY - animScale;
     if (y <= targetY) {
-        zClass_Object3D::gwObject3DSetPosition(
+        CZObject3D::gwObject3DSetPosition(
             controller->attachNodePrimary,
             controller->attachPosX,
             targetY,
             controller->attachPosZ
         );
-        zClass_Object3D::gwObject3DSetScale(
+        CZObject3D::gwObject3DSetScale(
             controller->attachNodePrimary,
             1.0f,
             0.600000024f,
@@ -208,15 +208,15 @@ void TickAltGunLowerTransition(
         return;
     }
 
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         controller->attachNodePrimary,
         controller->attachPosX,
         y,
         controller->attachPosZ
     );
     const float scale = 1.0f - progress * 0.399999976f;
-    zClass_Object3D::gwObject3DSetScale(controller->attachNodePrimary, 1.0f, scale, scale);
-    zClass_Object3D::gwObject3DSetRotation(controller->attachNodePrimary, 0.0f, 0.0f, 0.0f);
+    CZObject3D::gwObject3DSetScale(controller->attachNodePrimary, 1.0f, scale, scale);
+    CZObject3D::gwObject3DSetRotation(controller->attachNodePrimary, 0.0f, 0.0f, 0.0f);
 }
 /**
  * Original-source helper evidence: no standalone retail function exists;
@@ -237,8 +237,8 @@ void TickAltGunDoorOpen(
         playerState->altGunTransitionTimerB = 0.0f;
     }
 
-    zClass_Object3D::gwObject3DSetScale(playerState->doorLeftNode, xScale, 1.0f, 1.0f);
-    zClass_Object3D::gwObject3DSetScale(playerState->doorRightNode, xScale, 1.0f, 1.0f);
+    CZObject3D::gwObject3DSetScale(playerState->doorLeftNode, xScale, 1.0f, 1.0f);
+    CZObject3D::gwObject3DSetScale(playerState->doorRightNode, xScale, 1.0f, 1.0f);
 }
 /**
  * Original-source helper evidence: no standalone retail function exists;
@@ -261,10 +261,10 @@ void DeactivateOppositeAltGunControllerNodes(
         activeController->weaponSideIndex == 0 ? &bank->controllerB : &bank->controllerA;
 
     if (oppositeController->attachNodePrimary != 0) {
-        zClass_Class::gwNodeSetActive(oppositeController->attachNodePrimary, 0);
+        CZClass::gwNodeSetActive(oppositeController->attachNodePrimary, 0);
     }
     if (oppositeController->attachNodeSecondary != 0) {
-        zClass_Class::gwNodeSetActive(oppositeController->attachNodeSecondary, 0);
+        CZClass::gwNodeSetActive(oppositeController->attachNodeSecondary, 0);
     }
 }
 /**
@@ -286,7 +286,7 @@ void TickAltGunActivateTransition(
         OptCatalogRuntimeInstanceStorage *const attachState =
             (OptCatalogRuntimeInstanceStorage *)transitionController->attachState;
         if (attachState != 0) {
-            zClass_Class::RemoveChild(
+            CZClass::RemoveChild(
                 transitionController->attachNodePrimary,
                 attachState->projectileNode
             );
@@ -297,8 +297,8 @@ void TickAltGunActivateTransition(
             transitionController->attachState = 0;
         }
 
-        zClass_Class::gwNodeSetActive(transitionController->attachNodePrimary, 0);
-        zClass_Object3D::gwObject3DSetPosition(
+        CZClass::gwNodeSetActive(transitionController->attachNodePrimary, 0);
+        CZObject3D::gwObject3DSetPosition(
             transitionController->attachNodePrimary,
             transitionController->attachPosX,
             transitionController->attachPosY,
@@ -316,10 +316,10 @@ void TickAltGunActivateTransition(
         saveState->StartMasterTypeLoopSfxHandle(2, 1.0f);
         DeactivateOppositeAltGunControllerNodes(playerState, activeController);
         if (activeController->attachNodePrimary != 0) {
-            zClass_Class::gwNodeSetActive(activeController->attachNodePrimary, 1);
+            CZClass::gwNodeSetActive(activeController->attachNodePrimary, 1);
         }
         if (activeController->attachNodeSecondary != 0) {
-            zClass_Class::gwNodeSetActive(activeController->attachNodeSecondary, 1);
+            CZClass::gwNodeSetActive(activeController->attachNodeSecondary, 1);
         }
         playerState->altGunTransitionState = 1;
         return;
@@ -330,18 +330,18 @@ void TickAltGunActivateTransition(
         activeController->attachState = OptCatalog::AllocOrReuseAttachNodeClone(entry);
         OptCatalogRuntimeInstanceStorage *const attachState =
             (OptCatalogRuntimeInstanceStorage *)activeController->attachState;
-        zClass_Class::AddChild(activeController->attachNodePrimary, attachState->projectileNode);
+        CZClass::AddChild(activeController->attachNodePrimary, attachState->projectileNode);
         attachState->ownerNode = playerState->rootNode;
     }
 
-    zClass_Class::gwNodeSetActive(activeController->attachNodePrimary, 1);
-    zClass_Object3D::gwObject3DSetPosition(
+    CZClass::gwNodeSetActive(activeController->attachNodePrimary, 1);
+    CZObject3D::gwObject3DSetPosition(
         activeController->attachNodePrimary,
         activeController->attachPosX,
         activeController->attachPosY - 0.400000006f,
         activeController->attachPosZ
     );
-    zClass_Object3D::gwObject3DSetScale(
+    CZObject3D::gwObject3DSetScale(
         activeController->attachNodePrimary,
         1.0f,
         0.600000024f,
@@ -370,8 +370,8 @@ void TickAltGunDoorClose(
         playerState->altGunTransitionTimerB = 0.0f;
     }
 
-    zClass_Object3D::gwObject3DSetScale(playerState->doorLeftNode, xScale, 1.0f, 1.0f);
-    zClass_Object3D::gwObject3DSetScale(playerState->doorRightNode, xScale, 1.0f, 1.0f);
+    CZObject3D::gwObject3DSetScale(playerState->doorLeftNode, xScale, 1.0f, 1.0f);
+    CZObject3D::gwObject3DSetScale(playerState->doorRightNode, xScale, 1.0f, 1.0f);
 }
 /**
  * Original-source helper evidence: no standalone retail function exists;
@@ -394,24 +394,24 @@ void TickAltGunRaiseTransition(
         PlayerAltGunTransitionAnimScale(playerState) = 0.400000006f;
         playerState->altGunTransitionState = 1;
         playerState->altGunTransitionTimerA = 0.0f;
-        zClass_Object3D::gwObject3DSetPosition(
+        CZObject3D::gwObject3DSetPosition(
             controller->attachNodePrimary,
             controller->attachPosX,
             controller->attachPosY,
             controller->attachPosZ
         );
-        zClass_Object3D::gwObject3DSetScale(controller->attachNodePrimary, 1.0f, 1.0f, 1.0f);
+        CZObject3D::gwObject3DSetScale(controller->attachNodePrimary, 1.0f, 1.0f, 1.0f);
         return;
     }
 
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         controller->attachNodePrimary,
         controller->attachPosX,
         y,
         controller->attachPosZ
     );
     const float scale = progress * 0.399999976f + 0.600000024f;
-    zClass_Object3D::gwObject3DSetScale(controller->attachNodePrimary, 1.0f, scale, scale);
+    CZObject3D::gwObject3DSetScale(controller->attachNodePrimary, 1.0f, scale, scale);
 }
 /**
  * Original-source helper evidence: no standalone retail function exists;
@@ -759,20 +759,20 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
                     char scrollName[0x50];
                     sprintf(mountName, "%s_L", controller->optCatalogEntry->displayName);
                     controller->attachNodePrimary =
-                        zClass_Class::FindNodeRecursiveByName(playerState->gunNode, mountName);
+                        CZClass::FindNodeRecursiveByName(playerState->gunNode, mountName);
                     if (controller->attachNodePrimary != 0) {
-                        zClass_Class::gwNodeSetActive(controller->attachNodePrimary, 0);
+                        CZClass::gwNodeSetActive(controller->attachNodePrimary, 0);
                     }
                     sprintf(scrollName, "%sSCROLL", mountName);
-                    zClass_NodePartial *scrollNode =
-                        zClass_Class::FindNodeRecursiveByName(
+                    CZNodePartial *scrollNode =
+                        CZClass::FindNodeRecursiveByName(
                             controller->attachNodePrimary,
                             scrollName
                         );
                     controller->scrollTextureModelA = 0;
                     if (scrollNode != 0) {
                         unsigned int userData = 0;
-                        zClass_Class::gwNodeGetUserData(scrollNode, &userData);
+                        CZClass::gwNodeGetUserData(scrollNode, &userData);
                         controller->scrollTextureModelA = (zDiPartial *)userData;
                         zModel::SetDiTextureWorldPerMeter(
                             controller->scrollTextureModelA,
@@ -784,19 +784,19 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
 
                     sprintf(mountName, "%s_R", controller->optCatalogEntry->displayName);
                     controller->attachNodeSecondary =
-                        zClass_Class::FindNodeRecursiveByName(playerState->gunNode, mountName);
+                        CZClass::FindNodeRecursiveByName(playerState->gunNode, mountName);
                     if (controller->attachNodeSecondary != 0) {
-                        zClass_Class::gwNodeSetActive(controller->attachNodeSecondary, 0);
+                        CZClass::gwNodeSetActive(controller->attachNodeSecondary, 0);
                     }
                     sprintf(scrollName, "%sSCROLL", mountName);
-                    scrollNode = zClass_Class::FindNodeRecursiveByName(
+                    scrollNode = CZClass::FindNodeRecursiveByName(
                         controller->attachNodeSecondary,
                         scrollName
                     );
                     controller->scrollTextureModelB = 0;
                     if (scrollNode != 0) {
                         unsigned int userData = 0;
-                        zClass_Class::gwNodeGetUserData(scrollNode, &userData);
+                        CZClass::gwNodeGetUserData(scrollNode, &userData);
                         controller->scrollTextureModelB = (zDiPartial *)userData;
                         zModel::SetDiTextureWorldPerMeter(
                             controller->scrollTextureModelB,
@@ -807,14 +807,14 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
                     }
                 } else {
                     controller->attachNodePrimary =
-                        zClass_Class::FindNodeRecursiveByName(
+                        CZClass::FindNodeRecursiveByName(
                             playerState->gunNode,
                             controller->optCatalogEntry->displayName
                         );
                     if (controller->attachNodePrimary != 0) {
-                        zClass_Class::gwNodeSetActive(controller->attachNodePrimary, 0);
+                        CZClass::gwNodeSetActive(controller->attachNodePrimary, 0);
                     }
-                    zClass_Object3D::gwObject3DGetPosition(
+                    CZObject3D::gwObject3DGetPosition(
                         controller->attachNodePrimary,
                         &controller->attachPosX,
                         &controller->attachPosY,
@@ -876,7 +876,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
 
     PlayerGunFireController *const activeAltGunController = playerState->activeAltGunController;
     if (activeAltGunController->attachNodePrimary != 0) {
-        zClass_Class::gwNodeSetActive(activeAltGunController->attachNodePrimary, 1);
+        CZClass::gwNodeSetActive(activeAltGunController->attachNodePrimary, 1);
     }
 
     playerState->altHardpointSelectState =
@@ -917,9 +917,9 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
-    playerState->gunNode = zClass_Class::FindSubNodeByName(playerState->rootNode, "gun");
+    playerState->gunNode = CZClass::FindSubNodeByName(playerState->rootNode, "gun");
     if (playerState->gunNode != 0) {
-        float *const gunMatrix = zClass_Object3D::gwObject3DGetMatrixPtr(playerState->gunNode);
+        float *const gunMatrix = CZObject3D::gwObject3DGetMatrixPtr(playerState->gunNode);
         playerState->gunNodeMatrixPos.x = gunMatrix[9];
         playerState->gunNodeMatrixPos.y = gunMatrix[10];
         playerState->gunNodeMatrixPos.z = gunMatrix[11];
@@ -929,12 +929,12 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
         return;
     }
 
-    zClass_NodePartial *hardpointNode = zClass_Class::FindNodeRecursiveByName(
+    CZNodePartial *hardpointNode = CZClass::FindNodeRecursiveByName(
         playerState->gunNode,
         "fpnt_c"
     );
     if (hardpointNode != 0) {
-        zClass_Object3D::gwObject3DGetPosition(
+        CZObject3D::gwObject3DGetPosition(
             hardpointNode,
             &playerState->firePointCenter.x,
             &playerState->firePointCenter.y,
@@ -942,8 +942,8 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
         );
         if (detachDisplays != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
-            zClass_Class::gwNodeSetDisplayInstance(hardpointNode, 0);
+            CZClass::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
+            CZClass::gwNodeSetDisplayInstance(hardpointNode, 0);
             zDiPartial *const displayInstance = (zDiPartial *)displayInstanceValue;
             if (displayInstance != 0 && displayInstance->refCount != 0) {
                 zDi::Release(displayInstance);
@@ -952,9 +952,9 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
         }
     }
 
-    hardpointNode = zClass_Class::FindNodeRecursiveByName(playerState->gunNode, "fpnt_l");
+    hardpointNode = CZClass::FindNodeRecursiveByName(playerState->gunNode, "fpnt_l");
     if (hardpointNode != 0) {
-        zClass_Object3D::gwObject3DGetPosition(
+        CZObject3D::gwObject3DGetPosition(
             hardpointNode,
             &playerState->firePointLeft.x,
             &playerState->firePointLeft.y,
@@ -962,8 +962,8 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
         );
         if (detachDisplays != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
-            zClass_Class::gwNodeSetDisplayInstance(hardpointNode, 0);
+            CZClass::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
+            CZClass::gwNodeSetDisplayInstance(hardpointNode, 0);
             zDiPartial *const displayInstance = (zDiPartial *)displayInstanceValue;
             if (displayInstance != 0 && displayInstance->refCount != 0) {
                 zDi::Release(displayInstance);
@@ -972,9 +972,9 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
         }
     }
 
-    hardpointNode = zClass_Class::FindNodeRecursiveByName(playerState->gunNode, "fpnt_r");
+    hardpointNode = CZClass::FindNodeRecursiveByName(playerState->gunNode, "fpnt_r");
     if (hardpointNode != 0) {
-        zClass_Object3D::gwObject3DGetPosition(
+        CZObject3D::gwObject3DGetPosition(
             hardpointNode,
             &playerState->firePointRight.x,
             &playerState->firePointRight.y,
@@ -982,8 +982,8 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
         );
         if (detachDisplays != 0) {
             unsigned int displayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
-            zClass_Class::gwNodeSetDisplayInstance(hardpointNode, 0);
+            CZClass::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
+            CZClass::gwNodeSetDisplayInstance(hardpointNode, 0);
             zDiPartial *const displayInstance = (zDiPartial *)displayInstanceValue;
             if (displayInstance != 0 && displayInstance->refCount != 0) {
                 zDi::Release(displayInstance);
@@ -1197,16 +1197,16 @@ void __fastcall ApplyPrimaryWeaponSwitch(
     playerState->primaryHardpointSelectState = 2;
 
     if (previousController != 0 && previousController->attachNodePrimary != 0) {
-        zClass_Class::gwNodeSetActive(previousController->attachNodePrimary, 0);
+        CZClass::gwNodeSetActive(previousController->attachNodePrimary, 0);
     }
     if (previousController != 0 && previousController->attachNodeSecondary != 0) {
-        zClass_Class::gwNodeSetActive(previousController->attachNodeSecondary, 0);
+        CZClass::gwNodeSetActive(previousController->attachNodeSecondary, 0);
     }
     if (newController != 0 && newController->attachNodePrimary != 0) {
-        zClass_Class::gwNodeSetActive(newController->attachNodePrimary, 1);
+        CZClass::gwNodeSetActive(newController->attachNodePrimary, 1);
     }
     if (newController != 0 && newController->attachNodeSecondary != 0) {
-        zClass_Class::gwNodeSetActive(newController->attachNodeSecondary, 1);
+        CZClass::gwNodeSetActive(newController->attachNodeSecondary, 1);
     }
 
     PlayerGunFireController *const activeController = playerState->activePrimaryGunController;
@@ -1369,7 +1369,7 @@ void __fastcall ResetDamageStateAndTimedHitStatus(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack(playerState->rootNode);
+    CZNode::LoadFlagBit8MaterialImagesAndTexturePack(playerState->rootNode);
     playerState->queuedFixedDamageFlag = 0;
     playerState->damageProtectionActive = 0;
     playerState->damageVisualFlag = 0;
@@ -1637,13 +1637,13 @@ void __fastcall TickAltGunRuntimeState(
 
             const float y = transitionController->attachPosY - animScale;
             if (y <= targetY) {
-                zClass_Object3D::gwObject3DSetPosition(
+                CZObject3D::gwObject3DSetPosition(
                     transitionController->attachNodePrimary,
                     transitionController->attachPosX,
                     targetY,
                     transitionController->attachPosZ
                 );
-                zClass_Object3D::gwObject3DSetScale(
+                CZObject3D::gwObject3DSetScale(
                     transitionController->attachNodePrimary,
                     1.0f,
                     0.600000024f,
@@ -1654,20 +1654,20 @@ void __fastcall TickAltGunRuntimeState(
                 break;
             }
 
-            zClass_Object3D::gwObject3DSetPosition(
+            CZObject3D::gwObject3DSetPosition(
                 transitionController->attachNodePrimary,
                 transitionController->attachPosX,
                 y,
                 transitionController->attachPosZ
             );
             const float scale = 1.0f - progress * 0.399999976f;
-            zClass_Object3D::gwObject3DSetScale(
+            CZObject3D::gwObject3DSetScale(
                 transitionController->attachNodePrimary,
                 1.0f,
                 scale,
                 scale
             );
-            zClass_Object3D::gwObject3DSetRotation(
+            CZObject3D::gwObject3DSetRotation(
                 transitionController->attachNodePrimary,
                 0.0f,
                 0.0f,
@@ -1685,8 +1685,8 @@ void __fastcall TickAltGunRuntimeState(
                 playerState->altGunTransitionTimerB = 0.0f;
             }
 
-            zClass_Object3D::gwObject3DSetScale(playerState->doorLeftNode, xScale, 1.0f, 1.0f);
-            zClass_Object3D::gwObject3DSetScale(playerState->doorRightNode, xScale, 1.0f, 1.0f);
+            CZObject3D::gwObject3DSetScale(playerState->doorLeftNode, xScale, 1.0f, 1.0f);
+            CZObject3D::gwObject3DSetScale(playerState->doorRightNode, xScale, 1.0f, 1.0f);
             break;
         }
 
@@ -1696,7 +1696,7 @@ void __fastcall TickAltGunRuntimeState(
                 OptCatalogRuntimeInstanceStorage *const attachState =
                     (OptCatalogRuntimeInstanceStorage *)transitionController->attachState;
                 if (attachState != 0) {
-                    zClass_Class::RemoveChild(
+                    CZClass::RemoveChild(
                         transitionController->attachNodePrimary,
                         attachState->projectileNode
                     );
@@ -1707,8 +1707,8 @@ void __fastcall TickAltGunRuntimeState(
                     transitionController->attachState = 0;
                 }
 
-                zClass_Class::gwNodeSetActive(transitionController->attachNodePrimary, 0);
-                zClass_Object3D::gwObject3DSetPosition(
+                CZClass::gwNodeSetActive(transitionController->attachNodePrimary, 0);
+                CZObject3D::gwObject3DSetPosition(
                     transitionController->attachNodePrimary,
                     transitionController->attachPosX,
                     transitionController->attachPosY,
@@ -1732,16 +1732,16 @@ void __fastcall TickAltGunRuntimeState(
                         ? &bank->controllerB
                         : &bank->controllerA;
                 if (oppositeController->attachNodePrimary != 0) {
-                    zClass_Class::gwNodeSetActive(oppositeController->attachNodePrimary, 0);
+                    CZClass::gwNodeSetActive(oppositeController->attachNodePrimary, 0);
                 }
                 if (oppositeController->attachNodeSecondary != 0) {
-                    zClass_Class::gwNodeSetActive(oppositeController->attachNodeSecondary, 0);
+                    CZClass::gwNodeSetActive(oppositeController->attachNodeSecondary, 0);
                 }
                 if (activeController->attachNodePrimary != 0) {
-                    zClass_Class::gwNodeSetActive(activeController->attachNodePrimary, 1);
+                    CZClass::gwNodeSetActive(activeController->attachNodePrimary, 1);
                 }
                 if (activeController->attachNodeSecondary != 0) {
-                    zClass_Class::gwNodeSetActive(activeController->attachNodeSecondary, 1);
+                    CZClass::gwNodeSetActive(activeController->attachNodeSecondary, 1);
                 }
                 playerState->altGunTransitionState = 1;
                 break;
@@ -1754,21 +1754,21 @@ void __fastcall TickAltGunRuntimeState(
                     OptCatalog::AllocOrReuseAttachNodeClone(entry);
                 OptCatalogRuntimeInstanceStorage *const attachState =
                     (OptCatalogRuntimeInstanceStorage *)activeController->attachState;
-                zClass_Class::AddChild(
+                CZClass::AddChild(
                     activeController->attachNodePrimary,
                     attachState->projectileNode
                 );
                 attachState->ownerNode = playerState->rootNode;
             }
 
-            zClass_Class::gwNodeSetActive(activeController->attachNodePrimary, 1);
-            zClass_Object3D::gwObject3DSetPosition(
+            CZClass::gwNodeSetActive(activeController->attachNodePrimary, 1);
+            CZObject3D::gwObject3DSetPosition(
                 activeController->attachNodePrimary,
                 activeController->attachPosX,
                 activeController->attachPosY - 0.400000006f,
                 activeController->attachPosZ
             );
-            zClass_Object3D::gwObject3DSetScale(
+            CZObject3D::gwObject3DSetScale(
                 activeController->attachNodePrimary,
                 1.0f,
                 0.600000024f,
@@ -1788,8 +1788,8 @@ void __fastcall TickAltGunRuntimeState(
                 playerState->altGunTransitionTimerB = 0.0f;
             }
 
-            zClass_Object3D::gwObject3DSetScale(playerState->doorLeftNode, xScale, 1.0f, 1.0f);
-            zClass_Object3D::gwObject3DSetScale(playerState->doorRightNode, xScale, 1.0f, 1.0f);
+            CZObject3D::gwObject3DSetScale(playerState->doorLeftNode, xScale, 1.0f, 1.0f);
+            CZObject3D::gwObject3DSetScale(playerState->doorRightNode, xScale, 1.0f, 1.0f);
             break;
         }
 
@@ -1806,13 +1806,13 @@ void __fastcall TickAltGunRuntimeState(
                 playerState->altGunTransitionAnimScale = 0.400000006f;
                 playerState->altGunTransitionState = 1;
                 playerState->altGunTransitionTimerA = 0.0f;
-                zClass_Object3D::gwObject3DSetPosition(
+                CZObject3D::gwObject3DSetPosition(
                     activeController->attachNodePrimary,
                     activeController->attachPosX,
                     activeController->attachPosY,
                     activeController->attachPosZ
                 );
-                zClass_Object3D::gwObject3DSetScale(
+                CZObject3D::gwObject3DSetScale(
                     activeController->attachNodePrimary,
                     1.0f,
                     1.0f,
@@ -1821,14 +1821,14 @@ void __fastcall TickAltGunRuntimeState(
                 break;
             }
 
-            zClass_Object3D::gwObject3DSetPosition(
+            CZObject3D::gwObject3DSetPosition(
                 activeController->attachNodePrimary,
                 activeController->attachPosX,
                 y,
                 activeController->attachPosZ
             );
             const float scale = progress * 0.399999976f + 0.600000024f;
-            zClass_Object3D::gwObject3DSetScale(
+            CZObject3D::gwObject3DSetScale(
                 activeController->attachNodePrimary,
                 1.0f,
                 scale,
@@ -1993,8 +1993,8 @@ void __fastcall ProcessPrimaryGunDispatchTick(
  */
 void __fastcall UpdateGunAndTurretAimNodes(
     const zVec3 *aimDirection,
-    zClass_NodePartial *gunNode,
-    zClass_NodePartial *turretNode
+    CZNodePartial *gunNode,
+    CZNodePartial *turretNode
 ) {
     if (gunNode == 0 || turretNode == 0 || aimDirection == 0) {
         return;
@@ -2007,7 +2007,7 @@ void __fastcall UpdateGunAndTurretAimNodes(
     horizontalLengthBits = (horizontalLengthBits >> 1) + 0x1fc00000;
     memcpy(&horizontalLength, &horizontalLengthBits, sizeof(horizontalLength));
 
-    zMat4x3 *const gunMatrix = (zMat4x3 *)zClass_Object3D::gwObject3DGetMatrixPtr(gunNode);
+    zMat4x3 *const gunMatrix = (zMat4x3 *)CZObject3D::gwObject3DGetMatrixPtr(gunNode);
     gunMatrix->xx = 1.0f;
     gunMatrix->xy = 0.0f;
     gunMatrix->xz = 0.0f;
@@ -2017,7 +2017,7 @@ void __fastcall UpdateGunAndTurretAimNodes(
     gunMatrix->zx = 0.0f;
     gunMatrix->zy = -aimDirection->y;
     gunMatrix->zz = horizontalLength;
-    zClass_Object3D::gwObject3DSetMatrix(gunNode, (float *)gunMatrix);
+    CZObject3D::gwObject3DSetMatrix(gunNode, (float *)gunMatrix);
 
     float yawForward = 1.0f;
     float yawSide = 0.0f;
@@ -2027,7 +2027,7 @@ void __fastcall UpdateGunAndTurretAimNodes(
         yawSide = -(aimDirection->x * invHorizontalLength);
     }
 
-    zMat4x3 *const turretMatrix = (zMat4x3 *)zClass_Object3D::gwObject3DGetMatrixPtr(turretNode);
+    zMat4x3 *const turretMatrix = (zMat4x3 *)CZObject3D::gwObject3DGetMatrixPtr(turretNode);
     turretMatrix->xx = yawForward;
     turretMatrix->xy = 0.0f;
     turretMatrix->xz = -yawSide;
@@ -2037,7 +2037,7 @@ void __fastcall UpdateGunAndTurretAimNodes(
     turretMatrix->zx = yawSide;
     turretMatrix->zy = 0.0f;
     turretMatrix->zz = yawForward;
-    zClass_Object3D::gwObject3DSetMatrix(turretNode, (float *)turretMatrix);
+    CZObject3D::gwObject3DSetMatrix(turretNode, (float *)turretMatrix);
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimdirection
@@ -2143,7 +2143,7 @@ void __fastcall UpdateAltGunAimDirection(
  */
 void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
     PlayerGunFireSlot *slot,
-    zClass_NodePartial *slotNode,
+    CZNodePartial *slotNode,
     float slotAimY,
     int applyMatrix
 ) {
@@ -2155,11 +2155,11 @@ void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
         slot->offset = 0.0f;
     }
 
-    float *const matrix = zClass_Object3D::gwObject3DGetMatrixPtr(slotNode);
+    float *const matrix = CZObject3D::gwObject3DGetMatrixPtr(slotNode);
     matrix[10] = -(slotAimY * slot->offset);
     matrix[11] = slot->offset;
     if (applyMatrix != 0) {
-        zClass_Object3D::gwObject3DSetMatrix(slotNode, matrix);
+        CZObject3D::gwObject3DSetMatrix(slotNode, matrix);
     }
 }
 /**
@@ -2424,14 +2424,14 @@ void __fastcall ComposeAimBasisWorldMatrix(
     zMat4x3 gunMatrix = {0};
     memcpy(
         &gunMatrix,
-        zClass_Object3D::gwObject3DGetMatrixPtr(playerState->gunNode),
+        CZObject3D::gwObject3DGetMatrixPtr(playerState->gunNode),
         sizeof(gunMatrix)
     );
 
     zMat4x3 turretMatrix = {0};
     memcpy(
         &turretMatrix,
-        zClass_Object3D::gwObject3DGetMatrixPtr(playerState->turretNode),
+        CZObject3D::gwObject3DGetMatrixPtr(playerState->turretNode),
         sizeof(turretMatrix)
     );
 
@@ -2476,7 +2476,7 @@ void __fastcall BuildGunFireTransform(
     zMat4x3 rootMatrix = {0};
     memcpy(
         &rootMatrix,
-        zClass_Object3D::gwObject3DGetMatrixPtr(playerState->rootNode),
+        CZObject3D::gwObject3DGetMatrixPtr(playerState->rootNode),
         sizeof(rootMatrix)
     );
 
@@ -2488,7 +2488,7 @@ void __fastcall BuildGunFireTransform(
     zMat4x3 modalMatrix = {0};
     memcpy(
         &modalMatrix,
-        zClass_Object3D::gwObject3DGetMatrixPtr(primaryModalState->modalNode),
+        CZObject3D::gwObject3DGetMatrixPtr(primaryModalState->modalNode),
         sizeof(modalMatrix)
     );
 
@@ -2537,14 +2537,14 @@ void __fastcall UpdateAltGunAimBasisOrigin(
     zMat4x3 gunMatrix = {0};
     memcpy(
         &gunMatrix,
-        zClass_Object3D::gwObject3DGetMatrixPtr(playerState->gunNode),
+        CZObject3D::gwObject3DGetMatrixPtr(playerState->gunNode),
         sizeof(gunMatrix)
     );
 
     zMat4x3 turretMatrix = {0};
     memcpy(
         &turretMatrix,
-        zClass_Object3D::gwObject3DGetMatrixPtr(playerState->turretNode),
+        CZObject3D::gwObject3DGetMatrixPtr(playerState->turretNode),
         sizeof(turretMatrix)
     );
 
@@ -2900,7 +2900,7 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
             if (masterCommonData->naniteSpawnCounter >= masterCommonData->naniteBuildRate) {
                 zVec3 spawnPos = playerState->worldPos;
                 spawnPos.y -= masterModalData->modeAltTransitionTime;
-                zClass_cls_di::SnapProbePointYToBestCandidate(&spawnPos);
+                CZDisplayInstance::SnapProbePointYToBestCandidate(&spawnPos);
                 Pickup::SpawnAt(34, masterCommonData->naniteMaxLevel, &spawnPos, 0, 0);
                 masterCommonData->naniteSpawnCounter = 0;
                 spawnedNaniteReward = 1;
@@ -2912,7 +2912,7 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
             spawnedNaniteReward == 0) {
             zVec3 spawnPos = playerState->worldPos;
             spawnPos.y -= masterModalData->modeAltTransitionTime;
-            zClass_cls_di::SnapProbePointYToBestCandidate(&spawnPos);
+            CZDisplayInstance::SnapProbePointYToBestCandidate(&spawnPos);
             Pickup::SpawnAt(
                 masterCommonData->pickupType,
                 masterCommonData->pickupCapacity * pickupRewardMultiplier,
@@ -3251,7 +3251,7 @@ void __fastcall StartDestroyedStateVehicleEffect(
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     zEffectAnimEntry *vehicleEffect;
-    zClass_NodePartial *rootNode;
+    CZNodePartial *rootNode;
 
     playerState->destroyedRespawnAsyncHandle = 0;
     if (playerState->queuedFixedDamageFlag != 0) {
@@ -3478,7 +3478,7 @@ int __fastcall AltGunLaunchProjectile(
     } else {
         OptCatalogRuntimeInstanceStorage *const attachState =
             (OptCatalogRuntimeInstanceStorage *)activeAltGunController->attachState;
-        zClass_Class::RemoveChild(
+        CZClass::RemoveChild(
             activeAltGunController->attachNodePrimary,
             attachState->projectileNode
         );
@@ -3496,7 +3496,7 @@ int __fastcall AltGunLaunchProjectile(
         ) == 0) {
         OptCatalogRuntimeInstanceStorage *const attachState =
             (OptCatalogRuntimeInstanceStorage *)activeAltGunController->attachState;
-        zClass_Class::AddChild(
+        CZClass::AddChild(
             activeAltGunController->attachNodePrimary,
             attachState->projectileNode
         );
@@ -3667,14 +3667,14 @@ void __fastcall ResetAltGunDoorAnimationState(
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     playerState->altGunTransitionTimerB = 0.0f;
 
-    zClass_NodePartial *const doorLeftNode = playerState->doorLeftNode;
+    CZNodePartial *const doorLeftNode = playerState->doorLeftNode;
     if (doorLeftNode != 0) {
-        zClass_Object3D::gwObject3DSetScale(doorLeftNode, 1.0f, 1.0f, 1.0f);
+        CZObject3D::gwObject3DSetScale(doorLeftNode, 1.0f, 1.0f, 1.0f);
     }
 
-    zClass_NodePartial *const doorRightNode = playerState->doorRightNode;
+    CZNodePartial *const doorRightNode = playerState->doorRightNode;
     if (doorRightNode != 0) {
-        zClass_Object3D::gwObject3DSetScale(doorRightNode, 1.0f, 1.0f, 1.0f);
+        CZObject3D::gwObject3DSetScale(doorRightNode, 1.0f, 1.0f, 1.0f);
     }
 }
 /**
@@ -3698,7 +3698,7 @@ void __fastcall ResetAltGunRuntimeState(
     OptCatalogRuntimeInstanceStorage *const attachState =
         (OptCatalogRuntimeInstanceStorage *)(activeAltGunController->attachState);
     if (attachState != 0) {
-        zClass_Class::RemoveChild(
+        CZClass::RemoveChild(
             activeAltGunController->attachNodePrimary,
             attachState->projectileNode
         );
@@ -3718,29 +3718,29 @@ void __fastcall ResetAltGunRuntimeState(
     PlayerAltWeaponBank *bank = &playerState->altWeaponBanks[2];
     for (int i = 0; i < 8; ++i, ++bank) {
         PlayerGunFireController *controller = &bank->controllerA;
-        zClass_NodePartial *attachNode = controller->attachNodePrimary;
+        CZNodePartial *attachNode = controller->attachNodePrimary;
         if (attachNode != 0) {
-            zClass_Class::gwNodeSetActive(attachNode, 0);
-            zClass_Object3D::gwObject3DSetPosition(
+            CZClass::gwNodeSetActive(attachNode, 0);
+            CZObject3D::gwObject3DSetPosition(
                 attachNode,
                 controller->attachPosX,
                 controller->attachPosY,
                 controller->attachPosZ
             );
-            zClass_Object3D::gwObject3DSetScale(attachNode, 1.0f, 1.0f, 1.0f);
+            CZObject3D::gwObject3DSetScale(attachNode, 1.0f, 1.0f, 1.0f);
         }
 
         controller = &bank->controllerB;
         attachNode = controller->attachNodePrimary;
         if (attachNode != 0) {
-            zClass_Class::gwNodeSetActive(attachNode, 0);
-            zClass_Object3D::gwObject3DSetPosition(
+            CZClass::gwNodeSetActive(attachNode, 0);
+            CZObject3D::gwObject3DSetPosition(
                 attachNode,
                 controller->attachPosX,
                 controller->attachPosY,
                 controller->attachPosZ
             );
-            zClass_Object3D::gwObject3DSetScale(attachNode, 1.0f, 1.0f, 1.0f);
+            CZObject3D::gwObject3DSetScale(attachNode, 1.0f, 1.0f, 1.0f);
         }
     }
 }
@@ -3755,7 +3755,7 @@ void __fastcall RemoveAllDeployedMines(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zClass_NodePartial *const ownerNode = playerState->rootNode;
+    CZNodePartial *const ownerNode = playerState->rootNode;
 
     OptCatalogEntryDef *entry = playerState->altWeaponBanks[4].controllerA.optCatalogEntry;
     if (entry != 0) {
@@ -3919,13 +3919,13 @@ int __fastcall WriteMinesZarSection(
             while (runtime != 0) {
                 data.resetMarker = 0;
                 data.spawnPos = runtime->pos;
-                zClass_Object3D::gwObject3DGetScale(
+                CZObject3D::gwObject3DGetScale(
                     runtime->projectileNode,
                     &data.scale.x,
                     &data.scale.y,
                     &data.scale.z
                 );
-                strncpy(data.ownerNodeName, zClass_Class::gwNodeGetName(runtime->ownerNode), 0x24);
+                strncpy(data.ownerNodeName, CZClass::gwNodeGetName(runtime->ownerNode), 0x24);
 
                 char blobToken[0x14];
                 sprintf(blobToken, "MineData%03d", mineCount);
@@ -3969,11 +3969,11 @@ void __fastcall MinesZARReadEntryOrReset(
     }
 
     OptCatalogEntryDef *const entry = OptCatalog::FindEntryByName(mineData->optCatalogName);
-    zClass_NodePartial *const ownerNode = zClass::FindByTypeAndName(6, mineData->ownerNodeName);
+    CZNodePartial *const ownerNode = CZClass::FindByTypeAndName(6, mineData->ownerNodeName);
     if (entry != 0 && ownerNode != 0) {
         OptCatalogRuntimeInstanceStorage *const runtime =
             OptCatalog::SpawnRuntimeInstanceAt(entry, &mineData->spawnPos, ownerNode);
-        zClass_Object3D::gwObject3DSetScale(
+        CZObject3D::gwObject3DSetScale(
             runtime->projectileNode,
             mineData->scale.x,
             mineData->scale.y,

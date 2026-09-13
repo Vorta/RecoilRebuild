@@ -1460,7 +1460,7 @@
         },
         {
           "address": "0x408480",
-          "symbol": "?CameraSectionSetActiveCamera@zOpt@@YIXPAUzClass_NodePartial@@@Z",
+          "symbol": "?CameraSectionSetActiveCamera@zOpt@@YIXPAUCZNodePartial@@@Z",
           "name": "zOpt::CameraSectionSetActiveCamera",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -1469,7 +1469,7 @@
         },
         {
           "address": "0x4084e0",
-          "symbol": "?zOptCameraSectionGetActiveCamera@@YAPAUzClass_NodePartial@@XZ",
+          "symbol": "?zOptCameraSectionGetActiveCamera@@YAPAUCZNodePartial@@XZ",
           "name": "zOptCameraSectionGetActiveCamera",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -1496,7 +1496,7 @@
         },
         {
           "address": "0x408570",
-          "symbol": "?RenderSectionSetTargetWindow@zOpt@@YIXPAUzClass_NodePartial@@@Z",
+          "symbol": "?RenderSectionSetTargetWindow@zOpt@@YIXPAUCZNodePartial@@@Z",
           "name": "zOpt::RenderSectionSetTargetWindow",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -1514,7 +1514,7 @@
         },
         {
           "address": "0x4085b0",
-          "symbol": "?DisplaySectionSetTargetDisplay@zOpt@@YIXPAUzClass_NodePartial@@@Z",
+          "symbol": "?DisplaySectionSetTargetDisplay@zOpt@@YIXPAUCZNodePartial@@@Z",
           "name": "zOpt::DisplaySectionSetTargetDisplay",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",

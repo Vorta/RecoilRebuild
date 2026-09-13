@@ -24,44 +24,44 @@
   "data_symbols": [
     {
       "address": "0x4de23c",
-      "symbol": "_g_zClass_LineErrorVirtualAreaPartitionNullFmt",
-      "name": "g_zClass_LineErrorVirtualAreaPartitionNullFmt",
-      "bn_name": "g_zClass_LineErrorVirtualAreaPartitionNullFmt",
+      "symbol": "_g_CZClass_LineErrorVirtualAreaPartitionNullFmt",
+      "name": "g_CZClass_LineErrorVirtualAreaPartitionNullFmt",
+      "bn_name": "g_CZClass_LineErrorVirtualAreaPartitionNullFmt",
       "byte_length": 91
     },
     {
       "address": "0x4de2c0",
-      "symbol": "_g_zClass_PartitionMaxDecFeatureCountOverflowFmt",
-      "name": "g_zClass_PartitionMaxDecFeatureCountOverflowFmt",
-      "bn_name": "g_zClass_PartitionMaxDecFeatureCountOverflowFmt",
+      "symbol": "_g_CZClass_PartitionMaxDecFeatureCountOverflowFmt",
+      "name": "g_CZClass_PartitionMaxDecFeatureCountOverflowFmt",
+      "bn_name": "g_CZClass_PartitionMaxDecFeatureCountOverflowFmt",
       "byte_length": 77
     },
     {
       "address": "0x4de310",
-      "symbol": "_g_zClass_LineErrorDeleteLightWorldNotFoundFmt",
-      "name": "g_zClass_LineErrorDeleteLightWorldNotFoundFmt",
-      "bn_name": "g_zClass_LineErrorDeleteLightWorldNotFoundFmt",
+      "symbol": "_g_CZClass_LineErrorDeleteLightWorldNotFoundFmt",
+      "name": "g_CZClass_LineErrorDeleteLightWorldNotFoundFmt",
+      "bn_name": "g_CZClass_LineErrorDeleteLightWorldNotFoundFmt",
       "byte_length": 114
     },
     {
       "address": "0x4de384",
-      "symbol": "_g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt",
-      "name": "g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt",
-      "bn_name": "g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt",
+      "symbol": "_g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt",
+      "name": "g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt",
+      "bn_name": "g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt",
       "byte_length": 100
     },
     {
       "address": "0x4de3e8",
-      "symbol": "_g_zClass_LineErrorDeleteSoundWorldNotFoundFmt",
-      "name": "g_zClass_LineErrorDeleteSoundWorldNotFoundFmt",
-      "bn_name": "g_zClass_LineErrorDeleteSoundWorldNotFoundFmt",
+      "symbol": "_g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt",
+      "name": "g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt",
+      "bn_name": "g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt",
       "byte_length": 114
     },
     {
       "address": "0x4de45c",
-      "symbol": "_g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt",
-      "name": "g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt",
-      "bn_name": "g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt",
+      "symbol": "_g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt",
+      "name": "g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt",
+      "bn_name": "g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt",
       "byte_length": 100
     }
   ]

@@ -21,14 +21,14 @@
   "data_symbols": [
     {
       "address": "0x539e18",
-      "symbol": "?g_zDEClient_CameraNode@@3PAUzClass_NodePartial@@A",
+      "symbol": "?g_zDEClient_CameraNode@@3PAUCZNodePartial@@A",
       "name": "g_zDEClient_CameraNode",
       "bn_name": "g_zDEClient_CameraNode",
       "byte_length": 4
     },
     {
       "address": "0x539e1c",
-      "symbol": "?g_zDEClient_CameraNodeClassData@@3PAUzClass_CameraDataPartial@@A",
+      "symbol": "?g_zDEClient_CameraNodeClassData@@3PAUCZCameraDataPartial@@A",
       "name": "g_zDEClient_CameraNodeClassData",
       "bn_name": "g_zDEClient_CameraNodeClassData",
       "byte_length": 4

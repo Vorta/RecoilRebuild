@@ -1,6 +1,6 @@
 {
   "name": "zclass_typelist_mark_pending_removal",
-  "description": "zClass_TypeList::MarkPendingRemoval marks a matching bucket link for deferred removal.",
+  "description": "CZTypeList::MarkPendingRemoval marks a matching bucket link for deferred removal.",
   "source_filename": "List.c",
   "source_from": "src/GameZRecoil/zClass/List.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x44eed0",
-      "symbol": "?MarkPendingRemoval@zClass_TypeList@@YIHHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_TypeList::MarkPendingRemoval"
+      "symbol": "?MarkPendingRemoval@CZTypeList@@YIHHPAUCZNodePartial@@@Z",
+      "name": "CZTypeList::MarkPendingRemoval"
     }
   ]
 }

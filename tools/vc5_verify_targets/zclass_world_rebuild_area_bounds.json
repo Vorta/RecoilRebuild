@@ -1,6 +1,6 @@
 {
   "name": "zclass_world_rebuild_area_bounds",
-  "description": "VC verification target for zClass_World::RebuildAreaBounds.",
+  "description": "VC verification target for CZWorld::RebuildAreaBounds.",
   "source_filename": "cls_world.c",
   "source_from": "src/GameZRecoil/zClass/cls_world.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x4500b0",
-      "symbol": "?RebuildAreaBounds@zClass_World@@YIHPAUzClass_WorldDataPartial@@PAUzWorldAreaPartial@@@Z",
-      "name": "zClass_World::RebuildAreaBounds"
+      "symbol": "?RebuildAreaBounds@CZWorld@@YIHPAUCZWorldDataPartial@@PAUzWorldAreaPartial@@@Z",
+      "name": "CZWorld::RebuildAreaBounds"
     }
   ]
 }

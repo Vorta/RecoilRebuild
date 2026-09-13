@@ -24,8 +24,8 @@
     {
       "address": "0x4de214",
       "symbol": "??_C@_0CF@CBBL@D?3?2Proj?2GameZRecoil?2zClass?2Displ@",
-      "name": "g_zClass_SourceFile_DisplayC",
-      "bn_name": "g_zClass_SourceFile_DisplayC",
+      "name": "g_CZClass_SourceFile_DisplayC",
+      "bn_name": "g_CZClass_SourceFile_DisplayC",
       "byte_length": 37
     }
   ]

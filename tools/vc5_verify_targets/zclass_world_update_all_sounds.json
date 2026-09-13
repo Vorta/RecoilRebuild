@@ -1,6 +1,6 @@
 {
   "name": "zclass_world_update_all_sounds",
-  "description": "zClass_World::UpdateAllSounds world sound update wrapper.",
+  "description": "CZWorld::UpdateAllSounds world sound update wrapper.",
   "source_filename": "cls_world.c",
   "source_from": "src/GameZRecoil/zClass/cls_world.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -28,8 +28,8 @@
   "functions": [
     {
       "address": "0x451770",
-      "symbol": "?UpdateAllSounds@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_World::UpdateAllSounds"
+      "symbol": "?UpdateAllSounds@CZWorld@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZWorld::UpdateAllSounds"
     }
   ]
 }

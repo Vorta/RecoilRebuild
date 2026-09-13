@@ -24,7 +24,7 @@
   "functions": [
     {
       "address": "0x45e5c0",
-      "symbol": "?ResolveNodeByName@zEffectAnim@@YIPAUzClass_NodePartial@@PAUzEffectAnimEntry@@PBD@Z",
+      "symbol": "?ResolveNodeByName@zEffectAnim@@YIPAUCZNodePartial@@PAUzEffectAnimEntry@@PBD@Z",
       "name": "zEffectAnim::ResolveNodeByName"
     }
   ]

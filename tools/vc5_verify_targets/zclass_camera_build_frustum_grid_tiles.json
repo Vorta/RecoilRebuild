@@ -1,6 +1,6 @@
 {
   "name": "zclass_camera_build_frustum_grid_tiles",
-  "description": "zClass_Camera::BuildFrustumGridTiles clamped camera frustum grid helper.",
+  "description": "CZCamera::BuildFrustumGridTiles clamped camera frustum grid helper.",
   "source_filename": "Camera.c",
   "source_from": "src/GameZRecoil/zClass/Camera.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -28,8 +28,8 @@
   "functions": [
     {
       "address": "0x44c3c0",
-      "symbol": "?BuildFrustumGridTiles@zClass_Camera@@YIHPAUzClass_NodePartial@@PAUzClass_WorldDataPartial@@PAUzClass_CameraDataPartial@@@Z",
-      "name": "zClass_Camera::BuildFrustumGridTiles"
+      "symbol": "?BuildFrustumGridTiles@CZCamera@@YIHPAUCZNodePartial@@PAUCZWorldDataPartial@@PAUCZCameraDataPartial@@@Z",
+      "name": "CZCamera::BuildFrustumGridTiles"
     }
   ]
 }

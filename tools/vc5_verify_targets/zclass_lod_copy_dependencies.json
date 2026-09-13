@@ -23,23 +23,23 @@
   "functions": [
     {
       "address": "0x4542a0",
-      "symbol": "?gwLodNew@zClass_Lod@@YAPAUzClass_NodePartial@@XZ",
-      "name": "zClass_Lod::gwLodNew"
+      "symbol": "?gwLodNew@CZLod@@YAPAUCZNodePartial@@XZ",
+      "name": "CZLod::gwLodNew"
     },
     {
       "address": "0x454310",
-      "symbol": "?gwLodAddChild@zClass_Lod@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Lod::gwLodAddChild"
+      "symbol": "?gwLodAddChild@CZLod@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZLod::gwLodAddChild"
     },
     {
       "address": "0x454330",
-      "symbol": "?SetComputeOwnDistance@zClass_Lod@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Lod::SetComputeOwnDistance"
+      "symbol": "?SetComputeOwnDistance@CZLod@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZLod::SetComputeOwnDistance"
     },
     {
       "address": "0x454340",
-      "symbol": "?SetTargetNodeAndRange@zClass_Lod@@YIHPAUzClass_NodePartial@@0M@Z",
-      "name": "zClass_Lod::SetTargetNodeAndRange"
+      "symbol": "?SetTargetNodeAndRange@CZLod@@YIHPAUCZNodePartial@@0M@Z",
+      "name": "CZLod::SetTargetNodeAndRange"
     }
   ]
 }

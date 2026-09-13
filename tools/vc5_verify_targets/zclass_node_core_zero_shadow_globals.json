@@ -23,51 +23,51 @@
   "data_symbols": [
     {
       "address": "0x4f4a90",
-      "symbol": "_g_zClass_NodeCount",
-      "name": "g_zClass_NodeCount_full_extent",
-      "bn_name": "g_zClass_NodeCount",
+      "symbol": "_g_CZClass_NodeCount",
+      "name": "g_CZClass_NodeCount_full_extent",
+      "bn_name": "g_CZClass_NodeCount",
       "byte_length": 72
     },
     {
       "address": "0x4f4a94",
-      "symbol": "_g_zClass_NodeTableBase",
-      "name": "g_zClass_NodeTableBase",
-      "bn_name": "g_zClass_NodeTableBase",
+      "symbol": "_g_CZClass_NodeTableBase",
+      "name": "g_CZClass_NodeTableBase",
+      "bn_name": "g_CZClass_NodeTableBase",
       "byte_length": 4
     },
     {
       "address": "0x4f4a98",
-      "symbol": "_g_zClass_NodeActiveCount",
-      "name": "g_zClass_NodeActiveCount",
-      "bn_name": "g_zClass_NodeActiveCount",
+      "symbol": "_g_CZClass_NodeActiveCount",
+      "name": "g_CZClass_NodeActiveCount",
+      "bn_name": "g_CZClass_NodeActiveCount",
       "byte_length": 4
     },
     {
       "address": "0x4f4a9c",
-      "symbol": "_g_zClass_CopyNodeCloneMaterialRefs",
-      "name": "g_zClass_CopyNodeCloneMaterialRefs",
-      "bn_name": "g_zClass_CopyNodeCloneMaterialRefs",
+      "symbol": "_g_CZClass_CopyNodeCloneMaterialRefs",
+      "name": "g_CZClass_CopyNodeCloneMaterialRefs",
+      "bn_name": "g_CZClass_CopyNodeCloneMaterialRefs",
       "byte_length": 4
     },
     {
       "address": "0x4f4aa0",
-      "symbol": "_g_zClass_CopyNodeCloneAllMaterialsIfRelevant",
-      "name": "g_zClass_CopyNodeCloneAllMaterialsIfRelevant",
-      "bn_name": "g_zClass_CopyNodeCloneAllMaterialsIfRelevant",
+      "symbol": "_g_CZClass_CopyNodeCloneAllMaterialsIfRelevant",
+      "name": "g_CZClass_CopyNodeCloneAllMaterialsIfRelevant",
+      "bn_name": "g_CZClass_CopyNodeCloneAllMaterialsIfRelevant",
       "byte_length": 4
     },
     {
       "address": "0x4f4aa4",
-      "symbol": "_g_zClass_CoreInitialized",
-      "name": "g_zClass_CoreInitialized",
-      "bn_name": "g_zClass_CoreInitialized",
+      "symbol": "_g_CZClass_CoreInitialized",
+      "name": "g_CZClass_CoreInitialized",
+      "bn_name": "g_CZClass_CoreInitialized",
       "byte_length": 4
     },
     {
       "address": "0x4f4aa8",
-      "symbol": "_g_zClass_LastZbdPath",
-      "name": "g_zClass_LastZbdPath",
-      "bn_name": "g_zClass_LastZbdPath",
+      "symbol": "_g_CZClass_LastZbdPath",
+      "name": "g_CZClass_LastZbdPath",
+      "bn_name": "g_CZClass_LastZbdPath",
       "byte_length": 48
     }
   ]

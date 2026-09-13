@@ -15,8 +15,8 @@
   "functions": [
     {
       "address": "0x452920",
-      "symbol": "?AddChildValidated@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::AddChildValidated",
+      "symbol": "?AddChildValidated@CZClass@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZClass::AddChildValidated",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -24,8 +24,8 @@
     },
     {
       "address": "0x452970",
-      "symbol": "?RemoveChildValidated@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::RemoveChildValidated",
+      "symbol": "?RemoveChildValidated@CZClass@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZClass::RemoveChildValidated",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -50,8 +50,8 @@
       "retail_end_exclusive": "0x4529c0",
       "predecessor": {
         "address": "0x4528e0",
-        "symbol": "?AssignInt32ToDiRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
-        "name": "zClass_Node::AssignInt32ToDiRecursive",
+        "symbol": "?AssignInt32ToDiRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z",
+        "name": "CZNode::AssignInt32ToDiRecursive",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,
@@ -63,8 +63,8 @@
       ],
       "successor": {
         "address": "0x4529c0",
-        "symbol": "?gwSoundNew@zClass_Sound@@YAPAUzClass_NodePartial@@XZ",
-        "name": "zClass_Sound::gwSoundNew",
+        "symbol": "?gwSoundNew@CZSound@@YAPAUCZNodePartial@@XZ",
+        "name": "CZSound::gwSoundNew",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

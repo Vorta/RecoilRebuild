@@ -155,8 +155,8 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
         (
             0x267,
             IMAGE_REL_I386_REL32,
-            "?gwCameraGetNearFarClip@zClass_Camera@@"
-            "YIHPAUzClass_NodePartial@@PAM1@Z",
+            "?gwCameraGetNearFarClip@CZCamera@@"
+            "YIHPAUCZNodePartial@@PAM1@Z",
             0,
         ),
         (0x26D, IMAGE_REL_I386_DIR32, "$T88344", 0),
@@ -178,44 +178,44 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
         (
             0x2D9,
             IMAGE_REL_I386_REL32,
-            "?gwNodeSetRaycastable@zClass_Class@@"
-            "YIHPAUzClass_NodePartial@@H@Z",
+            "?gwNodeSetRaycastable@CZClass@@"
+            "YIHPAUCZNodePartial@@H@Z",
             0,
         ),
         (
             0x2F5,
             IMAGE_REL_I386_REL32,
-            "?gwNodeSetRaycastable@zClass_Class@@"
-            "YIHPAUzClass_NodePartial@@H@Z",
+            "?gwNodeSetRaycastable@CZClass@@"
+            "YIHPAUCZNodePartial@@H@Z",
             0,
         ),
         (
             0x2FF,
             IMAGE_REL_I386_REL32,
-            "?SetStopAfterFirstHit@zClass_cls_di@@YIXH@Z",
+            "?SetStopAfterFirstHit@CZDisplayInstance@@YIXH@Z",
             0,
         ),
         (0x31A, IMAGE_REL_I386_DIR32, "_g_Player_RuntimeDiScene", 0),
         (
             0x32D,
             IMAGE_REL_I386_REL32,
-            "?RaycastSelectClosestHitBetweenPoints@zClass_cls_di@@"
-            "YIHPAUzClass_NodePartial@@PBUzVec3@@1"
+            "?RaycastSelectClosestHitBetweenPoints@CZDisplayInstance@@"
+            "YIHPAUCZNodePartial@@PBUzVec3@@1"
             "PAUPlayerProbeSampleCandidateBuffer@@@Z",
             0,
         ),
         (
             0x33C,
             IMAGE_REL_I386_REL32,
-            "?gwNodeSetRaycastable@zClass_Class@@"
-            "YIHPAUzClass_NodePartial@@H@Z",
+            "?gwNodeSetRaycastable@CZClass@@"
+            "YIHPAUCZNodePartial@@H@Z",
             0,
         ),
         (
             0x35B,
             IMAGE_REL_I386_REL32,
-            "?gwNodeSetRaycastable@zClass_Class@@"
-            "YIHPAUzClass_NodePartial@@H@Z",
+            "?gwNodeSetRaycastable@CZClass@@"
+            "YIHPAUCZNodePartial@@H@Z",
             0,
         ),
         (0x370, IMAGE_REL_I386_DIR32, _cc_catalog.HUD_UI_MGR_AGGREGATE_DECORATED_SYMBOL, 0x330),
@@ -540,8 +540,8 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
         (IMAGE_REL_I386_DIR32, "_g_MainCamera", 0, (0x241,)),
         (
             IMAGE_REL_I386_REL32,
-            "?gwCameraGetNearFarClip@zClass_Camera@@"
-            "YIHPAUzClass_NodePartial@@PAM1@Z",
+            "?gwCameraGetNearFarClip@CZCamera@@"
+            "YIHPAUCZNodePartial@@PAM1@Z",
             0,
             (0x262,),
         ),
@@ -560,22 +560,22 @@ def _hud_ui_mgr_reticle_widget_candidate_rebaseline_bridges(
         ),
         (
             IMAGE_REL_I386_REL32,
-            "?gwNodeSetRaycastable@zClass_Class@@"
-            "YIHPAUzClass_NodePartial@@H@Z",
+            "?gwNodeSetRaycastable@CZClass@@"
+            "YIHPAUCZNodePartial@@H@Z",
             0,
             (0x2D4, 0x2F0, 0x333, 0x352),
         ),
         (
             IMAGE_REL_I386_REL32,
-            "?SetStopAfterFirstHit@zClass_cls_di@@YIXH@Z",
+            "?SetStopAfterFirstHit@CZDisplayInstance@@YIXH@Z",
             0,
             (0x2FA,),
         ),
         (IMAGE_REL_I386_DIR32, "_g_Player_RuntimeDiScene", 0, (0x311,)),
         (
             IMAGE_REL_I386_REL32,
-            "?RaycastSelectClosestHitBetweenPoints@zClass_cls_di@@"
-            "YIHPAUzClass_NodePartial@@PBUzVec3@@1"
+            "?RaycastSelectClosestHitBetweenPoints@CZDisplayInstance@@"
+            "YIHPAUCZNodePartial@@PBUzVec3@@1"
             "PAUPlayerProbeSampleCandidateBuffer@@@Z",
             0,
             (0x324,),

@@ -1,6 +1,6 @@
 {
   "name": "zclass_world_world_to_grid_coords_clamped_ex",
-  "description": "zClass_World::WorldToGridCoordsClampedEx raw and clamped world-grid coordinate helper.",
+  "description": "CZWorld::WorldToGridCoordsClampedEx raw and clamped world-grid coordinate helper.",
   "source_filename": "cls_world.c",
   "source_from": "src/GameZRecoil/zClass/cls_world.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -28,8 +28,8 @@
   "functions": [
     {
       "address": "0x450650",
-      "symbol": "?WorldToGridCoordsClampedEx@zClass_World@@YIHPAUzClass_NodePartial@@PAHMM1111@Z",
-      "name": "zClass_World::WorldToGridCoordsClampedEx"
+      "symbol": "?WorldToGridCoordsClampedEx@CZWorld@@YIHPAUCZNodePartial@@PAHMM1111@Z",
+      "name": "CZWorld::WorldToGridCoordsClampedEx"
     }
   ]
 }

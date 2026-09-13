@@ -1,6 +1,6 @@
 {
   "name": "zclass_sound_get_position",
-  "description": "VC verification target for zClass_Sound::gwSoundGetPosition.",
+  "description": "VC verification target for CZSound::gwSoundGetPosition.",
   "source_filename": "Sound.c",
   "source_from": "src/GameZRecoil/zClass/Sound.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -23,8 +23,8 @@
   "functions": [
     {
       "address": "0x452d60",
-      "symbol": "?gwSoundGetPosition@zClass_Sound@@YIHPAUzClass_NodePartial@@PAM11@Z",
-      "name": "zClass_Sound::gwSoundGetPosition"
+      "symbol": "?gwSoundGetPosition@CZSound@@YIHPAUCZNodePartial@@PAM11@Z",
+      "name": "CZSound::gwSoundGetPosition"
     }
   ]
 }

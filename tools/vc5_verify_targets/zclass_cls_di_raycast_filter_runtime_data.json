@@ -28,16 +28,16 @@
   "data_symbols": [
     {
       "address": "0x5396b8",
-      "symbol": "?g_zClass_cls_di_RaycastFilterRuntime@@3UzClass_DiRaycastFilterRuntime@@A",
-      "name": "g_zClass_cls_di_RaycastFilterRuntime",
-      "bn_name": "g_zClass_cls_di_RaycastFilterRuntime",
+      "symbol": "?g_CZDisplayInstance_RaycastFilterRuntime@@3UCZDisplayInstanceRaycastFilterRuntime@@A",
+      "name": "g_CZDisplayInstance_RaycastFilterRuntime",
+      "bn_name": "g_CZDisplayInstance_RaycastFilterRuntime",
       "byte_length": 368
     },
     {
       "address": "0x57c2c4",
-      "symbol": "?g_zClass_DiFaceVertexScratch4@@3PAUzVec3@@A",
-      "name": "g_zClass_DiFaceVertexScratch4",
-      "bn_name": "g_zClass_DiFaceVertexScratch4",
+      "symbol": "?g_CZClass_DiFaceVertexScratch4@@3PAUzVec3@@A",
+      "name": "g_CZClass_DiFaceVertexScratch4",
+      "bn_name": "g_CZClass_DiFaceVertexScratch4",
       "byte_length": 48
     }
   ]

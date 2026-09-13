@@ -82,8 +82,8 @@ struct HudSensorMapNode {
 struct HudSensorObjectiveSlot {
     int completedFlag;
     int autoplayFlag;
-    zClass_NodePartial *activationNode;
-    zClass_NodePartial *inactivationNode;
+    CZNodePartial *activationNode;
+    CZNodePartial *inactivationNode;
     zVidImagePartial *objectiveImage;
     char objectiveTitle[0x100];
     char objectiveDesc[0x100];
@@ -114,7 +114,7 @@ struct HudSensorTracker {
     HudSensorMapNode *mapNodeListHead;
     int mapLoadedFlag;
     zUtil_SaveGameState *trackedSaveStateSelection;
-    zClass_NodePartial *mapWorldNode;
+    CZNodePartial *mapWorldNode;
     int mapOverlayCenterX;
     int mapOverlayCenterY;
     char *loadedMapPath;
@@ -142,15 +142,15 @@ struct HudSensorTracker {
     int missionId;
     union {
         int missionFlags;
-        zClass_NodePartial *effectResourceNode;
+        CZNodePartial *effectResourceNode;
     };
     CString missionDataPath;
     CString zbdPath;
     CString missionGsPath;
-    zClass_NodePartial *worldNode;
-    zClass_NodePartial *cameraNode;
-    zClass_NodePartial *windowNode;
-    zClass_NodePartial *displayNode;
+    CZNodePartial *worldNode;
+    CZNodePartial *cameraNode;
+    CZNodePartial *windowNode;
+    CZNodePartial *displayNode;
     float objectiveMeterSeconds;
     float objectiveReadTimeSecRaw;
     int objectiveFlowState;
@@ -326,7 +326,7 @@ struct HudSensorTracker {
         HudSensorTracker *tracker
     );
     static int __fastcall ParseCheckpointNumberFromNode(
-        zClass_NodePartial *node
+        CZNodePartial *node
     );
 };
 

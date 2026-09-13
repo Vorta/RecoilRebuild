@@ -18,13 +18,13 @@
   "functions": [
     {
       "address": "0x4518e0",
-      "symbol": "?Shutdown@zClass@@YAHXZ",
-      "name": "zClass::Shutdown"
+      "symbol": "?Shutdown@CZClass@@YAHXZ",
+      "name": "CZClass::Shutdown"
     },
     {
       "address": "0x4518f0",
-      "symbol": "?IsInitialized@zClass@@YAHXZ",
-      "name": "zClass::IsInitialized"
+      "symbol": "?IsInitialized@CZClass@@YAHXZ",
+      "name": "CZClass::IsInitialized"
     }
   ]
 }

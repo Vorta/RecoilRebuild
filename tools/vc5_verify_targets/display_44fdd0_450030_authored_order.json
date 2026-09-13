@@ -12,11 +12,11 @@
     "src/GameZRecoil/zClass/Display.c"
   ],
   "functions": [
-    {"address":"0x44fdd0","symbol":"?gwDisplayInit@zClass_Display@@YAPAUzClass_NodePartial@@XZ","name":"zClass_Display::gwDisplayInit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44fe50","symbol":"?RemoveChild@zClass_Display@@YIHPAUzClass_NodePartial@@0@Z","name":"zClass_Display::RemoveChild","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44fe90","symbol":"?gwDisplaySetSize@zClass_Display@@YIHPAUzClass_NodePartial@@HH@Z","name":"zClass_Display::gwDisplaySetSize","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44ff10","symbol":"?gwDisplaySetPosition@zClass_Display@@YIHPAUzClass_NodePartial@@HH@Z","name":"zClass_Display::gwDisplaySetPosition","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44ff90","symbol":"?gwDisplaySetBackgroundColor@zClass_Display@@YIHPAUzClass_NodePartial@@MMM@Z","name":"zClass_Display::gwDisplaySetBackgroundColor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    {"address":"0x44fdd0","symbol":"?gwDisplayInit@CZDisplay@@YAPAUCZNodePartial@@XZ","name":"CZDisplay::gwDisplayInit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44fe50","symbol":"?RemoveChild@CZDisplay@@YIHPAUCZNodePartial@@0@Z","name":"CZDisplay::RemoveChild","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44fe90","symbol":"?gwDisplaySetSize@CZDisplay@@YIHPAUCZNodePartial@@HH@Z","name":"CZDisplay::gwDisplaySetSize","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ff10","symbol":"?gwDisplaySetPosition@CZDisplay@@YIHPAUCZNodePartial@@HH@Z","name":"CZDisplay::gwDisplaySetPosition","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44ff90","symbol":"?gwDisplaySetBackgroundColor@CZDisplay@@YIHPAUCZNodePartial@@MMM@Z","name":"CZDisplay::gwDisplaySetBackgroundColor","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],
   "translation_unit_function_order": [
     {
@@ -33,11 +33,11 @@
       "order_scope": "authored",
       "retail_start": "0x44fdd0",
       "retail_end_exclusive": "0x450030",
-      "predecessor": {"address":"0x44fcf0","symbol":"?gwWindowCloseClearPolygon@zClass_Window@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Window::gwWindowCloseClearPolygon","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "predecessor": {"address":"0x44fcf0","symbol":"?gwWindowCloseClearPolygon@CZWindow@@YIHPAUCZNodePartial@@@Z","name":"CZWindow::gwWindowCloseClearPolygon","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": [
         "0x44fdd0","0x44fe50","0x44fe90","0x44ff10","0x44ff90"
       ],
-      "successor": {"address":"0x450030","symbol":"?QueueAreaUpdate@zClass_World@@YIHPAUzClass_NodePartial@@PAUzClass_WorldDataPartial@@PAUzWorldAreaPartial@@@Z","name":"zClass_World::QueueAreaUpdate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x450030","symbol":"?QueueAreaUpdate@CZWorld@@YIHPAUCZNodePartial@@PAUCZWorldDataPartial@@PAUzWorldAreaPartial@@@Z","name":"CZWorld::QueueAreaUpdate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

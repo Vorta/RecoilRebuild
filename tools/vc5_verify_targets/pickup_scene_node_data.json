@@ -18,7 +18,7 @@
   "data_symbols": [
     {
       "address": "0x4f3328",
-      "symbol": "?g_Pickup_SceneNode@@3PAUzClass_NodePartial@@A",
+      "symbol": "?g_Pickup_SceneNode@@3PAUCZNodePartial@@A",
       "name": "g_Pickup_SceneNode",
       "bn_name": "g_Pickup_SceneNode",
       "byte_length": 4

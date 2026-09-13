@@ -65,8 +65,8 @@
       "retail_end_exclusive": "0x438540",
       "predecessor": {
         "address": "0x4381d0",
-        "symbol": "?Update@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
-        "name": "zClass_Object3D_ModelRefLerpQueue::Update",
+        "symbol": "?Update@CZObject3DModelRefLerpQueue@@YAXXZ",
+        "name": "CZObject3DModelRefLerpQueue::Update",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

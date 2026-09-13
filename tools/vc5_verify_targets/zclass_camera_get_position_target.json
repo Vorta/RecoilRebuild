@@ -27,13 +27,13 @@
   "functions": [
     {
       "address": "0x44a060",
-      "symbol": "?gwCameraGetPosition@zClass_Camera@@YIHPAUzClass_NodePartial@@PAM11@Z",
-      "name": "zClass_Camera::gwCameraGetPosition"
+      "symbol": "?gwCameraGetPosition@CZCamera@@YIHPAUCZNodePartial@@PAM11@Z",
+      "name": "CZCamera::gwCameraGetPosition"
     },
     {
       "address": "0x44a250",
-      "symbol": "?gwCameraGetTarget@zClass_Camera@@YIHPAUzClass_NodePartial@@PAM11@Z",
-      "name": "zClass_Camera::gwCameraGetTarget"
+      "symbol": "?gwCameraGetTarget@CZCamera@@YIHPAUCZNodePartial@@PAM11@Z",
+      "name": "CZCamera::gwCameraGetTarget"
     }
   ],
   "source_from": "src/GameZRecoil/zClass/Camera.c"

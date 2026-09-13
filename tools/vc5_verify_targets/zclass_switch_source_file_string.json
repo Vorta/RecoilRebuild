@@ -23,9 +23,9 @@
   "data_symbols": [
     {
       "address": "0x4dec88",
-      "symbol": "_g_zClass_SourceFile_SwitchC",
-      "name": "g_zClass_SourceFile_SwitchC",
-      "bn_name": "g_zClass_SourceFile_SwitchC",
+      "symbol": "_g_CZClass_SourceFile_SwitchC",
+      "name": "g_CZClass_SourceFile_SwitchC",
+      "bn_name": "g_CZClass_SourceFile_SwitchC",
       "byte_length": 36
     }
   ]

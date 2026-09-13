@@ -28,7 +28,7 @@
         },
         {
           "address": "0x4367a0",
-          "symbol": "?InitFromReaderNode@zTurret_Runtime@@QAEXPAUzClass_NodePartial@@0PAUzEffectAnimEntry@@PAUNode@zReader@@@Z",
+          "symbol": "?InitFromReaderNode@zTurret_Runtime@@QAEXPAUCZNodePartial@@0PAUzEffectAnimEntry@@PAUNode@zReader@@@Z",
           "name": "zTurret_Runtime::InitFromReaderNode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -136,7 +136,7 @@
         },
         {
           "address": "0x437ac0",
-          "symbol": "?LoadDefinitionsFromPath@zTurret_System@@YIHPAUzClass_NodePartial@@PBD@Z",
+          "symbol": "?LoadDefinitionsFromPath@zTurret_System@@YIHPAUCZNodePartial@@PBD@Z",
           "name": "zTurret_System::LoadDefinitionsFromPath",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -227,7 +227,7 @@
         },
         {
           "address": "0x4367a0",
-          "symbol": "?InitFromReaderNode@zTurret_Runtime@@QAEXPAUzClass_NodePartial@@0PAUzEffectAnimEntry@@PAUNode@zReader@@@Z",
+          "symbol": "?InitFromReaderNode@zTurret_Runtime@@QAEXPAUCZNodePartial@@0PAUzEffectAnimEntry@@PAUNode@zReader@@@Z",
           "name": "zTurret_Runtime::InitFromReaderNode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -335,7 +335,7 @@
         },
         {
           "address": "0x437ac0",
-          "symbol": "?LoadDefinitionsFromPath@zTurret_System@@YIHPAUzClass_NodePartial@@PBD@Z",
+          "symbol": "?LoadDefinitionsFromPath@zTurret_System@@YIHPAUCZNodePartial@@PBD@Z",
           "name": "zTurret_System::LoadDefinitionsFromPath",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -399,8 +399,8 @@
       ],
       "successor": {
         "address": "0x437e60",
-        "symbol": "?SetContextRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@0H@Z",
-        "name": "zClass_Node::SetContextRecursive",
+        "symbol": "?SetContextRecursive@CZNode@@YIXPAUCZNodePartial@@0H@Z",
+        "name": "CZNode::SetContextRecursive",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

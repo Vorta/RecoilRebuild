@@ -1,6 +1,6 @@
 {
   "name": "zclass_gwnode_update_subtree",
-  "description": "gwNode::UpdateSubtree recursively updates queued child trees before updating and pending-removing the current node.",
+  "description": "CZNode::UpdateSubtree recursively updates queued child trees before updating and pending-removing the current node.",
   "source_filename": "List.c",
   "source_from": "src/GameZRecoil/zClass/List.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x44eb00",
-      "symbol": "?UpdateSubtree@gwNode@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "gwNode::UpdateSubtree"
+      "symbol": "?UpdateSubtree@CZNode@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZNode::UpdateSubtree"
     }
   ]
 }

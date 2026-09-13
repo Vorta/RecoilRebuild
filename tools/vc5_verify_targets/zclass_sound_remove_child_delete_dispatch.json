@@ -22,13 +22,13 @@
   "functions": [
     {
       "address": "0x452ab0",
-      "symbol": "?DeleteNode@zClass_Sound@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Sound::DeleteNode"
+      "symbol": "?DeleteNode@CZSound@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZSound::DeleteNode"
     },
     {
       "address": "0x452b80",
-      "symbol": "?RemoveChild@zClass_Sound@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Sound::RemoveChild"
+      "symbol": "?RemoveChild@CZSound@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZSound::RemoveChild"
     }
   ]
 }

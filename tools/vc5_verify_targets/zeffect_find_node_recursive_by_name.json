@@ -24,7 +24,7 @@
   "functions": [
     {
       "address": "0x45e650",
-      "symbol": "?FindNodeRecursiveByName@zEffectAnim@@YIPAUzClass_NodePartial@@PAU2@PBD@Z",
+      "symbol": "?FindNodeRecursiveByName@zEffectAnim@@YIPAUCZNodePartial@@PAU2@PBD@Z",
       "name": "zEffectAnim::FindNodeRecursiveByName"
     }
   ]

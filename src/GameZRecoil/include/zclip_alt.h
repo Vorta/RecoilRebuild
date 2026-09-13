@@ -8,7 +8,7 @@
 #include "recoil/recoil_callconv.h"
 #include "zclip_rect.h"
 
-struct zClass_CameraDataPartial;
+struct CZCameraDataPartial;
 
 struct zClipAltFloatRect {
     float left;
@@ -37,7 +37,7 @@ extern int gAltClipPassEnabled;
 }
 
 void __fastcall zClipAltBuildFrustumPlanes(
-    zClass_CameraDataPartial *cameraData
+    CZCameraDataPartial *cameraData
 );
 
 namespace zClipAlt {

@@ -1,6 +1,6 @@
 {
   "name": "zclass_light_new",
-  "description": "zClass_Light::gwLightNew light-node constructor.",
+  "description": "CZLight::gwLightNew light-node constructor.",
   "source_filename": "Light.c",
   "source_from": "src/GameZRecoil/zClass/Light.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -23,8 +23,8 @@
   "functions": [
     {
       "address": "0x452fd0",
-      "symbol": "?gwLightNew@zClass_Light@@YAPAUzClass_NodePartial@@XZ",
-      "name": "zClass_Light::gwLightNew"
+      "symbol": "?gwLightNew@CZLight@@YAPAUCZNodePartial@@XZ",
+      "name": "CZLight::gwLightNew"
     }
   ]
 }

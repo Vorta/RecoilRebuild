@@ -480,8 +480,8 @@
       ],
       "successor": {
         "address": "0x443c50",
-        "symbol": "?SetBreakOnFirstCandidate@zClass_cls_di@@YIXH@Z",
-        "name": "zClass_cls_di::SetBreakOnFirstCandidate",
+        "symbol": "?SetBreakOnFirstCandidate@CZDisplayInstance@@YIXH@Z",
+        "name": "CZDisplayInstance::SetBreakOnFirstCandidate",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

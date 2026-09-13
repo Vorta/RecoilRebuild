@@ -24,8 +24,8 @@
     {
       "address": "0x4ddbcc",
       "symbol": "??_C@_0EL@FKHF@gwNodeUpdate?$CI?$CJ?3?5Unrecognized?5nod@",
-      "name": "g_zClass_GwNodeUpdateUnrecognizedNodeClassTypeFmt",
-      "bn_name": "g_zClass_GwNodeUpdateUnrecognizedNodeClassTypeFmt",
+      "name": "g_CZClass_GwNodeUpdateUnrecognizedNodeClassTypeFmt",
+      "bn_name": "g_CZClass_GwNodeUpdateUnrecognizedNodeClassTypeFmt",
       "byte_length": 75
     }
   ]

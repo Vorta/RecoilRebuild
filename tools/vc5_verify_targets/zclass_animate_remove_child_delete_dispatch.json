@@ -22,13 +22,13 @@
   "functions": [
     {
       "address": "0x453b10",
-      "symbol": "?DeleteNode@zClass_Animate@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Animate::DeleteNode"
+      "symbol": "?DeleteNode@CZAnimate@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZAnimate::DeleteNode"
     },
     {
       "address": "0x453b80",
-      "symbol": "?RemoveChild@zClass_Animate@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Animate::RemoveChild"
+      "symbol": "?RemoveChild@CZAnimate@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZAnimate::RemoveChild"
     }
   ]
 }

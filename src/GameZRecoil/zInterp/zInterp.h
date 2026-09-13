@@ -10,7 +10,7 @@
 #include <list>
 
 struct zArchiveList;
-struct zClass_NodePartial;
+struct CZNodePartial;
 struct zDiPartial;
 
 /**
@@ -77,7 +77,7 @@ struct zInterpVarEntry {
     zInterpVarValuePtr valuePtr;
 };
 
-typedef std::list<zClass_NodePartial *> zInterpScrollList;
+typedef std::list<CZNodePartial *> zInterpScrollList;
 RECOIL_STATIC_ASSERT(sizeof(zInterpScrollList) == 0x0c);
 
 struct CZInterp;
@@ -135,7 +135,7 @@ struct CZInterp {
      * Purpose: Own the nodes whose textures scroll on every driver tick.
      */
     zInterpScrollList scrollAlwaysList;
-    zClass_NodePartial *scrollAlwaysDriverNode;
+    CZNodePartial *scrollAlwaysDriverNode;
     int includeDepth;
     int conditionalDepth;
     void *currentNode;
@@ -186,7 +186,7 @@ struct CZInterp {
     bool ValidateArgsAndNodeType(
         int expectedArgCount,
         int expectedClassType,
-        zClass_NodePartial *node
+        CZNodePartial *node
     );
     int ReadPreparedScriptTableCount(const zInterpPreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue);
     int ReadPreparedScriptIndex(zInterpPreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue, zInterpPreparedScriptEntry *&entries);
@@ -215,12 +215,12 @@ struct CZInterp {
         int hasPreparedInput
     );
     void PrintNodeTree(
-        zClass_NodePartial *node,
+        CZNodePartial *node,
         int indent
     );
-    bool HandleScrollDisable(zClass_NodePartial *node);
+    bool HandleScrollDisable(CZNodePartial *node);
     bool RegisterScrollAlwaysNode(
-        zClass_NodePartial *node,
+        CZNodePartial *node,
         float scrollRateU,
         float scrollRateV,
         bool installDriverCallback
@@ -252,8 +252,8 @@ RECOIL_STATIC_ASSERT(sizeof(CRecoilInterp) == 0xcc);
 extern CRecoilInterp g_zInterp_GlobalContext;
 
 namespace zInterp_Object3D {
-int __fastcall DefaultRenderAction(zClass_NodePartial *node);
-void __fastcall ScrollAlwaysTickAction(zClass_NodePartial *wrapperNode);
+int __fastcall DefaultRenderAction(CZNodePartial *node);
+void __fastcall ScrollAlwaysTickAction(CZNodePartial *wrapperNode);
 } // namespace zInterp_Object3D
 
 RECOIL_STATIC_ASSERT(sizeof(zInterpFileFrame) == 0x0c);

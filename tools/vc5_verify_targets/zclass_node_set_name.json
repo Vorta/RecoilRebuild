@@ -1,6 +1,6 @@
 {
   "name": "zclass_node_set_name",
-  "description": "zClass_Class::gwNodeSetName node-name setter.",
+  "description": "CZClass::gwNodeSetName node-name setter.",
   "source_filename": "Class.c",
   "source_from": "src/GameZRecoil/zClass/Class.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x447dc0",
-      "symbol": "?gwNodeSetName@zClass_Class@@YIHPAUzClass_NodePartial@@PBD@Z",
-      "name": "zClass_Class::gwNodeSetName"
+      "symbol": "?gwNodeSetName@CZClass@@YIHPAUCZNodePartial@@PBD@Z",
+      "name": "CZClass::gwNodeSetName"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "zclass_add_child_generic",
-  "description": "zClass_Class child attachment helpers.",
+  "description": "CZClass child attachment helpers.",
   "source_filename": "Class.c",
   "source_from": "src/GameZRecoil/zClass/Class.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,13 +22,13 @@
   "functions": [
     {
       "address": "0x449b40",
-      "symbol": "?SetSingleParentFlagRecursive@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::SetSingleParentFlagRecursive"
+      "symbol": "?SetSingleParentFlagRecursive@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::SetSingleParentFlagRecursive"
     },
     {
       "address": "0x4484d0",
-      "symbol": "?AddChildGeneric@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::AddChildGeneric"
+      "symbol": "?AddChildGeneric@CZClass@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZClass::AddChildGeneric"
     }
   ]
 }

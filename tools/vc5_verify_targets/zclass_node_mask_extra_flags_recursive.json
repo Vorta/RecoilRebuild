@@ -1,6 +1,6 @@
 {
   "name": "zclass_node_mask_extra_flags_recursive",
-  "description": "zClass_Node recursive flag-state helpers. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "description": "CZNode recursive flag-state helpers. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
   "source_filename": "Class.c",
   "source_from": "src/GameZRecoil/zClass/Class.c",
   "include_dirs": [
@@ -22,28 +22,28 @@
   "functions": [
     {
       "address": "0x421d60",
-      "symbol": "?MaskExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Node::MaskExtraFlagsRecursive"
+      "symbol": "?MaskExtraFlagsRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z",
+      "name": "CZNode::MaskExtraFlagsRecursive"
     },
     {
       "address": "0x421da0",
-      "symbol": "?PropagateExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Node::PropagateExtraFlagsRecursive"
+      "symbol": "?PropagateExtraFlagsRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z",
+      "name": "CZNode::PropagateExtraFlagsRecursive"
     },
     {
       "address": "0x421de0",
-      "symbol": "?PropagateFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Node::PropagateFlagsRecursive"
+      "symbol": "?PropagateFlagsRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z",
+      "name": "CZNode::PropagateFlagsRecursive"
     },
     {
       "address": "0x437e60",
-      "symbol": "?SetContextRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@0H@Z",
-      "name": "zClass_Node::SetContextRecursive"
+      "symbol": "?SetContextRecursive@CZNode@@YIXPAUCZNodePartial@@0H@Z",
+      "name": "CZNode::SetContextRecursive"
     },
     {
       "address": "0x437ea0",
-      "symbol": "?SetDiFlagBit0Recursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Node::SetDiFlagBit0Recursive"
+      "symbol": "?SetDiFlagBit0Recursive@CZNode@@YIXPAUCZNodePartial@@H@Z",
+      "name": "CZNode::SetDiFlagBit0Recursive"
     }
   ],
   "translation_unit_function_order": [

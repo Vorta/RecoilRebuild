@@ -23,8 +23,8 @@ struct PlayerGunFireController {
     OptCatalogEntryDef *optCatalogEntry;
     int weaponBankIndex;
     int weaponSideIndex;
-    zClass_NodePartial *attachNodePrimary;
-    zClass_NodePartial *attachNodeSecondary;
+    CZNodePartial *attachNodePrimary;
+    CZNodePartial *attachNodeSecondary;
     zDiPartial *scrollTextureModelA;
     zDiPartial *scrollTextureModelB;
     float attachPosX;
@@ -51,7 +51,7 @@ struct PlayerAltWeaponBank {
 
 struct PlayerGunFireSlot {
     float offset;
-    zClass_NodePartial *attachNode;
+    CZNodePartial *attachNode;
 };
 
 struct PlayerProgressTargetSlotRuntime {
@@ -83,9 +83,9 @@ struct PlayerTimedHitStatus {
     OptCatalogEntryDef *hitSource;
     float currentLevel;
     float targetLevel;
-    zClass_NodePartial *lightNode;
+    CZNodePartial *lightNode;
     float nextUpdateTime;
-    zClass_NodePartial *lightParentNode;
+    CZNodePartial *lightParentNode;
 
     void ResetFields();
     void ClearLightAndReset();
@@ -331,14 +331,14 @@ struct zUtil_PlayerStateStorage {
             zVec3 aimBasisOrigin;
             zVec3 storedTargetPos;
             unsigned char unknown_0ecc[0x04];
-            zClass_NodePartial *rootNode;
-            zClass_NodePartial *environmentAttachmentNode;
-            zClass_NodePartial *bodyNode;
-            zClass_NodePartial *turretNode;
-            zClass_NodePartial *gunNode;
-            zClass_NodePartial *doorLeftNode;
-            zClass_NodePartial *doorRightNode;
-            zClass_NodePartial *modeVariantNode;
+            CZNodePartial *rootNode;
+            CZNodePartial *environmentAttachmentNode;
+            CZNodePartial *bodyNode;
+            CZNodePartial *turretNode;
+            CZNodePartial *gunNode;
+            CZNodePartial *doorLeftNode;
+            CZNodePartial *doorRightNode;
+            CZNodePartial *modeVariantNode;
             unsigned char unknown_0ef0[0x18];
             PlayerGunFireSlot altFireSlotLeft;
             PlayerGunFireSlot altFireSlotRight;

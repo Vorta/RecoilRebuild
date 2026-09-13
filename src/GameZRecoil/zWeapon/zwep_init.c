@@ -81,7 +81,7 @@ OptCatalogRuntimeInstanceStorage *g_OptCatalog_MineIteratorCursor = 0;
  * Purpose: active world node used by OptCatalog runtime projectiles, trail
  * probes, and glow-light attachment.
  */
-zClass_NodePartial *g_OptCatalogRuntimeWorld = 0;
+CZNodePartial *g_OptCatalogRuntimeWorld = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-entrycount
  * @recoil-artifact defines .data recoil:data:0x778924: g_OptCatalog_EntryCount.
@@ -126,7 +126,7 @@ OptCatalogRuntimeInstanceStorage *g_OptCatalogFreeRuntimeInstanceList = 0;
  * Purpose: stores the head of the pooled thermal glow light free list shared
  * by OptCatalog runtime effects and the Light lifecycle functions.
  */
-zClass_NodePartial *g_OptCatalogThermalGlowFreeList = 0;
+CZNodePartial *g_OptCatalogThermalGlowFreeList = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalognetworkoptionstate
  * @recoil-artifact defines .data recoil:data:0x77893c: g_OptCatalogNetworkOptionState.
@@ -195,7 +195,7 @@ int g_OptCatalogQueuedImpactCount = 0;
 namespace {
     struct OptCatalogQueuedImpactRecord {
         OptCatalogEntryDef *entry;
-        zClass_NodePartial *ownerNode;
+        CZNodePartial *ownerNode;
         zVec3 sourcePos;
         OptCatalogRaycastHitEntry hit;
         float damageAmount;
@@ -311,7 +311,7 @@ int g_OptCatalog_DamageFeedbackHitCount = 0;
  * @recoil-artifact defines .data recoil:data:0x779aa4: g_OptCatalogDamageFeedbackTrackedNode.
  * Purpose: Stores g OptCatalogDamageFeedbackTrackedNode data used by effects_weapons.optcatalog_damage_feedback_data.
  */
-zClass_NodePartial *g_OptCatalogDamageFeedbackTrackedNode = 0;
+CZNodePartial *g_OptCatalogDamageFeedbackTrackedNode = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x779aac
  * @recoil-artifact defines .data recoil:data:0x779aac: g_OptCatalogNextSpawnScale.
@@ -670,14 +670,14 @@ namespace {
 
         for (int i = 0; i < g_OptCatalogRuntimeInstanceCount; ++i) {
             OptCatalogRuntimeInstanceStorage *const runtime = &slots[i].runtime;
-            runtime->projectileNode = zClass_Object3D::gwObject3DInit();
+            runtime->projectileNode = CZObject3D::gwObject3DInit();
             if (runtime->projectileNode != 0) {
                 char name[40];
                 sprintf(name, "Projectile_%d", i);
-                zClass_Class::gwNodeSetName(runtime->projectileNode, name);
-                zClass_Class::gwNodeSetRaycastable(runtime->projectileNode, 0);
-                zClass_Class::gwNodeSetCellPickable(runtime->projectileNode, 0);
-                zClass_Class::gwNodeSetPickable(runtime->projectileNode, 1);
+                CZClass::gwNodeSetName(runtime->projectileNode, name);
+                CZClass::gwNodeSetRaycastable(runtime->projectileNode, 0);
+                CZClass::gwNodeSetCellPickable(runtime->projectileNode, 0);
+                CZClass::gwNodeSetPickable(runtime->projectileNode, 1);
             }
 
             runtime->flyoutAnimPrimary = 0;
@@ -749,7 +749,7 @@ namespace OptCatalog {
     void __fastcall SendPkt0ARemoveRuntimeRelay(
         OptCatalogEntryDef * self,
         zVec3 * pointOrVec3,
-        zClass_NodePartial * ownerNode
+        CZNodePartial * ownerNode
     ) {
         if (g_OptCatalogProcessRuntimeRelayEnabled == 0 || ownerNode == 0) {
             return;
@@ -992,17 +992,17 @@ namespace OptCatalog {
  * Purpose: reuse an attach-clone child from the entry free list, or clone
  * the template node when none are available.
  */
-    zClass_NodePartial *__fastcall AllocOrReuseAttachNodeChildClone(
+    CZNodePartial *__fastcall AllocOrReuseAttachNodeChildClone(
         OptCatalogEntryDef * self
     ) {
-        zClass_NodePartial *const clone = self->attachCloneChildFreeList;
+        CZNodePartial *const clone = self->attachCloneChildFreeList;
         if (clone != 0) {
             self->attachCloneChildFreeList = clone->callbackContext;
             clone->callbackContext = 0;
             return clone;
         }
 
-        return zClass_cls_util::CopyNodeWithCloneOptions(self->attachCloneTemplateNode, 0, 1);
+        return CZUtil::CopyNodeWithCloneOptions(self->attachCloneTemplateNode, 0, 1);
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -1023,7 +1023,7 @@ namespace OptCatalog {
             zEffect_Anim::NodeActionCallback(asyncFxHandle, 0);
         }
 
-        zClass_Object3D::RemoveChild(
+        CZObject3D::RemoveChild(
             runtimeInstance->projectileNode,
             runtimeInstance->attachCloneChild
         );
@@ -1069,16 +1069,16 @@ namespace OptCatalog {
 
         g_OptCatalogFreeRuntimeInstanceList = runtimeInstance->next;
 
-        zClass_NodePartial *attachChildNode = self->attachCloneTemplateNode;
+        CZNodePartial *attachChildNode = self->attachCloneTemplateNode;
         if (attachChildNode != 0) {
             if (self->flyoutModelAnimationEntry != 0) {
-                zClass_NodePartial *const clonedAttachChildNode =
+                CZNodePartial *const clonedAttachChildNode =
                     AllocOrReuseAttachNodeChildClone(self);
                 runtimeInstance->attachCloneChild = clonedAttachChildNode;
                 attachChildNode = clonedAttachChildNode;
             }
 
-            zClass_Object3D::gwObject3DAddChild(runtimeInstance->projectileNode, attachChildNode);
+            CZObject3D::gwObject3DAddChild(runtimeInstance->projectileNode, attachChildNode);
         }
 
         runtimeInstance->lifetime = 0.0f;
@@ -1101,14 +1101,14 @@ namespace OptCatalog {
             return;
         }
 
-        zClass_NodePartial *const projectileNode = runtimeInstance->projectileNode;
+        CZNodePartial *const projectileNode = runtimeInstance->projectileNode;
         while (projectileNode->listCountA != 0) {
-            zClass_Class::RemoveChild(projectileNode->listA[0], projectileNode);
+            CZClass::RemoveChild(projectileNode->listA[0], projectileNode);
         }
 
-        zClass_NodePartial *const attachCloneTemplateNode = self->attachCloneTemplateNode;
+        CZNodePartial *const attachCloneTemplateNode = self->attachCloneTemplateNode;
         if (attachCloneTemplateNode != 0) {
-            zClass_Class::RemoveChild(projectileNode, attachCloneTemplateNode);
+            CZClass::RemoveChild(projectileNode, attachCloneTemplateNode);
         }
 
         if (runtimeInstance->attachCloneChild != 0) {
@@ -1116,15 +1116,15 @@ namespace OptCatalog {
         }
 
         while (projectileNode->listCountB != 0) {
-            zClass_Class::RemoveChild(projectileNode, projectileNode->listB[0]);
+            CZClass::RemoveChild(projectileNode, projectileNode->listB[0]);
         }
 
         runtimeInstance->next = g_OptCatalogFreeRuntimeInstanceList;
         g_OptCatalogFreeRuntimeInstanceList = runtimeInstance;
-        zClass_Object3D::gwObject3DSetScale(projectileNode, 1.0f, 1.0f, 1.0f);
-        zClass_Object3D::gwObject3DSetRotation(projectileNode, 0.0f, 0.0f, 0.0f);
-        zClass_Object3D::gwObject3DSetPosition(projectileNode, 0.0f, 0.0f, 0.0f);
-        ((zClass_NodeFreeListSlot *)(projectileNode))->damageHandler = 0;
+        CZObject3D::gwObject3DSetScale(projectileNode, 1.0f, 1.0f, 1.0f);
+        CZObject3D::gwObject3DSetRotation(projectileNode, 0.0f, 0.0f, 0.0f);
+        CZObject3D::gwObject3DSetPosition(projectileNode, 0.0f, 0.0f, 0.0f);
+        ((CZNodeFreeListSlot *)(projectileNode))->damageHandler = 0;
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -1136,7 +1136,7 @@ namespace OptCatalog {
  */
     OptCatalogRuntimeInstanceStorage *__fastcall AllocRuntimeInstance(
         OptCatalogEntryDef * self,
-        zClass_NodePartial * ownerNode,
+        CZNodePartial * ownerNode,
         zTag4Partial * variantTagOrNull,
         zVec3 * spawnPos,
         zVec3 * spawnDir,
@@ -1159,7 +1159,7 @@ namespace OptCatalog {
 
         runtimeInstance->next = self->activeRuntimeListHead;
         self->activeRuntimeListHead = runtimeInstance;
-        zClass_Class::AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
+        CZClass::AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
 
         runtimeInstance->origin = *spawnPos;
         runtimeInstance->pos = *spawnPos;
@@ -1242,7 +1242,7 @@ namespace OptCatalog {
             (((self->flags & kOptCatalogFlagFlyoutModelRotation) != 0 &&
                  self->attachCloneTemplateNode != 0) ||
                 (self->flyoutAnimationEntry != 0 && self->attachCloneTemplateNode == 0))) {
-            zClass_Object3D::gwObject3DSetRotation(
+            CZObject3D::gwObject3DSetRotation(
                 runtimeInstance->projectileNode,
                 (float)asin((double)spawnDir->y),
                 (float)(atan2(-spawnDir->z, -spawnDir->x)),
@@ -1250,7 +1250,7 @@ namespace OptCatalog {
             );
         }
 
-        zClass_Object3D::gwObject3DSetPosition(
+        CZObject3D::gwObject3DSetPosition(
             runtimeInstance->projectileNode,
             runtimeInstance->pos.x,
             runtimeInstance->pos.y,
@@ -1312,15 +1312,15 @@ namespace OptCatalog {
         }
 
         if ((self->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
-            zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
+            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
             runtimeInstance->projectileNode->flags |= 0x08000000;
-            ((zClass_NodeFreeListSlot *)(runtimeInstance->projectileNode))->damageHandler =
+            ((CZNodeFreeListSlot *)(runtimeInstance->projectileNode))->damageHandler =
                 (void *)(1);
             runtimeInstance->projectileNode->callbackContext =
-                (zClass_NodePartial *)(runtimeInstance);
+                (CZNodePartial *)(runtimeInstance);
             runtimeInstance->projectileScale = self->flyoutHealth;
         } else {
-            zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
+            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
             runtimeInstance->projectileNode->flags &= ~0x08000000u;
         }
 
@@ -1342,7 +1342,7 @@ namespace OptCatalog {
     OptCatalogRuntimeInstanceStorage *__fastcall SpawnRuntimeInstanceAt(
         OptCatalogEntryDef * self,
         zVec3 * spawnPos,
-        zClass_NodePartial * ownerNode
+        CZNodePartial * ownerNode
     ) {
         OptCatalogRuntimeInstanceStorage *const runtimeInstance = AllocOrReuseAttachNodeClone(self);
 
@@ -1354,19 +1354,19 @@ namespace OptCatalog {
         runtimeInstance->spawnScale = g_OptCatalogNextSpawnScale;
         g_OptCatalogNextSpawnScale = 1.0f;
 
-        zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
+        CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
         runtimeInstance->projectileNode->flags |= 0x08000000;
-        ((zClass_NodeFreeListSlot *)(runtimeInstance->projectileNode))->damageHandler = (void *)(1);
-        runtimeInstance->projectileNode->callbackContext = (zClass_NodePartial *)(runtimeInstance);
+        ((CZNodeFreeListSlot *)(runtimeInstance->projectileNode))->damageHandler = (void *)(1);
+        runtimeInstance->projectileNode->callbackContext = (CZNodePartial *)(runtimeInstance);
         runtimeInstance->projectileScale = self->flyoutHealth;
 
-        zClass_Object3D::gwObject3DSetPosition(
+        CZObject3D::gwObject3DSetPosition(
             runtimeInstance->projectileNode,
             spawnPos->x,
             spawnPos->y,
             spawnPos->z
         );
-        zClass_Class::AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
+        CZClass::AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
         return runtimeInstance;
     }
 } // namespace OptCatalog
@@ -1401,7 +1401,7 @@ namespace OptCatalog {
             RecycleAttachNodeClone(self, runtimeInstance);
         }
 
-        zClass_Class::RemoveChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
+        CZClass::RemoveChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
         RecycleRuntimeInstanceStorage(self, runtimeInstance);
     }
 } // namespace OptCatalog
@@ -1432,7 +1432,7 @@ namespace OptCatalog {
     int __fastcall RemoveRuntimeInstance(
         OptCatalogEntryDef * self,
         zVec3 * pointOrVec3,
-        zClass_NodePartial * ownerNode
+        CZNodePartial * ownerNode
     ) {
         int result = 0;
 
@@ -1485,7 +1485,7 @@ namespace OptCatalog {
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     ) {
-        zClass_NodePartial *const projectileNode = runtimeInstance->projectileNode;
+        CZNodePartial *const projectileNode = runtimeInstance->projectileNode;
         zVec3 startPoint = runtimeInstance->pos;
         zVec3 endPoint = runtimeInstance->pos;
         startPoint.y += 1.0f;
@@ -1495,11 +1495,11 @@ namespace OptCatalog {
         int restoreProjectileActive = 0;
         if (projectileNode != 0 && (projectileNode->flags & 0x04) != 0) {
             restoreProjectileActive = 1;
-            zClass_Class::gwNodeSetActive(projectileNode, 0);
+            CZClass::gwNodeSetActive(projectileNode, 0);
         }
 
         PlayerProbeSampleCandidateBuffer rayData = {0};
-        if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
+        if (CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
                 g_OptCatalogRuntimeWorld,
                 &startPoint,
                 &endPoint,
@@ -1512,7 +1512,7 @@ namespace OptCatalog {
         }
 
         if (restoreProjectileActive != 0) {
-            zClass_Class::gwNodeSetActive(projectileNode, 1);
+            CZClass::gwNodeSetActive(projectileNode, 1);
         }
 
         if (g_OptCatalog_FallbackImpactProbeEnabled != 0 && self->impactProximity > 0.0f) {
@@ -1599,15 +1599,15 @@ namespace OptCatalog {
         }
 
         if ((ownerEntry->flags & kOptCatalogFlagTrailStartMutedAndLight) != 0) {
-            zClass_NodePartial *const light =
-                Light::AllocFromFreeListAndAttach(&ownerEntry->timedStatusLightSpecularColor);
+            CZNodePartial *const light =
+                CZLight::AllocFromFreeListAndAttach(&ownerEntry->timedStatusLightSpecularColor);
             trailRuntimeState->lightNode = light;
-            zClass_Light::gwLightSetRange(
+            CZLight::gwLightSetRange(
                 light,
                 ownerEntry->timedStatusLightRangeMin,
                 ownerEntry->timedStatusLightRangeMax
             );
-            zClass_Class::gwNodeSetActive(light, 0);
+            CZClass::gwNodeSetActive(light, 0);
         }
 
         OptCatalogTrailRuntimeState *const activeRuntime = ownerEntry->activeTrailRuntime;
@@ -1663,17 +1663,17 @@ namespace OptCatalog {
             ownerEntry->activeTrailRuntime = trailRuntimeState->next;
         }
 
-        zClass_NodePartial *const lightNode = trailRuntimeState->lightNode;
+        CZNodePartial *const lightNode = trailRuntimeState->lightNode;
         trailRuntimeState->prev = 0;
         trailRuntimeState->next = 0;
         if (lightNode != 0) {
-            Light::ReturnToFreeList(lightNode);
+            CZLight::ReturnToFreeList(lightNode);
         }
 
         for (int i = 0; i < trailRuntimeState->activeNodeSlotCount; ++i) {
-            zClass_NodePartial *const node = trailRuntimeState->activeNodeSlots[i].node;
+            CZNodePartial *const node = trailRuntimeState->activeNodeSlots[i].node;
             if (node != 0) {
-                zClass_Class::gwNodeSetActive(node, 0);
+                CZClass::gwNodeSetActive(node, 0);
             }
         }
 
@@ -1790,7 +1790,7 @@ namespace OptCatalog {
 
                             if ((entry->flags & kOptCatalogFlagTetherGuided) != 0) {
                                 PlayerProbeSampleCandidateBuffer groundPick;
-                                zClass_cls_di::FindBestPickCandidateBelowPoint(
+                                CZDisplayInstance::FindBestPickCandidateBelowPoint(
                                     g_OptCatalogRuntimeWorld,
                                     (zVec3 *)(runtimeInstance->pendingTargetA),
                                     &groundPick
@@ -1881,7 +1881,7 @@ namespace OptCatalog {
                                     runtimeInstance->aux.z * retainedVelocity;
                             }
 
-                            zClass_Object3D::gwObject3DSetRotation(
+                            CZObject3D::gwObject3DSetRotation(
                                 runtimeInstance->projectileNode,
                                 (float)(asin(runtimeInstance->dir.y)),
                                 (float)(atan2(-runtimeInstance->dir.x, -runtimeInstance->dir.z)),
@@ -1973,7 +1973,7 @@ namespace OptCatalog {
                         ProcessRuntimeInstance(entry, runtimeInstance);
                         g_OptCatalog_FallbackImpactProbeEnabled = 1;
                     } else {
-                        zClass_Object3D::gwObject3DTranslateRotation(
+                        CZObject3D::gwObject3DTranslateRotation(
                             runtimeInstance->projectileNode,
                             0.0f,
                             3.4906585f * g_OptCatalogRuntimeDeltaTime,
@@ -1988,13 +1988,13 @@ namespace OptCatalog {
                     endPoint.y = runtimeInstance->pos.y + movementDelta.y;
                     endPoint.z = runtimeInstance->pos.z + movementDelta.z;
                     SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
-                    zClass_Class::gwNodeSetRaycastable(runtimeInstance->ownerNode, 0);
+                    CZClass::gwNodeSetRaycastable(runtimeInstance->ownerNode, 0);
                     if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
-                        zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
+                        CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
                     }
-                    zClass_cls_di::SetStopAfterFirstHit(0x40000);
+                    CZDisplayInstance::SetStopAfterFirstHit(0x40000);
                     PlayerProbeSampleCandidateBuffer segmentHits;
-                    if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
+                    if (CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
                             g_OptCatalogRuntimeWorld,
                             &runtimeInstance->pos,
                             &endPoint,
@@ -2007,7 +2007,7 @@ namespace OptCatalog {
                         OptCatalogRaycastHitEntry *rayHit =
                             (OptCatalogRaycastHitEntry *)(void *)(candidate);
                         void *excludedDamageHandler =
-                            ((zClass_NodeFreeListSlot *)(candidate->node))->damageHandler;
+                            ((CZNodeFreeListSlot *)(candidate->node))->damageHandler;
                         if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0) {
                             if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
                                 g_OptCatalog_CapturedDamageSourcePos = runtimeInstance->pos;
@@ -2076,9 +2076,9 @@ namespace OptCatalog {
                                         (oldMagnitude / runtimeInstance->speed + 1.0f) * 0.5f
                                     );
                                     SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
-                                    zClass_cls_di::SetStopAfterFirstHit(0x40000);
+                                    CZDisplayInstance::SetStopAfterFirstHit(0x40000);
                                     PlayerProbeSampleCandidateBuffer reflectedHits;
-                                    if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
+                                    if (CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
                                             g_OptCatalogRuntimeWorld,
                                             &rayHit->pos,
                                             &endPoint,
@@ -2105,13 +2105,13 @@ namespace OptCatalog {
                                     runtimeInstance->rangeProgress = entry->range;
                                     endPoint = rayHit->pos;
                                     updateState = 2;
-                                    zClass_Object3D::gwObject3DTranslateRotation(
+                                    CZObject3D::gwObject3DTranslateRotation(
                                         runtimeInstance->projectileNode,
                                         0.0f,
                                         3.4906585f * g_OptCatalogRuntimeDeltaTime,
                                         0.0f
                                     );
-                                    zClass_Object3D::gwObject3DSetScale(
+                                    CZObject3D::gwObject3DSetScale(
                                         runtimeInstance->projectileNode,
                                         5.0f,
                                         5.0f,
@@ -2123,9 +2123,9 @@ namespace OptCatalog {
                         }
                     }
                     if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
-                        zClass_Class::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
+                        CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
                     }
-                    zClass_Class::gwNodeSetRaycastable(runtimeInstance->ownerNode, 1);
+                    CZClass::gwNodeSetRaycastable(runtimeInstance->ownerNode, 1);
                 }
 
                 if ((entry->flags & kOptCatalogFlagInstant) != 0) {
@@ -2139,7 +2139,7 @@ namespace OptCatalog {
                                 (entry->flags & kOptCatalogFlagFixedRotate) == 0) {
                                 zVec3 direction = runtimeInstance->velocity;
                                 zMath::Vec3Normalize(&direction);
-                                zClass_Object3D::gwObject3DSetRotation(
+                                CZObject3D::gwObject3DSetRotation(
                                     runtimeInstance->projectileNode,
                                     (float)(asin(direction.y)),
                                     (float)(atan2(-direction.x, -direction.z)),
@@ -2148,7 +2148,7 @@ namespace OptCatalog {
                             }
                         } else {
                             if (runtimeInstance->scaleFade <= 0.0f) {
-                                zClass_Object3D::gwObject3DTranslateRotation(
+                                CZObject3D::gwObject3DTranslateRotation(
                                     runtimeInstance->projectileNode,
                                     0.0f,
                                     3.4906585f * g_OptCatalogRuntimeDeltaTime,
@@ -2158,7 +2158,7 @@ namespace OptCatalog {
                             if (runtimeInstance->scaleFade < 1.0f) {
                                 const float scale =
                                     1.0f - runtimeInstance->scaleFade * -4.0f;
-                                zClass_Object3D::gwObject3DSetScale(
+                                CZObject3D::gwObject3DSetScale(
                                     runtimeInstance->projectileNode,
                                     scale,
                                     scale,
@@ -2169,7 +2169,7 @@ namespace OptCatalog {
                             }
                         }
                         runtimeInstance->pos = endPoint;
-                        zClass_Object3D::gwObject3DSetPosition(
+                        CZObject3D::gwObject3DSetPosition(
                             runtimeInstance->projectileNode,
                             runtimeInstance->pos.x,
                             runtimeInstance->pos.y,
@@ -2188,7 +2188,7 @@ namespace OptCatalog {
                         zEffect_Anim::NodeActionCallback(runtimeInstance->flyoutAnimSecondary, 0);
                         runtimeInstance->flyoutAnimSecondary = 0;
                     }
-                    zClass_Class::RemoveChild(
+                    CZClass::RemoveChild(
                         g_OptCatalogRuntimeWorld,
                         runtimeInstance->projectileNode
                     );
@@ -2431,20 +2431,20 @@ namespace OptCatalog {
                             do {
                                 OptCatalogTrailNodeSlot *const segment =
                                     &segments[visibleSegmentCount];
-                                zClass_Class::gwNodeSetActive(segment->node, 1);
-                                zClass_Object3D::gwObject3DSetPosition(
+                                CZClass::gwNodeSetActive(segment->node, 1);
+                                CZObject3D::gwObject3DSetPosition(
                                     segment->node,
                                     rayStart->x,
                                     rayStart->y,
                                     rayStart->z
                                 );
-                                zClass_Object3D::gwObject3DSetRotation(
+                                CZObject3D::gwObject3DSetRotation(
                                     segment->node,
                                     (float)(asin(rayDirection->y)),
                                     (float)(atan2(-rayDirection->x, -rayDirection->z)),
                                     0.0f
                                 );
-                                zClass_Object3D::gwObject3DSetAlphaScale(
+                                CZObject3D::gwObject3DSetAlphaScale(
                                     segment->node,
                                     1.0f - (float)(sin(trailRuntime->alphaPulsePhase)) * -0.25f
                                 );
@@ -2458,22 +2458,22 @@ namespace OptCatalog {
                                     &segment->pos
                                 );
                                 SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
-                                zClass_cls_di::SetStopAfterFirstHit(0x40000);
+                                CZDisplayInstance::SetStopAfterFirstHit(0x40000);
                                 if (visibleSegmentCount == 1) {
-                                    zClass_Class::gwNodeSetRaycastable(
+                                    CZClass::gwNodeSetRaycastable(
                                         trailRuntime->projectileNode,
                                         0
                                     );
                                 }
                                 const int rayResult =
-                                    zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
+                                    CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
                                         g_OptCatalogRuntimeWorld,
                                         rayStart,
                                         &segment->pos,
                                         &trailRayHits
                                     );
                                 if (visibleSegmentCount == 1) {
-                                    zClass_Class::gwNodeSetRaycastable(
+                                    CZClass::gwNodeSetRaycastable(
                                         trailRuntime->projectileNode,
                                         1
                                     );
@@ -2513,11 +2513,11 @@ namespace OptCatalog {
                                                     (OptCatalogHitEventPartial *)(void *)(hit),
                                                     0.0f
                                                 );
-                                                zClass_Class::gwNodeSetActive(
+                                                CZClass::gwNodeSetActive(
                                                     trailRuntime->lightNode,
                                                     1
                                                 );
-                                                zClass_Light::gwLightSetPosition(
+                                                CZLight::gwLightSetPosition(
                                                     trailRuntime->lightNode,
                                                     hit->pos.x,
                                                     hit->pos.y,
@@ -2584,10 +2584,10 @@ namespace OptCatalog {
                                 } else if ((entry->flags & 0x800u) != 0) {
                                     trailRuntime->volumeFadeTimer = 0.0f;
                                     trailRuntime->stopSoundHandle->SetFreqScaled(0.0f);
-                                    zClass_Class::gwNodeSetActive(trailRuntime->lightNode, 0);
+                                    CZClass::gwNodeSetActive(trailRuntime->lightNode, 0);
                                 }
 
-                                zClass_Object3D::gwObject3DSetScale(
+                                CZObject3D::gwObject3DSetScale(
                                     segment->node,
                                     1.0f,
                                     1.0f,
@@ -2603,7 +2603,7 @@ namespace OptCatalog {
                     for (int segmentIndex = visibleSegmentCount;
                         segmentIndex < trailRuntime->activeNodeSlotCursor;
                         ++segmentIndex) {
-                        zClass_Class::gwNodeSetActive(
+                        CZClass::gwNodeSetActive(
                             trailRuntime->activeNodeSlots[segmentIndex].node,
                             0
                         );
@@ -2724,8 +2724,8 @@ namespace OptCatalog {
     void __fastcall EmitQSandImpactEvent(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
-        zClass_NodePartial * unusedOwnerNode,
-        zClass_NodePartial * damageOwnerNode
+        CZNodePartial * unusedOwnerNode,
+        CZNodePartial * damageOwnerNode
     ) {
         (void)unusedOwnerNode;
 
@@ -2768,8 +2768,8 @@ namespace OptCatalog {
     int __fastcall EmitCraterImpactEvent(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
-        zClass_NodePartial * unusedOwnerNode,
-        zClass_NodePartial * damageOwnerNode
+        CZNodePartial * unusedOwnerNode,
+        CZNodePartial * damageOwnerNode
     ) {
         (void)unusedOwnerNode;
 
@@ -2847,7 +2847,7 @@ namespace OptCatalog {
                 runtimeInstance->ownerNode
             );
         } else if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0) {
-            zClass_NodePartial *contextOwnerNode = 0;
+            CZNodePartial *contextOwnerNode = 0;
             if (g_OptCatalog_DamageContextHitEvent != 0) {
                 OptCatalogHitEventPartial *const contextHitEvent =
                     (OptCatalogHitEventPartial *)(g_OptCatalog_DamageContextHitEvent);
@@ -2865,7 +2865,7 @@ namespace OptCatalog {
             (self->flags & kOptCatalogFlagCraterImpact) != 0) {
             OptCatalogHitEventPartial *const contextHitEvent =
                 (OptCatalogHitEventPartial *)(g_OptCatalog_DamageContextHitEvent);
-            zClass_NodePartial *const contextOwnerNode =
+            CZNodePartial *const contextOwnerNode =
                 contextHitEvent != 0 && contextHitEvent->surfaceRef != 0
                     ? contextHitEvent->surfaceRef->impactOwnerNode
                     : 0;
@@ -2876,7 +2876,7 @@ namespace OptCatalog {
             g_OptCatalog_DamageContextHitEvent != 0) {
             OptCatalogHitEventPartial *const contextHitEvent =
                 (OptCatalogHitEventPartial *)(g_OptCatalog_DamageContextHitEvent);
-            zClass_NodePartial *const contextOwnerNode =
+            CZNodePartial *const contextOwnerNode =
                 contextHitEvent->surfaceRef != 0
                     ? contextHitEvent->surfaceRef->impactOwnerNode
                     : 0;
@@ -2957,14 +2957,14 @@ namespace OptCatalog {
         int allowOwnerOnlyHit,
         OptCatalogRaycastHitList *outHitList
     ) {
-        zClass_NodePartial *projectileNode = runtimeInstance->projectileNode;
+        CZNodePartial *projectileNode = runtimeInstance->projectileNode;
         int restoreRaycastable = 0;
         if (projectileNode != 0 && (projectileNode->flags & 0x10) != 0) {
             restoreRaycastable = 1;
-            zClass_Class::gwNodeSetRaycastable(projectileNode, 0);
+            CZClass::gwNodeSetRaycastable(projectileNode, 0);
         }
 
-        int result = zClass_cls_di::FilterRegionsAgainstSphere(
+        int result = CZDisplayInstance::FilterRegionsAgainstSphere(
             g_Player_RuntimeDiScene,
             &runtimeInstance->pos,
             0,
@@ -2975,7 +2975,7 @@ namespace OptCatalog {
         );
 
         if (restoreRaycastable != 0) {
-            zClass_Class::gwNodeSetRaycastable(projectileNode, 1);
+            CZClass::gwNodeSetRaycastable(projectileNode, 1);
         }
 
         if (allowOwnerOnlyHit == 0 && outHitList->hitCount == 1 &&
@@ -3008,7 +3008,7 @@ namespace OptCatalog {
         int processedAny = 0;
         for (int i = 0; i < hitList->hitCount; ++i) {
             OptCatalogRaycastHitEntry *hit = &hitList->hits[i];
-            zClass_NodeFreeListSlot *hitSlot = (zClass_NodeFreeListSlot *)(hit->hitNode);
+            CZNodeFreeListSlot *hitSlot = (CZNodeFreeListSlot *)(hit->hitNode);
             if (hitSlot->damageHandler == excludedDamageHandler) {
                 continue;
             }
@@ -3070,7 +3070,7 @@ namespace OptCatalog {
 
         const unsigned int flags = self->flags;
         if ((flags & (1u << 19)) == 0) {
-            zClass_NodeFreeListSlot *const hitSlot = (zClass_NodeFreeListSlot *)(hit->hitNode);
+            CZNodeFreeListSlot *const hitSlot = (CZNodeFreeListSlot *)(hit->hitNode);
             if (hitSlot->damageHandler != 0) {
                 if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
                     g_OptCatalog_CapturedDamageSourcePos = *rayStart;
@@ -3170,26 +3170,26 @@ namespace OptCatalog {
         const zVec3 *targetPos
     ) {
         SetDamageMaskSlotIndex(self->damageMaskSlotIndex);
-        zClass_cls_di::SetStopAfterFirstHit(0x40000);
-        zClass_Class::gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
+        CZDisplayInstance::SetStopAfterFirstHit(0x40000);
+        CZClass::gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
 
         PlayerProbeSampleCandidateBuffer rayData = {0};
-        const int raycastResult = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(
+        const int raycastResult = CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
             g_OptCatalogRuntimeWorld,
             &segment->pos,
             targetPos,
             &rayData
         );
 
-        zClass_Class::gwNodeSetRaycastable(trailRuntime->projectileNode, 1);
+        CZClass::gwNodeSetRaycastable(trailRuntime->projectileNode, 1);
 
         if (raycastResult == 0) {
             zClassDiPickCandidateEntry *const selectedHit =
                 &rayData.entries[rayData.candidateCount];
             OptCatalogHitEventPartial *const hitEvent =
                 (OptCatalogHitEventPartial *)(void *)(selectedHit);
-            zClass_NodeFreeListSlot *const hitSlot =
-                (zClass_NodeFreeListSlot *)(selectedHit->node);
+            CZNodeFreeListSlot *const hitSlot =
+                (CZNodeFreeListSlot *)(selectedHit->node);
 
             if (hitSlot->damageHandler != 0) {
                 const double phase =
@@ -3236,8 +3236,8 @@ namespace OptCatalog {
     void __fastcall UpdateTrailSegmentVisual(
         OptCatalogTrailNodeSlot * segment
     ) {
-        zClass_Class::gwNodeSetActive(segment->node, 1);
-        zClass_Object3D::gwObject3DSetPosition(
+        CZClass::gwNodeSetActive(segment->node, 1);
+        CZObject3D::gwObject3DSetPosition(
             segment->node,
             segment->pos.x,
             segment->pos.y,
@@ -3246,8 +3246,8 @@ namespace OptCatalog {
 
         const float yaw = (float)(atan2(-segment->dir.x, -segment->dir.z));
         const float pitch = (float)(asin(segment->dir.y));
-        zClass_Object3D::gwObject3DSetRotation(segment->node, pitch, yaw, 0.0f);
-        zClass_Object3D::gwObject3DSetScale(segment->node, 1.0f, 1.0f, segment->scale);
+        CZObject3D::gwObject3DSetRotation(segment->node, pitch, yaw, 0.0f);
+        CZObject3D::gwObject3DSetScale(segment->node, 1.0f, 1.0f, segment->scale);
     }
 } // namespace OptCatalog
 namespace OptCatalog {
@@ -3402,13 +3402,13 @@ namespace zWeapon {
  * runtime storage, and publish the loaded runtime globals.
  */
     int __fastcall LoadOptCatalogFromPath(
-        zClass_NodePartial * worldNode,
+        CZNodePartial * worldNode,
         const char *path,
         int networkState,
         zWeaponOptCatalogEntryCallback entryCallback
     ) {
         g_OptCatalogRuntimeWorld = worldNode;
-        Light::InitThermalGlowPool();
+        CZLight::InitThermalGlowPool();
 
         zReader::Node *const rootNode = zReader::Load(path, 0, 0);
         g_OptCatalogLoadedTreeRoot = rootNode;
@@ -3751,7 +3751,7 @@ namespace zWeapon {
                         entry->flyoutHealth =
                             (float)(fieldNode->value.nodes[1].value.i32);
                         if (entry->attachCloneTemplateNode != 0) {
-                            zClass_Class::gwNodeSetRaycastable(entry->attachCloneTemplateNode, 0);
+                            CZClass::gwNodeSetRaycastable(entry->attachCloneTemplateNode, 0);
                         }
                     }
 
@@ -3895,10 +3895,10 @@ namespace zWeapon {
                 }
 
                 if (entry->attachCloneTemplateNode != 0) {
-                    zClass_Class::gwNodeSetActive(entry->attachCloneTemplateNode, 1);
-                    if (zClass::AnyNodeMatchesPredicateRecursive(
+                    CZClass::gwNodeSetActive(entry->attachCloneTemplateNode, 1);
+                    if (CZClass::AnyNodeMatchesPredicateRecursive(
                             entry->attachCloneTemplateNode,
-                            zClass_Node::HasRenderableDiPredicate
+                            CZNode::HasRenderableDiPredicate
                         ) == 0) {
                         entry->flags |= kOptCatalogFlagSkipTrailSegmentLighting;
                     } else {
@@ -3926,11 +3926,11 @@ namespace zWeapon {
              ++runtimeIndex) {
             OptCatalogRuntimeInstanceStorage *const runtime =
                 &runtimeSlots[runtimeIndex].runtime;
-            runtime->projectileNode = zClass_Object3D::gwObject3DInit();
+            runtime->projectileNode = CZObject3D::gwObject3DInit();
 
             char projectileName[40];
             sprintf(projectileName, "Projectile_%d", runtimeIndex);
-            zClass_Class::gwNodeSetName(runtime->projectileNode, projectileName);
+            CZClass::gwNodeSetName(runtime->projectileNode, projectileName);
 
             runtime->flyoutAnimPrimary = 0;
             runtime->flyoutAnimSecondary = 0;
@@ -3938,12 +3938,12 @@ namespace zWeapon {
             runtime->next = g_OptCatalogFreeRuntimeInstanceList;
             g_OptCatalogFreeRuntimeInstanceList = runtime;
 
-            zClass_Class::gwNodeSetRaycastable(runtime->projectileNode, 0);
-            zClass_Class::gwNodeSetCellPickable(runtime->projectileNode, 0);
-            zClass_Class::gwNodeSetPickable(runtime->projectileNode, 1);
+            CZClass::gwNodeSetRaycastable(runtime->projectileNode, 0);
+            CZClass::gwNodeSetCellPickable(runtime->projectileNode, 0);
+            CZClass::gwNodeSetPickable(runtime->projectileNode, 1);
         }
 
-        zClass_NodePartial *const callbackNode = zClass_Object3D::gwObject3DInit();
+        CZNodePartial *const callbackNode = CZObject3D::gwObject3DInit();
         if (callbackNode == 0) {
             zError::ReportOld(
                 0x400,
@@ -3955,8 +3955,8 @@ namespace zWeapon {
             return 0;
         }
 
-        zClass_Class::gwNodeSetPriority(callbackNode, 3);
-        zClass_Class::gwNodeSetActionCallback(
+        CZClass::gwNodeSetPriority(callbackNode, 3);
+        CZClass::gwNodeSetActionCallback(
             callbackNode,
             (void *)(&OptCatalog::ProcessRuntimeInstances)
         );
@@ -4014,11 +4014,11 @@ namespace OptCatalog {
                 entry.militaryName = 0;
             }
 
-            zClass_NodePartial *impactNode = entry.impactNodeListHead;
+            CZNodePartial *impactNode = entry.impactNodeListHead;
             while (impactNode != 0) {
-                zClass_NodePartial *const next = impactNode->callbackContext;
+                CZNodePartial *const next = impactNode->callbackContext;
                 entry.impactNodeListHead = next;
-                zClass_Util::DestroyNodeRecursive(impactNode);
+                CZUtil::DestroyNodeRecursive(impactNode);
                 impactNode = entry.impactNodeListHead;
             }
         }
@@ -4031,7 +4031,7 @@ namespace OptCatalog {
             free(g_OptCatalogRuntimeInstancePool);
             g_OptCatalogRuntimeInstancePool = 0;
         }
-        Light::DestroyThermalGlowPool();
+        CZLight::DestroyThermalGlowPool();
         g_OptCatalogRuntimeWorld = 0;
         zReader::Free(g_OptCatalogLoadedTreeRoot);
         g_OptCatalogLoadedTreeRoot = 0;
@@ -4060,7 +4060,7 @@ namespace OptCatalog {
  */
     OptCatalogTrailRuntimeState *__fastcall CreateTrailRuntimeState(
         OptCatalogEntryDef * entry,
-        zClass_NodePartial * projectileNode,
+        CZNodePartial * projectileNode,
         zTag4Partial * variantTagPtr,
         void *reserved,
         zVec3 *spawnPos,
@@ -4086,18 +4086,18 @@ namespace OptCatalog {
 
         runtime->activeNodeSlotCount = activeNodeSlotCount;
         for (int i = 0; i < activeNodeSlotCount; ++i) {
-            zClass_NodePartial *const node =
+            CZNodePartial *const node =
                 CreateTrailSegmentNodeFromTemplate(entry->attachCloneTemplateNode);
             runtime->activeNodeSlots[i].node = node;
 
             char nodeName[40];
             sprintf(nodeName, g_zWeapon_BeamReflectNameFmt, i);
-            zClass_Class::gwNodeSetName(node, nodeName);
-            zClass_Class::gwNodeSetActive(node, 0);
+            CZClass::gwNodeSetName(node, nodeName);
+            CZClass::gwNodeSetActive(node, 0);
             if ((entry->flags & kOptCatalogFlagSkipTrailSegmentLighting) == 0) {
-                zClass_Object3D::gwObject3DSetLitFlag(node, 1);
+                CZObject3D::gwObject3DSetLitFlag(node, 1);
             }
-            zClass_Class::AddChild(g_OptCatalogRuntimeWorld, node);
+            CZClass::AddChild(g_OptCatalogRuntimeWorld, node);
         }
 
         return runtime;
@@ -4140,7 +4140,7 @@ namespace OptCatalog {
         } else {
             fieldNode = zRdrGetNode(specNode, "MODEL");
             if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
-                spec->modelNode = zClass::FindByTypeAndName(6, fieldNode->value.nodes[1].value.str);
+                spec->modelNode = CZClass::FindByTypeAndName(6, fieldNode->value.nodes[1].value.str);
             }
         }
 
@@ -4204,38 +4204,38 @@ namespace OptCatalog {
  * Purpose: allocate an active Object3D segment node and attach an optional
  * template child to it.
  */
-    zClass_NodePartial *__fastcall CreateTrailSegmentNodeFromTemplate(
-        zClass_NodePartial * templateNode
+    CZNodePartial *__fastcall CreateTrailSegmentNodeFromTemplate(
+        CZNodePartial * templateNode
     ) {
-        zClass_NodePartial *const parent = zClass_Object3D::gwObject3DInit();
-        zClass_Class::gwNodeSetActive(parent, 1);
+        CZNodePartial *const parent = CZObject3D::gwObject3DInit();
+        CZClass::gwNodeSetActive(parent, 1);
         if (templateNode != 0) {
-            zClass_Object3D::gwObject3DAddChild(parent, templateNode);
+            CZObject3D::gwObject3DAddChild(parent, templateNode);
         }
 
         return parent;
     }
 } // namespace OptCatalog
-namespace Light {
+namespace CZLight {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-initthermalglowpool
- * @recoil-artifact defines .text recoil:function:0x4b2160: Light::InitThermalGlowPool
+ * @recoil-artifact defines .text recoil:function:0x4b2160: CZLight::InitThermalGlowPool
  * Purpose: allocate the fixed eight-node thermal glow light pool, initialize
  * names, positions, and ranges, then link every node onto the free list.
  */
     int __cdecl InitThermalGlowPool() {
         for (int i = 0; i < 8; ++i) {
-            zClass_NodePartial *const light = zClass_Light::gwLightNew();
-            zClass_Class::gwNodeSetName(light, g_zWeapon_ThermalGlowLabel);
-            zClass_Light::gwLightSetPosition(light, 0.0f, 0.0f, 0.0f);
-            zClass_Light::gwLightSetRange(light, 0.1f, 0.2f);
+            CZNodePartial *const light = CZLight::gwLightNew();
+            CZClass::gwNodeSetName(light, g_zWeapon_ThermalGlowLabel);
+            CZLight::gwLightSetPosition(light, 0.0f, 0.0f, 0.0f);
+            CZLight::gwLightSetRange(light, 0.1f, 0.2f);
             light->callbackContext = g_OptCatalogThermalGlowFreeList;
             g_OptCatalogThermalGlowFreeList = light;
         }
 
         return 1;
     }
-} // namespace Light
+} // namespace CZLight
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playertimedhitstatus-resetfields
  * @recoil-artifact defines .text recoil:function:0x4b21c0: PlayerTimedHitStatus::ResetFields
@@ -4250,28 +4250,28 @@ void PlayerTimedHitStatus::ResetFields() {
     targetLevel = 0.0f;
     nextUpdateTime = 0.0f;
 }
-namespace Light {
+namespace CZLight {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-destroythermalglowpool
- * @recoil-artifact defines .text recoil:function:0x4b21e0: Light::DestroyThermalGlowPool
+ * @recoil-artifact defines .text recoil:function:0x4b21e0: CZLight::DestroyThermalGlowPool
  * @recoil-match byte
  *
  * Purpose: delete every thermal glow light still on the free list and clear
  * the pool head.
  */
     int __cdecl DestroyThermalGlowPool() {
-        zClass_NodePartial *node = g_OptCatalogThermalGlowFreeList;
+        CZNodePartial *node = g_OptCatalogThermalGlowFreeList;
         while (node != 0) {
-            zClass_NodePartial *next = node->callbackContext;
+            CZNodePartial *next = node->callbackContext;
             node->callbackContext = 0;
-            zClass_Class::DeleteNodeByType(node);
+            CZClass::DeleteNodeByType(node);
             node = next;
         }
 
         g_OptCatalogThermalGlowFreeList = 0;
         return 1;
     }
-} // namespace Light
+} // namespace CZLight
 namespace HitSource {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-updatetimedstatus
@@ -4301,11 +4301,11 @@ int __fastcall UpdateTimedStatus(
     }
 
     if (status->lightNode == 0) {
-        zClass_NodePartial *const light =
-            Light::AllocFromFreeListAndAttach(&self->timedStatusLightSpecularColor);
+        CZNodePartial *const light =
+            CZLight::AllocFromFreeListAndAttach(&self->timedStatusLightSpecularColor);
         status->lightNode = light;
         if (light != 0) {
-            zClass_Class::AddChild(status->lightParentNode, light);
+            CZClass::AddChild(status->lightParentNode, light);
         }
     }
 
@@ -4328,8 +4328,8 @@ int __fastcall UpdateTimedStatus(
  */
 void PlayerTimedHitStatus::ClearLightAndReset() {
     if (lightNode != 0) {
-        zClass_Class::RemoveChild(lightParentNode, lightNode);
-        Light::ReturnToFreeList(lightNode);
+        CZClass::RemoveChild(lightParentNode, lightNode);
+        CZLight::ReturnToFreeList(lightNode);
         ResetFields();
     }
 }
@@ -4371,7 +4371,7 @@ int PlayerTimedHitStatus::TickAndUpdateLight(
         if (lightNode != 0) {
             const float signedLightScale = hitStatus * currentLevel;
             const float lightScale = signedLightScale < 0.0f ? -signedLightScale : signedLightScale;
-            zClass_Light::gwLightSetRange(
+            CZLight::gwLightSetRange(
                 lightNode,
                 source->timedStatusLightRangeMin * lightScale,
                 source->timedStatusLightRangeMax * lightScale
@@ -4379,7 +4379,7 @@ int PlayerTimedHitStatus::TickAndUpdateLight(
 
             if ((previousLevel > 0.0f && currentLevel < 0.0f) ||
                 (previousLevel < 0.0f && currentLevel > 0.0f)) {
-                zClass_Light::gwLightSetSpecularColor(
+                CZLight::gwLightSetSpecularColor(
                     lightNode,
                     source->timedStatusLightSpecularColor.red,
                     source->timedStatusLightSpecularColor.green,
@@ -4398,7 +4398,7 @@ int PlayerTimedHitStatus::TickAndUpdateLight(
         } else if (lightNode != 0) {
             const float signedLightScale = hitStatus * fadedLevel;
             const float lightScale = signedLightScale < 0.0f ? -signedLightScale : signedLightScale;
-            zClass_Light::gwLightSetRange(
+            CZLight::gwLightSetRange(
                 lightNode,
                 source->timedStatusLightRangeMin * lightScale,
                 source->timedStatusLightRangeMax * lightScale
@@ -4414,61 +4414,61 @@ int PlayerTimedHitStatus::TickAndUpdateLight(
     }
     return 0;
 }
-namespace Light {
+namespace CZLight {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocfromfreelistandattach
- * @recoil-artifact defines .text recoil:function:0x4b2520: Light::AllocFromFreeListAndAttach
+ * @recoil-artifact defines .text recoil:function:0x4b2520: CZLight::AllocFromFreeListAndAttach
  * Purpose: pop a thermal glow light from the free list, reset its range and
  * specular color, and attach it to the active runtime world.
  */
-    zClass_NodePartial *__fastcall AllocFromFreeListAndAttach(
+    CZNodePartial *__fastcall AllocFromFreeListAndAttach(
         zColorRgb * specularColor
     ) {
-        zClass_NodePartial *const light = g_OptCatalogThermalGlowFreeList;
+        CZNodePartial *const light = g_OptCatalogThermalGlowFreeList;
         if (light == 0) {
             return 0;
         }
 
         g_OptCatalogThermalGlowFreeList = light->callbackContext;
-        zClass_Light::gwLightSetRange(light, 0.1f, 0.2f);
-        zClass_Light::gwLightSetSpecularColor(
+        CZLight::gwLightSetRange(light, 0.1f, 0.2f);
+        CZLight::gwLightSetSpecularColor(
             light,
             specularColor->red,
             specularColor->green,
             specularColor->blue
         );
-        zClass_World::AddLight(g_OptCatalogRuntimeWorld, light);
+        CZWorld::AddLight(g_OptCatalogRuntimeWorld, light);
         return light;
     }
-} // namespace Light
-namespace Light {
+} // namespace CZLight
+namespace CZLight {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-returntofreelist
- * @recoil-artifact defines .text recoil:function:0x4b2570: Light::ReturnToFreeList
+ * @recoil-artifact defines .text recoil:function:0x4b2570: CZLight::ReturnToFreeList
  * Purpose: reset a thermal glow light's range, detach it from the runtime
  * world, and push it back onto the thermal glow free list.
  */
-    void __fastcall ReturnToFreeList(zClass_NodePartial * lightNode) {
-        zClass_Light::gwLightSetRange(lightNode, 0.1f, 0.2f);
-        zClass_World::RemoveLight(g_OptCatalogRuntimeWorld, lightNode);
+    void __fastcall ReturnToFreeList(CZNodePartial * lightNode) {
+        CZLight::gwLightSetRange(lightNode, 0.1f, 0.2f);
+        CZWorld::RemoveLight(g_OptCatalogRuntimeWorld, lightNode);
         lightNode->callbackContext = g_OptCatalogThermalGlowFreeList;
         g_OptCatalogThermalGlowFreeList = lightNode;
     }
-} // namespace Light
-namespace zClass_Node {
+} // namespace CZLight
+namespace CZNode {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setdamagehitcallback
- * @recoil-artifact defines .text recoil:function:0x4b25a0: zClass_Node::SetDamageHitCallback
+ * @recoil-artifact defines .text recoil:function:0x4b25a0: CZNode::SetDamageHitCallback
  * @recoil-match byte
  *
  * Purpose: create or reuse a damage handler, install its hit callback, and
  * propagate the handler through the node subtree.
  */
     int __fastcall SetDamageHitCallback(void *context,
-        zClass_NodePartial *node,
+        CZNodePartial *node,
         void *callback) {
         OptCatalogDamageHandlerPartial *handler =
-            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
+            (OptCatalogDamageHandlerPartial *)(((CZNodeFreeListSlot *)(node))
                 ->damageHandler);
         if (handler == 0) {
             handler = (OptCatalogDamageHandlerPartial *)(calloc(
@@ -4482,24 +4482,24 @@ namespace zClass_Node {
         handler->hitCallback = context;
         handler->hitContext = callback;
         AssignDamageHandlerRecursiveIfMissing(node, handler);
-        zClass_Class::gwNodeSetHasHitCallback(node, 1);
+        CZClass::gwNodeSetHasHitCallback(node, 1);
         return 0;
     }
-} // namespace zClass_Node
-namespace zClass_Node {
+} // namespace CZNode
+namespace CZNode {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-assigndamagehandlerrecursiveifmissing
- * @recoil-artifact defines .text recoil:function:0x4b25f0: zClass_Node::AssignDamageHandlerRecursiveIfMissing
+ * @recoil-artifact defines .text recoil:function:0x4b25f0: CZNode::AssignDamageHandlerRecursiveIfMissing
  * @recoil-match byte
  *
  * Purpose: assign a shared damage handler to nodes in a child-list subtree
  * that do not already own one.
  */
     void __fastcall AssignDamageHandlerRecursiveIfMissing(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         OptCatalogDamageHandlerPartial * handler
     ) {
-        if (((zClass_NodeFreeListSlot *)(node))->damageHandler != 0) {
+        if (((CZNodeFreeListSlot *)(node))->damageHandler != 0) {
             return;
         }
 
@@ -4509,46 +4509,46 @@ namespace zClass_Node {
             }
         }
 
-        ((zClass_NodeFreeListSlot *)(node))->damageHandler = handler;
+        ((CZNodeFreeListSlot *)(node))->damageHandler = handler;
     }
-} // namespace zClass_Node
-namespace zClass_Node {
+} // namespace CZNode
+namespace CZNode {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-cleardamagehandler
- * @recoil-artifact defines .text recoil:function:0x4b2630: zClass_Node::ClearDamageHandler
+ * @recoil-artifact defines .text recoil:function:0x4b2630: CZNode::ClearDamageHandler
  * @recoil-match byte
  *
  * Purpose: detach and free a node subtree's shared damage handler.
  */
-    int __fastcall ClearDamageHandler(zClass_NodePartial * node) {
+    int __fastcall ClearDamageHandler(CZNodePartial * node) {
         if (node == 0) {
             return 0;
         }
 
         OptCatalogDamageHandlerPartial *handler =
-            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
+            (OptCatalogDamageHandlerPartial *)(((CZNodeFreeListSlot *)(node))
                 ->damageHandler);
         if (handler != 0) {
             ClearDamageHandlerRecursive(node, handler);
             if (handler->hitContext != 0) {
-                zClass_Class::gwNodeSetHasHitCallback(node, 0);
+                CZClass::gwNodeSetHasHitCallback(node, 0);
             }
             free(handler);
         }
 
         return 0;
     }
-} // namespace zClass_Node
-namespace zClass_Node {
+} // namespace CZNode
+namespace CZNode {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-cleardamagehandlerrecursive
- * @recoil-artifact defines .text recoil:function:0x4b2670: zClass_Node::ClearDamageHandlerRecursive
+ * @recoil-artifact defines .text recoil:function:0x4b2670: CZNode::ClearDamageHandlerRecursive
  * @recoil-match byte
  *
  * Purpose: clear a matching shared damage handler through a node subtree.
  */
     void __fastcall ClearDamageHandlerRecursive(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         OptCatalogDamageHandlerPartial * handler
     ) {
         if (node->listCountB != 0) {
@@ -4557,25 +4557,25 @@ namespace zClass_Node {
             }
         }
 
-        if (((zClass_NodeFreeListSlot *)(node))->damageHandler == handler) {
-            ((zClass_NodeFreeListSlot *)(node))->damageHandler = 0;
+        if (((CZNodeFreeListSlot *)(node))->damageHandler == handler) {
+            ((CZNodeFreeListSlot *)(node))->damageHandler = 0;
         }
     }
-} // namespace zClass_Node
-namespace zClass_Node {
+} // namespace CZNode
+namespace CZNode {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setdamagetimercallback
- * @recoil-artifact defines .text recoil:function:0x4b26b0: zClass_Node::SetDamageTimerCallback
+ * @recoil-artifact defines .text recoil:function:0x4b26b0: CZNode::SetDamageTimerCallback
  * Purpose: create or reuse a damage handler, install its timer callback,
  * and propagate the handler through the node subtree.
  */
     int __fastcall SetDamageTimerCallback(
         void *context,
-        zClass_NodePartial *node,
+        CZNodePartial *node,
         void *callback
     ) {
         OptCatalogDamageHandlerPartial *handler =
-            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
+            (OptCatalogDamageHandlerPartial *)(((CZNodeFreeListSlot *)(node))
                 ->damageHandler);
         if (handler == 0) {
             handler = (OptCatalogDamageHandlerPartial *)(calloc(
@@ -4589,7 +4589,7 @@ namespace zClass_Node {
         AssignDamageHandlerRecursiveIfMissing(node, handler);
         return 0;
     }
-} // namespace zClass_Node
+} // namespace CZNode
 namespace OptCatalog {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-invokedamagefeedbackandhitcallback
@@ -4601,7 +4601,7 @@ namespace OptCatalog {
  */
     int __fastcall InvokeDamageFeedbackAndHitCallback(
         OptCatalogEntryDef * self,
-        zClass_NodePartial * damageOwnerNode,
+        CZNodePartial * damageOwnerNode,
         zVec3 * sourcePos,
         OptCatalogHitEventPartial * hitEvent,
         float damageAmount
@@ -4615,7 +4615,7 @@ namespace OptCatalog {
         }
 
         OptCatalogDamageHandlerPartial *const handler =
-            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(hitEvent->hitNode))
+            (OptCatalogDamageHandlerPartial *)(((CZNodeFreeListSlot *)(hitEvent->hitNode))
                 ->damageHandler);
         if (handler == 0) {
             return 0;
@@ -4704,7 +4704,7 @@ namespace OptCatalog {
         float damageAmount
     ) {
         OptCatalogDamageHandlerPartial *handler =
-            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(hitEvent->hitNode))
+            (OptCatalogDamageHandlerPartial *)(((CZNodeFreeListSlot *)(hitEvent->hitNode))
                 ->damageHandler);
 
         if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {

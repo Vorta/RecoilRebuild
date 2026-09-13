@@ -19,7 +19,7 @@
   "functions": [
     {
       "address": "0x479ce0",
-      "symbol": "?zVideoSetActiveViewContext@@YIXPAUzClass_CameraDataPartial@@@Z",
+      "symbol": "?zVideoSetActiveViewContext@@YIXPAUCZCameraDataPartial@@@Z",
       "name": "zVideoSetActiveViewContext"
     }
   ]

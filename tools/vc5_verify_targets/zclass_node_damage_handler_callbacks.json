@@ -1,6 +1,6 @@
 {
   "name": "zclass_node_damage_handler_callbacks",
-  "description": "zClass_Node OptCatalog damage-handler callback owner.",
+  "description": "CZNode OptCatalog damage-handler callback owner.",
   "source_filename": "OptCatalog.c",
   "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,28 +22,28 @@
   "functions": [
     {
       "address": "0x4b25a0",
-      "symbol": "?SetDamageHitCallback@zClass_Node@@YIHPAXPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Node::SetDamageHitCallback"
+      "symbol": "?SetDamageHitCallback@CZNode@@YIHPAXPAUCZNodePartial@@0@Z",
+      "name": "CZNode::SetDamageHitCallback"
     },
     {
       "address": "0x4b25f0",
-      "symbol": "?AssignDamageHandlerRecursiveIfMissing@zClass_Node@@YIXPAUzClass_NodePartial@@PAUOptCatalogDamageHandlerPartial@@@Z",
-      "name": "zClass_Node::AssignDamageHandlerRecursiveIfMissing"
+      "symbol": "?AssignDamageHandlerRecursiveIfMissing@CZNode@@YIXPAUCZNodePartial@@PAUOptCatalogDamageHandlerPartial@@@Z",
+      "name": "CZNode::AssignDamageHandlerRecursiveIfMissing"
     },
     {
       "address": "0x4b2630",
-      "symbol": "?ClearDamageHandler@zClass_Node@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Node::ClearDamageHandler"
+      "symbol": "?ClearDamageHandler@CZNode@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZNode::ClearDamageHandler"
     },
     {
       "address": "0x4b2670",
-      "symbol": "?ClearDamageHandlerRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@PAUOptCatalogDamageHandlerPartial@@@Z",
-      "name": "zClass_Node::ClearDamageHandlerRecursive"
+      "symbol": "?ClearDamageHandlerRecursive@CZNode@@YIXPAUCZNodePartial@@PAUOptCatalogDamageHandlerPartial@@@Z",
+      "name": "CZNode::ClearDamageHandlerRecursive"
     },
     {
       "address": "0x4b26b0",
-      "symbol": "?SetDamageTimerCallback@zClass_Node@@YIHPAXPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Node::SetDamageTimerCallback"
+      "symbol": "?SetDamageTimerCallback@CZNode@@YIHPAXPAUCZNodePartial@@0@Z",
+      "name": "CZNode::SetDamageTimerCallback"
     }
   ]
 }

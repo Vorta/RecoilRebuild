@@ -1589,7 +1589,7 @@
           "name": "RecoilApp authored-order identity 0x434240",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?SendPkt0ARemoveRuntimeRelay@OptCatalog@@YIXPAUOptCatalogEntryDef@@PAUzVec3@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?SendPkt0ARemoveRuntimeRelay@OptCatalog@@YIXPAUOptCatalogEntryDef@@PAUzVec3@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x4342d0",
@@ -3661,7 +3661,7 @@
           "name": "RecoilApp authored-order identity 0x434240",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?SendPkt0ARemoveRuntimeRelay@OptCatalog@@YIXPAUOptCatalogEntryDef@@PAUzVec3@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?SendPkt0ARemoveRuntimeRelay@OptCatalog@@YIXPAUOptCatalogEntryDef@@PAUzVec3@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x4342d0",

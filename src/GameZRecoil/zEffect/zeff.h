@@ -15,11 +15,11 @@ struct zClassDiPickCandidateEntry;
 struct zEffect_RuntimeManager {
     int initialized;
     int templateCount;
-    zClass_NodePartial *loadedTemplateTree;
+    CZNodePartial *loadedTemplateTree;
     zArchiveList *freeList;
     zEffect_RuntimeEntry *templates;
-    zClass_NodePartial *parentNode;
-    zClass_NodePartial *listenerNode;
+    CZNodePartial *parentNode;
+    CZNodePartial *listenerNode;
     int freshAllocCount;
     int activatedCount;
     int recycleCount;
@@ -29,7 +29,7 @@ struct zEffect_RuntimeEntry {
     int effectIndex;
     char *modelNodeName;
     char *effectName;
-    zClass_NodePartial *effectNode;
+    CZNodePartial *effectNode;
     void *effectGfxData;
     float fadeInTimeSec;
     float fadeInScaleRate;
@@ -461,18 +461,18 @@ struct zEffectAnimRefName {
 
 struct zEffectAnimTrackedNode {
     char trackedNodeName[0x24];
-    zClass_NodePartial *trackedNode;
+    CZNodePartial *trackedNode;
     zEffectAnimCapturedNodeState capturedState;
 };
 
 struct zEffectAnimNodeRef28 {
     zEffectAnimRefName name;
-    zClass_NodePartial *node;
+    CZNodePartial *node;
 };
 
 struct zEffectAnimRuntimeNodeRef {
     zEffectAnimRefName name;
-    zClass_NodePartial *runtimeNode;
+    CZNodePartial *runtimeNode;
     int isAttached;
 };
 
@@ -499,16 +499,16 @@ struct zEffectAnimActivationPrereq {
     unsigned char unknown_05[0x03];
     char targetName[0x20];
     zEffectAnimEntry *targetEntry;
-    zClass_NodePartial *targetNode;
+    CZNodePartial *targetNode;
 };
 
 struct zEffectAnimEntry {
     char name[0x20];
     char rootNodeName[0x20];
-    zClass_NodePartial *boundNode;
+    CZNodePartial *boundNode;
     char attachNodeName[0x20];
-    zClass_NodePartial *callbackNode;
-    zClass_NodePartial *runtimeNode;
+    CZNodePartial *callbackNode;
+    CZNodePartial *runtimeNode;
     zEffectAnimEventCallback eventCallback;
     void *eventCallbackContext;
     unsigned int resetScratch[8];
@@ -1835,7 +1835,7 @@ struct zEffectAnimState {
     zEffectAnimEntry *entryList;
     int textIdEntryCount;
     zEffectAnimTextIdEntry *textIdEntryList;
-    zClass_NodePartial *worldNode;
+    CZNodePartial *worldNode;
     float defaultGravity;
     int conditionalRefPosEnabled;
     int variantOverrideEnabled;
@@ -1882,7 +1882,7 @@ extern int g_zEffect_ConditionalEffectLevel;
 extern int g_zEffect_VariantCycleId;
 extern int g_zEffect_SkipStopDelay;
 extern int g_zEffect_Anim_DebugFrameTag;
-extern zClass_NodePartial *g_zEffect_ResourceNode;
+extern CZNodePartial *g_zEffect_ResourceNode;
 extern zEffectAnimActivationRecord *g_zEffectAnim_ActivationRecordTable;
 extern int g_zEffectAnim_ActivationRecordCapacity;
 extern int g_zEffectAnim_ActivationRecordCount;
@@ -1973,7 +1973,7 @@ int __fastcall AdvanceKeyframeSample(
 float __fastcall AnimateKeyframeSample(
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectKeyframeEvent *keyframeEvent,
-    zClass_NodePartial *targetNode,
+    CZNodePartial *targetNode,
     zEffectKeyframeSampleHeader *sampleHeader,
     float *deltaTime
 );
@@ -1995,10 +1995,10 @@ int __fastcall RunSequenceEvents(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime
 );
-int __fastcall RunSequence(zClass_NodePartial *node);
+int __fastcall RunSequence(CZNodePartial *node);
 int __fastcall NodeActionCallback(
     zEffectAnimEntry *self,
-    zClass_NodePartial *rootNode
+    CZNodePartial *rootNode
 );
 int __fastcall GetActivationRecordPackedSize(
     zEffectAnimActivationRecord *record
@@ -2018,8 +2018,8 @@ zEffectAnimEntry *__fastcall FindEntryByName(const char *name);
 zEffectAnimEntry *__fastcall FindNextAsyncEntry(
     zEffectAnimEntry *currentEntry
 );
-zClass_NodePartial *__fastcall FindNodeRecursiveByName(
-    zClass_NodePartial *rootNode,
+CZNodePartial *__fastcall FindNodeRecursiveByName(
+    CZNodePartial *rootNode,
     const char *name
 );
 int __fastcall FindSoundRefIndexByName(
@@ -2038,42 +2038,42 @@ int __fastcall FindOrCreateLightRef(
     zEffectAnimEntry *self,
     const char *name
 );
-zClass_NodePartial *__fastcall ResolveNodeByName(
+CZNodePartial *__fastcall ResolveNodeByName(
     zEffectAnimEntry *self,
     const char *name
 );
 zEffectAnimEntry *__fastcall RebindEntryToNode(
     zEffectAnimEntry *self,
-    zClass_NodePartial *node
+    CZNodePartial *node
 );
 int __fastcall EnsureCopiedRootTree(
     zEffectAnimEntry *self,
-    zClass_NodePartial *sourceRoot
+    CZNodePartial *sourceRoot
 );
 zEffectAnimEntry *__fastcall CloneEntryForNode(
     zEffectAnimEntry *self,
-    zClass_NodePartial *node
+    CZNodePartial *node
 );
-zClass_NodePartial *__fastcall GetRootNodeOrNull(zEffectAnimEntry *self);
+CZNodePartial *__fastcall GetRootNodeOrNull(zEffectAnimEntry *self);
 void __fastcall ResetActivationPrereqCount(zEffectAnimEntry *self);
 int __fastcall CheckActivationPrereqs(zEffectAnimEntry *self);
 int __fastcall ResetForNode(zEffectAnimEntry *self);
 int __fastcall Stop(zEffectAnimEntry *self);
 int __fastcall FinalizeStop(zEffectAnimEntry *self);
-int __fastcall RunStopDelayCallback(zClass_NodePartial *node);
-int __fastcall RunStopSequenceCallback(zClass_NodePartial *node);
+int __fastcall RunStopDelayCallback(CZNodePartial *node);
+int __fastcall RunStopSequenceCallback(CZNodePartial *node);
 int __fastcall StopAndCleanup(
     zEffectAnimEntry *self,
-    zClass_NodePartial *targetNode,
+    CZNodePartial *targetNode,
     int immediateCleanup
 );
 zEffectAnimEntry *__fastcall ActivateRuntime(
     zEffectAnimEntry *self,
-    zClass_NodePartial *targetNode
+    CZNodePartial *targetNode
 );
 zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
+    CZNodePartial *boundNode,
     float posX,
     float posY,
     float posZ,
@@ -2086,7 +2086,7 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
 );
 zEffectAnimEntry *__fastcall SetTransformRotAndVelocityThunk(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
+    CZNodePartial *boundNode,
     float posX,
     float posY,
     float posZ,
@@ -2099,51 +2099,51 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocityThunk(
 );
 zEffectAnimEntry *__fastcall SetVelocity(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
+    CZNodePartial *boundNode,
     float velocityX,
     float velocityY,
     float velocityZ
 );
 zEffectAnimEntry *__fastcall SetVelocityThunk(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
+    CZNodePartial *boundNode,
     float velocityX,
     float velocityY,
     float velocityZ
 );
 zEffectAnimEntry *__fastcall SetPositionRefAndVelocity(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
-    zClass_NodePartial *refNode,
+    CZNodePartial *boundNode,
+    CZNodePartial *refNode,
     const zVec3 *refVec,
     const zVec3 *velocityVec
 );
 zEffectAnimEntry *__fastcall SetPositionRefAndVelocityThunk(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
-    zClass_NodePartial *refNode,
+    CZNodePartial *boundNode,
+    CZNodePartial *refNode,
     const zVec3 *refVec,
     const zVec3 *velocityVec
 );
 zEffectAnimEntry *__fastcall SetTransformRefs(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
-    zClass_NodePartial *refNodeA,
+    CZNodePartial *boundNode,
+    CZNodePartial *refNodeA,
     const zVec3 *refVecA,
-    zClass_NodePartial *refNodeB,
+    CZNodePartial *refNodeB,
     const zVec3 *refVecB
 );
 zEffectAnimEntry *__fastcall SetTransformRefsThunk(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
-    zClass_NodePartial *refNodeA,
+    CZNodePartial *boundNode,
+    CZNodePartial *refNodeA,
     const zVec3 *refVecA,
-    zClass_NodePartial *refNodeB,
+    CZNodePartial *refNodeB,
     const zVec3 *refVecB
 );
 zEffectAnimActivationRecord *__fastcall QueueCmdType1TransformRotVelocity(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
+    CZNodePartial *boundNode,
     float posX,
     float posY,
     float posZ,
@@ -2156,24 +2156,24 @@ zEffectAnimActivationRecord *__fastcall QueueCmdType1TransformRotVelocity(
 );
 zEffectAnimActivationRecord *__fastcall QueueCmdType2Velocity(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
+    CZNodePartial *boundNode,
     float velocityX,
     float velocityY,
     float velocityZ
 );
 zEffectAnimActivationRecord *__fastcall QueueCmdType3PositionRefAndVelocity(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
-    zClass_NodePartial *refNode,
+    CZNodePartial *boundNode,
+    CZNodePartial *refNode,
     const zVec3 *refVec,
     const zVec3 *velocityVec
 );
 zEffectAnimActivationRecord *__fastcall QueueCmdType4TransformRefs(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
-    zClass_NodePartial *refNodeA,
+    CZNodePartial *boundNode,
+    CZNodePartial *refNodeA,
     const zVec3 *refVecA,
-    zClass_NodePartial *refNodeB,
+    CZNodePartial *refNodeB,
     const zVec3 *refVecB
 );
 int __fastcall ShutdownEntry(zEffectAnimEntry *self);
@@ -2182,19 +2182,19 @@ int __fastcall ShutdownEntry(zEffectAnimEntry *self);
 namespace zEffect {
 int __cdecl Init();
 int __fastcall InitFromPath(
-    zClass_NodePartial *worldNode,
-    zClass_NodePartial *cameraNode,
+    CZNodePartial *worldNode,
+    CZNodePartial *cameraNode,
     const char *path
 );
-void __fastcall SetWorldNode(zClass_NodePartial *worldNode);
-void __fastcall SetResourceNode(zClass_NodePartial *resourceNode);
+void __fastcall SetWorldNode(CZNodePartial *worldNode);
+void __fastcall SetResourceNode(CZNodePartial *resourceNode);
 float __fastcall TickResetDelayOnTimer(
     zEffectAnimEntry *self,
     float deltaSec
 );
 int __fastcall TickResetDelayOnHit(
     zEffectAnimEntry *self,
-    zClass_NodePartial *hitNode,
+    CZNodePartial *hitNode,
     int unused,
     float damageAmount
 );
@@ -2204,14 +2204,14 @@ void __fastcall SetVariantOverridePackedIdsIfComplete(
     const zTag4Partial *packedIds
 );
 int __cdecl SetAnimDebugFrameTag();
-float __fastcall GetConditionalRefPosDistanceSq(zClass_NodePartial *node);
+float __fastcall GetConditionalRefPosDistanceSq(CZNodePartial *node);
 int __fastcall TraceUpwardHitFromNodeOrPos(
-    zClass_NodePartial *nodeOrNull,
+    CZNodePartial *nodeOrNull,
     const zVec3 *positionOrNull,
     const float *rayHeight,
     int *outHit
 );
-void *__fastcall FindNodeUserDataRecursive(zClass_NodePartial *node);
+void *__fastcall FindNodeUserDataRecursive(CZNodePartial *node);
 int __fastcall SpawnRuntimeInstanceAt(
     int effectIndex,
     const zVec3 *worldPos
@@ -2226,18 +2226,18 @@ zEffect_RuntimeEntry *__fastcall CloneRuntimeEntryFromTemplate(
     int effectIndex
 );
 int __fastcall FindTemplateIndexByName(const char *name);
-int __fastcall RuntimeNodeActionCallback(zClass_NodePartial *node);
+int __fastcall RuntimeNodeActionCallback(CZNodePartial *node);
 int __fastcall HandleEffectTemplateOffsetEvent(
     zEffectAnimEntry *self,
     zEffectAnimRefOffsetEvent *event
 );
 float __fastcall UpdateBeamNodeBetweenPoints(
-    zClass_NodePartial *obj3d,
+    CZNodePartial *obj3d,
     const zVec3 *srcPos,
     const zVec3 *destPos
 );
 float __fastcall UpdateBeamNodeBetweenFractions(
-    zClass_NodePartial *obj3d,
+    CZNodePartial *obj3d,
     const zVec3 *srcPos,
     float t0,
     const zVec3 *destPos,

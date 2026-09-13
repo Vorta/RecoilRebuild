@@ -21,8 +21,8 @@
   "functions": [
     {
       "address": "0x448330",
-      "symbol": "?gwNodeSetNodeType@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetNodeType"
+      "symbol": "?gwNodeSetNodeType@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetNodeType"
     }
   ]
 }

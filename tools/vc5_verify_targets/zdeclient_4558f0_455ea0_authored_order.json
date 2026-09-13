@@ -14,7 +14,7 @@
   "functions": [
     {
       "address": "0x4558f0",
-      "symbol": "?LoadConfigResources@zDEClient@@YIHPAUzClass_NodePartial@@@Z",
+      "symbol": "?LoadConfigResources@zDEClient@@YIHPAUCZNodePartial@@@Z",
       "name": "zDEClient::LoadConfigResources",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -59,8 +59,8 @@
       "retail_end_exclusive": "0x455ea0",
       "predecessor": {
         "address": "0x4557a0",
-        "symbol": "?ReloadDisplayInstancesRecursive_Local@GameZ_ZBD@@YIHPAXPAUzClass_ZbdHeader@@PAUzClass_NodePartial@@H@Z",
-        "name": "GameZ_ZBD::ReloadDisplayInstancesRecursive",
+        "symbol": "?ReloadDisplayInstancesRecursive_Local@CZZbd@@YIHPAXPAUCZZbdHeader@@PAUCZNodePartial@@H@Z",
+        "name": "CZZbd::ReloadDisplayInstancesRecursive",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

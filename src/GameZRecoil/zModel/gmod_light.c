@@ -146,14 +146,14 @@ zModel_ActiveLightEntryLive gModel_ActiveLights[0x40] = {0};
  * Authored zModel active-light global.
  * Purpose: point at the current caller-supplied light data pointer list.
  */
-zClass_LightDataPartial **gModel_LightInputDataList = 0;
+CZLightDataPartial **gModel_LightInputDataList = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-lightinputnodestates
  * @recoil-artifact defines .data recoil:data:0x57d410: gModel_LightInputNodeStates.
  * Authored zModel active-light global.
  * Purpose: point at the current caller-supplied light node-state list.
  */
-zClass_NodePartial **gModel_LightInputNodeStates = 0;
+CZNodePartial **gModel_LightInputNodeStates = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-lightinputcount
  * @recoil-artifact defines .data recoil:data:0x57d41c: gModel_LightInputCount.
@@ -215,8 +215,8 @@ zVidPaletteRemapRecipe gModel_SpecialLightPaletteRemapRecipe = {0};
  * Purpose: select active lights and initialize ambient colour and palette remapping.
  */
 void __fastcall zModelLightPointInPolygonInitXZ(
-    zClass_NodePartial **lightNodes,
-    zClass_LightDataPartial **lightDataList,
+    CZNodePartial **lightNodes,
+    CZLightDataPartial **lightDataList,
     int lightCount
 ) {
     gModel_LightInputNodeStates = lightNodes;
@@ -303,7 +303,7 @@ namespace zModel_Light {
 
         for (int i = 0; i < gModel_ActiveLightCount; ++i) {
             zModel_ActiveLightEntryLive &entry = gModel_ActiveLights[i];
-            zClass_LightDataPartial *light = entry.light;
+            CZLightDataPartial *light = entry.light;
             entry.useFullWeight = 0;
             entry.contributesToLighting = 0;
 
@@ -376,7 +376,7 @@ namespace zModel_Light {
                 continue;
             }
 
-            zClass_LightDataPartial *light = entry.light;
+            CZLightDataPartial *light = entry.light;
             if (hasSoftwarePointLight != 0 && g_zModel_SoftwarePathActive != 0 &&
                 light->isDirectedSource == 0) {
                 entry.contributesToLighting = 0;
@@ -441,7 +441,7 @@ namespace zModel_Light {
 
             for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
                 zModel_ActiveLightEntryLive &entry = gModel_ActiveLights[lightIndex];
-                zClass_LightDataPartial *light = entry.light;
+                CZLightDataPartial *light = entry.light;
 
                 if (*lightFlags == 1 && light->lightParam != 0 && light->isDirectedSource == 0) {
                     continue;
@@ -529,7 +529,7 @@ namespace zModel_Light {
                 continue;
             }
 
-            zClass_LightDataPartial *light = entry.light;
+            CZLightDataPartial *light = entry.light;
             float pointSum = 0.0f;
             float attr2Sum = 0.0f;
             float fogSum = 0.0f;
@@ -852,7 +852,7 @@ int __fastcall zModelLightBuildLightWeights(
                         continue;
                     }
 
-                    zClass_LightDataPartial *light = entry.light;
+                    CZLightDataPartial *light = entry.light;
                     zVec3 difference;
                     difference.x = light->viewPos.x - vertex.x;
                     difference.y = light->viewPos.y - vertex.y;
@@ -903,7 +903,7 @@ int __fastcall zModelLightBuildLightWeights(
                 continue;
             }
 
-            zClass_LightDataPartial *light = entry.light;
+            CZLightDataPartial *light = entry.light;
             float lightWeightSum = 0.0f;
             {
                 for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
@@ -1068,7 +1068,7 @@ namespace zModel_Light {
      * between the inner and outer range.
      */
     EvalDistanceWeight(
-        const zClass_LightDataPartial *light,
+        const CZLightDataPartial *light,
         float distance
     ) {
         if (distance >= light->range2) {

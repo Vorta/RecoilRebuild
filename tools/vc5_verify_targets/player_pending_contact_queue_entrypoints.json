@@ -36,7 +36,7 @@
     },
     {
       "address": "0x423b10",
-      "symbol": "?CollectPendingContactsForSegments@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_DiSegmentEndpoints@@HPAH@Z",
+      "symbol": "?CollectPendingContactsForSegments@Player@@YIHPAUzUtil_SaveGameState@@PAUCZDisplayInstanceSegmentEndpoints@@HPAH@Z",
       "name": "Player::CollectPendingContactsForSegments"
     }
   ],

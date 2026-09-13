@@ -24,7 +24,7 @@
   "functions": [
     {
       "address": "0x45e730",
-      "symbol": "?CloneEntryForNode@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@@Z",
+      "symbol": "?CloneEntryForNode@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@@Z",
       "name": "zEffectAnim::CloneEntryForNode"
     }
   ],

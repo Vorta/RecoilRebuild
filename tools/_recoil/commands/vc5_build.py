@@ -64,6 +64,7 @@ from _recoil.lib.authored_icf import require_valid_authored_icf_groups
 from _recoil.lib.progress import (
     logical_alias_authored_order_role,
     symbol_authored_order_role,
+    symbol_authored_order_gate,
     symbol_logical_aliases,
 )
 from _recoil.lib.vc5_compile_topology import (
@@ -4863,35 +4864,88 @@ def required_authored_linked_functions(
     document: ProgressDocument,
     *,
     static_object_scopes: dict[str, set[str]] | None = None,
+    playground_only: bool = False,
 ) -> tuple[VerifyFunction, ...]:
-    """Select presence obligations from the accepted order census, not the MAP.
+    """Select presence obligations from tracker identities, never from the MAP.
 
     This is deliberately independent of the serial linked-order cursor. A
     missing/stale registration or an uncovered census member blocks deployment.
+    Playground tests include all currently authored rows even while order proof
+    is pending; normal builds still require the accepted order census.
     """
     from _recoil.lib.verification_targets import vc5_target_registration
 
-    slices = document.authored_call_contract_slices("recoil")
-    addresses = {address for row in slices for address in row["addresses"]}
-    target_ids = {target for row in slices for target in row["target_ids"]}
+    if playground_only:
+        # Test deployment must remain available while order evidence is pending.
+        # Take every tracker-authored identity, including newly classified bodies;
+        # never derive membership from candidate output or skip an unbound body.
+        addresses, target_ids = set(), set()
+        targets = document.collection("verification_targets")
+        for symbol_id, symbol in document.collection("symbols").items():
+            if symbol.get("binary") != "recoil" or not symbol_authored_order_gate(symbol):
+                continue
+            address = symbol.get("address")
+            if (not isinstance(address, str) or not re.fullmatch(r"0x[0-9a-f]+", address)
+                    or symbol_id != f"recoil:function:{address}" or address in addresses):
+                raise ValueError(f"linked presence has an invalid authored identity: {symbol_id}")
+            registrations = symbol.get("verification_target_ids")
+            if (not isinstance(registrations, list) or not registrations
+                    or any(not isinstance(item, str) or not item for item in registrations)
+                    or len(set(registrations)) != len(registrations)):
+                raise ValueError(f"linked presence authored identity has no unique registrations: {symbol_id}")
+            covering_targets = set()
+            for target_id in registrations:
+                target = targets.get(target_id)
+                if not isinstance(target, Mapping) or target.get("binary") != "recoil" or target.get("kind") != "vc5":
+                    raise ValueError(f"linked presence authored identity has an unknown registration: {symbol_id}: {target_id}")
+                registered_addresses = target.get("registered_addresses")
+                if not isinstance(registered_addresses, list) or not registered_addresses:
+                    registered_addresses = target.get("registration", {}).get("function_addresses", [])
+                if not isinstance(registered_addresses, list):
+                    raise ValueError(f"linked presence authored identity has an invalid registration: {symbol_id}: {target_id}")
+                if address in registered_addresses:
+                    covering_targets.add(target_id)
+            if not covering_targets:
+                raise ValueError(f"linked presence authored identity is absent from its registrations: {symbol_id}")
+            target_ids.update(covering_targets)
+            addresses.add(address)
+    else:
+        slices = document.authored_call_contract_slices("recoil")
+        addresses = {address for row in slices for address in row["addresses"]}
+        target_ids = {target for row in slices for target in row["target_ids"]}
     if not addresses or not target_ids:
         raise ValueError("linked presence requires a nonempty accepted authored census")
     inventory = load_repository_path_inventory(REPO_ROOT)
-    selected: dict[tuple[str, str | None, str | None], VerifyFunction] = {}
+    selected: dict[tuple[str, str | None, str | None, str | None], VerifyFunction] = {}
+    selector_priorities = {}
+    stale_targets = []
     for target_id in sorted(target_ids):
         registered = document.collection("verification_targets")[target_id]
         registration = registered["registration"]
-        path = resolve_repository_file(
-            registration["manifest_path"],
-            repository_root=REPO_ROOT,
-            inventory=inventory,
-            context=f"linked presence target {target_id}",
-            allowed_suffixes={".json"},
-        ).physical_path
-        current_id, current = vc5_target_registration(path)
+        try:
+            path = resolve_repository_file(
+                registration["manifest_path"],
+                repository_root=REPO_ROOT,
+                inventory=inventory,
+                context=f"linked presence target {target_id}",
+                allowed_suffixes={".json"},
+            ).physical_path
+            current_id, current = vc5_target_registration(path)
+        except (OSError, ValueError):
+            if not playground_only:
+                raise
+            stale_targets.append(target_id)
+            continue
         if current_id != target_id or current["registration"] != registration:
+            if playground_only:
+                # Diagnostic registrations can overlap the authoritative source
+                # targets. They cannot supply a selector while stale; every
+                # authored identity must still be covered by a current target.
+                stale_targets.append(target_id)
+                continue
             raise ValueError(f"linked presence target registration is stale: {target_id}")
         target = load_vc5_verify_manifest(path)
+        canonical_context = getattr(target, "compile_context_from", "") == "tools/_recoil/config/vc5_final_build.json"
         if static_object_scopes is not None:
             for unit in target.translation_unit_function_order:
                 for function in unit.functions:
@@ -4911,12 +4965,33 @@ def required_authored_linked_functions(
                 continue
             if not function.required_presence:
                 raise ValueError(f"authored census member lacks required presence: {function.address}")
-            key = (function.address, function.symbol, function.symbol_regex)
-            selected[key] = function
+            key = (function.address, function.symbol, function.symbol_regex, function.logical_identity_key)
+            if key not in selected or canonical_context >= selector_priorities[key]:
+                selected[key] = function
+                selector_priorities[key] = canonical_context
     uncovered = addresses - {function.address for function in selected.values()}
     if uncovered:
-        raise ValueError(f"linked presence has uncovered authored identities: {sorted(uncovered)}")
-    return tuple(sorted(selected.values(), key=lambda f: (f.address, f.symbol or f.symbol_regex or "")))
+        raise ValueError(f"linked presence has uncovered authored identities: {sorted(uncovered)}; stale registrations: {stale_targets}")
+    functions = list(selected.values())
+    if playground_only:
+        # Alternate registered compiler profiles can spell one physical body
+        # differently. Select their union, but still require one linked address.
+        # Distinct logical members retain separate presence obligations.
+        alternatives = {}
+        for key, function in selected.items():
+            alternatives.setdefault((function.address, function.logical_identity_key), []).append(
+                (selector_priorities[key], function))
+        functions = []
+        for choices in alternatives.values():
+            # The canonical build context owns production spellings. Standalone
+            # diagnostic profiles are fallback navigation, not equal authority.
+            priority = max(item[0] for item in choices)
+            group = [f for p, f in choices if p == priority]
+            patterns = sorted({f.symbol_regex if f.symbol_regex is not None else re.escape(f.symbol)
+                               for f in group})
+            functions.append(group[0] if len(patterns) == 1 else replace(
+                group[0], symbol=None, symbol_regex="(?:" + "|".join(patterns) + ")"))
+    return tuple(sorted(functions, key=lambda f: (f.address, f.symbol or f.symbol_regex or "")))
 
 
 def authored_linked_presence_report(
@@ -5012,13 +5087,14 @@ def validate_playground_build_request(
         raise ValueError("--playground-only requires a fresh absent --build-dir below build/live-validation")
 
 
-def required_authored_presence_at_map(map_path: Path, progress_path: Path) -> dict[str, object]:
+def required_authored_presence_at_map(map_path: Path, progress_path: Path, *, playground_only: bool = False) -> dict[str, object]:
     """Shared fail-closed presence gate for normal and playground builds."""
     try:
         static_object_scopes: dict[str, set[str]] = {}
         return authored_linked_presence_report(
             required_authored_linked_functions(
                 ProgressDocument.load(progress_path), static_object_scopes=static_object_scopes,
+                playground_only=playground_only,
             ),
             parse_link_map(map_path), static_object_scopes=static_object_scopes,
         )
@@ -5031,7 +5107,7 @@ def finish_playground_build(
     progress_path: Path, required_order_targets: tuple[str, ...],
     canonical_include_trace: dict[str, object] | None,
 ) -> int:
-    presence = required_authored_presence_at_map(paths.map_path, progress_path)
+    presence = required_authored_presence_at_map(paths.map_path, progress_path, playground_only=True)
     from _recoil.commands.startup_contract import check_startup_contract
     startup = check_startup_contract(config, paths) if presence["passed"] else {"passed": False, "not_run": True}
     deployment = {

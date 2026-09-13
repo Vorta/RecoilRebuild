@@ -22,19 +22,19 @@
   "functions": [
     {
       "address": "0x447980",
-      "symbol": "?DeleteNodeByType@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::DeleteNodeByType"
+      "symbol": "?DeleteNodeByType@CZClass@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZClass::DeleteNodeByType"
     },
     {
       "address": "0x448570",
-      "symbol": "?RemoveChild@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::RemoveChild",
+      "symbol": "?RemoveChild@CZClass@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZClass::RemoveChild",
       "bn_byte_length": 228
     },
     {
       "address": "0x448660",
-      "symbol": "?RemoveChildGeneric@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::RemoveChildGeneric"
+      "symbol": "?RemoveChildGeneric@CZClass@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZClass::RemoveChildGeneric"
     }
   ]
 }

@@ -28,9 +28,9 @@
   "data_symbols": [
     {
       "address": "0x4ddea0",
-      "symbol": "_g_zClass_VapStaticsNodeName",
-      "name": "g_zClass_VapStaticsNodeName",
-      "bn_name": "g_zClass_VapStaticsNodeName",
+      "symbol": "_g_CZClass_VapStaticsNodeName",
+      "name": "g_CZClass_VapStaticsNodeName",
+      "bn_name": "g_CZClass_VapStaticsNodeName",
       "byte_length": 12
     }
   ]

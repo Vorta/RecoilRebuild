@@ -1,6 +1,6 @@
 {
   "name": "zclass_camera_render_world",
-  "description": "zClass_Camera::RenderWorld camera world render wrapper.",
+  "description": "CZCamera::RenderWorld camera world render wrapper.",
   "source_filename": "Camera.c",
   "source_from": "src/GameZRecoil/zClass/Camera.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -28,8 +28,8 @@
   "functions": [
     {
       "address": "0x44d240",
-      "symbol": "?RenderWorld@zClass_Camera@@YIXPAUzClass_NodePartial@@0PAUzClass_CameraDataPartial@@@Z",
-      "name": "zClass_Camera::RenderWorld"
+      "symbol": "?RenderWorld@CZCamera@@YIXPAUCZNodePartial@@0PAUCZCameraDataPartial@@@Z",
+      "name": "CZCamera::RenderWorld"
     }
   ]
 }

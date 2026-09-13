@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x449cd0",
-      "symbol": "?gwCameraRemoveChild@zClass_Camera@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Camera::gwCameraRemoveChild"
+      "symbol": "?gwCameraRemoveChild@CZCamera@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZCamera::gwCameraRemoveChild"
     }
   ]
 }

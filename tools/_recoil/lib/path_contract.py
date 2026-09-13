@@ -78,7 +78,7 @@ MATRIX_CALL_EFFECTS = {
 UNPROJECT_SYMBOL = "?zMathUnprojectPointBatchZBuf@@YIXPBUzProjectedPoint@@PAUzVec3@@H@Z"
 LIGHT_CALL_EFFECTS = {
     "?ReportOld@zError@@YAXHPBDH0ZZ": (0x404e80, 0),
-    "?ComputeWorldTransform@zClass_Light@@YIHPAUzClass_NodePartial@@PAUzClass_LightDataPartial@@@Z": (0x453620, 0),
+    "?ComputeWorldTransform@CZLight@@YIHPAUCZNodePartial@@PAUCZLightDataPartial@@@Z": (0x453620, 0),
     "?MatStackPushAndCloneParent@zMath@@YIXPAM@Z": (0x472ef0, 1),
     "?MatLoadCameraScratchB@zMath@@YAXXZ": (0x472f90, 0),
     "?zMathMatTransformNormalBatch@@YIXPBUzVec3@@PAU1@H@Z": (0x474710, 0),
@@ -86,11 +86,11 @@ LIGHT_CALL_EFFECTS = {
 }
 MATRIX_PATH_BODIES = {
     0x474c20: (UNPROJECT_SYMBOL, "src/GameZRecoil/zMath/zmth_main.c", 0xe7, MATRIX_CALL_EFFECTS),
-    0x453880: ("?gwLightUpdate@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
+    0x453880: ("?gwLightUpdate@CZLight@@YIHPAUCZNodePartial@@@Z",
                "src/GameZRecoil/zClass/Light.c", 0x1b1, LIGHT_CALL_EFFECTS),
-    0x476cf0: ("?RenderNodeSoftware@zModel@@YIXPAUzClass_NodePartial@@H@Z",
+    0x476cf0: ("?RenderNodeSoftware@zModel@@YIXPAUCZNodePartial@@H@Z",
                "src/GameZRecoil/zModel/gmod_init.c", 0xe3c, None),
-    0x477b30: ("?RenderNodeHardware@zModel@@YIXPAUzClass_NodePartial@@H@Z",
+    0x477b30: ("?RenderNodeHardware@zModel@@YIXPAUCZNodePartial@@H@Z",
                "src/GameZRecoil/zModel/gmod_init.c", 0x1134, None),
 }
 MATRIX_PRIMITIVES = {

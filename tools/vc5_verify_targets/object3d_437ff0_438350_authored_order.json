@@ -20,7 +20,7 @@
         {
           "address": "0x438000",
           "symbol": "_$E1",
-          "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState",
+          "name": "CZObject3DModelRefLerpQueue::ClearGlobalState",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "compiler-generated-thunk",
           "required_presence": true,
@@ -34,8 +34,8 @@
         },
         {
           "address": "0x438020",
-          "symbol": "?Add@zClass_Object3D_ModelRefLerpQueue@@YIXPAUzClass_NodePartial@@PAX1MMM@Z",
-          "name": "zClass_Object3D_ModelRefLerpQueue::Add",
+          "symbol": "?Add@CZObject3DModelRefLerpQueue@@YIXPAUCZNodePartial@@PAX1MMM@Z",
+          "name": "CZObject3DModelRefLerpQueue::Add",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -43,8 +43,8 @@
         },
         {
           "address": "0x438180",
-          "symbol": "?Reset@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
-          "name": "zClass_Object3D_ModelRefLerpQueue::Reset",
+          "symbol": "?Reset@CZObject3DModelRefLerpQueue@@YAXXZ",
+          "name": "CZObject3DModelRefLerpQueue::Reset",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -52,8 +52,8 @@
         },
         {
           "address": "0x4381d0",
-          "symbol": "?Update@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
-          "name": "zClass_Object3D_ModelRefLerpQueue::Update",
+          "symbol": "?Update@CZObject3DModelRefLerpQueue@@YAXXZ",
+          "name": "CZObject3DModelRefLerpQueue::Update",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -81,7 +81,7 @@
         {
           "address": "0x438000",
           "symbol": "_$E1",
-          "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState",
+          "name": "CZObject3DModelRefLerpQueue::ClearGlobalState",
           "pipeline_class": "authored-lifecycle",
           "authored_order_role": "compiler-generated-thunk",
           "required_presence": true,
@@ -95,8 +95,8 @@
         },
         {
           "address": "0x438020",
-          "symbol": "?Add@zClass_Object3D_ModelRefLerpQueue@@YIXPAUzClass_NodePartial@@PAX1MMM@Z",
-          "name": "zClass_Object3D_ModelRefLerpQueue::Add",
+          "symbol": "?Add@CZObject3DModelRefLerpQueue@@YIXPAUCZNodePartial@@PAX1MMM@Z",
+          "name": "CZObject3DModelRefLerpQueue::Add",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -104,8 +104,8 @@
         },
         {
           "address": "0x438180",
-          "symbol": "?Reset@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
-          "name": "zClass_Object3D_ModelRefLerpQueue::Reset",
+          "symbol": "?Reset@CZObject3DModelRefLerpQueue@@YAXXZ",
+          "name": "CZObject3DModelRefLerpQueue::Reset",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -113,8 +113,8 @@
         },
         {
           "address": "0x4381d0",
-          "symbol": "?Update@zClass_Object3D_ModelRefLerpQueue@@YAXXZ",
-          "name": "zClass_Object3D_ModelRefLerpQueue::Update",
+          "symbol": "?Update@CZObject3DModelRefLerpQueue@@YAXXZ",
+          "name": "CZObject3DModelRefLerpQueue::Update",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,

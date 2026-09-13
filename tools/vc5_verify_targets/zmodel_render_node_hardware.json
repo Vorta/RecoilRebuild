@@ -25,7 +25,7 @@
   "functions": [
     {
       "address": "0x477b30",
-      "symbol": "?RenderNodeHardware@zModel@@YIXPAUzClass_NodePartial@@H@Z",
+      "symbol": "?RenderNodeHardware@zModel@@YIXPAUCZNodePartial@@H@Z",
       "name": "zModel::RenderNodeHardware"
     }
   ],

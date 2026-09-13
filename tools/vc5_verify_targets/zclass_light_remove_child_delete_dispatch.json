@@ -22,13 +22,13 @@
   "functions": [
     {
       "address": "0x453110",
-      "symbol": "?DeleteNode@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Light::DeleteNode"
+      "symbol": "?DeleteNode@CZLight@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZLight::DeleteNode"
     },
     {
       "address": "0x4531c0",
-      "symbol": "?RemoveChild@zClass_Light@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Light::RemoveChild"
+      "symbol": "?RemoveChild@CZLight@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZLight::RemoveChild"
     }
   ]
 }

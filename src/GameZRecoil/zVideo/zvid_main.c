@@ -150,7 +150,7 @@ int g_zVideo_FrameTick = 0;
  * the projection/frustum context cache at 0x576214.
  * Purpose: store the camera data record used by the software render frame.
  */
-zClass_CameraDataPartial *g_zVideo_pActiveViewContext = 0;
+CZCameraDataPartial *g_zVideo_pActiveViewContext = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-pactiveprojectionviewcontext
  * @recoil-artifact defines .data recoil:data:0x576214: g_zVideo_pActiveProjectionViewContext.
@@ -159,12 +159,12 @@ zClass_CameraDataPartial *g_zVideo_pActiveViewContext = 0;
  * writes it before projection, model, and frustum users read it.
  * Purpose: cache the camera data record used by projection, clip, and frustum state.
  */
-zClass_CameraDataPartial *g_zVideo_pActiveProjectionViewContext = 0;
+CZCameraDataPartial *g_zVideo_pActiveProjectionViewContext = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-activeviewvarianttag
  * @recoil-artifact defines .data recoil:data:0x5398f8: g_zVideo_ActiveViewVariantTag.
  * Render-frame variant owner data. BN xrefs show zVideo_sw::RenderFrame and
- * zClass_Camera::RenderScene copying the active view variant tag into this
+ * CZCamera::RenderScene copying the active view variant tag into this
  * 4-byte .data zTag4 record after view selection; retail initializes it to zero.
  * Purpose: cache the currently selected variant tag for render traversal.
  */

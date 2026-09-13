@@ -970,8 +970,8 @@ int CRecoilAppPlayState::OnTryBecomeCurrent() {
     zInput::MouseRecenterCursor();
 
     if (zVid::GetAccelerationOption() != 0) {
-        zClass_Camera::SetActiveCamera(0);
-        zClass_Camera::SetObjectHseTestEnabled(0);
+        CZCamera::SetActiveCamera(0);
+        CZCamera::SetObjectHseTestEnabled(0);
     }
 
     if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
@@ -1050,7 +1050,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(
     zOpt_ViewRectSection *const renderSection = pRenderSection;
     zOpt_ViewRectSection *const displaySection = pDisplaySection;
     zOpt_ViewRectSection *const windowSection = pWindowSection;
-    zClass_TypeList::UpdateAllBuckets();
+    CZTypeList::UpdateAllBuckets();
 
     if (g_RecoilApp_QuitAfterCredits != 0) {
         return 1;
@@ -1060,8 +1060,8 @@ int CRecoilAppPlayState::TickAndRenderFrame(
 
     if (g_Player_HorizonNodeFollowCameraEnabled != 0 && g_Player_HorizonNode != 0) {
         zVec3 cameraPosition = {0};
-        gwNode::GetWorldPosition(g_MainCamera, &cameraPosition);
-        zClass_Object3D::gwObject3DSetPosition(
+        CZNode::GetWorldPosition(g_MainCamera, &cameraPosition);
+        CZObject3D::gwObject3DSetPosition(
             g_Player_HorizonNode,
             cameraPosition.x,
             cameraPosition.y,
@@ -1099,7 +1099,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(
     }
 
     zRndr::SetFrameBufferRegion(pixels, renderSection, bitsPerPixel, pitchBytes);
-    zClass_List::RenderActiveCameras();
+    CZList::RenderActiveCameras();
     zVideo::FxPass3SetInputRectByIndex(0, (HudUiRect *)(renderSection));
 
     HudUiMgrSensor::GetFxRect(&g_HudUiMgrSensor_FxRectScratch);
@@ -3149,8 +3149,8 @@ void __cdecl InitFromZrd() {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         if (playerState->lifecycleState == 2) {
             playerState->lifecycleState = 4;
-            zClass_NodePartial *const rootNode = playerState->rootNode;
-            zClass_Class::RemoveChild(rootNode->listA[0], rootNode);
+            CZNodePartial *const rootNode = playerState->rootNode;
+            CZClass::RemoveChild(rootNode->listA[0], rootNode);
         }
         saveState = saveState->next;
     }
@@ -3634,10 +3634,10 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(
         zNetwork_DPlay::EnumPlayers();
     }
 
-    zClass_NodePartial *const sourceNode = zClass::FindByTypeAndName(6, "bft_99");
-    zClass_NodePartial *clonedNode = 0;
+    CZNodePartial *const sourceNode = CZClass::FindByTypeAndName(6, "bft_99");
+    CZNodePartial *clonedNode = 0;
     if (sourceNode != 0) {
-        clonedNode = zClass_cls_util::CopyNodeWithCloneOptions(sourceNode, 1, 1);
+        clonedNode = CZUtil::CopyNodeWithCloneOptions(sourceNode, 1, 1);
     }
 
     if (clonedNode == 0) {
@@ -3649,7 +3649,7 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(
 
     char netNodeName[0x14];
     sprintf(netNodeName, "net%d", packet->header.payloadDword0);
-    zClass_Class::gwNodeSetName(clonedNode, netNodeName);
+    CZClass::gwNodeSetName(clonedNode, netNodeName);
 
     zUtil_SaveGameState *const saveState = Player::CreateFromNamesAtPoseGetState(
         &packet->worldPos,
@@ -3679,8 +3679,8 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(
     row->playerNode = clonedNode;
     row->score = 0;
     row->lapCount = 0;
-    row->turretNode = zClass_Class::FindSubNodeByName(clonedNode, g_Player_NodeName_Turret);
-    row->gunNode = zClass_Class::FindSubNodeByName(clonedNode, "gun");
+    row->turretNode = CZClass::FindSubNodeByName(clonedNode, g_Player_NodeName_Turret);
+    row->gunNode = CZClass::FindSubNodeByName(clonedNode, "gun");
     row->saveState = (GameNetPlayerSaveState *)saveState;
 
     if (zNetwork::GetPlayerNameByKey(senderPlayerId, row->displayName, sizeof(row->displayName)) !=
@@ -3701,9 +3701,9 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(
     if (saveState != 0) {
         saveState->netPlayerRow = row;
         if (row->playerNode->listCountA == 0) {
-            zClass_Class::AddChild(g_Player_RuntimeDiScene, row->playerNode);
+            CZClass::AddChild(g_Player_RuntimeDiScene, row->playerNode);
         }
-        zClass_Class::gwNodeSetActive(row->playerNode, 1);
+        CZClass::gwNodeSetActive(row->playerNode, 1);
     }
 
     RefreshPlayerListMenu(row);
@@ -4566,8 +4566,8 @@ void GameNetPlayerRow::ApplyPlayerColorTint() {
         (float)((packedColor >> 8) & 0xff),
         (float)((packedColor >> 16) & 0xff),
     };
-    zClass_Object3D::gwObject3DSetColorAlpha(primaryModalState->modalNode, &color, 0.2f);
-    zClass_Object3D::gwObject3DSetVisibleFlag(primaryModalState->modalNode, 1);
+    CZObject3D::gwObject3DSetColorAlpha(primaryModalState->modalNode, &color, 0.2f);
+    CZObject3D::gwObject3DSetVisibleFlag(primaryModalState->modalNode, 1);
 }
 
 namespace zDEClient_Crater {
@@ -4814,10 +4814,10 @@ int __fastcall HandlePkt11SpawnDelta(
         return 1;
     }
     if ((flags & 8u) != 0) {
-        zClass_NodePartial *const pickupObj = spawn->pickupObj;
-        zClass_Node::ClearPickupFlagsRecursive(pickupObj);
-        zClass_Class::gwNodeSetRaycastable(pickupObj, 0);
-        zClass_Class::gwNodeSetPickable(pickupObj, 0);
+        CZNodePartial *const pickupObj = spawn->pickupObj;
+        CZNode::ClearPickupFlagsRecursive(pickupObj);
+        CZClass::gwNodeSetRaycastable(pickupObj, 0);
+        CZClass::gwNodeSetPickable(pickupObj, 0);
         RemoveObject(0, pickupObj, 0);
     }
     return 1;
@@ -4956,7 +4956,7 @@ namespace OptCatalog {
 void __fastcall SendPkt0ARemoveRuntimeRelay(
     OptCatalogEntryDef *self,
     zVec3 *pointOrVec3,
-    zClass_NodePartial *ownerNode
+    CZNodePartial *ownerNode
 ) {
     if (g_OptCatalogProcessRuntimeRelayEnabled == 0 || ownerNode == 0) {
         return;
@@ -6040,7 +6040,7 @@ void RecoilApp::ShutdownSubsystems() {
     zVid::ShutdownFrameScratchBuffers();
     zEffect::ShutdownAll();
     OptCatalog::Shutdown();
-    zClass::Shutdown();
+    CZClass::Shutdown();
     zModel_Display::ShutdownThunk();
     zSndSystem::Shutdown();
     zRdrExit();

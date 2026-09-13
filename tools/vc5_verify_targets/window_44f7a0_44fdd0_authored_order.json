@@ -1,6 +1,6 @@
 {
   "name": "window_44f7a0_44fdd0_authored_order",
-  "description": "Reviewed authored-order target for the complete literal-backed Window.c physical block [0x44f7a0,0x44fdd0). All ten selected rows are ordinary authored bodies in exact retail relative order. The zClass::RemoveChildChecked helper at 0x44f870 is physically Window.c by direct Window.c literal and surrounding order despite its stale current List.c definition. Unlisted raw definitions are diagnostic-only at this authored TU gate. This target proves no owner, tier, byte identity, full linked population, exact RVA, or final-image fact.",
+  "description": "Reviewed authored-order target for the complete literal-backed Window.c physical block [0x44f7a0,0x44fdd0). All ten selected rows are ordinary authored bodies in exact retail relative order. The CZClass::RemoveChildChecked helper at 0x44f870 is physically Window.c by direct Window.c literal and surrounding order despite its stale current List.c definition. Unlisted raw definitions are diagnostic-only at this authored TU gate. This target proves no owner, tier, byte identity, full linked population, exact RVA, or final-image fact.",
   "target_binary": "recoil",
   "retail_start": "0x44f7a0",
   "retail_end_exclusive": "0x44fdd0",
@@ -13,16 +13,16 @@
     "src/GameZRecoil/zClass/Window.c"
   ],
   "functions": [
-    {"address":"0x44f7a0","symbol":"?gwWindowNew@zClass_Window@@YAPAUzClass_NodePartial@@XZ","name":"zClass_Window::gwWindowNew","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44f870","symbol":"?RemoveChildChecked@zClass@@YIHPAUzClass_NodePartial@@0@Z","name":"zClass::RemoveChildChecked","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44f8b0","symbol":"?gwWindowSetResolution@zClass_Window@@YIHPAUzClass_NodePartial@@HH@Z","name":"zClass_Window::gwWindowSetResolution","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44f930","symbol":"?gwWindowGetResolution@zClass_Window@@YIHPAUzClass_NodePartial@@PAH1@Z","name":"zClass_Window::gwWindowGetResolution","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44f9c0","symbol":"?gwWindowSetSize@zClass_Window@@YIHPAUzClass_NodePartial@@HH@Z","name":"zClass_Window::gwWindowSetSize","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44fa40","symbol":"?gwWindowGetSize@zClass_Window@@YIHPAUzClass_NodePartial@@PAH1@Z","name":"zClass_Window::gwWindowGetSize","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44fad0","symbol":"?gwWindowSetBuffer@zClass_Window@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Window::gwWindowSetBuffer","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44fb40","symbol":"?gwWindowSetClearPolygon@zClass_Window@@YIHPAUzClass_NodePartial@@H@Z","name":"zClass_Window::gwWindowSetClearPolygon","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44fbd0","symbol":"?gwWindowAddClearPolygonVertex@zClass_Window@@YIHPAUzClass_NodePartial@@PBUzVec3@@@Z","name":"zClass_Window::gwWindowAddClearPolygonVertex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x44fcf0","symbol":"?gwWindowCloseClearPolygon@zClass_Window@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Window::gwWindowCloseClearPolygon","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+    {"address":"0x44f7a0","symbol":"?gwWindowNew@CZWindow@@YAPAUCZNodePartial@@XZ","name":"CZWindow::gwWindowNew","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f870","symbol":"?RemoveChildChecked@CZClass@@YIHPAUCZNodePartial@@0@Z","name":"CZClass::RemoveChildChecked","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f8b0","symbol":"?gwWindowSetResolution@CZWindow@@YIHPAUCZNodePartial@@HH@Z","name":"CZWindow::gwWindowSetResolution","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f930","symbol":"?gwWindowGetResolution@CZWindow@@YIHPAUCZNodePartial@@PAH1@Z","name":"CZWindow::gwWindowGetResolution","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44f9c0","symbol":"?gwWindowSetSize@CZWindow@@YIHPAUCZNodePartial@@HH@Z","name":"CZWindow::gwWindowSetSize","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44fa40","symbol":"?gwWindowGetSize@CZWindow@@YIHPAUCZNodePartial@@PAH1@Z","name":"CZWindow::gwWindowGetSize","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44fad0","symbol":"?gwWindowSetBuffer@CZWindow@@YIHPAUCZNodePartial@@H@Z","name":"CZWindow::gwWindowSetBuffer","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44fb40","symbol":"?gwWindowSetClearPolygon@CZWindow@@YIHPAUCZNodePartial@@H@Z","name":"CZWindow::gwWindowSetClearPolygon","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44fbd0","symbol":"?gwWindowAddClearPolygonVertex@CZWindow@@YIHPAUCZNodePartial@@PBUzVec3@@@Z","name":"CZWindow::gwWindowAddClearPolygonVertex","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x44fcf0","symbol":"?gwWindowCloseClearPolygon@CZWindow@@YIHPAUCZNodePartial@@@Z","name":"CZWindow::gwWindowCloseClearPolygon","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],
   "translation_unit_function_order": [
     {
@@ -39,11 +39,11 @@
       "order_scope": "authored",
       "retail_start": "0x44f7a0",
       "retail_end_exclusive": "0x44fdd0",
-      "predecessor": {"address":"0x44f750","symbol":"?gwNodeFindNextByNamePredicate@zClass_Class@@YIHPAUzClass_NodePartial@@@Z","name":"zClass_Class::gwNodeFindNextByNamePredicate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "predecessor": {"address":"0x44f750","symbol":"?gwNodeFindNextByNamePredicate@CZClass@@YIHPAUCZNodePartial@@@Z","name":"CZClass::gwNodeFindNextByNamePredicate","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": [
         "0x44f7a0","0x44f870","0x44f8b0","0x44f930","0x44f9c0","0x44fa40","0x44fad0","0x44fb40","0x44fbd0","0x44fcf0"
       ],
-      "successor": {"address":"0x44fdd0","symbol":"?gwDisplayInit@zClass_Display@@YAPAUzClass_NodePartial@@XZ","name":"zClass_Display::gwDisplayInit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
+      "successor": {"address":"0x44fdd0","symbol":"?gwDisplayInit@CZDisplay@@YAPAUCZNodePartial@@XZ","name":"CZDisplay::gwDisplayInit","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "zclass_find_by_type_and_name",
-  "description": "zClass::FindByTypeAndName exact bucket-name lookup.",
+  "description": "CZClass::FindByTypeAndName exact bucket-name lookup.",
   "source_filename": "List.c",
   "source_from": "src/GameZRecoil/zClass/List.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x44ecf0",
-      "symbol": "?FindByTypeAndName@zClass@@YIPAUzClass_NodePartial@@HPBD@Z",
-      "name": "zClass::FindByTypeAndName"
+      "symbol": "?FindByTypeAndName@CZClass@@YIPAUCZNodePartial@@HPBD@Z",
+      "name": "CZClass::FindByTypeAndName"
     }
   ]
 }

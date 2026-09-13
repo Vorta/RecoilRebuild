@@ -167,15 +167,15 @@ zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
     zDEClient_QSandFeature *featureInstance = CreateFeatureStructFromEventTemplate(eventTemplate);
     zVec3 *currentPoint = featureInstance->points;
 
-    zClass_NodePartial *world = zDEClient::GetCameraNode();
-    zClass_WorldDataPartial *worldData = (zClass_WorldDataPartial *)(world->classData);
+    CZNodePartial *world = zDEClient::GetCameraNode();
+    CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
     if (worldData == 0) {
         return 0;
     }
 
     int gridCol;
     int gridRow;
-    zClass_World::WorldToGridCoordsClamped(
+    CZWorld::WorldToGridCoordsClamped(
         world,
         &gridCol,
         eventTemplate->center.x,
@@ -375,7 +375,7 @@ int __fastcall Build(
 int __fastcall CreateFeature(
     zDEClient_QSandFeature *featureInstance
 ) {
-    zClass_NodePartial *node = 0;
+    CZNodePartial *node = 0;
     zDiPartial *displayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
         featureInstance->clipPatchOutput->partitions,
         zDEClient::GetCameraNode(),
@@ -387,14 +387,14 @@ int __fastcall CreateFeature(
         }
 
         if (node != 0) {
-            zClass_Object3D::DeleteNode(node);
+            CZObject3D::DeleteNode(node);
         }
 
         return -1;
     }
 
-    zClass_Class::gwNodeSetName(node, g_zDEClient_FeatureNodeName);
-    node->callbackContext = (zClass_NodePartial *)(featureInstance);
+    CZClass::gwNodeSetName(node, g_zDEClient_FeatureNodeName);
+    node->callbackContext = (CZNodePartial *)(featureInstance);
 
     zVec3 *const points = featureInstance->points;
     const int pointCount = featureInstance->eventTemplate.pointCount;
@@ -494,7 +494,7 @@ int __fastcall CreateFeature(
         zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, material, uvList);
     }
 
-    zClass_NodePartial *capNode = 0;
+    CZNodePartial *capNode = 0;
     zDiPartial *const capDisplayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
         featureInstance->clipPatchOutput->partitions,
         zDEClient::GetCameraNode(),
@@ -506,14 +506,14 @@ int __fastcall CreateFeature(
         }
 
         if (capNode != 0) {
-            zClass_Object3D::DeleteNode(capNode);
+            CZObject3D::DeleteNode(capNode);
         }
 
         return -1;
     }
 
-    zClass_Class::gwNodeSetName(capNode, g_zDEClient_FeatureNodeName);
-    capNode->callbackContext = (zClass_NodePartial *)(featureInstance);
+    CZClass::gwNodeSetName(capNode, g_zDEClient_FeatureNodeName);
+    capNode->callbackContext = (CZNodePartial *)(featureInstance);
 
     for (int i_901 = 0; i_901 < pointCount; ++i_901) {
         const int nextIndex = (i_901 + 1) % pointCount;

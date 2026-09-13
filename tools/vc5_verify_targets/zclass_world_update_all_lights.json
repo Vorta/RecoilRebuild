@@ -1,6 +1,6 @@
 {
   "name": "zclass_world_update_all_lights",
-  "description": "zClass_World::UpdateAllLights world light update wrapper.",
+  "description": "CZWorld::UpdateAllLights world light update wrapper.",
   "source_filename": "cls_world.c",
   "source_from": "src/GameZRecoil/zClass/cls_world.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -28,8 +28,8 @@
   "functions": [
     {
       "address": "0x451560",
-      "symbol": "?UpdateAllLights@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_World::UpdateAllLights"
+      "symbol": "?UpdateAllLights@CZWorld@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZWorld::UpdateAllLights"
     }
   ]
 }

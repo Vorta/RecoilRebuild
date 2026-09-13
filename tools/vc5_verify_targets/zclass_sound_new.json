@@ -1,6 +1,6 @@
 {
   "name": "zclass_sound_new",
-  "description": "zClass_Sound::gwSoundNew sound-node constructor.",
+  "description": "CZSound::gwSoundNew sound-node constructor.",
   "source_filename": "Sound.c",
   "source_from": "src/GameZRecoil/zClass/Sound.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -20,8 +20,8 @@
   "functions": [
     {
       "address": "0x4529c0",
-      "symbol": "?gwSoundNew@zClass_Sound@@YAPAUzClass_NodePartial@@XZ",
-      "name": "zClass_Sound::gwSoundNew"
+      "symbol": "?gwSoundNew@CZSound@@YAPAUCZNodePartial@@XZ",
+      "name": "CZSound::gwSoundNew"
     }
   ]
 }

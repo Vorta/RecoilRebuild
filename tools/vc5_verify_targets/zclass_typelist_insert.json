@@ -1,6 +1,6 @@
 {
   "name": "zclass_typelist_insert",
-  "description": "zClass_TypeList::Insert head-inserts callback list nodes.",
+  "description": "CZTypeList::Insert head-inserts callback list nodes.",
   "source_filename": "List.c",
   "source_from": "src/GameZRecoil/zClass/List.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x44ed90",
-      "symbol": "?Insert@zClass_TypeList@@YIHHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_TypeList::Insert"
+      "symbol": "?Insert@CZTypeList@@YIHHPAUCZNodePartial@@@Z",
+      "name": "CZTypeList::Insert"
     }
   ]
 }

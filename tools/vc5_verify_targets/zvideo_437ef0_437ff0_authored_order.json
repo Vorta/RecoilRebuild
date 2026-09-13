@@ -37,8 +37,8 @@
       "retail_end_exclusive": "0x437ff0",
       "predecessor": {
         "address": "0x437ea0",
-        "symbol": "?SetDiFlagBit0Recursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
-        "name": "zClass_Node::SetDiFlagBit0Recursive",
+        "symbol": "?SetDiFlagBit0Recursive@CZNode@@YIXPAUCZNodePartial@@H@Z",
+        "name": "CZNode::SetDiFlagBit0Recursive",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,
@@ -58,7 +58,7 @@
       "successor": {
         "address": "0x438000",
         "symbol": "_$E1",
-        "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState",
+        "name": "CZObject3DModelRefLerpQueue::ClearGlobalState",
         "pipeline_class": "authored-lifecycle",
         "authored_order_role": "compiler-generated-thunk",
         "required_presence": true,

@@ -1,6 +1,6 @@
 {
   "name": "zclass_light_gw_light_update",
-  "description": "zClass_Light::gwLightUpdate active light update helper.",
+  "description": "CZLight::gwLightUpdate active light update helper.",
   "source_filename": "Light.c",
   "source_from": "src/GameZRecoil/zClass/Light.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -23,8 +23,8 @@
   "functions": [
     {
       "address": "0x453880",
-      "symbol": "?gwLightUpdate@zClass_Light@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Light::gwLightUpdate"
+      "symbol": "?gwLightUpdate@CZLight@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZLight::gwLightUpdate"
     }
   ]
 }

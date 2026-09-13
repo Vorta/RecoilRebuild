@@ -98,7 +98,7 @@ struct zClassDiPickCandidateEntry {
     zTag4Partial variantTag;
     unsigned char unknown_1c[0x04];
     void *scenePayload;
-    zClass_NodePartial *node;
+    CZNodePartial *node;
 };
 
 struct PlayerProbeSampleCandidateBuffer {
@@ -112,7 +112,7 @@ struct OptCatalogRaycastHitEntry {
     float unknown_18;
     float distance;
     OptCatalogSurfaceMaterialRef *surfaceRef;
-    zClass_NodePartial *hitNode;
+    CZNodePartial *hitNode;
 };
 
 struct OptCatalogRaycastHitList {
@@ -120,12 +120,12 @@ struct OptCatalogRaycastHitList {
     OptCatalogRaycastHitEntry hits[0x20];
 };
 
-struct zClass_DiSegmentEndpoints {
+struct CZDisplayInstanceSegmentEndpoints {
     zVec3 start;
     zVec3 end;
 };
 
-struct zClass_DiSegmentBounds {
+struct CZDisplayInstanceSegmentBounds {
     float minX;
     float minY;
     float minZ;
@@ -138,18 +138,18 @@ enum {
     kDiRaycastFilterSegmentBoundsCapacity = 12
 };
 
-struct zClass_DiRaycastFilterRuntime {
+struct CZDisplayInstanceRaycastFilterRuntime {
     const char *filterRegionsNodeNamePrefix;
     zVec3 *filterRegionsCenter;
     float filterRegionsRadiusSq;
     int filterRegionsEnableClearanceCheck;
-    zClass_NodePartial *filterRegionsLineOfSightWorld;
+    CZNodePartial *filterRegionsLineOfSightWorld;
     OptCatalogRaycastHitList *filterRegionsOutHitList;
     int breakOnFirstCandidate;
     int stopAfterFirstHit;
     zVec3 pickQueryPoint;
     zVec3 segmentEnd;
-    zClass_DiSegmentBounds segmentBounds[kDiRaycastFilterSegmentBoundsCapacity];
+    CZDisplayInstanceSegmentBounds segmentBounds[kDiRaycastFilterSegmentBoundsCapacity];
     PlayerProbeSampleCandidateBuffer *pickCandidateBuffer;
     zClassDiPickCandidateEntry *pickCandidateCursor;
     float pickPointQueryMaxY;
@@ -326,45 +326,45 @@ int __fastcall AddCycleTexture(
 );
 } // namespace zModel_Instance
 
-extern zClass_DiRaycastFilterRuntime g_zClass_cls_di_RaycastFilterRuntime;
-extern zVec3 g_zClass_DiFaceVertexScratch4[64];
+extern CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime;
+extern zVec3 g_CZClass_DiFaceVertexScratch4[64];
 
-#define g_zClass_cls_di_FilterRegions_NodeNamePrefix \
-    (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsNodeNamePrefix)
-#define g_zClass_cls_di_FilterRegions_Center (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsCenter)
-#define g_zClass_cls_di_FilterRegions_RadiusSq (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsRadiusSq)
-#define g_zClass_cls_di_FilterRegions_EnableClearanceCheck \
-    (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsEnableClearanceCheck)
-#define g_zClass_cls_di_FilterRegions_LineOfSightWorld \
-    (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsLineOfSightWorld)
-#define g_zClass_cls_di_FilterRegions_OutHitList (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsOutHitList)
-#define g_cls_di_BreakOnFirstCandidate (g_zClass_cls_di_RaycastFilterRuntime.breakOnFirstCandidate)
-#define g_cls_di_StopAfterFirstHit (g_zClass_cls_di_RaycastFilterRuntime.stopAfterFirstHit)
-#define g_DiPickQueryPoint (g_zClass_cls_di_RaycastFilterRuntime.pickQueryPoint)
-#define g_DiSegmentEnd (g_zClass_cls_di_RaycastFilterRuntime.segmentEnd)
-#define g_DiSegmentBounds (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds)
-#define g_DiSegmentMinX (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].minX)
-#define g_DiSegmentMinY (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].minY)
-#define g_DiSegmentMinZ (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].minZ)
-#define g_DiSegmentMaxX (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].maxX)
-#define g_DiSegmentMaxY (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].maxY)
-#define g_DiSegmentMaxZ (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].maxZ)
-#define g_DiPickCandidateBuffer (g_zClass_cls_di_RaycastFilterRuntime.pickCandidateBuffer)
-#define g_DiPickCandidateCursor (g_zClass_cls_di_RaycastFilterRuntime.pickCandidateCursor)
-#define g_DiPickPointQueryMaxY (g_zClass_cls_di_RaycastFilterRuntime.pickPointQueryMaxY)
-#define g_DiPickPointArray (g_zClass_cls_di_RaycastFilterRuntime.pickPointArray)
-#define g_DiPickPointCount (g_zClass_cls_di_RaycastFilterRuntime.pickPointCount)
+#define g_CZDisplayInstance_FilterRegions_NodeNamePrefix \
+    (g_CZDisplayInstance_RaycastFilterRuntime.filterRegionsNodeNamePrefix)
+#define g_CZDisplayInstance_FilterRegions_Center (g_CZDisplayInstance_RaycastFilterRuntime.filterRegionsCenter)
+#define g_CZDisplayInstance_FilterRegions_RadiusSq (g_CZDisplayInstance_RaycastFilterRuntime.filterRegionsRadiusSq)
+#define g_CZDisplayInstance_FilterRegions_EnableClearanceCheck \
+    (g_CZDisplayInstance_RaycastFilterRuntime.filterRegionsEnableClearanceCheck)
+#define g_CZDisplayInstance_FilterRegions_LineOfSightWorld \
+    (g_CZDisplayInstance_RaycastFilterRuntime.filterRegionsLineOfSightWorld)
+#define g_CZDisplayInstance_FilterRegions_OutHitList (g_CZDisplayInstance_RaycastFilterRuntime.filterRegionsOutHitList)
+#define g_cls_di_BreakOnFirstCandidate (g_CZDisplayInstance_RaycastFilterRuntime.breakOnFirstCandidate)
+#define g_cls_di_StopAfterFirstHit (g_CZDisplayInstance_RaycastFilterRuntime.stopAfterFirstHit)
+#define g_DiPickQueryPoint (g_CZDisplayInstance_RaycastFilterRuntime.pickQueryPoint)
+#define g_DiSegmentEnd (g_CZDisplayInstance_RaycastFilterRuntime.segmentEnd)
+#define g_DiSegmentBounds (g_CZDisplayInstance_RaycastFilterRuntime.segmentBounds)
+#define g_DiSegmentMinX (g_CZDisplayInstance_RaycastFilterRuntime.segmentBounds[0].minX)
+#define g_DiSegmentMinY (g_CZDisplayInstance_RaycastFilterRuntime.segmentBounds[0].minY)
+#define g_DiSegmentMinZ (g_CZDisplayInstance_RaycastFilterRuntime.segmentBounds[0].minZ)
+#define g_DiSegmentMaxX (g_CZDisplayInstance_RaycastFilterRuntime.segmentBounds[0].maxX)
+#define g_DiSegmentMaxY (g_CZDisplayInstance_RaycastFilterRuntime.segmentBounds[0].maxY)
+#define g_DiSegmentMaxZ (g_CZDisplayInstance_RaycastFilterRuntime.segmentBounds[0].maxZ)
+#define g_DiPickCandidateBuffer (g_CZDisplayInstance_RaycastFilterRuntime.pickCandidateBuffer)
+#define g_DiPickCandidateCursor (g_CZDisplayInstance_RaycastFilterRuntime.pickCandidateCursor)
+#define g_DiPickPointQueryMaxY (g_CZDisplayInstance_RaycastFilterRuntime.pickPointQueryMaxY)
+#define g_DiPickPointArray (g_CZDisplayInstance_RaycastFilterRuntime.pickPointArray)
+#define g_DiPickPointCount (g_CZDisplayInstance_RaycastFilterRuntime.pickPointCount)
 
-namespace zClass_cls_di {
+namespace CZDisplayInstance {
 void __fastcall SetBreakOnFirstCandidate(int enabled);
 void __fastcall SetStopAfterFirstHit(int flag);
 void __fastcall FindBestPickCandidateBelowPoint(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     const zVec3 *position,
     PlayerProbeSampleCandidateBuffer *outResults
 );
 int __fastcall BuildPickCandidateListBelowPoint(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     PlayerProbeSampleCandidateBuffer *outResults,
     float x,
     float maxY,
@@ -372,46 +372,46 @@ int __fastcall BuildPickCandidateListBelowPoint(
 );
 int __fastcall SnapProbePointYToBestCandidate(zVec3 *point);
 int __fastcall BuildPickCandidateList(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int cullCount
 );
 int __fastcall BuildPickCandidatesForPoints(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int depth,
     int *hitFlags
 );
 int __fastcall BuildPickCandidatesForPointsRecursive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int depth,
     int *hitFlags
 );
 int __fastcall BuildPickCandidatesForPointsForLight(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int depth,
     int *hitFlags
 );
 int __fastcall BuildPickCandidatesForPointBatch(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     zVec3 *pointArray,
     int pointCount,
     float queryMaxY,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersByPoint
 );
 int __fastcall BuildPickCandidatesRecursive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int cullCount
 );
 int __fastcall BuildPickCandidatesForLight(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int cullCount
 );
-int __fastcall IsPickQueryPointOutsideViewBBoxXZ(zClass_NodePartial *node);
+int __fastcall IsPickQueryPointOutsideViewBBoxXZ(CZNodePartial *node);
 int __fastcall PickTestBBox2D(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int *hitFlags
 );
 int __fastcall FrustumTestAndPick(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int *activeMask
 );
 int __fastcall TryGetPolygonHitAtQueryXZ(
@@ -422,7 +422,7 @@ int __fastcall TryGetPolygonHitAtQueryXZ(
     int vertexCount
 );
 void __fastcall PickTestMeshAtQueryXZ(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     zModel_PickFaceData *faceData,
     const zVec3 *samplePoints,
     const int *sampleMaskSeeds,
@@ -430,15 +430,15 @@ void __fastcall PickTestMeshAtQueryXZ(
     float maxProjectedY,
     PlayerProbeSampleCandidateBuffer *outputBuckets
 );
-int __fastcall BuildPickCandidatesForSegment(zClass_NodePartial *self);
+int __fastcall BuildPickCandidatesForSegment(CZNodePartial *self);
 int __fastcall RaycastSelectClosestHitBetweenPoints(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     const zVec3 *startPoint,
     const zVec3 *endPoint,
     PlayerProbeSampleCandidateBuffer *rayData
 );
 int __fastcall RaycastFindClosest(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     PlayerProbeSampleCandidateBuffer *rayData,
     float startX,
     float startY,
@@ -448,44 +448,44 @@ int __fastcall RaycastFindClosest(
     float endZ
 );
 int __fastcall BuildPickCandidatesForSegmentChildFallback(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int nodeCountHint
 );
 int __fastcall BuildPickCandidatesForSegmentRecursive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int depth
 );
 int __fastcall BuildPickCandidatesForSegmentForCamera(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int depth
 );
 int __fastcall BuildPickCandidatesForSegmentForLight(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int depth
 );
 int __fastcall BuildPickCandidatesForSegmentsRecursive(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int nodeCountHint,
     int *activeMask
 );
 int __fastcall BuildPickCandidatesForSegmentsForAnimate(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int nodeCountHint,
     int *activeMask
 );
 int __fastcall BuildPickCandidatesForSegmentsForLight(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     int nodeCountHint,
     int *activeMask
 );
 void __fastcall BuildProbeHitBatchesForSegments(
-    zClass_NodePartial *world,
-    zClass_DiSegmentEndpoints *segmentEndpoints,
+    CZNodePartial *world,
+    CZDisplayInstanceSegmentEndpoints *segmentEndpoints,
     int endpointCount,
     PlayerProbeSampleCandidateBuffer *hitBatches
 );
 void __fastcall BuildPickCandidatesForSegmentsInGridWindow(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     int *activeMask
 );
 int __fastcall FilterRegionsAgainstMeshFaces(
@@ -497,7 +497,7 @@ int __fastcall FilterRegionsAgainstHexahedronFaces(
     float radius
 );
 int __fastcall FilterRegionsAgainstSphere(
-    zClass_NodePartial *world,
+    CZNodePartial *world,
     zVec3 *center,
     const char *nodeNamePrefix,
     float radius,
@@ -505,23 +505,23 @@ int __fastcall FilterRegionsAgainstSphere(
     int requireLineOfSight,
     OptCatalogRaycastHitList *outHitList
 );
-int __fastcall FilterRegionsTryAppendNode(zClass_NodePartial *node);
+int __fastcall FilterRegionsTryAppendNode(CZNodePartial *node);
 int __fastcall FilterPointsBBox(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     void *pointData
 );
 int __fastcall FilterRegionsAgainstPolygonWithDamageMaskUv(
-    zClass_NodePartial *candidateOwner,
+    CZNodePartial *candidateOwner,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
-    zClass_DiSegmentEndpoints *segmentEndpointsByBatch,
+    CZDisplayInstanceSegmentEndpoints *segmentEndpointsByBatch,
     int *activeMask,
     int segmentCount,
     const zBBoxCorners *bboxCorners
 );
 void __fastcall FilterRegionsAgainstPolygon(
-    zClass_NodePartial *candidateOwner,
+    CZNodePartial *candidateOwner,
     zModel_PickFaceData *faceData,
-    zClass_DiSegmentEndpoints *segmentEndpointsByBatch,
+    CZDisplayInstanceSegmentEndpoints *segmentEndpointsByBatch,
     int *activeMask,
     int segmentCount,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment
@@ -533,18 +533,18 @@ int __fastcall BuildPickCandidatesForSegmentVsBBoxFaces(
     const zVec3 *segmentEnd
 );
 int __fastcall BuildPickCandidatesForSegmentBatchVsPolygon(
-    zClass_NodePartial *candidateOwner,
+    CZNodePartial *candidateOwner,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
-    zClass_DiSegmentEndpoints *segmentEndpointsByBatch,
+    CZDisplayInstanceSegmentEndpoints *segmentEndpointsByBatch,
     int *activeMask,
     int segmentCount,
     zVec3 *polygonVertices,
     zModel_PickFaceEntry *faceEntry
 );
 int __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
-    zClass_NodePartial *candidateOwner,
+    CZNodePartial *candidateOwner,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
-    zClass_DiSegmentEndpoints *segmentEndpointsByBatch,
+    CZDisplayInstanceSegmentEndpoints *segmentEndpointsByBatch,
     int *activeMask,
     int segmentCount,
     zVec3 *polygonVertices,
@@ -576,11 +576,11 @@ int __fastcall AppendPickCandidatesForFace(
     const zVec3 *segmentStart,
     const zVec3 *segmentEnd
 );
-} // namespace zClass_cls_di
+} // namespace CZDisplayInstance
 
 namespace zModelConst {
 void __fastcall AddFaceToPlayerProbeSampleBuckets(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     PlayerProbeSampleCandidateBuffer *outputBuckets,
     const zVec3 *samplePoints,
     const int *sampleMaskSeeds,
@@ -987,121 +987,121 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiSegmentEndpoints,
+        CZDisplayInstanceSegmentEndpoints,
         end
     ) == 0x0c
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_DiSegmentEndpoints) == 0x18);
+RECOIL_STATIC_ASSERT(sizeof(CZDisplayInstanceSegmentEndpoints) == 0x18);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiSegmentBounds,
+        CZDisplayInstanceSegmentBounds,
         maxX
     ) == 0x0c
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_DiSegmentBounds) == 0x18);
+RECOIL_STATIC_ASSERT(sizeof(CZDisplayInstanceSegmentBounds) == 0x18);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         filterRegionsNodeNamePrefix
     ) == 0x00
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         filterRegionsCenter
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         filterRegionsRadiusSq
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         filterRegionsEnableClearanceCheck
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         filterRegionsLineOfSightWorld
     ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         filterRegionsOutHitList
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         breakOnFirstCandidate
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         stopAfterFirstHit
     ) == 0x1c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         pickQueryPoint
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         segmentEnd
     ) == 0x2c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         segmentBounds
     ) == 0x38
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         pickCandidateBuffer
     ) == 0x158
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         pickCandidateCursor
     ) == 0x15c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         pickPointQueryMaxY
     ) == 0x160
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         pickPointArray
     ) == 0x164
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         pickPointCount
     ) == 0x168
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zClass_DiRaycastFilterRuntime,
+        CZDisplayInstanceRaycastFilterRuntime,
         unused_16c
     ) == 0x16c
 );
-RECOIL_STATIC_ASSERT(sizeof(zClass_DiRaycastFilterRuntime) == 0x170);
+RECOIL_STATIC_ASSERT(sizeof(CZDisplayInstanceRaycastFilterRuntime) == 0x170);
 RECOIL_STATIC_ASSERT(sizeof(zModel_PickFaceUvData) == 0x18);
 RECOIL_STATIC_ASSERT(
     offsetof(

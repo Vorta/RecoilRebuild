@@ -2255,9 +2255,13 @@ def test_linked_presence_census_rejects_stale_or_uncovered_authority(monkeypatch
     registration = {"manifest_path": "tools/unit.json"}
     current = {"registration": dict(registration)}
     target = SimpleNamespace(functions=(function,), translation_unit_function_order=(), linked_function_intervals=())
+    collections = {"verification_targets": {"unit": {"registration": registration,
+        "binary": "recoil", "kind": "vc5", "registered_addresses": [function.address]}},
+        "symbols": {"recoil:function:0x401000": dict(binary="recoil", address=function.address,
+            pipeline_class="authored", authored_order_role="authored-body", verification_target_ids=["unit"])}}
     document = SimpleNamespace(
         authored_call_contract_slices=lambda binary: [{"addresses": [function.address], "target_ids": ["unit"]}],
-        collection=lambda name: {"unit": {"registration": registration}},
+        collection=lambda name: collections[name],
     )
     monkeypatch.setattr(vc5_build, "load_repository_path_inventory", lambda root: None)
     monkeypatch.setattr(vc5_build, "resolve_repository_file", lambda *args, **kwargs: SimpleNamespace(physical_path=Path("unit.json")))
@@ -2284,6 +2288,84 @@ def test_linked_presence_census_rejects_stale_or_uncovered_authority(monkeypatch
     target.functions = (replace(function, required_presence=False),)
     with pytest.raises(ValueError, match="required presence"):
         vc5_build.required_authored_linked_functions(document)
+
+    # Playground membership remains complete while order acceptance is pending.
+    def pending_order(binary):
+        raise ValueError("order proof pending")
+    document.authored_call_contract_slices = pending_order
+    target.functions = (function,)
+    assert vc5_build.required_authored_linked_functions(document, playground_only=True) == (function,)
+    with pytest.raises(ValueError, match="order proof pending"):
+        vc5_build.required_authored_linked_functions(document)
+    target.functions = (function, replace(function, symbol="_other_profile"))
+    union = vc5_build.required_authored_linked_functions(document, playground_only=True)
+    assert len(union) == 1
+    def linked(name, address):
+        return vc5_build.LinkedMapSymbol(1, 0, name, address, ("f",), "unit.obj", "Publics by Value")
+    assert vc5_build.authored_linked_presence_report(union,
+        vc5_build.ParsedLinkMap(0x400000, (linked("_other_profile", 0x405000),)))["passed"]
+    assert not vc5_build.authored_linked_presence_report(union,
+        vc5_build.ParsedLinkMap(0x400000, (linked("_entry", 0x405000), linked("_other_profile", 0x406000))))["passed"]
+    target.functions = (function, replace(function, symbol="_logical_member", logical_identity_key="logical:other"))
+    assert len(vc5_build.required_authored_linked_functions(document, playground_only=True)) == 2
+    target.functions = (function,)
+    member = collections["symbols"]["recoil:function:0x401000"]
+    for references in ([], ["unit", "unit"], ["missing"]):
+        member["verification_target_ids"] = references
+        with pytest.raises(ValueError, match="registration"):
+            vc5_build.required_authored_linked_functions(document, playground_only=True)
+    member["verification_target_ids"] = ["unit"]
+    collections["verification_targets"]["unit"]["registered_addresses"] = []
+    with pytest.raises(ValueError, match="absent from its registration"):
+        vc5_build.required_authored_linked_functions(document, playground_only=True)
+    collections["verification_targets"]["unit"]["registered_addresses"] = [function.address]
+    current["registration"] = {"manifest_path": "tools/stale.json"}
+    with pytest.raises(ValueError, match="stale"):
+        vc5_build.required_authored_linked_functions(document, playground_only=True)
+    current["registration"] = dict(registration)
+    # A retired overlapping diagnostic cannot select a name or excuse a missing
+    # body. A separate current registration must cover the complete population.
+    collections["verification_targets"]["old"] = dict(binary="recoil", kind="vc5",
+        registration={"manifest_path": "tools/removed.json", "function_addresses": [function.address]})
+    member["verification_target_ids"] = ["unit", "old"]
+    with monkeypatch.context() as patch:
+        def resolve(path, **kwargs):
+            if path == "tools/removed.json":
+                raise ValueError("retired diagnostic")
+            return SimpleNamespace(physical_path=Path("unit.json"))
+        patch.setattr(vc5_build, "resolve_repository_file", resolve)
+        assert vc5_build.required_authored_linked_functions(document, playground_only=True) == (function,)
+        member["verification_target_ids"] = ["old"]
+        with pytest.raises(ValueError, match="uncovered"):
+            vc5_build.required_authored_linked_functions(document, playground_only=True)
+    member["verification_target_ids"] = ["unit"]
+    production = replace(function, symbol="_production")
+    production_registration = {"manifest_path": "tools/canonical.json"}
+    collections["verification_targets"]["canonical"] = dict(binary="recoil", kind="vc5",
+        registration=production_registration, registered_addresses=[function.address])
+    member["verification_target_ids"] = ["unit", "canonical"]
+    with monkeypatch.context() as patch:
+        patch.setattr(vc5_build, "resolve_repository_file", lambda path, **kwargs:
+            SimpleNamespace(physical_path=Path(path)))
+        patch.setattr(verification_targets, "vc5_target_registration", lambda path:
+            ("canonical", {"registration": production_registration}) if path.name == "canonical.json" else ("unit", current))
+        canonical_target = SimpleNamespace(functions=(production,), translation_unit_function_order=(),
+            linked_function_intervals=(), compile_context_from="tools/_recoil/config/vc5_final_build.json")
+        patch.setattr(vc5_build, "load_vc5_verify_manifest", lambda path:
+            canonical_target if path.name == "canonical.json" else target)
+        selected = vc5_build.required_authored_linked_functions(document, playground_only=True)
+        assert selected == (production,)
+        # A production function missing from the map cannot fall back to a
+        # standalone diagnostic's still-present old spelling.
+        assert not vc5_build.authored_linked_presence_report(selected,
+            vc5_build.ParsedLinkMap(0x400000, (linked("_entry", 0x405000),)))["passed"]
+    member["verification_target_ids"] = ["unit"]
+    target.functions = ()
+    with pytest.raises(ValueError, match="uncovered"):
+        vc5_build.required_authored_linked_functions(document, playground_only=True)
+    target.functions = (replace(function, required_presence=False),)
+    with pytest.raises(ValueError, match="required presence"):
+        vc5_build.required_authored_linked_functions(document, playground_only=True)
 
     _check_byte_binding_translation_unit_projection(monkeypatch)
 
@@ -2331,7 +2413,10 @@ def test_playground_completion_requires_presence_and_deployment_without_acceptan
     presence, deployed = {"passed": False}, {"attempted": True, "updated": True}
     startup = {"passed": False}
     monkeypatch.setattr(startup_contract, "check_startup_contract", lambda *args: startup)
-    monkeypatch.setattr(build, "required_authored_presence_at_map", lambda *args: presence)
+    def check_presence(*args, playground_only=False):
+        assert playground_only
+        return presence
+    monkeypatch.setattr(build, "required_authored_presence_at_map", check_presence)
     monkeypatch.setattr(build, "compile_profile_rows", lambda config: [])
     monkeypatch.setattr(build, "write_summary", lambda *args, **kwargs: reports.append(kwargs["acceptance"]))
     monkeypatch.setattr(build, "deploy_playtest_candidate", lambda *args: deployments.append(args) or deployed)

@@ -22,37 +22,37 @@
   "data_symbols": [
     {
       "address": "0x539b98",
-      "symbol": "_g_zClass_FilterIterCursor",
-      "name": "g_zClass_FilterIterCursor_full_extent",
-      "bn_name": "g_zClass_FilterIterCursor",
+      "symbol": "_g_CZClass_FilterIterCursor",
+      "name": "g_CZClass_FilterIterCursor_full_extent",
+      "bn_name": "g_CZClass_FilterIterCursor",
       "byte_length": 20
     },
     {
       "address": "0x539b9c",
-      "symbol": "_g_zClass_FilterIterUnknownDword0",
-      "name": "g_zClass_FilterIterUnknownDword0",
+      "symbol": "_g_CZClass_FilterIterUnknownDword0",
+      "name": "g_CZClass_FilterIterUnknownDword0",
       "bn_name": "data_539b9c",
       "byte_length": 4
     },
     {
       "address": "0x539ba0",
-      "symbol": "_g_zClass_FilterIterText",
-      "name": "g_zClass_FilterIterText",
-      "bn_name": "g_zClass_FilterIterText",
+      "symbol": "_g_CZClass_FilterIterText",
+      "name": "g_CZClass_FilterIterText",
+      "bn_name": "g_CZClass_FilterIterText",
       "byte_length": 4
     },
     {
       "address": "0x539ba4",
-      "symbol": "_g_zClass_FilterIterUnknownDword1",
-      "name": "g_zClass_FilterIterUnknownDword1",
+      "symbol": "_g_CZClass_FilterIterUnknownDword1",
+      "name": "g_CZClass_FilterIterUnknownDword1",
       "bn_name": "data_539ba4",
       "byte_length": 4
     },
     {
       "address": "0x539ba8",
-      "symbol": "_g_zClass_FilterIterPrefixLen",
-      "name": "g_zClass_FilterIterPrefixLen",
-      "bn_name": "g_zClass_FilterIterPrefixLen",
+      "symbol": "_g_CZClass_FilterIterPrefixLen",
+      "name": "g_CZClass_FilterIterPrefixLen",
+      "bn_name": "g_CZClass_FilterIterPrefixLen",
       "byte_length": 4
     }
   ]

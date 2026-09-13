@@ -22,7 +22,7 @@
   "functions": [
     {
       "address": "0x44d600",
-      "symbol": "?zVideoswRenderFrame@@YIHPAUzClass_NodePartial@@H@Z",
+      "symbol": "?zVideoswRenderFrame@@YIHPAUCZNodePartial@@H@Z",
       "name": "zVideoswRenderFrame"
     }
   ]

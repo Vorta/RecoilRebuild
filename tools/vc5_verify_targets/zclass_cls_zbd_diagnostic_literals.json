@@ -23,254 +23,254 @@
   "data_symbols": [
     {
       "address": "0x4dee1c",
-      "symbol": "_g_zClass_SourceFile_ClsZbdC",
-      "name": "g_zClass_SourceFile_ClsZbdC",
-      "bn_name": "g_zClass_SourceFile_ClsZbdC",
+      "symbol": "_g_CZClass_SourceFile_ClsZbdC",
+      "name": "g_CZClass_SourceFile_ClsZbdC",
+      "bn_name": "g_CZClass_SourceFile_ClsZbdC",
       "byte_length": 37
     },
     {
       "address": "0x4dee44",
-      "symbol": "_g_zClass_WriteNodeDataErrorMsg",
-      "name": "g_zClass_WriteNodeDataErrorMsg",
-      "bn_name": "g_zClass_WriteNodeDataErrorMsg",
+      "symbol": "_g_CZClass_WriteNodeDataErrorMsg",
+      "name": "g_CZClass_WriteNodeDataErrorMsg",
+      "bn_name": "g_CZClass_WriteNodeDataErrorMsg",
       "byte_length": 25
     },
     {
       "address": "0x4dee60",
-      "symbol": "_g_zClass_WriteWorldAreaPartitionDataErrorMsg",
-      "name": "g_zClass_WriteWorldAreaPartitionDataErrorMsg",
-      "bn_name": "g_zClass_WriteWorldAreaPartitionDataErrorMsg",
+      "symbol": "_g_CZClass_WriteWorldAreaPartitionDataErrorMsg",
+      "name": "g_CZClass_WriteWorldAreaPartitionDataErrorMsg",
+      "bn_name": "g_CZClass_WriteWorldAreaPartitionDataErrorMsg",
       "byte_length": 41
     },
     {
       "address": "0x4dee8c",
-      "symbol": "_g_zClass_WriteNodeWorldDataErrorMsg",
-      "name": "g_zClass_WriteNodeWorldDataErrorMsg",
-      "bn_name": "g_zClass_WriteNodeWorldDataErrorMsg",
+      "symbol": "_g_CZClass_WriteNodeWorldDataErrorMsg",
+      "name": "g_CZClass_WriteNodeWorldDataErrorMsg",
+      "bn_name": "g_CZClass_WriteNodeWorldDataErrorMsg",
       "byte_length": 31
     },
     {
       "address": "0x4deeac",
-      "symbol": "_g_zClass_WriteNodeWindowDataErrorMsg",
-      "name": "g_zClass_WriteNodeWindowDataErrorMsg",
-      "bn_name": "g_zClass_WriteNodeWindowDataErrorMsg",
+      "symbol": "_g_CZClass_WriteNodeWindowDataErrorMsg",
+      "name": "g_CZClass_WriteNodeWindowDataErrorMsg",
+      "bn_name": "g_CZClass_WriteNodeWindowDataErrorMsg",
       "byte_length": 32
     },
     {
       "address": "0x4deecc",
-      "symbol": "_g_zClass_WriteNodeDisplayDataErrorMsg",
-      "name": "g_zClass_WriteNodeDisplayDataErrorMsg",
-      "bn_name": "g_zClass_WriteNodeDisplayDataErrorMsg",
+      "symbol": "_g_CZClass_WriteNodeDisplayDataErrorMsg",
+      "name": "g_CZClass_WriteNodeDisplayDataErrorMsg",
+      "bn_name": "g_CZClass_WriteNodeDisplayDataErrorMsg",
       "byte_length": 33
     },
     {
       "address": "0x4deef0",
-      "symbol": "_g_zClass_WriteNodeCameraDataErrorMsg",
-      "name": "g_zClass_WriteNodeCameraDataErrorMsg",
-      "bn_name": "g_zClass_WriteNodeCameraDataErrorMsg",
+      "symbol": "_g_CZClass_WriteNodeCameraDataErrorMsg",
+      "name": "g_CZClass_WriteNodeCameraDataErrorMsg",
+      "bn_name": "g_CZClass_WriteNodeCameraDataErrorMsg",
       "byte_length": 32
     },
     {
       "address": "0x4def10",
-      "symbol": "_g_zClass_WriteNodeLightDataErrorMsg",
-      "name": "g_zClass_WriteNodeLightDataErrorMsg",
-      "bn_name": "g_zClass_WriteNodeLightDataErrorMsg",
+      "symbol": "_g_CZClass_WriteNodeLightDataErrorMsg",
+      "name": "g_CZClass_WriteNodeLightDataErrorMsg",
+      "bn_name": "g_CZClass_WriteNodeLightDataErrorMsg",
       "byte_length": 31
     },
     {
       "address": "0x4def30",
-      "symbol": "_g_zClass_WriteNodeLodDataErrorMsg",
-      "name": "g_zClass_WriteNodeLodDataErrorMsg",
-      "bn_name": "g_zClass_WriteNodeLodDataErrorMsg",
+      "symbol": "_g_CZClass_WriteNodeLodDataErrorMsg",
+      "name": "g_CZClass_WriteNodeLodDataErrorMsg",
+      "bn_name": "g_CZClass_WriteNodeLodDataErrorMsg",
       "byte_length": 29
     },
     {
       "address": "0x4def50",
-      "symbol": "_g_zClass_WriteNodeObject3DDataErrorMsg",
-      "name": "g_zClass_WriteNodeObject3DDataErrorMsg",
-      "bn_name": "g_zClass_WriteNodeObject3DDataErrorMsg",
+      "symbol": "_g_CZClass_WriteNodeObject3DDataErrorMsg",
+      "name": "g_CZClass_WriteNodeObject3DDataErrorMsg",
+      "bn_name": "g_CZClass_WriteNodeObject3DDataErrorMsg",
       "byte_length": 34
     },
     {
       "address": "0x4def74",
-      "symbol": "_g_zClass_WriteNodeUnrecognizedClassTypeFmt",
-      "name": "g_zClass_WriteNodeUnrecognizedClassTypeFmt",
-      "bn_name": "g_zClass_WriteNodeUnrecognizedClassTypeFmt",
+      "symbol": "_g_CZClass_WriteNodeUnrecognizedClassTypeFmt",
+      "name": "g_CZClass_WriteNodeUnrecognizedClassTypeFmt",
+      "bn_name": "g_CZClass_WriteNodeUnrecognizedClassTypeFmt",
       "byte_length": 76
     },
     {
       "address": "0x4defc0",
-      "symbol": "_g_zClass_WriteNodeSoundDataErrorMsg",
-      "name": "g_zClass_WriteNodeSoundDataErrorMsg",
-      "bn_name": "g_zClass_WriteNodeSoundDataErrorMsg",
+      "symbol": "_g_CZClass_WriteNodeSoundDataErrorMsg",
+      "name": "g_CZClass_WriteNodeSoundDataErrorMsg",
+      "bn_name": "g_CZClass_WriteNodeSoundDataErrorMsg",
       "byte_length": 31
     },
     {
       "address": "0x4defe0",
-      "symbol": "_g_zClass_WriteSoundNodeDataIncompleteMsg",
-      "name": "g_zClass_WriteSoundNodeDataIncompleteMsg",
-      "bn_name": "g_zClass_WriteSoundNodeDataIncompleteMsg",
+      "symbol": "_g_CZClass_WriteSoundNodeDataIncompleteMsg",
+      "name": "g_CZClass_WriteSoundNodeDataIncompleteMsg",
+      "bn_name": "g_CZClass_WriteSoundNodeDataIncompleteMsg",
       "byte_length": 49
     },
     {
       "address": "0x4df014",
-      "symbol": "_g_zClass_WriteGameZNodeActionCallbackDefinedFmt",
-      "name": "g_zClass_WriteGameZNodeActionCallbackDefinedFmt",
-      "bn_name": "g_zClass_WriteGameZNodeActionCallbackDefinedFmt",
+      "symbol": "_g_CZClass_WriteGameZNodeActionCallbackDefinedFmt",
+      "name": "g_CZClass_WriteGameZNodeActionCallbackDefinedFmt",
+      "bn_name": "g_CZClass_WriteGameZNodeActionCallbackDefinedFmt",
       "byte_length": 56
     },
     {
       "address": "0x4df04c",
-      "symbol": "_g_zClass_WriteGameZHeaderDataErrorMsg",
-      "name": "g_zClass_WriteGameZHeaderDataErrorMsg",
-      "bn_name": "g_zClass_WriteGameZHeaderDataErrorMsg",
+      "symbol": "_g_CZClass_WriteGameZHeaderDataErrorMsg",
+      "name": "g_CZClass_WriteGameZHeaderDataErrorMsg",
+      "bn_name": "g_CZClass_WriteGameZHeaderDataErrorMsg",
       "byte_length": 33
     },
     {
       "address": "0x4df070",
-      "symbol": "_g_zClass_ZbdFilenameTooLongFmt",
-      "name": "g_zClass_ZbdFilenameTooLongFmt",
-      "bn_name": "g_zClass_ZbdFilenameTooLongFmt",
+      "symbol": "_g_CZClass_ZbdFilenameTooLongFmt",
+      "name": "g_CZClass_ZbdFilenameTooLongFmt",
+      "bn_name": "g_CZClass_ZbdFilenameTooLongFmt",
       "byte_length": 55
     },
     {
       "address": "0x4df0a8",
-      "symbol": "_g_zClass_ReadGameZNodeListErrorMsg",
-      "name": "g_zClass_ReadGameZNodeListErrorMsg",
-      "bn_name": "g_zClass_ReadGameZNodeListErrorMsg",
+      "symbol": "_g_CZClass_ReadGameZNodeListErrorMsg",
+      "name": "g_CZClass_ReadGameZNodeListErrorMsg",
+      "bn_name": "g_CZClass_ReadGameZNodeListErrorMsg",
       "byte_length": 31
     },
     {
       "address": "0x4df0c8",
-      "symbol": "_g_zClass_ReadWorldAreaPartitionDataErrorMsg",
-      "name": "g_zClass_ReadWorldAreaPartitionDataErrorMsg",
-      "bn_name": "g_zClass_ReadWorldAreaPartitionDataErrorMsg",
+      "symbol": "_g_CZClass_ReadWorldAreaPartitionDataErrorMsg",
+      "name": "g_CZClass_ReadWorldAreaPartitionDataErrorMsg",
+      "bn_name": "g_CZClass_ReadWorldAreaPartitionDataErrorMsg",
       "byte_length": 41
     },
     {
       "address": "0x4df0f4",
-      "symbol": "_g_zClass_ReadNodeUnrecognizedClassTypeFmt",
-      "name": "g_zClass_ReadNodeUnrecognizedClassTypeFmt",
-      "bn_name": "g_zClass_ReadNodeUnrecognizedClassTypeFmt",
+      "symbol": "_g_CZClass_ReadNodeUnrecognizedClassTypeFmt",
+      "name": "g_CZClass_ReadNodeUnrecognizedClassTypeFmt",
+      "bn_name": "g_CZClass_ReadNodeUnrecognizedClassTypeFmt",
       "byte_length": 75
     },
     {
       "address": "0x4df140",
-      "symbol": "_g_zClass_ReadNodeWorldDataErrorMsg",
-      "name": "g_zClass_ReadNodeWorldDataErrorMsg",
-      "bn_name": "g_zClass_ReadNodeWorldDataErrorMsg",
+      "symbol": "_g_CZClass_ReadNodeWorldDataErrorMsg",
+      "name": "g_CZClass_ReadNodeWorldDataErrorMsg",
+      "bn_name": "g_CZClass_ReadNodeWorldDataErrorMsg",
       "byte_length": 31
     },
     {
       "address": "0x4df160",
-      "symbol": "_g_zClass_ReadNodeWindowDataErrorMsg",
-      "name": "g_zClass_ReadNodeWindowDataErrorMsg",
-      "bn_name": "g_zClass_ReadNodeWindowDataErrorMsg",
+      "symbol": "_g_CZClass_ReadNodeWindowDataErrorMsg",
+      "name": "g_CZClass_ReadNodeWindowDataErrorMsg",
+      "bn_name": "g_CZClass_ReadNodeWindowDataErrorMsg",
       "byte_length": 32
     },
     {
       "address": "0x4df180",
-      "symbol": "_g_zClass_ReadNodeDisplayDataErrorMsg",
-      "name": "g_zClass_ReadNodeDisplayDataErrorMsg",
-      "bn_name": "g_zClass_ReadNodeDisplayDataErrorMsg",
+      "symbol": "_g_CZClass_ReadNodeDisplayDataErrorMsg",
+      "name": "g_CZClass_ReadNodeDisplayDataErrorMsg",
+      "bn_name": "g_CZClass_ReadNodeDisplayDataErrorMsg",
       "byte_length": 33
     },
     {
       "address": "0x4df1a4",
-      "symbol": "_g_zClass_ReadNodeCameraDataErrorMsg",
-      "name": "g_zClass_ReadNodeCameraDataErrorMsg",
-      "bn_name": "g_zClass_ReadNodeCameraDataErrorMsg",
+      "symbol": "_g_CZClass_ReadNodeCameraDataErrorMsg",
+      "name": "g_CZClass_ReadNodeCameraDataErrorMsg",
+      "bn_name": "g_CZClass_ReadNodeCameraDataErrorMsg",
       "byte_length": 32
     },
     {
       "address": "0x4df1c4",
-      "symbol": "_g_zClass_ReadNodeLightDataErrorMsg",
-      "name": "g_zClass_ReadNodeLightDataErrorMsg",
-      "bn_name": "g_zClass_ReadNodeLightDataErrorMsg",
+      "symbol": "_g_CZClass_ReadNodeLightDataErrorMsg",
+      "name": "g_CZClass_ReadNodeLightDataErrorMsg",
+      "bn_name": "g_CZClass_ReadNodeLightDataErrorMsg",
       "byte_length": 31
     },
     {
       "address": "0x4df1e4",
-      "symbol": "_g_zClass_ReadNodeLodDataErrorMsg",
-      "name": "g_zClass_ReadNodeLodDataErrorMsg",
-      "bn_name": "g_zClass_ReadNodeLodDataErrorMsg",
+      "symbol": "_g_CZClass_ReadNodeLodDataErrorMsg",
+      "name": "g_CZClass_ReadNodeLodDataErrorMsg",
+      "bn_name": "g_CZClass_ReadNodeLodDataErrorMsg",
       "byte_length": 29
     },
     {
       "address": "0x4df204",
-      "symbol": "_g_zClass_ReadNodeObject3DDataErrorMsg",
-      "name": "g_zClass_ReadNodeObject3DDataErrorMsg",
-      "bn_name": "g_zClass_ReadNodeObject3DDataErrorMsg",
+      "symbol": "_g_CZClass_ReadNodeObject3DDataErrorMsg",
+      "name": "g_CZClass_ReadNodeObject3DDataErrorMsg",
+      "bn_name": "g_CZClass_ReadNodeObject3DDataErrorMsg",
       "byte_length": 34
     },
     {
       "address": "0x4df228",
-      "symbol": "_g_zClass_ReadNodeSoundDataErrorMsg",
-      "name": "g_zClass_ReadNodeSoundDataErrorMsg",
-      "bn_name": "g_zClass_ReadNodeSoundDataErrorMsg",
+      "symbol": "_g_CZClass_ReadNodeSoundDataErrorMsg",
+      "name": "g_CZClass_ReadNodeSoundDataErrorMsg",
+      "bn_name": "g_CZClass_ReadNodeSoundDataErrorMsg",
       "byte_length": 31
     },
     {
       "address": "0x4df248",
-      "symbol": "_g_zClass_ReadSoundNodeDataIncompleteMsg",
-      "name": "g_zClass_ReadSoundNodeDataIncompleteMsg",
-      "bn_name": "g_zClass_ReadSoundNodeDataIncompleteMsg",
+      "symbol": "_g_CZClass_ReadSoundNodeDataIncompleteMsg",
+      "name": "g_CZClass_ReadSoundNodeDataIncompleteMsg",
+      "bn_name": "g_CZClass_ReadSoundNodeDataIncompleteMsg",
       "byte_length": 49
     },
     {
       "address": "0x4df27c",
-      "symbol": "_g_zClass_ReadGameZNodeBufferErrorMsg",
-      "name": "g_zClass_ReadGameZNodeBufferErrorMsg",
-      "bn_name": "g_zClass_ReadGameZNodeBufferErrorMsg",
+      "symbol": "_g_CZClass_ReadGameZNodeBufferErrorMsg",
+      "name": "g_CZClass_ReadGameZNodeBufferErrorMsg",
+      "bn_name": "g_CZClass_ReadGameZNodeBufferErrorMsg",
       "byte_length": 33
     },
     {
       "address": "0x4df2a0",
-      "symbol": "_g_zClass_ReadGameZNodeDataErrorMsg",
-      "name": "g_zClass_ReadGameZNodeDataErrorMsg",
-      "bn_name": "g_zClass_ReadGameZNodeDataErrorMsg",
+      "symbol": "_g_CZClass_ReadGameZNodeDataErrorMsg",
+      "name": "g_CZClass_ReadGameZNodeDataErrorMsg",
+      "bn_name": "g_CZClass_ReadGameZNodeDataErrorMsg",
       "byte_length": 31
     },
     {
       "address": "0x4df2c0",
-      "symbol": "_g_zClass_ReadGameZModel3DDataErrorMsg",
-      "name": "g_zClass_ReadGameZModel3DDataErrorMsg",
-      "bn_name": "g_zClass_ReadGameZModel3DDataErrorMsg",
+      "symbol": "_g_CZClass_ReadGameZModel3DDataErrorMsg",
+      "name": "g_CZClass_ReadGameZModel3DDataErrorMsg",
+      "bn_name": "g_CZClass_ReadGameZModel3DDataErrorMsg",
       "byte_length": 34
     },
     {
       "address": "0x4df2e4",
-      "symbol": "_g_zClass_ReadGameZMaterialDataErrorMsg",
-      "name": "g_zClass_ReadGameZMaterialDataErrorMsg",
-      "bn_name": "g_zClass_ReadGameZMaterialDataErrorMsg",
+      "symbol": "_g_CZClass_ReadGameZMaterialDataErrorMsg",
+      "name": "g_CZClass_ReadGameZMaterialDataErrorMsg",
+      "bn_name": "g_CZClass_ReadGameZMaterialDataErrorMsg",
       "byte_length": 35
     },
     {
       "address": "0x4df308",
-      "symbol": "_g_zClass_ReadGameZTextureDataErrorMsg",
-      "name": "g_zClass_ReadGameZTextureDataErrorMsg",
-      "bn_name": "g_zClass_ReadGameZTextureDataErrorMsg",
+      "symbol": "_g_CZClass_ReadGameZTextureDataErrorMsg",
+      "name": "g_CZClass_ReadGameZTextureDataErrorMsg",
+      "bn_name": "g_CZClass_ReadGameZTextureDataErrorMsg",
       "byte_length": 34
     },
     {
       "address": "0x4df32c",
-      "symbol": "_g_zClass_ReadGameZHeaderIncompatibleVersionMsg",
-      "name": "g_zClass_ReadGameZHeaderIncompatibleVersionMsg",
-      "bn_name": "g_zClass_ReadGameZHeaderIncompatibleVersionMsg",
+      "symbol": "_g_CZClass_ReadGameZHeaderIncompatibleVersionMsg",
+      "name": "g_CZClass_ReadGameZHeaderIncompatibleVersionMsg",
+      "bn_name": "g_CZClass_ReadGameZHeaderIncompatibleVersionMsg",
       "byte_length": 59
     },
     {
       "address": "0x4df368",
-      "symbol": "_g_zClass_ReadGameZHeaderIncompatibleTypeMsg",
-      "name": "g_zClass_ReadGameZHeaderIncompatibleTypeMsg",
-      "bn_name": "g_zClass_ReadGameZHeaderIncompatibleTypeMsg",
+      "symbol": "_g_CZClass_ReadGameZHeaderIncompatibleTypeMsg",
+      "name": "g_CZClass_ReadGameZHeaderIncompatibleTypeMsg",
+      "bn_name": "g_CZClass_ReadGameZHeaderIncompatibleTypeMsg",
       "byte_length": 56
     },
     {
       "address": "0x4df3a0",
-      "symbol": "_g_zClass_ReadGameZHeaderDataErrorMsg",
-      "name": "g_zClass_ReadGameZHeaderDataErrorMsg",
-      "bn_name": "g_zClass_ReadGameZHeaderDataErrorMsg",
+      "symbol": "_g_CZClass_ReadGameZHeaderDataErrorMsg",
+      "name": "g_CZClass_ReadGameZHeaderDataErrorMsg",
+      "bn_name": "g_CZClass_ReadGameZHeaderDataErrorMsg",
       "byte_length": 33
     }
   ]

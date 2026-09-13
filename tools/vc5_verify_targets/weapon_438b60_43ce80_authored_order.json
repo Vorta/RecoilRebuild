@@ -147,7 +147,7 @@
         },
         {
           "address": "0x43a4f0",
-          "symbol": "?UpdateGunAndTurretAimNodes@Player@@YIXPBUzVec3@@PAUzClass_NodePartial@@1@Z",
+          "symbol": "?UpdateGunAndTurretAimNodes@Player@@YIXPBUzVec3@@PAUCZNodePartial@@1@Z",
           "name": "Player::UpdateGunAndTurretAimNodes",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -165,7 +165,7 @@
         },
         {
           "address": "0x43a900",
-          "symbol": "?DecayAndApplyAltFireSlotOffsetToNode@Player@@YIXPAUPlayerGunFireSlot@@PAUzClass_NodePartial@@MH@Z",
+          "symbol": "?DecayAndApplyAltFireSlotOffsetToNode@Player@@YIXPAUPlayerGunFireSlot@@PAUCZNodePartial@@MH@Z",
           "name": "Player::DecayAndApplyAltFireSlotOffsetToNode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -616,7 +616,7 @@
         },
         {
           "address": "0x43a4f0",
-          "symbol": "?UpdateGunAndTurretAimNodes@Player@@YIXPBUzVec3@@PAUzClass_NodePartial@@1@Z",
+          "symbol": "?UpdateGunAndTurretAimNodes@Player@@YIXPBUzVec3@@PAUCZNodePartial@@1@Z",
           "name": "Player::UpdateGunAndTurretAimNodes",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
@@ -634,7 +634,7 @@
         },
         {
           "address": "0x43a900",
-          "symbol": "?DecayAndApplyAltFireSlotOffsetToNode@Player@@YIXPAUPlayerGunFireSlot@@PAUzClass_NodePartial@@MH@Z",
+          "symbol": "?DecayAndApplyAltFireSlotOffsetToNode@Player@@YIXPAUPlayerGunFireSlot@@PAUCZNodePartial@@MH@Z",
           "name": "Player::DecayAndApplyAltFireSlotOffsetToNode",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",

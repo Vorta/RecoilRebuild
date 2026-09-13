@@ -347,7 +347,7 @@
     },
     {
       "address": "0x476cf0",
-      "symbol": "?RenderNodeSoftware@zModel@@YIXPAUzClass_NodePartial@@H@Z",
+      "symbol": "?RenderNodeSoftware@zModel@@YIXPAUCZNodePartial@@H@Z",
       "name": "zModel::RenderNodeSoftware",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -356,7 +356,7 @@
     },
     {
       "address": "0x477b30",
-      "symbol": "?RenderNodeHardware@zModel@@YIXPAUzClass_NodePartial@@H@Z",
+      "symbol": "?RenderNodeHardware@zModel@@YIXPAUCZNodePartial@@H@Z",
       "name": "zModel::RenderNodeHardware",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -464,7 +464,7 @@
     },
     {
       "address": "0x479ce0",
-      "symbol": "?zVideoSetActiveViewContext@@YIXPAUzClass_CameraDataPartial@@@Z",
+      "symbol": "?zVideoSetActiveViewContext@@YIXPAUCZCameraDataPartial@@@Z",
       "name": "zVideo::SetActiveViewContext",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -482,7 +482,7 @@
     },
     {
       "address": "0x47a0c0",
-      "symbol": "?zVideoUpdateProjectionStateFromCameraData@@YIXPAUzClass_CameraDataPartial@@@Z",
+      "symbol": "?zVideoUpdateProjectionStateFromCameraData@@YIXPAUCZCameraDataPartial@@@Z",
       "name": "zVideo::UpdateProjectionStateFromCameraData",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -491,7 +491,7 @@
     },
     {
       "address": "0x47a1d0",
-      "symbol": "?zClipAltBuildFrustumPlanes@@YIXPAUzClass_CameraDataPartial@@@Z",
+      "symbol": "?zClipAltBuildFrustumPlanes@@YIXPAUCZCameraDataPartial@@@Z",
       "name": "zClipAlt::BuildFrustumPlanes",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",

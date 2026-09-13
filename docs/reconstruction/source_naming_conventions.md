@@ -93,6 +93,18 @@ headers and ABI, not this convention.
 
 ## Function Names And Naming Audits
 
+The user-selected convention for owners of `GameZRecoil/zClass` is `CZ…`,
+including `CZClass`, `CZAnimate`, `CZCamera`, `CZObject3D`, `CZWindow`,
+`CZUtil`, `CZWorld`, `CZDisplay`, `CZLight`, `CZList`, `CZSequence`, and
+`CZSound`. Related owner scopes use the same convention: `CZNode`,
+`CZNodeList`, `CZTypeList`, `CZLod`, `CZSwitch`, `CZDisplayInstance`,
+`CZObject3DModelRefLerpQueue`, `CZBBox`, and `CZZbd`. This is an explicitly
+requested reconstruction naming convention, not recovered historical spelling
+or proof that an existing namespace is a C++ class. Preserve the existing
+source construct, ABI, member layouts, source paths, and literal contents when
+applying it. Keep references and decorated candidate symbol selectors consistent
+across source files, shared headers, and verification registrations.
+
 Prefer a surviving diagnostic's exact function spelling when its xref and call
 context identify that function. A string can name a callee or recommend another
 API, so the containing function is not automatically the named function.

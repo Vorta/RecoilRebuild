@@ -23,30 +23,30 @@
   "data_symbols": [
     {
       "address": "0x539c90",
-      "symbol": "_g_zClass_NodeArraySize",
-      "name": "g_zClass_NodeArraySize",
-      "bn_name": "g_zClass_NodeArraySize",
+      "symbol": "_g_CZClass_NodeArraySize",
+      "name": "g_CZClass_NodeArraySize",
+      "bn_name": "g_CZClass_NodeArraySize",
       "byte_length": 4
     },
     {
       "address": "0x539ca4",
-      "symbol": "_g_zClass_IsInitialized",
-      "name": "g_zClass_IsInitialized",
-      "bn_name": "g_zClass_IsInitialized",
+      "symbol": "_g_CZClass_IsInitialized",
+      "name": "g_CZClass_IsInitialized",
+      "bn_name": "g_CZClass_IsInitialized",
       "byte_length": 4
     },
     {
       "address": "0x4de4c4",
-      "symbol": "_g_zClass_RebuildGwWorldBltRectOnShutdown",
-      "name": "g_zClass_RebuildGwWorldBltRectOnShutdown",
-      "bn_name": "g_zClass_RebuildGwWorldBltRectOnShutdown",
+      "symbol": "_g_CZClass_RebuildGwWorldBltRectOnShutdown",
+      "name": "g_CZClass_RebuildGwWorldBltRectOnShutdown",
+      "bn_name": "g_CZClass_RebuildGwWorldBltRectOnShutdown",
       "byte_length": 4
     },
     {
       "address": "0x4de530",
-      "symbol": "_g_zClass_GWWorldNodeName",
-      "name": "g_zClass_GWWorldNodeName",
-      "bn_name": "g_zClass_GWWorldNodeName",
+      "symbol": "_g_CZClass_GWWorldNodeName",
+      "name": "g_CZClass_GWWorldNodeName",
+      "bn_name": "g_CZClass_GWWorldNodeName",
       "byte_length": 8
     }
   ]

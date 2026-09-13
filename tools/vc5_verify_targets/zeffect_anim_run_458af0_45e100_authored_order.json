@@ -41,7 +41,7 @@
     },
     {
       "address": "0x458bb0",
-      "symbol": "?TickResetDelayOnHit@zEffect@@YIHPAUzEffectAnimEntry@@PAUzClass_NodePartial@@HM@Z",
+      "symbol": "?TickResetDelayOnHit@zEffect@@YIHPAUzEffectAnimEntry@@PAUCZNodePartial@@HM@Z",
       "name": "zEffect::TickResetDelayOnHit",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -50,7 +50,7 @@
     },
     {
       "address": "0x458c10",
-      "symbol": "?UpdateBeamNodeBetweenPoints@zEffect@@YIMPAUzClass_NodePartial@@PBUzVec3@@1@Z",
+      "symbol": "?UpdateBeamNodeBetweenPoints@zEffect@@YIMPAUCZNodePartial@@PBUzVec3@@1@Z",
       "name": "zEffect::UpdateBeamNodeBetweenPoints",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -59,7 +59,7 @@
     },
     {
       "address": "0x458ce0",
-      "symbol": "?UpdateBeamNodeBetweenFractions@zEffect@@YIMPAUzClass_NodePartial@@PBUzVec3@@M1M@Z",
+      "symbol": "?UpdateBeamNodeBetweenFractions@zEffect@@YIMPAUCZNodePartial@@PBUzVec3@@M1M@Z",
       "name": "zEffect::UpdateBeamNodeBetweenFractions",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -212,7 +212,7 @@
     },
     {
       "address": "0x45ae90",
-      "symbol": "?AnimateKeyframeSample@zEffect_Anim@@YIMPAUzEffectAnimSurfaceRuntime@@PAUzEffectKeyframeEvent@@PAUzClass_NodePartial@@PAUzEffectKeyframeSampleHeader@@PAM@Z",
+      "symbol": "?AnimateKeyframeSample@zEffect_Anim@@YIMPAUzEffectAnimSurfaceRuntime@@PAUzEffectKeyframeEvent@@PAUCZNodePartial@@PAUzEffectKeyframeSampleHeader@@PAM@Z",
       "name": "zEffect_Anim::AnimateKeyframeSample",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -401,7 +401,7 @@
     },
     {
       "address": "0x45c530",
-      "symbol": "?TraceUpwardHitFromNodeOrPos@zEffect@@YIHPAUzClass_NodePartial@@PBUzVec3@@PBMPAH@Z",
+      "symbol": "?TraceUpwardHitFromNodeOrPos@zEffect@@YIHPAUCZNodePartial@@PBUzVec3@@PBMPAH@Z",
       "name": "zEffect::TraceUpwardHitFromNodeOrPos",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -410,7 +410,7 @@
     },
     {
       "address": "0x45c640",
-      "symbol": "?GetConditionalRefPosDistanceSq@zEffect@@YIMPAUzClass_NodePartial@@@Z",
+      "symbol": "?GetConditionalRefPosDistanceSq@zEffect@@YIMPAUCZNodePartial@@@Z",
       "name": "zEffect::GetConditionalRefPosDistanceSq",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -491,7 +491,7 @@
     },
     {
       "address": "0x45d010",
-      "symbol": "?RunSequence@zEffect_Anim@@YIHPAUzClass_NodePartial@@@Z",
+      "symbol": "?RunSequence@zEffect_Anim@@YIHPAUCZNodePartial@@@Z",
       "name": "zEffect_Anim::RunSequence",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -527,7 +527,7 @@
     },
     {
       "address": "0x45d4c0",
-      "symbol": "?RunStopSequenceCallback@zEffectAnim@@YIHPAUzClass_NodePartial@@@Z",
+      "symbol": "?RunStopSequenceCallback@zEffectAnim@@YIHPAUCZNodePartial@@@Z",
       "name": "zEffectAnim::RunStopSequenceCallback",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -536,7 +536,7 @@
     },
     {
       "address": "0x45d570",
-      "symbol": "?StopAndCleanup@zEffectAnim@@YIHPAUzEffectAnimEntry@@PAUzClass_NodePartial@@H@Z",
+      "symbol": "?StopAndCleanup@zEffectAnim@@YIHPAUzEffectAnimEntry@@PAUCZNodePartial@@H@Z",
       "name": "zEffectAnim::StopAndCleanup",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -545,7 +545,7 @@
     },
     {
       "address": "0x45d6b0",
-      "symbol": "?NodeActionCallback@zEffect_Anim@@YIHPAUzEffectAnimEntry@@PAUzClass_NodePartial@@@Z",
+      "symbol": "?NodeActionCallback@zEffect_Anim@@YIHPAUzEffectAnimEntry@@PAUCZNodePartial@@@Z",
       "name": "zEffect_Anim::NodeActionCallback",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -563,7 +563,7 @@
     },
     {
       "address": "0x45d770",
-      "symbol": "?RunStopDelayCallback@zEffectAnim@@YIHPAUzClass_NodePartial@@@Z",
+      "symbol": "?RunStopDelayCallback@zEffectAnim@@YIHPAUCZNodePartial@@@Z",
       "name": "zEffectAnim::RunStopDelayCallback",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -581,7 +581,7 @@
     },
     {
       "address": "0x45d7b0",
-      "symbol": "?SetTransformRotAndVelocity@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMMMMMMMM@Z",
+      "symbol": "?SetTransformRotAndVelocity@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@MMMMMMMMM@Z",
       "name": "zEffectAnim::SetTransformRotAndVelocity",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -590,7 +590,7 @@
     },
     {
       "address": "0x45d930",
-      "symbol": "?ActivateRuntime@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@@Z",
+      "symbol": "?ActivateRuntime@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@@Z",
       "name": "zEffectAnim::ActivateRuntime",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -608,7 +608,7 @@
     },
     {
       "address": "0x45dc70",
-      "symbol": "?SetTransformRotAndVelocityThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMMMMMMMM@Z",
+      "symbol": "?SetTransformRotAndVelocityThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@MMMMMMMMM@Z",
       "name": "zEffectAnim::SetTransformRotAndVelocityThunk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -617,7 +617,7 @@
     },
     {
       "address": "0x45dcb0",
-      "symbol": "?SetVelocity@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMM@Z",
+      "symbol": "?SetVelocity@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@MMM@Z",
       "name": "zEffectAnim::SetVelocity",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -626,7 +626,7 @@
     },
     {
       "address": "0x45dde0",
-      "symbol": "?SetVelocityThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@MMM@Z",
+      "symbol": "?SetVelocityThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@MMM@Z",
       "name": "zEffectAnim::SetVelocityThunk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -635,7 +635,7 @@
     },
     {
       "address": "0x45de00",
-      "symbol": "?SetPositionRefAndVelocity@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@2@Z",
+      "symbol": "?SetPositionRefAndVelocity@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@1PBUzVec3@@2@Z",
       "name": "zEffectAnim::SetPositionRefAndVelocity",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -644,7 +644,7 @@
     },
     {
       "address": "0x45df70",
-      "symbol": "?SetPositionRefAndVelocityThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@2@Z",
+      "symbol": "?SetPositionRefAndVelocityThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@1PBUzVec3@@2@Z",
       "name": "zEffectAnim::SetPositionRefAndVelocityThunk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -653,7 +653,7 @@
     },
     {
       "address": "0x45df90",
-      "symbol": "?SetTransformRefs@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@12@Z",
+      "symbol": "?SetTransformRefs@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@1PBUzVec3@@12@Z",
       "name": "zEffectAnim::SetTransformRefs",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -662,7 +662,7 @@
     },
     {
       "address": "0x45e0b0",
-      "symbol": "?SetTransformRefsThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@1PBUzVec3@@12@Z",
+      "symbol": "?SetTransformRefsThunk@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@1PBUzVec3@@12@Z",
       "name": "zEffectAnim::SetTransformRefsThunk",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -779,7 +779,7 @@
       "retail_end_exclusive": "0x45e100",
       "predecessor": {
         "address": "0x458ae0",
-        "symbol": "?GetCameraNode@zDEClient@@YAPAUzClass_NodePartial@@XZ",
+        "symbol": "?GetCameraNode@zDEClient@@YAPAUCZNodePartial@@XZ",
         "name": "zDEClient::GetCameraNode",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",

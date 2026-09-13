@@ -22,14 +22,14 @@
   "data_symbols": [
     {
       "address": "0x57d410",
-      "symbol": "?gModel_LightInputNodeStates@@3PAPAUzClass_NodePartial@@A",
+      "symbol": "?gModel_LightInputNodeStates@@3PAPAUCZNodePartial@@A",
       "name": "gModel_LightInputNodeStates",
       "bn_name": "gModel_LightInputNodeStates",
       "byte_length": 4
     },
     {
       "address": "0x57d414",
-      "symbol": "?gModel_LightInputDataList@@3PAPAUzClass_LightDataPartial@@A",
+      "symbol": "?gModel_LightInputDataList@@3PAPAUCZLightDataPartial@@A",
       "name": "gModel_LightInputDataList",
       "bn_name": "gModel_LightInputDataList",
       "byte_length": 4

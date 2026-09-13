@@ -24,8 +24,8 @@
     {
       "address": "0x4ddad0",
       "symbol": "??_C@_0CN@LNNE@ERROR?5setting?5action?5callback?$DL?5p@",
-      "name": "g_zClass_ActionCallbackPriorityErrorFmt",
-      "bn_name": "g_zClass_ActionCallbackPriorityErrorFmt",
+      "name": "g_CZClass_ActionCallbackPriorityErrorFmt",
+      "bn_name": "g_CZClass_ActionCallbackPriorityErrorFmt",
       "byte_length": 45
     }
   ]

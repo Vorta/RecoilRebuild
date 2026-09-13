@@ -1,6 +1,6 @@
 {
   "name": "zclass_window_size_accessors",
-  "description": "zClass_Window viewport-size and render-resolution accessors.",
+  "description": "CZWindow viewport-size and render-resolution accessors.",
   "source_filename": "Window.c",
   "source_from": "src/GameZRecoil/zClass/Window.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -28,13 +28,13 @@
   "functions": [
     {
       "address": "0x44f930",
-      "symbol": "?gwWindowGetResolution@zClass_Window@@YIHPAUzClass_NodePartial@@PAH1@Z",
-      "name": "zClass_Window::gwWindowGetResolution"
+      "symbol": "?gwWindowGetResolution@CZWindow@@YIHPAUCZNodePartial@@PAH1@Z",
+      "name": "CZWindow::gwWindowGetResolution"
     },
     {
       "address": "0x44fa40",
-      "symbol": "?gwWindowGetSize@zClass_Window@@YIHPAUzClass_NodePartial@@PAH1@Z",
-      "name": "zClass_Window::gwWindowGetSize"
+      "symbol": "?gwWindowGetSize@CZWindow@@YIHPAUCZNodePartial@@PAH1@Z",
+      "name": "CZWindow::gwWindowGetSize"
     }
   ]
 }

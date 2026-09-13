@@ -11,248 +11,248 @@
 extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-nodearraysize
- * @recoil-artifact defines .data recoil:data:0x539c90: g_zClass_NodeArraySize.
+ * @recoil-artifact defines .data recoil:data:0x539c90: g_CZClass_NodeArraySize.
  * Purpose: track the configured zClass node free-list capacity.
  */
-int g_zClass_NodeArraySize = 0;
+int g_CZClass_NodeArraySize = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-isinitialized
- * @recoil-artifact defines .data recoil:data:0x539ca4: g_zClass_IsInitialized.
+ * @recoil-artifact defines .data recoil:data:0x539ca4: g_CZClass_IsInitialized.
  * Purpose: track whether the core zClass utility subsystem is initialized.
  */
-int g_zClass_IsInitialized = 0;
+int g_CZClass_IsInitialized = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeclonedimode
- * @recoil-artifact defines .data recoil:data:0x4de4cc: g_zClass_CopyNodeCloneDiMode.
+ * @recoil-artifact defines .data recoil:data:0x4de4cc: g_CZClass_CopyNodeCloneDiMode.
  * Purpose: hold the active display-instance clone mode during node-copy recursion.
  */
-int g_zClass_CopyNodeCloneDiMode = 1;
+int g_CZClass_CopyNodeCloneDiMode = 1;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-sourcefile-clsutilc
- * @recoil-artifact defines .data recoil:data:0x4de4d0: g_zClass_SourceFile_ClsUtilC.
+ * @recoil-artifact defines .data recoil:data:0x4de4d0: g_CZClass_SourceFile_ClsUtilC.
  * Purpose: store the recovered cls_util.c source path used by zError reports.
  */
-char g_zClass_SourceFile_ClsUtilC[0x26] =
+char g_CZClass_SourceFile_ClsUtilC[0x26] =
     "D:\\Proj\\GameZRecoil\\zClass\\cls_util.c";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-nodearraysizealreadysetfmt
- * @recoil-artifact defines .data recoil:data:0x4de4f8: g_zClass_NodeArraySizeAlreadySetFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de4f8: g_CZClass_NodeArraySizeAlreadySetFmt.
  * Purpose: report attempts to resize zClass node storage after configuration.
  */
-char g_zClass_NodeArraySizeAlreadySetFmt[0x37] =
+char g_CZClass_NodeArraySizeAlreadySetFmt[0x37] =
     "Error setting node array size; size already set to %d.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodediarg0
- * @recoil-artifact defines .data recoil:data:0x539c9c: g_zClass_CopyNodeDiArg0.
+ * @recoil-artifact defines .data recoil:data:0x539c9c: g_CZClass_CopyNodeDiArg0.
  * Purpose: hold the first display-instance clone argument during node-copy recursion.
  */
-int g_zClass_CopyNodeDiArg0 = 0;
+int g_CZClass_CopyNodeDiArg0 = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodediarg1
- * @recoil-artifact defines .data recoil:data:0x539ca0: g_zClass_CopyNodeDiArg1.
+ * @recoil-artifact defines .data recoil:data:0x539ca0: g_CZClass_CopyNodeDiArg1.
  * Purpose: hold the second display-instance clone argument during node-copy recursion.
  */
-int g_zClass_CopyNodeDiArg1 = 0;
+int g_CZClass_CopyNodeDiArg1 = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-rebuildgwworldbltrectonshutdown
- * @recoil-artifact defines .data recoil:data:0x4de4c4: g_zClass_RebuildGwWorldBltRectOnShutdown.
+ * @recoil-artifact defines .data recoil:data:0x4de4c4: g_CZClass_RebuildGwWorldBltRectOnShutdown.
  * Purpose: gate registration of the GWWorld ZBD settings handler at zClass init.
  */
-int g_zClass_RebuildGwWorldBltRectOnShutdown = 1;
+int g_CZClass_RebuildGwWorldBltRectOnShutdown = 1;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-gwworldnodename
- * @recoil-artifact defines .data recoil:data:0x4de530: g_zClass_GWWorldNodeName.
+ * @recoil-artifact defines .data recoil:data:0x4de530: g_CZClass_GWWorldNodeName.
  * Purpose: store the GWWorld ZBD section name used by the class utility handler.
  */
-char g_zClass_GWWorldNodeName[8] = "GWWorld";
+char g_CZClass_GWWorldNodeName[8] = "GWWorld";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodezoneiderrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de538: g_zClass_CopyNodeZoneIdErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de538: g_CZClass_CopyNodeZoneIdErrorFmt.
  * Purpose: report failed zone id copies while cloning common node data.
  */
-char g_zClass_CopyNodeZoneIdErrorFmt[0x52] =
+char g_CZClass_CopyNodeZoneIdErrorFmt[0x52] =
     "ERROR copying node while setting zone ID.  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeactioncallbackfielderrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de58c: g_zClass_CopyNodeActionCallbackFieldErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de58c: g_CZClass_CopyNodeActionCallbackFieldErrorFmt.
  * Purpose: report failed action callback copies while cloning common node data.
  */
-char g_zClass_CopyNodeActionCallbackFieldErrorFmt[0x5f] =
+char g_CZClass_CopyNodeActionCallbackFieldErrorFmt[0x5f] =
     "ERROR copying node while setting action callback field  Source "
     "Node: (address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeactioncallbackpriorityfielderrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de5ec: g_zClass_CopyNodeActionCallbackPriorityFieldErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de5ec: g_CZClass_CopyNodeActionCallbackPriorityFieldErrorFmt.
  * Purpose: report failed action callback priority copies.
  */
-char g_zClass_CopyNodeActionCallbackPriorityFieldErrorFmt[0x69] =
+char g_CZClass_CopyNodeActionCallbackPriorityFieldErrorFmt[0x69] =
     "ERROR copying node while setting action callback priority field.  "
     "Source Node: (address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeenvironmentdataignoredfmt
- * @recoil-artifact defines .data recoil:data:0x4de658: g_zClass_CopyNodeEnvironmentDataIgnoredFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de658: g_CZClass_CopyNodeEnvironmentDataIgnoredFmt.
  * Purpose: warn when source node environment data is intentionally skipped.
  */
-char g_zClass_CopyNodeEnvironmentDataIgnoredFmt[0x32] =
+char g_CZClass_CopyNodeEnvironmentDataIgnoredFmt[0x32] =
     "Source node (%s) has environment data.  Ignoring.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodegraphicsdataerrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de68c: g_zClass_CopyNodeGraphicsDataErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de68c: g_CZClass_CopyNodeGraphicsDataErrorFmt.
  * Purpose: report failed display-instance copies.
  */
-char g_zClass_CopyNodeGraphicsDataErrorFmt[0x4a] =
+char g_CZClass_CopyNodeGraphicsDataErrorFmt[0x4a] =
     "ERROR copying node graphics data.  Source Node: (address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeoverwriteflagerrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de6d8: g_zClass_CopyNodeOverwriteFlagErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de6d8: g_CZClass_CopyNodeOverwriteFlagErrorFmt.
  * Purpose: report failed overwrite flag copies.
  */
-char g_zClass_CopyNodeOverwriteFlagErrorFmt[0x58] =
+char g_CZClass_CopyNodeOverwriteFlagErrorFmt[0x58] =
     "ERROR copying node while setting overwrite flag  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodedizonecheckflagerrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de730: g_zClass_CopyNodeDiZoneCheckFlagErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de730: g_CZClass_CopyNodeDiZoneCheckFlagErrorFmt.
  * Purpose: report failed DI zone check flag copies.
  */
-char g_zClass_CopyNodeDiZoneCheckFlagErrorFmt[0x5c] =
+char g_CZClass_CopyNodeDiZoneCheckFlagErrorFmt[0x5c] =
     "ERROR copying node while setting DI zone check flag  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodecliptoflagerrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de78c: g_zClass_CopyNodeClipToFlagErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de78c: g_CZClass_CopyNodeClipToFlagErrorFmt.
  * Purpose: report failed clip_to flag copies.
  */
-char g_zClass_CopyNodeClipToFlagErrorFmt[0x56] =
+char g_CZClass_CopyNodeClipToFlagErrorFmt[0x56] =
     "ERROR copying node while setting clip_to flag  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodecanmodifyflagerrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de7e4: g_zClass_CopyNodeCanModifyFlagErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de7e4: g_CZClass_CopyNodeCanModifyFlagErrorFmt.
  * Purpose: report failed can_modify flag copies.
  */
-char g_zClass_CopyNodeCanModifyFlagErrorFmt[0x59] =
+char g_CZClass_CopyNodeCanModifyFlagErrorFmt[0x59] =
     "ERROR copying node while setting can_modify flag  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodelandmarkflagerrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de840: g_zClass_CopyNodeLandmarkFlagErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de840: g_CZClass_CopyNodeLandmarkFlagErrorFmt.
  * Purpose: report failed landmark flag copies.
  */
-char g_zClass_CopyNodeLandmarkFlagErrorFmt[0x57] =
+char g_CZClass_CopyNodeLandmarkFlagErrorFmt[0x57] =
     "ERROR copying node while setting landmark flag  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeproximityflagerrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de898: g_zClass_CopyNodeProximityFlagErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de898: g_CZClass_CopyNodeProximityFlagErrorFmt.
  * Purpose: report failed proximity flag copies.
  */
-char g_zClass_CopyNodeProximityFlagErrorFmt[0x58] =
+char g_CZClass_CopyNodeProximityFlagErrorFmt[0x58] =
     "ERROR copying node while setting proximity flag  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeintersectbboxfielderrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de8f0: g_zClass_CopyNodeIntersectBboxFieldErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de8f0: g_CZClass_CopyNodeIntersectBboxFieldErrorFmt.
  * Purpose: report failed intersect bbox field copies.
  */
-char g_zClass_CopyNodeIntersectBboxFieldErrorFmt[0x5f] =
+char g_CZClass_CopyNodeIntersectBboxFieldErrorFmt[0x5f] =
     "ERROR copying node while setting intersect bbox field.  Source "
     "Node: (address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeintersectionfielderrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de950: g_zClass_CopyNodeIntersectionFieldErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de950: g_CZClass_CopyNodeIntersectionFieldErrorFmt.
  * Purpose: report failed intersection field copies.
  */
-char g_zClass_CopyNodeIntersectionFieldErrorFmt[0x5d] =
+char g_CZClass_CopyNodeIntersectionFieldErrorFmt[0x5d] =
     "ERROR copying node while setting intersection field.  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodealtitudesurfacefielderrorfmt
- * @recoil-artifact defines .data recoil:data:0x4de9b0: g_zClass_CopyNodeAltitudeSurfaceFieldErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de9b0: g_CZClass_CopyNodeAltitudeSurfaceFieldErrorFmt.
  * Purpose: report failed altitude surface field copies.
  */
-char g_zClass_CopyNodeAltitudeSurfaceFieldErrorFmt[0x61] =
+char g_CZClass_CopyNodeAltitudeSurfaceFieldErrorFmt[0x61] =
     "ERROR copying node while setting altitude surface field.  Source "
     "Node: (address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeactivefielderrorfmt
- * @recoil-artifact defines .data recoil:data:0x4dea14: g_zClass_CopyNodeActiveFieldErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4dea14: g_CZClass_CopyNodeActiveFieldErrorFmt.
  * Purpose: report failed active field copies.
  */
-char g_zClass_CopyNodeActiveFieldErrorFmt[0x57] =
+char g_CZClass_CopyNodeActiveFieldErrorFmt[0x57] =
     "ERROR copying node while setting active field.  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodedescriptionfielderrorfmt
- * @recoil-artifact defines .data recoil:data:0x4dea6c: g_zClass_CopyNodeDescriptionFieldErrorFmt.
+ * @recoil-artifact defines .data recoil:data:0x4dea6c: g_CZClass_CopyNodeDescriptionFieldErrorFmt.
  * Purpose: report failed description field copies.
  */
-char g_zClass_CopyNodeDescriptionFieldErrorFmt[0x5c] =
+char g_CZClass_CopyNodeDescriptionFieldErrorFmt[0x5c] =
     "ERROR copying node while setting description field.  Source Node: "
     "(address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodebasedataerrormsg
- * @recoil-artifact defines .data recoil:data:0x4deac8: g_zClass_CopyNodeBaseDataErrorMsg.
+ * @recoil-artifact defines .data recoil:data:0x4deac8: g_CZClass_CopyNodeBaseDataErrorMsg.
  * Purpose: report generic common-node-data copy failures.
  */
-char g_zClass_CopyNodeBaseDataErrorMsg[0x1e] =
+char g_CZClass_CopyNodeBaseDataErrorMsg[0x1e] =
     "ERROR copying node base data.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodesourcenodefmt
- * @recoil-artifact defines .data recoil:data:0x4deae8: g_zClass_CopyNodeSourceNodeFmt.
+ * @recoil-artifact defines .data recoil:data:0x4deae8: g_CZClass_CopyNodeSourceNodeFmt.
  * Purpose: append source node address/description context to copy errors.
  */
-char g_zClass_CopyNodeSourceNodeFmt[0x29] =
+char g_CZClass_CopyNodeSourceNodeFmt[0x29] =
     "  Source Node: (address =%x) (desc = %s)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copylightnodeunimplementedmsg
- * @recoil-artifact defines .data recoil:data:0x4deb14: g_zClass_CopyLightNodeUnimplementedMsg.
+ * @recoil-artifact defines .data recoil:data:0x4deb14: g_CZClass_CopyLightNodeUnimplementedMsg.
  * Purpose: report the retail unimplemented light-node copy path.
  */
-char g_zClass_CopyLightNodeUnimplementedMsg[0x34] =
+char g_CZClass_CopyLightNodeUnimplementedMsg[0x34] =
     "Can't copy light node; Function not yet implemented";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copysoundnodeunimplementedmsg
- * @recoil-artifact defines .data recoil:data:0x4deb48: g_zClass_CopySoundNodeUnimplementedMsg.
+ * @recoil-artifact defines .data recoil:data:0x4deb48: g_CZClass_CopySoundNodeUnimplementedMsg.
  * Purpose: report the retail unimplemented sound-node copy path.
  */
-char g_zClass_CopySoundNodeUnimplementedMsg[0x34] =
+char g_CZClass_CopySoundNodeUnimplementedMsg[0x34] =
     "Can't copy sound node; Function not yet implemented";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copyanimatenodeunimplementedmsg
- * @recoil-artifact defines .data recoil:data:0x4deb7c: g_zClass_CopyAnimateNodeUnimplementedMsg.
+ * @recoil-artifact defines .data recoil:data:0x4deb7c: g_CZClass_CopyAnimateNodeUnimplementedMsg.
  * Purpose: report the retail unimplemented animate-node copy path.
  */
-char g_zClass_CopyAnimateNodeUnimplementedMsg[0x3a] =
+char g_CZClass_CopyAnimateNodeUnimplementedMsg[0x3a] =
     "ERROR copying animate node; Function not implemented yet.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copysequencenodeunimplementedmsg
- * @recoil-artifact defines .data recoil:data:0x4debb8: g_zClass_CopySequenceNodeUnimplementedMsg.
+ * @recoil-artifact defines .data recoil:data:0x4debb8: g_CZClass_CopySequenceNodeUnimplementedMsg.
  * Purpose: report the retail unimplemented sequence-node copy path.
  */
-char g_zClass_CopySequenceNodeUnimplementedMsg[0x3b] =
+char g_CZClass_CopySequenceNodeUnimplementedMsg[0x3b] =
     "ERROR copying sequence node; Function not implemented yet.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copyswitchnodeunimplementedmsg
- * @recoil-artifact defines .data recoil:data:0x4debf4: g_zClass_CopySwitchNodeUnimplementedMsg.
+ * @recoil-artifact defines .data recoil:data:0x4debf4: g_CZClass_CopySwitchNodeUnimplementedMsg.
  * Purpose: report the retail switch-node copy stub path.
  */
-char g_zClass_CopySwitchNodeUnimplementedMsg[0x39] =
+char g_CZClass_CopySwitchNodeUnimplementedMsg[0x39] =
     "ERROR copying switch node; Function not implemented yet.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copynodeunrecognizednodefmt
- * @recoil-artifact defines .data recoil:data:0x4dec30: g_zClass_CopyNodeUnrecognizedNodeFmt.
+ * @recoil-artifact defines .data recoil:data:0x4dec30: g_CZClass_CopyNodeUnrecognizedNodeFmt.
  * Purpose: report unrecognized node classes during clone dispatch.
  */
-char g_zClass_CopyNodeUnrecognizedNodeFmt[0x2f] =
+char g_CZClass_CopyNodeUnrecognizedNodeFmt[0x2f] =
     "ERROR Unrecognized node in copying process: %s";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.g-zclass-copyworldclassnodeserrormsg
- * @recoil-artifact defines .data recoil:data:0x4dec60: g_zClass_CopyWorldClassNodesErrorMsg.
+ * @recoil-artifact defines .data recoil:data:0x4dec60: g_CZClass_CopyWorldClassNodesErrorMsg.
  * Purpose: report the retail rejection of world-class node copies.
  */
-char g_zClass_CopyWorldClassNodesErrorMsg[0x25] =
+char g_CZClass_CopyWorldClassNodesErrorMsg[0x25] =
     "ERROR cannot copy world class nodes.";
 }
 
@@ -261,31 +261,31 @@ namespace {
     const unsigned int kNodeFreeTagIndexMask = 0x00ffffff;
 }
 
-namespace zClass {
+namespace CZClass {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.setnodearraysize
-     * @recoil-artifact defines .text recoil:function:0x4518b0: zClass::SetNodeArraySize.
+     * @recoil-artifact defines .text recoil:function:0x4518b0: CZClass::SetNodeArraySize.
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: set the core zClass node-array capacity before initialization.
      */
     void __fastcall SetNodeArraySize(int size) {
-        if (g_zClass_NodeArraySize != 0) {
+        if (g_CZClass_NodeArraySize != 0) {
             zError::ReportOld(
                 0x200,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x210,
-                g_zClass_NodeArraySizeAlreadySetFmt,
-                g_zClass_NodeArraySize
+                g_CZClass_NodeArraySizeAlreadySetFmt,
+                g_CZClass_NodeArraySize
             );
             return;
         }
 
-        g_zClass_NodeArraySize = size;
+        g_CZClass_NodeArraySize = size;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.shutdown
-     * @recoil-artifact defines .text recoil:function:0x4518e0: zClass::Shutdown
+     * @recoil-artifact defines .text recoil:function:0x4518e0: CZClass::Shutdown
      * @recoil-match byte
      *
      * Source owner: engine.zclass.lifecycle_node_array_control.
@@ -298,55 +298,55 @@ namespace zClass {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.isinitialized
-     * @recoil-artifact defines .text recoil:function:0x4518f0: zClass::IsInitialized.
+     * @recoil-artifact defines .text recoil:function:0x4518f0: CZClass::IsInitialized.
      * @recoil-match byte
      *
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: return the current zClass initialization flag.
      */
     int __cdecl IsInitialized() {
-        return g_zClass_IsInitialized;
+        return g_CZClass_IsInitialized;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.init
-     * @recoil-artifact defines .text recoil:function:0x451900: zClass::Init
+     * @recoil-artifact defines .text recoil:function:0x451900: CZClass::Init
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: initialize zClass node storage and register the GWWorld ZBD handler.
      */
     int __cdecl Init() {
-        if (g_zClass_NodeArraySize == 0) {
-            g_zClass_NodeArraySize = kDefaultNodeArraySize;
+        if (g_CZClass_NodeArraySize == 0) {
+            g_CZClass_NodeArraySize = kDefaultNodeArraySize;
         }
 
-        g_zClass_NodeArray = (zClass_NodeFreeListSlot *)(malloc(
-            (size_t)g_zClass_NodeArraySize * sizeof(zClass_NodeFreeListSlot)));
-        memset(g_zClass_NodeArray, 0,
-            (size_t)g_zClass_NodeArraySize * sizeof(zClass_NodeFreeListSlot));
+        g_CZClass_NodeArray = (CZNodeFreeListSlot *)(malloc(
+            (size_t)g_CZClass_NodeArraySize * sizeof(CZNodeFreeListSlot)));
+        memset(g_CZClass_NodeArray, 0,
+            (size_t)g_CZClass_NodeArraySize * sizeof(CZNodeFreeListSlot));
 
-        g_zClass_ActiveNodeCount = 0;
-        g_zClass_NodeFreeHeadIndex = 0;
-        if (g_zClass_NodeArraySize > 0) {
-            for (int i = 0; i < g_zClass_NodeArraySize - 1; ++i) {
-                unsigned int freeTag = g_zClass_NodeArray[i].freeTag;
+        g_CZClass_ActiveNodeCount = 0;
+        g_CZClass_NodeFreeHeadIndex = 0;
+        if (g_CZClass_NodeArraySize > 0) {
+            for (int i = 0; i < g_CZClass_NodeArraySize - 1; ++i) {
+                unsigned int freeTag = g_CZClass_NodeArray[i].freeTag;
                 freeTag = (freeTag & ~kNodeFreeTagIndexMask) |
                           ((unsigned int)(i + 1) & kNodeFreeTagIndexMask);
-                g_zClass_NodeArray[i].freeTag = freeTag;
+                g_CZClass_NodeArray[i].freeTag = freeTag;
             }
-            g_zClass_NodeArray[g_zClass_NodeArraySize - 1].freeTag |= kNodeFreeTagIndexMask;
+            g_CZClass_NodeArray[g_CZClass_NodeArraySize - 1].freeTag |= kNodeFreeTagIndexMask;
         }
 
-        if (g_zClass_RebuildGwWorldBltRectOnShutdown != 0) {
+        if (g_CZClass_RebuildGwWorldBltRectOnShutdown != 0) {
             zUtil_ZAR::RegisterSectionHandler(
-                g_zClass_GWWorldNodeName,
-                (zZbdSectionCallback)(&zClass_World::WriteSettingsSection),
-                (zZbdSectionCallback)(&zClass_World::ReadSettingsSection),
+                g_CZClass_GWWorldNodeName,
+                (zZbdSectionCallback)(&CZWorld::WriteSettingsSection),
+                (zZbdSectionCallback)(&CZWorld::ReadSettingsSection),
                 1000,
                 0
             );
         }
 
-        g_zClass_IsInitialized = 1;
+        g_CZClass_IsInitialized = 1;
         return 0;
     }
 
@@ -358,45 +358,45 @@ namespace zClass {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.shutdowncore
-     * @recoil-artifact defines .text recoil:function:0x451a00: zClass::ShutdownCore.
+     * @recoil-artifact defines .text recoil:function:0x451a00: CZClass::ShutdownCore.
      * @recoil-match byte
      *
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: tear down zClass-owned nodes, type lists, node storage, and path state.
      */
     int __cdecl ShutdownCore() {
-        zClass_List::DeleteAllOfType(6);
-        zClass_TypeList::FreeAll();
+        CZList::DeleteAllOfType(6);
+        CZTypeList::FreeAll();
 
-        if (g_zClass_NodeArraySize > 0) {
-            if (g_zClass_NodeArray != 0) {
-                free(g_zClass_NodeArray);
-                g_zClass_NodeArray = 0;
+        if (g_CZClass_NodeArraySize > 0) {
+            if (g_CZClass_NodeArray != 0) {
+                free(g_CZClass_NodeArray);
+                g_CZClass_NodeArray = 0;
             }
 
-            g_zClass_NodeArraySize = 0;
-            g_zClass_ActiveNodeCount = 0;
-            g_zClass_NodeFreeHeadIndex = -1;
+            g_CZClass_NodeArraySize = 0;
+            g_CZClass_ActiveNodeCount = 0;
+            g_CZClass_NodeFreeHeadIndex = -1;
         }
 
         ResetCurrentZbdPath();
-        g_zClass_IsInitialized = 0;
+        g_CZClass_IsInitialized = 0;
         return 0;
     }
 
 }
 
-namespace zClass_Util {
+namespace CZUtil {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.destroynoderecursive
-     * @recoil-artifact defines .text recoil:function:0x451a60: zClass_Util::DestroyNodeRecursive.
+     * @recoil-artifact defines .text recoil:function:0x451a60: CZUtil::DestroyNodeRecursive.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_util.c.
      * Purpose: recursively remove children, release display/class data, and
      * return nodes to the zClass free list.
      */
-    int __fastcall DestroyNodeRecursive(zClass_NodePartial * node) {
+    int __fastcall DestroyNodeRecursive(CZNodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, g_zClass_SourceFile_ClsUtilC, 0x2b6, "Null node pointer.");
+            zError::ReportOld(0x400, g_CZClass_SourceFile_ClsUtilC, 0x2b6, "Null node pointer.");
             return 1;
         }
 
@@ -406,8 +406,8 @@ namespace zClass_Util {
 
         if (node->listCountB > 0) {
             for (;;) {
-                zClass_NodePartial *child = node->listB[0];
-                const int removeResult = zClass_Class::RemoveChild(node, child);
+                CZNodePartial *child = node->listB[0];
+                const int removeResult = CZClass::RemoveChild(node, child);
                 if (removeResult != 0) {
                     return removeResult;
                 }
@@ -427,7 +427,7 @@ namespace zClass_Util {
 
         zDiPartial *displayInstance = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (displayInstance != 0) {
-            const int setResult = zClass_Class::gwNodeSetDisplayInstance(node, 0);
+            const int setResult = CZClass::gwNodeSetDisplayInstance(node, 0);
             if (setResult != 0) {
                 return setResult;
             }
@@ -439,55 +439,55 @@ namespace zClass_Util {
             }
         }
 
-        return zClass_Class::DeleteNodeByType(node);
+        return CZClass::DeleteNodeByType(node);
     }
 }
 
-namespace zClass_cls_util {
+namespace CZUtil {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynodedisplayinstance
-     * @recoil-artifact defines .text recoil:function:0x451b20: zClass_cls_util::CopyNodeDisplayInstance
+     * @recoil-artifact defines .text recoil:function:0x451b20: CZUtil::CopyNodeDisplayInstance
      * Purpose: copy or clone a source node's display instance into the destination.
      */
     int __fastcall CopyNodeDisplayInstance(
-        zClass_NodePartial * source,
-        zClass_NodePartial * dest
+        CZNodePartial * source,
+        CZNodePartial * dest
     ) {
         int result = 0;
         unsigned int displayInstanceValue;
 
         if (source->userDataOrDiRef != 0) {
-            if (g_zClass_CopyNodeCloneDiMode != 0) {
+            if (g_CZClass_CopyNodeCloneDiMode != 0) {
                 unsigned int sourceInstanceValue;
-                result = zClass_Class::gwNodeGetUserData(source, &sourceInstanceValue);
+                result = CZClass::gwNodeGetUserData(source, &sourceInstanceValue);
                 if (result != 0) {
                     return result;
                 }
 
                 displayInstanceValue = sourceInstanceValue;
                 int cloneInstance = 1;
-                if (g_zClass_CopyNodeDiArg1 != 0 &&
+                if (g_CZClass_CopyNodeDiArg1 != 0 &&
                     zDi::HasSpecialFlagsOrAuxMaterialData((zDiPartial *)sourceInstanceValue) == 0) {
                     cloneInstance = 0;
                 }
                 if (cloneInstance) {
                     const unsigned int clonedInstanceValue = (unsigned int)zDi::CloneToInstance(
                         (zDiPartial *)sourceInstanceValue,
-                        g_zClass_CopyNodeDiArg0,
-                        g_zClass_CopyNodeDiArg1);
+                        g_CZClass_CopyNodeDiArg0,
+                        g_CZClass_CopyNodeDiArg1);
                     if (clonedInstanceValue == 0) {
                         return 1;
                     }
                     displayInstanceValue = clonedInstanceValue;
-                    return zClass_Class::gwNodeSetDisplayInstance(dest, (zDiPartial *)displayInstanceValue);
+                    return CZClass::gwNodeSetDisplayInstance(dest, (zDiPartial *)displayInstanceValue);
                 }
             } else {
-                result = zClass_Class::gwNodeGetUserData(source, &displayInstanceValue);
+                result = CZClass::gwNodeGetUserData(source, &displayInstanceValue);
                 if (result != 0) {
                     return result;
                 }
             }
-            result = zClass_Class::gwNodeSetDisplayInstance(dest, (zDiPartial *)displayInstanceValue);
+            result = CZClass::gwNodeSetDisplayInstance(dest, (zDiPartial *)displayInstanceValue);
         }
 
         return result;
@@ -495,150 +495,150 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynodebasedata
-     * @recoil-artifact defines .text recoil:function:0x451bd0: zClass_cls_util::CopyNodeBaseData
+     * @recoil-artifact defines .text recoil:function:0x451bd0: CZUtil::CopyNodeBaseData
      * Purpose: copy common node flags, callbacks, type, and graphics state.
      */
     int __fastcall CopyNodeBaseData(
-        zClass_NodePartial * source,
-        zClass_NodePartial * dest
+        CZNodePartial * source,
+        CZNodePartial * dest
     ) {
-        int result = zClass_Class::gwNodeSetName(dest, source->name);
+        int result = CZClass::gwNodeSetName(dest, source->name);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x34e,
-                g_zClass_CopyNodeDescriptionFieldErrorFmt,
+                g_CZClass_CopyNodeDescriptionFieldErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetActive(dest, ((unsigned int)source->flags >> 2) & 1);
+        result = CZClass::gwNodeSetActive(dest, ((unsigned int)source->flags >> 2) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x359,
-                g_zClass_CopyNodeActiveFieldErrorFmt,
+                g_CZClass_CopyNodeActiveFieldErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetCellPickable(dest, ((unsigned int)source->flags >> 3) & 1);
+        result = CZClass::gwNodeSetCellPickable(dest, ((unsigned int)source->flags >> 3) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x364,
-                g_zClass_CopyNodeAltitudeSurfaceFieldErrorFmt,
+                g_CZClass_CopyNodeAltitudeSurfaceFieldErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetRaycastable(dest, ((unsigned int)source->flags >> 4) & 1);
+        result = CZClass::gwNodeSetRaycastable(dest, ((unsigned int)source->flags >> 4) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x36f,
-                g_zClass_CopyNodeIntersectionFieldErrorFmt,
+                g_CZClass_CopyNodeIntersectionFieldErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetPickable(dest, ((unsigned int)source->flags >> 5) & 1);
+        result = CZClass::gwNodeSetPickable(dest, ((unsigned int)source->flags >> 5) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x37a,
-                g_zClass_CopyNodeIntersectBboxFieldErrorFmt,
+                g_CZClass_CopyNodeIntersectBboxFieldErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetHasHitCallback(dest, ((unsigned int)source->flags >> 6) & 1);
+        result = CZClass::gwNodeSetHasHitCallback(dest, ((unsigned int)source->flags >> 6) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x385,
-                g_zClass_CopyNodeProximityFlagErrorFmt,
+                g_CZClass_CopyNodeProximityFlagErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetBypassFarClip(dest, ((unsigned int)source->flags >> 7) & 1);
+        result = CZClass::gwNodeSetBypassFarClip(dest, ((unsigned int)source->flags >> 7) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x390,
-                g_zClass_CopyNodeLandmarkFlagErrorFmt,
+                g_CZClass_CopyNodeLandmarkFlagErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetFlag16(dest, ((unsigned int)source->flags >> 16) & 1);
+        result = CZClass::gwNodeSetFlag16(dest, ((unsigned int)source->flags >> 16) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x39b,
-                g_zClass_CopyNodeCanModifyFlagErrorFmt,
+                g_CZClass_CopyNodeCanModifyFlagErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetFlag17(dest, ((unsigned int)source->flags >> 17) & 1);
+        result = CZClass::gwNodeSetFlag17(dest, ((unsigned int)source->flags >> 17) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x3a6,
-                g_zClass_CopyNodeClipToFlagErrorFmt,
+                g_CZClass_CopyNodeClipToFlagErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeClearVariantGate(dest, ((unsigned int)source->flags >> 24) & 1);
+        result = CZClass::gwNodeClearVariantGate(dest, ((unsigned int)source->flags >> 24) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x3b1,
-                g_zClass_CopyNodeDiZoneCheckFlagErrorFmt,
+                g_CZClass_CopyNodeDiZoneCheckFlagErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetVertexAlphaOverride(dest, ((unsigned int)source->flags >> 23) & 1);
+        result = CZClass::gwNodeSetVertexAlphaOverride(dest, ((unsigned int)source->flags >> 23) & 1);
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x3bc,
-                g_zClass_CopyNodeOverwriteFlagErrorFmt,
+                g_CZClass_CopyNodeOverwriteFlagErrorFmt,
                 source,
                 source
             );
@@ -652,9 +652,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x3ce,
-                g_zClass_CopyNodeGraphicsDataErrorFmt,
+                g_CZClass_CopyNodeGraphicsDataErrorFmt,
                 source,
                 source
             );
@@ -664,47 +664,47 @@ namespace zClass_cls_util {
         if (source->callbackContext != 0) {
             zError::ReportOld(
                 0x100,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x3d8,
-                g_zClass_CopyNodeEnvironmentDataIgnoredFmt,
+                g_CZClass_CopyNodeEnvironmentDataIgnoredFmt,
                 source
             );
         }
         dest->callbackContext = 0;
 
-        result = zClass_Class::gwNodeSetPriority(dest, source->callbackPriority);
+        result = CZClass::gwNodeSetPriority(dest, source->callbackPriority);
         if (result != 0) {
             zError::ReportOld(
                 0x100,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x3e2,
-                g_zClass_CopyNodeActionCallbackPriorityFieldErrorFmt,
+                g_CZClass_CopyNodeActionCallbackPriorityFieldErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetActionCallback(dest, source->actionCallback);
+        result = CZClass::gwNodeSetActionCallback(dest, source->actionCallback);
         if (result != 0) {
             zError::ReportOld(
                 0x100,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x3ed,
-                g_zClass_CopyNodeActionCallbackFieldErrorFmt,
+                g_CZClass_CopyNodeActionCallbackFieldErrorFmt,
                 source,
                 source
             );
             return result;
         }
 
-        result = zClass_Class::gwNodeSetNodeType(dest, source->nodeType);
+        result = CZClass::gwNodeSetNodeType(dest, source->nodeType);
         if (result != 0) {
             zError::ReportOld(
                 0x100,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x3f8,
-                g_zClass_CopyNodeZoneIdErrorFmt,
+                g_CZClass_CopyNodeZoneIdErrorFmt,
                 source,
                 source
             );
@@ -716,14 +716,14 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copycameranode
-     * @recoil-artifact defines .text recoil:function:0x451f70: zClass_cls_util::CopyCameraNode
+     * @recoil-artifact defines .text recoil:function:0x451f70: CZUtil::CopyCameraNode
      * Purpose: allocate and populate a copied camera node and its copied children.
      */
-    zClass_NodePartial *__fastcall CopyCameraNode(
-        zClass_NodePartial * source
+    CZNodePartial *__fastcall CopyCameraNode(
+        CZNodePartial * source
     ) {
         int result; // Status captures are unused afterward but are proven by byte matching.
-        zClass_NodePartial *const camera = zClass_Camera::gwCameraNew();
+        CZNodePartial *const camera = CZCamera::gwCameraNew();
         if (camera == 0) {
             return camera;
         }
@@ -731,24 +731,24 @@ namespace zClass_cls_util {
         if ((result = CopyNodeBaseData(source, camera)) != 0) {
             zError::ReportOld(
                 0x100,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x422,
-                g_zClass_CopyNodeBaseDataErrorMsg,
-                g_zClass_CopyNodeSourceNodeFmt,
+                g_CZClass_CopyNodeBaseDataErrorMsg,
+                g_CZClass_CopyNodeSourceNodeFmt,
                 source,
                 source
             );
             return 0;
         }
 
-        zClass_CameraDataPartial *const data = (zClass_CameraDataPartial *)(source->classData);
-        if ((result = zClass_Camera::gwCameraSetWorld(camera, data->worldNode)) != 0) {
+        CZCameraDataPartial *const data = (CZCameraDataPartial *)(source->classData);
+        if ((result = CZCamera::gwCameraSetWorld(camera, data->worldNode)) != 0) {
             return 0;
         }
-        if ((result = zClass_Camera::gwCameraSetWindow(camera, data->windowNode)) != 0) {
+        if ((result = CZCamera::gwCameraSetWindow(camera, data->windowNode)) != 0) {
             return 0;
         }
-        if ((result = zClass_Camera::gwCameraSetTarget(
+        if ((result = CZCamera::gwCameraSetTarget(
                 camera,
                 data->targetOrEuler.x,
                 data->targetOrEuler.y,
@@ -756,7 +756,7 @@ namespace zClass_cls_util {
             )) != 0) {
             return 0;
         }
-        if ((result = zClass_Camera::gwCameraSetPosition(
+        if ((result = CZCamera::gwCameraSetPosition(
                 camera,
                 data->posOffset.x,
                 data->posOffset.y,
@@ -764,19 +764,19 @@ namespace zClass_cls_util {
             )) != 0) {
             return 0;
         }
-        if ((result = zClass_Camera::gwCameraSetNearFarClip(camera, data->nearClip, data->farClip)) != 0) {
+        if ((result = CZCamera::gwCameraSetNearFarClip(camera, data->nearClip, data->farClip)) != 0) {
             return 0;
         }
-        if ((result = zClass_Camera::gwCameraSetClipDistance(camera, data->clipDistance)) != 0) {
+        if ((result = CZCamera::gwCameraSetClipDistance(camera, data->clipDistance)) != 0) {
             return 0;
         }
-        if ((result = zClass_Camera::gwCameraSetFOV(camera, data->fovX, data->fovY)) != 0) {
+        if ((result = CZCamera::gwCameraSetFOV(camera, data->fovX, data->fovY)) != 0) {
             return 0;
         }
 
         for (int i = 0; i < source->listCountB; ++i) {
-            zClass_NodePartial *const child = CopyNodeDispatch(source->listB[i]);
-            if (child == 0 || zClass_Camera::gwCameraAddChild(camera, child) != 0) {
+            CZNodePartial *const child = CopyNodeDispatch(source->listB[i]);
+            if (child == 0 || CZCamera::gwCameraAddChild(camera, child) != 0) {
                 return 0;
             }
         }
@@ -785,48 +785,48 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copylightnode-unimplemented
-     * @recoil-artifact defines .text recoil:function:0x4520c0: zClass_cls_util::CopyLightNode
+     * @recoil-artifact defines .text recoil:function:0x4520c0: CZUtil::CopyLightNode
      * Purpose: preserve the retail unimplemented light-node copy path.
      */
-    zClass_NodePartial *__fastcall CopyLightNode(
-        zClass_NodePartial *
+    CZNodePartial *__fastcall CopyLightNode(
+        CZNodePartial *
     ) {
         zError::ReportOld(
             0x800,
-            g_zClass_SourceFile_ClsUtilC,
+            g_CZClass_SourceFile_ClsUtilC,
             0x47d,
-            g_zClass_CopyLightNodeUnimplementedMsg
+            g_CZClass_CopyLightNodeUnimplementedMsg
         );
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copysoundnode-unimplemented
-     * @recoil-artifact defines .text recoil:function:0x4520e0: zClass_cls_util::CopySoundNode
+     * @recoil-artifact defines .text recoil:function:0x4520e0: CZUtil::CopySoundNode
      * Purpose: preserve the retail unimplemented sound-node copy path.
      */
-    zClass_NodePartial *__fastcall CopySoundNode(
-        zClass_NodePartial *
+    CZNodePartial *__fastcall CopySoundNode(
+        CZNodePartial *
     ) {
         zError::ReportOld(
             0x800,
-            g_zClass_SourceFile_ClsUtilC,
+            g_CZClass_SourceFile_ClsUtilC,
             0x493,
-            g_zClass_CopySoundNodeUnimplementedMsg
+            g_CZClass_CopySoundNodeUnimplementedMsg
         );
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copyobject3dnode
-     * @recoil-artifact defines .text recoil:function:0x452100: zClass_cls_util::CopyObject3DNode
+     * @recoil-artifact defines .text recoil:function:0x452100: CZUtil::CopyObject3DNode
      * Purpose: allocate and populate a copied Object3D node and its copied children.
      */
-    zClass_NodePartial *__fastcall CopyObject3DNode(
-        zClass_NodePartial * source
+    CZNodePartial *__fastcall CopyObject3DNode(
+        CZNodePartial * source
     ) {
         int result; // Status captures are unused afterward but are proven by byte matching.
-        zClass_NodePartial *const parent = zClass_Object3D::gwObject3DInit();
+        CZNodePartial *const parent = CZObject3D::gwObject3DInit();
         if (parent == 0) {
             return parent;
         }
@@ -834,31 +834,31 @@ namespace zClass_cls_util {
         if ((result = CopyNodeBaseData(source, parent)) != 0) {
             zError::ReportOld(
                 0x100,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x4b9,
-                g_zClass_CopyNodeBaseDataErrorMsg,
-                g_zClass_CopyNodeSourceNodeFmt,
+                g_CZClass_CopyNodeBaseDataErrorMsg,
+                g_CZClass_CopyNodeSourceNodeFmt,
                 source,
                 source
             );
             return 0;
         }
 
-        zClass_Object3DDataPartial *const data = (zClass_Object3DDataPartial *)(source->classData);
-        if ((result = zClass_Object3D::gwObject3DSetAlphaScale(parent, data->alphaScale)) != 0) {
+        CZObject3DDataPartial *const data = (CZObject3DDataPartial *)(source->classData);
+        if ((result = CZObject3D::gwObject3DSetAlphaScale(parent, data->alphaScale)) != 0) {
             return 0;
         }
-        if ((result = zClass_Object3D::gwObject3DSetLitFlag(parent, ((unsigned int)data->flags >> 1) & 1)) != 0) {
+        if ((result = CZObject3D::gwObject3DSetLitFlag(parent, ((unsigned int)data->flags >> 1) & 1)) != 0) {
             return 0;
         }
 
         if ((data->flags & 0x08) == 0) {
             if ((data->flags & 0x10) != 0) {
-                if ((result = zClass_Object3D::gwObject3DSetMatrix(parent, data->localMatrix)) != 0) {
+                if ((result = CZObject3D::gwObject3DSetMatrix(parent, data->localMatrix)) != 0) {
                     return 0;
                 }
             } else {
-                if ((result = zClass_Object3D::gwObject3DSetPosition(
+                if ((result = CZObject3D::gwObject3DSetPosition(
                         parent,
                         data->localMatrix[9],
                         data->localMatrix[10],
@@ -866,7 +866,7 @@ namespace zClass_cls_util {
                     )) != 0) {
                     return 0;
                 }
-                if ((result = zClass_Object3D::gwObject3DSetRotation(
+                if ((result = CZObject3D::gwObject3DSetRotation(
                         parent,
                         data->rotation.x,
                         data->rotation.y,
@@ -874,7 +874,7 @@ namespace zClass_cls_util {
                     )) != 0) {
                     return 0;
                 }
-                if ((result = zClass_Object3D::gwObject3DSetScale(
+                if ((result = CZObject3D::gwObject3DSetScale(
                         parent,
                         data->scale.x,
                         data->scale.y,
@@ -886,8 +886,8 @@ namespace zClass_cls_util {
         }
 
         for (int i = 0; i < source->listCountB; ++i) {
-            zClass_NodePartial *const child = CopyNodeDispatch(source->listB[i]);
-            if (child != 0 && zClass_Object3D::gwObject3DAddChild(parent, child) != 0) {
+            CZNodePartial *const child = CopyNodeDispatch(source->listB[i]);
+            if (child != 0 && CZObject3D::gwObject3DAddChild(parent, child) != 0) {
                 return 0;
             }
         }
@@ -896,33 +896,33 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copyanimatenode-unimplemented
-     * @recoil-artifact defines .text recoil:function:0x452230: zClass_cls_util::CopyAnimateNode
+     * @recoil-artifact defines .text recoil:function:0x452230: CZUtil::CopyAnimateNode
      * Purpose: preserve the retail unimplemented animate-node copy path.
      */
-    zClass_NodePartial *__fastcall CopyAnimateNode(
-        zClass_NodePartial *
+    CZNodePartial *__fastcall CopyAnimateNode(
+        CZNodePartial *
     ) {
         zError::ReportOld(
             0x100,
-            g_zClass_SourceFile_ClsUtilC,
+            g_CZClass_SourceFile_ClsUtilC,
             0x518,
-            g_zClass_CopyAnimateNodeUnimplementedMsg
+            g_CZClass_CopyAnimateNodeUnimplementedMsg
         );
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copylodnode
-     * @recoil-artifact defines .text recoil:function:0x452250: zClass_cls_util::CopyLodNode
+     * @recoil-artifact defines .text recoil:function:0x452250: CZUtil::CopyLodNode
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.copy-lod-range recoil:function:0x452250
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.copy-lod-range
      *
      * Purpose: allocate and populate a copied LOD node and its copied children.
      * Raw assembly: Pro-reviewed after native VC5 C++ range-estimate variants failed.
      */
-    zClass_NodePartial *__fastcall CopyLodNode(zClass_NodePartial * source) {
+    CZNodePartial *__fastcall CopyLodNode(CZNodePartial * source) {
         float savedRange; // Unused later; this argument capture is proven by byte matching.
-        zClass_NodePartial *const parent = zClass_Lod::gwLodNew();
+        CZNodePartial *const parent = CZLod::gwLodNew();
         if (parent == 0) {
             return parent;
         }
@@ -930,22 +930,22 @@ namespace zClass_cls_util {
         if (CopyNodeBaseData(source, parent) != 0) {
             zError::ReportOld(
                 0x100,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x53e,
-                g_zClass_CopyNodeBaseDataErrorMsg,
-                g_zClass_CopyNodeSourceNodeFmt,
+                g_CZClass_CopyNodeBaseDataErrorMsg,
+                g_CZClass_CopyNodeSourceNodeFmt,
                 source,
                 source
             );
             return 0;
         }
 
-        zClass_LodDataPartial *const sourceData = (zClass_LodDataPartial *)(source->classData);
-        if (zClass_Lod::SetComputeOwnDistance(parent, sourceData->computeOwnDistance) != 0) {
+        CZLodDataPartial *const sourceData = (CZLodDataPartial *)(source->classData);
+        if (CZLod::SetComputeOwnDistance(parent, sourceData->computeOwnDistance) != 0) {
             return 0;
         }
 
-        zClass_LodDataPartial *const destData = (zClass_LodDataPartial *)(parent->classData);
+        CZLodDataPartial *const destData = (CZLodDataPartial *)(parent->classData);
         destData->nearRangeSq = sourceData->nearRangeSq;
         destData->nearRange = sourceData->nearRange;
         destData->farRangeSq = sourceData->farRangeSq;
@@ -976,13 +976,13 @@ namespace zClass_cls_util {
             }
             range = rangeValue;
         }
-        if (zClass_Lod::SetTargetNodeAndRange(parent, sourceData->rangeNode, (savedRange = range)) != 0) {
+        if (CZLod::SetTargetNodeAndRange(parent, sourceData->rangeNode, (savedRange = range)) != 0) {
             return 0;
         }
 
         for (int i = 0; i < source->listCountB; ++i) {
-            zClass_NodePartial *const child = CopyNodeDispatch(source->listB[i]);
-            if (child == 0 || zClass_Lod::gwLodAddChild(parent, child) != 0) {
+            CZNodePartial *const child = CopyNodeDispatch(source->listB[i]);
+            if (child == 0 || CZLod::gwLodAddChild(parent, child) != 0) {
                 return 0;
             }
         }
@@ -992,47 +992,47 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copysequencenode-unimplemented
-     * @recoil-artifact defines .text recoil:function:0x4523c0: zClass_cls_util::CopySequenceNode
+     * @recoil-artifact defines .text recoil:function:0x4523c0: CZUtil::CopySequenceNode
      * Purpose: preserve the retail unimplemented sequence-node copy path.
      */
-    zClass_NodePartial *__fastcall CopySequenceNode(
-        zClass_NodePartial *
+    CZNodePartial *__fastcall CopySequenceNode(
+        CZNodePartial *
     ) {
         zError::ReportOld(
             0x100,
-            g_zClass_SourceFile_ClsUtilC,
+            g_CZClass_SourceFile_ClsUtilC,
             0x585,
-            g_zClass_CopySequenceNodeUnimplementedMsg
+            g_CZClass_CopySequenceNodeUnimplementedMsg
         );
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copyswitchnode-stub
-     * @recoil-artifact defines .text recoil:function:0x4523e0: zClass_cls_util::CopySwitchNode
+     * @recoil-artifact defines .text recoil:function:0x4523e0: CZUtil::CopySwitchNode
      * Purpose: preserve the retail switch-node copy stub behavior.
      */
-    zClass_NodePartial *__fastcall CopySwitchNode(zClass_NodePartial *) {
+    CZNodePartial *__fastcall CopySwitchNode(CZNodePartial *) {
         zError::ReportOld(
             0x100,
-            g_zClass_SourceFile_ClsUtilC,
+            g_CZClass_SourceFile_ClsUtilC,
             0x59c,
-            g_zClass_CopySwitchNodeUnimplementedMsg
+            g_CZClass_CopySwitchNodeUnimplementedMsg
         );
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynodedispatch
-     * @recoil-artifact defines .text recoil:function:0x452400: zClass_cls_util::CopyNodeDispatch
+     * @recoil-artifact defines .text recoil:function:0x452400: CZUtil::CopyNodeDispatch
      * Purpose: dispatch node-copy work by class id.
      */
-    zClass_NodePartial *__fastcall CopyNodeDispatch(
-        zClass_NodePartial * source
+    CZNodePartial *__fastcall CopyNodeDispatch(
+        CZNodePartial * source
     ) {
-        zClass_NodePartial *result = 0;
+        CZNodePartial *result = 0;
         if (source == 0) {
-            zError::ReportOld(0x400, g_zClass_SourceFile_ClsUtilC, 0x5b8, "Null node pointer.");
+            zError::ReportOld(0x400, g_CZClass_SourceFile_ClsUtilC, 0x5b8, "Null node pointer.");
             return 0;
         }
         if ((source->flags & 0x04000000) != 0) {
@@ -1067,17 +1067,17 @@ namespace zClass_cls_util {
         case 2:
             zError::ReportOld(
                 0x100,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x5e1,
-                g_zClass_CopyWorldClassNodesErrorMsg
+                g_CZClass_CopyWorldClassNodesErrorMsg
             );
             return 0;
         default:
             zError::ReportOld(
                 0x100,
-                g_zClass_SourceFile_ClsUtilC,
+                g_CZClass_SourceFile_ClsUtilC,
                 0x5e8,
-                g_zClass_CopyNodeUnrecognizedNodeFmt,
+                g_CZClass_CopyNodeUnrecognizedNodeFmt,
                 source
             );
             break;
@@ -1087,65 +1087,65 @@ namespace zClass_cls_util {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynodewithcloneoptions
-     * @recoil-artifact defines .text recoil:function:0x452500: zClass_cls_util::CopyNodeWithCloneOptions
+     * @recoil-artifact defines .text recoil:function:0x452500: CZUtil::CopyNodeWithCloneOptions
      * Purpose: copy a node while temporarily overriding clone-mode globals.
      */
-    zClass_NodePartial *__fastcall CopyNodeWithCloneOptions(
-        zClass_NodePartial * source,
+    CZNodePartial *__fastcall CopyNodeWithCloneOptions(
+        CZNodePartial * source,
         int cloneDiMode,
         int diArg0
     ) {
         if (source == 0) {
-            zError::ReportOld(0x400, g_zClass_SourceFile_ClsUtilC, 0x60f, "Null node pointer.");
+            zError::ReportOld(0x400, g_CZClass_SourceFile_ClsUtilC, 0x60f, "Null node pointer.");
             return 0;
         }
 
-        const int savedCloneDiMode = g_zClass_CopyNodeCloneDiMode;
-        const int savedDiArg0 = g_zClass_CopyNodeDiArg0;
-        g_zClass_CopyNodeCloneDiMode = cloneDiMode;
-        g_zClass_CopyNodeDiArg0 = diArg0;
+        const int savedCloneDiMode = g_CZClass_CopyNodeCloneDiMode;
+        const int savedDiArg0 = g_CZClass_CopyNodeDiArg0;
+        g_CZClass_CopyNodeCloneDiMode = cloneDiMode;
+        g_CZClass_CopyNodeDiArg0 = diArg0;
 
-        zClass_NodePartial *const result = CopyNodeDispatch(source);
-        g_zClass_CopyNodeCloneDiMode = savedCloneDiMode;
-        g_zClass_CopyNodeDiArg0 = savedDiArg0;
+        CZNodePartial *const result = CopyNodeDispatch(source);
+        g_CZClass_CopyNodeCloneDiMode = savedCloneDiMode;
+        g_CZClass_CopyNodeDiArg0 = savedDiArg0;
         return result;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynode
-     * @recoil-artifact defines .text recoil:function:0x452560: zClass_cls_util::CopyNode
+     * @recoil-artifact defines .text recoil:function:0x452560: CZUtil::CopyNode
      * Purpose: copy a node while temporarily overriding all display-instance clone options.
      */
-    zClass_NodePartial *__fastcall CopyNode(
-        zClass_NodePartial * source,
+    CZNodePartial *__fastcall CopyNode(
+        CZNodePartial * source,
         int cloneDiMode,
         int diArg0,
         int diArg1
     ) {
         if (source == 0) {
-            zError::ReportOld(0x400, g_zClass_SourceFile_ClsUtilC, 0x648, "Null node pointer.");
+            zError::ReportOld(0x400, g_CZClass_SourceFile_ClsUtilC, 0x648, "Null node pointer.");
             return 0;
         }
 
-        const int savedCloneDiMode = g_zClass_CopyNodeCloneDiMode;
-        const int savedDiArg0 = g_zClass_CopyNodeDiArg0;
-        const int savedDiArg1 = g_zClass_CopyNodeDiArg1;
-        g_zClass_CopyNodeCloneDiMode = cloneDiMode;
-        g_zClass_CopyNodeDiArg0 = diArg0;
-        g_zClass_CopyNodeDiArg1 = diArg1;
+        const int savedCloneDiMode = g_CZClass_CopyNodeCloneDiMode;
+        const int savedDiArg0 = g_CZClass_CopyNodeDiArg0;
+        const int savedDiArg1 = g_CZClass_CopyNodeDiArg1;
+        g_CZClass_CopyNodeCloneDiMode = cloneDiMode;
+        g_CZClass_CopyNodeDiArg0 = diArg0;
+        g_CZClass_CopyNodeDiArg1 = diArg1;
 
-        zClass_NodePartial *const result = CopyNodeDispatch(source);
-        g_zClass_CopyNodeDiArg1 = savedDiArg1;
-        g_zClass_CopyNodeCloneDiMode = savedCloneDiMode;
-        g_zClass_CopyNodeDiArg0 = savedDiArg0;
+        CZNodePartial *const result = CopyNodeDispatch(source);
+        g_CZClass_CopyNodeDiArg1 = savedDiArg1;
+        g_CZClass_CopyNodeCloneDiMode = savedCloneDiMode;
+        g_CZClass_CopyNodeDiArg0 = savedDiArg0;
         return result;
     }
 }
 
-namespace BBox {
+namespace CZBBox {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.minmaxtoboundingsphere
-     * @recoil-artifact defines .text recoil:function:0x4525d0: BBox::MinMaxToBoundingSphere.
+     * @recoil-artifact defines .text recoil:function:0x4525d0: CZBBox::MinMaxToBoundingSphere.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.minmax-radius recoil:function:0x4525d0
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.minmax-radius
      *
@@ -1187,7 +1187,7 @@ namespace BBox {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.cornerstoboundingsphere
-     * @recoil-artifact defines .text recoil:function:0x452650: BBox::CornersToBoundingSphere.
+     * @recoil-artifact defines .text recoil:function:0x452650: CZBBox::CornersToBoundingSphere.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.corners-radius recoil:function:0x452650
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.corners-radius
      *
@@ -1253,13 +1253,13 @@ namespace BBox {
     }
 }
 
-namespace zClass_Class {
+namespace CZClass {
     /**
      * Purpose: recursively search a node subtree by name, checking the root
      * first and then visiting child-list entries from tail to head.
      */
-    zClass_NodePartial *__fastcall FindSubNodeByName(
-        zClass_NodePartial * root,
+    CZNodePartial *__fastcall FindSubNodeByName(
+        CZNodePartial * root,
         const char *name
     ) {
         if (root == 0) {
@@ -1270,7 +1270,7 @@ namespace zClass_Class {
         }
 
         for (int i = root->listCountB; i--; ) {
-            zClass_NodePartial *found = FindSubNodeByName(root->listB[i], name);
+            CZNodePartial *found = FindSubNodeByName(root->listB[i], name);
             if (found != 0) {
                 return found;
             }
@@ -1280,12 +1280,12 @@ namespace zClass_Class {
     }
 }
 
-namespace zClass_Node {
+namespace CZNode {
     /**
      * Purpose: test whether a node's DI reference points to a renderable display
      * instance mode without the hidden flag.
      */
-    int __fastcall HasRenderableDiPredicate(zClass_NodePartial * node) {
+    int __fastcall HasRenderableDiPredicate(CZNodePartial * node) {
         ::zDiPartial *di = (::zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di == 0) {
             return 0;
@@ -1299,14 +1299,14 @@ namespace zClass_Node {
     }
 }
 
-namespace zClass {
+namespace CZClass {
     /**
      * Purpose: recursively test a node and its secondary children with a
      * caller-supplied predicate.
      */
     int __fastcall AnyNodeMatchesPredicateRecursive(
-        zClass_NodePartial * root,
-        zClass_NodePredicate predicate
+        CZNodePartial * root,
+        CZNodePredicate predicate
     ) {
         if (predicate(root) == 1) {
             return 1;
@@ -1322,13 +1322,13 @@ namespace zClass {
     }
 }
 
-namespace zClass_Node {
+namespace CZNode {
     /**
      * Purpose: recurse a child-list subtree and propagate material flag bit 9
      * updates through each node display instance.
      */
     void __fastcall SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         int enabled
     ) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
@@ -1346,7 +1346,7 @@ namespace zClass_Node {
      * then load pending texture-directory entries.
      */
     void __fastcall LoadFlagBit8MaterialImagesAndTexturePack(
-        zClass_NodePartial * node
+        CZNodePartial * node
     ) {
         if (node == 0) {
             return;
@@ -1361,7 +1361,7 @@ namespace zClass_Node {
      * image variants for each display instance with material flag bit 8 set.
      */
     void __fastcall InvalidateFlagBit8MaterialImagesRecursive(
-        zClass_NodePartial * node
+        CZNodePartial * node
     ) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
@@ -1378,7 +1378,7 @@ namespace zClass_Node {
      * reachable through a node's child-list subtree.
      */
     void __fastcall AssignInt32ToDiRecursive(
-        zClass_NodePartial * node,
+        CZNodePartial * node,
         int value
     ) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));

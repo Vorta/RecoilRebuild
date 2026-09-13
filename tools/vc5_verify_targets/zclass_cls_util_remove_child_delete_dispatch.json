@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x451a60",
-      "symbol": "?DestroyNodeRecursive@zClass_Util@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Util::DestroyNodeRecursive"
+      "symbol": "?DestroyNodeRecursive@CZUtil@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZUtil::DestroyNodeRecursive"
     }
   ]
 }

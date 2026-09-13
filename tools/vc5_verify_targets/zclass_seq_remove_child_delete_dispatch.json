@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x454000",
-      "symbol": "?RemoveChild@zClass_Sequence@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Sequence::RemoveChild"
+      "symbol": "?RemoveChild@CZSequence@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZSequence::RemoveChild"
     }
   ]
 }

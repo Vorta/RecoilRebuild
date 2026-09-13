@@ -10,7 +10,7 @@
 #include "GameZRecoil/zMath/zmth_decls.h"
 #include "recoil/recoil_callconv.h"
 
-typedef zClass_NodePartial zGeometry_ClipPatchNodeView;
+typedef CZNodePartial zGeometry_ClipPatchNodeView;
 
 struct zDEClient_FeatureGridCell;
 struct zGeometry_PolygonPointSpanPartial;

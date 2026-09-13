@@ -1,6 +1,6 @@
 {
   "name": "zclass_clear_damage_handler",
-  "description": "zClass_Node damage-handler clear helper.",
+  "description": "CZNode damage-handler clear helper.",
   "source_filename": "OptCatalog.c",
   "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,13 +22,13 @@
   "functions": [
     {
       "address": "0x4b2630",
-      "symbol": "?ClearDamageHandler@zClass_Node@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Node::ClearDamageHandler"
+      "symbol": "?ClearDamageHandler@CZNode@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZNode::ClearDamageHandler"
     },
     {
       "address": "0x4b2670",
-      "symbol": "?ClearDamageHandlerRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@PAUOptCatalogDamageHandlerPartial@@@Z",
-      "name": "zClass_Node::ClearDamageHandlerRecursive"
+      "symbol": "?ClearDamageHandlerRecursive@CZNode@@YIXPAUCZNodePartial@@PAUOptCatalogDamageHandlerPartial@@@Z",
+      "name": "CZNode::ClearDamageHandlerRecursive"
     }
   ]
 }

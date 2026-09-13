@@ -1,6 +1,6 @@
 {
   "name": "zclass_camera_find_convex_hull_xz",
-  "description": "zClass_Camera::FindConvexHullXZ camera footprint convex hull helper.",
+  "description": "CZCamera::FindConvexHullXZ camera footprint convex hull helper.",
   "source_filename": "Camera.c",
   "source_from": "src/GameZRecoil/zClass/Camera.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -28,8 +28,8 @@
   "functions": [
     {
       "address": "0x44c230",
-      "symbol": "?FindConvexHullXZ@zClass_Camera@@YIHPAUzVec3@@H@Z",
-      "name": "zClass_Camera::FindConvexHullXZ"
+      "symbol": "?FindConvexHullXZ@CZCamera@@YIHPAUzVec3@@H@Z",
+      "name": "CZCamera::FindConvexHullXZ"
     }
   ]
 }

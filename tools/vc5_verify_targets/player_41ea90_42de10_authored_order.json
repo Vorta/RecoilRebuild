@@ -384,7 +384,7 @@
           "name": "Player::RecordNodeFlagsForRestore",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?RecordNodeFlagsForRestore@Player@@YIXPAUzClass_NodePartial@@@Z"
+          "symbol": "?RecordNodeFlagsForRestore@Player@@YIXPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41ef30",
@@ -541,7 +541,7 @@
           "name": "Player::InitMissionRuntimeFromWorldAndCamera",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?InitMissionRuntimeFromWorldAndCamera@Player@@YIXPAUzClass_NodePartial@@0@Z"
+          "symbol": "?InitMissionRuntimeFromWorldAndCamera@Player@@YIXPAUCZNodePartial@@0@Z"
         },
         {
           "address": "0x420be0",
@@ -604,7 +604,7 @@
           "name": "Player::CloneType6NodeFromTemplateAndRename",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?CloneType6NodeFromTemplateAndRename@Player@@YIPAUzClass_NodePartial@@PBD0@Z"
+          "symbol": "?CloneType6NodeFromTemplateAndRename@Player@@YIPAUCZNodePartial@@PBD0@Z"
         },
         {
           "address": "0x421ab0",
@@ -619,28 +619,28 @@
           "address": "0x421d60",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::MaskExtraFlagsRecursive",
+          "name": "CZNode::MaskExtraFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?MaskExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+          "symbol": "?MaskExtraFlagsRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x421da0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::PropagateExtraFlagsRecursive",
+          "name": "CZNode::PropagateExtraFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?PropagateExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+          "symbol": "?PropagateExtraFlagsRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x421de0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::PropagateFlagsRecursive",
+          "name": "CZNode::PropagateFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?PropagateFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+          "symbol": "?PropagateFlagsRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x421e20",
@@ -667,7 +667,7 @@
           "name": "Player::BuildCollisionPointsFromModel",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BuildCollisionPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?BuildCollisionPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x4220f0",
@@ -676,7 +676,7 @@
           "name": "Player::BuildSupportPointsFromModel",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BuildSupportPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?BuildSupportPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x422170",
@@ -795,7 +795,7 @@
           "name": "Player::CollectPendingContactsForSegments",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?CollectPendingContactsForSegments@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_DiSegmentEndpoints@@HPAH@Z"
+          "symbol": "?CollectPendingContactsForSegments@Player@@YIHPAUzUtil_SaveGameState@@PAUCZDisplayInstanceSegmentEndpoints@@HPAH@Z"
         },
         {
           "address": "0x423c20",
@@ -921,7 +921,7 @@
           "name": "HudSensorTracker::ParseCheckpointNumberFromNode",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ParseCheckpointNumberFromNode@HudSensorTracker@@SIHPAUzClass_NodePartial@@@Z"
+          "symbol": "?ParseCheckpointNumberFromNode@HudSensorTracker@@SIHPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x425150",
@@ -1128,7 +1128,7 @@
           "name": "Player::ProbeModalSampleHeights",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ProbeModalSampleHeights@Player@@YIXPAUzUtil_SaveGameState@@PAM1HPAUPlayerProbeTypeHistogram@@PAHPAPAUzClass_NodePartial@@@Z"
+          "symbol": "?ProbeModalSampleHeights@Player@@YIXPAUzUtil_SaveGameState@@PAM1HPAUPlayerProbeTypeHistogram@@PAHPAPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x4290f0",
@@ -1496,10 +1496,10 @@
           "address": "0x42ba50",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_cls_di::SnapProbePointYToBestCandidate",
+          "name": "CZDisplayInstance::SnapProbePointYToBestCandidate",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?SnapProbePointYToBestCandidate@zClass_cls_di@@YIHPAUzVec3@@@Z"
+          "symbol": "?SnapProbePointYToBestCandidate@CZDisplayInstance@@YIHPAUzVec3@@@Z"
         },
         {
           "address": "0x42bab0",
@@ -2144,7 +2144,7 @@
           "name": "Player::RecordNodeFlagsForRestore",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?RecordNodeFlagsForRestore@Player@@YIXPAUzClass_NodePartial@@@Z"
+          "symbol": "?RecordNodeFlagsForRestore@Player@@YIXPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41efa0",
@@ -2261,7 +2261,7 @@
           "name": "Player::InitMissionRuntimeFromWorldAndCamera",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?InitMissionRuntimeFromWorldAndCamera@Player@@YIXPAUzClass_NodePartial@@0@Z"
+          "symbol": "?InitMissionRuntimeFromWorldAndCamera@Player@@YIXPAUCZNodePartial@@0@Z"
         },
         {
           "address": "0x420be0",
@@ -2324,7 +2324,7 @@
           "name": "Player::CloneType6NodeFromTemplateAndRename",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?CloneType6NodeFromTemplateAndRename@Player@@YIPAUzClass_NodePartial@@PBD0@Z"
+          "symbol": "?CloneType6NodeFromTemplateAndRename@Player@@YIPAUCZNodePartial@@PBD0@Z"
         },
         {
           "address": "0x421ab0",
@@ -2339,28 +2339,28 @@
           "address": "0x421d60",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::MaskExtraFlagsRecursive",
+          "name": "CZNode::MaskExtraFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?MaskExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+          "symbol": "?MaskExtraFlagsRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x421da0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::PropagateExtraFlagsRecursive",
+          "name": "CZNode::PropagateExtraFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?PropagateExtraFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+          "symbol": "?PropagateExtraFlagsRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x421de0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::PropagateFlagsRecursive",
+          "name": "CZNode::PropagateFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?PropagateFlagsRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z"
+          "symbol": "?PropagateFlagsRecursive@CZNode@@YIXPAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x421e20",
@@ -2387,7 +2387,7 @@
           "name": "Player::BuildCollisionPointsFromModel",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BuildCollisionPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?BuildCollisionPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x4220f0",
@@ -2396,7 +2396,7 @@
           "name": "Player::BuildSupportPointsFromModel",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?BuildSupportPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?BuildSupportPointsFromModel@Player@@YIHPAUzUtil_SaveGameState@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x422170",
@@ -2495,7 +2495,7 @@
           "name": "Player::CollectPendingContactsForSegments",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?CollectPendingContactsForSegments@Player@@YIHPAUzUtil_SaveGameState@@PAUzClass_DiSegmentEndpoints@@HPAH@Z"
+          "symbol": "?CollectPendingContactsForSegments@Player@@YIHPAUzUtil_SaveGameState@@PAUCZDisplayInstanceSegmentEndpoints@@HPAH@Z"
         },
         {
           "address": "0x423c20",
@@ -2621,7 +2621,7 @@
           "name": "HudSensorTracker::ParseCheckpointNumberFromNode",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ParseCheckpointNumberFromNode@HudSensorTracker@@SIHPAUzClass_NodePartial@@@Z"
+          "symbol": "?ParseCheckpointNumberFromNode@HudSensorTracker@@SIHPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x425150",
@@ -2828,7 +2828,7 @@
           "name": "Player::ProbeModalSampleHeights",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ProbeModalSampleHeights@Player@@YIXPAUzUtil_SaveGameState@@PAM1HPAUPlayerProbeTypeHistogram@@PAHPAPAUzClass_NodePartial@@@Z"
+          "symbol": "?ProbeModalSampleHeights@Player@@YIXPAUzUtil_SaveGameState@@PAM1HPAUPlayerProbeTypeHistogram@@PAHPAPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x4290f0",
@@ -3196,10 +3196,10 @@
           "address": "0x42ba50",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_cls_di::SnapProbePointYToBestCandidate",
+          "name": "CZDisplayInstance::SnapProbePointYToBestCandidate",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?SnapProbePointYToBestCandidate@zClass_cls_di@@YIHPAUzVec3@@@Z"
+          "symbol": "?SnapProbePointYToBestCandidate@CZDisplayInstance@@YIHPAUzVec3@@@Z"
         },
         {
           "address": "0x42bab0",

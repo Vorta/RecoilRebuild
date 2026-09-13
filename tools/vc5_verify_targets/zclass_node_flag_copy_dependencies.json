@@ -22,48 +22,48 @@
   "functions": [
     {
       "address": "0x447d20",
-      "symbol": "?gwNodeSetFlag16@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetFlag16"
+      "symbol": "?gwNodeSetFlag16@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetFlag16"
     },
     {
       "address": "0x447d70",
-      "symbol": "?gwNodeSetFlag17@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetFlag17"
+      "symbol": "?gwNodeSetFlag17@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetFlag17"
     },
     {
       "address": "0x448100",
-      "symbol": "?gwNodeSetCellPickable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetCellPickable"
+      "symbol": "?gwNodeSetCellPickable@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetCellPickable"
     },
     {
       "address": "0x4481b0",
-      "symbol": "?gwNodeSetRaycastable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetRaycastable"
+      "symbol": "?gwNodeSetRaycastable@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetRaycastable"
     },
     {
       "address": "0x448230",
-      "symbol": "?gwNodeSetPickable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetPickable"
+      "symbol": "?gwNodeSetPickable@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetPickable"
     },
     {
       "address": "0x4482b0",
-      "symbol": "?gwNodeSetHasHitCallback@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetHasHitCallback"
+      "symbol": "?gwNodeSetHasHitCallback@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetHasHitCallback"
     },
     {
       "address": "0x4482f0",
-      "symbol": "?gwNodeSetBypassFarClip@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetBypassFarClip"
+      "symbol": "?gwNodeSetBypassFarClip@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetBypassFarClip"
     },
     {
       "address": "0x448360",
-      "symbol": "?gwNodeClearVariantGate@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeClearVariantGate"
+      "symbol": "?gwNodeClearVariantGate@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeClearVariantGate"
     },
     {
       "address": "0x4483a0",
-      "symbol": "?gwNodeSetVertexAlphaOverride@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetVertexAlphaOverride"
+      "symbol": "?gwNodeSetVertexAlphaOverride@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetVertexAlphaOverride"
     }
   ]
 }

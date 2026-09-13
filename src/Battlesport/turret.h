@@ -18,24 +18,24 @@ struct zMat4x3;
 struct zTurret_Runtime {
     int flags;
     int scenePathVisible;
-    zClass_NodePartial *turretNode;
-    zClass_NodePartial *healthyNode;
+    CZNodePartial *turretNode;
+    CZNodePartial *healthyNode;
     zVec3 worldPos;
     zVec3 firePos;
     int weaponBaseMoves;
     int hasMissileLock;
-    zClass_NodePartial *deactivateNode;
+    CZNodePartial *deactivateNode;
     unsigned char unknown_034[0x04];
-    zClass_NodePartial *partBaseNode;
+    CZNodePartial *partBaseNode;
     zMat4x3 *partBaseMatrix;
-    zClass_NodePartial *partBarrelNode;
+    CZNodePartial *partBarrelNode;
     zVec3 firePointLocal[2];
     zMat4x3 *partBarrelMatrix;
     zVec3 forward;
-    zClass_NodePartial *fireEffectNode;
+    CZNodePartial *fireEffectNode;
     float fireEffectDurationSec;
     unsigned char unknown_074[0x04];
-    zClass_NodePartial *targetTypes[8];
+    CZNodePartial *targetTypes[8];
     OptCatalogEntryDef *weaponCatalogEntry;
     int weaponAmmo;
     float detectionRange;
@@ -45,8 +45,8 @@ struct zTurret_Runtime {
     float damageModifier;
     int firePointIndex;
     int firePointCount;
-    zClass_NodePartial *firePointNode0;
-    zClass_NodePartial *firePointNode1;
+    CZNodePartial *firePointNode0;
+    CZNodePartial *firePointNode1;
     zVec3 fireDir;
     zVec3 spawnPos;
     zVec3 spawnVel;
@@ -69,7 +69,7 @@ struct zTurret_Runtime {
     zEffectAnimEntry *destroyAnimEntry;
     float healthCurrent;
     float healthMax;
-    zClass_NodePartial *damagePartNode;
+    CZNodePartial *damagePartNode;
     float activateOnHitDamage;
     float activateOnHitTimeout;
     int intersectBvolEnabled;
@@ -77,8 +77,8 @@ struct zTurret_Runtime {
 
     zTurret_Runtime * InitDefaults();
     void InitFromReaderNode(
-        zClass_NodePartial *worldNode,
-        zClass_NodePartial *turretWorldNode,
+        CZNodePartial *worldNode,
+        CZNodePartial *turretWorldNode,
         zEffectAnimEntry *defaultDestroyAnim,
         zReader::Node *readerNode
     );
@@ -419,7 +419,7 @@ RECOIL_STATIC_ASSERT(sizeof(zTurret_Runtime) == 0x180);
 } // namespace zTurret_LayoutAssertions
 
 extern "C" {
-extern zClass_NodePartial *g_zTurret_CallbackNode;
+extern CZNodePartial *g_zTurret_CallbackNode;
 extern zReader::Node *g_zTurret_LoadedDefRoot;
 extern zEffectAnimEntry *g_zTurret_NapalmVehicleDestroyAnim;
 extern int g_zTurret_RuntimeCount;
@@ -433,7 +433,7 @@ extern zTurret_Runtime *g_zTurret_RuntimeList[128];
 namespace zTurret_System {
 int __cdecl ResetIterationState();
 int __fastcall LoadDefinitionsFromPath(
-    zClass_NodePartial *worldNode,
+    CZNodePartial *worldNode,
     const char *path
 );
 void __cdecl TickAllRuntimesRoundRobin();

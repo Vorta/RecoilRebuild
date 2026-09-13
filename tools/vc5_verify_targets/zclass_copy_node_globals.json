@@ -23,23 +23,23 @@
   "data_symbols": [
     {
       "address": "0x4de4cc",
-      "symbol": "_g_zClass_CopyNodeCloneDiMode",
-      "name": "g_zClass_CopyNodeCloneDiMode",
-      "bn_name": "g_zClass_CopyNodeCloneDiMode",
+      "symbol": "_g_CZClass_CopyNodeCloneDiMode",
+      "name": "g_CZClass_CopyNodeCloneDiMode",
+      "bn_name": "g_CZClass_CopyNodeCloneDiMode",
       "byte_length": 4
     },
     {
       "address": "0x539c9c",
-      "symbol": "_g_zClass_CopyNodeDiArg0",
-      "name": "g_zClass_CopyNodeDiArg0",
-      "bn_name": "g_zClass_CopyNodeDiArg0",
+      "symbol": "_g_CZClass_CopyNodeDiArg0",
+      "name": "g_CZClass_CopyNodeDiArg0",
+      "bn_name": "g_CZClass_CopyNodeDiArg0",
       "byte_length": 4
     },
     {
       "address": "0x539ca0",
-      "symbol": "_g_zClass_CopyNodeDiArg1",
-      "name": "g_zClass_CopyNodeDiArg1",
-      "bn_name": "g_zClass_CopyNodeDiArg1",
+      "symbol": "_g_CZClass_CopyNodeDiArg1",
+      "name": "g_CZClass_CopyNodeDiArg1",
+      "bn_name": "g_CZClass_CopyNodeDiArg1",
       "byte_length": 4
     }
   ]

@@ -28,18 +28,18 @@
   "functions": [
     {
       "address": "0x443c50",
-      "symbol": "?SetBreakOnFirstCandidate@zClass_cls_di@@YIXH@Z",
-      "name": "zClass_cls_di::SetBreakOnFirstCandidate"
+      "symbol": "?SetBreakOnFirstCandidate@CZDisplayInstance@@YIXH@Z",
+      "name": "CZDisplayInstance::SetBreakOnFirstCandidate"
     },
     {
       "address": "0x443c60",
-      "symbol": "?SetStopAfterFirstHit@zClass_cls_di@@YIXH@Z",
-      "name": "zClass_cls_di::SetStopAfterFirstHit"
+      "symbol": "?SetStopAfterFirstHit@CZDisplayInstance@@YIXH@Z",
+      "name": "CZDisplayInstance::SetStopAfterFirstHit"
     },
     {
       "address": "0x444e90",
-      "symbol": "?RaycastFindClosest@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAUPlayerProbeSampleCandidateBuffer@@MMMMMM@Z",
-      "name": "zClass_cls_di::RaycastFindClosest"
+      "symbol": "?RaycastFindClosest@CZDisplayInstance@@YIHPAUCZNodePartial@@PAUPlayerProbeSampleCandidateBuffer@@MMMMMM@Z",
+      "name": "CZDisplayInstance::RaycastFindClosest"
     }
   ]
 }

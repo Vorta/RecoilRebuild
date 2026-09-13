@@ -43,7 +43,7 @@ struct HudUiControlsDialog;
 struct HudUiCheatCodeDialog;
 struct zSndSample;
 struct zSndPlayHandleSnapshot;
-struct zClass_NodePartial;
+struct CZNodePartial;
 /**
  * Forward declaration for imported MFC42 CString. This is only a pointer
  * boundary here, not a local CString reimplementation.
@@ -380,7 +380,7 @@ struct HudWeatherFx : zVideoFxPass3Element {
     unsigned short reserved46;
     float alphaStartScale;
     float alphaEndScale;
-    zClass_NodePartial *camera;
+    CZNodePartial *camera;
     int activeParticleCount;
     zVec3 *particlePositions[2];
     int sourceBufferIndex;

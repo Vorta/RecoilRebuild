@@ -50,7 +50,7 @@ struct zDEClient_QSandEventTemplate {
     float depth;
     float radius;
     zVec3 center;
-    zClass_NodePartial *damageOwnerNode;
+    CZNodePartial *damageOwnerNode;
 };
 
 struct zDEClient_CraterEventTemplate {
@@ -61,7 +61,7 @@ struct zDEClient_CraterEventTemplate {
     float depth;
     float radius;
     zVec3 center;
-    zClass_NodePartial *damageOwnerNode;
+    CZNodePartial *damageOwnerNode;
 };
 
 union zDEClient_FeatureEventData {
@@ -261,8 +261,8 @@ extern char g_zDEClient_CraterNameFmt[0x09];
 extern char g_zDEClient_QuickSandNameFmt[0x08];
 extern std::vector<zDEClient_FeatureEntry> g_zDEClient_FeatureList;
 extern std::set<zGeometry_ClipPatchNodeView *> g_zDEClient_FeatureMapTree;
-extern zClass_NodePartial *g_zDEClient_CameraNode;
-extern zClass_CameraDataPartial *g_zDEClient_CameraNodeClassData;
+extern CZNodePartial *g_zDEClient_CameraNode;
+extern CZCameraDataPartial *g_zDEClient_CameraNodeClassData;
 extern zDEClient_NetRelayCallback g_zDEClientQSandNetRelayCallback;
 extern zDEClient_NetRelayCallback g_zDEClientCraterNetRelayCallback;
 
@@ -274,7 +274,7 @@ typedef int(__fastcall *zDEClient_QSandFeatureDispatch)(
 );
 
 namespace zDEClient {
-int __fastcall LoadConfigResources(zClass_NodePartial *worldNode);
+int __fastcall LoadConfigResources(CZNodePartial *worldNode);
 RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
     zModel_MaterialPartial **outMaterial,
     char *texturePath
@@ -291,7 +291,7 @@ void __fastcall DispatchFeatureEventTemplates(
 int __cdecl ShutdownGlobals();
 int __cdecl ClearFeatureEntriesAndMapTree();
 void __cdecl ClearFeatureDisplayNodes();
-void __fastcall SetCameraNode(zClass_NodePartial *cameraNode);
+void __fastcall SetCameraNode(CZNodePartial *cameraNode);
 int __fastcall WriteFeatureSectionsToZAR(zZbdSectionCallbackCtx *callbackCtx);
 void __fastcall CopyQSandEventTemplateDefaults(
     zDEClient_QSandEventTemplate *eventTemplate
@@ -300,11 +300,11 @@ zDEClient_FeatureGridCell *__fastcall GetFeatureGridCell(
     int gridCol,
     int gridRow
 );
-zClass_NodePartial *__cdecl GetCameraNode();
+CZNodePartial *__cdecl GetCameraNode();
 zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
     zGeometry_ClipPatchPartitionOutput *partitionOutput,
-    zClass_NodePartial *parentNode,
-    zClass_NodePartial **outNode
+    CZNodePartial *parentNode,
+    CZNodePartial **outNode
 );
 int __fastcall AppendFeatureEntry(
     int featureType,

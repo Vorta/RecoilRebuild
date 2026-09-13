@@ -10,8 +10,8 @@
 #include "recoil/recoil_callconv.h"
 
 #include "GameZRecoil/include/zClass.h"
-struct zClass_CameraDataPartial;
-struct zClass_NodePartial;
+struct CZCameraDataPartial;
+struct CZNodePartial;
 struct HudUiRect;
 struct zTag4Partial;
 struct zVec3;
@@ -407,8 +407,8 @@ extern zVidPaletteRemapRecipe *g_zVid_PaletteRemapRecipes;
 extern int g_zVideo_RendererType;
 extern int g_zVideo_ActiveRendererPath;
 extern int g_zVideo_FrameTick;
-extern zClass_CameraDataPartial *g_zVideo_pActiveViewContext;
-extern zClass_CameraDataPartial *g_zVideo_pActiveProjectionViewContext;
+extern CZCameraDataPartial *g_zVideo_pActiveViewContext;
+extern CZCameraDataPartial *g_zVideo_pActiveProjectionViewContext;
 extern zTag4Partial g_zVideo_ActiveViewVariantTag;
 extern float g_zVideo_ProjectClipLeft;
 extern float g_zVideo_ProjectClipTop;
@@ -748,10 +748,10 @@ void __cdecl zVideoRestoreIconicFullscreenWindowIfNeeded();
 }
 
 void __fastcall zVideoSetActiveViewContext(
-    zClass_CameraDataPartial *viewContext
+    CZCameraDataPartial *viewContext
 );
 void __fastcall zVideoUpdateProjectionStateFromCameraData(
-    zClass_CameraDataPartial *cameraData
+    CZCameraDataPartial *cameraData
 );
 int __fastcall zVideoFrustumTestSphereClipMask(
     zVec3 *sphereCenter,
@@ -760,7 +760,7 @@ int __fastcall zVideoFrustumTestSphereClipMask(
 );
 
 int __fastcall zVideoswRenderFrame(
-    zClass_NodePartial *camera,
+    CZNodePartial *camera,
     int updateFxPass3Local
 );
 

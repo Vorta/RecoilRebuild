@@ -1,6 +1,6 @@
 {
   "name": "zclass_copy_node_base_data",
-  "description": "zClass_cls_util::CopyNodeBaseData copies common zClass node metadata and display-instance state.",
+  "description": "CZUtil::CopyNodeBaseData copies common zClass node metadata and display-instance state.",
   "source_filename": "cls_util.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -23,8 +23,8 @@
   "functions": [
     {
       "address": "0x451bd0",
-      "symbol": "?CopyNodeBaseData@zClass_cls_util@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_cls_util::CopyNodeBaseData"
+      "symbol": "?CopyNodeBaseData@CZUtil@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZUtil::CopyNodeBaseData"
     }
   ]
 }

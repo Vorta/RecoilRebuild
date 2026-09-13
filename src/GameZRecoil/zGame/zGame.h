@@ -29,7 +29,7 @@ struct zOpt_ViewRectSection {
     void *target;
 };
 
-struct zClass_NodePartial;
+struct CZNodePartial;
 namespace zReader {
 struct Node;
 }
@@ -37,7 +37,7 @@ struct Node;
 struct zOpt_CameraSection {
     int unknown_00;
     int unknown_04;
-    zClass_NodePartial *m_pCamera;
+    CZNodePartial *m_pCamera;
 };
 
 typedef int zOptGameControlFlags;
@@ -188,7 +188,7 @@ void __fastcall RenderSectionSetSize(
     int width,
     int height
 );
-void __fastcall RenderSectionSetTargetWindow(zClass_NodePartial *windowNode);
+void __fastcall RenderSectionSetTargetWindow(CZNodePartial *windowNode);
 zOpt_ViewRectSection *GetRenderSection();
 void __fastcall DisplaySectionSetPosition(
     int x,
@@ -199,7 +199,7 @@ void __fastcall DisplaySectionSetSize(
     int height
 );
 void __fastcall DisplaySectionSetTargetDisplay(
-    zClass_NodePartial *displayNode
+    CZNodePartial *displayNode
 );
 void __fastcall DisplaySectionSetBitsPerPixel(int bitsPerPixel);
 void __fastcall WindowSectionSetPosition(
@@ -210,7 +210,7 @@ void __fastcall WindowSectionSetSize(
     int width,
     int height
 );
-void __fastcall CameraSectionSetActiveCamera(zClass_NodePartial *camera);
+void __fastcall CameraSectionSetActiveCamera(CZNodePartial *camera);
 void __fastcall SetGameControlOptions(zOptGameControlFlags value);
 void __fastcall SetThrottleMode(int enable);
 int GetThrottleMode();
@@ -245,7 +245,7 @@ int GetNetworkModemEnabled();
 void __fastcall SetWolPasswordFlag(int value);
 } // namespace zOpt
 
-zClass_NodePartial *zOptCameraSectionGetActiveCamera();
+CZNodePartial *zOptCameraSectionGetActiveCamera();
 char *zOptGetPlayerName();
 int zOptGetWolPasswordFlagValue();
 int zOptDisplaySectionGetWidth();

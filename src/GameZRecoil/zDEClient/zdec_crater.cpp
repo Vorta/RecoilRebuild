@@ -237,15 +237,15 @@ zDEClient_CraterFeature *__fastcall InitFeatureFromEventTemplate(
     zDEClient_CraterFeature *featureInstance = CreateFeatureStructFromEventTemplate(eventTemplate);
     zVec3 *currentPoint = featureInstance->points;
 
-    zClass_NodePartial *world = zDEClient::GetCameraNode();
-    zClass_WorldDataPartial *worldData = (zClass_WorldDataPartial *)(world->classData);
+    CZNodePartial *world = zDEClient::GetCameraNode();
+    CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
     if (worldData == 0) {
         return 0;
     }
 
     int gridCol;
     int gridRow;
-    zClass_World::WorldToGridCoordsClamped(
+    CZWorld::WorldToGridCoordsClamped(
         world,
         &gridCol,
         eventTemplate->center.x,
@@ -451,15 +451,15 @@ int __fastcall Build(
 int __fastcall CreateFeature(
     zDEClient_CraterFeature *featureInstance
 ) {
-    zClass_NodePartial *node = 0;
+    CZNodePartial *node = 0;
     zDiPartial *displayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
         featureInstance->clipPatchOutput->partitions,
         zDEClient::GetCameraNode(),
         &node
     );
     if (node != 0) {
-        zClass_Class::gwNodeSetName(node, g_zDEClient_FeatureNodeName);
-        node->callbackContext = (zClass_NodePartial *)(featureInstance);
+        CZClass::gwNodeSetName(node, g_zDEClient_FeatureNodeName);
+        node->callbackContext = (CZNodePartial *)(featureInstance);
     }
 
     if (displayInstance == 0) {
@@ -570,7 +570,7 @@ int __fastcall CreateFeature(
         free(uvPairs);
     }
 
-    zClass_Class::gwNodeSetDisplayInstance(node, displayInstance);
+    CZClass::gwNodeSetDisplayInstance(node, displayInstance);
     return 0;
 }
 } /* namespace zDEClient_Crater */ namespace zDEClient {
@@ -612,13 +612,13 @@ void __cdecl ClearFeatureDisplayNodes() {
         ++entry) {
         zGeometry_ClipPatchNodeView *key = *entry;
         if (key != 0) {
-            GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local(key, 1);
+            CZZbd::ReloadDisplayInstancesFromCurrentPath_Local(key, 1);
 
             const int gridCol = key->gridCol;
             const int gridRow = key->gridRow;
             if (gridCol >= 0 && gridRow >= 0) {
                 zWorldAreaPartial *area =
-                    zClass_World::GetAreaPartitionAtGrid(key->listA[0], gridCol, gridRow);
+                    CZWorld::GetAreaPartitionAtGrid(key->listA[0], gridCol, gridRow);
                 if (area != 0) {
                     area->displayRefreshQueued = 0;
                 }
@@ -626,22 +626,22 @@ void __cdecl ClearFeatureDisplayNodes() {
         }
     }
 
-    zClass_NodePartial *child = zClass::FindByTypeAndName(6, g_zDEClient_FeatureNodeName);
+    CZNodePartial *child = CZClass::FindByTypeAndName(6, g_zDEClient_FeatureNodeName);
     while (child != 0) {
         while (child->listCountA > 0) {
-            zClass_Class::RemoveChild(child->listA[0], child);
+            CZClass::RemoveChild(child->listA[0], child);
         }
 
         unsigned int displayInstanceValue = 0;
-        zClass_Class::gwNodeGetUserData(child, &displayInstanceValue);
+        CZClass::gwNodeGetUserData(child, &displayInstanceValue);
         if (displayInstanceValue != 0) {
             zDiPartial *displayInstance = (zDiPartial *)((unsigned int)(displayInstanceValue));
-            zClass_Class::gwNodeSetDisplayInstance(child, 0);
+            CZClass::gwNodeSetDisplayInstance(child, 0);
             zModel_DiPool::FreeIfUnreferenced(displayInstance);
         }
 
-        zClass_Class::DeleteNodeByType(child);
-        child = zClass::FindByTypeAndName(6, g_zDEClient_FeatureNodeName);
+        CZClass::DeleteNodeByType(child);
+        child = CZClass::FindByTypeAndName(6, g_zDEClient_FeatureNodeName);
     }
 }
 
@@ -804,11 +804,11 @@ namespace zDEClient {
  * Purpose: record the active camera node and its class-data feature grid.
  */
 void __fastcall SetCameraNode(
-    zClass_NodePartial *cameraNode
+    CZNodePartial *cameraNode
 ) {
     if (cameraNode != 0) {
         g_zDEClient_CameraNode = cameraNode;
-        g_zDEClient_CameraNodeClassData = (zClass_CameraDataPartial *)(cameraNode->classData);
+        g_zDEClient_CameraNodeClassData = (CZCameraDataPartial *)(cameraNode->classData);
     }
 }
 
@@ -839,7 +839,7 @@ zDEClient_FeatureGridCell *__fastcall GetFeatureGridCell(
  *
  * Purpose: expose the active camera node used by terrain feature helpers.
  */
-zClass_NodePartial *__cdecl GetCameraNode() {
+CZNodePartial *__cdecl GetCameraNode() {
     return g_zDEClient_CameraNode;
 }
 } // namespace zDEClient

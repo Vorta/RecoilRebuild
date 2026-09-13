@@ -8,7 +8,7 @@
 #include "GameZRecoil/include/zclass.h"
 #include "recoil/recoil_callconv.h"
 
-struct zClass_NodePartial;
+struct CZNodePartial;
 struct zUtil_SaveGameState;
 
 struct AINetPathProbeFan {
@@ -139,12 +139,12 @@ struct AINet {
         zUtil_SaveGameState *saveState
     );
     static int __fastcall HasLineOfSightFromLocalPlayerFxOffset(
-        zClass_NodePartial *node,
+        CZNodePartial *node,
         const zVec3 *point,
         int directionMode
     );
     static int __fastcall HasLineOfSightFromCameraTarget(
-        zClass_NodePartial *node,
+        CZNodePartial *node,
         const zVec3 *point,
         int directionMode
     );
@@ -1070,7 +1070,7 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
         saveState->primaryModalState->masterModalData;
     int segmentTags[2];
     zVec3 forwardDir;
-    zClass_DiSegmentEndpoints segmentPairs[1];
+    CZDisplayInstanceSegmentEndpoints segmentPairs[1];
 
     if (playerState->playerCollisionResolved != 0 || playerState->preferredCollisionResolved != 0) {
         ++playerState->aiMode2SteeringRetryCount;
@@ -1553,7 +1553,7 @@ void __fastcall AINet::AiEnterMode2SteeringPursuit(
 struct AiNetLosFxFrame {
     const zVec3 *savedEdi;
     zUtil_PlayerStateStorage *savedEsi;
-    zClass_NodePartial *savedEbx;
+    CZNodePartial *savedEbx;
     PlayerProbeSampleCandidateBuffer rayData;
     void *returnAddress;
     int directionMode;
@@ -1586,14 +1586,14 @@ struct AiNetLosFxFrame {
  * tested node and local player root from raycast candidates.
  */
 __declspec(naked) int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     const zVec3 *point,
     int directionMode
 ) {
-    using zClass_Class::gwNodeSetRaycastable;
-    using zClass_cls_di::SetBreakOnFirstCandidate;
-    using zClass_cls_di::SetStopAfterFirstHit;
-    using zClass_cls_di::RaycastFindClosest;
+    using CZClass::gwNodeSetRaycastable;
+    using CZDisplayInstance::SetBreakOnFirstCandidate;
+    using CZDisplayInstance::SetStopAfterFirstHit;
+    using CZDisplayInstance::RaycastFindClosest;
     /*
      * Frame: [rayData][ebx][esi][edi][return][directionMode].  esi holds the
      * player state, edi the supplied point, ebx the tested node.
@@ -1691,7 +1691,7 @@ __declspec(naked) int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
  * the emitted instruction schedule differs.
  */
 int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     const zVec3 *point,
     int directionMode
 ) {
@@ -1699,14 +1699,14 @@ int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
         (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
 
     g_Variant_CurrentTag = playerState->variantTag;
-    zClass_Class::gwNodeSetRaycastable(node, 0);
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
-    zClass_cls_di::SetBreakOnFirstCandidate(1);
-    zClass_cls_di::SetStopAfterFirstHit(0x40000);
+    CZClass::gwNodeSetRaycastable(node, 0);
+    CZClass::gwNodeSetRaycastable(playerState->rootNode, 0);
+    CZDisplayInstance::SetBreakOnFirstCandidate(1);
+    CZDisplayInstance::SetStopAfterFirstHit(0x40000);
 
     PlayerProbeSampleCandidateBuffer rayData;
     if (directionMode == 1) {
-        directionMode = zClass_cls_di::RaycastFindClosest(
+        directionMode = CZDisplayInstance::RaycastFindClosest(
             g_Player_RuntimeDiScene,
             &rayData,
             playerState->fxOffsetWorld.x,
@@ -1717,7 +1717,7 @@ int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
             point->z
         );
     } else {
-        directionMode = zClass_cls_di::RaycastFindClosest(
+        directionMode = CZDisplayInstance::RaycastFindClosest(
             g_Player_RuntimeDiScene,
             &rayData,
             point->x,
@@ -1728,9 +1728,9 @@ int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
             playerState->fxOffsetWorld.z
         );
     }
-    zClass_cls_di::SetBreakOnFirstCandidate(0);
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1);
-    zClass_Class::gwNodeSetRaycastable(node, 1);
+    CZDisplayInstance::SetBreakOnFirstCandidate(0);
+    CZClass::gwNodeSetRaycastable(playerState->rootNode, 1);
+    CZClass::gwNodeSetRaycastable(node, 1);
     if (directionMode == 0 && rayData.candidateCount != 0) {
         return 0;
     }
@@ -1755,14 +1755,14 @@ struct AiNetLosCamLocals {
 struct AiNetLosCamFrame {
     zUtil_PlayerStateStorage *savedEdi;
     const zVec3 *savedEsi;
-    zClass_NodePartial *savedEbx;
+    CZNodePartial *savedEbx;
     AiNetLosCamLocals locals;
     void *returnAddress;
     int directionMode;
 };
 struct AiNetLosCamFrameBeforeEdi {
     const zVec3 *savedEsi;
-    zClass_NodePartial *savedEbx;
+    CZNodePartial *savedEbx;
     AiNetLosCamLocals locals;
 };
 struct AiNetLosCamFrame1 { void *pushed[1]; AiNetLosCamFrame frame; };
@@ -1793,15 +1793,15 @@ struct AiNetLosCamFrame4 { void *pushed[4]; AiNetLosCamFrame frame; };
  * player root from raycast candidates.
  */
 __declspec(naked) int __fastcall AINet::HasLineOfSightFromCameraTarget(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     const zVec3 *point,
     int directionMode
 ) {
-    using zClass_Camera::gwCameraGetTarget;
-    using zClass_Class::gwNodeSetRaycastable;
-    using zClass_cls_di::SetBreakOnFirstCandidate;
-    using zClass_cls_di::SetStopAfterFirstHit;
-    using zClass_cls_di::RaycastFindClosest;
+    using CZCamera::gwCameraGetTarget;
+    using CZClass::gwNodeSetRaycastable;
+    using CZDisplayInstance::SetBreakOnFirstCandidate;
+    using CZDisplayInstance::SetStopAfterFirstHit;
+    using CZDisplayInstance::RaycastFindClosest;
     /* edi holds the player state, esi the supplied point, ebx the tested node. */
     __asm {
         sub     esp, SIZE AiNetLosCamLocals
@@ -1903,7 +1903,7 @@ __declspec(naked) int __fastcall AINet::HasLineOfSightFromCameraTarget(
  * schedule differs.
  */
 int __fastcall AINet::HasLineOfSightFromCameraTarget(
-    zClass_NodePartial *node,
+    CZNodePartial *node,
     const zVec3 *point,
     int directionMode
 ) {
@@ -1911,7 +1911,7 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(
         (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
 
     zVec3 cameraTarget;
-    zClass_Camera::gwCameraGetTarget(
+    CZCamera::gwCameraGetTarget(
         g_MainCamera,
         &cameraTarget.x,
         &cameraTarget.y,
@@ -1919,15 +1919,15 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(
     );
 
     g_Variant_CurrentTag = playerState->variantTag;
-    zClass_Class::gwNodeSetRaycastable(node, 0);
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
-    zClass_cls_di::SetBreakOnFirstCandidate(1);
-    zClass_cls_di::SetStopAfterFirstHit(0x40000);
+    CZClass::gwNodeSetRaycastable(node, 0);
+    CZClass::gwNodeSetRaycastable(playerState->rootNode, 0);
+    CZDisplayInstance::SetBreakOnFirstCandidate(1);
+    CZDisplayInstance::SetStopAfterFirstHit(0x40000);
 
     PlayerProbeSampleCandidateBuffer rayData;
     int raycastResult;
     if (directionMode == 1) {
-        raycastResult = zClass_cls_di::RaycastFindClosest(
+        raycastResult = CZDisplayInstance::RaycastFindClosest(
             g_Player_RuntimeDiScene,
             &rayData,
             cameraTarget.x,
@@ -1938,7 +1938,7 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(
             point->z
         );
     } else {
-        raycastResult = zClass_cls_di::RaycastFindClosest(
+        raycastResult = CZDisplayInstance::RaycastFindClosest(
             g_Player_RuntimeDiScene,
             &rayData,
             point->x,
@@ -1950,9 +1950,9 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(
         );
     }
 
-    zClass_cls_di::SetBreakOnFirstCandidate(0);
-    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1);
-    zClass_Class::gwNodeSetRaycastable(node, 1);
+    CZDisplayInstance::SetBreakOnFirstCandidate(0);
+    CZClass::gwNodeSetRaycastable(playerState->rootNode, 1);
+    CZClass::gwNodeSetRaycastable(node, 1);
 
     return raycastResult == 0 && rayData.candidateCount != 0 ? 0 : 1;
 }

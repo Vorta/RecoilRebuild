@@ -14,7 +14,7 @@
   "functions": [
     {"address":"0x460020","symbol":"?Init@zEffect@@YAHXZ","name":"zEffect::Init","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x460060","symbol":"?ShutdownAll@zEffect@@YAHXZ","name":"zEffect::ShutdownAll","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
-    {"address":"0x460070","symbol":"?InitFromPath@zEffect@@YIHPAUzClass_NodePartial@@0PBD@Z","name":"zEffect::InitFromPath","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+    {"address":"0x460070","symbol":"?InitFromPath@zEffect@@YIHPAUCZNodePartial@@0PBD@Z","name":"zEffect::InitFromPath","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
     {"address":"0x460330","symbol":"?Reset@zEffect@@YAHXZ","name":"zEffect::Reset","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true}
   ],
   "translation_unit_function_order": [
@@ -32,7 +32,7 @@
       "order_scope": "authored",
       "retail_start": "0x460020",
       "retail_end_exclusive": "0x4603d0",
-      "predecessor": {"address":"0x460010","symbol":"?GetRootNodeOrNull@zEffectAnim@@YIPAUzClass_NodePartial@@PAUzEffectAnimEntry@@@Z","name":"zEffectAnim::GetRootNodeOrNull","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
+      "predecessor": {"address":"0x460010","symbol":"?GetRootNodeOrNull@zEffectAnim@@YIPAUCZNodePartial@@PAUzEffectAnimEntry@@@Z","name":"zEffectAnim::GetRootNodeOrNull","pipeline_class":"authored","authored_order_role":"authored-body","required_presence":true,"full_order_gate":true},
       "function_address_refs": [
         "0x460020","0x460060","0x460070","0x460330"
       ],

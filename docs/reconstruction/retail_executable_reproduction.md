@@ -339,9 +339,19 @@ python tools/recoil.py verify final-build --playground-only --build-dir build/li
 ```
 
 This mode requires an absent root, the canonical manifest/profile and tracker,
-and a complete fresh compile, resource build, and link. It runs the same complete
-authored linked-presence safeguard described below and deploys only if that
-passes. A failed deployment is also a command failure. Partial builds, diagnostic
+and a complete fresh compile, resource build, and link. Its linked-presence
+census includes every currently classified authored body and lifecycle body,
+including bodies whose order evidence is pending or invalidated. Each requires
+current tracker/manifest registrations and unambiguous linked presence; no
+unregistered body may be skipped. Retired or stale overlapping diagnostic targets
+cannot supply selectors; every body still needs a current covering registration.
+Alternative registered spellings of the same physical identity must resolve to
+one linked address, while distinct logical members remain separate obligations.
+Registrations inheriting the canonical build context take precedence over
+standalone diagnostic profiles for the same identity.
+This permits test builds during reconstruction
+without requiring order acceptance. The same startup guard remains mandatory.
+A failed deployment is also a command failure. Partial builds, diagnostic
 profiles, custom order targets, `--clean`, and `--linkability-only` cannot be
 combined with it. It evaluates no linked order and accepts no order, byte, alias,
 or final-image fact; those comparisons remain separate serial-stage work.

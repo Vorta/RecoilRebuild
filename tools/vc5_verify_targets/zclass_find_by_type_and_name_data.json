@@ -22,16 +22,16 @@
   "data_symbols": [
     {
       "address": "0x4ddef8",
-      "symbol": "_g_zClass_TypeList_HeadSlotPtrs",
-      "name": "g_zClass_TypeList_HeadSlotPtrs",
-      "bn_name": "g_zClass_TypeList_HeadSlotPtrs",
+      "symbol": "_g_CZTypeList_HeadSlotPtrs",
+      "name": "g_CZTypeList_HeadSlotPtrs",
+      "bn_name": "g_CZTypeList_HeadSlotPtrs",
       "byte_length": 64
     },
     {
       "address": "0x539bac",
-      "symbol": "_g_zClass_TypeList_Buckets",
-      "name": "g_zClass_TypeList_Buckets",
-      "bn_name": "g_zClass_TypeList_Buckets",
+      "symbol": "_g_CZTypeList_Buckets",
+      "name": "g_CZTypeList_Buckets",
+      "bn_name": "g_CZTypeList_Buckets",
       "byte_length": 192
     }
   ]

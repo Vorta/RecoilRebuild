@@ -1,6 +1,6 @@
 {
   "name": "zclass_typelist_alloc_link",
-  "description": "zClass_TypeList::AllocLink free-list/calloc allocator.",
+  "description": "CZTypeList::AllocLink free-list/calloc allocator.",
   "source_filename": "List.c",
   "source_from": "src/GameZRecoil/zClass/List.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,13 +22,13 @@
   "functions": [
     {
       "address": "0x44e630",
-      "symbol": "?AllocLink@zClass_TypeList@@YAPAUzClass_TypeListLink@@XZ",
-      "name": "zClass_TypeList::AllocLink"
+      "symbol": "?AllocLink@CZTypeList@@YAPAUCZTypeListLink@@XZ",
+      "name": "CZTypeList::AllocLink"
     },
     {
       "address": "0x44e690",
-      "symbol": "?FreeLink@zClass_TypeList@@YIXPAUzClass_TypeListLink@@@Z",
-      "name": "zClass_TypeList::FreeLink"
+      "symbol": "?FreeLink@CZTypeList@@YIXPAUCZTypeListLink@@@Z",
+      "name": "CZTypeList::FreeLink"
     }
   ]
 }

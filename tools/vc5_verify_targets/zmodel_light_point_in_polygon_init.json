@@ -20,7 +20,7 @@
   "functions": [
     {
       "address": "0x487a30",
-      "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUzClass_NodePartial@@PAPAUzClass_LightDataPartial@@H@Z",
+      "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUCZNodePartial@@PAPAUCZLightDataPartial@@H@Z",
       "name": "zModelLightPointInPolygonInitXZ"
     }
   ]

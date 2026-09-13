@@ -24,8 +24,8 @@
     {
       "address": "0x4ddd44",
       "symbol": "??_C@_0CE@FGEF@D?3?2Proj?2GameZRecoil?2zClass?2Camer@",
-      "name": "g_zClass_SourceFile_CameraC",
-      "bn_name": "g_zClass_SourceFile_CameraC",
+      "name": "g_CZClass_SourceFile_CameraC",
+      "bn_name": "g_CZClass_SourceFile_CameraC",
       "byte_length": 36
     }
   ]

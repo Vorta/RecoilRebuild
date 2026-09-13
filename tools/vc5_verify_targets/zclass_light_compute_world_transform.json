@@ -1,6 +1,6 @@
 {
   "name": "zclass_light_compute_world_transform",
-  "description": "zClass_Light::ComputeWorldTransform world-space light transform helper.",
+  "description": "CZLight::ComputeWorldTransform world-space light transform helper.",
   "source_filename": "Light.c",
   "source_from": "src/GameZRecoil/zClass/Light.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -23,8 +23,8 @@
   "functions": [
     {
       "address": "0x453620",
-      "symbol": "?ComputeWorldTransform@zClass_Light@@YIHPAUzClass_NodePartial@@PAUzClass_LightDataPartial@@@Z",
-      "name": "zClass_Light::ComputeWorldTransform"
+      "symbol": "?ComputeWorldTransform@CZLight@@YIHPAUCZNodePartial@@PAUCZLightDataPartial@@@Z",
+      "name": "CZLight::ComputeWorldTransform"
     }
   ]
 }

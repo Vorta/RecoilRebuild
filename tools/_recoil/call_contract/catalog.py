@@ -1342,7 +1342,7 @@ MSVC_CHKSTK_CALLER_SPECS: Mapping[str, Mapping[str, Any]] = {
         "physical_block_id": "recoil:block:0x475c40",
         "symbol": (
             "?RenderNodeHardware@zModel@@"
-            "YIXPAUzClass_NodePartial@@H@Z"
+            "YIXPAUCZNodePartial@@H@Z"
         ),
         "retail_setup_offset": 0x03,
         "retail_call_offset": 0x08,
@@ -2203,7 +2203,7 @@ ZWEP_CIASIN_CANDIDATE_PROFILES: Mapping[str, Mapping[str, Any]] = {
         "symbol": (
             "?AllocRuntimeInstance@OptCatalog@@YIPAU"
             "OptCatalogRuntimeInstanceStorage@@PAUOptCatalogEntryDef@@"
-            "PAUzClass_NodePartial@@PAUzTag4Partial@@PAUzVec3@@33PAXPAU2@@Z"
+            "PAUCZNodePartial@@PAUzTag4Partial@@PAUzVec3@@33PAXPAU2@@Z"
         ),
         "name": "OptCatalog::AllocRuntimeInstance",
         "body_size": 0x410,
@@ -2279,7 +2279,7 @@ ZWEP_DAMAGE_CANDIDATE_PROFILES: Mapping[str, Mapping[str, Any]] = {
         "end": "0x4b2880",
         "symbol": (
             "?InvokeDamageFeedbackAndHitCallback@OptCatalog@@YIHPAU"
-            "OptCatalogEntryDef@@PAUzClass_NodePartial@@PAUzVec3@@"
+            "OptCatalogEntryDef@@PAUCZNodePartial@@PAUzVec3@@"
             "PAUOptCatalogHitEventPartial@@M@Z"
         ),
         "name": "OptCatalog::InvokeDamageFeedbackAndHitCallback",
@@ -2348,7 +2348,7 @@ ZWEP_ENTRY_CALLBACK_CALLER_IDENTITY = "symbol:recoil:function:0x4b1190"
 
 
 ZWEP_ENTRY_CALLBACK_CALLER_SYMBOL = (
-    "?LoadOptCatalogFromPath@zWeapon@@YIHPAUzClass_NodePartial@@PBDH"
+    "?LoadOptCatalogFromPath@zWeapon@@YIHPAUCZNodePartial@@PBDH"
     "P6IXPAUNode@zReader@@PAUOptCatalogEntryDef@@@Z@Z"
 )
 
@@ -2878,10 +2878,10 @@ ZCLASS_FREEALL_CALLER_ADDRESS = "0x451a00"
 ZCLASS_FREEALL_CALLER_END_EXCLUSIVE = "0x451a60"
 
 
-ZCLASS_FREEALL_CALLER_SYMBOL = "?ShutdownCore@zClass@@YAHXZ"
+ZCLASS_FREEALL_CALLER_SYMBOL = "?ShutdownCore@CZClass@@YAHXZ"
 
 
-ZCLASS_FREEALL_CALLER_NAME = "zClass::ShutdownCore"
+ZCLASS_FREEALL_CALLER_NAME = "CZClass::ShutdownCore"
 
 
 ZCLASS_FREEALL_CALLER_BLOCK_ID = "recoil:block:0x4518b0"
@@ -2925,7 +2925,7 @@ ZCLASS_FREEALL_TARGET_ADDRESS = "0x44e6d0"
 ZCLASS_FREEALL_TARGET_END_EXCLUSIVE = "0x44e700"
 
 
-ZCLASS_FREEALL_TARGET_NAME = "zClass_TypeList::FreeAll"
+ZCLASS_FREEALL_TARGET_NAME = "CZTypeList::FreeAll"
 
 
 ZCLASS_FREEALL_TARGET_BLOCK_ID = "recoil:block:0x44e630"
@@ -2955,10 +2955,10 @@ ZCLASS_FREEALL_TARGET_MANIFEST = (
 ZCLASS_FREEALL_HEADER_PATH = "src/GameZRecoil/include/zClass.h"
 
 
-ZCLASS_FREEALL_CANDIDATE_SYMBOL = "?FreeAll@zClass_TypeList@@YIXXZ"
+ZCLASS_FREEALL_CANDIDATE_SYMBOL = "?FreeAll@CZTypeList@@YIXXZ"
 
 
-ZCLASS_FREEALL_REGISTERED_SYMBOL = "?FreeAll@zClass_TypeList@@YAXXZ"
+ZCLASS_FREEALL_REGISTERED_SYMBOL = "?FreeAll@CZTypeList@@YAXXZ"
 
 
 ZCLASS_FREEALL_CALL_ORDINAL = 1
@@ -2981,17 +2981,17 @@ ZCLASS_FREEALL_CALLER_BODY = bytes.fromhex(
 
 
 ZCLASS_FREEALL_CALLER_RELOCATIONS = (
-    (0x07, IMAGE_REL_I386_REL32, "?DeleteAllOfType@zClass_List@@YIHH@Z"),
+    (0x07, IMAGE_REL_I386_REL32, "?DeleteAllOfType@CZList@@YIHH@Z"),
     (0x0C, IMAGE_REL_I386_REL32, ZCLASS_FREEALL_CANDIDATE_SYMBOL),
-    (0x11, IMAGE_REL_I386_DIR32, "_g_zClass_NodeArraySize"),
-    (0x1C, IMAGE_REL_I386_DIR32, "_g_zClass_NodeArray"),
+    (0x11, IMAGE_REL_I386_DIR32, "_g_CZClass_NodeArraySize"),
+    (0x1C, IMAGE_REL_I386_DIR32, "_g_CZClass_NodeArray"),
     (0x27, IMAGE_REL_I386_DIR32, "__imp__free"),
-    (0x30, IMAGE_REL_I386_DIR32, "_g_zClass_NodeArray"),
-    (0x36, IMAGE_REL_I386_DIR32, "_g_zClass_NodeArraySize"),
-    (0x3C, IMAGE_REL_I386_DIR32, "_g_zClass_ActiveNodeCount"),
-    (0x42, IMAGE_REL_I386_DIR32, "_g_zClass_NodeFreeHeadIndex"),
-    (0x4B, IMAGE_REL_I386_REL32, "?ResetCurrentZbdPath@zClass@@YIHXZ"),
-    (0x51, IMAGE_REL_I386_DIR32, "_g_zClass_IsInitialized"),
+    (0x30, IMAGE_REL_I386_DIR32, "_g_CZClass_NodeArray"),
+    (0x36, IMAGE_REL_I386_DIR32, "_g_CZClass_NodeArraySize"),
+    (0x3C, IMAGE_REL_I386_DIR32, "_g_CZClass_ActiveNodeCount"),
+    (0x42, IMAGE_REL_I386_DIR32, "_g_CZClass_NodeFreeHeadIndex"),
+    (0x4B, IMAGE_REL_I386_REL32, "?ResetCurrentZbdPath@CZClass@@YIHXZ"),
+    (0x51, IMAGE_REL_I386_DIR32, "_g_CZClass_IsInitialized"),
 )
 
 
@@ -3007,7 +3007,7 @@ ZCLASS_RESET_ZBD_TARGET_ADDRESS = "0x454360"
 ZCLASS_RESET_ZBD_TARGET_END_EXCLUSIVE = "0x454370"
 
 
-ZCLASS_RESET_ZBD_TARGET_NAME = "zClass::ResetCurrentZbdPath"
+ZCLASS_RESET_ZBD_TARGET_NAME = "CZClass::ResetCurrentZbdPath"
 
 
 ZCLASS_RESET_ZBD_TARGET_BLOCK_ID = "recoil:block:0x454360"
@@ -3029,10 +3029,10 @@ ZCLASS_RESET_ZBD_TARGET_MANIFEST = (
 )
 
 
-ZCLASS_RESET_ZBD_CANDIDATE_SYMBOL = "?ResetCurrentZbdPath@zClass@@YIHXZ"
+ZCLASS_RESET_ZBD_CANDIDATE_SYMBOL = "?ResetCurrentZbdPath@CZClass@@YIHXZ"
 
 
-ZCLASS_RESET_ZBD_REGISTERED_SYMBOL = "?ResetCurrentZbdPath@zClass@@YAHXZ"
+ZCLASS_RESET_ZBD_REGISTERED_SYMBOL = "?ResetCurrentZbdPath@CZClass@@YAHXZ"
 
 
 ZCLASS_RESET_ZBD_CALL_ORDINAL = 3

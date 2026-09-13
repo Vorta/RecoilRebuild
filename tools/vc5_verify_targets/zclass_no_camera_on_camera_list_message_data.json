@@ -24,8 +24,8 @@
     {
       "address": "0x4de0c0",
       "symbol": "??_C@_0CC@DJI@ERROR?3?5No?5camera?5on?5camera?5list?4@",
-      "name": "g_zClass_NoCameraOnCameraListMsg",
-      "bn_name": "g_zClass_NoCameraOnCameraListMsg",
+      "name": "g_CZClass_NoCameraOnCameraListMsg",
+      "bn_name": "g_CZClass_NoCameraOnCameraListMsg",
       "byte_length": 34
     }
   ]

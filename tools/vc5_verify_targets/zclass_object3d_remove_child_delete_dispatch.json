@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x44db60",
-      "symbol": "?RemoveChild@zClass_Object3D@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Object3D::RemoveChild"
+      "symbol": "?RemoveChild@CZObject3D@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZObject3D::RemoveChild"
     }
   ]
 }

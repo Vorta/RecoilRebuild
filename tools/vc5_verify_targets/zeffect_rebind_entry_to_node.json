@@ -24,7 +24,7 @@
   "functions": [
     {
       "address": "0x45ed80",
-      "symbol": "?RebindEntryToNode@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUzClass_NodePartial@@@Z",
+      "symbol": "?RebindEntryToNode@zEffectAnim@@YIPAUzEffectAnimEntry@@PAU2@PAUCZNodePartial@@@Z",
       "name": "zEffectAnim::RebindEntryToNode"
     }
   ]

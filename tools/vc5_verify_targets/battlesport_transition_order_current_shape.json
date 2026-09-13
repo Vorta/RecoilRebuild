@@ -45,13 +45,13 @@
       "functions": [
         {
           "address": "0x437e60",
-          "symbol": "?SetContextRecursive@zClass_Node@@YIXPAUzClass_NodePartial@@0H@Z",
-          "name": "zClass_Node::SetContextRecursive"
+          "symbol": "?SetContextRecursive@CZNode@@YIXPAUCZNodePartial@@0H@Z",
+          "name": "CZNode::SetContextRecursive"
         },
         {
           "address": "0x437ea0",
-          "symbol": "?SetDiFlagBit0Recursive@zClass_Node@@YIXPAUzClass_NodePartial@@H@Z",
-          "name": "zClass_Node::SetDiFlagBit0Recursive"
+          "symbol": "?SetDiFlagBit0Recursive@CZNode@@YIXPAUCZNodePartial@@H@Z",
+          "name": "CZNode::SetDiFlagBit0Recursive"
         }
       ]
     },

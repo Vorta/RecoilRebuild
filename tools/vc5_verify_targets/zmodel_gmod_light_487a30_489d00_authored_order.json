@@ -15,7 +15,7 @@
   "functions": [
     {
       "address": "0x487a30",
-      "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUzClass_NodePartial@@PAPAUzClass_LightDataPartial@@H@Z",
+      "symbol": "?zModelLightPointInPolygonInitXZ@@YIXPAPAUCZNodePartial@@PAPAUCZLightDataPartial@@H@Z",
       "name": "zModelLightPointInPolygonInitXZ",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -51,7 +51,7 @@
     },
     {
       "address": "0x4894f0",
-      "symbol": "?EvalDistanceWeight@zModel_Light@@YIMPBUzClass_LightDataPartial@@M@Z",
+      "symbol": "?EvalDistanceWeight@zModel_Light@@YIMPBUCZLightDataPartial@@M@Z",
       "name": "zModel_Light::EvalDistanceWeight",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
@@ -126,8 +126,8 @@
       "retail_end_exclusive": "0x489d00",
       "predecessor": {
         "address": "0x4879c0",
-        "symbol": "?FilterRegionsAgainstHexahedronFaces@zClass_cls_di@@YIHPAUzVec3@@M@Z",
-        "name": "zClass_cls_di::FilterRegionsAgainstHexahedronFaces",
+        "symbol": "?FilterRegionsAgainstHexahedronFaces@CZDisplayInstance@@YIHPAUzVec3@@M@Z",
+        "name": "CZDisplayInstance::FilterRegionsAgainstHexahedronFaces",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

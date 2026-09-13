@@ -1,6 +1,6 @@
 {
   "name": "light_return_to_free_list",
-  "description": "Light::ReturnToFreeList resets a thermal-glow light range, removes it from the runtime world, and pushes it onto the free list. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "description": "CZLight::ReturnToFreeList resets a thermal-glow light range, removes it from the runtime world, and pushes it onto the free list. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
   "source_filename": "zwep_init.c",
   "source_from": "src/GameZRecoil/zWeapon/zwep_init.c",
   "include_dirs": [
@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x4b2570",
-      "symbol": "?ReturnToFreeList@Light@@YIXPAUzClass_NodePartial@@@Z",
-      "name": "Light::ReturnToFreeList"
+      "symbol": "?ReturnToFreeList@CZLight@@YIXPAUCZNodePartial@@@Z",
+      "name": "CZLight::ReturnToFreeList"
     }
   ],
   "translation_unit_function_order": [

@@ -18,228 +18,228 @@
   "functions": [
     {
       "address": "0x4478c0",
-      "symbol": "?gwNodeNew@zClass_Class@@YAPAUzClass_NodePartial@@XZ",
-      "name": "zClass_Class::gwNodeNew"
+      "symbol": "?gwNodeNew@CZClass@@YAPAUCZNodePartial@@XZ",
+      "name": "CZClass::gwNodeNew"
     },
     {
       "address": "0x447980",
-      "symbol": "?DeleteNodeByType@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::DeleteNodeByType"
+      "symbol": "?DeleteNodeByType@CZClass@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZClass::DeleteNodeByType"
     },
     {
       "address": "0x447a70",
-      "symbol": "?FreeNodeToFreeList@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::FreeNodeToFreeList"
+      "symbol": "?FreeNodeToFreeList@CZClass@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZClass::FreeNodeToFreeList"
     },
     {
       "address": "0x447b60",
-      "symbol": "?TryFreeNode@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::TryFreeNode"
+      "symbol": "?TryFreeNode@CZClass@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZClass::TryFreeNode"
     },
     {
       "address": "0x447bc0",
-      "symbol": "?FindNodeRecursiveByName@zClass_Class@@YIPAUzClass_NodePartial@@PAU2@PBD@Z",
-      "name": "zClass_Class::FindNodeRecursiveByName"
+      "symbol": "?FindNodeRecursiveByName@CZClass@@YIPAUCZNodePartial@@PAU2@PBD@Z",
+      "name": "CZClass::FindNodeRecursiveByName"
     },
     {
       "address": "0x447c60",
-      "symbol": "?gwNodeSetActive@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetActive"
+      "symbol": "?gwNodeSetActive@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetActive"
     },
     {
       "address": "0x447d20",
-      "symbol": "?gwNodeSetFlag16@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetFlag16"
+      "symbol": "?gwNodeSetFlag16@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetFlag16"
     },
     {
       "address": "0x447d70",
-      "symbol": "?gwNodeSetFlag17@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetFlag17"
+      "symbol": "?gwNodeSetFlag17@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetFlag17"
     },
     {
       "address": "0x447dc0",
-      "symbol": "?gwNodeSetName@zClass_Class@@YIHPAUzClass_NodePartial@@PBD@Z",
-      "name": "zClass_Class::gwNodeSetName"
+      "symbol": "?gwNodeSetName@CZClass@@YIHPAUCZNodePartial@@PBD@Z",
+      "name": "CZClass::gwNodeSetName"
     },
     {
       "address": "0x447e30",
-      "symbol": "?gwNodeGetName@zClass_Class@@YIPADPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::gwNodeGetName"
+      "symbol": "?gwNodeGetName@CZClass@@YIPADPAUCZNodePartial@@@Z",
+      "name": "CZClass::gwNodeGetName"
     },
     {
       "address": "0x447e60",
-      "symbol": "?gwNodeSetDisplayInstance@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzDiPartial@@@Z",
-      "name": "zClass_Class::gwNodeSetDisplayInstance"
+      "symbol": "?gwNodeSetDisplayInstance@CZClass@@YIHPAUCZNodePartial@@PAUzDiPartial@@@Z",
+      "name": "CZClass::gwNodeSetDisplayInstance"
     },
     {
       "address": "0x447f00",
-      "symbol": "?gwNodeGetUserData@zClass_Class@@YIHPAUzClass_NodePartial@@PAI@Z",
-      "name": "zClass_Class::gwNodeGetUserData"
+      "symbol": "?gwNodeGetUserData@CZClass@@YIHPAUCZNodePartial@@PAI@Z",
+      "name": "CZClass::gwNodeGetUserData"
     },
     {
       "address": "0x447f30",
-      "symbol": "?gwNodeSetActionCallback@zClass_Class@@YIHPAUzClass_NodePartial@@PAX@Z",
-      "name": "zClass_Class::gwNodeSetActionCallback"
+      "symbol": "?gwNodeSetActionCallback@CZClass@@YIHPAUCZNodePartial@@PAX@Z",
+      "name": "CZClass::gwNodeSetActionCallback"
     },
     {
       "address": "0x447fe0",
-      "symbol": "?gwNodeSetActionCallbackTail@zClass_Class@@YIHPAUzClass_NodePartial@@PAX@Z",
-      "name": "zClass_Class::gwNodeSetActionCallbackTail"
+      "symbol": "?gwNodeSetActionCallbackTail@CZClass@@YIHPAUCZNodePartial@@PAX@Z",
+      "name": "CZClass::gwNodeSetActionCallbackTail"
     },
     {
       "address": "0x448090",
-      "symbol": "?gwNodeSetPriority@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetPriority"
+      "symbol": "?gwNodeSetPriority@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetPriority"
     },
     {
       "address": "0x448100",
-      "symbol": "?gwNodeSetCellPickable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetCellPickable"
+      "symbol": "?gwNodeSetCellPickable@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetCellPickable"
     },
     {
       "address": "0x448140",
-      "symbol": "?gwNodeGetCellPickable@zClass_Class@@YIHPAUzClass_NodePartial@@PAH@Z",
-      "name": "zClass_Class::gwNodeGetCellPickable"
+      "symbol": "?gwNodeGetCellPickable@CZClass@@YIHPAUCZNodePartial@@PAH@Z",
+      "name": "CZClass::gwNodeGetCellPickable"
     },
     {
       "address": "0x448180",
-      "symbol": "?gwNodeGetNodeType@zClass_Class@@YIHPAUzClass_NodePartial@@PAH@Z",
-      "name": "zClass_Class::gwNodeGetNodeType"
+      "symbol": "?gwNodeGetNodeType@CZClass@@YIHPAUCZNodePartial@@PAH@Z",
+      "name": "CZClass::gwNodeGetNodeType"
     },
     {
       "address": "0x4481b0",
-      "symbol": "?gwNodeSetRaycastable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetRaycastable"
+      "symbol": "?gwNodeSetRaycastable@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetRaycastable"
     },
     {
       "address": "0x4481f0",
-      "symbol": "?gwNodeGetRaycastable@zClass_Class@@YIHPAUzClass_NodePartial@@PAH@Z",
-      "name": "zClass_Class::gwNodeGetRaycastable"
+      "symbol": "?gwNodeGetRaycastable@CZClass@@YIHPAUCZNodePartial@@PAH@Z",
+      "name": "CZClass::gwNodeGetRaycastable"
     },
     {
       "address": "0x448230",
-      "symbol": "?gwNodeSetPickable@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetPickable"
+      "symbol": "?gwNodeSetPickable@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetPickable"
     },
     {
       "address": "0x448270",
-      "symbol": "?gwNodeGetPickable@zClass_Class@@YIHPAUzClass_NodePartial@@PAH@Z",
-      "name": "zClass_Class::gwNodeGetPickable"
+      "symbol": "?gwNodeGetPickable@CZClass@@YIHPAUCZNodePartial@@PAH@Z",
+      "name": "CZClass::gwNodeGetPickable"
     },
     {
       "address": "0x4482b0",
-      "symbol": "?gwNodeSetHasHitCallback@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetHasHitCallback"
+      "symbol": "?gwNodeSetHasHitCallback@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetHasHitCallback"
     },
     {
       "address": "0x4482f0",
-      "symbol": "?gwNodeSetBypassFarClip@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetBypassFarClip"
+      "symbol": "?gwNodeSetBypassFarClip@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetBypassFarClip"
     },
     {
       "address": "0x448330",
-      "symbol": "?gwNodeSetNodeType@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetNodeType"
+      "symbol": "?gwNodeSetNodeType@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetNodeType"
     },
     {
       "address": "0x448360",
-      "symbol": "?gwNodeClearVariantGate@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeClearVariantGate"
+      "symbol": "?gwNodeClearVariantGate@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeClearVariantGate"
     },
     {
       "address": "0x4483a0",
-      "symbol": "?gwNodeSetVertexAlphaOverride@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::gwNodeSetVertexAlphaOverride"
+      "symbol": "?gwNodeSetVertexAlphaOverride@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::gwNodeSetVertexAlphaOverride"
     },
     {
       "address": "0x4483f0",
-      "symbol": "?AddChild@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::AddChild"
+      "symbol": "?AddChild@CZClass@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZClass::AddChild"
     },
     {
       "address": "0x4484d0",
-      "symbol": "?AddChildGeneric@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::AddChildGeneric"
+      "symbol": "?AddChildGeneric@CZClass@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZClass::AddChildGeneric"
     },
     {
       "address": "0x448570",
-      "symbol": "?RemoveChild@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::RemoveChild"
+      "symbol": "?RemoveChild@CZClass@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZClass::RemoveChild"
     },
     {
       "address": "0x448660",
-      "symbol": "?RemoveChildGeneric@zClass_Class@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Class::RemoveChildGeneric"
+      "symbol": "?RemoveChildGeneric@CZClass@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZClass::RemoveChildGeneric"
     },
     {
       "address": "0x448760",
-      "symbol": "?gwNodeGetBBox@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzBBox3f@@@Z",
-      "name": "zClass_Class::gwNodeGetBBox"
+      "symbol": "?gwNodeGetBBox@CZClass@@YIHPAUCZNodePartial@@PAUzBBox3f@@@Z",
+      "name": "CZClass::gwNodeGetBBox"
     },
     {
       "address": "0x4487c0",
-      "symbol": "?gwNodeGetWorldBBoxCorners@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzBBoxCorners@@@Z",
-      "name": "zClass_Class::gwNodeGetWorldBBoxCorners"
+      "symbol": "?gwNodeGetWorldBBoxCorners@CZClass@@YIHPAUCZNodePartial@@PAUzBBoxCorners@@@Z",
+      "name": "CZClass::gwNodeGetWorldBBoxCorners"
     },
     {
       "address": "0x448920",
-      "symbol": "?gwNodeGetViewBBoxCorners@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzBBoxCorners@@@Z",
-      "name": "zClass_Class::gwNodeGetViewBBoxCorners"
+      "symbol": "?gwNodeGetViewBBoxCorners@CZClass@@YIHPAUCZNodePartial@@PAUzBBoxCorners@@@Z",
+      "name": "CZClass::gwNodeGetViewBBoxCorners"
     },
     {
       "address": "0x448cc0",
-      "symbol": "?gwNodeUpdate@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::gwNodeUpdate"
+      "symbol": "?gwNodeUpdate@CZClass@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZClass::gwNodeUpdate"
     },
     {
       "address": "0x448e90",
-      "symbol": "?gwNodeRecalcBBox@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::gwNodeRecalcBBox"
+      "symbol": "?gwNodeRecalcBBox@CZClass@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZClass::gwNodeRecalcBBox"
     },
     {
       "address": "0x4491b0",
-      "symbol": "?gwNodeComputeChildBBox@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::gwNodeComputeChildBBox"
+      "symbol": "?gwNodeComputeChildBBox@CZClass@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZClass::gwNodeComputeChildBBox"
     },
     {
       "address": "0x449420",
-      "symbol": "?gwNodeUpdateDisplayInstance@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::gwNodeUpdateDisplayInstance"
+      "symbol": "?gwNodeUpdateDisplayInstance@CZClass@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZClass::gwNodeUpdateDisplayInstance"
     },
     {
       "address": "0x449480",
-      "symbol": "?gwNodeBuildNodeToAncestorMatrix@gwNode@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "gwNode::gwNodeBuildNodeToAncestorMatrix"
+      "symbol": "?gwNodeBuildNodeToAncestorMatrix@CZNode@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZNode::gwNodeBuildNodeToAncestorMatrix"
     },
     {
       "address": "0x4497b0",
-      "symbol": "?GetWorldPosition@gwNode@@YIHPAUzClass_NodePartial@@PAUzVec3@@@Z",
-      "name": "gwNode::GetWorldPosition"
+      "symbol": "?GetWorldPosition@CZNode@@YIHPAUCZNodePartial@@PAUzVec3@@@Z",
+      "name": "CZNode::GetWorldPosition"
     },
     {
       "address": "0x449850",
-      "symbol": "?TransformPoint@gwNode@@YIHPAUzClass_NodePartial@@PAUzVec3@@@Z",
-      "name": "gwNode::TransformPoint"
+      "symbol": "?TransformPoint@CZNode@@YIHPAUCZNodePartial@@PAUzVec3@@@Z",
+      "name": "CZNode::TransformPoint"
     },
     {
       "address": "0x4498e0",
-      "symbol": "?GetWorldPosAndOrientation@gwNode@@YIHPAUzClass_NodePartial@@PAUzVec3@@1@Z",
-      "name": "gwNode::GetWorldPosAndOrientation"
+      "symbol": "?GetWorldPosAndOrientation@CZNode@@YIHPAUCZNodePartial@@PAUzVec3@@1@Z",
+      "name": "CZNode::GetWorldPosAndOrientation"
     },
     {
       "address": "0x449ab0",
-      "symbol": "?gwNodeGetRoot@zClass_Class@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_Class::gwNodeGetRoot"
+      "symbol": "?gwNodeGetRoot@CZClass@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZClass::gwNodeGetRoot"
     },
     {
       "address": "0x449af0",
-      "symbol": "?gwNodeGetWorldChild@zClass_Class@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_Class::gwNodeGetWorldChild"
+      "symbol": "?gwNodeGetWorldChild@CZClass@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZClass::gwNodeGetWorldChild"
     },
     {
       "address": "0x449b40",
-      "symbol": "?SetSingleParentFlagRecursive@zClass_Class@@YIHPAUzClass_NodePartial@@H@Z",
-      "name": "zClass_Class::SetSingleParentFlagRecursive"
+      "symbol": "?SetSingleParentFlagRecursive@CZClass@@YIHPAUCZNodePartial@@H@Z",
+      "name": "CZClass::SetSingleParentFlagRecursive"
     }
   ],
   "translation_unit_function_order": [
@@ -303,8 +303,8 @@
       "retail_end_exclusive": "0x449ba0",
       "predecessor": {
         "address": "0x4476f0",
-        "symbol": "?FrustumTestAndPick@zClass_cls_di@@YIHPAUzClass_NodePartial@@PAH@Z",
-        "name": "zClass_cls_di::FrustumTestAndPick",
+        "symbol": "?FrustumTestAndPick@CZDisplayInstance@@YIHPAUCZNodePartial@@PAH@Z",
+        "name": "CZDisplayInstance::FrustumTestAndPick",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,
@@ -359,8 +359,8 @@
       ],
       "successor": {
         "address": "0x449ba0",
-        "symbol": "?SetViewDistance@zClass_Camera@@YIXHM@Z",
-        "name": "zClass_Camera::SetViewDistance",
+        "symbol": "?SetViewDistance@CZCamera@@YIXHM@Z",
+        "name": "CZCamera::SetViewDistance",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

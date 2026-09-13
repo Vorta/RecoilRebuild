@@ -23,13 +23,13 @@
   "functions": [
     {
       "address": "0x447e60",
-      "symbol": "?gwNodeSetDisplayInstance@zClass_Class@@YIHPAUzClass_NodePartial@@PAUzDiPartial@@@Z",
-      "name": "zClass_Class::gwNodeSetDisplayInstance"
+      "symbol": "?gwNodeSetDisplayInstance@CZClass@@YIHPAUCZNodePartial@@PAUzDiPartial@@@Z",
+      "name": "CZClass::gwNodeSetDisplayInstance"
     },
     {
       "address": "0x447f00",
-      "symbol": "?gwNodeGetUserData@zClass_Class@@YIHPAUzClass_NodePartial@@PAI@Z",
-      "name": "zClass_Class::gwNodeGetUserData"
+      "symbol": "?gwNodeGetUserData@CZClass@@YIHPAUCZNodePartial@@PAI@Z",
+      "name": "CZClass::gwNodeGetUserData"
     }
   ]
 }

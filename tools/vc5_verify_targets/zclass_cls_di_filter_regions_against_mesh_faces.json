@@ -1,6 +1,6 @@
 {
   "name": "zclass_cls_di_filter_regions_against_mesh_faces",
-  "description": "zClass_cls_di::FilterRegionsAgainstMeshFaces mesh polygon cache helper. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
+  "description": "CZDisplayInstance::FilterRegionsAgainstMeshFaces mesh polygon cache helper. Explicit per-TU function placements and current symbol spellings follow the complete authored-order targets; each TU uses its canonical configured compiler profile.",
   "source_filename": "gmod_const.c",
   "source_from": "src/GameZRecoil/zModel/gmod_const.c",
   "include_dirs": [
@@ -27,8 +27,8 @@
   "functions": [
     {
       "address": "0x487900",
-      "symbol": "?FilterRegionsAgainstMeshFaces@zClass_cls_di@@YIHPAUzVec3@@H@Z",
-      "name": "zClass_cls_di::FilterRegionsAgainstMeshFaces"
+      "symbol": "?FilterRegionsAgainstMeshFaces@CZDisplayInstance@@YIHPAUzVec3@@H@Z",
+      "name": "CZDisplayInstance::FilterRegionsAgainstMeshFaces"
     }
   ],
   "translation_unit_function_order": [

@@ -203,14 +203,14 @@ inline void AppendPickupFeature(
  * child-node walk, and original mission.cpp error reporting pattern.
  * Purpose: resolve an objective ZRD node path to a zClass node.
  */
-inline zClass_NodePartial *ResolveObjectiveNodePath(
+inline CZNodePartial *ResolveObjectiveNodePath(
     zReader::Node *pathNode,
     int objectiveIndex,
     const char *missingFormat,
     int sourceLine
 ) {
     zReader::Node *const pathFields = pathNode->value.nodes;
-    zClass_NodePartial *resolvedNode = zClass::FindByTypeAndName(6, pathFields[1].value.str);
+    CZNodePartial *resolvedNode = CZClass::FindByTypeAndName(6, pathFields[1].value.str);
     if (resolvedNode == 0) {
         zError::ReportOld(
             0x400,
@@ -225,7 +225,7 @@ inline zClass_NodePartial *ResolveObjectiveNodePath(
 
     const int pathCount = pathFields[0].value.i32;
     for (int i = 2; i < pathCount; ++i) {
-        resolvedNode = zClass_Class::FindNodeRecursiveByName(resolvedNode, pathFields[i].value.str);
+        resolvedNode = CZClass::FindNodeRecursiveByName(resolvedNode, pathFields[i].value.str);
     }
 
     return resolvedNode;
@@ -356,8 +356,8 @@ int HudSensorTracker::ApplyMissionDataAndReload(
         LoadMissionCoreResources();
         InitMissionGameplaySystems();
         if (zVid::GetAccelerationOption() != 0) {
-            zClass_Camera::SetActiveCamera(0);
-            zClass_Camera::SetObjectHseTestEnabled(0);
+            CZCamera::SetActiveCamera(0);
+            CZCamera::SetObjectHseTestEnabled(0);
         }
     }
 
@@ -578,7 +578,7 @@ int HudSensorTracker::LoadMissionCoreResources() {
     scriptPath.Format(g_HudSensorTracker_InitScriptPathFmt, missionId);
     g_zInterp_GlobalContext.RunScriptFile(scriptPath);
 
-    zClass::Init();
+    CZClass::Init();
     zModel::Init();
 
     if (((const char *)zbdPath)[0] == '\0') {
@@ -600,13 +600,13 @@ int HudSensorTracker::LoadMissionCoreResources() {
     zImage::TexDirLoadPendingEntries();
 
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x104));
-    worldNode = zClass::FindByTypeAndName(13, g_HudSensorTracker_WorldNodeName);
-    cameraNode = zClass::FindByTypeAndName(8, g_HudSensorTracker_CameraNodeName);
-    windowNode = zClass::FindByTypeAndName(14, g_HudSensorTracker_WindowNodeName);
-    displayNode = zClass::FindByTypeAndName(15, g_HudSensorTracker_DisplayNodeName);
+    worldNode = CZClass::FindByTypeAndName(13, g_HudSensorTracker_WorldNodeName);
+    cameraNode = CZClass::FindByTypeAndName(8, g_HudSensorTracker_CameraNodeName);
+    windowNode = CZClass::FindByTypeAndName(14, g_HudSensorTracker_WindowNodeName);
+    displayNode = CZClass::FindByTypeAndName(15, g_HudSensorTracker_DisplayNodeName);
 
-    zClass_Class::gwNodeUpdateAll();
-    zClass::ProcessDeferredWork();
+    CZClass::gwNodeUpdateAll();
+    CZClass::ProcessDeferredWork();
     zOpt::RenderSectionSetTargetWindow(windowNode);
     zOpt::DisplaySectionSetTargetDisplay(displayNode);
     zOpt::CameraSectionSetActiveCamera(cameraNode);
@@ -696,7 +696,7 @@ int HudSensorTracker::InitMissionGameplaySystems() {
         MapOverlayRefToggle(1);
     }
 
-    zClass_Camera::gwCameraSetFlagBit0(cameraNode, 1);
+    CZCamera::gwCameraSetFlagBit0(cameraNode, 1);
     if (g_zVideo_ActiveRendererPath != 0) {
         zModel_MatlBuffer::ReleaseTextureSurfaces();
     }
@@ -772,7 +772,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudLoading_StopAllSoundsMsg);
     zSndPlayHandleSnapshot *const soundSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
     soundSnapshot->StopAllIfPlaying();
-    zClass_Camera::gwCameraSetFlagBit0(cameraNode, 0);
+    CZCamera::gwCameraSetFlagBit0(cameraNode, 0);
     MapShutdownAndReset();
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_UnloadObjectivesMsg);
@@ -794,7 +794,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     zEffect_Anim::Shutdown();
     zDEClient::ShutdownGlobals();
     Pickup::Shutdown();
-    zClass_Object3D_ModelRefLerpQueue::Reset();
+    CZObject3DModelRefLerpQueue::Reset();
     zOpt::RenderSectionSetTargetWindow(0);
     zOpt::DisplaySectionSetTargetDisplay(0);
     zOpt::CameraSectionSetActiveCamera(0);
@@ -804,7 +804,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     HudUiLoadingCheckpoint::AdvanceAndLog(loadingMessage);
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingClassMsg);
-    zClass::ShutdownCore();
+    CZClass::ShutdownCore();
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingModelsMsg);
     zModel_Display::Shutdown();
@@ -3577,13 +3577,13 @@ void __fastcall TickRemoteNetworkPlayer(
         }
     }
 
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         playerState->rootNode,
         playerState->worldPos.x,
         playerState->worldPos.y,
         playerState->worldPos.z
     );
-    zClass_Object3D::gwObject3DSetRotation(
+    CZObject3D::gwObject3DSetRotation(
         playerState->rootNode,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
@@ -3640,9 +3640,9 @@ void __fastcall DestroyedStateRespawnCallback(
     int
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zClass_Object3D::gwObject3DSetLitFlag(playerState->rootNode, 1);
-    zClass_Object3D::gwObject3DSetAlphaScale(playerState->rootNode, 0.0f);
-    zClass_Object3D_ModelRefLerpQueue::Add(
+    CZObject3D::gwObject3DSetLitFlag(playerState->rootNode, 1);
+    CZObject3D::gwObject3DSetAlphaScale(playerState->rootNode, 0.0f);
+    CZObject3DModelRefLerpQueue::Add(
         playerState->rootNode,
         saveState,
         (void *)(&ClearRespawnTransitionFlagCallback),
@@ -3651,11 +3651,11 @@ void __fastcall DestroyedStateRespawnCallback(
         5.0f
     );
 
-    zClass_NodePartial *const healthyNode =
-        zClass_Class::FindNodeRecursiveByName(playerState->rootNode, g_Player_HealthySubNodeName);
+    CZNodePartial *const healthyNode =
+        CZClass::FindNodeRecursiveByName(playerState->rootNode, g_Player_HealthySubNodeName);
     if (healthyNode != 0) {
-        zClass_Object3D::gwObject3DSetPosition(healthyNode, 0.0f, 0.0f, 0.0f);
-        zClass_Object3D::gwObject3DSetRotation(healthyNode, 0.0f, 0.0f, 0.0f);
+        CZObject3D::gwObject3DSetPosition(healthyNode, 0.0f, 0.0f, 0.0f);
+        CZObject3D::gwObject3DSetRotation(healthyNode, 0.0f, 0.0f, 0.0f);
     }
 
     if (playerState->destroyedRespawnAsyncHandle != 0) {
@@ -3692,9 +3692,9 @@ void __fastcall DestroyedStateResetCallback(
     ResetDamageStateAndTimedHitStatus(saveState);
 
     playerState->statusMeterValue = playerState->masterCommonData->maxHealth;
-    zClass_Object3D::gwObject3DSetLitFlag(playerState->rootNode, 1);
-    zClass_Object3D::gwObject3DSetAlphaScale(playerState->rootNode, 0.0f);
-    zClass_Object3D_ModelRefLerpQueue::Add(
+    CZObject3D::gwObject3DSetLitFlag(playerState->rootNode, 1);
+    CZObject3D::gwObject3DSetAlphaScale(playerState->rootNode, 0.0f);
+    CZObject3DModelRefLerpQueue::Add(
         playerState->rootNode,
         saveState,
         (void *)(&DestroyedStateResetFinalizeCallback),

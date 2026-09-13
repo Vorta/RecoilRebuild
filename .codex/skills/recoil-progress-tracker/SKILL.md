@@ -51,6 +51,14 @@ old-name guards. This command changes no identity, relationship, gate, tier,
 source path, evidence, or acceptance fact. Use the owner commands for actual
 ownership changes. Validate tool changes through `recoil-validation`.
 
+Logical ICF member `object_symbol` and `original_name` spellings are bound to
+the group's reviewed candidate mechanism. Rename them through
+`progress symbol set-logical-alias-group` with a renewed v4/v5 proof using
+current source, current member and selector relocations, and same-input ICF
+and NOICF links. Preserve logical IDs and retail selectors. A display-name
+batch cannot update these bindings independently of their proof; never rewrite
+historical evidence to make its old compiler spellings appear current.
+
 After source identifiers and verification registrations are synchronized, use
 `progress relocation-target refresh-source-names` for existing ordinary target,
 native EH, and reviewed-exception source bindings. Its reviewed

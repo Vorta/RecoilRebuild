@@ -21,7 +21,7 @@
   "functions": [
     {
       "address": "0x458aa0",
-      "symbol": "?SetCameraNode@zDEClient@@YIXPAUzClass_NodePartial@@@Z",
+      "symbol": "?SetCameraNode@zDEClient@@YIXPAUCZNodePartial@@@Z",
       "name": "zDEClient::SetCameraNode"
     }
   ]

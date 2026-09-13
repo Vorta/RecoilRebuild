@@ -1,6 +1,6 @@
 {
   "name": "zclass_class_free_node_to_free_list",
-  "description": "zClass_Class::FreeNodeToFreeList node free-list return helper.",
+  "description": "CZClass::FreeNodeToFreeList node free-list return helper.",
   "source_filename": "Class.c",
   "source_from": "src/GameZRecoil/zClass/Class.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -21,8 +21,8 @@
   "functions": [
     {
       "address": "0x447a70",
-      "symbol": "?FreeNodeToFreeList@zClass_Class@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Class::FreeNodeToFreeList"
+      "symbol": "?FreeNodeToFreeList@CZClass@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZClass::FreeNodeToFreeList"
     }
   ]
 }

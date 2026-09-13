@@ -1,6 +1,6 @@
 {
   "name": "zclass_copy_node_display_instance",
-  "description": "zClass_cls_util::CopyNodeDisplayInstance display-instance copy and clone policy helper.",
+  "description": "CZUtil::CopyNodeDisplayInstance display-instance copy and clone policy helper.",
   "source_filename": "cls_util.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -23,8 +23,8 @@
   "functions": [
     {
       "address": "0x451b20",
-      "symbol": "?CopyNodeDisplayInstance@zClass_cls_util@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_cls_util::CopyNodeDisplayInstance"
+      "symbol": "?CopyNodeDisplayInstance@CZUtil@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZUtil::CopyNodeDisplayInstance"
     }
   ]
 }

@@ -23,23 +23,23 @@
   "data_symbols": [
     {
       "address": "0x539c94",
-      "symbol": "_g_zClass_NodeArray",
-      "name": "g_zClass_NodeArray",
-      "bn_name": "g_zClass_NodeArray",
+      "symbol": "_g_CZClass_NodeArray",
+      "name": "g_CZClass_NodeArray",
+      "bn_name": "g_CZClass_NodeArray",
       "byte_length": 4
     },
     {
       "address": "0x4de4c8",
-      "symbol": "_g_zClass_NodeFreeHeadIndex",
-      "name": "g_zClass_NodeFreeHeadIndex",
-      "bn_name": "g_zClass_NodeFreeHeadIndex",
+      "symbol": "_g_CZClass_NodeFreeHeadIndex",
+      "name": "g_CZClass_NodeFreeHeadIndex",
+      "bn_name": "g_CZClass_NodeFreeHeadIndex",
       "byte_length": 4
     },
     {
       "address": "0x539c98",
-      "symbol": "_g_zClass_ActiveNodeCount",
-      "name": "g_zClass_ActiveNodeCount",
-      "bn_name": "g_zClass_ActiveNodeCount",
+      "symbol": "_g_CZClass_ActiveNodeCount",
+      "name": "g_CZClass_ActiveNodeCount",
+      "bn_name": "g_CZClass_ActiveNodeCount",
       "byte_length": 4
     }
   ]

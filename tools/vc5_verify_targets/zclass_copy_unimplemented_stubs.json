@@ -23,28 +23,28 @@
   "functions": [
     {
       "address": "0x4520c0",
-      "symbol": "?CopyLightNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_cls_util::CopyLightNode"
+      "symbol": "?CopyLightNode@CZUtil@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZUtil::CopyLightNode"
     },
     {
       "address": "0x4520e0",
-      "symbol": "?CopySoundNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_cls_util::CopySoundNode"
+      "symbol": "?CopySoundNode@CZUtil@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZUtil::CopySoundNode"
     },
     {
       "address": "0x452230",
-      "symbol": "?CopyAnimateNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_cls_util::CopyAnimateNode"
+      "symbol": "?CopyAnimateNode@CZUtil@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZUtil::CopyAnimateNode"
     },
     {
       "address": "0x4523c0",
-      "symbol": "?CopySequenceNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_cls_util::CopySequenceNode"
+      "symbol": "?CopySequenceNode@CZUtil@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZUtil::CopySequenceNode"
     },
     {
       "address": "0x4523e0",
-      "symbol": "?CopySwitchNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@@Z",
-      "name": "zClass_cls_util::CopySwitchNode"
+      "symbol": "?CopySwitchNode@CZUtil@@YIPAUCZNodePartial@@PAU2@@Z",
+      "name": "CZUtil::CopySwitchNode"
     }
   ]
 }

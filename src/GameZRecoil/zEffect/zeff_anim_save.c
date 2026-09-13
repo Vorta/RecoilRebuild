@@ -228,7 +228,7 @@ int __fastcall SaveActivationRecords(
 
         memcpy(&saveRecord->base, sourceRecord, sizeof(*sourceRecord));
         if (entry != 0) {
-            zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(sourceRecord->nodeToken);
+            CZNodePartial *const rootNode = CZZbd::NodeIndexToPtr(sourceRecord->nodeToken);
             saveRecord->savedActivationState = entry->activationState;
             zEffectAnim::RebindEntryToNode(entry, rootNode);
             saveRecord->trackedNodeCount = trackedNodeCount;
@@ -236,38 +236,38 @@ int __fastcall SaveActivationRecords(
             for (int j = 0; j < trackedNodeCount; ++j) {
                 zEffectAnimTrackedNode *const tracked = &entry->trackedNodeList[j];
                 zEffectAnimTrackedNodeSaveRecord *const savedTracked = &saveRecord->trackedNodes[j];
-                zClass_NodePartial *const node = tracked->trackedNode;
+                CZNodePartial *const node = tracked->trackedNode;
                 if (node == 0 || node->classId != 5) {
                     savedTracked->nodeIndex = -1;
                     continue;
                 }
 
-                savedTracked->nodeIndex = zClass::NodePtrToValidatedIndex(node);
+                savedTracked->nodeIndex = CZClass::NodePtrToValidatedIndex(node);
                 savedTracked->activeFlag = (node->flags >> 2) & 1;
 
-                zClass_Object3DDataPartial *const objectData =
-                    (zClass_Object3DDataPartial *)(node->classData);
+                CZObject3DDataPartial *const objectData =
+                    (CZObject3DDataPartial *)(node->classData);
                 savedTracked->usesCachedMatrix = (objectData->flags >> 4) & 1;
                 if (savedTracked->usesCachedMatrix != 0) {
                     memcpy(
                         savedTracked->transform,
-                        zClass_Object3D::gwObject3DGetMatrixPtr(node),
+                        CZObject3D::gwObject3DGetMatrixPtr(node),
                         sizeof(savedTracked->transform)
                     );
                 } else {
-                    zClass_Object3D::gwObject3DGetPosition(
+                    CZObject3D::gwObject3DGetPosition(
                         node,
                         &savedTracked->transform[0],
                         &savedTracked->transform[1],
                         &savedTracked->transform[2]
                     );
-                    zClass_Object3D::gwObject3DGetRotation(
+                    CZObject3D::gwObject3DGetRotation(
                         node,
                         &savedTracked->transform[3],
                         &savedTracked->transform[4],
                         &savedTracked->transform[5]
                     );
-                    zClass_Object3D::gwObject3DGetScale(
+                    CZObject3D::gwObject3DGetScale(
                         node,
                         &savedTracked->transform[6],
                         &savedTracked->transform[7],
@@ -337,7 +337,7 @@ void __fastcall LoadActivationRecords(
     }
 
     if (record->base.nodeToken >= 0 && entry != 0) {
-        zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->base.nodeToken);
+        CZNodePartial *const rootNode = CZZbd::NodeIndexToPtr(record->base.nodeToken);
         zEffectAnimEntry *sibling = entry->runtimeSibling;
         while (sibling != 0 && entry->boundNode != rootNode) {
             entry = sibling;
@@ -356,7 +356,7 @@ void __fastcall LoadActivationRecords(
     const unsigned char savedState = record->savedActivationState;
     if (savedState == 2) {
         if (entry->activationState != 2) {
-            NodeActionCallback(entry, GameZ_ZBD::NodeIndexToPtr(record->base.nodeToken));
+            NodeActionCallback(entry, CZZbd::NodeIndexToPtr(record->base.nodeToken));
             entry = ProcessActivationRecord(&record->base);
             zError::ReportOld(
                 0x100,
@@ -391,7 +391,7 @@ void __fastcall LoadActivationRecords(
             if (entry->activationState == 4) {
                 entry->activationState = 3;
             }
-            NodeActionCallback(entry, GameZ_ZBD::NodeIndexToPtr(record->base.nodeToken));
+            NodeActionCallback(entry, CZZbd::NodeIndexToPtr(record->base.nodeToken));
             zError::ReportOld(
                 0x100,
                 g_zEffect_SourceFile_ZeffAnimSaveC,
@@ -409,7 +409,7 @@ void __fastcall LoadActivationRecords(
             if (entry->activationState == 4) {
                 entry->activationState = 3;
             }
-            NodeActionCallback(entry, GameZ_ZBD::NodeIndexToPtr(record->base.nodeToken));
+            NodeActionCallback(entry, CZZbd::NodeIndexToPtr(record->base.nodeToken));
             entry = ProcessActivationRecord(&record->base);
             zError::ReportOld(
                 0x100,
@@ -441,7 +441,7 @@ void __fastcall LoadActivationRecords(
 
     for (int i = 0; i < record->trackedNodeCount; ++i) {
         zEffectAnimTrackedNodeSaveRecord *const tracked = &record->trackedNodes[i];
-        zClass_NodePartial *const node = GameZ_ZBD::NodeIndexToPtr(tracked->nodeIndex);
+        CZNodePartial *const node = CZZbd::NodeIndexToPtr(tracked->nodeIndex);
         if (node == 0 || node->classId != 5) {
             continue;
         }
@@ -454,24 +454,24 @@ void __fastcall LoadActivationRecords(
             node,
             tracked->activeFlag
         );
-        zClass_Class::gwNodeSetActive(node, tracked->activeFlag != 0 ? 1 : 0);
+        CZClass::gwNodeSetActive(node, tracked->activeFlag != 0 ? 1 : 0);
         if (tracked->activeFlag != 0) {
             if (tracked->usesCachedMatrix != 0) {
-                zClass_Object3D::gwObject3DSetMatrix(node, tracked->transform);
+                CZObject3D::gwObject3DSetMatrix(node, tracked->transform);
             } else {
-                zClass_Object3D::gwObject3DSetPosition(
+                CZObject3D::gwObject3DSetPosition(
                     node,
                     tracked->transform[0],
                     tracked->transform[1],
                     tracked->transform[2]
                 );
-                zClass_Object3D::gwObject3DSetRotation(
+                CZObject3D::gwObject3DSetRotation(
                     node,
                     tracked->transform[3],
                     tracked->transform[4],
                     tracked->transform[5]
                 );
-                zClass_Object3D::gwObject3DSetScale(
+                CZObject3D::gwObject3DSetScale(
                     node,
                     tracked->transform[6],
                     tracked->transform[7],
@@ -549,15 +549,15 @@ int __fastcall SaveRunningAnimRecord(
     header.entryTableIndex = runningIndex;
     header.matchSavedRootNode = includePrimaryEntry;
     strncpy(header.entryName, entry->name, sizeof(header.entryName));
-    header.rootNodeIndex = zClass::NodePtrToValidatedIndex(entry->boundNode);
-    header.nodeRefAIndex = zClass::NodePtrToValidatedIndex(
-        (zClass_NodePartial *)((unsigned int)(entry->resetScratch[0]))
+    header.rootNodeIndex = CZClass::NodePtrToValidatedIndex(entry->boundNode);
+    header.nodeRefAIndex = CZClass::NodePtrToValidatedIndex(
+        (CZNodePartial *)((unsigned int)(entry->resetScratch[0]))
     );
     memcpy(&header.refVecA.x, &entry->resetScratch[1], sizeof(header.refVecA.x));
     memcpy(&header.refVecA.y, &entry->resetScratch[2], sizeof(header.refVecA.y));
     memcpy(&header.refVecA.z, &entry->resetScratch[3], sizeof(header.refVecA.z));
-    header.nodeRefBIndex = zClass::NodePtrToValidatedIndex(
-        (zClass_NodePartial *)((unsigned int)(entry->resetScratch[4]))
+    header.nodeRefBIndex = CZClass::NodePtrToValidatedIndex(
+        (CZNodePartial *)((unsigned int)(entry->resetScratch[4]))
     );
     memcpy(&header.refVecB.x, &entry->resetScratch[5], sizeof(header.refVecB.x));
     memcpy(&header.refVecB.y, &entry->resetScratch[6], sizeof(header.refVecB.y));
@@ -601,12 +601,12 @@ int __fastcall SaveRunningAnimRecord(
         zEffectAnimRuntimeNodeRef *const lightRef = &entry->lightRefList[i_2660];
         strncpy(record.name, lightRef->name.text, sizeof(record.name));
         record.isAttached = lightRef->isAttached;
-        zClass_NodePartial *const node = lightRef->runtimeNode;
+        CZNodePartial *const node = lightRef->runtimeNode;
         if (node != 0) {
             // Original 0x460bc0 uses this shared position helper for saved light refs too.
-            zClass_Sound::gwSoundGetPosition(node, &record.posX, &record.posY, &record.posZ);
+            CZSound::gwSoundGetPosition(node, &record.posX, &record.posY, &record.posZ);
             record.parentNodeIndex =
-                node->listCountA > 0 ? zClass::NodePtrToValidatedIndex(node->listA[0]) : -1;
+                node->listCountA > 0 ? CZClass::NodePtrToValidatedIndex(node->listA[0]) : -1;
         }
         result = fwrite(&record, sizeof(record), 1, tempStream) == 1 ? 1 : 0;
     }
@@ -616,13 +616,13 @@ int __fastcall SaveRunningAnimRecord(
         zEffectAnimRuntimeNodeRef *const soundRef = &entry->soundRefList[i_2679];
         strncpy(record.name, soundRef->name.text, sizeof(record.name));
         record.isAttached = soundRef->isAttached;
-        zClass_NodePartial *const node = soundRef->runtimeNode;
+        CZNodePartial *const node = soundRef->runtimeNode;
         if (node != 0) {
-            zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
+            CZSoundDataPartial *const soundData = (CZSoundDataPartial *)(node->classData);
             record.hasPosition = (soundData->runtimeFlags >> 1) & 1;
-            zClass_Sound::gwSoundGetPosition(node, &record.posX, &record.posY, &record.posZ);
+            CZSound::gwSoundGetPosition(node, &record.posX, &record.posY, &record.posZ);
             record.parentNodeIndex =
-                node->listCountA > 0 ? zClass::NodePtrToValidatedIndex(node->listA[0]) : -1;
+                node->listCountA > 0 ? CZClass::NodePtrToValidatedIndex(node->listA[0]) : -1;
         }
         result = fwrite(&record, sizeof(record), 1, tempStream) == 1 ? 1 : 0;
     }
@@ -690,7 +690,7 @@ void __fastcall LoadRunningAnimRecords(
     fread(&header, sizeof(header), 1, tempStream);
 
     zEffectAnimEntry *entry = &g_zEffectAnim_State.entryList[header.entryTableIndex];
-    zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(header.rootNodeIndex);
+    CZNodePartial *const rootNode = CZZbd::NodeIndexToPtr(header.rootNodeIndex);
 
     if (header.matchSavedRootNode != 0) {
         zEffectAnimEntry *sibling = entry->runtimeSibling;
@@ -724,12 +724,12 @@ void __fastcall LoadRunningAnimRecords(
 
     entry->flags |= 0x4000u;
     entry->resetScratch[0] =
-        (unsigned int)((unsigned int)(GameZ_ZBD::NodeIndexToPtr(header.nodeRefAIndex)));
+        (unsigned int)((unsigned int)(CZZbd::NodeIndexToPtr(header.nodeRefAIndex)));
     memcpy(&entry->resetScratch[1], &header.refVecA.x, sizeof(header.refVecA.x));
     memcpy(&entry->resetScratch[2], &header.refVecA.y, sizeof(header.refVecA.y));
     memcpy(&entry->resetScratch[3], &header.refVecA.z, sizeof(header.refVecA.z));
     entry->resetScratch[4] =
-        (unsigned int)((unsigned int)(GameZ_ZBD::NodeIndexToPtr(header.nodeRefBIndex)));
+        (unsigned int)((unsigned int)(CZZbd::NodeIndexToPtr(header.nodeRefBIndex)));
     memcpy(&entry->resetScratch[5], &header.refVecB.x, sizeof(header.refVecB.x));
     memcpy(&entry->resetScratch[6], &header.refVecB.y, sizeof(header.refVecB.y));
     memcpy(&entry->resetScratch[7], &header.refVecB.z, sizeof(header.refVecB.z));
@@ -773,17 +773,17 @@ void __fastcall LoadRunningAnimRecords(
         }
 
         zEffectAnimRuntimeNodeRef *const lightRef = &entry->lightRefList[lightIndex];
-        zClass_NodePartial *const lightNode = lightRef->runtimeNode;
+        CZNodePartial *const lightNode = lightRef->runtimeNode;
         if (lightRef->isAttached != 0 || lightNode == 0) {
             continue;
         }
 
-        zClass_Class::gwNodeSetActive(lightNode, 1);
+        CZClass::gwNodeSetActive(lightNode, 1);
         if (record.parentNodeIndex >= 0 && lightNode->listCountA == 0) {
-            zClass_Class::AddChild(GameZ_ZBD::NodeIndexToPtr(record.parentNodeIndex), lightNode);
+            CZClass::AddChild(CZZbd::NodeIndexToPtr(record.parentNodeIndex), lightNode);
         }
-        zClass_Light::gwLightSetPosition(lightNode, record.posX, record.posY, record.posZ);
-        zClass_World::AddLight(g_zEffectAnim_State.worldNode, lightNode);
+        CZLight::gwLightSetPosition(lightNode, record.posX, record.posY, record.posZ);
+        CZWorld::AddLight(g_zEffectAnim_State.worldNode, lightNode);
         lightRef->isAttached = 1;
     }
 
@@ -801,24 +801,24 @@ void __fastcall LoadRunningAnimRecords(
         }
 
         zEffectAnimRuntimeNodeRef *const soundRef = &entry->soundRefList[soundIndex];
-        zClass_NodePartial *const soundNode = soundRef->runtimeNode;
+        CZNodePartial *const soundNode = soundRef->runtimeNode;
         if (soundRef->isAttached != 0 || soundNode == 0) {
             continue;
         }
 
-        zClass_Class::gwNodeSetActive(soundNode, 1);
+        CZClass::gwNodeSetActive(soundNode, 1);
         if (record.parentNodeIndex >= 0 && soundNode->listCountA == 0) {
-            zClass_Class::AddChild(GameZ_ZBD::NodeIndexToPtr(record.parentNodeIndex), soundNode);
+            CZClass::AddChild(CZZbd::NodeIndexToPtr(record.parentNodeIndex), soundNode);
         }
         if (record.hasPosition != 0) {
-            zClass_Sound::gwSoundSetPosition(soundNode, record.posX, record.posY, record.posZ);
+            CZSound::gwSoundSetPosition(soundNode, record.posX, record.posY, record.posZ);
         }
-        zClass_World::AddSound(g_zEffectAnim_State.worldNode, soundNode);
+        CZWorld::AddSound(g_zEffectAnim_State.worldNode, soundNode);
         soundRef->isAttached = 1;
     }
 
-    entry->runtimeNode->callbackContext = (zClass_NodePartial *)(entry);
-    zClass_Class::gwNodeSetActionCallbackTail(
+    entry->runtimeNode->callbackContext = (CZNodePartial *)(entry);
+    CZClass::gwNodeSetActionCallbackTail(
         entry->runtimeNode,
         (void *)(&zEffect_Anim::RunSequence)
     );
@@ -867,37 +867,37 @@ int __fastcall SaveAnimRecords(
         {
             for (int childIndex = 0; childIndex < trackedNodeCount; ++childIndex) {
                 zEffectAnimTrackedNodeSaveRecord *const record = &records[childIndex];
-                zClass_NodePartial *const node = entry->trackedNodeList[childIndex].trackedNode;
+                CZNodePartial *const node = entry->trackedNodeList[childIndex].trackedNode;
                 if (node == 0 || node->classId != 5) {
                     record->nodeIndex = -1;
                     continue;
                 }
 
-                zClass_Object3DDataPartial *const objectData =
-                    (zClass_Object3DDataPartial *)(node->classData);
-                record->nodeIndex = zClass::NodePtrToValidatedIndex(node);
+                CZObject3DDataPartial *const objectData =
+                    (CZObject3DDataPartial *)(node->classData);
+                record->nodeIndex = CZClass::NodePtrToValidatedIndex(node);
                 record->activeFlag = (node->flags >> 2) & 1;
                 record->usesCachedMatrix = (objectData->flags >> 4) & 1;
                 if (record->usesCachedMatrix != 0) {
                     memcpy(
                         record->transform,
-                        zClass_Object3D::gwObject3DGetMatrixPtr(node),
+                        CZObject3D::gwObject3DGetMatrixPtr(node),
                         sizeof(record->transform)
                     );
                 } else {
-                    zClass_Object3D::gwObject3DGetPosition(
+                    CZObject3D::gwObject3DGetPosition(
                         node,
                         &record->transform[0],
                         &record->transform[1],
                         &record->transform[2]
                     );
-                    zClass_Object3D::gwObject3DGetRotation(
+                    CZObject3D::gwObject3DGetRotation(
                         node,
                         &record->transform[3],
                         &record->transform[4],
                         &record->transform[5]
                     );
-                    zClass_Object3D::gwObject3DGetScale(
+                    CZObject3D::gwObject3DGetScale(
                         node,
                         &record->transform[6],
                         &record->transform[7],
@@ -982,7 +982,7 @@ void __fastcall LoadAnimRecords(
         (zEffectAnimTrackedNodeSaveRecord *)((unsigned char *)(data) + sizeof(*header));
     for (int i = 0; i < header->trackedNodeCount; ++i) {
         zEffectAnimTrackedNodeSaveRecord *const record = &records[i];
-        zClass_NodePartial *const node = GameZ_ZBD::NodeIndexToPtr(record->nodeIndex);
+        CZNodePartial *const node = CZZbd::NodeIndexToPtr(record->nodeIndex);
         if (node == 0 || node->classId != 5) {
             continue;
         }
@@ -995,27 +995,27 @@ void __fastcall LoadAnimRecords(
             node,
             record->activeFlag
         );
-        zClass_Class::gwNodeSetActive(node, record->activeFlag != 0 ? 1 : 0);
+        CZClass::gwNodeSetActive(node, record->activeFlag != 0 ? 1 : 0);
         if (record->activeFlag == 0) {
             continue;
         }
 
         if (record->usesCachedMatrix != 0) {
-            zClass_Object3D::gwObject3DSetMatrix(node, record->transform);
+            CZObject3D::gwObject3DSetMatrix(node, record->transform);
         } else {
-            zClass_Object3D::gwObject3DSetPosition(
+            CZObject3D::gwObject3DSetPosition(
                 node,
                 record->transform[0],
                 record->transform[1],
                 record->transform[2]
             );
-            zClass_Object3D::gwObject3DSetRotation(
+            CZObject3D::gwObject3DSetRotation(
                 node,
                 record->transform[3],
                 record->transform[4],
                 record->transform[5]
             );
-            zClass_Object3D::gwObject3DSetScale(
+            CZObject3D::gwObject3DSetScale(
                 node,
                 record->transform[6],
                 record->transform[7],
@@ -1058,7 +1058,7 @@ void __fastcall ResetFromActivationRecord(
     zEffectAnimActivationRecord *record
 ) {
     zEffectAnimEntry *const entry = zEffectAnim::FindEntryByName(record->animName);
-    zClass_NodePartial *const node = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
+    CZNodePartial *const node = CZZbd::NodeIndexToPtr(record->nodeToken);
     NodeActionCallback(entry, node);
 }
 
@@ -1079,7 +1079,7 @@ zEffectAnimEntry *__fastcall ProcessActivationRecord(
 
     switch (record->commandType) {
     case 1: {
-        zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
+        CZNodePartial *const rootNode = CZZbd::NodeIndexToPtr(record->nodeToken);
         return zEffectAnim::SetTransformRotAndVelocityThunk(
             entry,
             rootNode,
@@ -1096,7 +1096,7 @@ zEffectAnimEntry *__fastcall ProcessActivationRecord(
     }
 
     case 2: {
-        zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
+        CZNodePartial *const rootNode = CZZbd::NodeIndexToPtr(record->nodeToken);
         return zEffectAnim::SetVelocityThunk(
             entry,
             rootNode,
@@ -1107,8 +1107,8 @@ zEffectAnimEntry *__fastcall ProcessActivationRecord(
     }
 
     case 3: {
-        zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
-        zClass_NodePartial *const refNode = GameZ_ZBD::NodeIndexToPtr(record->params[0].i32);
+        CZNodePartial *const rootNode = CZZbd::NodeIndexToPtr(record->nodeToken);
+        CZNodePartial *const refNode = CZZbd::NodeIndexToPtr(record->params[0].i32);
         return zEffectAnim::SetPositionRefAndVelocityThunk(
             entry,
             rootNode,
@@ -1119,9 +1119,9 @@ zEffectAnimEntry *__fastcall ProcessActivationRecord(
     }
 
     case 4: {
-        zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(record->nodeToken);
-        zClass_NodePartial *const refNodeA = GameZ_ZBD::NodeIndexToPtr(record->params[0].i32);
-        zClass_NodePartial *const refNodeB = GameZ_ZBD::NodeIndexToPtr(record->params[4].i32);
+        CZNodePartial *const rootNode = CZZbd::NodeIndexToPtr(record->nodeToken);
+        CZNodePartial *const refNodeA = CZZbd::NodeIndexToPtr(record->params[0].i32);
+        CZNodePartial *const refNodeB = CZZbd::NodeIndexToPtr(record->params[4].i32);
         return zEffectAnim::SetTransformRefsThunk(
             entry,
             rootNode,
@@ -1150,7 +1150,7 @@ namespace zEffectAnim {
  */
 zEffectAnimActivationRecord *__fastcall QueueCmdType1TransformRotVelocity(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
+    CZNodePartial *boundNode,
     float posX,
     float posY,
     float posZ,
@@ -1162,7 +1162,7 @@ zEffectAnimActivationRecord *__fastcall QueueCmdType1TransformRotVelocity(
     float velocityZ
 ) {
     zEffectAnimActivationRecord *result = 0;
-    const int boundNodeToken = zClass::NodePtrToValidatedIndex(boundNode);
+    const int boundNodeToken = CZClass::NodePtrToValidatedIndex(boundNode);
     const unsigned int flags = self->flags;
 
     int recordQueueRequested = 0;
@@ -1242,13 +1242,13 @@ namespace zEffectAnim {
  */
 zEffectAnimActivationRecord *__fastcall QueueCmdType2Velocity(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
+    CZNodePartial *boundNode,
     float velocityX,
     float velocityY,
     float velocityZ
 ) {
     zEffectAnimActivationRecord *result = 0;
-    const int boundNodeToken = zClass::NodePtrToValidatedIndex(boundNode);
+    const int boundNodeToken = CZClass::NodePtrToValidatedIndex(boundNode);
     const unsigned int flags = self->flags;
 
     int recordQueueRequested = 0;
@@ -1302,14 +1302,14 @@ zEffectAnimActivationRecord *__fastcall QueueCmdType2Velocity(
  */
 zEffectAnimActivationRecord *__fastcall QueueCmdType3PositionRefAndVelocity(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
-    zClass_NodePartial *refNode,
+    CZNodePartial *boundNode,
+    CZNodePartial *refNode,
     const zVec3 *refVec,
     const zVec3 *velocityVec
 ) {
     zEffectAnimActivationRecord *result = 0;
-    const int boundNodeToken = zClass::NodePtrToValidatedIndex(boundNode);
-    const int refNodeToken = zClass::NodePtrToValidatedIndex(refNode);
+    const int boundNodeToken = CZClass::NodePtrToValidatedIndex(boundNode);
+    const int refNodeToken = CZClass::NodePtrToValidatedIndex(refNode);
     const unsigned int flags = self->flags;
     const bool refsValid = (flags & kActivationRecordNoQueueDispatchFlag) == 0 &&
                            self->name[0] != '\0' && (boundNode == 0 || boundNodeToken > 0) &&
@@ -1379,16 +1379,16 @@ zEffectAnimActivationRecord *__fastcall QueueCmdType3PositionRefAndVelocity(
  */
 zEffectAnimActivationRecord *__fastcall QueueCmdType4TransformRefs(
     zEffectAnimEntry *self,
-    zClass_NodePartial *boundNode,
-    zClass_NodePartial *refNodeA,
+    CZNodePartial *boundNode,
+    CZNodePartial *refNodeA,
     const zVec3 *refVecA,
-    zClass_NodePartial *refNodeB,
+    CZNodePartial *refNodeB,
     const zVec3 *refVecB
 ) {
     zEffectAnimActivationRecord *result = 0;
-    const int boundNodeToken = zClass::NodePtrToValidatedIndex(boundNode);
-    const int refNodeAToken = zClass::NodePtrToValidatedIndex(refNodeA);
-    const int refNodeBToken = zClass::NodePtrToValidatedIndex(refNodeB);
+    const int boundNodeToken = CZClass::NodePtrToValidatedIndex(boundNode);
+    const int refNodeAToken = CZClass::NodePtrToValidatedIndex(refNodeA);
+    const int refNodeBToken = CZClass::NodePtrToValidatedIndex(refNodeB);
     const unsigned int flags = self->flags;
     const bool refsValid = (flags & kActivationRecordNoQueueDispatchFlag) == 0 &&
                            self->name[0] != '\0' && (boundNode == 0 || boundNodeToken > 0) &&
@@ -1481,10 +1481,10 @@ namespace zEffect {
  * traversal.
  */
 void *__fastcall FindNodeUserDataRecursive(
-    zClass_NodePartial *node
+    CZNodePartial *node
 ) {
     unsigned int userDataValue = 0;
-    zClass_Class::gwNodeGetUserData(node, &userDataValue);
+    CZClass::gwNodeGetUserData(node, &userDataValue);
     if (userDataValue != 0) {
         return (void *)((unsigned int)(userDataValue));
     }
@@ -1515,9 +1515,9 @@ int __fastcall SpawnRuntimeInstanceAt(
         zEffect_RuntimeEntry *const entry = AcquireRuntimeEntryByIndex(effectIndex);
         if (entry != 0) {
             ActivateRuntimeEntryAtPosition(entry, worldPos);
-            zClass_Class::gwNodeSetActive(entry->effectNode, 1);
-            entry->effectNode->callbackContext = (zClass_NodePartial *)(entry);
-            zClass_Class::gwNodeSetActionCallback(
+            CZClass::gwNodeSetActive(entry->effectNode, 1);
+            entry->effectNode->callbackContext = (CZNodePartial *)(entry);
+            CZClass::gwNodeSetActionCallback(
                 entry->effectNode,
                 (void *)(&RuntimeNodeActionCallback)
             );
@@ -1567,20 +1567,20 @@ int __fastcall ActivateRuntimeEntryAtPosition(
     }
 
     const float currentScale = runtimeEntry->currentScale;
-    zClass_Object3D::gwObject3DSetScale(
+    CZObject3D::gwObject3DSetScale(
         runtimeEntry->effectNode,
         currentScale,
         currentScale,
         currentScale
     );
-    zClass_Object3D::gwObject3DSetPosition(
+    CZObject3D::gwObject3DSetPosition(
         runtimeEntry->effectNode,
         worldPos->x,
         worldPos->y,
         worldPos->z
     );
     zDi::ResetCurrentVariant((zDiPartial *)(runtimeEntry->effectGfxData));
-    zClass_Class::AddChild(g_zEffect_RuntimeManager.parentNode, runtimeEntry->effectNode);
+    CZClass::AddChild(g_zEffect_RuntimeManager.parentNode, runtimeEntry->effectNode);
     ++g_zEffect_RuntimeManager.activatedCount;
     return 1;
 }
@@ -1596,7 +1596,7 @@ float __fastcall ComputeDistanceSqToListener(
     const zVec3 *worldPos
 ) {
     zVec3 listenerPosition = {0};
-    gwNode::GetWorldPosition(g_zEffect_RuntimeManager.listenerNode, &listenerPosition);
+    CZNode::GetWorldPosition(g_zEffect_RuntimeManager.listenerNode, &listenerPosition);
     listenerPosition.x -= worldPos->x;
     listenerPosition.y -= worldPos->y;
     listenerPosition.z -= worldPos->z;
@@ -1655,7 +1655,7 @@ zEffect_RuntimeEntry *__fastcall CloneRuntimeEntryFromTemplate(
         (zEffect_RuntimeEntry *)(malloc(sizeof(zEffect_RuntimeEntry)));
     memcpy(clone, templateEntry, sizeof(zEffect_RuntimeEntry));
 
-    zClass_NodePartial *const node = zClass_cls_util::CopyNodeWithCloneOptions(
+    CZNodePartial *const node = CZUtil::CopyNodeWithCloneOptions(
         clone->effectNode,
         g_zEffect_CloneCopyMode,
         g_zEffect_CloneCopyChildrenMode
@@ -1677,7 +1677,7 @@ zEffect_RuntimeEntry *__fastcall CloneRuntimeEntryFromTemplate(
  * after the instance has completed.
  */
 int __fastcall RuntimeNodeActionCallback(
-    zClass_NodePartial *node
+    CZNodePartial *node
 ) {
     if ((node->flags & 0x04) == 0) {
         return 0;
@@ -1689,7 +1689,7 @@ int __fastcall RuntimeNodeActionCallback(
     if (runtimeEntry->elapsedSec < runtimeEntry->fadeInTimeSec) {
         runtimeEntry->currentScale += runtimeEntry->fadeInScaleRate * g_FrameDeltaTimeSec;
         const float currentScale = runtimeEntry->currentScale;
-        return zClass_Object3D::gwObject3DSetScale(node, currentScale, currentScale, currentScale);
+        return CZObject3D::gwObject3DSetScale(node, currentScale, currentScale, currentScale);
     }
 
     if (runtimeEntry->elapsedSec < runtimeEntry->fadeOutStartTimeSec) {
@@ -1699,16 +1699,16 @@ int __fastcall RuntimeNodeActionCallback(
         }
 
         const float currentScale = runtimeEntry->currentScale;
-        return zClass_Object3D::gwObject3DSetScale(node, currentScale, currentScale, currentScale);
+        return CZObject3D::gwObject3DSetScale(node, currentScale, currentScale, currentScale);
     }
 
     node->callbackContext = 0;
     zArchiveListAddTail(g_zEffect_RuntimeManager.freeList, runtimeEntry);
-    zClass_Class::gwNodeSetActionCallback(node, 0);
-    zClass_Class::gwNodeSetActive(node, 0);
+    CZClass::gwNodeSetActionCallback(node, 0);
+    CZClass::gwNodeSetActive(node, 0);
     const int parentCount = node->listCountA;
     if (parentCount != 0) {
-        return zClass_Class::RemoveChild(g_zEffect_RuntimeManager.parentNode, node);
+        return CZClass::RemoveChild(g_zEffect_RuntimeManager.parentNode, node);
     }
 
     return parentCount;

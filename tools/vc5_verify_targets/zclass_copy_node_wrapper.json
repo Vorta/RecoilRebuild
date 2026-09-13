@@ -1,6 +1,6 @@
 {
   "name": "zclass_copy_node_wrapper",
-  "description": "zClass_cls_util::CopyNode top-level wrapper for recursive node copying with DI clone options.",
+  "description": "CZUtil::CopyNode top-level wrapper for recursive node copying with DI clone options.",
   "source_filename": "cls_util.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
   "include_dirs": [
@@ -23,8 +23,8 @@
   "functions": [
     {
       "address": "0x452560",
-      "symbol": "?CopyNode@zClass_cls_util@@YIPAUzClass_NodePartial@@PAU2@HHH@Z",
-      "name": "zClass_cls_util::CopyNode"
+      "symbol": "?CopyNode@CZUtil@@YIPAUCZNodePartial@@PAU2@HHH@Z",
+      "name": "CZUtil::CopyNode"
     }
   ]
 }

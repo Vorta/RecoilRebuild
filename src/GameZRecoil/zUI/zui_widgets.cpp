@@ -53,7 +53,7 @@ const float ZSND_CD_NORMALIZED_TO_VOLUME = 65535.0f;
 
 struct HudReticleAttachStatePartial {
     unsigned char unknown_00[0x0c];
-    zClass_NodePartial *projectileNode;
+    CZNodePartial *projectileNode;
 };
 
 struct HudReticleAltGunControllerPartial {
@@ -68,7 +68,7 @@ struct HudReticlePlayerStatePartial {
     unsigned char unknown_590[0x54];
     HudReticleAltGunControllerPartial *activeAltGunController;
     unsigned char unknown_5e8[0x8e8];
-    zClass_NodePartial *rootNode;
+    CZNodePartial *rootNode;
 };
 
 RECOIL_STATIC_ASSERT(offsetof(HudReticleAttachStatePartial, projectileNode) == 0x0c);

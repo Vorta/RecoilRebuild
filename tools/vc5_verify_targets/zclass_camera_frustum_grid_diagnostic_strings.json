@@ -28,30 +28,30 @@
   "data_symbols": [
     {
       "address": "0x4dddbc",
-      "symbol": "_g_zClass_FindConvexHullUnexpectedReturnMsg",
-      "name": "g_zClass_FindConvexHullUnexpectedReturnMsg",
-      "bn_name": "g_zClass_FindConvexHullUnexpectedReturnMsg",
+      "symbol": "_g_CZClass_FindConvexHullUnexpectedReturnMsg",
+      "name": "g_CZClass_FindConvexHullUnexpectedReturnMsg",
+      "bn_name": "g_CZClass_FindConvexHullUnexpectedReturnMsg",
       "byte_length": 55
     },
     {
       "address": "0x4dddf4",
-      "symbol": "_g_zClass_DiamondTilerNeedMoreRingsMsg",
-      "name": "g_zClass_DiamondTilerNeedMoreRingsMsg",
-      "bn_name": "g_zClass_DiamondTilerNeedMoreRingsMsg",
+      "symbol": "_g_CZClass_DiamondTilerNeedMoreRingsMsg",
+      "name": "g_CZClass_DiamondTilerNeedMoreRingsMsg",
+      "bn_name": "g_CZClass_DiamondTilerNeedMoreRingsMsg",
       "byte_length": 38
     },
     {
       "address": "0x4dde1c",
-      "symbol": "_g_zClass_DiamondTilerNeedMoreCellsPerRingMsg",
-      "name": "g_zClass_DiamondTilerNeedMoreCellsPerRingMsg",
-      "bn_name": "g_zClass_DiamondTilerNeedMoreCellsPerRingMsg",
+      "symbol": "_g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg",
+      "name": "g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg",
+      "bn_name": "g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg",
       "byte_length": 47
     },
     {
       "address": "0x4dde4c",
-      "symbol": "_g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt",
-      "name": "g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt",
-      "bn_name": "g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt",
+      "symbol": "_g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt",
+      "name": "g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt",
+      "bn_name": "g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt",
       "byte_length": 83
     }
   ]

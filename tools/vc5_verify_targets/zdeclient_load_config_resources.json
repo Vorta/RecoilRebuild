@@ -21,7 +21,7 @@
   "functions": [
     {
       "address": "0x4558f0",
-      "symbol": "?LoadConfigResources@zDEClient@@YIHPAUzClass_NodePartial@@@Z",
+      "symbol": "?LoadConfigResources@zDEClient@@YIHPAUCZNodePartial@@@Z",
       "name": "zDEClient::LoadConfigResources"
     },
     {

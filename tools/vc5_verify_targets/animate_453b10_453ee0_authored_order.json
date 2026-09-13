@@ -14,8 +14,8 @@
   "functions": [
     {
       "address": "0x453b10",
-      "symbol": "?DeleteNode@zClass_Animate@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Animate::DeleteNode",
+      "symbol": "?DeleteNode@CZAnimate@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZAnimate::DeleteNode",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -23,8 +23,8 @@
     },
     {
       "address": "0x453b40",
-      "symbol": "?AddChild@zClass_Animate@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Animate::AddChild",
+      "symbol": "?AddChild@CZAnimate@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZAnimate::AddChild",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -32,8 +32,8 @@
     },
     {
       "address": "0x453b80",
-      "symbol": "?RemoveChild@zClass_Animate@@YIHPAUzClass_NodePartial@@0@Z",
-      "name": "zClass_Animate::RemoveChild",
+      "symbol": "?RemoveChild@CZAnimate@@YIHPAUCZNodePartial@@0@Z",
+      "name": "CZAnimate::RemoveChild",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -41,8 +41,8 @@
     },
     {
       "address": "0x453bd0",
-      "symbol": "?UpdateNode@zClass_Animate@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_Animate::UpdateNode",
+      "symbol": "?UpdateNode@CZAnimate@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZAnimate::UpdateNode",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -50,8 +50,8 @@
     },
     {
       "address": "0x453c90",
-      "symbol": "?AdvanceTime@zClass_Animate@@YIFPAUzClass_AnimateRuntimePartial@@M@Z",
-      "name": "zClass_Animate::AdvanceTime",
+      "symbol": "?AdvanceTime@CZAnimate@@YIFPAUCZAnimateRuntimePartial@@M@Z",
+      "name": "CZAnimate::AdvanceTime",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -59,8 +59,8 @@
     },
     {
       "address": "0x453d20",
-      "symbol": "?SampleTransform@zClass_Animate@@YIFPAUzClass_AnimateRuntimePartial@@@Z",
-      "name": "zClass_Animate::SampleTransform",
+      "symbol": "?SampleTransform@CZAnimate@@YIFPAUCZAnimateRuntimePartial@@@Z",
+      "name": "CZAnimate::SampleTransform",
       "pipeline_class": "authored",
       "authored_order_role": "authored-body",
       "required_presence": true,
@@ -89,8 +89,8 @@
       "retail_end_exclusive": "0x453ee0",
       "predecessor": {
         "address": "0x453aa0",
-        "symbol": "?gwLightSetSpecularColor@zClass_Light@@YIHPAUzClass_NodePartial@@MMM@Z",
-        "name": "zClass_Light::gwLightSetSpecularColor",
+        "symbol": "?gwLightSetSpecularColor@CZLight@@YIHPAUCZNodePartial@@MMM@Z",
+        "name": "CZLight::gwLightSetSpecularColor",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,
@@ -106,8 +106,8 @@
       ],
       "successor": {
         "address": "0x453ee0",
-        "symbol": "?gwSequenceNew@zClass_Sequence@@YAPAUzClass_NodePartial@@XZ",
-        "name": "zClass_Sequence::gwSequenceNew",
+        "symbol": "?gwSequenceNew@CZSequence@@YAPAUCZNodePartial@@XZ",
+        "name": "CZSequence::gwSequenceNew",
         "pipeline_class": "authored",
         "authored_order_role": "authored-body",
         "required_presence": true,

@@ -22,23 +22,23 @@
   "functions": [
     {
       "address": "0x407130",
-      "symbol": "?ReturnOneNoArgs@zStub@@QAEHXZ",
-      "name": "zStub::ReturnOneNoArgs"
+      "symbol": "?ReturnOneNoArgs@CZStub@@QAEHXZ",
+      "name": "CZStub::ReturnOneNoArgs"
     },
     {
       "address": "0x407140",
-      "symbol": "?ReturnZeroNoArgs@zStub@@QAEHXZ",
-      "name": "zStub::ReturnZeroNoArgs"
+      "symbol": "?ReturnZeroNoArgs@CZStub@@QAEHXZ",
+      "name": "CZStub::ReturnZeroNoArgs"
     },
     {
       "address": "0x407150",
-      "symbol": "?NoOp1Arg@zStub@@QAEXH@Z",
-      "name": "zStub::NoOp1Arg"
+      "symbol": "?NoOp1Arg@CZStub@@QAEXH@Z",
+      "name": "CZStub::NoOp1Arg"
     },
     {
       "address": "0x407160",
-      "symbol": "?ReturnOne2Args@zStub@@QAEHHH@Z",
-      "name": "zStub::ReturnOne2Args"
+      "symbol": "?ReturnOne2Args@CZStub@@QAEHHH@Z",
+      "name": "CZStub::ReturnOne2Args"
     }
   ]
 }

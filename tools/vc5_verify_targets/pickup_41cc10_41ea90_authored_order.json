@@ -69,25 +69,25 @@
           "name": "Pickup::Init",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Init@Pickup@@YIHPAUzClass_NodePartial@@PBD@Z"
+          "symbol": "?Init@Pickup@@YIHPAUCZNodePartial@@PBD@Z"
         },
         {
           "address": "0x41ceb0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::ClearPickupFlagsRecursive",
+          "name": "CZNode::ClearPickupFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ClearPickupFlagsRecursive@zClass_Node@@YIHPAUzClass_NodePartial@@@Z"
+          "symbol": "?ClearPickupFlagsRecursive@CZNode@@YIHPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41cef0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::SetPickupFlagsRecursive",
+          "name": "CZNode::SetPickupFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?SetPickupFlagsRecursive@zClass_Node@@YIHPAUzClass_NodePartial@@@Z"
+          "symbol": "?SetPickupFlagsRecursive@CZNode@@YIHPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41cf30",
@@ -96,7 +96,7 @@
           "name": "Pickup::ResolveOwnerFromBvolHit",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ResolveOwnerFromBvolHit@Pickup@@YIHPAPAUzClass_NodePartial@@@Z"
+          "symbol": "?ResolveOwnerFromBvolHit@Pickup@@YIHPAPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41cf50",
@@ -105,7 +105,7 @@
           "name": "Pickup::RemoveObject",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?RemoveObject@Pickup@@YIXPAUzEffectAnimEntry@@PAUzClass_NodePartial@@H@Z"
+          "symbol": "?RemoveObject@Pickup@@YIXPAUzEffectAnimEntry@@PAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x41d0c0",
@@ -114,7 +114,7 @@
           "name": "Pickup::OnCollected",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnCollected@Pickup@@YIHPAUzClass_NodePartial@@PAUzUtil_SaveGameState@@@Z"
+          "symbol": "?OnCollected@Pickup@@YIHPAUCZNodePartial@@PAUzUtil_SaveGameState@@@Z"
         },
         {
           "address": "0x41d220",
@@ -150,7 +150,7 @@
           "name": "Pickup::CreateSpawnDefAndLink",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?CreateSpawnDefAndLink@Pickup@@YIPAUPickupSpawnDef@@PAUzClass_NodePartial@@PAUzVec3@@1HH@Z"
+          "symbol": "?CreateSpawnDefAndLink@Pickup@@YIPAUPickupSpawnDef@@PAUCZNodePartial@@PAUzVec3@@1HH@Z"
         },
         {
           "address": "0x41da20",
@@ -168,7 +168,7 @@
           "name": "Pickup::CreateObjectInstance",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?CreateObjectInstance@Pickup@@YIPAUzClass_NodePartial@@HH@Z"
+          "symbol": "?CreateObjectInstance@Pickup@@YIPAUCZNodePartial@@HH@Z"
         },
         {
           "address": "0x41db40",
@@ -186,7 +186,7 @@
           "name": "Pickup::AssignBvolGroupAndId",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?AssignBvolGroupAndId@Pickup@@YIHPAUzClass_NodePartial@@@Z"
+          "symbol": "?AssignBvolGroupAndId@Pickup@@YIHPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41dc30",
@@ -213,7 +213,7 @@
           "name": "Pickup::RegisterExistingObject",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?RegisterExistingObject@Pickup@@YIXHPAUzClass_NodePartial@@H@Z"
+          "symbol": "?RegisterExistingObject@Pickup@@YIXHPAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x41dd60",
@@ -303,7 +303,7 @@
           "name": "Pickup::RemoveOtherSpawnsWithSameOptEntry",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?RemoveOtherSpawnsWithSameOptEntry@Pickup@@YIXPAUOptCatalogEntryDef@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?RemoveOtherSpawnsWithSameOptEntry@Pickup@@YIXPAUOptCatalogEntryDef@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41e330",
@@ -312,7 +312,7 @@
           "name": "Pickup::SetVariantFromTerrain",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?SetVariantFromTerrain@Pickup@@YIXPAUzClass_NodePartial@@PAUzVec3@@@Z"
+          "symbol": "?SetVariantFromTerrain@Pickup@@YIXPAUCZNodePartial@@PAUzVec3@@@Z"
         },
         {
           "address": "0x41e430",
@@ -411,7 +411,7 @@
           "name": "Pickup::GetSpawnDefFromNode",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?GetSpawnDefFromNode@Pickup@@YIPAUPickupSpawnDef@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?GetSpawnDefFromNode@Pickup@@YIPAUPickupSpawnDef@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41e960",
@@ -529,25 +529,25 @@
           "name": "Pickup::Init",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?Init@Pickup@@YIHPAUzClass_NodePartial@@PBD@Z"
+          "symbol": "?Init@Pickup@@YIHPAUCZNodePartial@@PBD@Z"
         },
         {
           "address": "0x41ceb0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::ClearPickupFlagsRecursive",
+          "name": "CZNode::ClearPickupFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ClearPickupFlagsRecursive@zClass_Node@@YIHPAUzClass_NodePartial@@@Z"
+          "symbol": "?ClearPickupFlagsRecursive@CZNode@@YIHPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41cef0",
           "authored_order_role": "authored-body",
           "full_order_gate": true,
-          "name": "zClass_Node::SetPickupFlagsRecursive",
+          "name": "CZNode::SetPickupFlagsRecursive",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?SetPickupFlagsRecursive@zClass_Node@@YIHPAUzClass_NodePartial@@@Z"
+          "symbol": "?SetPickupFlagsRecursive@CZNode@@YIHPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41cf30",
@@ -556,7 +556,7 @@
           "name": "Pickup::ResolveOwnerFromBvolHit",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?ResolveOwnerFromBvolHit@Pickup@@YIHPAPAUzClass_NodePartial@@@Z"
+          "symbol": "?ResolveOwnerFromBvolHit@Pickup@@YIHPAPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41cf50",
@@ -565,7 +565,7 @@
           "name": "Pickup::RemoveObject",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?RemoveObject@Pickup@@YIXPAUzEffectAnimEntry@@PAUzClass_NodePartial@@H@Z"
+          "symbol": "?RemoveObject@Pickup@@YIXPAUzEffectAnimEntry@@PAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x41d0c0",
@@ -574,7 +574,7 @@
           "name": "Pickup::OnCollected",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?OnCollected@Pickup@@YIHPAUzClass_NodePartial@@PAUzUtil_SaveGameState@@@Z"
+          "symbol": "?OnCollected@Pickup@@YIHPAUCZNodePartial@@PAUzUtil_SaveGameState@@@Z"
         },
         {
           "address": "0x41d220",
@@ -610,7 +610,7 @@
           "name": "Pickup::CreateSpawnDefAndLink",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?CreateSpawnDefAndLink@Pickup@@YIPAUPickupSpawnDef@@PAUzClass_NodePartial@@PAUzVec3@@1HH@Z"
+          "symbol": "?CreateSpawnDefAndLink@Pickup@@YIPAUPickupSpawnDef@@PAUCZNodePartial@@PAUzVec3@@1HH@Z"
         },
         {
           "address": "0x41da20",
@@ -628,7 +628,7 @@
           "name": "Pickup::CreateObjectInstance",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?CreateObjectInstance@Pickup@@YIPAUzClass_NodePartial@@HH@Z"
+          "symbol": "?CreateObjectInstance@Pickup@@YIPAUCZNodePartial@@HH@Z"
         },
         {
           "address": "0x41db40",
@@ -646,7 +646,7 @@
           "name": "Pickup::AssignBvolGroupAndId",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?AssignBvolGroupAndId@Pickup@@YIHPAUzClass_NodePartial@@@Z"
+          "symbol": "?AssignBvolGroupAndId@Pickup@@YIHPAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41dc30",
@@ -673,7 +673,7 @@
           "name": "Pickup::RegisterExistingObject",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?RegisterExistingObject@Pickup@@YIXHPAUzClass_NodePartial@@H@Z"
+          "symbol": "?RegisterExistingObject@Pickup@@YIXHPAUCZNodePartial@@H@Z"
         },
         {
           "address": "0x41dd60",
@@ -763,7 +763,7 @@
           "name": "Pickup::RemoveOtherSpawnsWithSameOptEntry",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?RemoveOtherSpawnsWithSameOptEntry@Pickup@@YIXPAUOptCatalogEntryDef@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?RemoveOtherSpawnsWithSameOptEntry@Pickup@@YIXPAUOptCatalogEntryDef@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41e330",
@@ -772,7 +772,7 @@
           "name": "Pickup::SetVariantFromTerrain",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?SetVariantFromTerrain@Pickup@@YIXPAUzClass_NodePartial@@PAUzVec3@@@Z"
+          "symbol": "?SetVariantFromTerrain@Pickup@@YIXPAUCZNodePartial@@PAUzVec3@@@Z"
         },
         {
           "address": "0x41e430",
@@ -871,7 +871,7 @@
           "name": "Pickup::GetSpawnDefFromNode",
           "pipeline_class": "authored",
           "required_presence": true,
-          "symbol": "?GetSpawnDefFromNode@Pickup@@YIPAUPickupSpawnDef@@PAUzClass_NodePartial@@@Z"
+          "symbol": "?GetSpawnDefFromNode@Pickup@@YIPAUPickupSpawnDef@@PAUCZNodePartial@@@Z"
         },
         {
           "address": "0x41e960",

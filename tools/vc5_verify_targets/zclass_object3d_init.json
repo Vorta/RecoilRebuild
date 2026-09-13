@@ -1,6 +1,6 @@
 {
   "name": "zclass_object3d_init",
-  "description": "zClass_Object3D::gwObject3DInit object-node constructor.",
+  "description": "CZObject3D::gwObject3DInit object-node constructor.",
   "source_filename": "Object3d.c",
   "source_from": "src/GameZRecoil/zClass/Object3d.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -22,8 +22,8 @@
   "functions": [
     {
       "address": "0x44daa0",
-      "symbol": "?gwObject3DInit@zClass_Object3D@@YAPAUzClass_NodePartial@@XZ",
-      "name": "zClass_Object3D::gwObject3DInit"
+      "symbol": "?gwObject3DInit@CZObject3D@@YAPAUCZNodePartial@@XZ",
+      "name": "CZObject3D::gwObject3DInit"
     }
   ]
 }

@@ -15,60 +15,60 @@
 extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrorvirtualareapartitionnullfmt
- * @recoil-artifact defines .data recoil:data:0x4de23c: g_zClass_LineErrorVirtualAreaPartitionNullFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de23c: g_CZClass_LineErrorVirtualAreaPartitionNullFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x5b].
  *
  * Purpose: report a missing virtual-area partition grid during world
  * partition initialization.
  */
-char g_zClass_LineErrorVirtualAreaPartitionNullFmt[0x5b] =
+char g_CZClass_LineErrorVirtualAreaPartitionNullFmt[0x5b] =
     "%s: Line %d: ERROR initializing virtual area partition; NULL area partitions encountered.\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-partitionmaxdecfeaturecountoverflowfmt
- * @recoil-artifact defines .data recoil:data:0x4de2c0: g_zClass_PartitionMaxDecFeatureCountOverflowFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de2c0: g_CZClass_PartitionMaxDecFeatureCountOverflowFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x4d].
  * Purpose: report clamping of the maximum DEC feature count to the byte-sized
  * partition storage limit.
  */
-char g_zClass_PartitionMaxDecFeatureCountOverflowFmt[0x4d] =
+char g_CZClass_PartitionMaxDecFeatureCountOverflowFmt[0x4d] =
     "ERROR setting Partition Max DEC Feature count to %d:\n"
     "overflow limit at 255.\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletelightworldnotfoundfmt
- * @recoil-artifact defines .data recoil:data:0x4de310: g_zClass_LineErrorDeleteLightWorldNotFoundFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de310: g_CZClass_LineErrorDeleteLightWorldNotFoundFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x72].
  * Purpose: report that a light's attached-world list does not contain the
  * world being removed.
  */
-char g_zClass_LineErrorDeleteLightWorldNotFoundFmt[0x72] =
+char g_CZClass_LineErrorDeleteLightWorldNotFoundFmt[0x72] =
     "%s: Line %d: ERROR deleting light; world not found in light's world list.\n"
     "        world_ptr = %x; light_ptr = %x\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletelightnotfoundinworldlistfmt
- * @recoil-artifact defines .data recoil:data:0x4de384: g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de384: g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x64].
  * Purpose: report that a light node is absent from the world's light list.
  */
-char g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt[0x64] =
+char g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt[0x64] =
     "%s: Line %d: ERROR deleting light; not found in world list.\n"
     "        world_ptr = %x; light_ptr = %x\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletesoundworldnotfoundfmt
- * @recoil-artifact defines .data recoil:data:0x4de3e8: g_zClass_LineErrorDeleteSoundWorldNotFoundFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de3e8: g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x72].
  * Purpose: report that a sound's attached-world list does not contain the
  * world being removed.
  */
-char g_zClass_LineErrorDeleteSoundWorldNotFoundFmt[0x72] =
+char g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt[0x72] =
     "%s: Line %d: ERROR deleting sound; world not found in sound's world list.\n"
     "        world_ptr = %x; sound_ptr = %x\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletesoundnotfoundinworldlistfmt
- * @recoil-artifact defines .data recoil:data:0x4de45c: g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt.
+ * @recoil-artifact defines .data recoil:data:0x4de45c: g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x64].
  * Purpose: report that a sound node is absent from the world's sound list.
  */
-char g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt[0x64] =
+char g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt[0x64] =
     "%s: Line %d: ERROR deleting sound; not found in world list.\n"
     "        world_ptr = %x; sound_ptr = %x\n";
 }
@@ -76,7 +76,7 @@ char g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt[0x64] =
 namespace {
 
     /**
-     * Original static helper observed in zClass_World grid-coordinate callers
+     * Original static helper observed in CZWorld grid-coordinate callers
      * (D:\Proj\GameZRecoil\zClass\cls_world.c).
      * Purpose: truncate a floating-point world/grid coordinate to an integer cell coordinate.
      */
@@ -87,7 +87,7 @@ namespace {
     /**
      * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
      * No standalone retail function; observed caller includes
-     * 0x450c60 zClass_World::gwWorldSetVirtualAreaPartition.
+     * 0x450c60 CZWorld::gwWorldSetVirtualAreaPartition.
      * Purpose: approximate the square root of a squared range through its
      * floating-point exponent bits.
      */
@@ -103,7 +103,7 @@ namespace {
     /**
      * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
      * No standalone retail function; observed callers include
-     * 0x450840 zClass_World::WorldRectToGridIndex.
+     * 0x450840 CZWorld::WorldRectToGridIndex.
      * Evidence: world-grid source-cluster callers share the invalid grid-cell
      * sentinel write before and after partition inclusion checks.
      * Purpose: set grid column and row outputs to the invalid cell sentinel.
@@ -119,13 +119,13 @@ namespace {
     /**
      * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
      * No standalone retail function; observed callers include
-     * 0x450f60 zClass_World::AddChildToGridCell and
-     * 0x451240 zClass_World::RemoveChildAtGrid.
+     * 0x450f60 CZWorld::AddChildToGridCell and
+     * 0x451240 CZWorld::RemoveChildAtGrid.
      * Evidence: grid add/remove source-cluster callers share area-grid indexing.
      * Purpose: return the world area record for a grid column and row.
      */
     zWorldAreaPartial *AreaAt(
-        zClass_WorldDataPartial * data,
+        CZWorldDataPartial * data,
         int gridCol,
         int gridRow
     ) {
@@ -134,18 +134,18 @@ namespace {
 
 }
 
-namespace zClass_World {
+namespace CZWorld {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.queueareaupdate
-     * @recoil-artifact defines .text recoil:function:0x450030: zClass_World::QueueAreaUpdate
+     * @recoil-artifact defines .text recoil:function:0x450030: CZWorld::QueueAreaUpdate
      * @recoil-match byte
      *
      * Evidence: retail literal-backed physical source block D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: Queues a pending area update record, marks the area pending, and sets world update flags for later processing.
      */
     int __fastcall QueueAreaUpdate(
-        zClass_NodePartial * world,
-        zClass_WorldDataPartial * worldData,
+        CZNodePartial * world,
+        CZWorldDataPartial * worldData,
         zWorldAreaPartial * area
     ) {
         if (worldData->pendingAreaUpdateCount == worldData->pendingAreaUpdateCapacity) {
@@ -161,7 +161,7 @@ namespace zClass_World {
         area->areaFlags |= 0x01;
 
         if ((world->flags & 0x01) == 0) {
-            if (zClass_TypeList::InsertChildNodes(7, world) == 0) {
+            if (CZTypeList::InsertChildNodes(7, world) == 0) {
                 world->flags |= 0x01;
             }
         }
@@ -172,12 +172,12 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.rebuildareabounds
-     * @recoil-artifact defines .text recoil:function:0x4500b0: zClass_World::RebuildAreaBounds.
+     * @recoil-artifact defines .text recoil:function:0x4500b0: CZWorld::RebuildAreaBounds.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: recompute an area's active Y bounds and bounding sphere from
      * child world bounding boxes.
      */
-    int __fastcall RebuildAreaBounds(zClass_WorldDataPartial * /*worldData*/, zWorldAreaPartial * area) {
+    int __fastcall RebuildAreaBounds(CZWorldDataPartial * /*worldData*/, zWorldAreaPartial * area) {
         const short childCount = area->childCount;
         // Recomputes bbox-present flag 0x100; ApplyPendingFogSettings clears
         // dirty flag 0x01 after this helper.
@@ -189,13 +189,13 @@ namespace zClass_World {
         zBBoxCorners corners = {0};
         int childIndex = 0;
         for (; childIndex < childCount; ++childIndex) {
-            zClass_NodePartial *child = area->childList[childIndex];
+            CZNodePartial *child = area->childList[childIndex];
             if ((child->flags & 0x100) == 0) {
                 continue;
             }
 
             area->areaFlags |= 0x100;
-            zClass_Class::gwNodeGetWorldBBoxCorners(child, &corners);
+            CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
             area->bbox[1] = corners.values[1];
             area->bbox[4] = corners.values[1];
             for (int i = 1; i < 8; ++i) {
@@ -215,12 +215,12 @@ namespace zClass_World {
         }
 
         for (; childIndex < childCount; ++childIndex) {
-            zClass_NodePartial *child = area->childList[childIndex];
+            CZNodePartial *child = area->childList[childIndex];
             if ((child->flags & 0x100) == 0) {
                 continue;
             }
 
-            zClass_Class::gwNodeGetWorldBBoxCorners(child, &corners);
+            CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
             for (int i = 0; i < 8; ++i) {
                 const float y = corners.values[i * 3 + 1];
                 if (y < area->bbox[1]) {
@@ -231,7 +231,7 @@ namespace zClass_World {
             }
         }
 
-        BBox::MinMaxToBoundingSphere(
+        CZBBox::MinMaxToBoundingSphere(
             (const zBBox3f *)(area->bbox),
             &area->bboxCenter,
             &area->bboxRadius
@@ -241,17 +241,17 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldnew
-     * @recoil-artifact defines .text recoil:function:0x4501c0: zClass_World::gwWorldNew.
+     * @recoil-artifact defines .text recoil:function:0x4501c0: CZWorld::gwWorldNew.
      * @recoil-match byte
      *
      * Purpose: allocate a world node and its class data, then add it to the world type list.
      */
-    zClass_NodePartial *__cdecl gwWorldNew() {
-        zClass_NodePartial *node = zClass_Class::gwNodeNew();
+    CZNodePartial *__cdecl gwWorldNew() {
+        CZNodePartial *node = CZClass::gwNodeNew();
         node->classId = 2;
 
-        zClass_WorldDataPartial *data =
-            (zClass_WorldDataPartial *)(calloc(1, sizeof(zClass_WorldDataPartial)));
+        CZWorldDataPartial *data =
+            (CZWorldDataPartial *)(calloc(1, sizeof(CZWorldDataPartial)));
         node->classData = data;
         data->fogState = 0;
         data->lightCount = 0;
@@ -266,25 +266,25 @@ namespace zClass_World {
         data->clampQueriesToBounds = 0;
         data->flags = 1;
         data->partitionMaxDecFeatureCount = 16;
-        zClass_TypeList::Insert(13, node);
+        CZTypeList::Insert(13, node);
         return node;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.deletenode
-     * @recoil-artifact defines .text recoil:function:0x450240: zClass_World::DeleteNode.
+     * @recoil-artifact defines .text recoil:function:0x450240: CZWorld::DeleteNode.
      * @recoil-match byte
      *
      * Purpose: release world-owned partition/light/sound/update lists and
      * return the world node to the shared zClass free-list machinery.
      */
-    int __fastcall DeleteNode(zClass_NodePartial * world) {
+    int __fastcall DeleteNode(CZNodePartial * world) {
         const int freeResult = FreeVirtualAreaPartitions(world);
         if (freeResult != 0) {
             return freeResult;
         }
 
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         if (data->lightNodes != 0) {
             free(data->lightNodes);
         }
@@ -301,22 +301,22 @@ namespace zClass_World {
             free(data->pendingAreaUpdates);
         }
 
-        return zClass_Class::TryFreeNode(world);
+        return CZClass::TryFreeNode(world);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.initvirtualareapartitions
-     * @recoil-artifact defines .text recoil:function:0x4502b0: zClass_World::InitVirtualAreaPartitions.
+     * @recoil-artifact defines .text recoil:function:0x4502b0: CZWorld::InitVirtualAreaPartitions.
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
      * Purpose: initialize virtual area partition edge cells by moving their
      * children into VAP_statics nodes.
      */
-    int __fastcall InitVirtualAreaPartitions(zClass_NodePartial * world) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+    int __fastcall InitVirtualAreaPartitions(CZNodePartial * world) {
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         if (data->areaGridRows == 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                g_zClass_LineErrorVirtualAreaPartitionNullFmt,
+                g_CZClass_LineErrorVirtualAreaPartitionNullFmt,
                 "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x245
             );
@@ -324,20 +324,20 @@ namespace zClass_World {
             return 5;
         }
 
-        zClass_TypeList::UpdateQueuedTrees();
+        CZTypeList::UpdateQueuedTrees();
 
         for (int col = 0; col < data->areaGridColCount; ++col) {
             zWorldAreaPartial *area = &data->areaGridRows[0][col];
             if (area->childCount > 0) {
-                zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
-                zClass_Class::gwNodeSetName(statics, g_zClass_VapStaticsNodeName);
+                CZNodePartial *statics = CZObject3D::gwObject3DInit();
+                CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    zClass_NodePartial *child = area->childList[0];
-                    zClass_Object3D::gwObject3DAddChild(statics, child);
-                    zClass_World::RemoveChildAtGrid(world, child);
+                    CZNodePartial *child = area->childList[0];
+                    CZObject3D::gwObject3DAddChild(statics, child);
+                    CZWorld::RemoveChildAtGrid(world, child);
                 }
-                zClass_TypeList::UpdateQueuedTrees();
-                zClass_World::AddChildAtGrid(world, statics);
+                CZTypeList::UpdateQueuedTrees();
+                CZWorld::AddChildAtGrid(world, statics);
             }
         }
 
@@ -345,30 +345,30 @@ namespace zClass_World {
         for (int lastCol = 0; lastCol < data->areaGridColCount; ++lastCol) {
             zWorldAreaPartial *area = &lastRow[lastCol];
             if (area->childCount > 0) {
-                zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
-                zClass_Class::gwNodeSetName(statics, g_zClass_VapStaticsNodeName);
+                CZNodePartial *statics = CZObject3D::gwObject3DInit();
+                CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    zClass_NodePartial *child = area->childList[0];
-                    zClass_Object3D::gwObject3DAddChild(statics, child);
-                    zClass_World::RemoveChildAtGrid(world, child);
+                    CZNodePartial *child = area->childList[0];
+                    CZObject3D::gwObject3DAddChild(statics, child);
+                    CZWorld::RemoveChildAtGrid(world, child);
                 }
-                zClass_TypeList::UpdateQueuedTrees();
-                zClass_World::AddChildAtGrid(world, statics);
+                CZTypeList::UpdateQueuedTrees();
+                CZWorld::AddChildAtGrid(world, statics);
             }
         }
 
         for (int firstEdgeRow = 1; firstEdgeRow < data->areaGridRowCount - 1; ++firstEdgeRow) {
             zWorldAreaPartial *area = &data->areaGridRows[firstEdgeRow][0];
             if (area->childCount > 0) {
-                zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
-                zClass_Class::gwNodeSetName(statics, g_zClass_VapStaticsNodeName);
+                CZNodePartial *statics = CZObject3D::gwObject3DInit();
+                CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    zClass_NodePartial *child = area->childList[0];
-                    zClass_Object3D::gwObject3DAddChild(statics, child);
-                    zClass_World::RemoveChildAtGrid(world, child);
+                    CZNodePartial *child = area->childList[0];
+                    CZObject3D::gwObject3DAddChild(statics, child);
+                    CZWorld::RemoveChildAtGrid(world, child);
                 }
-                zClass_TypeList::UpdateQueuedTrees();
-                zClass_World::AddChildAtGrid(world, statics);
+                CZTypeList::UpdateQueuedTrees();
+                CZWorld::AddChildAtGrid(world, statics);
             }
         }
 
@@ -376,15 +376,15 @@ namespace zClass_World {
             zWorldAreaPartial *area =
                 &data->areaGridRows[lastEdgeRow][data->areaGridColCount - 1];
             if (area->childCount > 0) {
-                zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
-                zClass_Class::gwNodeSetName(statics, g_zClass_VapStaticsNodeName);
+                CZNodePartial *statics = CZObject3D::gwObject3DInit();
+                CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    zClass_NodePartial *child = area->childList[0];
-                    zClass_Object3D::gwObject3DAddChild(statics, child);
-                    zClass_World::RemoveChildAtGrid(world, child);
+                    CZNodePartial *child = area->childList[0];
+                    CZObject3D::gwObject3DAddChild(statics, child);
+                    CZWorld::RemoveChildAtGrid(world, child);
                 }
-                zClass_TypeList::UpdateQueuedTrees();
-                zClass_World::AddChildAtGrid(world, statics);
+                CZTypeList::UpdateQueuedTrees();
+                CZWorld::AddChildAtGrid(world, statics);
             }
         }
 
@@ -394,7 +394,7 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setvirtualpartition
-     * @recoil-artifact defines .text recoil:function:0x450510: zClass_World::SetVirtualPartition.
+     * @recoil-artifact defines .text recoil:function:0x450510: CZWorld::SetVirtualPartition.
      * @recoil-match byte
      *
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
@@ -402,10 +402,10 @@ namespace zClass_World {
      * when enabling the mode.
      */
     SetVirtualPartition(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         int enabled
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         data->clampQueriesToBounds = enabled;
         if (enabled != 0) {
             InitVirtualAreaPartitions(world);
@@ -415,14 +415,14 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.applypendingfogsettings
-     * @recoil-artifact defines .text recoil:function:0x450530: zClass_World::ApplyPendingFogSettings.
+     * @recoil-artifact defines .text recoil:function:0x450530: CZWorld::ApplyPendingFogSettings.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: apply staged world fog changes and queued area-bound updates,
      * then clear the pending flags.
      */
-    int __fastcall ApplyPendingFogSettings(zClass_NodePartial * world) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
-        if (zClass_TypeList::CountNodes(0x0d) > 1) {
+    int __fastcall ApplyPendingFogSettings(CZNodePartial * world) {
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+        if (CZTypeList::CountNodes(0x0d) > 1) {
             data->flags = 0x2f;
         }
 
@@ -490,12 +490,12 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldtogridcoordsclampedex
-     * @recoil-artifact defines .text recoil:function:0x450650: zClass_World::WorldToGridCoordsClampedEx.
+     * @recoil-artifact defines .text recoil:function:0x450650: CZWorld::WorldToGridCoordsClampedEx.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: clamp world X/Z coordinates to valid grid coordinates while also returning unclamped grid coordinates and an inside-bounds flag.
      */
     int __fastcall WorldToGridCoordsClampedEx(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         int *outGridCol,
         float worldX,
         float worldZ,
@@ -504,7 +504,7 @@ namespace zClass_World {
         int *clampedGridRowOut,
         int *insideBoundsOut
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
 
         float clampedX = worldX;
         float clampedZ = worldZ;
@@ -542,18 +542,18 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldtogridcoordsclamped
-     * @recoil-artifact defines .text recoil:function:0x450790: zClass_World::WorldToGridCoordsClamped.
+     * @recoil-artifact defines .text recoil:function:0x450790: CZWorld::WorldToGridCoordsClamped.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: clamp a world X/Z position to the world's grid extents and return the corresponding grid coordinates.
      */
     int __fastcall WorldToGridCoordsClamped(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         int *outGridCol,
         float worldX,
         float worldZ,
         int *outGridRow
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
 
         float clampedX;
         if (worldX < data->originX + 0.1) {
@@ -582,13 +582,13 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldrecttogridindex
-     * @recoil-artifact defines .text recoil:function:0x450840: zClass_World::WorldRectToGridIndex.
+     * @recoil-artifact defines .text recoil:function:0x450840: CZWorld::WorldRectToGridIndex.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: convert a world-space X/Z rectangle to a valid grid cell when
      * it fits inside the partition inclusion tolerances.
      */
     int __fastcall WorldRectToGridIndex(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         int *outGridCol,
         float minX,
         float maxX,
@@ -596,7 +596,7 @@ namespace zClass_World {
         float maxZ,
         int *outGridRow
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         *outGridCol = -1;
         *outGridRow = -1;
 
@@ -648,13 +648,13 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getareapartitionatgrid
-     * @recoil-artifact defines .text recoil:function:0x450a00: zClass_World::GetAreaPartitionAtGrid.
+     * @recoil-artifact defines .text recoil:function:0x450a00: CZWorld::GetAreaPartitionAtGrid.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: validate the world node/data pointers and return the area
      * partition at a grid column and row.
      */
     zWorldAreaPartial *__fastcall GetAreaPartitionAtGrid(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         int gridCol,
         int gridRow
     ) {
@@ -663,7 +663,7 @@ namespace zClass_World {
             return 0;
         }
 
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6d5, "Null class data pointer");
             return 0;
@@ -674,13 +674,13 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.ensuregridcelldisplayposition
-     * @recoil-artifact defines .text recoil:function:0x450a70: zClass_World::EnsureGridCellDisplayPosition.
+     * @recoil-artifact defines .text recoil:function:0x450a70: CZWorld::EnsureGridCellDisplayPosition.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: ensure a grid cell is queued for display-position/bounds
      * refresh when it is not already pending.
      */
     int __fastcall EnsureGridCellDisplayPosition(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         int gridCol,
         int gridRow
     ) {
@@ -689,7 +689,7 @@ namespace zClass_World {
             return 5;
         }
 
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6f6, "Null class data pointer");
             return 5;
@@ -705,7 +705,7 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogstate
-     * @recoil-artifact defines .text recoil:function:0x450ae0: zClass_World::SetPendingFogState.
+     * @recoil-artifact defines .text recoil:function:0x450ae0: CZWorld::SetPendingFogState.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
@@ -713,10 +713,10 @@ namespace zClass_World {
      * world fog application pass.
      */
     int __fastcall SetPendingFogState(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         int fogState
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         data->fogState = fogState;
         data->flags |= 0x01;
         return 0;
@@ -724,18 +724,18 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogcolorrgb01
-     * @recoil-artifact defines .text recoil:function:0x450af0: zClass_World::SetPendingFogColorRgb01.
+     * @recoil-artifact defines .text recoil:function:0x450af0: CZWorld::SetPendingFogColorRgb01.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: stage the pending fog RGB color values for the next world fog
      * application pass.
      */
     int __fastcall SetPendingFogColorRgb01(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float red,
         float green,
         float blue
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         data->ambientColor.red = red;
         data->ambientColor.green = green;
         data->ambientColor.blue = blue;
@@ -745,7 +745,7 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogaltituderange
-     * @recoil-artifact defines .text recoil:function:0x450b20: zClass_World::SetPendingFogAltitudeRange.
+     * @recoil-artifact defines .text recoil:function:0x450b20: CZWorld::SetPendingFogAltitudeRange.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
@@ -753,11 +753,11 @@ namespace zClass_World {
      * world fog application pass.
      */
     int __fastcall SetPendingFogAltitudeRange(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float minAlt,
         float maxAlt
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         data->fogHeightHigh = maxAlt;
         data->fogHeightLow = minAlt;
         data->flags |= 0x20;
@@ -766,7 +766,7 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogrange
-     * @recoil-artifact defines .text recoil:function:0x450b40: zClass_World::SetPendingFogRange.
+     * @recoil-artifact defines .text recoil:function:0x450b40: CZWorld::SetPendingFogRange.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
@@ -774,11 +774,11 @@ namespace zClass_World {
      * world fog application pass.
      */
     int __fastcall SetPendingFogRange(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float nearRange,
         float farRange
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         data->fogDistanceStart = nearRange;
         data->fogDistanceEnd = farRange;
         data->flags |= 0x04;
@@ -787,7 +787,7 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.setpendingfogdensity
-     * @recoil-artifact defines .text recoil:function:0x450b60: zClass_World::SetPendingFogDensity.
+     * @recoil-artifact defines .text recoil:function:0x450b60: CZWorld::SetPendingFogDensity.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
@@ -795,10 +795,10 @@ namespace zClass_World {
      * application pass.
      */
     int __fastcall SetPendingFogDensity(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float density
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         data->fogDensity = density;
         data->flags |= 0x08;
         return 0;
@@ -806,53 +806,53 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogdensity
-     * @recoil-artifact defines .text recoil:function:0x450b80: zClass_World::GetPendingFogDensity.
+     * @recoil-artifact defines .text recoil:function:0x450b80: CZWorld::GetPendingFogDensity.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged fog density value from the world data.
      */
     int __fastcall GetPendingFogDensity(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float *outDensity
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         *outDensity = data->fogDensity;
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogstate
-     * @recoil-artifact defines .text recoil:function:0x450b90: zClass_World::GetPendingFogState.
+     * @recoil-artifact defines .text recoil:function:0x450b90: CZWorld::GetPendingFogState.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged fog state from the world data.
      */
     int __fastcall GetPendingFogState(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         int *outState
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         *outState = data->fogState;
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogcolorrgb01
-     * @recoil-artifact defines .text recoil:function:0x450ba0: zClass_World::GetPendingFogColorRgb01.
+     * @recoil-artifact defines .text recoil:function:0x450ba0: CZWorld::GetPendingFogColorRgb01.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged fog RGB color values from the world data.
      */
     int __fastcall GetPendingFogColorRgb01(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float *outRed,
         float *outGreen,
         float *outBlue
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         *outRed = data->ambientColor.red;
         *outGreen = data->ambientColor.green;
         *outBlue = data->ambientColor.blue;
@@ -861,7 +861,7 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogrange
-     * @recoil-artifact defines .text recoil:function:0x450bc0: zClass_World::GetPendingFogRange.
+     * @recoil-artifact defines .text recoil:function:0x450bc0: CZWorld::GetPendingFogRange.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
@@ -869,11 +869,11 @@ namespace zClass_World {
      * world data.
      */
     int __fastcall GetPendingFogRange(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float *outNearRange,
         float *outFarRange
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         *outNearRange = data->fogDistanceStart;
         *outFarRange = data->fogDistanceEnd;
         return 0;
@@ -881,7 +881,7 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.getpendingfogaltituderange
-     * @recoil-artifact defines .text recoil:function:0x450be0: zClass_World::GetPendingFogAltitudeRange.
+     * @recoil-artifact defines .text recoil:function:0x450be0: CZWorld::GetPendingFogAltitudeRange.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
@@ -889,11 +889,11 @@ namespace zClass_World {
      * data.
      */
     int __fastcall GetPendingFogAltitudeRange(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float *outMinAlt,
         float *outMaxAlt
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         *outMaxAlt = data->fogHeightHigh;
         *outMinAlt = data->fogHeightLow;
         return 0;
@@ -902,7 +902,7 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetorigin
-     * @recoil-artifact defines .text recoil:function:0x450c00: zClass_World::gwWorldSetOrigin.
+     * @recoil-artifact defines .text recoil:function:0x450c00: CZWorld::gwWorldSetOrigin.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
@@ -910,11 +910,11 @@ namespace zClass_World {
      * bounds.
      */
     gwWorldSetOrigin(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float originX,
         float originZ
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         data->originX = originX;
         data->originZ = originZ;
         data->worldMaxX = data->worldSizeX + originX;
@@ -925,18 +925,18 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetsize
-     * @recoil-artifact defines .text recoil:function:0x450c30: zClass_World::gwWorldSetSize.
+     * @recoil-artifact defines .text recoil:function:0x450c30: CZWorld::gwWorldSetSize.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: set the world X/Z size and update the derived maximum bounds.
      */
     gwWorldSetSize(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float sizeX,
         float sizeZ
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         data->worldSizeX = sizeX;
         data->worldSizeZ = sizeZ;
         data->worldMaxX = data->originX + sizeX;
@@ -947,17 +947,17 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetvirtualareapartition
-     * @recoil-artifact defines .text recoil:function:0x450c60: zClass_World::gwWorldSetVirtualAreaPartition.
+     * @recoil-artifact defines .text recoil:function:0x450c60: CZWorld::gwWorldSetVirtualAreaPartition.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: allocate and initialize the virtual area partition grid and
      * its cell metrics from the configured world bounds.
      */
     gwWorldSetVirtualAreaPartition(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float cellSizeX,
         float cellSizeZ
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         if (data->areaGridRows != 0) {
             FreeVirtualAreaPartitions(world);
         }
@@ -1007,7 +1007,7 @@ namespace zClass_World {
                 area->bbox[3] = area->cellMinX + data->areaCellSizeX;
                 area->bbox[5] = area->cellMinZ;
                 area->bbox[2] = area->cellMinZ + data->areaCellSizeZ;
-                BBox::MinMaxToBoundingSphere(
+                CZBBox::MinMaxToBoundingSphere(
                     (const zBBox3f *)(area->bbox),
                     &area->bboxCenter,
                     &area->bboxRadius
@@ -1021,14 +1021,14 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.freevirtualareapartitions
-     * @recoil-artifact defines .text recoil:function:0x450e40: zClass_World::FreeVirtualAreaPartitions.
+     * @recoil-artifact defines .text recoil:function:0x450e40: CZWorld::FreeVirtualAreaPartitions.
      * @recoil-match byte
      *
      * Purpose: release virtual-area child lists and owned grid storage, then
      * clear the installed partition metrics.
      */
-    int __fastcall FreeVirtualAreaPartitions(zClass_NodePartial * world) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+    int __fastcall FreeVirtualAreaPartitions(CZNodePartial * world) {
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         if (data->areaGridRows == 0) {
             return 0;
         }
@@ -1075,18 +1075,18 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetpartitioninclusiontolerance
-     * @recoil-artifact defines .text recoil:function:0x450f00: zClass_World::gwWorldSetPartitionInclusionTolerance.
+     * @recoil-artifact defines .text recoil:function:0x450f00: CZWorld::gwWorldSetPartitionInclusionTolerance.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: set the X/Z tolerances used when testing partition inclusion.
      */
     int __fastcall gwWorldSetPartitionInclusionTolerance(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         float toleranceX,
         float toleranceZ
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         data->partitionInclusionTolX = toleranceX;
         data->partitionInclusionTolZ = toleranceZ;
         return 0;
@@ -1095,22 +1095,22 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetmaxdecfeatures
-     * @recoil-artifact defines .text recoil:function:0x450f20: zClass_World::gwWorldSetMaxDecFeatures.
+     * @recoil-artifact defines .text recoil:function:0x450f20: CZWorld::gwWorldSetMaxDecFeatures.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: clamp and store the maximum DEC feature count for world
      * partitions.
      */
     gwWorldSetMaxDecFeatures(
-        zClass_NodePartial * world,
+        CZNodePartial * world,
         int maxFeatures
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         if (maxFeatures > 255) {
             zError::ReportOld(
                 0x200,
                 "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0xc01,
-                g_zClass_PartitionMaxDecFeatureCountOverflowFmt,
+                g_CZClass_PartitionMaxDecFeatureCountOverflowFmt,
                 maxFeatures
             );
             maxFeatures = 255;
@@ -1122,7 +1122,7 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addchildtogridcell
-     * @recoil-artifact defines .text recoil:function:0x450f60: zClass_World::AddChildToGridCell.
+     * @recoil-artifact defines .text recoil:function:0x450f60: CZWorld::AddChildToGridCell.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
@@ -1130,15 +1130,15 @@ namespace zClass_World {
      * list while maintaining the child's listA parent ownership.
      */
     int __fastcall AddChildToGridCell(
-        zClass_NodePartial * world,
-        zClass_NodePartial * child,
+        CZNodePartial * world,
+        CZNodePartial * child,
         int gridCol,
         int gridRow
     ) {
         int result;
-        zClass_WorldDataPartial *data;
+        CZWorldDataPartial *data;
 
-        data = (zClass_WorldDataPartial *)(world->classData);
+        data = (CZWorldDataPartial *)(world->classData);
         result = 0;
 
         if (gridCol >= 0 && gridRow >= 0) {
@@ -1150,37 +1150,37 @@ namespace zClass_World {
 
         if (gridCol < 0 || gridRow < 0) {
             int listCount = world->listCountB + 1;
-            int listBytes = listCount * sizeof(zClass_NodePartial *);
-            world->listB = (zClass_NodePartial **)(realloc(world->listB, listBytes));
+            int listBytes = listCount * sizeof(CZNodePartial *);
+            world->listB = (CZNodePartial **)(realloc(world->listB, listBytes));
             world->listB[listCount - 1] = child;
             ++world->listCountB;
             child->gridCol = -1;
             child->gridRow = -1;
             int parentCount = child->listCountA + 1;
-            int parentBytes = parentCount * sizeof(zClass_NodePartial *);
-            child->listA = (zClass_NodePartial **)(realloc(child->listA, parentBytes));
+            int parentBytes = parentCount * sizeof(CZNodePartial *);
+            child->listA = (CZNodePartial **)(realloc(child->listA, parentBytes));
             child->listA[parentCount - 1] = world;
             ++child->listCountA;
             if (child->listCountA > 1) {
-                zClass_Class::SetSingleParentFlagRecursive(child, 0);
+                CZClass::SetSingleParentFlagRecursive(child, 0);
             }
         } else {
             zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
             int areaCount = (int)(area->childCount) + 1;
-            int areaBytes = areaCount * sizeof(zClass_NodePartial *);
-            area->childList = (zClass_NodePartial **)(realloc(area->childList, areaBytes));
+            int areaBytes = areaCount * sizeof(CZNodePartial *);
+            area->childList = (CZNodePartial **)(realloc(area->childList, areaBytes));
             area->childList[areaCount - 1] = child;
             ++area->childCount;
 
             child->gridCol = gridCol;
             child->gridRow = gridRow;
             int parentCount = child->listCountA + 1;
-            int parentBytes = parentCount * sizeof(zClass_NodePartial *);
-            child->listA = (zClass_NodePartial **)(realloc(child->listA, parentBytes));
+            int parentBytes = parentCount * sizeof(CZNodePartial *);
+            child->listA = (CZNodePartial **)(realloc(child->listA, parentBytes));
             child->listA[parentCount - 1] = world;
             ++child->listCountA;
             if (child->listCountA > 1) {
-                zClass_Class::SetSingleParentFlagRecursive(child, 0);
+                CZClass::SetSingleParentFlagRecursive(child, 0);
             }
 
             if ((area->areaFlags & 0x01) == 0) {
@@ -1195,14 +1195,14 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addchildatgrid
-     * @recoil-artifact defines .text recoil:function:0x4510e0: zClass_World::AddChildAtGrid.
+     * @recoil-artifact defines .text recoil:function:0x4510e0: CZWorld::AddChildAtGrid.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: derive the child's world grid cell from bounds or world extent
      * and route insertion into the world child-link storage.
      */
     int __fastcall AddChildAtGrid(
-        zClass_NodePartial * world,
-        zClass_NodePartial * child
+        CZNodePartial * world,
+        CZNodePartial * child
     ) {
         int gridCol = -1;
         int gridRow = -1;
@@ -1215,7 +1215,7 @@ namespace zClass_World {
 
             if ((child->flags & 0x100) != 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetWorldBBoxCorners(child, &corners);
+                CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
                 minX = corners.values[0];
                 maxX = corners.values[0];
                 minZ = corners.values[2];
@@ -1237,7 +1237,7 @@ namespace zClass_World {
                     }
                 }
             } else {
-                zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+                CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
                 minX = data->originX;
                 minZ = data->originZ;
                 maxX = data->originX + data->worldSizeX;
@@ -1252,21 +1252,21 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.removechildatgrid
-     * @recoil-artifact defines .text recoil:function:0x451240: zClass_World::RemoveChildAtGrid.
+     * @recoil-artifact defines .text recoil:function:0x451240: CZWorld::RemoveChildAtGrid.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: remove a child from the world overflow list or its grid area
      * list while clearing the child's parent/grid ownership state.
      */
     int __fastcall RemoveChildAtGrid(
-        zClass_NodePartial * world,
-        zClass_NodePartial * child
+        CZNodePartial * world,
+        CZNodePartial * child
     ) {
         const int gridCol = child->gridCol;
         const int gridRow = child->gridRow;
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
 
         if (gridCol == -1 && gridRow == -1) {
-            return zClass_Class::RemoveChildGeneric(world, child);
+            return CZClass::RemoveChildGeneric(world, child);
         }
 
         zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
@@ -1322,30 +1322,30 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addlight
-     * @recoil-artifact defines .text recoil:function:0x451360: zClass_World::AddLight.
+     * @recoil-artifact defines .text recoil:function:0x451360: CZWorld::AddLight.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: append a light and its data to the world lists and attach the
      * world to the light's world list.
      */
     AddLight(
-        zClass_NodePartial * world,
-        zClass_NodePartial * light
+        CZNodePartial * world,
+        CZNodePartial * light
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
-        zClass_LightDataPartial *lightData = (zClass_LightDataPartial *)(light->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+        CZLightDataPartial *lightData = (CZLightDataPartial *)(light->classData);
 
-        const int lightListBytes = (data->lightCount + 1) * sizeof(zClass_NodePartial *);
-        data->lightNodes = (zClass_NodePartial **)(realloc(data->lightNodes, lightListBytes));
+        const int lightListBytes = (data->lightCount + 1) * sizeof(CZNodePartial *);
+        data->lightNodes = (CZNodePartial **)(realloc(data->lightNodes, lightListBytes));
         data->lightNodes[data->lightCount] = light;
 
         data->lightDataList =
-            (zClass_LightDataPartial **)(realloc(data->lightDataList, lightListBytes));
+            (CZLightDataPartial **)(realloc(data->lightDataList, lightListBytes));
         data->lightDataList[data->lightCount] = lightData;
         ++data->lightCount;
 
-        lightData->attachedWorlds = (zClass_NodePartial **)(realloc(
+        lightData->attachedWorlds = (CZNodePartial **)(realloc(
             lightData->attachedWorlds,
-            (lightData->attachedWorldCount + 1) * sizeof(zClass_NodePartial *)
+            (lightData->attachedWorldCount + 1) * sizeof(CZNodePartial *)
         ));
         lightData->attachedWorlds[lightData->attachedWorldCount] = world;
         ++lightData->attachedWorldCount;
@@ -1355,16 +1355,16 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.removelight
-     * @recoil-artifact defines .text recoil:function:0x451410: zClass_World::RemoveLight.
+     * @recoil-artifact defines .text recoil:function:0x451410: CZWorld::RemoveLight.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: remove a light from the world lists and remove the world from
      * the light's attached-world list.
      */
     RemoveLight(
-        zClass_NodePartial * world,
-        zClass_NodePartial * light
+        CZNodePartial * world,
+        CZNodePartial * light
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
 
         int lightIndex = -1;
         for (int i = 0; i < data->lightCount; ++i) {
@@ -1377,7 +1377,7 @@ namespace zClass_World {
         if (lightIndex < 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt,
+                g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt,
                 "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x108d,
                 (unsigned int)((unsigned int)(world)),
@@ -1387,7 +1387,7 @@ namespace zClass_World {
             return 5;
         }
 
-        zClass_LightDataPartial *lightData = data->lightDataList[lightIndex];
+        CZLightDataPartial *lightData = data->lightDataList[lightIndex];
         for (int i_681 = lightIndex; i_681 < data->lightCount - 1; ++i_681) {
             data->lightNodes[i_681] = data->lightNodes[i_681 + 1];
             data->lightDataList[i_681] = data->lightDataList[i_681 + 1];
@@ -1405,7 +1405,7 @@ namespace zClass_World {
         if (worldIndex < 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                g_zClass_LineErrorDeleteLightWorldNotFoundFmt,
+                g_CZClass_LineErrorDeleteLightWorldNotFoundFmt,
                 "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x10b4,
                 (unsigned int)((unsigned int)(world)),
@@ -1425,13 +1425,13 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.initlightpointinpolygonxz
-     * @recoil-artifact defines .text recoil:function:0x451540: zClass_World::InitLightPointInPolygonXZ.
+     * @recoil-artifact defines .text recoil:function:0x451540: CZWorld::InitLightPointInPolygonXZ.
      * @recoil-match byte
      *
      * Purpose: initialize model lighting from the world light nodes, data and count.
      */
-    int __fastcall InitLightPointInPolygonXZ(zClass_NodePartial * world) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+    int __fastcall InitLightPointInPolygonXZ(CZNodePartial * world) {
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
         zModelLightPointInPolygonInitXZ(
             data->lightNodes,
             data->lightDataList,
@@ -1442,18 +1442,18 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.updatealllights
-     * @recoil-artifact defines .text recoil:function:0x451560: zClass_World::UpdateAllLights.
+     * @recoil-artifact defines .text recoil:function:0x451560: CZWorld::UpdateAllLights.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: iterate the world light nodes and call
-     * zClass_Light::gwLightUpdate for each.
+     * CZLight::gwLightUpdate for each.
      */
-    int __fastcall UpdateAllLights(zClass_NodePartial * world) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+    int __fastcall UpdateAllLights(CZNodePartial * world) {
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
 
         for (int i = 0; i < data->lightCount; ++i) {
-            zClass_Light::gwLightUpdate(data->lightNodes[i]);
+            CZLight::gwLightUpdate(data->lightNodes[i]);
         }
 
         return 0;
@@ -1462,30 +1462,30 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addsound
-     * @recoil-artifact defines .text recoil:function:0x451590: zClass_World::AddSound.
+     * @recoil-artifact defines .text recoil:function:0x451590: CZWorld::AddSound.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: append a sound and its data to the world lists and attach the
      * world to the sound's world list.
      */
     AddSound(
-        zClass_NodePartial * world,
-        zClass_NodePartial * sound
+        CZNodePartial * world,
+        CZNodePartial * sound
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
-        zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(sound->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+        CZSoundDataPartial *soundData = (CZSoundDataPartial *)(sound->classData);
 
-        const int soundListBytes = (data->soundCount + 1) * sizeof(zClass_NodePartial *);
-        data->soundNodes = (zClass_NodePartial **)(realloc(data->soundNodes, soundListBytes));
+        const int soundListBytes = (data->soundCount + 1) * sizeof(CZNodePartial *);
+        data->soundNodes = (CZNodePartial **)(realloc(data->soundNodes, soundListBytes));
         data->soundNodes[data->soundCount] = sound;
 
         data->soundDataList =
-            (zClass_SoundDataPartial **)(realloc(data->soundDataList, soundListBytes));
+            (CZSoundDataPartial **)(realloc(data->soundDataList, soundListBytes));
         data->soundDataList[data->soundCount] = soundData;
         ++data->soundCount;
 
-        soundData->attachedWorlds = (zClass_NodePartial **)(realloc(
+        soundData->attachedWorlds = (CZNodePartial **)(realloc(
             soundData->attachedWorlds,
-            (soundData->attachedWorldCount + 1) * sizeof(zClass_NodePartial *)
+            (soundData->attachedWorldCount + 1) * sizeof(CZNodePartial *)
         ));
         soundData->attachedWorlds[soundData->attachedWorldCount] = world;
         ++soundData->attachedWorldCount;
@@ -1495,16 +1495,16 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.removesound
-     * @recoil-artifact defines .text recoil:function:0x451640: zClass_World::RemoveSound.
+     * @recoil-artifact defines .text recoil:function:0x451640: CZWorld::RemoveSound.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: remove a sound from the world lists and remove the world from
      * the sound's attached-world list.
      */
     RemoveSound(
-        zClass_NodePartial * world,
-        zClass_NodePartial * sound
+        CZNodePartial * world,
+        CZNodePartial * sound
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
 
         int soundIndex = -1;
         for (int i = 0; i < data->soundCount; ++i) {
@@ -1517,7 +1517,7 @@ namespace zClass_World {
         if (soundIndex < 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt,
+                g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt,
                 "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x11cc,
                 (unsigned int)((unsigned int)(world)),
@@ -1527,7 +1527,7 @@ namespace zClass_World {
             return 5;
         }
 
-        zClass_SoundDataPartial *soundData = data->soundDataList[soundIndex];
+        CZSoundDataPartial *soundData = data->soundDataList[soundIndex];
         for (int i_789 = soundIndex; i_789 < data->soundCount - 1; ++i_789) {
             data->soundNodes[i_789] = data->soundNodes[i_789 + 1];
             data->soundDataList[i_789] = data->soundDataList[i_789 + 1];
@@ -1545,7 +1545,7 @@ namespace zClass_World {
         if (worldIndex < 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                g_zClass_LineErrorDeleteSoundWorldNotFoundFmt,
+                g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt,
                 "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c",
                 0x11f3,
                 (unsigned int)((unsigned int)(world)),
@@ -1565,18 +1565,18 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.updateallsounds
-     * @recoil-artifact defines .text recoil:function:0x451770: zClass_World::UpdateAllSounds.
+     * @recoil-artifact defines .text recoil:function:0x451770: CZWorld::UpdateAllSounds.
      * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: iterate the world sound nodes and call
-     * zClass_Sound::UpdatePlayback for each.
+     * CZSound::UpdatePlayback for each.
      */
-    int __fastcall UpdateAllSounds(zClass_NodePartial * world) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+    int __fastcall UpdateAllSounds(CZNodePartial * world) {
+        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
 
         for (int i = 0; i < data->soundCount; ++i) {
-            zClass_Sound::UpdatePlayback(data->soundNodes[i]);
+            CZSound::UpdatePlayback(data->soundNodes[i]);
         }
 
         return 0;
@@ -1584,7 +1584,7 @@ namespace zClass_World {
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.writesettingssection
-     * @recoil-artifact defines .text recoil:function:0x4517a0: zClass_World::WriteSettingsSection.
+     * @recoil-artifact defines .text recoil:function:0x4517a0: CZWorld::WriteSettingsSection.
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
      * Purpose: write each world node's pending fog settings as a ZBD settings
      * section blob.
@@ -1596,10 +1596,10 @@ namespace zClass_World {
         (void)userData;
 
         int result = 1;
-        zClass_TypeListLink *link = *g_zClass_TypeList_HeadSlotPtrs[13];
+        CZTypeListLink *link = *g_CZTypeList_HeadSlotPtrs[13];
         while (link != 0 && result != 0) {
-            zClass_NodePartial *world = link->node;
-            zClass_WorldSettingsSectionRecord settings;
+            CZNodePartial *world = link->node;
+            CZWorldSettingsSectionRecord settings;
             GetPendingFogDensity(world, &settings.fogDensity);
             GetPendingFogState(world, &settings.fogState);
             GetPendingFogColorRgb01(
@@ -1621,7 +1621,7 @@ namespace zClass_World {
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.readsettingssection
-     * @recoil-artifact defines .text recoil:function:0x451840: zClass_World::ReadSettingsSection.
+     * @recoil-artifact defines .text recoil:function:0x451840: CZWorld::ReadSettingsSection.
      * @recoil-match byte
      *
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
@@ -1631,7 +1631,7 @@ namespace zClass_World {
     void __fastcall ReadSettingsSection(
         zZbdSectionCallbackCtx * callbackCtx,
         const char *worldName,
-        zClass_WorldSettingsSectionRecord *settings,
+        CZWorldSettingsSectionRecord *settings,
         unsigned int size,
         void *userData
     ) {
@@ -1639,7 +1639,7 @@ namespace zClass_World {
         (void)size;
         (void)userData;
 
-        zClass_NodePartial *world = zClass::FindByTypeAndName(13, worldName);
+        CZNodePartial *world = CZClass::FindByTypeAndName(13, worldName);
         if (world == 0) {
             return;
         }

@@ -1,6 +1,6 @@
 {
   "name": "zclass_world_build_active_light_list",
-  "description": "zClass_World::InitLightPointInPolygonXZ world light-list wrapper.",
+  "description": "CZWorld::InitLightPointInPolygonXZ world light-list wrapper.",
   "source_filename": "cls_world.c",
   "source_from": "src/GameZRecoil/zClass/cls_world.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -28,8 +28,8 @@
   "functions": [
     {
       "address": "0x451540",
-      "symbol": "?InitLightPointInPolygonXZ@zClass_World@@YIHPAUzClass_NodePartial@@@Z",
-      "name": "zClass_World::InitLightPointInPolygonXZ"
+      "symbol": "?InitLightPointInPolygonXZ@CZWorld@@YIHPAUCZNodePartial@@@Z",
+      "name": "CZWorld::InitLightPointInPolygonXZ"
     }
   ]
 }

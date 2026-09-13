@@ -1,6 +1,6 @@
 {
   "name": "hud_small_stub_layer_order_current_shape",
-  "description": "VC5SP3 authored-order diagnostic for the zStub predecessor, nongating RecoilStateBase deleting variant, and first 0x407190 HUD-hosted authored body in their natural hud.cpp raw sequence. It proves no linked presence, source owner, byte gate, tier, or final equivalence.",
+  "description": "VC5SP3 authored-order diagnostic for the CZStub predecessor, nongating RecoilStateBase deleting variant, and first 0x407190 HUD-hosted authored body in their natural hud.cpp raw sequence. It proves no linked presence, source owner, byte gate, tier, or final equivalence.",
   "source_filename": "hud.cpp",
   "compiler_profile": "vc5_o2_ob1_md_gx_facs",
   "check_function_order": true,
@@ -24,23 +24,23 @@
   "functions": [
     {
       "address": "0x407130",
-      "symbol": "?ReturnOneNoArgs@zStub@@QAEHXZ",
-      "name": "zStub::ReturnOneNoArgs"
+      "symbol": "?ReturnOneNoArgs@CZStub@@QAEHXZ",
+      "name": "CZStub::ReturnOneNoArgs"
     },
     {
       "address": "0x407140",
-      "symbol": "?ReturnZeroNoArgs@zStub@@QAEHXZ",
-      "name": "zStub::ReturnZeroNoArgs"
+      "symbol": "?ReturnZeroNoArgs@CZStub@@QAEHXZ",
+      "name": "CZStub::ReturnZeroNoArgs"
     },
     {
       "address": "0x407150",
-      "symbol": "?NoOp1Arg@zStub@@QAEXH@Z",
-      "name": "zStub::NoOp1Arg"
+      "symbol": "?NoOp1Arg@CZStub@@QAEXH@Z",
+      "name": "CZStub::NoOp1Arg"
     },
     {
       "address": "0x407160",
-      "symbol": "?ReturnOne2Args@zStub@@QAEHHH@Z",
-      "name": "zStub::ReturnOne2Args"
+      "symbol": "?ReturnOne2Args@CZStub@@QAEHHH@Z",
+      "name": "CZStub::ReturnOne2Args"
     }
   ],
   "translation_unit_function_order": [
@@ -50,8 +50,8 @@
       "functions": [
         {
           "address": "0x407130",
-          "symbol": "?ReturnOneNoArgs@zStub@@QAEHXZ",
-          "name": "zStub::ReturnOneNoArgs",
+          "symbol": "?ReturnOneNoArgs@CZStub@@QAEHXZ",
+          "name": "CZStub::ReturnOneNoArgs",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -59,8 +59,8 @@
         },
         {
           "address": "0x407140",
-          "symbol": "?ReturnZeroNoArgs@zStub@@QAEHXZ",
-          "name": "zStub::ReturnZeroNoArgs",
+          "symbol": "?ReturnZeroNoArgs@CZStub@@QAEHXZ",
+          "name": "CZStub::ReturnZeroNoArgs",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -68,8 +68,8 @@
         },
         {
           "address": "0x407150",
-          "symbol": "?NoOp1Arg@zStub@@QAEXH@Z",
-          "name": "zStub::NoOp1Arg",
+          "symbol": "?NoOp1Arg@CZStub@@QAEXH@Z",
+          "name": "CZStub::NoOp1Arg",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,
@@ -77,8 +77,8 @@
         },
         {
           "address": "0x407160",
-          "symbol": "?ReturnOne2Args@zStub@@QAEHHH@Z",
-          "name": "zStub::ReturnOne2Args",
+          "symbol": "?ReturnOne2Args@CZStub@@QAEHHH@Z",
+          "name": "CZStub::ReturnOne2Args",
           "pipeline_class": "authored",
           "authored_order_role": "authored-body",
           "required_presence": true,

@@ -1,6 +1,6 @@
 {
   "name": "zclass_object3d_model_ref_lerp_queue_clear_global_state",
-  "description": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState queue-global clear helper.",
+  "description": "CZObject3DModelRefLerpQueue::ClearGlobalState queue-global clear helper.",
   "source_filename": "Object3d.c",
   "source_from": "src/GameZRecoil/zClass/Object3d.c",
   "compiler_profile": "vc5_o2_ob0_md_facs",
@@ -23,7 +23,7 @@
     {
       "address": "0x438000",
       "symbol": "_$E1",
-      "name": "zClass_Object3D_ModelRefLerpQueue::ClearGlobalState",
+      "name": "CZObject3DModelRefLerpQueue::ClearGlobalState",
       "pipeline_class": "authored-lifecycle",
       "authored_order_role": "compiler-generated-thunk",
       "emission_anchor": {
