@@ -1426,15 +1426,15 @@ namespace zClass_World {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.initlightpointinpolygonxz
      * @recoil-artifact defines .text recoil:function:0x451540: zClass_World::InitLightPointInPolygonXZ.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
-     * Purpose: forward the world's light data/node lists and count into
-     * zModelLightPointInPolygonInitXZ.
+     * @recoil-match byte
+     *
+     * Purpose: initialize model lighting from the world light nodes, data and count.
      */
     int __fastcall InitLightPointInPolygonXZ(zClass_NodePartial * world) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         zModelLightPointInPolygonInitXZ(
+            data->lightNodes,
             data->lightDataList,
-            (zModel_LightStatePartial **)(data->lightNodes),
             data->lightCount
         );
         return 0;

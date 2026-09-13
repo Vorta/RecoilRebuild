@@ -209,24 +209,31 @@ typedef void(__fastcall *SubmitPolygonLitProc)(
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
  * Purpose: transform and normalize display-instance normals for per-vertex shading.
  */
-#define PrepareTransformedNormals(di)                                             \
-    do {                                                                           \
-        if (g_zModel_VertexShadingEnabled != 0 && (di)->normals != 0 &&            \
-            (di)->normalCount > 0) {                                               \
-            memcpy(                                                               \
-                g_zModel_TransformedNormals,                                       \
-                (di)->normals,                                                     \
-                (size_t)((di)->normalCount) * sizeof(zVec3)                        \
-            );                                                                     \
-            zMath::MatTransformPointBatchInPlace(                                  \
-                g_zModel_TransformedNormals,                                       \
-                (di)->normalCount                                                  \
-            );                                                                     \
-            for (int normalIndex = 0; normalIndex < (di)->normalCount;             \
-                 ++normalIndex) {                                                  \
-                zMath::Vec3Normalize(&g_zModel_TransformedNormals[normalIndex]);   \
-            }                                                                      \
-        }                                                                          \
+#define PrepareTransformedNormals(di)                                           \
+    do {                                                                        \
+        if (g_zModel_VertexShadingEnabled != 0 && (di)->normalCount > 0) {      \
+            zVec3 origin = {0};                                                 \
+            if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {                 \
+                memcpy(g_zModel_TransformedNormals, (di)->normals,              \
+                       (size_t)(di)->normalCount * sizeof(zVec3));              \
+            } else {                                                            \
+                for (int normalIndex = 0; normalIndex < (di)->normalCount;      \
+                     ++normalIndex) {                                           \
+                    TransformPointByCurrentMatrix(                              \
+                        &(di)->normals[normalIndex],                            \
+                        g_zModel_TransformedNormals[normalIndex]);              \
+                }                                                               \
+            }                                                                   \
+            zMath::MatTransformPointBatchInPlace(&origin, 1);                   \
+            for (int normalIndex = 0; normalIndex < (di)->normalCount;          \
+                 ++normalIndex) {                                               \
+                zVec3 *normal = &g_zModel_TransformedNormals[normalIndex];      \
+                normal->x -= origin.x;                                          \
+                normal->y -= origin.y;                                          \
+                normal->z -= origin.z;                                          \
+                zMath::Vec3Normalize(normal);                                   \
+            }                                                                   \
+        }                                                                       \
     } while (0)
 
 /**
@@ -350,6 +357,8 @@ int BuildPolyAttributes(
  * Original inline helper observed in zModel software/hardware render paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: compute the polygon facing normal and apply backface/show-backface culling.
+ * Keep the edge vectors as aggregates: VC5 scalar-temporary reuse corrupts
+ * the normal Z calculation when these are six independent float locals.
  */
 #define ComputeSurfaceNormalAndCull(vertexCount, showBackFace, outNormal,            \
                                     outScanConvertMode, visible)                     \
@@ -362,18 +371,13 @@ int BuildPolyAttributes(
             const zClipVert &v0 = g_Clip_PolyVertsScratch[0];                       \
             const zClipVert &v1 = g_Clip_PolyVertsScratch[1];                       \
             const zClipVert &v2 = g_Clip_PolyVertsScratch[2];                       \
-            const float v2xMinusV1x = v2.x - v1.x;                                 \
-            const float v2yMinusV1y = v2.y - v1.y;                                 \
-            const float v2zMinusV1z = v2.z - v1.z;                                 \
-            const float v0xMinusV1x = v0.x - v1.x;                                 \
-            const float v0yMinusV1y = v0.y - v1.y;                                 \
-            const float v0zMinusV1z = v0.z - v1.z;                                 \
-            (outNormal)->x =                                                       \
-                v0zMinusV1z * v2yMinusV1y - v0yMinusV1y * v2zMinusV1z;            \
-            (outNormal)->y =                                                       \
-                v0xMinusV1x * v2zMinusV1z - v0zMinusV1z * v2xMinusV1x;            \
-            (outNormal)->z =                                                       \
-                v0yMinusV1y * v2xMinusV1x - v0xMinusV1x * v2zMinusV1z;            \
+            const zVec3 edgeA = {                                                   \
+                v2.x - v1.x, v2.y - v1.y, v2.z - v1.z};                            \
+            const zVec3 edgeB = {                                                   \
+                v0.x - v1.x, v0.y - v1.y, v0.z - v1.z};                            \
+            (outNormal)->x = edgeB.z * edgeA.y - edgeB.y * edgeA.z;                 \
+            (outNormal)->y = edgeB.x * edgeA.z - edgeB.z * edgeA.x;                 \
+            (outNormal)->z = edgeB.y * edgeA.x - edgeB.x * edgeA.y;                 \
             const float facing =                                                   \
                 (outNormal)->x * v0.x + (outNormal)->y * v0.y +                    \
                 (outNormal)->z * v0.z;                                             \
@@ -3362,7 +3366,7 @@ void __fastcall RenderNodeSoftware(
         if ((di->flags & 0x10) != 0) {
             zMathMatLoadView();
         } else {
-            zMathMatLoadProjection(g_zVideo_pActiveViewContext->frustumYaw);
+            zMathMatLoadProjection(g_zVideo_pActiveProjectionViewContext->eulerAngles.y);
         }
         zRndr::g_perspectiveTextureEnabled = 0;
         break;
@@ -3748,7 +3752,7 @@ void __fastcall RenderNodeHardware(zClass_NodePartial * node, int clipMask) {
         if ((di->flags & 0x10) != 0) {
             zMathMatLoadView();
         } else {
-            zMathMatLoadProjection(g_zVideo_pActiveViewContext->frustumYaw);
+            zMathMatLoadProjection(g_zVideo_pActiveProjectionViewContext->eulerAngles.y);
         }
         zRndr::g_perspectiveTextureEnabled = 0;
         break;
@@ -4196,8 +4200,8 @@ void __fastcall RenderNodeHardware(zClass_NodePartial * node, int clipMask) {
  */
 int __fastcall zVideoFrustumTestSphereClipMask(
     zVec3 *sphereCenter,
-    int *clipMaskInOut,
-    float radius
+    float radius,
+    int *clipMaskInOut
 ) {
     const int oldMask = *clipMaskInOut;
     *clipMaskInOut = 0;
@@ -4714,11 +4718,11 @@ void __fastcall OptCatalogSetDamageMaskEnabled(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-optcatalog-isdamagemaskslotptrregistered
  * @recoil-artifact defines .text recoil:function:0x479cc0: OptCatalogIsDamageMaskSlotPtrRegistered
+ * @recoil-match byte
+ *
  * Purpose: test whether a damage-mask slot already references the supplied handle.
  */
-int __fastcall OptCatalogIsDamageMaskSlotPtrRegistered(
-    void *slotPtr
-) {
+int __fastcall OptCatalogIsDamageMaskSlotPtrRegistered(void *slotPtr) {
     for (int i = 0; i < 3; ++i) {
         if (g_OptCatalogDamageMaskHandles[i] == slotPtr) {
             return 1;

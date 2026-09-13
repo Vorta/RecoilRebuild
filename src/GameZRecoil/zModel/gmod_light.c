@@ -153,7 +153,7 @@ zClass_LightDataPartial **gModel_LightInputDataList = 0;
  * Authored zModel active-light global.
  * Purpose: point at the current caller-supplied light node-state list.
  */
-zModel_LightStatePartial **gModel_LightInputNodeStates = 0;
+zClass_NodePartial **gModel_LightInputNodeStates = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-gmodel-lightinputcount
  * @recoil-artifact defines .data recoil:data:0x57d41c: gModel_LightInputCount.
@@ -207,163 +207,25 @@ float gModel_AmbientIntensityFactor = 0.0f;
 zColorRgb gModel_AmbientColorRgb01 = {0};
 zVidPaletteRemapRecipe gModel_SpecialLightPaletteRemapRecipe = {0};
 
-namespace {
-
-
-    /**
-     * Original static helper observed in zModel light/fog callers
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
-     * Purpose: produce the original fast square-root estimate from a float bit
-     * pattern for distance and radius checks.
-     */
-    float ApproximateSqrtFromBits(float value) {
-        int bits = 0;
-        memcpy(&bits, &value, sizeof(bits));
-        bits = (bits >> 1) + 0x1fc00000;
-
-        float result = 0.0f;
-        memcpy(&result, &bits, sizeof(result));
-        return result;
-    }
-
-    /**
-     * Original static helper observed in caller 0x489540
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
-     * Purpose: evaluate vertical fog coverage for a sphere using the cached
-     * projected Y coordinate and height-fog range.
-     */
-    float EvalHeightFogFade(
-        const zVec3 *point,
-        float radius
-    ) {
-        float projectedY = 0.0f;
-        zMath::Vec3ArrayProjectToCachedY(point, &projectedY, 1);
-
-        const float bottom = projectedY - radius;
-        if (bottom >= gModel_FogHeightHigh) {
-            return 0.0f;
-        }
-
-        if (projectedY + radius <= gModel_FogHeightLow) {
-            return 1.0f;
-        }
-
-        const float clampedBottom = bottom < gModel_FogHeightLow ? gModel_FogHeightLow : bottom;
-        return (gModel_FogHeightHigh - clampedBottom) * gModel_FogHeightInvRange;
-    }
-
-    /**
-     * Original static helper observed in zModel light-weight callers
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
-     * Purpose: clamp a lighting or fog contribution weight to the unit interval.
-     */
-    float ClampWeight(float weight) {
-        if (weight > 1.0f) {
-            return 1.0f;
-        }
-
-        if (weight < 0.0f) {
-            return 0.0f;
-        }
-
-        return weight;
-    }
-
-    /**
-     * Original static helper observed in zModel light-weight callers
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
-     * Purpose: compute the dot product used for angular light and normal
-     * weighting.
-     */
-    float DotVec3(
-        const zVec3 &a,
-        const zVec3 &b
-    ) {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
-    }
-
-    /**
-     * Original static helper observed in zModel light-weight callers
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
-     * Purpose: subtract view-space vectors for light-to-vertex distance and
-     * direction calculations.
-     */
-    zVec3 SubtractVec3(
-        const zVec3 &a,
-        const zVec3 &b
-    ) {
-        zVec3 result = {a.x - b.x, a.y - b.y, a.z - b.z};
-        return result;
-    }
-
-    /**
-     * Original static helper observed in caller 0x487f10
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
-     * Purpose: test whether a light or fog weight exceeds the visible one-byte
-     * attribute threshold.
-     */
-    bool IsVisibleWeight(float weight) {
-        return weight > (1.0f / 255.0f);
-    }
-
-    /**
-     * Original static helper observed in caller 0x487f10
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
-     * Purpose: clamp an attribute weight in place and return the clamped value.
-     */
-    float ClampWeightInPlace(float *weight) {
-        *weight = ClampWeight(*weight);
-        return *weight;
-    }
-
-    /**
-     * Original static helper observed in callers 0x487f10 and 0x488d60
-     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
-     * Purpose: select either the fog target override color or an active light's
-     * specular color for fog-target commits.
-     */
-    zColorRgb *SelectActiveLightColor(int lightIndex) {
-        if (lightIndex < 0) {
-            return &g_zModel_FogTargetColorOverride.colorRgb01;
-        }
-
-        return &gModel_ActiveLights[lightIndex].light->specularColor;
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-pointinpolygoninitxz
  * @recoil-artifact defines .text recoil:function:0x487a30: zModelLightPointInPolygonInitXZ
- * Purpose: seed active light inputs, filter enabled light states, track the
- * active point-light index, and initialize software-path ambient/remap state.
+ *
+ *
+ * Purpose: select active lights and initialize ambient colour and palette remapping.
  */
 void __fastcall zModelLightPointInPolygonInitXZ(
+    zClass_NodePartial **lightNodes,
     zClass_LightDataPartial **lightDataList,
-    zModel_LightStatePartial **lightNodeStates,
     int lightCount
 ) {
+    gModel_LightInputNodeStates = lightNodes;
     gModel_LightInputDataList = lightDataList;
-    gModel_LightInputNodeStates = lightNodeStates;
     gModel_LightInputCount = lightCount;
-    gModel_ActiveLightCount = 0;
-    gModel_ActiveLightSpecialIndex = -1;
-
-    for (int i = 0; i < lightCount; ++i) {
-        if ((lightNodeStates[i]->flags & 4) == 0) {
+    // Keep the coupled empty-list initialization for the retail VC5 output.
+    gModel_ActiveLightSpecialIndex = (gModel_ActiveLightCount = 0) - 1;
+    for (int i = 0; i < gModel_LightInputCount; ++i) {
+        if ((gModel_LightInputNodeStates[i]->flags & 4) == 0) {
             continue;
         }
 
@@ -378,13 +240,11 @@ void __fastcall zModelLightPointInPolygonInitXZ(
             break;
         }
 
-        zModel_ActiveLightEntryLive &active = gModel_ActiveLights[gModel_ActiveLightCount];
-        active.light = lightDataList[i];
-        active.lightState = lightNodeStates[i];
-        active.useFullWeight = 0;
-        active.contributesToLighting = 0;
-        active.reserved_10 = 0;
-        if (lightDataList[i]->isDirectedSource != 0) {
+        zModel_ActiveLightEntryLive *active = &gModel_ActiveLights[gModel_ActiveLightCount];
+        active->light = gModel_LightInputDataList[i];
+        active = &gModel_ActiveLights[gModel_ActiveLightCount];
+        active->lightNode = gModel_LightInputNodeStates[i];
+        if (gModel_LightInputDataList[i]->isDirectedSource != 0) {
             gModel_ActiveLightSpecialIndex = gModel_ActiveLightCount;
         }
         ++gModel_ActiveLightCount;
@@ -398,28 +258,30 @@ void __fastcall zModelLightPointInPolygonInitXZ(
     gModel_FogBaseColorRgb01 = gModel_FogColorRgb01;
     gModel_AmbientScale = 1.0f;
     if (gModel_ActiveLightSpecialIndex >= 0) {
-        zClass_LightDataPartial *light = gModel_ActiveLights[gModel_ActiveLightSpecialIndex].light;
-        gModel_AmbientColorRgb01 = light->specularColor;
-        gModel_AmbientIntensityFactor = 1.0f - light->intensityScale;
-        gModel_SpecialLightPaletteRemapRecipe.color1R = light->specularColor.red;
-        gModel_SpecialLightPaletteRemapRecipe.color1G = light->specularColor.green;
-        gModel_SpecialLightPaletteRemapRecipe.color1B = light->specularColor.blue;
-        gModel_SpecialLightPaletteRemapRecipe.color1Strength = 1.0f;
-        gModel_SpecialLightPaletteRemapRecipe.color0R = light->specularColor.red;
-        gModel_SpecialLightPaletteRemapRecipe.color0G = light->specularColor.green;
-        gModel_SpecialLightPaletteRemapRecipe.color0B = light->specularColor.blue;
-        gModel_SpecialLightPaletteRemapRecipe.color0Strength = 0.0f;
+        zModel_ActiveLightEntryLive *active = &gModel_ActiveLights[gModel_ActiveLightSpecialIndex];
+        gModel_AmbientColorRgb01 = active->light->specularColor;
+        active = &gModel_ActiveLights[gModel_ActiveLightSpecialIndex];
+        gModel_AmbientIntensityFactor = 1.0f - active->light->intensityScale;
     } else {
         gModel_AmbientIntensityFactor = 0.0f;
         gModel_AmbientColorRgb01 = gModel_FogColorRgb01;
-        gModel_SpecialLightPaletteRemapRecipe.color0R = 0.0f;
-        gModel_SpecialLightPaletteRemapRecipe.color0G = 0.0f;
-        gModel_SpecialLightPaletteRemapRecipe.color0B = 0.0f;
+    }
+
+    gModel_SpecialLightPaletteRemapRecipe.color1Strength = 1.0f;
+    if (gModel_ActiveLightSpecialIndex >= 0) {
+        zModel_ActiveLightEntryLive *active = &gModel_ActiveLights[gModel_ActiveLightSpecialIndex];
+        gModel_SpecialLightPaletteRemapRecipe.color1 = active->light->specularColor;
+        active = &gModel_ActiveLights[gModel_ActiveLightSpecialIndex];
+        gModel_SpecialLightPaletteRemapRecipe.color0 = active->light->specularColor;
         gModel_SpecialLightPaletteRemapRecipe.color0Strength = 0.0f;
-        gModel_SpecialLightPaletteRemapRecipe.color1R = 0.0f;
-        gModel_SpecialLightPaletteRemapRecipe.color1G = 0.0f;
-        gModel_SpecialLightPaletteRemapRecipe.color1B = 0.0f;
-        gModel_SpecialLightPaletteRemapRecipe.color1Strength = 1.0f;
+    } else {
+        gModel_SpecialLightPaletteRemapRecipe.color0.red =
+            gModel_SpecialLightPaletteRemapRecipe.color0.green =
+            gModel_SpecialLightPaletteRemapRecipe.color0.blue = 0.0f;
+        gModel_SpecialLightPaletteRemapRecipe.color1.red =
+            gModel_SpecialLightPaletteRemapRecipe.color1.green =
+            gModel_SpecialLightPaletteRemapRecipe.color1.blue = 0.0f;
+        gModel_SpecialLightPaletteRemapRecipe.color0Strength = 0.0f;
     }
 }
 
@@ -445,7 +307,7 @@ namespace zModel_Light {
             entry.useFullWeight = 0;
             entry.contributesToLighting = 0;
 
-            if ((entry.lightState->flags & 4) == 0) {
+            if ((entry.lightNode->flags & 4) == 0) {
                 zError::ReportOld(
                     0x200,
                     g_zModel_SourceFile_GmodLightC,
@@ -557,8 +419,8 @@ namespace zModel_Light {
         int *lightingMode,
         int usePaletteRemap
     ) {
-        const float kVisibleWeight = 1.0f / 255.0f;
-        const float kMinPointNormalWeight = 0.00402156916f;
+        const double kVisibleWeight = 0.003921569;
+        const double kMinPointNormalWeight = kVisibleWeight + 0.0001f;
         const float kMinIntensity = 9.99999975e-6f;
 
         const int initialLightingMode = *lightingMode;
@@ -963,8 +825,8 @@ int __fastcall zModelLightBuildLightWeights(
     int *outPackedFogColor,
     float fogBlendScale
 ) {
-    const float kVisibleWeight = 1.0f / 255.0f;
-    const float kMinPointNormalWeight = 0.00402156916f;
+    const double kVisibleWeight = 0.003921569;
+    const double kMinPointNormalWeight = kVisibleWeight + 0.0001f;
     const float kMinIntensity = 9.99999975e-6f;
 
     bool hasAnyCandidate = false;
@@ -1220,317 +1082,4 @@ namespace zModel_Light {
         return (light->range2 - distance) * light->invRangeDelta;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-evalspherefogfade
-     * @recoil-artifact defines .text recoil:function:0x489540: zModel_Light::EvalSphereFogFade
-     * Purpose: combine distance and height fog coverage for a bounding sphere
-     * and clamp the resulting fade.
-     */
-    float __fastcall EvalSphereFogFade(
-        const zVec3 *point,
-        float radius
-    ) {
-        const float distSqXZ = point->x * point->x + point->z * point->z;
-        int distanceBits = 0;
-        memcpy(&distanceBits, &distSqXZ, sizeof(distanceBits));
-        distanceBits = (distanceBits >> 1) + 0x1fc00000;
-        float distanceXZ = 0.0f;
-        memcpy(&distanceXZ, &distanceBits, sizeof(distanceXZ));
-        const float farEdge = distanceXZ + radius;
-        if (farEdge <= gModel_FogDistanceStart) {
-            return 0.0f;
-        }
-
-        float distanceFade = 1.0f;
-        if (distanceXZ - radius < gModel_FogDistanceEnd) {
-            const float clampedFarEdge =
-                farEdge > gModel_FogDistanceEnd ? gModel_FogDistanceEnd : farEdge;
-            distanceFade = (clampedFarEdge - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
-        }
-
-        float projectedBottom = 0.0f;
-        zMath::Vec3ArrayProjectToCachedY(point, &projectedBottom, 1);
-        projectedBottom -= radius;
-        if (projectedBottom >= gModel_FogHeightHigh) {
-            return 0.0f;
-        }
-
-        float projectedTop = 0.0f;
-        zMath::Vec3ArrayProjectToCachedY(point, &projectedTop, 1);
-        projectedTop += radius;
-        if (projectedTop <= gModel_FogHeightLow) {
-            return 1.0f;
-        }
-
-        const float clampedBottom = projectedBottom < gModel_FogHeightLow
-            ? gModel_FogHeightLow
-            : projectedBottom;
-        const float heightFade =
-            (gModel_FogHeightHigh - clampedBottom) * gModel_FogHeightInvRange;
-        const float fade = heightFade * distanceFade;
-        if (fade > 1.0f) {
-            return 1.0f;
-        }
-
-        if (fade < 0.0f) {
-            return 0.0f;
-        }
-
-        return fade;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-buildattr0depthfade
-     * @recoil-artifact defines .text recoil:function:0x4896d0: zModel_Light::BuildAttr0DepthFade
-     * Purpose: build per-vertex attr0 depth-fog weights from clip scratch
-     * positions, distance fog, projected height fog, and 255-scale output.
-     */
-    int __fastcall BuildAttr0DepthFade(
-        int vertexCount,
-        int *outHasVariation
-    ) {
-        const float kVisibleAttrThreshold = 1.0f / 255.0f;
-
-        float radialDistance[0x40] = {0};
-        for (int i = 0; i < vertexCount; ++i) {
-            const zClipVert &vert = g_Clip_PolyVertsScratch[i];
-            const float distanceSq = vert.x * vert.x + vert.z * vert.z;
-            int distanceBits = 0;
-            memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
-            distanceBits = (distanceBits >> 1) + 0x1fc00000;
-            memcpy(&radialDistance[i], &distanceBits, sizeof(radialDistance[i]));
-        }
-
-        float attrFade[0x40] = {0};
-        float attrScale = 0.0f;
-        zFloat::Set255f(&attrScale);
-
-        int hasAnyFogCandidate = 0;
-        for (int i_250 = 0; i_250 < vertexCount; ++i_250) {
-            const float distance = radialDistance[i_250];
-            if (distance < gModel_FogDistanceStart) {
-                attrFade[i_250] = 0.0f;
-                continue;
-            }
-
-            float fade = 1.0f;
-            if (distance < gModel_FogDistanceEnd) {
-                fade = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
-            }
-
-            float projectedHighY = 0.0f;
-            zMath::Vec3ArrayProjectToCachedY(
-                (const zVec3 *)(&g_Clip_PolyVertsScratch[i_250]),
-                &projectedHighY,
-                1
-            );
-
-            if (projectedHighY >= gModel_FogHeightHigh) {
-                fade = 0.0f;
-            } else {
-                float projectedLowY = 0.0f;
-                zMath::Vec3ArrayProjectToCachedY(
-                    (const zVec3 *)(&g_Clip_PolyVertsScratch[i_250]),
-                    &projectedLowY,
-                    1
-                );
-                if (projectedLowY > gModel_FogHeightLow) {
-                    fade *=
-                        (gModel_FogHeightHigh - projectedLowY) * gModel_FogHeightInvRange;
-                }
-            }
-
-            attrFade[i_250] = fade;
-            hasAnyFogCandidate = 1;
-        }
-
-        if (hasAnyFogCandidate == 0) {
-            return 0;
-        }
-
-        int result = 0;
-        for (int i_281 = 0; i_281 < vertexCount; ++i_281) {
-            if (attrFade[i_281] >= 1.0f) {
-                attrFade[i_281] = 1.0f;
-            } else if (attrFade[i_281] < 0.0f) {
-                attrFade[i_281] = 0.0f;
-            }
-
-            if (attrFade[i_281] > kVisibleAttrThreshold) {
-                result = 1;
-            }
-
-            if (fabs(attrFade[i_281] - attrFade[0]) > kVisibleAttrThreshold) {
-                *outHasVariation = 1;
-            }
-        }
-
-        if (result != 0) {
-            for (int i = 0; i < vertexCount; ++i) {
-                if (attrFade[i] > kVisibleAttrThreshold) {
-                    g_Clip_PolyAttr0[i] = attrScale * attrFade[i];
-                }
-            }
-        }
-
-        if (result == 0) {
-            *outHasVariation = 0;
-        }
-
-        return result;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-evalbatchspherefade
-     * @recoil-artifact defines .text recoil:function:0x489920: zModel_Light::EvalBatchSphereFade
-     * Purpose: evaluate depth and height fog for the current scratch vertex,
-     * store the clamped fade, and report whether it is visible.
-     */
-    int __fastcall EvalBatchSphereFade(float *outFade) {
-        const zClipVert &vert = g_Clip_PolyVertsScratch[0];
-        const float distanceSq = vert.x * vert.x + vert.z * vert.z;
-        int distanceBits = 0;
-        memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
-        distanceBits = (distanceBits >> 1) + 0x1fc00000;
-        float distance = 0.0f;
-        memcpy(&distance, &distanceBits, sizeof(distance));
-        if (distance <= gModel_FogDistanceStart) {
-            return 0;
-        }
-
-        float fade = 1.0f;
-        if (distance < gModel_FogDistanceEnd) {
-            fade = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
-        }
-
-        float projectedHighY = 0.0f;
-        zMath::Vec3ArrayProjectToCachedY(
-            (const zVec3 *)(&g_Clip_PolyVertsScratch[0]),
-            &projectedHighY,
-            1
-        );
-
-        if (projectedHighY >= gModel_FogHeightHigh) {
-            fade = 0.0f;
-        } else {
-            float projectedLowY = 0.0f;
-            zMath::Vec3ArrayProjectToCachedY(
-                (const zVec3 *)(&g_Clip_PolyVertsScratch[0]),
-                &projectedLowY,
-                1
-            );
-            if (projectedLowY > gModel_FogHeightLow) {
-                fade *= (gModel_FogHeightHigh - projectedLowY) * gModel_FogHeightInvRange;
-            }
-        }
-
-        if (fade >= 1.0f) {
-            fade = 1.0f;
-        } else if (fade < 0.0f) {
-            fade = 0.0f;
-        }
-
-        *outFade = fade;
-        return fade > 0.005f ? 1 : 0;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-buildattr1falloff
-     * @recoil-artifact defines .text recoil:function:0x489a90: zModel_Light::BuildAttr1Falloff
-     * Purpose: build per-vertex fog falloff weights in attr2, update lighting
-     * variation flags, and commit the current fog color.
-     */
-    int __fastcall BuildAttr1Falloff(
-        int vertexCount,
-        int *pLightingFlags
-    ) {
-        const float kVisibleAttrThreshold = 1.0f / 255.0f;
-
-        float radialDistance[0x40] = {0};
-        for (int i = 0; i < vertexCount; ++i) {
-            const zClipVert &vert = g_Clip_PolyVertsScratch[i];
-            const float distanceSq = vert.x * vert.x + vert.z * vert.z;
-            int distanceBits = 0;
-            memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
-            distanceBits = (distanceBits - 0x3f800000) / 2 + 0x3f800000;
-            memcpy(&radialDistance[i], &distanceBits, sizeof(radialDistance[i]));
-        }
-
-        int hasFogContribution = 0;
-        for (int fogIndex = 0; fogIndex < vertexCount; ++fogIndex) {
-            const float distance = radialDistance[fogIndex];
-            if (distance <= gModel_FogDistanceStart) {
-                g_Clip_PolyAttr2[fogIndex] = 0.0f;
-                continue;
-            }
-
-            float fade = 1.0f;
-            if (distance < gModel_FogDistanceEnd) {
-                fade = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
-            }
-
-            float projectedHighY = 0.0f;
-            zMath::Vec3ArrayProjectToCachedY(
-                (const zVec3 *)(&g_Clip_PolyVertsScratch[fogIndex]),
-                &projectedHighY,
-                1
-            );
-
-            if (projectedHighY >= gModel_FogHeightHigh) {
-                fade = 0.0f;
-            } else {
-                float projectedLowY = 0.0f;
-                zMath::Vec3ArrayProjectToCachedY(
-                    (const zVec3 *)(&g_Clip_PolyVertsScratch[fogIndex]),
-                    &projectedLowY,
-                    1
-                );
-                if (projectedLowY > gModel_FogHeightLow) {
-                    fade *= (gModel_FogHeightHigh - projectedLowY) *
-                        gModel_FogHeightInvRange;
-                }
-            }
-
-            g_Clip_PolyAttr2[fogIndex] = fade;
-            hasFogContribution = 1;
-        }
-
-        if (hasFogContribution == 0) {
-            *pLightingFlags &= ~2;
-            return 0;
-        }
-
-        for (int clampIndex = 0; clampIndex < vertexCount; ++clampIndex) {
-            if (g_Clip_PolyAttr2[clampIndex] > 1.0f) {
-                g_Clip_PolyAttr2[clampIndex] = 1.0f;
-            } else if (g_Clip_PolyAttr2[clampIndex] < 0.0f) {
-                g_Clip_PolyAttr2[clampIndex] = 0.0f;
-            }
-        }
-
-        int hasVisibleFog = 0;
-        for (int visibleIndex = 0; visibleIndex < vertexCount; ++visibleIndex) {
-            if (g_Clip_PolyAttr2[visibleIndex] > kVisibleAttrThreshold) {
-                hasVisibleFog = 1;
-                break;
-            }
-        }
-
-        if (hasVisibleFog == 0) {
-            *pLightingFlags &= ~2;
-            return 0;
-        }
-
-        for (int varianceIndex = 1; varianceIndex < vertexCount; ++varianceIndex) {
-            if (fabs(g_Clip_PolyAttr2[varianceIndex] - g_Clip_PolyAttr2[0]) >
-                kVisibleAttrThreshold) {
-                *pLightingFlags |= 2;
-                break;
-            }
-        }
-
-        zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat *)(&gModel_FogColorRgb01));
-        zVideo::CommitFogColorIfChanged();
-        return hasVisibleFog;
-    }
 }

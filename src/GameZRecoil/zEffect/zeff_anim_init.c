@@ -28,32 +28,14 @@ const unsigned int kEffectAnimNeedsCopiedRootFlag = 0x00008000u;
 const char kAnimationNodeNotFoundMessage[] =
     "Animation node not found.\n  Animation: %s; Node: %s\n";
 
-struct zEffectAnimZbdHeaderBlock {
-    int entriesInstantiated;
-    void *heapPtr;
-    short countsPackedLoWord;
-    short entryCount;
-    zEffectAnimEntry *entryList;
-    int textIdEntryCount;
-    zEffectAnimTextIdEntry *textIdEntryList;
-    zClass_NodePartial *worldNode;
-    float defaultGravity;
-    int conditionalRefPosEnabled;
-    int variantOverrideEnabled;
-    float conditionalRefPosX;
-    float conditionalRefPosY;
-    float conditionalRefPosZ;
-    unsigned int variantOverridePackedIds;
-    float frameDeltaRemainingSec;
-};
+
 
 struct zEffectAnimZbdFilePrefix {
     int signature;
-    int sourceFileStampRecordSize;
+    int formatMarker;
     int sourceFileStampCount;
 };
 
-RECOIL_STATIC_ASSERT(sizeof(zEffectAnimZbdHeaderBlock) == 0x3c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimZbdFilePrefix) == 0x0c);
 } // namespace
 
@@ -67,22 +49,22 @@ namespace zEffect_Anim {
  * animation save/load ZAR section handlers.
  */
 int __cdecl Init() {
-    if (g_zEffectAnim_EntriesInstantiated != 0) {
+    if (g_zEffectAnim_State.entriesInstantiated != 0) {
         Shutdown();
     }
 
     g_zEffectAnim_ZbdFilename[0] = '\0';
-    g_zEffectAnim_EntriesInstantiated = 0;
-    g_zEffectAnim_HeapPtr = 0;
-    g_zEffectAnim_CountsPackedLoWord = 0;
-    g_zEffectAnim_EntryCount = 0;
-    g_zEffectAnim_EntryList = 0;
-    g_zEffectAnim_TextIdEntryCount = 0;
-    g_zEffectAnim_TextIdEntryList = 0;
-    g_zEffect_World = 0;
-    g_zEffect_ConditionalRefPosEnabled = 0;
-    g_zEffect_VariantOverrideEnabled = 0;
-    g_zEffect_DefaultGravity = -9.8f;
+    g_zEffectAnim_State.entriesInstantiated = 0;
+    g_zEffectAnim_State.heapPtr = 0;
+    g_zEffectAnim_State.countsPackedLoWord = 0;
+    g_zEffectAnim_State.entryCount = 0;
+    g_zEffectAnim_State.entryList = 0;
+    g_zEffectAnim_State.textIdEntryCount = 0;
+    g_zEffectAnim_State.textIdEntryList = 0;
+    g_zEffectAnim_State.worldNode = 0;
+    g_zEffectAnim_State.conditionalRefPosEnabled = 0;
+    g_zEffectAnim_State.variantOverrideEnabled = 0;
+    g_zEffectAnim_State.defaultGravity = -9.8f;
 
     srand((unsigned int)(time(0)));
     *(unsigned int *)(&g_zEffect_RandUnitScale) = kRandUnitScaleBits;
@@ -136,7 +118,7 @@ namespace zEffect {
 void __fastcall SetWorldNode(
     zClass_NodePartial *worldNode
 ) {
-    g_zEffect_World = worldNode;
+    g_zEffectAnim_State.worldNode = worldNode;
 }
 
 } // namespace zEffect
@@ -781,7 +763,11 @@ namespace zEffect_Anim {
  * text ids from the configured animation ZBD.
  */
 int __cdecl LoadZbd() {
-    if (g_zEffect_ResourceNode == 0 || g_zEffectAnim_ZbdFilename[0] == '\0') {
+    int i;
+    if (g_zEffect_ResourceNode == 0) {
+        return -1;
+    }
+    if (strlen(g_zEffectAnim_ZbdFilename) == 0) {
         return -1;
     }
 
@@ -790,7 +776,7 @@ int __cdecl LoadZbd() {
         return -1;
     }
 
-    zEffectAnimZbdFilePrefix filePrefix = {0};
+    zEffectAnimZbdFilePrefix filePrefix;
     if (fread(&filePrefix, sizeof(filePrefix), 1, stream) != 1) {
         fclose(stream);
         return -1;
@@ -799,87 +785,56 @@ int __cdecl LoadZbd() {
         fclose(stream);
         return -1;
     }
-    if (filePrefix.sourceFileStampRecordSize != sizeof(zEffectAnimSourceFileStamp)) {
+    if (filePrefix.formatMarker != 0x1c) {
         fclose(stream);
         return -1;
     }
 
-    const int sourceFileStampCount = filePrefix.sourceFileStampCount;
-    g_zEffectAnim_SourceFileStampCount = sourceFileStampCount;
-    g_zEffectAnim_SourceFileStampList = 0;
-    if (sourceFileStampCount > 0) {
-        g_zEffectAnim_SourceFileStampList =
-            (zEffectAnimSourceFileStamp *)(malloc(
-                sizeof(zEffectAnimSourceFileStamp) *
-                (unsigned int)(sourceFileStampCount)
-            ));
-        if (g_zEffectAnim_SourceFileStampList == 0 ||
-            fread(
-                g_zEffectAnim_SourceFileStampList,
-                sizeof(zEffectAnimSourceFileStamp),
-                (unsigned int)(sourceFileStampCount),
-                stream
-            ) != (unsigned int)(sourceFileStampCount)) {
-            return -1;
-        }
-    }
-
+    g_zEffectAnim_SourceFileStampCount = filePrefix.sourceFileStampCount;
+    g_zEffectAnim_SourceFileStampList = (zEffectAnimSourceFileStamp *)malloc(
+        sizeof(zEffectAnimSourceFileStamp) * g_zEffectAnim_SourceFileStampCount);
     bool stampMismatch = false;
-    for (int i = 0; i < g_zEffectAnim_SourceFileStampCount; ++i) {
-        struct _stat statBuffer;
-        zEffectAnimSourceFileStamp *const stamp = &g_zEffectAnim_SourceFileStampList[i];
-        if (_stat(stamp->sourcePath, &statBuffer) == 0 &&
-            stamp->fileMtime != (int)(statBuffer.st_mtime)) {
-            stampMismatch = true;
-            break;
+    if (fread(g_zEffectAnim_SourceFileStampList, sizeof(zEffectAnimSourceFileStamp),
+            g_zEffectAnim_SourceFileStampCount, stream) !=
+            (unsigned int)g_zEffectAnim_SourceFileStampCount) {
+        stampMismatch = true;
+    }
+    if (!stampMismatch) {
+        for (i = 0; i < g_zEffectAnim_SourceFileStampCount; ++i) {
+            struct _stat statBuffer;
+            if (_stat(g_zEffectAnim_SourceFileStampList[i].sourcePath, &statBuffer) == 0 &&
+                g_zEffectAnim_SourceFileStampList[i].fileMtime != statBuffer.st_mtime) {
+                stampMismatch = true;
+                break;
+            }
         }
     }
 
     if (g_zEffectAnim_SourceFileStampList != 0) {
         free(g_zEffectAnim_SourceFileStampList);
-        g_zEffectAnim_SourceFileStampList = 0;
     }
+    g_zEffectAnim_SourceFileStampList = 0;
     g_zEffectAnim_SourceFileStampCount = 0;
     if (stampMismatch) {
         fclose(stream);
         return -1;
     }
 
-    zClass_NodePartial *const savedWorld = g_zEffect_World;
-    zEffectAnimZbdHeaderBlock headerBlock = {0};
-    if (fread(&headerBlock, sizeof(headerBlock), 1, stream) != 1) {
+    zClass_NodePartial *const savedWorld = g_zEffectAnim_State.worldNode;
+    if (fread(&g_zEffectAnim_State, sizeof(g_zEffectAnim_State), 1, stream) != 1) {
         fclose(stream);
         return -1;
     }
+    g_zEffectAnim_State.worldNode = savedWorld;
+    g_zEffectAnim_State.textIdEntryList = 0;
 
-    g_zEffectAnim_EntriesInstantiated = headerBlock.entriesInstantiated;
-    g_zEffectAnim_HeapPtr = headerBlock.heapPtr;
-    g_zEffectAnim_CountsPackedLoWord = headerBlock.countsPackedLoWord;
-    g_zEffectAnim_EntryCount = headerBlock.entryCount;
-    g_zEffectAnim_EntryList = 0;
-    g_zEffectAnim_TextIdEntryCount = headerBlock.textIdEntryCount;
-    g_zEffectAnim_TextIdEntryList = 0;
-    g_zEffect_World = savedWorld;
-    g_zEffect_DefaultGravity = headerBlock.defaultGravity;
-    g_zEffect_ConditionalRefPosEnabled = headerBlock.conditionalRefPosEnabled;
-    g_zEffect_VariantOverrideEnabled = headerBlock.variantOverrideEnabled;
-    g_zEffect_ConditionalRefPosX = headerBlock.conditionalRefPosX;
-    g_zEffect_ConditionalRefPosY = headerBlock.conditionalRefPosY;
-    g_zEffect_ConditionalRefPosZ = headerBlock.conditionalRefPosZ;
-    g_zEffect_VariantOverridePackedIds = headerBlock.variantOverridePackedIds;
-    g_zEffect_FrameDeltaRemainingSec = headerBlock.frameDeltaRemainingSec;
+    g_zEffectAnim_State.entryList = (zEffectAnimEntry *)malloc(
+        sizeof(zEffectAnimEntry) * g_zEffectAnim_State.entryCount);
+    memset(g_zEffectAnim_State.entryList, 0,
+        sizeof(zEffectAnimEntry) * g_zEffectAnim_State.entryCount);
 
-    const int entryCount = g_zEffectAnim_EntryCount;
-    g_zEffectAnim_EntryList = (zEffectAnimEntry *)(malloc(sizeof(zEffectAnimEntry) * entryCount));
-    if (entryCount > 0 && g_zEffectAnim_EntryList == 0) {
-        return -1;
-    }
-    if (entryCount > 0) {
-        memset(g_zEffectAnim_EntryList, 0, sizeof(zEffectAnimEntry) * entryCount);
-    }
-
-    for (int i_2059 = 0; i_2059 < entryCount; ++i_2059) {
-        zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i_2059];
+    for (i = 0; i < g_zEffectAnim_State.entryCount; ++i) {
+        zEffectAnimEntry *const entry = &g_zEffectAnim_State.entryList[i];
         if (fread(entry, sizeof(zEffectAnimEntry), 1, stream) != 1) {
             fclose(stream);
             return -1;
@@ -900,8 +855,7 @@ int __cdecl LoadZbd() {
             entry->trackedNodeList = (zEffectAnimTrackedNode *)(malloc(
                 sizeof(zEffectAnimTrackedNode) * entry->trackedNodeCount
             ));
-            if (entry->trackedNodeList == 0 ||
-                fread(
+            if (fread(
                     entry->trackedNodeList,
                     sizeof(zEffectAnimTrackedNode),
                     entry->trackedNodeCount,
@@ -915,9 +869,8 @@ int __cdecl LoadZbd() {
             entry->nodeRefList = (zEffectAnimNodeRef28 *)(malloc(
                 sizeof(zEffectAnimNodeRef28) * entry->nodeRefCount
             ));
-            if (entry->nodeRefList == 0 ||
-                fread(
-                    entry->nodeRefList,
+            if (fread(
+                entry->nodeRefList,
                     sizeof(zEffectAnimNodeRef28),
                     entry->nodeRefCount,
                     stream
@@ -930,9 +883,8 @@ int __cdecl LoadZbd() {
             entry->lightRefList = (zEffectAnimRuntimeNodeRef *)(malloc(
                 sizeof(zEffectAnimRuntimeNodeRef) * entry->lightRefCount
             ));
-            if (entry->lightRefList == 0 ||
-                fread(
-                    entry->lightRefList,
+            if (fread(
+                entry->lightRefList,
                     sizeof(zEffectAnimRuntimeNodeRef),
                     entry->lightRefCount,
                     stream
@@ -945,9 +897,8 @@ int __cdecl LoadZbd() {
             entry->soundRefList = (zEffectAnimRuntimeNodeRef *)(malloc(
                 sizeof(zEffectAnimRuntimeNodeRef) * entry->soundRefCount
             ));
-            if (entry->soundRefList == 0 ||
-                fread(
-                    entry->soundRefList,
+            if (fread(
+                entry->soundRefList,
                     sizeof(zEffectAnimRuntimeNodeRef),
                     entry->soundRefCount,
                     stream
@@ -960,8 +911,7 @@ int __cdecl LoadZbd() {
             entry->sampleRefList = (zEffectAnimSampleRef *)(malloc(
                 sizeof(zEffectAnimSampleRef) * entry->sampleRefCount
             ));
-            if (entry->sampleRefList == 0 ||
-                fread(
+            if (fread(
                     entry->sampleRefList,
                     sizeof(zEffectAnimSampleRef),
                     entry->sampleRefCount,
@@ -975,8 +925,7 @@ int __cdecl LoadZbd() {
             entry->effectTemplateRefList = (zEffectAnimTemplateIndexRef *)(malloc(
                 sizeof(zEffectAnimTemplateIndexRef) * entry->effectTemplateRefCount
             ));
-            if (entry->effectTemplateRefList == 0 ||
-                fread(
+            if (fread(
                     entry->effectTemplateRefList,
                     sizeof(zEffectAnimTemplateIndexRef),
                     entry->effectTemplateRefCount,
@@ -990,8 +939,7 @@ int __cdecl LoadZbd() {
             entry->activationPrereqList = (zEffectAnimActivationPrereq *)(malloc(
                 sizeof(zEffectAnimActivationPrereq) * entry->activationPrereqCount
             ));
-            if (entry->activationPrereqList == 0 ||
-                fread(
+            if (fread(
                     entry->activationPrereqList,
                     sizeof(zEffectAnimActivationPrereq),
                     entry->activationPrereqCount,
@@ -1005,8 +953,7 @@ int __cdecl LoadZbd() {
             entry->runtimeRefList = (zEffectAnimRuntimeRef *)(malloc(
                 sizeof(zEffectAnimRuntimeRef) * entry->runtimeRefCount
             ));
-            if (entry->runtimeRefList == 0 ||
-                fread(
+            if (fread(
                     entry->runtimeRefList,
                     sizeof(zEffectAnimRuntimeRef),
                     entry->runtimeRefCount,
@@ -1015,33 +962,28 @@ int __cdecl LoadZbd() {
                 fclose(stream);
                 return -1;
             }
-        }
 
-        for (int j = 0; j < entry->runtimeRefCount; ++j) {
-            entry->runtimeRefList[j].cachedChildEntry = 0;
+            for (int j0 = 0; j0 < entry->runtimeRefCount; ++j0) {
+                entry->runtimeRefList[j0].cachedChildEntry = 0;
+            }
         }
 
         if (entry->runtimeSequenceCount > 0) {
             entry->runtimeList = (zEffectAnimSurfaceRuntime *)(malloc(
                 sizeof(zEffectAnimSurfaceRuntime) * entry->runtimeSequenceCount
             ));
-            if (entry->runtimeList == 0) {
-                fclose(stream);
-                return -1;
-            }
         }
-        if (fread(&entry->surfacePrimary, sizeof(entry->surfacePrimary), 1, stream) != 1) {
+        zEffectAnimSurfaceRuntime *runtime = &entry->surfacePrimary;
+        if (fread(runtime, sizeof(zEffectAnimSurfaceRuntime), 1, stream) != 1) {
             fclose(stream);
             return -1;
         }
-        entry->surfacePrimary.eventStream = 0;
-        if (entry->surfacePrimary.eventStreamSize > 0) {
-            entry->surfacePrimary.eventStream =
-                malloc(entry->surfacePrimary.eventStreamSize);
-            if (entry->surfacePrimary.eventStream == 0 ||
-                fread(
-                    entry->surfacePrimary.eventStream,
-                    entry->surfacePrimary.eventStreamSize,
+        if (runtime->eventStreamSize > 0) {
+            runtime->eventStream =
+                malloc(runtime->eventStreamSize);
+            if (fread(
+                    runtime->eventStream,
+                    runtime->eventStreamSize,
                     1,
                     stream
                 ) != 1) {
@@ -1050,17 +992,15 @@ int __cdecl LoadZbd() {
             }
         }
 
-        for (int j_2108 = 0; j_2108 < entry->runtimeSequenceCount; ++j_2108) {
-            zEffectAnimSurfaceRuntime *const runtime = &entry->runtimeList[j_2108];
+        for (int j1 = 0; j1 < entry->runtimeSequenceCount; ++j1) {
+            runtime = &entry->runtimeList[j1];
             if (fread(runtime, sizeof(zEffectAnimSurfaceRuntime), 1, stream) != 1) {
                 fclose(stream);
                 return -1;
             }
-            runtime->eventStream = 0;
             if (runtime->eventStreamSize > 0) {
                 runtime->eventStream = malloc(runtime->eventStreamSize);
-                if (runtime->eventStream == 0 ||
-                    fread(runtime->eventStream, runtime->eventStreamSize, 1, stream) != 1) {
+                if (fread(runtime->eventStream, runtime->eventStreamSize, 1, stream) != 1) {
                     fclose(stream);
                     return -1;
                 }
@@ -1069,14 +1009,17 @@ int __cdecl LoadZbd() {
     }
 
     const char *previousRootNodeName = 0;
-    for (int i_2119 = 0; i_2119 < entryCount; ++i_2119) {
-        zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i_2119];
-        const unsigned char savedLightRefCount = entry->lightRefCount;
+    for (i = 0; i < g_zEffectAnim_State.entryCount; ++i) {
+        zEffectAnimEntry *const entry = &g_zEffectAnim_State.entryList[i];
         const unsigned char savedSoundRefCount = entry->soundRefCount;
+        const unsigned char savedLightRefCount = entry->lightRefCount;
         entry->lightRefCount = 0;
         entry->soundRefCount = 0;
 
-        if (i_2119 != 0 && entry->activationState != 5) {
+        if (i == 0 || entry->activationState == 5) {
+            continue;
+        }
+        {
             entry->boundNode = 0;
             if (previousRootNodeName != 0 &&
                 strcmp(previousRootNodeName, entry->rootNodeName) == 0) {
@@ -1109,6 +1052,7 @@ int __cdecl LoadZbd() {
                 }
             }
 
+            entry->callbackNode = 0;
             entry->callbackNode = zEffectAnim::ResolveNodeByName(entry, entry->attachNodeName);
             if (entry->callbackNode == 0) {
                 fclose(stream);
@@ -1117,119 +1061,116 @@ int __cdecl LoadZbd() {
         }
 
         entry->lightRefCount = savedLightRefCount;
-        for (int j = 1; j < entry->lightRefCount; ++j) {
-            zEffectAnimRuntimeNodeRef *const lightRef = &entry->lightRefList[j];
-            lightRef->runtimeNode = zClass_Light::gwLightNew();
-            if (lightRef->runtimeNode == 0) {
+        for (int j2 = 1; j2 < entry->lightRefCount; ++j2) {
+            entry->lightRefList[j2].runtimeNode = zClass_Light::gwLightNew();
+            if (entry->lightRefList[j2].runtimeNode == 0) {
                 fclose(stream);
                 return -1;
             }
-            zClass_Class::gwNodeSetName(lightRef->runtimeNode, lightRef->name.text);
+            zClass_Class::gwNodeSetName(entry->lightRefList[j2].runtimeNode, entry->lightRefList[j2].name.text);
         }
 
         entry->soundRefCount = savedSoundRefCount;
-        for (int j_2175 = 1; j_2175 < entry->soundRefCount; ++j_2175) {
-            zEffectAnimRuntimeNodeRef *const soundRef = &entry->soundRefList[j_2175];
-            soundRef->runtimeNode = zClass_Sound::gwSoundNew();
-            if (soundRef->runtimeNode == 0) {
+        for (int j3 = 1; j3 < entry->soundRefCount; ++j3) {
+            entry->soundRefList[j3].runtimeNode = zClass_Sound::gwSoundNew();
+            if (entry->soundRefList[j3].runtimeNode == 0) {
                 fclose(stream);
                 return -1;
             }
-            zClass_Class::gwNodeSetName(soundRef->runtimeNode, soundRef->name.text);
-            zClass_Sound::SetSampleSetByName(soundRef->runtimeNode, soundRef->name.text);
+            zClass_Class::gwNodeSetName(entry->soundRefList[j3].runtimeNode, entry->soundRefList[j3].name.text);
+            zClass_Sound::SetSampleSetByName(entry->soundRefList[j3].runtimeNode, entry->soundRefList[j3].name.text);
         }
 
-        for (int j_2186 = 1; j_2186 < entry->trackedNodeCount; ++j_2186) {
-            zEffectAnimTrackedNode *const tracked = &entry->trackedNodeList[j_2186];
-            tracked->trackedNode = zEffectAnim::ResolveNodeByName(entry, tracked->trackedNodeName);
-            if (tracked->trackedNode == 0) {
-                fclose(stream);
-                return -1;
-            }
-        }
-
-        for (int j_2195 = 1; j_2195 < entry->nodeRefCount; ++j_2195) {
-            zEffectAnimNodeRef28 *const nodeRef = &entry->nodeRefList[j_2195];
-            nodeRef->node = zEffectAnim::ResolveNodeByName(entry, nodeRef->name.text);
-            if (nodeRef->node == 0) {
+        for (int j4 = 1; j4 < entry->trackedNodeCount; ++j4) {
+            entry->trackedNodeList[j4].trackedNode = zEffectAnim::ResolveNodeByName(entry, entry->trackedNodeList[j4].trackedNodeName);
+            if (entry->trackedNodeList[j4].trackedNode == 0) {
                 fclose(stream);
                 return -1;
             }
         }
 
-        for (int j_2204 = 1; j_2204 < entry->sampleRefCount; ++j_2204) {
-            entry->sampleRefList[j_2204].sample =
-                zSnd::FindSampleByName(entry->sampleRefList[j_2204].name);
-        }
-
-        for (int j_2208 = 1; j_2208 < entry->effectTemplateRefCount; ++j_2208) {
-            zEffectAnimTemplateIndexRef *const templateRef = &entry->effectTemplateRefList[j_2208];
-            templateRef->templateIndex = zEffect::FindTemplateIndexByName(templateRef->name);
-            if (templateRef->templateIndex == -1) {
-                const int closeResult = fclose(stream);
-                return closeResult == 0 ? -1 : closeResult;
+        for (int j5 = 1; j5 < entry->nodeRefCount; ++j5) {
+            entry->nodeRefList[j5].node = zEffectAnim::ResolveNodeByName(entry, entry->nodeRefList[j5].name.text);
+            if (entry->nodeRefList[j5].node == 0) {
+                fclose(stream);
+                return -1;
             }
         }
 
-        zClass_NodePartial *prereqSearchRoot = 0;
-        zClass_NodePartial *cachedPrereqSearchRoot = 0;
-        for (int j_2219 = 0; j_2219 < entry->activationPrereqCount; ++j_2219) {
-            zEffectAnimActivationPrereq *const prereq = &entry->activationPrereqList[j_2219];
-            if (prereq->mode == 1) {
-                prereq->targetEntry = 0;
-                prereqSearchRoot = cachedPrereqSearchRoot;
-            } else if (prereq->mode == 2 || prereq->mode == 3) {
-                const char *const nodeName = &prereq->targetName[4];
-                if (prereqSearchRoot == 0) {
-                    prereqSearchRoot = zClass::FindByTypeAndName(6, nodeName);
-                } else {
-                    prereqSearchRoot = zClass_Class::FindSubNodeByName(prereqSearchRoot, nodeName);
-                }
+        for (int j6 = 1; j6 < entry->sampleRefCount; ++j6) {
+            entry->sampleRefList[j6].sample =
+                zSnd::FindSampleByName(entry->sampleRefList[j6].name);
+        }
 
-                cachedPrereqSearchRoot = prereqSearchRoot;
-                if (prereqSearchRoot == 0) {
-                    zError::ReportOld(
-                        0x400,
-                        "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
-                        0x2c17,
-                        g_zEffectAnim_ActivationPrereqNodeNotFoundFmt,
-                        entry,
-                        nodeName
-                    );
-                    entry->activationPrereqCount = 0;
-                    break;
-                }
+        for (int j7 = 1; j7 < entry->effectTemplateRefCount; ++j7) {
+            entry->effectTemplateRefList[j7].templateIndex = zEffect::FindTemplateIndexByName(entry->effectTemplateRefList[j7].name);
+            if (entry->effectTemplateRefList[j7].templateIndex == -1) {
+                fclose(stream);
+                return -1;
+            }
+        }
 
-                prereq->targetNode = prereqSearchRoot;
-                if (prereq->mode == 2) {
-                    prereqSearchRoot = 0;
-                    cachedPrereqSearchRoot = 0;
+        if (entry->activationPrereqCount > 0) {
+            zClass_NodePartial *prereqSearchRoot = 0;
+            for (int j8 = 0; j8 < entry->activationPrereqCount; ++j8) {
+                zEffectAnimActivationPrereq *const prereq = &entry->activationPrereqList[j8];
+                if (prereq->mode == 1) {
+                    prereq->targetEntry = 0;
+                    zEffectAnimEntry *targetEntry = g_zEffectAnim_State.entryList;
+                    for (int k = 1; k < g_zEffectAnim_State.entryCount; ++k, ++targetEntry) {
+                        if (strcmp(targetEntry->name, prereq->targetName) == 0) {
+                            prereq->targetEntry = targetEntry;
+                            break;
+                        }
+                    }
+                } else if (prereq->mode == 3 || prereq->mode == 2) {
+                    const char *const nodeName = &prereq->targetName[4];
+                    if (prereqSearchRoot == 0) {
+                        prereqSearchRoot = zClass::FindByTypeAndName(6, nodeName);
+                    } else {
+                        prereqSearchRoot = zClass_Class::FindSubNodeByName(prereqSearchRoot, nodeName);
+                    }
+
+                    if (prereqSearchRoot == 0) {
+                        zError::ReportOld(
+                            0x400,
+                            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
+                            0x2c17,
+                            g_zEffectAnim_ActivationPrereqNodeNotFoundFmt,
+                            entry,
+                            nodeName
+                        );
+                        entry->activationPrereqCount = 0;
+                        break;
+                    }
+
+                    prereq->targetNode = prereqSearchRoot;
+                    if (prereq->mode == 2) {
+                        prereqSearchRoot = 0;
+                    }
                 }
             }
         }
     }
 
-    if (g_zEffectAnim_TextIdEntryCount > 0) {
-        g_zEffectAnim_TextIdEntryList = (zEffectAnimTextIdEntry *)(malloc(
+    if (g_zEffectAnim_State.textIdEntryCount > 0) {
+        g_zEffectAnim_State.textIdEntryList = (zEffectAnimTextIdEntry *)(malloc(
             sizeof(zEffectAnimTextIdEntry) *
-            (unsigned int)(g_zEffectAnim_TextIdEntryCount)
+            (unsigned int)(g_zEffectAnim_State.textIdEntryCount)
         ));
-        if (g_zEffectAnim_TextIdEntryList == 0) {
-            return -1;
-        }
         if (fread(
-                g_zEffectAnim_TextIdEntryList,
+                g_zEffectAnim_State.textIdEntryList,
                 sizeof(zEffectAnimTextIdEntry),
-                (unsigned int)(g_zEffectAnim_TextIdEntryCount),
+                (unsigned int)(g_zEffectAnim_State.textIdEntryCount),
                 stream
-            ) != (unsigned int)(g_zEffectAnim_TextIdEntryCount)) {
+            ) != (unsigned int)(g_zEffectAnim_State.textIdEntryCount)) {
             fclose(stream);
             return -1;
         }
 
-        for (int i = 0; i < g_zEffectAnim_TextIdEntryCount; ++i) {
-            g_zEffectAnim_TextIdEntryList[i].messageId =
-                zLoc::GetMessageId(g_zEffectAnim_TextIdEntryList[i].messageKey);
+        for (i = 0; i < g_zEffectAnim_State.textIdEntryCount; ++i) {
+            g_zEffectAnim_State.textIdEntryList[i].messageId =
+                zLoc::GetMessageId(g_zEffectAnim_State.textIdEntryList[i].messageKey);
         }
     }
 
@@ -1245,14 +1186,15 @@ int __cdecl LoadZbd() {
  * callbacks, capture initial node state, and mark entries instantiated.
  */
 int __cdecl LoadAndInstantiate() {
-    if (g_zEffectAnim_EntriesInstantiated != 0) {
+    char runtimeNodeName[0x24];
+    if (g_zEffectAnim_State.entriesInstantiated != 0) {
         return 0;
     }
 
     LoadZbd();
 
-    for (int i = 1; i < g_zEffectAnim_EntryCount; ++i) {
-        zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i];
+    zEffectAnimEntry *entry = &g_zEffectAnim_State.entryList[1];
+    for (int i = 1; i < g_zEffectAnim_State.entryCount; ++i, ++entry) {
         if (entry->activationState != 5 && entry->activationState != 4 &&
             zClass::AnyNodeMatchesPredicateRecursive(
                 entry->boundNode,
@@ -1262,12 +1204,9 @@ int __cdecl LoadAndInstantiate() {
         }
     }
 
-    for (int i_2286 = 1; i_2286 < g_zEffectAnim_EntryCount; ++i_2286) {
-        zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i_2286];
+    entry = &g_zEffectAnim_State.entryList[1];
+    for (int i_2286 = 1; i_2286 < g_zEffectAnim_State.entryCount; ++i_2286, ++entry) {
         if (entry->activationState == 5) {
-            continue;
-        }
-        if (entry->activationState == 2) {
             zError::ReportOld(
                 0x400,
                 "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
@@ -1275,62 +1214,62 @@ int __cdecl LoadAndInstantiate() {
                 g_zEffectAnim_CorruptAnimationLoadedFmt,
                 entry
             );
-            continue;
-        }
+        } else {
+            if (entry->boundNode == 0) {
+                zClass_NodePartial *const objectNode = zClass_Object3D::gwObject3DInit();
+                entry->boundNode = objectNode;
+                entry->callbackNode = objectNode;
+            }
 
-        if (entry->boundNode == 0) {
-            zClass_NodePartial *const objectNode = zClass_Object3D::gwObject3DInit();
-            entry->boundNode = objectNode;
-            entry->callbackNode = objectNode;
-        }
+            if ((entry->flags & kEffectAnimNeedsCopiedRootFlag) != 0) {
+                zEffectAnim::EnsureCopiedRootTree(entry, entry->boundNode);
+            }
 
-        if ((entry->flags & kEffectAnimNeedsCopiedRootFlag) != 0) {
-            zEffectAnim::EnsureCopiedRootTree(entry, entry->boundNode);
-        }
+            entry->runtimeNode = zClass_Object3D::gwObject3DInit();
+            sprintf(runtimeNodeName, "_%s", entry->name);
+            zClass_Class::gwNodeSetName(entry->runtimeNode, runtimeNodeName);
+            zClass_Class::gwNodeSetPriority(entry->runtimeNode, entry->priority);
 
-        entry->runtimeNode = zClass_Object3D::gwObject3DInit();
-        char runtimeNodeName[0x24];
-        sprintf(runtimeNodeName, "_%s", entry->name);
-        zClass_Class::gwNodeSetName(entry->runtimeNode, runtimeNodeName);
-        zClass_Class::gwNodeSetPriority(entry->runtimeNode, entry->priority);
+            CaptureNodeStates(entry);
+            if (entry->activationMode == 1) {
+                zClass_Node::SetDamageTimerCallback(
+                    entry,
+                    entry->callbackNode,
+                    (void *)(zEffect::TickResetDelayOnTimer)
+                );
+            }
+            if (entry->activationMode == 0) {
+                zClass_Node::SetDamageHitCallback(
+                    entry,
+                    entry->callbackNode,
+                    (void *)(zEffect::TickResetDelayOnHit)
+                );
+            }
+            if (entry->activationMode == 2) {
+                zClass_Node::SetDamageTimerCallback(
+                    entry,
+                    entry->callbackNode,
+                    (void *)(zEffect::TickResetDelayOnTimer)
+                );
+                zClass_Node::SetDamageHitCallback(
+                    entry,
+                    entry->callbackNode,
+                    (void *)(zEffect::TickResetDelayOnHit)
+                );
+            }
 
-        CaptureNodeStates(entry);
-        if (entry->activationMode == 1) {
-            zClass_Node::SetDamageTimerCallback(
-                entry,
-                entry->callbackNode,
-                (void *)(zEffect::TickResetDelayOnTimer)
-            );
-        }
-        if (entry->activationMode == 0) {
-            zClass_Node::SetDamageHitCallback(
-                entry,
-                entry->callbackNode,
-                (void *)(zEffect::TickResetDelayOnHit)
-            );
-        }
-        if (entry->activationMode == 2) {
-            zClass_Node::SetDamageTimerCallback(
-                entry,
-                entry->callbackNode,
-                (void *)(zEffect::TickResetDelayOnTimer)
-            );
-            zClass_Node::SetDamageHitCallback(
-                entry,
-                entry->callbackNode,
-                (void *)(zEffect::TickResetDelayOnHit)
-            );
-        }
-
-        if ((entry->flags & 0x20) != 0) {
-            zEffectAnim::StopAndCleanup(entry, 0, 0);
-        }
-        if (entry->activationMode == 4) {
-            zEffectAnim::SetVelocity(entry, 0, 0.0f, 0.0f, 0.0f);
+            if (entry->activationState != 2) {
+                if ((entry->flags & 0x20) != 0) {
+                    zEffectAnim::StopAndCleanup(entry, 0, 0);
+                }
+                if (entry->activationMode == 4) {
+                    zEffectAnim::SetVelocity(entry, 0, 0.0f, 0.0f, 0.0f);
+                }
+            }
         }
     }
 
-    g_zEffectAnim_EntriesInstantiated = 1;
+    g_zEffectAnim_State.entriesInstantiated = 1;
     return 0;
 }
 
@@ -1421,30 +1360,30 @@ namespace zEffect_Anim {
  * queued activation records, then clear animation-load state.
  */
 int __cdecl Shutdown() {
-    if (g_zEffectAnim_HeapPtr != 0) {
-        free(g_zEffectAnim_HeapPtr);
-        g_zEffectAnim_HeapPtr = 0;
+    if (g_zEffectAnim_State.heapPtr != 0) {
+        free(g_zEffectAnim_State.heapPtr);
+        g_zEffectAnim_State.heapPtr = 0;
     }
 
-    g_zEffectAnim_CountsPackedLoWord = 0;
-    for (int i = 0; i < g_zEffectAnim_EntryCount; ++i) {
-        zEffectAnim::ShutdownEntry(&g_zEffectAnim_EntryList[i]);
+    g_zEffectAnim_State.countsPackedLoWord = 0;
+    for (int i = 0; i < g_zEffectAnim_State.entryCount; ++i) {
+        zEffectAnim::ShutdownEntry(&g_zEffectAnim_State.entryList[i]);
     }
 
-    if (g_zEffectAnim_EntryList != 0) {
-        free(g_zEffectAnim_EntryList);
-        g_zEffectAnim_EntryList = 0;
+    if (g_zEffectAnim_State.entryList != 0) {
+        free(g_zEffectAnim_State.entryList);
+        g_zEffectAnim_State.entryList = 0;
     }
 
-    g_zEffectAnim_EntryCount = 0;
-    if (g_zEffectAnim_TextIdEntryList != 0) {
-        free(g_zEffectAnim_TextIdEntryList);
-        g_zEffectAnim_TextIdEntryList = 0;
+    g_zEffectAnim_State.entryCount = 0;
+    if (g_zEffectAnim_State.textIdEntryList != 0) {
+        free(g_zEffectAnim_State.textIdEntryList);
+        g_zEffectAnim_State.textIdEntryList = 0;
     }
 
-    g_zEffectAnim_TextIdEntryCount = 0;
+    g_zEffectAnim_State.textIdEntryCount = 0;
     ClearActivationRecords();
-    g_zEffectAnim_EntriesInstantiated = 0;
+    g_zEffectAnim_State.entriesInstantiated = 0;
     return 0;
 }
 
@@ -1458,7 +1397,7 @@ int __cdecl Shutdown() {
  * instantiated.
  */
 int __cdecl ShutdownIfLoaded() {
-    if (g_zEffectAnim_EntriesInstantiated != 0) {
+    if (g_zEffectAnim_State.entriesInstantiated != 0) {
         Shutdown();
     }
 
@@ -1483,10 +1422,10 @@ zEffectAnimEntry *__fastcall FindEntryByName(
         return 0;
     }
 
-    const int count = g_zEffectAnim_EntryCount;
+    const int count = g_zEffectAnim_State.entryCount;
     for (int i = 0; i < count; ++i) {
-        if (strcmp(g_zEffectAnim_EntryList[i].name, name) == 0) {
-            return &g_zEffectAnim_EntryList[i];
+        if (strcmp(g_zEffectAnim_State.entryList[i].name, name) == 0) {
+            return &g_zEffectAnim_State.entryList[i];
         }
     }
 
@@ -1505,12 +1444,12 @@ zEffectAnimEntry *__fastcall FindNextAsyncEntry(
 ) {
     int index = 0;
     if (currentEntry != 0) {
-        index = (int)(currentEntry - g_zEffectAnim_EntryList) + 1;
+        index = (int)(currentEntry - g_zEffectAnim_State.entryList) + 1;
     }
 
-    for (; index < g_zEffectAnim_EntryCount; ++index) {
-        if ((g_zEffectAnim_EntryList[index].flags & 0x10) != 0) {
-            return &g_zEffectAnim_EntryList[index];
+    for (; index < g_zEffectAnim_State.entryCount; ++index) {
+        if ((g_zEffectAnim_State.entryList[index].flags & 0x10) != 0) {
+            return &g_zEffectAnim_State.entryList[index];
         }
     }
 

@@ -297,7 +297,7 @@ namespace zClass_Light {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightsetrange
      * @recoil-artifact defines .text recoil:function:0x453400: zClass_Light::gwLightSetRange
-     *
+     * @recoil-match byte
      *
      * Purpose: validate light data, order and store the two range values, repair
      * equal ranges with the original debug path, and cache range-derived values.
@@ -437,52 +437,47 @@ namespace zClass_Light {
      * Purpose: build the node-to-world transform, update world position,
      * direction, and rotation caches, then restore the zMath matrix stack.
      */
-    int __fastcall ComputeWorldTransform(
-        zClass_NodePartial * node,
-        zClass_LightDataPartial * data
-    ) {
-        zVec3 localPointA = {0.0f, 0.0f, 0.0f};
-        zVec3 localPointB = {0.0f, 0.0f, -1.0f};
-        zMat4x3 slotBuffer = {0};
-
-        zMath::MatStackPushPtr((float *)(&slotBuffer));
+    int __fastcall ComputeWorldTransform(zClass_NodePartial *node, zClass_LightDataPartial *data) {
+        zVec3 localPoints[2] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}};
+        zVec3 worldPoints[2];
+        zMat4x3 slotBuffer;
+        zMath::MatStackPushPtr((float *)&slotBuffer);
         zMath::MatLoadIdentity();
         gwNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
-
-        zVec3 pointA = localPointA;
-        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3 *matrix =
-                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
-            pointA.x = localPointA.x * matrix->xx + localPointA.y * matrix->yx
-                + localPointA.z * matrix->zx + matrix->posX;
-            pointA.y = localPointA.x * matrix->xy + localPointA.y * matrix->yy
-                + localPointA.z * matrix->zy + matrix->posY;
-            pointA.z = localPointA.x * matrix->xz + localPointA.y * matrix->yz
-                + localPointA.z * matrix->zz + matrix->posZ;
-        }
-
-        if (data->isDirectedSource != 0 || data->isDirectional != 0) {
-            zVec3 pointB = localPointB;
-            if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-                const zMat4x3 *matrix =
-                    (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
-                pointB.x = localPointB.x * matrix->xx + localPointB.y * matrix->yx
-                    + localPointB.z * matrix->zx + matrix->posX;
-                pointB.y = localPointB.x * matrix->xy + localPointB.y * matrix->yy
-                    + localPointB.z * matrix->zy + matrix->posY;
-                pointB.z = localPointB.x * matrix->xz + localPointB.y * matrix->yz
-                    + localPointB.z * matrix->zz + matrix->posZ;
+        if (data->isDirectedSource == 0 && data->isDirectional == 0) {
+            if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
+                worldPoints[0] = localPoints[0];
+            } else {
+                for (int i = 0; i < 1; ++i) {
+                    const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+                    const zVec3 *point = &localPoints[i];
+                    zVec3 *out = &worldPoints[i];
+                    out->x = point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX;
+                    out->y = point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY;
+                    out->z = point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ;
+                }
             }
-            zVec3 outAngles = zMath::Vec3DirectionAnglesBetweenPoints(&pointA, &pointB);
+        } else {
+            if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
+                memcpy(worldPoints, localPoints, sizeof(localPoints));
+            } else {
+                for (int i = 0; i < 2; ++i) {
+                    const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+                    const zVec3 *point = &localPoints[i];
+                    zVec3 *out = &worldPoints[i];
+                    out->x = point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX;
+                    out->y = point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY;
+                    out->z = point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ;
+                }
+            }
+            zVec3 outAngles = zMath::Vec3DirectionAnglesBetweenPoints(&worldPoints[0], &worldPoints[1]);
             outAngles.z = 0.0f;
             data->worldRotation = outAngles;
         }
-
-        data->worldPosition = pointA;
+        data->worldPosition = worldPoints[0];
         data->worldDir.x = -slotBuffer.zx;
         data->worldDir.y = -slotBuffer.zy;
         data->worldDir.z = -slotBuffer.zz;
-
         zMath::MatStackPopPtr();
         return 0;
     }

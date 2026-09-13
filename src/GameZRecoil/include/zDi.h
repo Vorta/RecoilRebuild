@@ -327,7 +327,7 @@ int __fastcall AddCycleTexture(
 } // namespace zModel_Instance
 
 extern zClass_DiRaycastFilterRuntime g_zClass_cls_di_RaycastFilterRuntime;
-extern zVec3 g_zClass_DiFaceVertexScratch4[4];
+extern zVec3 g_zClass_DiFaceVertexScratch4[64];
 
 #define g_zClass_cls_di_FilterRegions_NodeNamePrefix \
     (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsNodeNamePrefix)

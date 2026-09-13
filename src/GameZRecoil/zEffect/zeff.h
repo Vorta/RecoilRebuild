@@ -1825,19 +1825,51 @@ RECOIL_STATIC_ASSERT(
     ) == 0x2c
 );
 
+// The live animation state image read at retail 0x45f15f spans exactly 0x3c
+// bytes. Names describe the observed roles; the layout is checked below.
+struct zEffectAnimState {
+    int entriesInstantiated;
+    void *heapPtr;
+    short countsPackedLoWord;
+    short entryCount;
+    zEffectAnimEntry *entryList;
+    int textIdEntryCount;
+    zEffectAnimTextIdEntry *textIdEntryList;
+    zClass_NodePartial *worldNode;
+    float defaultGravity;
+    int conditionalRefPosEnabled;
+    int variantOverrideEnabled;
+    float conditionalRefPosX;
+    float conditionalRefPosY;
+    float conditionalRefPosZ;
+    unsigned int variantOverridePackedIds;
+    float frameDeltaRemainingSec;
+};
+RECOIL_STATIC_ASSERT(sizeof(zEffectAnimState) == 0x3c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, entriesInstantiated) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, heapPtr) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, countsPackedLoWord) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, entryCount) == 0x0a);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, entryList) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, textIdEntryCount) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, textIdEntryList) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, worldNode) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, defaultGravity) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPosEnabled) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, variantOverrideEnabled) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPosX) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPosY) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPosZ) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, variantOverridePackedIds) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, frameDeltaRemainingSec) == 0x38);
+
 extern "C" {
 extern zEffect_RuntimeManager g_zEffect_RuntimeManager;
 extern float g_zEffect_RandUnitTable[200];
 extern float g_zEffect_RandUnitScale;
 extern int g_zEffect_RandTableIndex;
 extern char g_zEffectAnim_ZbdFilename[0x80];
-extern int g_zEffectAnim_EntriesInstantiated;
-extern void *g_zEffectAnim_HeapPtr;
-extern short g_zEffectAnim_CountsPackedLoWord;
-extern short g_zEffectAnim_EntryCount;
-extern zEffectAnimEntry *g_zEffectAnim_EntryList;
-extern int g_zEffectAnim_TextIdEntryCount;
-extern zEffectAnimTextIdEntry *g_zEffectAnim_TextIdEntryList;
+extern zEffectAnimState g_zEffectAnim_State;
 extern int g_zEffectAnim_SourceFileStampCount;
 extern zEffectAnimSourceFileStamp *g_zEffectAnim_SourceFileStampList;
 extern int g_zEffectAnim_CopyNodeMode;
@@ -1846,15 +1878,6 @@ extern int g_zEffectAnim_CopyNodeArg2;
 extern int g_zEffectAnim_ForceCloneNonDynamicRoot;
 extern int g_zEffect_CloneCopyMode;
 extern int g_zEffect_CloneCopyChildrenMode;
-extern zClass_NodePartial *g_zEffect_World;
-extern float g_zEffect_DefaultGravity;
-extern int g_zEffect_ConditionalRefPosEnabled;
-extern int g_zEffect_VariantOverrideEnabled;
-extern float g_zEffect_ConditionalRefPosX;
-extern float g_zEffect_ConditionalRefPosY;
-extern float g_zEffect_ConditionalRefPosZ;
-extern unsigned int g_zEffect_VariantOverridePackedIds;
-extern float g_zEffect_FrameDeltaRemainingSec;
 extern int g_zEffect_ConditionalEffectLevel;
 extern int g_zEffect_VariantCycleId;
 extern int g_zEffect_SkipStopDelay;

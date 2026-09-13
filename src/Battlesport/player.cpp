@@ -1533,7 +1533,13 @@ enum PlayerMasterTypeId {
     kPlayerMasterTypeAmphib = 5
 };
 
-const float kPlayerMasterTypeTrackCooldownSec = 1.0f;
+/**
+ * @recoil-anchor recoil:anchor:battlesport-player-master-type-track-cooldown-negative
+ * @recoil-artifact defines .rdata recoil:data:0x4d0860: Shared negative unit interval.
+ * Purpose: retain the retail scalar shared by four mode transitions and the async callback.
+ * The current name and named-versus-anonymous original source provenance remain inferred.
+ */
+const float kPlayerMasterTypeTrackCooldownNegSec = -1.0f;
 const float kPlayerMasterTypeFlyCooldownSec = 5.0f;
 const int kPlayerAiMode2TopSteering = 1;
 const int kPlayerAiMode2SteerDirectTarget = 0;
@@ -6669,9 +6675,9 @@ void __fastcall TickLocalPlayerControls(
     playerState->steeringInputCopy = playerState->steeringInput;
     HudUiMgr::UpdateTargetReticleFromCursor(
         2,
-        &playerState->storedTargetPos,
         playerState->cursorNormX,
-        playerState->cursorNormY
+        playerState->cursorNormY,
+        &playerState->storedTargetPos
     );
 
     const int altFireState = zInput::BindMapCurrentReadCommandInputState(12);
@@ -9518,7 +9524,7 @@ int __fastcall TransitionToMasterTypeTrack(
     playerState->currentMasterType = masterModalData->masterType;
     saveState->SelectModalStateByMasterType(kPlayerMasterTypeTrack);
     playerState->masterTypeTransitionCooldownUntilTime =
-        g_Time_AccumulatedTimeSec + kPlayerMasterTypeTrackCooldownSec;
+        g_Time_AccumulatedTimeSec - kPlayerMasterTypeTrackCooldownNegSec;
     zClass_Class::gwNodeSetActive(playerState->modeVariantNode, 1);
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
@@ -9624,7 +9630,7 @@ int __fastcall TransitionToMasterTypeAmphib(
     playerState->currentMasterType = masterModalData->masterType;
     saveState->SelectModalStateByMasterType(kPlayerMasterTypeAmphib);
     playerState->masterTypeTransitionCooldownUntilTime =
-        g_Time_AccumulatedTimeSec + kPlayerMasterTypeTrackCooldownSec;
+        g_Time_AccumulatedTimeSec - kPlayerMasterTypeTrackCooldownNegSec;
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x239), 5.0f);
@@ -9725,7 +9731,7 @@ int __fastcall TransitionToMasterTypeHover(
     playerState->currentMasterType = masterModalData->masterType;
     saveState->SelectModalStateByMasterType(kPlayerMasterTypeHover);
     playerState->masterTypeTransitionCooldownUntilTime =
-        g_Time_AccumulatedTimeSec + kPlayerMasterTypeTrackCooldownSec;
+        g_Time_AccumulatedTimeSec - kPlayerMasterTypeTrackCooldownNegSec;
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x23a), 5.0f);
@@ -9813,7 +9819,7 @@ int __fastcall TransitionToMasterTypeSub(
     }
 
     playerState->masterTypeTransitionCooldownUntilTime =
-        g_Time_AccumulatedTimeSec + kPlayerMasterTypeTrackCooldownSec;
+        g_Time_AccumulatedTimeSec - kPlayerMasterTypeTrackCooldownNegSec;
 
     if (saveState == (zUtil_SaveGameState *)g_GameStateOrMapTable) {
         HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x23b), 5.0f);
@@ -10272,8 +10278,6 @@ void __fastcall AsyncCommandCallback(
     void *,
     int eventCode
 ) {
-    zUtil_SaveGameState *const localSaveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
-
     switch (eventCode) {
     case 0:
         if (animEntry == g_Player_ActiveDebugScriptAsyncEntry) {
@@ -10289,7 +10293,7 @@ void __fastcall AsyncCommandCallback(
     case 2:
         UnbindCurrentSaveStateIfSinglePlayer();
         HudUiMgr::DisableHud();
-        HudUiMgr::UpdateTargetReticleFromCursor(0, 0, 0.0f, 0.0f);
+        HudUiMgr::UpdateTargetReticleFromCursor(0, 0.0f, 0.0f, 0);
         HudUiMgr::DisableTopAndChatStacks();
         return;
 
@@ -10300,8 +10304,8 @@ void __fastcall AsyncCommandCallback(
 
     case 11:
         if (zOpt::GetNetworkEnabled() == 0) {
-            localSaveState->playerState->lifecycleState = kPlayerLifecycleState6Inactive;
-            localSaveState->UpdateModalLoopSfx(0);
+            ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->lifecycleState = kPlayerLifecycleState6Inactive;
+            ((zUtil_SaveGameState *)g_GameStateOrMapTable)->UpdateModalLoopSfx(0);
         }
         return;
 
@@ -10309,7 +10313,7 @@ void __fastcall AsyncCommandCallback(
         if (zOpt::GetNetworkEnabled() == 0) {
             g_Player_LocalControlEnabled = 0;
             HudUiMgr::DisableHud();
-            HudUiMgr::UpdateTargetReticleFromCursor(0, 0, 0.0f, 0.0f);
+            HudUiMgr::UpdateTargetReticleFromCursor(0, 0.0f, 0.0f, 0);
             HudUiTimerPanel::SetRunning(0);
             HudUiMgr::TriggerCurrentLayoutOnActivated();
         }
@@ -10323,9 +10327,9 @@ void __fastcall AsyncCommandCallback(
                 HudUiMgr::ApplyHudModeSwitch(zOpt::GetHudTypeForCurrentHwMode());
                 HudUiMgr::EnableHud();
             }
-            HudUiMgr::UpdateTargetReticleFromCursor(1, 0, 0.5f, 0.5f);
+            HudUiMgr::UpdateTargetReticleFromCursor(1, 0.5f, 0.5f, 0);
             HudUi::ShowTopMessageLine(
-                localSaveState->playerState->activeAltGunController->optCatalogEntry->description,
+                ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->activeAltGunController->optCatalogEntry->description,
                 5.0f
             );
             HudUiTimerPanel::SetRunning(1);
@@ -10340,11 +10344,11 @@ void __fastcall AsyncCommandCallback(
         return;
 
     case 16:
-        ResetMotionTransientState(localSaveState);
+        ResetMotionTransientState(((zUtil_SaveGameState *)g_GameStateOrMapTable));
         return;
 
     case 17:
-        CaptureCurrentObjectPoseAsRestartAnchor(localSaveState);
+        CaptureCurrentObjectPoseAsRestartAnchor(((zUtil_SaveGameState *)g_GameStateOrMapTable));
         return;
 
     case 20:
@@ -10352,27 +10356,20 @@ void __fastcall AsyncCommandCallback(
         return;
 
     case 25:
-        localSaveState->playerState->nanitePanelLevel = 0;
+        ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->nanitePanelLevel = 0;
         HudUiMgr::SetNanitePanelCount(0);
-        EnterDestroyedState(
-            localSaveState,
-            0,
-            0,
-            localSaveState->playerState->statusMeterValue - -1.0f
-        );
-        return;
-
+        // The retail switch falls through to the shared destruction event.
     case 26:
         EnterDestroyedState(
-            localSaveState,
+            ((zUtil_SaveGameState *)g_GameStateOrMapTable),
             0,
             0,
-            localSaveState->playerState->statusMeterValue - -1.0f
+            ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->statusMeterValue - kPlayerMasterTypeTrackCooldownNegSec
         );
         return;
 
     case 27:
-        EnterDestroyedState(localSaveState, 0, 0, 10.0f);
+        EnterDestroyedState(((zUtil_SaveGameState *)g_GameStateOrMapTable), 0, 0, 10.0f);
         return;
 
     case 99:
@@ -10453,12 +10450,10 @@ void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
         &worldPos.z
     );
 
-    float pitchRad;
-    float yawRad;
-    float rollRad;
-    zClass_Object3D::gwObject3DGetRotation(playerState->rootNode, &pitchRad, &yawRad, &rollRad);
+    zVec3 rotation;
+    zClass_Object3D::gwObject3DGetRotation(playerState->rootNode, &rotation.x, &rotation.y, &rotation.z);
 
-    SetWorldPoseAndRestartAnchor(saveState, &worldPos, yawRad);
+    SetWorldPoseAndRestartAnchor(saveState, &worldPos, rotation.y);
 }
 } // namespace Player
 namespace Player {
@@ -10473,18 +10468,10 @@ void __fastcall ResetMotionTransientState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    playerState->localVel.x = 0.0f;
-    playerState->localVel.y = 0.0f;
-    playerState->localVel.z = 0.0f;
-    playerState->projectileSpawnVel.x = 0.0f;
-    playerState->projectileSpawnVel.y = 0.0f;
-    playerState->projectileSpawnVel.z = 0.0f;
-    playerState->yawRotatedLocalVel.x = 0.0f;
-    playerState->yawRotatedLocalVel.y = 0.0f;
-    playerState->yawRotatedLocalVel.z = 0.0f;
-    playerState->angVelPitch = 0.0f;
-    playerState->angVelYaw = 0.0f;
-    playerState->angVelRoll = 0.0f;
+    playerState->localVel.x = playerState->localVel.y = playerState->localVel.z = 0.0f;
+    playerState->projectileSpawnVel.x = playerState->projectileSpawnVel.y = playerState->projectileSpawnVel.z = 0.0f;
+    playerState->yawRotatedLocalVel.x = playerState->yawRotatedLocalVel.y = playerState->yawRotatedLocalVel.z = 0.0f;
+    playerState->angVelPitch = playerState->angVelYaw = playerState->angVelRoll = 0.0f;
     playerState->steeringInput = 0.0f;
     playerState->throttleInput = 0.0f;
     playerState->subVerticalInput = 0.0f;

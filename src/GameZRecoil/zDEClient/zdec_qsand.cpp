@@ -330,9 +330,11 @@ zDEClient_QSandFeature *__fastcall CreateFeatureStructFromEventTemplate(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-build
  * @recoil-artifact defines .text recoil:function:0x456450: zDEClient_QSand::Build
+ * @recoil-match byte
  *
  * Purpose: clip the quicksand polygon into the feature grid cell and adopt the
  * clipped point list.
+ * Only positive results replace the point list; negative results become zero.
  */
 int __fastcall Build(
     zDEClient_QSandFeature *featureInstance
@@ -344,26 +346,24 @@ int __fastcall Build(
         featureInstance->clipPatchOutput
     );
 
-    if (result <= 0) {
-        if (result < 0) {
-            result = 0;
+    if (result > 0) {
+        if (featureInstance->clipPatchOutput->points == 0) {
+            return 0;
         }
 
-        return result;
+        if (featureInstance->points != 0) {
+            free(featureInstance->points);
+        }
+
+        featureInstance->points = featureInstance->clipPatchOutput->points;
+        featureInstance->eventTemplate.pointCount = featureInstance->clipPatchOutput->pointCount;
+    } else if (result < 0) {
+        result = 0;
     }
 
-    if (featureInstance->clipPatchOutput->points == 0) {
-        return 0;
-    }
-
-    if (featureInstance->points != 0) {
-        free(featureInstance->points);
-    }
-
-    featureInstance->points = featureInstance->clipPatchOutput->points;
-    featureInstance->eventTemplate.pointCount = featureInstance->clipPatchOutput->pointCount;
     return result;
 }
+
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-createfeature

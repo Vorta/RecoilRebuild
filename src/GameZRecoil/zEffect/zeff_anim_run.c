@@ -56,55 +56,55 @@ int g_zEffect_RandTableIndex = 0;
  * Purpose: Stores the animation ZBD path loaded by zeff_anim_init.c.
  */
 char g_zEffectAnim_ZbdFilename[0x80] = {0};
-/* Animation load-state globals at 0x575da0..0x575db4 are stored as the
- * original adjacent records read by zEffect_Anim::LoadZbd and cleared by
- * Init/Shutdown. Keep declaration order and zero initialization source-visible.
- */
+
+
+
+
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-entriesinstantiated
- * @recoil-artifact defines .data recoil:data:0x575da0: g_zEffectAnim_EntriesInstantiated.
- * Purpose: Records whether animation entries have been loaded and
- * instantiated.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-state
+ * @recoil-artifact defines .data recoil:data:0x575da0: g_zEffectAnim_State.
+ * Purpose: Own the contiguous live animation state read and fixed up by LoadZbd.
  */
-int g_zEffectAnim_EntriesInstantiated = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-heapptr
- * @recoil-artifact defines .data recoil:data:0x575da4: g_zEffectAnim_HeapPtr.
- * Purpose: Retains the loaded animation heap block released by shutdown.
- */
-void *g_zEffectAnim_HeapPtr = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-countspackedloword
- * @recoil-artifact defines .data recoil:data:0x575da8: g_zEffectAnim_CountsPackedLoWord.
- * Purpose: Stores the packed count field read from the animation ZBD header.
- */
-short g_zEffectAnim_CountsPackedLoWord = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-entrycount
- * @recoil-artifact defines .data recoil:data:0x575daa: g_zEffectAnim_EntryCount.
- * Purpose: Tracks the number of entries in g_zEffectAnim_EntryList.
- */
-short g_zEffectAnim_EntryCount = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-entrylist
- * @recoil-artifact defines .data recoil:data:0x575dac: g_zEffectAnim_EntryList.
- * Purpose: Owns the loaded animation entry table used by load, shutdown,
- * save, activation, and runtime dispatch.
- */
-zEffectAnimEntry *g_zEffectAnim_EntryList = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-textidentrycount
- * @recoil-artifact defines .data recoil:data:0x575db0: g_zEffectAnim_TextIdEntryCount.
- * Purpose: Tracks localized text-id entries loaded from the animation ZBD.
- */
-int g_zEffectAnim_TextIdEntryCount = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-textidentrylist
- * @recoil-artifact defines .data recoil:data:0x575db4: g_zEffectAnim_TextIdEntryList.
- * Purpose: Owns the localized text-id entry table loaded from the animation
- * ZBD.
- */
-zEffectAnimTextIdEntry *g_zEffectAnim_TextIdEntryList = 0;
+zEffectAnimState g_zEffectAnim_State = {0};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-sourcefilestampcount
  * @recoil-artifact defines .data recoil:data:0x53a248: g_zEffectAnim_SourceFileStampCount.
@@ -156,60 +156,60 @@ int g_zEffect_CloneCopyMode = 1;
  * Purpose: Supplies the child-copy mode for runtime effect template clones.
  */
 int g_zEffect_CloneCopyChildrenMode = 1;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-world
- * @recoil-artifact defines .data recoil:data:0x575db8: g_zEffect_World.
- * Purpose: Stores g zEffect World data used by engine.zeffect.stop_cleanup_globals.
- */
-zClass_NodePartial *g_zEffect_World = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-defaultgravity
- * @recoil-artifact defines .data recoil:data:0x575dbc: g_zEffect_DefaultGravity.
- * Purpose: Stores the default gravity value restored from animation ZBD state.
- */
-float g_zEffect_DefaultGravity = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionalrefposenabled
- * @recoil-artifact defines .data recoil:data:0x575dc0: g_zEffect_ConditionalRefPosEnabled.
- * Purpose: Enables conditional reference-position distance checks.
- */
-int g_zEffect_ConditionalRefPosEnabled = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-variantoverrideenabled
- * @recoil-artifact defines .data recoil:data:0x575dc4: g_zEffect_VariantOverrideEnabled.
- * Purpose: Enables the packed variant override once every id is complete.
- */
-int g_zEffect_VariantOverrideEnabled = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionalrefposx
- * @recoil-artifact defines .data recoil:data:0x575dc8: g_zEffect_ConditionalRefPosX.
- * Purpose: Stores the conditional reference-position X component.
- */
-float g_zEffect_ConditionalRefPosX = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionalrefposy
- * @recoil-artifact defines .data recoil:data:0x575dcc: g_zEffect_ConditionalRefPosY.
- * Purpose: Stores the conditional reference-position Y component.
- */
-float g_zEffect_ConditionalRefPosY = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionalrefposz
- * @recoil-artifact defines .data recoil:data:0x575dd0: g_zEffect_ConditionalRefPosZ.
- * Purpose: Stores the conditional reference-position Z component.
- */
-float g_zEffect_ConditionalRefPosZ = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-variantoverridepackedids
- * @recoil-artifact defines .data recoil:data:0x575dd4: g_zEffect_VariantOverridePackedIds.
- * Purpose: Stores the completed packed variant ids copied from zTag4Partial.
- */
-unsigned int g_zEffect_VariantOverridePackedIds = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-framedeltaremainingsec
- * @recoil-artifact defines .data recoil:data:0x575dd8: g_zEffect_FrameDeltaRemainingSec.
- * Purpose: Stores g zEffect FrameDeltaRemainingSec data used by engine.zeffect.stop_cleanup_globals.
- */
-float g_zEffect_FrameDeltaRemainingSec = 0.0f;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffect-conditionaleffectlevel
  * @recoil-artifact defines .data recoil:data:0x539ea0: g_zEffect_ConditionalEffectLevel.
@@ -482,10 +482,10 @@ namespace zEffect {
 void __fastcall SetConditionalRefPos(
     const zVec3 *position
 ) {
-    g_zEffect_ConditionalRefPosX = position->x;
-    g_zEffect_ConditionalRefPosY = position->y;
-    g_zEffect_ConditionalRefPosZ = position->z;
-    g_zEffect_ConditionalRefPosEnabled = 1;
+    g_zEffectAnim_State.conditionalRefPosX = position->x;
+    g_zEffectAnim_State.conditionalRefPosY = position->y;
+    g_zEffectAnim_State.conditionalRefPosZ = position->z;
+    g_zEffectAnim_State.conditionalRefPosEnabled = 1;
 }
 
 /**
@@ -511,8 +511,8 @@ void __fastcall SetVariantOverridePackedIdsIfComplete(
 
     unsigned int packedValue = 0;
     memcpy(&packedValue, packedIds, sizeof(packedValue));
-    g_zEffect_VariantOverrideEnabled = 1;
-    g_zEffect_VariantOverridePackedIds = packedValue;
+    g_zEffectAnim_State.variantOverrideEnabled = 1;
+    g_zEffectAnim_State.variantOverridePackedIds = packedValue;
 }
 
 /**
@@ -750,11 +750,11 @@ int __fastcall HandleSoundEvent(
 
     if (event->activeState == 1) {
         if (soundRef->isAttached == 0) {
-            zClass_World::AddSound(g_zEffect_World, soundRef->runtimeNode);
+            zClass_World::AddSound(g_zEffectAnim_State.worldNode, soundRef->runtimeNode);
             soundRef->isAttached = 1;
         }
     } else if (soundRef->isAttached != 0) {
-        zClass_World::RemoveSound(g_zEffect_World, soundRef->runtimeNode);
+        zClass_World::RemoveSound(g_zEffectAnim_State.worldNode, soundRef->runtimeNode);
         soundRef->isAttached = 0;
     }
 
@@ -808,11 +808,11 @@ int __fastcall HandleLightEvent(
 
     if (event->activeState == 1) {
         if (lightRef->isAttached == 0) {
-            zClass_World::AddLight(g_zEffect_World, lightNode);
+            zClass_World::AddLight(g_zEffectAnim_State.worldNode, lightNode);
             lightRef->isAttached = 1;
         }
     } else if (lightRef->isAttached != 0) {
-        zClass_World::RemoveLight(g_zEffect_World, lightNode);
+        zClass_World::RemoveLight(g_zEffectAnim_State.worldNode, lightNode);
         lightRef->isAttached = 0;
     }
 
@@ -928,9 +928,9 @@ int __fastcall HandleLightAnimEvent(
         animEvent->currentSpecularB = animEvent->initialSpecularB;
     }
 
-    float stepSec = g_zEffect_FrameDeltaRemainingSec;
+    float stepSec = g_zEffectAnim_State.frameDeltaRemainingSec;
     if (sequenceRuntime->eventElapsedSec > animEvent->durationSec) {
-        stepSec = g_zEffect_FrameDeltaRemainingSec -
+        stepSec = g_zEffectAnim_State.frameDeltaRemainingSec -
                   (sequenceRuntime->eventElapsedSec - animEvent->durationSec);
     }
 
@@ -989,7 +989,7 @@ int __fastcall HandleLightAnimEvent(
 
     zClass_Light::gwLightSetSpecularColor(lightRef->runtimeNode, specularR, specularG, specularB);
 
-    g_zEffect_FrameDeltaRemainingSec -= stepSec;
+    g_zEffectAnim_State.frameDeltaRemainingSec -= stepSec;
     return sequenceRuntime->eventElapsedSec > animEvent->durationSec ? 2 : 1;
 }
 
@@ -1006,12 +1006,12 @@ int __fastcall HandleFogEvent(
     zEffectFogEvent *event
 ) {
     if ((event->flags & 0x01) != 0) {
-        zClass_World::SetPendingFogState(g_zEffect_World, event->fogState);
+        zClass_World::SetPendingFogState(g_zEffectAnim_State.worldNode, event->fogState);
     }
 
     if ((event->flags & 0x02) != 0) {
         zClass_World::SetPendingFogColorRgb01(
-            g_zEffect_World,
+            g_zEffectAnim_State.worldNode,
             event->fogColorR,
             event->fogColorG,
             event->fogColorB
@@ -1020,14 +1020,14 @@ int __fastcall HandleFogEvent(
 
     if ((event->flags & 0x04) != 0) {
         zClass_World::SetPendingFogAltitudeRange(
-            g_zEffect_World,
+            g_zEffectAnim_State.worldNode,
             event->fogAltitudeMin,
             event->fogAltitudeMax
         );
     }
 
     if ((event->flags & 0x08) != 0) {
-        zClass_World::SetPendingFogRange(g_zEffect_World, event->fogRangeStart, event->fogRangeEnd);
+        zClass_World::SetPendingFogRange(g_zEffectAnim_State.worldNode, event->fogRangeStart, event->fogRangeEnd);
     }
 
     return 2;
@@ -1154,9 +1154,9 @@ int __fastcall AnimateCameraParamsOverTime(
         }
     }
 
-    float stepSec = g_zEffect_FrameDeltaRemainingSec;
+    float stepSec = g_zEffectAnim_State.frameDeltaRemainingSec;
     if (sequenceRuntime->eventElapsedSec > animEvent->endTime) {
-        stepSec = g_zEffect_FrameDeltaRemainingSec -
+        stepSec = g_zEffectAnim_State.frameDeltaRemainingSec -
                   (sequenceRuntime->eventElapsedSec - animEvent->endTime);
     }
 
@@ -1222,7 +1222,7 @@ int __fastcall AnimateCameraParamsOverTime(
         );
     }
 
-    g_zEffect_FrameDeltaRemainingSec -= stepSec;
+    g_zEffectAnim_State.frameDeltaRemainingSec -= stepSec;
     if (sequenceRuntime->eventElapsedSec <= animEvent->endTime) {
         return 1;
     }
@@ -1607,7 +1607,7 @@ int __fastcall HandleNodeAnimEvent(
         }
     }
 
-    float frameStepSec = g_zEffect_FrameDeltaRemainingSec;
+    float frameStepSec = g_zEffectAnim_State.frameDeltaRemainingSec;
     if ((animEvent->flags & 0x0400) != 0 &&
         sequenceRuntime->eventElapsedSec > animEvent->runtimeElapsedSec) {
         frameStepSec -= sequenceRuntime->eventElapsedSec - animEvent->runtimeElapsedSec;
@@ -1770,7 +1770,7 @@ int __fastcall HandleNodeAnimEvent(
         }
     }
 
-    g_zEffect_FrameDeltaRemainingSec -= frameStepSec;
+    g_zEffectAnim_State.frameDeltaRemainingSec -= frameStepSec;
     if ((animEvent->flags & 0x0400) != 0 &&
         sequenceRuntime->eventElapsedSec > animEvent->runtimeElapsedSec) {
         return 2;
@@ -1791,7 +1791,7 @@ int __fastcall FindNearestPickCandidateBelowPoint(
 ) {
     PlayerProbeSampleCandidateBuffer outResults = {0};
     zClass_cls_di::BuildPickCandidateListBelowPoint(
-        g_zEffect_World,
+        g_zEffectAnim_State.worldNode,
         &outResults,
         point->x,
         point->y,
@@ -1898,8 +1898,8 @@ int __fastcall AnimateNodeOverTime(
 
     const float deltaTimeSec =
         sequenceRuntime->eventElapsedSec <= nodeAnimEvent->endTimeSec
-            ? g_zEffect_FrameDeltaRemainingSec
-            : g_zEffect_FrameDeltaRemainingSec -
+            ? g_zEffectAnim_State.frameDeltaRemainingSec
+            : g_zEffectAnim_State.frameDeltaRemainingSec -
                   (sequenceRuntime->eventElapsedSec - nodeAnimEvent->endTimeSec);
 
     if ((nodeAnimEvent->flags & 0x01) != 0) {
@@ -1970,7 +1970,7 @@ int __fastcall AnimateNodeOverTime(
         }
     }
 
-    g_zEffect_FrameDeltaRemainingSec -= deltaTimeSec;
+    g_zEffectAnim_State.frameDeltaRemainingSec -= deltaTimeSec;
     if (sequenceRuntime->eventElapsedSec <= nodeAnimEvent->endTimeSec) {
         return 1;
     }
@@ -2042,20 +2042,19 @@ int __fastcall AdvanceKeyframeSample(
     zEffectKeyframeSampleHeader *sampleHeader
 ) {
     const int nextSampleOffset =
-        keyframeEvent->currentKeyframeOffset + (int)(sizeof(zEffectKeyframeSampleHeader));
-
+        keyframeEvent->currentKeyframeOffset + (int)sizeof(zEffectKeyframeSampleHeader);
     ++keyframeEvent->lookaheadAdvanceCount;
+
     keyframeEvent->currentKeyframeOffset = nextSampleOffset;
 
-    const int channelFlags = sampleHeader->channelFlags;
-    if ((channelFlags & 0x01) != 0) {
+    if ((sampleHeader->channelFlags & 0x01) != 0) {
         keyframeEvent->currentKeyframeOffset =
             nextSampleOffset + (int)(sizeof(zEffectKeyframeSampleChannel));
     }
-    if ((channelFlags & 0x02) != 0) {
+    if ((sampleHeader->channelFlags & 0x02) != 0) {
         keyframeEvent->currentKeyframeOffset += (int)(sizeof(zEffectKeyframeSampleChannel));
     }
-    if ((channelFlags & 0x04) != 0) {
+    if ((sampleHeader->channelFlags & 0x04) != 0) {
         keyframeEvent->currentKeyframeOffset += (int)(sizeof(zEffectKeyframeSampleChannel));
     }
 
@@ -2092,89 +2091,107 @@ float __fastcall AnimateKeyframeSample(
         *deltaTime = sampleHeader->startTimeSec;
     }
 
-    float sampleEndTimeSec = sequenceRuntime->eventElapsedSec;
+    float sampleDurationSec;
     if (sequenceRuntime->eventElapsedSec > sampleHeader->endTimeSec) {
-        const float savedLocalTime = keyframeEvent->keyframeLocalTime;
+        const float savedLocalTimeSec = keyframeEvent->keyframeLocalTime;
         const int savedOffset = keyframeEvent->currentKeyframeOffset;
         if (AdvanceKeyframeSample(sequenceRuntime, keyframeEvent, sampleHeader) != 0) {
             zEffectKeyframeSampleHeader *const nextSample =
-                (zEffectKeyframeSampleHeader *)((unsigned char *)(keyframeEvent) +
-                                                keyframeEvent->currentKeyframeOffset);
+                (zEffectKeyframeSampleHeader *)((int *)(keyframeEvent) +
+                                                (keyframeEvent->currentKeyframeOffset >> 2));
             if (nextSample->channelFlags == sampleHeader->channelFlags) {
-                const float consumed = sampleHeader->endTimeSec - *deltaTime + preStartDelaySec;
+                const float sampleRemainingSec = sampleHeader->endTimeSec - *deltaTime;
                 *deltaTime = sampleHeader->endTimeSec;
+                const float consumed = sampleRemainingSec + preStartDelaySec;
                 keyframeEvent->keyframeLocalTime = sampleHeader->endTimeSec;
                 keyframeEvent->currentKeyframeOffset = savedOffset;
                 return consumed;
             }
         }
 
+        // Preserve retail's memory read before restoring the saved sample time under VC5.
+        const volatile float *const savedLocalTime = &savedLocalTimeSec;
+        const double restoredLocalTimeSec = *savedLocalTime;
+        const int lookaheadAdvanceCount = keyframeEvent->lookaheadAdvanceCount;
         keyframeEvent->currentKeyframeOffset = savedOffset;
-        keyframeEvent->keyframeLocalTime = savedLocalTime;
-        --keyframeEvent->lookaheadAdvanceCount;
-        sampleEndTimeSec = sampleHeader->endTimeSec;
+        keyframeEvent->keyframeLocalTime = (float)restoredLocalTimeSec;
+        keyframeEvent->lookaheadAdvanceCount = lookaheadAdvanceCount - 1;
+        sampleDurationSec = sampleHeader->endTimeSec - *deltaTime;
+    } else {
+        sampleDurationSec = sequenceRuntime->eventElapsedSec - *deltaTime;
     }
 
     zEffectKeyframeSampleChannel *sampleChannel =
         (zEffectKeyframeSampleChannel *)(sampleHeader + 1);
-    const float sampleDurationSec = sampleEndTimeSec - *deltaTime;
-    keyframeEvent->keyframeLocalTime += sampleDurationSec;
-    const float sampleLocalTime = keyframeEvent->keyframeLocalTime;
+    const float positionTimeSec = sampleDurationSec + keyframeEvent->keyframeLocalTime;
+    keyframeEvent->keyframeLocalTime = positionTimeSec;
 
-    zVec3 outEuler = {0};
+    zVec3 outEuler;
     if ((sampleHeader->channelFlags & 0x01) != 0) {
-        outEuler.x = sampleChannel->rate.x * sampleLocalTime + sampleChannel->baseQuat.w;
-        outEuler.y = sampleChannel->rate.y * sampleLocalTime + sampleChannel->baseQuat.x;
-        outEuler.z = sampleChannel->rate.z * sampleLocalTime + sampleChannel->baseQuat.y;
+        const float x = sampleChannel->rate.x * positionTimeSec;
+        const float y = sampleChannel->rate.y * positionTimeSec;
+        const float z = sampleChannel->rate.z * positionTimeSec;
+        outEuler.x = x + sampleChannel->baseQuat.w;
+        outEuler.y = y + sampleChannel->baseQuat.x;
+        outEuler.z = z + sampleChannel->baseQuat.y;
 
-        if (targetNode->classId == 5) {
+        switch (targetNode->classId) {
+        case 5:
             zClass_Object3D::gwObject3DSetPosition(targetNode, outEuler.x, outEuler.y, outEuler.z);
-        } else if (targetNode->classId == 1) {
+            break;
+        case 1:
             zClass_Camera::gwCameraSetTarget(targetNode, outEuler.x, outEuler.y, outEuler.z);
+            break;
         }
 
         ++sampleChannel;
     }
 
     if ((sampleHeader->channelFlags & 0x02) != 0) {
-        const zVec3 rotationVector = {sampleChannel->rate.x * sampleLocalTime,
-            sampleChannel->rate.y * sampleLocalTime,
-            sampleChannel->rate.z * sampleLocalTime};
+        const float localTimeSec = keyframeEvent->keyframeLocalTime;
+        const zVec3 rotationVector = {sampleChannel->rate.x * localTimeSec,
+            sampleChannel->rate.y * localTimeSec,
+            sampleChannel->rate.z * localTimeSec};
 
-        zQuat deltaQuat = {0};
+        zQuat deltaQuat;
         zMathQuatFromRotationVector(&rotationVector, &deltaQuat);
 
-        zQuat blendedQuat = {0};
+        zQuat blendedQuat;
         zMathQuatMultiply(&deltaQuat, &sampleChannel->baseQuat, &blendedQuat);
 
-        zMat4x3 rotationMatrix = {0};
+        zMat4x3 rotationMatrix;
         zMathQuatToMatrix(&blendedQuat, &rotationMatrix);
         zMathMatExtractEulerAngles(&rotationMatrix, &outEuler);
 
-        if (targetNode->classId == 5) {
+        switch (targetNode->classId) {
+        case 5:
             zClass_Object3D::gwObject3DSetRotation(targetNode, outEuler.x, outEuler.y, outEuler.z);
-        } else if (targetNode->classId == 1) {
+            break;
+        case 1:
             zClass_Camera::gwCameraSetPosition(targetNode, outEuler.x, outEuler.y, outEuler.z);
+            break;
         }
 
         ++sampleChannel;
     }
 
     if ((sampleHeader->channelFlags & 0x04) != 0) {
-        outEuler.x =
-            sampleChannel->rate.x * keyframeEvent->keyframeLocalTime + sampleChannel->baseQuat.w;
-        outEuler.y =
-            sampleChannel->rate.y * keyframeEvent->keyframeLocalTime + sampleChannel->baseQuat.x;
-        outEuler.z =
-            sampleChannel->rate.z * keyframeEvent->keyframeLocalTime + sampleChannel->baseQuat.y;
+        const float x = sampleChannel->rate.x * keyframeEvent->keyframeLocalTime;
+        const float y = sampleChannel->rate.y * keyframeEvent->keyframeLocalTime;
+        const float z = sampleChannel->rate.z * keyframeEvent->keyframeLocalTime;
+        outEuler.x = x + sampleChannel->baseQuat.w;
+        outEuler.y = y + sampleChannel->baseQuat.x;
+        outEuler.z = z + sampleChannel->baseQuat.y;
 
         if (targetNode->classId == 5) {
             zClass_Object3D::gwObject3DSetScale(targetNode, outEuler.x, outEuler.y, outEuler.z);
         }
     }
 
+    // Compute the return amount first: VC5 otherwise swaps it with the updated output time.
+    const float consumedSec = preStartDelaySec + sampleDurationSec;
     *deltaTime += sampleDurationSec;
-    return preStartDelaySec + sampleDurationSec;
+    return consumedSec;
 }
 
 /**
@@ -2202,12 +2219,16 @@ int __fastcall AdvanceKeyframe(
         keyframeEvent->lookaheadAdvanceCount = 0;
     }
 
-    float sampleTimeSec = sequenceRuntime->eventElapsedSec - g_zEffect_FrameDeltaRemainingSec;
+    float sampleTimeSec = sequenceRuntime->eventElapsedSec - g_zEffectAnim_State.frameDeltaRemainingSec;
 
-    while (keyframeEvent->currentKeyframeOffset < keyframeEvent->header.recordSize) {
+    if (keyframeEvent->currentKeyframeOffset >=
+        ((zEffectAnimEventHeader *)sequenceRuntime->currentEvent)->recordSize) {
+        return 2;
+    }
+    do {
         zEffectKeyframeSampleHeader *const sampleHeader =
-            (zEffectKeyframeSampleHeader *)((unsigned char *)(keyframeEvent) +
-                                            keyframeEvent->currentKeyframeOffset);
+            (zEffectKeyframeSampleHeader *)((int *)(keyframeEvent) +
+                                            (keyframeEvent->currentKeyframeOffset >> 2));
         const float consumedSec = AnimateKeyframeSample(
             sequenceRuntime,
             keyframeEvent,
@@ -2215,19 +2236,16 @@ int __fastcall AdvanceKeyframe(
             sampleHeader,
             &sampleTimeSec
         );
-        g_zEffect_FrameDeltaRemainingSec -= consumedSec;
+        g_zEffectAnim_State.frameDeltaRemainingSec -= consumedSec;
 
         if (sampleTimeSec < sequenceRuntime->eventElapsedSec &&
             AdvanceKeyframeSample(sequenceRuntime, keyframeEvent, sampleHeader) == 0) {
             runState = 2;
         }
 
-        if (sampleTimeSec >= sequenceRuntime->eventElapsedSec || runState == 2) {
-            break;
-        }
-    }
+    } while (sampleTimeSec < sequenceRuntime->eventElapsedSec && runState != 2);
 
-    return keyframeEvent->currentKeyframeOffset < keyframeEvent->header.recordSize ? runState : 2;
+    return runState;
 }
 
 /**
@@ -2290,8 +2308,8 @@ int __fastcall RunKeyframes(
 
     const float frameDeltaUsedSec =
         sequenceRuntime->eventElapsedSec <= keyframeEvent->endTimeSec
-            ? g_zEffect_FrameDeltaRemainingSec
-            : g_zEffect_FrameDeltaRemainingSec -
+            ? g_zEffectAnim_State.frameDeltaRemainingSec
+            : g_zEffectAnim_State.frameDeltaRemainingSec -
                   (sequenceRuntime->eventElapsedSec - keyframeEvent->endTimeSec);
 
     float alphaScale = 0.0f;
@@ -2303,7 +2321,7 @@ int __fastcall RunKeyframes(
         targetNode,
         keyframeEvent->alphaScaleRate * frameDeltaUsedSec + alphaScale
     );
-    g_zEffect_FrameDeltaRemainingSec -= frameDeltaUsedSec;
+    g_zEffectAnim_State.frameDeltaRemainingSec -= frameDeltaUsedSec;
 
     if (sequenceRuntime->eventElapsedSec <= keyframeEvent->endTimeSec) {
         return 1;
@@ -2487,8 +2505,8 @@ int __fastcall HandleDetachEvent(
 
     const float timeSlice =
         runtime->eventElapsedSec <= event->endTimeSec
-            ? g_zEffect_FrameDeltaRemainingSec
-            : g_zEffect_FrameDeltaRemainingSec - (runtime->eventElapsedSec - event->endTimeSec);
+            ? g_zEffectAnim_State.frameDeltaRemainingSec
+            : g_zEffectAnim_State.frameDeltaRemainingSec - (runtime->eventElapsedSec - event->endTimeSec);
 
     const unsigned int flags = (unsigned int)(event->flags);
 
@@ -2583,7 +2601,7 @@ int __fastcall HandleDetachEvent(
         result = 1;
     }
 
-    g_zEffect_FrameDeltaRemainingSec -= timeSlice;
+    g_zEffectAnim_State.frameDeltaRemainingSec -= timeSlice;
     return result;
 }
 
@@ -2599,8 +2617,8 @@ int __fastcall HandleTransformRefsEvent(
     zEffectTransformRefsEvent *event
 ) {
     if (event->animEntryIndex <= 0) {
-        zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
-        for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
+        zEffectAnimEntry *entry = g_zEffectAnim_State.entryList;
+        for (int i = 0; i < g_zEffectAnim_State.entryCount; ++i, ++entry) {
             if (strcmp(entry->name, event->animName) == 0) {
                 event->animEntryIndex = (short)(i);
                 break;
@@ -2663,7 +2681,7 @@ int __fastcall HandleTransformRefsEvent(
         }
 
         zEffectAnimEntry *const childEntry = zEffectAnim::SetTransformRefs(
-            &g_zEffectAnim_EntryList[event->animEntryIndex],
+            &g_zEffectAnim_State.entryList[event->animEntryIndex],
             0,
             refNodeA,
             &refPointA,
@@ -2750,8 +2768,8 @@ int __fastcall HandleSurfaceRefEvent(
         }
 
         if (event->animEntryIndex <= 0) {
-            zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
-            for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
+            zEffectAnimEntry *entry = g_zEffectAnim_State.entryList;
+            for (int i = 0; i < g_zEffectAnim_State.entryCount; ++i, ++entry) {
                 if (strcmp(entry->name, event->sequenceName) == 0) {
                     event->animEntryIndex = (short)(i);
                     break;
@@ -2765,7 +2783,7 @@ int __fastcall HandleSurfaceRefEvent(
             }
 
             const unsigned short flags = (unsigned short)(event->flags);
-            zEffectAnimEntry *const targetEntry = &g_zEffectAnim_EntryList[event->animEntryIndex];
+            zEffectAnimEntry *const targetEntry = &g_zEffectAnim_State.entryList[event->animEntryIndex];
 
             if ((flags & 0x01u) != 0) {
                 zClass_NodePartial *const refNode =
@@ -2876,7 +2894,7 @@ int __fastcall CleanupLightRefs(
         }
 
         if (lightRef->isAttached != 0) {
-            zClass_World::RemoveLight(g_zEffect_World, runtimeNode);
+            zClass_World::RemoveLight(g_zEffectAnim_State.worldNode, runtimeNode);
             lightRef->isAttached = 0;
         }
     }
@@ -2911,7 +2929,7 @@ int __fastcall CleanupSoundRefs(
         }
 
         if (soundRef->isAttached != 0) {
-            zClass_World::RemoveSound(g_zEffect_World, runtimeNode);
+            zClass_World::RemoveSound(g_zEffectAnim_State.worldNode, runtimeNode);
             soundRef->isAttached = 0;
         }
     }
@@ -2984,8 +3002,8 @@ int __fastcall HandleNamedAnimStopEvent(
     zEffectAnimEmitterEvent *event
 ) {
     if (event->cachedEntryIndex <= 0) {
-        zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
-        for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
+        zEffectAnimEntry *entry = g_zEffectAnim_State.entryList;
+        for (int i = 0; i < g_zEffectAnim_State.entryCount; ++i, ++entry) {
             if (strcmp(entry->name, event->animName) == 0) {
                 event->cachedEntryIndex = i;
                 break;
@@ -2994,7 +3012,7 @@ int __fastcall HandleNamedAnimStopEvent(
     }
     const int entryIndex = event->cachedEntryIndex;
     if (entryIndex > 0) {
-        zEffectAnim::Stop(&g_zEffectAnim_EntryList[entryIndex]);
+        zEffectAnim::Stop(&g_zEffectAnim_State.entryList[entryIndex]);
     }
 
     return 2;
@@ -3013,8 +3031,8 @@ int __fastcall HandleEmitterPlayEvent(
     zEffectAnimEmitterEvent *event
 ) {
     if (event->cachedEntryIndex <= 0) {
-        zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
-        for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
+        zEffectAnimEntry *entry = g_zEffectAnim_State.entryList;
+        for (int i = 0; i < g_zEffectAnim_State.entryCount; ++i, ++entry) {
             if (strcmp(entry->name, event->animName) == 0) {
                 event->cachedEntryIndex = i;
                 break;
@@ -3023,7 +3041,7 @@ int __fastcall HandleEmitterPlayEvent(
     }
     const int entryIndex = event->cachedEntryIndex;
     if (entryIndex > 0) {
-        zEffect_Anim::NodeActionCallback(&g_zEffectAnim_EntryList[entryIndex], 0);
+        zEffect_Anim::NodeActionCallback(&g_zEffectAnim_State.entryList[entryIndex], 0);
     }
 
     return 2;
@@ -3040,8 +3058,8 @@ int __fastcall HandleEmitterStopEvent(
     zEffectAnimEmitterEvent *event
 ) {
     if (event->cachedEntryIndex <= 0) {
-        zEffectAnimEntry *entry = g_zEffectAnim_EntryList;
-        for (int i = 0; i < g_zEffectAnim_EntryCount; ++i, ++entry) {
+        zEffectAnimEntry *entry = g_zEffectAnim_State.entryList;
+        for (int i = 0; i < g_zEffectAnim_State.entryCount; ++i, ++entry) {
             if (strcmp(entry->name, event->animName) == 0) {
                 event->cachedEntryIndex = i;
                 break;
@@ -3050,7 +3068,7 @@ int __fastcall HandleEmitterStopEvent(
     }
     const int entryIndex = event->cachedEntryIndex;
     if (entryIndex > 0) {
-        zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[entryIndex];
+        zEffectAnimEntry *const entry = &g_zEffectAnim_State.entryList[entryIndex];
         const unsigned char activationState = entry->activationState;
         if (activationState != 5) {
             entry->activationState = activationState == 2 ? 6 : 4;
@@ -3150,7 +3168,7 @@ int __fastcall HandleConditionalChainEvent(
                 conditionMatched = 1;
             }
         } else if ((conditionMask & 0x02) != 0) {
-            if (g_zEffect_ConditionalRefPosEnabled != 0) {
+            if (g_zEffectAnim_State.conditionalRefPosEnabled != 0) {
                 if (cachedConditionMask != conditionMask) {
                     conditionalValue = GetConditionalRefPosDistanceSq(self->callbackNode);
                 }
@@ -3159,10 +3177,10 @@ int __fastcall HandleConditionalChainEvent(
                 }
             }
         } else if ((conditionMask & 0x08) != 0) {
-            if (g_zEffect_ConditionalRefPosEnabled != 0) {
-                const zVec3 conditionalRefPos = {g_zEffect_ConditionalRefPosX,
-                    g_zEffect_ConditionalRefPosY,
-                    g_zEffect_ConditionalRefPosZ};
+            if (g_zEffectAnim_State.conditionalRefPosEnabled != 0) {
+                const zVec3 conditionalRefPos = {g_zEffectAnim_State.conditionalRefPosX,
+                    g_zEffectAnim_State.conditionalRefPosY,
+                    g_zEffectAnim_State.conditionalRefPosZ};
                 int hit = 0;
                 if (TraceUpwardHitFromNodeOrPos(0, &conditionalRefPos, &threshold.f32, &hit) == 0 &&
                     hit != 0) {
@@ -3252,7 +3270,7 @@ int __fastcall TraceUpwardHitFromNodeOrPos(
 
     PlayerProbeSampleCandidateBuffer rayData = {0};
     const int result = zClass_cls_di::RaycastFindClosest(
-        g_zEffect_World,
+        g_zEffectAnim_State.worldNode,
         &rayData,
         startPosition.x,
         startPosition.y,
@@ -3284,9 +3302,9 @@ float __fastcall GetConditionalRefPosDistanceSq(
         return 0.0f;
     }
 
-    const float dx = worldPosition.x - g_zEffect_ConditionalRefPosX;
-    const float dy = worldPosition.y - g_zEffect_ConditionalRefPosY;
-    const float dz = worldPosition.z - g_zEffect_ConditionalRefPosZ;
+    const float dx = worldPosition.x - g_zEffectAnim_State.conditionalRefPosX;
+    const float dy = worldPosition.y - g_zEffectAnim_State.conditionalRefPosY;
+    const float dz = worldPosition.z - g_zEffectAnim_State.conditionalRefPosZ;
     return dx * dx + dy * dy + dz * dz;
 }
 
@@ -3369,8 +3387,8 @@ int __fastcall HandleScreenColorFxEvent(
 
     int result = 1;
     const float timeSlice = sequenceRuntime->eventElapsedSec <= event->endTimeSec
-                                ? g_zEffect_FrameDeltaRemainingSec
-                                : g_zEffect_FrameDeltaRemainingSec -
+                                ? g_zEffectAnim_State.frameDeltaRemainingSec
+                                : g_zEffectAnim_State.frameDeltaRemainingSec -
                                       (sequenceRuntime->eventElapsedSec - event->endTimeSec);
     const float colorTime = sequenceRuntime->eventElapsedSec <= event->endTimeSec
                                 ? sequenceRuntime->eventElapsedSec
@@ -3380,7 +3398,7 @@ int __fastcall HandleScreenColorFxEvent(
     float green = event->greenSlope * colorTime + event->greenBase;
     float alpha = event->alphaSlope * colorTime + event->alphaBase;
     float blue = event->blueSlope * colorTime + event->blueBase;
-    g_zEffect_FrameDeltaRemainingSec -= timeSlice;
+    g_zEffectAnim_State.frameDeltaRemainingSec -= timeSlice;
 
     if (sequenceRuntime->eventElapsedSec > event->endTimeSec) {
         red = event->redEnd;
@@ -3467,13 +3485,13 @@ int __fastcall HandleScreenOverlayFxEvent(
     }
 
     const float timeSlice = sequenceRuntime->eventElapsedSec <= event->endTimeSec
-                                ? g_zEffect_FrameDeltaRemainingSec
-                                : g_zEffect_FrameDeltaRemainingSec -
+                                ? g_zEffectAnim_State.frameDeltaRemainingSec
+                                : g_zEffectAnim_State.frameDeltaRemainingSec -
                                       (sequenceRuntime->eventElapsedSec - event->endTimeSec);
     const float overlayTime = sequenceRuntime->eventElapsedSec <= event->endTimeSec
                                   ? sequenceRuntime->eventElapsedSec
                                   : event->endTimeSec;
-    g_zEffect_FrameDeltaRemainingSec -= timeSlice;
+    g_zEffectAnim_State.frameDeltaRemainingSec -= timeSlice;
 
     int rectLeftPixels = 0;
     int rectTopPixels = 0;
@@ -3541,7 +3559,7 @@ int __fastcall HandleTopMessageEvent(
 ) {
     const int textIdIndex = event->textIdIndex;
     if (textIdIndex >= 0) {
-        zEffectAnimTextIdEntry *const textEntry = &g_zEffectAnim_TextIdEntryList[textIdIndex];
+        zEffectAnimTextIdEntry *const textEntry = &g_zEffectAnim_State.textIdEntryList[textIdIndex];
         const int messageId = textEntry->messageId;
         const char *message = textEntry->messageKey;
         if (messageId != 0) {
@@ -3570,57 +3588,53 @@ int __fastcall RunSequenceEvents(
     zEffectAnimSurfaceRuntime *sequenceRuntime
 ) {
     if (self == 0 || sequenceRuntime == 0 || sequenceRuntime->currentEvent == 0) {
-        if (sequenceRuntime != 0) {
-            sequenceRuntime->runState = 2;
-        }
+        sequenceRuntime->runState = 2;
         return -1;
     }
 
-    zEffectAnimEventHeader *currentEvent =
-        (zEffectAnimEventHeader *)(sequenceRuntime->currentEvent);
     if (sequenceRuntime->runState == 1 ||
-        currentEvent > (zEffectAnimEventHeader *)(sequenceRuntime->eventStream)) {
-        sequenceRuntime->sequenceElapsedSec += g_zEffect_FrameDeltaRemainingSec;
-        sequenceRuntime->eventElapsedSec += g_zEffect_FrameDeltaRemainingSec;
+        sequenceRuntime->currentEvent > sequenceRuntime->eventStream) {
+        sequenceRuntime->sequenceElapsedSec += g_zEffectAnim_State.frameDeltaRemainingSec;
+        sequenceRuntime->eventElapsedSec += g_zEffectAnim_State.frameDeltaRemainingSec;
     }
 
     while (true) {
-        currentEvent = (zEffectAnimEventHeader *)(sequenceRuntime->currentEvent);
-        int invalidStart = 0;
-
         if (sequenceRuntime->runState == 0) {
-            int startSatisfied = 0;
-            switch (currentEvent->startMode) {
+            int waitingForStart = 0;
+            zEffectAnimEventHeader *const startEvent =
+                (zEffectAnimEventHeader *)sequenceRuntime->currentEvent;
+            switch (startEvent->startMode) {
             case 1:
-                startSatisfied = self->triggerCurrentValue >= currentEvent->startThreshold;
+                if (self->triggerCurrentValue < startEvent->startThreshold) {
+                    waitingForStart = 1;
+                }
                 break;
             case 2:
-                startSatisfied = sequenceRuntime->sequenceElapsedSec >= currentEvent->startThreshold;
+                if (sequenceRuntime->sequenceElapsedSec < startEvent->startThreshold) {
+                    waitingForStart = 1;
+                }
                 break;
             case 3:
-                startSatisfied = sequenceRuntime->eventElapsedSec >= currentEvent->startThreshold;
+                if (sequenceRuntime->eventElapsedSec < startEvent->startThreshold) {
+                    waitingForStart = 1;
+                }
                 break;
             default:
-                invalidStart = 1;
-                break;
+                zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_run.c", 0x15fe,
+                    "Invalid Start Time\n  Animation: %s\n", self);
+                return -1;
             }
-
-            if (invalidStart == 0) {
-                if (startSatisfied == 0) {
-                    return 0;
-                }
-
-                sequenceRuntime->eventElapsedSec = g_zEffect_FrameDeltaRemainingSec;
-                if (currentEvent == (zEffectAnimEventHeader *)(sequenceRuntime->eventStream)) {
-                    sequenceRuntime->sequenceElapsedSec = g_zEffect_FrameDeltaRemainingSec;
-                }
+            if (waitingForStart != 0) {
+                return 0;
+            }
+            sequenceRuntime->eventElapsedSec = g_zEffectAnim_State.frameDeltaRemainingSec;
+            if (sequenceRuntime->currentEvent == sequenceRuntime->eventStream) {
+                sequenceRuntime->sequenceElapsedSec = g_zEffectAnim_State.frameDeltaRemainingSec;
             }
         }
-
-        int errorLine;
-        const char *errorMessage;
-        if (invalidStart == 0) {
-            int dispatchResult;
+        zEffectAnimEventHeader *const currentEvent =
+            (zEffectAnimEventHeader *)sequenceRuntime->currentEvent;
+        int dispatchResult;
         switch (currentEvent->eventType) {
         case 1:
             dispatchResult = zEffect::HandleSampleRefOffsetEvent(
@@ -3803,6 +3817,10 @@ int __fastcall RunSequenceEvents(
                 sequenceRuntime,
                 (zEffectAnimLoopEvent *)(currentEvent)
             );
+            sequenceRuntime->runState = (unsigned char)dispatchResult;
+            if (sequenceRuntime->runState == 0) {
+                return 0;
+            }
             break;
         case 0x1f:
             dispatchResult = zEffect::HandleConditionalChainEvent(
@@ -3818,13 +3836,14 @@ int __fastcall RunSequenceEvents(
                 currentEvent
             );
             break;
-        case 0x21:
+        case 0x21: {
             dispatchResult = (unsigned char)(zEffect::SkipConditionalChainToEnd(
                 self,
                 sequenceRuntime,
                 currentEvent
             ));
             break;
+        }
         case 0x22:
             dispatchResult = zEffect::HandleNoOpMarkerEvent(self, sequenceRuntime, currentEvent);
             break;
@@ -3849,20 +3868,22 @@ int __fastcall RunSequenceEvents(
                 (zEffectScreenOverlayFxEvent *)(currentEvent)
             );
             break;
-        case 0x27:
+        case 0x27: {
             dispatchResult = (unsigned char)(zEffect::HandleNoOpMarkerEvent(
                 self,
                 sequenceRuntime,
                 currentEvent
             ));
             break;
-        case 0x28:
+        }
+        case 0x28: {
             dispatchResult = (signed char)(zEffect::HandleNoOpMarkerEvent(
                 self,
                 sequenceRuntime,
                 currentEvent
             ));
             break;
+        }
         case 0x26:
             dispatchResult = zEffect::HandleTopMessageEvent(
                 self,
@@ -3870,48 +3891,30 @@ int __fastcall RunSequenceEvents(
             );
             break;
         default:
-            dispatchResult = -1;
-            break;
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_run.c", 0x171c,
+                "Invalid Sequence Event\n  Animation: %s\n", self);
+            return -1;
         }
 
-            if (dispatchResult >= 0) {
-                sequenceRuntime->runState = (unsigned char)(dispatchResult);
-                if (currentEvent->eventType == 0x1e && dispatchResult == 0) {
-                    return 0;
-                }
-
-                if (dispatchResult == 2) {
-                    unsigned char *const currentEventBytes =
-                        (unsigned char *)(sequenceRuntime->currentEvent);
-                    sequenceRuntime->eventElapsedSec = 0.0f;
-                    unsigned char *const nextEvent = currentEventBytes + currentEvent->recordSize;
-                    sequenceRuntime->currentEvent = nextEvent;
-
-                    unsigned char *const eventStreamEnd =
-                        (unsigned char *)(sequenceRuntime->eventStream) + sequenceRuntime->eventStreamSize;
-                    if (nextEvent < eventStreamEnd) {
-                        sequenceRuntime->runState = 0;
-                    } else if (sequenceRuntime->resetMode == 3) {
-                        zEffect::HandleEmitterResetEvent(sequenceRuntime);
-                    }
-                    return 0;
-                }
-
-                if (dispatchResult != 0) {
-                    return 0;
-                }
-                continue;
+        sequenceRuntime->runState = (unsigned char)dispatchResult;
+        if (sequenceRuntime->runState == 2) {
+            zEffectAnimEventHeader *const finishedEvent =
+                (zEffectAnimEventHeader *)sequenceRuntime->currentEvent;
+            sequenceRuntime->eventElapsedSec = 0.0f;
+            unsigned char *const nextEvent =
+                (unsigned char *)finishedEvent + finishedEvent->recordSize;
+            sequenceRuntime->currentEvent = nextEvent;
+            if (nextEvent < (unsigned char *)sequenceRuntime->eventStream +
+                                sequenceRuntime->eventStreamSize) {
+                sequenceRuntime->runState = 0;
+            } else if (sequenceRuntime->resetMode == 3) {
+                zEffect::HandleEmitterResetEvent(sequenceRuntime);
+                return 0;
             }
-
-            errorLine = 0x171c;
-            errorMessage = "Invalid Sequence Event\n  Animation: %s\n";
-        } else {
-            errorLine = 0x15fe;
-            errorMessage = "Invalid Start Time\n  Animation: %s\n";
         }
-
-        zError::ReportOld(0x400, kZeffAnimRunSourceFile, errorLine, errorMessage, self);
-        return -1;
+        if (sequenceRuntime->runState != 0) {
+            return 0;
+        }
     }
 }
 
@@ -3965,7 +3968,7 @@ int __fastcall RunSequence(
         }
 
         if ((flags & 0x02u) != 0) {
-            if (g_zEffect_ConditionalRefPosEnabled == 0) {
+            if (g_zEffectAnim_State.conditionalRefPosEnabled == 0) {
                 return 0;
             }
 
@@ -3984,13 +3987,13 @@ int __fastcall RunSequence(
         }
 
         if ((entry->flags & 0x08u) != 0) {
-            if (g_zEffect_VariantOverrideEnabled == 0) {
+            if (g_zEffectAnim_State.variantOverrideEnabled == 0) {
                 return 0;
             }
 
             memcpy(
                 &g_Variant_CurrentTag,
-                &g_zEffect_VariantOverridePackedIds,
+                &g_zEffectAnim_State.variantOverridePackedIds,
                 sizeof(g_Variant_CurrentTag)
             );
             if (VariantTag::CurrentAllowsId(entry->callbackNode->nodeType) == 0) {
@@ -4025,7 +4028,7 @@ int __fastcall RunSequence(
     entry->triggerCurrentValue += g_FrameDeltaTimeSec;
     zEffectAnimSurfaceRuntime *sequenceRuntime = entry->runtimeList;
     for (int i = 0; i < entry->runtimeSequenceCount; ++i, ++sequenceRuntime) {
-        g_zEffect_FrameDeltaRemainingSec = g_FrameDeltaTimeSec;
+        g_zEffectAnim_State.frameDeltaRemainingSec = g_FrameDeltaTimeSec;
         const unsigned char runState = sequenceRuntime->runState;
         if (runState == 0 || runState == 1) {
             if (RunSequenceEvents(entry, sequenceRuntime) != 0) {
@@ -4195,7 +4198,7 @@ int __fastcall FinalizeStop(
     }
 
     if ((self->flags & kEffectAnimWorldChildAttachedFlag) != 0) {
-        if (zClass_World::RemoveChildAtGrid(g_zEffect_World, self->boundNode) != 0) {
+        if (zClass_World::RemoveChildAtGrid(g_zEffectAnim_State.worldNode, self->boundNode) != 0) {
             return -1;
         }
 
@@ -4249,7 +4252,7 @@ int __fastcall RunStopSequenceCallback(
 
     entry->triggerCurrentValue += g_FrameDeltaTimeSec;
     if (entry->surfacePrimary.eventStream != 0) {
-        g_zEffect_FrameDeltaRemainingSec = g_FrameDeltaTimeSec;
+        g_zEffectAnim_State.frameDeltaRemainingSec = g_FrameDeltaTimeSec;
         const unsigned char runState = entry->surfacePrimary.runState;
         if (runState == 0 || runState == 1) {
             if (zEffect_Anim::RunSequenceEvents(entry, &entry->surfacePrimary) != 0) {
@@ -4407,7 +4410,7 @@ int __fastcall ResetForNode(
     if (rootNode->classId == 2 || rootNode->classId == 1) {
         self->flags &= ~0x00000100u;
     } else {
-        const int status = zClass_World::AddChildAtGrid(g_zEffect_World, self->boundNode);
+        const int status = zClass_World::AddChildAtGrid(g_zEffectAnim_State.worldNode, self->boundNode);
         if (status != 0) {
             return -1;
         }
@@ -4670,8 +4673,8 @@ int __fastcall CheckActivationPrereqs(
 
         if (prereq->mode == 1) {
             if (prereq->targetEntry == 0) {
-                zEffectAnimEntry *candidate = g_zEffectAnim_EntryList;
-                for (int entryIndex = 0; entryIndex < g_zEffectAnim_EntryCount;
+                zEffectAnimEntry *candidate = g_zEffectAnim_State.entryList;
+                for (int entryIndex = 0; entryIndex < g_zEffectAnim_State.entryCount;
                     ++entryIndex, ++candidate) {
                     if (strcmp(candidate->name, prereq->targetName) == 0) {
                         prereq->targetEntry = candidate;

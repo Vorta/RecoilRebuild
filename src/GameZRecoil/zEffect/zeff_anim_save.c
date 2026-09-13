@@ -327,8 +327,8 @@ void __fastcall LoadActivationRecords(
         }
 
         ClearActivationRecords();
-        for (int i_2482 = 1; i_2482 < g_zEffectAnim_EntryCount; ++i_2482) {
-            zEffectAnimEntry *cursor = &g_zEffectAnim_EntryList[i_2482];
+        for (int i_2482 = 1; i_2482 < g_zEffectAnim_State.entryCount; ++i_2482) {
+            zEffectAnimEntry *cursor = &g_zEffectAnim_State.entryList[i_2482];
             while (cursor != 0) {
                 cursor->flags &= ~0x4000u;
                 cursor = cursor->runtimeSibling;
@@ -642,8 +642,8 @@ int __fastcall SaveRunningAnimRecords(
     zZbdSectionCallbackCtx *callbackCtx
 ) {
     int result = 1;
-    for (int i = 1; result != 0 && i < g_zEffectAnim_EntryCount; ++i) {
-        zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i];
+    for (int i = 1; result != 0 && i < g_zEffectAnim_State.entryCount; ++i) {
+        zEffectAnimEntry *const entry = &g_zEffectAnim_State.entryList[i];
         if (entry != 0 && (entry->activationState == 2 || entry->activationState == 6)) {
             const unsigned short flags = (unsigned short)(entry->flags);
             if (((flags & 0x1000) == 0 || (flags & 0x2000) != 0) &&
@@ -689,7 +689,7 @@ void __fastcall LoadRunningAnimRecords(
     zEffectAnimRunningSaveHeader header = {0};
     fread(&header, sizeof(header), 1, tempStream);
 
-    zEffectAnimEntry *entry = &g_zEffectAnim_EntryList[header.entryTableIndex];
+    zEffectAnimEntry *entry = &g_zEffectAnim_State.entryList[header.entryTableIndex];
     zClass_NodePartial *const rootNode = GameZ_ZBD::NodeIndexToPtr(header.rootNodeIndex);
 
     if (header.matchSavedRootNode != 0) {
@@ -783,7 +783,7 @@ void __fastcall LoadRunningAnimRecords(
             zClass_Class::AddChild(GameZ_ZBD::NodeIndexToPtr(record.parentNodeIndex), lightNode);
         }
         zClass_Light::gwLightSetPosition(lightNode, record.posX, record.posY, record.posZ);
-        zClass_World::AddLight(g_zEffect_World, lightNode);
+        zClass_World::AddLight(g_zEffectAnim_State.worldNode, lightNode);
         lightRef->isAttached = 1;
     }
 
@@ -813,7 +813,7 @@ void __fastcall LoadRunningAnimRecords(
         if (record.hasPosition != 0) {
             zClass_Sound::gwSoundSetPosition(soundNode, record.posX, record.posY, record.posZ);
         }
-        zClass_World::AddSound(g_zEffect_World, soundNode);
+        zClass_World::AddSound(g_zEffectAnim_State.worldNode, soundNode);
         soundRef->isAttached = 1;
     }
 
@@ -836,8 +836,8 @@ int __fastcall SaveAnimRecords(
     zZbdSectionCallbackCtx *callbackCtx
 ) {
     int result = 1;
-    for (int i = 1; result != 0 && i < g_zEffectAnim_EntryCount; ++i) {
-        zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i];
+    for (int i = 1; result != 0 && i < g_zEffectAnim_State.entryCount; ++i) {
+        zEffectAnimEntry *const entry = &g_zEffectAnim_State.entryList[i];
 
         zEffectAnimSaveRecord saveRecord = {0};
         zEffectAnimSaveHeader *const header = &saveRecord.header;
@@ -946,7 +946,7 @@ void __fastcall LoadAnimRecords(
     (void)extraCtx;
 
     zEffectAnimSaveHeader *const header = (zEffectAnimSaveHeader *)(data);
-    zEffectAnimEntry *entry = &g_zEffectAnim_EntryList[header->entryTableIndex];
+    zEffectAnimEntry *entry = &g_zEffectAnim_State.entryList[header->entryTableIndex];
     if (entry == 0 || (entry->flags & 0x4000u) != 0) {
         return;
     }

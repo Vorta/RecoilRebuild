@@ -1993,57 +1993,57 @@ inline const zClass_NodeFreeListSlot *zClassNodeSlotFromNode(
 }
 
 /**
- * Original inline helper; no standalone retail function exists. Observed in
- * address-backed render/update callers including 0x448920, 0x448e90,
- * 0x453bd0, 0x453ee0, and 0x4542a0 as the cached view-sphere center access.
- * Purpose: return the primary bounds center field used as the node view-sphere
- * center.
+ * Source inline helper; retail sphere access is observed in the render
+ * traversal callers at 0x44ada0, 0x44b300, and 0x44b8c0. The cached sphere
+ * center occupies node bytes 0x64..0x6f, separately from the primary bounds.
+ * Purpose: return the cached view-sphere center without aliasing the model
+ * bounding box.
  */
 inline zVec3 *zClassNodeViewSphereCenter(
     zClass_NodePartial *node
 ) {
-    return (zVec3 *)(&zClassNodeSlotFromNode(node)->primaryBounds.minX);
+    return (zVec3 *)node->cachedSphereCenter;
 }
 
 /**
- * Original inline helper; no standalone retail function exists. Observed in
- * address-backed render/update callers including 0x448920, 0x448e90,
- * 0x453bd0, 0x453ee0, and 0x4542a0 as the cached const view-sphere center
- * access.
- * Purpose: return the const primary bounds center field used as the node
- * view-sphere center.
+ * Source inline helper; retail sphere access is observed in the render
+ * traversal callers at 0x44ada0, 0x44b300, and 0x44b8c0. The cached sphere
+ * center occupies node bytes 0x64..0x6f, separately from the primary bounds.
+ * This overload preserves const access to that same cached sphere.
+ * Purpose: return the const view-sphere center without aliasing the model
+ * bounding box.
  */
 inline const zVec3 *zClassNodeViewSphereCenter(
     const zClass_NodePartial *node
 ) {
-    return (const zVec3 *)(&zClassNodeSlotFromNode(node)->primaryBounds.minX);
+    return (const zVec3 *)node->cachedSphereCenter;
 }
 
 /**
- * Original inline helper; no standalone retail function exists. Observed in
- * address-backed render/update callers including 0x448920, 0x448e90,
- * 0x453bd0, 0x453ee0, and 0x4542a0 as the cached view-sphere radius access.
- * Purpose: return the primary bounds radius field used as the node view-sphere
- * radius.
+ * Source inline helper; retail sphere access is observed in the render
+ * traversal callers at 0x44ada0, 0x44b300, and 0x44b8c0. The cached sphere
+ * radius occupies node bytes 0x70..0x73, separately from the primary bounds.
+ * Purpose: return the cached view-sphere radius without aliasing the model
+ * bounding box.
  */
 inline float *zClassNodeViewSphereRadius(
     zClass_NodePartial *node
 ) {
-    return &zClassNodeSlotFromNode(node)->primaryBounds.maxX;
+    return &node->cachedSphereCenter[3];
 }
 
 /**
- * Original inline helper; no standalone retail function exists. Observed in
- * address-backed render/update callers including 0x448920, 0x448e90,
- * 0x453bd0, 0x453ee0, and 0x4542a0 as the cached const view-sphere radius
- * access.
- * Purpose: return the const primary bounds radius field used as the node
- * view-sphere radius.
+ * Source inline helper; retail sphere access is observed in the render
+ * traversal callers at 0x44ada0, 0x44b300, and 0x44b8c0. The cached sphere
+ * radius occupies node bytes 0x70..0x73, separately from the primary bounds.
+ * This overload preserves const access to that same cached sphere.
+ * Purpose: return the const view-sphere radius without aliasing the model
+ * bounding box.
  */
 inline const float *zClassNodeViewSphereRadius(
     const zClass_NodePartial *node
 ) {
-    return &zClassNodeSlotFromNode(node)->primaryBounds.maxX;
+    return &node->cachedSphereCenter[3];
 }
 
 namespace BBox {

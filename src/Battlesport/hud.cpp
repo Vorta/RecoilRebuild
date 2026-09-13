@@ -191,7 +191,7 @@ void HudUiElement::Draw() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduielement-drawbase
  * @recoil-artifact defines .text recoil:function:0x404cb0: HudUiElement::DrawBase.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: blit the element's attached image at its current position using its clip rect.
@@ -9401,9 +9401,9 @@ int __fastcall ProjectPointToNormalizedClamped(
  */
 int __fastcall UpdateTargetReticleFromCursor(
     int reticleMode,
-    zVec3 *worldHitPoint,
     float normalizedX,
-    float normalizedY
+    float normalizedY,
+    zVec3 *worldHitPoint
 ) {
     HudUiElement *const reticleElement = (HudUiElement *)(&g_HudUiMgrReticleWidget);
 

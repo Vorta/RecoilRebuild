@@ -5283,58 +5283,93 @@ int __fastcall zRndrSpanOcclusionTestSpanDepthOrderPair(
     zRndr::SpanNodePartial *lhs,
     zRndr::SpanNodePartial *rhs
 ) {
-    if (lhs == 0 || rhs == 0) {
-        return 0;
-    }
-
+    union { float value; int bits; } lhsDepth, rhsDepth;
     if (rhs->sampleXMin == rhs->sampleXMax) {
-        const float lhsDepth = lhs->invDepth +
-                               (float)(rhs->sampleXMax - lhs->sampleXMin) *
-                                   lhs->depthSlope;
-        return lhsDepth * zRndr::g_spanDepthBiasPlusOne >= rhs->invDepth ? 1 : 0;
+        if (lhs->sampleXMin == lhs->sampleXMax) {
+            lhsDepth.value = lhs->invDepth * zRndr::g_spanDepthBiasPlusOne;
+        } else {
+            lhsDepth.value =
+                ((float)(rhs->sampleXMax - lhs->sampleXMin) * lhs->depthSlope +
+                 lhs->invDepth) * zRndr::g_spanDepthBiasPlusOne;
+        }
+        return lhsDepth.bits >= *(const int *)&rhs->invDepth;
     }
 
     if (lhs->sampleXMin == lhs->sampleXMax) {
-        const float rhsDepth = rhs->invDepth +
-                               (float)(lhs->sampleXMax - rhs->sampleXMin) *
-                                   rhs->depthSlope;
-        return lhs->invDepth >= rhsDepth * zRndr::g_spanDepthBiasPlusOneInv ? 1 : 0;
+        rhsDepth.value =
+            ((float)(lhs->sampleXMax - rhs->sampleXMin) * rhs->depthSlope +
+             rhs->invDepth) * zRndr::g_spanDepthBiasPlusOneInv;
+        return *(const int *)&lhs->invDepth >= rhsDepth.bits;
     }
 
-    const int overlapMin = lhs->sampleXMin > rhs->sampleXMin
-                               ? lhs->sampleXMin
-                               : rhs->sampleXMin;
-    const int overlapMax = lhs->sampleXMax < rhs->sampleXMax
-                               ? lhs->sampleXMax
-                               : rhs->sampleXMax;
-    if (overlapMin > overlapMax) {
-        return 0;
-    }
-
-    const float lhsStart = lhs->invDepth +
-                           (float)(overlapMin - lhs->sampleXMin) * lhs->depthSlope;
-    const float lhsEnd = lhs->invDepth +
-                         (float)(overlapMax - lhs->sampleXMin) * lhs->depthSlope;
-    const float rhsStart = rhs->invDepth +
-                           (float)(overlapMin - rhs->sampleXMin) * rhs->depthSlope;
-    const float rhsEnd = rhs->invDepth +
-                         (float)(overlapMax - rhs->sampleXMin) * rhs->depthSlope;
-    const float startDelta = lhsStart - rhsStart;
-    const float endDelta = lhsEnd - rhsEnd;
-
-    if (startDelta >= zRndr::g_spanDepthBias && endDelta >= zRndr::g_spanDepthBias) {
+    const float lhsDepthDelta = lhs->invDepth - lhs->invDepthStep;
+    const float lhsWidth = (float)(lhs->sampleXMax - lhs->sampleXMin);
+    const float rhsStartDepthDelta = rhs->invDepth - lhs->invDepth;
+    const float rhsStartOffset = (float)(rhs->sampleXMin - lhs->sampleXMin);
+    const float lhsStartSide =
+        lhsDepthDelta * rhsStartOffset + lhsWidth * rhsStartDepthDelta;
+    const float negativeBias = -zRndr::g_spanDepthBias;
+    if (lhsStartSide >= negativeBias) {
+        const float lhsEndSide =
+            (rhs->invDepthStep - lhs->invDepth) * lhsWidth +
+            (float)(rhs->sampleXMax - lhs->sampleXMin) * lhsDepthDelta;
+        if (lhsEndSide >= negativeBias) {
+            return 0;
+        }
+        if (lhsStartSide <= zRndr::g_spanDepthBias &&
+            lhsEndSide <= zRndr::g_spanDepthBias) {
+            return 1;
+        }
+    } else if (lhsStartSide <= zRndr::g_spanDepthBias &&
+               (rhs->invDepthStep - lhs->invDepth) * lhsWidth +
+                   (float)(rhs->sampleXMax - lhs->sampleXMin) * lhsDepthDelta <=
+                   zRndr::g_spanDepthBias) {
         return 1;
     }
-    if (startDelta <= -zRndr::g_spanDepthBias && endDelta <= -zRndr::g_spanDepthBias) {
+
+    const float rhsDepthDelta = rhs->invDepth - rhs->invDepthStep;
+    const float rhsWidth = (float)(rhs->sampleXMax - rhs->sampleXMin);
+    const float lhsStartDepthDelta = lhs->invDepth - rhs->invDepth;
+    const float lhsStartOffset = (float)(lhs->sampleXMin - rhs->sampleXMin);
+    const float rhsStartSide =
+        rhsDepthDelta * lhsStartOffset + rhsWidth * lhsStartDepthDelta;
+    if (rhsStartSide >= negativeBias) {
+        const float rhsEndSide =
+            (lhs->invDepthStep - rhs->invDepth) * rhsWidth +
+            (float)(lhs->sampleXMax - rhs->sampleXMin) * rhsDepthDelta;
+        if (rhsEndSide >= negativeBias) {
+            return 1;
+        }
+        if (rhsStartSide <= zRndr::g_spanDepthBias &&
+            rhsEndSide <= zRndr::g_spanDepthBias) {
+            return 0;
+        }
+    } else if (rhsStartSide <= zRndr::g_spanDepthBias &&
+               (lhs->invDepthStep - rhs->invDepth) * rhsWidth +
+                   (float)(lhs->sampleXMax - rhs->sampleXMin) * rhsDepthDelta <=
+                   zRndr::g_spanDepthBias) {
         return 0;
     }
 
-    const int midX = overlapMin + ((overlapMax - overlapMin) >> 1);
-    const float lhsMid = lhs->invDepth +
-                         (float)(midX - lhs->sampleXMin) * lhs->depthSlope;
-    const float rhsMid = rhs->invDepth +
-                         (float)(midX - rhs->sampleXMin) * rhs->depthSlope;
-    return lhsMid >= rhsMid ? 1 : 0;
+    if (lhs->sampleXMax < rhs->sampleXMax) {
+        lhsDepth.value = lhs->invDepthStep;
+        rhsDepth.value =
+            (float)(lhs->sampleXMax - rhs->sampleXMin) * rhs->depthSlope +
+            rhs->invDepth;
+    } else {
+        lhsDepth.value =
+            (float)(rhs->sampleXMax - lhs->sampleXMin) * lhs->depthSlope +
+            lhs->invDepth;
+        rhsDepth.value = rhs->invDepthStep;
+    }
+    if (lhs->sampleXMin < rhs->sampleXMin) {
+        rhsDepth.value += rhs->invDepth;
+        lhsDepth.value = lhs->depthSlope * rhsStartOffset + lhsDepth.value + lhs->invDepth;
+    } else {
+        lhsDepth.value += lhs->invDepth;
+        rhsDepth.value = rhs->depthSlope * lhsStartOffset + rhsDepth.value + rhs->invDepth;
+    }
+    return lhsDepth.bits >= rhsDepth.bits;
 }
 
 /**
@@ -5889,67 +5924,118 @@ void __fastcall zRndrSpanOcclusionBuildSpanListFast(
  * Purpose: test whether the pending span node remains visible in one occlusion
  * column.
  *
- * Evidence: BN validates output clearing and column table lookup, copies
- * gRndr_SpanAllocCursor into a local candidate span, walks the column head
- * list, uses zRndrSpanOcclusionTestSpanDepthOrderPair for overlap depth
- * decisions, trims candidate ranges, and writes the out visibility flag.
+ * Evidence: retail copies each column-list occluder and trims the pending
+ * g_spanAllocCursor span in place. Endpoint depth bounds avoid an ambiguous
+ * overlap test; zRndrSpanOcclusionTestSpanDepthOrderPair resolves the remainder.
+ * The invDepthStep field holds the inverse depth at the span's final endpoint.
  */
 void __fastcall zRndrSpanOcclusionTestColumnVisibility(
     int columnIndex,
     int *isVisible
 ) {
+    zRndr::SpanNodePartial *current = zRndr::g_spanColumnHeadTable[columnIndex];
+    zRndr::SpanNodePartial *pending = zRndr::g_spanAllocCursor;
+    zRndr::SpanNodePartial *minDepthSpan = 0;
     *isVisible = 0;
-    if (zRndr::g_spanColumnHeadTable == 0 || zRndr::g_spanAllocCursor == 0 || columnIndex < 0) {
+    if (current == 0) {
+        *isVisible = 1;
         return;
     }
-
-    zRndr::SpanNodePartial candidate = *zRndr::g_spanAllocCursor;
-    candidate.next = 0;
-
-    zRndr::SpanNodePartial *current = zRndr::g_spanColumnHeadTable[columnIndex];
-    if (current == 0 || candidate.sampleXMax < current->sampleXMin) {
+    if (pending->sampleXMax < current->sampleXMin) {
         *isVisible = 1;
         return;
     }
 
-    while (current != 0) {
-        while (current != 0 && candidate.sampleXMin > current->sampleXMax) {
+    pending->next = 0;
+    zRndr::SpanNodePartial *maxDepthSpan = 0;
+    float maxDepth = 0.0f;
+    float minDepth = 0.0f;
+    zRndr::SpanNodePartial occluder;
+    for (;;) {
+        while (current != 0 && pending->sampleXMin > current->sampleXMax) {
             current = current->next;
         }
-
-        if (current == 0 || candidate.sampleXMax < current->sampleXMin) {
+        if (current == 0) {
             *isVisible = 1;
             return;
         }
 
-        zRndr::SpanNodePartial occluder = *current;
-        if (zRndrSpanOcclusionTestSpanDepthOrderPair(&candidate, &occluder) != 0) {
+        occluder.next = current->next;
+        occluder.sampleXMin = current->sampleXMin;
+        occluder.sampleXMax = current->sampleXMax;
+        occluder.invDepth = current->invDepth;
+        occluder.invDepthStep = current->invDepthStep;
+        occluder.depthSlope = current->depthSlope;
+        current = &occluder;
+        if (pending->sampleXMax < current->sampleXMin) {
             *isVisible = 1;
             return;
         }
 
-        if (occluder.sampleXMin <= candidate.sampleXMin) {
-            if (occluder.sampleXMax >= candidate.sampleXMax) {
+        if (maxDepthSpan != pending) {
+            maxDepth = pending->invDepth > pending->invDepthStep
+                           ? pending->invDepth : pending->invDepthStep;
+            maxDepthSpan = pending;
+        }
+        const float occluderMinDepth = current->invDepth < current->invDepthStep
+                                           ? current->invDepth : current->invDepthStep;
+        int pendingInFront;
+        if (occluderMinDepth * zRndr::g_spanDepthBiasPlusOne >= maxDepth) {
+            pendingInFront = 0;
+        } else {
+            if (minDepthSpan != pending) {
+                minDepth = pending->invDepth < pending->invDepthStep
+                               ? pending->invDepth : pending->invDepthStep;
+                minDepthSpan = pending;
+            }
+            const float occluderMaxDepth = current->invDepth > current->invDepthStep
+                                               ? current->invDepth : current->invDepthStep;
+            if (minDepth * zRndr::g_spanDepthBiasPlusOne >= occluderMaxDepth) {
+                pendingInFront = 1;
+            } else {
+                pendingInFront = zRndrSpanOcclusionTestSpanDepthOrderPair(pending, current);
+            }
+        }
+
+        if (pendingInFront != 0) {
+            if (current->sampleXMax <= pending->sampleXMax) {
+                *isVisible = 1;
                 return;
             }
-
-            if (occluder.sampleXMax >= candidate.sampleXMin) {
-                candidate.sampleXMin = occluder.sampleXMax + 1;
-                candidate.invDepth =
-                    zRndr::g_spanAllocCursor->invDepth +
-                    (float)(candidate.sampleXMin -
-                            zRndr::g_spanAllocCursor->sampleXMin) *
-                    zRndr::g_spanAllocCursor->depthSlope;
+            if (pending->sampleXMin <= current->sampleXMin &&
+                current->sampleXMin <= pending->sampleXMax) {
+                *isVisible = 1;
+                return;
             }
-        } else if (occluder.sampleXMin <= candidate.sampleXMax) {
-            *isVisible = 1;
-            return;
+            if (pending->sampleXMin > current->sampleXMin &&
+                pending->sampleXMax < current->sampleXMax) {
+                *isVisible = 1;
+                return;
+            }
+        } else if (current->sampleXMin <= pending->sampleXMin) {
+            if (current->sampleXMax >= pending->sampleXMin) {
+                if (pending->sampleXMax <= current->sampleXMax) {
+                    return;
+                }
+                pending->sampleXMin = current->sampleXMax + 1;
+            } else if (pending->sampleXMax <= current->sampleXMax) {
+                return;
+            }
+        } else {
+            if (current->sampleXMax < pending->sampleXMax) {
+                *isVisible = 1;
+                return;
+            }
+            if (pending->sampleXMin <= current->sampleXMin &&
+                current->sampleXMin <= pending->sampleXMax &&
+                current->sampleXMax >= pending->sampleXMax) {
+                if (pending->sampleXMin < current->sampleXMin) {
+                    *isVisible = 1;
+                }
+                return;
+            }
         }
-
-        current = current->next;
     }
-
-    *isVisible = 1;
 }
 
 /**
@@ -10109,13 +10195,13 @@ void __fastcall zRndrSetPaletteRemapKeyFromRgb01(
     }
 
     zVidPaletteRemapRecipe recipe;
-    recipe.color0R = 0.0f;
-    recipe.color0G = 0.0f;
-    recipe.color0B = 0.0f;
+    recipe.color0.red = 0.0f;
+    recipe.color0.green = 0.0f;
+    recipe.color0.blue = 0.0f;
     recipe.color0Strength = 0.0f;
-    recipe.color1R = rgb01->red;
-    recipe.color1G = rgb01->green;
-    recipe.color1B = rgb01->blue;
+    recipe.color1.red = rgb01->red;
+    recipe.color1.green = rgb01->green;
+    recipe.color1.blue = rgb01->blue;
     recipe.color1Strength = 1.0f;
     zRndrSetPaletteRemapKey(&recipe, shadeLevel);
 }
