@@ -1019,7 +1019,7 @@ extern zVidImagePartial g_zImage_DefaultImage;
 
 zVidImagePartial *__cdecl Create();
 int __fastcall Destroy(zVidImagePartial *image);
-int __fastcall ReleaseIfNotDefault(zVidImagePartial *image) throw();
+zVidImagePartial *__fastcall ReleaseIfNotDefault(zVidImagePartial *image) throw();
 void __fastcall ReleaseOwnedBuffers(zVidImagePartial *image);
 void __fastcall CalcPow2ScratchFields(zVidImagePartial *image);
 int __fastcall QueryBytesPerPixel(zVidImagePartial *image);

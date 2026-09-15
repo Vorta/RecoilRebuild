@@ -2029,10 +2029,10 @@ void __fastcall Pickup::SetVariantFromTerrain(
     PlayerProbeSampleCandidateBuffer candidateBuffer;
     CZDisplayInstance::BuildPickCandidateListBelowPoint(
         g_Pickup_SceneNode,
-        &candidateBuffer,
         position->x,
         500.0f,
-        position->z
+        position->z,
+        &candidateBuffer
     );
 
     int bestCandidateIndex;

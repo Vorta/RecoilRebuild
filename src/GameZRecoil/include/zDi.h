@@ -365,10 +365,10 @@ void __fastcall FindBestPickCandidateBelowPoint(
 );
 int __fastcall BuildPickCandidateListBelowPoint(
     CZNodePartial *world,
-    PlayerProbeSampleCandidateBuffer *outResults,
     float x,
     float maxY,
-    float z
+    float z,
+    PlayerProbeSampleCandidateBuffer *outResults
 );
 int __fastcall SnapProbePointYToBestCandidate(zVec3 *point);
 int __fastcall BuildPickCandidateList(

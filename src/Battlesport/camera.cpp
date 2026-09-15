@@ -715,12 +715,12 @@ int __fastcall AdjustThirdPersonCameraByOffsetProbes(
 
     return result;
 }
-
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.adjustthirdpersoncamerabysideprobes
  * @recoil-artifact defines .text recoil:function:0x406110: Player::AdjustThirdPersonCameraBySideProbes.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+ * @recoil-match byte
  *
  * Purpose: implement Player::AdjustThirdPersonCameraBySideProbes in the Battlesport camera subsystem.
  */
@@ -736,10 +736,10 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
     const float kCameraPickRiseWindow = 0.00100000005f;
     const float kCameraFloorOffset = -0.5f;
 
+    int cameraAdjusted = 0;
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     CZNodePartial *const rootNode = playerState->rootNode;
     const zTag4Partial savedVariantTag = g_Variant_CurrentTag;
-    int cameraAdjusted = 0;
 
     zTag4::Clear(&g_Variant_CurrentTag);
 
@@ -749,11 +749,8 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
         negativeScale * cameraDirNext->y,
         negativeScale * cameraDirNext->z,
     };
-    const zVec3 sideProbeEndpoint = {
-        cameraPos->x + sideProbeOffset.x,
-        cameraPos->y + sideProbeOffset.y,
-        cameraPos->z + sideProbeOffset.z,
-    };
+    zVec3 sideProbeEndpoint;
+    zMath::Vec3Add(cameraPos, &sideProbeOffset, &sideProbeEndpoint);
 
     CZDisplayInstanceSegmentEndpoints segmentPairs[2];
     segmentPairs[1].end = sideProbeEndpoint;
@@ -777,9 +774,7 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
         sideProbeOffset.x = cameraDirNext->x * g_Player_ThirdPersonCameraSideProbeOffsetScale;
         sideProbeOffset.y = cameraDirNext->y * g_Player_ThirdPersonCameraSideProbeOffsetScale;
         sideProbeOffset.z = cameraDirNext->z * g_Player_ThirdPersonCameraSideProbeOffsetScale;
-        cameraPos->x = hitPos.x + sideProbeOffset.x;
-        cameraPos->y = hitPos.y + sideProbeOffset.y;
-        cameraPos->z = hitPos.z + sideProbeOffset.z;
+        zMath::Vec3Add(&hitPos, &sideProbeOffset, cameraPos);
         cameraAdjusted = 1;
     }
 
@@ -798,37 +793,35 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
     CZClass::gwNodeSetCellPickable(rootNode, 0);
     const int pickResult = CZDisplayInstance::BuildPickCandidateListBelowPoint(
         g_Player_RuntimeDiScene,
-        probeBatches,
         cameraPos->x,
         kCameraPickMaxY,
-        cameraPos->z
+        cameraPos->z,
+        probeBatches
     );
     CZClass::gwNodeSetCellPickable(rootNode, 1);
-    if (pickResult != 0) {
-        return cameraAdjusted;
-    }
+    if (pickResult == 0) {
+        int selectedCandidateIndex;
+        int bestImpactSlot;
+        float taggedHeight;
+        float selectedHeight;
+        selectedHeight = SelectProbeSampleHeightFromCandidates(
+            probeBatches,
+            &selectedCandidateIndex,
+            cameraPos->y,
+            kCameraPickRiseWindow,
+            preferAttachmentSlot1,
+            &bestImpactSlot,
+            &taggedHeight
+        );
+        UpdateCameraVariantFromAnchor(probeBatches, cameraPos, selectedCandidateIndex);
 
-    int selectedCandidateIndex;
-    int selectedImpactSlot;
-    float taggedHeight;
-    const float selectedHeight = SelectProbeSampleHeightFromCandidates(
-        probeBatches,
-        &selectedCandidateIndex,
-        cameraPos->y,
-        kCameraPickRiseWindow,
-        preferAttachmentSlot1,
-        &selectedImpactSlot,
-        &taggedHeight
-    );
-    UpdateCameraVariantFromAnchor(probeBatches, cameraPos, selectedCandidateIndex);
-
-    const float targetY = selectedHeight - kCameraFloorOffset;
-    g_Player_CameraVariantUpdatedThisTick = 1;
-    if (targetY > cameraPos->y) {
-        cameraPos->y = targetY;
-
-        ZMTH_VECTOR_DIRECTION(cameraDirNext, cameraPos, focusPos);
-        cameraAdjusted = 1;
+        const float targetY = selectedHeight - kCameraFloorOffset;
+        g_Player_CameraVariantUpdatedThisTick = 1;
+        if (targetY > cameraPos->y) {
+            cameraPos->y = targetY;
+            ZMTH_VECTOR_DIRECTION_BOUND(cameraDirNext, cameraPos, focusPos);
+            cameraAdjusted = 1;
+        }
     }
 
     return cameraAdjusted;
@@ -899,10 +892,10 @@ void __fastcall UpdateCameraVariantFromCameraPos(
     CZClass::gwNodeSetCellPickable(playerState->rootNode, 0);
     const int pickResult = CZDisplayInstance::BuildPickCandidateListBelowPoint(
         g_Player_RuntimeDiScene,
-        candidateBuffers,
         cameraPos->x,
         500.0f,
-        cameraPos->z
+        cameraPos->z,
+        candidateBuffers
     );
     CZClass::gwNodeSetCellPickable(playerState->rootNode, 1);
 

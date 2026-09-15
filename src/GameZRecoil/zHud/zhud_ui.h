@@ -263,6 +263,8 @@ HudUiElement() {
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-widget.type
  * @recoil-artifact emits .text recoil:function:0x4b3ce0: VC5 scalar deleting destructor emitted for this virtual-destructor model.
  * @recoil-artifact emits .text recoil:function:0x40d5f0: VC5 destructor cleanup forwarding thunk to the HudUiWidget destructor core.
+ * @recoil-artifact emits .text recoil:function:0x40f2d0: VC5 default-constructor closure supplies the zero alignment argument for arrays.
+ *
  * Purpose: Record compiler-generated lifecycle and cleanup code emitted by the complete HudUiWidget type.
  */
 struct HudUiWidget : HudUiElement {
@@ -273,9 +275,7 @@ struct HudUiWidget : HudUiElement {
     HudUiRect *bltClipRectOrNull;
     unsigned int alignFlags;
     HudUiRectDirty dirtyRects[4];
-
-    HudUiWidget();
-    HudUiWidget(unsigned int alignFlags);
+    HudUiWidget(unsigned int alignFlags = 0);
     ~HudUiWidget();
     HudUiWidget * Constructor(unsigned int alignFlags);
     void DestructorCore();
@@ -2346,7 +2346,7 @@ struct HudFontStyle {
 
     HudFontStyle();
     ~HudFontStyle();
-    void Destructor();
+
 };
 
 struct HudUiBackground : HudUiBackgroundContainer {

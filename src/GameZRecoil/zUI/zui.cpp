@@ -135,11 +135,11 @@ unsigned char HudUiCircle::HitTestCore(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcontainer-huduibackgroundcontainer-0x4bc510
  * @recoil-artifact defines .text recoil:function:0x4bc510: HudUiBackgroundContainer::HudUiBackgroundContainer.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundContainer::HudUiBackgroundContainer.
  */
-HudUiBackgroundContainer::HudUiBackgroundContainer(
-    int initFlag
-) : HudUiContainer() {
+HudUiBackgroundContainer::HudUiBackgroundContainer(int initFlag) : HudUiContainer() {
     captureTransitionMask = initFlag;
     inputFocusElement = 0;
 }
@@ -290,11 +290,11 @@ void __fastcall HudUi::SetInvalidateMode(
     g_HudUi_InvalidateMask = mode != 0 ? 0x0c : 0x04;
 }
 
-
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-huduicontainer
  * @recoil-artifact defines .text recoil:function:0x4bc780: HudUiContainer::HudUiContainer.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiContainer::HudUiContainer.
  */
 HudUiContainer::HudUiContainer() {
@@ -2729,12 +2729,12 @@ void HudUiPolyline::Draw() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-huduibackgroundcursorwidget-0x4bf980
  * @recoil-artifact defines .text recoil:function:0x4bf980: HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget.
  */
 HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(
-    const char *imagePath,
-    int initCaptureEnabled
-) : HudUiWidget(0) {
+    const char *imagePath, int initCaptureEnabled) : HudUiWidget(0) {
     captureEnabled = initCaptureEnabled;
     capturedImage = 0;
     if (imagePath != 0) {

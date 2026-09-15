@@ -1388,12 +1388,12 @@ char k_zOpt_ProfileMetricCpuClass[] = "CPU_CLASS";
  * Purpose: Stores the writable option name used to register VStride.
  */
 char g_zOpt_OptionName_VStride[] = "VStride";
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.g-zopt-optionname-vmode
- * @recoil-artifact defines .data recoil:data:0x4da69c: g_zOpt_OptionName_VMode.
- * Purpose: Stores the writable option name used to register VMode.
+/*
+ * VMode is emitted by the option-loading and background-construction literals.
+ * VC5 pools their six bytes into one writable data allocation.
+ * This source form reproduces the shared retail target; original syntax
+ * remains inferred. No separate mutable option-name array is required.
  */
-char g_zOpt_OptionName_VMode[] = "VMode";
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.g-zopt-optionname-replicate
  * @recoil-artifact defines .data recoil:data:0x4da6a4: g_zOpt_OptionName_Replicate.
@@ -1931,15 +1931,15 @@ inline int BuildGraphicsFlags(
  * Purpose: preserve the empty zGame stub used by the option/load cluster.
  */
 void __cdecl ReturnOnlyStub() {}
-
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.options-loadgameoptions
  * @recoil-artifact defines .text recoil:function:0x407700: zGame::OptionsLoadGameOptions.
+ * @recoil-artifact emits .data recoil:data:0x4da69c: Pooled VMode option key.
+ *
  * Purpose: load detail.zrd and register the game option globals.
  */
 RECOIL_NO_GS int OptionsLoadGameOptions() {
     memset(&g_zGame_Options_PointerCache, 0, sizeof(g_zGame_Options_PointerCache));
-
     zReader::Node *const detailRoot = zReader::Load(g_zOpt_DetailArchiveName, 0, 0);
     if (detailRoot == 0) {
         return 0;
@@ -2315,12 +2315,12 @@ RECOIL_NO_GS int OptionsLoadGameOptions() {
     ));
 
     g_zGame_Options_PointerCache.videoMode = OptionValuePointer<int>(
-        OptionsGetOrCreateOption(g_zOpt_OptionName_VMode, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+        OptionsGetOrCreateOption("VMode", ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
     if (g_zGame_Options_PointerCache.videoMode != 0) {
         zVid::SetVideoModeIndex(zOpt::SelectProfileValueForSystem(
             detailRoot,
-            g_zOpt_OptionName_VMode,
+            "VMode",
             5
         ));
     }
@@ -8087,14 +8087,14 @@ HudUiTripletPanel::HudUiTripletPanel() : HudUiElement(0, 0) {
     g_HudUiMgr.AddChild(this);
 }
 
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduiwidget-huduiwidget
- * @recoil-artifact defines .text recoil:function:0x40f2d0: HudUiWidget::HudUiWidget.
- * Purpose: preserve the recovered HUD behavior for HudUiWidget::HudUiWidget.
+/*
+ * VC5 emits the HudUiWidget default-constructor closure for the array above.
+ * The default argument on the class constructor supplies alignment zero.
+ * Retail 0x40f2d0 pushes that argument, calls the ordinary constructor, and
+ * returns; a separate authored default constructor adds an EH frame and
+ * another vtable store. The stock default-argument closure reproduces the
+ * retail instructions. Its emission anchor belongs to the class declaration.
  */
-HudUiWidget::HudUiWidget() {
-    Constructor(0);
-}
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduinanitepanel-initlayout

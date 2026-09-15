@@ -91,22 +91,18 @@ vec3_normalize_zero_length:
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-direction
  *
  * Raw assembly: reviewed after VC5 C++ direction probes failed.
- * This version captures each pointer once; historical operand evaluation,
- * macro syntax, identifier and header ownership remain unresolved.
+ * The normal wrapper captures pointers once; BOUND uses existing pointer locals.
+ * Historical macro syntax, identifier and header ownership remain unresolved.
  * Purpose: Normalize (to - from) with x87-resident intermediates and
  * (z*z + y*y) + x*x summation, then store z/x/y as binary32. There is
  * no zero-length check. Arithmetic precision and rounding follow the
  * ambient x87 control word; no intermediate m32/m64 stores are added.
  */
-#define ZMTH_VECTOR_DIRECTION(destination, from, to) \
-    do { \
-        zVec3 *const directionDest = (destination); \
-        const zVec3 *const directionFrom = (from); \
-        const zVec3 *const directionTo = (to); \
+#define ZMTH_VECTOR_DIRECTION_BODY(destVar, fromVar, toVar) \
         __asm { \
-            __asm mov eax, directionTo \
-            __asm mov ebx, directionFrom \
-            __asm mov edx, directionDest \
+            __asm mov eax, toVar \
+            __asm mov ebx, fromVar \
+            __asm mov edx, destVar \
             __asm fld dword ptr [eax]zVec3.x \
             __asm fsub dword ptr [ebx]zVec3.x \
             __asm fld dword ptr [eax]zVec3.y \
@@ -135,8 +131,17 @@ vec3_normalize_zero_length:
             __asm fstp dword ptr [edx]zVec3.x \
             __asm fmulp st(1), st \
             __asm fstp dword ptr [edx]zVec3.y \
-        } \
+        }
+#define ZMTH_VECTOR_DIRECTION(destination, from, to) \
+    do { \
+        zVec3 *const directionDest = (destination); \
+        const zVec3 *const directionFrom = (from); \
+        const zVec3 *const directionTo = (to); \
+        ZMTH_VECTOR_DIRECTION_BODY(directionDest, directionFrom, directionTo); \
     } while (0)
+// Only named pointer objects may be passed to the direct binding wrapper.
+#define ZMTH_VECTOR_DIRECTION_BOUND(destVar, fromVar, toVar) \
+    do { ZMTH_VECTOR_DIRECTION_BODY(destVar, fromVar, toVar); } while (0)
 #else
 #define ZMTH_VECTOR_DIRECTION(destination, from, to) \
     do { \
@@ -151,6 +156,8 @@ vec3_normalize_zero_length:
         directionDest->x = (float)(dx * scale); \
         directionDest->y = (float)(dy * scale); \
     } while (0)
+#define ZMTH_VECTOR_DIRECTION_BOUND(destVar, fromVar, toVar) \
+    ZMTH_VECTOR_DIRECTION(destVar, fromVar, toVar)
 #endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100

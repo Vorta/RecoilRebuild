@@ -426,17 +426,17 @@ namespace zVid_Image {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-image-releaseifnotdefault
  * @recoil-artifact defines .text recoil:function:0x46d5a0: zVid_Image::ReleaseIfNotDefault.
- * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
- * Purpose: destroy dynamically allocated images while preserving the initialized default image singleton.
+ * @recoil-match byte
  *
+ * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: Release non-default images and return a null image pointer to clear ownership.
  * Evidence: BN compares the incoming image against g_zImage_DefaultImage,
  * calls zVid_Image::Destroy only for non-default images, and returns 0.
+ * The pointer return type is inferred from image-pointer result stores in callers.
  * The VC5-era throw() declaration is retained because callers such as
  * HudUiBackground::~HudUiBackground use it to match retail EH cleanup state numbering.
  */
-int __fastcall ReleaseIfNotDefault(
-    zVidImagePartial *image
-) throw() {
+zVidImagePartial *__fastcall ReleaseIfNotDefault(zVidImagePartial *image) throw() {
     if (image != &g_zImage_DefaultImage) {
         Destroy(image);
     }

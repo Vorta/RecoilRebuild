@@ -1792,10 +1792,10 @@ int __fastcall FindNearestPickCandidateBelowPoint(
     PlayerProbeSampleCandidateBuffer outResults = {0};
     CZDisplayInstance::BuildPickCandidateListBelowPoint(
         g_zEffectAnim_State.worldNode,
-        &outResults,
         point->x,
         point->y,
-        point->z
+        point->z,
+        &outResults
     );
 
     int bestIndex = -1;

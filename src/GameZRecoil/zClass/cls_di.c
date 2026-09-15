@@ -1281,10 +1281,10 @@ namespace CZDisplayInstance {
     ) {
         if (BuildPickCandidateListBelowPoint(
                 world,
-                outResults,
                 position->x,
                 position->y,
-                position->z
+                position->z,
+                outResults
             ) != 0) {
             outResults->candidateCount = 0;
             zTag4::Clear(&outResults->entries[0].variantTag);
@@ -1317,10 +1317,10 @@ namespace CZDisplayInstance {
      */
     int __fastcall BuildPickCandidateListBelowPoint(
         CZNodePartial * world,
-        PlayerProbeSampleCandidateBuffer * outResults,
         float x,
         float maxY,
-        float z
+        float z,
+        PlayerProbeSampleCandidateBuffer * outResults
     ) {
         if (*g_CZTypeList_HeadSlotPtrs[0] != 0) {
             CZTypeList::UpdateQueuedTrees();

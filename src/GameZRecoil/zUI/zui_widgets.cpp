@@ -1556,14 +1556,14 @@ void HudUiWidget::DestructorCore() {
     this->~HudUiWidget();
 }
 
-
-namespace HudUiMgr {
-
-} // namespace HudUiMgr
-
-HudUiWidget::HudUiWidget(
-    unsigned int initAlignFlags
-) : HudUiElement(0, 0) {
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduiwidget-huduiwidget-0x4b3d00
+ * @recoil-artifact defines .text recoil:function:0x4b3d00: HudUiWidget::HudUiWidget.
+ * @recoil-match byte
+ *
+ * Purpose: Initialize the widget image, alignment, clipping and dirty rectangles.
+ */
+HudUiWidget::HudUiWidget(unsigned int initAlignFlags) : HudUiElement(0, 0) {
     alignFlags = initAlignFlags;
     image = 0;
     ownsImage = 0;
@@ -1579,23 +1579,35 @@ HudUiWidget::HudUiWidget(
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduiwidget-destructor
+ * @recoil-artifact defines .text recoil:function:0x4b3d50: HudUiWidget::~HudUiWidget.
+ * @recoil-match byte
+ *
+ * Purpose: Release the widget's owned image before its element base is destroyed.
+ * Evidence: VC5 supplies the vtable stores and native exception cleanup.
+ */
 HudUiWidget::~HudUiWidget() {
     ReleaseImageIfOwned();
 }
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduiwidget-releaseimageifowned
+ * @recoil-artifact defines .text recoil:function:0x4b3da0: HudUiWidget::ReleaseImageIfOwned.
+ * @recoil-match byte
+ *
+ * Purpose: Release an owned image and clear the widget's ownership state.
+ * Evidence: Retail stores the release helper's returned pointer into image.
+ */
 void HudUiWidget::ReleaseImageIfOwned() {
     if (image != 0 && ownsImage != 0) {
-        zVid_Image::ReleaseIfNotDefault(image);
-        image = 0;
+        image = zVid_Image::ReleaseIfNotDefault(image);
     }
 
     ownsImage = 0;
 }
 
-void HudUiWidget::SetPos(
-    int newX,
-    int newY
-) {
+void HudUiWidget::SetPos(int newX, int newY) {
     if (alignFlags != 0 && image != 0) {
         x = newX - (image->width / 2);
         y = newY - (image->height / 2);
@@ -1607,9 +1619,7 @@ void HudUiWidget::SetPos(
     Invalidate();
 }
 
-zVidImagePartial * HudUiWidget::SetImageByPathOwned(
-    const char *imagePath
-) {
+zVidImagePartial * HudUiWidget::SetImageByPathOwned(const char *imagePath) {
     if (imagePath == 0) {
         return 0;
     }
@@ -1624,18 +1634,14 @@ zVidImagePartial * HudUiWidget::SetImageByPathOwned(
     return image;
 }
 
-zVidImagePartial * HudUiWidget::SetImageBorrowedAndInvalidate(
-    zVidImagePartial *newImage
-) {
+zVidImagePartial * HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial *newImage) {
     ownsImage = 0;
     image = newImage;
     Invalidate();
     return newImage;
 }
 
-void HudUiWidget::InvalidateRect(
-    const HudUiRect *dirtyRect
-) {
+void HudUiWidget::InvalidateRect(const HudUiRect *dirtyRect) {
     if (image == 0) {
         return;
     }
@@ -1731,10 +1737,7 @@ void HudUiWidget::Draw() {
     zVid_Image::BlitToActiveTarget(image, x, y, 0, (zVidRect32 *)(bltClipRectOrNull));
 }
 
-int HudUiWidget::HitTest(
-    int px,
-    int py
-) {
+int HudUiWidget::HitTest(int px, int py) {
     if ((flags & 0x10) != 0) {
         return 0;
     }
@@ -1752,10 +1755,7 @@ int HudUiWidget::HitTest(
 /**
  * Purpose: Initializes the common HUD element position, links, timer, invalidation state, and blit source.
  */
-HudUiElement::HudUiElement(
-    int initX,
-    int initY
-) {
+HudUiElement::HudUiElement(int initX, int initY) {
     HudUiElement *const element = this;
     parent = 0;
     next = 0;
@@ -2481,19 +2481,19 @@ HudUiZrdWidget::~HudUiZrdWidget() {
     (activateLabelPanels.*erasePanelRange)(activateLabelPanels.begin(), activateLabelPanels.end());
 
     if (defaultImage != 0 && defaultImage != image) {
-        defaultImage = (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(defaultImage);
+        defaultImage = zVid_Image::ReleaseIfNotDefault(defaultImage);
     }
 
     if (activateImage != 0 && activateImage != image) {
-        activateImage = (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(activateImage);
+        activateImage = zVid_Image::ReleaseIfNotDefault(activateImage);
     }
 
     if (rolloverImage != 0 && rolloverImage != image) {
-        rolloverImage = (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(rolloverImage);
+        rolloverImage = zVid_Image::ReleaseIfNotDefault(rolloverImage);
     }
 
     if (disabledImage != 0 && disabledImage != image) {
-        disabledImage = (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(disabledImage);
+        disabledImage = zVid_Image::ReleaseIfNotDefault(disabledImage);
     }
 
     if (image != 0 && ownsImage == 0) {
@@ -2515,7 +2515,7 @@ void HudUiZrdWidget::Invalidate() {
     HudUiElement::Invalidate();
 
     HudUiPanelPtrVector::iterator panel = labelPanels.begin();
-    if (panel == labelPanels.end()) {
+    if (panel == 0) {
         return;
     }
 
@@ -3592,12 +3592,12 @@ HudUiFillBitmap::HudUiFillBitmap() : HudUiZrdWidget() {
 HudUiFillBitmap::~HudUiFillBitmap() {
     if (previewImage != 0 && previewImage != image) {
         previewImage =
-            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(previewImage);
+            zVid_Image::ReleaseIfNotDefault(previewImage);
     }
 
     if (fillImage != 0 && fillImage != image) {
         fillImage =
-            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(fillImage);
+            zVid_Image::ReleaseIfNotDefault(fillImage);
     }
 }
 
@@ -4321,18 +4321,18 @@ void HudUiListSelectorItem::OnActivate() {
         ((OnSelectedIndexChangedFn)(ownerSlots[33]))(selectionOwner, entryIndex);
     }
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduibackground-huduibackground-0x4b9540
  * @recoil-artifact defines .text recoil:function:0x4b9540: HudUiBackground::HudUiBackground.
- * Purpose: preserve the recovered HUD behavior for HudUiBackground::HudUiBackground.
+ * @recoil-match byte
+ *
+ * Purpose: initialize the HUD background and its member arrays.
  */
 HudUiBackground::HudUiBackground()
     : HudUiBackgroundContainer(1),
       cursorWidget(0, 1) {
     primaryClipImage = 0;
     capturedCompositeImage = 0;
-
     {
         for (int index = 0; index < 10; ++index) {
             backgroundSounds[index].sample = 0;
@@ -4378,12 +4378,12 @@ HudUiBackground::HudUiBackground()
 HudUiBackground::~HudUiBackground() {
     if (primaryClipImage != 0) {
         primaryClipImage =
-            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(primaryClipImage);
+            zVid_Image::ReleaseIfNotDefault(primaryClipImage);
     }
 
     if (capturedCompositeImage != 0) {
         capturedCompositeImage =
-            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+            zVid_Image::ReleaseIfNotDefault(
                 capturedCompositeImage
             );
     }
@@ -5004,18 +5004,18 @@ HudFontStyle::HudFontStyle() {
 }
 
 /**
- * Source model note: Source-faithful helper recovered from address-backed callers in this
- * source file.
- * Purpose: run the recovered HudFontStyle::Destructor teardown path.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-hudfontstyle-destructor
+ * @recoil-artifact defines .text recoil:function:0x4ba4c0: HudFontStyle::~HudFontStyle.
+ * @recoil-match byte
+ *
+ * Purpose: Clear the font-style validity marker when the record is destroyed.
+ *
+ * Retail array construction passes this destructor for the twenty font records.
+ * Its body clears the first field and returns without calling another function.
+ * The class has no base or owned members requiring further teardown.
+ * The ordinary destructor directly expresses that lifetime operation.
  */
 HudFontStyle::~HudFontStyle() {
-    Destructor();
-}
-
-/**
- * Purpose: run the recovered HudFontStyle::Destructor teardown path.
- */
-void HudFontStyle::Destructor() {
     validMarker = 0;
 }
 
@@ -5112,11 +5112,7 @@ HudUiPanel & HudUiPanel::operator=(
     }
 
     cachedTextLength = source.cachedTextLength;
-    strncpy(
-        cachedText,
-        source.cachedText,
-        0x100
-    );
+    strncpy(cachedText, source.cachedText, 0x100);
 
     textWidthPx = source.textWidthPx;
     textHeightPx = source.textHeightPx;
@@ -5137,8 +5133,12 @@ HudUiPanel & HudUiPanel::operator=(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-huduipanel-0x4bab40
  * @recoil-artifact defines .text recoil:function:0x4bab40: HudUiPanel::~HudUiPanel.
- * Purpose: release the panel-owned text image and font resources during C++
- * object teardown.
+ * @recoil-match byte
+ *
+ * Purpose: Release the panel-owned text image and font during object teardown.
+ * Evidence: Retail calls Destroy for a non-null text image, clears that field,
+ * and releases the font through DeleteObject. VC5 supplies the vtable stores
+ * and native exception cleanup for this ordinary destructor.
  */
 HudUiPanel::~HudUiPanel() {
     if (textPick != 0) {

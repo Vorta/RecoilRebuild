@@ -1900,7 +1900,7 @@ void HudUiMpExitDialog::UnloadLayout() {
     g_HudUiTopMessageStack->Clear();
     if (m_capturedBackgroundImage != 0) {
         m_capturedBackgroundImage =
-            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+            zVid_Image::ReleaseIfNotDefault(
                 m_capturedBackgroundImage
             );
     }

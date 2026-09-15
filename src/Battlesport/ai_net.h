@@ -729,7 +729,6 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm fsubp ST(1), ST(0)               \
         __asm fstp dword ptr [out]             \
     } while (0)
-
 /**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-dot-xyz
  * Raw assembly for 0x4024a0: computes the full XYZ dot product with the observed
@@ -758,7 +757,6 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm faddp ST(1), ST(0)                  \
         __asm fstp dword ptr [out]                \
     } while (0)
-
 /**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.fast-sqrt-estimate
  * Raw-assembly evidence: retail function offsets [+0x195,+0x1a2)
@@ -780,7 +778,6 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm add eax, 01fc00000h                     \
         __asm mov destination, eax                    \
     }
-
 /**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add
  * Raw assembly for 0x4024a0: adds two vectors with the observed VC5
@@ -860,8 +857,11 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 #define AINET_PATH_DOT_XZ(out, steer, delta) AINET_VEC3_DOT_XZ(out, steer, delta)
 #define AINET_PATH_CROSS_XZ(out, steer, delta) AINET_VEC3_CROSS_XZ(out, steer, delta)
 #endif
-
 /**
+ * @recoil-anchor recoil:anchor:battlesport.ai-net.tick-ai-mode2-top-level
+ * @recoil-artifact defines .text recoil:function:0x401060: AINet::TickAiMode2TopLevel.
+ * @recoil-match byte
+ *
  * Purpose: Dispatches the active mode-2 top-level state and attack-pursuit transitions. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::TickAiMode2TopLevel(
@@ -2311,12 +2311,12 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     zUtil_SaveGameState *targetState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zUtil_PlayerStateStorage *const targetPlayerState = targetState->playerState;
+    zUtil_PlayerStateStorage *savedTargetPlayerState; // Unused snapshot required for VC5 byte matching.
+    zUtil_PlayerStateStorage *const targetPlayerState = (savedTargetPlayerState = targetState->playerState);
     zVec3 targetDir;
     zVec3 targetToPlayerDir;
     zVec3 offsetTarget;
     const float offsetDistance = playerState->aiNet->pursuitParam0;
-
     {
         zVec3 *v0 = &targetToPlayerDir;
         zVec3 *v1 = &targetPlayerState->worldPos;
