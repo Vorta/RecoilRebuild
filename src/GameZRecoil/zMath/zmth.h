@@ -423,3 +423,64 @@ inline void Vec3Subtract(const zVec3 *left, const zVec3 *right, zVec3 *dest) {
         transformDest->x = transformX; \
     } while (0)
 #endif
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-cross
+ *
+ * Purpose: Compute a cross product through typed captures before y/z/x stores.
+ * Raw assembly: VC5 C++ controls failed; Pro reviewed [0x42b994,0x42b9d5).
+ * C++ owns captures, homes and saves; original macro spelling is inferred.
+ * Empty incoming x87 stack reaches depth six and returns empty on completion.
+ * Integer flags and control word are unchanged; FP status follows retail.
+ * All input reads precede stores; arguments must be side-effect-free pointers.
+ */
+#define ZMTH_VECTOR_CROSS(left, right, destination) \
+    do { \
+        zVec3 *const crossDest = (destination); \
+        const zVec3 *const crossRight = (right); \
+        const zVec3 *const crossLeft = (left); \
+        __asm { \
+            __asm mov ebx, crossLeft \
+            __asm mov ecx, crossRight \
+            __asm mov edx, crossDest \
+            __asm fld dword ptr [ebx]zVec3.x \
+            __asm fld st(0) \
+            __asm fmul dword ptr [ecx]zVec3.y \
+            __asm fld dword ptr [ebx]zVec3.y \
+            __asm fld st(0) \
+            __asm fmul dword ptr [ecx]zVec3.z \
+            __asm fld dword ptr [ebx]zVec3.z \
+            __asm fld st(0) \
+            __asm fmul dword ptr [ecx]zVec3.x \
+            __asm fxch st(5) \
+            __asm fmul dword ptr [ecx]zVec3.z \
+            __asm fxch st(3) \
+            __asm fmul dword ptr [ecx]zVec3.x \
+            __asm fxch st(3) \
+            __asm fsubp st(5), st \
+            __asm fmul dword ptr [ecx]zVec3.y \
+            __asm fxch st(2) \
+            __asm fsubp st(3), st \
+            __asm fxch st(1) \
+            __asm fsubp st(1), st \
+            __asm fxch st(2) \
+            __asm fstp dword ptr [edx]zVec3.y \
+            __asm fstp dword ptr [edx]zVec3.z \
+            __asm fstp dword ptr [edx]zVec3.x \
+        } \
+    } while (0)
+#else
+#define ZMTH_VECTOR_CROSS(left, right, destination) \
+    do { \
+        zVec3 *const crossDest = (destination); \
+        const zVec3 *const crossRight = (right); \
+        const zVec3 *const crossLeft = (left); \
+        const float crossX = crossLeft->y * crossRight->z - crossLeft->z * crossRight->y; \
+        const float crossY = crossLeft->z * crossRight->x - crossLeft->x * crossRight->z; \
+        const float crossZ = crossLeft->x * crossRight->y - crossLeft->y * crossRight->x; \
+        crossDest->y = crossY; \
+        crossDest->z = crossZ; \
+        crossDest->x = crossX; \
+    } while (0)
+#endif

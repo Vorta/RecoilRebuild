@@ -268,12 +268,12 @@ namespace {
         const zBBox3f *b
     ) {
         zBBox3f merged = {0};
-        merged.minX = a->minX < b->minX ? a->minX : b->minX;
-        merged.minY = a->minY < b->minY ? a->minY : b->minY;
-        merged.minZ = a->minZ < b->minZ ? a->minZ : b->minZ;
-        merged.maxX = a->maxX > b->maxX ? a->maxX : b->maxX;
-        merged.maxY = a->maxY > b->maxY ? a->maxY : b->maxY;
-        merged.maxZ = a->maxZ > b->maxZ ? a->maxZ : b->maxZ;
+        merged.min.x = a->min.x < b->min.x ? a->min.x : b->min.x;
+        merged.min.y = a->min.y < b->min.y ? a->min.y : b->min.y;
+        merged.min.z = a->min.z < b->min.z ? a->min.z : b->min.z;
+        merged.max.x = a->max.x > b->max.x ? a->max.x : b->max.x;
+        merged.max.y = a->max.y > b->max.y ? a->max.y : b->max.y;
+        merged.max.z = a->max.z > b->max.z ? a->max.z : b->max.z;
         return merged;
     }
 
@@ -1400,15 +1400,15 @@ namespace CZClass {
             }
         }
 
-        float *out = outCorners->values;
-        out[0] = node->cachedBounds[0]; out[1] = node->cachedBounds[1]; out[2] = node->cachedBounds[5];
-        out[3] = node->cachedBounds[3]; out[4] = node->cachedBounds[1]; out[5] = node->cachedBounds[5];
-        out[6] = node->cachedBounds[3]; out[7] = node->cachedBounds[1]; out[8] = node->cachedBounds[2];
-        out[9] = node->cachedBounds[0]; out[10] = node->cachedBounds[1]; out[11] = node->cachedBounds[2];
-        out[12] = node->cachedBounds[0]; out[13] = node->cachedBounds[4]; out[14] = node->cachedBounds[5];
-        out[15] = node->cachedBounds[3]; out[16] = node->cachedBounds[4]; out[17] = node->cachedBounds[5];
-        out[18] = node->cachedBounds[3]; out[19] = node->cachedBounds[4]; out[20] = node->cachedBounds[2];
-        out[21] = node->cachedBounds[0]; out[22] = node->cachedBounds[4]; out[23] = node->cachedBounds[2];
+        zVec3 *out = outCorners->corners;
+        out[0].x = node->cachedBounds[0]; out[0].y = node->cachedBounds[1]; out[0].z = node->cachedBounds[5];
+        out[1].x = node->cachedBounds[3]; out[1].y = node->cachedBounds[1]; out[1].z = node->cachedBounds[5];
+        out[2].x = node->cachedBounds[3]; out[2].y = node->cachedBounds[1]; out[2].z = node->cachedBounds[2];
+        out[3].x = node->cachedBounds[0]; out[3].y = node->cachedBounds[1]; out[3].z = node->cachedBounds[2];
+        out[4].x = node->cachedBounds[0]; out[4].y = node->cachedBounds[4]; out[4].z = node->cachedBounds[5];
+        out[5].x = node->cachedBounds[3]; out[5].y = node->cachedBounds[4]; out[5].z = node->cachedBounds[5];
+        out[6].x = node->cachedBounds[3]; out[6].y = node->cachedBounds[4]; out[6].z = node->cachedBounds[2];
+        out[7].x = node->cachedBounds[0]; out[7].y = node->cachedBounds[4]; out[7].z = node->cachedBounds[2];
         return 0;
     }
 
@@ -1491,15 +1491,15 @@ namespace CZClass {
         const zMat4x3 *transformMatrix;
         if (currentIsIdentity != 0) {
             if (skipTransform != 0) {
-                float *out = outCorners->values;
-                out[0] = node->cachedBounds[0]; out[1] = node->cachedBounds[1]; out[2] = node->cachedBounds[5];
-                out[3] = node->cachedBounds[3]; out[4] = node->cachedBounds[1]; out[5] = node->cachedBounds[5];
-                out[6] = node->cachedBounds[3]; out[7] = node->cachedBounds[1]; out[8] = node->cachedBounds[2];
-                out[9] = node->cachedBounds[0]; out[10] = node->cachedBounds[1]; out[11] = node->cachedBounds[2];
-                out[12] = node->cachedBounds[0]; out[13] = node->cachedBounds[4]; out[14] = node->cachedBounds[5];
-                out[15] = node->cachedBounds[3]; out[16] = node->cachedBounds[4]; out[17] = node->cachedBounds[5];
-                out[18] = node->cachedBounds[3]; out[19] = node->cachedBounds[4]; out[20] = node->cachedBounds[2];
-                out[21] = node->cachedBounds[0]; out[22] = node->cachedBounds[4]; out[23] = node->cachedBounds[2];
+                zVec3 *out = outCorners->corners;
+                out[0].x = node->cachedBounds[0]; out[0].y = node->cachedBounds[1]; out[0].z = node->cachedBounds[5];
+                out[1].x = node->cachedBounds[3]; out[1].y = node->cachedBounds[1]; out[1].z = node->cachedBounds[5];
+                out[2].x = node->cachedBounds[3]; out[2].y = node->cachedBounds[1]; out[2].z = node->cachedBounds[2];
+                out[3].x = node->cachedBounds[0]; out[3].y = node->cachedBounds[1]; out[3].z = node->cachedBounds[2];
+                out[4].x = node->cachedBounds[0]; out[4].y = node->cachedBounds[4]; out[4].z = node->cachedBounds[5];
+                out[5].x = node->cachedBounds[3]; out[5].y = node->cachedBounds[4]; out[5].z = node->cachedBounds[5];
+                out[6].x = node->cachedBounds[3]; out[6].y = node->cachedBounds[4]; out[6].z = node->cachedBounds[2];
+                out[7].x = node->cachedBounds[0]; out[7].y = node->cachedBounds[4]; out[7].z = node->cachedBounds[2];
                 return returnCode;
             }
             transformMatrix = nodeMatrix;
@@ -1674,12 +1674,12 @@ namespace CZClass {
         const zBBox3f *primaryBBox = hasPrimaryBBox ? &nodeSlot->primaryBounds : 0;
         const zBBox3f *secondaryBBox = hasChildBBox ? &nodeSlot->secondaryBounds : 0;
         if (hasPrimaryBBox && hasChildBBox) {
-            merged.minX = primaryBBox->minX < secondaryBBox->minX ? primaryBBox->minX : secondaryBBox->minX;
-            merged.minY = primaryBBox->minY < secondaryBBox->minY ? primaryBBox->minY : secondaryBBox->minY;
-            merged.minZ = primaryBBox->minZ < secondaryBBox->minZ ? primaryBBox->minZ : secondaryBBox->minZ;
-            merged.maxX = primaryBBox->maxX > secondaryBBox->maxX ? primaryBBox->maxX : secondaryBBox->maxX;
-            merged.maxY = primaryBBox->maxY > secondaryBBox->maxY ? primaryBBox->maxY : secondaryBBox->maxY;
-            merged.maxZ = primaryBBox->maxZ > secondaryBBox->maxZ ? primaryBBox->maxZ : secondaryBBox->maxZ;
+            merged.min.x = primaryBBox->min.x < secondaryBBox->min.x ? primaryBBox->min.x : secondaryBBox->min.x;
+            merged.min.y = primaryBBox->min.y < secondaryBBox->min.y ? primaryBBox->min.y : secondaryBBox->min.y;
+            merged.min.z = primaryBBox->min.z < secondaryBBox->min.z ? primaryBBox->min.z : secondaryBBox->min.z;
+            merged.max.x = primaryBBox->max.x > secondaryBBox->max.x ? primaryBBox->max.x : secondaryBBox->max.x;
+            merged.max.y = primaryBBox->max.y > secondaryBBox->max.y ? primaryBBox->max.y : secondaryBBox->max.y;
+            merged.max.z = primaryBBox->max.z > secondaryBBox->max.z ? primaryBBox->max.z : secondaryBBox->max.z;
             bboxSource = &merged;
         } else if (hasPrimaryBBox) {
             bboxSource = primaryBBox;
@@ -1705,14 +1705,14 @@ namespace CZClass {
                 if (!worldRectComputed) {
                     zBBoxCorners corners = {0};
                     gwNodeGetWorldBBoxCorners(node, &corners);
-                    minX = maxX = corners.values[0];
-                    minZ = maxZ = corners.values[2];
+                    minX = maxX = corners.corners[0].x;
+                    minZ = maxZ = corners.corners[0].z;
                     for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
-                        const float *corner = &corners.values[cornerIndex * 3];
-                        if (corner[0] < minX) minX = corner[0];
-                        else if (corner[0] > maxX) maxX = corner[0];
-                        if (corner[2] < minZ) minZ = corner[2];
-                        else if (corner[2] > maxZ) maxZ = corner[2];
+                        const zVec3 *corner = &corners.corners[cornerIndex];
+                        if (corner->x < minX) minX = corner->x;
+                        else if (corner->x > maxX) maxX = corner->x;
+                        if (corner->z < minZ) minZ = corner->z;
+                        else if (corner->z > maxZ) maxZ = corner->z;
                     }
                     worldRectComputed = true;
                 }
@@ -1788,26 +1788,26 @@ namespace CZClass {
             nextChildIndex = childIndex + 1;
             nodeSlot->node.flags |= 0x400;
 
-            nodeSlot->secondaryBounds.maxX = nodeSlot->secondaryBounds.minX = corners.values[0];
-            nodeSlot->secondaryBounds.maxY = nodeSlot->secondaryBounds.minY = corners.values[1];
-            nodeSlot->secondaryBounds.maxZ = nodeSlot->secondaryBounds.minZ = corners.values[2];
+            nodeSlot->secondaryBounds.max.x = nodeSlot->secondaryBounds.min.x = corners.corners[0].x;
+            nodeSlot->secondaryBounds.max.y = nodeSlot->secondaryBounds.min.y = corners.corners[0].y;
+            nodeSlot->secondaryBounds.max.z = nodeSlot->secondaryBounds.min.z = corners.corners[0].z;
 
             for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
-                const float *corner = &corners.values[cornerIndex * 3];
-                if (corner[0] < nodeSlot->secondaryBounds.minX) {
-                    nodeSlot->secondaryBounds.minX = corner[0];
-                } else if (corner[0] > nodeSlot->secondaryBounds.maxX) {
-                    nodeSlot->secondaryBounds.maxX = corner[0];
+                const zVec3 *corner = &corners.corners[cornerIndex];
+                if (corner->x < nodeSlot->secondaryBounds.min.x) {
+                    nodeSlot->secondaryBounds.min.x = corner->x;
+                } else if (corner->x > nodeSlot->secondaryBounds.max.x) {
+                    nodeSlot->secondaryBounds.max.x = corner->x;
                 }
-                if (corner[1] < nodeSlot->secondaryBounds.minY) {
-                    nodeSlot->secondaryBounds.minY = corner[1];
-                } else if (corner[1] > nodeSlot->secondaryBounds.maxY) {
-                    nodeSlot->secondaryBounds.maxY = corner[1];
+                if (corner->y < nodeSlot->secondaryBounds.min.y) {
+                    nodeSlot->secondaryBounds.min.y = corner->y;
+                } else if (corner->y > nodeSlot->secondaryBounds.max.y) {
+                    nodeSlot->secondaryBounds.max.y = corner->y;
                 }
-                if (corner[2] < nodeSlot->secondaryBounds.minZ) {
-                    nodeSlot->secondaryBounds.minZ = corner[2];
-                } else if (corner[2] > nodeSlot->secondaryBounds.maxZ) {
-                    nodeSlot->secondaryBounds.maxZ = corner[2];
+                if (corner->z < nodeSlot->secondaryBounds.min.z) {
+                    nodeSlot->secondaryBounds.min.z = corner->z;
+                } else if (corner->z > nodeSlot->secondaryBounds.max.z) {
+                    nodeSlot->secondaryBounds.max.z = corner->z;
                 }
             }
             break;
@@ -1826,21 +1826,21 @@ namespace CZClass {
             gwNodeGetWorldBBoxCorners(child, &corners);
 
             for (int cornerIndex = 0; cornerIndex < 8; ++cornerIndex) {
-                const float *corner = &corners.values[cornerIndex * 3];
-                if (corner[0] < nodeSlot->secondaryBounds.minX) {
-                    nodeSlot->secondaryBounds.minX = corner[0];
-                } else if (corner[0] > nodeSlot->secondaryBounds.maxX) {
-                    nodeSlot->secondaryBounds.maxX = corner[0];
+                const zVec3 *corner = &corners.corners[cornerIndex];
+                if (corner->x < nodeSlot->secondaryBounds.min.x) {
+                    nodeSlot->secondaryBounds.min.x = corner->x;
+                } else if (corner->x > nodeSlot->secondaryBounds.max.x) {
+                    nodeSlot->secondaryBounds.max.x = corner->x;
                 }
-                if (corner[1] < nodeSlot->secondaryBounds.minY) {
-                    nodeSlot->secondaryBounds.minY = corner[1];
-                } else if (corner[1] > nodeSlot->secondaryBounds.maxY) {
-                    nodeSlot->secondaryBounds.maxY = corner[1];
+                if (corner->y < nodeSlot->secondaryBounds.min.y) {
+                    nodeSlot->secondaryBounds.min.y = corner->y;
+                } else if (corner->y > nodeSlot->secondaryBounds.max.y) {
+                    nodeSlot->secondaryBounds.max.y = corner->y;
                 }
-                if (corner[2] < nodeSlot->secondaryBounds.minZ) {
-                    nodeSlot->secondaryBounds.minZ = corner[2];
-                } else if (corner[2] > nodeSlot->secondaryBounds.maxZ) {
-                    nodeSlot->secondaryBounds.maxZ = corner[2];
+                if (corner->z < nodeSlot->secondaryBounds.min.z) {
+                    nodeSlot->secondaryBounds.min.z = corner->z;
+                } else if (corner->z > nodeSlot->secondaryBounds.max.z) {
+                    nodeSlot->secondaryBounds.max.z = corner->z;
                 }
             }
         }

@@ -465,26 +465,26 @@ namespace CZTypeList {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatequeuedtrees
      * @recoil-artifact defines .text recoil:function:0x44eba0: CZTypeList::UpdateQueuedTrees.
-     * Purpose: process queued tree-update nodes until the queued-tree bucket
-     * contains no remaining active work.
+     * @recoil-match byte
+     *
+     * Purpose: Update queued trees, reloading the queue after each update
+     * and skipping links whose removal is still pending.
      */
     int __cdecl UpdateQueuedTrees() {
-        CZTypeListLink *link =
-            *g_CZTypeList_HeadSlotPtrs[kQueuedTreeBucket];
+        CZTypeListLink *link = g_CZTypeList_Buckets[kQueuedTreeBucket].head;
         while (link != 0) {
+            if (link->pendingRemove == 0) {
+                CZNode::UpdateTree(link->node);
+            }
+            link = g_CZTypeList_Buckets[kQueuedTreeBucket].head;
             while (link != 0 && link->pendingRemove != 0) {
                 link = link->next;
             }
-            if (link == 0) {
-                break;
-            }
-
-            CZNode::UpdateTree(link->node);
-            link = *g_CZTypeList_HeadSlotPtrs[kQueuedTreeBucket];
         }
-
         return 0;
     }
+
+
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesequences

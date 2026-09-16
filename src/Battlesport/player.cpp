@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <algorithm>
 extern char g_HudUiCounterText_PlayerLabel[];
 
 /**
@@ -1556,15 +1556,15 @@ enum PlayerMasterTypeId {
     kPlayerMasterTypeHover = 4,
     kPlayerMasterTypeAmphib = 5
 };
-
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-master-type-track-cooldown-negative
  * @recoil-artifact defines .rdata recoil:data:0x4d0860: Shared negative unit interval.
- * Purpose: retain the retail scalar shared by four mode transitions and the async callback.
- * The current name and named-versus-anonymous original source provenance remain inferred.
+ * @recoil-artifact defines .rdata recoil:data:0x4d0868: Negative fly cooldown interval.
+ *
+ * Purpose: retain the distinct retail cooldown scalars; original names remain inferred.
  */
 const float kPlayerMasterTypeTrackCooldownNegSec = -1.0f;
-const float kPlayerMasterTypeFlyCooldownSec = 5.0f;
+const float kPlayerMasterTypeFlyCooldownNegSec = -5.0f;
 const int kPlayerAiMode2TopSteering = 1;
 const int kPlayerAiMode2SteerDirectTarget = 0;
 const int kPlayerAiMode2SteerOffsetTarget = 1;
@@ -2742,12 +2742,12 @@ CPlayerUnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-underwaterfxpass3ui-constructor
  * @recoil-artifact defines .text recoil:function:0x41eb30: CPlayerUnderwaterFxPass3Ui::CPlayerUnderwaterFxPass3Ui.
- * Purpose: construct the underwater pass-3 HUD overlay singleton storage and
- * return the initialized object.
+ * @recoil-match byte
+ *
+ * Purpose: Construct the underwater pass-3 HUD overlay.
  */
 CPlayerUnderwaterFxPass3Ui::CPlayerUnderwaterFxPass3Ui()
-    : zVideoFxPass3Element(0, 0) {
-}
+    : zVideoFxPass3Element(0, 0) {}
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-projectile-pass3-global
  * @recoil-artifact defines .data recoil:data:0x4f3650: Projectile-camera pass-3 overlay.
@@ -2761,12 +2761,12 @@ CPlayerProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-projectilecamerafxpass3ui-constructor
  * @recoil-artifact defines .text recoil:function:0x41eb90: CPlayerProjectileCameraFxPass3Ui::CPlayerProjectileCameraFxPass3Ui.
- * Purpose: construct the projectile-camera pass-3 HUD overlay singleton storage
- * and return the initialized object.
+ * @recoil-match byte
+ *
+ * Purpose: Construct the projectile-camera pass-3 HUD overlay.
  */
 CPlayerProjectileCameraFxPass3Ui::CPlayerProjectileCameraFxPass3Ui()
-    : zVideoFxPass3Element(0, 0) {
-}
+    : zVideoFxPass3Element(0, 0) {}
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-sensor-track-list-global
  * @recoil-artifact defines .data recoil:data:0x4f3340: Sensor track list.
@@ -2811,23 +2811,23 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-recordnodeflagsforrestore
  * @recoil-artifact defines .text recoil:function:0x41ecd0: Player::RecordNodeFlagsForRestore.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement Player::RecordNodeFlagsForRestore from the recovered
- * Battlesport gameplay source file.
+ * @recoil-match byte
+ *
+ * Purpose: Save the node pickability flags for later restoration.
  */
-void __fastcall RecordNodeFlagsForRestore(
-    CZNodePartial *node
-) {
+void __fastcall RecordNodeFlagsForRestore(CZNodePartial *node) {
     PlayerNodeFlagRestoreEntry value;
     value.node = node;
     CZClass::gwNodeGetCellPickable(node, &value.wasCellPickable);
     CZClass::gwNodeGetRaycastable(node, &value.wasRaycastable);
     CZClass::gwNodeGetPickable(node, &value.wasPickable);
-
     g_PlayerNodeFlagRestoreEntries.push_back(value);
 }
 } // namespace Player
 /**
+ * @recoil-anchor recoil:anchor:battlesport-player-node-flag-restore-vector
+ * @recoil-artifact defines .data recoil:data:0x4f3a58: g_PlayerNodeFlagRestoreEntries.
+ *
  * Purpose: Retain node flag snapshots until their original values are restored.
  */
 PlayerNodeFlagRestoreEntryVector g_PlayerNodeFlagRestoreEntries;
@@ -2835,9 +2835,9 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-restorerecordednodeflags
  * @recoil-artifact defines .text recoil:function:0x41efa0: Player::RestoreRecordedNodeFlags.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement Player::RestoreRecordedNodeFlags from the recovered
- * Battlesport gameplay source file.
+ * @recoil-match byte
+ *
+ * Purpose: Restore the saved node pickability flags from each copied record.
  */
 void __cdecl RestoreRecordedNodeFlags() {
     PlayerNodeFlagRestoreEntryVector::iterator entry =
@@ -4710,21 +4710,21 @@ namespace CZNode {
 } // namespace CZNode
 namespace zReader {
 /**
+ * @recoil-anchor recoil:anchor:battlesport-player-zreader-buildresolvedparentdir
+ * @recoil-artifact defines .text recoil:function:0x421e20: zReader::BuildResolvedParentDir.
+ * @recoil-match byte
+ *
  * Purpose: build the parent directory for the currently resolved ZRDR path.
  */
-int __fastcall BuildResolvedParentDir(
-    const char *filename,
-    char *outParentDir
-) {
-    char fullPath[0x104] = {0};
-    _fullpath(fullPath, FindFile( filename, 0 ), sizeof(fullPath));
-
-    char drive[3] = {0};
-    char dir[0x100] = {0};
-    char baseName[0x100] = {0};
-    char ext[0x100] = {0};
+int __fastcall BuildResolvedParentDir(const char *filename, char *outParentDir) {
+    char fullPath[0x104];
+    filename = FindFile(filename, 0);
+    _fullpath(fullPath, filename, sizeof(fullPath));
+    char drive[3];
+    char dir[0x100];
+    char baseName[0x100];
+    char ext[0x100];
     _splitpath(fullPath, drive, dir, baseName, ext);
-
     return sprintf(outParentDir, "%s%s", drive, dir);
 }
 } // namespace zReader
@@ -5268,6 +5268,9 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-extractvehiclenamefromaivname
  * @recoil-artifact defines .text recoil:function:0x423150: Player::ExtractVehicleNameFromAivName.
+ * @recoil-match byte
+ *
+ *
  * Purpose: copy the vehicle-name prefix from an AIV name until the numeric
  * suffix separator.
  */
@@ -5277,21 +5280,18 @@ void __fastcall ExtractVehicleNameFromAivName(
 ) {
     int outLen = 0;
     outVehicleName[0] = '\0';
-    if (aivName[0] == '\0') {
-        return;
-    }
 
-    const char *cursor = aivName;
-    do {
-        if (*cursor == '_' && isdigit(aivName[outLen + 1]) != 0) {
+    // Write the next-byte terminator before the for-loop advances the index.
+    // VC5 then retains the input base and output index across isdigit,
+    // reproducing the retail loop; the cursor form compiles differently.
+    for (; aivName[outLen] != '\0'; ++outLen) {
+        if (aivName[outLen] == '_' && isdigit(aivName[outLen + 1]) != 0) {
             break;
         }
 
-        outVehicleName[outLen] = *cursor;
-        ++outLen;
-        outVehicleName[outLen] = '\0';
-        ++cursor;
-    } while (*cursor != '\0');
+        outVehicleName[outLen] = aivName[outLen];
+        outVehicleName[outLen + 1] = '\0';
+    }
 }
 } // namespace Player
 namespace Player {
@@ -5794,33 +5794,33 @@ void __fastcall SelectAndResolvePreferredPendingCollisionContact(
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-playerpendingcontact-selectpreferred
  * @recoil-artifact defines .text recoil:function:0x424010: PlayerPendingContact::SelectPreferred.
- * Retail literal-backed physical source block: src/Battlesport/player.cpp.
- * Purpose: reimplement PlayerPendingContact::SelectPreferred from the recovered
- * Battlesport gameplay source file.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot-xz
+ * @recoil-match byte
+ *
+ * Purpose: Select a contact from its rounded horizontal approach score.
+ * The negated comparison preserves retail's unordered selection of this.
  */
-PlayerPendingContact *__fastcall PlayerPendingContact::SelectPreferred(
-    PlayerPendingContact *rhs
-) {
-    // Retail snapshots the normal, forms a delta, then reuses both vectors
-    // for the other contact. No record layout is implied by its stack slots.
+PlayerPendingContact *__fastcall PlayerPendingContact::SelectPreferred(PlayerPendingContact *rhs) {
     zVec3 normal = hit.surfaceNormal;
     zVec3 delta;
-    delta.x = sweepEnd.x - hit.hitPos.x;
-    delta.y = sweepEnd.y - hit.hitPos.y;
-    delta.z = sweepEnd.z - hit.hitPos.z;
-    const float selfApproachDot = delta.x * normal.x + delta.z * normal.z;
+    zMath::Vec3Subtract(&sweepEnd, &hit.hitPos, &delta);
+    float selfApproachDot;
+    ZMTH_VECTOR_DOT_XZ(selfApproachDot, &delta, &normal);
 
     normal = rhs->hit.surfaceNormal;
-    delta.x = rhs->sweepEnd.x - rhs->hit.hitPos.x;
-    delta.y = rhs->sweepEnd.y - rhs->hit.hitPos.y;
-    delta.z = rhs->sweepEnd.z - rhs->hit.hitPos.z;
-    const float rhsApproachDot = delta.x * normal.x + delta.z * normal.z;
+    zMath::Vec3Subtract(&rhs->sweepEnd, &rhs->hit.hitPos, &delta);
+    float rhsApproachDot;
+    ZMTH_VECTOR_DOT_XZ(rhsApproachDot, &delta, &normal);
 
-    if (-rhsApproachDot < -selfApproachDot) {
+    if (!(-selfApproachDot <= -rhsApproachDot)) {
         return this;
     }
     return rhs;
 }
+
+
+
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingworldcollisioncontact
@@ -6351,6 +6351,8 @@ int __fastcall TryResolvePendingCollisionProbeSweep(
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-hudsensortracker-parsecheckpointnumberfromnode
  * @recoil-artifact defines .text recoil:function:0x425060: HudSensorTracker::ParseCheckpointNumberFromNode
+ * @recoil-match byte
+ *
  * Source model: checkpoint-node name parser used by player contact handling;
  * MFC CString construction/Right/destruction are provider behavior.
  * Touched data: no authored globals; reads only the node flags, callback
@@ -6371,16 +6373,14 @@ int __fastcall HudSensorTracker::ParseCheckpointNumberFromNode(
     }
 
     CString name(contextNode->name);
-    int suffixLength = name.GetLength() - 10;
-    if (suffixLength < 0) {
-        suffixLength = 0;
-    }
-
-    CString checkpointNumber = name.Right(suffixLength);
+    // The canonical max-style expansion produces the retail branchless clamp.
+    // Preserve the comparison and selected-value expression of the clamp.
+    CString checkpointNumber = name.Right(0 > name.GetLength() - 10 ? 0 : name.GetLength() - 10);
     if (checkpointNumber.GetLength() != 0) {
         const long parsedNumber = atol((const char *)checkpointNumber);
         return parsedNumber < 0 ? 0 : (int)(parsedNumber);
     }
+
     return 0;
 }
 namespace Checkpoint {
@@ -8109,9 +8109,9 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-integrateyawandwrapfromyawvelocity
  * @recoil-artifact defines .text recoil:function:0x428490: Player::IntegrateYawAndWrapFromYawVelocity.
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\player.cpp.
- * Purpose: reimplement Player::IntegrateYawAndWrapFromYawVelocity from the recovered
- * Battlesport gameplay source file.
+ * @recoil-match byte
+ *
+ * Purpose: Updates auto-turn steering, integrates yaw and wraps it by one full turn.
  */
 void __fastcall IntegrateYawAndWrapFromYawVelocity(
     zUtil_SaveGameState *saveState
@@ -9078,13 +9078,9 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x429ed0: Player::StartSlipSfx.
  * @recoil-match byte
  *
- * Retail literal-backed physical source block: src/Battlesport/player.cpp.
- * Purpose: reimplement Player::StartSlipSfx from the recovered
- * Battlesport gameplay source file.
+ * Purpose: Start the player slip sound and update its active flag.
  */
-void __fastcall StartSlipSfx(
-    zUtil_SaveGameState *saveState
-) {
+void __fastcall StartSlipSfx(zUtil_SaveGameState *saveState) {
     saveState->playerState->slipSfxActive = 1;
     saveState->StartModalLoopSfxHandle(3, 1.0f);
 }
@@ -9095,82 +9091,87 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x429ef0: Player::StopSlipSfx.
  * @recoil-match byte
  *
- * Retail literal-backed physical source block: src/Battlesport/player.cpp.
- * Purpose: reimplement Player::StopSlipSfx from the recovered
- * Battlesport gameplay source file.
+ * Purpose: Stop the player slip sound and update its active flag.
  */
-void __fastcall StopSlipSfx(
-    zUtil_SaveGameState *saveState
-) {
+void __fastcall StopSlipSfx(zUtil_SaveGameState *saveState) {
     saveState->playerState->slipSfxActive = 0;
     saveState->StopModalLoopSfxHandle(3);
 }
 } // namespace Player
 namespace zInput {
 /**
- * Purpose: Destroys active bind-group records and resets the vector end pointer.
+ * Purpose: Delete an owned binding group and return null for its vector slot.
+ */
+struct CBindGroupDelete {
+    CZInputBindGroupInfo *operator()(CZInputBindGroupInfo *group) const {
+        delete group;
+        return 0;
+    }
+};
+
+/**
+ * @recoil-anchor recoil:anchor:battlesport-player-input-bind-group-list-clear
+ * @recoil-artifact defines .text recoil:function:0x429f80: zInput::BindGroupListClear.
+ * @recoil-match byte
+ *
+ * Purpose: Delete and null all owned binding groups, then empty the vector.
  */
 void __cdecl BindGroupListClear() {
-    zInput_BindGroupInfoList::iterator groupIt =
-        g_zInput_BindGroupInfoList.begin();
-    while (groupIt != g_zInput_BindGroupInfoList.end()) {
-        CZInputBindGroupInfo *const group = *groupIt;
-        if (group != 0) {
-            group->~CZInputBindGroupInfo();
-            ::operator delete(group);
-        }
-        *groupIt = 0;
-        ++groupIt;
-    }
-    g_zInput_BindGroupInfoList.erase(
+    std::transform(
         g_zInput_BindGroupInfoList.begin(),
-        g_zInput_BindGroupInfoList.end()
+        g_zInput_BindGroupInfoList.end(),
+        g_zInput_BindGroupInfoList.begin(),
+        CBindGroupDelete()
     );
+    g_zInput_BindGroupInfoList.clear();
 }
 } // namespace zInput
+
 /**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
- * Binary Ninja shows the VC EH-framed record destructor empties the CString,
- * deletes commandIds storage, clears the vector triplet, then destroys title.
- * Purpose: Releases a bind-group record's CString title and command-id vector.
+ * @recoil-anchor recoil:anchor:battlesport-player-input-bind-group-destructor
+ * @recoil-artifact defines .text recoil:function:0x42a000: CZInputBindGroupInfo destructor.
+ * @recoil-match byte
+ *
+ * Purpose: Release the title and native command-id vector storage.
  */
 CZInputBindGroupInfo::~CZInputBindGroupInfo() {
     title.Empty();
 }
 namespace zInput {
 /**
+ * @recoil-anchor recoil:anchor:battlesport-player-zinput-bindgrouplistaddgroup
+ * @recoil-artifact defines .text recoil:function:0x42a070: zInput::BindGroupListAddGroup.
+ * @recoil-match byte
+ *
  * Purpose: Allocates a bind-group record and appends it to the global vector.
  */
-int __fastcall BindGroupListAddGroup(
-    const char *title
-) {
+int __fastcall BindGroupListAddGroup(const char *title) {
     const int groupIndex = (int)g_zInput_BindGroupInfoList.size();
     CZInputBindGroupInfo *group = new CZInputBindGroupInfo(title);
     g_zInput_BindGroupInfoList.push_back(group);
     return groupIndex;
 }
-} // namespace zInput
-namespace zInput {
 /**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
- * Binary Ninja shows the VC vector append-at-end template for the selected
- * group's commandIds storage; the source model is the typed command-id vector,
- * not a raw offset or copied template scaffold.
+ * @recoil-anchor recoil:anchor:battlesport-player-zinput-bindgrouplistaddcommandtogroup
+ * @recoil-artifact defines .text recoil:function:0x42a2c0: zInput::BindGroupListAddCommandToGroup.
+ *
+ *
  * Purpose: Appends a command id to the selected bind group's command-id vector.
  */
-void __fastcall BindGroupListAddCommandToGroup(
-    int groupIndex,
-    int commandId
-) {
-    g_zInput_BindGroupInfoList[groupIndex]->commandIds.push_back(commandId);
+void __fastcall BindGroupListAddCommandToGroup(int groupIndex, int commandId) {
+    std::vector<int> &commandIds =
+        g_zInput_BindGroupInfoList[groupIndex]->commandIds;
+    int savedCommandId = commandId;
+    commandIds.push_back(savedCommandId);
 }
 } // namespace zInput
 namespace zInput {
 /**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
- * Binary Ninja reads the global bind-group vector begin/end pointers and
- * returns zero when begin is null.
- * Purpose: Returns the number of active bind groups in the global vector.
+ * @recoil-anchor recoil:anchor:battlesport-player-zinput-bindgrouplistgetcount
+ * @recoil-artifact defines .text recoil:function:0x42a480: zInput::BindGroupListGetCount.
+ * @recoil-match byte
+ *
+ * Purpose: Returns the number of active bind groups.
  */
 int __cdecl BindGroupListGetCount() {
     return (int)g_zInput_BindGroupInfoList.size();
@@ -9178,38 +9179,37 @@ int __cdecl BindGroupListGetCount() {
 } // namespace zInput
 namespace zInput {
 /**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
- * Binary Ninja indexes g_zInput_BindGroupInfoList and returns the CString
- * buffer pointer from the selected group title.
- * Purpose: Returns the CString buffer for the selected bind-group title.
+ * @recoil-anchor recoil:anchor:battlesport-player-zinput-bindgrouplistgetgrouptitle
+ * @recoil-artifact defines .text recoil:function:0x42a4a0: zInput::BindGroupListGetGroupTitle.
+ * @recoil-match byte
+ *
+ * Purpose: Returns the selected bind-group title buffer.
  */
-char *__fastcall BindGroupListGetGroupTitle(
-    int groupIndex
-) {
+char *__fastcall BindGroupListGetGroupTitle(int groupIndex) {
     CZInputBindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
     return (char *)(LPCTSTR)(group->title);
 }
 } // namespace zInput
 namespace zInput {
 /**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
- * Binary Ninja indexes the accepted global bind-group vector, selects the
- * embedded commandIds vector, and returns zero for a null command begin.
- * Purpose: Returns the number of command ids stored in a bind group.
+ * @recoil-anchor recoil:anchor:battlesport-player-zinput-bindgrouplistgetgroupcommandcount
+ * @recoil-artifact defines .text recoil:function:0x42a4b0: zInput::BindGroupListGetGroupCommandCount.
+ * @recoil-match byte
+ *
+ * Purpose: Returns the number of command IDs in the selected bind group.
  */
-int __fastcall BindGroupListGetGroupCommandCount(
-    int groupIndex
-) {
+int __fastcall BindGroupListGetGroupCommandCount(int groupIndex) {
     CZInputBindGroupInfo *const group = g_zInput_BindGroupInfoList[groupIndex];
     return (int)group->commandIds.size();
 }
 } // namespace zInput
 namespace zInput {
 /**
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
- * Binary Ninja indexes the accepted global bind-group vector and then indexes
- * the selected record's embedded commandIds begin pointer.
- * Purpose: Returns one command id from a bind group's command-id vector.
+ * @recoil-anchor recoil:anchor:battlesport-player-zinput-bindgrouplistgetgroupcommandid
+ * @recoil-artifact defines .text recoil:function:0x42a4d0: zInput::BindGroupListGetGroupCommandId.
+ * @recoil-match byte
+ *
+ * Purpose: Returns one command ID from the selected bind group.
  */
 int __fastcall BindGroupListGetGroupCommandId(
     int groupIndex,
@@ -9336,26 +9336,26 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-addscaledhudcountervalue
  * @recoil-artifact defines .text recoil:function:0x42a9f0: Player::AddScaledHudCounterValue.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: scale a HUD objective counter contribution by active primary-gun
- * dispatch count and add it to the mission HUD counter accumulator.
+ * @recoil-artifact emits .rdata recoil:data:0x4d0848: Unit scale.
+ * @recoil-artifact emits .rdata recoil:data:0x4d084c: Counter units.
+ * @recoil-match byte
+ *
+ * Purpose: Scale HUD contributions by dispatch count; constant names/storage are inferred.
  */
-void __fastcall AddScaledHudCounterValue(
-    float value
-) {
-    float scale;
+void __fastcall AddScaledHudCounterValue(float value) {
+    static const float unitScale = 1.0f;
+    static const float counterUnits = 1000.0f;
+    double scale;
     if (g_HudSensorTracker.primaryGunDispatchCount > 0) {
-        // Integer fidiv of the hit count by the dispatch count matches retail
-        // fild/fidiv; both-float casts compiled as a second fild instead.
         scale = (float)g_OptCatalog_DamageFeedbackHitCount /
                 g_HudSensorTracker.primaryGunDispatchCount;
     } else {
-        scale = 1.0f;
+        scale = unitScale;
     }
-
-    // fld value / fmul st1 needs scale to remain on the x87 stack through ftol.
+    // This VC5 double-scale/float-storage model retains the x87 scale
+    // across _ftol and reproduces retail's native post-call discard.
     g_Player_HudCounterValue =
-        g_Player_HudCounterValue + (int)((value * scale) * 1000.0f);
+        g_Player_HudCounterValue + (int)((value * scale) * counterUnits);
 }
 } // namespace Player
 namespace Player {
@@ -9928,10 +9928,10 @@ void __fastcall StopBftBubbleFxHandle(
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypefly
- * @recoil-artifact defines .text recoil:function:0x42b4c0: Player::TransitionToMasterTypeFly
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: select the fly modal state when the master-type transition cooldown
- * allows it.
+ * @recoil-artifact defines .text recoil:function:0x42b4c0: Player::TransitionToMasterTypeFly.
+ * @recoil-match byte
+ *
+ * Purpose: select the fly modal state when the transition cooldown allows it.
  * Source owner: Player master-type transition cluster.
  * Evidence: existing implementation follows the reviewed Player save-state
  * model: cooldown guard, SUB-source damage visual latch, source master-type
@@ -9942,22 +9942,22 @@ int __fastcall TransitionToMasterTypeFly(
     zUtil_SaveGameState *saveState,
     int flags
 ) {
-    (void)flags;
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
-
     if (g_Time_AccumulatedTimeSec < playerState->masterTypeTransitionCooldownUntilTime) {
         return 0;
     }
 
-    if (masterModalData->masterType == kPlayerMasterTypeSub) {
+    switch (masterModalData->masterType) {
+    case kPlayerMasterTypeSub:
         playerState->damageVisualFlag = 1;
+        break;
     }
 
     playerState->currentMasterType = masterModalData->masterType;
     saveState->SelectModalStateByMasterType(kPlayerMasterTypeFly);
     playerState->masterTypeTransitionCooldownUntilTime =
-        g_Time_AccumulatedTimeSec + kPlayerMasterTypeFlyCooldownSec;
+        g_Time_AccumulatedTimeSec - kPlayerMasterTypeFlyCooldownNegSec;
     return 1;
 }
 } // namespace Player
@@ -10193,24 +10193,24 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisrawfromref
  * @recoil-artifact defines .text recoil:function:0x42b8c0: Player::RebuildSteerBasisRawFromRef.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement Player::RebuildSteerBasisRawFromRef from the recovered
- * Battlesport gameplay source file.
+ *
+ *
+ * Purpose: normalize the steering direction projected onto the reference plane.
  */
 void __fastcall RebuildSteerBasisRawFromRef(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+    const zVec3 normal = playerState->steerBasisNorm;
+    const zVec3 reference = playerState->steerBasisRef;
 
-    if (playerState->steerBasisRef.y == 0.0f) {
+    if (reference.y == 0.0f) {
         return;
     }
 
     zVec3 rawBasis = playerState->steerBasisNorm;
     rawBasis.y =
-        -((playerState->steerBasisRef.x * playerState->steerBasisNorm.x +
-              playerState->steerBasisRef.z * playerState->steerBasisNorm.z) /
-            playerState->steerBasisRef.y);
+        -((reference.x * normal.x + reference.z * normal.z) / reference.y);
     zMath::Vec3Normalize(&rawBasis);
     playerState->steerBasisRaw = rawBasis;
 }
@@ -10219,24 +10219,24 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildmotionbasisfromsteerbasis
  * @recoil-artifact defines .text recoil:function:0x42b970: Player::RebuildMotionBasisFromSteerBasis.
- * Retail literal-backed physical source block: src/Battlesport/player.cpp.
- * Purpose: reimplement Player::RebuildMotionBasisFromSteerBasis from the recovered
- * Battlesport gameplay source file.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
+ * @recoil-match byte
+ *
+ * Purpose: Build the motion matrix from the steering axes and world position.
+ * The cross product writes the side axis before native C++ fills the matrix.
+ * Pro-reviewed raw scope is only [0x42b994,0x42b9d5), including pointer reloads.
+ * C++ owns parameter homes, frame, saves and the complete matrix copy.
+ * The capturing macro spelling and historical header placement remain inferred.
  */
 void __fastcall RebuildMotionBasisFromSteerBasis(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
 
-    zVec3 basisSide = {0};
-    basisSide.x = playerState->steerBasisRaw.y * playerState->steerBasisRef.z -
-                  playerState->steerBasisRaw.z * playerState->steerBasisRef.y;
-    basisSide.y = playerState->steerBasisRaw.z * playerState->steerBasisRef.x -
-                  playerState->steerBasisRaw.x * playerState->steerBasisRef.z;
-    basisSide.z = playerState->steerBasisRaw.x * playerState->steerBasisRef.y -
-                  playerState->steerBasisRaw.y * playerState->steerBasisRef.x;
+    zVec3 basisSide;
+    ZMTH_VECTOR_CROSS(&playerState->steerBasisRaw, &playerState->steerBasisRef, &basisSide);
 
-    zMat4x3 motionBasis = {0};
+    zMat4x3 motionBasis;
     motionBasis.xx = basisSide.x;
     motionBasis.xy = basisSide.y;
     motionBasis.xz = basisSide.z;
@@ -10742,30 +10742,30 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-accumulateslopeforces
  * @recoil-artifact defines .text recoil:function:0x42c420: Player::AccumulateSlopeForces.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement Player::AccumulateSlopeForces from the recovered
- * Battlesport gameplay source file.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+ *
+ *
+ * Purpose: add downhill force from up to three selected terrain-contact normals.
  */
-void __fastcall AccumulateSlopeForces(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *probeResult
-) {
+void __fastcall AccumulateSlopeForces(zUtil_SaveGameState *saveState, PlayerEnvProbeResult *probeResult) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     int clampedAboveGroundCount = g_PlayerEnvProbe_AboveGroundCount;
     if (clampedAboveGroundCount >= 3) {
         clampedAboveGroundCount = 3;
     }
-
     for (int i = 0; i < clampedAboveGroundCount; ++i) {
         const int sampleIndex = g_PlayerEnvProbe_AboveGroundIndices[i];
         const int bestCandidateIndex = probeResult->bestIndexBySample[sampleIndex];
-        const zVec3 &surfaceNormal =
-            probeResult->candidateBuffers[sampleIndex].entries[bestCandidateIndex].surfaceNormal;
-        if (surfaceNormal.y < g_Player_MaxSlope) {
-            const float slopeScale = g_Player_DeltaTime * playerState->gravityAccel * 5.0f;
-            playerState->projectileSpawnVel.x += surfaceNormal.x * slopeScale;
-            playerState->projectileSpawnVel.y += (surfaceNormal.y - 1.0f) * slopeScale;
-            playerState->projectileSpawnVel.z += surfaceNormal.z * slopeScale;
+        const zVec3 surfaceNormal = probeResult->candidateBuffers[sampleIndex].entries[bestCandidateIndex].surfaceNormal;
+        if (!(surfaceNormal.y >= g_Player_MaxSlope)) {
+            zVec3 force;
+            force.x = surfaceNormal.x * (g_Player_DeltaTime * playerState->gravityAccel) * 5.0f;
+            force.z = surfaceNormal.z * (g_Player_DeltaTime * playerState->gravityAccel) * 5.0f;
+            force.y = (surfaceNormal.y - 1.0f) * g_Player_DeltaTime * playerState->gravityAccel * 5.0f;
+            /**
+             * Purpose: preserve the reviewed vector-add operation after storing the force.
+             */
+            zMath::Vec3Add(&playerState->projectileSpawnVel, &force, &playerState->projectileSpawnVel);
         }
     }
 }
@@ -10992,9 +10992,9 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-checkprobesamplemaskoverlap
  * @recoil-artifact defines .text recoil:function:0x42cbd0: Player::CheckProbeSampleMaskOverlap.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement Player::CheckProbeSampleMaskOverlap from the recovered
- * Battlesport gameplay source file.
+ * @recoil-match byte
+ *
+ * Purpose: Returns the shared mask bits of three environment probe samples.
  */
 int __fastcall CheckProbeSampleMaskOverlap(
     int sampleIndexA,
@@ -11011,33 +11011,49 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-selectbestprobesbydotproduct
  * @recoil-artifact defines .text recoil:function:0x42cc00: Player::SelectBestProbesByDotProduct.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
- * Purpose: reimplement Player::SelectBestProbesByDotProduct from the recovered
- * Battlesport gameplay source file.
+ * @recoil-raw-asm recoil:raw-asm:battlesport.player.probe-dot-xyz
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.player.probe-dot-xyz
+ * @recoil-match byte
+ *
+ * Purpose: Rank probes by rounded XYZ dot; reviewed raw assembly preserves
+ * retail's complete schedule and x87 boundary. Original spelling is inferred.
  */
 void __fastcall SelectBestProbesByDotProduct(
     const zVec3 *referenceNormal,
     PlayerEnvProbeResult *probeResult
 ) {
-    int sampleIndexA = -1;
-    int sampleIndexB = -1;
-    int sampleIndexC = -1;
-    int sampleIndexD = -1;
-    float scoreA = -100000000.0f;
-    float scoreB = -100000000.0f;
-    float scoreC = -100000000.0f;
-    float scoreD = -100000000.0f;
+    int sampleIndexA, sampleIndexB, sampleIndexC, sampleIndexD;
+    float scoreA, scoreB, scoreC, scoreD;
+    scoreA = scoreB = scoreC = scoreD = -100000000.0f;
+    sampleIndexA = sampleIndexB = sampleIndexC = sampleIndexD = -1;
 
     for (int sampleIndex = 0; sampleIndex < g_PlayerEnvProbeSampleCount; ++sampleIndex) {
         if (g_PlayerEnvProbe_AboveGroundFlags[sampleIndex] == 0) {
             continue;
         }
-
         zVec3 candidatePoint = g_PlayerEnvProbeWorldPoints[sampleIndex];
         candidatePoint.y = probeResult->candidateScoreBySample[sampleIndex];
-        const float score = referenceNormal->x * candidatePoint.x +
-                            referenceNormal->y * candidatePoint.y +
-                            referenceNormal->z * candidatePoint.z;
+        float score;
+        const zVec3 *const candidatePointForDot = &candidatePoint;
+        /**
+         * Purpose: Compute the grouped XYZ dot and store score as binary32.
+         * Raw assembly: native forms miss retail's complete instruction/state boundary.
+         * Some native controls round score. ECX/EDX clobbered; normal x87 depths 0/3/0.
+         */
+        __asm {
+            mov ecx, referenceNormal
+            mov edx, candidatePointForDot
+            fld dword ptr [ecx]zVec3.x
+            fmul dword ptr [edx]zVec3.x
+            fld dword ptr [ecx]zVec3.y
+            fmul dword ptr [edx]zVec3.y
+            fld dword ptr [ecx]zVec3.z
+            fmul dword ptr [edx]zVec3.z
+            fxch st(1)
+            faddp st(2), st(0)
+            faddp st(1), st(0)
+            fstp score
+        }
 
         if (score > scoreA) {
             if (sampleIndexD > -1) {
@@ -11079,14 +11095,14 @@ void __fastcall SelectBestProbesByDotProduct(
             g_PlayerEnvProbe_AboveGroundFlags[sampleIndex] = 0;
         }
     }
-
-    if (CheckProbeSampleMaskOverlap(sampleIndexA, sampleIndexB, sampleIndexC) == 0) {
-        g_PlayerEnvProbe_AboveGroundFlags[sampleIndexD] = 0;
-    } else {
+    if (CheckProbeSampleMaskOverlap(sampleIndexA, sampleIndexB, sampleIndexC)) {
         g_PlayerEnvProbe_AboveGroundFlags[sampleIndexC] = 0;
+    } else {
+        g_PlayerEnvProbe_AboveGroundFlags[sampleIndexD] = 0;
     }
     RebuildAboveGroundIndices();
 }
+
 } // namespace Player
 namespace Player {
 /**
@@ -11382,24 +11398,24 @@ void __fastcall FindThirdProbeAndComputeNormal(
 
 namespace zMath {
 /**
- * Purpose: Writes the component-wise midpoint of two vectors and returns the output pointer.
- * Data: reads shared zMath scalar constant 0x4d08d4 and writes only the
- * caller-supplied output vector.
+ * @recoil-anchor recoil:anchor:battlesport-player-zmath-vec3midpoint
+ * @recoil-artifact defines .text recoil:function:0x42d560: zMath::Vec3Midpoint.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+ * @recoil-match byte
+ *
+ * Purpose: Writes the component-wise midpoint and returns the output pointer.
+ * Data: Uses the shared midpoint half scalar at 0x4d08d4.
+ * The reviewed addition stores all three sums before scaling.
+ * The compiler owns scalar arithmetic, calling convention and return.
  */
-zVec3 *__fastcall Vec3Midpoint(
-    const zVec3 *a,
-    const zVec3 *b,
-    zVec3 *outMidpoint
-) {
-    const float sumX = a->x + b->x;
-    const float sumY = a->y + b->y;
-    const float sumZ = a->z + b->z;
-    outMidpoint->x = sumX;
-    outMidpoint->y = sumY;
-    outMidpoint->z = sumZ;
-    outMidpoint->x *= g_zMath_MidpointHalf;
-    outMidpoint->y *= g_zMath_MidpointHalf;
-    outMidpoint->z *= g_zMath_MidpointHalf;
+zVec3 *__fastcall Vec3Midpoint(const zVec3 *a, const zVec3 *b, zVec3 *outMidpoint) {
+    Vec3Add(a, b, outMidpoint);
+
+    // Unused snapshots preserve the retail x87 load order, proven by byte matching.
+    float unscaledX, unscaledY, unscaledZ;
+    outMidpoint->x = (unscaledX = outMidpoint->x) * g_zMath_MidpointHalf;
+    outMidpoint->y = (unscaledY = outMidpoint->y) * g_zMath_MidpointHalf;
+    outMidpoint->z = (unscaledZ = outMidpoint->z) * g_zMath_MidpointHalf;
     return outMidpoint;
 }
 } // namespace zMath

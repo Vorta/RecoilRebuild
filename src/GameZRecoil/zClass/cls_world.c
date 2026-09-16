@@ -196,10 +196,10 @@ namespace CZWorld {
 
             area->areaFlags |= 0x100;
             CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
-            area->bbox[1] = corners.values[1];
-            area->bbox[4] = corners.values[1];
+            area->bbox[1] = corners.corners[0].y;
+            area->bbox[4] = corners.corners[0].y;
             for (int i = 1; i < 8; ++i) {
-                const float y = corners.values[i * 3 + 1];
+                const float y = corners.corners[i].y;
                 if (y < area->bbox[1]) {
                     area->bbox[1] = y;
                 } else if (y > area->bbox[4]) {
@@ -222,7 +222,7 @@ namespace CZWorld {
 
             CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
             for (int i = 0; i < 8; ++i) {
-                const float y = corners.values[i * 3 + 1];
+                const float y = corners.corners[i].y;
                 if (y < area->bbox[1]) {
                     area->bbox[1] = y;
                 } else if (y > area->bbox[4]) {
@@ -1216,14 +1216,14 @@ namespace CZWorld {
             if ((child->flags & 0x100) != 0) {
                 zBBoxCorners corners = {0};
                 CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
-                minX = corners.values[0];
-                maxX = corners.values[0];
-                minZ = corners.values[2];
-                maxZ = corners.values[2];
+                minX = corners.corners[0].x;
+                maxX = corners.corners[0].x;
+                minZ = corners.corners[0].z;
+                maxZ = corners.corners[0].z;
 
                 for (int i = 1; i < 8; ++i) {
-                    const float x = corners.values[i * 3];
-                    const float z = corners.values[i * 3 + 2];
+                    const float x = corners.corners[i].x;
+                    const float z = corners.corners[i].z;
                     if (x < minX) {
                         minX = x;
                     } else if (x > maxX) {

@@ -1159,12 +1159,12 @@ namespace CZBBox {
         float *outRadius
     ) {
         float savedHalf; // Unused later; these input captures are proven by byte matching.
-        const float halfX = (bbox->maxX - bbox->minX) * 0.5f;
-        const float halfY = (bbox->maxY - bbox->minY) * 0.5f;
-        const float halfZ = (bbox->maxZ - bbox->minZ) * 0.5f;
-        outCenter->x = (savedHalf = halfX) + bbox->minX;
-        outCenter->y = (savedHalf = halfY) + bbox->minY;
-        outCenter->z = (savedHalf = halfZ) + bbox->minZ;
+        const float halfX = (bbox->max.x - bbox->min.x) * 0.5f;
+        const float halfY = (bbox->max.y - bbox->min.y) * 0.5f;
+        const float halfZ = (bbox->max.z - bbox->min.z) * 0.5f;
+        outCenter->x = (savedHalf = halfX) + bbox->min.x;
+        outCenter->y = (savedHalf = halfY) + bbox->min.y;
+        outCenter->z = (savedHalf = halfZ) + bbox->min.z;
 
         {
             float rangeSquaredValue = halfX * halfX + halfY * halfY + halfZ * halfZ;
@@ -1200,40 +1200,40 @@ namespace CZBBox {
         zVec3 * outCenter,
         float *outRadius
     ) {
-        const zVec3 *corner = (const zVec3 *)corners->values;
+        const zVec3 *corner = corners->corners;
         zBBox3f bounds;
-        bounds.minX = corner->x;
-        bounds.maxX = corner->x;
-        bounds.minY = corner->y;
-        bounds.maxY = corner->y;
-        bounds.minZ = corner->z;
-        bounds.maxZ = corner->z;
+        bounds.min.x = corner->x;
+        bounds.max.x = corner->x;
+        bounds.min.y = corner->y;
+        bounds.max.y = corner->y;
+        bounds.min.z = corner->z;
+        bounds.max.z = corner->z;
         ++corner;
 
         for (int i = 7; i > 0; --i, ++corner) {
-            if (corner->x < bounds.minX) {
-                bounds.minX = corner->x;
-            } else if (corner->x > bounds.maxX) {
-                bounds.maxX = corner->x;
+            if (corner->x < bounds.min.x) {
+                bounds.min.x = corner->x;
+            } else if (corner->x > bounds.max.x) {
+                bounds.max.x = corner->x;
             }
-            if (corner->y < bounds.minY) {
-                bounds.minY = corner->y;
-            } else if (corner->y > bounds.maxY) {
-                bounds.maxY = corner->y;
+            if (corner->y < bounds.min.y) {
+                bounds.min.y = corner->y;
+            } else if (corner->y > bounds.max.y) {
+                bounds.max.y = corner->y;
             }
-            if (corner->z < bounds.minZ) {
-                bounds.minZ = corner->z;
-            } else if (corner->z > bounds.maxZ) {
-                bounds.maxZ = corner->z;
+            if (corner->z < bounds.min.z) {
+                bounds.min.z = corner->z;
+            } else if (corner->z > bounds.max.z) {
+                bounds.max.z = corner->z;
             }
         }
 
-        const float halfX = (bounds.maxX - bounds.minX) * 0.5f;
-        const float halfY = (bounds.maxY - bounds.minY) * 0.5f;
-        const float halfZ = (bounds.maxZ - bounds.minZ) * 0.5f;
-        outCenter->x = bounds.minX + halfX;
-        outCenter->y = bounds.minY + halfY;
-        outCenter->z = bounds.minZ + halfZ;
+        const float halfX = (bounds.max.x - bounds.min.x) * 0.5f;
+        const float halfY = (bounds.max.y - bounds.min.y) * 0.5f;
+        const float halfZ = (bounds.max.z - bounds.min.z) * 0.5f;
+        outCenter->x = bounds.min.x + halfX;
+        outCenter->y = bounds.min.y + halfY;
+        outCenter->z = bounds.min.z + halfZ;
         {
             float rangeSquaredValue = halfX * halfX + halfY * halfY + halfZ * halfZ;
             float rangeValue;

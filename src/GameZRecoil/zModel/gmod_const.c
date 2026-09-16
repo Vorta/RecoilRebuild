@@ -843,38 +843,38 @@ namespace {
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
     ) {
-        const float minX = bbox->minX;
-        const float minY = bbox->minY;
-        const float minZ = bbox->minZ;
-        const float maxX = bbox->maxX;
-        const float maxY = bbox->maxY;
-        const float maxZ = bbox->maxZ;
+        const float minX = bbox->min.x;
+        const float minY = bbox->min.y;
+        const float minZ = bbox->min.z;
+        const float maxX = bbox->max.x;
+        const float maxY = bbox->max.y;
+        const float maxZ = bbox->max.z;
 
-        float *values = outCorners->values;
-        values[0] = minX;
-        values[1] = minY;
-        values[2] = maxZ;
-        values[3] = maxX;
-        values[4] = minY;
-        values[5] = maxZ;
-        values[6] = maxX;
-        values[7] = minY;
-        values[8] = minZ;
-        values[9] = minX;
-        values[10] = minY;
-        values[11] = minZ;
-        values[12] = minX;
-        values[13] = maxY;
-        values[14] = maxZ;
-        values[15] = maxX;
-        values[16] = maxY;
-        values[17] = maxZ;
-        values[18] = maxX;
-        values[19] = maxY;
-        values[20] = minZ;
-        values[21] = minX;
-        values[22] = maxY;
-        values[23] = minZ;
+        zVec3 *vertices = outCorners->corners;
+        vertices[0].x = minX;
+        vertices[0].y = minY;
+        vertices[0].z = maxZ;
+        vertices[1].x = maxX;
+        vertices[1].y = minY;
+        vertices[1].z = maxZ;
+        vertices[2].x = maxX;
+        vertices[2].y = minY;
+        vertices[2].z = minZ;
+        vertices[3].x = minX;
+        vertices[3].y = minY;
+        vertices[3].z = minZ;
+        vertices[4].x = minX;
+        vertices[4].y = maxY;
+        vertices[4].z = maxZ;
+        vertices[5].x = maxX;
+        vertices[5].y = maxY;
+        vertices[5].z = maxZ;
+        vertices[6].x = maxX;
+        vertices[6].y = maxY;
+        vertices[6].z = minZ;
+        vertices[7].x = minX;
+        vertices[7].y = maxY;
+        vertices[7].z = minZ;
     }
 
     /**
@@ -1100,30 +1100,30 @@ namespace {
         float *outMinZ,
         float *outMaxZ
     ) {
-        const float *values = corners->values;
-        *outMinX = values[0];
-        *outMaxX = values[0];
-        *outMinY = values[1];
-        *outMaxY = values[1];
-        *outMinZ = values[2];
-        *outMaxZ = values[2];
+        const zVec3 *vertices = corners->corners;
+        *outMinX = vertices[0].x;
+        *outMaxX = vertices[0].x;
+        *outMinY = vertices[0].y;
+        *outMaxY = vertices[0].y;
+        *outMinZ = vertices[0].z;
+        *outMaxZ = vertices[0].z;
 
         for (int i = 1; i < 8; ++i) {
-            const float *corner = &values[i * 3];
-            if (corner[0] < *outMinX) {
-                *outMinX = corner[0];
-            } else if (corner[0] > *outMaxX) {
-                *outMaxX = corner[0];
+            const zVec3 *corner = &vertices[i];
+            if (corner->x < *outMinX) {
+                *outMinX = corner->x;
+            } else if (corner->x > *outMaxX) {
+                *outMaxX = corner->x;
             }
-            if (corner[1] < *outMinY) {
-                *outMinY = corner[1];
-            } else if (corner[1] > *outMaxY) {
-                *outMaxY = corner[1];
+            if (corner->y < *outMinY) {
+                *outMinY = corner->y;
+            } else if (corner->y > *outMaxY) {
+                *outMaxY = corner->y;
             }
-            if (corner[2] < *outMinZ) {
-                *outMinZ = corner[2];
-            } else if (corner[2] > *outMaxZ) {
-                *outMaxZ = corner[2];
+            if (corner->z < *outMinZ) {
+                *outMinZ = corner->z;
+            } else if (corner->z > *outMaxZ) {
+                *outMaxZ = corner->z;
             }
         }
     }
@@ -1138,11 +1138,11 @@ namespace {
         int sourceCorner,
         int scratchCorner
     ) {
-        const float *src = &bboxCorners->values[sourceCorner * 3];
+        const zVec3 *src = &bboxCorners->corners[sourceCorner];
         zVec3 *dst = &g_CZClass_DiFaceVertexScratch4[scratchCorner];
-        dst->x = src[0];
-        dst->y = src[1];
-        dst->z = src[2];
+        dst->x = src->x;
+        dst->y = src->y;
+        dst->z = src->z;
     }
 
     /**
@@ -4453,13 +4453,13 @@ namespace CZDisplayInstance {
         candidate->scenePayload = 0;
 
         g_CZClass_DiFaceVertexScratch4[0] =
-            *(const zVec3 *)(&bboxCorners->values[0 * 3]);
+            bboxCorners->corners[0];
         g_CZClass_DiFaceVertexScratch4[1] =
-            *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+            bboxCorners->corners[4];
         g_CZClass_DiFaceVertexScratch4[2] =
-            *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+            bboxCorners->corners[7];
         g_CZClass_DiFaceVertexScratch4[3] =
-            *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+            bboxCorners->corners[3];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
                 candidate, segmentStart, segmentEnd,
                 g_CZClass_DiFaceVertexScratch4, 4, 0)) {
@@ -4467,13 +4467,13 @@ namespace CZDisplayInstance {
         }
 
         g_CZClass_DiFaceVertexScratch4[0] =
-            *(const zVec3 *)(&bboxCorners->values[0 * 3]);
+            bboxCorners->corners[0];
         g_CZClass_DiFaceVertexScratch4[1] =
-            *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+            bboxCorners->corners[1];
         g_CZClass_DiFaceVertexScratch4[2] =
-            *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+            bboxCorners->corners[5];
         g_CZClass_DiFaceVertexScratch4[3] =
-            *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+            bboxCorners->corners[4];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
                 candidate, segmentStart, segmentEnd,
                 g_CZClass_DiFaceVertexScratch4, 4, 0)) {
@@ -4481,13 +4481,13 @@ namespace CZDisplayInstance {
         }
 
         g_CZClass_DiFaceVertexScratch4[0] =
-            *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+            bboxCorners->corners[5];
         g_CZClass_DiFaceVertexScratch4[1] =
-            *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+            bboxCorners->corners[1];
         g_CZClass_DiFaceVertexScratch4[2] =
-            *(const zVec3 *)(&bboxCorners->values[2 * 3]);
+            bboxCorners->corners[2];
         g_CZClass_DiFaceVertexScratch4[3] =
-            *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+            bboxCorners->corners[6];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
                 candidate, segmentStart, segmentEnd,
                 g_CZClass_DiFaceVertexScratch4, 4, 0)) {
@@ -4495,13 +4495,13 @@ namespace CZDisplayInstance {
         }
 
         g_CZClass_DiFaceVertexScratch4[0] =
-            *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+            bboxCorners->corners[7];
         g_CZClass_DiFaceVertexScratch4[1] =
-            *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+            bboxCorners->corners[6];
         g_CZClass_DiFaceVertexScratch4[2] =
-            *(const zVec3 *)(&bboxCorners->values[2 * 3]);
+            bboxCorners->corners[2];
         g_CZClass_DiFaceVertexScratch4[3] =
-            *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+            bboxCorners->corners[3];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
                 candidate, segmentStart, segmentEnd,
                 g_CZClass_DiFaceVertexScratch4, 4, 0)) {
@@ -4509,13 +4509,13 @@ namespace CZDisplayInstance {
         }
 
         g_CZClass_DiFaceVertexScratch4[0] =
-            *(const zVec3 *)(&bboxCorners->values[0 * 3]);
+            bboxCorners->corners[0];
         g_CZClass_DiFaceVertexScratch4[1] =
-            *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+            bboxCorners->corners[3];
         g_CZClass_DiFaceVertexScratch4[2] =
-            *(const zVec3 *)(&bboxCorners->values[2 * 3]);
+            bboxCorners->corners[2];
         g_CZClass_DiFaceVertexScratch4[3] =
-            *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+            bboxCorners->corners[1];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
                 candidate, segmentStart, segmentEnd,
                 g_CZClass_DiFaceVertexScratch4, 4, 0)) {
@@ -4523,13 +4523,13 @@ namespace CZDisplayInstance {
         }
 
         g_CZClass_DiFaceVertexScratch4[0] =
-            *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+            bboxCorners->corners[4];
         g_CZClass_DiFaceVertexScratch4[1] =
-            *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+            bboxCorners->corners[5];
         g_CZClass_DiFaceVertexScratch4[2] =
-            *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+            bboxCorners->corners[6];
         g_CZClass_DiFaceVertexScratch4[3] =
-            *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+            bboxCorners->corners[7];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
                 candidate, segmentStart, segmentEnd,
                 g_CZClass_DiFaceVertexScratch4, 4, 0)) {
@@ -5494,10 +5494,10 @@ namespace CZDisplayInstance {
         faceEntry.flagsAndVertexCount = 4;
 
         int result = 0;
-        g_CZClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[0 * 3]);
-        g_CZClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[4 * 3]);
-        g_CZClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[7 * 3]);
-        g_CZClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[3 * 3]);
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[4];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[7];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[3];
         if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
@@ -5510,10 +5510,10 @@ namespace CZDisplayInstance {
             result = 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[0 * 3]);
-        g_CZClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[1 * 3]);
-        g_CZClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[5 * 3]);
-        g_CZClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[4 * 3]);
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[1];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[5];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[4];
         if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
@@ -5526,10 +5526,10 @@ namespace CZDisplayInstance {
             result = 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[1 * 3]);
-        g_CZClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[2 * 3]);
-        g_CZClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[6 * 3]);
-        g_CZClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[5 * 3]);
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[1];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[2];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[6];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[5];
         if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
@@ -5542,10 +5542,10 @@ namespace CZDisplayInstance {
             result = 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[2 * 3]);
-        g_CZClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[3 * 3]);
-        g_CZClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[7 * 3]);
-        g_CZClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[6 * 3]);
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[2];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[3];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[7];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[6];
         if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
@@ -5558,10 +5558,10 @@ namespace CZDisplayInstance {
             result = 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[0 * 3]);
-        g_CZClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[3 * 3]);
-        g_CZClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[2 * 3]);
-        g_CZClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[1 * 3]);
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[3];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[2];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[1];
         if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,
@@ -5574,10 +5574,10 @@ namespace CZDisplayInstance {
             result = 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] = *(const zVec3 *)(&bboxCorners->values[4 * 3]);
-        g_CZClass_DiFaceVertexScratch4[1] = *(const zVec3 *)(&bboxCorners->values[5 * 3]);
-        g_CZClass_DiFaceVertexScratch4[2] = *(const zVec3 *)(&bboxCorners->values[6 * 3]);
-        g_CZClass_DiFaceVertexScratch4[3] = *(const zVec3 *)(&bboxCorners->values[7 * 3]);
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[4];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[5];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[6];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[7];
         if (BuildPickCandidatesForSegmentBatchVsPolygon(
                 candidateOwner,
                 outCandidateBuffersBySegment,

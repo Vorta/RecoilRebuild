@@ -569,38 +569,38 @@ namespace {
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
     ) {
-        const float minX = bbox->minX;
-        const float minY = bbox->minY;
-        const float minZ = bbox->minZ;
-        const float maxX = bbox->maxX;
-        const float maxY = bbox->maxY;
-        const float maxZ = bbox->maxZ;
+        const float minX = bbox->min.x;
+        const float minY = bbox->min.y;
+        const float minZ = bbox->min.z;
+        const float maxX = bbox->max.x;
+        const float maxY = bbox->max.y;
+        const float maxZ = bbox->max.z;
 
-        float *values = outCorners->values;
-        values[0] = minX;
-        values[1] = minY;
-        values[2] = maxZ;
-        values[3] = maxX;
-        values[4] = minY;
-        values[5] = maxZ;
-        values[6] = maxX;
-        values[7] = minY;
-        values[8] = minZ;
-        values[9] = minX;
-        values[10] = minY;
-        values[11] = minZ;
-        values[12] = minX;
-        values[13] = maxY;
-        values[14] = maxZ;
-        values[15] = maxX;
-        values[16] = maxY;
-        values[17] = maxZ;
-        values[18] = maxX;
-        values[19] = maxY;
-        values[20] = minZ;
-        values[21] = minX;
-        values[22] = maxY;
-        values[23] = minZ;
+        zVec3 *vertices = outCorners->corners;
+        vertices[0].x = minX;
+        vertices[0].y = minY;
+        vertices[0].z = maxZ;
+        vertices[1].x = maxX;
+        vertices[1].y = minY;
+        vertices[1].z = maxZ;
+        vertices[2].x = maxX;
+        vertices[2].y = minY;
+        vertices[2].z = minZ;
+        vertices[3].x = minX;
+        vertices[3].y = minY;
+        vertices[3].z = minZ;
+        vertices[4].x = minX;
+        vertices[4].y = maxY;
+        vertices[4].z = maxZ;
+        vertices[5].x = maxX;
+        vertices[5].y = maxY;
+        vertices[5].z = maxZ;
+        vertices[6].x = maxX;
+        vertices[6].y = maxY;
+        vertices[6].z = minZ;
+        vertices[7].x = minX;
+        vertices[7].y = maxY;
+        vertices[7].z = minZ;
     }
 
     /**
@@ -826,30 +826,30 @@ namespace {
         float *outMinZ,
         float *outMaxZ
     ) {
-        const float *values = corners->values;
-        *outMinX = values[0];
-        *outMaxX = values[0];
-        *outMinY = values[1];
-        *outMaxY = values[1];
-        *outMinZ = values[2];
-        *outMaxZ = values[2];
+        const zVec3 *vertices = corners->corners;
+        *outMinX = vertices[0].x;
+        *outMaxX = vertices[0].x;
+        *outMinY = vertices[0].y;
+        *outMaxY = vertices[0].y;
+        *outMinZ = vertices[0].z;
+        *outMaxZ = vertices[0].z;
 
         for (int i = 1; i < 8; ++i) {
-            const float *corner = &values[i * 3];
-            if (corner[0] < *outMinX) {
-                *outMinX = corner[0];
-            } else if (corner[0] > *outMaxX) {
-                *outMaxX = corner[0];
+            const zVec3 *corner = &vertices[i];
+            if (corner->x < *outMinX) {
+                *outMinX = corner->x;
+            } else if (corner->x > *outMaxX) {
+                *outMaxX = corner->x;
             }
-            if (corner[1] < *outMinY) {
-                *outMinY = corner[1];
-            } else if (corner[1] > *outMaxY) {
-                *outMaxY = corner[1];
+            if (corner->y < *outMinY) {
+                *outMinY = corner->y;
+            } else if (corner->y > *outMaxY) {
+                *outMaxY = corner->y;
             }
-            if (corner[2] < *outMinZ) {
-                *outMinZ = corner[2];
-            } else if (corner[2] > *outMaxZ) {
-                *outMaxZ = corner[2];
+            if (corner->z < *outMinZ) {
+                *outMinZ = corner->z;
+            } else if (corner->z > *outMaxZ) {
+                *outMaxZ = corner->z;
             }
         }
     }
@@ -864,11 +864,11 @@ namespace {
         int sourceCorner,
         int scratchCorner
     ) {
-        const float *src = &bboxCorners->values[sourceCorner * 3];
+        const zVec3 *src = &bboxCorners->corners[sourceCorner];
         zVec3 *dst = &g_CZClass_DiFaceVertexScratch4[scratchCorner];
-        dst->x = src[0];
-        dst->y = src[1];
-        dst->z = src[2];
+        dst->x = src->x;
+        dst->y = src->y;
+        dst->z = src->z;
     }
 
     /**
@@ -3542,7 +3542,7 @@ namespace CZDisplayInstance {
                         zMath::MatStackPopPtr();
                         continue;
                     }
-                    zMath::MatTransformPointBatchInPlace((zVec3 *)(corners.values), 8);
+                    zMath::MatTransformPointBatchInPlace(corners.corners, 8);
                     zMath::MatStackPopPtr();
 
                     zVec3 boundsCenter;
@@ -3622,31 +3622,31 @@ namespace CZBBox {
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
     ) {
-        float *values = outCorners->values;
-        values[0] = bbox->minX;
-        values[1] = bbox->minY;
-        values[2] = bbox->maxZ;
-        values[3] = bbox->maxX;
-        values[4] = bbox->minY;
-        values[5] = bbox->maxZ;
-        values[6] = bbox->maxX;
-        values[7] = bbox->minY;
-        values[8] = bbox->minZ;
-        values[9] = bbox->minX;
-        values[10] = bbox->minY;
-        values[11] = bbox->minZ;
-        values[12] = bbox->minX;
-        values[13] = bbox->maxY;
-        values[14] = bbox->maxZ;
-        values[15] = bbox->maxX;
-        values[16] = bbox->maxY;
-        values[17] = bbox->maxZ;
-        values[18] = bbox->maxX;
-        values[19] = bbox->maxY;
-        values[20] = bbox->minZ;
-        values[21] = bbox->minX;
-        values[22] = bbox->maxY;
-        values[23] = bbox->minZ;
+        zVec3 *vertices = outCorners->corners;
+        vertices[0].x = bbox->min.x;
+        vertices[0].y = bbox->min.y;
+        vertices[0].z = bbox->max.z;
+        vertices[1].x = bbox->max.x;
+        vertices[1].y = bbox->min.y;
+        vertices[1].z = bbox->max.z;
+        vertices[2].x = bbox->max.x;
+        vertices[2].y = bbox->min.y;
+        vertices[2].z = bbox->min.z;
+        vertices[3].x = bbox->min.x;
+        vertices[3].y = bbox->min.y;
+        vertices[3].z = bbox->min.z;
+        vertices[4].x = bbox->min.x;
+        vertices[4].y = bbox->max.y;
+        vertices[4].z = bbox->max.z;
+        vertices[5].x = bbox->max.x;
+        vertices[5].y = bbox->max.y;
+        vertices[5].z = bbox->max.z;
+        vertices[6].x = bbox->max.x;
+        vertices[6].y = bbox->max.y;
+        vertices[6].z = bbox->min.z;
+        vertices[7].x = bbox->min.x;
+        vertices[7].y = bbox->max.y;
+        vertices[7].z = bbox->min.z;
     }
 }
 
@@ -3699,31 +3699,31 @@ namespace CZDisplayInstance {
         CZClass::gwNodeGetBBox(node, &bbox);
 
         zBBoxCorners corners;
-        float *values = corners.values;
-        values[0] = bbox.minX;
-        values[1] = bbox.minY;
-        values[2] = bbox.maxZ;
-        values[3] = bbox.maxX;
-        values[4] = bbox.minY;
-        values[5] = bbox.maxZ;
-        values[6] = bbox.maxX;
-        values[7] = bbox.minY;
-        values[8] = bbox.minZ;
-        values[9] = bbox.minX;
-        values[10] = bbox.minY;
-        values[11] = bbox.minZ;
-        values[12] = bbox.minX;
-        values[13] = bbox.maxY;
-        values[14] = bbox.maxZ;
-        values[15] = bbox.maxX;
-        values[16] = bbox.maxY;
-        values[17] = bbox.maxZ;
-        values[18] = bbox.maxX;
-        values[19] = bbox.maxY;
-        values[20] = bbox.minZ;
-        values[21] = bbox.minX;
-        values[22] = bbox.maxY;
-        values[23] = bbox.minZ;
+        zVec3 *vertices = corners.corners;
+        vertices[0].x = bbox.min.x;
+        vertices[0].y = bbox.min.y;
+        vertices[0].z = bbox.max.z;
+        vertices[1].x = bbox.max.x;
+        vertices[1].y = bbox.min.y;
+        vertices[1].z = bbox.max.z;
+        vertices[2].x = bbox.max.x;
+        vertices[2].y = bbox.min.y;
+        vertices[2].z = bbox.min.z;
+        vertices[3].x = bbox.min.x;
+        vertices[3].y = bbox.min.y;
+        vertices[3].z = bbox.min.z;
+        vertices[4].x = bbox.min.x;
+        vertices[4].y = bbox.max.y;
+        vertices[4].z = bbox.max.z;
+        vertices[5].x = bbox.max.x;
+        vertices[5].y = bbox.max.y;
+        vertices[5].z = bbox.max.z;
+        vertices[6].x = bbox.max.x;
+        vertices[6].y = bbox.max.y;
+        vertices[6].z = bbox.min.z;
+        vertices[7].x = bbox.min.x;
+        vertices[7].y = bbox.max.y;
+        vertices[7].z = bbox.min.z;
 
         zMat4x3 slotBuffer = {0};
         zMath::MatStackPushPtr((float *)(&slotBuffer));
@@ -3734,7 +3734,7 @@ namespace CZDisplayInstance {
             return matrixResult;
         }
 
-        zMath::MatTransformPointBatchInPlace((zVec3 *)(corners.values), 8);
+        zMath::MatTransformPointBatchInPlace(corners.corners, 8);
         zMath::MatStackPopPtr();
 
         zVec3 boundsCenter;
@@ -3814,26 +3814,26 @@ namespace CZDisplayInstance {
         float maxY;
         float minZ;
         float maxZ;
-        const float *values = corners.values;
-        minX = maxX = values[0];
-        minY = maxY = values[1];
-        minZ = maxZ = values[2];
+        const zVec3 *vertices = corners.corners;
+        minX = maxX = vertices[0].x;
+        minY = maxY = vertices[0].y;
+        minZ = maxZ = vertices[0].z;
         for (int bboxCornerIndex = 1; bboxCornerIndex < 8; ++bboxCornerIndex) {
-            const float *corner = &values[bboxCornerIndex * 3];
-            if (corner[0] < minX) {
-                minX = corner[0];
-            } else if (corner[0] > maxX) {
-                maxX = corner[0];
+            const zVec3 *corner = &vertices[bboxCornerIndex];
+            if (corner->x < minX) {
+                minX = corner->x;
+            } else if (corner->x > maxX) {
+                maxX = corner->x;
             }
-            if (corner[1] < minY) {
-                minY = corner[1];
-            } else if (corner[1] > maxY) {
-                maxY = corner[1];
+            if (corner->y < minY) {
+                minY = corner->y;
+            } else if (corner->y > maxY) {
+                maxY = corner->y;
             }
-            if (corner[2] < minZ) {
-                minZ = corner[2];
-            } else if (corner[2] > maxZ) {
-                maxZ = corner[2];
+            if (corner->z < minZ) {
+                minZ = corner->z;
+            } else if (corner->z > maxZ) {
+                maxZ = corner->z;
             }
         }
 
@@ -3867,26 +3867,26 @@ namespace CZDisplayInstance {
         float maxY;
         float minZ;
         float maxZ;
-        const float *values = corners.values;
-        minX = maxX = values[0];
-        minY = maxY = values[1];
-        minZ = maxZ = values[2];
+        const zVec3 *vertices = corners.corners;
+        minX = maxX = vertices[0].x;
+        minY = maxY = vertices[0].y;
+        minZ = maxZ = vertices[0].z;
         for (int bboxCornerIndex = 1; bboxCornerIndex < 8; ++bboxCornerIndex) {
-            const float *corner = &values[bboxCornerIndex * 3];
-            if (corner[0] < minX) {
-                minX = corner[0];
-            } else if (corner[0] > maxX) {
-                maxX = corner[0];
+            const zVec3 *corner = &vertices[bboxCornerIndex];
+            if (corner->x < minX) {
+                minX = corner->x;
+            } else if (corner->x > maxX) {
+                maxX = corner->x;
             }
-            if (corner[1] < minY) {
-                minY = corner[1];
-            } else if (corner[1] > maxY) {
-                maxY = corner[1];
+            if (corner->y < minY) {
+                minY = corner->y;
+            } else if (corner->y > maxY) {
+                maxY = corner->y;
             }
-            if (corner[2] < minZ) {
-                minZ = corner[2];
-            } else if (corner[2] > maxZ) {
-                maxZ = corner[2];
+            if (corner->z < minZ) {
+                minZ = corner->z;
+            } else if (corner->z > maxZ) {
+                maxZ = corner->z;
             }
         }
 
@@ -3926,26 +3926,26 @@ namespace CZDisplayInstance {
         float maxY;
         float minZ;
         float maxZ;
-        const float *values = corners.values;
-        minX = maxX = values[0];
-        minY = maxY = values[1];
-        minZ = maxZ = values[2];
+        const zVec3 *vertices = corners.corners;
+        minX = maxX = vertices[0].x;
+        minY = maxY = vertices[0].y;
+        minZ = maxZ = vertices[0].z;
         for (int bboxCornerIndex = 1; bboxCornerIndex < 8; ++bboxCornerIndex) {
-            const float *corner = &values[bboxCornerIndex * 3];
-            if (corner[0] < minX) {
-                minX = corner[0];
-            } else if (corner[0] > maxX) {
-                maxX = corner[0];
+            const zVec3 *corner = &vertices[bboxCornerIndex];
+            if (corner->x < minX) {
+                minX = corner->x;
+            } else if (corner->x > maxX) {
+                maxX = corner->x;
             }
-            if (corner[1] < minY) {
-                minY = corner[1];
-            } else if (corner[1] > maxY) {
-                maxY = corner[1];
+            if (corner->y < minY) {
+                minY = corner->y;
+            } else if (corner->y > maxY) {
+                maxY = corner->y;
             }
-            if (corner[2] < minZ) {
-                minZ = corner[2];
-            } else if (corner[2] > maxZ) {
-                maxZ = corner[2];
+            if (corner->z < minZ) {
+                minZ = corner->z;
+            } else if (corner->z > maxZ) {
+                maxZ = corner->z;
             }
         }
 
@@ -3990,26 +3990,26 @@ namespace CZDisplayInstance {
         float maxY;
         float minZ;
         float maxZ;
-        const float *values = corners.values;
-        minX = maxX = values[0];
-        minY = maxY = values[1];
-        minZ = maxZ = values[2];
+        const zVec3 *vertices = corners.corners;
+        minX = maxX = vertices[0].x;
+        minY = maxY = vertices[0].y;
+        minZ = maxZ = vertices[0].z;
         for (int bboxCornerIndex = 1; bboxCornerIndex < 8; ++bboxCornerIndex) {
-            const float *corner = &values[bboxCornerIndex * 3];
-            if (corner[0] < minX) {
-                minX = corner[0];
-            } else if (corner[0] > maxX) {
-                maxX = corner[0];
+            const zVec3 *corner = &vertices[bboxCornerIndex];
+            if (corner->x < minX) {
+                minX = corner->x;
+            } else if (corner->x > maxX) {
+                maxX = corner->x;
             }
-            if (corner[1] < minY) {
-                minY = corner[1];
-            } else if (corner[1] > maxY) {
-                maxY = corner[1];
+            if (corner->y < minY) {
+                minY = corner->y;
+            } else if (corner->y > maxY) {
+                maxY = corner->y;
             }
-            if (corner[2] < minZ) {
-                minZ = corner[2];
-            } else if (corner[2] > maxZ) {
-                maxZ = corner[2];
+            if (corner->z < minZ) {
+                minZ = corner->z;
+            } else if (corner->z > maxZ) {
+                maxZ = corner->z;
             }
         }
 

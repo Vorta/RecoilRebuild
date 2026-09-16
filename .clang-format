@@ -9,7 +9,7 @@ SortIncludes: CaseSensitive
 
 # Use block-style continuation indentation instead of aligning later
 # parameters/arguments under the first one.
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: false
 BreakAfterOpenBracketFunction: true
 BreakBeforeCloseBracketFunction: true
 

@@ -2915,28 +2915,28 @@ namespace VariantTag {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-varianttag-currentallowsid
  * @recoil-artifact defines .text recoil:function:0x476400: VariantTag::CurrentAllowsId
- * Purpose: test whether one variant id is accepted by the active tag filter.
+ * @recoil-match byte
+ *
+ * Purpose: Tests whether one variant ID is accepted by the active tag filter.
  */
-int __fastcall CurrentAllowsId(
-    int variantId
-) {
+int __fastcall CurrentAllowsId(int variantId) {
     if (g_Variant_FilterEnabled == 0) {
         return 1;
     }
-
     if (variantId == 0xff) {
         return 1;
     }
 
-    const unsigned char count = g_Variant_CurrentTag.count;
+    // The complete snapshot preserves retail's word-sized count load.
+    const zTag4Partial currentTag = g_Variant_CurrentTag;
+    const unsigned char count = currentTag.count;
     if (count == 0) {
         return 1;
     }
-
     const unsigned char id = (unsigned char)(variantId);
     for (int i = 0; i < count; ++i) {
         const unsigned char tag = g_Variant_CurrentTag.tags[i];
-        if (tag == 0xff || tag == id) {
+        if (tag == 0xff || id == tag) {
             return 1;
         }
     }

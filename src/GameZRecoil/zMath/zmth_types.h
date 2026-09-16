@@ -56,17 +56,17 @@ RECOIL_STATIC_ASSERT(
     ) == 0x04
 );
 
+/**
+ * Axis-aligned box defined by its minimum and maximum positions.
+ * Each endpoint occupies one consecutive three-float vector.
+ */
 struct zBBox3f {
-    float minX;
-    float minY;
-    float minZ;
-    float maxX;
-    float maxY;
-    float maxZ;
+    zVec3 min;
+    zVec3 max;
 };
 
 struct zBBoxCorners {
-    float values[24];
+    zVec3 corners[8];
 };
 
 struct zProjectedPoint {

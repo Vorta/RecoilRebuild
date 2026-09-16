@@ -347,35 +347,35 @@ float **g_currentMatrixPtrSlot = &g_matrixSlots[0];
 #pragma optimize("", on)
 
 /**
- * Purpose: moves one segment endpoint onto the caller-supplied Z clip plane by
- * interpolating toward the other endpoint.
- * Data: writes only the caller-supplied endpoint and reads no authored globals.
- */
-/**
- * Purpose: clips a mutable segment against the current zMath lower and upper
- * Z clipping planes, rejecting segments fully outside the range.
- * Data: reads g_zMath_ClipZLowerBound at 0x4e4880 and
- * g_zMath_ClipZUpperBound at 0x4e4890.
- */
-} // namespace zMath
-
-namespace zMath {
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3deltalengthsq-gamezrecoil-zmath-cpp
- * @recoil-artifact defines .text recoil:function:0x472670: zMath::Vec3DeltaLengthSq (GameZRecoil/zMath.cpp).
- * Purpose: Stores the vector delta in the shared scratch vector and returns its squared length.
+ * @recoil-artifact defines .text recoil:function:0x472670: zMath::Vec3DeltaLengthSq.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.delta-square-sum
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.delta-square-sum
+ * @recoil-match byte
+ *
+ * Purpose: Use reviewed raw assembly for retail's rounded XYZ deltas and squared-length result.
  */
-float __fastcall Vec3DeltaLengthSq(
-    const zVec3 *a,
-    const zVec3 *b
-) {
-    g_zMath_Vec3DeltaScratch.x = a->x - b->x;
-    g_zMath_Vec3DeltaScratch.y = a->y - b->y;
-    g_zMath_Vec3DeltaScratch.z = a->z - b->z;
-
-    return g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x +
-           g_zMath_Vec3DeltaScratch.y * g_zMath_Vec3DeltaScratch.y +
-           g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
+float __fastcall Vec3DeltaLengthSq(const zVec3 *a, const zVec3 *b) {
+    Vec3Subtract(a, b, &g_zMath_Vec3DeltaScratch);
+    float lengthSq;
+    /**
+     * Purpose: Store the grouped XYZ square sum as a float; ECX clobbered, x87 depths 0/3/0.
+     */
+    __asm {
+        mov ecx, offset g_zMath_Vec3DeltaScratch
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [ecx]zVec3.x
+        fld dword ptr [ecx]zVec3.y
+        fmul dword ptr [ecx]zVec3.y
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [ecx]zVec3.z
+        fxch st(1)
+        faddp st(2), st(0)
+        faddp st(1), st(0)
+        fstp lengthSq
+    }
+    return lengthSq;
 }
 
 /**
@@ -1633,61 +1633,82 @@ void __fastcall zMathMatTransformBBoxToCorners(
     const zBBox3f *bbox,
     zBBoxCorners *outCorners
 ) {
-    outCorners->values[0] = bbox->minX * matrix->xx + bbox->minY * matrix->yx +
-        bbox->maxZ * matrix->zx + matrix->posX;
-    outCorners->values[1] = bbox->minX * matrix->xy + bbox->minY * matrix->yy +
-        bbox->maxZ * matrix->zy + matrix->posY;
-    outCorners->values[2] = bbox->minX * matrix->xz + bbox->minY * matrix->yz +
-        bbox->maxZ * matrix->zz + matrix->posZ;
+    zVec3 minXMinY;
+    zVec3 maxXMinY;
+    zVec3 work;
+    zVec3 minXMaxY;
+    zVec3 maxXMaxY;
+    float savedZProduct; // Unused capture; restores the retail x87 instruction counts.
 
-    outCorners->values[3] = bbox->maxX * matrix->xx + bbox->minY * matrix->yx +
-        bbox->maxZ * matrix->zx + matrix->posX;
-    outCorners->values[4] = bbox->maxX * matrix->xy + bbox->minY * matrix->yy +
-        bbox->maxZ * matrix->zy + matrix->posY;
-    outCorners->values[5] = bbox->maxX * matrix->xz + bbox->minY * matrix->yz +
-        bbox->maxZ * matrix->zz + matrix->posZ;
+    // Seed the min-Y accumulators with the X contributions.
+    minXMinY.x = bbox->min.x * matrix->xx;
+    minXMinY.y = bbox->min.x * matrix->xy;
+    minXMinY.z = bbox->min.x * matrix->xz;
+    maxXMinY.x = matrix->xx * bbox->max.x;
+    maxXMinY.y = bbox->max.x * matrix->xy;
+    maxXMinY.z = bbox->max.x * matrix->xz;
 
-    outCorners->values[6] = bbox->maxX * matrix->xx + bbox->minY * matrix->yx +
-        bbox->minZ * matrix->zx + matrix->posX;
-    outCorners->values[7] = bbox->maxX * matrix->xy + bbox->minY * matrix->yy +
-        bbox->minZ * matrix->zy + matrix->posY;
-    outCorners->values[8] = bbox->maxX * matrix->xz + bbox->minY * matrix->yz +
-        bbox->minZ * matrix->zz + matrix->posZ;
+    work.x = bbox->max.y * matrix->yx;
+    work.y = matrix->yy * bbox->max.y;
+    work.z = matrix->yz * bbox->max.y;
+    minXMaxY.x = work.x + minXMinY.x;
+    minXMaxY.y = work.y + minXMinY.y;
+    minXMaxY.z = work.z + minXMinY.z;
+    maxXMaxY.x = work.x + maxXMinY.x;
+    maxXMaxY.y = work.y + maxXMinY.y;
+    maxXMaxY.z = work.z + maxXMinY.z;
 
-    outCorners->values[9] = bbox->minX * matrix->xx + bbox->minY * matrix->yx +
-        bbox->minZ * matrix->zx + matrix->posX;
-    outCorners->values[10] = bbox->minX * matrix->xy + bbox->minY * matrix->yy +
-        bbox->minZ * matrix->zy + matrix->posY;
-    outCorners->values[11] = bbox->minX * matrix->xz + bbox->minY * matrix->yz +
-        bbox->minZ * matrix->zz + matrix->posZ;
+    // Add min-Y in place after saving the max-Y combinations.
+    work.x = matrix->yx * bbox->min.y;
+    work.y = matrix->yy * bbox->min.y;
+    work.z = matrix->yz * bbox->min.y;
+    minXMinY.x = work.x + minXMinY.x;
+    minXMinY.y = work.y + minXMinY.y;
+    minXMinY.z = work.z + minXMinY.z;
+    maxXMinY.x = work.x + maxXMinY.x;
+    maxXMinY.y = work.y + maxXMinY.y;
+    maxXMinY.z = work.z + maxXMinY.z;
 
-    outCorners->values[12] = bbox->minX * matrix->xx + bbox->maxY * matrix->yx +
-        bbox->maxZ * matrix->zx + matrix->posX;
-    outCorners->values[13] = bbox->minX * matrix->xy + bbox->maxY * matrix->yy +
-        bbox->maxZ * matrix->zy + matrix->posY;
-    outCorners->values[14] = bbox->minX * matrix->xz + bbox->maxY * matrix->yz +
-        bbox->maxZ * matrix->zz + matrix->posZ;
+    // Reuse the contribution vector for each Z plane.
+    work.x = matrix->zx * bbox->min.z + matrix->posX;
+    work.y = matrix->zy * bbox->min.z + matrix->posY;
+    work.z = matrix->zz * bbox->min.z + matrix->posZ;
 
-    outCorners->values[15] = bbox->maxX * matrix->xx + bbox->maxY * matrix->yx +
-        bbox->maxZ * matrix->zx + matrix->posX;
-    outCorners->values[16] = bbox->maxX * matrix->xy + bbox->maxY * matrix->yy +
-        bbox->maxZ * matrix->zy + matrix->posY;
-    outCorners->values[17] = bbox->maxX * matrix->xz + bbox->maxY * matrix->yz +
-        bbox->maxZ * matrix->zz + matrix->posZ;
+    outCorners->corners[2].x = work.x + maxXMinY.x;
+    outCorners->corners[2].y = work.y + maxXMinY.y;
+    outCorners->corners[2].z = work.z + maxXMinY.z;
 
-    outCorners->values[18] = bbox->maxX * matrix->xx + bbox->maxY * matrix->yx +
-        bbox->minZ * matrix->zx + matrix->posX;
-    outCorners->values[19] = bbox->maxX * matrix->xy + bbox->maxY * matrix->yy +
-        bbox->minZ * matrix->zy + matrix->posY;
-    outCorners->values[20] = bbox->maxX * matrix->xz + bbox->maxY * matrix->yz +
-        bbox->minZ * matrix->zz + matrix->posZ;
+    outCorners->corners[3].x = work.x + minXMinY.x;
+    outCorners->corners[3].y = work.y + minXMinY.y;
+    outCorners->corners[3].z = work.z + minXMinY.z;
 
-    outCorners->values[21] = bbox->minX * matrix->xx + bbox->maxY * matrix->yx +
-        bbox->minZ * matrix->zx + matrix->posX;
-    outCorners->values[22] = bbox->minX * matrix->xy + bbox->maxY * matrix->yy +
-        bbox->minZ * matrix->zy + matrix->posY;
-    outCorners->values[23] = bbox->minX * matrix->xz + bbox->maxY * matrix->yz +
-        bbox->minZ * matrix->zz + matrix->posZ;
+    outCorners->corners[6].x = maxXMaxY.x + work.x;
+    outCorners->corners[6].y = maxXMaxY.y + work.y;
+    outCorners->corners[6].z = maxXMaxY.z + work.z;
+
+    outCorners->corners[7].x = minXMaxY.x + work.x;
+    outCorners->corners[7].y = minXMaxY.y + work.y;
+    outCorners->corners[7].z = minXMaxY.z + work.z;
+
+    work.x = bbox->max.z * matrix->zx + matrix->posX;
+    work.y = bbox->max.z * matrix->zy + matrix->posY;
+    work.z = (savedZProduct = bbox->max.z * matrix->zz) + matrix->posZ;
+
+    outCorners->corners[0].x = work.x + minXMinY.x;
+    outCorners->corners[0].y = work.y + minXMinY.y;
+    outCorners->corners[0].z = work.z + minXMinY.z;
+
+    outCorners->corners[1].x = work.x + maxXMinY.x;
+    outCorners->corners[1].y = work.y + maxXMinY.y;
+    outCorners->corners[1].z = work.z + maxXMinY.z;
+
+    outCorners->corners[4].x = minXMaxY.x + work.x;
+    outCorners->corners[4].y = minXMaxY.y + work.y;
+    outCorners->corners[4].z = minXMaxY.z + work.z;
+
+    outCorners->corners[5].x = maxXMaxY.x + work.x;
+    outCorners->corners[5].y = maxXMaxY.y + work.y;
+    outCorners->corners[5].z = maxXMaxY.z + work.z;
 }
 
 namespace zMath {
