@@ -426,7 +426,9 @@ void __fastcall Vec3ScaleAdd(
     float scale,
     zVec3 *out
 ) {
-    out->x = scale * delta->x + vec->x;
+    // Unused snapshots retained to reproduce the retail VC5 operand order.
+    float savedScale, savedX;
+    out->x = (savedScale = scale) * delta->x + (savedX = vec->x);
     out->y = vec->y + delta->y * scale;
     out->z = vec->z + delta->z * scale;
 }

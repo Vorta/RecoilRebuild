@@ -3671,10 +3671,9 @@ void __fastcall SetShowBackFaceForAllEntries(
     zDiPartial *self,
     int enabled
 ) {
-    const unsigned int showBackFaceBit = (enabled & 1) << 8;
     for (int i = 0; i < self->entryCount; ++i) {
         self->entries[i].flagsAndIndexCount =
-            (self->entries[i].flagsAndIndexCount & ~0x0100u) | showBackFaceBit;
+            (self->entries[i].flagsAndIndexCount & ~0x0100u) | ((enabled & 1) << 8);
     }
 }
 } // namespace zDi
@@ -3729,10 +3728,9 @@ void __fastcall ResetCurrentVariant(
     zDiPartial *self
 ) {
     zModel_MaterialPartial *const material = self->entries->material;
-    zModel_MaterialCyclePartial *const cycle = material->cycle;
-    if (cycle != 0) {
-        cycle->currentFrame = 0.0f;
-        material->currentTextureDirectoryEntry = cycle->frameTable[0];
+    if (material->cycle != 0) {
+        material->cycle->currentFrame = 0.0f;
+        material->currentTextureDirectoryEntry = material->cycle->frameTable[0];
     }
 }
 } // namespace zDi
@@ -5646,15 +5644,12 @@ namespace CZDisplayInstance {
         zVec3 *vertex = g_zModel_PointInPolygonVertices;
         zVec3 *edgeNormal = g_zModel_PointInPolygonEdgeNormals;
 
-        for (int vertexIndex = 0; vertexIndex < g_zModel_PointInPolygonVertexCount; ++vertexIndex) {
+        for (int vertexIndex = 0; vertexIndex < g_zModel_PointInPolygonVertexCount; ++vertexIndex, ++vertex, ++edgeNormal) {
             const float distance =
                 (center->x - vertex->x) * edgeNormal->x + (center->z - vertex->z) * edgeNormal->z;
             if (distance < radius) {
                 return 0;
             }
-
-            ++vertex;
-            ++edgeNormal;
         }
 
         return 1;

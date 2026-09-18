@@ -296,21 +296,20 @@ namespace zGeometry_ClipPolygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-resetweilerstatefromcontourpoints
  * @recoil-artifact defines .text recoil:function:0x464790: zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints
+ * @recoil-match byte
+ *
  * Purpose: Replace the clip polygon's Weiler state from a point list while preserving the old contour source.
  */
-int __fastcall ResetWeilerStateFromContourPoints(
-    zGeometry_ClipPolygonPartial *clipPolygon,
+int __fastcall ResetWeilerStateFromContourPoints(zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *points,
-    int pointCount
-) {
+    int pointCount) {
     if (points == 0 || pointCount == 0) {
         return 0;
     }
 
-    zGeometry_WeilerStatePartial *const oldState = clipPolygon->weilerState;
     zGeometry_WeilerStatePartial *const newState =
-        zGeometry_Weiler::Init(points, pointCount, oldState->contourSource);
-    zGeometry_Weiler::DestroyState(oldState);
+        zGeometry_Weiler::Init(points, pointCount, clipPolygon->weilerState->contourSource);
+    zGeometry_Weiler::DestroyState(clipPolygon->weilerState);
     clipPolygon->weilerState = newState;
     return 1;
 }
@@ -2588,20 +2587,20 @@ void __fastcall UpdateBounds(
     zVec3 *const start = segment->startPoint;
     zVec3 *const end = segment->endPoint;
 
-    if (start->x <= end->x) {
-        segment->minX = start->x;
-        segment->maxX = end->x;
-    } else {
+    if (start->x > end->x) {
         segment->minX = end->x;
         segment->maxX = start->x;
+    } else {
+        segment->minX = start->x;
+        segment->maxX = end->x;
     }
 
-    if (start->y <= end->y) {
-        segment->minY = start->y;
-        segment->maxY = end->y;
-    } else {
+    if (start->y > end->y) {
         segment->minY = end->y;
         segment->maxY = start->y;
+    } else {
+        segment->minY = start->y;
+        segment->maxY = end->y;
     }
 
     segment->boundsDirty = 0;
@@ -3212,31 +3211,34 @@ namespace zGeometry_WeilerContourSegmentArray {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-updatebounds-0x4693a0
  * @recoil-artifact defines .text recoil:function:0x4693a0: zGeometry_WeilerContourSegmentArray::UpdateBounds
+ * @recoil-match byte
+ *
  * Purpose: Refresh cached XY bounds for each segment in a contour segment array.
  */
-void __fastcall UpdateBounds(
-    zGeometry_WeilerContourSegmentPartial *segments,
-    int segmentCount
-) {
-    for (int i = 0; i < segmentCount; ++i) {
-        zGeometry_WeilerContourSegment::UpdateBounds(&segments[i]);
+void __fastcall UpdateBounds(zGeometry_WeilerContourSegmentPartial *segments,
+    int segmentCount) {
+    while (segmentCount--) {
+        zGeometry_WeilerContourSegment::UpdateBounds(segments++);
     }
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-initfrompointlist
  * @recoil-artifact defines .text recoil:function:0x4693c0: zGeometry_WeilerContourSegmentArray::InitFromPointList
+ * @recoil-match byte
+ *
  * Purpose: Build a linked contour segment ring from a point list.
  */
-void __fastcall InitFromPointList(
-    zGeometry_WeilerContourSegmentPartial *segments,
+void __fastcall InitFromPointList(zGeometry_WeilerContourSegmentPartial *segments,
     zVec3 *points,
     int pointCount,
-    int contourType
-) {
+    int contourType) {
+
     zVec3 *point = points;
-    for (int i = 0; i < pointCount; ++i) {
-        zGeometry_WeilerContourSegmentPartial *const segment = &segments[i];
+    zGeometry_WeilerContourSegmentPartial *segment = segments - 1;
+    int count = pointCount;
+    while (count--) {
+        ++segment;
         segment->prev = segment - 1;
         segment->next = segment + 1;
         segment->contourType = contourType;
@@ -3247,11 +3249,9 @@ void __fastcall InitFromPointList(
         segment->startXing = 0;
         segment->contourOutput = 0;
     }
-
-    zGeometry_WeilerContourSegmentPartial *const lastSegment = &segments[pointCount - 1];
-    segments->prev = lastSegment;
-    lastSegment->next = segments;
-    lastSegment->endPoint = points;
+    segments->prev = &segments[pointCount - 1];
+    segment->next = segments;
+    segment->endPoint = points;
 }
 
 } // namespace zGeometry_WeilerContourSegmentArray
@@ -3500,19 +3500,17 @@ void __fastcall RecenterPointSetsIfOutOfRange(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-preclassifyinputcontouraadjacentedgepairs
  * @recoil-artifact defines .text recoil:function:0x469a30: zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs
+ * @recoil-match byte
+ *
  * Purpose: Reset clipping scratch buffers and seed contour A's forward and reverse adjacent-edge segment rings.
  */
-void __fastcall PreclassifyInputContourAAdjacentEdgePairs(
-    zGeometry_WeilerStatePartial *self
-) {
-    const int pointCount = self->inputContourABuffer.count;
-    zGeometry_WeilerContourSegmentPartial *const segmentBase =
-        (zGeometry_WeilerContourSegmentPartial *)(self->segmentBuffer.base);
-    zGeometry_WeilerContourOutputPartial *const contourBase =
-        (zGeometry_WeilerContourOutputPartial *)(self->contourBuffer.base);
-    zVec3 *const points = (zVec3 *)(self->inputContourABuffer.base);
+void __fastcall PreclassifyInputContourAAdjacentEdgePairs(zGeometry_WeilerStatePartial *self) {
+    zGeometry_WeilerContourSegmentPartial *segments =
+        (zGeometry_WeilerContourSegmentPartial *)self->segmentBuffer.base;
+    zGeometry_WeilerContourOutputPartial *contour =
+        (zGeometry_WeilerContourOutputPartial *)self->contourBuffer.base;
 
-    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->segmentBuffer, pointCount << 1);
+    zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->segmentBuffer, self->inputContourABuffer.count << 1);
     zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->contourBuffer, 2);
     zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->xingBuffer, 0);
     zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->polygonSetABuffer, 0);
@@ -3520,16 +3518,19 @@ void __fastcall PreclassifyInputContourAAdjacentEdgePairs(
     zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->polygonSetCBuffer, 0);
     zGeometry_WeilerBuffer::SetCountAndAppendPtr(&self->pointListBuffer, 0);
 
-    zGeometry_WeilerContourSegmentArray::InitFromPointList(segmentBase, points, pointCount, 1);
-    segmentBase->contourOutput = contourBase;
-    contourBase[0].firstSegment = segmentBase;
-    zGeometry_WeilerContourSegmentArray::UpdateBounds(segmentBase, pointCount);
+    zGeometry_WeilerContourSegmentArray::InitFromPointList(
+        segments, (zVec3 *)self->inputContourABuffer.base, self->inputContourABuffer.count, 1);
+    segments->contourOutput = contour;
+    contour->firstSegment = segments;
+    zGeometry_WeilerContourSegmentArray::UpdateBounds(segments, self->inputContourABuffer.count);
 
-    zGeometry_WeilerContourSegmentPartial *const reverseSegments = &segmentBase[pointCount];
-    zGeometry_WeilerContourSegmentArray::InitFromPointList(reverseSegments, points, pointCount, 4);
-    reverseSegments->contourOutput = &contourBase[1];
-    contourBase[1].firstSegment = reverseSegments;
-    zGeometry_WeilerContourSegmentArray::UpdateBounds(reverseSegments, pointCount);
+    segments += self->inputContourABuffer.count;
+    ++contour;
+    zGeometry_WeilerContourSegmentArray::InitFromPointList(
+        segments, (zVec3 *)self->inputContourABuffer.base, self->inputContourABuffer.count, 4);
+    segments->contourOutput = contour;
+    contour->firstSegment = segments;
+    zGeometry_WeilerContourSegmentArray::UpdateBounds(segments, self->inputContourABuffer.count);
 }
 
 } // namespace zGeometry_Weiler
@@ -3556,27 +3557,32 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-restorepointtranslation
  * @recoil-artifact defines .text recoil:function:0x469af0: zGeometry_Weiler::RestorePointTranslation
+ * @recoil-match byte
+ *
  * Purpose: Restore the saved XY translation to caller-owned input points and generated output points.
  */
-void __fastcall RestorePointTranslation(
-    zGeometry_WeilerStatePartial *self
-) {
+void __fastcall RestorePointTranslation(zGeometry_WeilerStatePartial *self) {
+
     const float translationX = self->pointTranslationX;
     const float translationY = self->pointTranslationY;
-
-    zVec3 *point = (zVec3 *)(self->inputContourBBuffer.base);
-    for (int i = self->inputContourBBuffer.count; i != 0; --i) {
-        point->x += translationX;
-        point->y += translationY;
-        ++point;
+    int count = self->inputContourBBuffer.count;
+    if (count) {
+        zVec3 *point = (zVec3 *)self->inputContourBBuffer.base;
+        do {
+            point->x = translationX + point->x;
+            point->y = translationY + point->y;
+            ++point;
+        } while (--count);
     }
-
     zGeometry_WeilerClipOutputPartial *const outClip = self->outClip;
-    point = outClip->pointList.points;
-    for (int i_2790 = outClip->pointList.pointCount; i_2790 != 0; --i_2790) {
-        point->x += translationX;
-        point->y += translationY;
-        ++point;
+    int outputCount = outClip->pointList.pointCount;
+    if (outputCount) {
+        zVec3 *point = outClip->pointList.points;
+        do {
+            point->x = translationX + point->x;
+            point->y = translationY + point->y;
+            ++point;
+        } while (--outputCount);
     }
 }
 
@@ -3712,28 +3718,32 @@ namespace zGeometry_Vec3 {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-isnearequalxy
  * @recoil-artifact defines .text recoil:function:0x469e50: zGeometry_Vec3::IsNearEqualXY
+ * @recoil-match byte
+ *
  * Purpose: Compare two vectors in XY using the caller-supplied tolerance.
  */
-int __fastcall IsNearEqualXY(
-    zVec3 *vecA,
+int __fastcall IsNearEqualXY(zVec3 *vecA,
     zVec3 *vecB,
-    float tolerance
-) {
-    if (fabs(vecA->x - vecB->x) <= tolerance && fabs(vecA->y - vecB->y) <= tolerance) {
-        return 1;
-    }
+    float tolerance) {
 
-    return 0;
+    float dx = vecA->x - vecB->x;
+    float dy = vecA->y - vecB->y;
+    dx = fabs(dx);
+    dy = fabs(dy);
+    if (dx > tolerance || dy > tolerance) {
+        return 0;
+    }
+    return 1;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-snappointtosegmentxyifnear
  * @recoil-artifact defines .text recoil:function:0x469e90: zGeometry_Vec3::SnapPointToSegmentXYIfNear
+ *
+ *
  * Purpose: Snap a nearby point onto a segment in XY while preserving Z.
  */
-int __fastcall SnapPointToSegmentXYIfNear(
-    zVec3 *lineStart,
-    zVec3 *lineEnd,
+int __fastcall SnapPointToSegmentXYIfNear( zVec3 *lineStart, zVec3 *lineEnd,
     zVec3 *testPoint,
     float tolerance
 ) {
@@ -3742,7 +3752,7 @@ int __fastcall SnapPointToSegmentXYIfNear(
     const float testDx = testPoint->x - lineStart->x;
     const float testDy = testPoint->y - lineStart->y;
 
-    if (fabs(dx) <= tolerance) {
+    if (fabs(dx) < tolerance) {
         if (fabs(testDx) <= tolerance) {
             const float t = testDy / dy;
             if (t > 0.0f && t < 1.0f) {
@@ -3750,7 +3760,7 @@ int __fastcall SnapPointToSegmentXYIfNear(
                 return 1;
             }
         }
-    } else if (fabs(dy) <= tolerance) {
+    } else if (fabs(dy) < tolerance) {
         if (fabs(testDy) <= tolerance) {
             const float t = testDx / dx;
             if (t > 0.0f && t < 1.0f) {
@@ -3759,15 +3769,16 @@ int __fastcall SnapPointToSegmentXYIfNear(
             }
         }
     } else {
-        const float tx = testDx / dx;
         const float ty = testDy / dy;
-        if (fabs(tx - ty) <= tolerance && tx > 0.0f && ty > 0.0f && tx < 1.0f && ty < 1.0f) {
-            const float snappedX = tx * dx + lineStart->x;
-            if (fabs(snappedX - testPoint->x) <= tolerance) {
-                const float snappedY = ty * dy + lineStart->y;
-                if (fabs(snappedY - testPoint->y) <= tolerance) {
-                    testPoint->y = snappedY;
-                    testPoint->x = snappedX;
+        const float tx = testDx / dx;
+        if (fabs(tx - ty) < tolerance && tx > 0.0f && ty > 0.0f && tx < 1.0f && ty < 1.0f) {
+            zVec3 snapped;
+            snapped.x = tx * dx + lineStart->x;
+            if (fabs(snapped.x - testPoint->x) <= tolerance) {
+                snapped.y = ty * dy + lineStart->y;
+                if (fabs(snapped.y - testPoint->y) <= tolerance) {
+                    testPoint->x = snapped.x;
+                    testPoint->y = snapped.y;
                     return 1;
                 }
             }
@@ -3783,43 +3794,36 @@ namespace zGeometry_Vec3Array {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-removeadjacentduplicatepointsxy
  * @recoil-artifact defines .text recoil:function:0x46a080: zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY
+ * @recoil-match byte
+ *
  * Purpose: Collapse adjacent duplicate XY vertices from a polygon point list.
  */
-int __fastcall RemoveAdjacentDuplicatePointsXY(
-    zVec3 *vertices,
-    int count
-) {
-    int result = count;
-    int index = 0;
-
-    if (result == 0) {
-        return result;
-    }
-
-    int nextIndex = 1;
-    zVec3 *current = vertices;
-
-    while ((unsigned int)(index) < (unsigned int)(result)) {
-        if (zGeometry_Vec3::IsNearEqualXY(current, &vertices[nextIndex % result], 0.00999999978f)) {
-            const int lastIndex = result - 1;
-            if (index == lastIndex) {
-                result = lastIndex;
-            } else {
-                const int bytesToMove = (result - index - 1) * (int)(sizeof(zVec3));
-                memcpy(current, current + 1, bytesToMove);
-                --index;
-                --nextIndex;
-                --current;
-                --result;
+int __fastcall RemoveAdjacentDuplicatePointsXY(zVec3 *vertices,
+    int count) {
+    unsigned int index = 0;
+    if (index < count) {
+        unsigned int nextIndex = 1;
+        zVec3 *current = vertices;
+        zVec3 *next = vertices + 1;
+        do {
+            if (zGeometry_Vec3::IsNearEqualXY(current, &vertices[nextIndex % count], 0.00999999978f)) {
+                const int lastIndex = count - 1;
+                if (index != lastIndex) {
+                    memcpy(current, next, (count - index - 1) * sizeof(zVec3));
+                    --index;
+                    --nextIndex;
+                    --next;
+                    --current;
+                }
+                count = lastIndex;
             }
-        }
-
-        ++index;
-        ++nextIndex;
-        ++current;
+            ++index;
+            ++nextIndex;
+            ++next;
+            ++current;
+        } while (index < count);
     }
-
-    return result;
+    return count;
 }
 
 } // namespace zGeometry_Vec3Array
@@ -4011,40 +4015,34 @@ namespace zGeometry_Vec3Array {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-rotateneg90aroundx
  * @recoil-artifact defines .text recoil:function:0x46a5e0: zGeometry_Vec3Array::RotateNeg90AroundX
+ * @recoil-match byte
+ *
  * Purpose: Rotate an array of vectors negative ninety degrees around X.
  */
-void __fastcall RotateNeg90AroundX(
-    int pointCount,
-    zVec3 *points
-) {
-    if (pointCount == 0) {
-        return;
-    }
-
-    for (int i = 0; i < pointCount; ++i) {
-        const float z = points[i].z;
-        points[i].z = -points[i].y;
-        points[i].y = z;
+void __fastcall RotateNeg90AroundX(int pointCount,
+    zVec3 *points) {
+    while (pointCount--) {
+        const float y = points->y;
+        points->y = points->z;
+        points->z = -y;
+        ++points;
     }
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-rotatepos90aroundx
  * @recoil-artifact defines .text recoil:function:0x46a600: zGeometry_Vec3Array::RotatePos90AroundX
+ * @recoil-match byte
+ *
  * Purpose: Rotate an array of vectors positive ninety degrees around X.
  */
-void __fastcall RotatePos90AroundX(
-    int pointCount,
-    zVec3 *points
-) {
-    if (pointCount == 0) {
-        return;
-    }
-
-    for (int i = 0; i < pointCount; ++i) {
-        const float y = points[i].y;
-        points[i].y = -points[i].z;
-        points[i].z = y;
+void __fastcall RotatePos90AroundX(int pointCount,
+    zVec3 *points) {
+    while (pointCount--) {
+        const float z = points->z;
+        points->z = points->y;
+        points->y = -z;
+        ++points;
     }
 }
 
@@ -4054,28 +4052,26 @@ namespace zGeometry_Bounds2D {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-overlapswithunitmargin
  * @recoil-artifact defines .text recoil:function:0x46a620: zGeometry_Bounds2D::OverlapsWithUnitMargin
+ *
+ *
  * Purpose: Test XY bounds overlap with the retail one-unit margin.
  */
-int __fastcall OverlapsWithUnitMargin(
-    zGeometry_BoundsXY *boundsA,
-    zGeometry_BoundsXY *boundsB
+int __fastcall OverlapsWithUnitMargin(zGeometry_BoundsXY *boundsA, zGeometry_BoundsXY *boundsB
 ) {
-    if (boundsB->maxX + 1.0f < boundsA->minX) {
+    // Unused comparison snapshots reproduce the retail VC5 x87 operand order.
+    float savedX, savedY, savedOtherY;
+    if (boundsB->maxX - -1.0f < boundsA->minX) {
         return 0;
     }
-
-    if (boundsA->maxX < boundsB->minX - 1.0f) {
+    if (boundsA->maxX < (savedX = boundsB->minX - 1.0f)) {
         return 0;
     }
-
-    if (boundsA->minY > boundsB->maxY + 1.0f) {
+    if (boundsA->maxY > (savedY = boundsB->minY - -1.0f)) {
         return 0;
     }
-
-    if (boundsA->maxY < boundsB->minY - 1.0f) {
+    if (boundsA->minY < (savedOtherY = boundsB->maxY - 1.0f)) {
         return 0;
     }
-
     return 1;
 }
 

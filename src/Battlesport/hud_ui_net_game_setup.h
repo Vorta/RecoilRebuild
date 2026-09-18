@@ -95,7 +95,7 @@ struct HudUiNetGameSetupPanel_NameTagsToggle : HudUiCheckToggleWidget {
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_NameTagsToggle) == 0x164);
 
 struct HudUiNetGameSetupPanel : HudUiBackground {
-    HudUiNumericTextInput *currentFocusWidget;
+    HudUiNetGameSetupTextInput *currentFocusWidget;
     HudUiNetGameSetupPanel_LaunchButton playButton;
     HudUiNetGameSetupPanel_CancelButton cancelButton;
     CHudUiNetGameSetupPanelGameNameInput gameNameInput;

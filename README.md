@@ -16,8 +16,10 @@ satisfy the goal.
 
 The unified tracker coordinates one strictly serial six-stage traversal:
 
-1. `authored-function-order` recovers the natural VC5SP3 order of
-   source-authored and authored-lifecycle bodies across retail `.text`.
+1. The authored function census (legacy ID `authored-function-order`) proves
+   source-authored and authored-lifecycle identity membership and source bindings
+   across retail `.text`. Object/TU order is diagnostic; it does not dictate
+   class, namespace or source-file placement.
 2. `authored-call-contract` checks the static invocation contract of every
    currently reviewed physical authored gating body in deterministic
    retail-contiguous slices.

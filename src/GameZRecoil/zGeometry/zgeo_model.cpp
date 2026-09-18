@@ -243,34 +243,31 @@ namespace zGeometry_Vec3Array {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-computeboundsxy
  * @recoil-artifact defines .text recoil:function:0x46a9c0: zGeometry_Vec3Array::ComputeBoundsXY
+ * @recoil-match byte
+ *
  * Purpose: Compute XY min/max bounds for a point array.
  */
-void __fastcall ComputeBoundsXY(
-    zGeometry_BoundsXY *outBounds,
+void __fastcall ComputeBoundsXY(zGeometry_BoundsXY *outBounds,
     zVec3 *points,
-    int pointCount
-) {
-    outBounds->minX = points[0].x;
-    outBounds->maxX = points[0].x;
-    outBounds->maxY = points[0].y;
-    outBounds->minY = points[0].y;
+    int pointCount) {
 
-    for (int i = 1; i < pointCount; ++i) {
-        zVec3 *const point = &points[i];
-        if (point->x < outBounds->minX) {
-            outBounds->minX = point->x;
+    outBounds->minX = outBounds->maxX = points->x;
+    outBounds->maxY = outBounds->minY = points->y;
+    ++points;
+    float savedPoint, savedBound; // Unused captures reproduce retail x87 comparisons.
+    float savedY; // Unused capture reproduces retail x87 stores.
+    for (int i = 1; i < pointCount; ++i, ++points) {
+        if (points->x < outBounds->minX) {
+            outBounds->minX = points->x;
         }
-
-        if (point->x > outBounds->maxX) {
-            outBounds->maxX = point->x;
+        if (points->x > (savedBound = outBounds->maxX)) {
+            outBounds->maxX = points->x;
         }
-
-        if (point->y > outBounds->maxY) {
-            outBounds->maxY = point->y;
+        if ((savedPoint = points->y) < (savedBound = outBounds->maxY)) {
+            outBounds->maxY = (savedY = points->y);
         }
-
-        if (point->y < outBounds->minY) {
-            outBounds->minY = point->y;
+        if ((savedPoint = points->y) > (savedBound = outBounds->minY)) {
+            outBounds->minY = (savedY = points->y);
         }
     }
 }
@@ -307,18 +304,16 @@ zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-copypointsoutrotatedback
  * @recoil-artifact defines .text recoil:function:0x46aab0: zGeometry_ClipPolygon::CopyPointsOutRotatedBack
+ * @recoil-match byte
+ *
  * Purpose: Copy clip polygon points to caller storage and restore model-space rotation.
  */
-int __fastcall CopyPointsOutRotatedBack(
-    zGeometry_ClipPolygonPartial *clipPolygon,
+int __fastcall CopyPointsOutRotatedBack(zGeometry_ClipPolygonPartial *clipPolygon,
     int *outPointCount,
-    zVec3 **outPoints
-) {
+    zVec3 **outPoints) {
     *outPointCount = clipPolygon->pointCount;
-
-    const size_t pointBytes = (size_t)(clipPolygon->pointCount) * sizeof(zVec3);
-    *outPoints = (zVec3 *)(realloc(*outPoints, pointBytes));
-    memcpy(*outPoints, clipPolygon->points, pointBytes);
+    *outPoints = (zVec3 *)realloc(*outPoints, clipPolygon->pointCount * sizeof(zVec3));
+    memcpy(*outPoints, clipPolygon->points, clipPolygon->pointCount * sizeof(zVec3));
 
     zGeometry_Vec3Array::RotateNeg90AroundX(*outPointCount, *outPoints);
     return 0;
@@ -345,14 +340,15 @@ void __fastcall FinalizeAndDestroy(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findpointindexxy
  * @recoil-artifact defines .text recoil:function:0x46ab40: zGeometry_ClipPolygon::FindPointIndexXY
+ * @recoil-match byte
+ *
  * Purpose: Find the first clip-polygon point whose XY coordinates match the candidate point within tolerance.
  */
-int __fastcall FindPointIndexXY(
-    zGeometry_ClipPolygonPartial *clipPolygon,
-    zVec3 *point
-) {
-    for (int i = 0; i < clipPolygon->pointCount; ++i) {
-        if (zGeometry_Vec3::IsNearEqualXY(&clipPolygon->points[i], point, 0.00999999978f)) {
+int __fastcall FindPointIndexXY(zGeometry_ClipPolygonPartial *clipPolygon,
+    zVec3 *point) {
+    zVec3 *current = clipPolygon->points;
+    for (int i = 0; i < clipPolygon->pointCount; ++current, ++i) {
+        if (zGeometry_Vec3::IsNearEqualXY(current, point, 0.00999999978f)) {
             return i;
         }
     }
@@ -467,46 +463,41 @@ namespace zGeometry_ClipPatchOutput {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-applynodedipairs
  * @recoil-artifact defines .text recoil:function:0x46ae40: zGeometry_ClipPatchOutput::ApplyNodeDiPairs
+ * @recoil-match byte
  *
  * Purpose: publish generated display instances to their clip-patch nodes,
  * release replaced display instances, and clear consumed node/DI pairs.
  */
 int __fastcall ApplyNodeDiPairs(
-    zGeometry_ClipPatchOutputPartial *self
-) {
-    {
-        for (int partitionIndex = 0; partitionIndex < self->partitionCount; ++partitionIndex) {
-            zGeometry_ClipPatchPartitionOutput *const partition = &self->partitions[partitionIndex];
-            for (int i = 0; i < partition->nodeDiPairCount; ++i) {
-                zGeometry_ClipPatchNodeDiPair *const pair = &partition->nodeDiPairs[i];
+    zGeometry_ClipPatchOutputPartial *self) {
+    for (int partitionIndex = 0; partitionIndex < self->partitionCount; ++partitionIndex) {
+        for (int i = 0; i < self->partitions[partitionIndex].nodeDiPairCount; ++i) {
+            unsigned int oldDisplayInstanceValue;
+            CZClass::gwNodeGetUserData(
+                self->partitions[partitionIndex].nodeDiPairs[i].node, &oldDisplayInstanceValue);
+            CZClass::gwNodeSetDisplayInstance(
+                self->partitions[partitionIndex].nodeDiPairs[i].node,
+                self->partitions[partitionIndex].nodeDiPairs[i].di);
 
-                unsigned int oldDisplayInstanceValue = 0;
-                CZClass::gwNodeGetUserData(pair->node, &oldDisplayInstanceValue);
-                CZClass::gwNodeSetDisplayInstance(pair->node, pair->di);
-
-                if (oldDisplayInstanceValue != 0) {
-                    zModel_DiPool::FreeIfUnreferenced(
-                        (zDiPartial *)((unsigned int)(oldDisplayInstanceValue))
-                    );
-                }
+            if (oldDisplayInstanceValue != 0) {
+                zModel_DiPool::FreeIfUnreferenced((zDiPartial *)oldDisplayInstanceValue);
             }
+        }
 
-            ++partition->featureGridCell->featureCount;
-
-            if (partition->nodeDiPairs != 0) {
-                free(partition->nodeDiPairs);
-                partition->nodeDiPairs = 0;
-                partition->nodeDiPairCount = 0;
-            }
+        ++self->partitions[partitionIndex].featureGridCell->featureCount;
+        if (self->partitions[partitionIndex].nodeDiPairs != 0) {
+            free(self->partitions[partitionIndex].nodeDiPairs);
+            self->partitions[partitionIndex].nodeDiPairs = 0;
+            self->partitions[partitionIndex].nodeDiPairCount = 0;
         }
     }
 
     return 0;
 }
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-create
  * @recoil-artifact defines .text recoil:function:0x46af00: zGeometry_ClipPatchOutput::Create
+ * @recoil-match byte
  *
  * Purpose: allocate an empty clip-patch output record for crater and quicksand
  * feature tessellation.
@@ -514,10 +505,7 @@ int __fastcall ApplyNodeDiPairs(
 zGeometry_ClipPatchOutputPartial *__cdecl Create() {
     zGeometry_ClipPatchOutputPartial *result =
         (zGeometry_ClipPatchOutputPartial *)(malloc(sizeof(zGeometry_ClipPatchOutputPartial)));
-    result->pointCount = 0;
-    result->points = 0;
-    result->partitionCount = 0;
-    result->partitions = 0;
+    memset(result, 0, sizeof(*result));
     return result;
 }
 

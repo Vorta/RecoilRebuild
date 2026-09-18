@@ -336,6 +336,8 @@ int HudUiContainer::AddChild(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-findchildwithprev
  * @recoil-artifact defines .text recoil:function:0x4bc810: HudUiContainer::FindChildWithPrev.
+ * @recoil-match byte
+ *
  * Purpose: find a child in the container list and optionally report the
  * previous sibling.
  */
@@ -343,17 +345,16 @@ int HudUiContainer::FindChildWithPrev(
     HudUiElement *child,
     HudUiElement **previousOut
 ) {
-    HudUiElement *previous = childHead;
-    if (previous == 0) {
+    if (childHead == 0) {
         return 0;
     }
 
-    if (child == previous) {
+    if (child == childHead) {
         *previousOut = 0;
         return 1;
     }
 
-    while (previous != 0) {
+    for (HudUiElement *previous = childHead; previous != 0; previous = previous->next) {
         HudUiElement *const current = previous->next;
         if (current == child) {
             if (previousOut != 0) {
@@ -362,8 +363,6 @@ int HudUiContainer::FindChildWithPrev(
 
             return 1;
         }
-
-        previous = current;
     }
 
     return 0;
@@ -982,14 +981,13 @@ HudUiChatMessageStack::HudUiChatMessageStack() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextstack4-settextcolors
  * @recoil-artifact defines .text recoil:function:0x4bd3d0: HudUiTextStack4::SetTextColors.
+ * @recoil-match byte
+ *
  * Purpose: assign both text colors to every row in the four-line stack.
  */
-void HudUiTextStack4::SetTextColors(
-    unsigned int color0,
-    unsigned int color1
+void HudUiTextStack4::SetTextColors( unsigned int color0, unsigned int color1
 ) {
-    for (int index = 3; index >= 0; --index) {
-        HudUiPanel *const panel = &lines[index];
+    for (HudUiPanel *panel = &lines[3]; panel >= lines; --panel) {
         panel->textColor0 = color0;
         panel->textColor1 = color1;
         panel->textDirty = 1;
@@ -1029,35 +1027,32 @@ void HudUiTextStack4::SetYDescending(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-ztimedtask-removefromactivelist
  * @recoil-artifact defines .text recoil:function:0x4bd470: zTimedTask::RemoveFromActiveList.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for zTimedTask::RemoveFromActiveList.
  */
 void zTimedTask::RemoveFromActiveList() {
     zTimedTask *node = g_zTimedTask_ActiveHead;
     zTimedTask *previous = 0;
-    if (node == 0) {
-        return;
-    }
+    while (node != 0) {
+        if (this == node) {
+            if (previous == 0) {
+                g_zTimedTask_ActiveHead = g_zTimedTask_ActiveHead->next;
+                --g_zTimedTask_ActiveCount;
+                return;
+            }
 
-    while (node != this) {
-        previous = node;
-        node = node->next;
-        if (node == 0) {
+            if (node == g_zTimedTask_ActiveTail) {
+                g_zTimedTask_ActiveTail = previous;
+            }
+
+            previous->next = node->next;
+            --g_zTimedTask_ActiveCount;
             return;
         }
+        previous = node;
+        node = node->next;
     }
-
-    if (previous == 0) {
-        g_zTimedTask_ActiveHead = g_zTimedTask_ActiveHead->next;
-        --g_zTimedTask_ActiveCount;
-        return;
-    }
-
-    if (node == g_zTimedTask_ActiveTail) {
-        g_zTimedTask_ActiveTail = previous;
-    }
-
-    previous->next = node->next;
-    --g_zTimedTask_ActiveCount;
 }
 
 /**
@@ -1325,16 +1320,17 @@ int __fastcall HudLineClip::ClipSegmentToCurrentXBounds(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudlineclip-clipendpointtox
  * @recoil-artifact defines .text recoil:function:0x4bd9c0: HudLineClip::ClipEndpointToX
+ * @recoil-match byte
+ *
  * Purpose: Move one segment endpoint to an X clipping plane and interpolate Y.
  */
-void __fastcall HudLineClip::ClipEndpointToX(
-    zVec3 *endpoint,
-    const zVec3 *otherEndpoint,
+void __fastcall HudLineClip::ClipEndpointToX( zVec3 *endpoint, const zVec3 *otherEndpoint,
     float clipX
 ) {
-    endpoint->y += (otherEndpoint->y - endpoint->y) *
-                   ((clipX - endpoint->x) / (otherEndpoint->x - endpoint->x));
+    const float clippedY = (otherEndpoint->y - endpoint->y) * (clipX - endpoint->x) /
+        (otherEndpoint->x - endpoint->x) + endpoint->y;
     endpoint->x = clipX;
+    endpoint->y = clippedY;
 }
 
 /**
@@ -1381,16 +1377,17 @@ int __fastcall HudLineClip::ClipSegmentToCurrentYBounds(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudlineclip-clipendpointtoy
  * @recoil-artifact defines .text recoil:function:0x4bdb30: HudLineClip::ClipEndpointToY
+ * @recoil-match byte
+ *
  * Purpose: Move one segment endpoint to a Y clipping plane and interpolate X.
  */
-void __fastcall HudLineClip::ClipEndpointToY(
-    zVec3 *endpoint,
-    const zVec3 *otherEndpoint,
+void __fastcall HudLineClip::ClipEndpointToY( zVec3 *endpoint, const zVec3 *otherEndpoint,
     float clipY
 ) {
-    endpoint->x += (otherEndpoint->x - endpoint->x) *
-                   ((clipY - endpoint->y) / (otherEndpoint->y - endpoint->y));
+    const float clippedX = (otherEndpoint->x - endpoint->x) * (clipY - endpoint->y) /
+        (otherEndpoint->y - endpoint->y) + endpoint->x;
     endpoint->y = clipY;
+    endpoint->x = clippedX;
 }
 
 /**
@@ -1810,13 +1807,13 @@ void HudWeatherFx::ApplyPass3() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxpointbatch-arepointbatchinsiderect
  * @recoil-artifact defines .text recoil:function:0x4be210: HudWeatherFx::ArePointBatchInsideRect.
+ * @recoil-match byte
+ *
  * Purpose: Accept a projected weather quad only when all points lie inside the viewport.
  */
-int HudWeatherFxPointBatch::ArePointBatchInsideRect(
-    int pointCount,
-    const HudUiRect *viewportRect
+int HudWeatherFxPointBatch::ArePointBatchInsideRect( int pointCount, const HudUiRect *viewportRect
 ) {
-    if (viewportRect == 0 || pointCount <= 0) {
+    if (viewportRect == 0) {
         return 1;
     }
 
@@ -3624,18 +3621,6 @@ void HudUiNumericTextInput::Destructor() {
 /**
  * Purpose: handle the recovered HUD event path for HudUiNumericTextInput::OnRawKeyboardChar.
  */
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduinumerictextinput-commitandgetvalue
- * @recoil-artifact defines .text recoil:function:0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardChar.
- * No standalone retail function has been identified for the base numeric
- * text-input commit slot; clamped/save-game owners override the slot when they
- * need committed values.
- * Purpose: provide the base numeric input commit default.
- */
-int HudUiNumericTextInput::CommitAndGetValue() {
-    return 0;
-}
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduipanel-constructordefaultthunk

@@ -1670,26 +1670,36 @@ zSndSample * zSndSampleSet::GetSampleAt(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-findsamplebyname
  * @recoil-artifact defines .text recoil:function:0x4a0ec0: zSndSampleSet::FindSampleByName.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: GameZRecoil/zSound/zsnd.cpp.
  * Purpose: find a loaded sample in this sample set by source sample id for the active backend.
  */
-zSndSample * zSndSampleSet::FindSampleByName(
-    const char *sampleName
-) {
-    if (this == 0 || (g_zSnd_ActiveBackend != 0 && g_zSnd_ActiveBackend != 1)) {
-        return 0;
-    }
-
-    {
-        for (int index = 0; index < sampleCount; ++index) {
-            zSndSample *const sample = &samples[index];
-            if (strcmp(sampleName, sample->replayFields.sampleId) == 0 &&
-                sample->primaryVoice.backendBuffer != 0) {
-                return sample;
-            }
+zSndSample * zSndSampleSet::FindSampleByName( const char *sampleName ) {
+    if (this != 0) {
+        switch (g_zSnd_ActiveBackend) {
+        case 0: {
+            zSndSample *sample = samples;
+            for (int index = 0; index < sampleCount; ++index, ++sample) {
+                if (strcmp(sampleName, sample->replayFields.sampleId) == 0 &&
+                    sample->primaryVoice.backendBuffer != 0) {
+                    return sample;
+                }
+        }
+        break;
+        }
+        case 1: {
+            zSndSample *sample = samples;
+            for (int index = 0; index < sampleCount; ++index, ++sample) {
+                if (strcmp(sampleName, sample->replayFields.sampleId) == 0 &&
+                    sample->primaryVoice.backendBuffer != 0) {
+                    return sample;
+                }
+        }
+        break;
+        }
         }
     }
-
     return 0;
 }
 

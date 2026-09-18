@@ -1875,11 +1875,10 @@ int __cdecl AllocFreePlayerColorIndex() {
  * Purpose: return the local player record's assigned color index.
  */
 extern "C" int __cdecl zNetworkGetLocalPlayerColorIndex() {
-    if (g_zNetwork_LocalPlayerRecord == 0) {
-        return 0;
+    if (g_zNetwork_LocalPlayerRecord != 0) {
+        return g_zNetwork_LocalPlayerRecord->colorIndex;
     }
-
-    return g_zNetwork_LocalPlayerRecord->colorIndex;
+    return 0;
 }
 
 /**
@@ -1982,12 +1981,12 @@ extern "C" zNetwork_PlayerRecord *__fastcall zNetworkFindPlayerRecordByKey(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-extractstatusfieldsfromsessiondesc
  * @recoil-artifact defines .text recoil:function:0x48bab0: zNetworkExtractStatusFieldsFromSessionDesc.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: copy session status fields from the current DirectPlay descriptor.
  */
-extern "C" int __fastcall zNetworkExtractStatusFieldsFromSessionDesc(
-    zNetworkSessionDescStatusFields *outFields
-) {
+extern "C" int __fastcall zNetworkExtractStatusFieldsFromSessionDesc( zNetworkSessionDescStatusFields *outFields ) {
     const zNetworkDPlaySessionDesc sessionDesc = g_zNetwork_CurrentSessionDescCache->desc;
 
     outFields->eventCode = sessionDesc.dwUser1;
@@ -1997,8 +1996,7 @@ extern "C" int __fastcall zNetworkExtractStatusFieldsFromSessionDesc(
     outFields->maxPlayers = sessionDesc.dwMaxPlayers;
     outFields->selectedSessionIndex = -1;
 
-    const size_t sessionNameBytes = strlen(sessionDesc.lpszSessionNameA) + 1;
-    memcpy(outFields->sessionNameBuf, sessionDesc.lpszSessionNameA, sessionNameBytes);
+    strcpy(outFields->sessionNameBuf, sessionDesc.lpszSessionNameA);
     return 1;
 }
 

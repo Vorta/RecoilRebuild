@@ -183,17 +183,15 @@ void __cdecl UnloadMessagesDll() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-getmessageid
  * @recoil-artifact defines .text recoil:function:0x4a5b20: zLoc::GetMessageId.
+ * @recoil-match byte
+ *
  * Purpose: Looks up a localization message id through the loaded ZLocGetID export.
  */
-unsigned int __fastcall GetMessageId(
-    const char *key
-) {
-    unsigned int messageId = 0;
+unsigned int __fastcall GetMessageId(const char *key) {
     if (g_zLoc_GetIdProc != 0) {
-        messageId = g_zLoc_GetIdProc(key);
+        return g_zLoc_GetIdProc(key);
     }
-
-    return messageId;
+    return 0;
 }
 
 /**

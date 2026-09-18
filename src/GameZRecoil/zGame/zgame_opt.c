@@ -246,21 +246,21 @@ RECOIL_NO_GS int __cdecl OptionsLoadFromRegistry() {
     const size_t subKeyLength = strlen(g_zGame_Options_RegKeyVersionSegment) +
                                 strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
-                                strlen(g_zGame_Options_RegKeyGame) + 1;
-    char *const subKey = (char *)(_alloca((subKeyLength + 3u) & ~(size_t)(3u)));
-    strcpy(subKey, g_zGame_Options_RegRootPrefix);
+                                strlen(g_zGame_Options_RegKeyGame) + 3;
+    char *const subKey = (char *)(_alloca(subKeyLength));
+    memcpy(subKey, g_zGame_Options_RegRootPrefix, sizeof(g_zGame_Options_RegRootPrefix));
     strcat(subKey, g_zGame_Options_RegKeyRoot);
     strcat(subKey, g_zGame_Options_RegPathSeparator);
     strcat(subKey, g_zGame_Options_RegKeyCurrentUser);
     strcat(subKey, g_zGame_Options_RegPathSeparator);
     strcat(subKey, g_zGame_Options_RegKeyGame);
 
-    HKEY currentUserKey = 0;
+    HKEY currentUserKey;
     if (RegOpenKeyExA(HKEY_CURRENT_USER, subKey, 0, KEY_READ, &currentUserKey) != ERROR_SUCCESS) {
         return 0;
     }
 
-    HKEY localMachineKey = 0;
+    HKEY localMachineKey;
     if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ, &localMachineKey) != ERROR_SUCCESS) {
         RegCloseKey(currentUserKey);
         return 0;
@@ -268,21 +268,23 @@ RECOIL_NO_GS int __cdecl OptionsLoadFromRegistry() {
 
     for (zOptionEntryPartial *entry = g_zGame_Options_OptionListHead; entry != 0;
         entry = entry->next) {
-        HKEY *key = 0;
+        HKEY *key;
         if (entry->registryScope == ZGAME_OPTION_SCOPE_USER) {
             key = &currentUserKey;
         } else if (entry->registryScope == 0) {
             key = &localMachineKey;
-        }
-
-        if (key == 0) {
+        } else {
             continue;
         }
 
-        DWORD expectedSize = 0;
-        BYTE *payload = 0;
+        // Retail initializes the payload and size only for storage types 0 through 7.
+        DWORD expectedSize;
+        BYTE *payload;
         switch (entry->storageType) {
         case 0:
+            expectedSize = 4;
+            payload = (BYTE *)(entry);
+            break;
         case 1:
             expectedSize = 4;
             payload = (BYTE *)(entry);
@@ -303,11 +305,11 @@ RECOIL_NO_GS int __cdecl OptionsLoadFromRegistry() {
             break;
 
         default:
-            continue;
+            break;
         }
 
-        DWORD valueType = 0;
-        DWORD actualSize = 0;
+        DWORD valueType;
+        DWORD actualSize;
         if (RegQueryValueExA(*key, entry->name, 0, &valueType, 0, &actualSize) == ERROR_SUCCESS &&
             actualSize == expectedSize) {
             RegQueryValueExA(*key, entry->name, 0, &valueType, payload, &expectedSize);
@@ -328,18 +330,19 @@ RECOIL_NO_GS int __cdecl OptionsSaveToRegistry() {
     const size_t subKeyLength = strlen(g_zGame_Options_RegKeyVersionSegment) +
                                 strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
-                                strlen(g_zGame_Options_RegKeyGame) + 1;
-    char *const subKey = (char *)(_alloca((subKeyLength + 3u) & ~(size_t)(3u)));
-    strcpy(subKey, g_zGame_Options_RegRootPrefix);
+                                strlen(g_zGame_Options_RegKeyGame) + 3;
+    char *const subKey = (char *)(_alloca(subKeyLength));
+    strcpy(subKey, g_zGame_Options_RegKeyVersionSegment);
     strcat(subKey, g_zGame_Options_RegKeyRoot);
     strcat(subKey, g_zGame_Options_RegPathSeparator);
     strcat(subKey, g_zGame_Options_RegKeyCurrentUser);
     strcat(subKey, g_zGame_Options_RegPathSeparator);
     strcat(subKey, g_zGame_Options_RegKeyGame);
 
-    DWORD disposition = 0;
-    HKEY currentUserKey = 0;
-    if (RegCreateKeyExA(
+    DWORD disposition;
+    LONG result;
+    HKEY currentUserKey;
+    if ((result = RegCreateKeyExA(
             HKEY_CURRENT_USER,
             subKey,
             0,
@@ -349,13 +352,13 @@ RECOIL_NO_GS int __cdecl OptionsSaveToRegistry() {
             0,
             &currentUserKey,
             &disposition
-        ) != ERROR_SUCCESS) {
+        )) != ERROR_SUCCESS) {
         RegCloseKey(currentUserKey);
         return 0;
     }
 
-    HKEY localMachineKey = 0;
-    if (RegCreateKeyExA(
+    HKEY localMachineKey;
+    if ((result = RegCreateKeyExA(
             HKEY_LOCAL_MACHINE,
             subKey,
             0,
@@ -365,7 +368,7 @@ RECOIL_NO_GS int __cdecl OptionsSaveToRegistry() {
             0,
             &localMachineKey,
             &disposition
-        ) != ERROR_SUCCESS) {
+        )) != ERROR_SUCCESS) {
         RegCloseKey(currentUserKey);
         RegCloseKey(localMachineKey);
         return 0;
@@ -373,27 +376,33 @@ RECOIL_NO_GS int __cdecl OptionsSaveToRegistry() {
 
     for (zOptionEntryPartial *entry = g_zGame_Options_OptionListHead; entry != 0;
         entry = entry->next) {
-        HKEY *key = 0;
+        HKEY *key;
         if (entry->registryScope == ZGAME_OPTION_SCOPE_USER) {
             key = &currentUserKey;
         } else if (entry->registryScope == 0) {
             key = &localMachineKey;
-        }
-
-        if (key == 0 || (unsigned int)(entry->storageType) > ZGAME_OPTION_STORAGE_MAX) {
+        } else {
             continue;
         }
 
-        DWORD valueType = REG_BINARY;
-        const BYTE *payload = (const BYTE *)(entry);
-        if (entry->storageType == ZGAME_OPTION_INLINE_DWORD) {
-            valueType = REG_DWORD;
-        } else if (entry->storageType >= ZGAME_OPTION_STRING_BUFFER) {
-            payload = (const BYTE *)((unsigned int)(entry->payloadOrBuffer));
+        switch (entry->storageType) {
+        case 0:
+            result = RegSetValueExA(*key, entry->name, 0, REG_DWORD, (const BYTE *)entry, entry->dataSize);
+            break;
+        case 1:
+        case 2:
+            result = RegSetValueExA(*key, entry->name, 0, REG_BINARY, (const BYTE *)entry, entry->dataSize);
+            break;
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            result = RegSetValueExA(*key, entry->name, 0, REG_BINARY,
+                (const BYTE *)entry->payloadOrBuffer, entry->dataSize);
+            break;
         }
-
-        if (RegSetValueExA(*key, entry->name, 0, valueType, payload, (DWORD)(entry->dataSize)) !=
-            ERROR_SUCCESS) {
+        if (result != ERROR_SUCCESS) {
             return 0;
         }
     }
@@ -415,44 +424,45 @@ zOptionEntryPartial *__fastcall OptionsGetOrCreateOption(
     int registryScope
 ) {
     zOptionEntryPartial *result = OptionsFindOption(name);
-    if (result != 0) {
-        return result;
-    }
+    if (result == 0) {
+        result = (zOptionEntryPartial *)(calloc(1, sizeof(zOptionEntryPartial)));
+        result->name = _strdup(name);
+        result->storageType = storageType;
+        result->dataSize = dataSize;
+        result->registryScope = registryScope;
 
-    result = (zOptionEntryPartial *)(calloc(1, sizeof(zOptionEntryPartial)));
-    result->name = _strdup(name);
-    result->storageType = storageType;
-    result->dataSize = dataSize;
-    result->registryScope = registryScope;
+        switch (storageType) {
+        case 0:
+            result->dataSize = 4;
+            break;
 
-    switch (storageType) {
-    case 0:
-    case 2:
-        result->dataSize = 4;
-        break;
+        case 1:
+            result->dataSize = 4;
+            break;
 
-    case 1:
-        result->dataSize = 8;
-        break;
+        case 2:
+            result->dataSize = 8;
+            break;
 
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-        if (dataSize == 0) {
-            free(result);
-            return 0;
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            if (dataSize == 0) {
+                free(result);
+                return 0;
+            }
+            result->payloadOrBuffer = (int)(calloc(1, dataSize));
+            break;
+
+        default:
+            break;
         }
-        result->payloadOrBuffer = (int)(calloc(1, dataSize));
-        break;
 
-    default:
-        break;
+        result->next = g_zGame_Options_OptionListHead;
+        g_zGame_Options_OptionListHead = result;
     }
-
-    result->next = g_zGame_Options_OptionListHead;
-    g_zGame_Options_OptionListHead = result;
     return result;
 }
 
@@ -646,12 +656,12 @@ int __cdecl CheckCpuSignatureMask() {
  * Purpose: copy the probed default runtime configuration into this active config.
  */
 zGame_OptionsRuntimeConfig * zGame_OptionsRuntimeConfig::CopyDefault() {
-    if (this == 0) {
-        return &g_zGame_Options_RuntimeConfigDefaults;
+    zGame_OptionsRuntimeConfig *result = &g_zGame_Options_RuntimeConfigDefaults;
+    if (this != 0) {
+        *this = *result;
+        result = this;
     }
-
-    memcpy(this, &g_zGame_Options_RuntimeConfigDefaults, sizeof(*this));
-    return this;
+    return result;
 }
 
 /**
@@ -750,16 +760,19 @@ int __cdecl GetCpuClass() {
 } // namespace zSys
 
 namespace zSnd {
-
 /**
- * Purpose: report MMX mixer availability only when CPUID probing is available.
+ * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-hasmmxmixersupport
+ * @recoil-artifact defines .text recoil:function:0x4b31f0: zSnd::HasMmxMixerSupport.
+ * @recoil-match byte
+ *
+ * Purpose: return the MMX feature probe result when CPUID is available.
  */
 int __cdecl HasMmxMixerSupport() {
-    if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
-        return 0;
+    int result = 0;
+    if (zSys::HasCpuidSupportRuntimeOptions()) {
+        result = zCpu::HasMmxSupport();
     }
-
-    return zCpu::HasMmxSupport() != 0 ? 1 : 0;
+    return result;
 }
 
 } // namespace zSnd

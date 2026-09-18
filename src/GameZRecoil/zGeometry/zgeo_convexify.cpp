@@ -510,24 +510,25 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-collectactiveedgeindicesforvertex
  * @recoil-artifact defines .text recoil:function:0x46bf30: zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex
+ * @recoil-match byte
+ *
  * Purpose: Collect live edge-state indices incident to one combined-ring vertex.
  */
-int __fastcall CollectActiveEdgeIndicesForVertex(
-    int vertexIndex,
+int __fastcall CollectActiveEdgeIndicesForVertex(int vertexIndex,
     int edgeCount,
     zGeometry_TriangulateHole_EdgeState *edgeStates,
-    int *outEdgeIndices
-) {
+    int *outEdgeIndices) {
+
+    int *output = outEdgeIndices;
     int result = 0;
     for (int i = 0; i < edgeCount; ++i) {
         zGeometry_TriangulateHole_EdgeState *const edge = &edgeStates[i];
         if (edge->remainingUseCount != 0 &&
             (edge->vertexIndex0 == vertexIndex || edge->vertexIndex1 == vertexIndex)) {
-            outEdgeIndices[result] = i;
+            *output++ = i;
             ++result;
         }
     }
-
     return result;
 }
 } // namespace zGeometry_TriangulateHole
@@ -536,26 +537,29 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-findactiveedgestate
  * @recoil-artifact defines .text recoil:function:0x46bf70: zGeometry_TriangulateHole::FindActiveEdgeState
+ * @recoil-match byte
+ *
  * Purpose: Find a live edge between two combined-ring vertex indices.
  */
-zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(
-    int vertexIndex0,
+zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(int vertexIndex0,
     int vertexIndex1,
     int edgeCount,
-    zGeometry_TriangulateHole_EdgeState *edgeStates
-) {
-    for (int i = 0; i < edgeCount; ++i) {
-        zGeometry_TriangulateHole_EdgeState *const edge = &edgeStates[i];
-        if ((edge->vertexIndex0 == vertexIndex0 && edge->vertexIndex1 == vertexIndex1) ||
-            (edge->vertexIndex0 == vertexIndex1 && edge->vertexIndex1 == vertexIndex0)) {
-            if (edge->remainingUseCount != 0) {
+    zGeometry_TriangulateHole_EdgeState *edgeStates) {
+
+    zGeometry_TriangulateHole_EdgeState *edge = edgeStates;
+    for (int i = 0; i < edgeCount; ++i, ++edge) {
+        if (edge->remainingUseCount == 0) {
+            if ((edge->vertexIndex0 == vertexIndex0 && edge->vertexIndex1 == vertexIndex1) ||
+                (edge->vertexIndex1 == vertexIndex0 && edge->vertexIndex0 == vertexIndex1)) {
+                return 0;
+            }
+        } else {
+            if ((edge->vertexIndex0 == vertexIndex0 && edge->vertexIndex1 == vertexIndex1) ||
+                (edge->vertexIndex1 == vertexIndex0 && edge->vertexIndex0 == vertexIndex1)) {
                 return edge;
             }
-
-            return 0;
         }
     }
-
     return 0;
 }
 } // namespace zGeometry_TriangulateHole
@@ -862,22 +866,20 @@ namespace zGeometry_Vec3Array {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-reversepoints
  * @recoil-artifact defines .text recoil:function:0x46c5b0: zGeometry_Vec3Array::ReversePoints
+ * @recoil-match byte
+ *
  * Purpose: Reverse all points after the anchor point in a polygon ring.
  */
-void __fastcall ReversePoints(
-    int pointCount,
-    zVec3 *points
-) {
+void __fastcall ReversePoints(int pointCount,
+    zVec3 *points) {
+
+    int swapCount = pointCount / 2;
     zVec3 *front = &points[1];
     zVec3 *back = &points[pointCount - 1];
-    const int swapCount = pointCount / 2;
-
-    for (int i = 0; i < swapCount; ++i) {
+    while (swapCount--) {
         const zVec3 temp = *back;
-        *back = *front;
-        *front = temp;
-        --back;
-        ++front;
+        *back-- = *front;
+        *front++ = temp;
     }
 }
 } // namespace zGeometry_Vec3Array

@@ -239,11 +239,11 @@ extern "C" void __cdecl zRdrFreeScratchSearchPathList() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-freepathlist
  * @recoil-artifact defines .text recoil:function:0x4a5e10: zRdrFreePathList.
+ * @recoil-match byte
+ *
  * Purpose: free every search-path string payload from a search-path list.
  */
-extern "C" int __fastcall zRdrFreePathList(
-    zArchiveList *list
-) {
+extern "C" void __fastcall zRdrFreePathList(zArchiveList *list) {
     zArchiveList *target = list;
     if (target == 0) {
         target = g_zRdr_ScratchSearchPathList;
@@ -254,8 +254,6 @@ extern "C" int __fastcall zRdrFreePathList(
         free(payload);
         payload = zArchiveListRemoveHead(target);
     }
-
-    return 0;
 }
 
 

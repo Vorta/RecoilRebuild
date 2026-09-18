@@ -155,6 +155,8 @@ int zImage_Font::BuildGlyphRects() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-isimagecolumntransparent
  * @recoil-artifact defines .text recoil:function:0x46f210: zImage_Font::IsImageColumnTransparent.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: test whether a vertical image column contains only the configured
  * transparent font color.
@@ -163,29 +165,24 @@ int zImage_Font::BuildGlyphRects() {
  * as transparent, then walks one 16-bit pixel per row using image width as the
  * row stride.
  */
-int __fastcall zImage_Font::IsImageColumnTransparent(
-    zVidImagePartial *image,
-    int columnX
+int __fastcall zImage_Font::IsImageColumnTransparent( zVidImagePartial *image, int columnX
 ) {
+    unsigned short *column = (unsigned short *)image->pixels + columnX;
     const int width = image->width;
-    unsigned short *column = (unsigned short *)(image->pixels) + columnX;
+    int result = 1;
     if (columnX >= width) {
         return 0;
     }
-
+    int y = 0;
     const int height = image->height;
-    if (height <= 0) {
-        return 1;
-    }
-
-    for (int y = 0; y < height; ++y) {
-        if (*column != (unsigned short)(g_zImage_FontTransparentColor)) {
-            return 0;
+    for (; y < height; ++y) {
+        if (*column != g_zImage_FontTransparentColor) {
+            result = 0;
+            break;
         }
         column += width;
     }
-
-    return 1;
+    return result;
 }
 
 /**

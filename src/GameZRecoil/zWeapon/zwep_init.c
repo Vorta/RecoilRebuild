@@ -4244,10 +4244,11 @@ namespace CZLight {
  * light, level, and update timer fields.
  */
 void PlayerTimedHitStatus::ResetFields() {
-    runtimeFlags &= ~3u;
+    const unsigned int flags = runtimeFlags & ~3u;
     lightNode = 0;
     currentLevel = 0.0f;
     targetLevel = 0.0f;
+    runtimeFlags = flags;
     nextUpdateTime = 0.0f;
 }
 namespace CZLight {

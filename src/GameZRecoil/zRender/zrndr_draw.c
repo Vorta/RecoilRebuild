@@ -2415,28 +2415,27 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-overlayblendrow565-scalar
  * @recoil-artifact defines .text recoil:function:0x48d4b0: zRndr::OverlayBlendRow565Scalar
+ * @recoil-match byte
+ *
  * Source-shape evidence: BN zRndr_Overlay.cpp matches the 555 row shape with
  * two 565 pixels per uint32_t and the inclusive right-left delta row extent.
  * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with 0x48d7a0,
  * 0x48d450, 0x48d510, and 0x48d5f0.
  * Purpose: Blend one 565 overlay row using the active pixel masks and cached overlay alpha.
  */
-void __fastcall OverlayBlendRow565Scalar(
-    unsigned short *rowPixels16,
-    int rightDelta
+void __fastcall OverlayBlendRow565Scalar( unsigned short *rowPixels16, int rightDelta
 ) {
     int pairCount = rightDelta >> 1;
-    unsigned int *rowPairs = (unsigned int *)(rowPixels16);
     do {
-        const unsigned int packedPair = *rowPairs;
+        const unsigned int packedPair = *(unsigned int *)(rowPixels16);
         const unsigned int loLanes =
             ((((packedPair & 0x07e0f81fU) * (unsigned int)(g_swOverlayDstScale5)) >> 5) +
                 g_swOverlayPremulPackedRot16);
         const unsigned int hiLanes =
             (((packedPair >> 5) & 0x07c0f83fU) * (unsigned int)(g_swOverlayDstScale5)) +
             g_swOverlayPremulPacked;
-        *rowPairs = ((loLanes ^ hiLanes) & 0x07e0f81fU) ^ hiLanes;
-        ++rowPairs;
+        *(unsigned int *)(rowPixels16) = ((loLanes ^ hiLanes) & 0x07e0f81fU) ^ hiLanes;
+        rowPixels16 += 2;
     } while (pairCount-- != 0);
 }
 } // namespace zRndr
@@ -4845,12 +4844,12 @@ namespace zVid_Image {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-calcpow2scratchfields
  * @recoil-artifact defines .text recoil:function:0x4902b0: zVid_Image::CalcPow2ScratchFields.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: GameZRecoil/zImage/zimg_texture.cpp.
  * Purpose: provide the recovered zVid_Image::CalcPow2ScratchFields behavior.
  */
-void __fastcall CalcPow2ScratchFields(
-    zVidImagePartial *image
-) {
+void __fastcall CalcPow2ScratchFields( zVidImagePartial *image ) {
     image->vPow2Shift = 0;
     image->uPow2Shift = 0;
 
@@ -4866,7 +4865,7 @@ void __fastcall CalcPow2ScratchFields(
         ++image->vPow2Shift;
     }
 
-    const unsigned char uShift = image->uPow2Shift;
+    const int uShift = image->uPow2Shift;
     image->widthScale = 1.0f;
     image->uShiftFrom20 = 20 - uShift;
     image->uMask = (1 << uShift) - 1;

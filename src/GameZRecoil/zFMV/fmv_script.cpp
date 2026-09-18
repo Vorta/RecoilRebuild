@@ -460,7 +460,9 @@ void CZFMVActionWait::Begin(
 int CZFMVActionWait::Update(
     double timeSec
 ) {
-    return timeSec < (double)(startSec + durationSec) ? 1 : 0;
+    // Unused snapshot retained to reproduce the retail VC5 operand order.
+    float savedStartSec;
+    return timeSec < (double)((savedStartSec = startSec) + durationSec) ? 1 : 0;
 }
 
 /**

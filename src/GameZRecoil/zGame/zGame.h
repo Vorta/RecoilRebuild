@@ -89,7 +89,7 @@ struct zGame_OptionsRuntimeConfig {
     int cpuMhz;
     unsigned int defaultFlags;
     unsigned int systemRamKb;
-    unsigned int unknown_20;
+    unsigned int videoMemoryKb; // Inferred from the VIDEO_KB profile metric.
     unsigned int soundHardwareMemKb;
     unsigned int reservedCapabilityValue;
     unsigned int unknown_2c;

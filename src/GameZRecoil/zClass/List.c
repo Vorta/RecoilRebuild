@@ -593,20 +593,22 @@ namespace CZClass {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findbytypeandname
      * @recoil-artifact defines .text recoil:function:0x44ecf0: CZClass::FindByTypeAndName.
+     * @recoil-match byte
+     *
      * Purpose: find the first node in a type-list bucket whose name matches.
      */
-    CZNodePartial *__fastcall FindByTypeAndName(
-        int bucket,
-        const char *name
+    CZNodePartial *__fastcall FindByTypeAndName( int bucket, const char *name
     ) {
-        for (CZTypeListLink *link = *g_CZTypeList_HeadSlotPtrs[bucket]; link != 0;
-            link = link->next) {
+        CZTypeListLink *link = *g_CZTypeList_HeadSlotPtrs[bucket];
+        CZNodePartial *result = 0;
+        for (; link != 0; link = link->next) {
             if (strcmp(link->node->name, name) == 0) {
-                return link->node;
+                result = link->node;
+                break;
             }
         }
 
-        return 0;
+        return result;
     }
 }
 

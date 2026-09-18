@@ -2099,29 +2099,41 @@ void HudUiTextInput::MoveCursorLeft() {
         --cursor;
     }
 }
-
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-text-input-move-cursor-right
+ * @recoil-artifact defines .text recoil:function:0x4b4570: HudUiTextInput::MoveCursorRight.
+ * @recoil-match byte
+ *
+ * Purpose: advance the insertion cursor while it precedes the end of the text.
+ */
 void HudUiTextInput::MoveCursorRight() {
-    const int textLength = (int)(strlen(buffer));
-    if ((int)(cursor) < textLength) {
+    if ((int)cursor < (int)strlen(buffer)) {
         ++cursor;
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduitextinput-shifttextright
+ * @recoil-artifact defines .text recoil:function:0x4b4590: HudUiTextInput::ShiftTextRight.
+ * @recoil-match byte
+ *
+ * Purpose: make room in the input buffer by shifting its suffix right.
+ */
 int HudUiTextInput::ShiftTextRight(
     int count,
     int startPos
 ) {
-    int index = (int)(strlen(buffer)) + count;
-    if (index >= (int)(capacity)) {
-        return 0;
+    int result = 0;
+    const int length = (int)strlen(buffer);
+    int index = length + count;
+    if (index < (int)(capacity)) {
+        while (index > startPos) {
+            buffer[index] = buffer[index - count];
+            --index;
+        }
+        result = 1;
     }
-
-    while (index > startPos) {
-        buffer[index] = buffer[index - count];
-        --index;
-    }
-
-    return 1;
+    return result;
 }
 
 int HudUiTextInput::ShiftTextLeft(
@@ -2213,9 +2225,9 @@ void HudUiSliderBorder::SetBounds(
 HudUiNumericTextInput::HudUiNumericTextInput()
     : HudUiZrdWidget(),
       textInput(0x100),
-      sliderBorder() {
-    sliderBorder.sliderVisibleWhenInputActive = 0;
-    sliderBorder.rawKeyFilterEnabled = 0;
+      sliderBorder(),
+      sliderVisibleWhenInputActive(0),
+      rawKeyFilterEnabled(0) {
     sliderBorder.inputActive = 1;
     sliderBorder.caretHalfWidth = 0;
 
@@ -2253,7 +2265,7 @@ int __fastcall HudUiNumericTextInput::RawKeyboardCallback(
 int HudUiNumericTextInput::OnRawKeyboardChar(
     int key
 ) {
-    if (sliderBorder.rawKeyFilterEnabled != 0) {
+    if (rawKeyFilterEnabled != 0) {
         if (strchr(kNumericTextInputAcceptedRawKeyChars, key) == 0) {
             return 0;
         }
@@ -2272,9 +2284,9 @@ int HudUiNumericTextInput::SetInputActive(
     const int previousActive = sliderBorder.inputActive;
     sliderBorder.inputActive = active;
 
-    const int labelPanelCount = (int)(labelPanels.size());
-    unsigned char labelPanelsEmpty = labelPanelCount == 0;
-    if (labelPanelsEmpty == 0) {
+    // VC5 vector::empty() uses the null-aware size() calculation,
+    // matching the retail count and Boolean materialization.
+    if (!labelPanels.empty()) {
         firstLabelPanel = labelPanels[0];
     }
 
@@ -2299,11 +2311,11 @@ void HudUiNumericTextInput::SetRawKeyboardCapture(
     int enable
 ) {
     const char enableByte = (char)(enable);
-    if (enableByte == sliderBorder.sliderVisibleWhenInputActive) {
+    if (enableByte == sliderVisibleWhenInputActive) {
         return;
     }
 
-    sliderBorder.sliderVisibleWhenInputActive = enableByte;
+    sliderVisibleWhenInputActive = enableByte;
     if (enableByte != 0) {
         zInput::KeyboardSetRawEventCallback(
             (void *)(&HudUiNumericTextInput::RawKeyboardCallback),
@@ -2330,7 +2342,7 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(
         return;
     }
 
-    if (sliderBorder.sliderVisibleWhenInputActive != 0) {
+    if (sliderVisibleWhenInputActive != 0) {
         labelPanels[0]->SetVisible(1);
         char *const buffer = textInput.GetBuffer();
 
@@ -2425,7 +2437,7 @@ HudUiZrdWidget::HudUiZrdWidget() : HudUiWidget(0) {
     HudUiElement *element = this;
     element->Invalidate();
     unsigned int visibleFlag = (unsigned char)(flags);
-    flags = (visibleFlag & 0x10u) | 0x02u;
+    flags = (unsigned char)((visibleFlag & ~0xefu) | 0x02u);
 }
 
 HudUiZrdWidget::~HudUiZrdWidget() {
@@ -4952,8 +4964,8 @@ void HudUiFillBitmap::SetNormalizedValueAndRebuild(
  * Purpose: handle the recovered HUD event path for HudUiOwnedTextInput::OnAccept.
  */
 void HudUiOwnedTextInput::OnAccept() {
-    zGame::ReturnOnlyStub();
-    owner->OnAcceptForwardToCommit();
+    HudUiTextInput::OnAccept();
+    owner->OnAccept();
 }
 
 /**

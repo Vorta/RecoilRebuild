@@ -7013,9 +7013,7 @@ void HudUiSaveGameDialog::ProcessDialogResult() {
  */
 void HudUiSaveLoadGameNameInput::OnAccept() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
-    if (dialog != 0) {
-        dialog->OnPrimaryActionThunk();
-    }
+    dialog->OnPrimaryActionThunk();
 }
 
 /**

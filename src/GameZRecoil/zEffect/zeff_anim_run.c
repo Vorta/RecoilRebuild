@@ -498,21 +498,18 @@ void __fastcall SetConditionalRefPos(
 void __fastcall SetVariantOverridePackedIdsIfComplete(
     const zTag4Partial *packedIds
 ) {
-    const unsigned char count = packedIds->count;
-    if (count == 0) {
+    if (packedIds->count <= 0) {
         return;
     }
 
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < packedIds->count; ++i) {
         if (packedIds->tags[i] == 0xff) {
             return;
         }
     }
 
-    unsigned int packedValue = 0;
-    memcpy(&packedValue, packedIds, sizeof(packedValue));
+    memcpy(&g_zEffectAnim_State.variantOverridePackedIds, packedIds, sizeof(*packedIds));
     g_zEffectAnim_State.variantOverrideEnabled = 1;
-    g_zEffectAnim_State.variantOverridePackedIds = packedValue;
 }
 
 /**
@@ -2041,15 +2038,12 @@ int __fastcall AdvanceKeyframeSample(
     zEffectKeyframeEvent *keyframeEvent,
     zEffectKeyframeSampleHeader *sampleHeader
 ) {
-    const int nextSampleOffset =
-        keyframeEvent->currentKeyframeOffset + (int)sizeof(zEffectKeyframeSampleHeader);
     ++keyframeEvent->lookaheadAdvanceCount;
-
-    keyframeEvent->currentKeyframeOffset = nextSampleOffset;
+    keyframeEvent->currentKeyframeOffset += (int)sizeof(zEffectKeyframeSampleHeader);
 
     if ((sampleHeader->channelFlags & 0x01) != 0) {
         keyframeEvent->currentKeyframeOffset =
-            nextSampleOffset + (int)(sizeof(zEffectKeyframeSampleChannel));
+            keyframeEvent->currentKeyframeOffset + (int)(sizeof(zEffectKeyframeSampleChannel));
     }
     if ((sampleHeader->channelFlags & 0x02) != 0) {
         keyframeEvent->currentKeyframeOffset += (int)(sizeof(zEffectKeyframeSampleChannel));
@@ -2708,16 +2702,20 @@ int __fastcall HandleSurfaceStopEvent(
     zEffectSurfaceControlEvent *event
 ) {
     if (event->surfaceSlotIndex < 0) {
-        for (int i = 0; i < self->runtimeSequenceCount; ++i) {
-            if (strcmp(self->runtimeList[i].sequenceName, event->sequenceName) == 0) {
+        zEffectAnimSurfaceRuntime *runtime = self->runtimeList;
+        for (int i = 0; i < self->runtimeSequenceCount; ++i, ++runtime) {
+            if (strcmp(runtime->sequenceName, event->sequenceName) == 0) {
                 event->surfaceSlotIndex = i;
                 break;
             }
         }
     }
     const int surfaceIndex = event->surfaceSlotIndex;
-    if (surfaceIndex >= 0 && self->runtimeList[surfaceIndex].runState == 3) {
-        self->runtimeList[surfaceIndex].runState = 0;
+    if (surfaceIndex >= 0) {
+        zEffectAnimSurfaceRuntime *runtime = &self->runtimeList[surfaceIndex];
+        if (runtime->runState == 3) {
+            runtime->runState = 0;
+        }
     }
 
     return 2;
@@ -2734,8 +2732,9 @@ int __fastcall HandleSurfacePlayEvent(
     zEffectSurfaceControlEvent *event
 ) {
     if (event->surfaceSlotIndex < 0) {
-        for (int i = 0; i < self->runtimeSequenceCount; ++i) {
-            if (strcmp(self->runtimeList[i].sequenceName, event->sequenceName) == 0) {
+        zEffectAnimSurfaceRuntime *runtime = self->runtimeList;
+        for (int i = 0; i < self->runtimeSequenceCount; ++i, ++runtime) {
+            if (strcmp(runtime->sequenceName, event->sequenceName) == 0) {
                 event->surfaceSlotIndex = i;
                 break;
             }
@@ -3071,7 +3070,11 @@ int __fastcall HandleEmitterStopEvent(
         zEffectAnimEntry *const entry = &g_zEffectAnim_State.entryList[entryIndex];
         const unsigned char activationState = entry->activationState;
         if (activationState != 5) {
-            entry->activationState = activationState == 2 ? 6 : 4;
+            if (activationState == 2) {
+                entry->activationState = 6;
+            } else {
+                entry->activationState = 4;
+            }
         }
     }
 
@@ -3320,15 +3323,13 @@ int __fastcall SkipConditionalChainToEnd(
     zEffectAnimSurfaceRuntime *runtime,
     void * /*event*/
 ) {
-    unsigned char *currentEvent = (unsigned char *)(runtime->currentEvent);
-    unsigned char *const eventStreamEnd =
-        (unsigned char *)(runtime->eventStream) + runtime->eventStreamSize;
-
     do {
-        const zEffectAnimEventHeader *const header = (zEffectAnimEventHeader *)(currentEvent);
-        currentEvent += header->byteSize;
-        runtime->currentEvent = currentEvent;
-    } while (currentEvent[0] != 0x22 && currentEvent < eventStreamEnd);
+        const zEffectAnimEventHeader *const header =
+            (zEffectAnimEventHeader *)(runtime->currentEvent);
+        runtime->currentEvent = (unsigned char *)(runtime->currentEvent) + header->byteSize;
+    } while (((zEffectAnimEventHeader *)(runtime->currentEvent))->eventType != 0x22 &&
+        runtime->currentEvent <
+            (unsigned char *)(runtime->eventStream) + runtime->eventStreamSize);
 
     return 2;
 }
@@ -4663,56 +4664,58 @@ zEffectAnimEntry *__fastcall ActivateRuntime(
 int __fastcall CheckActivationPrereqs(
     zEffectAnimEntry *self
 ) {
-    if (self->activationPrereqCount == 0) {
-        return 1;
-    }
+    if (self->activationPrereqCount > 0) {
+        int matchedPrereqTotal = 0;
+        for (int i = 0; i < self->activationPrereqCount; ++i) {
+            zEffectAnimActivationPrereq *const prereq = &self->activationPrereqList[i];
 
-    int matchedPrereqTotal = 0;
-    for (int i = 0; i < self->activationPrereqCount; ++i) {
-        zEffectAnimActivationPrereq *const prereq = &self->activationPrereqList[i];
-
-        if (prereq->mode == 1) {
-            if (prereq->targetEntry == 0) {
-                zEffectAnimEntry *candidate = g_zEffectAnim_State.entryList;
-                for (int entryIndex = 0; entryIndex < g_zEffectAnim_State.entryCount;
-                    ++entryIndex, ++candidate) {
-                    if (strcmp(candidate->name, prereq->targetName) == 0) {
-                        prereq->targetEntry = candidate;
-                        break;
+            if (prereq->mode == 1) {
+                if (prereq->targetEntry == 0) {
+                    zEffectAnimEntry *candidate = g_zEffectAnim_State.entryList;
+                    for (int entryIndex = 0; entryIndex < g_zEffectAnim_State.entryCount;
+                        ++entryIndex, ++candidate) {
+                        if (strcmp(candidate->name, prereq->targetName) == 0) {
+                            prereq->targetEntry = candidate;
+                            break;
+                        }
                     }
                 }
-            }
 
-            zEffectAnimEntry *const targetEntry = prereq->targetEntry;
-            if (targetEntry == 0) {
-                return 0;
-            }
-
-            if (targetEntry->activationState == 1) {
-                if (prereq->requireMatch == 0) {
+                zEffectAnimEntry *const targetEntry = prereq->targetEntry;
+                if (targetEntry == 0) {
                     return 0;
                 }
-            } else if (prereq->requireMatch != 0) {
-                ++matchedPrereqTotal;
-            }
-        } else if (prereq->mode == 2) {
-            CZNodePartial *const targetNode = prereq->targetNode;
-            if (targetNode != 0) {
-                const int nodeFlagValue = (targetNode->flags >> 2) & 1;
-                int expectedValue = 0;
-                memcpy(&expectedValue, prereq->targetName, sizeof(expectedValue));
-                if (nodeFlagValue == expectedValue) {
-                    if (prereq->requireMatch != 0) {
+
+                if (targetEntry->activationState == 1) {
+                    if (prereq->requireMatch == 0) {
+                        return 0;
+                    }
+                } else if (prereq->requireMatch != 0) {
+                    ++matchedPrereqTotal;
+                }
+            } else if (prereq->mode == 2) {
+                CZNodePartial *const targetNode = prereq->targetNode;
+                if (targetNode != 0) {
+                    const int nodeFlagValue = ((unsigned int)targetNode->flags >> 2) & 1;
+                    int expectedValue = 0;
+                    memcpy(&expectedValue, prereq->targetName, sizeof(expectedValue));
+                    if (nodeFlagValue != expectedValue) {
+                        if (prereq->requireMatch == 0) {
+                            return 0;
+                        }
+                    } else if (prereq->requireMatch != 0) {
                         ++matchedPrereqTotal;
                     }
-                } else if (prereq->requireMatch == 0) {
-                    return 0;
                 }
             }
         }
+
+        if (matchedPrereqTotal < self->activationPrereqMinimumMatchCount) {
+            return 0;
+        }
     }
 
-    return matchedPrereqTotal >= self->activationPrereqMinimumMatchCount ? 1 : 0;
+    return 1;
 }
 
 /**

@@ -200,7 +200,7 @@ void *__fastcall zArchiveListRemoveHead(zArchiveList *list);
 zArchiveListNode *__fastcall zArchiveListAllocNode(void *payload);
 int __fastcall zRdrSetPath(const char *pathText);
 int __fastcall zRdrAddPath(const char *pathText);
-int __fastcall zRdrFreePathList(zArchiveList *list);
+void __fastcall zRdrFreePathList(zArchiveList *list);
 zArchiveList *__fastcall zRdrFreeSearchPathList(zArchiveList *list);
 void __cdecl zRdrFreeScratchSearchPathList();
 int __cdecl zRdrShutdownWildcardPath();

@@ -135,12 +135,12 @@ void __cdecl zZarRequestStopGlobal() {
 } // namespace zUtil
 
 namespace zUtil_ZBD {
-// The namespace wrapper calls the CRT function through its import-library thunk.
-extern "C" FILE *__cdecl tmpfile(void);
-
+extern "C" FILE *__cdecl tmpfile(void); // Calls the CRT import-library thunk.
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-opentempwritestream
  * @recoil-artifact defines .text recoil:function:0x4c0080: zUtil_ZBD::OpenTempWriteStream
+ * @recoil-match byte
+ *
  * Purpose: open a temp write stream when a global ZBD manager is active.
  */
 FILE *__cdecl OpenTempWriteStream() {
@@ -155,47 +155,44 @@ FILE *__cdecl OpenTempWriteStream() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-flushtempwritestreamtosectionrecord
  * @recoil-artifact defines .text recoil:function:0x4c00a0: zUtil_ZBD::FlushTempWriteStreamToSectionRecord
+ * @recoil-match byte
+ *
  * Purpose: flush a temp write stream into a named section record.
  */
-void __fastcall FlushTempWriteStreamToSectionRecord(
-    FILE *tempStream,
+void __fastcall FlushTempWriteStreamToSectionRecord(FILE *tempStream,
     zZbdSectionCallbackCtx *callbackCtx,
-    const char *sectionToken
-) {
-    zZbdManager *const manager = g_zUtil_ZbdManager;
-    if (manager != 0) {
-        manager->FlushTempStreamToSectionRecord(tempStream, callbackCtx, sectionToken);
+    const char *sectionToken) {
+    if (g_zUtil_ZbdManager != 0) {
+        g_zUtil_ZbdManager->FlushTempStreamToSectionRecord(tempStream, callbackCtx, sectionToken);
     }
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-opentempreadstream
  * @recoil-artifact defines .text recoil:function:0x4c00c0: zUtil_ZBD::OpenTempReadStream
+ * @recoil-match byte
+ *
  * Purpose: create a temp read stream from a buffer through the active manager.
  */
-FILE *__fastcall OpenTempReadStream(
-    void *buffer,
-    unsigned int size
-) {
-    zZbdManager *const manager = g_zUtil_ZbdManager;
-    if (manager == 0) {
-        return 0;
+FILE *__fastcall OpenTempReadStream(void *buffer,
+    unsigned int size) {
+    FILE *tempStream = 0;
+    if (g_zUtil_ZbdManager != 0) {
+        tempStream = g_zUtil_ZbdManager->CreateTempReadStreamFromBuffer(buffer, size);
     }
-
-    return manager->CreateTempReadStreamFromBuffer(buffer, size);
+    return tempStream;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-closetempreadstream
  * @recoil-artifact defines .text recoil:function:0x4c00e0: zUtil_ZBD::CloseTempReadStream
+ * @recoil-match byte
+ *
  * Purpose: close ZBD temp read-stream state through the active manager.
  */
-void __fastcall CloseTempReadStream(
-    FILE *tempStream
-) {
-    zZbdManager *const manager = g_zUtil_ZbdManager;
-    if (manager != 0) {
-        manager->RemoveTempFiles(tempStream);
+void __fastcall CloseTempReadStream(FILE *tempStream) {
+    if (g_zUtil_ZbdManager != 0) {
+        g_zUtil_ZbdManager->RemoveTempFiles(tempStream);
     }
 }
 } // namespace zUtil_ZBD

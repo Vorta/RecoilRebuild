@@ -1706,9 +1706,6 @@ struct HudUiSliderBorder : HudUiPolyline {
     int blinkDirSign;
     int caretHalfWidth;
     int inputActive;
-    char sliderVisibleWhenInputActive;
-    char rawKeyFilterEnabled;
-    char unknown112[2];
 
     HudUiSliderBorder();
     HudUiSliderBorder * Constructor();
@@ -1902,6 +1899,8 @@ struct HudUiChatComposeTextInput : HudUiTextInput {
 struct HudUiNumericTextInput : HudUiZrdWidget {
     HudUiOwnedTextInput textInput;
     HudUiSliderBorder sliderBorder;
+    char sliderVisibleWhenInputActive;
+    char rawKeyFilterEnabled;
 
     HudUiNumericTextInput();
     ~HudUiNumericTextInput();
@@ -1913,8 +1912,8 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
     int SetInputActive(int active);
     void SetRawKeyboardCapture(int enable);
     virtual int OnRawKeyboardChar(int key);
-    virtual int OnAcceptForwardToCommit();
-    virtual int CommitAndGetValue();
+    // Default acceptance is an event; only network inputs add a commit value.
+    virtual void OnAccept() {}
     void OnActivate();
     static int __fastcall RawKeyboardCallback(
         int key,
@@ -1932,8 +1931,9 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
  */
 struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
     HudUiNetGameSetupTextInput(unsigned int bufferSize);
-    void OnActivate();
-    void OnActivateFocusAndCursor();
+    virtual int CommitAndGetValue() { return 0; }
+    // Receive the inherited activation event directly.
+    virtual void OnActivate();
 };
 
 struct HudUiNetGameSetupOverlayOwner : RecoilStateDialogHost {
@@ -1974,6 +1974,7 @@ struct HudUiClampedIntTextInput : HudUiNetGameSetupTextInput {
     void SetRange(int minimum, int maximum);
     void SetValue(int value);
     int OnRawKeyboardChar(int key);
+    virtual void OnAccept();
     int CommitAndGetValue();
 };
 
@@ -4943,7 +4944,7 @@ RECOIL_STATIC_ASSERT(
         clipRect
     ) == 0xe4
 );
-RECOIL_STATIC_ASSERT(sizeof(HudUiSliderBorder) == 0x114);
+RECOIL_STATIC_ASSERT(sizeof(HudUiSliderBorder) == 0x110);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiSliderBorder,
@@ -5006,15 +5007,15 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiSliderBorder,
+        HudUiNumericTextInput,
         sliderVisibleWhenInputActive
-    ) == 0x110
+    ) == 0x370
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiSliderBorder,
+        HudUiNumericTextInput,
         rawKeyFilterEnabled
-    ) == 0x111
+    ) == 0x371
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiBar) == 0x140);
 RECOIL_STATIC_ASSERT(

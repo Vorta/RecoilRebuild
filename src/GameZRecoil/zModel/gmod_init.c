@@ -2848,23 +2848,19 @@ namespace zDi {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zdi-setvarianttagifunset
  * @recoil-artifact defines .text recoil:function:0x476340: zDi::SetVariantTagIfUnset
+ * @recoil-match byte
  *
  * Purpose: assign the variant tag to each display-instance entry that has
  * not already initialized its variant-tag state.
  */
-    void __fastcall SetVariantTagIfUnset(
-        zDiPartial * self,
-        int variantTag
-    ) {
-        if (self == 0 || self->entryCount <= 0) {
-            return;
-        }
-
-        for (int i = 0; i < self->entryCount; ++i) {
-            zDiEntryPartial *entry = &self->entries[i];
-            if (entry->variantTagInitialized == 0) {
-                entry->variantTag = (unsigned char)(variantTag);
-                entry->variantTagInitialized = 1;
+    void __fastcall SetVariantTagIfUnset(zDiPartial *self, int variantTag) {
+        if (self != 0) {
+            zDiEntryPartial *entry = self->entries;
+            for (int i = 0; i < self->entryCount; ++i, ++entry) {
+                if (entry->variantTagInitialized == 0) {
+                    entry->variantTag = (unsigned char)variantTag;
+                    entry->variantTagInitialized = 1;
+                }
             }
         }
     }

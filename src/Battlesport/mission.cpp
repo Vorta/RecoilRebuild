@@ -2281,10 +2281,10 @@ HudUiClampedIntTextInput::HudUiClampedIntTextInput(
 }
 
 /**
- * Purpose: handle the recovered HUD event path for HudUiNumericTextInput::OnAcceptForwardToCommit.
+ * Purpose: commit the clamped value when the text editor accepts its input.
  */
-int HudUiNumericTextInput::OnAcceptForwardToCommit() {
-    return CommitAndGetValue();
+void HudUiClampedIntTextInput::OnAccept() {
+    CommitAndGetValue();
 }
 
 /**
@@ -2418,33 +2418,32 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
 }
 
 /**
- * Purpose: Move network setup text focus to this numeric input, release the
- * previous raw-keyboard capture, refresh text and cursor state, then activate.
+ * @recoil-anchor recoil:anchor:battlesport.mission.huduinetgamesetuptextinput-onactivatefocusandcursor
+ * @recoil-artifact defines .text recoil:function:0x41a7b0: Network input focus transfer.
+ *
+ * Purpose: Commit previous focus, transfer keyboard capture, and refresh the cursor.
+ * The network-input table installed by 0x41a190 points directly to this
+ * body from its activation slot (+0x30). The name follows the inherited
+ * event interface; the original spelling is unknown.
+ *
+ * Committing may replace the focused input, so capture release reads the
+ * owner's current focus again after the virtual call.
+ *
  */
-void HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
+void HudUiNetGameSetupTextInput::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel =
         (HudUiNetGameSetupPanel *)HudUiZrdWidget::owner;
-    HudUiNumericTextInput **const focusTextInputSlot =
+    HudUiNetGameSetupTextInput **const focusTextInputSlot =
         &ownerPanel->currentFocusWidget;
-    HudUiNumericTextInput *const previousFocusTextInput = *focusTextInputSlot;
-
-    if (previousFocusTextInput != 0) {
-        previousFocusTextInput->CommitAndGetValue();
-        previousFocusTextInput->SetRawKeyboardCapture(0);
+    if (*focusTextInputSlot != 0) {
+        (*focusTextInputSlot)->CommitAndGetValue();
+        (*focusTextInputSlot)->SetRawKeyboardCapture(0);
     }
-
     *focusTextInputSlot = this;
     SetRawKeyboardCapture(1);
     Update(GetBuffer());
     textInput.SetCursorPosition((int)(strlen(GetBuffer())));
     HudUiNumericTextInput::OnActivate();
-}
-
-/**
- * Purpose: preserve the recovered HUD behavior for HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit.
- */
-void HudUiNetGameSetupTextInput::OnActivate() {
-    OnActivateFocusAndCursor();
 }
 
 /**

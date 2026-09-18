@@ -609,36 +609,29 @@ namespace zModel_Material {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-compareforreuse
  * @recoil-artifact defines .text recoil:function:0x480d20: zModel_Material::CompareForReuse
+ * @recoil-match byte
+ *
  * Purpose: compare two material records for reuse, merging missing user tags when possible.
  */
-    int __fastcall CompareForReuse(
-        zModel_MaterialPartial * lhs,
-        zModel_MaterialPartial * rhs
+    int __fastcall CompareForReuse( zModel_MaterialPartial * lhs, zModel_MaterialPartial * rhs
     ) {
         if (lhs->currentTextureDirectoryEntry != rhs->currentTextureDirectoryEntry) {
             return 1;
         }
 
-        const int compare = memcmp(lhs, rhs, offsetof(zModel_MaterialPartial, userTag));
-        if (compare != 0) {
-            return compare < 0 ? -1 : 1;
+        int compare = memcmp(lhs, rhs, offsetof(zModel_MaterialPartial, userTag));
+        if (compare == 0) {
+            if (lhs->userTag != rhs->userTag) {
+                if (lhs->userTag == 0) {
+                    lhs->userTag = rhs->userTag;
+                } else if (rhs->userTag == 0) {
+                    rhs->userTag = lhs->userTag;
+                } else {
+                    compare = 1;
+                }
+            }
         }
-
-        if (lhs->userTag == rhs->userTag) {
-            return 0;
-        }
-
-        if (lhs->userTag == 0) {
-            lhs->userTag = rhs->userTag;
-            return 0;
-        }
-
-        if (rhs->userTag == 0) {
-            rhs->userTag = lhs->userTag;
-            return 0;
-        }
-
-        return 1;
+        return compare;
     }
 
 } // namespace zModel_Material
@@ -900,31 +893,26 @@ namespace zModel_Material {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-addcycletexture
  * @recoil-artifact defines .text recoil:function:0x481100: zModel_Material::AddCycleTexture
+ * @recoil-match byte
+ *
  * Purpose: append one texture-directory entry to a material cycle.
  */
-    int __fastcall AddCycleTexture(
-        zModel_MaterialPartial * material,
-        zImage_TexDirEntryPartial * textureDirectoryEntry
+    int __fastcall AddCycleTexture( zModel_MaterialPartial * material, zImage_TexDirEntryPartial * textureDirectoryEntry
     ) {
-        if ((material->flags & 0x0400) == 0) {
-            return 0;
+        if ((material->flags & 0x0400) != 0) {
+            zModel_MaterialCyclePartial *cycle = material->cycle;
+            zImage_TexDirEntryPartial **const frameTable = cycle->frameTable;
+            if (frameTable != 0) {
+                const int frameWriteCount = cycle->frameWriteCount;
+                const int frameCount = cycle->frameCount;
+                if (frameWriteCount < frameCount) {
+                    frameTable[frameWriteCount] = textureDirectoryEntry;
+                    ++material->cycle->frameWriteCount;
+                    return 1;
+                }
+            }
         }
-
-        zModel_MaterialCyclePartial *cycle = material->cycle;
-        zImage_TexDirEntryPartial **const frameTable = cycle->frameTable;
-        if (frameTable == 0) {
-            return 0;
-        }
-
-        const int frameWriteCount = cycle->frameWriteCount;
-        if (frameWriteCount >= cycle->frameCount) {
-            return 0;
-        }
-
-        frameTable[frameWriteCount] = textureDirectoryEntry;
-        cycle = material->cycle;
-        ++cycle->frameWriteCount;
-        return 1;
+        return 0;
     }
 
 

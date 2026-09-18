@@ -173,14 +173,15 @@ namespace zEffectAnim {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findsoundrefindexbyname
  * @recoil-artifact defines .text recoil:function:0x45e280: zEffectAnim::FindSoundRefIndexByName (zeff_anim.c)
+ * @recoil-match byte
+ *
  * Purpose: Return the first runtime sound reference index whose node name matches.
  */
-int __fastcall FindSoundRefIndexByName(
-    zEffectAnimEntry *self,
-    const char *name
+int __fastcall FindSoundRefIndexByName( zEffectAnimEntry *self, const char *name
 ) {
+    zEffectAnimRuntimeNodeRef *refs = self->soundRefList;
     for (int i = 0; i < self->soundRefCount; ++i) {
-        CZNodePartial *const node = self->soundRefList[i].runtimeNode;
+        CZNodePartial *const node = refs[i].runtimeNode;
         if (node != 0 && strcmp(node->name, name) == 0) {
             return i;
         }
@@ -192,14 +193,15 @@ int __fastcall FindSoundRefIndexByName(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findlightrefindexbyname
  * @recoil-artifact defines .text recoil:function:0x45e300: zEffectAnim::FindLightRefIndexByName (zeff_anim.c)
+ * @recoil-match byte
+ *
  * Purpose: Return the first runtime light reference index whose node name matches.
  */
-int __fastcall FindLightRefIndexByName(
-    zEffectAnimEntry *self,
-    const char *name
+int __fastcall FindLightRefIndexByName( zEffectAnimEntry *self, const char *name
 ) {
+    zEffectAnimRuntimeNodeRef *refs = self->lightRefList;
     for (int i = 0; i < self->lightRefCount; ++i) {
-        CZNodePartial *const node = self->lightRefList[i].runtimeNode;
+        CZNodePartial *const node = refs[i].runtimeNode;
         if (node != 0 && strcmp(node->name, name) == 0) {
             return i;
         }
@@ -1435,6 +1437,8 @@ zEffectAnimEntry *__fastcall FindEntryByName(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findnextasyncentry
  * @recoil-artifact defines .text recoil:function:0x45ffa0: zEffectAnim::FindNextAsyncEntry.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: return the next animation entry with the async flag set after an
  * optional current entry.
@@ -1442,14 +1446,12 @@ zEffectAnimEntry *__fastcall FindEntryByName(
 zEffectAnimEntry *__fastcall FindNextAsyncEntry(
     zEffectAnimEntry *currentEntry
 ) {
-    int index = 0;
-    if (currentEntry != 0) {
-        index = (int)(currentEntry - g_zEffectAnim_State.entryList) + 1;
-    }
+    zEffectAnimEntry *entries = g_zEffectAnim_State.entryList;
+    int index = currentEntry == 0 ? 0 : (int)(currentEntry - entries) + 1;
 
     for (; index < g_zEffectAnim_State.entryCount; ++index) {
-        if ((g_zEffectAnim_State.entryList[index].flags & 0x10) != 0) {
-            return &g_zEffectAnim_State.entryList[index];
+        if ((entries[index].flags & 0x10) != 0) {
+            return &entries[index];
         }
     }
 

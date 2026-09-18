@@ -793,6 +793,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeTitleWidget) == 0x14c);
 
 struct HudUiCheatTextInputWidget : HudUiNumericTextInput {
     HudUiCheatTextInputWidget();
+    virtual void OnAccept();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatTextInputWidget) == 0x374);
 
@@ -894,7 +895,6 @@ extern float g_HudWeatherFxRain_TimeAccumulator;
 #define g_HudWeatherFxRain_LastCameraTargetY (g_HudWeatherFxRain_LastCameraTarget.y)
 #define g_HudWeatherFxRain_LastCameraTargetZ (g_HudWeatherFxRain_LastCameraTarget.z)
 namespace HudUiCallback {
-void QueueExitCurrentState();
 int QueueCheatCodeState();
 } // namespace HudUiCallback
 

@@ -1042,10 +1042,10 @@ void RecoilStateCheatCode::AtExitDestructor() {
 RecoilStateCheatCode::RecoilStateCheatCode() {
     m_dialog = 0;
 }
-
 /**
- * Original function; retail address 0x406f00.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecheatcode-destructor
+ * @recoil-artifact defines .text recoil:function:0x406f00: RecoilStateCheatCode::~RecoilStateCheatCode.
+ *
  * Purpose: release any active cheat-code dialog and clear the app-state dialog pointer.
  */
 RecoilStateCheatCode::~RecoilStateCheatCode() {
@@ -1139,15 +1139,13 @@ inline void HudUiCheatCodeTitleWidget::OnActivate() {
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicallback-queueexitcurrentstate
- * @recoil-artifact defines .text recoil:function:0x407100: HudUiCallback::QueueExitCurrentState.
+ * @recoil-artifact defines .text recoil:function:0x407100: HudUiCheatTextInputWidget::OnAccept.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Queue an immediate exit from the current Recoil application state.
+ * Purpose: Queue the cheat-code state exit when the text input is accepted.
  */
-void HudUiCallback::QueueExitCurrentState() {
+void HudUiCheatTextInputWidget::OnAccept() {
     g_RecoilApp.QueueExitCurrentState(0);
 }
-
-extern void (*const g_HudUiQueueExitCurrentStateCallback)() = HudUiCallback::QueueExitCurrentState;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicallback-queuecheatcodestate
@@ -1756,29 +1754,24 @@ int __fastcall EvalIntCompareOp(
     int lhs,
     int rhs
 ) {
+    int result = 0;
     if (strcmp(opString, g_zOpt_OpStr_Eq) == 0) {
-        return lhs == rhs;
-    }
-    if (strcmp(opString, g_zOpt_OpStr_Lt) == 0) {
-        return lhs < rhs;
-    }
-    if (strcmp(opString, g_zOpt_OpStr_Gt) == 0) {
-        return lhs > rhs;
-    }
-    if (strcmp(opString, g_zOpt_OpStr_Le) == 0) {
-        return lhs <= rhs;
-    }
-    if (strcmp(opString, g_zOpt_OpStr_Ge) == 0) {
-        return lhs >= rhs;
-    }
-    if (strcmp(opString, g_zOpt_OpStr_Ne) == 0) {
-        return lhs != rhs;
-    }
-    if (strcmp(opString, g_zOpt_OpStr_TolEq) == 0) {
-        return (double)(abs(lhs - rhs)) < (double)(lhs)*ZOPT_COMPARE_TOLERANCE_PCT;
+        result = lhs == rhs;
+    } else if (strcmp(opString, g_zOpt_OpStr_Lt) == 0) {
+        result = lhs < rhs;
+    } else if (strcmp(opString, g_zOpt_OpStr_Gt) == 0) {
+        result = lhs > rhs;
+    } else if (strcmp(opString, g_zOpt_OpStr_Le) == 0) {
+        result = lhs <= rhs;
+    } else if (strcmp(opString, g_zOpt_OpStr_Ge) == 0) {
+        result = lhs >= rhs;
+    } else if (strcmp(opString, g_zOpt_OpStr_Ne) == 0) {
+        result = lhs != rhs;
+    } else if (strcmp(opString, g_zOpt_OpStr_TolEq) == 0) {
+        result = (double)(abs(lhs - rhs)) < (double)(lhs)*ZOPT_COMPARE_TOLERANCE_PCT;
     }
 
-    return 0;
+    return result;
 }
 
 /**
@@ -1790,39 +1783,39 @@ int __fastcall EvalIntCompareOp(
 int __fastcall EvaluateProfileMetricCondition(
     zReader::Node *metricConditionNode
 ) {
-    if (metricConditionNode->type == zReader::ZRDR_NODE_STRING) {
-        return strcmp(metricConditionNode->value.str, k_zOpt_ProfileMetricDefault) == 0;
+    int result = 0;
+    switch (metricConditionNode->type) {
+    case zReader::ZRDR_NODE_ARRAY: {
+        zReader::Node *const conditionArray = metricConditionNode->value.nodes;
+        if (conditionArray[0].value.i32 == 4) {
+            const char *const metricKey = conditionArray[1].value.str;
+            const char *const opString = conditionArray[2].value.str;
+            const int rhs = ReadScalarValueAsInt(&conditionArray[3]);
+            int currentMetricValue = 0;
+
+            if (strcmp(metricKey, k_zOpt_ProfileMetricCpuClass) == 0) {
+                currentMetricValue = g_zGame_Options_RuntimeConfig.cpuClass;
+            } else if (strcmp(metricKey, k_zOpt_ProfileMetricCpuMhz) == 0) {
+                currentMetricValue = g_zGame_Options_RuntimeConfig.cpuMhz;
+            } else if (strcmp(metricKey, k_zOpt_ProfileMetricVideoKb) == 0) {
+                currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.videoMemoryKb);
+            } else if (strcmp(metricKey, k_zOpt_ProfileMetricRamKb) == 0) {
+                currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.systemRamKb);
+            } else if (strcmp(metricKey, k_zOpt_ProfileMetricHwAccel) == 0) {
+                currentMetricValue = (int)((g_zGame_Options_RuntimeConfig.defaultFlags >> 6) & 1u);
+            }
+            result = EvalIntCompareOp(opString, currentMetricValue, rhs);
+        }
+        break;
+    }
+    case zReader::ZRDR_NODE_STRING:
+        if (strcmp(metricConditionNode->value.str, k_zOpt_ProfileMetricDefault) == 0) {
+            result = 1;
+        }
+        break;
     }
 
-    if (metricConditionNode->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const conditionArray = metricConditionNode->value.nodes;
-    if (conditionArray[0].value.i32 != 4) {
-        return 0;
-    }
-
-    const char *const metricKey = conditionArray[1].value.str;
-    const char *const opString = conditionArray[2].value.str;
-    const int rhs = ReadScalarValueAsInt(&conditionArray[3]);
-    int currentMetricValue = 0;
-
-    if (strcmp(metricKey, k_zOpt_ProfileMetricCpuClass) == 0) {
-        currentMetricValue = g_zGame_Options_RuntimeConfig.cpuClass;
-    } else if (strcmp(metricKey, k_zOpt_ProfileMetricCpuMhz) == 0) {
-        currentMetricValue = g_zGame_Options_RuntimeConfig.cpuMhz;
-    } else if (strcmp(metricKey, k_zOpt_ProfileMetricVideoKb) == 0) {
-        currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.soundHardwareMemKb);
-    } else if (strcmp(metricKey, k_zOpt_ProfileMetricRamKb) == 0) {
-        currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.systemRamKb);
-    } else if (strcmp(metricKey, k_zOpt_ProfileMetricHwAccel) == 0) {
-        currentMetricValue = (int)((g_zGame_Options_RuntimeConfig.defaultFlags >> 6) & 1u);
-    } else {
-        return 0;
-    }
-
-    return EvalIntCompareOp(opString, currentMetricValue, rhs);
+    return result;
 }
 
 /**
