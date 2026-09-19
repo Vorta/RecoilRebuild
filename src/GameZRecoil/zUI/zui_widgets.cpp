@@ -188,8 +188,8 @@ int g_HudUiMgrSensorFxViewportHeight = 0;
  */
 CZFMVPlayback *g_HudUiSensorWindowPlayback = 0;
 
-// Moved HUD runtime bodies live in src/Battlesport/hud_runtime_layer_body.h
-// and are included by src/Battlesport/hud.cpp for physical HUD order.
+
+
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduichatmessagestack

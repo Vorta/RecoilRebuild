@@ -1824,9 +1824,9 @@ RECOIL_STATIC_ASSERT(
         params
     ) == 0x2c
 );
-
-// The live animation state image read at retail 0x45f15f spans exactly 0x3c
-// bytes. Names describe the observed roles; the layout is checked below.
+/** Live animation state read at 0x45f15f: exactly 0x3c bytes.
+ * Names describe observed roles; the layout is checked below.
+ */
 struct zEffectAnimState {
     int entriesInstantiated;
     void *heapPtr;

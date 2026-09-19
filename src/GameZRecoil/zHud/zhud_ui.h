@@ -1932,7 +1932,7 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
 struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
     HudUiNetGameSetupTextInput(unsigned int bufferSize);
     virtual int CommitAndGetValue() { return 0; }
-    // Receive the inherited activation event directly.
+    /** Receive the inherited activation event directly. */
     virtual void OnActivate();
 };
 

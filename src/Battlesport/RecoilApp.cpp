@@ -6474,9 +6474,9 @@ void RecoilApp_IState::OnResume(
     int
 ) {}
 
-// CRecoilAppAttractFmvState instances use the implicit VC5 destructor and CRecoilAppFmvScript member cleanup.
-// CRecoilAppIntroFmvState instances use the implicit VC5 destructor and CRecoilAppFmvScript member cleanup.
-// RecoilApp_MissionFmvState instances use the implicit VC5 destructor and CRecoilAppFmvScript member cleanup.
+
+
+
 
 /**
  * operator<(HudUiSaveLoadEntry const &, HudUiSaveLoadEntry const &).

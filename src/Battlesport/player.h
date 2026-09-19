@@ -494,7 +494,7 @@ void __fastcall AsyncCommandCallback(
 void __fastcall TickLocalPlayerControls(zUtil_SaveGameState *saveState);
 void __cdecl RegisterGameplayCommandCallbacksAndCreateFfEffects();
 void __fastcall TickActiveCameraState(zUtil_SaveGameState *saveState);
-// Inferred camera-state handler; the original spelling and body location are unknown.
+/** Inferred camera-state handler; the original spelling and body location are unknown. */
 void __fastcall UpdateCameraState5(zUtil_SaveGameState *saveState);
 void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState *saveState);
 void __fastcall UpdateTopDownCameraState(zUtil_SaveGameState *saveState);

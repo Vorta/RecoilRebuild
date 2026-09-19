@@ -46,9 +46,9 @@ struct zVideoFxPass3RootElement : zVideoFxPass3Element {
     double alpha;
 
     /**
-     * Original inline helper; no standalone retail body exists. The enclosing
-     * config constructor at 0x4bef90 emits this base construction before the
-     * following five-element slot array construction.
+     * Inline helper emitted by the config constructor at 0x4bef90 before
+     * its five-element slot array; no standalone retail body exists.
+     * Purpose: Construct the root pass-3 element at the origin through its base.
      */
     zVideoFxPass3RootElement() : zVideoFxPass3Element(
         0,
