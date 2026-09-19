@@ -2517,7 +2517,6 @@ void CZRecoilFrame::OnMenuStartCampaignMode5() {
     g_RecoilApp.LoadZbdAndSetupSensorTracker(6, 0, 1, m_useArchiveBanks);
 }
 
-
 /**
  *
  * Purpose: toggle archive-bank loading and mirror it into audio/HUD state.
@@ -2850,7 +2849,6 @@ void CZRecoilFrame::OnUpdateJoystickCmdUI(
     cmdUi->Enable(1);
     cmdUi->SetCheck(zInp::GetJoystickOption() != 0 ? 1 : 0);
 }
-
 
 /**
  * Purpose: gate the Westwood Online upgrade flow on Winsock2 readiness and
@@ -5256,12 +5254,10 @@ GameNetCrtInitializerFn s_GameNetCrtInit_PlayerRowListReset =
 #endif
 
 #include <direct.h>
-#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
 #ifndef __PLACEMENT_NEW_INLINE
 #define __PLACEMENT_NEW_INLINE
 #endif
 #include <deque>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5884,21 +5880,7 @@ int g_RecoilApp_AttractFmvReloadMode = 1;
  * Purpose: destroys the app state's chunked queue storage before chaining to the MFC base destructor.
  */
 RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule() {
-#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
     // VC5 emits the retail chunk-drain loop from the recovered deque member destructor.
-#else
-    if (m_stateQueue.m_chunkBaseList != 0) {
-        RecoilApp_StateQueueItem ***slot = m_stateQueue.m_readBlock.m_chunkBaseSlot;
-        RecoilApp_StateQueueItem ***const lastSlot = m_stateQueue.m_writeBlock.m_chunkBaseSlot;
-        while (slot != 0 && slot <= lastSlot) {
-            ::operator delete(*slot);
-            ++slot;
-        }
-
-        ::operator delete(m_stateQueue.m_chunkBaseList);
-        memset(&m_stateQueue, 0, sizeof(m_stateQueue));
-    }
-#endif
 }
 
 /**
@@ -6077,130 +6059,8 @@ int RecoilApp::StartEngineAndQueueStartupState() {
     return 1;
 }
 
-#if !(defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86))
 /**
- * Original inline member helper with no standalone retail function address.
- * Purpose: tests whether the recovered state queue has no pending transition items.
- */
-inline bool RecoilApp_StateQueue::Empty() const {
-    return m_itemCount == 0;
-}
-
-/**
- * Evidence: the recovered queue-front accessor is inline and has no standalone retail function.
- * Purpose: returns the pending transition item at the front of the recovered queue.
- */
-inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
-    return *m_readBlock.m_cursor;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in queue entrypoint callers 0x443160, 0x443310, and 0x4434b0.
- *
- * Purpose: append one pending app-state transition item to the recovered queue.
- */
-inline void RecoilApp_StateQueue::PushBack(
-    RecoilApp_StateQueueItem *const &item
-) {
-    if (Empty() || m_writeBlock.m_cursor == m_writeBlock.m_chunkEnd) {
-        RecoilApp_StateQueueItem **chunk =
-            (RecoilApp_StateQueueItem **)::operator new(
-                kRecoilAppStateQueueChunkSlotCount * sizeof(RecoilApp_StateQueueItem *)
-            );
-
-        if (Empty()) {
-            m_chunkBaseCapacity = kRecoilAppStateQueueInitialChunkBaseCapacity;
-            m_chunkBaseList = (RecoilApp_StateQueueItem ***)::operator new(
-                kRecoilAppStateQueueInitialChunkBaseCapacity *
-                    (int)(sizeof(RecoilApp_StateQueueItem **))
-            );
-            m_chunkBaseList[kRecoilAppStateQueueInitialChunkBaseCapacity - 1] = chunk;
-
-            RecoilApp_StateQueueItem ***const chunkBaseSlot =
-                m_chunkBaseList + kRecoilAppStateQueueInitialChunkBaseCapacity - 1;
-            chunk += kRecoilAppStateQueueInitialCursorOffset;
-            m_readBlock.m_chunkBegin = *chunkBaseSlot;
-            m_readBlock.m_chunkEnd =
-                m_readBlock.m_chunkBegin + kRecoilAppStateQueueChunkSlotCount;
-            m_readBlock.m_cursor = chunk;
-            m_readBlock.m_chunkBaseSlot = chunkBaseSlot;
-            m_writeBlock.m_chunkBegin = m_readBlock.m_chunkBegin;
-            m_writeBlock.m_chunkEnd = m_readBlock.m_chunkEnd;
-            m_writeBlock.m_cursor = chunk;
-            m_writeBlock.m_chunkBaseSlot = chunkBaseSlot;
-        } else if (m_writeBlock.m_chunkBaseSlot <
-                   m_chunkBaseList + m_chunkBaseCapacity - 1) {
-            ++m_writeBlock.m_chunkBaseSlot;
-            *m_writeBlock.m_chunkBaseSlot = chunk;
-            m_writeBlock.m_chunkBegin = *m_writeBlock.m_chunkBaseSlot;
-            m_writeBlock.m_chunkEnd =
-                m_writeBlock.m_chunkBegin + kRecoilAppStateQueueChunkSlotCount;
-            m_writeBlock.m_cursor = chunk;
-        } else {
-            const int activeChunkCount =
-                (int)(m_writeBlock.m_chunkBaseSlot - m_readBlock.m_chunkBaseSlot) + 1;
-            RecoilApp_StateQueueItem **const oldReadCursor = m_readBlock.m_cursor;
-            RecoilApp_StateQueueItem ***const centeredSlot =
-                GrowAndCenterChunkBaseList(activeChunkCount * 2);
-            RecoilApp_StateQueueItem ***const newWriteSlot =
-                centeredSlot + activeChunkCount;
-            *newWriteSlot = chunk;
-            m_readBlock.m_chunkBegin = *centeredSlot;
-            m_readBlock.m_chunkEnd =
-                m_readBlock.m_chunkBegin + kRecoilAppStateQueueChunkSlotCount;
-            m_readBlock.m_cursor = oldReadCursor;
-            m_readBlock.m_chunkBaseSlot = centeredSlot;
-            RecoilApp_StateQueueBlock writeBlock;
-            m_writeBlock = *writeBlock.InitFromCursor(chunk, newWriteSlot);
-        }
-    }
-
-    RecoilApp_StateQueueItem **const slot = m_writeBlock.m_cursor;
-    m_writeBlock.m_cursor = slot + 1;
-    if (slot != 0) {
-        *slot = item;
-    }
-    ++m_itemCount;
-}
-
-/**
- * Evidence: the recovered queue-pop operation is inline and has no standalone retail function.
- * Purpose: removes the pending transition item at the front of the recovered queue.
- */
-inline void RecoilApp_StateQueue::PopFront() {
-    RecoilApp_StateQueueItem **const completedChunk =
-        *m_readBlock.m_chunkBaseSlot;
-    ++m_readBlock.m_cursor;
-    --m_itemCount;
-
-    if (m_itemCount != 0 && m_readBlock.m_cursor != m_readBlock.m_chunkEnd) {
-        return;
-    }
-
-    ++m_readBlock.m_chunkBaseSlot;
-    ::operator delete(completedChunk);
-
-    if (m_itemCount == 0) {
-        m_readBlock.m_chunkBegin = 0;
-        m_readBlock.m_chunkEnd = 0;
-        m_readBlock.m_cursor = 0;
-        m_writeBlock.m_chunkBegin = 0;
-        m_writeBlock.m_chunkEnd = 0;
-        m_writeBlock.m_cursor = 0;
-        m_writeBlock.m_chunkBaseSlot = m_readBlock.m_chunkBaseSlot;
-        ::operator delete(m_chunkBaseList);
-        return;
-    }
-
-    m_readBlock.m_chunkBegin = *m_readBlock.m_chunkBaseSlot;
-    m_readBlock.m_chunkEnd =
-        m_readBlock.m_chunkBegin + kRecoilAppStateQueueChunkSlotCount;
-    m_readBlock.m_cursor = m_readBlock.m_chunkBegin;
-}
-#else
-/**
- * Original-source inline helper: VC5 owner verification uses the retail STL deque member.
+ * Inferred inline facade over the canonical VC5 deque empty operation.
  * Purpose: tests whether the recovered state queue has no pending transition items.
  */
 inline bool RecoilApp_StateQueue::Empty() const {
@@ -6208,7 +6068,7 @@ inline bool RecoilApp_StateQueue::Empty() const {
 }
 
 /**
- * Evidence: VC5 owner verification uses the retail STL deque member for this inline queue-front accessor.
+ * Inferred inline facade over the canonical VC5 deque front accessor.
  * Purpose: returns the pending transition item at the front of the queue.
  */
 inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
@@ -6216,7 +6076,7 @@ inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
 }
 
 /**
- * Evidence: VC5 owner verification uses the retail STL deque member for this inline queue-pop operation.
+ * Inferred inline facade over the canonical VC5 deque removal operation.
  * Purpose: removes the pending transition item at the front of the queue.
  */
 inline void RecoilApp_StateQueue::PopFront() {
@@ -6224,7 +6084,7 @@ inline void RecoilApp_StateQueue::PopFront() {
 }
 
 /**
- * Evidence: VC5 owner verification uses the retail STL deque member for this inline queue-append operation.
+ * Inferred inline facade over the canonical VC5 deque append operation.
  * Purpose: appends one pending transition item to the queue.
  */
 inline void RecoilApp_StateQueue::PushBack(
@@ -6232,12 +6092,10 @@ inline void RecoilApp_StateQueue::PushBack(
 ) {
     push_back(item);
 }
-#endif
 
 /**
  * Purpose: constructs the MFC app subobject and initializes Recoil-owned state host fields.
  */
-#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
 RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
     : CWinApp(0)
 #if !defined(_AFXDLL)
@@ -6249,25 +6107,6 @@ RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
     m_currentStateIndex = -1;
     memset(m_stateStack, 0, sizeof(m_stateStack));
 }
-#else
-/**
- * Purpose: constructs the MFC app subobject and initializes Recoil-owned state host fields.
- */
-RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
-    : CWinApp(0)
-#if !defined(_AFXDLL)
-      , m_recoilPad(0)
-#endif
-      , m_pendingState(0),
-      m_currentStateIndex(-1),
-      m_stateHostReserved(0),
-      m_skipWait(0),
-      m_missionShutdownMode(RECOILAPP_MISSION_SHUTDOWN_ON_EXIT),
-      m_stateQueue(),
-      m_reserved148(0) {
-    memset(m_stateStack, 0, sizeof(m_stateStack));
-}
-#endif
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-run
@@ -6556,61 +6395,6 @@ int RecoilApp::OnIdleOrDispatch(
     }
 
     return currentState->OnIdleOrDispatch(wParam, lParam);
-}
-
-#if !(defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86))
-/**
- * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-statequeue-growandcenterchunkbaselist
- * @recoil-artifact defines .text recoil:function:0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList.
- * @recoil-match byte
- *
- * Purpose: Grows the chunk-map and recenters the active chunk-slot range in the new map.
- */
-RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
-    int newCapacity
-) {
-    int byteCount = newCapacity * (int)(sizeof(RecoilApp_StateQueueItem **));
-    if (byteCount < 0) {
-        byteCount = 0;
-    }
-
-    RecoilApp_StateQueueItem ***const newList =
-        (RecoilApp_StateQueueItem ***)::operator new(byteCount);
-    RecoilApp_StateQueueItem ***const centeredSlot =
-        newList + (((unsigned int)newCapacity) >> 2);
-    RecoilApp_StateQueueItem ***readSlot = m_readBlock.m_chunkBaseSlot;
-    RecoilApp_StateQueueItem ***const stopSlot = m_writeBlock.m_chunkBaseSlot + 1;
-    RecoilApp_StateQueueItem ***writeSlot = centeredSlot;
-
-    while (readSlot != stopSlot) {
-        *writeSlot = *readSlot;
-        ++readSlot;
-        ++writeSlot;
-    }
-
-    ::operator delete(m_chunkBaseList);
-    m_chunkBaseList = newList;
-    m_chunkBaseCapacity = newCapacity;
-    return centeredSlot;
-}
-#endif
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-statequeueblock-initfromcursor
- * @recoil-artifact defines .text recoil:function:0x443700: RecoilApp_StateQueueBlock::InitFromCursor.
- * @recoil-match byte
- *
- * Purpose: Initializes one chunk cursor descriptor from a slot in the queue chunk map.
- */
-RecoilApp_StateQueueBlock * RecoilApp_StateQueueBlock::InitFromCursor(
-    RecoilApp_StateQueueItem **cursor,
-    RecoilApp_StateQueueItem ***chunkBaseSlot
-) {
-    m_chunkBegin = *chunkBaseSlot;
-    m_chunkEnd = *chunkBaseSlot + kRecoilAppStateQueueChunkSlotCount;
-    m_cursor = cursor;
-    m_chunkBaseSlot = chunkBaseSlot;
-    return this;
 }
 
 /**
@@ -7079,7 +6863,6 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
                 continue;
             }
         }
-
 
         listItem->SetVisible(0);
     }

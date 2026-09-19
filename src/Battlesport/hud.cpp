@@ -1859,18 +1859,18 @@ namespace {
 const int ZGAME_OPTION_INLINE_DWORD = 0;
 const int ZGAME_OPTION_INLINE_BINARY4 = 1;
 const int ZGAME_OPTION_STRING_BUFFER = 3;
-const int ZGAME_OPTION_HEAP_BUFFER = 5;
+const int ZGAME_OPTION_HEAP_BUFFER = 7;
 const int ZGAME_OPTION_SCOPE_USER = 1;
 const int ZGAME_OPTION_SCOPE_TRANSIENT = 2;
 const int ZVID_HW_MODE_SOFTWARE = 0;
 const int ZVID_HW_MODE_HARDWARE = 1;
 const zOptGameControlFlags ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
-const int ZOPT_GRAPHICS_MMX = 1;
+const int ZOPT_GRAPHICS_MMX = 4;
 const int ZOPT_GRAPHICS_TRANSPARENCY = 2;
-const int ZOPT_GRAPHICS_LIGHTING = 4;
+const int ZOPT_GRAPHICS_LIGHTING = 1;
 const int ZOPT_GRAPHICS_PERSPECTIVE = 8;
 const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
-const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x20;
+const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x10000;
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -1931,7 +1931,7 @@ void __cdecl ReturnOnlyStub() {}
  *
  * Purpose: load detail.zrd and register the game option globals.
  */
-RECOIL_NO_GS int OptionsLoadGameOptions() {
+RECOIL_NO_GS int __fastcall OptionsLoadGameOptions() {
     memset(&g_zGame_Options_PointerCache, 0, sizeof(g_zGame_Options_PointerCache));
     zReader::Node *const detailRoot = zReader::Load(g_zOpt_DetailArchiveName, 0, 0);
     if (detailRoot == 0) {
@@ -2113,7 +2113,7 @@ RECOIL_NO_GS int OptionsLoadGameOptions() {
         OptionsGetOrCreateOption(g_zOpt_OptionName_SoundApi, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
     if (g_zGame_Options_PointerCache.audioApi != 0) {
-        zSnd::SetAudioApiOption(1);
+        zSnd::SetAudioApiOption(0);
     }
 
     g_zGame_Options_PointerCache.playerName = OptionsGetOrCreateOption(
@@ -2334,18 +2334,18 @@ RECOIL_NO_GS int OptionsLoadGameOptions() {
     zOpt::SetNetworkEnabled(0);
     zOpt::SetNetworkModemEnabled(0);
 
-    if (g_zGame_Options_PointerCache.cameraSection != 0 && *g_zGame_Options_PointerCache.cameraSection != 0) {
-        (*g_zGame_Options_PointerCache.cameraSection)->m_pCamera = 0;
-    }
-    if (g_zGame_Options_PointerCache.renderSection != 0 && *g_zGame_Options_PointerCache.renderSection != 0) {
-        (*g_zGame_Options_PointerCache.renderSection)->target = 0;
-    }
-    if (g_zGame_Options_PointerCache.displaySection != 0 && *g_zGame_Options_PointerCache.displaySection != 0) {
-        (*g_zGame_Options_PointerCache.displaySection)->target = 0;
-    }
-    if (g_zGame_Options_PointerCache.windowSection != 0 && *g_zGame_Options_PointerCache.windowSection != 0) {
-        (*g_zGame_Options_PointerCache.windowSection)->target = 0;
-    }
+    // Each transient section is allocated when its option is registered.
+    (*g_zGame_Options_PointerCache.cameraSection)->m_pCamera = 0;
+
+    // Rendering has no attached target until the display is initialized.
+    (*g_zGame_Options_PointerCache.renderSection)->target = 0;
+
+    // The display target is supplied by the video setup.
+    (*g_zGame_Options_PointerCache.displaySection)->target = 0;
+
+    // The window target is supplied when the game window is created.
+    (*g_zGame_Options_PointerCache.windowSection)->target = 0;
+
 
     zReader::Free(detailRoot);
     g_zOpt_HwMode = zVid::GetAccelerationOption();

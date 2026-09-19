@@ -129,7 +129,7 @@ void __fastcall OptionsInitRegistryContext(
     const char *regKeyCurrentUser,
     const char *regKeyGame
 );
-RECOIL_NO_GS int OptionsLoadGameOptions();
+RECOIL_NO_GS int __fastcall OptionsLoadGameOptions();
 RECOIL_NO_GS int __cdecl OptionsLoadFromRegistry();
 RECOIL_NO_GS int __cdecl OptionsSaveToRegistry();
 int OptionsSaveGameOptions();

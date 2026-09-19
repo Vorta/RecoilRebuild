@@ -8,9 +8,7 @@
 #include "recoil/recoil_callconv.h"
 #include "Battlesport/recoil_state_base.h"
 
-#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
 #include <deque>
-#endif
 
 typedef recoil::Ptr32 RecoilPtr32;
 
@@ -117,94 +115,17 @@ RECOIL_STATIC_ASSERT(
 );
 
 /**
- * VC5 deque-shaped app-state queue recovered from the queueing functions.
+ * App-state transition queue backed by the canonical VC5 deque.
  * Retail stores 0x1000-byte chunks and a centered chunk-base list; queued
  * items themselves are consumed and deleted by RecoilApp_MfcOleModule::Run.
  */
-enum {
-    kRecoilAppStateQueueChunkSlotCount = 1024,
-    kRecoilAppStateQueueInitialCursorOffset =
-        kRecoilAppStateQueueChunkSlotCount / 2,
-    kRecoilAppStateQueueInitialChunkBaseCapacity = 2
-};
-
-struct RecoilApp_StateQueueBlock {
-    RecoilApp_StateQueueItem **m_chunkBegin;
-    RecoilApp_StateQueueItem **m_chunkEnd;
-    RecoilApp_StateQueueItem **m_cursor;
-    RecoilApp_StateQueueItem ***m_chunkBaseSlot;
-
-    RecoilApp_StateQueueBlock * InitFromCursor(
-        RecoilApp_StateQueueItem **cursor,
-        RecoilApp_StateQueueItem ***chunkBaseSlot
-    );
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueueBlock) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_StateQueueBlock,
-        m_cursor
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_StateQueueBlock,
-        m_chunkBaseSlot
-    ) == 0x0c
-);
-
-#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
 struct RecoilApp_StateQueue : std::deque<RecoilApp_StateQueueItem *> {
     inline bool Empty() const;
     inline RecoilApp_StateQueueItem *Front() const;
     inline void PopFront();
     inline void PushBack(RecoilApp_StateQueueItem *const &item);
 };
-#else
-struct RecoilApp_StateQueue {
-    int m_allocatorPad;
-    RecoilApp_StateQueueBlock m_readBlock;
-    RecoilApp_StateQueueBlock m_writeBlock;
-    RecoilApp_StateQueueItem ***m_chunkBaseList;
-    int m_chunkBaseCapacity;
-    int m_itemCount;
-
-    RecoilApp_StateQueueItem *** GrowAndCenterChunkBaseList(
-        int newCapacity
-    );
-    inline bool Empty() const;
-    inline RecoilApp_StateQueueItem *Front() const;
-    inline void PopFront();
-    inline void PushBack(RecoilApp_StateQueueItem *const &item);
-};
-#endif
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueue) == 0x30);
-#if !(defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86))
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_StateQueue,
-        m_readBlock
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_StateQueue,
-        m_writeBlock
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_StateQueue,
-        m_chunkBaseList
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_StateQueue,
-        m_itemCount
-    ) == 0x2c
-);
-#endif
 
 struct RECOIL_NOVTABLE RecoilApp_FmvState : RecoilApp_IState {
     int OnIdleOrDispatch(

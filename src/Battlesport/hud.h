@@ -723,17 +723,17 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_OptionSelector) == 0x17c);
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-controls-dialog.type
  * @recoil-artifact emits .text recoil:function:0x408c40: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
- * Purpose: Defines the controls dialog whose ordinary virtual lifetime causes
- * VC5 to emit the deleting-destructor contribution.
+ * Purpose: Own the controls widgets and five distinct, zero-data selector types.
+ * Role names are inferred; native lifetime emits their separate retail tables.
  */
 struct HudUiControlsDialog : HudUiBackground {
     CHudUiControlsDialogResumeWidget resumeWidget;
     HudUiControlsDialog_CommandsWidget commandsWidget;
-    HudUiControlsDialog_OptionSelector mouseOrJoystickSelector;
-    HudUiControlsDialog_OptionSelector throttleModeSelector;
-    HudUiControlsDialog_OptionSelector steeringModeSelector;
-    HudUiControlsDialog_OptionSelector cursorModeSelector;
-    HudUiControlsDialog_OptionSelector cameraModeSelector;
+    struct CMouseOrJoystickSelector : CHudRadioGroupWidget {} mouseOrJoystickSelector;
+    struct CThrottleModeSelector : CHudRadioGroupWidget {} throttleModeSelector;
+    struct CSteeringModeSelector : CHudRadioGroupWidget {} steeringModeSelector;
+    struct CCursorModeSelector : CHudRadioGroupWidget {} cursorModeSelector;
+    struct CCameraModeSelector : CHudRadioGroupWidget {} cameraModeSelector;
 
     HudUiControlsDialog();
     void Destructor();

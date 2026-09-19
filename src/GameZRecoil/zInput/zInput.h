@@ -570,7 +570,7 @@ void __fastcall BindMapAddDefaultBinding(
     int joystickSlot,
     int mouseSlot
 );
-int __cdecl BindMapInitDefaultBindings();
+int __fastcall BindMapInitDefaultBindings();
 void __fastcall BindMapSystemInit(int commandCount);
 void __cdecl BindMapSystemShutdown();
 void __fastcall BindMapContextPush(zInput_BindMapContext *bindMapOrNull);

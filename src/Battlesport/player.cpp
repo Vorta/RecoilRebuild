@@ -9272,9 +9272,13 @@ void __fastcall BindMapAddDefaultBinding(
 } // namespace zInput
 namespace zInput {
 /**
+ * @recoil-anchor recoil:anchor:battlesport-player-zinput-bindmapinitdefaultbindings
+ * @recoil-artifact defines .text recoil:function:0x42a550: zInput::BindMapInitDefaultBindings.
+ * @recoil-match byte
+ *
  * Purpose: Clear the bind-group list and seed the retail default command bindings.
  */
-int __cdecl BindMapInitDefaultBindings() {
+int __fastcall BindMapInitDefaultBindings() {
     BindGroupListClear();
     g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x750));
     BindMapAddDefaultBinding(0x04, 0x806, 0x0c8, 0, 0, 0);
@@ -9292,7 +9296,6 @@ int __cdecl BindMapInitDefaultBindings() {
     BindMapAddDefaultBinding(0x08, 0x82c, 0x02b, 0, 5, 0);
     BindMapAddDefaultBinding(0x09, 0x872, 0x030, 0, 0, 0);
     BindMapAddDefaultBinding(0x0a, 0x8c2, 0x230, 0, 0, 0);
-
     g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x751));
     BindMapAddDefaultBinding(0x0b, 0x88c, 0, 0, 1, 1);
     BindMapAddDefaultBinding(0x0c, 0x88e, 0, 0, 2, 2);
@@ -9306,18 +9309,15 @@ int __cdecl BindMapInitDefaultBindings() {
     BindMapAddDefaultBinding(0x15, 0x81e, 0x008, 0x047, 0, 0);
     BindMapAddDefaultBinding(0x16, 0x820, 0x009, 0x048, 0, 0);
     BindMapAddDefaultBinding(0x17, 0x822, 0x00a, 0x049, 0, 0);
-
     g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x752));
     BindMapAddDefaultBinding(0x1e, 0x84e, 0x02f, 0, 0, 0);
     BindMapAddDefaultBinding(0x20, 0x888, 0x03f, 0, 0, 0);
     BindMapAddDefaultBinding(0x21, 0x8a6, 0x040, 0, 0, 0);
     BindMapAddDefaultBinding(0x22, 0x8a8, 0x041, 0, 0, 0);
-
     g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x753));
     BindMapAddDefaultBinding(0x19, 0x8a4, 0x013, 0, 0, 0);
     BindMapAddDefaultBinding(0x18, 0x826, 0x018, 0, 0, 0);
     BindMapAddDefaultBinding(0x1a, 0x8c4, 0x011, 0, 0, 0);
-
     g_zInput_CurrentBindGroupIndex = BindGroupListAddGroup(zLoc::GetMessageString(0x754));
     BindMapAddDefaultBinding(0x2d, 0x8b6, 0x042, 0, 0, 0);
     BindMapAddDefaultBinding(0x2c, 0x8b4, 0x043, 0, 0, 0);

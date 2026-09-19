@@ -1628,7 +1628,10 @@ void __fastcall MatTransformPointBatchInPlace(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-transformbboxtocorners
  * @recoil-artifact defines .text recoil:function:0x474870: zMathMatTransformBBoxToCorners
- * Purpose: transforms a bounding box into its eight output corner positions.
+ * @recoil-match functional
+ *
+ * Purpose: Transform finite, representable geometry under the reviewed functional contract.
+ * Contract and proof: docs/reconstruction/audits/bbox_474870_byte_matching_2026-09-16.md.
  */
 void __fastcall zMathMatTransformBBoxToCorners(
     const zMat4x3 *matrix,
@@ -1640,26 +1643,23 @@ void __fastcall zMathMatTransformBBoxToCorners(
     zVec3 work;
     zVec3 minXMaxY;
     zVec3 maxXMaxY;
-    float savedZProduct; // Unused capture; restores the retail x87 instruction counts.
-
-    // Seed the min-Y accumulators with the X contributions.
-    minXMinY.x = bbox->min.x * matrix->xx;
+    float savedComponent; // Some captures are unused; preserve the closer retail x87 schedule.
+    minXMinY.x = bbox->min.x; // Seed the factor to retain retail's multiply operand order.
+    minXMinY.x *= matrix->xx;
     minXMinY.y = bbox->min.x * matrix->xy;
     minXMinY.z = bbox->min.x * matrix->xz;
     maxXMinY.x = matrix->xx * bbox->max.x;
     maxXMinY.y = bbox->max.x * matrix->xy;
     maxXMinY.z = bbox->max.x * matrix->xz;
-
-    work.x = bbox->max.y * matrix->yx;
     work.y = matrix->yy * bbox->max.y;
     work.z = matrix->yz * bbox->max.y;
+    work.x = bbox->max.y * matrix->yx;
     minXMaxY.x = work.x + minXMinY.x;
     minXMaxY.y = work.y + minXMinY.y;
     minXMaxY.z = work.z + minXMinY.z;
     maxXMaxY.x = work.x + maxXMinY.x;
     maxXMaxY.y = work.y + maxXMinY.y;
     maxXMaxY.z = work.z + maxXMinY.z;
-
     // Add min-Y in place after saving the max-Y combinations.
     work.x = matrix->yx * bbox->min.y;
     work.y = matrix->yy * bbox->min.y;
@@ -1670,20 +1670,17 @@ void __fastcall zMathMatTransformBBoxToCorners(
     maxXMinY.x = work.x + maxXMinY.x;
     maxXMinY.y = work.y + maxXMinY.y;
     maxXMinY.z = work.z + maxXMinY.z;
-
     // Reuse the contribution vector for each Z plane.
-    work.x = matrix->zx * bbox->min.z + matrix->posX;
+    work.x = matrix->zx;
+    work.x = work.x * bbox->min.z + matrix->posX;
     work.y = matrix->zy * bbox->min.z + matrix->posY;
     work.z = matrix->zz * bbox->min.z + matrix->posZ;
-
     outCorners->corners[2].x = work.x + maxXMinY.x;
     outCorners->corners[2].y = work.y + maxXMinY.y;
-    outCorners->corners[2].z = work.z + maxXMinY.z;
-
+    outCorners->corners[2].z = (savedComponent = work.z) + maxXMinY.z;
     outCorners->corners[3].x = work.x + minXMinY.x;
     outCorners->corners[3].y = work.y + minXMinY.y;
     outCorners->corners[3].z = work.z + minXMinY.z;
-
     outCorners->corners[6].x = maxXMaxY.x + work.x;
     outCorners->corners[6].y = maxXMaxY.y + work.y;
     outCorners->corners[6].z = maxXMaxY.z + work.z;
@@ -1692,12 +1689,15 @@ void __fastcall zMathMatTransformBBoxToCorners(
     outCorners->corners[7].y = minXMaxY.y + work.y;
     outCorners->corners[7].z = minXMaxY.z + work.z;
 
-    work.x = bbox->max.z * matrix->zx + matrix->posX;
-    work.y = bbox->max.z * matrix->zy + matrix->posY;
-    work.z = (savedZProduct = bbox->max.z * matrix->zz) + matrix->posZ;
-
+    work.x = bbox->max.z * matrix->zx;
+    work.y = bbox->max.z * matrix->zy;
+    work.z = bbox->max.z * matrix->zz;
+    work.x += matrix->posX;
+    work.y += matrix->posY;
+    work.z += matrix->posZ;
     outCorners->corners[0].x = work.x + minXMinY.x;
-    outCorners->corners[0].y = work.y + minXMinY.y;
+    savedComponent = work.y;
+    outCorners->corners[0].y = savedComponent + minXMinY.y;
     outCorners->corners[0].z = work.z + minXMinY.z;
 
     outCorners->corners[1].x = work.x + maxXMinY.x;
