@@ -20,6 +20,7 @@ resources/raw/
 *.zip
 *.zbd
 .devspace/
+/research/local/
 
 # SQLite transient files. Canonical *.sqlite3 ledgers remain eligible.
 *.sqlite3-journal

@@ -6,8 +6,10 @@ A source-faithful native C/C++ reconstruction of Zipper Interactive's 1999 Windo
 - `src/GameZRecoil` — engine subsystems.
 - `tools` and `tests/tools` — reconstruction tools and proof infrastructure.
 - `docs/reconstruction` — procedures and supporting evidence.
+- `reference/exports` — non-authoritative Binary Ninja text exports.
+- `research/local` — ignored, retained investigations; `build` — build and validation output.
 
-Start with [AGENTS.md](AGENTS.md) and the [runbook index](docs/reconstruction/retail_executable_reproduction.md). Current status comes only from the machine-local tracker:
+Start with [AGENTS.md](AGENTS.md) and the [runbook index](docs/reconstruction/retail_executable_reproduction.md). [Workspace layout](docs/reconstruction/reference/workspace-layout.md) explains historical paths. Current status comes only from the machine-local tracker:
 
 ```powershell
 python tools/recoil.py progress next --json
