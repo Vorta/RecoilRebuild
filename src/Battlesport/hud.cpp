@@ -3913,8 +3913,9 @@ int RecoilStateControls::OnTryBecomeCurrent() {
         m_dialog = new HudUiControlsDialog;
     }
 
+    ((HudUiControlsDialog *)m_dialog)->SetEnabled(1);
+
     HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
-    dialog->SetEnabled(1);
 
     dialog->mouseOrJoystickSelector.SetSelectedIndex(zInp::GetJoystickOption());
     dialog->throttleModeSelector.SetSelectedIndex(zOpt::GetThrottleMode());
