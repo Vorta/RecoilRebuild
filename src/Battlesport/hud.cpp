@@ -4062,8 +4062,10 @@ inline HudUiZrdScrollingText::HudUiZrdScrollingText() : HudUiZrdWidget() {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicreditspanel-huduicreditspanel
  * @recoil-artifact defines .text recoil:function:0x409040: HudUiCreditsPanel::HudUiCreditsPanel.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
- * Purpose: preserve the recovered HUD behavior for HudUiCreditsPanel::HudUiCreditsPanel.
+ * Purpose: construct and load the credits panel, preserving only screen flag bit 0x10.
  */
 HudUiCreditsPanel::HudUiCreditsPanel() : HudUiBackground() {
     fadeProgress = 0.0f;
@@ -4098,9 +4100,12 @@ HudUiCreditsPanel::HudUiCreditsPanel() : HudUiBackground() {
         HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
     }
 
-    unsigned int screenFlags = 0;
-    screenFlags = (unsigned char)(screen->flags);
-    screen->flags = screenFlags & 0x10u;
+    unsigned int oldScreenFlags = (unsigned char)screen->flags;
+    if ((~oldScreenFlags & 0x10u) != 0) {
+        screen->flags = 0;
+    } else {
+        screen->flags = 0x10u;
+    }
 }
 
 /**

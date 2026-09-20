@@ -129,9 +129,12 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# AI/local assistant runtime state. Repository-local skills live only under
-# `.codex/skills/recoil-*`; `AGENTS.md` is the sole instruction entry point.
+# AI/local assistant runtime state. Retain Recoil skills and native Codex role
+# TOML files; `AGENTS.md` remains the task instruction entry point.
 .codex/*
+!.codex/agents/
+.codex/agents/*
+!.codex/agents/*.toml
 !.codex/skills/
 .codex/skills/*
 !.codex/skills/recoil-*/
