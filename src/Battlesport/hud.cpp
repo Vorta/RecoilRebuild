@@ -5238,6 +5238,8 @@ int HudCmdDialog::ApplyPrimaryKeyRebind(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialog-applysecondarykeyrebind
  * @recoil-artifact defines .text recoil:function:0x40b460: HudCmdDialog::ApplySecondaryKeyRebind.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: apply the recovered HUD layout or option state handled by HudCmdDialog::ApplySecondaryKeyRebind.
  */
@@ -5246,11 +5248,14 @@ int HudCmdDialog::ApplySecondaryKeyRebind(
     int commandIndex
 ) {
     if (keyCode != 1) {
-        const int secondaryCommand = zInput::BindMapCurrentGetCommandBySecondaryKey(keyCode);
+        int secondaryCommand = zInput::BindMapCurrentGetCommandBySecondaryKey(keyCode);
         const int groupIndex = setList.selectedIndex;
         const int commandId = zInput::BindGroupListGetGroupCommandId(groupIndex, commandIndex);
-        if (secondaryCommand == 0 && zInput::BindMapCurrentGetCommandByPrimaryKey(keyCode) != 0) {
-            zInput::BindMapCurrentSetPrimaryKeyBinding(keyCode, 0);
+        if (secondaryCommand == 0) {
+            secondaryCommand = zInput::BindMapCurrentGetCommandByPrimaryKey(keyCode);
+            if (secondaryCommand != 0) {
+                zInput::BindMapCurrentSetPrimaryKeyBinding(keyCode, 0);
+            }
         }
 
         zInput::BindMapCurrentSetSecondaryKeyBinding(keyCode, commandId);
@@ -5375,6 +5380,8 @@ int HudCmdDialog::SelectCommandRelative(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialog-rebuildcommandbindinglistsforgroup
  * @recoil-artifact defines .text recoil:function:0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: preserve the recovered HUD behavior for HudCmdDialog::RebuildCommandBindingListsForGroup.
  */
@@ -5879,6 +5886,8 @@ inline HudCmdBindingEntry *HudCmdBindingEntryDelete::operator()(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmdbindbuttonbase-addbindingentry
  * @recoil-artifact defines .text recoil:function:0x40bf80: HudCmdBindButtonBase::AddBindingEntry.
+ * @recoil-match byte
+ *
  * Binary Ninja shows the HudCmdBindButton.cpp method allocating a
  * HudCmdBindingEntry, duplicating the display text, assigning the command id,
  * and appending it to the binding vector with growth when capacity is full.

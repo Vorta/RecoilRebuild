@@ -2310,8 +2310,9 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetState
 ) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zUtil_PlayerStateStorage *savedTargetPlayerState; // Unused snapshot required for VC5 byte matching.
+    zUtil_PlayerStateStorage *savedPlayerState; // Unused snapshot preserves retail VC5 x87 evaluation order.
+    zUtil_PlayerStateStorage *const playerState = (savedPlayerState = saveState->playerState);
+    zUtil_PlayerStateStorage *savedTargetPlayerState; // Unused snapshot retained for retail VC5 scheduling.
     zUtil_PlayerStateStorage *const targetPlayerState = (savedTargetPlayerState = targetState->playerState);
     zVec3 targetDir;
     zVec3 targetToPlayerDir;
