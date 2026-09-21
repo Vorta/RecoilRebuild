@@ -2816,6 +2816,10 @@ struct HudUiMessageBoxDialog : HudUiBackground {
     virtual void OnCancel();
 };
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-panel-layout-entry.type
+ * @recoil-artifact emits .text recoil:function:0x40bef0: VC5 implicit destructor used by nested row-vector cleanup.
+ */
 struct HudUiPanelLayoutEntry {
     HudUiPanel panel;
     int layoutX;
@@ -3028,6 +3032,7 @@ struct HudUiCreditsQuitButton : HudUiZrdWidget {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-zrd-scrolling-text.type
+ * @recoil-artifact emits .text recoil:function:0x4091e0: VC5 implicit destructor for the row-vector and widget-base lifetime.
  * @recoil-artifact emits .text recoil:function:0x409360: VC5 scalar deleting destructor for this virtual-destructor model.
  */
 struct HudUiZrdScrollingText : HudUiZrdWidget {
@@ -3036,11 +3041,6 @@ struct HudUiZrdScrollingText : HudUiZrdWidget {
     int totalHeight;
 
     HudUiZrdScrollingText();
-    /**
-     * Purpose: declare the retained ordinary destructor defined inline at its
-     * source-order position in the owning translation unit.
-     */
-    ~HudUiZrdScrollingText();
     void OnActivate();
     void OnActivateResetOwnerFade();
     void Update(float deltaSeconds);
@@ -3053,6 +3053,7 @@ struct HudUiZrdScrollingText : HudUiZrdWidget {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-credits-panel.type
+ * @recoil-artifact emits .text recoil:function:0x4092a0: VC5 implicit destructor for reverse credits widget and background-base lifetime.
  * @recoil-artifact emits .text recoil:function:0x4091c0: VC5 scalar deleting destructor for this virtual-destructor model.
  */
 struct HudUiCreditsPanel : HudUiBackground {
@@ -3063,11 +3064,6 @@ struct HudUiCreditsPanel : HudUiBackground {
     float fadeProgress;
 
     HudUiCreditsPanel();
-    /**
-     * Purpose: let ordinary C++ lifetime rules tear down the credits widgets
-     * and background base in reverse construction order.
-     */
-    ~HudUiCreditsPanel();
     virtual void UpdateAll(float deltaSeconds);
 };
 

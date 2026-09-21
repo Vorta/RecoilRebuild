@@ -4157,29 +4157,6 @@ void HudUiCreditsQuitButton::OnActivate() {
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduizrdscrollingtext-destructor-huduizrdscrollingtext
- * @recoil-artifact defines .text recoil:function:0x4091e0: HudUiZrdScrollingText::~HudUiZrdScrollingText.
- * @recoil-artifact emits .text recoil:function:0x40bef0: implicit HudUiPanelLayoutEntry destructor used by the
- * nested row-vector cleanup path.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
- * Purpose: keep the ordinary destructor inline at its source-order position
- * so the following credits-panel destructor can naturally expand member
- * teardown while VC5 emits this retained lifecycle identity in retail order.
- */
-inline HudUiZrdScrollingText::~HudUiZrdScrollingText() {
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduicreditspanel-destructor-huduicreditspanel
- * @recoil-artifact defines .text recoil:function:0x4092a0: HudUiCreditsPanel::~HudUiCreditsPanel.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
- * Purpose: invoke ordinary reverse member and base teardown for the credits
- * panel at the end of its lifetime.
- */
-HudUiCreditsPanel::~HudUiCreditsPanel() {
-}
-
-/**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicreditspanel-updateall
  * @recoil-artifact defines .text recoil:function:0x409380: HudUiCreditsPanel::UpdateAll
  * Purpose: advance the credits fade, update the panel, and queue the post-credits transition.
@@ -4402,11 +4379,12 @@ int HudUiZrdScrollingText::LoadFromZrd(
 
             HudUiPanelLayoutEntry templateEntry(0, 0, 0);
             templateEntry.panel.SetTextFmt("%s", text);
+            const HudUiBackground *const styleOwner = owner;
+            const HudFontStyle *const style =
+                styleOwner->fontStyles[styleIndex].validMarker != 0 ?
+                &styleOwner->fontStyles[styleIndex] : 0;
             templateEntry.layoutX = layoutX;
             templateEntry.layoutY = layoutY;
-
-            const HudFontStyle *style = &owner->fontStyles[styleIndex];
-            style = style->validMarker != 0 ? style : 0;
             if (style != 0) {
                 templateEntry.panel.SetFont(
                     style->fontName,
@@ -4417,8 +4395,9 @@ int HudUiZrdScrollingText::LoadFromZrd(
                     0,
                     2
                 );
-                templateEntry.panel.textColor0 = style->textColor;
-                templateEntry.panel.textColor1 = style->textColor;
+                const unsigned int textColor = style->textColor;
+                templateEntry.panel.textColor0 = textColor;
+                templateEntry.panel.textColor1 = textColor;
                 templateEntry.panel.textDirty = 1;
                 templateEntry.panel.shadowEnabled = style->shadowEnabled;
                 templateEntry.panel.shadowOffsetX = 1;
@@ -4427,7 +4406,8 @@ int HudUiZrdScrollingText::LoadFromZrd(
             templateSpan.insert(templateSpan.end(), templateEntry);
         }
 
-        rows.insert(rows.end(), templateSpan);
+        HudUiPanelSpanVec &rowList = rows;
+        rowList.insert(rowList.end(), templateSpan);
     }
 
     totalHeight = 0;
@@ -4611,11 +4591,7 @@ RecoilStateCredits::~RecoilStateCredits() {
  * app state becomes current.
  */
 int RecoilStateCredits::OnTryBecomeCurrent() {
-    HudUiCreditsPanel *creditsPanel =
-        (HudUiCreditsPanel *) ::operator new(sizeof(HudUiCreditsPanel));
-    if (creditsPanel != 0) {
-        creditsPanel = new (creditsPanel) HudUiCreditsPanel;
-    }
+    HudUiCreditsPanel *creditsPanel = new HudUiCreditsPanel;
     m_dialog = creditsPanel;
 
     creditsPanel->SetEnabled(1);
@@ -5239,11 +5215,14 @@ int HudCmdDialog::ApplyPrimaryKeyRebind(
     int commandIndex
 ) {
     if (keyCode != 1) {
-        const int primaryCommand = zInput::BindMapCurrentGetCommandByPrimaryKey(keyCode);
+        int primaryCommand = zInput::BindMapCurrentGetCommandByPrimaryKey(keyCode);
         const int groupIndex = setList.selectedIndex;
         const int commandId = zInput::BindGroupListGetGroupCommandId(groupIndex, commandIndex);
-        if (primaryCommand == 0 && zInput::BindMapCurrentGetCommandBySecondaryKey(keyCode) != 0) {
-            zInput::BindMapCurrentSetSecondaryKeyBinding(keyCode, 0);
+        if (primaryCommand == 0) {
+            primaryCommand = zInput::BindMapCurrentGetCommandBySecondaryKey(keyCode);
+            if (primaryCommand != 0) {
+                zInput::BindMapCurrentSetSecondaryKeyBinding(keyCode, 0);
+            }
         }
 
         zInput::BindMapCurrentSetPrimaryKeyBinding(keyCode, commandId);

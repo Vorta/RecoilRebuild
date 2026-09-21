@@ -87,6 +87,21 @@ struct zInput_BindMapContext {
         char *destBuf,
         int maxBytes
     );
+    char * FormatKeyComboName(
+        int packedKey,
+        char *destBuf,
+        int maxBytes
+    );
+    char * CopyJoystickButtonName(
+        int joystickSlot,
+        char *outBuf,
+        int bufSize
+    );
+    char * CopyMouseButtonName(
+        int mouseSlot,
+        char *outBuf,
+        int bufSize
+    );
 };
 
 RECOIL_STATIC_ASSERT(
@@ -618,21 +633,6 @@ char *__fastcall BindMapCurrentCopyCommandLabel(
     int commandId,
     char *destBuf,
     int maxBytes
-);
-char *__stdcall BindMapFormatKeyComboName(
-    int packedKey,
-    char *destBuf,
-    int maxBytes
-);
-char *__stdcall BindMapCopyJoystickButtonName(
-    int joystickSlot,
-    char *outBuf,
-    int bufSize
-);
-char *__stdcall BindMapCopyMouseButtonName(
-    int mouseSlot,
-    char *outBuf,
-    int bufSize
 );
 char *__fastcall BindMapCurrentFormatKeyComboName(
     int packedKey,

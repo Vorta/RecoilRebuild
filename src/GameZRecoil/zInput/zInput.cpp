@@ -1488,86 +1488,95 @@ char * zInput_BindMapContext::CopyCommandLabel(
     return strncpy(destBuf, source, maxBytes);
 }
 
-namespace zInput {
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-formatkeycomboname
- * @recoil-artifact defines .text recoil:function:0x470f80: zInput::BindMapFormatKeyComboName.
+ * @recoil-artifact defines .text recoil:function:0x470f80: zInput_BindMapContext::FormatKeyComboName.
  * @recoil-artifact emits .data recoil:logical-data:0x4e5ce0:zinput-bindmap-format-key-combo-name-empty-literal: VC5 pooled empty-string literal occurrence.
- * Binary Ninja shows the zinput.cpp helper reading g_zInput_DikKeyNames,
+ * Binary Ninja shows the context method reading g_zInput_DikKeyNames,
  * appending Ctrl/Alt/Shift prefixes in retail order, and returning an empty
  * string when the DIK slot has no name.
  * Purpose: Format a packed keyboard binding into the user-visible key name.
  */
-char *__stdcall BindMapFormatKeyComboName(
+char * zInput_BindMapContext::FormatKeyComboName(
     int packedKey,
     char *destBuf,
     int maxBytes
 ) {
-    const char *keyName = g_zInput_DikKeyNames[packedKey & 0xff];
-    if (keyName == 0) {
-        return "";
+    const char *const *keyNameSlot = &g_zInput_DikKeyNames[packedKey & 0xff];
+    if (*keyNameSlot != 0) {
+        int remaining = maxBytes;
+        *destBuf = '\0';
+        if ((packedKey & 0x200) != 0) {
+            remaining -= (int)(strlen(strncat(
+                destBuf,
+                g_zInput_KeyNameCtrlPrefix,
+                remaining
+            )));
+        }
+        if ((packedKey & 0x100) != 0) {
+            remaining -= (int)(strlen(strncat(
+                destBuf,
+                g_zInput_KeyNameAltPrefix,
+                remaining
+            )));
+        }
+        if ((packedKey & 0x400) != 0) {
+            remaining -= (int)(strlen(strncat(
+                destBuf,
+                g_zInput_KeyNameShiftPrefix,
+                remaining
+            )));
+        }
+
+        return strncat(destBuf, *keyNameSlot, remaining);
     }
 
-    int remaining = maxBytes;
-    *destBuf = '\0';
-    if ((packedKey & 0x200) != 0) {
-        strncat(destBuf, g_zInput_KeyNameCtrlPrefix, remaining);
-        remaining -= (int)(strlen(destBuf));
-    }
-    if ((packedKey & 0x100) != 0) {
-        strncat(destBuf, g_zInput_KeyNameAltPrefix, remaining);
-        remaining -= (int)(strlen(destBuf));
-    }
-    if ((packedKey & 0x400) != 0) {
-        strncat(destBuf, g_zInput_KeyNameShiftPrefix, remaining);
-        remaining -= (int)(strlen(destBuf));
-    }
-
-    return strncat(destBuf, keyName, remaining);
+    return "";
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-copyjoystickbuttonname
- * @recoil-artifact defines .text recoil:function:0x471040: zInput::BindMapCopyJoystickButtonName.
+ * @recoil-artifact defines .text recoil:function:0x471040: zInput_BindMapContext::CopyJoystickButtonName.
  * @recoil-artifact emits .data recoil:logical-data:0x4e5ce0:zinput-bindmap-copy-joystick-button-name-empty-literal: VC5 pooled empty-string literal occurrence.
  * Binary Ninja reads the one-based g_zInput_JoystickButtonNames table, returns
  * an empty string for an empty slot, or copies the selected literal.
  * Purpose: Copy a joystick button name for bind-map display.
  */
-char *__stdcall BindMapCopyJoystickButtonName(
+char * zInput_BindMapContext::CopyJoystickButtonName(
     int joystickSlot,
     char *outBuf,
     int bufSize
 ) {
     const char *source = g_zInput_JoystickButtonNames[joystickSlot];
-    if (source == 0) {
-        return "";
+    if (source != 0) {
+        return strncpy(outBuf, source, bufSize);
     }
 
-    return strncpy(outBuf, source, bufSize);
+    return "";
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-copymousebuttonname
- * @recoil-artifact defines .text recoil:function:0x471070: zInput::BindMapCopyMouseButtonName.
+ * @recoil-artifact defines .text recoil:function:0x471070: zInput_BindMapContext::CopyMouseButtonName.
  * @recoil-artifact emits .data recoil:logical-data:0x4e5ce0:zinput-bindmap-copy-mouse-button-name-empty-literal: VC5 pooled empty-string literal occurrence.
  * Binary Ninja reads the one-based g_zInput_MouseButtonNames table, returns
  * an empty string for an empty slot, or copies the selected literal.
  * Purpose: Copy a mouse button name for bind-map display.
  */
-char *__stdcall BindMapCopyMouseButtonName(
+char * zInput_BindMapContext::CopyMouseButtonName(
     int mouseSlot,
     char *outBuf,
     int bufSize
 ) {
     const char *source = g_zInput_MouseButtonNames[mouseSlot];
-    if (source == 0) {
-        return "";
+    if (source != 0) {
+        return strncpy(outBuf, source, bufSize);
     }
 
-    return strncpy(outBuf, source, bufSize);
+    return "";
 }
+
+namespace zInput {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapsystem-init
@@ -2027,7 +2036,7 @@ char *__fastcall BindMapCurrentCopyCommandLabel(
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-formatkeycomboname
  * @recoil-artifact defines .text recoil:function:0x471800: zInput::BindMapCurrentFormatKeyComboName.
  * Binary Ninja shows the current-map namespace wrapper forwarding the packed
- * key, destination buffer, and byte limit to BindMapFormatKeyComboName.
+ * key, destination buffer, and byte limit to the context formatting method.
  * Purpose: Format a packed keyboard binding for the current bind map.
  */
 char *__fastcall BindMapCurrentFormatKeyComboName(
@@ -2035,14 +2044,18 @@ char *__fastcall BindMapCurrentFormatKeyComboName(
     char *destBuf,
     int maxBytes
 ) {
-    return BindMapFormatKeyComboName(packedKey, destBuf, maxBytes);
+    return g_zInput_BindMap_Current->FormatKeyComboName(
+        packedKey,
+        destBuf,
+        maxBytes
+    );
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-copyjoystickbuttonname
  * @recoil-artifact defines .text recoil:function:0x471820: zInput::BindMapCurrentCopyJoystickButtonName.
  * Binary Ninja shows the current-map namespace wrapper forwarding the slot,
- * destination buffer, and byte limit to BindMapCopyJoystickButtonName.
+ * destination buffer, and byte limit to the context joystick-name method.
  * Purpose: Copy a joystick button name for the current bind map.
  */
 char *__fastcall BindMapCurrentCopyJoystickButtonName(
@@ -2050,14 +2063,18 @@ char *__fastcall BindMapCurrentCopyJoystickButtonName(
     char *outBuf,
     int bufSize
 ) {
-    return BindMapCopyJoystickButtonName(joystickSlot, outBuf, bufSize);
+    return g_zInput_BindMap_Current->CopyJoystickButtonName(
+        joystickSlot,
+        outBuf,
+        bufSize
+    );
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcurrent-copymousebuttonname
  * @recoil-artifact defines .text recoil:function:0x471840: zInput::BindMapCurrentCopyMouseButtonName.
  * Binary Ninja shows the current-map namespace wrapper forwarding the slot,
- * destination buffer, and byte limit to BindMapCopyMouseButtonName.
+ * destination buffer, and byte limit to the context mouse-name method.
  * Purpose: Copy a mouse button name for the current bind map.
  */
 char *__fastcall BindMapCurrentCopyMouseButtonName(
@@ -2065,7 +2082,11 @@ char *__fastcall BindMapCurrentCopyMouseButtonName(
     char *outBuf,
     int bufSize
 ) {
-    return BindMapCopyMouseButtonName(mouseSlot, outBuf, bufSize);
+    return g_zInput_BindMap_Current->CopyMouseButtonName(
+        mouseSlot,
+        outBuf,
+        bufSize
+    );
 }
 
 /**
